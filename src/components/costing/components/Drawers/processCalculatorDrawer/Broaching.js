@@ -14,7 +14,6 @@ function Broaching(props) {
     const costData = useContext(costingInfoContext);
 
     const dispatch = useDispatch()
-
     const [dataToSend, setDataToSend] = useState({ ...WeightCalculatorRequest })
 
     const defaultValues = {
@@ -29,9 +28,7 @@ function Broaching(props) {
         toolLength: WeightCalculatorRequest && WeightCalculatorRequest.toolLength !== undefined ? WeightCalculatorRequest.toolLength : '',
         cuttingSpeedForward: WeightCalculatorRequest && WeightCalculatorRequest.cuttingSpeedForward !== undefined ? WeightCalculatorRequest.cuttingSpeedForward : '',
         cuttingSpeedReturn: WeightCalculatorRequest && WeightCalculatorRequest.cuttingSpeedReturn !== undefined ? WeightCalculatorRequest.cuttingSpeedReturn : '',
-
         cuttingTimeMins: WeightCalculatorRequest && WeightCalculatorRequest.cuttingTimeMins !== undefined ? WeightCalculatorRequest.cuttingTimeMins : '',
-
         chipToChipTiming: WeightCalculatorRequest && WeightCalculatorRequest.chipToChipTiming !== undefined ? WeightCalculatorRequest.chipToChipTiming : '',
         totalNonCuttingTime: WeightCalculatorRequest && WeightCalculatorRequest.totalNonCuttingTime !== undefined ? WeightCalculatorRequest.totalNonCuttingTime : '',
         indexingTablePositioningTime: WeightCalculatorRequest && WeightCalculatorRequest.indexingTablePositioningTime !== undefined ? WeightCalculatorRequest.indexingTablePositioningTime : '',
@@ -56,10 +53,6 @@ function Broaching(props) {
     useEffect(() => {
         setBroachingForce()
         setCuttingTime()
-
-
-
-
         setTotalCycleTimeMins()   //totalCycleTimeMins
         setPartsPerHour()    //partsPerHour
     }, [fieldValues])
@@ -69,88 +62,51 @@ function Broaching(props) {
     const { technology, process, calculateMachineTime } = props
     const [totalMachiningTime, setTotalMachiningTime] = useState(WeightCalculatorRequest && WeightCalculatorRequest.TotalMachiningTime !== undefined ? WeightCalculatorRequest.TotalMachiningTime : '')
 
-
-
-
-
-
     const setBroachingForce = () => {
-
         const cuttingResistance = Number(getValues('cuttingResistance'))
         const cuttingLength = Number(getValues('cuttingLength'))
         const module = Number(getValues('module'))
         const noOFTeeth = Number(getValues('noOFTeeth'))
         const stepForwardThinning = Number(getValues('stepForwardThinning'))
-
-
         const broachingForce = checkForNull(cuttingResistance) * (checkForNull(cuttingLength) / checkForNull(module)).toFixed(0) * (checkForNull(noOFTeeth) * checkForNull(module) * checkForNull(stepForwardThinning)) / 1000;
         setDataToSend(prevState => ({ ...prevState, broachingForce: broachingForce }))
         setValue('broachingForceInTon', checkForDecimalAndNull(broachingForce, getConfigurationKey().NoOfDecimalForInputOutput))
-
-
     }
 
-
-
-
     const setCuttingTime = () => {
-
         const toolLength = Number(getValues('toolLength'))
         const cuttingSpeedForward = Number(getValues('cuttingSpeedForward'))
         const cuttingSpeedReturn = Number(getValues('cuttingSpeedReturn'))
-
         const cuttingTimeMins = (checkForNull(toolLength) / checkForNull(cuttingSpeedForward) / 1000) + (checkForNull(toolLength) / checkForNull(cuttingSpeedReturn) / 1000);
-
         setDataToSend(prevState => ({ ...prevState, cuttingTimeMins: cuttingTimeMins }))
         setValue('cuttingTimeMins', checkForDecimalAndNull(cuttingTimeMins, getConfigurationKey().NoOfDecimalForInputOutput))
-
     }
 
-
-
-
-
     const setTotalCycleTimeMins = () => {
-
-
         const chipToChipTiming = Number(getValues('chipToChipTiming'))
         const totalNonCuttingTime = Number(getValues('totalNonCuttingTime'))
         const indexingTablePositioningTime = Number(getValues('indexingTablePositioningTime'))
         const loadingAndUnloadingTime = Number(getValues('loadingAndUnloadingTime'))
-
         const totalCycleTimeMins = (checkForNull(dataToSend.cuttingTimeMins) + checkForNull(chipToChipTiming) + checkForNull(totalNonCuttingTime) + checkForNull(indexingTablePositioningTime) + checkForNull(loadingAndUnloadingTime))
-
         setDataToSend(prevState => ({ ...prevState, totalCycleTimeMins: totalCycleTimeMins }))
         setValue('totalCycleTimeMins', checkForDecimalAndNull(totalCycleTimeMins, getConfigurationKey().NoOfDecimalForInputOutput))
-
         const totalCycleTimeSec = (totalCycleTimeMins * 60)
         setDataToSend(prevState => ({ ...prevState, totalCycleTimeSec: totalCycleTimeSec }))
         setValue('totalCycleTimeSec', checkForDecimalAndNull(totalCycleTimeSec, getConfigurationKey().NoOfDecimalForInputOutput))
-
     }
-
-
-
 
 
     const setPartsPerHour = () => {
-
         const efficiencyPercentage = Number(getValues('efficiencyPercentage'))
         const partsPerHour = (3600 / checkForNull(dataToSend.totalCycleTimeSec)) * (checkForNull(efficiencyPercentage) / 100)
-
         setDataToSend(prevState => ({ ...prevState, partsPerHour: partsPerHour }))
         setValue('partsPerHour', checkForDecimalAndNull(partsPerHour, getConfigurationKey().NoOfDecimalForInputOutput))
-
         const processCost = (props?.calculatorData?.MHR) / checkForNull(partsPerHour)
         setDataToSend(prevState => ({ ...prevState, processCost: processCost }))
         setValue('processCost', checkForDecimalAndNull(processCost, getConfigurationKey().NoOfDecimalForInputOutput))
-
-
     }
 
-
     const onSubmit = (value) => {
-
         let obj = {}
         obj.ProcessCalculationId = props.calculatorData.ProcessCalculationId ? props.calculatorData.ProcessCalculationId : "00000000-0000-0000-0000-000000000000"
         obj.CostingProcessDetailId = WeightCalculatorRequest && WeightCalculatorRequest.CostingProcessDetailId ? WeightCalculatorRequest.CostingProcessDetailId : "00000000-0000-0000-0000-000000000000"
@@ -170,10 +126,7 @@ function Broaching(props) {
         obj.LoggedInUserId = loggedInUserId()
         obj.UnitTypeId = props.calculatorData.UOMTypeId
         obj.UnitType = props.calculatorData.UOMType
-
-
-
-        obj.noOFTeeth = value.noOFTeeth
+        obj.noOFTeeth = value.noOFTeeth//
         obj.module = value.module
         obj.majorDiameter = value.majorDiameter
         obj.minorDiameter = value.minorDiameter
@@ -185,10 +138,6 @@ function Broaching(props) {
         obj.cuttingSpeedForward = value.cuttingSpeedForward
         obj.cuttingSpeedReturn = value.cuttingSpeedReturn
         obj.cuttingTimeMins = dataToSend.cuttingTimeMins
-
-
-
-
         obj.chipToChipTiming = value.chipToChipTiming
         obj.totalNonCuttingTime = value.totalNonCuttingTime
         obj.indexingTablePositioningTime = value.indexingTablePositioningTime
@@ -198,14 +147,8 @@ function Broaching(props) {
         obj.efficiencyPercentage = value.efficiencyPercentage
         obj.partsPerHour = dataToSend.partsPerHour
         obj.processCost = dataToSend.processCost
-
-
-
         obj.TotalMachiningTime = totalMachiningTime
         obj.MachineRate = props.calculatorData.MHR
-
-
-
 
         dispatch(saveProcessCostCalculationData(obj, res => {
             if (res.data.Result) {
@@ -239,14 +182,6 @@ function Broaching(props) {
                                                 control={control}
                                                 register={register}
                                                 mandatory={true}
-                                                // rules={{
-                                                //     required: true,
-                                                //     pattern: {
-                                                //         value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                                //         message: 'Maximum length for interger is 4 and for decimal is 7',
-                                                //     },
-
-                                                // }}
                                                 rules={{
                                                     required: true,
                                                     pattern: {
@@ -275,15 +210,6 @@ function Broaching(props) {
                                                 control={control}
                                                 register={register}
                                                 mandatory={true}
-                                                // rules={{
-                                                //     required: true,
-                                                //     pattern: {
-                                                //         //value: /^[0-9]*$/i,
-                                                //         value: /^[0-9]\d*(\.\d+)?$/i,
-                                                //         message: 'Invalid Number.',
-                                                //     },
-                                                //     // maxLength: 4,
-                                                // }}
                                                 rules={{
                                                     required: true,
                                                     pattern: {
@@ -320,7 +246,6 @@ function Broaching(props) {
                                                     },
 
                                                 }}
-                                                //handleChange={onWidthChange}
                                                 handleChange={() => { }}
                                                 defaultValue={''}
                                                 className=""
@@ -328,8 +253,6 @@ function Broaching(props) {
                                                 errors={errors.majorDiameter}
                                                 disabled={false}
                                             />
-
-
                                         </Col>
 
                                     </Row>
@@ -337,9 +260,6 @@ function Broaching(props) {
                                     <Row>
 
                                         <Col md="4">
-
-
-
                                             <TextFieldHookForm
                                                 label={`Minor Dia(mm)`}
                                                 name={'minorDiameter'}
@@ -366,8 +286,6 @@ function Broaching(props) {
 
                                         </Col>
                                         <Col md="4">
-
-
                                             <TextFieldHookForm
                                                 label={`Cutting Length`}
                                                 name={'cuttingLength'}
@@ -437,15 +355,6 @@ function Broaching(props) {
                                                 control={control}
                                                 register={register}
                                                 mandatory={true}
-                                                // rules={{
-                                                //     required: true,
-                                                //     pattern: {
-                                                //         //value: /^[0-9]*$/i,
-                                                //         value: /^[0-9]\d*(\.\d+)?$/i,
-                                                //         message: 'Invalid Number.',
-                                                //     },
-                                                //     // maxLength: 4,
-                                                // }}
                                                 rules={{
                                                     required: true,
                                                     pattern: {
@@ -482,9 +391,6 @@ function Broaching(props) {
                                             />
                                         </Col>
                                         <Col md="4">
-
-
-
                                             <TextFieldHookForm
                                                 label={`Tool Length`}
                                                 name={'toolLength'}
@@ -519,14 +425,6 @@ function Broaching(props) {
                                                 control={control}
                                                 register={register}
                                                 mandatory={true}
-                                                // rules={{
-                                                //     required: false,
-                                                //     pattern: {
-                                                //         value: /^[0-9]\d*(\.\d+)?$/i,
-                                                //         message: 'Invalid Number.',
-                                                //     },
-                                                //     // maxLength: 4,
-                                                // }}
                                                 rules={{
                                                     required: true,
                                                     pattern: {
@@ -544,8 +442,6 @@ function Broaching(props) {
                                             />
                                         </Col>
                                         <Col md="4">
-
-
 
                                             <TextFieldHookForm
                                                 label={`Cutting Speed Return (m/min)`}
@@ -772,8 +668,6 @@ function Broaching(props) {
                                                 disabled={false}
                                             />
                                         </Col>
-
-
 
 
                                         <Col md="4">

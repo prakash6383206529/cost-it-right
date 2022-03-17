@@ -177,7 +177,6 @@ function ProcessCost(props) {
 
 
   const onRemarkPopUpClickk = (index) => {
-
     setRemarkPopUpData(getValues(`${ProcessGridFields}.${index}.remarkPopUp`))
     let tempArr = []
     let tempData = gridData[index]
@@ -194,18 +193,14 @@ function ProcessCost(props) {
       Toaster.success('Remark saved successfully')
     }
 
-
     setTabData(tempArr)
-
     var button = document.getElementById(`popUpTriggers${index}`)
     button.click()
-
 
   }
 
 
   const onRemarkPopUpClosee = (index) => {
-
     var button = document.getElementById(`popUpTriggers${index}`)
     button.click()
   }

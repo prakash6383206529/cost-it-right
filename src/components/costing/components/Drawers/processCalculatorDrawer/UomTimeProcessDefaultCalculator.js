@@ -64,102 +64,59 @@ function UomTimeProcessDefaultCalculator(props) {
     const [totalMachiningTime, setTotalMachiningTime] = useState(WeightCalculatorRequest && WeightCalculatorRequest.TotalMachiningTime !== undefined ? WeightCalculatorRequest.TotalMachiningTime : '')
 
 
-
-
-
-
     const setSpindleSpeed = () => {
-
         const cuttingDiameter = Number(getValues('cuttingDiameter'))
         const cuttingSpeed = Number(getValues('cuttingSpeed'))
-
         const spindleSpeed = (1000 * checkForNull(cuttingSpeed)) / (3.14 * checkForNull(cuttingDiameter))
         setDataToSend(prevState => ({ ...prevState, spindleSpeed: spindleSpeed }))
         setValue('spindleSpeed', checkForDecimalAndNull(spindleSpeed, getConfigurationKey().NoOfDecimalForInputOutput))
-
     }
 
-
     const setFeed = () => {
-
         const feedPerTooth = Number(getValues('feedPerTooth'))
         const noOfTooth = Number(getValues('noOfTooth'))
         const feed = (checkForNull(dataToSend.spindleSpeed) * checkForNull(feedPerTooth) * checkForNull(noOfTooth))
-
-
-
         setDataToSend(prevState => ({ ...prevState, feed: feed }))
         setValue('feedAutoCalculated', checkForDecimalAndNull(feed, getConfigurationKey().NoOfDecimalForInputOutput))
-
     }
 
-
-
-
     const setTotalLengthDepth = () => {
-
         const lengthDepth = Number(getValues('lengthDepth'))
         const noOfPasses = Number(getValues('noOfPasses'))
         const totalLengthDepth = (checkForNull(lengthDepth) * checkForNull(noOfPasses))
         setDataToSend(prevState => ({ ...prevState, totalLengthDepth: totalLengthDepth }))
         setValue('totalLengthDepth', checkForDecimalAndNull(totalLengthDepth, getConfigurationKey().NoOfDecimalForInputOutput))
-
-
         const cuttingTimeMins = totalLengthDepth / checkForNull(dataToSend.feed);
-
         setDataToSend(prevState => ({ ...prevState, cuttingTimeMins: cuttingTimeMins }))
         setValue('cuttingTimeMins', checkForDecimalAndNull(cuttingTimeMins, getConfigurationKey().NoOfDecimalForInputOutput))
 
     }
 
-
-
-
-
-
     const setTotalCycleTimeMins = () => {
-
-
         const chipToChipTiming = Number(getValues('chipToChipTiming'))
         const totalNonCuttingTime = Number(getValues('totalNonCuttingTime'))
         const indexingTablePositioningTime = Number(getValues('indexingTablePositioningTime'))
         const loadingAndUnloadingTime = Number(getValues('loadingAndUnloadingTime'))
-
         const totalCycleTimeMins = (checkForNull(dataToSend.cuttingTimeMins) + checkForNull(chipToChipTiming) + checkForNull(totalNonCuttingTime) + checkForNull(indexingTablePositioningTime) + checkForNull(loadingAndUnloadingTime))
-
         setDataToSend(prevState => ({ ...prevState, totalCycleTimeMins: totalCycleTimeMins }))
         setValue('totalCycleTimeMins', checkForDecimalAndNull(totalCycleTimeMins, getConfigurationKey().NoOfDecimalForInputOutput))
-
         const totalCycleTimeSec = (checkForNull(totalCycleTimeMins) * 60)
         setDataToSend(prevState => ({ ...prevState, totalCycleTimeSec: totalCycleTimeSec }))
         setValue('totalCycleTimeSec', checkForDecimalAndNull(totalCycleTimeSec, getConfigurationKey().NoOfDecimalForInputOutput))
-
-
     }
-
-
-
 
 
     const setPartsPerHour = () => {
-
         const efficiencyPercentage = Number(getValues('efficiencyPercentage'))
         const partsPerHour = (3600 / checkForNull(dataToSend.totalCycleTimeSec)) * (checkForNull(efficiencyPercentage) / 100)
-
         setDataToSend(prevState => ({ ...prevState, partsPerHour: partsPerHour }))
         setValue('partsPerHour', checkForDecimalAndNull(partsPerHour, getConfigurationKey().NoOfDecimalForInputOutput))
-
         const processCost = (props?.calculatorData?.MHR) / partsPerHour
         setDataToSend(prevState => ({ ...prevState, processCost: processCost }))
         setValue('processCost', checkForDecimalAndNull(processCost, getConfigurationKey().NoOfDecimalForInputOutput))
-
-
-
     }
 
-
     const onSubmit = (value) => {
-
         let obj = {}
         obj.ProcessCalculationId = props.calculatorData.ProcessCalculationId ? props.calculatorData.ProcessCalculationId : "00000000-0000-0000-0000-000000000000"
         obj.CostingProcessDetailId = WeightCalculatorRequest && WeightCalculatorRequest.CostingProcessDetailId ? WeightCalculatorRequest.CostingProcessDetailId : "00000000-0000-0000-0000-000000000000"
@@ -179,11 +136,7 @@ function UomTimeProcessDefaultCalculator(props) {
         obj.LoggedInUserId = loggedInUserId()
         obj.UnitTypeId = props.calculatorData.UOMTypeId
         obj.UnitType = props.calculatorData.UOMType
-
-
-
-
-        obj.cuttingDiameter = value.cuttingDiameter
+        obj.cuttingDiameter = value.cuttingDiameter//
         obj.cuttingSpeed = value.cuttingSpeed
         obj.spindleSpeed = dataToSend.spindleSpeed
         obj.feedPerTooth = value.feedPerTooth
@@ -203,14 +156,8 @@ function UomTimeProcessDefaultCalculator(props) {
         obj.efficiencyPercentage = value.efficiencyPercentage
         obj.partsPerHour = dataToSend.partsPerHour
         obj.processCost = dataToSend.processCost
-
-
-
         obj.TotalMachiningTime = totalMachiningTime
         obj.MachineRate = props.calculatorData.MHR
-
-
-
 
         dispatch(saveProcessCostCalculationData(obj, res => {
             if (res.data.Result) {
@@ -244,16 +191,6 @@ function UomTimeProcessDefaultCalculator(props) {
                                                 control={control}
                                                 register={register}
                                                 mandatory={true}
-                                                // rules={{
-                                                //     required: true,
-                                                //     pattern: {
-                                                //         //value: /^[0-9]*$/i,
-                                                //         value: /^[0-9]\d*(\.\d+)?$/i,
-                                                //         message: 'Invalid Number.',
-                                                //     },
-                                                //     // maxLength: 4,
-                                                // }}
-
                                                 rules={{
                                                     required: true,
                                                     pattern: {
@@ -318,7 +255,6 @@ function UomTimeProcessDefaultCalculator(props) {
                                                     },
                                                     // maxLength: 4,
                                                 }}
-                                                //handleChange={onWidthChange}
                                                 handleChange={() => { }}
                                                 defaultValue={''}
                                                 className=""
@@ -335,9 +271,6 @@ function UomTimeProcessDefaultCalculator(props) {
                                     <Row>
 
                                         <Col md="4">
-
-
-
                                             <TextFieldHookForm
                                                 label={`Feed Per tooth`}
                                                 name={'feedPerTooth'}
@@ -422,15 +355,6 @@ function UomTimeProcessDefaultCalculator(props) {
                                                 control={control}
                                                 register={register}
                                                 mandatory={false}
-                                                // rules={{
-                                                //     required: true,
-                                                //     pattern: {
-                                                //         //value: /^[0-9]*$/i,
-                                                //         value: /^[0-9]\d*(\.\d+)?$/i,
-                                                //         message: 'Invalid Number.',
-                                                //     },
-                                                //     // maxLength: 4,
-                                                // }}
                                                 rules={{
                                                     required: true,
                                                     pattern: {
@@ -591,7 +515,6 @@ function UomTimeProcessDefaultCalculator(props) {
                                                     },
 
                                                 }}
-                                                // handleChange={onClampingPercantageChange}
                                                 handleChange={() => { }}
                                                 defaultValue={''}
                                                 className=""
@@ -654,7 +577,6 @@ function UomTimeProcessDefaultCalculator(props) {
 
 
                                         <Col md="4">
-
                                             <TextFieldHookForm
                                                 label={`Total Cycle Time (mins)`}
                                                 name={'totalCycleTimeMins'}
@@ -673,9 +595,7 @@ function UomTimeProcessDefaultCalculator(props) {
 
 
 
-
                                         <Col md="4">
-
                                             <TextFieldHookForm
                                                 label={`Total Cycle Time (sec)`}
                                                 name={'totalCycleTimeSec'}
@@ -765,12 +685,7 @@ function UomTimeProcessDefaultCalculator(props) {
 
                                     </Row>
                                 </Col>
-                                {/* <div className="bluefooter-butn border row">
-                                    <div className="col-sm-8">Total Machining Time </div>
-                                    <span className="col-sm-4 text-right">
-                                        {totalMachiningTime === '0.00' ? totalMachiningTime : checkForDecimalAndNull(totalMachiningTime, trim)}{' '} min
-                                    </span>
-                                </div> */}
+
                             </div>
                         </Col>
                         <div className="mt25 col-md-12 text-right">
