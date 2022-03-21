@@ -251,7 +251,6 @@ function RawMaterialCost(props) {
     let tempArr = []
     let tempData = gridData[index]
     setEditCalculation(false)
-
     let grossValue = event
 
     if (checkForNull(grossValue) >= 0) {
@@ -432,7 +431,6 @@ function RawMaterialCost(props) {
 
         let scrapWeight = checkForNull(GrossWeight - FinishWeight);
 
-
         // Recovered scrap weight calculate
         let recoveredScrapWeight;
         if (isScrapRecoveryPercentageApplied && tempData.ScrapRecoveryPercentage !== undefined && tempData.ScrapRecoveryPercentage !== 0) {
@@ -440,7 +438,6 @@ function RawMaterialCost(props) {
           recoveredScrapWeight = scrapWeight * calculatePercentage(ScrapRecoveryPercentage);
           scrapWeight = recoveredScrapWeight
         }
-
 
         // ternary condition
         const ScrapCost = FinishWeight !== 0 ? scrapWeight * checkForNull(tempData.ScrapRate) : 0;
@@ -717,16 +714,12 @@ function RawMaterialCost(props) {
     setIsApplyMasterBatch(false)
   }
 
-
   const onRemarkPopUpClick = (index) => {
-
     setRemarkPopUpData(getValues(`${rmGridFields}.${index}.remarkPopUp`))
     let tempArr = []
     let tempData = gridData[index]
-
     tempData = {
       ...tempData,
-
       Remark: getValues(`${rmGridFields}.${index}.remarkPopUp`)
     }
     tempArr = Object.assign([...gridData], { [index]: tempData })
@@ -735,16 +728,11 @@ function RawMaterialCost(props) {
     if (getValues(`${rmGridFields}.${index}.remarkPopUp`)) {
       Toaster.success('Remark saved successfully')
     }
-
     var button = document.getElementById(`popUpTrigger${index}`)
     button.click()
-
-
   }
 
-
   const onRemarkPopUpClose = (index) => {
-
     var button = document.getElementById(`popUpTrigger${index}`)
     button.click()
   }
@@ -1049,13 +1037,11 @@ function RawMaterialCost(props) {
                             </td>
 
                             {
-
                               costData.TechnologyName === PLASTIC && <td>{checkForDecimalAndNull(item.BurningLossWeight, initialConfiguration.NoOfDecimalForInputOutput)}</td>
                             }
                             {
                               isScrapRecoveryPercentageApplied &&
                               <td>
-                                { }
                                 <NumberFieldHookForm
                                   label=""
                                   name={`${rmGridFields}.${index}.ScrapRecoveryPercentage`}
@@ -1106,14 +1092,11 @@ function RawMaterialCost(props) {
                                   register={register}
                                   mandatory={false}
                                   rules={{
-
-
                                     maxLength: {
                                       value: 75,
                                       message: "Remark should be less than 75 word"
                                     },
                                   }}
-
                                   handleChange={(e) => { }}
                                   defaultValue={item.Remark ?? item.Remark}
                                   className=""
