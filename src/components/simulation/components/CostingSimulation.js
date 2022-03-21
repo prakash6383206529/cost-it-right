@@ -762,7 +762,7 @@ function CostingSimulation(props) {
     }
     const errorBoxClass = () => {
         let temp
-        temp = status === (null && '') ? 'd-none' : ''
+        temp = status === (null || '' || undefined) ? 'd-none' : ''
         return temp
     }
 
