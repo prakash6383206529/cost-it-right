@@ -372,9 +372,11 @@ class ExchangeRateListing extends Component {
                                 </Row>
                             }
 
-                            <Row className="pt-4 blue-before">
-
-                                <Col md="6" className="search-user-block mb-3">
+                            <Row className="pt-4 blue-before zindex-0">
+                                <Col md="6">
+                                    <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                                </Col>
+                                <Col md="6" className=" mb-3">
                                     <div className="d-flex justify-content-end bd-highlight w100">
                                         <div>
                                             {this.state.shown ? (
@@ -411,9 +413,7 @@ class ExchangeRateListing extends Component {
                         </form>
 
                         <div className={`ag-grid-wrapper height-width-wrapper ${this.props.exchangeRateDataList && this.props.exchangeRateDataList?.length <= 0 ? "overlay-contain" : ""}`}>
-                            <div className="ag-grid-header">
-                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
-                            </div>
+
                             <div className="ag-theme-material">
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
