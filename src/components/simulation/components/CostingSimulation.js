@@ -5,8 +5,8 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRawMaterialNameChild } from '../../masters/actions/Material';
 import NoContentFound from '../../common/NoContentFound';
-import { BOPDOMESTIC, BOPIMPORT, COSTINGSIMULATIONROUND, EMPTY_DATA, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
-import { getComparisionSimulationData, getCostingSimulationList, getCostingSurfaceTreatmentSimulationList,setShowSimulationPage } from '../actions/Simulation';
+import { BOPDOMESTIC, BOPIMPORT, COSTINGSIMULATIONROUND, TOFIXEDVALUE, EMPTY_DATA, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
+import { getComparisionSimulationData, getCostingBoughtOutPartSimulationList, getCostingSimulationList, getCostingSurfaceTreatmentSimulationList, setShowSimulationPage } from '../actions/Simulation';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
 import { checkForDecimalAndNull, checkForNull, formViewData, getConfigurationKey, userDetails } from '../../../helper';
@@ -16,7 +16,7 @@ import Toaster from '../../common/Toaster';
 import { Redirect } from 'react-router';
 import { getPlantSelectListByType } from '../../../actions/Common';
 import { setCostingViewData } from '../../costing/actions/Costing';
-import { CostingSimulationDownloadOperation, CostingSimulationDownloadRM, CostingSimulationDownloadST } from '../../../config/masterData'
+import { CostingSimulationDownloadBOP, CostingSimulationDownloadOperation, CostingSimulationDownloadRM, CostingSimulationDownloadST } from '../../../config/masterData'
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -37,16 +37,14 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 function CostingSimulation(props) {
     const { simulationId, isFromApprovalListing, master, } = props
 
-    const { register, control, formState: { errors }, getValues, setValue } = useForm({
+    const { formState: getValues, setValue } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onChange',
     })
     const getShowSimulationPage = useSelector((state) => state.simulation.getShowSimulationPage)
 
-    const [shown, setshown] = useState(false);
 
     const [selectedRowData, setSelectedRowData] = useState([]);
-    const [selectedIds, setSelectedIds] = useState([])
     const [tokenNo, setTokenNo] = useState('')
     const [CostingDetailDrawer, setCostingDetailDrawer] = useState(false)
     const [isVerifyImpactDrawer, setIsVerifyImpactDrawer] = useState(false)
@@ -70,9 +68,7 @@ function CostingSimulation(props) {
     const [simulationTypeState, setSimulationTypeState] = useState("")
     const [SimulationTechnologyIdState, setSimulationTechnologyIdState] = useState("")
     const [tableData, setTableData] = useState([])
-    const [isSuccessfullyInsert, setIsSuccessfullyInsert] = useState(true)
     const [status, setStatus] = useState('')
-    const [noContent, setNoContent] = useState(false)
     const [hideDataColumn, setHideDataColumn] = useState({
         hideOverhead: false,
         hideProfit: false,
@@ -87,6 +83,12 @@ function CostingSimulation(props) {
     const [showViewAssemblyDrawer, setShowViewAssemblyDrawer] = useState(false)
     const [dataForAssemblyImpact, setDataForAssemblyImpact] = useState({})
     const [assemblyImpactButtonTrue, setAssemblyImpactButtonTrue] = useState(true);
+    const [showBOPColumn, setShowBOPColumn] = useState(false);
+    const [showRMColumn, setShowRMColumn] = useState(false);
+    const [showOperationColumn, setShowOperationColumn] = useState(false);
+    const [showSurfaceTreatmentColumn, setShowSurfaceTreatmentColumn] = useState(false);
+    const [showExchangeRateColumn, setShowExchangeRateColumn] = useState(false);
+    const [showMachineRateColumn, setShowMachineRateColumn] = useState(false);
 
     const isSurfaceTreatment = (Number(master) === Number(SURFACETREATMENT));
     const isOperation = (Number(master) === Number(OPERATIONS));
@@ -109,7 +111,6 @@ function CostingSimulation(props) {
             if (item.IsAssemblyExist === true) {
                 count++
             }
-
         })
         if (count !== 0) {
             setAssemblyImpactButtonTrue(true)
@@ -122,225 +123,111 @@ function CostingSimulation(props) {
         dispatch(setShowSimulationPage(true))
     };
 
-    const reducerOldRMPrice = (array, item) => {
-        let temparr = array.filter(item1 => item1.CostingId === item.CostingId)
-        let sum = 0
-        const arr = array.reduce((accumulator, el) => {
-            if (temparr.length === 1) {
-                if (el.CostingId === item.CostingId) {
-                    sum = el.OldRMPrice
-                }
-            } else {
-                sum = accumulator + el.OldRMPrice
-            }
-            return sum
-        }, 0)
-    }
+    const setCommonStateForList = (res) => {
+        if (res.data.Result) {
+            const tokenNo = res.data.Data.SimulationTokenNumber
+            const Data = res.data.Data
+            setStatus(Data.SapMessage)
+            var vendorId = Data.VendorId
+            var SimulationTechnologyId = Data.SimulationTechnologyId
+            var SimulationType = Data.SimulationType
+            setVendorIdState(vendorId)
+            setSimulationTechnologyIdState(SimulationTechnologyId)
+            setSimulationTypeState(SimulationType)
 
-    const reducerNewRMPrice = (array, item) => {
-        let temparr = array.filter(item1 => item1.CostingId === item.CostingId)
-        let sum = 0
-        const arr = array.reduce((accumulator, el) => {
-            if (temparr.length === 1) {
-                if (el.CostingId === item.CostingId) {
-                    sum = el.NewRMPrice
+            Data.SimulatedCostingList && Data.SimulatedCostingList.map(item => {
+                if (item.IsLockedBySimulation) {
+                    setSelectedCostingIds(item.CostingId)
                 }
-            } else {
-                sum = accumulator + el.NewRMPrice
+                item.Variance = (item.OldPOPrice - item.NewPOPrice).toFixed(getConfigurationKey().NoOfDecimalForPrice)
+                //  ********** ADDED NEW FIELDS FOR ADDING THE OLD AND NEW RM COST / PC BUT NOT GETTING THE AS SUM IN DOWNLOAD **********
+                switch (Number(selectedMasterForSimulation.value)) {
+                    case Number(RMIMPORT):
+                    case Number(RMDOMESTIC):
+                        item.RMCVariance = (checkForNull(item.OldRMPrice).toFixed(TOFIXEDVALUE) -
+                            checkForNull(item.NewRMPrice).toFixed(TOFIXEDVALUE))
+                        return item
+                    case Number(SURFACETREATMENT):
+                        item.STVariance = (checkForNull(item.OldSurfaceTreatmentCost).toFixed(TOFIXEDVALUE) -
+                            checkForNull(item.NewSurfaceTreatmentCost).toFixed(TOFIXEDVALUE))
+                        return item
+                    case Number(OPERATIONS):
+                        item.OperationVariance = (checkForNull(item.OldOperationCost).toFixed(TOFIXEDVALUE) -
+                            checkForNull(item.NewOperationCost).toFixed(TOFIXEDVALUE))
+                        return item
+                    case Number(BOPDOMESTIC):
+                    case Number(BOPIMPORT):
+                        item.BOPVariance = (checkForNull(item.OldBOPCost).toFixed(TOFIXEDVALUE) -
+                            checkForNull(item.NewBOPCost).toFixed(TOFIXEDVALUE))
+                        return item
+                    default:
+                        break;
+                }
+
+            })
+            let uniqeArray = []
+            const map = new Map();
+            for (const item of Data.SimulatedCostingList) {
+                if (!map.has(item.CostingNumber)) {
+
+                    map.set(item.CostingNumber, true);    // set any value to Map
+                    uniqeArray.push(item);
+                }
             }
-            return sum
-        }, 0)
+            setTableData(uniqeArray)
+            setTokenNo(tokenNo)
+            setCostingArr(Data.SimulatedCostingList)
+            setSimulationDetail({ TokenNo: Data.SimulationTokenNumber, Status: Data.SimulationStatus, SimulationId: Data.SimulationId, SimulationAppliedOn: Data.SimulationAppliedOn, EffectiveDate: Data.EffectiveDate })
+            setLoader(false)
+            let tempObj = {}
+            tempObj.EffectiveDate = Data.EffectiveDate
+            tempObj.CostingHead = Data.SimulatedCostingList[0].CostingHead
+            tempObj.SimulationAppliedOn = Data.SimulationAppliedOn
+            tempObj.Technology = Data.SimulatedCostingList[0].Technology
+            tempObj.Vendor = Data.SimulatedCostingList[0].VendorName
+            setAmendmentDetails(tempObj)
+        }
     }
 
     const getCostingList = (plantId = '', rawMatrialId = '') => {
         switch (Number(selectedMasterForSimulation?.value)) {
             case Number(RMDOMESTIC):
             case Number(RMIMPORT):
-            case Number(BOPDOMESTIC):
-            case Number(BOPIMPORT):
                 dispatch(getCostingSimulationList(simulationId, plantId, rawMatrialId, (res) => {
-                    if (res.data.Result) {
-                        const tokenNo = res.data.Data.SimulationTokenNumber
-                        const Data = res.data.Data
-                        setStatus(Data.SapMessage)
-                        var vendorId = Data.VendorId
-                        var SimulationTechnologyId = Data.SimulationTechnologyId
-                        var SimulationType = Data.SimulationType
-                        setVendorIdState(vendorId)
-                        setSimulationTechnologyIdState(SimulationTechnologyId)
-                        setSimulationTypeState(SimulationType)
-
-                        Data.SimulatedCostingList && Data.SimulatedCostingList.map(item => {
-                            if (item.IsLockedBySimulation) {
-                                setSelectedCostingIds(item.CostingId)
-                            }
-                            item.Variance = (item.OldPOPrice - item.NewPOPrice).toFixed(getConfigurationKey().NoOfDecimalForPrice)
-                            //  ********** ADDED NEW FIELDS FOR ADDING THE OLD AND NEW RM COST / PC BUT NOT GETTING THE AS SUM IN DOWNLOAD **********
-                            switch (Number(selectedMasterForSimulation.value)) {
-                                case Number(RMIMPORT):
-                                case Number(RMDOMESTIC):
-                                    // item.OldRMCSum = reducerOldRMPrice(Data.SimulatedCostingList, item)
-                                    // item.NewRMCSum = reducerNewRMPrice(Data.SimulatedCostingList, item)
-                                    // item.RMVarianceSum = checkForDecimalAndNull(Number(item.OldRMCSum) - Number(item.NewRMCSum), getConfigurationKey().NoOfDecimalForPrice)
-                                    // ********** THIS IS RE SPECIFIC **********
-                                    item.RMCVariance = (item.OldRMPrice - item.NewRMPrice)
-                                    return item
-
-                                default:
-                                    break;
-                            }
-
-                        })
-                        let uniqeArray = []
-                        const map = new Map();
-                        for (const item of Data.SimulatedCostingList) {
-                            if (!map.has(item.CostingNumber)) {
-
-                                map.set(item.CostingNumber, true);    // set any value to Map
-                                uniqeArray.push(item);
-                            }
-                        }
-                        setTableData(uniqeArray)
-                        setTokenNo(tokenNo)
-                        setCostingArr(Data.SimulatedCostingList)
-                        setSimulationDetail({ TokenNo: Data.SimulationTokenNumber, Status: Data.SimulationStatus, SimulationId: Data.SimulationId, SimulationAppliedOn: Data.SimulationAppliedOn, EffectiveDate: Data.EffectiveDate })
-                        setLoader(false)
-                        let tempObj = {}
-                        tempObj.EffectiveDate = Data.EffectiveDate
-                        tempObj.CostingHead = Data.SimulatedCostingList[0].CostingHead
-                        tempObj.SimulationAppliedOn = Data.SimulationAppliedOn
-                        tempObj.Technology = Data.SimulatedCostingList[0].Technology
-                        tempObj.Vendor = Data.SimulatedCostingList[0].VendorName
-                        setAmendmentDetails(tempObj)
-                    }
-
-                    // EffectiveDate  SimulatedCostingList[0].CostingHead   SimulationAppliedOn
-                    // SimulatedCostingList[0].Technology  ,VendorName
+                    setCommonStateForList(res)
                 }))
                 break;
             case Number(SURFACETREATMENT):
                 dispatch(getCostingSurfaceTreatmentSimulationList(simulationId, plantId, rawMatrialId, (res) => {
-                    if (res.data.Result) {
-                        const tokenNo = res.data.Data.SimulationTokenNumber
-                        const Data = res.data.Data
-                        setStatus(Data.SapMessage)
-                        var vendorId = Data.VendorId
-                        var SimulationTechnologyId = Data.SimulationTechnologyId
-                        var SimulationType = Data.SimulationType
-                        setVendorIdState(vendorId)
-                        setSimulationTechnologyIdState(SimulationTechnologyId)
-                        setSimulationTypeState(SimulationType)
-
-                        Data.SimulatedCostingList && Data.SimulatedCostingList.map(item => {
-                            if (item.IsLockedBySimulation) {
-                                setSelectedCostingIds(item.CostingId)
-                            }
-                            item.Variance = (item.OldPOPrice - item.NewPOPrice).toFixed(getConfigurationKey().NoOfDecimalForPrice)
-                            //  ********** ADDED NEW FIELDS FOR ADDING THE OLD AND NEW RM COST / PC BUT NOT GETTING THE AS SUM IN DOWNLOAD **********
-                            const STVariance = (item.OldSurfaceTreatmentCost - item.NewSurfaceTreatmentCost).toFixed(getConfigurationKey().NoOfDecimalForPrice)
-                            item.STVariance = STVariance
-                            return item
-                        })
-                        let uniqeArray = []
-                        const map = new Map();
-                        for (const item of Data.SimulatedCostingList) {
-                            if (!map.has(item.CostingNumber)) {
-
-                                map.set(item.CostingNumber, true);    // set any value to Map
-                                uniqeArray.push(item);
-                            }
-                        }
-                        setTableData(uniqeArray)
-                        setTokenNo(tokenNo)
-                        setCostingArr(Data.SimulatedCostingList)
-                        setSimulationDetail({ TokenNo: Data.SimulationTokenNumber, Status: Data.SimulationStatus, SimulationId: Data.SimulationId, SimulationAppliedOn: Data.SimulationAppliedOn, EffectiveDate: Data.EffectiveDate })
-                        setLoader(false)
-                        let tempObj = {}
-                        tempObj.EffectiveDate = Data.EffectiveDate
-                        tempObj.CostingHead = Data.SimulatedCostingList[0].CostingHead
-                        tempObj.SimulationAppliedOn = Data.SimulationAppliedOn
-                        tempObj.Technology = Data.SimulatedCostingList[0].Technology
-                        tempObj.Vendor = Data.SimulatedCostingList[0].VendorName
-                        setAmendmentDetails(tempObj)
-                    }
-
-                    // EffectiveDate  SimulatedCostingList[0].CostingHead   SimulationAppliedOn
-                    // SimulatedCostingList[0].Technology  ,VendorName
+                    setCommonStateForList(res)
                 }))
                 break;
             case Number(OPERATIONS):
                 dispatch(getCostingSurfaceTreatmentSimulationList(simulationId, plantId, rawMatrialId, (res) => {
-                    if (res.data.Result) {
-                        const tokenNo = res.data.Data.SimulationTokenNumber
-                        const Data = res.data.Data
-                        setStatus(Data.SapMessage)
-                        var vendorId = Data.VendorId
-                        var SimulationTechnologyId = Data.SimulationTechnologyId
-                        var SimulationType = Data.SimulationType
-                        setVendorIdState(vendorId)
-                        setSimulationTechnologyIdState(SimulationTechnologyId)
-                        setSimulationTypeState(SimulationType)
-
-                        Data.SimulatedCostingList && Data.SimulatedCostingList.map(item => {
-                            if (item.IsLockedBySimulation) {
-                                setSelectedCostingIds(item.CostingId)
-                            }
-                            item.Variance = (item.OldPOPrice - item.NewPOPrice).toFixed(getConfigurationKey().NoOfDecimalForPrice)
-                            //  ********** ADDED NEW FIELDS FOR ADDING THE OLD AND NEW RM COST / PC BUT NOT GETTING THE AS SUM IN DOWNLOAD **********
-                            const OperationVariance = (item.OldOperationCost - item.NewOperationCost).toFixed(getConfigurationKey().NoOfDecimalForPrice)
-                            item.OperationVariance = OperationVariance
-                            return item
-                        })
-                        let uniqeArray = []
-                        const map = new Map();
-                        for (const item of Data.SimulatedCostingList) {
-                            if (!map.has(item.CostingNumber)) {
-
-                                map.set(item.CostingNumber, true);    // set any value to Map
-                                uniqeArray.push(item);
-                            }
-                        }
-                        setTableData(uniqeArray)
-                        setTokenNo(tokenNo)
-                        setCostingArr(Data.SimulatedCostingList)
-                        setSimulationDetail({ TokenNo: Data.SimulationTokenNumber, Status: Data.SimulationStatus, SimulationId: Data.SimulationId, SimulationAppliedOn: Data.SimulationAppliedOn, EffectiveDate: Data.EffectiveDate })
-                        setLoader(false)
-                        let tempObj = {}
-                        tempObj.EffectiveDate = Data.EffectiveDate
-                        tempObj.CostingHead = Data.SimulatedCostingList[0].CostingHead
-                        tempObj.SimulationAppliedOn = Data.SimulationAppliedOn
-                        tempObj.Technology = Data.SimulatedCostingList[0].Technology
-                        tempObj.Vendor = Data.SimulatedCostingList[0].VendorName
-                        setAmendmentDetails(tempObj)
-                    }
-
-                    // EffectiveDate  SimulatedCostingList[0].CostingHead   SimulationAppliedOn
-                    // SimulatedCostingList[0].Technology  ,VendorName
+                    setCommonStateForList(res)
                 }))
                 break;
+            case Number(BOPDOMESTIC):
+            case Number(BOPIMPORT):
+                dispatch(getCostingBoughtOutPartSimulationList(simulationId, (res) => {
+                    setCommonStateForList(res)
+                }))
+                break;
+
             default:
                 break;
         }
     }
 
     const costingList = useSelector(state => state.simulation.costingSimulationList)
+    const costingSimulationListAllKeys = useSelector(state => state.simulation.costingSimulationListAllKeys)
 
     const selectedMasterForSimulation = useSelector(state => state.simulation.selectedMasterForSimulation)
 
-    const plantSelectList = useSelector(state => state.comman.plantSelectList)
-
-    const { rawMaterialNameSelectList } = useSelector(state => state.material)
-
     useEffect(() => {
         hideColumn()
-        // costingList && costingList.map(item => {
-        //     item.Variance = checkForDecimalAndNull(item.OldRMPrice - item.NewRMPrice, getConfigurationKey().NoOfDecimalForPrice)
-        // })
-
-
 
     }, [costingList])
-
 
 
     const runCostingDetailSimulation = () => {
@@ -363,7 +250,7 @@ function CostingSimulation(props) {
         }
         setId(id)
         setPricesDetail({
-            CostingNumber: data.CostingNumber, PlantCode: data.PlantCode, OldPOPrice: data.OldPOPrice, NewPOPrice: data.NewPOPrice, OldRMPrice: data.OldNetRawMaterialsCost, NewRMPrice: data.NewNetRawMaterialsCost, CostingHead: data.CostingHead, OldNetSurfaceTreatmentCost: data.OldNetSurfaceTreatmentCost, NewNetSurfaceTreatmentCost: data.NewNetSurfaceTreatmentCost, OldOperationCost: data.OldOperationCost, NewOperationCost: data.NewOperationCost
+            CostingNumber: data.CostingNumber, PlantCode: data.PlantCode, OldPOPrice: data.OldPOPrice, NewPOPrice: data.NewPOPrice, OldRMPrice: data.OldNetRawMaterialsCost, NewRMPrice: data.NewNetRawMaterialsCost, CostingHead: data.CostingHead, OldNetSurfaceTreatmentCost: data.OldNetSurfaceTreatmentCost, NewNetSurfaceTreatmentCost: data.NewNetSurfaceTreatmentCost, OldOperationCost: data.OldOperationCost, NewOperationCost: data.NewOperationCost, OldBOPCost: data.OldNetBoughtOutPartCost, NewBOPCost: data.NewNetBoughtOutPartCost
         })
         dispatch(getComparisionSimulationData(obj, res => {
             const Data = res.data.Data
@@ -701,6 +588,12 @@ function CostingSimulation(props) {
         return cell != null ? checkForDecimalAndNull(row.Variance, getConfigurationKey().NoOfDecimalForPrice) : ''
     }
 
+    const decimalFormatter = (props) => {
+
+        const cell = props?.value;
+        return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : ''
+    }
+
     const varianceSTFormatter = (props) => {
         // const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         // const sumold = oldRMCalc(row)
@@ -723,15 +616,36 @@ function CostingSimulation(props) {
 
     const hideColumn = (props) => {
         setHideDataColumn({
-            hideOverhead: costingList && costingList.length > 0 && costingList[0].NewOverheadCost === 0 ? true : false,
-            hideProfit: costingList && costingList.length > 0 && costingList[0].NewProfitCost === 0 ? true : false,
-            hideRejection: costingList && costingList.length > 0 && costingList[0].NewRejectionCost === 0 ? true : false,
-            hideICC: costingList && costingList.length > 0 && costingList[0].NewICCCost === 0 ? true : false,
-            hidePayment: costingList && costingList.length > 0 && costingList[0].NewPaymentTermsCost === 0 ? true : false,
-            hideOtherCost: costingList && costingList.length > 0 && costingList[0].NewOtherCost === 0 ? true : false,
-            hideDiscount: costingList && costingList.length > 0 && costingList[0].NewDiscountCost === 0 ? true : false,
-            hideOveheadAndProfit: costingList && costingList.length > 0 && costingList[0].NewNetOverheadAndProfitCost === 0 ? true : false
+            hideOverhead: costingList && costingList.length > 0 && (costingList[0].NewOverheadCost === 0 || costingList[0].OldOverheadCost === costingList[0].NewOverheadCost) ? true : false,
+            hideProfit: costingList && costingList.length > 0 && (costingList[0].NewProfitCost === 0 || costingList[0].OldProfitCost === costingList[0].NewProfitCost) ? true : false,
+            hideRejection: costingList && costingList.length > 0 && (costingList[0].NewRejectionCost === 0 || costingList[0].OldRejectionCost === costingList[0].NewRejectionCost) ? true : false,
+            hideICC: costingList && costingList.length > 0 && (costingList[0].NewICCCost === 0 || costingList[0].OldICCCost === costingList[0].NewICCCost) ? true : false,
+            hidePayment: costingList && costingList.length > 0 && (costingList[0].NewPaymentTermsCost === 0 || costingList[0].OldPaymentTermsCost === costingList[0].NewPaymentTermsCost) ? true : false,
+            hideOtherCost: costingList && costingList.length > 0 && (costingList[0].NewOtherCost === 0 || costingList[0].OldOtherCost === costingList[0].NewOtherCost) ? true : false,
+            hideDiscount: costingList && costingList.length > 0 && (costingList[0].NewDiscountCost === 0 || costingList[0].OldDiscountCost === costingList[0].NewDiscountCost) ? true : false,
+            hideOveheadAndProfit: costingList && costingList.length > 0 && (costingList[0].NewNetOverheadAndProfitCost === 0 || costingList[0].OldNetOverheadAndProfitCost === costingList[0].NewNetOverheadAndProfitCost) ? true : false
         })
+
+        setShowBOPColumn(costingSimulationListAllKeys?.IsBoughtOutPartSimulation === true ? true : false)
+        setShowSurfaceTreatmentColumn(costingSimulationListAllKeys?.IsSurfaceTreatmentSimulation === true ? true : false)
+        setShowOperationColumn(costingSimulationListAllKeys?.IsOperationSimulation === true ? true : false)
+        setShowRMColumn(costingSimulationListAllKeys?.IsRawMaterialSimulation === true ? true : false)
+        setShowExchangeRateColumn(costingSimulationListAllKeys?.IsExchangeRateSimulation === true ? true : false)
+        setShowMachineRateColumn(costingSimulationListAllKeys?.IsMachineRateSimulation === true ? true : false)
+
+
+
+        // let arr = [], countFalse = 0
+        // costingList && costingList.map((item) => {
+        //     // item.IsBoughtOutPartSimulation
+        //     arr.push(item.IsBoughtOutPartSimulation)
+        //     countFalse = item.IsBoughtOutPartSimulation === false ? countFalse++ : countFalse
+        //     if (countFalse === costingList.length) {
+        //         setShowBOPColumn(false)
+        //     } else {
+        //         setShowBOPColumn(true)
+        //     }
+        // })
     }
 
 
@@ -796,6 +710,9 @@ function CostingSimulation(props) {
                 return returnExcelColumn(CostingSimulationDownloadST, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : costingList && costingList?.length > 0 ? costingList : [])
             case Number(OPERATIONS):
                 return returnExcelColumn(CostingSimulationDownloadOperation, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : costingList && costingList?.length > 0 ? costingList : [])
+            case Number(BOPDOMESTIC):
+            case Number(BOPIMPORT):
+                return returnExcelColumn(CostingSimulationDownloadBOP, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : costingList && costingList?.length > 0 ? costingList : [])
             default:
                 return 'foo'
         }
@@ -860,12 +777,12 @@ function CostingSimulation(props) {
         oldRMFormatter: oldRMFormatter,
         buttonFormatter: buttonFormatter,
         newRMFormatter: newRMFormatter,
-        newOPERFormatter:newOPERFormatter,
-        oldOPERFormatter:oldOPERFormatter,
-        newSTFormatter:newSTFormatter,
-        oldSTFormatter:oldSTFormatter,
-        newNetSTFormatter:newNetSTFormatter,
-        oldNetSTFormatter:oldNetSTFormatter,
+        newOPERFormatter: newOPERFormatter,
+        oldOPERFormatter: oldOPERFormatter,
+        newSTFormatter: newSTFormatter,
+        oldSTFormatter: oldSTFormatter,
+        newNetSTFormatter: newNetSTFormatter,
+        oldNetSTFormatter: oldNetSTFormatter,
         // customLoadingOverlay: LoaderCustom,
         customNoRowsOverlay: NoContentFound,
         varianceFormatter: varianceFormatter,
@@ -882,7 +799,8 @@ function CostingSimulation(props) {
         newRMCFormatter: newRMCFormatter,
         varianceRMCFormatter: varianceRMCFormatter,
         varianceSTFormatter: varianceSTFormatter,
-        variancePOFormatter: variancePOFormatter
+        variancePOFormatter: variancePOFormatter,
+        decimalFormatter: decimalFormatter,
     };
 
     // const isRowSelectable = rowNode => rowNode.data ? selectedCostingIds.length > 0 && !selectedCostingIds.includes(rowNode.data.CostingId) : false;
@@ -965,20 +883,20 @@ function CostingSimulation(props) {
                                                     <AgGridColumn width={120} field="PartName" headerName='Part Name' cellRenderer='descriptionFormatter'></AgGridColumn>
                                                     <AgGridColumn width={130} field="Technology" headerName='Technology'></AgGridColumn>
                                                     <AgGridColumn width={130} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
-                                                    {isRMDomesticOrRMImport && <>
+
+                                                    {(isRMDomesticOrRMImport || showRMColumn) && <>
                                                         <AgGridColumn field="RawMaterialFinishWeight" hide headerName='Finish Weight'></AgGridColumn>
                                                         <AgGridColumn field="RawMaterialGrossWeight" hide headerName='Gross Weight'></AgGridColumn>
                                                     </>}
+
                                                     <AgGridColumn width={140} field="OldPOPrice" headerName='Old PO Price' cellRenderer='oldPOFormatter'></AgGridColumn>
                                                     <AgGridColumn width={140} field="NewPOPrice" headerName='New PO Price' cellRenderer='newPOFormatter'></AgGridColumn>
                                                     <AgGridColumn width={140} field="Variance" headerName=' PO Variance' cellRenderer='variancePOFormatter' ></AgGridColumn>
 
-                                                    {isRMDomesticOrRMImport && <>
+                                                    {(isRMDomesticOrRMImport || showRMColumn) && <>
                                                         {/* <AgGridColumn width={140} field="OldRMCSum" headerName='Old RM Cost/Pc' cellRenderer='oldRMCFormatter'></AgGridColumn>
                                                         <AgGridColumn width={140} field="NewRMCSum" headerName='New RM Cost/Pc' cellRenderer='newRMCFormatter' ></AgGridColumn>
                                                         <AgGridColumn width={140} field="RMVarianceSum" headerName='RM Variance' cellRenderer='varianceRMCFormatter' ></AgGridColumn> */}
-
-
                                                         <AgGridColumn width={140} field="OldNetRawMaterialsCost" headerName='Old RM Cost/Pc' cellRenderer='oldRMCFormatter'></AgGridColumn>
                                                         <AgGridColumn width={140} field="NewNetRawMaterialsCost" headerName='New RM Cost/Pc' cellRenderer='newRMCFormatter'></AgGridColumn>
                                                         <AgGridColumn width={140} field="RMVariance" headerName='RM Variance' cellRenderer='varianceRMCFormatter' ></AgGridColumn>
@@ -988,30 +906,55 @@ function CostingSimulation(props) {
                                                         <AgGridColumn width={140} field="NewScrapRate" hide></AgGridColumn>
                                                     </>}
 
-                                                    {isBOPDomesticOrImport && <>
-                                                        <AgGridColumn width={140} field="OldBasicRate" headerName='Old Basic Rate' ></AgGridColumn>
-                                                        <AgGridColumn width={140} field="NewBasicRate" headerName='New Basic Rate' ></AgGridColumn>
-                                                    </>}
-
-                                                    {isMachineRate && <>
-                                                        <AgGridColumn width={140} field="OldMachineRate" headerName='Old Machine Rate' ></AgGridColumn>
-                                                        <AgGridColumn width={140} field="NewMachineRate" headerName='New Machine Rate' ></AgGridColumn>
-                                                    </>}
-
-                                                    {isSurfaceTreatment && <>
+                                                    {(isSurfaceTreatment || showSurfaceTreatmentColumn) && <>
                                                         <AgGridColumn width={140} field="OldSurfaceTreatmentCost" headerName='Old ST Cost' cellRenderer="oldSTFormatter"></AgGridColumn>
                                                         <AgGridColumn width={140} field="NewSurfaceTreatmentCost" headerName='New ST Cost' cellRenderer="newSTFormatter"></AgGridColumn>
                                                         <AgGridColumn width={140} field="OldTranspotationCost" headerName='Old Extra Cost' ></AgGridColumn>
                                                         <AgGridColumn width={140} field="NewTranspotationCost" headerName='New Extra Cost' ></AgGridColumn>
-                                                        <AgGridColumn width={140} field="OldNetSurfaceTreatmentCost" headerName='Old Net ST Cost'  cellRenderer="oldNetSTFormatter"></AgGridColumn>
-                                                        <AgGridColumn width={140} field="NewNetSurfaceTreatmentCost" headerName='New Net ST Cost'  cellRenderer="newNetSTFormatter"></AgGridColumn>
+                                                        <AgGridColumn width={140} field="OldNetSurfaceTreatmentCost" headerName='Old Net ST Cost' cellRenderer="oldNetSTFormatter"></AgGridColumn>
+                                                        <AgGridColumn width={140} field="NewNetSurfaceTreatmentCost" headerName='New Net ST Cost' cellRenderer="newNetSTFormatter"></AgGridColumn>
                                                         <AgGridColumn width={140} field="NetSurfaceTreatmentCostVariance" headerName='ST Variance' cellRenderer='varianceSTFormatter' ></AgGridColumn>
                                                     </>}
-                                                    {isOperation && <>
-                                                        <AgGridColumn width={140} field="OldOperationCost" headerName='Old Oper Cost' cellRenderer="oldOPERFormatter"></AgGridColumn>
+
+                                                    {(isOperation || showOperationColumn) && <>
+                                                        <AgGridColumn width={140} field="OldOperationCost" headerName='Old Oper Cost' cellRenderer="oldOPERFormatter" ></AgGridColumn>
                                                         <AgGridColumn width={140} field="NewOperationCost" headerName='New Oper Cost' cellRenderer="newOPERFormatter"></AgGridColumn>
                                                         <AgGridColumn width={140} field="OperationCostVariance" headerName='Oper Variance' ></AgGridColumn>
                                                     </>}
+
+                                                    {(isBOPDomesticOrImport || showBOPColumn) && <>
+                                                        <AgGridColumn width={140} field="OldNetBoughtOutPartCost" headerName='Old BOP Cost' cellRenderer={decimalFormatter} ></AgGridColumn>
+                                                        <AgGridColumn width={140} field="NewNetBoughtOutPartCost" headerName='New BOP Cost' cellRenderer={decimalFormatter}></AgGridColumn>
+                                                        <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" headerName='BOP Variance' cellRenderer={decimalFormatter} ></AgGridColumn>
+                                                    </>}
+
+                                                    {(isMachineRate || showMachineRateColumn) && <>
+                                                        <AgGridColumn width={140} field="OldMachineRate" headerName='Old Machine Rate' ></AgGridColumn>
+                                                        <AgGridColumn width={140} field="NewMachineRate" headerName='New Machine Rate' ></AgGridColumn>
+                                                    </>}
+
+                                                    {
+                                                        showExchangeRateColumn &&
+                                                        <>
+                                                            <AgGridColumn width={130} field="Currency" headerName='Currency' cellRenderer='revisionFormatter'></AgGridColumn>
+                                                            <AgGridColumn width={140} field="OldPOPrice" headerName='PO Price' cellRenderer='oldPOFormatter'></AgGridColumn>
+                                                        </>
+                                                    }
+
+                                                    {/* <AgGridColumn width={140} field="NewPOPrice" headerName='PO Price New' cellRenderer='newPOFormatter'></AgGridColumn> */}
+
+                                                    {
+                                                        showExchangeRateColumn &&
+                                                        <>
+                                                            <AgGridColumn width={140} field="OldNetPOPriceOtherCurrency" headerName='PO Price Old(in Currency)' cellRenderer='oldPOCurrencyFormatter'></AgGridColumn>
+                                                            <AgGridColumn width={140} field="NewNetPOPriceOtherCurrency" headerName='PO Price New (in Currency)' cellRenderer='newPOCurrencyFormatter'></AgGridColumn>
+                                                            <AgGridColumn width={140} field="POVariance" headerName='PO Variance' cellRenderer='POVarianceFormatter'></AgGridColumn>
+                                                            <AgGridColumn width={140} field="OldExchangeRate" headerName='Exchange Rate Old' cellRenderer='oldExchangeFormatter'></AgGridColumn>
+                                                            <AgGridColumn width={140} field="NewExchangeRate" headerName='Exchange Rate New' cellRenderer='newExchangeFormatter'></AgGridColumn>
+                                                        </>
+                                                    }
+
+
 
                                                     <AgGridColumn width={140} field="OldOverheadCost" hide={hideDataColumn.hideOverhead} cellRenderer='overheadFormatter' headerName='Old Overhead'></AgGridColumn>
                                                     <AgGridColumn width={140} field="NewOverheadCost" hide={hideDataColumn.hideOverhead} cellRenderer='overheadFormatter' headerName='New Overhead'></AgGridColumn>
@@ -1027,9 +970,9 @@ function CostingSimulation(props) {
                                                     <AgGridColumn width={140} field="NewOtherCost" hide={hideDataColumn.hideOtherCost} cellRenderer='otherCostFormatter' headerName='New Other Cost'></AgGridColumn>
                                                     <AgGridColumn width={140} field="OldDiscountCost" hide={hideDataColumn.hideDiscount} cellRenderer='discountCostFormatter' headerName='Old Discount'></AgGridColumn>
                                                     <AgGridColumn width={140} field="NewDiscountCost" hide={hideDataColumn.hideDiscount} cellRenderer='discountCostFormatter' headerName='New Discount'></AgGridColumn>
-                                                    <AgGridColumn width={150} field="CostingId" headerName='Actions' type="rightAligned" floatingFilter={false} cellRenderer='buttonFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={110} field="CostingId" headerName='Actions' type="rightAligned" floatingFilter={false} cellRenderer='buttonFormatter' pinned="right"></AgGridColumn>
                                                     {/* </>} */}
-                                                </AgGridReact>
+                                                </AgGridReact >
 
                                                 <div className="paging-container d-inline-block float-right">
                                                     <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
@@ -1038,11 +981,11 @@ function CostingSimulation(props) {
                                                         <option value="100">100</option>
                                                     </select>
                                                 </div>
-                                            </div>
-                                        </div>
-                                    </Col>
-                                </Row>
-                            </div>
+                                            </div >
+                                        </div >
+                                    </Col >
+                                </Row >
+                            </div >
                             <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer">
                                 <div className="col-sm-12 text-right bluefooter-butn">
 
@@ -1074,7 +1017,7 @@ function CostingSimulation(props) {
 
                                 </div>
                             </Row>
-                        </div>
+                        </div >
                         {isApprovalDrawer &&
                             <ApproveRejectDrawer
                                 isOpen={isApprovalDrawer}
@@ -1094,7 +1037,8 @@ function CostingSimulation(props) {
                             // isSaveDone={isSaveDone}
                             />}
 
-                        {isVerifyImpactDrawer &&
+                        {
+                            isVerifyImpactDrawer &&
                             <VerifyImpactDrawer
                                 isOpen={isVerifyImpactDrawer}
                                 anchor={'right'}
@@ -1110,15 +1054,17 @@ function CostingSimulation(props) {
                                 amendmentDetails={amendmentDetails}
                                 dataForAssemblyImpactInVerifyImpact={tableData}
                                 assemblyImpactButtonTrue={assemblyImpactButtonTrue}
-                            />}
-                    </div>
+                            />
+                        }
+                    </div >
 
             }
 
 
             {(showApprovalHistory || getShowSimulationPage) && <Redirect to='/simulation-history' />}
 
-            {CostingDetailDrawer &&
+            {
+                CostingDetailDrawer &&
                 <CostingDetailSimulationDrawer
                     isOpen={CostingDetailSimulationDrawer}
                     closeDrawer={closeDrawer2}
@@ -1132,7 +1078,8 @@ function CostingSimulation(props) {
                     isSimulation={true}
                 />
             }
-            {showViewAssemblyDrawer &&
+            {
+                showViewAssemblyDrawer &&
                 <ViewAssembly
                     isOpen={showViewAssemblyDrawer}
                     closeDrawer={closeAssemblyDrawer}

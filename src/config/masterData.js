@@ -1738,7 +1738,7 @@ export const SurfaceTreatmentPartGetJSON = [
     }
 ]
 
-export const AcceptableRMUOM = ['Mass', 'Dimensionless', 'Volume']
+export const AcceptableRMUOM = ['Mass', 'Dimensionless', 'Volume', 'Dimension']
 export const AcceptableBOPUOM = ['Mass', 'Dimensionless', 'Volume', 'Dimension']
 export const AcceptableMachineUOM = ['Mass', 'Dimensionless', 'Volume', 'Area', 'Time']
 export const AcceptableOperationUOM = ['Mass', 'Dimensionless', 'Volume', 'Area', 'Dimension', 'Time']
@@ -1755,7 +1755,7 @@ export function isMultipleRMAllow(technology) {
 
 
 export const SHEETMETAL = 1
-export const FORGINING = 2
+export const FORGING = 2
 export const Non_Ferrous_LPDC = 3
 export const Non_Ferrous_HPDC = 4
 export const Non_Ferrous_GDC = 5
@@ -1886,7 +1886,8 @@ export const BOPDomesticSimulation = [
     { label: "BasicRate", value: "BasicRate" },
     { label: "NewBasicRate", value: "NewBasicRate" },
     { label: "NetLandedCost", value: "NetLandedCost" },
-    { label: "EffectiveDate", value: "EffectiveDate" }
+    { label: "EffectiveDate", value: "EffectiveDate" },
+    { label: "BoughtOutPartId", value: "BoughtOutPartId" }
 ]
 
 export const BOPImportSimulation = [
@@ -1900,7 +1901,8 @@ export const BOPImportSimulation = [
     { label: "BasicRate", value: "BasicRate" },
     { label: "NewBasicRate", value: "NewBasicRate" },
     { label: "NetLandedCost", value: "NetLandedCost" },
-    { label: "EffectiveDate", value: "EffectiveDate" }
+    { label: "EffectiveDate", value: "EffectiveDate" },
+    { label: "BoughtOutPartId", value: "BoughtOutPartId" }
 ]
 
 export const OverheadProfitSimulation = [
@@ -2387,11 +2389,13 @@ export const SIDEFACEMILING = 'Side Face Miling'
 export const SLOTCUTTING = 'Slot Cutting'
 export const CHAMFERINGMILLER = 'Chamfering Miller'
 export const ENDMILL = 'End Mill'
+export const BROACHING = 'Broaching'
+export const HARDFACING = 'Hard Facing'
 
 export const getTechnology = [1, 8, 7, 2, 4, 20, 23, 6]
 export const technologyForDensity = [1, 2, 7]
 export const getTechnologyForRecoveryPercent = [4, 6, 3, 5, 2]
-export const getTechnologyForSimulation = ['1', '2', '3', '6', '7', '9']
+export const getTechnologyForSimulation = ['1', '2', '3', '4', '5', '6', '7', '9', '10', '11']
 
 
 export const CostingSimulationDownloadRM = [
@@ -2578,6 +2582,45 @@ export const CostingSimulationDownloadOperation = [
     // { label: "EffectiveDate", value: "EffectiveDate" },
 ]
 
+export const CostingSimulationDownloadBOP = [
+    { label: "Costing Head", value: "CostingHead" },
+    { label: "CostingNumber", value: "CostingNumber" },
+    { label: "Vendor Name", value: "VendorName" },
+    { label: "Plant Code", value: "PlantCode" },
+    { label: "Technology", value: "Technology" },
+    { label: "PlantCode", value: "PlantCode" },
+    { label: "Part No", value: "PartNo" },
+    { label: "Part Name", value: "PartName" },
+    { label: "ECN Number", value: "ECNNumber" },
+    { label: "Revision Number", value: "RevisionNumber" },
+    { label: "PO Price Old", value: "OldPOPrice" },
+    { label: "PO Price New", value: "NewPOPrice" },
+    { label: "PO Variance", value: "Variance" },
+
+    { label: "OldBOPCost", value: "OldBOPCost" },
+    { label: "NewBOPCost", value: "NewBOPCost" },
+    { label: "BOPVariance", value: "BOPVariance" },
+
+    { label: "OldOverheadCost", value: "OldOverheadCost" },
+    { label: "NewOverheadCost", value: "NewOverheadCost" },
+    { label: "OldProfitCost", value: "OldProfitCost" },
+    { label: "NewProfitCost", value: "NewProfitCost" },
+    { label: "OldRejectionCost", value: "OldRejectionCost" },
+    { label: "NewRejectionCost", value: "NewRejectionCost" },
+    { label: "OldICCCost", value: "OldICCCost" },
+    { label: "NewICCCost", value: "NewICCCost" },
+    { label: "OldPaymentTermsCost", value: "OldPaymentTermsCost" },
+    { label: "NewPaymentTermsCost", value: "NewPaymentTermsCost" },
+    { label: "OldOtherCost", value: "OldOtherCost" },
+    { label: "NewOtherCost", value: "NewOtherCost" },
+    { label: "OldDiscountCost", value: "OldDiscountCost" },
+    { label: "NewDiscountCost", value: "NewDiscountCost" },
+    { label: "OldNetOverheadAndProfitCost", value: "OldNetOverheadAndProfitCost" },
+    { label: "NewNetOverheadAndProfitCost", value: "NewNetOverheadAndProfitCost" },
+
+    // { label: "EffectiveDate", value: "EffectiveDate" },
+]
+
 export const SIMULATIONAPPROVALSUMMARYDOWNLOADRM = [
 
     { label: "Costing Id", value: "CostingNumber" },
@@ -2630,6 +2673,29 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADCP = [
     { label: "Old CC", value: "OldNetCC" },
     { label: "New CC", value: "NewNetCC" },
     { label: "CC Variance", value: "Variance" },
+
+]
+
+export const SIMULATIONAPPROVALSUMMARYDOWNLOADBOP = [
+
+    { label: "Costing Id", value: "CostingNumber" },
+    { label: "Part No", value: "PartNo" },
+    { label: "Part Name", value: "PartName" },
+    { label: "ECN Number", value: "ECNNumber" },
+    { label: "Revision Number", value: "RevisionNumber" },
+    { label: "Vendor Name", value: "VendorName" },
+    { label: "Plant", value: "PlantName" },
+
+    { label: "BOP Name", value: "BoughtOutPartName" },
+    { label: "BOP Number", value: "BoughtOutPartNumber" },
+    { label: "Old BOP Cost", value: "OldBOPCost" },
+    { label: "New BOP Cost", value: "NewBOPCost" },
+    { label: "BOP Variance", value: "NetBoughtOutPartCostVariance" },
+
+    { label: "Old PO Price", value: "OldPOPrice" },
+    { label: "New PO Price", value: "NewPOPrice" },
+    { label: "PO Variance", value: "POVariance" },
+
 
 ]
 
@@ -3001,4 +3067,17 @@ export const CombinedProcessSimulationFinal = [
     { label: "Variance", value: "Variance" },
     { label: "Actions", value: "Actions" },
     { label: "CostingId", value: "CostingId" },
+]
+
+
+
+export const ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl = [
+    { label: "Assembly Number", value: "PartNumber", },
+    { label: "Revision Number", value: "RevisionNumber", },
+    { label: "Name", value: "PartName", },
+    { label: "Child's Level", value: "Level", },
+    { label: "Old PO Price/Assembly", value: "OldPrice", },
+    { label: "New PO Price/Assembly", value: "NewPrice", },
+    { label: "Variance/Assembly", value: "Variance", },
+
 ]

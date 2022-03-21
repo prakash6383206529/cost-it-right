@@ -14,10 +14,8 @@ import ReactExport from 'react-export-excel';
 import { ReportMaster, EMPTY_DATA } from '../../../config/constants';
 import LoaderCustom from '../../common/LoaderCustom';
 import WarningMessage from '../../common/WarningMessage'
-import { formViewData } from '../../../helper'
 import CostingDetailSimulationDrawer from '../../simulation/components/CostingDetailSimulationDrawer'
-
-
+import { formViewData, checkForDecimalAndNull } from '../../../helper'
 
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -54,6 +52,7 @@ function ReportListing(props) {
 
 
     const [reportListingDataStateArray, setReportListingDataStateArray] = useState([])
+    const [isLastWeek, setIsLastWeek] = useState(false)
 
 
     const dispatch = useDispatch()
@@ -65,6 +64,7 @@ function ReportListing(props) {
 
 
     let reportListingData = useSelector((state) => state.report.reportListing)
+    const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
 
     const simulatedOnFormatter = (props) => {
@@ -145,6 +145,22 @@ function ReportListing(props) {
     }
 
     /**
+    * @method decimalPriceFormatter
+    */
+    const decimalPriceFormatter = (props) => {
+        const cellValue = props?.value;
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? checkForDecimalAndNull(cellValue, initialConfiguration.NoOfDecimalForPrice) : '-';
+    }
+
+    /**
+    * @method decimalInputOutputFormatter
+    */
+    const decimalInputOutputFormatter = (props) => {
+        const cellValue = props?.value;
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? checkForDecimalAndNull(cellValue, initialConfiguration.NoOfDecimalForInputOutput) : '-';
+    }
+
+    /**
     * @method effectiveDateFormatter
     */
     const effectiveDateFormatter = (props) => {
@@ -155,7 +171,7 @@ function ReportListing(props) {
     const statusFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return <div className={cell}>{row.Status}</div>
+        return <div className={cell}>{row.DisplayStatus}</div>
     }
 
     /**
@@ -163,10 +179,9 @@ function ReportListing(props) {
    * @description getting approval list table
    */
 
-    const getTableData = (skip, take, isPagination, data) => {
+    const getTableData = (skip, take, isPagination, data, isLastWeek) => {
 
-
-        dispatch(getCostingReport(skip, take, isPagination, data, (res) => {
+        dispatch(getCostingReport(skip, take, isPagination, data, isLastWeek, (res) => {
             if (res) {
                 setLoader(false)
             }
@@ -180,7 +195,7 @@ function ReportListing(props) {
     useEffect(() => {
 
         setLoader(true)
-        getTableData(0, 100, true, floatingFilterData);
+        getTableData(0, 100, true, floatingFilterData, false);
 
 
     }, [])
@@ -195,7 +210,7 @@ function ReportListing(props) {
             setPageNo(pageNo + 1)
             const nextNo = currentRowIndex + 10;
 
-            getTableData(nextNo, 100, true, floatingFilterData);
+            getTableData(nextNo, 100, true, floatingFilterData, false);
             setCurrentRowIndex(nextNo)
         }
 
@@ -208,7 +223,7 @@ function ReportListing(props) {
             setPageNo(pageNo - 1)
             const previousNo = currentRowIndex - 10;
 
-            getTableData(previousNo, 100, true, floatingFilterData);
+            getTableData(previousNo, 100, true, floatingFilterData, false);
             setCurrentRowIndex(previousNo)
 
         }
@@ -380,7 +395,7 @@ function ReportListing(props) {
 
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
-        getTableData(0, 100, true, floatingFilterData);
+        getTableData(0, 100, true, floatingFilterData, false);
 
         setEnableSearchFilterButton(true)
 
@@ -472,7 +487,8 @@ function ReportListing(props) {
         //customLoadingOverlay: LoaderCustom
         hyperLinkableFormatter: hyperLinkableFormatter,
         effectiveDateFormatter: effectiveDateFormatter,
-
+        decimalInputOutputFormatter: decimalInputOutputFormatter,
+        decimalPriceFormatter: decimalPriceFormatter
     };
 
 
@@ -491,7 +507,7 @@ function ReportListing(props) {
 
 
         setPageNo(1)
-        getTableData(0, 100, true, emptyObj);
+        getTableData(0, 100, true, emptyObj, false);
 
 
 
@@ -541,7 +557,9 @@ function ReportListing(props) {
         // const type_of_costing = 
         getTableData(tempPartNo, tempcreatedBy, tempRequestedBy, tempStatus)
     }
-
+    const lastWeekFilter = () => {
+        getTableData(0, 100, true, floatingFilterData, true);
+    }
 
     return (
         <div className="container-fluid part-manage-component report-listing-page ag-grid-react">
@@ -550,14 +568,16 @@ function ReportListing(props) {
 
                 <h1 className="mb-0">Report</h1>
 
-                <Row className="pt-4 blue-before ">
+                <Row className="pt-3 blue-before ">
 
-                    <Col md="8">
+                    {/* <Col md="8">
                         <div className="warning-message mt-1">
                             {warningMessage && <WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} />}
                         </div>
+                    </Col> */}
+                    <Col md="6">
+                        <button title="Last Week" type="button" class="user-btn mr5" onClick={() => lastWeekFilter()}><div class="swap rotate90 mr-2"></div>Last Week</button>
                     </Col>
-
 
                     <Col md="6" lg="6" className="search-user-block mb-3">
                         <div className="d-flex justify-content-end bd-highlight excel-btn w100 mb-4 pb-2">
@@ -621,58 +641,57 @@ function ReportListing(props) {
                         <AgGridColumn field='RawMaterialGrade' headerName='RM Grade' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='RMSpecification' headerName='RM Specs' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='RawMaterialSpecification' headerName='RM Specs' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='RawMaterialRate' headerName='RM Rate' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='RawMaterialScrapWeight' headerName='Scrap Weight' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='RawMaterialGrossWeight' headerName='Gross Weight' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='RawMaterialRate' headerName='RM Rate' cellRenderer='decimalPriceFormatter'></AgGridColumn>
+                        <AgGridColumn field='RawMaterialScrapWeight' headerName='Scrap Weight' cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
+                        <AgGridColumn field='RawMaterialGrossWeight' headerName='Gross Weight' cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
                         {/* <AgGridColumn field='GrossWeight' headerName='Gross Weight' cellRenderer='hyphenFormatter'></AgGridColumn> */}
-                        <AgGridColumn field='RawMaterialFinishWeight' headerName='Finish Weight' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='NetRawMaterialsCost' headerName='Net RM Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='NetBoughtOutPartCost' headerName='Net BOP Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='NetProcessCost' headerName='Net Process Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='NetOperationCost' headerName='Net Operation Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='NetConversionCost' headerName='Net Conversion Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='SurfaceTreatmentCost' headerName='Surface Treatment Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='NetSurfaceTreatmentCost' headerName='Net Surface Treatment Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='RawMaterialFinishWeight' headerName='Finish Weight' cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
+                        <AgGridColumn field='NetRawMaterialsCost' headerName='Net RM Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
+                        <AgGridColumn field='NetBoughtOutPartCost' headerName='Net BOP Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
+                        <AgGridColumn field='NetProcessCost' headerName='Net Process Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
+                        <AgGridColumn field='NetOperationCost' headerName='Net Operation Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
+                        <AgGridColumn field='NetConversionCost' headerName='Net Conversion Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
+                        <AgGridColumn field='SurfaceTreatmentCost' headerName='Surface Treatment Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
+                        <AgGridColumn field='NetSurfaceTreatmentCost' headerName='Net Surface Treatment Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                         <AgGridColumn field='ModelTypeForOverheadAndProfit' headerName='Model Type' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='OverheadApplicability' headerName='Overhead Applicability' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='OverheadPercentage' headerName='Overhead Percentage' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='OverheadCombinedCost' headerName='Overhead Combined Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='OverheadPercentage' headerName='Overhead Percentage' cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
+                        <AgGridColumn field='OverheadCombinedCost' headerName='Overhead Combined Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                         {/* <AgGridColumn field='OverheadOn' headerName='Overhead On' cellRenderer='hyphenFormatter'></AgGridColumn> */}
                         <AgGridColumn field='ProfitApplicability' headerName='Profit Applicability' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='ProfitPercentage' headerName='Profit Percentage' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='ProfitCost' headerName='Profit Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='ProfitPercentage' headerName='Profit Percentage' cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
+                        <AgGridColumn field='ProfitCost' headerName='Profit Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                         {/* <AgGridColumn field='ProfitOn' headerName='Profit On' cellRenderer='hyphenFormatter'></AgGridColumn> */}
-                        <AgGridColumn field='NetOverheadAndProfitCost' headerName='Net Overhead And Profit Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='NetOverheadAndProfitCost' headerName='Net Overhead And Profit Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                         <AgGridColumn field='RejectionApplicability' headerName='Rejection Applicability' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='RejectionPercentage' headerName='Rejection Percentage' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='RejectionCost' headerName='Rejection Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='RejectionPercentage' headerName='Rejection Percentage' cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
+                        <AgGridColumn field='RejectionCost' headerName='Rejection Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                         {/* <AgGridColumn field='RejectOn' headerName='Reject On' cellRenderer='hyphenFormatter'></AgGridColumn> */}
                         <AgGridColumn field='ICCApplicability' headerName='ICC Applicability' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='ICCInterestRate' headerName='ICC Interest Rate' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='ICCInterestRate' headerName='ICC Interest Rate' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                         {/* <AgGridColumn field='ICCOn' headerName='ICC On' cellRenderer='hyphenFormatter'></AgGridColumn> */}
-                        <AgGridColumn field='NetICCCost' headerName='Net ICC Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='NetICCCost' headerName='Net ICC Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                         <AgGridColumn field='PaymentTermsOn' headerName='Payment Terms On' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='PaymentTermCost' headerName='Payment Term Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='PackagingCostPercentage' headerName='Packaging Cost Percentage' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='PackagingCost' headerName='Packaging Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='FreightPercentage' headerName='Freight Percentage' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='FreightCost' headerName='Freight Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='TransportationCost' headerName='Transportation Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='PaymentTermCost' headerName='Payment Term Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
+                        <AgGridColumn field='PackagingCostPercentage' headerName='Packaging Cost Percentage' cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
+                        <AgGridColumn field='PackagingCost' headerName='Packaging Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
+                        <AgGridColumn field='FreightPercentage' headerName='Freight Percentage' cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
+                        <AgGridColumn field='FreightCost' headerName='Freight Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
+                        <AgGridColumn field='TransportationCost' headerName='Transportation Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                         <AgGridColumn field='FreightType' headerName='Freight Type' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='DiscountCost' headerName='Discount Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='NetDiscountsCost' headerName='Net Discounts Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='HundiOrDiscountValue' headerName='Hundi/Discount Value' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='ToolCost' headerName='Tool Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='ToolLife' headerName='Tool Life' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='ToolMaintenanceCost' headerName='Tool Maintenance Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='ToolPrice' headerName='Tool Price' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='ToolQuantity' headerName='Tool Quantity' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='NetToolCost' headerName='Net Tool Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='OtherCostPercentage' headerName='Other Cost Percentage' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='AnyOtherCost' headerName='Any Other Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='OtherCost' headerName='Other Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='NetOtherCost' headerName='Net Other Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='TotalOtherCost' headerName='Total Other Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='HundiOrDiscountPercentage' headerName='Hundi/Discount Percentage' cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
+                        <AgGridColumn field='HundiOrDiscountValue' headerName='Hundi/Discount Value' cellRenderer='decimalPriceFormatter'></AgGridColumn>
+                        <AgGridColumn field='ToolCost' headerName='Tool Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
+                        <AgGridColumn field='ToolLife' headerName='Amortization Quantity (Tool Life)' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='ToolMaintenanceCost' headerName='Tool Maintenance Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
+                        {/* <AgGridColumn field='ToolPrice' headerName='Tool Price' cellRenderer='hyphenFormatter'></AgGridColumn> */}
+                        {/* <AgGridColumn field='ToolQuantity' headerName='Tool Quantity' cellRenderer='hyphenFormatter'></AgGridColumn> */}
+                        <AgGridColumn field='NetToolCost' headerName='Net Tool Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
+                        <AgGridColumn field='OtherCostPercentage' headerName='Other Cost Percentage' cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
+                        <AgGridColumn field='AnyOtherCost' headerName='Any Other Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
+                        <AgGridColumn field='OtherCost' headerName='Other Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
+                        <AgGridColumn field='NetOtherCost' headerName='Net Other Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
+                        <AgGridColumn field='TotalOtherCost' headerName='Total Other Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                         <AgGridColumn field='EffectiveDate' headerName='Effective Date' cellRenderer='effectiveDateFormatter'></AgGridColumn>
 
 
@@ -683,11 +702,11 @@ function ReportListing(props) {
 
 
                         <AgGridColumn field='Currency' headerName='Currency' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='NetConvertedPOPrice' headerName='Net Converted PO Price' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='NetPOPrice' headerName='Net PO Price' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='NetPOPriceOtherCurrency' headerName='Net PO Price Other Currency' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        {/* <AgGridColumn field='NetPOPrice' headerName='Net PO Price' cellRenderer='hyphenFormatter'></AgGridColumn> */}
                         <AgGridColumn field='NetPOPriceINR' headerName='Net PO Price (INR)' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='Remark' headerName='Remark' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn pinned="right" field="DisplayStatus" headerName="Status" cellRenderer={'statusFormatter'}></AgGridColumn>
+                        <AgGridColumn pinned="right" field="Status" headerName="Status" cellRenderer={'statusFormatter'}></AgGridColumn>
 
 
                         {/* <AgGridColumn field='BaseCostingId' headerName='BaseCostingId' cellRenderer='hyphenFormatter'></AgGridColumn> */}

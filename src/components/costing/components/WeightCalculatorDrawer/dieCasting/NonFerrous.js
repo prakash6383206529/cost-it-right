@@ -467,7 +467,7 @@ NonFerrous(props) {
                                 </Col>
                                 <Col md="3">
                                     <TextFieldHookForm
-                                        label={`Recovery Scrap %`}
+                                        label={`Scrap Recovery %`}
                                         name={'recovery'}
                                         Controller={Controller}
                                         control={control}

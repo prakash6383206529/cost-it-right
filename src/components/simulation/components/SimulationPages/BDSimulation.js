@@ -4,19 +4,17 @@ import DayTime from '../../../common/DayTimeWrapper'
 import { EMPTY_DATA } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper';
-import { GridTotalFormate } from '../../../common/TableGridFunctions';
 import Toaster from '../../../common/Toaster';
-import { runSimulationOnSelectedBoughtOutPartCosting } from '../../actions/Simulation';
+import { runVerifyBoughtOutPartSimulation } from '../../actions/Simulation';
 import { Fragment } from 'react';
 import { TextFieldHookForm } from '../../../layout/HookFormInputs';
-import { useForm, Controller, useWatch } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import RunSimulationDrawer from '../RunSimulationDrawer';
 import VerifySimulation from '../VerifySimulation';
 import { useDispatch, useSelector } from 'react-redux';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { data } from 'jquery';
 import Simulation from '../Simulation';
 import { debounce } from 'lodash'
 import { VBC, ZBC } from '../../../../config/constants';
@@ -27,11 +25,10 @@ const gridOptions = {
 
 
 function BDSimulation(props) {
-    const { isDomestic, list, isbulkUpload, rowCount, technology, master, isImpactedMaster, costingAndPartNo } = props
+    const { list, isbulkUpload, rowCount, isImpactedMaster, tokenForMultiSimulation } = props
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')
-    const [colorClass, setColorClass] = useState('')
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [showMainSimulation, setShowMainSimulation] = useState(false)
@@ -45,9 +42,8 @@ function BDSimulation(props) {
 
     const dispatch = useDispatch()
 
-    const { selectedMasterForSimulation } = useSelector(state => state.simulation)
+    const { selectedMasterForSimulation, selectedTechnologyForSimulation } = useSelector(state => state.simulation)
 
-    const { filteredRMData } = useSelector(state => state.material)
     useEffect(() => {
         if (isbulkUpload) {
             setValue('NoOfCorrectRow', rowCount.correctRow)
@@ -57,7 +53,6 @@ function BDSimulation(props) {
 
     const verifySimulation = debounce(() => {
         let basicRateCount = 0
-        let basicScrapCount = 0
 
         list && list.map((li) => {
 
@@ -65,99 +60,56 @@ function BDSimulation(props) {
 
                 basicRateCount = basicRateCount + 1
             }
-            if (Number(li.ScrapRate) === Number(li.NewScrapRate) || li?.NewScrapRate === undefined) {
-                basicScrapCount = basicScrapCount + 1
-            }
+
             return null;
         })
 
-        if (basicRateCount === list.length && basicScrapCount === list.length) {
+        if (basicRateCount === list.length) {
             Toaster.warning('There is no changes in new value. Please correct the data, then run simulation')
             return false
         }
         basicRateCount = 0
-        basicScrapCount = 0
         // setShowVerifyPage(true)
         /**********POST METHOD TO CALL HERE AND AND SEND TOKEN TO VERIFY PAGE TODO ****************/
         let obj = {}
-        obj.Technology = technology
         obj.SimulationTechnologyId = selectedMasterForSimulation.value
-        obj.CostingHead = list[0].CostingHead === 'Vendor Based' ? VBC : ZBC
-        obj.Masters = master
+        obj.CostingHead = ((isbulkUpload ? list[0].CostingHead : list[0].IsVendor) === 'Vendor Based') ? VBC : ZBC
         obj.LoggedInUserId = loggedInUserId()
-
-        obj.TechnologyId = list[0].TechnologyId
-
-        if (filteredRMData.plantId && filteredRMData.plantId.value) {
-            obj.PlantId = filteredRMData.plantId ? filteredRMData.plantId.value : ''
-        }
+        obj.TechnologyId = selectedTechnologyForSimulation.value
+        obj.TechnologyName = selectedTechnologyForSimulation.label
+        // if (filteredRMData.plantId && filteredRMData.plantId.value) {
+        //     obj.PlantId = filteredRMData.plantId ? filteredRMData.plantId.value : ''
+        // }
         let tempArr = []
         list && list.map(item => {
-            if ((item.NewBasicRate !== undefined || item.NewScrapRate !== undefined) && ((item.NewBasicRate !== undefined ? Number(item.NewBasicRate) : Number(item.BasicRate)) !== Number(item.BasicRate) || (item.NewScrapRate !== undefined ? Number(item.NewScrapRate) : Number(item.ScrapRate)) !== Number(item.ScrapRate))) {
+            if (item.NewBasicRate !== undefined ? Number(item.NewBasicRate) : Number(item.BasicRate)) {
                 let tempObj = {}
-                tempObj.CostingHead = item.CostingHead === 'Vendor Based' ? VBC : ZBC
-                tempObj.RawMaterialName = item.RawMaterial
-                tempObj.MaterialType = item.MaterialType
-                tempObj.RawMaterialGrade = item.RMGrade
-                tempObj.RawMaterialSpecification = item.RMSpec
-                tempObj.RawMaterialCategory = item.Category
-                tempObj.UOM = item.UOM
-                tempObj.OldBasicRate = item.BasicRate
-                tempObj.NewBasicRate = item.NewBasicRate ? item.NewBasicRate : item.BasicRate
-                tempObj.OldScrapRate = item.ScrapRate
-                tempObj.NewScrapRate = item.NewScrapRate ? item.NewScrapRate : item.ScrapRate
-                tempObj.RawMaterialFreightCost = checkForNull(item.RMFreightCost)
-                tempObj.RawMaterialShearingCost = checkForNull(item.RMShearingCost)
-                tempObj.OldNetLandedCost = item.NetLandedCost
-                tempObj.NewNetLandedCost = Number(item.NewBasicRate ? item.NewBasicRate : item.BasicRate) + checkForNull(item.RMShearingCost) + checkForNull(item.RMFreightCost)
-                tempObj.EffectiveDate = item.EffectiveDate
-                tempObj.RawMaterialId = item.RawMaterialId
-                tempObj.PlantId = item.PlantId
-                tempObj.VendorId = item.VendorId
-                tempObj.Delta = 0
+                tempObj.BoughtOutPartId = item.BoughtOutPartId
+                tempObj.OldBOPRate = item.BasicRate
+                tempObj.NewBOPRate = item.NewBasicRate
+                tempObj.OldNetLandedCost = Number(item.BasicRate) / Number(item.NumberOfPieces)
+                tempObj.NewNetLandedCost = Number(item.NewBasicRate) / Number(item.NumberOfPieces)
                 tempArr.push(tempObj)
             }
             return null;
         })
-        obj.SimulationRawMaterials = tempArr
 
-        dispatch(runSimulationOnSelectedBoughtOutPartCosting(obj, res => {
+        obj.SimulationIds = tokenForMultiSimulation
+        obj.SimulationBoughtOutPart = tempArr
+
+        dispatch(runVerifyBoughtOutPartSimulation(obj, res => {
 
             if (res.data.Result) {
                 setToken(res.data.Identity)
                 setShowVerifyPage(true)
             }
         }))
-        setShowVerifyPage(true)
     }, 500)
 
 
     const cancelVerifyPage = () => {
-
         setShowVerifyPage(false)
     }
-
-
-    /**
-     * @method shearingCostFormatter
-     * @description Renders buttons
-     */
-    const shearingCostFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-
-        return cell != null ? cell : '-';
-    }
-
-    /**
-    * @method freightCostFormatter
-    * @description Renders buttons
-    */
-    const freightCostFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-
-        return cell != null ? cell : '-';
-    }
-
 
     const effectiveDateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -165,10 +117,8 @@ function BDSimulation(props) {
         return cell != null ? DayTime(cell).format('DD/MM/YYYY') : '';
     }
 
-
     const costingHeadFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-
         return (cell === true || cell === 'Vendor Based') ? 'Vendor Based' : 'Zero Based';
     }
 
@@ -180,7 +130,7 @@ function BDSimulation(props) {
             <>
                 {
                     isImpactedMaster ?
-                        Number(row.NewBasicRate) :
+                        Number(row.NewBOPRate) :
                         <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.BasicRate)} </span>
                 }
 
@@ -195,45 +145,13 @@ function BDSimulation(props) {
             <>
                 {
                     isImpactedMaster ?
-                        row.OldBasicRate :
+                        row.OldBOPRate :
                         <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.BasicRate)} </span>
                 }
 
             </>
         )
     }
-
-
-    const newScrapRateFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const value = beforeSaveCell(cell)
-        return (
-            <>
-                {
-                    isImpactedMaster ?
-                        row.NewScrapRate :
-                        <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.ScrapRate)}</span>
-                }
-            </>
-        )
-    }
-    const oldScrapRateFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const value = beforeSaveCell(cell)
-        return (
-            <>
-                {
-                    isImpactedMaster ?
-                        row.OldScrapRate :
-                        <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.ScrapRate)}</span>
-                }
-            </>
-        )
-    }
-
-    // const colorCheck = 
 
     const costFormatter = (props) => {
 
@@ -245,14 +163,10 @@ function BDSimulation(props) {
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
-    const renderPaginationShowsTotal = (start, to, total) => {
-        return <GridTotalFormate start={start} to={to} total={total} />
-    }
-
     /**
-  * @method beforeSaveCell
-  * @description CHECK FOR ENTER NUMBER IN CELL
-  */
+    * @method beforeSaveCell
+    * @description CHECK FOR ENTER NUMBER IN CELL
+    */
     const beforeSaveCell = (props) => {
         const cellValue = props
         if (Number.isInteger(Number(cellValue)) && /^\+?(0|[1-9]\d*)$/.test(cellValue) && cellValue.toString().replace(/\s/g, '').length) {
@@ -268,41 +182,41 @@ function BDSimulation(props) {
         return true
     }
 
-    const afterSaveCell = (row, cellName, cellValue, index) => {
-
-        if ((Number(row.NewBasicRate) + checkForNull(row.RMFreightCost) + checkForNull(row.RMShearingCost)) > row.NetLandedCost) {
-            setColorClass('red-value form-control')
-        } else if ((Number(row.NewBasicRate) + checkForNull(row.RMFreightCost) + checkForNull(row.RMShearingCost)) < row.NetLandedCost) {
-            setColorClass('green-value form-control')
+    const NewcostFormatter = (props) => {
+        const row = props?.data;
+        if (isImpactedMaster) {
+            return row.NewNetBoughtOutPartCost ? row.NewNetBoughtOutPartCost : '-'
         } else {
-            setColorClass('form-class')
-        }
-        return false
+            if (!row.NewBasicRate || Number(row.BasicRate) === Number(row.NewBasicRate) || row.NewBasicRate === '') return ''
+            const BasicRate = Number(row.BasicRate) / Number(row.NumberOfPieces)
+            const NewBasicRate = Number(row.NewBasicRate) / Number(row.NumberOfPieces)
+            const classGreen = (BasicRate < NewBasicRate) ? 'red-value form-control' : (BasicRate > NewBasicRate) ? 'green-value form-control' : 'form-class'
+            return row.NewBasicRate != null ? <span className={classGreen}>{checkForDecimalAndNull(Number(row.NewBasicRate) / Number(row.NumberOfPieces), getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
 
+        }
     }
 
-    const NewcostFormatter = (props) => {
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        if (!row.NewBasicRate || Number(row.BasicRate) === Number(row.NewBasicRate) || row.NewBasicRate === '') return ''
-        const NewBasicRate = Number(row.NewBasicRate) + checkForNull(row.RMFreightCost) + checkForNull(row.RMShearingCost)
-        const classGreen = (NewBasicRate > row.NetLandedCost) ? 'red-value form-control' : (NewBasicRate < row.NetLandedCost) ? 'green-value form-control' : 'form-class'
-        return row.NewBasicRate != null ? <span className={classGreen}>{checkForDecimalAndNull(NewBasicRate, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
-        // checkForDecimalAndNull(NewBasicRate, getConfigurationKey().NoOfDecimalForPrice)
+    const OldcostFormatter = (props) => {
+        const row = props?.data;
+        if (isImpactedMaster) {
+            return row.OldNetBoughtOutPartCost ? row.OldNetBoughtOutPartCost : '-'
+        } else {
+            if (!row.BasicRate || row.BasicRate === '') return ''
+
+            return row.BasicRate != null ? checkForDecimalAndNull(Number(row.BasicRate) / Number(row.NumberOfPieces), getConfigurationKey().NoOfDecimalForPrice) : ''
+
+        }
     }
 
 
     const runSimulation = () => {
         let basicRateCount = 0
-        let basicScrapCount = 0
         list && list.map((li) => {
             if (li.BasicRate === li.NewBasicRate) {
                 basicRateCount = basicRateCount + 1
             }
-            if (li.ScrapRate === li.NewScrapRate) {
-                basicScrapCount = basicScrapCount + 1
-            }
 
-            if (basicRateCount === list.length || basicScrapCount === list.length) {
+            if (basicRateCount === list.length) {
                 Toaster.warning('There is no changes in new value. Please correct the data, then run simulation')
             } else {
                 setShowRunSimulationDrawer(true)
@@ -318,7 +232,6 @@ function BDSimulation(props) {
 
     const closeDrawer = (e = '') => {
         setShowRunSimulationDrawer(false)
-
     }
 
     const defaultColDef = {
@@ -331,7 +244,7 @@ function BDSimulation(props) {
     const onGridReady = (params) => {
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
-        window.screen.width >= 1600 && params.api.sizeColumnsToFit();
+        window.screen.width >= 1920 && params.api.sizeColumnsToFit();
         if (isImpactedMaster) {
             window.screen.width >= 1365 && params.api.sizeColumnsToFit();
         }
@@ -346,34 +259,28 @@ function BDSimulation(props) {
     const onFilterTextBoxChanged = (e) => {
         gridApi.setQuickFilter(e.target.value);
     }
+
     const cellChange = (props) => {
 
     }
+
     const frameworkComponents = {
         effectiveDateRenderer: effectiveDateFormatter,
         costingHeadFormatter: costingHeadFormatter,
-        shearingCostFormatter: shearingCostFormatter,
-        freightCostFormatter: freightCostFormatter,
-        newScrapRateFormatter: newScrapRateFormatter,
         NewcostFormatter: NewcostFormatter,
+        OldcostFormatter: OldcostFormatter,
         costFormatter: costFormatter,
         customNoRowsOverlay: NoContentFound,
         newBasicRateFormatter: newBasicRateFormatter,
         cellChange: cellChange,
         oldBasicRateFormatter: oldBasicRateFormatter,
-        oldScrapRateFormatter: oldScrapRateFormatter,
     };
-
-
 
     return (
 
         <div>
             <div className={`ag-grid-react`}>
-
                 {
-
-
                     (!showverifyPage && !showMainSimulation) &&
                     <Fragment>
                         {
@@ -422,7 +329,7 @@ function BDSimulation(props) {
                             </Row>
                         }
                         <Row>
-                            <Col className={`add-min-height mb-3 sm-edit-page  ${list && list?.length <=0 ?"overlay-contain": ""}`}>
+                            <Col className={`add-min-height mb-3 sm-edit-page  ${list && list?.length <= 0 ? "overlay-contain" : ""}`}>
                                 <div className="ag-grid-wrapper height-width-wrapper">
                                     <div className="ag-grid-header">
                                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
@@ -448,23 +355,24 @@ function BDSimulation(props) {
                                             stopEditingWhenCellsLoseFocus={true}
                                         >
                                             {/* <AgGridColumn field="Technologies" editable='false' headerName="Technology" minWidth={190}></AgGridColumn> */}
-                                            <AgGridColumn field="BoughtOutPartNumber" editable='false' headerName="BOP Part No" minWidth={190}></AgGridColumn>
-                                            <AgGridColumn field="BoughtOutPartName" editable='false' headerName="BOP Part Name" minWidth={190}></AgGridColumn>
-                                            <AgGridColumn field="BoughtOutPartCategory" editable='false' headerName="BOP Category" minWidth={190}></AgGridColumn>
-                                            <AgGridColumn field="Vendor" editable='false' headerName="Vendor" minWidth={190}></AgGridColumn>
-                                            <AgGridColumn field="DestinationPlant" editable='false' headerName="DestinationPlant" minWidth={190}></AgGridColumn>
+                                            <AgGridColumn field="BoughtOutPartNumber" editable='false' headerName="BOP Part No" minWidth={140}></AgGridColumn>
+                                            <AgGridColumn field="BoughtOutPartName" editable='false' headerName="BOP Part Name" minWidth={140}></AgGridColumn>
+                                            {!isImpactedMaster && <AgGridColumn field="BoughtOutPartCategory" editable='false' headerName="BOP Category" minWidth={140}></AgGridColumn>}
+                                            {!isImpactedMaster && <AgGridColumn field="Vendor" editable='false' headerName="Vendor" minWidth={140}></AgGridColumn>}
+                                            {!isImpactedMaster && <AgGridColumn field="DestinationPlant" editable='false' headerName="DestinationPlant" minWidth={140}></AgGridColumn>}
 
-                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Basic Rate (INR)" marryChildren={true} >
+                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName="Basic Rate (INR)" marryChildren={true} width={240}>
                                                 <AgGridColumn width={120} field="BasicRate" editable='false' headerName="Old" cellRenderer='oldBasicRateFormatter' colId="BasicRate"></AgGridColumn>
-                                                <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' onCellValueChanged='cellChange' field="NewBasicRate" headerName="New" colId='NewBasicRate'></AgGridColumn>
+                                                <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' editable={!isImpactedMaster} onCellValueChanged='cellChange' field="NewBasicRate" headerName="New" colId='NewBasicRate'></AgGridColumn>
                                             </AgGridColumn>
 
-                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Net Cost (INR)">
-                                                <AgGridColumn width={120} field="NetLandedCost" editable='false' headerName="Old" colId='NetLandedCost'></AgGridColumn>
-                                                <AgGridColumn width={120} field="NewNetLandedCost" editable='false' valueGetter='data.NewBasicRate' cellRenderer={'NewcostFormatter'} headerName="New" colId='NewNetLandedCost'></AgGridColumn>
+                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Net Cost (INR)" marryChildren={true}>
+                                                {/* {!isImpactedMaster &&<AgGridColumn width={120} field="OldNetLandedCost" editable='false' cellRenderer={'OldcostFormatter'} headerName="Old" colId='NetLandedCost'></AgGridColumn>} */}
+                                                <AgGridColumn width={120} field="OldNetLandedCost" editable='false' cellRenderer={'OldcostFormatter'} headerName="Old" colId='NetLandedCost'></AgGridColumn>
+                                                <AgGridColumn width={120} field="NewNetLandedCost" editable='false' valueGetter='data.NewBasicRate/data.NumberOfPieces' cellRenderer={'NewcostFormatter'} headerName="New" colId='NewNetLandedCost'></AgGridColumn>
                                             </AgGridColumn>
 
-                                            <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn>
+                                            <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={150} cellRenderer='effectiveDateRenderer'></AgGridColumn>
                                             <AgGridColumn field="CostingId" hide={true}></AgGridColumn>
 
 

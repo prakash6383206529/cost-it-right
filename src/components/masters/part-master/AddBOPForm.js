@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required, number, postiveNumber, maxLength5, minValue1, positiveAndDecimalNumber, } from "../../../helper/validation";
+import { required, maxLength5, minValue1, minValueLessThan1, positiveAndDecimalNumber, } from "../../../helper/validation";
 import { renderText, searchableSelect } from "../../layout/FormInputs";
 import { getBoughtOutPartSelectList, getDrawerBOPData } from '../actions/Part';
 import { } from '../../../actions/Common';
@@ -17,7 +17,7 @@ class AddBOPForm extends Component {
       BOPPart: [],
       isAddMore: false,
       selectedParts: [],
-      titleObj:{}
+      titleObj: {}
     }
   }
 
@@ -170,7 +170,7 @@ class AddBOPForm extends Component {
           className="form"
           onSubmit={handleSubmit(this.onSubmit.bind(this))}
           onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
-          >
+        >
           <Row>
             <Col md="6">
               <Field
@@ -243,7 +243,7 @@ class AddBOPForm extends Component {
                 name={"Quantity"}
                 type="text"
                 placeholder={""}
-                validate={[positiveAndDecimalNumber, maxLength5, required, minValue1]}
+                validate={[positiveAndDecimalNumber, maxLength5, required, minValueLessThan1]}
                 component={renderText}
                 required={true}
                 className=""

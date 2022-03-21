@@ -31,6 +31,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import AddNCCDrawer from './AddNCCDrawer';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import LoaderCustom from '../../common/LoaderCustom';
+import { debounce } from 'lodash';
 
 export const ViewCostingContext = React.createContext()
 
@@ -700,7 +701,7 @@ function CostingDetails(props) {
    * @method addDetails
    * @description ADD DETAILS IN COSTING
    */
-  const addDetails = (index, type) => {
+  const addDetails = debounce((index, type) => {
     const userDetail = userDetails()
 
     if (CheckIsSOBChangedSaved()) {
@@ -820,7 +821,7 @@ function CostingDetails(props) {
         EffectiveDate: effectiveDate,
       }
 
-  
+
       // dispatch(createNCCCosting(data,(res)=>{
       //   if (res.data.Result) {
       //     setPartInfo(res.data.Data)
@@ -838,7 +839,7 @@ function CostingDetails(props) {
     else {
       Toaster.warning('SOB Should not be greater than 100.')
     }
-  }
+  }, 500)
 
   /**
    * @method viewDetails
@@ -2042,7 +2043,7 @@ function CostingDetails(props) {
                     )}
 
                     {/* ******************************************************VBC UI HERE *********************************************************************** */}
-                  
+
                     {IsOpenVendorSOBDetails && (
                       <>
                         <Row className="align-items-center">
@@ -2095,8 +2096,8 @@ function CostingDetails(props) {
 
                                   return (
                                     <tr key={index}>
-                                      <td  className='break-word'>{`${item.VendorName}(${item.VendorCode})`}</td>
-                                      {initialConfiguration?.IsDestinationPlantConfigure && <td  className='break-word'>{item?.DestinationPlantName ? item.DestinationPlantName : ''}</td>}
+                                      <td className='break-word'>{`${item.VendorName}(${item.VendorCode})`}</td>
+                                      {initialConfiguration?.IsDestinationPlantConfigure && <td className='break-word'>{item?.DestinationPlantName ? item.DestinationPlantName : ''}</td>}
                                       <td className="w-100px cr-select-height">
                                         <NumberFieldHookForm
                                           label=""

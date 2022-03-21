@@ -137,11 +137,12 @@ export const NumberFieldHookForm = (field) => {
 
 export const SearchableSelectHookForm = (field) => {
   const { name, label, Controller, mandatory, disabled, options, handleChange, rules, placeholder, defaultValue,
-    isClearable, control, errors, register, isLoading, customClassName } = field;
+    isClearable, control, errors, register, isLoading, customClassName, isMulti } = field;
 
 
   let isDisable = (disabled && disabled === true) ? true : false;
   let isLoader = (isLoading && isLoading === true) ? true : false;
+  let isMultiple = (isMulti === true) ? true : false;
 
   return (
     <div className={`w-100 mb-15 form-group-searchable-select ${customClassName}`}>
@@ -174,6 +175,7 @@ export const SearchableSelectHookForm = (field) => {
               selected={value}
               value={value}
               isLoading={isLoader}
+              isMulti={isMultiple}
             />
           )
 
@@ -438,7 +440,7 @@ export const AsyncSearchableSelectHookForm = (field) => {
               selected={value}
               value={value}
               isLoading={isLoader}
-              noOptionsMessage={({inputValue}) => !inputValue ? NoOptionMessage : "No results found"}
+              noOptionsMessage={({ inputValue }) => !inputValue ? NoOptionMessage : "No results found"}
             />
           )
 

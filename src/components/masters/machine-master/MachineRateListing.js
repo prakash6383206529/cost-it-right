@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { EMPTY_DATA, MACHINE_MASTER_ID } from '../../../config/constants';
+import { EMPTY_DATA, MACHINERATE, MACHINE_MASTER_ID, RMDOMESTIC } from '../../../config/constants';
 import {
     getInitialPlantSelectList, getInitialMachineTypeSelectList, getInitialProcessesSelectList, getInitialVendorWithVendorCodeSelectList, getMachineTypeSelectListByPlant,
     getVendorSelectListByTechnology, getMachineTypeSelectListByTechnology, getMachineTypeSelectListByVendor, getProcessSelectListByMachineType,
@@ -26,6 +26,7 @@ import ReactExport from 'react-export-excel';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
 import { getFilteredData, CheckApprovalApplicableMaster } from '../../../helper'
+import { getListingForSimulationCombined } from '../../simulation/actions/Simulation';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -64,7 +65,18 @@ class MachineRateListing extends Component {
         this.props.getInitialVendorWithVendorCodeSelectList(() => { })
         this.props.getInitialMachineTypeSelectList(() => { })
         this.props.getInitialProcessesSelectList(() => { })
-        this.getDataList()
+        if (this.props.isSimulation) {
+            if (this.props.selectionForListingMasterAPI === 'Combined') {
+                this.props?.changeSetLoader(true)
+                this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, MACHINERATE, () => {
+                    this.props?.changeSetLoader(false)
+
+                })
+            }
+        }
+        if (this.props.selectionForListingMasterAPI === 'Master') {
+            this.getDataList()
+        }
     }
 
 
@@ -79,8 +91,14 @@ class MachineRateListing extends Component {
         }
 
         if (this.props.isMasterSummaryDrawer !== undefined && !this.props.isMasterSummaryDrawer) {
+            if (this.props.isSimulation) {
+                this.props?.changeTokenCheckBox(false)
+            }
             this.setState({ isLoader: true })
             this.props.getMachineDataList(filterData, (res) => {
+                if (this.props.isSimulation) {
+                    this.props?.changeTokenCheckBox(true)
+                }
                 this.setState({ isLoader: false })
 
             })
@@ -177,19 +195,19 @@ class MachineRateListing extends Component {
         let isEditable = false
         let isDeleteButton = false
 
-        
-            if (EditAccessibility && !rowData.IsMachineAssociated) {
-                isEditable = true
-            } else {
-                isEditable = false
-            }
+
+        if (EditAccessibility && !rowData.IsMachineAssociated) {
+            isEditable = true
+        } else {
+            isEditable = false
+        }
 
 
-            if (DeleteAccessibility && !rowData.IsMachineAssociated) {
-                isDeleteButton = true
-            } else {
-                isDeleteButton = false
-            }
+        if (DeleteAccessibility && !rowData.IsMachineAssociated) {
+            isDeleteButton = true
+        } else {
+            isDeleteButton = false
+        }
 
         return (
             <>
@@ -408,8 +426,11 @@ class MachineRateListing extends Component {
             <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     {(this.state.isLoader && !this.props.isMasterSummaryDrawer) && <LoaderCustom />}
-                    <Row className={`pt-4 filter-row-large ${this.props.isSimulation ? 'simulation-filter' : ''}`}>
-                        <Col md="6" lg="6" className="search-user-block pl-0 mb-3">
+                    <Row className={`pt-4 filter-row-large ${this.props.isSimulation ? 'simulation-filter zindex-0' : ''}`}>
+                        <Col md="6" lg="6">
+                            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                        </Col>
+                        <Col md="6" lg="6" className="pl-0 mb-3">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
                                     {this.state.shown ? (
@@ -469,9 +490,7 @@ class MachineRateListing extends Component {
                 <Row>
                     <Col>
                         <div className={`ag-grid-wrapper height-width-wrapper ${this.props.machineDatalist && this.props.machineDatalist?.length <= 0 ? "overlay-contain" : ""}`}>
-                            <div className="ag-grid-header">
-                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
-                            </div>
+
                             <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
@@ -571,6 +590,7 @@ export default connect(mapStateToProps, {
     getMachineTypeSelectListByTechnology,
     getMachineTypeSelectListByVendor,
     getProcessSelectListByMachineType,
+    getListingForSimulationCombined
 })(reduxForm({
     form: 'MachineRateListing',
     enableReinitialize: true,

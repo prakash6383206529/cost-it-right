@@ -7,10 +7,10 @@ import ApprovalWorkFlow from '../../costing/components/approval/ApprovalWorkFlow
 import ViewDrawer from '../../costing/components/approval/ViewDrawer'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import { costingHeadObjs, SIMULATIONAPPROVALSUMMARYDOWNLOADCP, SIMULATIONAPPROVALSUMMARYDOWNLOADOperation, SIMULATIONAPPROVALSUMMARYDOWNLOADST } from '../../../config/masterData';
+import { costingHeadObjs, SIMULATIONAPPROVALSUMMARYDOWNLOADCP, SIMULATIONAPPROVALSUMMARYDOWNLOADBOP, SIMULATIONAPPROVALSUMMARYDOWNLOADOperation, SIMULATIONAPPROVALSUMMARYDOWNLOADST } from '../../../config/masterData';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common';
 import { getAmmendentStatus, getApprovalSimulatedCostingSummary, getComparisionSimulationData, setAttachmentFileData, getImpactedMasterData, getLastSimulationData, uploadSimulationAttachmentonFTP } from '../actions/Simulation'
-import { EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, ZBC, COMBINED_PROCESS, FILE_URL, COSTINGSIMULATIONROUND, SURFACETREATMENT, OPERATIONS } from '../../../config/constants';
+import { EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, ZBC, COMBINED_PROCESS, FILE_URL, COSTINGSIMULATIONROUND, SURFACETREATMENT, OPERATIONS, BOPDOMESTIC, BOPIMPORT } from '../../../config/constants';
 import Toaster from '../../common/Toaster';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
 import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId, userDetails } from '../../../helper';
@@ -205,8 +205,20 @@ function SimulationApprovalSummary(props) {
         if (effectiveDate && costingList && simulationDetail.SimulationId) {
             if (costingList && costingList.length > 0 && effectiveDate && Object.keys('simulationDetail'.length > 0)) {
                 dispatch(getLastSimulationData(costingList[0].VendorId, effectiveDate, res => {
-                    const Data = res.data.Data.ImpactedMasterDataList
-                    const masterId = res.data.Data.SimulationTechnologyId;
+                    const structureOfData = {
+                        ExchangeRateImpactedMasterDataList: [],
+                        OperationImpactedMasterDataList: [],
+                        RawMaterialImpactedMasterDataList: [],
+                        BoughtOutPartImpactedMasterDataList: []
+                    }
+                    let masterId
+                    let Data = []
+                    if (Number(res?.status) === 204) {
+                        Data = structureOfData
+                    } else {
+                        Data = res?.data?.Data
+                        masterId = res?.data?.Data?.SimulationTechnologyId;
+                    }
 
                     if (res) {
                         setImpactedMasterDataListForLastRevisionData(Data)
@@ -255,17 +267,17 @@ function SimulationApprovalSummary(props) {
             setApproveDrawer(false)
             setShowListing(true)
             setRejectDrawer(false)
-            if (status === 200 && showFinalLevelButtons === true && approveDrawer === true) {
-                simulationDetail.Attachements && simulationDetail.Attachements.map((Data) => {
+            // if (status === 200 && showFinalLevelButtons === true && approveDrawer === true) {
+            //     simulationDetail.Attachements && simulationDetail.Attachements.map((Data) => {
 
-                    let Category = Data.AttachementCategory.replaceAll(' ', '_')
-                    let path = `${Category}\\\\${Data.FileName}`
-                    let uploadData = new FormData()
-                    uploadData.append('path', path)
-                    dispatch(uploadSimulationAttachmentonFTP(uploadData, (res) => { }))
+            //         let Category = Data.AttachementCategory.replaceAll(' ', '_')
+            //         let path = `${Category}\\\\${Data.FileName}`
+            //         let uploadData = new FormData()
+            //         uploadData.append('path', path)
+            //         dispatch(uploadSimulationAttachmentonFTP(uploadData, (res) => { }))
 
-                })
-            }
+            //     })
+            // }
 
         } else {
             setApproveDrawer(false)
@@ -394,6 +406,9 @@ function SimulationApprovalSummary(props) {
                 return returnExcelColumn(SIMULATIONAPPROVALSUMMARYDOWNLOADST, dataForDownload.length > 0 ? dataForDownload : [])
             case COMBINED_PROCESS:
                 return returnExcelColumn(SIMULATIONAPPROVALSUMMARYDOWNLOADCP, dataForDownload.length > 0 ? dataForDownload : [])
+            case BOPDOMESTIC:
+            case BOPIMPORT:
+                return returnExcelColumn(SIMULATIONAPPROVALSUMMARYDOWNLOADBOP, dataForDownload.length > 0 ? dataForDownload : [])
             default:
                 break;
         }
@@ -487,6 +502,21 @@ function SimulationApprovalSummary(props) {
         const classGreen = (row.NewExchangeRate > row.OldExchangeRate) ? 'red-value form-control' : (row.NewExchangeRate < row.OldExchangeRate) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
+
+    const oldBOPFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const classGreen = (row.NewNetBoughtOutPartCost > row.OldNetBoughtOutPartCost) ? 'red-value form-control' : (row.NewNetBoughtOutPartCost < row.OldNetBoughtOutPartCost) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+    }
+
+    const newBOPFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const classGreen = (row.NewNetBoughtOutPartCost > row.OldNetBoughtOutPartCost) ? 'red-value form-control' : (row.NewNetBoughtOutPartCost < row.OldNetBoughtOutPartCost) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+    }
+
     const rmNameFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -501,6 +531,11 @@ function SimulationApprovalSummary(props) {
         roudOffOld = _.round(row.OldNetRawMaterialsCost, COSTINGSIMULATIONROUND)
         rounfOffNew = _.round(row.NewNetRawMaterialsCost, COSTINGSIMULATIONROUND)
         return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : ''
+    }
+
+    const BOPVarianceFormatter = (props) => {
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return checkForDecimalAndNull(row.NetBoughtOutPartCostVariance, getConfigurationKey().NoOfDecimalForPrice)
     }
 
     const POVarianceFormatter = (props) => {
@@ -700,15 +735,21 @@ function SimulationApprovalSummary(props) {
         oldCCFormatter: oldCCFormatter,
         POVarianceFormatter: POVarianceFormatter,
         operationNameFormatter: operationNameFormatter,
+        oldBOPFormatter: oldBOPFormatter,
+        newBOPFormatter: newBOPFormatter,
+        BOPVarianceFormatter: BOPVarianceFormatter,
     };
 
     const errorBoxClass = () => {
         let temp
-        temp = isSuccessfullyInsert === false ? '' : 'success'
-        if (noContent === true) {
+        if (amendentStatus.startsWith('E')) {
+            temp = 'error';
+        }
+        else if (amendentStatus.startsWith('S')) {
+            temp = 'success';
+        }
+        else {
             temp = 'd-none'
-            setRecordInsertStatusBox(false)
-            setAmendmentStatusBox(false)
         }
         return temp
     }
@@ -750,7 +791,7 @@ function SimulationApprovalSummary(props) {
                                     className="float-right"
                                     alt={""}
                                     onClick={deleteInsertStatusBox}
-                                    src={errorBoxClass() === 'success' ? imgGreencross : imgRedcross}
+                                    src={errorBoxClass() === 'd-none' ? '' : errorBoxClass() === "success" ? imgGreencross : imgRedcross}
                                 ></img>
                             </div>
                         }
@@ -762,7 +803,7 @@ function SimulationApprovalSummary(props) {
                                     className="float-right"
                                     alt={""}
                                     onClick={deleteAmendmentStatusBox}
-                                    src={errorBoxClass() === 'success' ? imgGreencross : imgRedcross}
+                                    src={errorBoxClass() === 'd-none' ? '' : errorBoxClass() === "success" ? imgGreencross : imgRedcross}
                                 ></img>
                             </div>
 
@@ -1042,7 +1083,15 @@ function SimulationApprovalSummary(props) {
                                                                         <AgGridColumn width={140} field="Variance" headerName="Exchange Rate Variance" cellRenderer='varianceFormatter' ></AgGridColumn>
                                                                     </>
                                                                 }
-                                                                <AgGridColumn width={140} field="SimulationCostingId" pinned="right" cellRenderer='buttonFormatter' floatingFilter={false} headerName="Actions" type="rightAligned"></AgGridColumn>
+                                                                {
+                                                                    (String(SimulationTechnologyId) === BOPDOMESTIC || String(SimulationTechnologyId) === BOPIMPORT) &&
+                                                                    <>
+                                                                        <AgGridColumn width={140} field="OldNetBoughtOutPartCost" headerName="Old BOP Cost" cellRenderer='oldBOPFormatter' ></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="NewNetBoughtOutPartCost" headerName="New BOP Cost" cellRenderer='newBOPFormatter'></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" headerName="BOP Variance" cellRenderer='BOPVarianceFormatter' ></AgGridColumn>
+                                                                    </>
+                                                                }
+                                                                <AgGridColumn width={130} field="SimulationCostingId" pinned="right" cellRenderer='buttonFormatter' floatingFilter={false} headerName="Actions" type="rightAligned"></AgGridColumn>
                                                                 {/* <AgGridColumn field="Status" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>
                                                                 <AgGridColumn field="SimulationId" headerName='Actions'   type="rightAligned" cellRenderer='buttonFormatter'></AgGridColumn> */}
 
@@ -1140,7 +1189,7 @@ function SimulationApprovalSummary(props) {
 
                                 <div className="accordian-content w-100 px-3 impacted-min-height">
                                     {showLastRevisionData && <Impactedmasterdata data={impactedMasterDataListForLastRevisionData} masterId={simulationDetail.masterId} viewCostingAndPartNo={false} lastRevision={true} />}
-                                    {impactedMasterDataListForLastRevisionData.length === 0 ? <div className='border'><NoContentFound title={EMPTY_DATA} /></div> : ""}
+                                    {impactedMasterDataListForLastRevisionData?.length === 0 ? <div className='border'><NoContentFound title={EMPTY_DATA} /></div> : ""}
                                 </div>
                             }
                             {showViewAssemblyDrawer &&

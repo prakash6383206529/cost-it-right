@@ -125,25 +125,97 @@ function ApproveRejectDrawer(props) {
         values.push(item.SimulationTechnologyId)
       }
     })
-    if (values.length > 1) {
-      values.map((item, index) => {
+    if (!IsFinalLevel) {
+      if (values.length > 1) {
+        values.map((item, index) => {
+          let obj = {
+            LoggedInUserId: userData.LoggedInUserId,
+            DepartmentId: departObj,
+            //NEED TO MAKE THIS 2   
+            // TechnologyId: isSimulationApprovalListing ? selectedRowData[0].SimulationTechnologyId : simulationDetail.SimulationTechnologyId ? simulationDetail.SimulationTechnologyId : selectedMasterForSimulation.value,
+            TechnologyId: item,
+            ReasonId: 0
+          }
+
+          dispatch(
+            getAllSimulationApprovalList(obj, (res) => {
+              const Data = res.data.DataList[1] ? res.data.DataList[1] : []
+              // setValue('dept', { label: Data.DepartmentName, value: Data.DepartmentId })
+              // setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
+              let tempDropdownList = []
+              let listForDropdown = []
+
+              res.data.DataList && res.data.DataList.map((item) => {
+                if (item.Value === '0') return false;
+                tempDropdownList.push({
+                  label: item.Text,
+                  value: item.Value,
+                  levelId: item.LevelId,
+                  levelName: item.LevelName
+                })
+                return null
+              })
+              approverDropdownValue.push(tempDropdownList)
+              let allObjVal = []
+
+              for (let v = 0; v < approverDropdownValue.length; v++) {
+                let valueOfAllArrays = []
+                approverDropdownValue && approverDropdownValue[v].map(itemmmm => {
+                  valueOfAllArrays.push(itemmmm?.value)
+
+                })
+                allObjVal.push(valueOfAllArrays)
+              }
+
+              let filteredArray1 = allObjVal.length && allObjVal[0]?.filter(value => allObjVal.length && allObjVal[1]?.includes(value));
+              let filteredArray = filteredArray1
+              for (let v = 2; v < allObjVal.length; v++) {
+                filteredArray = filteredArray && filteredArray?.filter(value => allObjVal && allObjVal[v]?.includes(value));
+
+              }
+
+              tempDropdownList.map(i => {
+                filteredArray.map(item => {
+                  if (i.value === item) {
+                    listForDropdown.push(i)
+                  }
+                })
+              })
+
+
+              setApprovalDropDown(listForDropdown)
+              count = count + 1;
+              if ((listForDropdown[0]?.value === EMPTY_GUID || listForDropdown.length === 0) && count === values.length) {
+
+                Toaster.warning('User does not exist on next level for selected simulation.')
+                setApprovalDropDown([])
+                return false
+              }
+            },
+            ),
+          )
+          return null;
+        })
+
+
+      } else {
+
         let obj = {
           LoggedInUserId: userData.LoggedInUserId,
           DepartmentId: departObj,
           //NEED TO MAKE THIS 2   
-          // TechnologyId: isSimulationApprovalListing ? selectedRowData[0].SimulationTechnologyId : simulationDetail.SimulationTechnologyId ? simulationDetail.SimulationTechnologyId : selectedMasterForSimulation.value,
-          TechnologyId: item,
+          TechnologyId: isSimulationApprovalListing ? selectedRowData[0].SimulationTechnologyId : simulationDetail.SimulationTechnologyId ? simulationDetail.SimulationTechnologyId : selectedMasterForSimulation.value,
           ReasonId: 0
         }
 
         dispatch(
           getAllSimulationApprovalList(obj, (res) => {
             const Data = res.data.DataList[1] ? res.data.DataList[1] : []
-            // setValue('dept', { label: Data.DepartmentName, value: Data.DepartmentId })
-            // setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
+            if (Object.keys(Data).length > 0) {
+              setValue('dept', { label: Data.DepartmentName, value: Data.DepartmentId })
+            }
+            setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
             let tempDropdownList = []
-            let listForDropdown = []
-
             res.data.DataList && res.data.DataList.map((item) => {
               if (item.Value === '0') return false;
               tempDropdownList.push({
@@ -154,37 +226,8 @@ function ApproveRejectDrawer(props) {
               })
               return null
             })
-            approverDropdownValue.push(tempDropdownList)
-            let allObjVal = []
-
-            for (let v = 0; v < approverDropdownValue.length; v++) {
-              let valueOfAllArrays = []
-              approverDropdownValue && approverDropdownValue[v].map(itemmmm => {
-                valueOfAllArrays.push(itemmmm?.value)
-
-              })
-              allObjVal.push(valueOfAllArrays)
-            }
-
-            let filteredArray1 = allObjVal.length && allObjVal[0]?.filter(value => allObjVal.length && allObjVal[1]?.includes(value));
-            let filteredArray = filteredArray1
-            for (let v = 2; v < allObjVal.length; v++) {
-              filteredArray = filteredArray && filteredArray?.filter(value => allObjVal && allObjVal[v]?.includes(value));
-
-            }
-
-            tempDropdownList.map(i => {
-              filteredArray.map(item => {
-                if (i.value === item) {
-                  listForDropdown.push(i)
-                }
-              })
-            })
-
-
-            setApprovalDropDown(listForDropdown)
-            count = count + 1;
-            if ((listForDropdown[0]?.value === EMPTY_GUID || listForDropdown.length === 0) && count === values.length) {
+            setApprovalDropDown(tempDropdownList)
+            if ((tempDropdownList[0]?.value === EMPTY_GUID || tempDropdownList.length === 0) && type !== 'Reject' && !IsFinalLevel) {
 
               Toaster.warning('User does not exist on next level for selected simulation.')
               setApprovalDropDown([])
@@ -193,48 +236,7 @@ function ApproveRejectDrawer(props) {
           },
           ),
         )
-        return null;
-      })
-
-
-    } else {
-
-      let obj = {
-        LoggedInUserId: userData.LoggedInUserId,
-        DepartmentId: departObj,
-        //NEED TO MAKE THIS 2   
-        TechnologyId: isSimulationApprovalListing ? selectedRowData[0].SimulationTechnologyId : simulationDetail.SimulationTechnologyId ? simulationDetail.SimulationTechnologyId : selectedMasterForSimulation.value,
-        ReasonId: 0
       }
-
-      dispatch(
-        getAllSimulationApprovalList(obj, (res) => {
-          const Data = res.data.DataList[1] ? res.data.DataList[1] : []
-          if (Object.keys(Data).length > 0) {
-            setValue('dept', { label: Data.DepartmentName, value: Data.DepartmentId })
-          }
-          setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
-          let tempDropdownList = []
-          res.data.DataList && res.data.DataList.map((item) => {
-            if (item.Value === '0') return false;
-            tempDropdownList.push({
-              label: item.Text,
-              value: item.Value,
-              levelId: item.LevelId,
-              levelName: item.LevelName
-            })
-            return null
-          })
-          setApprovalDropDown(tempDropdownList)
-          if ((tempDropdownList[0]?.value === EMPTY_GUID || tempDropdownList.length === 0) && type !== 'Reject' && !IsFinalLevel) {
-
-            Toaster.warning('User does not exist on next level for selected simulation.')
-            setApprovalDropDown([])
-            return false
-          }
-        },
-        ),
-      )
     }
 
   }
@@ -478,20 +480,20 @@ function ApproveRejectDrawer(props) {
 
             } else {
               if (IsFinalLevel) {
-                let pushObj = {}
-                let temp = []
-                let uniqueArr = _.uniqBy(costingList, function (o) {
-                  return o.CostingId;
-                });
+                // let pushObj = {}
+                // let temp = []
+                // let uniqueArr = _.uniqBy(costingList, function (o) {
+                //   return o.CostingId;
+                // });
 
-                uniqueArr && uniqueArr.map(item => {
-                  const vendor = item.VendorName.split('(')[1]
-                  temp.push({ TokenNumber: simulationDetail.Token, Vendor: item?.VendorCode, PurchasingGroup: simulationDetail.DepartmentCode, Plant: item.PlantCode, MaterialCode: item.PartNo, NewPOPrice: item.NewPOPrice, EffectiveDate: simulationDetail.EffectiveDate, SimulationId: simulationDetail.SimulationId })
-                  return null
-                })
-                pushObj.LoggedInUserId = userLoggedIn
-                pushObj.AmmendentDataRequests = temp
-                dispatch(pushAPI(pushObj, () => { }))
+                // uniqueArr && uniqueArr.map(item => {
+                //   const vendor = item.VendorName.split('(')[1]
+                //   temp.push({ TokenNumber: simulationDetail.Token, Vendor: item?.VendorCode, PurchasingGroup: simulationDetail.DepartmentCode, Plant: item.PlantCode, MaterialCode: item.PartNo, NewPOPrice: item.NewPOPrice, EffectiveDate: simulationDetail.EffectiveDate, SimulationId: simulationDetail.SimulationId })
+                //   return null
+                // })
+                // pushObj.LoggedInUserId = userLoggedIn
+                // pushObj.AmmendentDataRequests = temp
+                // dispatch(pushAPI(pushObj, () => { }))
                 Toaster.success(IsFinalLevel ? 'The simulation token has been approved' : 'The simulation token has been sent to next level for approval')
                 props.closeDrawer('', 'submit', status)
               } else {
@@ -792,7 +794,7 @@ function ApproveRejectDrawer(props) {
                 </div>
 
                 {
-                  isSimulation && type === 'Sender' && !isSimulationApprovalListing &&
+                  isSimulation && type === 'Sender' &&
                   <AttachmentSec
                     token={simulationDetail?.TokenNo}
                     type={type}
