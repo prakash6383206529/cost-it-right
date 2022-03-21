@@ -12,7 +12,6 @@ import { EMPTY_GUID } from '../../../../../config/constants';
 function AssemblyPart(props) {
   const { children, item, index } = props;
 
-
   const [IsOpen, setIsOpen] = useState(false);
   const [Count, setCount] = useState(0);
   const [IsDrawerOpen, setDrawerOpen] = useState(false)
@@ -20,8 +19,10 @@ function AssemblyPart(props) {
   const CostingViewMode = useContext(ViewCostingContext);
   const costData = useContext(costingInfoContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { CostingEffectiveDate } = useSelector(state => state.costing)
+  const { RMCCTabData, CostingEffectiveDate } = useSelector(state => state.costing)
   const dispatch = useDispatch()
+
+  const RMCHeaderData = RMCCTabData && RMCCTabData.length > 0 && RMCCTabData[0].CostingPartDetails !== undefined ? RMCCTabData[0].CostingPartDetails : null;
 
   const toggle = (BOMLevel, PartNumber) => {
     setIsOpen(!IsOpen)
@@ -176,7 +177,7 @@ function AssemblyPart(props) {
               type="button"
               className={'user-btn add-oprn-btn'}
               onClick={DrawerToggle}>
-              <div className={`${CostingViewMode ? 'fa fa-eye pr-1' : 'plus'}`}></div>{'OPER'}</button>}
+              <div className={`${RMCHeaderData !== null && RMCHeaderData.CostingOperationCostResponse > 0 ? 'fa fa-eye pr-1' : 'plus'}`}></div>{'OPER'}</button>}
         </td>
       </tr>
 
