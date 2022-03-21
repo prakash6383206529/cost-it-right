@@ -16,7 +16,6 @@ import { MESSAGES } from '../../../../config/message';
 import { ViewCostingContext } from '../CostingDetails';
 import DayTime from '../../../common/DayTimeWrapper'
 import AddBOPHandling from '../Drawers/AddBOPHandling';
-import { Link } from 'react-scroll';
 
 function TabRMCC(props) {
 
@@ -33,6 +32,8 @@ function TabRMCC(props) {
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
   const netPOPrice = useContext(NetPOPriceContext);
+
+  const RMCHeaderData = RMCCTabData && RMCCTabData.length > 0 && RMCCTabData[0].CostingPartDetails !== undefined ? RMCCTabData[0].CostingPartDetails : null;
 
   useEffect(() => {
     if (Object.keys(costData).length > 0) {
@@ -1752,7 +1753,7 @@ function TabRMCC(props) {
                                 type="button"
                                 className={'user-btn add-oprn-btn'}
                                 onClick={bopHandlingDrawer}>
-                                <div className={`${CostingViewMode ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`Insert H`}</button>}
+                                <div className={`${RMCHeaderData !== null && RMCHeaderData.IsApplyBOPHandlingCharges ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`BOP H`}</button>}
                             </th>
                           }
                         </tr>
