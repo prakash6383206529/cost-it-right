@@ -625,13 +625,15 @@ class OperationListing extends Component {
         return (
             <div className="container-fluid">
                 {(this.state.isLoader && !this.props.isMasterSummaryDrawer) && <LoaderCustom />}
-                <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""} ${isSimulation ? "zindex-0" : ""}`}>
+                <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
                     <form>
 
-                        <Row className="pt-4 filter-row-large blue-before">
-                            {(!isSimulation) &&
-
-                                <Col md="6" lg="6" className="search-user-block mb-3">
+                        <Row className={`pt-4 filter-row-large blue-before ${isSimulation ? "zindex-0" : ""}`}>
+                            <Col md="6" lg="6">
+                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                            </Col>
+                            <Col md="6" lg="6" className=" mb-3 d-flex justify-content-end">
+                                {(!isSimulation) &&
                                     <div className="d-flex justify-content-end bd-highlight w100">
                                         <div>
                                             {this.state.shown ?
@@ -674,26 +676,20 @@ class OperationListing extends Component {
 
                                                         {this.onBtExport()}
                                                     </ExcelFile>
-
                                                 </>
-
-
                                             }
-                                            <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => this.resetState()}>
-                                                <div className="refresh mr-0"></div>
-                                            </button>
-
                                         </div>
                                     </div>
-                                </Col>
-                            }
+                                }
+                                <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => this.resetState()}>
+                                    <div className="refresh mr-0"></div>
+                                </button>
+                            </Col>
+
                         </Row>
                     </form>
 
                     <div className={`ag-grid-wrapper height-width-wrapper ${this.getFilterOperationData() && this.getFilterOperationData()?.length <= 0 ? "overlay-contain" : ""}`}>
-                        <div className={`ag-grid-header ${isSimulation ? "zindex-0" : ""}`}>
-                            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
-                        </div>
                         <div className={`ag-theme-material ${(this.state.isLoader && !this.props.isMasterSummaryDrawer) && "max-loader-height"}`}>
                             <AgGridReact
                                 defaultColDef={defaultColDef}
