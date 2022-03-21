@@ -7274,6 +7274,11 @@ left: 17rem;
   .flex-fills.label {
     min-width: fit-content !important;
   }
+  .w-72 {
+    .flex-fills.label {
+      min-width: 72px !important;
+    }
+  }
 }
 @media screen and (min-width:$middleDesktop) {
   .freight-drawer {
