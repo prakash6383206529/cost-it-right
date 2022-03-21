@@ -522,7 +522,7 @@ function RMImportListing(props) {
       <Row>
         <Col>
           <div className={`ag-grid-wrapper height-width-wrapper ${getFilterRMData() && getFilterRMData()?.length <= 0 ? "overlay-contain" : ""}`}>
-            <div className="ag-grid-header">
+            <div className={`ag-grid-header ${props?.isSimulation ? 'zindex-0 ' : ''}`}>
               <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
             </div>
             <div className={`ag-theme-material ${loader && "max-loader-height"}`}>
