@@ -6,33 +6,35 @@ import ProcessCost from './ProcessCost';
 import RawMaterialCost from './RawMaterialCost';
 import {
   getRMCCTabData, saveComponentCostingRMCCTab, setComponentItemData, saveDiscountOtherCostTab,
-  setComponentDiscountOtherItemData, 
+  setComponentDiscountOtherItemData,
 } from '../../../actions/Costing';
-import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../../helper';
+import { checkForDecimalAndNull, checkForNull, loggedInUserId, CheckIsCostingDateSelected } from '../../../../../helper';
 import { EMPTY_GUID, LEVEL1 } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
 import { MESSAGES } from '../../../../../config/message';
 import { ViewCostingContext } from '../../CostingDetails';
 
 function PartCompoment(props) {
-  
+
   const { rmData, bopData, ccData, item } = props;
 
   const [IsOpen, setIsOpen] = useState(false);
   const [Count, setCount] = useState(0);
+  const { CostingEffectiveDate } = useSelector(state => state.costing)
 
   const dispatch = useDispatch()
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { ComponentItemDiscountData, CloseOpenAccordion } = useSelector(state => state.costing)
 
   const costData = useContext(costingInfoContext);
-  
+
   const CostingViewMode = useContext(ViewCostingContext);
   const netPOPrice = useContext(NetPOPriceContext);
 
 
 
   const toggle = (BOMLevel, PartNumber) => {
+    if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
     setIsOpen(!IsOpen)
     setCount(Count + 1)
     setTimeout(() => {
@@ -41,7 +43,7 @@ function PartCompoment(props) {
           CostingId: item.CostingId !== null ? item.CostingId : "00000000-0000-0000-0000-000000000000",
           PartId: item.PartId,
           AssemCostingId: costData.CostingId,
-          subAsmCostingId:props.subAssembId !== null ? props.subAssembId:EMPTY_GUID
+          subAsmCostingId: props.subAssembId !== null ? props.subAssembId : EMPTY_GUID
         }
         dispatch(getRMCCTabData(data, false, (res) => {
           if (res && res.data && res.data.Result) {
@@ -66,7 +68,7 @@ function PartCompoment(props) {
 
 
 
-/*************************************************************ACCORDIAN SAVE COMMENTED FOR NOW (MAY BE REMOVE IT LATER)*******************************************************************************/
+  /*************************************************************ACCORDIAN SAVE COMMENTED FOR NOW (MAY BE REMOVE IT LATER)*******************************************************************************/
   // useEffect(() => {
   //   // OBJECT FOR SENDING OBJECT TO API
   //  if (!CostingViewMode  && Count > 0 && Object.keys(ComponentItemData).length > 0 && checkIsDataChange === true) {
@@ -208,9 +210,9 @@ function PartCompoment(props) {
    */
   return (
     <>
-  
+
       <tr className="accordian-row" onClick={() => toggle(item.BOMLevel, item.PartNumber)} id={`${item && item.PartNumber}`}>
-        
+
         <td>
           <span style={{ position: 'relative' }} className={`cr-prt-nm1 cr-prt-link1 ${item && item.BOMLevel}`}>
             {item && item.PartNumber}<div className={`${item.IsOpen ? 'Open' : 'Close'}`}></div>
