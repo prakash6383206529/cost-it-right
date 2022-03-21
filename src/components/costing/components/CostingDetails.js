@@ -1643,7 +1643,7 @@ function CostingDetails(props) {
                         {inputLoader && <LoaderCustom customClass="input-loader" />}
                         <TooltipCustom tooltipText="Please enter first few digits to see the part numbers" />
                         <AsyncSearchableSelectHookForm
-                          label={"Assembly No./Part No."}
+                          label={"Assembly/Part No."}
                           name={"Part"}
                           placeholder={"Select"}
                           Controller={Controller}
@@ -1662,7 +1662,7 @@ function CostingDetails(props) {
                       </Col>
                       <Col className="col-md-15">
                         <TextFieldHookForm
-                          label="Assembly Name/Part Name"
+                          label="Assembly/Part Name"
                           name={"PartName"}
                           title={titleObj.partNameTitle}
                           Controller={Controller}
