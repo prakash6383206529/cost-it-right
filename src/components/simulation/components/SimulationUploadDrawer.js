@@ -11,8 +11,6 @@ import { ExcelRenderer } from 'react-excel-renderer';
 import { getJsDateFromExcel } from "../../../helper/validation";
 import imgCloud from '../../../assests/images/uploadcloud.png';
 
-
-import TooltipCustom from '../../common/Tooltip';
 import { BOPDOMESTIC, BOPIMPORT, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
 
 const ExcelFile = ReactExport.ExcelFile;
