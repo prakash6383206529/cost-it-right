@@ -180,9 +180,12 @@ export function ProcessListingSimulation(props) {
     return (
         <div className={`ag-grid-react ${props.DownloadAccessibility ? "show-table-btn" : ""}`}>
             < form onSubmit={handleSubmit(onSubmit)} noValidate >
-                <Row className="pt-4">
-                    {(!props.isSimulation) &&
-                        <Col md="6" className="search-user-block mb-3">
+                <Row className={`pt-4 ${props.isSimulation ? 'zindex-0' : ''}`}>
+                    <Col md='6'>
+                        <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => onFilterTextBoxChanged(e)} />
+                    </Col>
+                    <Col md="6" className=" mb-3 d-flex justify-content-end">
+                        {(!props.isSimulation) &&
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
                                     {shown ? (
@@ -206,14 +209,14 @@ export function ProcessListingSimulation(props) {
                                         </>
                                     }
 
-                                    <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
-                                        <div className="refresh mr-0"></div>
-                                    </button>
 
                                 </div>
                             </div>
-                        </Col>
-                    }
+                        }
+                        <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
+                            <div className="refresh mr-0"></div>
+                        </button>
+                    </Col>
                 </Row>
 
             </form>
@@ -222,9 +225,7 @@ export function ProcessListingSimulation(props) {
 
 
                     <div className={`ag-grid-wrapper height-width-wrapper  ${processCostingList && processCostingList?.length <= 0 ? "overlay-contain" : ""}`}>
-                        <div className="ag-grid-header">
-                            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => onFilterTextBoxChanged(e)} />
-                        </div>
+
                         <div
                             className="ag-theme-material"
                         >

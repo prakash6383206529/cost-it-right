@@ -248,7 +248,10 @@ function CPSimulation(props) {
         }))
         setShowVerifyPage(true)
     }, 500);
-
+    const resetState = () => {
+        gridOptions.columnApi.resetColumnState();
+        gridOptions.api.setFilterModel(null);
+    }
     return (
         <div>
             <div className={`ag-grid-react`}>
@@ -302,12 +305,20 @@ function CPSimulation(props) {
                         }
                         <form>
 
+                            <Row className={`pt-4 filter-row-large blue-before zindex-0`}>
+                                <Col md="6" lg="6">
+                                    <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => onFilterTextBoxChanged(e)} />
+                                </Col>
+                                <Col md="6" lg="6" className=" mb-3 d-flex justify-content-end">
+                                    <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => resetState()}>
+                                        <div className="refresh mr-0"></div>
+                                    </button>
+                                </Col>
+                            </Row>
                             <Row>
                                 <Col className="add-min-height mb-3 sm-edit-page">
                                     <div className={`ag-grid-wrapper height-width-wrapper  ${list && list?.length <= 0 ? "overlay-contain" : ""}`}>
-                                        <div className="ag-grid-header">
-                                            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
-                                        </div>
+
                                         <div className="ag-theme-material" style={{ width: '100%' }}>
                                             <AgGridReact
                                                 floatingFilter={true}
