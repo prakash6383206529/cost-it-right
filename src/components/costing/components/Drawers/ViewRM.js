@@ -46,7 +46,7 @@ function ViewRM(props) {
     }
     const tempData = viewCostingData[props.index]
 
-    dispatch(getRawMaterialCalculationByTechnology(tempData.CostingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].WeightCalculationId, tempData.technologyId, res => {
+    dispatch(getRawMaterialCalculationByTechnology(tempData.costingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].WeightCalculationId, tempData.technologyId, res => {
       if (res && res.data && res.data.Data) {
         const data = res.data.Data
         setCalciData({ ...viewRM[index], WeightCalculatorRequest: data })
