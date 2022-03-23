@@ -248,7 +248,7 @@ function RawMaterialCost(props) {
    * @method handleGrossWeightChange
    * @description HANDLE GROSS WEIGHT CHANGE
    */
-  const handleGrossWeightChange = debounce((event, index) => {
+  const handleGrossWeightChange = (event, index) => {
     let tempArr = []
     let tempData = gridData[index]
     setEditCalculation(false)
@@ -360,13 +360,13 @@ function RawMaterialCost(props) {
         Toaster.warning('Gross Weight should not be less than Finish Weight')
       }
     }
-  }, 500)
+  }
 
   /**
    * @method handleFinishWeightChange
    * @description HANDLE FINISH WEIGHT CHANGE
    */
-  const handleFinishWeightChange = debounce((event, index) => {
+  const handleFinishWeightChange = (event, index) => {
     let tempArr = []
     let tempData = gridData[index]
     setEditCalculation(false)
@@ -539,7 +539,7 @@ function RawMaterialCost(props) {
 
       }
     }
-  }, 500)
+  }
 
 
   /**
