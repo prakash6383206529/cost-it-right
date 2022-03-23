@@ -484,21 +484,20 @@ function RMSimulation(props) {
                                                 <div className="refresh mr-0"></div>
                                             </button>
                                         </div>
-                                        {list && list.map(item => {
-                                            return <>
-                                                {!isImpactedMaster && <div className={`d-flex simulation-label-container ${isbulkUpload ? "mt-5 pt-2" : ''}`}>
-                                                    <div className='d-flex pl-3'>
-                                                        <label>Technology: </label>
-                                                        <p className='technology mx-1' title={item.TechnologyName}>{item.TechnologyName}</p>
-                                                    </div>
-                                                    <div className='d-flex pl-3'>
-                                                        <label className='mx-1'>Vendor:</label>
-                                                        <p title={item.VendorName}>{item.VendorName}</p>
-                                                    </div>
-                                                </div>}
-                                            </>
+                                        <>
+                                            {!isImpactedMaster && <div className={`d-flex simulation-label-container ${isbulkUpload ? "mt-5 pt-2" : ''}`}>
+                                                <div className='d-flex pl-3'>
+                                                    <label>Technology: </label>
+                                                    <p className='technology mx-1' title={list[0].TechnologyName}>{list[0].TechnologyName}</p>
+                                                </div>
+                                                <div className='d-flex pl-3'>
+                                                    <label className='mx-1'>Vendor:</label>
+                                                    <p title={list[0].VendorName}>{list[0].VendorName}</p>
+                                                </div>
+                                            </div>}
+                                        </>
 
-                                        })}
+
 
                                     </div>
                                     <div className="ag-theme-material" style={{ width: '100%' }}>
