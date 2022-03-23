@@ -22,7 +22,6 @@ import WarningMessage from '../../common/WarningMessage'
 import DayTime from '../../common/DayTimeWrapper'
 import { getVolumeDataByPartAndYear } from '../../masters/actions/Volume'
 import { isFinalApprover } from '../actions/Approval';
-import { jsPDF } from "jspdf";
 import cirHeader from "../../../assests/images/logo/CIRlogo.jpg";
 import LoaderCustom from '../../common/LoaderCustom'
 import ReactToPrint from 'react-to-print';
@@ -92,6 +91,7 @@ const CostingSummaryTable = (props) => {
 
   const componentRef = useRef();
   const onBeforeContentResolve = useRef(null)
+  const onBeforeContentResolveDetail = useRef(null)
 
   useEffect(() => {
 
@@ -691,85 +691,48 @@ const CostingSummaryTable = (props) => {
 
     return checkForDecimalAndNull(arr, initialConfiguration.NoOfDecimalForInputOutput)
   }
+  const reactToPrintTriggerDetail = useCallback(() => {
+    return <button className="user-btn mr-1 mb-2 px-2" title='pdf' disabled={viewCostingData?.length === 1 ? false : true}> <div className='pdf-detail'></div>  D </button>
+  }, [viewCostingData])
 
-  // We have used jsPDF to Generate PDF
-  const generatorPDF = () => {
-    setLoader(true)
-    var height = document.querySelector("#summaryPdf").clientHeight;
-    var width = document.querySelector("#summaryPdf").offsetWidth;
-    var doc = new jsPDF('p', "ex", [width, height])
-
-    // var doc = new jsPDF('l', "mm", [width, height])
-    // var doc = new jsPDF('l', "mm", [1244, 1700])
-    // var doc = new jsPDF('l', "pc", [width, height])  
-    setPdfHead(true);
-    setIcon(false)
-    doc.html(document.querySelector("#summaryPdf"), {
-      callback: function (pdf) {
-        pdf.deletePage(2)
-        pdf.save("CostingSummary.pdf");
-        setPdfHead(false);
-        setIcon(true);
-        setLoader(false)
-      }
-    });
-  }
-
-  const generatorAllDetailPDF = () => {
-    setLoader(true)
-    setDrawerDetailPDF(true);
-    setTimeout(() => {
-      var height = document.querySelector("#summaryPdf").clientHeight;
-      var width = document.querySelector("#summaryPdf").offsetWidth;
-      var doc = new jsPDF('p', "ex", [width, height])
-      setIcon(false)
-      doc.html(document.querySelector("#summaryPdf"), {
-        margin: [0, 5, 0, 5],
-        callback: function (pdf) {
-          // pdf.deletePage(2)
-          pdf.save("CostingSummary.pdf");
-          setDrawerDetailPDF(false);
-          setIcon(true);
-          setLoader(false)
-        }
-      });
-    }, 2000);
-  }
-  const handleAfterPrint = () => {
+  const handleAfterPrintDetail = () => {
     setDrawerDetailPDF(false)
     setPdfHead(false)
+    setLoader(false)
   }
-  const drawerTrue = () => {
-    setDrawerDetailPDF(true)
-    setPdfHead(true)
-  }
-  const handleBeforePrint = useCallback(() => {
-    setDrawerDetailPDF(true)
-    setPdfHead(true)
-  }, [])
-  const handleOnBeforeGetContent = useCallback(() => {
+  const handleOnBeforeGetContentDetail = () => {
     setLoader(true)
     setDrawerDetailPDF(true)
     return new Promise((resolve) => {
-      onBeforeContentResolve.current = resolve;
-      drawerTrue()
+      onBeforeContentResolveDetail.current = resolve;
       setTimeout(() => {
-        drawerTrue()
         resolve();
-      }, 300);
+      }, 1500);
     })
-  })
-  const reactToPrintContent = useCallback(() => {
+  }
+  const handleAfterPrint = () => {
+    setPdfHead(false)
     setLoader(false)
-
-    return componentRef.current;
-  }, [componentRef.current]);
-
+  }
+  const handleOnBeforeGetContent = () => {
+    setLoader(true)
+    setPdfHead(true)
+    return new Promise((resolve) => {
+      onBeforeContentResolve.current = resolve
+      setTimeout(() => {
+        resolve();
+      }, 1500);
+    })
+  }
   const reactToPrintTrigger = useCallback(() => {
-    return <button Type="button" className="user-btn mr-1 mb-2 px-2" title='pdf' disabled={viewCostingData?.length < 2 ? false : true}> <div className='pdf-detail'></div>  D </button>
-  }, [])
-  return (
+    return <button className="user-btn mr-1 mb-2 px-2" title='pdf' disabled={viewCostingData?.length > 2 ? true : false}> <div className='pdf-detail'></div></button>
+  }, [viewCostingData])
 
+  const reactToPrintContent = () => {
+    return componentRef.current;
+  };
+
+  return (
     <Fragment>
       {
         stepOne &&
@@ -785,14 +748,22 @@ const CostingSummaryTable = (props) => {
             {
               !simulationMode &&
               <Col md="8" className="text-right">
-                {/* <ReactToPrint
+                <ReactToPrint
+                  bodyClass='mx-2 mt-3 remove-space-border'
+                  documentTitle="Costing-Summary-detail"
+                  content={reactToPrintContent}
+                  onAfterPrint={handleAfterPrintDetail}
+                  onBeforeGetContent={handleOnBeforeGetContentDetail}
+                  trigger={reactToPrintTriggerDetail}
+                />
+                <ReactToPrint
+                  bodyClass='pt5'
+                  documentTitle="Costing-Summary"
                   content={reactToPrintContent}
                   onAfterPrint={handleAfterPrint}
                   onBeforeGetContent={handleOnBeforeGetContent}
-                  onBeforePrint={handleBeforePrint}
                   trigger={reactToPrintTrigger}
-                /> */}
-                <button Type="button" className="mr-1 mb-2 user-btn pdf-detail px-0" title='pdf' onClick={generatorPDF}>  <div className='pdf-detail'></div></button>
+                />
                 {(!viewMode && !isFinalApproverShow) && (
                   <button class="user-btn mr-1 mb-2 approval-btn" disabled={isWarningFlag} onClick={() => checkCostings()}>
                     <div className="send-for-approval"></div>
@@ -812,13 +783,12 @@ const CostingSummaryTable = (props) => {
               </Col>
             }
           </Row>
-
           <div ref={componentRef}>
-            <Row id="summaryPdf" ref={componentRef} className={`${customClass} ${drawerDetailPDF ? 'remove-space-border' : ''}`}>
+            <Row id="summaryPdf" className={`${customClass} ${drawerDetailPDF ? 'remove-space-border' : ''}`}>
               {(drawerDetailPDF || pdfHead) &&
                 <>
                   <Col md="12" className='pdf-header-wrapper'>
-                    <img src={cirHeader} className="pdf-header-img" />
+                    <img src={cirHeader} className="pdf-header-img" alt={'Cost it right'} />
                   </Col>
                   <Col md="12">
                     <h3 className='left-border'>Costing Summary:</h3>
@@ -831,14 +801,14 @@ const CostingSummaryTable = (props) => {
                     <thead>
                       <tr className="main-row">
                         {
-                          isApproval ? <th scope="col" className='approval-summary-headers'>{props.id}</th> : <th scope="col">VBC/ZBC</th>
+                          isApproval ? <th scope="col" className='approval-summary-headers'>{props.id}</th> : <th scope="col" className='header-name-left'>VBC/ZBC</th>
                         }
 
                         {viewCostingData &&
                           viewCostingData.map((data, index) => {
 
                             return (
-                              <th scope="col" >
+                              <th scope="col" className='header-name'>
                                 <div class="element w-60 d-inline-flex align-items-center">
                                   {
                                     (data.status === DRAFT || data.status === REJECTED) && <>
@@ -867,7 +837,7 @@ const CostingSummaryTable = (props) => {
                                     isApproval ? <span>{data.CostingHeading}</span> : <span className="checkbox-text">{data.zbc === 0 ? `ZBC(${data.plantName})` : data.zbc === 1 ? `${data.vendorName}(${data.vendorCode}) ${localStorage.IsVendorPlantConfigurable ? `(${data.vendorPlantName})` : ''}` : 'CBC'}{` (SOB: ${data.shareOfBusinessPercent}%)`}</span>
                                   }
                                 </div>
-                                {(!viewMode && icons) && (
+                                {(!viewMode && icons) && (!pdfHead && !drawerDetailPDF) && (
                                   <div class="action w-40 d-inline-block text-right">
                                     {EditAccessibility && (data.status === DRAFT || data.status === REJECTED) && <button className="Edit mr-1 mb-0 align-middle" type={"button"} title={"Edit Costing"} onClick={() => editCostingDetail(index)} />}
                                     {AddAccessibility && <button className="Add-file mr-1 mb-0 align-middle" type={"button"} title={"Add Costing"} onClick={() => addNewCosting(index)} />}
@@ -997,7 +967,7 @@ const CostingSummaryTable = (props) => {
                               <td>
                                 <span>{checkForDecimalAndNull(data.netRM, initialConfiguration.NoOfDecimalForPrice)}</span>
                                 {
-                                  (data.CostingHeading !== VARIANCE && icons) &&
+                                  (data.CostingHeading !== VARIANCE && icons) && (!pdfHead && !drawerDetailPDF) &&
                                   <button
                                     type="button"
                                     class="float-right mb-0 View "
@@ -1025,7 +995,7 @@ const CostingSummaryTable = (props) => {
                               <td>
                                 <span>{checkForDecimalAndNull(data.netBOP, initialConfiguration.NoOfDecimalForPrice)}</span>
                                 {
-                                  (data.CostingHeading !== VARIANCE && icons) &&
+                                  (data.CostingHeading !== VARIANCE && icons) && (!pdfHead && !drawerDetailPDF) &&
                                   <button
                                     type="button"
                                     class="float-right mb-0 View "
@@ -1068,6 +1038,8 @@ const CostingSummaryTable = (props) => {
                           anchor={'right'}
                           index={index}
                           isPDFShow={true}
+                          STreatmentShow={false}
+
                         />
                       </th></tr>}
 
@@ -1080,7 +1052,7 @@ const CostingSummaryTable = (props) => {
 
                                 <span>{data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.nConvCost, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(data.nConvCost, initialConfiguration.NoOfDecimalForPrice)}</span>
                                 {
-                                  (data.CostingHeading !== VARIANCE && icons) &&
+                                  (data.CostingHeading !== VARIANCE && icons) && (!pdfHead && !drawerDetailPDF) &&
                                   <button
                                     type="button"
                                     class="float-right mb-0 View "
@@ -1122,7 +1094,7 @@ const CostingSummaryTable = (props) => {
                           anchor={'right'}
                           index={index}
                           isPDFShow={true}
-                          stCostShow={true}
+                          STreatmentShow={true}
                         />
                       </th></tr>}
 
@@ -1137,7 +1109,7 @@ const CostingSummaryTable = (props) => {
                               < td >
                                 <span>{data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.netSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(data.netSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice)}</span>
                                 {
-                                  (data.CostingHeading !== VARIANCE && icons && !(Number(master) === Number(SURFACETREATMENT))) &&
+                                  (data.CostingHeading !== VARIANCE && icons && !(Number(master) === Number(SURFACETREATMENT))) && (!pdfHead && !drawerDetailPDF) &&
                                   <button
                                     type="button"
                                     class="float-right mb-0 View "
@@ -1227,7 +1199,7 @@ const CostingSummaryTable = (props) => {
                               </td>
                             )
                           })}
-                      </tr> : <tr><td colSpan={2} className='pb-0 px-0'><ViewOverheadProfit
+                      </tr> : <tr><td colSpan={2} className='pb-0'><ViewOverheadProfit
                         isOpen={isViewOverheadProfit}
                         overheadData={viewOverheadData}
                         profitData={viewProfitData}
@@ -1246,7 +1218,7 @@ const CostingSummaryTable = (props) => {
                               <td>
                                 <span>{checkForDecimalAndNull(data.nOverheadProfit, initialConfiguration.NoOfDecimalForPrice)}</span>
                                 {
-                                  (data.CostingHeading !== VARIANCE && icons) &&
+                                  (data.CostingHeading !== VARIANCE && icons) && (!pdfHead && !drawerDetailPDF) &&
                                   <button
                                     type="button"
                                     class="float-right mb-0 View "
@@ -1293,7 +1265,7 @@ const CostingSummaryTable = (props) => {
                               <td>
                                 <span>{data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.nPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice) : ''}</span>
                                 {
-                                  (data.CostingHeading !== VARIANCE && icons) &&
+                                  (data.CostingHeading !== VARIANCE && icons) && (!pdfHead && !drawerDetailPDF) &&
                                   <button
                                     type="button"
                                     class="float-right mb-0 View "
@@ -1365,7 +1337,7 @@ const CostingSummaryTable = (props) => {
                               <td>
                                 <span>{data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.totalToolCost, initialConfiguration.NoOfDecimalForPrice) : ''}</span>
                                 {
-                                  (data.CostingHeading !== VARIANCE && icons) &&
+                                  (data.CostingHeading !== VARIANCE && icons) && (!pdfHead && !drawerDetailPDF) &&
                                   <button
                                     type="button"
                                     class="float-right mb-0 View "
@@ -1378,25 +1350,6 @@ const CostingSummaryTable = (props) => {
                             )
                           })}
                       </tr>
-
-                      <tr class="background-light-blue">
-                        <th>Total Cost</th>
-                        {viewCostingData &&
-                          viewCostingData.map((data, index) => {
-                            return (
-                              <td>
-                                {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.totalTabSum, initialConfiguration.NoOfDecimalForPrice) : ''}
-                                {/* <button
-                            type="button"
-                            class="float-right mb-0 View "
-                          >
-                            
-                          </button> */}
-                              </td>
-                            )
-                          })}
-                      </tr>
-                      { }
                       <tr className='border-right'>
                         <td width={"20%"}>
                           <span class="d-block small-grey-text">
@@ -1575,7 +1528,7 @@ const CostingSummaryTable = (props) => {
 
                               <td class="text-center costing-summary">
                                 {(!viewMode && !isFinalApproverShow) &&
-                                  (data.status === DRAFT && icons) &&
+                                  (data.status === DRAFT && icons) && (!pdfHead && !drawerDetailPDF) &&
                                   <button
                                     class="user-btn"
                                     disabled={isWarningFlag}
@@ -1632,6 +1585,7 @@ const CostingSummaryTable = (props) => {
             closeDrawer={closeViewDrawer}
             anchor={'right'}
             index={index}
+            isPDFShow={false}
           />
         )
       }
