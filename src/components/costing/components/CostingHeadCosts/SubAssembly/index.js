@@ -11,7 +11,6 @@ import { EMPTY_GUID } from '../../../../../config/constants';
 
 function AssemblyPart(props) {
   const { children, item, index } = props;
-  
 
   const [IsOpen, setIsOpen] = useState(false);
   const [Count, setCount] = useState(0);
@@ -31,7 +30,7 @@ function AssemblyPart(props) {
         CostingId: item.CostingId !== null ? item.CostingId : "00000000-0000-0000-0000-000000000000",
         PartId: item.PartId,
         AssemCostingId: costData.CostingId,
-        subAsmCostingId:props.subAssembId !== null ? props.subAssembId:EMPTY_GUID
+        subAsmCostingId: props.subAssembId !== null ? props.subAssembId : EMPTY_GUID
       }
       dispatch(getRMCCTabData(data, false, (res) => {
         if (res && res.data && res.data.Result) {
@@ -132,7 +131,7 @@ function AssemblyPart(props) {
       <tr className="costing-highlight-row accordian-row">
         <div style={{ display: 'contents' }} onClick={() => toggle(item.BOMLevel, item.PartNumber)}>
           <td>
-            <span style={{ position: 'relative' }} className={`cr-prt-nm1 cr-prt-link1 ${item && item.PartType!=="Sub Assembly"  && item.PartType!=="Assembly" && "L1"}`}>
+            <span style={{ position: 'relative' }} className={`cr-prt-nm1 cr-prt-link1 ${item && item.PartType !== "Sub Assembly" && item.PartType !== "Assembly" && "L1"}`}>
               <div className={`${item.IsOpen ? 'Open' : 'Close'}`}></div>{item && item.PartNumber}
             </span>
           </td>
@@ -176,7 +175,7 @@ function AssemblyPart(props) {
               type="button"
               className={'user-btn add-oprn-btn'}
               onClick={DrawerToggle}>
-              <div className={ `${CostingViewMode ? 'fa fa-eye pr-1' : 'plus'}`}></div>{ 'OPER'}</button>}
+              <div className={`${CostingViewMode ? 'fa fa-eye pr-1' : 'plus'}`}></div>{'OPER'}</button>}
         </td>
       </tr>
 

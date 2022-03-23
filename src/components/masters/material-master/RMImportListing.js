@@ -443,70 +443,71 @@ function RMImportListing(props) {
   return (
     <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
       {(loader && !props.isMasterSummaryDrawer) && <LoaderCustom />}
-      <Row className="filter-row-large pt-4 ">
-        {
-          // SHOW FILTER BUTTON ONLY FOR RM MASTER NOT FOR SIMULATION AMD MASTER APPROVAL SUMMARY
-          (!isSimulation && !props.isMasterSummaryDrawer) &&
-          <Col md="6" lg="6" className="search-user-block mb-3">
-            <div className="d-flex justify-content-end bd-highlight w100">
-              <div>
-                <>
-                  {shown ? (
-                    <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => { setshown(!shown) }}>
-                      <div className="cancel-icon-white"></div>
-                    </button>
-                  ) : (
-                    <>
-                    </>
-                  )}
-                  {AddAccessibility && (
-                    <button
-                      type="button"
-                      className={"user-btn mr5"}
-                      onClick={formToggle}
-                      title="Add"
-                    >
-                      <div className={"plus mr-0"}></div>
-                      {/* ADD */}
-                    </button>
-                  )}
-                  {BulkUploadAccessibility && (
-                    <button
-                      type="button"
-                      className={"user-btn mr5"}
-                      onClick={bulkToggle}
-                      title="Bulk Upload"
-                    >
-                      <div className={"upload mr-0"}></div>
-                      {/* Bulk Upload */}
-                    </button>
-                  )}
-                  {
-                    DownloadAccessibility &&
-                    <>
-                      <ExcelFile filename={'RM Import'} fileExtension={'.xls'} element={
-                        <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-                          {/* DOWNLOAD */}
-                        </button>}>
-                        {onBtExport()}
-                      </ExcelFile>
-                    </>
-                  }
-                  <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
-                    <div className="refresh mr-0"></div>
-                  </button>
-                </>
+      <Row className={`filter-row-large pt-4 ${isSimulation ? "zindex-0" : ""}`}>
+        <Col md="6" lg="6">
+          <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+        </Col>
+        <Col md="6" lg="6" className=" mb-3 d-flex justify-content-end">
+          {/* SHOW FILTER BUTTON ONLY FOR RM MASTER NOT FOR SIMULATION AMD MASTER APPROVAL SUMMARY */}
+          {(!props.isMasterSummaryDrawer) && <>
+            {!isSimulation &&
+              <div className="d-flex justify-content-end bd-highlight w100">
+                <div>
+                  <>
+                    {shown ? (
+                      <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => { setshown(!shown) }}>
+                        <div className="cancel-icon-white"></div>
+                      </button>
+                    ) : (
+                      <>
+                      </>
+                    )}
+                    {AddAccessibility && (
+                      <button
+                        type="button"
+                        className={"user-btn mr5"}
+                        onClick={formToggle}
+                        title="Add"
+                      >
+                        <div className={"plus mr-0"}></div>
+                        {/* ADD */}
+                      </button>
+                    )}
+                    {BulkUploadAccessibility && (
+                      <button
+                        type="button"
+                        className={"user-btn mr5"}
+                        onClick={bulkToggle}
+                        title="Bulk Upload"
+                      >
+                        <div className={"upload mr-0"}></div>
+                        {/* Bulk Upload */}
+                      </button>
+                    )}
+                    {
+                      DownloadAccessibility &&
+                      <>
+                        <ExcelFile filename={'RM Import'} fileExtension={'.xls'} element={
+                          <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                            {/* DOWNLOAD */}
+                          </button>}>
+                          {onBtExport()}
+                        </ExcelFile>
+                      </>
+                    }
+                  </>
+                </div>
               </div>
-            </div>
-          </Col>
-        }
+            }
+            <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
+              <div className="refresh mr-0"></div>
+            </button>
+          </>}
+        </Col>
       </Row>
       <Row>
         <Col>
           <div className={`ag-grid-wrapper height-width-wrapper ${getFilterRMData() && getFilterRMData()?.length <= 0 ? "overlay-contain" : ""}`}>
-            <div className={`ag-grid-header ${props?.isSimulation ? 'zindex-0 ' : ''}`}>
-              <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
-            </div>
             <div className={`ag-theme-material ${loader && "max-loader-height"}`}>
               <AgGridReact
                 style={{ height: '100%', width: '100%' }}

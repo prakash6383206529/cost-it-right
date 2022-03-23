@@ -444,7 +444,7 @@ function CostingSummary(props) {
                       <Col className="col-md-15">
                         <TextFieldHookForm
                           title={titleObj.partNameTitle}
-                          label="Assembly Name/Part Name"
+                          label="Assembly/Part Name"
                           name={'PartName'}
                           Controller={Controller}
                           control={control}
