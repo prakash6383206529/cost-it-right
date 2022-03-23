@@ -16,6 +16,7 @@ import LoaderCustom from '../../common/LoaderCustom';
 import WarningMessage from '../../common/WarningMessage'
 import CostingDetailSimulationDrawer from '../../simulation/components/CostingDetailSimulationDrawer'
 import { formViewData, checkForDecimalAndNull } from '../../../helper'
+import { date } from 'joi'
 
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -26,8 +27,6 @@ const gridOptions = {};
 
 
 function ReportListing(props) {
-
-
 
 
     const [selectedRowData, setSelectedRowData] = useState([]);
@@ -47,12 +46,12 @@ function ReportListing(props) {
     const [pageSize100, setPageSize100] = useState(false)
     const [pageNo, setPageNo] = useState(1)
     const [currentRowIndex, setCurrentRowIndex] = useState(0)
-    const [floatingFilterData, setFloatingFilterData] = useState({ CostingNumber: "", TechnologyName: "", AmorizationQuantity: "", AnyOtherCost: "", CostingVersion: "", DisplayStatus: "", EffectiveDate: "", Currency: "", DepartmentCode: "", DepartmentName: "", DiscountCost: "", ECNNumber: "", FinalPOPrice: "", FinishWeight: "", FreightCost: "", FreightPercentage: "", FreightType: "", GrossWeight: "", HundiOrDiscountValue: "", ICCApplicability: "", ICCCost: "", ICCInterestRate: "", ICCOn: "", MasterBatchTotal: "", ModelTypeForOverheadAndProfit: "", ModifiedByName: "", ModifiedByUserName: "", ModifiedDate: "", NetBoughtOutPartCost: "", NetConversionCost: "", NetConvertedPOPrice: "", NetDiscountsCost: "", NetFreightPackaging: "", NetFreightPackagingCost: "", NetICCCost: "", NetOperationCost: "", NetOtherCost: "", NetOverheadAndProfitCost: "", NetPOPrice: "", NetPOPriceINR: "", NetPOPriceInCurrency: "", NetPOPriceOtherCurrency: "", NetProcessCost: "", NetRawMaterialsCost: "", NetSurfaceTreatmentCost: "", NetToolCost: "", NetTotalRMBOPCC: "", OtherCost: "", OtherCostPercentage: "", OverheadApplicability: "", OverheadCombinedCost: "", OverheadCost: "", OverheadOn: "", OverheadPercentage: "", PackagingCost: "", PackagingCostPercentage: "", PartName: "", PartNumber: "", PartType: "", PaymentTermCost: "", PaymentTermsOn: "", PlantCode: "", PlantName: "", ProfitApplicability: "", ProfitCost: "", ProfitOn: "", ProfitPercentage: "", RMGrade: "", RMSpecification: "", RawMaterialCode: "", RawMaterialGrossWeight: "", RawMaterialName: "", RawMaterialRate: "", RawMaterialScrapWeight: "", RawMaterialSpecification: "", RecordInsertedBy: "", RejectOn: "", RejectionApplicability: "", RejectionCost: "", RejectionPercentage: "", Remark: "", Rev: "", RevisionNumber: "", ScrapRate: "", ScrapWeight: "", SurfaceTreatmentCost: "", ToolCost: "", ToolLife: "", ToolMaintenaceCost: "", ToolPrice: "", ToolQuantity: "", TotalCost: "", TotalOtherCost: "", TotalRecordCount: "", TransportationCost: "", VendorCode: "", VendorName: "", Version: "" })
+    const [floatingFilterData, setFloatingFilterData] = useState({ CostingNumber: "", TechnologyName: "", AmorizationQuantity: "", AnyOtherCost: "", CostingVersion: "", DisplayStatus: "", EffectiveDate: "", Currency: "", DepartmentCode: "", DepartmentName: "", DiscountCost: "", ECNNumber: "", FinalPOPrice: "", RawMaterialFinishWeight: "", FreightCost: "", FreightPercentage: "", FreightType: "", GrossWeight: "", HundiOrDiscountValue: "", ICCApplicability: "", ICCCost: "", ICCInterestRate: "", ICCOn: "", MasterBatchTotal: "", ModelTypeForOverheadAndProfit: "", ModifiedByName: "", ModifiedByUserName: "", ModifiedDate: "", NetBoughtOutPartCost: "", NetConversionCost: "", NetConvertedPOPrice: "", NetDiscountsCost: "", NetFreightPackaging: "", NetFreightPackagingCost: "", NetICCCost: "", NetOperationCost: "", NetOtherCost: "", NetOverheadAndProfitCost: "", NetPOPrice: "", NetPOPriceINR: "", NetPOPriceInCurrency: "", NetPOPriceOtherCurrency: "", NetProcessCost: "", NetRawMaterialsCost: "", NetSurfaceTreatmentCost: "", NetToolCost: "", NetTotalRMBOPCC: "", OtherCost: "", OtherCostPercentage: "", OverheadApplicability: "", OverheadCombinedCost: "", OverheadCost: "", OverheadOn: "", OverheadPercentage: "", PackagingCost: "", PackagingCostPercentage: "", PartName: "", PartNumber: "", PartType: "", PaymentTermCost: "", PaymentTermsOn: "", PlantCode: "", PlantName: "", ProfitApplicability: "", ProfitCost: "", ProfitOn: "", ProfitPercentage: "", RMGrade: "", RMSpecification: "", RawMaterialCode: "", RawMaterialGrossWeight: "", RawMaterialName: "", RawMaterialRate: "", RawMaterialScrapWeight: "", RawMaterialSpecification: "", RecordInsertedBy: "", RejectOn: "", RejectionApplicability: "", RejectionCost: "", RejectionPercentage: "", Remark: "", Rev: "", RevisionNumber: "", ScrapRate: "", ScrapWeight: "", SurfaceTreatmentCost: "", ToolCost: "", ToolLife: "", ToolMaintenaceCost: "", ToolPrice: "", ToolQuantity: "", TotalCost: "", TotalOtherCost: "", TotalRecordCount: "", TransportationCost: "", VendorCode: "", VendorName: "", Version: "", RawMaterialGrade: "", HundiOrDiscountPercentage: "", FromDate: "", ToDate: "" })
     const [enableSearchFilterSearchButton, setEnableSearchFilterButton] = useState(true)
-
 
     const [reportListingDataStateArray, setReportListingDataStateArray] = useState([])
     const [isLastWeek, setIsLastWeek] = useState(false)
+    let filterClick = false
 
 
     const dispatch = useDispatch()
@@ -181,14 +180,30 @@ function ReportListing(props) {
 
     const getTableData = (skip, take, isPagination, data, isLastWeek) => {
 
-        dispatch(getCostingReport(skip, take, isPagination, data, isLastWeek, (res) => {
-            if (res) {
-                setLoader(false)
-            }
+        if (isLastWeek) {
+            let currentDate = new Date()
+            currentDate = DayTime(currentDate).format('DD/MM/YYYY')
+            let today = new Date();
+            today.setDate(today.getDate() - 7);
+            let sevenDaysBack = DayTime(today).format('DD/MM/YYYY')
 
-            // var t1 = performance.now();
-        }))
+            let newData = { ...data, ToDate: currentDate, FromDate: sevenDaysBack }
+            dispatch(getCostingReport(skip, take, isPagination, newData, isLastWeek, (res) => {
+                if (res) {
+                    setLoader(false)
+                }
 
+            }))
+        }
+        else {
+
+            dispatch(getCostingReport(skip, take, isPagination, data, isLastWeek, (res) => {
+                if (res) {
+                    setLoader(false)
+                }
+
+            }))
+        }
     }
 
 
@@ -197,9 +212,7 @@ function ReportListing(props) {
         setLoader(true)
         getTableData(0, 100, true, floatingFilterData, false);
 
-
     }, [])
-
 
 
 
@@ -210,7 +223,13 @@ function ReportListing(props) {
             setPageNo(pageNo + 1)
             const nextNo = currentRowIndex + 10;
 
-            getTableData(nextNo, 100, true, floatingFilterData, false);
+
+            if (floatingFilterData.FromDate) {
+                getTableData(nextNo, 100, true, floatingFilterData, true);
+            } else {
+                getTableData(nextNo, 100, true, floatingFilterData, false);
+            }
+
             setCurrentRowIndex(nextNo)
         }
 
@@ -224,6 +243,14 @@ function ReportListing(props) {
             const previousNo = currentRowIndex - 10;
 
             getTableData(previousNo, 100, true, floatingFilterData, false);
+
+            if (floatingFilterData.FromDate) {
+                getTableData(previousNo, 100, true, floatingFilterData, true);
+
+            } else {
+                getTableData(previousNo, 100, true, floatingFilterData, false);
+            }
+
             setCurrentRowIndex(previousNo)
 
         }
@@ -237,28 +264,132 @@ function ReportListing(props) {
         setReportListingDataStateArray(reportListingData)
         if (reportListingData.length > 0) {
 
-            if (totalRecordCount === 0) {
-                setTotalRecordCount(reportListingData[0].TotalRecordCount)
-
-            }
-
+            setTotalRecordCount(reportListingData[0].TotalRecordCount)
         }
-
 
     }, [reportListingData])
 
 
     const onFloatingFilterChanged = (value) => {
 
-
-        setWarningMessage(true)
         setEnableSearchFilterButton(false)
+        setWarningMessage(true)
 
         if (value?.filterInstance?.appliedModel === null || value?.filterInstance?.appliedModel?.filter === "") {
             setWarningMessage(false)
 
-            return false
+            if (!filterClick) {
+
+
+                if (value.column.colId === 'CostingNumber') { setFloatingFilterData({ ...floatingFilterData, CostingNumber: "" }) }
+                if (value.column.colId === 'TechnologyName') { setFloatingFilterData({ ...floatingFilterData, TechnologyName: "" }) }
+                if (value.column.colId === 'AmorizationQuantity') { setFloatingFilterData({ ...floatingFilterData, AmorizationQuantity: "" }) }
+                if (value.column.colId === 'AnyOtherCost') { setFloatingFilterData({ ...floatingFilterData, AnyOtherCost: "" }) }
+                if (value.column.colId === 'CostingVersion') { setFloatingFilterData({ ...floatingFilterData, CostingVersion: "" }) }
+                if (value.column.colId === 'DisplayStatus') { setFloatingFilterData({ ...floatingFilterData, DisplayStatus: "" }) }
+                if (value.column.colId === 'EffectiveDate') { setFloatingFilterData({ ...floatingFilterData, EffectiveDate: "" }) }
+                if (value.column.colId === 'Currency') { setFloatingFilterData({ ...floatingFilterData, Currency: "" }) }
+                if (value.column.colId === 'DepartmentCode') { setFloatingFilterData({ ...floatingFilterData, DepartmentCode: "" }) }
+                if (value.column.colId === 'DepartmentName') { setFloatingFilterData({ ...floatingFilterData, DepartmentName: "" }) }
+                if (value.column.colId === 'DiscountCost') { setFloatingFilterData({ ...floatingFilterData, DiscountCost: "" }) }
+                if (value.column.colId === 'ECNNumber') { setFloatingFilterData({ ...floatingFilterData, ECNNumber: "" }) }
+                if (value.column.colId === 'FinalPOPrice') { setFloatingFilterData({ ...floatingFilterData, FinalPOPrice: "" }) }
+                if (value.column.colId === 'FinishWeight') { setFloatingFilterData({ ...floatingFilterData, FinishWeight: "" }) }
+                if (value.column.colId === 'FreightCost') { setFloatingFilterData({ ...floatingFilterData, FreightCost: "" }) }
+                if (value.column.colId === 'FreightPercentage') { setFloatingFilterData({ ...floatingFilterData, FreightPercentage: "" }) }
+                if (value.column.colId === 'FreightType') { setFloatingFilterData({ ...floatingFilterData, FreightType: "" }) }
+                if (value.column.colId === 'GrossWeight') { setFloatingFilterData({ ...floatingFilterData, GrossWeight: "" }) }
+                if (value.column.colId === 'HundiOrDiscountValue') { setFloatingFilterData({ ...floatingFilterData, HundiOrDiscountValue: "" }) }
+                if (value.column.colId === 'ICCApplicability') { setFloatingFilterData({ ...floatingFilterData, ICCApplicability: "" }) }
+                if (value.column.colId === 'ICCCost') { setFloatingFilterData({ ...floatingFilterData, ICCCost: "" }) }
+                if (value.column.colId === 'ICCInterestRate') { setFloatingFilterData({ ...floatingFilterData, ICCInterestRate: "" }) }
+                if (value.column.colId === 'ICCOn') { setFloatingFilterData({ ...floatingFilterData, ICCOn: "" }) }
+                if (value.column.colId === 'MasterBatchTotal') { setFloatingFilterData({ ...floatingFilterData, MasterBatchTotal: "" }) }
+                if (value.column.colId === 'ModelTypeForOverheadAndProfit') { setFloatingFilterData({ ...floatingFilterData, ModelTypeForOverheadAndProfit: "" }) }
+                if (value.column.colId === 'ModifiedByName') { setFloatingFilterData({ ...floatingFilterData, ModifiedByName: "" }) }
+                if (value.column.colId === 'ModifiedByUserName') { setFloatingFilterData({ ...floatingFilterData, ModifiedByUserName: "" }) }
+                if (value.column.colId === 'ModifiedDate') { setFloatingFilterData({ ...floatingFilterData, ModifiedDate: "" }) }
+                if (value.column.colId === 'NetBoughtOutPartCost') { setFloatingFilterData({ ...floatingFilterData, NetBoughtOutPartCost: "" }) }
+                if (value.column.colId === 'NetConversionCost') { setFloatingFilterData({ ...floatingFilterData, NetConversionCost: "" }) }
+                if (value.column.colId === 'NetConvertedPOPrice') { setFloatingFilterData({ ...floatingFilterData, NetConvertedPOPrice: "" }) }
+                if (value.column.colId === 'NetDiscountsCost') { setFloatingFilterData({ ...floatingFilterData, NetDiscountsCost: "" }) }
+                if (value.column.colId === 'NetFreightPackaging') { setFloatingFilterData({ ...floatingFilterData, NetFreightPackaging: "" }) }
+                if (value.column.colId === 'NetFreightPackagingCost') { setFloatingFilterData({ ...floatingFilterData, NetFreightPackagingCost: "" }) }
+                if (value.column.colId === 'NetICCCost') { setFloatingFilterData({ ...floatingFilterData, NetICCCost: "" }) }
+                if (value.column.colId === 'NetOperationCost') { setFloatingFilterData({ ...floatingFilterData, NetOperationCost: "" }) }
+                if (value.column.colId === 'NetOtherCost') { setFloatingFilterData({ ...floatingFilterData, NetOtherCost: "" }) }
+                if (value.column.colId === 'NetOverheadAndProfitCost') { setFloatingFilterData({ ...floatingFilterData, NetOverheadAndProfitCost: "" }) }
+                if (value.column.colId === 'NetPOPrice') { setFloatingFilterData({ ...floatingFilterData, NetPOPrice: "" }) }
+                if (value.column.colId === 'NetPOPriceINR') { setFloatingFilterData({ ...floatingFilterData, NetPOPriceINR: "" }) }
+                if (value.column.colId === 'NetPOPriceInCurrency') { setFloatingFilterData({ ...floatingFilterData, NetPOPriceInCurrency: "" }) }
+                if (value.column.colId === 'NetPOPriceOtherCurrency') { setFloatingFilterData({ ...floatingFilterData, NetPOPriceOtherCurrency: "" }) }
+                if (value.column.colId === 'NetProcessCost') { setFloatingFilterData({ ...floatingFilterData, NetProcessCost: "" }) }
+                if (value.column.colId === 'NetRawMaterialsCost') { setFloatingFilterData({ ...floatingFilterData, NetRawMaterialsCost: "" }) }
+                if (value.column.colId === 'NetSurfaceTreatmentCost') { setFloatingFilterData({ ...floatingFilterData, NetSurfaceTreatmentCost: "" }) }
+                if (value.column.colId === 'NetToolCost') { setFloatingFilterData({ ...floatingFilterData, NetToolCost: "" }) }
+                if (value.column.colId === 'NetTotalRMBOPCC') { setFloatingFilterData({ ...floatingFilterData, NetTotalRMBOPCC: "" }) }
+                if (value.column.colId === 'OtherCost') { setFloatingFilterData({ ...floatingFilterData, OtherCost: "" }) }
+                if (value.column.colId === 'OtherCostPercentage') { setFloatingFilterData({ ...floatingFilterData, OtherCostPercentage: "" }) }
+                if (value.column.colId === 'OverheadApplicability') { setFloatingFilterData({ ...floatingFilterData, OverheadApplicability: "" }) }
+                if (value.column.colId === 'OverheadCombinedCost') { setFloatingFilterData({ ...floatingFilterData, OverheadCombinedCost: "" }) }
+                if (value.column.colId === 'OverheadCost') { setFloatingFilterData({ ...floatingFilterData, OverheadCost: "" }) }
+                if (value.column.colId === 'OverheadOn') { setFloatingFilterData({ ...floatingFilterData, OverheadOn: "" }) }
+                if (value.column.colId === 'OverheadPercentage') { setFloatingFilterData({ ...floatingFilterData, OverheadPercentage: "" }) }
+                if (value.column.colId === 'PackagingCost') { setFloatingFilterData({ ...floatingFilterData, PackagingCost: "" }) }
+                if (value.column.colId === 'PackagingCostPercentage') { setFloatingFilterData({ ...floatingFilterData, PackagingCostPercentage: "" }) }
+                if (value.column.colId === 'PartName') { setFloatingFilterData({ ...floatingFilterData, PartName: "" }) }
+                if (value.column.colId === 'PartNumber') { setFloatingFilterData({ ...floatingFilterData, PartNumber: "" }) }
+                if (value.column.colId === 'PartType') { setFloatingFilterData({ ...floatingFilterData, PartType: "" }) }
+                if (value.column.colId === 'PaymentTermCost') { setFloatingFilterData({ ...floatingFilterData, PaymentTermCost: "" }) }
+                if (value.column.colId === 'PaymentTermsOn') { setFloatingFilterData({ ...floatingFilterData, PaymentTermsOn: "" }) }
+                if (value.column.colId === 'PlantCode') { setFloatingFilterData({ ...floatingFilterData, PlantCode: "" }) }
+                if (value.column.colId === 'PlantName') { setFloatingFilterData({ ...floatingFilterData, PlantName: "" }) }
+                if (value.column.colId === 'ProfitApplicability') { setFloatingFilterData({ ...floatingFilterData, ProfitApplicability: "" }) }
+                if (value.column.colId === 'ProfitCost') { setFloatingFilterData({ ...floatingFilterData, ProfitCost: "" }) }
+                if (value.column.colId === 'ProfitOn') { setFloatingFilterData({ ...floatingFilterData, ProfitOn: "" }) }
+                if (value.column.colId === 'ProfitPercentage') { setFloatingFilterData({ ...floatingFilterData, ProfitPercentage: "" }) }
+                if (value.column.colId === 'RMGrade') { setFloatingFilterData({ ...floatingFilterData, RMGrade: "" }) }
+                if (value.column.colId === 'RMSpecification') { setFloatingFilterData({ ...floatingFilterData, RMSpecification: "" }) }
+                if (value.column.colId === 'RawMaterialCode') { setFloatingFilterData({ ...floatingFilterData, RawMaterialCode: "" }) }
+                if (value.column.colId === 'RawMaterialGrade') { setFloatingFilterData({ ...floatingFilterData, RawMaterialGrade: "" }) }
+                if (value.column.colId === 'RawMaterialGrossWeight') { setFloatingFilterData({ ...floatingFilterData, RawMaterialGrossWeight: "" }) }
+                if (value.column.colId === 'RawMaterialName') { setFloatingFilterData({ ...floatingFilterData, RawMaterialName: "" }) }
+                if (value.column.colId === 'RawMaterialRate') { setFloatingFilterData({ ...floatingFilterData, RawMaterialRate: "" }) }
+                if (value.column.colId === 'RawMaterialScrapWeight') { setFloatingFilterData({ ...floatingFilterData, RawMaterialScrapWeight: "" }) }
+                if (value.column.colId === 'RawMaterialSpecification') { setFloatingFilterData({ ...floatingFilterData, RawMaterialSpecification: "" }) }
+                if (value.column.colId === 'RecordInsertedBy') { setFloatingFilterData({ ...floatingFilterData, RecordInsertedBy: "" }) }
+                if (value.column.colId === 'RejectOn') { setFloatingFilterData({ ...floatingFilterData, RejectOn: "" }) }
+                if (value.column.colId === 'RejectionApplicability') { setFloatingFilterData({ ...floatingFilterData, RejectionApplicability: "" }) }
+                if (value.column.colId === 'RejectionCost') { setFloatingFilterData({ ...floatingFilterData, RejectionCost: "" }) }
+                if (value.column.colId === 'RejectionPercentage') { setFloatingFilterData({ ...floatingFilterData, RejectionPercentage: "" }) }
+                if (value.column.colId === 'Remark') { setFloatingFilterData({ ...floatingFilterData, Remark: "" }) }
+                if (value.column.colId === 'Rev') { setFloatingFilterData({ ...floatingFilterData, Rev: "" }) }
+                if (value.column.colId === 'RevisionNumber') { setFloatingFilterData({ ...floatingFilterData, RevisionNumber: "" }) }
+                if (value.column.colId === 'ScrapRate') { setFloatingFilterData({ ...floatingFilterData, ScrapRate: "" }) }
+                if (value.column.colId === 'ScrapWeight') { setFloatingFilterData({ ...floatingFilterData, ScrapWeight: "" }) }
+                if (value.column.colId === 'SurfaceTreatmentCost') { setFloatingFilterData({ ...floatingFilterData, SurfaceTreatmentCost: "" }) }
+                if (value.column.colId === 'ToolCost') { setFloatingFilterData({ ...floatingFilterData, ToolCost: "" }) }
+                if (value.column.colId === 'ToolLife') { setFloatingFilterData({ ...floatingFilterData, ToolLife: "" }) }
+                if (value.column.colId === 'ToolMaintenanceCost') { setFloatingFilterData({ ...floatingFilterData, ToolMaintenaceCost: "" }) }
+                if (value.column.colId === 'ToolPrice') { setFloatingFilterData({ ...floatingFilterData, RevisionNumber: "" }) }
+                if (value.column.colId === 'ToolQuantity') { setFloatingFilterData({ ...floatingFilterData, ToolQuantity: "" }) }
+                if (value.column.colId === 'TotalCost') { setFloatingFilterData({ ...floatingFilterData, TotalCost: "" }) }
+                if (value.column.colId === 'TotalOtherCost') { setFloatingFilterData({ ...floatingFilterData, TotalOtherCost: "" }) }
+                if (value.column.colId === 'TotalRecordCount') { setFloatingFilterData({ ...floatingFilterData, TotalRecordCount: "" }) }
+                if (value.column.colId === 'TransportationCost') { setFloatingFilterData({ ...floatingFilterData, TransportationCost: "" }) }
+                if (value.column.colId === 'VendorCode') { setFloatingFilterData({ ...floatingFilterData, VendorCode: "" }) }
+                if (value.column.colId === 'VendorName') { setFloatingFilterData({ ...floatingFilterData, VendorName: "" }) }
+                if (value.column.colId === 'Version') { setFloatingFilterData({ ...floatingFilterData, Version: "" }) }
+                if (value.column.colId === 'HundiOrDiscountPercentage ') { setFloatingFilterData({ ...floatingFilterData, HundiOrDiscountPercentage: "" }) }
+
+            }
+
+
+
         } else {
+
+
+
 
             if (value.column.colId === 'CostingNumber') { setFloatingFilterData({ ...floatingFilterData, CostingNumber: value.filterInstance.appliedModel.filter }) }
             if (value.column.colId === 'TechnologyName') { setFloatingFilterData({ ...floatingFilterData, TechnologyName: value.filterInstance.appliedModel.filter }) }
@@ -268,8 +399,8 @@ function ReportListing(props) {
 
             if (value.column.colId === 'CostingVersion') { setFloatingFilterData({ ...floatingFilterData, CostingVersion: value.filterInstance.appliedModel.filter }) }
 
-            if (value.column.colId === 'DisplayStatus') { setFloatingFilterData({ ...floatingFilterData, DisplayStatus: value.filterInstance.appliedModel.filter }) }
-            if (value.column.colId === 'EffectiveDate') { setFloatingFilterData({ ...floatingFilterData, EffectiveDate: DayTime(value.filterInstance.appliedModel.filter).format("YYYY-DD-MMTHH:mm:ss") }) }
+            if (value.column.colId === 'Status') { setFloatingFilterData({ ...floatingFilterData, DisplayStatus: value.filterInstance.appliedModel.filter }) }
+            if (value.column.colId === 'EffectiveDate') { setFloatingFilterData({ ...floatingFilterData, EffectiveDate: (value.filterInstance.appliedModel.filter) }) }
 
             if (value.column.colId === 'Currency') { setFloatingFilterData({ ...floatingFilterData, Currency: value.filterInstance.appliedModel.filter }) }
             if (value.column.colId === 'DepartmentCode') { setFloatingFilterData({ ...floatingFilterData, DepartmentCode: value.filterInstance.appliedModel.filter }) }
@@ -279,7 +410,7 @@ function ReportListing(props) {
             if (value.column.colId === 'DiscountCost') { setFloatingFilterData({ ...floatingFilterData, DiscountCost: value.filterInstance.appliedModel.filter }) }
             if (value.column.colId === 'ECNNumber') { setFloatingFilterData({ ...floatingFilterData, ECNNumber: value.filterInstance.appliedModel.filter }) }
             if (value.column.colId === 'FinalPOPrice') { setFloatingFilterData({ ...floatingFilterData, FinalPOPrice: value.filterInstance.appliedModel.filter }) }
-            if (value.column.colId === 'FinishWeight') { setFloatingFilterData({ ...floatingFilterData, FinishWeight: value.filterInstance.appliedModel.filter }) }
+            if (value.column.colId === 'RawMaterialFinishWeight') { setFloatingFilterData({ ...floatingFilterData, RawMaterialFinishWeight: value.filterInstance.appliedModel.filter }) }
             if (value.column.colId === 'FreightCost') { setFloatingFilterData({ ...floatingFilterData, FreightCost: value.filterInstance.appliedModel.filter }) }
             if (value.column.colId === 'FreightPercentage') { setFloatingFilterData({ ...floatingFilterData, FreightPercentage: value.filterInstance.appliedModel.filter }) }
             if (value.column.colId === 'FreightType') { setFloatingFilterData({ ...floatingFilterData, FreightType: value.filterInstance.appliedModel.filter }) }
@@ -368,7 +499,7 @@ function ReportListing(props) {
             if (value.column.colId === 'SurfaceTreatmentCost') { setFloatingFilterData({ ...floatingFilterData, SurfaceTreatmentCost: value.filterInstance.appliedModel.filter }) }
             if (value.column.colId === 'ToolCost') { setFloatingFilterData({ ...floatingFilterData, ToolCost: value.filterInstance.appliedModel.filter }) }
             if (value.column.colId === 'ToolLife') { setFloatingFilterData({ ...floatingFilterData, ToolLife: value.filterInstance.appliedModel.filter }) }
-            if (value.column.colId === 'ToolMaintenaceCost') { setFloatingFilterData({ ...floatingFilterData, ToolMaintenaceCost: value.filterInstance.appliedModel.filter }) }
+            if (value.column.colId === 'ToolMaintenanceCost') { setFloatingFilterData({ ...floatingFilterData, ToolMaintenaceCost: value.filterInstance.appliedModel.filter }) }
             if (value.column.colId === 'ToolPrice') { setFloatingFilterData({ ...floatingFilterData, RevisionNumber: value.filterInstance.appliedModel.filter }) }
             if (value.column.colId === 'ToolQuantity') { setFloatingFilterData({ ...floatingFilterData, ToolQuantity: value.filterInstance.appliedModel.filter }) }
             if (value.column.colId === 'TotalCost') { setFloatingFilterData({ ...floatingFilterData, TotalCost: value.filterInstance.appliedModel.filter }) }
@@ -378,8 +509,10 @@ function ReportListing(props) {
             if (value.column.colId === 'VendorCode') { setFloatingFilterData({ ...floatingFilterData, VendorCode: value.filterInstance.appliedModel.filter }) }
             if (value.column.colId === 'VendorName') { setFloatingFilterData({ ...floatingFilterData, VendorName: value.filterInstance.appliedModel.filter }) }
             if (value.column.colId === 'Version') { setFloatingFilterData({ ...floatingFilterData, Version: value.filterInstance.appliedModel.filter }) }
+            if (value.column.colId === 'HundiOrDiscountPercentage') { setFloatingFilterData({ ...floatingFilterData, HundiOrDiscountPercentage: value.filterInstance.appliedModel.filter }) }
 
         }
+        filterClick = false
 
 
     }
@@ -393,11 +526,13 @@ function ReportListing(props) {
         setPageNo(1)
         setCurrentRowIndex(0)
 
-        gridOptions.columnApi.resetColumnState();
-        gridOptions.api.setFilterModel(null);
+        gridOptions?.columnApi?.resetColumnState();
+        gridOptions?.api?.setFilterModel(null);
         getTableData(0, 100, true, floatingFilterData, false);
 
         setEnableSearchFilterButton(true)
+
+        filterClick = true
 
     }
 
@@ -494,19 +629,17 @@ function ReportListing(props) {
 
 
     const resetState = () => {
-        gridOptions.columnApi.resetColumnState();
-        gridOptions.api.setFilterModel(null);
-
+        gridOptions?.columnApi?.resetColumnState();
+        gridOptions?.api?.setFilterModel(null);
 
 
         //this.setState({ floatingFilterData: { Technology: "", PartNumber: "", PartName: "", ECNNumber: "", RevisionNumber: "", DrawingNumber: "", EffectiveDate: "" } })
-        let emptyObj = { CostingNumber: "", TechnologyName: "", AmorizationQuantity: "", AnyOtherCost: "", CostingVersion: "", DisplayStatus: "", EffectiveDate: "", Currency: "", DepartmentCode: "", DepartmentName: "", DiscountCost: "", ECNNumber: "", FinalPOPrice: "", FinishWeight: "", FreightCost: "", FreightPercentage: "", FreightType: "", GrossWeight: "", HundiOrDiscountValue: "", ICCApplicability: "", ICCCost: "", ICCInterestRate: "", ICCOn: "", MasterBatchTotal: "", ModelTypeForOverheadAndProfit: "", ModifiedByName: "", ModifiedByUserName: "", ModifiedDate: "", NetBoughtOutPartCost: "", NetConversionCost: "", NetConvertedPOPrice: "", NetDiscountsCost: "", NetFreightPackaging: "", NetFreightPackagingCost: "", NetICCCost: "", NetOperationCost: "", NetOtherCost: "", NetOverheadAndProfitCost: "", NetPOPrice: "", NetPOPriceINR: "", NetPOPriceInCurrency: "", NetPOPriceOtherCurrency: "", NetProcessCost: "", NetRawMaterialsCost: "", NetSurfaceTreatmentCost: "", NetToolCost: "", NetTotalRMBOPCC: "", OtherCost: "", OtherCostPercentage: "", OverheadApplicability: "", OverheadCombinedCost: "", OverheadCost: "", OverheadOn: "", OverheadPercentage: "", PackagingCost: "", PackagingCostPercentage: "", PartName: "", PartNumber: "", PartType: "", PaymentTermCost: "", PaymentTermsOn: "", PlantCode: "", PlantName: "", ProfitApplicability: "", ProfitCost: "", ProfitOn: "", ProfitPercentage: "", RMGrade: "", RMSpecification: "", RawMaterialCode: "", RawMaterialGrossWeight: "", RawMaterialName: "", RawMaterialRate: "", RawMaterialScrapWeight: "", RawMaterialSpecification: "", RecordInsertedBy: "", RejectOn: "", RejectionApplicability: "", RejectionCost: "", RejectionPercentage: "", Remark: "", Rev: "", RevisionNumber: "", ScrapRate: "", ScrapWeight: "", SurfaceTreatmentCost: "", ToolCost: "", ToolLife: "", ToolMaintenaceCost: "", ToolPrice: "", ToolQuantity: "", TotalCost: "", TotalOtherCost: "", TotalRecordCount: "", TransportationCost: "", VendorCode: "", VendorName: "", Version: "" }
+        let emptyObj = { CostingNumber: "", TechnologyName: "", AmorizationQuantity: "", AnyOtherCost: "", CostingVersion: "", DisplayStatus: "", EffectiveDate: "", Currency: "", DepartmentCode: "", DepartmentName: "", DiscountCost: "", ECNNumber: "", FinalPOPrice: "", RawMaterialFinishWeight: "", FreightCost: "", FreightPercentage: "", FreightType: "", GrossWeight: "", HundiOrDiscountValue: "", ICCApplicability: "", ICCCost: "", ICCInterestRate: "", ICCOn: "", MasterBatchTotal: "", ModelTypeForOverheadAndProfit: "", ModifiedByName: "", ModifiedByUserName: "", ModifiedDate: "", NetBoughtOutPartCost: "", NetConversionCost: "", NetConvertedPOPrice: "", NetDiscountsCost: "", NetFreightPackaging: "", NetFreightPackagingCost: "", NetICCCost: "", NetOperationCost: "", NetOtherCost: "", NetOverheadAndProfitCost: "", NetPOPrice: "", NetPOPriceINR: "", NetPOPriceInCurrency: "", NetPOPriceOtherCurrency: "", NetProcessCost: "", NetRawMaterialsCost: "", NetSurfaceTreatmentCost: "", NetToolCost: "", NetTotalRMBOPCC: "", OtherCost: "", OtherCostPercentage: "", OverheadApplicability: "", OverheadCombinedCost: "", OverheadCost: "", OverheadOn: "", OverheadPercentage: "", PackagingCost: "", PackagingCostPercentage: "", PartName: "", PartNumber: "", PartType: "", PaymentTermCost: "", PaymentTermsOn: "", PlantCode: "", PlantName: "", ProfitApplicability: "", ProfitCost: "", ProfitOn: "", ProfitPercentage: "", RMGrade: "", RMSpecification: "", RawMaterialCode: "", RawMaterialGrossWeight: "", RawMaterialName: "", RawMaterialRate: "", RawMaterialScrapWeight: "", RawMaterialSpecification: "", RecordInsertedBy: "", RejectOn: "", RejectionApplicability: "", RejectionCost: "", RejectionPercentage: "", Remark: "", Rev: "", RevisionNumber: "", ScrapRate: "", ScrapWeight: "", SurfaceTreatmentCost: "", ToolCost: "", ToolLife: "", ToolMaintenaceCost: "", ToolPrice: "", ToolQuantity: "", TotalCost: "", TotalOtherCost: "", TotalRecordCount: "", TransportationCost: "", VendorCode: "", VendorName: "", Version: "", RawMaterialGrade: "", HundiOrDiscountPercentage: "", ToDate: "", FromDate: "" }
 
-
-        setFloatingFilterData({ CostingNumber: "", TechnologyName: "", AmorizationQuantity: "", AnyOtherCost: "", CostingVersion: "", DisplayStatus: "", EffectiveDate: "", Currency: "", DepartmentCode: "", DepartmentName: "", DiscountCost: "", ECNNumber: "", FinalPOPrice: "", FinishWeight: "", FreightCost: "", FreightPercentage: "", FreightType: "", GrossWeight: "", HundiOrDiscountValue: "", ICCApplicability: "", ICCCost: "", ICCInterestRate: "", ICCOn: "", MasterBatchTotal: "", ModelTypeForOverheadAndProfit: "", ModifiedByName: "", ModifiedByUserName: "", ModifiedDate: "", NetBoughtOutPartCost: "", NetConversionCost: "", NetConvertedPOPrice: "", NetDiscountsCost: "", NetFreightPackaging: "", NetFreightPackagingCost: "", NetICCCost: "", NetOperationCost: "", NetOtherCost: "", NetOverheadAndProfitCost: "", NetPOPrice: "", NetPOPriceINR: "", NetPOPriceInCurrency: "", NetPOPriceOtherCurrency: "", NetProcessCost: "", NetRawMaterialsCost: "", NetSurfaceTreatmentCost: "", NetToolCost: "", NetTotalRMBOPCC: "", OtherCost: "", OtherCostPercentage: "", OverheadApplicability: "", OverheadCombinedCost: "", OverheadCost: "", OverheadOn: "", OverheadPercentage: "", PackagingCost: "", PackagingCostPercentage: "", PartName: "", PartNumber: "", PartType: "", PaymentTermCost: "", PaymentTermsOn: "", PlantCode: "", PlantName: "", ProfitApplicability: "", ProfitCost: "", ProfitOn: "", ProfitPercentage: "", RMGrade: "", RMSpecification: "", RawMaterialCode: "", RawMaterialGrossWeight: "", RawMaterialName: "", RawMaterialRate: "", RawMaterialScrapWeight: "", RawMaterialSpecification: "", RecordInsertedBy: "", RejectOn: "", RejectionApplicability: "", RejectionCost: "", RejectionPercentage: "", Remark: "", Rev: "", RevisionNumber: "", ScrapRate: "", ScrapWeight: "", SurfaceTreatmentCost: "", ToolCost: "", ToolLife: "", ToolMaintenaceCost: "", ToolPrice: "", ToolQuantity: "", TotalCost: "", TotalOtherCost: "", TotalRecordCount: "", TransportationCost: "", VendorCode: "", VendorName: "", Version: "" })
-
+        setFloatingFilterData({ CostingNumber: "", TechnologyName: "", AmorizationQuantity: "", AnyOtherCost: "", CostingVersion: "", DisplayStatus: "", EffectiveDate: "", Currency: "", DepartmentCode: "", DepartmentName: "", DiscountCost: "", ECNNumber: "", FinalPOPrice: "", RawMaterialFinishWeight: "", FreightCost: "", FreightPercentage: "", FreightType: "", GrossWeight: "", HundiOrDiscountValue: "", ICCApplicability: "", ICCCost: "", ICCInterestRate: "", ICCOn: "", MasterBatchTotal: "", ModelTypeForOverheadAndProfit: "", ModifiedByName: "", ModifiedByUserName: "", ModifiedDate: "", NetBoughtOutPartCost: "", NetConversionCost: "", NetConvertedPOPrice: "", NetDiscountsCost: "", NetFreightPackaging: "", NetFreightPackagingCost: "", NetICCCost: "", NetOperationCost: "", NetOtherCost: "", NetOverheadAndProfitCost: "", NetPOPrice: "", NetPOPriceINR: "", NetPOPriceInCurrency: "", NetPOPriceOtherCurrency: "", NetProcessCost: "", NetRawMaterialsCost: "", NetSurfaceTreatmentCost: "", NetToolCost: "", NetTotalRMBOPCC: "", OtherCost: "", OtherCostPercentage: "", OverheadApplicability: "", OverheadCombinedCost: "", OverheadCost: "", OverheadOn: "", OverheadPercentage: "", PackagingCost: "", PackagingCostPercentage: "", PartName: "", PartNumber: "", PartType: "", PaymentTermCost: "", PaymentTermsOn: "", PlantCode: "", PlantName: "", ProfitApplicability: "", ProfitCost: "", ProfitOn: "", ProfitPercentage: "", RMGrade: "", RMSpecification: "", RawMaterialCode: "", RawMaterialGrossWeight: "", RawMaterialName: "", RawMaterialRate: "", RawMaterialScrapWeight: "", RawMaterialSpecification: "", RecordInsertedBy: "", RejectOn: "", RejectionApplicability: "", RejectionCost: "", RejectionPercentage: "", Remark: "", Rev: "", RevisionNumber: "", ScrapRate: "", ScrapWeight: "", SurfaceTreatmentCost: "", ToolCost: "", ToolLife: "", ToolMaintenaceCost: "", ToolPrice: "", ToolQuantity: "", TotalCost: "", TotalOtherCost: "", TotalRecordCount: "", TransportationCost: "", VendorCode: "", VendorName: "", Version: "", RawMaterialGrade: "", HundiOrDiscountPercentage: "", ToDate: "", FromDate: "" })
 
         setPageNo(1)
+        setCurrentRowIndex(0)
         getTableData(0, 100, true, emptyObj, false);
 
 
@@ -558,7 +691,18 @@ function ReportListing(props) {
         getTableData(tempPartNo, tempcreatedBy, tempRequestedBy, tempStatus)
     }
     const lastWeekFilter = () => {
+
+        let currentDate = new Date()
+        currentDate = DayTime(currentDate).format('DD/MM/YYYY')
+        let today = new Date();
+        today.setDate(today.getDate() - 7);
+        let sevenDaysBack = DayTime(today).format('DD/MM/YYYY')
+
+        setFloatingFilterData({ ...floatingFilterData, FromDate: sevenDaysBack, ToDate: currentDate })
+        setPageNo(1)
+        setCurrentRowIndex(0)
         getTableData(0, 100, true, floatingFilterData, true);
+
     }
 
     return (
