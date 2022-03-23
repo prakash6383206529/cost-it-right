@@ -7101,26 +7101,42 @@ left: 17rem;
   border-top: none !important;
 }
 @media print { 
-  .table-responsive {
-  .header-name-left {
-    border-right: none !important;
-  }
-  .header-name {
-    border-left: none !important;
-  }
-}
+  .remove-space-border {
+    .table-responsive {
+      .header-name-left {
+        border-right: none !important;
+      }
+      .header-name {
+        border-left: none !important;
+       }
+      }
+      .background-light-blue {
+        th {
+          border-right: none !important;
+        }
+        td {
+          border-left: none !important;
+        }
+      }
+    }
   .background-light-blue {
     th {
       background-color: #E7F2FC !important;
       word-spacing: 1px;
-      border-right: none !important;
     }
     td {
-      border-left: none !important;
       background-color: #E7F2FC !important;
     }
   }
-}
+  .align-table {
+    padding-top: 0px;
+    transform: translateY(0);
+      th {
+        border-right: 1px solid #dee2e6 !important;
+      }
+    }
+  }
+
 .remove-space-border {
   .table-responsive {
     overflow: hidden;
@@ -7200,4 +7216,8 @@ left: 17rem;
   .freight-drawer {
     width: 485px !important;
   } 
+}
+
+.pt5 {
+  padding-top: 15px;
 }
