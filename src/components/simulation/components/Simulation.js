@@ -81,9 +81,11 @@ function Simulation(props) {
         dispatch(getVendorWithVendorCodeSelectList(() => { }))
         setShowEditTable(false)
         if (props.isRMPage) {
+            console.log('selectedTechnologyForSimulation: ', selectedTechnologyForSimulation);
             setValue('Technology', { label: selectedTechnologyForSimulation?.label, value: selectedTechnologyForSimulation?.value })
             setValue('Masters', { label: selectedMasterForSimulation?.label, value: selectedMasterForSimulation?.value })
             setValue('Vendor', { label: selectedVendorForSimulation?.label, value: selectedVendorForSimulation?.value })
+            console.log('selectedVendorForSimulation: ', selectedVendorForSimulation);
 
             setMaster({ label: selectedMasterForSimulation?.label, value: selectedMasterForSimulation?.value })
             setTechnology({ label: selectedTechnologyForSimulation?.label, value: selectedTechnologyForSimulation?.value })
@@ -163,12 +165,12 @@ function Simulation(props) {
     }
 
     const handleVendorChange = (value) => {
+        console.log('value: ', value);
         setShowMasterList(false)
         setToken([])
         setValue('token', '')
         setSelectionForListingMasterAPI('Master')
         setTimeout(() => {
-            dispatch(setTechnologyForSimulation(value))
             if (value !== '' && Object.keys(master).length > 0 && technology.label !== '') {
                 setShowMasterList(true)
                 setShowTokenDropdown(true)
@@ -377,6 +379,8 @@ function Simulation(props) {
         setShowEditTable(false)
         setIsBulkUpload(false)
         // setTableData([])
+        console.log('master: ', master);
+        console.log('technology: ', technology);
         setMaster({ label: master.label, value: master.value })
         setTechnology({ label: technology.label, value: technology.value })
     }
