@@ -24,13 +24,11 @@ import { getCostingReport } from '.././actions/ReportListing'
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
-
 const gridOptions = {};
 
 
 
 function ReportListing(props) {
-
 
     const [selectedRowData, setSelectedRowData] = useState([]);
     const [selectedIds, setSelectedIds] = useState(props.Ids);
@@ -55,7 +53,6 @@ function ReportListing(props) {
     const [reportListingDataStateArray, setReportListingDataStateArray] = useState([])
 
     let filterClick = false
-
 
     const dispatch = useDispatch()
 
@@ -88,8 +85,6 @@ function ReportListing(props) {
         setCostingVersion(temp);
         return temp
     }
-
-
 
 
     // @method hyperLinkFormatter( This function will make the first column details into hyperlink )
@@ -297,6 +292,8 @@ function ReportListing(props) {
         setEnableSearchFilterButton(true)
         filterClick = true
     }
+
+
     const isFirstColumn = (params) => {
         var displayedColumns = params.columnApi.getAllDisplayedColumns();
         var thisIsFirstColumn = displayedColumns[0] === params.column;
@@ -321,8 +318,6 @@ function ReportListing(props) {
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
-
-
 
     };
 
@@ -518,11 +513,11 @@ function ReportListing(props) {
 
                 <Row className="pt-3 blue-before ">
 
-                    {/* <Col md="8">
+                    <Col md="8">
                         <div className="warning-message mt-1">
                             {warningMessage && <WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} />}
                         </div>
-                    </Col> */}
+                    </Col>
                     <Col md="6">
                         <button title="Last Week" type="button" class="user-btn mr5" onClick={() => lastWeekFilter()}><div class="swap rotate90 mr-2"></div>Last Week</button>
                     </Col>
@@ -652,7 +647,6 @@ function ReportListing(props) {
                         {/* <AgGridColumn field='NetPOPrice' headerName='Net PO Price' cellRenderer='hyphenFormatter'></AgGridColumn> */}
                         <AgGridColumn field='NetPOPriceINR' headerName='Net PO Price (INR)' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='Remark' headerName='Remark' cellRenderer='hyphenFormatter'></AgGridColumn>
-
                         {/* <AgGridColumn field='BaseCostingId' headerName='BaseCostingId' cellRenderer='hyphenFormatter'></AgGridColumn> */}
                         {/* <AgGridColumn field='CreatedBy' headerName='CreatedBy' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='CreatedByName' headerName='CreatedByName' cellRenderer='hyphenFormatter'></AgGridColumn>
