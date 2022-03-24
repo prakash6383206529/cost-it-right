@@ -168,7 +168,6 @@ function Simulation(props) {
         setValue('token', '')
         setSelectionForListingMasterAPI('Master')
         setTimeout(() => {
-            dispatch(setTechnologyForSimulation(value))
             if (value !== '' && Object.keys(master).length > 0 && technology.label !== '') {
                 setShowMasterList(true)
                 setShowTokenDropdown(true)
