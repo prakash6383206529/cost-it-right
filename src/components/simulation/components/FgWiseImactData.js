@@ -31,7 +31,7 @@ export function Fgwiseimactdata(props) {
                 }
                 else if (res?.response?.status !== "200") {
                     setshowTableData(false)
-                }else{
+                } else {
                     setLoader(false)
                 }
 
@@ -55,13 +55,13 @@ export function Fgwiseimactdata(props) {
     }
 
     const toggleAcc = (value) => {
-        let temp=acc1
-        if(temp.currentIndex!==value) {    
+        let temp = acc1
+        if (temp.currentIndex !== value) {
             setAcc1({ currentIndex: temp.currentIndex, isClicked: false })
             setTimeout(() => {
-            setAcc1({ currentIndex: value, isClicked: true })
+                setAcc1({ currentIndex: value, isClicked: true })
             }, 200);
-        }else {     
+        } else {
             setAcc1({ currentIndex: value, isClicked: !acc1.isClicked })
         }
     }
@@ -74,7 +74,7 @@ export function Fgwiseimactdata(props) {
                 <Col md="12">
                     {/* {impactType} */}
                     <div className={`table-responsive  fgwise-table ${showTableData ? 'hide-border' : ''} `}>
-                    <table className="table cr-brdr-main accordian-table-with-arrow fg-wise-table">
+                        <table className="table cr-brdr-main accordian-table-with-arrow fg-wise-table">
                             <thead>
                                 {loader && <LoaderCustom />}
                                 <tr>
@@ -100,7 +100,7 @@ export function Fgwiseimactdata(props) {
                                 return (<>
                                     <tbody >
                                         <tr className="accordian-with-arrow" key={index} id={"fg-wise"}>
-                                            <td className="arrow-accordian"><span><Link to={"fg-wise"} spy={true} smooth={true} delay={0}><div class="Close" onClick={()=>{toggleAcc(index)}}></div></Link>{item.PartNumber ? item.PartNumber : "-"}</span></td>
+                                            <td className="arrow-accordian"><span><Link to={"fg-wise"} spy={true} smooth={true} delay={0}><div class="Close" onClick={() => { toggleAcc(index) }}></div></Link>{item.PartNumber ? item.PartNumber : "-"}</span></td>
                                             <td><span>{'-'}</span></td>
                                             <td><span className='text-overflow' title={item.PartName}>{item.PartName}</span></td>
                                             <td><span>{'-'}</span></td>
@@ -110,7 +110,7 @@ export function Fgwiseimactdata(props) {
 
                                             <td><span>{checkForNull(item?.VendorSOBPercentage)}</span></td>
                                             {/* //Impact/Pc(with SOB) */}
-                                            <td><span>{item?.VendorSOBImpactPerPiece}</span></td> 
+                                            <td><span>{item?.VendorSOBImpactPerPiece}</span></td>
                                             <td><span>{item.VolumePerYear == null ? "" : item.VolumePerYear}</span></td>
                                             <td><span>{checkForDecimalAndNull(item.VendorSOBImpactPerQuater, initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
                                             <td colSpan="2"><span> {checkForDecimalAndNull(item.VendorSOBImpactPerYear, initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
@@ -120,6 +120,7 @@ export function Fgwiseimactdata(props) {
 
 
                                         {acc1.currentIndex === index && acc1.isClicked && item.childPartsList.map((item, index) => {
+                                            let VendorSOBImpactPerPiece = item.VariancePerPiece / (item.VendorSOBPercentage / 100)
 
                                             return (
                                                 <tr className="accordian-content">
@@ -130,7 +131,9 @@ export function Fgwiseimactdata(props) {
                                                     <td><span>{checkForDecimalAndNull(item.NewCost, initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
                                                     <td><span>{item.Quantity}</span></td>
                                                     <td ><span>{checkForDecimalAndNull(item.VariancePerPiece, initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
-                                                    <td colSpan="6"><span> <Link to="compare-costing" spy={true} smooth={true}><button className="Balance mb-0 float-right" type={'button'} onClick={() => { DisplayCompareCostingFgWiseImpact(item.SimulationApprovalProcessSummaryId) }} /></Link></span></td>
+                                                    <td ><span>{checkForDecimalAndNull(item.VendorSOBPercentage, initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
+                                                    <td ><span>{checkForDecimalAndNull(VendorSOBImpactPerPiece, initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
+                                                    <td colSpan="4"><span> <Link to="compare-costing" spy={true} smooth={true}><button className="Balance mb-0 float-right" type={'button'} onClick={() => { DisplayCompareCostingFgWiseImpact(item.SimulationApprovalProcessSummaryId) }} /></Link></span></td>
 
                                                 </tr>)
                                         })}
