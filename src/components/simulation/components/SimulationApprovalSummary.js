@@ -7,10 +7,10 @@ import ApprovalWorkFlow from '../../costing/components/approval/ApprovalWorkFlow
 import ViewDrawer from '../../costing/components/approval/ViewDrawer'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import { costingHeadObjs, SIMULATIONAPPROVALSUMMARYDOWNLOADCP, SIMULATIONAPPROVALSUMMARYDOWNLOADBOP, SIMULATIONAPPROVALSUMMARYDOWNLOADOperation, SIMULATIONAPPROVALSUMMARYDOWNLOADST } from '../../../config/masterData';
+import { costingHeadObjs, SIMULATIONAPPROVALSUMMARYDOWNLOADCP, SIMULATIONAPPROVALSUMMARYDOWNLOADBOP, SIMULATIONAPPROVALSUMMARYDOWNLOADOperation, SIMULATIONAPPROVALSUMMARYDOWNLOADST, ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common';
-import { getAmmendentStatus, getApprovalSimulatedCostingSummary, getComparisionSimulationData, setAttachmentFileData, getImpactedMasterData, getLastSimulationData, uploadSimulationAttachmentonFTP } from '../actions/Simulation'
-import { EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, ZBC, COMBINED_PROCESS, FILE_URL, COSTINGSIMULATIONROUND, SURFACETREATMENT, OPERATIONS, BOPDOMESTIC, BOPIMPORT } from '../../../config/constants';
+import { getAmmendentStatus, getApprovalSimulatedCostingSummary, getComparisionSimulationData, setAttachmentFileData, getImpactedMasterData, getLastSimulationData, uploadSimulationAttachmentonFTP, getSimulatedAssemblyWiseImpactDate } from '../actions/Simulation'
+import { EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, ZBC, COMBINED_PROCESS, FILE_URL, COSTINGSIMULATIONROUND, SURFACETREATMENT, OPERATIONS, BOPDOMESTIC, BOPIMPORT, AssemblyWiseImpactt } from '../../../config/constants';
 import Toaster from '../../common/Toaster';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
 import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId, userDetails } from '../../../helper';
@@ -98,6 +98,7 @@ function SimulationApprovalSummary(props) {
     const [dataForDownload, setDataForDownload] = useState([])
     const [count, setCount] = useState(0);
     const [assemblyImpactButtonTrue, setAssemblyImpactButtonTrue] = useState(true);
+    const simulationAssemblyListSummary = useSelector((state) => state.simulation.simulationAssemblyListSummary)
 
     const [recordInsertStatusBox, setRecordInsertStatusBox] = useState(true);
     const [amendmentStatusBox, setAmendmentStatusBox] = useState(true);
@@ -111,7 +112,7 @@ function SimulationApprovalSummary(props) {
     const { technologySelectList, plantSelectList } = useSelector(state => state.comman)
     const impactedMasterData = useSelector(state => state.comman.impactedMasterData)
 
-    const [lastRevisionDataAccordian, setLastRevisionDataAccordian] = useState(impactedMasterDataListForLastRevisionData.length >= 0 ? false : true)
+    const [lastRevisionDataAccordian, setLastRevisionDataAccordian] = useState(impactedMasterDataListForLastRevisionData?.length >= 0 ? false : true)
     const headerName = ['Revision No.', 'Name', 'Old Cost/Pc', 'New Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
     const headerNameAssembly = ['Revision No.', 'Name', 'Level', 'Old Price/Pc', 'New Price/Pc', 'Applicable Quantity', 'Variance', '', '', 'Assembly Number']
 
@@ -159,6 +160,25 @@ function SimulationApprovalSummary(props) {
             // setIsApprovalDone(false)
             setShowFinalLevelButton(IsFinalLevelButtonShow)
             setShowPushButton(IsPushedButtonShow)
+
+
+            if (SimulatedCostingList !== undefined && (Object.keys(SimulatedCostingList).length !== 0 || SimulatedCostingList.length > 0)) {
+                let requestData = []
+                let isAssemblyInDraft = false
+
+                let uniqueArr = _.uniqBy(SimulatedCostingList, function (o) {
+                    return o.CostingId;
+                });
+
+                uniqueArr && uniqueArr.map(item => {
+                    requestData.push({ CostingId: item.CostingId, delta: item.Variance, IsSinglePartImpact: false })
+                    return null
+                })
+
+                dispatch(getSimulatedAssemblyWiseImpactDate(requestData, isAssemblyInDraft, (res) => {
+                }))
+            }
+
             setTimeout(() => {
 
                 setLoader(false)
@@ -370,6 +390,21 @@ function SimulationApprovalSummary(props) {
         setAmendmentStatusBox(false)
     }
 
+    const onBtExport = () => {
+        let tempArr = []
+        tempArr = simulationAssemblyListSummary
+        return returnExcelColumnSecond(ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl, tempArr)
+    };
+
+
+    const returnExcelColumnSecond = (data = [], TempData) => {
+
+        return (
+
+            <ExcelSheet data={TempData} name={AssemblyWiseImpactt}>
+                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+            </ExcelSheet>);
+    }
 
     /**
     * @method onSubmit
@@ -1003,6 +1038,7 @@ function SimulationApprovalSummary(props) {
                                                             <ExcelFile filename={'Costing'} fileExtension={'.xls'} element={
                                                                 <button title="Download" type="button" className={'user-btn'} ><div className="download mr-0"></div></button>}>
                                                                 {renderColumn()}
+                                                                {onBtExport()}
                                                             </ExcelFile>
                                                         </div>
                                                         <div className="ag-theme-material">

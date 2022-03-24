@@ -6,17 +6,17 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getRawMaterialNameChild } from '../../masters/actions/Material';
 import NoContentFound from '../../common/NoContentFound';
 import { BOPDOMESTIC, BOPIMPORT, COSTINGSIMULATIONROUND, TOFIXEDVALUE, EMPTY_DATA, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
-import { getComparisionSimulationData, getCostingBoughtOutPartSimulationList, getCostingSimulationList, getCostingSurfaceTreatmentSimulationList, setShowSimulationPage } from '../actions/Simulation';
+import { getComparisionSimulationData, getCostingBoughtOutPartSimulationList, getCostingSimulationList, getCostingSurfaceTreatmentSimulationList, setShowSimulationPage, getSimulatedAssemblyWiseImpactDate } from '../actions/Simulation';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
 import { checkForDecimalAndNull, checkForNull, formViewData, getConfigurationKey, userDetails } from '../../../helper';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
-import { EMPTY_GUID, ZBC } from '../../../config/constants';
+import { EMPTY_GUID, ZBC, AssemblyWiseImpactt } from '../../../config/constants';
 import Toaster from '../../common/Toaster';
 import { Redirect } from 'react-router';
 import { getPlantSelectListByType } from '../../../actions/Common';
 import { setCostingViewData } from '../../costing/actions/Costing';
-import { CostingSimulationDownloadBOP, CostingSimulationDownloadOperation, CostingSimulationDownloadRM, CostingSimulationDownloadST } from '../../../config/masterData'
+import { CostingSimulationDownloadBOP, CostingSimulationDownloadOperation, CostingSimulationDownloadRM, CostingSimulationDownloadST, ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl } from '../../../config/masterData'
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -26,7 +26,7 @@ import { Errorbox } from '../../common/ErrorBox';
 import { SimulationUtils } from '../SimulationUtils'
 import ViewAssembly from './ViewAssembly';
 import _ from 'lodash';
-import { reactLocalStorage } from 'reactjs-localstorage';
+
 
 const gridOptions = {};
 
@@ -95,6 +95,7 @@ function CostingSimulation(props) {
     const isRMDomesticOrRMImport = ((Number(master) === Number(RMDOMESTIC)) || (Number(master) === Number(RMIMPORT)));
     const isBOPDomesticOrImport = ((Number(master) === Number(BOPDOMESTIC)) || (Number(master) === Number(BOPIMPORT)))
     const isMachineRate = Number(master) === (Number(MACHINERATE));
+    const simulationAssemblyListSummary = useSelector((state) => state.simulation.simulationAssemblyListSummary)
 
     const dispatch = useDispatch()
 
@@ -117,6 +118,25 @@ function CostingSimulation(props) {
         } else {
             setAssemblyImpactButtonTrue(false)
         }
+
+
+        if (tableData !== undefined && (Object.keys(tableData).length !== 0 || tableData.length > 0)) {
+            let requestData = []
+            let isAssemblyInDraft = false
+
+            let uniqueArr = _.uniqBy(tableData, function (o) {
+                return o.CostingId;
+            });
+
+            uniqueArr && uniqueArr.map(item => {
+                requestData.push({ CostingId: item.CostingId, delta: item.Variance, IsSinglePartImpact: false })
+                return null
+            })
+
+            dispatch(getSimulatedAssemblyWiseImpactDate(requestData, isAssemblyInDraft, (res) => {
+            }))
+        }
+
     }, [tableData])
 
     window.onbeforeunload = (e) => {
@@ -675,9 +695,31 @@ function CostingSimulation(props) {
         temp = SimulationUtils(TempData)    // common function 
 
 
-        return (<ExcelSheet data={temp} name={'Costing'}>
-            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
-        </ExcelSheet>);
+        return (
+
+            <ExcelSheet data={temp} name={'Costing'}>
+                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+            </ExcelSheet>
+
+        );
+    }
+
+
+
+    const onBtExport = () => {
+        let tempArr = []
+        tempArr = simulationAssemblyListSummary
+
+        return returnExcelColumnSecond(ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl, tempArr)
+    };
+
+    const returnExcelColumnSecond = (data = [], TempData) => {
+
+        return (
+
+            <ExcelSheet data={TempData} name={AssemblyWiseImpactt}>
+                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+            </ExcelSheet>);
     }
 
     const renderColumn = () => {
@@ -834,6 +876,7 @@ function CostingSimulation(props) {
                                             <ExcelFile filename={'Costing'} fileExtension={'.xls'} element={
                                                 <button title="Download" type="button" className={'user-btn mr5'}><div className="download mr-0"></div></button>}>
                                                 {renderColumn()}
+                                                {onBtExport()}
                                             </ExcelFile>
                                             <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
                                                 <div className="refresh mr-0"></div>
