@@ -23,15 +23,12 @@ function AddOperation(props) {
   const [gridApi, setGridApi] = useState(null);
   const [gridColumnApi, setGridColumnApi] = useState(null);
   const [rowData, setRowData] = useState(null);
-
   const dispatch = useDispatch()
-
   const costData = useContext(costingInfoContext)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { CostingEffectiveDate } = useSelector(state => state.costing)
   const { selectedIdsOfOperationAndOtherOperation } = useSelector(state => state.costing)
-
-  const [selectedIds, setSelectedIds] = useState([...props?.Ids, ...selectedIdsOfOperationAndOtherOperation]);
+  let selectedIds = [...props?.Ids, ...selectedIdsOfOperationAndOtherOperation]
 
   /**
   * @method toggleDrawer
@@ -86,17 +83,6 @@ function AddOperation(props) {
 
     }
   }, []);
-
-
-
-
-
-  useEffect(() => {
-
-
-
-  }, [selectedIdsOfOperationAndOtherOperation]);
-
 
 
   /**
@@ -226,7 +212,6 @@ function AddOperation(props) {
   const resetState = () => {
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
-
   }
 
 

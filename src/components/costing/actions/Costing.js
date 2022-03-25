@@ -2347,7 +2347,6 @@ export function setForgingCalculatorMachiningStockSection(data) {
 }
 
 
-
 export function setSelectedIds(data) {                  //THIS METHOD WILL SAVE OPERATION ID'S OF SELECTED OPERATION AND OTHER OPERATION
   return (dispatch) => {
     dispatch({
@@ -2355,7 +2354,6 @@ export function setSelectedIds(data) {                  //THIS METHOD WILL SAVE 
       payload: data,
     })
   }
-
 }
 
 
