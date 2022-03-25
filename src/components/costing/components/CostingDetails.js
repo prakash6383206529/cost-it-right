@@ -576,12 +576,8 @@ function CostingDetails(props) {
 
     if (type === VBC) {
       setCostingData({ costingId: costingId, type })
-<<<<<<< HEAD
-      dispatch(getZBCCostingByCostingId(costingId, (res) => {
-=======
       dispatch(getBriefCostingById(costingId, (res) => {
 
->>>>>>> 8736a3d54 (Action name and import change for get-zbc-costing-detail-by-id)
         setTimeout(() => {
           setStepTwo(true)
           setStepOne(false)
