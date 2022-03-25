@@ -16,7 +16,7 @@ import CostingDetailStepTwo from './CostingDetailStepTwo';
 import { APPROVED, DRAFT, EMPTY_GUID, PENDING, REJECTED, VBC, WAITING_FOR_APPROVAL, ZBC, EMPTY_GUID_0, COSTING, APPROVED_BY_SIMULATION } from '../../../config/constants';
 import {
   getPartInfo, checkPartWithTechnology, createZBCCosting, createVBCCosting, getZBCExistingCosting, getVBCExistingCosting,
-  updateZBCSOBDetail, updateVBCSOBDetail, storePartNumber, getZBCCostingByCostingId, deleteDraftCosting, getPartSelectListByTechnology,
+  updateZBCSOBDetail, updateVBCSOBDetail, storePartNumber, getBriefCostingById, deleteDraftCosting, getPartSelectListByTechnology,
   setOverheadProfitData, setComponentOverheadItemData, setPackageAndFreightData, setComponentPackageFreightItemData, setToolTabData,
   setComponentToolItemData, setComponentDiscountOtherItemData, gridDataAdded, getCostingSpecificTechnology, setRMCCData, setComponentItemData, getNCCExistingCosting, createNCCCosting, saveAssemblyBOPHandlingCharge,
 } from '../actions/Costing'
@@ -562,10 +562,11 @@ function CostingDetails(props) {
   const closeCopyCostingDrawer = (e = '', costingId = '', type = '') => {
     //nextToggle()
     setIsCopyCostingDrawer(false)
-    dispatch(getZBCCostingByCostingId('', (res) => { }))
+    dispatch(getBriefCostingById('', (res) => { }))
+
     if (type === ZBC) {
       setCostingData({ costingId: costingId, type })
-      dispatch(getZBCCostingByCostingId(costingId, (res) => {
+      dispatch(getBriefCostingById(costingId, (res) => {
         setTimeout(() => {
           setStepTwo(true)
           setStepOne(false)
@@ -575,7 +576,12 @@ function CostingDetails(props) {
 
     if (type === VBC) {
       setCostingData({ costingId: costingId, type })
+<<<<<<< HEAD
       dispatch(getZBCCostingByCostingId(costingId, (res) => {
+=======
+      dispatch(getBriefCostingById(costingId, (res) => {
+
+>>>>>>> 8736a3d54 (Action name and import change for get-zbc-costing-detail-by-id)
         setTimeout(() => {
           setStepTwo(true)
           setStepOne(false)
@@ -710,7 +716,7 @@ function CostingDetails(props) {
       return false;
     }
 
-    dispatch(getZBCCostingByCostingId('', (res) => { }))
+    dispatch(getBriefCostingById('', (res) => { }))
 
     if (checkSOBTotal() && type === ZBC) {
       let tempData = zbcPlantGrid[index]
@@ -743,7 +749,7 @@ function CostingDetails(props) {
           setPartInfo(res.data.Data)
           setCostingData({ costingId: res.data.Data.CostingId, type })
           /***********ADDED THIS DISPATCH METHOD FOR GETTING ZBC DETAIL************/
-          dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, (res) => {
+          dispatch(getBriefCostingById(res.data.Data.CostingId, (res) => {
             setIsCostingViewMode(false)
             setStepTwo(true)
             setStepOne(false)
@@ -784,7 +790,7 @@ function CostingDetails(props) {
 
       dispatch(createVBCCosting(data, (res) => {
         if (res.data.Result) {
-          dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, () => {
+          dispatch(getBriefCostingById(res.data.Data.CostingId, () => {
 
             setIsCostingViewMode(false)
             setStepTwo(true)
@@ -827,7 +833,7 @@ function CostingDetails(props) {
           setPartInfo(res.data.Data)
           setCostingData({ costingId: res.data.Data.CostingId, type })
           /***********ADDED THIS DISPATCH METHOD FOR GETTING ZBC DETAIL************/
-          dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, (res) => {
+          dispatch(getBriefCostingById(res.data.Data.CostingId, (res) => {
             setIsCostingViewMode(false)
             setStepTwo(true)
             setStepOne(false)
@@ -841,7 +847,7 @@ function CostingDetails(props) {
           setPartInfo(res.data.Data)
           setCostingData({ costingId: res.data.Data.CostingId, type })
           /***********ADDED THIS DISPATCH METHOD FOR GETTING ZBC DETAIL************/
-          dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, (res) => {
+          dispatch(getBriefCostingById(res.data.Data.CostingId, (res) => {
             setIsCostingViewMode(false)
             setStepTwo(true)
             setStepOne(false)
@@ -951,7 +957,7 @@ function CostingDetails(props) {
         LoggedInUserId: loggedInUserId(),
       }
       dispatch(updateZBCSOBDetail(data, (res) => {
-        dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => {
+        dispatch(getBriefCostingById(tempData.SelectedCostingVersion.value, (res) => {
           resetSOBChanged()
           setStepTwo(true)
           setStepOne(false)
@@ -973,7 +979,7 @@ function CostingDetails(props) {
         DestinationPlantId: tempData.DestinationPlantId
       }
       dispatch(updateVBCSOBDetail(data, (res) => {
-        dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => {
+        dispatch(getBriefCostingById(tempData.SelectedCostingVersion.value, (res) => {
 
 
           resetSOBChanged()
@@ -990,12 +996,12 @@ function CostingDetails(props) {
    * @description MOVE TO COSTING DETAIL
    */
   const moveToCostingDetail = (index, type) => {
-    dispatch(getZBCCostingByCostingId('', (res) => { }))
+    dispatch(getBriefCostingById('', (res) => { }))
 
     if (type === ZBC) {
       let tempData = zbcPlantGrid[index]
       setCostingData({ costingId: tempData.SelectedCostingVersion.value, type })
-      dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => {
+      dispatch(getBriefCostingById(tempData.SelectedCostingVersion.value, (res) => {
         setTimeout(() => {
           setStepTwo(true)
           setStepOne(false)
@@ -1006,7 +1012,7 @@ function CostingDetails(props) {
     if (type === VBC) {
       let tempData = vbcVendorGrid[index]
       setCostingData({ costingId: tempData.SelectedCostingVersion.value, type })
-      dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => {
+      dispatch(getBriefCostingById(tempData.SelectedCostingVersion.value, (res) => {
 
 
         setTimeout(() => {
@@ -1019,7 +1025,7 @@ function CostingDetails(props) {
     if (type === NCC) {
       let tempData = nccGrid[index]
       setCostingData({ costingId: tempData.SelectedCostingVersion.value, type })
-      dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => {
+      dispatch(getBriefCostingById(tempData.SelectedCostingVersion.value, (res) => {
         setTimeout(() => {
           setStepTwo(true)
           setStepOne(false)
@@ -1217,7 +1223,7 @@ function CostingDetails(props) {
    * @description used to Reset form
    */
   const backToFirstStep = () => {
-    dispatch(getZBCCostingByCostingId('', (res) => {
+    dispatch(getBriefCostingById('', (res) => {
 
 
     }))
