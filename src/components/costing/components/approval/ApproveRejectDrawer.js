@@ -524,7 +524,8 @@ function ApproveRejectDrawer(props) {
         senderObj.PurchasingGroup = SAPData.PurchasingGroup?.label
         senderObj.MaterialGroup = SAPData.MaterialGroup?.label
         senderObj.DecimalOption = SAPData.DecimalOption?.value
-        senderObj.isMultiSimulation = isSimulationApprovalListing ? true : false
+        senderObj.IsMultiSimulation = isSimulationApprovalListing ? true : false      // IF WE SEND MULTIPLE TOKENS FOR SIMULATION THEN THIS WILL BE TRUE (requirement)
+
         //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
         dispatch(simulationApprovalRequestBySender(senderObj, res => {
           setIsDisable(false)
