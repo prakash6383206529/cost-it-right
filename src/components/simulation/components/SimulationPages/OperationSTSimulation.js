@@ -68,11 +68,15 @@ function OperationSTSimulation(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let valueShow
         let master = isImpactedMaster ? masterId : selectedMasterForSimulation?.value
-        if (Number(master) === Number(SURFACETREATMENT) || row.IsSurfaceTreatmenOperation === true) {
-            valueShow = lastRevision ? row.OldSurfaceTreatmentRatePerUOM : row.OldOperationRate
-        }
-        if (Number(master) === Number(OPERATIONS) || row.IsSurfaceTreatmenOperation === false) {
-            valueShow = lastRevision ? row.OldNetOperationCost : row.OldOperationRate
+        if (lastRevision) {
+            if (Number(master) === Number(SURFACETREATMENT) || row.IsSurfaceTreatmenOperation === true) {
+                valueShow = row.OldSurfaceTreatmentRatePerUOM
+            }
+            if (Number(master) === Number(OPERATIONS) || row.IsSurfaceTreatmenOperation === false) {
+                valueShow = row.OldOperationBasicRate
+            }
+        } else {
+            valueShow = row.OldOperationRate
         }
         // switch (Number(master)) {
         //     case Number(SURFACETREATMENT):
@@ -104,11 +108,15 @@ function OperationSTSimulation(props) {
         const value = beforeSaveCell(cell)
         let valueShow
         let master = isImpactedMaster ? masterId : selectedMasterForSimulation?.value
-        if (Number(master) === Number(SURFACETREATMENT) || row.IsSurfaceTreatmenOperation === true) {
-            valueShow = lastRevision ? row.NewSurfaceTreatmentRatePerUOM : row.NewOperationRate
-        }
-        if (Number(master) === Number(OPERATIONS) || row.IsSurfaceTreatmenOperation === false) {
-            valueShow = lastRevision ? row.NewOperationBasicRate : row.NewOperationRate
+        if (lastRevision) {
+            if (Number(master) === Number(SURFACETREATMENT) || row.IsSurfaceTreatmenOperation === true) {
+                valueShow = row.NewSurfaceTreatmentRatePerUOM
+            }
+            if (Number(master) === Number(OPERATIONS) || row.IsSurfaceTreatmenOperation === false) {
+                valueShow = row.NewOperationBasicRate
+            }
+        } else {
+            valueShow = row.NewOperationRate
         }
         //  switch (Number(master)) {
         //     case Number(SURFACETREATMENT):
