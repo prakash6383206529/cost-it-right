@@ -1773,12 +1773,12 @@ export const AcceptableOperationUOM = ['Mass', 'Dimensionless', 'Volume', 'Area'
 export const AcceptableFuelUOM = ['Mass', 'Volume']
 export const AcceptablePowerUOM = ['Power']
 export const AcceptableSheetMetalUOM = ['Kilogram', 'Gram', 'Milligram']
-export const MULTIPLERMTECHNOLOGY=[4,5,7,8,14,16,17,6,9,10,2,15]
+export const MULTIPLERMTECHNOLOGY = [4, 5, 7, 8, 14, 16, 17, 6, 9, 10, 2, 15]
 
 export function isMultipleRMAllow(technology) {
-    const allowedMultipleRM =[4,5,7,8,14,16,17,6,9,10,2,15]
+    const allowedMultipleRM = [4, 5, 7, 8, 14, 16, 17, 6, 9, 10, 2, 15]
     return allowedMultipleRM.includes(technology);
-  }
+}
 
 
 
@@ -1800,9 +1800,9 @@ export const FABRICATION = 15
 export const CORRUGATEDBOX = 20
 export const WIRING_HARNESS = 16
 export const ELECTRONICS = 17
-export const HARDWARE=18
-export const RIVET=19
-export const PLATING=21
+export const HARDWARE = 18
+export const RIVET = 19
+export const PLATING = 21
 
 
 export const SIMULATION_LEFT_MENU_NOT_INCLUDED = ["Simulation Upload", "RM Import", "RM Domestic", "BOP Domestic", "BOP Import", "Process-Simulation", "Process", "Operation-Simulation", "Surface Treatment", "Overhead-Simulation", "Overhead", "Profits", "Profits-Simulation", "Freight-Simulation", "Combined Process", "Operations", "Exchange Rates", "Machine Rate"]
@@ -1838,7 +1838,7 @@ export const RMDomesticSimulation = [
 export const RMImportSimulation = [
     { label: "CostingHead", value: "CostingHead" },
     { label: "RawMaterial", value: "RawMaterial" },
-    {label:"RMCode",value:"RawMaterialCode"},
+    { label: "RMCode", value: "RawMaterialCode" },
     { label: "RMGrade", value: "RMGrade" },
     { label: "RMSpec", value: "RMSpec" },
     { label: "RawMaterialCode", value: "RawMaterialCode", },
@@ -2616,6 +2616,7 @@ export const RMDOMESTIC_DOWNLOAD_EXCEl = [
     { label: "RawMaterial", value: "RawMaterial", },
     { label: "RMGrade", value: "RMGrade", },
     { label: "RMSpec", value: "RMSpec", },
+    { label: "RawMaterialCode", value: "RawMaterialCode", },
     { label: "MaterialType", value: "MaterialType", },
     { label: "Category", value: "Category", },
     { label: "TechnologyName", value: "TechnologyName", },
@@ -2638,6 +2639,7 @@ export const RMIMPORT_DOWNLOAD_EXCEl = [
     { label: "RawMaterial", value: "RawMaterial", },
     { label: "RMGrade", value: "RMGrade", },
     { label: "RMSpec", value: "RMSpec", },
+    { label: "RawMaterialCode", value: "RawMaterialCode", },
     { label: "MaterialType", value: "MaterialType", },
     { label: "Category", value: "Category", },
     { label: "TechnologyName", value: "TechnologyName", },
