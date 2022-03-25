@@ -72,7 +72,8 @@ import {
   CHECK_IS_TOOL_DATA_CHANGE,
   CHECK_IS_OVERHEAD_AND_PROFIT_DATA_CHANGE,
   CHECK_IS_PACKAGE_AND_FREIGHT_DATA_CHANGE,
-  FORGING_CALCULATOR_MACHININGSTOCK_SECTION
+  FORGING_CALCULATOR_MACHININGSTOCK_SECTION,
+  SELECTED_IDS_OF_OPERATION_AND_OTHEROPERATION
 } from '../../../config/constants';
 
 const initialState = {
@@ -91,11 +92,11 @@ const initialState = {
   IsToolCostApplicable: false,
   SurfaceCostData: {},
   RMCCutOffObj: { IsCutOffApplicable: false, CutOffRMC: '' },
-  getAssemBOPCharge:{},
-  checkIsOverheadProfitChange:false,
-  checkIsFreightPackageChange:false,
-  checkIsToolTabChange:false,
-  
+  getAssemBOPCharge: {},
+  checkIsOverheadProfitChange: false,
+  checkIsFreightPackageChange: false,
+  checkIsToolTabChange: false,
+
 
 }
 
@@ -290,7 +291,7 @@ export default function costingReducer(state = initialState, action) {
       };
     case SET_RMCC_TAB_DATA:
       const tempRMData = [...action.payload]
-      
+
       return {
         ...state,
         loading: false,
@@ -567,42 +568,47 @@ export default function costingReducer(state = initialState, action) {
         getAssemBOPCharge: action.payload
       }
     case CHECK_IS_DATA_CHANGE:
-      return{
+      return {
         ...state,
-        loading:false,
-        checkIsDataChange:action.payload
+        loading: false,
+        checkIsDataChange: action.payload
       }
     case CHECK_IS_OVERHEAD_AND_PROFIT_DATA_CHANGE:
-      return{
+      return {
         ...state,
-        loading:false,
-        checkIsOverheadProfitChange:action.payload
+        loading: false,
+        checkIsOverheadProfitChange: action.payload
       }
     case CHECK_IS_PACKAGE_AND_FREIGHT_DATA_CHANGE:
-      return{
+      return {
         ...state,
-        loading:false,
-        checkIsFreightPackageChange:action.payload
+        loading: false,
+        checkIsFreightPackageChange: action.payload
       }
     case CHECK_IS_TOOL_DATA_CHANGE:
-      return{
+      return {
         ...state,
-        loading:false,
-        checkIsToolTabChange:action.payload
+        loading: false,
+        checkIsToolTabChange: action.payload
       }
     case CHECK_IS_DISCOUNT_DATA_CHANGE:
-      return{
+      return {
         ...state,
-        loading:false,
-        checkIsDiscountChange:action.payload
+        loading: false,
+        checkIsDiscountChange: action.payload
       }
-      case FORGING_CALCULATOR_MACHININGSTOCK_SECTION:
-        return {
-          ...state,
-          forgingCalculatorMachiningStockSectionValue: action.payload,
-        }
-    
-    
+    case FORGING_CALCULATOR_MACHININGSTOCK_SECTION:
+      return {
+        ...state,
+        forgingCalculatorMachiningStockSectionValue: action.payload,
+      }
+    case SELECTED_IDS_OF_OPERATION_AND_OTHEROPERATION:
+      return {
+        ...state,
+        selectedIdsOfOperationAndOtherOperation: action.payload,
+      }
+
+
     default:
       return state
   }

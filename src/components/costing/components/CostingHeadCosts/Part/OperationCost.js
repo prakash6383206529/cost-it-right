@@ -9,7 +9,7 @@ import { EMPTY_DATA } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
 import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected } from '../../../../../helper';
 import { ViewCostingContext } from '../../CostingDetails';
-import { gridDataAdded, isDataChange, setRMCCErrors } from '../../../actions/Costing';
+import { gridDataAdded, isDataChange, setRMCCErrors, setSelectedIds } from '../../../actions/Costing';
 import Popup from 'reactjs-popup';
 
 let counter = 0;
@@ -111,6 +111,7 @@ function OperationCost(props) {
       }
       return null;
     })
+    dispatch(setSelectedIds(Ids))
   }
 
   const onRemarkPopUpClick = (index) => {
@@ -145,6 +146,7 @@ function OperationCost(props) {
     })
     setIds(Ids && Ids.filter(item => item !== OperationId))
     setGridData(tempArr)
+    dispatch(setSelectedIds(Ids && Ids.filter(item => item !== OperationId)))
   }
 
   const editItem = (index) => {
