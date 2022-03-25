@@ -25,7 +25,7 @@ const gridOptions = {
 
 };
 function OperationSTSimulation(props) {
-    const { list, isbulkUpload, rowCount, isImpactedMaster, masterId, lastRevision, tokenForMultiSimulation } = props
+    const { list, isbulkUpload, rowCount, isImpactedMaster, masterId, lastRevision, tokenForMultiSimulation, isOperationMaster } = props
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')
@@ -68,17 +68,23 @@ function OperationSTSimulation(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let valueShow
         let master = isImpactedMaster ? masterId : selectedMasterForSimulation?.value
-        switch (Number(master)) {
-            case Number(SURFACETREATMENT):
-                valueShow = lastRevision ? row.OldSurfaceTreatmentCost : row.OldOperationRate
-                break;
-            case Number(OPERATIONS):
-                valueShow = lastRevision ? row.OldNetOperationCost : row.OldOperationRate
-                break;
-
-            default:
-                break;
+        if (Number(master) === Number(SURFACETREATMENT) || row.isSurfaceTreatment === true) {
+            valueShow = lastRevision ? row.OldSurfaceTreatmentRatePerUOM : row.OldOperationRate
         }
+        if (Number(master) === Number(OPERATIONS) || row.isSurfaceTreatment === false) {
+            valueShow = lastRevision ? row.OldNetOperationCost : row.OldOperationRate
+        }
+        // switch (Number(master)) {
+        //     case Number(SURFACETREATMENT):
+        //         valueShow = lastRevision ? row.OldSurfaceTreatmentCost : row.OldOperationRate
+        //         break;
+        //     case Number(OPERATIONS):
+        //         valueShow = lastRevision ? row.OldNetOperationCost : row.OldOperationRate
+        //         break;
+
+        //     default:
+        //         break;
+        // }
         const value = beforeSaveCell(cell)
         return (
             <>
@@ -98,17 +104,23 @@ function OperationSTSimulation(props) {
         const value = beforeSaveCell(cell)
         let valueShow
         let master = isImpactedMaster ? masterId : selectedMasterForSimulation?.value
-        switch (Number(master)) {
-            case Number(SURFACETREATMENT):
-                valueShow = lastRevision ? row.NewSurfaceTreatmentCost : row.NewOperationRate
-                break;
-            case Number(OPERATIONS):
-                valueShow = lastRevision ? row.NewNetOperationCost : row.NewOperationRate
-                break;
-
-            default:
-                break;
+        if (Number(master) === Number(SURFACETREATMENT) || row.isSurfaceTreatment === true) {
+            valueShow = lastRevision ? row.NewSurfaceTreatmentRatePerUOM : row.NewOperationRate
         }
+        if (Number(master) === Number(OPERATIONS) || row.isSurfaceTreatment === false) {
+            valueShow = lastRevision ? row.NewOperationBasicRate : row.NewOperationRate
+        }
+        //  switch (Number(master)) {
+        //     case Number(SURFACETREATMENT):
+        //         valueShow = lastRevision ? row.NewSurfaceTreatmentCost : row.NewOperationRate
+        //         break;
+        //     case Number(OPERATIONS):
+        //         valueShow = lastRevision ? row.NewNetOperationCost : row.NewOperationRate
+        //         break;
+
+        //     default:
+        //         break;
+        // }
         return (
             <>
                 {

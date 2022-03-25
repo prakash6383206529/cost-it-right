@@ -16,7 +16,12 @@ import Toaster from '../../common/Toaster';
 import { Redirect } from 'react-router';
 import { getPlantSelectListByType } from '../../../actions/Common';
 import { setCostingViewData } from '../../costing/actions/Costing';
-import { CostingSimulationDownloadBOP, CostingSimulationDownloadOperation, CostingSimulationDownloadRM, CostingSimulationDownloadST, ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl } from '../../../config/masterData'
+import {
+    ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl,
+    BOPGridForToken,
+    CostingSimulationDownloadBOP, CostingSimulationDownloadOperation, CostingSimulationDownloadRM, CostingSimulationDownloadST
+    , InitialGridForToken, LastGridForToken, OperationGridForToken, RMGridForToken, STGridForToken
+} from '../../../config/masterData'
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -160,28 +165,28 @@ function CostingSimulation(props) {
                 }
                 item.Variance = (item.OldPOPrice - item.NewPOPrice).toFixed(getConfigurationKey().NoOfDecimalForPrice)
                 //  ********** ADDED NEW FIELDS FOR ADDING THE OLD AND NEW RM COST / PC BUT NOT GETTING THE AS SUM IN DOWNLOAD **********
-                switch (Number(selectedMasterForSimulation.value)) {
-                    case Number(RMIMPORT):
-                    case Number(RMDOMESTIC):
-                        item.RMCVariance = (checkForNull(item.OldRMPrice).toFixed(TOFIXEDVALUE) -
-                            checkForNull(item.NewRMPrice).toFixed(TOFIXEDVALUE))
-                        return item
-                    case Number(SURFACETREATMENT):
-                        item.STVariance = (checkForNull(item.OldSurfaceTreatmentCost).toFixed(TOFIXEDVALUE) -
-                            checkForNull(item.NewSurfaceTreatmentCost).toFixed(TOFIXEDVALUE))
-                        return item
-                    case Number(OPERATIONS):
-                        item.OperationVariance = (checkForNull(item.OldOperationCost).toFixed(TOFIXEDVALUE) -
-                            checkForNull(item.NewOperationCost).toFixed(TOFIXEDVALUE))
-                        return item
-                    case Number(BOPDOMESTIC):
-                    case Number(BOPIMPORT):
-                        item.BOPVariance = (checkForNull(item.OldBOPCost).toFixed(TOFIXEDVALUE) -
-                            checkForNull(item.NewBOPCost).toFixed(TOFIXEDVALUE))
-                        return item
-                    default:
-                        break;
-                }
+                // switch (Number(selectedMasterForSimulation.value)) {
+                //     case Number(RMIMPORT):
+                //     case Number(RMDOMESTIC):
+                item.RMCVariance = (checkForNull(item.OldRMPrice).toFixed(TOFIXEDVALUE) -
+                    checkForNull(item.NewRMPrice).toFixed(TOFIXEDVALUE))
+                //     return item
+                // case Number(SURFACETREATMENT):
+                item.STVariance = (checkForNull(item.OldSurfaceTreatmentCost).toFixed(TOFIXEDVALUE) -
+                    checkForNull(item.NewSurfaceTreatmentCost).toFixed(TOFIXEDVALUE))
+                //     return item
+                // case Number(OPERATIONS):
+                item.OperationVariance = (checkForNull(item.OldOperationRate).toFixed(TOFIXEDVALUE) -
+                    checkForNull(item.NewOperationRate).toFixed(TOFIXEDVALUE))
+                //     return item
+                // case Number(BOPDOMESTIC):
+                // case Number(BOPIMPORT):
+                item.BOPVariance = (checkForNull(item.OldBOPCost).toFixed(TOFIXEDVALUE) -
+                    checkForNull(item.NewBOPCost).toFixed(TOFIXEDVALUE))
+                //         return item
+                //     default:
+                //         break;
+                // }
 
             })
             let uniqeArray = []
@@ -697,19 +702,12 @@ function CostingSimulation(props) {
 
 
 
-    const onBtExport = () => {
-        let tempArr = []
-        tempArr = simulationAssemblyListSummary
-
-        return returnExcelColumnSecond(ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl, tempArr)
-    };
-
-    const returnExcelColumnSecond = (data = [], TempData) => {
+    const returnExcelColumnSecond = (data = []) => {
 
         return (
 
-            <ExcelSheet data={TempData} name={AssemblyWiseImpactt}>
-                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+            <ExcelSheet data={simulationAssemblyListSummary} name={AssemblyWiseImpactt}>
+                {ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl && ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
 
@@ -734,18 +732,49 @@ function CostingSimulation(props) {
             // ************ CONCAT ALL DATA IN SINGLE ARRAY *********** */
             arrayOFCorrectObjIndividual = arrayOFCorrectObjIndividual.concat(temp);
         })
+        let finalGrid = [], isTokenAPI = false
+        if (showBOPColumn === true || showRMColumn === true || showOperationColumn === true || showSurfaceTreatmentColumn === true ||
+            showExchangeRateColumn === true || showMachineRateColumn === true) {
+            if (showBOPColumn || isBOPDomesticOrImport) {
+                finalGrid = [...finalGrid, ...BOPGridForToken]
+                isTokenAPI = true
+            }
+            if (showRMColumn || isRMDomesticOrRMImport) {
+                finalGrid = [...finalGrid, ...RMGridForToken]
+                isTokenAPI = true
+            }
+            if (showOperationColumn || isOperation) {
+                finalGrid = [...finalGrid, ...OperationGridForToken]
+                isTokenAPI = true
+            }
+            if (showSurfaceTreatmentColumn || isSurfaceTreatment) {
+                finalGrid = [...finalGrid, ...STGridForToken]
+                isTokenAPI = true
+            }
+            // if (showExchangeRateColumn || isOperation) {         
+            //     finalGrid = [...finalGrid, ...OperationGridForToken]
+            // isTokenAPI = true
+            // }
+            // if (showMachineRateColumn || isMachineRate) {
+            //     finalGrid = [...finalGrid, ...OperationGridForToken]
+            // isTokenAPI = true
+            // }
+
+            // CONDITION FOR COMBINED PROCESS
+            finalGrid = [...InitialGridForToken, ...finalGrid, ...LastGridForToken]
+        }
 
         switch (Number(master)) {
             case Number(RMDOMESTIC):
             case Number(RMIMPORT):
-                return returnExcelColumn(CostingSimulationDownloadRM, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : costingList && costingList?.length > 0 ? costingList : [])
+                return returnExcelColumn(isTokenAPI ? finalGrid : CostingSimulationDownloadRM, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : costingList && costingList?.length > 0 ? costingList : [])
             case Number(SURFACETREATMENT):
-                return returnExcelColumn(CostingSimulationDownloadST, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : costingList && costingList?.length > 0 ? costingList : [])
+                return returnExcelColumn(isTokenAPI ? finalGrid : CostingSimulationDownloadST, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : costingList && costingList?.length > 0 ? costingList : [])
             case Number(OPERATIONS):
-                return returnExcelColumn(CostingSimulationDownloadOperation, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : costingList && costingList?.length > 0 ? costingList : [])
+                return returnExcelColumn(isTokenAPI ? finalGrid : CostingSimulationDownloadOperation, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : costingList && costingList?.length > 0 ? costingList : [])
             case Number(BOPDOMESTIC):
             case Number(BOPIMPORT):
-                return returnExcelColumn(CostingSimulationDownloadBOP, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : costingList && costingList?.length > 0 ? costingList : [])
+                return returnExcelColumn(isTokenAPI ? finalGrid : CostingSimulationDownloadBOP, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : costingList && costingList?.length > 0 ? costingList : [])
             default:
                 return 'foo'
         }
@@ -867,7 +896,7 @@ function CostingSimulation(props) {
                                             <ExcelFile filename={'Costing'} fileExtension={'.xls'} element={
                                                 <button title="Download" type="button" className={'user-btn mr5'}><div className="download mr-0"></div></button>}>
                                                 {renderColumn()}
-                                                {onBtExport()}
+                                                {returnExcelColumnSecond()}
                                             </ExcelFile>
                                             <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
                                                 <div className="refresh mr-0"></div>
@@ -951,12 +980,16 @@ function CostingSimulation(props) {
                                                     </>}
 
                                                     {(isOperation || showOperationColumn) && <>
+                                                        <AgGridColumn width={140} field="OperationName" headerName='Operation Name' ></AgGridColumn>
+                                                        <AgGridColumn width={140} field="OperationCode" headerName='Operation Code' ></AgGridColumn>
                                                         <AgGridColumn width={140} field="OldOperationCost" headerName='Old Oper Cost' cellRenderer="oldOPERFormatter" ></AgGridColumn>
                                                         <AgGridColumn width={140} field="NewOperationCost" headerName='New Oper Cost' cellRenderer="newOPERFormatter"></AgGridColumn>
                                                         <AgGridColumn width={140} field="OperationCostVariance" headerName='Oper Variance' ></AgGridColumn>
                                                     </>}
 
                                                     {(isBOPDomesticOrImport || showBOPColumn) && <>
+                                                        <AgGridColumn width={140} field="BoughtOutPartName" headerName='BOP Name' ></AgGridColumn>
+                                                        <AgGridColumn width={140} field="BoughtOutPartNumber" headerName='BOP Number' ></AgGridColumn>
                                                         <AgGridColumn width={140} field="OldNetBoughtOutPartCost" headerName='Old BOP Cost' cellRenderer={decimalFormatter} ></AgGridColumn>
                                                         <AgGridColumn width={140} field="NewNetBoughtOutPartCost" headerName='New BOP Cost' cellRenderer={decimalFormatter}></AgGridColumn>
                                                         <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" headerName='BOP Variance' cellRenderer={decimalFormatter} ></AgGridColumn>
