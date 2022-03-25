@@ -16,7 +16,7 @@ import { BOP_IMPORT_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
 import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
 import { BopImport, INR, BOP_MASTER_ID } from '../../../config/constants';
-import { getConfigurationKey, CheckApprovalApplicableMaster, getFilteredData } from '../../../helper';
+import { getConfigurationKey, getFilteredData } from '../../../helper';
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -298,44 +298,12 @@ class BOPImportListing extends Component {
         return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
     }
     plantFormatter = (props) => {
-
+        let checkValue
         const rowData = props.data
-        return rowData.IsVendor === 'Vendor Based' ? rowData.DestinationPlant : rowData.Plants
+        checkValue = (!this.props.isSimulation) ? 'Vendor Based' : true
+        return rowData.IsVendor === checkValue ? rowData.DestinationPlant : rowData.Plants
     }
 
-
-
-
-    /**
-    * @method filterList
-    * @description Filter user listing on the basis of role and department
-    */
-    filterList = () => {
-        const { costingHead, BOPCategory, plant, vendor } = this.state;
-
-        const costingHeadTemp = costingHead ? costingHead.value : '';
-        const categoryTemp = BOPCategory ? BOPCategory.value : 0;
-        const vendorTemp = vendor ? vendor.value : '';
-        const plantTemp = plant ? plant.value : '';
-
-        this.getDataList(costingHeadTemp, categoryTemp, vendorTemp, plantTemp)
-    }
-
-    /**
-    * @method resetFilter
-    * @description Reset user filter
-    */
-    resetFilter = () => {
-        this.setState({
-            costingHead: [],
-            BOPCategory: [],
-            plant: [],
-            vendor: [],
-        }, () => {
-            this.getDataList()
-        })
-
-    }
     formToggle = () => {
         this.props.displayForm()
     }
@@ -545,7 +513,6 @@ class BOPImportListing extends Component {
                     <Col>
 
                         <div className={`ag-grid-wrapper height-width-wrapper ${this.props.bopImportList && this.props.bopImportList?.length <= 0 ? "overlay-contain" : ""}`}>
-
                             <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`} >
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
