@@ -12,14 +12,14 @@ function AssemblyOverheadProfit(props) {
   const { children, item, index } = props;
 
   const [IsOpen, setIsOpen] = useState(false);
-  
+
   const [Count, setCount] = useState(0);
 
   const costData = useContext(costingInfoContext);
   const netPOPrice = useContext(NetPOPriceContext);
   const CostingViewMode = useContext(ViewCostingContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { CostingEffectiveDate, RMCCTabData, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, DiscountCostData,checkIsOverheadProfitChange } = useSelector(state => state.costing)
+  const { CostingEffectiveDate, RMCCTabData, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, DiscountCostData, checkIsOverheadProfitChange } = useSelector(state => state.costing)
 
   const dispatch = useDispatch()
 
@@ -111,8 +111,8 @@ function AssemblyOverheadProfit(props) {
         "TotalRawMaterialsCostWithQuantity": tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
         "TotalBoughtOutPartCostWithQuantity": tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
         "TotalConversionCostWithQuantity": tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
-        "TotalCalculatedRMBOPCCCostPerPC": tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity + tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity + tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
-        "TotalCalculatedRMBOPCCCostPerAssembly": tabData.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
+        "TotalCalculatedRMBOPCCCostWithQuantity": tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity + tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity + tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
+        "TotalCalculatedRMBOPCCCostPerAssembly": tabData && tabData.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
         "NetRMCostPerAssembly": tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
         "NetBOPCostAssembly": tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
         "NetConversionCostPerAssembly": tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
@@ -133,10 +133,11 @@ function AssemblyOverheadProfit(props) {
         "TabId": 3
       },
       "WorkingRows": [],
-      "LoggedInUserId": loggedInUserId()
+      "LoggedInUserId": loggedInUserId(),
+      "BOPHandlingCharges": {}
 
     }
-    if(!CostingViewMode && checkIsOverheadProfitChange){
+    if (!CostingViewMode && checkIsOverheadProfitChange) {
       dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
       dispatch(saveAssemblyOverheadProfitTab(reqData, res => {
         if (res.data.Result) {
