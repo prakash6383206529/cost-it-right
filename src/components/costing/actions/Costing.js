@@ -257,10 +257,10 @@ export function updateVBCSOBDetail(requestData, callback) {
 }
 
 /**
- * @method getZBCCostingByCostingId
+ * @method getBriefCostingById
  * @description GET COSTING DETAIL BY COSTING ID
  */
-export function getZBCCostingByCostingId(CostingId, callback) {
+export function getBriefCostingById(CostingId, callback) {
   return (dispatch) => {
     if (CostingId !== '') {
       dispatch({
@@ -275,13 +275,13 @@ export function getZBCCostingByCostingId(CostingId, callback) {
         type: SET_COSTING_DATALIST_BY_COSTINGID,
         payload: [],
       })
-      const request = axios.get(`${API.getZBCCostingByCostingId}/${CostingId}`, headers);
+      const request = axios.get(`${API.getBriefCostingById}/${CostingId}`, headers);
       request.then((response) => {
 
         if (response.data.Result) {
           dispatch({
             type: GET_COSTING_DATA_BY_COSTINGID,
-            payload: response.data.Data,
+            payload: response.data.DataList[0],
           })
           dispatch({
             type: SET_ACTUAL_COSTING_DATALIST_BY_COSTINGID,
@@ -2337,7 +2337,7 @@ export function isDiscountDataChange(isDataChange) {
  * @description: Used for storing part no from costing summary
  * @param {*} data
  */
- export function setForgingCalculatorMachiningStockSection(data) {
+export function setForgingCalculatorMachiningStockSection(data) {
   return (dispatch) => {
     dispatch({
       type: FORGING_CALCULATOR_MACHININGSTOCK_SECTION,

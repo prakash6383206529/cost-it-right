@@ -42,6 +42,7 @@ function TabRMCC(props) {
         AssemCostingId: costData.CostingId,
         subAsmCostingId: costData.CostingId
       }
+
       dispatch(getRMCCTabData(data, true, (res) => { }))
     }
   }, [costData])
