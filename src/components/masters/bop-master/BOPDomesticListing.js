@@ -221,9 +221,14 @@ class BOPDomesticListing extends Component {
     }
 
     plantFormatter = (props) => {
-
+        let checkValue
         const rowData = props.data
-        return rowData.IsVendor === 'Vendor Based' ? rowData.DestinationPlant : rowData.Plants
+        if (!this.props.isSimulation) {
+            checkValue = 'Vendor Based'
+        } else {
+            checkValue = true
+        }
+        return rowData.IsVendor === checkValue ? rowData.DestinationPlant : rowData.Plants
     }
 
     formToggle = () => {

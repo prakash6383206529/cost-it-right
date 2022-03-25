@@ -2556,11 +2556,14 @@ export const CostingSimulationDownloadOperation = [
     { label: "PO Price New", value: "NewPOPrice" },
     { label: "PO Variance", value: "Variance" },
 
+    { label: "OperationName", value: "OperationName" },
+    { label: "OperationCode", value: "OperationCode" },
     { label: "OldOperationRate", value: "OldOperationRate" },
     { label: "NewOperationRate", value: "NewOperationRate" },
+    { label: "OperationVariance", value: "OperationVariance" },
     { label: "OldOperationCost", value: "OldOperationCost" },
     { label: "NewOperationCost", value: "NewOperationCost" },
-    { label: "OperationVariance", value: "OperationVariance" },
+    { label: "OperationCostVariance", value: "OperationCostVariance" },
 
     { label: "OldOverheadCost", value: "OldOverheadCost" },
     { label: "NewOverheadCost", value: "NewOverheadCost" },
@@ -2597,6 +2600,8 @@ export const CostingSimulationDownloadBOP = [
     { label: "PO Price New", value: "NewPOPrice" },
     { label: "PO Variance", value: "Variance" },
 
+    { label: "BoughtOutPartName", value: "BoughtOutPartName" },
+    { label: "BoughtOutPartNumber", value: "BoughtOutPartNumber" },
     { label: "OldBOPCost", value: "OldBOPCost" },
     { label: "NewBOPCost", value: "NewBOPCost" },
     { label: "BOPVariance", value: "BOPVariance" },
@@ -3082,4 +3087,91 @@ export const ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl = [
     { label: "New PO Price/Assembly", value: "NewPrice", },
     { label: "Variance/Assembly", value: "Variance", },
 
+]
+
+
+export const OperationGridForToken = [
+    { label: "OperationName", value: "OperationName" },
+    { label: "OperationCode", value: "OperationCode" },
+    { label: "OldOperationRate", value: "OldOperationRate" },
+    { label: "NewOperationRate", value: "NewOperationRate" },
+    { label: "OperationVariance", value: "OperationVariance" },
+    { label: "OldOperationCost", value: "OldOperationCost" },
+    { label: "NewOperationCost", value: "NewOperationCost" },
+    { label: "OperationCostVariance", value: "OperationCostVariance" },
+
+]
+
+export const RMGridForToken = [
+    { label: "Finish Weight", value: "RawMaterialFinishWeight" },
+    { label: "Gross Weight", value: "RawMaterialGrossWeight" },
+    { label: "PO Price Old", value: "OldPOPrice" },
+    { label: "PO Price New", value: "NewPOPrice" },
+    { label: "PO Variance", value: "Variance" },
+    { label: "Old Basic Rate", value: "OldRMRate" },
+    { label: 'New Basic Rate', value: 'NewRMRate' },
+    { label: "ScrapRate", value: "OldScrapRate" },
+    { label: 'NewScrapRate', value: 'NewScrapRate' },
+    { label: "RM Cost Old", value: "OldRMPrice" },
+    { label: "RM Cost New", value: "NewRMPrice" },
+    { label: "RM Variance", value: "RMCVariance" },
+
+]
+
+export const STGridForToken = [
+    { label: "OldSurfaceTreatmentRate", value: "OldSurfaceTreatmentRate" },
+    { label: "NewSurfaceTreatmentRate", value: "NewSurfaceTreatmentRate" },
+    { label: "OldSurfaceTreatmentCost", value: "OldSurfaceTreatmentCost" },
+    { label: "NewSurfaceTreatmentCost", value: "NewSurfaceTreatmentCost" },
+    { label: "OldTranspotationCost", value: "OldTranspotationCost" },
+    { label: "OldNetSurfaceTreatmentCost", value: "OldNetSurfaceTreatmentCost" },
+    { label: "NewNetSurfaceTreatmentCost", value: "NewNetSurfaceTreatmentCost" },
+    { label: "STVariance", value: "STVariance" },
+
+]
+
+export const BOPGridForToken = [
+    { label: "BoughtOutPartName", value: "BoughtOutPartName" },
+    { label: "BoughtOutPartNumber", value: "BoughtOutPartNumber" },
+    { label: "OldBOPCost", value: "OldBOPCost" },
+    { label: "NewBOPCost", value: "NewBOPCost" },
+    { label: "BOPVariance", value: "BOPVariance" },
+]
+
+export const InitialGridForToken = [
+
+    { label: "Costing Head", value: "CostingHead" },
+    { label: "CostingNumber", value: "CostingNumber" },
+    { label: "Vendor Name", value: "VendorName" },
+    { label: "Plant Code", value: "PlantCode" },
+    { label: "Technology", value: "Technology" },
+    { label: "PlantCode", value: "PlantCode" },
+    { label: "Part No", value: "PartNo" },
+    { label: "Part Name", value: "PartName" },
+    { label: "ECN Number", value: "ECNNumber" },
+    { label: "Revision Number", value: "RevisionNumber" },
+    { label: "PO Price Old", value: "OldPOPrice" },
+    { label: "PO Price New", value: "NewPOPrice" },
+    { label: "PO Variance", value: "Variance" },
+]
+
+export const LastGridForToken = [
+    { label: "OldOverheadCost", value: "OldOverheadCost" },
+    { label: "NewOverheadCost", value: "NewOverheadCost" },
+    { label: "OldProfitCost", value: "OldProfitCost" },
+    { label: "NewProfitCost", value: "NewProfitCost" },
+    { label: "OldRejectionCost", value: "OldRejectionCost" },
+    { label: "NewRejectionCost", value: "NewRejectionCost" },
+    { label: "OldICCCost", value: "OldICCCost" },
+    { label: "NewICCCost", value: "NewICCCost" },
+    { label: "OldPaymentTermsCost", value: "OldPaymentTermsCost" },
+    { label: "NewPaymentTermsCost", value: "NewPaymentTermsCost" },
+    { label: "OldOtherCost", value: "OldOtherCost" },
+    { label: "NewOtherCost", value: "NewOtherCost" },
+    { label: "OldDiscountCost", value: "OldDiscountCost" },
+    { label: "NewDiscountCost", value: "NewDiscountCost" },
+    { label: "OldNetOverheadAndProfitCost", value: "OldNetOverheadAndProfitCost" },
+    { label: "NewNetOverheadAndProfitCost", value: "NewNetOverheadAndProfitCost" },
+
+    // { label: "EffectiveDate", value: "EffectiveDate" },
 ]
