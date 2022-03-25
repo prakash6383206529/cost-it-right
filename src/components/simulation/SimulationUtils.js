@@ -2,9 +2,7 @@
 
 export const SimulationUtils = (TempData) => {
 
-
     TempData && TempData.map(item => {
-
 
         if (item.CostingHead === true) {
             item.CostingHead = 'Vendor Based'
@@ -23,18 +21,12 @@ export const SimulationUtils = (TempData) => {
         item.NewICCCost = (item.NewICCCost === 0 ? item.OldICCCost : item.NewICCCost)
         item.NewPaymentTermsCost = (item.NewPaymentTermsCost === 0 ? item.OldPaymentTermsCost : item.NewPaymentTermsCost)
         item.NewOtherCost = (item.NewOtherCost === 0 ? item.OldOtherCost : item.NewOtherCost)
-        item.NewDiscountCost = (item.NewDiscountCost === 0 ? item.NOldDiscountCostewRMPrice : item.NewDiscountCost)
+        item.NewDiscountCost = ((item.NewDiscountCost === 0 || item.NewDiscountCost === undefined) ? item.OldDiscountCost : item.NewDiscountCost)
         item.NewNetOverheadAndProfitCost = (item.NewNetOverheadAndProfitCost === 0 ? item.OldNetOverheadAndProfitCost : item.NewNetOverheadAndProfitCost)
         return null
     });
 
-
-
-
     return TempData
-
-
-
 }
 
 export const checkForChangeInOverheadProfit1Values = (item) => {
