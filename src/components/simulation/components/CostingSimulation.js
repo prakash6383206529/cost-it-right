@@ -5,8 +5,8 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRawMaterialNameChild } from '../../masters/actions/Material';
 import NoContentFound from '../../common/NoContentFound';
-import { BOPDOMESTIC, BOPIMPORT, TOFIXEDVALUE, EMPTY_DATA, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
-import { getComparisionSimulationData, getCostingBoughtOutPartSimulationList, getCostingSimulationList, getCostingSurfaceTreatmentSimulationList, setShowSimulationPage, getSimulatedAssemblyWiseImpactDate } from '../actions/Simulation';
+import { BOPDOMESTIC, BOPIMPORT, TOFIXEDVALUE, EMPTY_DATA, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, RMImpact, BOPImpact, OPerationImpact, ExchangeRateImpact } from '../../../config/constants';
+import { getComparisionSimulationData, getCostingBoughtOutPartSimulationList, getCostingSimulationList, getCostingSurfaceTreatmentSimulationList, setShowSimulationPage, getSimulatedAssemblyWiseImpactDate, getImpactedMasterData } from '../actions/Simulation';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
 import { checkForDecimalAndNull, checkForNull, formViewData, getConfigurationKey, userDetails } from '../../../helper';
@@ -19,8 +19,9 @@ import { setCostingViewData } from '../../costing/actions/Costing';
 import {
     ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl,
     BOPGridForToken,
+    BOPImpactDownloadArray,
     CostingSimulationDownloadBOP, CostingSimulationDownloadOperation, CostingSimulationDownloadRM, CostingSimulationDownloadST
-    , InitialGridForToken, LastGridForToken, OperationGridForToken, RMGridForToken, STGridForToken
+    , ERImpactDownloadArray, ImpactedBOPDownload, ImpactedERDownload, ImpactedOPERATIONDownload, ImpactedOPERATIONSTDownload, ImpactedRMDownload, ImpactedSTDownload, InitialGridForToken, LastGridForToken, OperationGridForToken, OperationImpactDownloadArray, RMGridForToken, RMImpactedDownloadArray, STGridForToken
 } from '../../../config/masterData'
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -100,6 +101,7 @@ function CostingSimulation(props) {
     const isBOPDomesticOrImport = ((Number(master) === Number(BOPDOMESTIC)) || (Number(master) === Number(BOPIMPORT)))
     const isMachineRate = Number(master) === (Number(MACHINERATE));
     const simulationAssemblyListSummary = useSelector((state) => state.simulation.simulationAssemblyListSummary)
+    const impactedMasterData = useSelector(state => state.comman.impactedMasterData)
 
     const dispatch = useDispatch()
 
@@ -107,6 +109,7 @@ function CostingSimulation(props) {
         getCostingList()
         dispatch(getPlantSelectListByType(ZBC, () => { }))
         dispatch(getRawMaterialNameChild(() => { }))
+        dispatch(getImpactedMasterData(simulationId, () => { }))
     }, [])
 
     useEffect(() => {
@@ -737,6 +740,98 @@ function CostingSimulation(props) {
             </ExcelSheet>);
     }
 
+    const returnExcelColumnImpactedMaster = () => {
+        let rmArraySet = [], bopArraySet = []
+        let operationArraySet = [], erArraySet = []
+
+        impactedMasterData?.OperationImpactedMasterDataList && impactedMasterData?.OperationImpactedMasterDataList.map((item) => {
+            let tempObj = []
+
+            tempObj.push(item.OperationName)
+            tempObj.push(item.OperationCode)
+            tempObj.push(item.UOM)
+            tempObj.push(item.OldOperationRate)
+            tempObj.push(item.NewOperationRate)
+            tempObj.push(item.EffectiveDate)
+            operationArraySet.push(tempObj)
+        })
+
+        impactedMasterData?.RawMaterialImpactedMasterDataList && impactedMasterData?.RawMaterialImpactedMasterDataList.map((item) => {
+
+            let tempObj = []
+
+            tempObj.push(item.RawMaterial)
+            tempObj.push(item.RMGrade)
+            tempObj.push(item.RMSpec)
+            tempObj.push(item.RawMaterialCode)
+            tempObj.push(item.Category)
+            tempObj.push(item.TechnologyName)
+            tempObj.push(item.VendorName)
+            tempObj.push(item.UOM)
+            tempObj.push(item.OldBasicRate)
+            tempObj.push(item.NewBasicRate)
+            tempObj.push(item.OldScrapRate)
+            tempObj.push(item.NewScrapRate)
+            tempObj.push(item.RMFreightCost)
+            tempObj.push(item.RMShearingCost)
+            tempObj.push(item.EffectiveDate)
+            rmArraySet.push(tempObj)
+        })
+
+        impactedMasterData?.BoughtOutPartImpactedMasterDataList && impactedMasterData?.BoughtOutPartImpactedMasterDataList.map((item) => {
+            let tempObj = []
+            tempObj.push(item.BoughtOutPartNumber)
+            tempObj.push(item.BoughtOutPartName)
+            tempObj.push(item.Category)
+            tempObj.push(item.Vendor)
+            tempObj.push(item.PartNumber)
+            tempObj.push(item.OldBOPRate)
+            tempObj.push(item.NewBOPRate)
+            tempObj.push(item.OldPOPrice)
+            tempObj.push(item.NewPOPrice)
+            tempObj.push(item.EffectiveDate)
+            rmArraySet.push(tempObj)
+        })
+        impactedMasterData?.ExchangeRateImpactedMasterDataList && impactedMasterData?.ExchangeRateImpactedMasterDataList.map((item) => {
+            let tempObj = []
+            tempObj.push(item.Currency)
+            tempObj.push(item.CostingNumber)
+            tempObj.push(item.PartNumber)
+            tempObj.push(item.BankRate)
+            tempObj.push(item.BankCommissionPercentage)
+            tempObj.push(item.CustomRate)
+            tempObj.push(item.CurrencyExchangeRate)
+            tempObj.push(item.NewExchangeRate)
+            tempObj.push(item.OldExchangeRate)
+            tempObj.push(item.EffectiveDate)
+            rmArraySet.push(tempObj)
+        })
+
+        const multiDataSet = [
+            {
+                columns: RMImpactedDownloadArray,
+                data: rmArraySet
+            }, {
+                ySteps: 5, //will put space of 5 rows,
+                columns: OperationImpactDownloadArray,
+                data: operationArraySet
+            }, {
+                ySteps: 5,
+                columns: BOPImpactDownloadArray,
+                data: bopArraySet
+            }, {
+                ySteps: 5,
+                columns: ERImpactDownloadArray,
+                data: erArraySet
+            }
+        ];
+
+        return (
+
+            <ExcelSheet dataSet={multiDataSet} name="Organization" />
+        );
+    }
+
     const renderColumn = () => {
         let arrayOFCorrectObjIndividual = []
         let tempArr = []
@@ -919,11 +1014,23 @@ function CostingSimulation(props) {
                                     <Col md="3" lg="3" className="search-user-block mb-3">
                                         <div className="d-flex justify-content-end bd-highlight w100">
 
-                                            <ExcelFile filename={'Costing'} fileExtension={'.xls'} element={
-                                                <button title="Download" type="button" className={'user-btn mr5'}><div className="download mr-0"></div></button>}>
-                                                {renderColumn()}
-                                                {returnExcelColumnSecond()}
-                                            </ExcelFile>
+                                            {(showRMColumn || showBOPColumn || showOperationColumn ||
+                                                showMachineRateColumn || showExchangeRateColumn || showSurfaceTreatmentColumn)
+                                                ?
+                                                <ExcelFile filename={'Costing'} fileExtension={'.xls'} element={
+                                                    <button title="Download" type="button" className={'user-btn mr5'} ><div className="download mr-0"></div></button>}>
+                                                    {renderColumn()}
+                                                    {returnExcelColumnSecond()}
+                                                    {returnExcelColumnImpactedMaster()}
+
+                                                </ExcelFile> :
+                                                <ExcelFile filename={'Costing'} fileExtension={'.xls'} element={
+                                                    <button title="Download" type="button" className={'user-btn mr5'} ><div className="download mr-0"></div></button>}>
+                                                    {renderColumn()}
+                                                    {returnExcelColumnSecond()}
+                                                </ExcelFile>
+
+                                            }
                                             <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
                                                 <div className="refresh mr-0"></div>
                                             </button>
