@@ -710,7 +710,7 @@ function SimulationApprovalSummary(props) {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let temp = ''
-        temp = (row.IsMultipleOperation === true) ? 'Multiple Operation' : row.OperationName
+        temp = (row.IsMultipleOperation === true) ? 'Multiple BOP' : row.OperationName
 
         return cell != null ? temp : '-';
     }
