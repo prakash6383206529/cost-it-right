@@ -220,12 +220,13 @@ function Simulation(props) {
             item = item.DepartmentCode
             return item
         })
-        let tempValue = token
-        tempValue = tempValue && tempValue.map((item) => {
-            let object = {}
-            object.SimulationId = item.value
-            return object
-        })
+        // let tempValue = token
+        // tempValue = tempValue && tempValue.map((item) => {
+        //     let object = {}
+        //     object.SimulationId = item.value
+        //     return object
+        // })
+        let tempValue = [{ SimulationId: token.value }]
 
         let obj = {
 
@@ -320,8 +321,17 @@ function Simulation(props) {
         setShowEditTable(false)
         setIsBulkUpload(false)
         // setTableData([])
+        setShowEditTable(false)
         setMaster({ label: master.label, value: master.value })
         setTechnology({ label: technology.label, value: technology.value })
+        setTimeout(() => {
+            setShowEditTable(true)
+        }, 200);
+
+        setSelectionForListingMasterAPI('Master')
+        setTimeout(() => {
+            dispatch(setTechnologyForSimulation(technology))
+        }, 200);
     }
 
     /**
@@ -695,12 +705,14 @@ function Simulation(props) {
     }
 
     const editMasterPage = (page) => {
-        let tempObject = token && token.map((item) => {
-            let obj = {}
-            obj.SimulationId = item.value
-            return obj
+        // let tempObject = token && token.map((item) => {
+        //     let obj = {}
+        //     obj.SimulationId = item.value
+        //     return obj
 
-        })
+        // })
+        let tempObject = token.length !== 0 ? [{ SimulationId: token.value }] : []
+
         switch (page) {
             case RMDOMESTIC:
                 return <RMSimulation isDomestic={true} cancelEditPage={cancelEditPage} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : getFilteredData(rmDomesticListing, RM_MASTER_ID)} technology={technology.label} master={master.label} tokenForMultiSimulation={tempObject} />  //IF WE ARE USING BULK UPLOAD THEN ONLY TABLE DATA WILL BE USED OTHERWISE DIRECT LISTING
@@ -821,7 +833,6 @@ function Simulation(props) {
                                             mandatory={false}
                                             handleChange={handleTokenChange}
                                             errors={errors.Masters}
-                                            isMulti={true}
                                         />
                                     </div>
                                 </div>
