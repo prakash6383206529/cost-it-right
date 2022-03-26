@@ -361,15 +361,15 @@ export function getApprovalSimulatedCostingSummary(params, callback) {
                     IsRawMaterialSimulation: response.status === 204 ? false : response?.data?.Data?.IsRawMaterialSimulation,
                     IsSurfaceTreatmentSimulation: response.status === 204 ? false : response?.data?.Data?.IsSurfaceTreatmentSimulation
                 }
-
-                dispatch({
-                    type: GET_APPROVAL_SIMULATION_COSTING_SUMMARY,
-                    payload: response.status === 204 ? [] : response.data.DataList,
-                })
                 dispatch({
                     type: GET_KEYS_FOR_DOWNLOAD_SUMMARY,
                     payload: tempData,
                 })
+                dispatch({
+                    type: GET_APPROVAL_SIMULATION_COSTING_SUMMARY,
+                    payload: response.status === 204 ? [] : response.data.DataList,
+                })
+
                 callback(response)
             }
         }).catch((error) => {
