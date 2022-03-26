@@ -8,9 +8,10 @@ import ViewDrawer from '../../costing/components/approval/ViewDrawer'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import {
-    costingHeadObjs, SIMULATIONAPPROVALSUMMARYDOWNLOADCP, SIMULATIONAPPROVALSUMMARYDOWNLOADBOP, SIMULATIONAPPROVALSUMMARYDOWNLOADOperation, BOPGridForToken, InitialGridForToken,
-    LastGridForToken, OperationGridForToken, RMGridForToken, STGridForToken,
-    SIMULATIONAPPROVALSUMMARYDOWNLOADST, ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl
+    costingHeadObjs, SIMULATIONAPPROVALSUMMARYDOWNLOADCP, SIMULATIONAPPROVALSUMMARYDOWNLOADBOP, BOPGridForTokenSummary, InitialGridForTokenSummary,
+    LastGridForTokenSummary, OperationGridForTokenSummary, RMGridForTokenSummary, STGridForTokenSummary,
+    SIMULATIONAPPROVALSUMMARYDOWNLOADST, ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl, RMImpactedDownloadArray,
+    OperationImpactDownloadArray, BOPImpactDownloadArray, ERImpactDownloadArray
 } from '../../../config/masterData';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common';
 import { getAmmendentStatus, getApprovalSimulatedCostingSummary, getComparisionSimulationData, setAttachmentFileData, getImpactedMasterData, getLastSimulationData, uploadSimulationAttachmentonFTP, getSimulatedAssemblyWiseImpactDate } from '../actions/Simulation'
@@ -198,11 +199,6 @@ function SimulationApprovalSummary(props) {
                 }))
             }
 
-            setTimeout(() => {
-
-                setLoader(false)
-            }, 500);
-
             // const valueTemp = {
             //     CostingHead: SimulatedCostingList[0].CostingHead === 'VBC' ? 1 : 0,
             //     impactPartNumber: SimulatedCostingList[0].PartNo,
@@ -235,29 +231,24 @@ function SimulationApprovalSummary(props) {
     }, [])
 
     const hideColumn = (props) => {
-        // setHideDataColumn({
-        //     hideOverhead: costingList && costingList.length > 0 && (costingList[0].NewOverheadCost === 0 || costingList[0].OldOverheadCost === costingList[0].NewOverheadCost) ? true : false,
-        //     hideProfit: costingList && costingList.length > 0 && (costingList[0].NewProfitCost === 0 || costingList[0].OldProfitCost === costingList[0].NewProfitCost) ? true : false,
-        //     hideRejection: costingList && costingList.length > 0 && (costingList[0].NewRejectionCost === 0 || costingList[0].OldRejectionCost === costingList[0].NewRejectionCost) ? true : false,
-        //     hideICC: costingList && costingList.length > 0 && (costingList[0].NewICCCost === 0 || costingList[0].OldICCCost === costingList[0].NewICCCost) ? true : false,
-        //     hidePayment: costingList && costingList.length > 0 && (costingList[0].NewPaymentTermsCost === 0 || costingList[0].OldPaymentTermsCost === costingList[0].NewPaymentTermsCost) ? true : false,
-        //     hideOtherCost: costingList && costingList.length > 0 && (costingList[0].NewOtherCost === 0 || costingList[0].OldOtherCost === costingList[0].NewOtherCost) ? true : false,
-        //     hideDiscount: costingList && costingList.length > 0 && (costingList[0].NewDiscountCost === 0 || costingList[0].OldDiscountCost === costingList[0].NewDiscountCost) ? true : false,
-        //     hideOveheadAndProfit: costingList && costingList.length > 0 && (costingList[0].NewNetOverheadAndProfitCost === 0 || costingList[0].OldNetOverheadAndProfitCost === costingList[0].NewNetOverheadAndProfitCost) ? true : false
-        // })
-
         setShowBOPColumn(keysForDownloadSummary?.IsBoughtOutPartSimulation === true ? true : false)
         setShowSurfaceTreatmentColumn(keysForDownloadSummary?.IsSurfaceTreatmentSimulation === true ? true : false)
         setShowOperationColumn(keysForDownloadSummary?.IsOperationSimulation === true ? true : false)
         setShowRMColumn(keysForDownloadSummary?.IsRawMaterialSimulation === true ? true : false)
         setShowExchangeRateColumn(keysForDownloadSummary?.IsExchangeRateSimulation === true ? true : false)
         setShowMachineRateColumn(keysForDownloadSummary?.IsMachineRateSimulation === true ? true : false)
+
+        setTimeout(() => {
+
+            setLoader(false)
+        }, 500);
+
     }
 
     useEffect(() => {
         hideColumn()
 
-    }, [costingList])
+    }, [keysForDownloadSummary])
 
     useEffect(() => {
         // if (costingList.length > 0 && effectiveDate) {
@@ -344,58 +335,7 @@ function SimulationApprovalSummary(props) {
         }
     }
 
-    const renderDropdownListing = (label) => {
-        const tempDropdownList = []
 
-        if (label === 'costingHead') {
-            return costingHeadObjs;
-        }
-
-        if (label === 'PartList') {
-            partSelectList && partSelectList.map((item) => {
-                if (item.Value === '0') return false
-                tempDropdownList.push({ label: item.Text, value: item.Value })
-                return null
-            })
-
-            return tempDropdownList
-        }
-
-        if (label === 'plant') {
-            plantSelectList && plantSelectList.map(item => {
-                if (item.Value === '0') return false;
-                tempDropdownList.push({ label: item.Text, value: item.Value })
-            });
-            return tempDropdownList;
-        }
-
-        if (label === 'Status') {
-            statusSelectList && statusSelectList.map((item) => {
-                if (item.Value === '0') return false
-                tempDropdownList.push({ label: item.Text, value: item.Value })
-                return null
-            })
-            return tempDropdownList
-        }
-
-        if (label === 'users') {
-            userList && userList.map((item) => {
-                if (item.Value === '0') return false
-                tempDropdownList.push({ label: item.Text, value: item.Value })
-                return null
-            })
-            return tempDropdownList
-        }
-
-        if (label === 'technology') {
-            technologySelectList && technologySelectList.map((item) => {
-                if (item.Value === '0') return false
-                tempDropdownList.push({ label: item.Text, value: item.Value })
-                return null
-            })
-            return tempDropdownList
-        }
-    }
 
     const DisplayCompareCosting = (el, data) => {
 
@@ -419,8 +359,6 @@ function SimulationApprovalSummary(props) {
         }))
     }
 
-
-
     const deleteInsertStatusBox = () => {
         setRecordInsertStatusBox(false)
     }
@@ -429,45 +367,108 @@ function SimulationApprovalSummary(props) {
         setAmendmentStatusBox(false)
     }
 
-    const onBtExport = () => {
-        let tempArr = []
-        tempArr = simulationAssemblyListSummary
-        return returnExcelColumnSecond(ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl, tempArr)
-    };
 
-
-    const returnExcelColumnSecond = (data = [], TempData) => {
+    const returnExcelColumnSecond = () => {
 
         return (
 
-            <ExcelSheet data={TempData} name={AssemblyWiseImpactt}>
-                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+            <ExcelSheet data={simulationAssemblyListSummary} name={AssemblyWiseImpactt}>
+                {ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl && ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
 
-    /**
-    * @method onSubmit
-    * @description filtering data on Apply button
-    */
-    const onSubmit = (values) => {
-        const tempPartNo = getValues('partNo') && getValues('partNo').value
-        const tempPlant = getValues('plantCode') && getValues('plantCode').value
+    const returnExcelColumnImpactedMaster = () => {
+        let rmArraySet = [], bopArraySet = []
+        let operationArraySet = [], erArraySet = []
 
-        let temp = []
-        if (tempPartNo && tempPlant) {
-            temp = costingList && costingList.filter(item => item.PartId === tempPartNo && item.PlantId === tempPlant)
-        } else {
-            if (tempPlant) {
-                temp = costingList && costingList.filter(item => item.PlantId === tempPlant)
+        impactedMasterData?.OperationImpactedMasterDataList && impactedMasterData?.OperationImpactedMasterDataList.map((item) => {
+            let tempObj = []
 
-            } else {
-                temp = costingList && costingList.filter(item => item.PartId === tempPartNo)
+            tempObj.push(item.OperationName)
+            tempObj.push(item.OperationCode)
+            tempObj.push(item.UOM)
+            tempObj.push(item.OldOperationRate)
+            tempObj.push(item.NewOperationRate)
+            tempObj.push(item.EffectiveDate)
+            operationArraySet.push(tempObj)
+        })
 
+        impactedMasterData?.RawMaterialImpactedMasterDataList && impactedMasterData?.RawMaterialImpactedMasterDataList.map((item) => {
+
+            let tempObj = []
+
+            tempObj.push(item.RawMaterial)
+            tempObj.push(item.RMGrade)
+            tempObj.push(item.RMSpec)
+            tempObj.push(item.RawMaterialCode)
+            tempObj.push(item.Category)
+            tempObj.push(item.TechnologyName)
+            tempObj.push(item.VendorName)
+            tempObj.push(item.UOM)
+            tempObj.push(item.OldBasicRate)
+            tempObj.push(item.NewBasicRate)
+            tempObj.push(item.OldScrapRate)
+            tempObj.push(item.NewScrapRate)
+            tempObj.push(item.RMFreightCost)
+            tempObj.push(item.RMShearingCost)
+            tempObj.push(item.EffectiveDate)
+            rmArraySet.push(tempObj)
+        })
+
+        impactedMasterData?.BoughtOutPartImpactedMasterDataList && impactedMasterData?.BoughtOutPartImpactedMasterDataList.map((item) => {
+            let tempObj = []
+            tempObj.push(item.BoughtOutPartNumber)
+            tempObj.push(item.BoughtOutPartName)
+            tempObj.push(item.Category)
+            tempObj.push(item.Vendor)
+            tempObj.push(item.PartNumber)
+            tempObj.push(item.OldBOPRate)
+            tempObj.push(item.NewBOPRate)
+            tempObj.push(item.OldPOPrice)
+            tempObj.push(item.NewPOPrice)
+            tempObj.push(item.EffectiveDate)
+            rmArraySet.push(tempObj)
+        })
+        impactedMasterData?.ExchangeRateImpactedMasterDataList && impactedMasterData?.ExchangeRateImpactedMasterDataList.map((item) => {
+            let tempObj = []
+            tempObj.push(item.Currency)
+            tempObj.push(item.CostingNumber)
+            tempObj.push(item.PartNumber)
+            tempObj.push(item.BankRate)
+            tempObj.push(item.BankCommissionPercentage)
+            tempObj.push(item.CustomRate)
+            tempObj.push(item.CurrencyExchangeRate)
+            tempObj.push(item.NewExchangeRate)
+            tempObj.push(item.OldExchangeRate)
+            tempObj.push(item.EffectiveDate)
+            rmArraySet.push(tempObj)
+        })
+
+        const multiDataSet = [
+            {
+                columns: RMImpactedDownloadArray,
+                data: rmArraySet
+            }, {
+                ySteps: 5, //will put space of 5 rows,
+                columns: OperationImpactDownloadArray,
+                data: operationArraySet
+            }, {
+                ySteps: 5,
+                columns: BOPImpactDownloadArray,
+                data: bopArraySet
+            }, {
+                ySteps: 5,
+                columns: ERImpactDownloadArray,
+                data: erArraySet
             }
-        }
-        setCostingList(temp)
+        ];
 
+        return (
+
+            <ExcelSheet dataSet={multiDataSet} name="Organization" />
+        );
     }
+
 
 
     const renderColumn = () => {
@@ -475,32 +476,32 @@ function SimulationApprovalSummary(props) {
         if (showBOPColumn === true || showRMColumn === true || showOperationColumn === true || showSurfaceTreatmentColumn === true ||
             showExchangeRateColumn === true || showMachineRateColumn === true) {
             if (showBOPColumn || isBOPDomesticOrImport) {
-                finalGrid = [...finalGrid, ...BOPGridForToken]
+                finalGrid = [...finalGrid, ...BOPGridForTokenSummary]
                 isTokenAPI = true
             }
             if (showRMColumn || isRMDomesticOrRMImport) {
-                finalGrid = [...finalGrid, ...RMGridForToken]
+                finalGrid = [...finalGrid, ...RMGridForTokenSummary]
                 isTokenAPI = true
             }
             if (showOperationColumn || isOperation) {
-                finalGrid = [...finalGrid, ...OperationGridForToken]
+                finalGrid = [...finalGrid, ...OperationGridForTokenSummary]
                 isTokenAPI = true
             }
             if (showSurfaceTreatmentColumn || isSurfaceTreatment) {
-                finalGrid = [...finalGrid, ...STGridForToken]
+                finalGrid = [...finalGrid, ...STGridForTokenSummary]
                 isTokenAPI = true
             }
             // if (showExchangeRateColumn || isOperation) {         
-            //     finalGrid = [...finalGrid, ...OperationGridForToken]
+            //     finalGrid = [...finalGrid, ...OperationGridForTokenSummary]
             // isTokenAPI = true
             // }
             // if (showMachineRateColumn || isMachineRate) {
-            //     finalGrid = [...finalGrid, ...OperationGridForToken]
+            //     finalGrid = [...finalGrid, ...OperationGridForTokenSummary]
             // isTokenAPI = true
             // }
 
             // CONDITION FOR COMBINED PROCESS
-            finalGrid = [...InitialGridForToken, ...finalGrid, ...LastGridForToken]
+            finalGrid = [...InitialGridForTokenSummary, ...finalGrid, ...LastGridForTokenSummary]
         }
 
         switch (String(SimulationTechnologyId)) {
@@ -588,6 +589,7 @@ function SimulationApprovalSummary(props) {
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
+
     const newPOCurrencyFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -636,7 +638,8 @@ function SimulationApprovalSummary(props) {
         let roudOffOld = 0, rounfOffNew = 0
         roudOffOld = _.round(row.OldNetRawMaterialsCost, COSTINGSIMULATIONROUND)
         rounfOffNew = _.round(row.NewNetRawMaterialsCost, COSTINGSIMULATIONROUND)
-        return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : ''
+        let newRoundOffVariance = checkForNull(roudOffOld - rounfOffNew).toFixed(COSTINGSIMULATIONROUND)
+        return cell != null ? checkForDecimalAndNull(newRoundOffVariance, getConfigurationKey().NoOfDecimalForPrice) : ''
     }
 
     const BOPVarianceFormatter = (props) => {
@@ -764,10 +767,11 @@ function SimulationApprovalSummary(props) {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let temp = ''
-        if (String(SimulationTechnologyId) === SURFACETREATMENT) {
-            temp = row.IsMultipleSTOperatrion === true ? 'Multiple Surface Treatment' : row.OperationName
-        } else if (String(SimulationTechnologyId) === OPERATIONS) {
-            temp = row.IsMultipleSTOperatrion === true ? 'Multiple Operation' : row.OperationName
+        temp = row.OperationName
+        if (row.IsMultipleSTOperatrion === true) {
+            temp = 'Multiple Surface Treatment'
+        } if (row.IsMultipleOperation === true) {
+            temp = 'Multiple Operation'
         }
         return cell != null ? temp : '-';
     }
@@ -1091,7 +1095,7 @@ function SimulationApprovalSummary(props) {
                             </Col>
                         </Row>
 
-                        {costingSummary &&
+                        {costingSummary && keysForDownloadSummary && Object.keys(keysForDownloadSummary).length > 0 &&
                             <>
                                 <div className={`ag-grid-react`}>
                                     { }
@@ -1101,16 +1105,27 @@ function SimulationApprovalSummary(props) {
                                                 <Col>
                                                     <div className={`ag-grid-wrapper height-width-wrapper ${costingList && costingList?.length <= 0 ? "overlay-contain" : ""}`}>
                                                         <div className="ag-grid-header d-flex">
-
                                                             <input type="text" className="form-control table-search" id="filter-text-box" value={textFilterSearch} placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                                                             <button type="button" className="user-btn float-right mr5" title="Reset Grid" onClick={() => resetState()}>
                                                                 <div className="refresh mr-0"></div>
                                                             </button>
-                                                            <ExcelFile filename={'Costing'} fileExtension={'.xls'} element={
-                                                                <button title="Download" type="button" className={'user-btn'} ><div className="download mr-0"></div></button>}>
-                                                                {renderColumn()}
-                                                                {onBtExport()}
-                                                            </ExcelFile>
+                                                            {(keysForDownloadSummary?.IsBoughtOutPartSimulation || keysForDownloadSummary?.IsSurfaceTreatmentSimulation || keysForDownloadSummary?.IsOperationSimulation ||
+                                                                keysForDownloadSummary?.IsRawMaterialSimulation || keysForDownloadSummary?.IsExchangeRateSimulation || keysForDownloadSummary?.IsMachineRateSimulation)
+                                                                ?
+                                                                <ExcelFile filename={'Costing'} fileExtension={'.xls'} element={
+                                                                    <button title="Download" type="button" className={'user-btn'} ><div className="download mr-0"></div></button>}>
+                                                                    {renderColumn()}
+                                                                    {returnExcelColumnSecond()}
+                                                                    {returnExcelColumnImpactedMaster()}
+
+                                                                </ExcelFile> :
+                                                                <ExcelFile filename={'Costing'} fileExtension={'.xls'} element={
+                                                                    <button title="Download" type="button" className={'user-btn'} ><div className="download mr-0"></div></button>}>
+                                                                    {renderColumn()}
+                                                                    {returnExcelColumnSecond()}
+                                                                </ExcelFile>
+
+                                                            }
                                                         </div>
                                                         <div className="ag-theme-material">
                                                             <AgGridReact
@@ -1134,7 +1149,7 @@ function SimulationApprovalSummary(props) {
                                                                 <AgGridColumn width={140} field="SimulationCostingId" hide='true'></AgGridColumn>
                                                                 <AgGridColumn width={160} field="CostingNumber" headerName="Costing Id"></AgGridColumn>
                                                                 {
-                                                                    (isRMDomesticOrRMImport) &&
+                                                                    (isRMDomesticOrRMImport || keysForDownloadSummary.IsRawMaterialSimulation) &&
                                                                     <AgGridColumn width={192} field="RMName" cellRenderer='rawMaterailFormat' headerName="Raw Material-Grade" ></AgGridColumn>
                                                                 }
                                                                 <AgGridColumn width={136} field="PartNo" headerName="Part No."></AgGridColumn>
@@ -1143,10 +1158,26 @@ function SimulationApprovalSummary(props) {
                                                                 <AgGridColumn width={150} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
                                                                 <AgGridColumn width={150} field="VendorName" headerName="Vendor"></AgGridColumn>
                                                                 {
-                                                                    (isOperation || isSurfaceTreatment) &&
+                                                                    (isOperation || isSurfaceTreatment || keysForDownloadSummary.IsSurfaceTreatmentSimulation || keysForDownloadSummary.IsOperationSimulation) &&
                                                                     <>
                                                                         <AgGridColumn width={140} field="OperationName" cellRenderer='operationNameFormatter' headerName="Operation Name"></AgGridColumn>
                                                                         <AgGridColumn width={140} field="OperationCode" headerName="Operation Code" ></AgGridColumn>
+                                                                    </>
+                                                                }
+                                                                {
+                                                                    (isOperation || keysForDownloadSummary.IsSurfaceTreatmentSimulation) &&
+                                                                    <>
+                                                                        <AgGridColumn width={140} field="OldNetSurfaceTreatmentCost" headerName="Old ST Cost" ></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="NewNetSurfaceTreatmentCost" headerName="New ST Cost" ></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="NetSurfaceTreatmentCostVariance" headerName="ST Variance" ></AgGridColumn>
+                                                                    </>
+                                                                }
+                                                                {
+                                                                    (isSurfaceTreatment || keysForDownloadSummary.IsOperationSimulation) &&
+                                                                    <>
+                                                                        <AgGridColumn width={140} field="OldOperationCost" headerName="Old Operation Cost" ></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="NewOperationCost" headerName="New Operation Cost" ></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="OperationCostVariance" headerName="Operation Variance" ></AgGridColumn>
                                                                     </>
                                                                 }
                                                                 {String(SimulationTechnologyId) !== EXCHNAGERATE &&
@@ -1161,7 +1192,7 @@ function SimulationApprovalSummary(props) {
                                                                     </>
                                                                 }
                                                                 {
-                                                                    (isRMDomesticOrRMImport) &&
+                                                                    (isRMDomesticOrRMImport || keysForDownloadSummary.IsRawMaterialSimulation) &&
                                                                     <>
 
                                                                         <AgGridColumn width={140} field="OldNetRawMaterialsCost" cellRenderer='oldRMFormatter' headerName="Old RMC/pc" ></AgGridColumn>
@@ -1182,6 +1213,7 @@ function SimulationApprovalSummary(props) {
 
                                                                     String(SimulationTechnologyId) === EXCHNAGERATE &&
                                                                     isExchangeRate &&
+                                                                    (isExchangeRate || keysForDownloadSummary.IsExchangeRateSimulation) &&
                                                                     <>
                                                                         <AgGridColumn width={140} field="OldNetPOPriceOtherCurrency" cellRenderer='oldPOCurrencyFormatter' headerName="Old PO Price (in Currency)"></AgGridColumn>
                                                                         <AgGridColumn width={140} field="NewNetPOPriceOtherCurrency" cellRenderer='newPOCurrencyFormatter' headerName="New PO Price (in Currency)"></AgGridColumn>
@@ -1192,14 +1224,16 @@ function SimulationApprovalSummary(props) {
                                                                     </>
                                                                 }
                                                                 {
-                                                                    (isBOPDomesticOrImport) &&
+                                                                    (isBOPDomesticOrImport || keysForDownloadSummary.IsBoughtOutPartSimulation) &&
                                                                     <>
                                                                         <AgGridColumn width={140} field="OldNetBoughtOutPartCost" headerName="Old BOP Cost" cellRenderer='oldBOPFormatter' ></AgGridColumn>
                                                                         <AgGridColumn width={140} field="NewNetBoughtOutPartCost" headerName="New BOP Cost" cellRenderer='newBOPFormatter'></AgGridColumn>
                                                                         <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" headerName="BOP Variance" cellRenderer='BOPVarianceFormatter' ></AgGridColumn>
                                                                     </>
                                                                 }
-                                                                <AgGridColumn width={140} field="DraftPOPrice" headerName="Draft PO Price" ></AgGridColumn>
+                                                                {(keysForDownloadSummary?.IsBoughtOutPartSimulation || keysForDownloadSummary?.IsSurfaceTreatmentSimulation || keysForDownloadSummary?.IsOperationSimulation ||
+                                                                    keysForDownloadSummary?.IsRawMaterialSimulation || keysForDownloadSummary?.IsExchangeRateSimulation || keysForDownloadSummary?.IsMachineRateSimulation) &&
+                                                                    < AgGridColumn width={140} field="DraftPOPrice" headerName="Draft PO Price" ></AgGridColumn>}
                                                                 <AgGridColumn width={130} field="SimulationCostingId" pinned="right" cellRenderer='buttonFormatter' floatingFilter={false} headerName="Actions" type="rightAligned"></AgGridColumn>
                                                                 {/* <AgGridColumn field="Status" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>
                                                                 <AgGridColumn field="SimulationId" headerName='Actions'   type="rightAligned" cellRenderer='buttonFormatter'></AgGridColumn> */}
@@ -1430,36 +1464,40 @@ function SimulationApprovalSummary(props) {
                 // <SimulationApprovalListing />
             }
 
-            {approveDrawer && <ApproveRejectDrawer
-                type={'Approve'}
-                isOpen={approveDrawer}
-                closeDrawer={closeApproveDrawer}
-                // tokenNo={approvalNumber}
-                approvalData={[]}
-                anchor={'right'}
-                isSimulation={true}
-                simulationDetail={simulationDetail}
-                // reasonId={approvalDetails.ReasonId}
-                IsFinalLevel={showFinalLevelButtons}
-                costingList={costingList}
-                attachments={simulationDetail.Attachements}
-            // IsPushDrawer={showPushDrawer}
-            // dataSend={[approvalDetails, partDetail]}
-            />}
+            {
+                approveDrawer && <ApproveRejectDrawer
+                    type={'Approve'}
+                    isOpen={approveDrawer}
+                    closeDrawer={closeApproveDrawer}
+                    // tokenNo={approvalNumber}
+                    approvalData={[]}
+                    anchor={'right'}
+                    isSimulation={true}
+                    simulationDetail={simulationDetail}
+                    // reasonId={approvalDetails.ReasonId}
+                    IsFinalLevel={showFinalLevelButtons}
+                    costingList={costingList}
+                    attachments={simulationDetail.Attachements}
+                // IsPushDrawer={showPushDrawer}
+                // dataSend={[approvalDetails, partDetail]}
+                />
+            }
 
-            {rejectDrawer && <ApproveRejectDrawer
-                type={'Reject'}
-                isOpen={rejectDrawer}
-                simulationDetail={simulationDetail}
-                closeDrawer={closeApproveDrawer}
-                isSimulation={true}
-                //  tokenNo={approvalNumber}
-                anchor={'right'}
-                IsFinalLevel={!showFinalLevelButtons}
-            // reasonId={approvalDetails.ReasonId}
-            // IsPushDrawer={showPushDrawer}
-            // dataSend={[approvalDetails, partDetail]}
-            />}
+            {
+                rejectDrawer && <ApproveRejectDrawer
+                    type={'Reject'}
+                    isOpen={rejectDrawer}
+                    simulationDetail={simulationDetail}
+                    closeDrawer={closeApproveDrawer}
+                    isSimulation={true}
+                    //  tokenNo={approvalNumber}
+                    anchor={'right'}
+                    IsFinalLevel={!showFinalLevelButtons}
+                // reasonId={approvalDetails.ReasonId}
+                // IsPushDrawer={showPushDrawer}
+                // dataSend={[approvalDetails, partDetail]}
+                />
+            }
 
             {/* {pushButton && <PushButtonDrawer
                 isOpen={pushButton}
@@ -1469,17 +1507,18 @@ function SimulationApprovalSummary(props) {
                 approvalData={[approvalData]}
             />} */}
 
-            {viewButton && <ViewDrawer
-                approvalLevelStep={approvalLevelStep}
-                isOpen={viewButton}
-                closeDrawer={closeViewDrawer}
-
-                anchor={'top'}
-                approvalNo={simulationDetail.Token}
-                isSimulation={true}
-            />
+            {
+                viewButton && <ViewDrawer
+                    approvalLevelStep={approvalLevelStep}
+                    isOpen={viewButton}
+                    closeDrawer={closeViewDrawer}
+                    anchor={'top'}
+                    approvalNo={simulationDetail.Token}
+                    isSimulation={true}
+                />
             }
-            {isVerifyImpactDrawer &&
+            {
+                isVerifyImpactDrawer &&
                 <VerifyImpactDrawer
                     isOpen={isVerifyImpactDrawer}
                     anchor={'right'}

@@ -2627,7 +2627,6 @@ export const CostingSimulationDownloadBOP = [
 ]
 
 export const SIMULATIONAPPROVALSUMMARYDOWNLOADRM = [
-
     { label: "Costing Id", value: "CostingNumber" },
     { label: "RawMaterial Grade", value: "RMGrade" },
     { label: "Part No", value: "PartNo" },
@@ -2643,7 +2642,6 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADRM = [
     { label: "RM Cost New", value: "NewRMPrice" },
     { label: "RM Variance", value: "Variance" },
 
-
 ]
 
 export const SIMULATIONAPPROVALSUMMARYDOWNLOADST = [
@@ -2654,9 +2652,14 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADST = [
     { label: "ECN Number", value: "ECNNumber" },
     { label: "Revision Number", value: "RevisionNumber" },
     { label: "Vendor Name", value: "VendorName" },
+    { label: "Plant", value: "PlantName" },
+
     { label: "Operation Name", value: "OperationName" },
     { label: "Operation Code", value: "OperationCode" },
-    { label: "Plant", value: "PlantName" },
+    { label: "Old Net ST Cost", value: "OldNetSurfaceTreatmentCost" },
+    { label: "New Net ST Cost", value: "NewNetSurfaceTreatmentCost" },
+    { label: "ST Variance", value: "NetSurfaceTreatmentCostVariance" },
+
     { label: "Old PO Price", value: "OldPOPrice" },
     { label: "New PO Price", value: "NewPOPrice" },
     { label: "PO Variance", value: "POVariance" },
@@ -3175,3 +3178,128 @@ export const LastGridForToken = [
 
     // { label: "EffectiveDate", value: "EffectiveDate" },
 ]
+
+export const InitialGridForTokenSummary = [
+
+    { label: "Costing Id", value: "CostingNumber" },
+    { label: "Part No", value: "PartNo" },
+    { label: "Part Name", value: "PartName" },
+    { label: "ECN Number", value: "ECNNumber" },
+    { label: "Revision Number", value: "RevisionNumber" },
+    { label: "Vendor Name", value: "VendorName" },
+    { label: "Plant", value: "PlantName" },
+]
+
+export const LastGridForTokenSummary = [
+    { label: "Old PO Price", value: "OldPOPrice" },
+    { label: "New PO Price", value: "NewPOPrice" },
+    { label: "PO Variance", value: "POVariance" },
+]
+
+export const OperationGridForTokenSummary = [
+    { label: "Operation Name", value: "OperationName" },
+    { label: "Operation Code", value: "OperationCode" },
+    { label: "Old Net ST Cost", value: "OldNetSurfaceTreatmentCost" },
+    { label: "New Net ST Cost", value: "NewNetSurfaceTreatmentCost" },
+    { label: "ST Variance", value: "NetSurfaceTreatmentCostVariance" },
+
+]
+
+export const RMGridForTokenSummary = [
+    { label: "RawMaterial Grade", value: "RMGrade" },
+    { label: "RM Cost Old", value: "OldRMPrice" },
+    { label: "RM Cost New", value: "NewRMPrice" },
+    { label: "RM Variance", value: "RMVariance" },
+
+]
+
+export const STGridForTokenSummary = [
+    { label: "Operation Name", value: "OperationName" },
+    { label: "Operation Code", value: "OperationCode" },
+    { label: "Old Net ST Cost", value: "OldNetSurfaceTreatmentCost" },
+    { label: "New Net ST Cost", value: "NewNetSurfaceTreatmentCost" },
+    { label: "ST Variance", value: "NetSurfaceTreatmentCostVariance" },
+]
+
+export const BOPGridForTokenSummary = [
+    { label: "BOP Name", value: "BoughtOutPartName" },
+    { label: "BOP Number", value: "BoughtOutPartNumber" },
+    { label: "Old BOP Cost", value: "OldBOPCost" },
+    { label: "New BOP Cost", value: "NewBOPCost" },
+    { label: "BOP Variance", value: "NetBoughtOutPartCostVariance" },
+]
+
+export const ImpactedRMDownload = [
+    { label: "RawMaterial", value: "RawMaterial" },
+    { label: "RMGrade", value: "RMGrade" },
+    { label: "RMSpec", value: "RMSpec" },
+    { label: "RawMaterialCode", value: "RawMaterialCode" },
+    { label: "Category", value: "Category" },
+    { label: "TechnologyName", value: "TechnologyName" },
+    { label: "VendorName", value: "VendorName" },
+    { label: "UOM", value: "UOM" },
+    { label: "OldBasicRate", value: "OldBasicRate" },
+    { label: "NewBasicRate", value: "NewBasicRate" },
+    { label: "OldScrapRate", value: "OldScrapRate" },
+    { label: "NewScrapRate", value: "NewScrapRate" },
+    { label: "RMFreightCost", value: "RMFreightCost" },
+    { label: "RMShearingCost", value: "RMShearingCost" },
+    { label: "EffectiveDate", value: "EffectiveDate" },
+]
+
+export const ImpactedBOPDownload = [
+    { label: "BoughtOutPartNumber", value: "BoughtOutPartNumber" },
+    { label: "BoughtOutPartName", value: "BoughtOutPartName" },
+    { label: "Category", value: "Category" },
+    { label: "Vendor", value: "Vendor" },
+    { label: "PartNumber", value: "PartNumber" },
+    { label: "OldBOPRate", value: "OldBOPRate" },
+    { label: "NewBOPRate", value: "NewBOPRate" },
+    { label: "OldPOPrice", value: "OldPOPrice" },
+    { label: "NewPOPrice", value: "NewPOPrice" },
+    { label: "EffectiveDate", value: "EffectiveDate" },
+]
+export const ImpactedOPERATIONDownload = [
+    { label: "OperationName", value: "OperationName" },
+    { label: "OperationCode", value: "OperationCode" },
+    { label: "UOM", value: "UOM" },
+    { label: "OldOperationRate", value: "OldOperationRate" },
+    { label: "NewOperationRate", value: "NewOperationRate" },
+    { label: "EffectiveDate", value: "EffectiveDate" },
+]
+export const ImpactedSTDownload = [
+    { label: "Technology", value: "Technology" },
+    { label: "VendorName", value: "VendorName" },
+    { label: "OperationName", value: "OperationName" },
+    { label: "OperationCode", value: "OperationCode" },
+    { label: "DestinationPlant", value: "DestinationPlant" },
+    { label: "Plants", value: "Plants" },
+    { label: "Rate", value: "Rate" },
+    { label: "NewRate", value: "NewRate" },
+    { label: "EffectiveDate", value: "EffectiveDate" },
+]
+
+export const ImpactedERDownload = [
+    { label: "Currency", value: "Currency" },
+    { label: "CostingNumber", value: "CostingNumber" },
+    { label: "PartNumber", value: "PartNumber" },
+    { label: "BankRate", value: "BankRate" },
+    { label: "BankCommissionPercentage", value: "BankCommissionPercentage" },
+    { label: "CustomRate", value: "CustomRate" },
+    { label: "CurrencyExchangeRate", value: "CurrencyExchangeRate" },
+    { label: "NewExchangeRate", value: "NewExchangeRate" },
+    { label: "OldExchangeRate", value: "OldExchangeRate" },
+    { label: "EffectiveDate", value: "EffectiveDate" },
+]
+
+export const RMImpactedDownloadArray = ["RawMaterial", "RMGrade", "RMSpec", "RawMaterialCode", "Category", "TechnologyName", "VendorName", "UOM", "OldBasicRate", "NewBasicRate", "OldScrapRate", "NewScrapRate", "RMFreightCost", "RMShearingCost", "EffectiveDate"]
+
+export const OperationImpactDownloadArray = ["OperationName", "OperationCode", "UOM", "OldOperationRate", "NewOperationRate", "EffectiveDate",]
+
+export const BOPImpactDownloadArray = ["BoughtOutPartNumber", "BoughtOutPartName", "Category", "Vendor", "PartNumber", "OldBOPRate", "NewBOPRate", "OldPOPrice", "NewPOPrice", "EffectiveDate",]
+
+export const ERImpactDownloadArray = ["Currency", "CostingNumber", "PartNumber", "BankRate", "BankCommissionPercentage", "CustomRate", "CurrencyExchangeRate", "NewExchangeRate", "OldExchangeRate", "EffectiveDate",]
+
+
+
+
