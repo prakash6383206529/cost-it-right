@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRawMaterialNameChild } from '../../masters/actions/Material';
 import NoContentFound from '../../common/NoContentFound';
-import { BOPDOMESTIC, BOPIMPORT, TOFIXEDVALUE, EMPTY_DATA, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, RMImpact, BOPImpact, OPerationImpact, ExchangeRateImpact } from '../../../config/constants';
+import { BOPDOMESTIC, BOPIMPORT, TOFIXEDVALUE, EMPTY_DATA, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, RMImpact, BOPImpact, OPerationImpact, ExchangeRateImpact, ImpactMaster } from '../../../config/constants';
 import { getComparisionSimulationData, getCostingBoughtOutPartSimulationList, getCostingSimulationList, getCostingSurfaceTreatmentSimulationList, setShowSimulationPage, getSimulatedAssemblyWiseImpactDate, getImpactedMasterData } from '../actions/Simulation';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
@@ -29,7 +29,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../common/LoaderCustom';
 import { Errorbox } from '../../common/ErrorBox';
-import { SimulationUtils } from '../SimulationUtils'
+import { impactmasterDownload, SimulationUtils } from '../SimulationUtils'
 import ViewAssembly from './ViewAssembly';
 import _ from 'lodash';
 
@@ -168,29 +168,14 @@ function CostingSimulation(props) {
                 }
                 item.Variance = (item.OldPOPrice - item.NewPOPrice).toFixed(getConfigurationKey().NoOfDecimalForPrice)
                 //  ********** ADDED NEW FIELDS FOR ADDING THE OLD AND NEW RM COST / PC BUT NOT GETTING THE AS SUM IN DOWNLOAD **********
-                // switch (Number(selectedMasterForSimulation.value)) {
-                //     case Number(RMIMPORT):
-                //     case Number(RMDOMESTIC):
                 item.RMCVariance = (checkForNull(item.OldRMPrice).toFixed(TOFIXEDVALUE) -
                     checkForNull(item.NewRMPrice).toFixed(TOFIXEDVALUE))
-                //     return item
-                // case Number(SURFACETREATMENT):
                 item.STVariance = (checkForNull(item.OldSurfaceTreatmentCost).toFixed(TOFIXEDVALUE) -
                     checkForNull(item.NewSurfaceTreatmentCost).toFixed(TOFIXEDVALUE))
-                //     return item
-                // case Number(OPERATIONS):
                 item.OperationVariance = (checkForNull(item.OldOperationRate).toFixed(TOFIXEDVALUE) -
                     checkForNull(item.NewOperationRate).toFixed(TOFIXEDVALUE))
-                //     return item
-                // case Number(BOPDOMESTIC):
-                // case Number(BOPIMPORT):
                 item.BOPVariance = (checkForNull(item.OldBOPCost).toFixed(TOFIXEDVALUE) -
                     checkForNull(item.NewBOPCost).toFixed(TOFIXEDVALUE))
-                //         return item
-                //     default:
-                //         break;
-                // }
-
             })
             let uniqeArray = []
             const map = new Map();
@@ -715,94 +700,11 @@ function CostingSimulation(props) {
     }
 
     const returnExcelColumnImpactedMaster = () => {
-        let rmArraySet = [], bopArraySet = []
-        let operationArraySet = [], erArraySet = []
-
-        impactedMasterData?.OperationImpactedMasterDataList && impactedMasterData?.OperationImpactedMasterDataList.map((item) => {
-            let tempObj = []
-
-            tempObj.push(item.OperationName)
-            tempObj.push(item.OperationCode)
-            tempObj.push(item.UOM)
-            tempObj.push(item.OldOperationRate)
-            tempObj.push(item.NewOperationRate)
-            tempObj.push(item.EffectiveDate)
-            operationArraySet.push(tempObj)
-        })
-
-        impactedMasterData?.RawMaterialImpactedMasterDataList && impactedMasterData?.RawMaterialImpactedMasterDataList.map((item) => {
-
-            let tempObj = []
-
-            tempObj.push(item.RawMaterial)
-            tempObj.push(item.RMGrade)
-            tempObj.push(item.RMSpec)
-            tempObj.push(item.RawMaterialCode)
-            tempObj.push(item.Category)
-            tempObj.push(item.TechnologyName)
-            tempObj.push(item.VendorName)
-            tempObj.push(item.UOM)
-            tempObj.push(item.OldBasicRate)
-            tempObj.push(item.NewBasicRate)
-            tempObj.push(item.OldScrapRate)
-            tempObj.push(item.NewScrapRate)
-            tempObj.push(item.RMFreightCost)
-            tempObj.push(item.RMShearingCost)
-            tempObj.push(item.EffectiveDate)
-            rmArraySet.push(tempObj)
-        })
-
-        impactedMasterData?.BoughtOutPartImpactedMasterDataList && impactedMasterData?.BoughtOutPartImpactedMasterDataList.map((item) => {
-            let tempObj = []
-            tempObj.push(item.BoughtOutPartNumber)
-            tempObj.push(item.BoughtOutPartName)
-            tempObj.push(item.Category)
-            tempObj.push(item.Vendor)
-            tempObj.push(item.PartNumber)
-            tempObj.push(item.OldBOPRate)
-            tempObj.push(item.NewBOPRate)
-            tempObj.push(item.OldPOPrice)
-            tempObj.push(item.NewPOPrice)
-            tempObj.push(item.EffectiveDate)
-            rmArraySet.push(tempObj)
-        })
-        impactedMasterData?.ExchangeRateImpactedMasterDataList && impactedMasterData?.ExchangeRateImpactedMasterDataList.map((item) => {
-            let tempObj = []
-            tempObj.push(item.Currency)
-            tempObj.push(item.CostingNumber)
-            tempObj.push(item.PartNumber)
-            tempObj.push(item.BankRate)
-            tempObj.push(item.BankCommissionPercentage)
-            tempObj.push(item.CustomRate)
-            tempObj.push(item.CurrencyExchangeRate)
-            tempObj.push(item.NewExchangeRate)
-            tempObj.push(item.OldExchangeRate)
-            tempObj.push(item.EffectiveDate)
-            rmArraySet.push(tempObj)
-        })
-
-        const multiDataSet = [
-            {
-                columns: RMImpactedDownloadArray,
-                data: rmArraySet
-            }, {
-                ySteps: 5, //will put space of 5 rows,
-                columns: OperationImpactDownloadArray,
-                data: operationArraySet
-            }, {
-                ySteps: 5,
-                columns: BOPImpactDownloadArray,
-                data: bopArraySet
-            }, {
-                ySteps: 5,
-                columns: ERImpactDownloadArray,
-                data: erArraySet
-            }
-        ];
+        let multiDataSet = impactmasterDownload(impactedMasterData)
 
         return (
 
-            <ExcelSheet dataSet={multiDataSet} name="Organization" />
+            <ExcelSheet dataSet={multiDataSet} name={ImpactMaster} />
         );
     }
 

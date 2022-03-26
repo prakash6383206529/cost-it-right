@@ -1748,6 +1748,7 @@ export const RMImpact = "RawMaterial-Impact"
 export const BOPImpact = "BOP-Impact"
 export const OPerationImpact = "Operation-Impact"
 export const ExchangeRateImpact = "ExchangeRate-Impact"
+export const ImpactMaster = "ImpactMaster"
 
 export const MachineRate = "Machine-rate"
 export const ProcessMaster = "Process "
