@@ -2686,6 +2686,7 @@ td,.ag-cell{
   .Pushed,
   .POUpdated,
   .Draft,
+  .Linked,
   [class^="Pending"],
   [class^="Awaiting"],
   .Approved,
@@ -2711,6 +2712,9 @@ td,.ag-cell{
   [class^="Awaiting"]{
     background-color: #eac607;
   }
+  [class^="Linked"]{
+    background-color: #498cef;
+  }
   .Approved,.ApprovedBySimulation, .ApprovedByAssembly {
     background-color: #4dc771;
   }
@@ -2723,7 +2727,7 @@ td,.ag-cell{
   .Error{
     background-color: #f73d3d;
   }
-  .Pushed, .POUpdated {
+  .Pushed, .POUpdated, .Linked {
     background-color: #498cef;
   }
 }

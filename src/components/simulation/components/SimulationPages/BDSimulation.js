@@ -361,6 +361,7 @@ function BDSimulation(props) {
                                             {!isImpactedMaster && <AgGridColumn field="Vendor" editable='false' headerName="Vendor" minWidth={140}></AgGridColumn>}
                                             {!isImpactedMaster && <AgGridColumn field="DestinationPlant" editable='false' headerName="DestinationPlant" minWidth={140}></AgGridColumn>}
 
+                                            <AgGridColumn field="NumberOfPieces" editable='false' headerName="NumberOfPieces" minWidth={140}></AgGridColumn>
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName="Basic Rate (INR)" marryChildren={true} width={240}>
                                                 <AgGridColumn width={120} field="BasicRate" editable='false' headerName="Old" cellRenderer='oldBasicRateFormatter' colId="BasicRate"></AgGridColumn>
                                                 <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' editable={!isImpactedMaster} onCellValueChanged='cellChange' field="NewBasicRate" headerName="New" colId='NewBasicRate'></AgGridColumn>

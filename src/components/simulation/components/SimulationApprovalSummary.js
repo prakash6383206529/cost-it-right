@@ -10,12 +10,11 @@ import { useDispatch, useSelector } from 'react-redux'
 import {
     costingHeadObjs, SIMULATIONAPPROVALSUMMARYDOWNLOADCP, SIMULATIONAPPROVALSUMMARYDOWNLOADBOP, BOPGridForTokenSummary, InitialGridForTokenSummary,
     LastGridForTokenSummary, OperationGridForTokenSummary, RMGridForTokenSummary, STGridForTokenSummary,
-    SIMULATIONAPPROVALSUMMARYDOWNLOADST, ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl, RMImpactedDownloadArray,
-    OperationImpactDownloadArray, BOPImpactDownloadArray, ERImpactDownloadArray
+    SIMULATIONAPPROVALSUMMARYDOWNLOADST, ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl
 } from '../../../config/masterData';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common';
 import { getAmmendentStatus, getApprovalSimulatedCostingSummary, getComparisionSimulationData, setAttachmentFileData, getImpactedMasterData, getLastSimulationData, uploadSimulationAttachmentonFTP, getSimulatedAssemblyWiseImpactDate } from '../actions/Simulation'
-import { EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, ZBC, COMBINED_PROCESS, FILE_URL, COSTINGSIMULATIONROUND, SURFACETREATMENT, OPERATIONS, BOPDOMESTIC, BOPIMPORT, AssemblyWiseImpactt, MACHINERATE } from '../../../config/constants';
+import { EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, ZBC, COMBINED_PROCESS, FILE_URL, COSTINGSIMULATIONROUND, SURFACETREATMENT, OPERATIONS, BOPDOMESTIC, BOPIMPORT, AssemblyWiseImpactt, MACHINERATE, ImpactMaster } from '../../../config/constants';
 import Toaster from '../../common/Toaster';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
 import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId, userDetails } from '../../../helper';
@@ -41,7 +40,7 @@ import AssemblyWiseImpact from './AssemblyWiseImpact';
 import { Link } from 'react-scroll';
 import ScrollToTop from '../../common/ScrollToTop';
 import _ from 'lodash'
-import { SimulationUtils } from '../SimulationUtils'
+import { impactmasterDownload, SimulationUtils } from '../SimulationUtils'
 import { SIMULATIONAPPROVALSUMMARYDOWNLOADRM } from '../../../config/masterData'
 import ViewAssembly from './ViewAssembly';
 import imgRedcross from '../../../assests/images/red-cross.png';
@@ -378,94 +377,10 @@ function SimulationApprovalSummary(props) {
     }
 
     const returnExcelColumnImpactedMaster = () => {
-        let rmArraySet = [], bopArraySet = []
-        let operationArraySet = [], erArraySet = []
-
-        impactedMasterData?.OperationImpactedMasterDataList && impactedMasterData?.OperationImpactedMasterDataList.map((item) => {
-            let tempObj = []
-
-            tempObj.push(item.OperationName)
-            tempObj.push(item.OperationCode)
-            tempObj.push(item.UOM)
-            tempObj.push(item.OldOperationRate)
-            tempObj.push(item.NewOperationRate)
-            tempObj.push(item.EffectiveDate)
-            operationArraySet.push(tempObj)
-        })
-
-        impactedMasterData?.RawMaterialImpactedMasterDataList && impactedMasterData?.RawMaterialImpactedMasterDataList.map((item) => {
-
-            let tempObj = []
-
-            tempObj.push(item.RawMaterial)
-            tempObj.push(item.RMGrade)
-            tempObj.push(item.RMSpec)
-            tempObj.push(item.RawMaterialCode)
-            tempObj.push(item.Category)
-            tempObj.push(item.TechnologyName)
-            tempObj.push(item.VendorName)
-            tempObj.push(item.UOM)
-            tempObj.push(item.OldBasicRate)
-            tempObj.push(item.NewBasicRate)
-            tempObj.push(item.OldScrapRate)
-            tempObj.push(item.NewScrapRate)
-            tempObj.push(item.RMFreightCost)
-            tempObj.push(item.RMShearingCost)
-            tempObj.push(item.EffectiveDate)
-            rmArraySet.push(tempObj)
-        })
-
-        impactedMasterData?.BoughtOutPartImpactedMasterDataList && impactedMasterData?.BoughtOutPartImpactedMasterDataList.map((item) => {
-            let tempObj = []
-            tempObj.push(item.BoughtOutPartNumber)
-            tempObj.push(item.BoughtOutPartName)
-            tempObj.push(item.Category)
-            tempObj.push(item.Vendor)
-            tempObj.push(item.PartNumber)
-            tempObj.push(item.OldBOPRate)
-            tempObj.push(item.NewBOPRate)
-            tempObj.push(item.OldPOPrice)
-            tempObj.push(item.NewPOPrice)
-            tempObj.push(item.EffectiveDate)
-            rmArraySet.push(tempObj)
-        })
-        impactedMasterData?.ExchangeRateImpactedMasterDataList && impactedMasterData?.ExchangeRateImpactedMasterDataList.map((item) => {
-            let tempObj = []
-            tempObj.push(item.Currency)
-            tempObj.push(item.CostingNumber)
-            tempObj.push(item.PartNumber)
-            tempObj.push(item.BankRate)
-            tempObj.push(item.BankCommissionPercentage)
-            tempObj.push(item.CustomRate)
-            tempObj.push(item.CurrencyExchangeRate)
-            tempObj.push(item.NewExchangeRate)
-            tempObj.push(item.OldExchangeRate)
-            tempObj.push(item.EffectiveDate)
-            rmArraySet.push(tempObj)
-        })
-
-        const multiDataSet = [
-            {
-                columns: RMImpactedDownloadArray,
-                data: rmArraySet
-            }, {
-                ySteps: 5, //will put space of 5 rows,
-                columns: OperationImpactDownloadArray,
-                data: operationArraySet
-            }, {
-                ySteps: 5,
-                columns: BOPImpactDownloadArray,
-                data: bopArraySet
-            }, {
-                ySteps: 5,
-                columns: ERImpactDownloadArray,
-                data: erArraySet
-            }
-        ];
-
+        let multiDataSet = impactmasterDownload(impactedMasterData)
         return (
 
-            <ExcelSheet dataSet={multiDataSet} name="Organization" />
+            <ExcelSheet dataSet={multiDataSet} name={ImpactMaster} />
         );
     }
 
@@ -763,6 +678,15 @@ function SimulationApprovalSummary(props) {
         return cell != null ? temp : '-';
     }
 
+    const bopMaterailFormat = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        let temp = ''
+        temp = (row.IsMultipleOperation === true) ? 'Multiple Operation' : row.OperationName
+
+        return cell != null ? temp : '-';
+    }
+
     const operationNameFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -848,6 +772,7 @@ function SimulationApprovalSummary(props) {
         oldBOPFormatter: oldBOPFormatter,
         newBOPFormatter: newBOPFormatter,
         BOPVarianceFormatter: BOPVarianceFormatter,
+        bopMaterailFormat: bopMaterailFormat,
     };
 
     const errorBoxClass = () => {
@@ -1226,6 +1151,8 @@ function SimulationApprovalSummary(props) {
                                                                 {
                                                                     (isBOPDomesticOrImport || keysForDownloadSummary.IsBoughtOutPartSimulation) &&
                                                                     <>
+                                                                        <AgGridColumn width={140} field="BoughtOutPartName" headerName="BoughtOutPartName" cellRenderer='bopMaterailFormat'></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="BoughtOutPartNumber" headerName="BoughtOutPartNumber"></AgGridColumn>
                                                                         <AgGridColumn width={140} field="OldNetBoughtOutPartCost" headerName="Old BOP Cost" cellRenderer='oldBOPFormatter' ></AgGridColumn>
                                                                         <AgGridColumn width={140} field="NewNetBoughtOutPartCost" headerName="New BOP Cost" cellRenderer='newBOPFormatter'></AgGridColumn>
                                                                         <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" headerName="BOP Variance" cellRenderer='BOPVarianceFormatter' ></AgGridColumn>

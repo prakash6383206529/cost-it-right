@@ -78,17 +78,6 @@ function OperationSTSimulation(props) {
         } else {
             valueShow = row.OldOperationRate
         }
-        // switch (Number(master)) {
-        //     case Number(SURFACETREATMENT):
-        //         valueShow = lastRevision ? row.OldSurfaceTreatmentCost : row.OldOperationRate
-        //         break;
-        //     case Number(OPERATIONS):
-        //         valueShow = lastRevision ? row.OldNetOperationCost : row.OldOperationRate
-        //         break;
-
-        //     default:
-        //         break;
-        // }
         const value = beforeSaveCell(cell)
         return (
             <>
@@ -118,17 +107,6 @@ function OperationSTSimulation(props) {
         } else {
             valueShow = row.NewOperationRate
         }
-        //  switch (Number(master)) {
-        //     case Number(SURFACETREATMENT):
-        //         valueShow = lastRevision ? row.NewSurfaceTreatmentCost : row.NewOperationRate
-        //         break;
-        //     case Number(OPERATIONS):
-        //         valueShow = lastRevision ? row.NewNetOperationCost : row.NewOperationRate
-        //         break;
-
-        //     default:
-        //         break;
-        // }
         return (
             <>
                 {
