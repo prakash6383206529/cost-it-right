@@ -868,7 +868,6 @@ function Simulation(props) {
                                 <div className="d-inline-flex justify-content-start align-items-center mr-3">
                                     <div className="flex-fills label">Vendor:</div>
                                     <div className="flex-fills hide-label pl-0">
-                                        <TooltipCustom customClass="combine-tooltip" tooltipText="please enter the first few letters to see vendors" />
                                         <AsyncSearchableSelectHookForm
                                             label={''}
                                             name={'Vendor'}
@@ -882,12 +881,13 @@ function Simulation(props) {
                                             mandatory={false}
                                             handleChange={handleVendorChange}
                                             errors={errors.Masters}
+                                            NoOptionMessage={"Please enter first few letters to see vendors"}
                                         />
                                     </div>
                                 </div>
                             }
                             {showTokenDropdown &&
-                                <div className={`d-inline-flex justify-content-start align-items-center ${master.value === '3' ? "mt-2 w-72" : ""}`}>
+                                <div className="d-inline-flex justify-content-start align-items-center">
                                     <div className="flex-fills label">Token:</div>
                                     <div className="flex-fills hide-label pl-0">
                                         <SearchableSelectHookForm
