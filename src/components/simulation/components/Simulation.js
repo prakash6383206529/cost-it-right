@@ -169,6 +169,16 @@ function Simulation(props) {
         setSelectionForListingMasterAPI('Master')
         setTimeout(() => {
             if (value !== '' && Object.keys(master).length > 0 && technology.label !== '') {
+                let obj = {
+                    technologyId: value.value,
+                    loggedInUserId: loggedInUserId(),
+                    simulationTechnologyId: master.value
+                }
+                dispatch(getTokenSelectListAPI(obj, () => { }))
+                if (value !== '' && Object.keys(master).length > 0) {
+                    setShowMasterList(true)
+                    setShowTokenDropdown(true)
+                }
                 setShowMasterList(true)
                 setShowTokenDropdown(true)
             }
@@ -299,7 +309,7 @@ function Simulation(props) {
             // case BOPIMPORT:
             //     return (<ProfitListing isSimulation={true} technology={technology.value} apply={editTable} />)
             case COMBINED_PROCESS:
-                return (<ProcessListingSimulation isSimulation={true} technology={technology.value} vendorId={vendor.value} objectForMultipleSimulation={obj} apply={editTable} tokenArray={token} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} />)
+                return (<ProcessListingSimulation isSimulation={true} technology={technology.value} vendorId={vendor.value} objectForMultipleSimulation={obj} apply={editTable} tokenArray={token} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} />)
             default:
                 return <div className="empty-table-paecholder" />;
         }

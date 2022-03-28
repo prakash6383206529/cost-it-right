@@ -23,7 +23,7 @@ const gridOptions = {
 
 };
 function CPSimulation(props) {
-    const { list, isbulkUpload, rowCount, isImpactedMaster } = props
+    const { list, isbulkUpload, rowCount, isImpactedMaster, tokenForMultiSimulation } = props
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')
@@ -238,6 +238,7 @@ function CPSimulation(props) {
             tempArr.push(tempObj)
             return null
         })
+        obj.SimulationIds = tokenForMultiSimulation
         obj.SimulationCombinedProcess = tempArr
 
         dispatch(runVerifyCombinedProcessSimulation(obj, res => {

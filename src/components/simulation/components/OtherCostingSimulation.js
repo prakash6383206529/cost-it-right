@@ -4,8 +4,8 @@ import { Row, Col, } from 'reactstrap';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import NoContentFound from '../../common/NoContentFound';
-import { EMPTY_DATA, TOFIXEDVALUE } from '../../../config/constants';
-import { getCombinedProcessCostingSimulationList, getComparisionSimulationData, getCostingSimulationList, getExchangeCostingSimulationList, saveSimulationForRawMaterial } from '../actions/Simulation';
+import { BOPDOMESTIC, BOPIMPORT, EMPTY_DATA, ImpactMaster, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, TOFIXEDVALUE } from '../../../config/constants';
+import { getCombinedProcessCostingSimulationList, getComparisionSimulationData, getCostingSimulationList, getExchangeCostingSimulationList, getImpactedMasterData, saveSimulationForRawMaterial } from '../actions/Simulation';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
 import { checkForDecimalAndNull, checkForNull, formatRMSimulationObject, formViewData, getConfigurationKey, loggedInUserId, userDetails } from '../../../helper';
@@ -17,8 +17,8 @@ import { setCostingViewData } from '../../costing/actions/Costing';
 import ReactExport from 'react-export-excel';
 import LoaderCustom from '../../common/LoaderCustom';
 import { Errorbox } from '../../common/ErrorBox';
-import { SimulationUtils } from '../SimulationUtils'
-import { COMBINEDPROCESSSIMULATION, EXCHANGESIMULATIONDOWNLOAD } from '../../../config/masterData';
+import { impactmasterDownload, SimulationUtils } from '../SimulationUtils'
+import { BOPGridForToken, COMBINEDPROCESSSIMULATION, CPGridForTokenSummary, ERGridForToken, EXCHANGESIMULATIONDOWNLOAD, InitialGridForToken, LastGridForToken, OperationGridForToken, RMGridForToken, STGridForToken } from '../../../config/masterData';
 import { AgGridReact } from 'ag-grid-react/lib/agGridReact';
 import { AgGridColumn } from 'ag-grid-react/lib/agGridColumn';
 const gridOptions = {};
@@ -60,6 +60,7 @@ function OtherCostingSimulation(props) {
     const [status, setStatus] = useState('')
     const [noContent, setNoContent] = useState(false)
     const [isSuccessfullyInsert, setIsSuccessfullyInsert] = useState(true)
+    const selectedMasterForSimulation = useSelector(state => state.simulation.selectedMasterForSimulation)
 
     const [showBOPColumn, setShowBOPColumn] = useState(false);
     const [showRMColumn, setShowRMColumn] = useState(false);
@@ -68,6 +69,9 @@ function OtherCostingSimulation(props) {
     const [showExchangeRateColumn, setShowExchangeRateColumn] = useState(false);
     const [showCombinedProcessColumn, setShowCombinedProcessColumn] = useState(false)
     const [showMachineRateColumn, setShowMachineRateColumn] = useState(false);
+
+    const isExchangeRate = String(selectedMasterForSimulation?.value) === EXCHNAGERATE;
+    const isCombinedProcess = String(selectedMasterForSimulation?.value) === COMBINED_PROCESS;
 
     const [hideDataColumn, setHideDataColumn] = useState({
         hideOverhead: false,
@@ -85,6 +89,7 @@ function OtherCostingSimulation(props) {
 
     useEffect(() => {
         getCostingList()
+        dispatch(getImpactedMasterData(simulationId, (res) => { }))
     }, [])
 
 
@@ -163,11 +168,11 @@ function OtherCostingSimulation(props) {
         setAmendmentDetails(tempObj)
     }
 
+    const impactedMasterData = useSelector(state => state.comman.impactedMasterData)
 
     const costingList = useSelector(state => state.simulation.costingSimulationList)
     const costingSimulationListAllKeys = useSelector(state => state.simulation.costingSimulationListAllKeys)
 
-    const selectedMasterForSimulation = useSelector(state => state.simulation.selectedMasterForSimulation)
 
     useEffect(() => {
         hideColumn()
@@ -508,6 +513,15 @@ function OtherCostingSimulation(props) {
         </ExcelSheet>);
     }
 
+    const returnExcelColumnImpactedMaster = () => {
+        let multiDataSet = impactmasterDownload(impactedMasterData)
+
+        return (
+
+            <ExcelSheet dataSet={multiDataSet} name={ImpactMaster} />
+        );
+    }
+
     const returnExcelColumnCombine = (data = [], TempData) => {
 
 
@@ -539,12 +553,69 @@ function OtherCostingSimulation(props) {
     }
 
     const renderColumn = () => {
+        let arrayOFCorrectObjIndividual = []
+        let tempArr = []
+        // ********** EXTRACT PART NO. FROM SELECTED ROWS IN AN ARRAY ********** */
+        selectedRowData.map((item) => {
+            tempArr.push(item?.CostingId)
+            return null
+        })
+
+        //********** APPLY MAP ON PART NO ARRAY | COMPARE WITH REDUCER'S ALL PART NO. ONE BY ONE | CONDITION - TRUE -> PUSH IN ARRAY  ********** */
+        //********** TO GET OTHER RECOED IN LIST WHICH WERE FILTERED TO SHOW UNIQUE IN LISTING  ********** */
+        tempArr && tempArr.map((itemOut) => {
+            let temp = []
+            costingList && costingList.map((item) => {
+                if (itemOut === item.CostingId) {
+                    temp.push(item)
+                }
+            })
+            // ************ CONCAT ALL DATA IN SINGLE ARRAY *********** */
+            arrayOFCorrectObjIndividual = arrayOFCorrectObjIndividual.concat(temp);
+        })
+        let finalGrid = [], isTokenAPI = false
+        if (showBOPColumn === true || showRMColumn === true || showOperationColumn === true || showSurfaceTreatmentColumn === true ||
+            showExchangeRateColumn === true || showMachineRateColumn === true || true) {
+
+            if (showBOPColumn) {
+                finalGrid = [...finalGrid, ...BOPGridForToken]
+                isTokenAPI = true
+            }
+            if (showRMColumn) {
+                finalGrid = [...finalGrid, ...RMGridForToken]
+                isTokenAPI = true
+            }
+            if (showOperationColumn) {
+                finalGrid = [...finalGrid, ...OperationGridForToken]
+                isTokenAPI = true
+            }
+            if (showSurfaceTreatmentColumn) {
+                finalGrid = [...finalGrid, ...STGridForToken]
+                isTokenAPI = true
+            }
+            if (showExchangeRateColumn || isExchangeRate) {
+                finalGrid = [...finalGrid, ...ERGridForToken]
+                isTokenAPI = true
+            }
+            // if (showMachineRateColumn || isMachineRate) {
+            //     finalGrid = [...finalGrid, ...OperationGridForToken]
+            // isTokenAPI = true
+            // }
+            if (showCombinedProcessColumn || isCombinedProcess) {
+                finalGrid = [...finalGrid, ...CPGridForTokenSummary]
+                isTokenAPI = true
+            }
+
+            // CONDITION FOR COMBINED PROCESS
+            finalGrid = [...InitialGridForToken, ...finalGrid, ...LastGridForToken]
+        }
+
         switch (Number(master)) {
             case Number(EXCHNAGERATE):
-                return returnExcelColumn(EXCHANGESIMULATIONDOWNLOAD, selectedRowData.length > 0 ? selectedRowData : costingList && costingList.length > 0 ? costingList : [])
+                return returnExcelColumn(isTokenAPI ? finalGrid : EXCHANGESIMULATIONDOWNLOAD, selectedRowData.length > 0 ? selectedRowData : costingList && costingList.length > 0 ? costingList : [])
 
             case Number(COMBINED_PROCESS):
-                return returnExcelColumnCombine(COMBINEDPROCESSSIMULATION, selectedRowData.length > 0 ? selectedRowData : costingList && costingList.length > 0 ? costingList : [])
+                return returnExcelColumn(isTokenAPI ? finalGrid : COMBINEDPROCESSSIMULATION, selectedRowData.length > 0 ? selectedRowData : costingList && costingList.length > 0 ? costingList : [])
 
             default:
                 break;
@@ -666,10 +737,23 @@ function OtherCostingSimulation(props) {
                                     <Col md="3" lg="3" className="search-user-block mb-3">
                                         <div className="d-flex justify-content-end bd-highlight w100">
 
-                                            <ExcelFile filename={'Costing'} fileExtension={'.xls'} element={
-                                                <button title="Download" type="button" className={'user-btn mr5'}><div className="download mr-0"></div></button>}>
-                                                {renderColumn()}
-                                            </ExcelFile>
+                                            {(showRMColumn || showBOPColumn || showOperationColumn ||
+                                                showMachineRateColumn || showExchangeRateColumn || showCombinedProcessColumn)
+                                                ?
+                                                <ExcelFile filename={'Costing'} fileExtension={'.xls'} element={
+                                                    <button title="Download" type="button" className={'user-btn mr5'} ><div className="download mr-0"></div></button>}>
+                                                    {renderColumn()}
+                                                    {/* {returnExcelColumnSecond()} */}
+                                                    {returnExcelColumnImpactedMaster()}
+
+                                                </ExcelFile> :
+                                                <ExcelFile filename={'Costing'} fileExtension={'.xls'} element={
+                                                    <button title="Download" type="button" className={'user-btn mr5'} ><div className="download mr-0"></div></button>}>
+                                                    {renderColumn()}
+                                                    {/* {returnExcelColumnSecond()} */}
+                                                </ExcelFile>
+
+                                            }
                                             <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
                                                 <div className="refresh mr-0"></div>
                                             </button>
@@ -725,7 +809,7 @@ function OtherCostingSimulation(props) {
                                                             <AgGridColumn width={140} field="NewExchangeRate" headerName='New Exchange Rate' cellRenderer='newExchangeFormatter'></AgGridColumn>
                                                         </>
                                                     }
-                                                    {String(master) === String(COMBINED_PROCESS) || showCombinedProcessColumn &&
+                                                    {(String(master) === String(COMBINED_PROCESS) || showCombinedProcessColumn) &&
                                                         <>
                                                             <AgGridColumn width={140} field="OldPOPrice" headerName='Old PO Price' cellRenderer='fourDecimalFormatter'></AgGridColumn>
                                                             <AgGridColumn width={140} field="NewPOPrice" headerName='New PO Price' cellRenderer='fourDecimalFormatter'></AgGridColumn>
