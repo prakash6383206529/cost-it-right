@@ -6778,6 +6778,11 @@ left: 17rem;
 // <------START  dropdown input field loader----->
 .p-relative {
   position: relative;
+  .withBorder {
+      .text-help {
+        margin: -1px 5px;
+      }
+  } 
 }
 .input-loader {
     left: 11px;
