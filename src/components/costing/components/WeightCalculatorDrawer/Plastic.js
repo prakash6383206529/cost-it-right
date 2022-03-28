@@ -88,13 +88,19 @@ function Plastic(props) {
 
   useEffect(() => {
     // dispatch(setPlasticArray(WeightCalculatorRequest.LossOfTypeDetails ? WeightCalculatorRequest.LossOfTypeDetails : []))
-    calculateGrossWeight()
-    calculateRemainingCalculation(lostWeight)
+    if (!props.CostingViewMode) {
+
+      calculateGrossWeight()
+      calculateRemainingCalculation(lostWeight)
+    }
   }, [fieldValues])
 
   useEffect(() => {
-    calculateGrossWeight()
-    calculateRemainingCalculation()
+    if (!props.CostingViewMode) {
+
+      calculateGrossWeight()
+      calculateRemainingCalculation()
+    }
   }, [getPlasticData])
 
   useEffect(() => {
