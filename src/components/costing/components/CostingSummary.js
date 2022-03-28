@@ -14,7 +14,6 @@ import { checkForDecimalAndNull, formViewData, loggedInUserId } from '../../../h
 import CostingSummaryTable from './CostingSummaryTable'
 import BOMUpload from '../../massUpload/BOMUpload'
 import { useHistory } from "react-router-dom";
-import TooltipCustom from '../../common/Tooltip';
 import LoaderCustom from '../../common/LoaderCustom';
 import { reactLocalStorage } from 'reactjs-localstorage';
 
@@ -404,7 +403,6 @@ function CostingSummary(props) {
 
                       <Col className="col-md-15">
                         {inputLoader && <LoaderCustom customClass="input-loader" />}
-                        {IsTechnologySelected && <TooltipCustom tooltipText="Please enter first few digits to see the part numbers" />}
                         <AsyncSearchableSelectHookForm
                           label={"Assembly No./Part No."}
                           name={"Part"}
