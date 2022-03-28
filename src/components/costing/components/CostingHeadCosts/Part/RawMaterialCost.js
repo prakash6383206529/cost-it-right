@@ -1010,7 +1010,7 @@ function RawMaterialCost(props) {
                                   e.preventDefault()
                                   handleGrossWeightChange(e?.target?.value, index)
                                 }}
-                                errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].GrossWeight : ''}
+                                errors={!gridData[index].GrossWeight && errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].GrossWeight : ''}
                                 disabled={CostingViewMode ? true : false}
                               />
                             </td>
@@ -1037,7 +1037,7 @@ function RawMaterialCost(props) {
                                   e.preventDefault()
                                   handleFinishWeightChange(e?.target?.value, index)
                                 }}
-                                errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].FinishWeight : ''}
+                                errors={!gridData[index].FinishWeight && errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].FinishWeight : ''}
                                 disabled={CostingViewMode ? true : false}
                               />
                             </td>

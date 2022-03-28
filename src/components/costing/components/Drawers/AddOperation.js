@@ -20,16 +20,15 @@ function AddOperation(props) {
 
   const [tableData, setTableDataList] = useState([]);
   const [selectedRowData, setSelectedRowData] = useState([]);
-  const [selectedIds, setSelectedIds] = useState(props.Ids);
   const [gridApi, setGridApi] = useState(null);
   const [gridColumnApi, setGridColumnApi] = useState(null);
   const [rowData, setRowData] = useState(null);
-
   const dispatch = useDispatch()
-
   const costData = useContext(costingInfoContext)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { CostingEffectiveDate } = useSelector(state => state.costing)
+  const { selectedIdsOfOperationAndOtherOperation } = useSelector(state => state.costing)
+  let selectedIds = [...props?.Ids, ...selectedIdsOfOperationAndOtherOperation]
 
   /**
   * @method toggleDrawer
@@ -213,7 +212,6 @@ function AddOperation(props) {
   const resetState = () => {
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
-
   }
 
 
@@ -245,7 +243,7 @@ function AddOperation(props) {
 
               <Row className="mb-3 mx-0">
                 <Col className="hidepage-size">
-                  <div className={`ag-grid-wrapper min-height-auto height-width-wrapper ${tableData && tableData?.length <=0 ?"overlay-contain": ""}`}>
+                  <div className={`ag-grid-wrapper min-height-auto height-width-wrapper ${tableData && tableData?.length <= 0 ? "overlay-contain" : ""}`}>
                     <div className="ag-grid-header">
                       <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                       <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
