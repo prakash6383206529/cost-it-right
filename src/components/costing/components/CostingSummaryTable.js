@@ -728,7 +728,7 @@ const CostingSummaryTable = (props) => {
     })
   }
   const reactToPrintTrigger = useCallback(() => {
-    return <button className="user-btn mr-1 mb-2 px-2" title='pdf' disabled={viewCostingData?.length > 2 ? true : false}> <div className='pdf-detail'></div></button>
+    return (simulationMode ? <button className="user-btn mr-1 mb-2 px-2" title='pdf' disabled={viewCostingData?.length > 3 ? true : false}> <div className='pdf-detail'></div></button> : <button className="user-btn mr-1 mb-2 px-2" title='pdf' disabled={viewCostingData?.length > 2 ? true : false}> <div className='pdf-detail'></div></button>)
   }, [viewCostingData])
 
   const reactToPrintContent = () => {
@@ -748,9 +748,8 @@ const CostingSummaryTable = (props) => {
               </Col>
             )}
 
-            {
-              !simulationMode &&
-              <Col md="8" className="text-right">
+            <Col md={simulationMode ? "12" : "8"} className="text-right">
+              {!simulationMode &&
                 <ReactToPrint
                   bodyClass='mx-2 mt-3 remove-space-border'
                   documentTitle={`${pdfName}-detailed-costing`}
@@ -759,40 +758,44 @@ const CostingSummaryTable = (props) => {
                   onBeforeGetContent={handleOnBeforeGetContentDetail}
                   trigger={reactToPrintTriggerDetail}
                 />
-                <ReactToPrint
-                  bodyClass='pt5'
-                  documentTitle={`${pdfName}-costing`}
-                  content={reactToPrintContent}
-                  onAfterPrint={handleAfterPrint}
-                  onBeforeGetContent={handleOnBeforeGetContent}
-                  trigger={reactToPrintTrigger}
-                />
-                {(!viewMode && !isFinalApproverShow) && (
-                  <button class="user-btn mr-1 mb-2 approval-btn" disabled={isWarningFlag} onClick={() => checkCostings()}>
-                    <div className="send-for-approval"></div>
-                    {'Send For Approval'}
+              }
+              <ReactToPrint
+                bodyClass={`mt-3 ${simulationMode ? 'mx-1 simulation-print' : 'mx-2'}`}
+                documentTitle={`${pdfName}-costing`}
+                content={reactToPrintContent}
+                onAfterPrint={handleAfterPrint}
+                onBeforeGetContent={handleOnBeforeGetContent}
+                trigger={reactToPrintTrigger}
+              />
+              {
+                !simulationMode && <>
+
+                  {(!viewMode && !isFinalApproverShow) && (
+                    <button class="user-btn mr-1 mb-2 approval-btn" disabled={isWarningFlag} onClick={() => checkCostings()}>
+                      <div className="send-for-approval"></div>
+                      {'Send For Approval'}
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    className={'user-btn mb-2 comparison-btn'}
+                    onClick={addComparisonDrawerToggle}
+                  >
+                    <div className="compare-arrows"></div>
+                    Add To Comparison{' '}
                   </button>
-                )}
-                <button
-                  type="button"
-                  className={'user-btn mb-2 comparison-btn'}
-                  onClick={addComparisonDrawerToggle}
-                >
-                  <div className="compare-arrows"></div>
-                  Add To Comparison{' '}
-                </button>
-                {isWarningFlag && <WarningMessage dClass={"col-md-12 pr-0 justify-content-end"} message={'A costing is pending for approval for this part or one of it\'s child part. Please approve that first'} />}
-                {(showWarningMsg && !warningMsg) && <WarningMessage dClass={"col-md-12 pr-0 justify-content-end"} message={'Costing for this part/Assembly is not yet done!'} />}
-              </Col>
-            }
+                  {isWarningFlag && <WarningMessage dClass={"col-md-12 pr-0 justify-content-end"} message={'A costing is pending for approval for this part or one of it\'s child part. Please approve that first'} />}
+                  {(showWarningMsg && !warningMsg) && <WarningMessage dClass={"col-md-12 pr-0 justify-content-end"} message={'Costing for this part/Assembly is not yet done!'} />}
+                </>}
+            </Col>
           </Row>
           <div ref={componentRef}>
-            <Row id="summaryPdf" className={`${customClass} ${drawerDetailPDF ? 'remove-space-border' : ''}`}>
+            <Row id="summaryPdf" className={`${customClass} ${drawerDetailPDF ? 'remove-space-border' : ''} ${simulationMode ? "simulation-print" : ""}`}>
               {(drawerDetailPDF || pdfHead) &&
                 <>
                   <Col md="12" className='pdf-header-wrapper d-flex justify-content-between'>
-                    <img src={Logo} className="pdf-header-img" alt={'Compnay-logo'} />
-                    <img src={cirHeader} className="pdf-header-img" alt={'Cost it right'} />
+                    <img src={Logo} alt={'Compnay-logo'} />
+                    <img src={cirHeader} alt={'Cost it right'} />
                   </Col>
                   {/* <Col md="12">
                     <h3>Costing Summary:</h3>
@@ -1296,7 +1299,7 @@ const CostingSummaryTable = (props) => {
                         {viewCostingData &&
                           viewCostingData.map((data) => {
                             return (
-                              <td className={`align-table ${pdfHead || drawerDetailPDF ? 'border-none' : ''}`}>
+                              <td className={` ${pdfHead || drawerDetailPDF ? '' : ''}`}>
                                 <div class="d-flex mt7">
                                   <span class="d-inline-block w-50">
                                     {data.CostingHeading !== VARIANCE ? data.toolApplicability.applicability : ''}
