@@ -46,6 +46,7 @@ function OpenWeightCalculator(props) {
   }
 
   const technology = props.technology;
+  console.log('technology: ', technology);
 
 
   /**

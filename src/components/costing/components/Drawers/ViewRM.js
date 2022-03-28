@@ -32,7 +32,7 @@ function ViewRM(props) {
   useEffect(() => {
 
     setViewRM(viewRMData)
-    
+
   }, [])
 
   const dispatch = useDispatch()
@@ -276,7 +276,7 @@ function ViewRM(props) {
                 isEditFlag={false}
                 isOpen={weightCalculatorDrawer}
                 closeDrawer={closeWeightDrawer}
-                technology={props.technologyId}
+                technology={viewCostingData[props.index].technologyId}
                 isSummary={true}
                 rmMBDetail={rmMBDetail} // MASTER BATCH DETAIL
                 CostingViewMode={true}   // THIS KEY WILL BE USE TO OPEN CALCI IN VIEW MODE

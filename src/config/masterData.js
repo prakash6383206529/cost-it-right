@@ -1785,11 +1785,11 @@ export function isMultipleRMAllow(technology) {
 export const SHEETMETAL = 1
 export const FORGINING = 2
 export const Non_Ferrous_LPDC = 3
-export const Non_Ferrous_HPDC = 4
+export const Non_Ferrous_HPDC = 3 //later 4
 export const Non_Ferrous_GDC = 5
 export const Ferrous_Casting = 6
 export const RUBBER = 7
-export const PLASTIC = 8
+export const PLASTIC = 6 // later 8
 export const Mechanical_Proprietary = 9
 export const Electrical_Proprietary = 10
 export const SPRING = 11
