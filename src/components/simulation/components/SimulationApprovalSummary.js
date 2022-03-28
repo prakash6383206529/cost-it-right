@@ -1136,7 +1136,7 @@ function SimulationApprovalSummary(props) {
                                                                     </>
                                                                 }
                                                                 {
-                                                                    (isOperation || keysForDownloadSummary.IsSurfaceTreatmentSimulation) &&
+                                                                    (isSurfaceTreatment || keysForDownloadSummary.IsSurfaceTreatmentSimulation) &&
                                                                     <>
                                                                         <AgGridColumn width={140} field="OldNetSurfaceTreatmentCost" headerName="Old ST Cost" ></AgGridColumn>
                                                                         <AgGridColumn width={140} field="NewNetSurfaceTreatmentCost" headerName="New ST Cost" ></AgGridColumn>
@@ -1144,7 +1144,7 @@ function SimulationApprovalSummary(props) {
                                                                     </>
                                                                 }
                                                                 {
-                                                                    (isSurfaceTreatment || keysForDownloadSummary.IsOperationSimulation) &&
+                                                                    (isOperation || keysForDownloadSummary.IsOperationSimulation) &&
                                                                     <>
                                                                         <AgGridColumn width={140} field="OldOperationCost" headerName="Old Operation Cost" ></AgGridColumn>
                                                                         <AgGridColumn width={140} field="NewOperationCost" headerName="New Operation Cost" ></AgGridColumn>
