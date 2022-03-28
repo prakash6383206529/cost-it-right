@@ -122,6 +122,11 @@ function BDSimulation(props) {
         return (cell === true || cell === 'Vendor Based') ? 'Vendor Based' : 'Zero Based';
     }
 
+    const quantityFormatter = (props) => {
+        const row = props?.data;
+        return (isImpactedMaster) ? row.Quantity : row.NumberOfPieces
+    }
+
     const newBasicRateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -274,6 +279,7 @@ function BDSimulation(props) {
         newBasicRateFormatter: newBasicRateFormatter,
         cellChange: cellChange,
         oldBasicRateFormatter: oldBasicRateFormatter,
+        quantityFormatter: quantityFormatter
     };
 
     return (
@@ -361,7 +367,7 @@ function BDSimulation(props) {
                                             {!isImpactedMaster && <AgGridColumn field="Vendor" editable='false' headerName="Vendor" minWidth={140}></AgGridColumn>}
                                             {!isImpactedMaster && <AgGridColumn field="DestinationPlant" editable='false' headerName="DestinationPlant" minWidth={140}></AgGridColumn>}
 
-                                            <AgGridColumn field="NumberOfPieces" editable='false' headerName="Quantity" minWidth={140}></AgGridColumn>
+                                            <AgGridColumn field="Quantity" editable='false' headerName="Quantity" minWidth={140} cellRenderer='quantityFormatter'></AgGridColumn>
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName="Basic Rate (INR)" marryChildren={true} width={240}>
                                                 <AgGridColumn width={120} field="BasicRate" editable='false' headerName="Old" cellRenderer='oldBasicRateFormatter' colId="BasicRate"></AgGridColumn>
                                                 <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' editable={!isImpactedMaster} onCellValueChanged='cellChange' field="NewBasicRate" headerName="New" colId='NewBasicRate'></AgGridColumn>
