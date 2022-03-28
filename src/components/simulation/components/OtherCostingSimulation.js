@@ -16,7 +16,7 @@ import Toaster from '../../common/Toaster';
 import { Redirect } from 'react-router';
 import { getPlantSelectListByType } from '../../../actions/Common';
 import { setCostingViewData } from '../../costing/actions/Costing';
-import { ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl, BOPGridForToken, CostingSimulationDownloadRM, EXCHANGESIMULATIONDOWNLOAD, InitialGridForToken, LastGridForToken, OperationGridForToken, RMGridForToken, STGridForToken } from '../../../config/masterData'
+import { ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl, BOPGridForToken, CostingSimulationDownloadRM, ERGridForToken, EXCHANGESIMULATIONDOWNLOAD, InitialGridForToken, LastGridForToken, OperationGridForToken, RMGridForToken, STGridForToken } from '../../../config/masterData'
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -77,11 +77,6 @@ function OtherCostingSimulation(props) {
     const [showMachineRateColumn, setShowMachineRateColumn] = useState(false);
     const [assemblyImpactButtonTrue, setAssemblyImpactButtonTrue] = useState(true);
 
-    const isSurfaceTreatment = (Number(selectedMasterForSimulation?.value) === Number(SURFACETREATMENT));
-    const isOperation = (Number(selectedMasterForSimulation?.value) === Number(OPERATIONS));
-    const isRMDomesticOrRMImport = ((Number(selectedMasterForSimulation?.value) === Number(RMDOMESTIC)) || (Number(selectedMasterForSimulation?.value) === Number(RMIMPORT)));
-    const isBOPDomesticOrImport = ((Number(selectedMasterForSimulation?.value) === Number(BOPDOMESTIC)) || (Number(selectedMasterForSimulation?.value) === Number(BOPIMPORT)))
-    const isMachineRate = Number(selectedMasterForSimulation?.value) === (Number(MACHINERATE));
     const isExchangeRate = String(selectedMasterForSimulation?.value) === EXCHNAGERATE;
 
     const [hideDataColumn, setHideDataColumn] = useState({
@@ -519,26 +514,26 @@ function OtherCostingSimulation(props) {
         if (showBOPColumn === true || showRMColumn === true || showOperationColumn === true || showSurfaceTreatmentColumn === true ||
             showExchangeRateColumn === true || showMachineRateColumn === true || true) {
 
-            if (showBOPColumn || isBOPDomesticOrImport) {
+            if (showBOPColumn) {
                 finalGrid = [...finalGrid, ...BOPGridForToken]
                 isTokenAPI = true
             }
-            if (showRMColumn || isRMDomesticOrRMImport) {
+            if (showRMColumn) {
                 finalGrid = [...finalGrid, ...RMGridForToken]
                 isTokenAPI = true
             }
-            if (showOperationColumn || isOperation) {
+            if (showOperationColumn) {
                 finalGrid = [...finalGrid, ...OperationGridForToken]
                 isTokenAPI = true
             }
-            if (showSurfaceTreatmentColumn || isSurfaceTreatment) {
+            if (showSurfaceTreatmentColumn) {
                 finalGrid = [...finalGrid, ...STGridForToken]
                 isTokenAPI = true
             }
-            // if (showExchangeRateColumn || isOperation) {         
-            //     finalGrid = [...finalGrid, ...OperationGridForToken]
-            // isTokenAPI = true
-            // }
+            if (showExchangeRateColumn || isExchangeRate) {
+                finalGrid = [...finalGrid, ...ERGridForToken]
+                isTokenAPI = true
+            }
             // if (showMachineRateColumn || isMachineRate) {
             //     finalGrid = [...finalGrid, ...OperationGridForToken]
             // isTokenAPI = true

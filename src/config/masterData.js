@@ -3096,6 +3096,15 @@ export const BOPGridForToken = [
     { label: "NewBOPCost", value: "NewBOPCost" },
     { label: "BOPVariance", value: "BOPVariance" },
 ]
+export const ERGridForToken = [
+    { label: "Currency", value: "Currency" },
+    { label: "OldPOPrice", value: "OldPOPrice" },
+    { label: "OldNetPOPriceOtherCurrency", value: "OldNetPOPriceOtherCurrency" },
+    { label: "NewNetPOPriceOtherCurrency", value: "NewNetPOPriceOtherCurrency" },
+    { label: "POVariance", value: "POVariance" },
+    { label: "OldExchangeRate", value: "OldExchangeRate" },
+    { label: "NewExchangeRate", value: "NewExchangeRate" },
+]
 
 export const InitialGridForToken = [
 
