@@ -773,7 +773,7 @@ function OtherCostingSimulation(props) {
                                         <div className="d-flex justify-content-end bd-highlight w100">
 
                                             {(showRMColumn || showBOPColumn || showOperationColumn ||
-                                                showMachineRateColumn || showExchangeRateColumn || true)
+                                                showMachineRateColumn || showExchangeRateColumn)
                                                 ?
                                                 <ExcelFile filename={'Costing'} fileExtension={'.xls'} element={
                                                     <button title="Download" type="button" className={'user-btn mr5'} ><div className="download mr-0"></div></button>}>
