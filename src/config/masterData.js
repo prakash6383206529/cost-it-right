@@ -3202,6 +3202,22 @@ export const ImpactedERDownload = [
     { label: "EffectiveDate", value: "EffectiveDate" },
 ]
 
+export const EXCHANGESIMULATIONDOWNLOAD = [
+    { label: "Costing Head", value: "CostingHead" },
+    { label: "CostingNumber", value: "CostingNumber" },
+    { label: "Part No", value: "PartNo" },
+    { label: "Part Name", value: "PartName" },
+    { label: "ECN Number", value: "ECNNumber" },
+    { label: "Revision Number", value: "RevisionNumber" },
+    { label: "Vendor Name", value: "VendorName" },
+    { label: "Currency", value: "Currency" },
+    { label: "OldNetPOPriceOtherCurrency", value: "OldNetPOPriceOtherCurrency" },
+    { label: "NewNetPOPriceOtherCurrency", value: "NewNetPOPriceOtherCurrency" },
+    { label: "Old Exchange Rate", value: "OldExchangeRate" },
+    { label: "NewExchangeRate", value: "NewExchangeRate" },
+    { label: "PO Price", value: "OldPOPrice" },
+    { label: "Variance", value: "Variance" }
+]
 export const RMImpactedDownloadArray = ["RawMaterial", "RMGrade", "RMSpec", "RawMaterialCode", "Category", "TechnologyName", "VendorName", "UOM", "OldBasicRate", "NewBasicRate", "OldScrapRate", "NewScrapRate", "RMFreightCost", "RMShearingCost", "EffectiveDate"]
 
 export const OperationImpactDownloadArray = ["OperationName", "OperationCode", "UOM", "OldOperationRate", "NewOperationRate", "EffectiveDate",]
