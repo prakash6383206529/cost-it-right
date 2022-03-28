@@ -350,6 +350,7 @@ class BOPDomesticListing extends Component {
             resizable: true,
             filter: true,
             sortable: true,
+            headerCheckboxSelectionFilteredOnly: true,
             headerCheckboxSelection: isFirstColumn,
             checkboxSelection: isFirstColumn
         };
