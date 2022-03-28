@@ -19,9 +19,8 @@ import { setCostingViewData } from '../../costing/actions/Costing';
 import {
     ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl,
     BOPGridForToken,
-    BOPImpactDownloadArray,
     CostingSimulationDownloadBOP, CostingSimulationDownloadOperation, CostingSimulationDownloadRM, CostingSimulationDownloadST
-    , ERImpactDownloadArray, ImpactedBOPDownload, ImpactedERDownload, ImpactedOPERATIONDownload, ImpactedOPERATIONSTDownload, ImpactedRMDownload, ImpactedSTDownload, InitialGridForToken, LastGridForToken, OperationGridForToken, OperationImpactDownloadArray, RMGridForToken, RMImpactedDownloadArray, STGridForToken
+    , InitialGridForToken, LastGridForToken, OperationGridForToken, RMGridForToken, RMImpactedDownloadArray, STGridForToken
 } from '../../../config/masterData'
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -141,8 +140,7 @@ function CostingSimulation(props) {
                 return null
             })
 
-            dispatch(getSimulatedAssemblyWiseImpactDate(requestData, isAssemblyInDraft, (res) => {
-            }))
+            dispatch(getSimulatedAssemblyWiseImpactDate(requestData, isAssemblyInDraft, (res) => { }))
         }
 
     }, [tableData])
