@@ -26,7 +26,6 @@ import { MESSAGES } from '../../../config/message';
 import BOMUpload from '../../massUpload/BOMUpload';
 
 import Clientbasedcostingdrawer from './ClientBasedCostingDrawer';
-import TooltipCustom from '../../common/Tooltip';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import AddNCCDrawer from './AddNCCDrawer';
 import { reactLocalStorage } from 'reactjs-localstorage';
@@ -1641,7 +1640,6 @@ function CostingDetails(props) {
                       </Col>
                       <Col className="col-md-15">
                         {inputLoader && <LoaderCustom customClass="input-loader" />}
-                        <TooltipCustom tooltipText="Please enter first few digits to see the part numbers" />
                         <AsyncSearchableSelectHookForm
                           label={"Assembly/Part No."}
                           name={"Part"}
