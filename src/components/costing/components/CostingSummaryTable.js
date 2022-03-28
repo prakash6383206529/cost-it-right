@@ -143,7 +143,7 @@ const CostingSummaryTable = (props) => {
       setIsViewRM(false)
       setIsViewConversionCost(false)
       setViewBOP(false)
-      setPdfName(viewCostingData[0].partName)
+      setPdfName(viewCostingData[0].partId)
     }
   }, [viewCostingData])
 
@@ -753,7 +753,7 @@ const CostingSummaryTable = (props) => {
               <Col md="8" className="text-right">
                 <ReactToPrint
                   bodyClass='mx-2 mt-3 remove-space-border'
-                  documentTitle={pdfName}
+                  documentTitle={`${pdfName}-detailed-costing`}
                   content={reactToPrintContent}
                   onAfterPrint={handleAfterPrintDetail}
                   onBeforeGetContent={handleOnBeforeGetContentDetail}
@@ -761,7 +761,7 @@ const CostingSummaryTable = (props) => {
                 />
                 <ReactToPrint
                   bodyClass='pt5'
-                  documentTitle={pdfName}
+                  documentTitle={`${pdfName}-costing`}
                   content={reactToPrintContent}
                   onAfterPrint={handleAfterPrint}
                   onBeforeGetContent={handleOnBeforeGetContent}
@@ -1042,7 +1042,7 @@ const CostingSummaryTable = (props) => {
                           anchor={'right'}
                           index={index}
                           isPDFShow={true}
-                          STreatmentShow={false}
+                          stCostShow={false}
 
                         />
                       </th></tr>}
@@ -1098,7 +1098,7 @@ const CostingSummaryTable = (props) => {
                           anchor={'right'}
                           index={index}
                           isPDFShow={true}
-                          STreatmentShow={true}
+                          stCostShow={true}
                         />
                       </th></tr>}
 
