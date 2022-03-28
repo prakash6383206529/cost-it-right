@@ -23,6 +23,7 @@ import DayTime from '../../common/DayTimeWrapper'
 import { getVolumeDataByPartAndYear } from '../../masters/actions/Volume'
 import { isFinalApprover } from '../actions/Approval';
 import cirHeader from "../../../assests/images/logo/CIRlogo.jpg";
+import Logo from '../../../assests/images/logo/company-logo.svg';
 import LoaderCustom from '../../common/LoaderCustom'
 import ReactToPrint from 'react-to-print';
 
@@ -88,6 +89,7 @@ const CostingSummaryTable = (props) => {
   const partInfo = useSelector((state) => state.costing.partInfo)
   const partNumber = useSelector(state => state.costing.partNo);
   const { initialConfiguration, topAndLeftMenuData } = useSelector(state => state.auth)
+  const [pdfName, setPdfName] = useState('')
 
   const componentRef = useRef();
   const onBeforeContentResolve = useRef(null)
@@ -141,6 +143,7 @@ const CostingSummaryTable = (props) => {
       setIsViewRM(false)
       setIsViewConversionCost(false)
       setViewBOP(false)
+      setPdfName(viewCostingData[0].partName)
     }
   }, [viewCostingData])
 
@@ -750,7 +753,7 @@ const CostingSummaryTable = (props) => {
               <Col md="8" className="text-right">
                 <ReactToPrint
                   bodyClass='mx-2 mt-3 remove-space-border'
-                  documentTitle="Costing-Summary-detail"
+                  documentTitle={pdfName}
                   content={reactToPrintContent}
                   onAfterPrint={handleAfterPrintDetail}
                   onBeforeGetContent={handleOnBeforeGetContentDetail}
@@ -758,7 +761,7 @@ const CostingSummaryTable = (props) => {
                 />
                 <ReactToPrint
                   bodyClass='pt5'
-                  documentTitle="Costing-Summary"
+                  documentTitle={pdfName}
                   content={reactToPrintContent}
                   onAfterPrint={handleAfterPrint}
                   onBeforeGetContent={handleOnBeforeGetContent}
@@ -787,12 +790,13 @@ const CostingSummaryTable = (props) => {
             <Row id="summaryPdf" className={`${customClass} ${drawerDetailPDF ? 'remove-space-border' : ''}`}>
               {(drawerDetailPDF || pdfHead) &&
                 <>
-                  <Col md="12" className='pdf-header-wrapper'>
+                  <Col md="12" className='pdf-header-wrapper d-flex justify-content-between'>
+                    <img src={Logo} className="pdf-header-img" alt={'Compnay-logo'} />
                     <img src={cirHeader} className="pdf-header-img" alt={'Cost it right'} />
                   </Col>
-                  <Col md="12">
-                    <h3 className='left-border'>Costing Summary:</h3>
-                  </Col>
+                  {/* <Col md="12">
+                    <h3>Costing Summary:</h3>
+                  </Col> */}
                 </>}
 
               <Col md="12">
