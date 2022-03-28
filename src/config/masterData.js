@@ -2656,8 +2656,8 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADBOP = [
 
     { label: "BOP Name", value: "BoughtOutPartName" },
     { label: "BOP Number", value: "BoughtOutPartNumber" },
-    { label: "Old BOP Cost", value: "OldBOPCost" },
-    { label: "New BOP Cost", value: "NewBOPCost" },
+    { label: "Old BOP Cost", value: "OldNetBoughtOutPartCost" },
+    { label: "New BOP Cost", value: "NewNetBoughtOutPartCost" },
     { label: "BOP Variance", value: "NetBoughtOutPartCostVariance" },
 
     { label: "Old PO Price", value: "OldPOPrice" },
