@@ -6732,8 +6732,8 @@ left: 17rem;
   img {
     height: 50px;
     display: block;
-    margin: 3px;
-    margin-bottom: 10px;
+    margin: auto 5px;
+    margin-bottom: 5px;
   }
 }
 
@@ -6768,21 +6768,16 @@ left: 17rem;
   }
 }
 .loader-wrapper {
-  height: 668px;
+  height: calc(100vh - 924px);
   overflow: hidden;
   @media screen and (max-width: $miniDesktop) {
-    height: 412px;
+    height: calc(100vh - 668px);
   }
 }
 
 // <------START  dropdown input field loader----->
 .p-relative {
   position: relative;
-  .withBorder {
-      .text-help {
-        margin: -1px 5px;
-      }
-  } 
 }
 .input-loader {
     left: 11px;
@@ -6907,11 +6902,14 @@ left: 17rem;
 // <----END Remark popup css->
 .rm-table-body {
   .rm-part-name {
+    height: 65px;
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
+    // -webkit-box-align: center;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
+    padding: 21px 4px 15px 15px !important;
     @media screen and (max-width:$miniDesktop) {
       max-width: 140px;
     }
@@ -7176,6 +7174,7 @@ left: 17rem;
   border-bottom: none !important;
   border-top: none !important;
 }
+
 @media print { 
   .remove-space-border {
     .table-responsive {
@@ -7209,6 +7208,30 @@ left: 17rem;
     transform: translateY(0);
       th {
         border-right: 1px solid #dee2e6 !important;
+      }
+    }
+    .simulation-print {
+      table.costing-summary-table {
+        overflow: hidden !important;
+        th {
+          min-width: auto !important;          
+        }
+      }
+      .table.table,:not(.table){
+        .green-row{
+          th,td{
+          background-color: #DBF4E2!important;
+          border-color: #4DC771!important;
+          border: 2px solid !important;
+          }
+        }
+        .red-row{
+          th,td{
+          background-color: #FEDCE2!important;
+          border-color: #FC5774!important;
+          border: 2px solid !important;
+          }
+        }
       }
     }
   }
