@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table } from 'reactstrap';
 import {
   setCostingDataList, setPOPrice, setRMCCBOPCostData, setSurfaceCostData,
-  setOverheadProfitCostData, setDiscountCost, showLoader, hideLoader,
+  setOverheadProfitCostData, setDiscountCost, showLoader, hideLoader, saveAssemblyPartRowCostingCalculation,
 } from '../actions/Costing';
 import { calculatePercentage, calculatePercentageValue, checkForDecimalAndNull, checkForNull } from '../../../helper';
 import DayTime from '../../common/DayTimeWrapper'
@@ -11,6 +11,8 @@ import CostingHeadTabs from './CostingHeaderTabs/index';
 import LoaderCustom from '../../common/LoaderCustom';
 import { useContext } from 'react';
 import { ViewCostingContext } from './CostingDetails';
+import { createToprowObjAndSave } from '../CostingUtil';
+import _ from 'lodash'
 
 export const costingInfoContext = React.createContext()
 export const netHeadCostContext = React.createContext()
@@ -35,7 +37,7 @@ function CostingDetailStepTwo(props) {
 
   const { initialConfiguration } = useSelector(state => state.auth)
   const { costingData, CostingDataList, NetPOPrice, RMCCBOPCost, SurfaceCostData, OverheadProfitCostData,
-    DiscountCostData, partNo, IsToolCostApplicable, showLoading } = useSelector(state => state.costing)
+    DiscountCostData, partNo, IsToolCostApplicable, showLoading, RMCCTabData, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, } = useSelector(state => state.costing)
 
   useEffect(() => {
     if (partNo.isChanged === true) {
@@ -378,6 +380,26 @@ function CostingDetailStepTwo(props) {
     }
   }
 
+  const handleBackButton = () => {
+    if (RMCCTabData && RMCCTabData.length > 0) {
+      let tempArrForCosting = JSON.parse(localStorage.getItem('costingArray'))
+      const data = _.find(tempArrForCosting, ['IsPartLocked', true])
+      const bopData = _.find(tempArrForCosting, ['PartType', 'BOP'])
+      if (data !== undefined || bopData !== undefined) {
+        const tabData = RMCCTabData[0]
+        const surfaceTabData = SurfaceTabData[0]
+        const overHeadAndProfitTabData = OverheadProfitTabData[0]
+        const discountAndOtherTabData = DiscountCostData
+
+        let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, NetPOPrice, getAssemBOPCharge, 1, [])
+
+        dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
+      }
+
+    }
+    props.backBtn()
+  }
+
   return (
     <>
       {showLoading && <LoaderCustom customClass={'costing-loader'} />}
@@ -462,7 +484,7 @@ function CostingDetailStepTwo(props) {
                   <button
                     type="button"
                     className="submit-button mr5 save-btn cr-bk-btn"
-                    onClick={props.backBtn} >
+                    onClick={handleBackButton} >
                     <div className={'back-icon'}></div>
                     {'Back '}
                   </button>

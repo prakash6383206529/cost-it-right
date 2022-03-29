@@ -16,6 +16,7 @@ import _ from 'lodash'
 let counter = 0;
 function BOPCost(props) {
   const { item, data } = props;
+  const IsLocked = item.IsLocked || item.IsPartLocked
 
   const { register, handleSubmit, control, formState: { errors }, setValue, getValues } = useForm({
     mode: 'onChange',
@@ -48,7 +49,7 @@ function BOPCost(props) {
         BOMLevel: props.item.BOMLevel,
         PartNumber: props.item.PartNumber,
       }
-      if (!CostingViewMode) {
+      if (!CostingViewMode && !IsLocked) {
         props.setBOPCost(gridData, Params, item)
         if (JSON.stringify(gridData) !== JSON.stringify(oldGridData)) {
           dispatch(isDataChange(true))
@@ -249,8 +250,8 @@ function BOPCost(props) {
           BOPHandlingPercentage: getValues('BOPHandlingPercentage'),
           BOPHandlingCharges: getValues('BOPHandlingCharges'),
         }
-        if (!CostingViewMode) {
-          props.setBOPHandlingCost(gridData, BOPHandlingFields, Params)
+        if (!CostingViewMode && !IsLocked) {
+          props.setBOPHandlingCost(gridData, BOPHandlingFields, Params, item)
         }
       }, 200)
 
@@ -280,8 +281,8 @@ function BOPCost(props) {
         BOPHandlingPercentage: 0,
         BOPHandlingCharges: 0,
       }
-      if (!CostingViewMode) {
-        props.setBOPHandlingCost(gridData, BOPHandlingFields, Params)
+      if (!CostingViewMode && !IsLocked) {
+        props.setBOPHandlingCost(gridData, BOPHandlingFields, Params, item)
       }
     }
   }, [IsApplyBOPHandlingCharges]);
@@ -317,15 +318,15 @@ function BOPCost(props) {
           <Row className="align-items-center">
             <Col md="10">
               <div className="left-border">
-                {'Insert Cost:'}
+                {'BOP Cost:'}
               </div>
             </Col>
             <Col md={'2'}>
-              {!CostingViewMode && <button
+              {!CostingViewMode && !IsLocked && <button
                 type="button"
                 className={'user-btn'}
                 onClick={DrawerToggle}>
-                <div className={'plus'}></div>INSERT</button>}
+                <div className={'plus'}></div>BOP</button>}
             </Col>
           </Row>
           <form noValidate className="form" onSubmit={handleSubmit(onSubmit)} >
@@ -336,12 +337,12 @@ function BOPCost(props) {
                 <Table className="table cr-brdr-main costing-bop-cost-section" size="sm" >
                   <thead>
                     <tr>
-                      <th>{`Insert Part No.`}</th>
-                      <th>{`Insert Part Name`}</th>
+                      <th>{`BOP Part No.`}</th>
+                      <th>{`BOP Part Name`}</th>
                       <th>{`UOM`}</th>
-                      <th style={{ width: "220px" }} >{`Insert Cost (INR)`}</th>
+                      <th style={{ width: "220px" }} >{`BOP Cost (INR)`}</th>
                       <th style={{ width: "220px" }} >{`Quantity`}</th>
-                      <th style={{ width: "220px" }} >{`Net Insert Cost`}</th>
+                      <th style={{ width: "220px" }} >{`Net BOP Cost`}</th>
                       <th style={{ width: "145px" }}>{`Action`}</th>
                     </tr>
                   </thead>
@@ -382,7 +383,7 @@ function BOPCost(props) {
                                           handleQuantityChange(e, index)
                                         }}
                                         errors={errors && errors.bopGridFields && errors.bopGridFields[index] !== undefined ? errors.bopGridFields[index].Quantity : ''}
-                                        disabled={CostingViewMode ? true : false}
+                                        disabled={(CostingViewMode || IsLocked) ? true : false}
                                       />
                                     </>
                                     :
@@ -408,14 +409,14 @@ function BOPCost(props) {
                                         handleQuantityChange(e, index)
                                       }}
                                       errors={errors && errors.bopGridFields && errors.bopGridFields[index] !== undefined ? errors.bopGridFields[index].Quantity : ''}
-                                      disabled={CostingViewMode ? true : false}
+                                      disabled={(CostingViewMode || IsLocked) ? true : false}
                                     />
                                 }
                               </td>
                               <td>{item.NetBoughtOutPartCost !== undefined ? checkForDecimalAndNull(item.NetBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
                               <td>
-                                {!CostingViewMode && <button className="SaveIcon mr-2" type={'button'} onClick={() => SaveItem(index)} />}
-                                {!CostingViewMode && <button className="CancelIcon " type={'button'} onClick={() => CancelItem(index)} />}
+                                {!CostingViewMode && !IsLocked && <button className="SaveIcon mr-2" type={'button'} onClick={() => SaveItem(index)} />}
+                                {!CostingViewMode && !IsLocked && <button className="CancelIcon " type={'button'} onClick={() => CancelItem(index)} />}
                               </td>
                             </tr>
                             :
@@ -427,8 +428,8 @@ function BOPCost(props) {
                               <td style={{ width: 200 }}>{checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForInputOutput)}</td>
                               <td>{item.NetBoughtOutPartCost ? checkForDecimalAndNull(item.NetBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
                               <td>
-                                {!CostingViewMode && <button className="Edit mr-2" type={'button'} onClick={() => editItem(index)} />}
-                                {!CostingViewMode && <button className="Delete " type={'button'} onClick={() => deleteItem(index)} />}
+                                {!CostingViewMode && !IsLocked && <button className="Edit mr-2" type={'button'} onClick={() => editItem(index)} />}
+                                {!CostingViewMode && !IsLocked && <button className="Delete " type={'button'} onClick={() => deleteItem(index)} />}
                               </td>
                             </tr>
 
@@ -453,11 +454,11 @@ function BOPCost(props) {
                     className={`custom-checkbox mb-0`}
                     onChange={onPressApplyBOPCharges}
                   >
-                    Apply Insert Handling Charges
+                    Apply BOP Handling Charges
                     <input
                       type="checkbox"
                       checked={IsApplyBOPHandlingCharges}
-                      disabled={CostingViewMode ? true : false}
+                      disabled={(CostingViewMode || IsLocked) ? true : false}
                     />
                     <span
                       className=" before-box"
@@ -496,7 +497,7 @@ function BOPCost(props) {
                     className=""
                     customClassName={"withBorder"}
                     errors={errors.BOPHandlingPercentage}
-                    disabled={CostingViewMode ? true : false}
+                    disabled={(CostingViewMode || IsLocked) ? true : false}
                   />
                 </Col>}
 

@@ -22,6 +22,9 @@ import {
   CHECK_IS_TOOL_DATA_CHANGE,
   CHECK_IS_DISCOUNT_DATA_CHANGE,
   FORGING_CALCULATOR_MACHININGSTOCK_SECTION,
+  SET_MASTER_BATCH_OBJ,
+  SET_NEW_ARRAY_FOR_COSTING,
+  SET_ARRAY_FOR_COSTING,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -2223,6 +2226,25 @@ export function saveAssemblyBOPHandlingCharge(data, callback) {
   }
 }
 
+
+export function setAllCostingInArray(data, isNewArray) {
+  return (dispatch) => {
+    // IF isNewArray THEN WE ARE REPLACING WHOLE ARRAY WITH NEW VALUE ELSE WE ARE APPENDING VALUE IN OLD ARRAY
+    if (isNewArray) {
+      dispatch({
+        type: SET_NEW_ARRAY_FOR_COSTING,
+        payload: data
+      })
+    } else {
+
+      dispatch({
+        type: SET_ARRAY_FOR_COSTING,
+        payload: data
+      })
+    }
+  }
+}
+
 /**
  * @method getVBCExistingCosting
  * @description get VBC Costing Select List By Part
@@ -2357,3 +2379,12 @@ export function setSelectedIds(data) {                  //THIS METHOD WILL SAVE 
 }
 
 
+export function setMasterBatchObj(data) {
+  console.log('data: ', data);
+  return (dispatch) => {
+    dispatch({
+      type: SET_MASTER_BATCH_OBJ,
+      payload: data
+    })
+  }
+}
