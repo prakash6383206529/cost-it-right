@@ -215,6 +215,7 @@ function CostingDetailStepTwo(props) {
         let OverAllCost = 0;
         if (tempData && tempData !== undefined) {
           const ApplyCost = IsToolCostApplicable ? checkForNull(tempData?.ToolCost) : checkForNull(data?.ToolCost);
+
           OverAllCost =
             tempData.NetTotalRMBOPCC +
             tempData.NetSurfaceTreatmentCost +
@@ -230,6 +231,7 @@ function CostingDetailStepTwo(props) {
             NetPackagingAndFreight: tempData.NetPackagingAndFreight,
           }
         }
+
         let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
 
         dispatch(setCostingDataList('setHeaderCostToolTab', tempArr, () => {
@@ -242,11 +244,11 @@ function CostingDetailStepTwo(props) {
 
 
   const findApplicabilityCost = (data, Text, headCostData, costData, percent) => {
-    console.log('data: ', data);
-    console.log('headCostData: ', headCostData);
+
+
     if (data && Text && Object.keys(headCostData).length > 0) {
 
-      console.log(CostingDataList, "CostingDataListCostingDataList",);
+
       const ConversionCostForCalculation = headCostData?.IsAssemblyPart ? checkForNull(headCostData.NetConversionCost) - checkForNull(headCostData.TotalOtherOperationCostPerAssembly) : headCostData.ProcessCostTotal + headCostData.OperationCostTotal
       const RMBOPCC = checkForNull(headCostData.NetRawMaterialsCost) + checkForNull(headCostData.NetBoughtOutPartCost) + ConversionCostForCalculation
       const RMBOP = checkForNull(headCostData.NetRawMaterialsCost) + checkForNull(headCostData.NetBoughtOutPartCost);
@@ -265,7 +267,7 @@ function CostingDetailStepTwo(props) {
 
         case 'BOP':
           totalCost = headCostData.NetBoughtOutPartCost * calculatePercentage(percent)
-          console.log("COMING HERE", totalCost);
+
 
           break;
 
@@ -324,7 +326,7 @@ function CostingDetailStepTwo(props) {
         if (data.OtherCostType === 'Percentage') {
 
           const cost = checkForNull(findApplicabilityCost(data, data?.OtherCostApplicability, headerCostData, CostingData, data?.PercentageOtherCost))
-          console.log('cost: ', cost);
+
           // data.AnyOtherCost = calculatePercentageValue(SumOfTab, data.PercentageOtherCost)
           data.AnyOtherCost = cost
         }

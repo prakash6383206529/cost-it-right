@@ -10,7 +10,7 @@ import { checkForDecimalAndNull, checkForNull } from '../../../../helper';
 
 function AddTool(props) {
 
-  const { rowObjData, isEditFlag, ProcessOperationArray, gridData } = props;
+  const { rowObjData, isEditFlag, ProcessOperationArray, gridData, editIndex } = props;
 
   const defaultValues = {
     ToolOperationId: rowObjData?.ToolOperationId ? rowObjData.ToolOperationId : '',
@@ -72,7 +72,7 @@ function AddTool(props) {
   * @description GET NET TOOL COST
   */
   const getNetToolCost = () => {
-    const cost = checkForNull(fieldValues.Quantity) * checkForNull(fieldValues.ToolCost) / checkForNull(fieldValues.Life)
+    const cost = checkForNull(getValues("Quantity")) * checkForNull(getValues("ToolCost")) / checkForNull(getValues("Life"))
     return checkForDecimalAndNull(cost, 2);
   }
 
@@ -143,8 +143,23 @@ function AddTool(props) {
       Quantity: getValues('Quantity'),
       ToolCost: getValues('ToolCost'),
       Life: getValues('Life'),
-      TotalToolCost: getValues('TotalToolCost'),
+      NetToolCost: getValues('TotalToolCost'),
     }
+
+    if (formData.ProcessOrOperation === undefined || formData.ToolCategory === undefined || formData.ToolName === undefined || formData.Quantity === undefined || formData.ToolCost === undefined || formData.Life === undefined) {
+      return false
+    }
+
+    let tempArr = []
+
+    if (isEditFlag) {
+      tempArr = Object.assign([...gridData], { [editIndex]: formData })
+    }
+    else {
+      tempArr = [...rowObjData, formData]
+    }
+
+    props.setToolCost(tempArr, JSON.stringify(tempArr) !== JSON.stringify(rowObjData) ? true : false)
     toggleDrawer('', formData)
   }
 
@@ -166,8 +181,9 @@ function AddTool(props) {
       Quantity: data.Quantity,
       ToolCost: data.ToolCost,
       Life: data.Life,
-      TotalToolCost: data.TotalToolCost,
+      NetToolCost: data.TotalToolCost, //NET TOOL COST
     }
+
     toggleDrawer('', formData)
   }
 
@@ -373,7 +389,7 @@ function AddTool(props) {
                       className="submit-button save-btn"
                       onClick={addRow}
                     >
-                                          <div className={'save-icon'}></div>
+                      <div className={'save-icon'}></div>
                       {'Save'}
                     </button>
                   </div>
