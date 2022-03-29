@@ -7,7 +7,7 @@ import { costingInfoContext } from '../../CostingDetailStepTwo';
 import { TextFieldHookForm, } from '../../../../layout/HookFormInputs'
 import { checkForDecimalAndNull, checkForNull, checkPercentageValue, getConfigurationKey, loggedInUserId } from '../../../../../helper'
 import { DIMENSIONLESS, HOUR, KG, MASS, NO, SHOTS, STROKE, TIME, VOLUMETYPE } from '../../../../../config/constants';
-import { saveProcessCostCalculationData } from '../../../actions/CostWorking';
+import { saveDefaultProcessCostCalculationData } from '../../../actions/CostWorking';
 import Toaster from '../../../../common/Toaster';
 import { reactLocalStorage } from 'reactjs-localstorage';
 
@@ -120,14 +120,15 @@ function SheetMetalBaicDrawer(props) {
 
   const onSubmit = (value) => {
     let obj = {}
-    obj.ProcessCalculationId = props.calculatorData.ProcessCalculationId ? props.calculatorData.ProcessCalculationId : "00000000-0000-0000-0000-000000000000"
-    // obj.CostingProcessDetailId = WeightCalculatorRequest && WeightCalculatorRequest.CostingProcessDetailId ? WeightCalculatorRequest.CostingProcessDetailId : "00000000-0000-0000-0000-000000000000"
+    obj.ProcessDefaultCalculatorId = props.calculatorData.ProcessDefaultCalculatorId ? props.calculatorData.ProcessDefaultCalculatorId : "00000000-0000-0000-0000-000000000000"
+    obj.CostingProcessDetailsIdRef = WeightCalculatorRequest && WeightCalculatorRequest.CostingProcessDetailsIdRef ? WeightCalculatorRequest.CostingProcessDetailsIdRef : "00000000-0000-0000-0000-000000000000"
+    obj.BaseCostingIdRef = costData.CostingId
+    obj.ProcessIdRef = props.calculatorData.ProcessId
     obj.IsChangeApplied = tempProcessObj === value.ProcessCost ? false : true
     obj.TechnologyId = costData.TechnologyId
-    obj.CostingId = costData.CostingId
     obj.UnitOfMeasurementId = props.calculatorData.UnitOfMeasurementId
     obj.UOM = props.calculatorData.UOM
-    obj.Tonnage = value.MachineTonnage
+    obj.Tonnage = value.MachineTonnage ? value.MachineTonnage : ""
     obj.CycleTime = value.CycleTime
     obj.Efficiency = value.Efficiency
     obj.Cavity = value.Cavity
@@ -137,7 +138,7 @@ function SheetMetalBaicDrawer(props) {
     obj.UnitTypeId = props.calculatorData.UOMTypeId
     obj.UnitType = props.calculatorData.UOMType
     obj.PartPerHour = props.calculatorData.UOMType === TIME ? checkForNull(quantityState) : '-'
-    dispatch(saveProcessCostCalculationData(obj, res => {
+    dispatch(saveDefaultProcessCostCalculationData(obj, res => {
       if (res.data.Result) {
         obj.ProcessCalculationId = res.data.Identity
         Toaster.success('Calculation saved sucessfully.')
