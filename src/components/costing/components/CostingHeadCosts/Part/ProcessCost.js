@@ -12,12 +12,13 @@ import { EMPTY_DATA, MASS, TIME } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
 import { costingInfoContext } from '../../CostingDetailStepTwo';
 import VariableMhrDrawer from '../../Drawers/processCalculatorDrawer/VariableMhrDrawer'
-import { getProcessCalculation } from '../../../actions/CostWorking';
+import { getProcessMachiningCalculation, getProcessDefaultCalculation } from '../../../actions/CostWorking';
 import { gridDataAdded, isDataChange, setIsToolCostUsed, setRMCCErrors } from '../../../actions/Costing';
 import { ViewCostingContext } from '../../CostingDetails';
 import { HOUR } from '../../../../../config/constants';
 import Popup from 'reactjs-popup';
 import OperationCostExcludedOverhead from './OperationCostExcludedOverhead';
+import { MACHINING, FORGING, DIE_CASTING, Ferrous_Casting, } from '../../../../../config/masterData'
 
 let counter = 0;
 function ProcessCost(props) {
@@ -83,19 +84,34 @@ function ProcessCost(props) {
     let tempArr = []
     let tempData = gridData[id]
     // const calciData = gridData[id]
-
     /****************************FOR GETING CALCULATED VALUE IN CALCULATOR**************************/
-    dispatch(getProcessCalculation(costData.CostingId, tempData.ProcessId, tempData.ProcessCalculationId, costData.TechnologyId, 'default', res => {
-      if (res && res.data && res.data.Data) {
-        const data = res.data.Data
-        tempData = { ...tempData, WeightCalculatorRequest: data, }
-        tempArr = Object.assign([...gridData], { [id]: tempData })
-        setTimeout(() => {
-          setGridData(tempArr)
-          setIsCalculator(true)
-        }, 100)
-      }
-    }))
+    if ((costData.TechnologyId === MACHINING || costData.TechnologyId === FORGING || costData.TechnologyId === Ferrous_Casting || costData.TechnologyId === DIE_CASTING) && tempData.UOMType === TIME) {
+      //getProcessDefaultCalculation
+      dispatch(getProcessMachiningCalculation(costData.CostingId, tempData.ProcessId, tempData.ProcessCalculationId, res => {
+        if (res && res.data && res.data.Data) {
+          const data = res.data.Data
+          tempData = { ...tempData, WeightCalculatorRequest: data, }
+          tempArr = Object.assign([...gridData], { [id]: tempData })
+          setTimeout(() => {
+            setGridData(tempArr)
+            setIsCalculator(true)
+          }, 100)
+        }
+      }))
+
+    } else {
+      dispatch(getProcessDefaultCalculation(costData.CostingId, tempData.ProcessId, tempData.ProcessCalculationId, res => {
+        if (res && res.data && res.data.Data) {
+          const data = res.data.Data
+          tempData = { ...tempData, WeightCalculatorRequest: data, }
+          tempArr = Object.assign([...gridData], { [id]: tempData })
+          setTimeout(() => {
+            setGridData(tempArr)
+            setIsCalculator(true)
+          }, 100)
+        }
+      }))
+    }
     // setCalculatorData(calciData)
   }
 
