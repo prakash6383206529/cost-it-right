@@ -474,7 +474,7 @@ export const API = {
   createVBCCosting: `${BASE_URL}/costing/create-vbc-costing`,
   getZBCExistingCosting: `${BASE_URL}/costing/get-zbc-exist-costings-list`,
   getVBCExistingCosting: `${BASE_URL}/costing/get-vbc-exist-costings-list`,
-  getZBCDetailByPlantId: `${BASE_URL}/costing/get-zbc-plant-by-id`,
+  getBriefCostingById: `${BASE_URL}/costing/get-zbc-plant-by-id`,
   getVBCDetailByVendorId: `${BASE_URL}/costing/get-vbc-vendor-by-id`,
   updateZBCSOBDetail: `${BASE_URL}/costing/bulk-update-zbc-sob-detail`,
   updateVBCSOBDetail: `${BASE_URL}/costing/bulk-update-vbc-sob-detail`,
