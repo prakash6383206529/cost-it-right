@@ -6888,14 +6888,11 @@ left: 17rem;
 // <----END Remark popup css->
 .rm-table-body {
   .rm-part-name {
-    height: 65px;
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
-    // -webkit-box-align: center;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
-    padding: 21px 4px 15px 15px !important;
     @media screen and (max-width:$miniDesktop) {
       max-width: 140px;
     }
