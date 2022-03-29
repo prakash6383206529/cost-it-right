@@ -58,15 +58,15 @@ function TabToolCost(props) {
 
   useEffect(() => {
 
-    if (RMCCTabData) {
+    if (RMCCTabData && RMCCTabData.length > 0) {
       let ProcessCostArray = []
       let OperationCostArray = []
 
       ProcessCostArray = RMCCTabData && RMCCTabData[0]?.CostingPartDetails?.CostingConversionCost?.CostingProcessCostResponse.map(el => {
-        return { label: el.ProcessName, value: el.ProcessName };
+        return { label: el.ProcessName, value: el.ProcessId };
       })
       OperationCostArray = RMCCTabData && RMCCTabData[0]?.CostingPartDetails?.CostingConversionCost?.CostingOperationCostResponse.map(el => {
-        return { label: el.OperationName, value: el.OperationName };
+        return { label: el.OperationName, value: el.OperationId };
       });
 
       setProcessArray(ProcessCostArray)
@@ -221,7 +221,9 @@ function TabToolCost(props) {
   useEffect(() => {
 
     if (IsApplicableProcessWise && props.activeTab === '5') {
-      dispatch(getToolsProcessWiseDataListByCostingID(costData.CostingId, (res) => { if (res) { setGridData(res.data.DataList) } }))
+      dispatch(getToolsProcessWiseDataListByCostingID(costData.CostingId, (res) => {
+        if (res) { setGridData(res.data.DataList) }
+      }))
     }
 
   }, [IsApplicableProcessWise, props.activeTab])
@@ -362,24 +364,14 @@ function TabToolCost(props) {
 
     return (
       <>
-        <button className="Edit mr-2 align-middle" type={'button'} onClick={() => editItem(props.rowIndex, props.agGridReact.props.rowData)} />
-        <button className="Delete align-middle" type={'button'} onClick={() => deleteItem(props.rowIndex, props.agGridReact.props.rowData)} />
+        <button className="Edit mr-2 align-middle" type={'button'} onClick={() => editItem(props?.rowIndex, props?.agGridReact?.props?.rowData)} />
+        <button className="Delete align-middle" type={'button'} onClick={() => deleteItem(props?.rowIndex, props?.agGridReact?.props?.rowData)} />
       </>
     )
   }
 
   const frameworkComponents = {
-    // renderPlant: renderPlant,
-    // renderVendor: renderVendor,
-    // renderVendor: renderVendor,
-    // priceFormatter: priceFormatter,
-    // oldpriceFormatter: oldpriceFormatter,
-    // createdOnFormatter: createdOnFormatter,
-    // requestedOnFormatter: requestedOnFormatter,
-    // statusFormatter: statusFormatter,
-    // customLoadingOverlay: LoaderCustom,
     customNoRowsOverlay: NoContentFound,
-    // linkableFormatter: linkableFormatter
     totalValueRenderer: buttonFormatter,
   };
   const onPageSizeChanged = (newPageSize) => {
@@ -610,6 +602,7 @@ function TabToolCost(props) {
         isOpen={isDrawerOpen}
         closeDrawer={closeDrawer}
         isEditFlag={isEditFlag}
+        CostingViewMode={CostingViewMode}
         ID={''}
         setToolCost={setToolCost}
         editIndex={editIndex}
