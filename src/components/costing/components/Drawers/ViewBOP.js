@@ -33,19 +33,19 @@ function ViewBOP(props) {
         <Col md="12">
           <Row>
             <Col md="12">
-              <div className="left-border">{'Insert:'}</div>
+              <div className="left-border">{'BOP:'}</div>
             </Col>
           </Row>
           <Table className="table cr-brdr-main" size="sm">
             <thead>
               <tr>
                 {IsAssemblyCosting && <th>{`Part No.`}</th>}
-                <th>{`Insert Part No.`}</th>
-                <th>{`Insert Part Name`}</th>
+                <th>{`BOP Part No.`}</th>
+                <th>{`BOP Part Name`}</th>
                 <th>{`Currency`}</th>
                 <th>{`Landed Cost (INR)`}</th>
                 <th>{`Quantity`}</th>
-                <th className="costing-border-right">{`Net Insert Cost`}</th>
+                <th className="costing-border-right">{`Net BOP Cost`}</th>
               </tr>
             </thead>
             <tbody>
@@ -86,7 +86,7 @@ function ViewBOP(props) {
         <Col md="12">
           <Row>
             <Col md="12">
-              <div className="left-border">{`${IsAssemblyCosting ? 'Assembly\'s Insert Handling Charge:' : 'Insert Handling Charge:'}`}</div>
+              <div className="left-border">{`${IsAssemblyCosting ? 'Assembly\'s BOP Handling Charge:' : 'BOP Handling Charge:'}`}</div>
             </Col>
           </Row>
           <Table className="table cr-brdr-main mb-0" size="sm">
@@ -106,7 +106,7 @@ function ViewBOP(props) {
 
                   <tr>
                     <td colSpan={7}>
-                      <NoContentFound title={EMPTY_DATA} />
+                      {isPDFShow ? <div className='text-center'>0</div> : <NoContentFound title={EMPTY_DATA} />}
                     </td>
                   </tr>
               }
@@ -119,11 +119,11 @@ function ViewBOP(props) {
       {
         IsAssemblyCosting &&
         <Row className="mx-0">
-          <Col md="12">
+          <Col md="12" className='px-0'>
             <br />
             <Row>
               <Col md="12">
-                <div className="left-border">{'Part\'s Insert Handling Charge:'}</div>
+                <div className="left-border">{'Part\'s BOP Handling Charge:'}</div>
               </Col>
             </Row>
             <Table className="table cr-brdr-main mb-0" size="sm">
@@ -171,7 +171,7 @@ function ViewBOP(props) {
               <Row className="drawer-heading">
                 <Col>
                   <div className={'header-wrapper left'}>
-                    <h3>{'View Insert Cost:'}</h3>
+                    <h3>{'View BOP Cost:'}</h3>
                   </div>
                   <div
                     onClick={(e) => toggleDrawer(e)}
