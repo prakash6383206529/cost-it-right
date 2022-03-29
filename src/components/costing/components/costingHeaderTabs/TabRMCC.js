@@ -842,13 +842,21 @@ function TabRMCC(props) {
     return tempArr;
   }
 
+  /**
+ * @method setPartDetails
+ * @description SET PART DETAILS
+ */
+  const setPartDetails = (BOMLevel, PartNumber, Data, item) => {
+    let arr = formatData(BOMLevel, PartNumber, Data, RMCCTabData, item)
+    dispatch(setRMCCData(arr, () => { }))
+  }
+
 
   /**
-  * @method setPartDetails
-  * @description SET PART DETAILS
-  */
-  const setPartDetails = (BOMLevel, PartNumber, Data, item) => {
-
+ * @method formatData
+ * @description FORMATE DATA FOR SET PART DETAILS
+ */
+  const formatData = (BOMLevel, PartNumber, Data, RMCCTabData, item) => {
     let tempArr = [];
     try {
       tempArr = RMCCTabData && RMCCTabData.map(i => {
