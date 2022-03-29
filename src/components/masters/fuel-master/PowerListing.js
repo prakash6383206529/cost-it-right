@@ -92,6 +92,7 @@ class PowerListing extends Component {
         plantID: vendorPlant && vendorPlant !== undefined ? vendorPlant.value : '',
       }
       this.props.getVendorPowerDetailDataList(filterData, (res) => {
+        this.setState({ isLoader: false })
         if (res && res.status === 200) {
           let Data = res.data.DataList;
           this.setState({ tableData: Data })
