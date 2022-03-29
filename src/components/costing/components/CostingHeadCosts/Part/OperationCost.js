@@ -14,6 +14,8 @@ import Popup from 'reactjs-popup';
 
 let counter = 0;
 function OperationCost(props) {
+  const { item } = props;
+  const IsLocked = item.IsLocked || item.IsPartLocked
 
   const { register, control, formState: { errors }, setValue, getValues } = useForm({
     mode: 'onChange',
@@ -39,9 +41,9 @@ function OperationCost(props) {
       PartNumber: props.item.PartNumber,
       PartType: props.item.PartType
     }
-    if (!CostingViewMode) {
+    if (!CostingViewMode && !IsLocked) {
       if (props.IsAssemblyCalculation) {
-        props.setAssemblyOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
+        props.setAssemblyOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false, props.item)
       } else {
         props.setOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
       }
@@ -257,7 +259,7 @@ function OperationCost(props) {
               </div>
             </Col>
             <Col md={'4'}>
-              {!CostingViewMode && <button
+              {(!CostingViewMode && !IsLocked) && <button
                 type="button"
                 className={'user-btn'}
                 onClick={DrawerToggle}>
@@ -322,7 +324,7 @@ function OperationCost(props) {
                                     handleQuantityChange(e, index)
                                   }}
                                   errors={errors && errors.OperationGridFields && errors.OperationGridFields[index] !== undefined ? errors.OperationGridFields[index].Quantity : ''}
-                                  disabled={CostingViewMode ? true : false}
+                                  disabled={(CostingViewMode || IsLocked) ? true : false}
                                 />
                               }
                             </td>
@@ -357,7 +359,7 @@ function OperationCost(props) {
                                         handleLabourQuantityChange(e, index)
                                       }}
                                       errors={errors && errors.OperationGridFields && errors.OperationGridFields[index] !== undefined ? errors.OperationGridFields[index].LabourQuantity : ''}
-                                      disabled={CostingViewMode ? true : false}
+                                      disabled={(CostingViewMode || IsLocked) ? true : false}
                                     />
                                     :
                                     '-'
@@ -384,8 +386,8 @@ function OperationCost(props) {
                               <td>{item.IsLabourRateExist ? item.LabourQuantity : '-'}</td>}
                             <td>{netCost(item)}</td>
                             <td>
-                              {!CostingViewMode && <button className="Edit  mr-2 " type={'button'} onClick={() => editItem(index)} />}
-                              {!CostingViewMode && <button className="Delete" type={'button'} onClick={() => deleteItem(index, item.OperationId)} />}
+                              {(!CostingViewMode && !IsLocked) && <button className="Edit  mr-2 mb-0 align-middle" type={'button'} onClick={() => editItem(index)} />}
+                              {(!CostingViewMode && !IsLocked) && <button className="Delete mb-0 align-middle" type={'button'} onClick={() => deleteItem(index, item.OperationId)} />}
                               <Popup trigger={<button id={`popUpTriggerss${index}`} className="Comment-box ml-2" type={'button'} />}
                                 position="top center">
                                 <TextAreaHookForm
@@ -407,12 +409,12 @@ function OperationCost(props) {
                                   customClassName={"withBorder"}
                                   errors={errors && errors.OperationGridFields && errors.OperationGridFields[index] !== undefined ? errors.OperationGridFields[index].remarkPopUp : ''}
                                   //errors={errors && errors.remarkPopUp && errors.remarkPopUp[index] !== undefined ? errors.remarkPopUp[index] : ''}                        
-                                  disabled={CostingViewMode ? true : false}
+                                  disabled={(CostingViewMode || IsLocked) ? true : false}
                                   hidden={false}
                                 />
                                 <Row>
                                   <Col md="12" className='remark-btn-container'>
-                                    <button className='submit-button mr-2' disabled={CostingViewMode ? true : false} onClick={() => onRemarkPopUpClick(index)} > <div className='save-icon'></div> </button>
+                                    <button className='submit-button mr-2' disabled={(CostingViewMode || IsLocked) ? true : false} onClick={() => onRemarkPopUpClick(index)} > <div className='save-icon'></div> </button>
                                     <button className='reset' onClick={() => onRemarkPopUpClose(index)} > <div className='cancel-icon'></div></button>
                                   </Col>
                                 </Row>

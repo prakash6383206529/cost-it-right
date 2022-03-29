@@ -121,7 +121,7 @@ function CostingDetails(props) {
 
   useEffect(() => {
     if (reactLocalStorage.get('location') === '/costing') {
-
+      localStorage.setItem('costingArray', [])
       setValue('Technology', '')
       setValue('Part', '')
       reset()
@@ -131,6 +131,7 @@ function CostingDetails(props) {
       dispatch(getPartSelectListByTechnology('', () => { }))
       dispatch(getPartInfo('', () => { }))
       dispatch(gridDataAdded(false))
+
     }
   }, [])
 
@@ -1216,11 +1217,9 @@ function CostingDetails(props) {
    * @description used to Reset form
    */
   const backToFirstStep = () => {
-    dispatch(getBriefCostingById('', (res) => {
+    dispatch(getBriefCostingById('', (res) => { }))
 
-
-    }))
-
+    localStorage.setItem('costingArray', [])
     dispatch(setRMCCData([], () => { }))                            //THIS WILL CLEAR RM CC REDUCER
     dispatch(setComponentItemData({}, () => { }))
 
@@ -1246,7 +1245,11 @@ function CostingDetails(props) {
     setZBCPlantGrid([])
     setVBCVendorGrid([])
     setNccGrid([])
-    nextToggle()
+
+    setTimeout(() => {
+
+      nextToggle()
+    }, 700);
 
     dispatch(getPartInfo(part.value !== undefined ? part.value : partNumber.partId, (res) => {
       let Data = res.data.Data;
