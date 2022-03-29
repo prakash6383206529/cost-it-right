@@ -474,11 +474,11 @@ export const API = {
   createVBCCosting: `${BASE_URL}/costing/create-vbc-costing`,
   getZBCExistingCosting: `${BASE_URL}/costing/get-zbc-exist-costings-list`,
   getVBCExistingCosting: `${BASE_URL}/costing/get-vbc-exist-costings-list`,
-  getBriefCostingById: `${BASE_URL}/costing/get-zbc-plant-by-id`,
+  getZBCDetailByPlantId: `${BASE_URL}/costing/get-zbc-plant-by-id`,
   getVBCDetailByVendorId: `${BASE_URL}/costing/get-vbc-vendor-by-id`,
   updateZBCSOBDetail: `${BASE_URL}/costing/bulk-update-zbc-sob-detail`,
   updateVBCSOBDetail: `${BASE_URL}/costing/bulk-update-vbc-sob-detail`,
-  getZBCCostingByCostingId: `${BASE_URL}/costing/get-zbc-costing-detail-by-id`,
+  getBriefCostingById: `${BASE_URL}/costing/get-zbc-costing-detail-by-id`,
   getVBCCostingByCostingId: `${BASE_URL}/costing/get-vbc-costing-detail-by-id`,
   deleteDraftCosting: `${BASE_URL}/costing/delete-draft-costing`,
   getNCCCExistingCosting: `${BASE_URL}/costing/get-ncc-exist-costings-list`,
@@ -1845,4 +1845,4 @@ export const LEVEL1 = 'L1';
 export const SUB_ASSEMBLY = 'Sub Assembly';
 
 //VERSION 
-export const VERSION = "V1.2.100.1";
+export const VERSION = "V1.2.100.2";
