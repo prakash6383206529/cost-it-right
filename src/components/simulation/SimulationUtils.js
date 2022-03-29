@@ -1,4 +1,4 @@
-import { BOPImpactDownloadArray, ERImpactDownloadArray, OperationImpactDownloadArray, RMImpactedDownloadArray } from "../../config/masterData";
+import { BOPImpactDownloadArray, CPImpactDownloadArray, ERImpactDownloadArray, OperationImpactDownloadArray, RMImpactedDownloadArray } from "../../config/masterData";
 
 
 export const SimulationUtils = (TempData) => {
@@ -104,7 +104,7 @@ export const checkForChangeInOverheadProfit3Values = (item) => {
 
 export const impactmasterDownload = (impactedMasterData) => {
     let rmArraySet = [], bopArraySet = []
-    let operationArraySet = [], erArraySet = []
+    let operationArraySet = [], erArraySet = [], combinedProcessArraySet = []
 
     impactedMasterData?.OperationImpactedMasterDataList && impactedMasterData?.OperationImpactedMasterDataList.map((item) => {
         let tempObj = []
@@ -168,6 +168,17 @@ export const impactmasterDownload = (impactedMasterData) => {
         tempObj.push(item.EffectiveDate)
         erArraySet.push(tempObj)
     })
+    impactedMasterData?.CombinedProcessImpactedMasterDataList && impactedMasterData?.CombinedProcessImpactedMasterDataList.map((item) => {
+        let tempObj = []
+
+        tempObj.push(item.PartNumber)
+        tempObj.push(item.OldPOPrice)
+        tempObj.push(item.NewPOPrice)
+        tempObj.push(item.OldNetCC)
+        tempObj.push(item.NewPOPrice)
+        tempObj.push(item.EffectiveDate)
+        combinedProcessArraySet.push(tempObj)
+    })
 
     const multiDataSet = [
         {
@@ -185,6 +196,10 @@ export const impactmasterDownload = (impactedMasterData) => {
             ySteps: 5,
             columns: ERImpactDownloadArray,
             data: erArraySet
+        }, {
+            ySteps: 5,
+            columns: CPImpactDownloadArray,
+            data: combinedProcessArraySet
         }
     ];
     return multiDataSet

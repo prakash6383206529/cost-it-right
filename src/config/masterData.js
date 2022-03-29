@@ -3161,13 +3161,6 @@ export const STGridForToken = [
 
 ]
 
-export const BOPGridForToken = [
-    { label: "BoughtOutPartName", value: "BoughtOutPartName" },
-    { label: "BoughtOutPartNumber", value: "BoughtOutPartNumber" },
-    { label: "OldBOPCost", value: "OldBOPCost" },
-    { label: "NewBOPCost", value: "NewBOPCost" },
-    { label: "BOPVariance", value: "BOPVariance" },
-]
 export const ERGridForToken = [
     { label: "Currency", value: "Currency" },
     { label: "OldPOPrice", value: "OldPOPrice" },
@@ -3176,6 +3169,27 @@ export const ERGridForToken = [
     { label: "POVariance", value: "POVariance" },
     { label: "OldExchangeRate", value: "OldExchangeRate" },
     { label: "NewExchangeRate", value: "NewExchangeRate" },
+]
+
+export const BOPGridForToken = [
+    { label: "BoughtOutPartName", value: "BoughtOutPartName" },
+    { label: "BoughtOutPartNumber", value: "BoughtOutPartNumber" },
+    { label: "OldBOPCost", value: "OldBOPCost" },
+    { label: "NewBOPCost", value: "NewBOPCost" },
+    { label: "BOPVariance", value: "BOPVariance" },
+]
+
+
+export const ExchangeRateGridForToken = [
+    { label: "OperationName", value: "OperationName" },
+    { label: "OperationCode", value: "OperationCode" },
+    { label: "OldOperationRate", value: "OldOperationRate" },
+    { label: "NewOperationRate", value: "NewOperationRate" },
+    { label: "OperationVariance", value: "OperationVariance" },
+    { label: "OldOperationCost", value: "OldOperationCost" },
+    { label: "NewOperationCost", value: "NewOperationCost" },
+    { label: "OperationCostVariance", value: "OperationCostVariance" },
+
 ]
 
 export const InitialGridForToken = [
@@ -3243,7 +3257,7 @@ export const OperationGridForTokenSummary = [
 ]
 
 export const RMGridForTokenSummary = [
-    { label: "RawMaterial Grade", value: "RMGrade" },
+    { label: "Raw Material Grade", value: "RMGrade" },
     { label: "RM Cost Old", value: "OldRMPrice" },
     { label: "RM Cost New", value: "NewRMPrice" },
     { label: "RM Variance", value: "RMVariance" },
@@ -3264,6 +3278,14 @@ export const BOPGridForTokenSummary = [
     { label: "Old BOP Cost", value: "OldBOPCost" },
     { label: "New BOP Cost", value: "NewBOPCost" },
     { label: "BOP Variance", value: "NetBoughtOutPartCostVariance" },
+]
+
+export const CPGridForTokenSummary = [
+    { label: "Costing Number", value: "CostingNumber" },
+    { label: "Old Net CC", value: "OldNetCC" },
+    { label: "New Net CC", value: "NewNetCC" },
+    { label: "Part Number", value: "PartNumber" },
+    { label: "EffectiveDate", value: "EffectiveDate" },
 ]
 
 export const ImpactedRMDownload = [
@@ -3337,6 +3359,7 @@ export const BOPImpactDownloadArray = ["BoughtOutPartNumber", "BoughtOutPartName
 
 export const ERImpactDownloadArray = ["Currency", "CostingNumber", "PartNumber", "BankRate", "BankCommissionPercentage", "CustomRate", "CurrencyExchangeRate", "NewExchangeRate", "OldExchangeRate", "EffectiveDate",]
 
+export const CPImpactDownloadArray = ["CostingNumber", "PartNumber", "OldNetCC", "NewNetCC", "OldPOPrice", "NewPOPrice", "EffectiveDate"]
 
 
 

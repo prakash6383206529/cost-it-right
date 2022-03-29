@@ -71,14 +71,16 @@ function Simulation(props) {
     const [loader, setloader] = useState(false)
     const [tokenCheckBox, setTokenCheckBox] = useState(false)
     const [objectForCombinedTokenAPI, setObjectForCombinedTokenAPI] = useState('')
+    const [inputLoader, setInputLoader] = useState(false)
 
     const dispatch = useDispatch()
     const vendorSelectList = useSelector(state => state.comman.vendorWithVendorCodeSelectList)
 
     useEffect(() => {
+        setInputLoader(true)
         dispatch(getSelectListOfMasters(() => { }))
         dispatch(getCostingTechnologySelectList(() => { }))
-        dispatch(getVendorWithVendorCodeSelectList(() => { }))
+        dispatch(getVendorWithVendorCodeSelectList(() => { setInputLoader(false) }))
         setShowEditTable(false)
         if (props.isRMPage) {
             setValue('Technology', { label: selectedTechnologyForSimulation?.label, value: selectedTechnologyForSimulation?.value })
@@ -169,6 +171,16 @@ function Simulation(props) {
         setSelectionForListingMasterAPI('Master')
         setTimeout(() => {
             if (value !== '' && Object.keys(master).length > 0 && technology.label !== '') {
+                let obj = {
+                    technologyId: value.value,
+                    loggedInUserId: loggedInUserId(),
+                    simulationTechnologyId: master.value
+                }
+                dispatch(getTokenSelectListAPI(obj, () => { }))
+                if (value !== '' && Object.keys(master).length > 0) {
+                    setShowMasterList(true)
+                    setShowTokenDropdown(true)
+                }
                 setShowMasterList(true)
                 setShowTokenDropdown(true)
             }
@@ -299,7 +311,7 @@ function Simulation(props) {
             // case BOPIMPORT:
             //     return (<ProfitListing isSimulation={true} technology={technology.value} apply={editTable} />)
             case COMBINED_PROCESS:
-                return (<ProcessListingSimulation isSimulation={true} technology={technology.value} vendorId={vendor.value} objectForMultipleSimulation={obj} apply={editTable} tokenArray={token} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} />)
+                return (<ProcessListingSimulation isSimulation={true} technology={technology.value} vendorId={vendor.value} objectForMultipleSimulation={obj} apply={editTable} tokenArray={token} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} />)
             default:
                 return <div className="empty-table-paecholder" />;
         }
@@ -878,8 +890,8 @@ function Simulation(props) {
                                 master.value === '3' &&
                                 <div className="d-inline-flex justify-content-start align-items-center mr-3">
                                     <div className="flex-fills label">Vendor:</div>
-                                    <div className="flex-fills hide-label pl-0">
-                                        <TooltipCustom customClass="combine-tooltip" tooltipText="please enter the first few letters to see vendors" />
+                                    <div className="flex-fills hide-label pl-0 p-relative">
+                                        {inputLoader && <LoaderCustom customClass="input-loader vendor-input combine-process" />}
                                         <AsyncSearchableSelectHookForm
                                             label={''}
                                             name={'Vendor'}
@@ -893,6 +905,7 @@ function Simulation(props) {
                                             mandatory={false}
                                             handleChange={handleVendorChange}
                                             errors={errors.Masters}
+                                            NoOptionMessage={"Please enter first few letters to see vendors"}
                                         />
                                     </div>
                                 </div>

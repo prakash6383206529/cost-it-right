@@ -739,6 +739,7 @@ function CostingSimulation(props) {
         let finalGrid = [], isTokenAPI = false
         if (showBOPColumn === true || showRMColumn === true || showOperationColumn === true || showSurfaceTreatmentColumn === true ||
             showExchangeRateColumn === true || showMachineRateColumn === true) {
+
             if (showBOPColumn || isBOPDomesticOrImport) {
                 finalGrid = [...finalGrid, ...BOPGridForToken]
                 isTokenAPI = true
@@ -898,7 +899,7 @@ function CostingSimulation(props) {
                                         <div className="d-flex justify-content-end bd-highlight w100">
 
                                             {(showRMColumn || showBOPColumn || showOperationColumn ||
-                                                showMachineRateColumn || showExchangeRateColumn || showSurfaceTreatmentColumn)
+                                                showMachineRateColumn || showExchangeRateColumn)
                                                 ?
                                                 <ExcelFile filename={'Costing'} fileExtension={'.xls'} element={
                                                     <button title="Download" type="button" className={'user-btn mr5'} ><div className="download mr-0"></div></button>}>

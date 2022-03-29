@@ -9,6 +9,7 @@ import RMSimulation from './SimulationPages/RMSimulation';
 import CPSimulation from './SimulationPages/CPSimulation';
 import OperationSTSimulation from './SimulationPages/OperationSTSimulation';
 import BDSimulation from './SimulationPages/BDSimulation';
+import { ProcessListingSimulation } from './ProcessListingSimulation';
 
 const gridOptions = {};
 
@@ -20,6 +21,7 @@ export function Impactedmasterdata(props) {
         let operationListing = data?.OperationImpactedMasterDataList?.length === 0 ? false : true
         let exchangeRateListing = data?.ExchangeRateImpactedMasterDataList?.length === 0 ? false : true
         let bopListing = data?.BoughtOutPartImpactedMasterDataList?.length === 0 || data?.BoughtOutPartImpactedMasterDataList === null ? false : true
+        let combinedProcessListing = data?.CombinedProcessImpactedMasterDataList?.length === 0 || data?.BoughtOutPartImpactedMasterDataList === null ? false : true
         let surfaceTreatment = data?.OperationImpactedMasterDataList?.length === 0 ? false : true
         let machineRateListing = data?.MachineRateImpactedMasterDataList?.length === 0 ? false : true
 
@@ -28,6 +30,7 @@ export function Impactedmasterdata(props) {
             {operationListing && masterId && <OperationSTSimulation isOperationMaster={true} costingAndPartNo={viewCostingAndPartNo} list={data?.OperationImpactedMasterDataList} isImpactedMaster={true} isbulkUpload={false} lastRevision={lastRevision} masterId={masterId} />}
             {exchangeRateListing && <ERSimulation costingAndPartNo={viewCostingAndPartNo} list={data?.ExchangeRateImpactedMasterDataList} isImpactedMaster={true} />}
             {bopListing && <BDSimulation costingAndPartNo={viewCostingAndPartNo} list={data?.BoughtOutPartImpactedMasterDataList} isImpactedMaster={true} isbulkUpload={false} />}
+            {combinedProcessListing && <ProcessListingSimulation costingAndPartNo={viewCostingAndPartNo} list={data?.CombinedProcessImpactedMasterDataList} isImpactedMaster={true} isbulkUpload={false} />}
             {/* {surfaceTreatment && masterId && <OperationSTSimulation isSurfaceTreatmentMaster={true} costingAndPartNo={viewCostingAndPartNo} list={data?.OperationImpactedMasterDataList} isImpactedMaster={true} isbulkUpload={false} lastRevision={lastRevision} masterId={masterId} />} */}
             {/* {rmListing && <RMSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} customClass={customClass} />} */}
             {/* {machineRateListing && <MRSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} />} */}

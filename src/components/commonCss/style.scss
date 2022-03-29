@@ -6874,6 +6874,17 @@ left: 17rem;
       @extend .masters-vendor-loader;
       bottom: 1px;
     }
+    &.combine-process {
+      left: 1px;
+      right: 1px;
+      top: 1px;
+      bottom: 1px;
+      .loaderinner {
+        @-moz-document url-prefix() {      //firefox css
+          margin-right: -18px;
+        }
+        }
+    }
 }
 // <------END input field loader----->
 

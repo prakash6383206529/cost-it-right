@@ -49,6 +49,7 @@ import {
     GET_RM_DOMESTIC_LIST,
     GET_VALUE_TO_SHOW_COSTING_SIMULATION,
     GET_KEYS_FOR_DOWNLOAD_SUMMARY,
+    COMBINED_PROCESS,
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { toastr } from 'react-redux-toastr'
@@ -816,7 +817,8 @@ export function getLastSimulationData(vendorId, effectiveDate, callback) {
             ExchangeRateImpactedMasterDataList: [],
             OperationImpactedMasterDataList: [],
             RawMaterialImpactedMasterDataList: [],
-            BoughtOutPartImpactedMasterDataList: []
+            BoughtOutPartImpactedMasterDataList: [],
+            CombinedProcessImpactedMasterDataList: [],
         }
         const queryParams = `vendorId=${vendorId}&effectiveDate=${effectiveDate}`
 
@@ -889,7 +891,8 @@ export function getImpactedMasterData(simulationId, callback) {
             ExchangeRateImpactedMasterDataList: [],
             OperationImpactedMasterDataList: [],
             RawMaterialImpactedMasterDataList: [],
-            BoughtOutPartImpactedMasterDataList: []
+            BoughtOutPartImpactedMasterDataList: [],
+            CombinedProcessImpactedMasterDataList: [],
         }
         const queryParams = `simulationId=${simulationId}`
         const request = axios.get(`${API.getImpactedMasterData}?${queryParams}`, headers);
@@ -1373,6 +1376,12 @@ export function getListingForSimulationCombined(requestData, master, callback) {
                     payload: []
                 })
                 break;
+            case COMBINED_PROCESS:
+                dispatch({
+                    type: GET_COMBINED_PROCESS_LIST,
+                    payload: []
+                })
+                break;
 
             //ADD CASE FOR COMBINED PROCESS IN RE (REMINDER)
 
@@ -1430,6 +1439,12 @@ export function getListingForSimulationCombined(requestData, master, callback) {
                         dispatch({
                             type: EXCHANGE_RATE_DATALIST,
                             payload: response.data.Data
+                        })
+                        break;
+                    case COMBINED_PROCESS:
+                        dispatch({
+                            type: GET_COMBINED_PROCESS_LIST,
+                            payload: response.data.DataList
                         })
                         break;
 
