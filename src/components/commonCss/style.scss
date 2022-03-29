@@ -6716,8 +6716,8 @@ left: 17rem;
   img {
     height: 50px;
     display: block;
-    margin:8px;
-    margin: auto;
+    margin: auto 5px;
+    margin-bottom: 5px;
   }
 }
 .ag-pinned-right-header {
@@ -7148,6 +7148,7 @@ left: 17rem;
   border-bottom: none !important;
   border-top: none !important;
 }
+
 @media print { 
   .remove-space-border {
     .table-responsive {
@@ -7181,6 +7182,30 @@ left: 17rem;
     transform: translateY(0);
       th {
         border-right: 1px solid #dee2e6 !important;
+      }
+    }
+    .simulation-print {
+      table.costing-summary-table {
+        overflow: hidden !important;
+        th {
+          min-width: auto !important;          
+        }
+      }
+      .table.table,:not(.table){
+        .green-row{
+          th,td{
+          background-color: #DBF4E2!important;
+          border-color: #4DC771!important;
+          border: 2px solid !important;
+          }
+        }
+        .red-row{
+          th,td{
+          background-color: #FEDCE2!important;
+          border-color: #FC5774!important;
+          border: 2px solid !important;
+          }
+        }
       }
     }
   }
