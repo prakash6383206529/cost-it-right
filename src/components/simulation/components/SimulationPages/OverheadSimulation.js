@@ -54,6 +54,8 @@ function OverheadSimulation(props) {
         })
     }, [list])
 
+
+    // VERIFY SIMUALTION BUTTON (SUBMIT)
     const verifySimulation = debounce(() => {
         let OverheadApplicabilityTypeCount = 0
         let OverheadRMPercentageCount = 0
@@ -737,6 +739,8 @@ function OverheadSimulation(props) {
         }
     }
 
+
+    // CALL BACK FOR DISABLE AND ENABLE % CELL
     const EditableCallbackForOP = (props) => {
         const rowData = props?.data;
         let value = false
@@ -800,6 +804,7 @@ function OverheadSimulation(props) {
 
     }
 
+    // TRIGGER ON EVERY CHNAGE IN CELL
     const onCellValueChanged = (props) => {
         const indexFromProps = props?.node?.rowIndex
         if ((props?.value === 'BOP' || props?.value === 'BOP + CC' || props?.value === 'CC' || props?.value === 'Fixed' || props?.value === 'RM'

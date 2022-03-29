@@ -273,7 +273,7 @@ function TabToolCost(props) {
             "TotalRawMaterialsCostWithQuantity": tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
             "TotalBoughtOutPartCostWithQuantity": tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
             "TotalConversionCostWithQuantity": tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
-            "TotalCalculatedRMBOPCCCostPerPC": tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity + tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity + tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
+            "TotalCalculatedRMBOPCCCostWithQuantity": tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity + tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity + tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
             "TotalCalculatedRMBOPCCCostPerAssembly": tabData.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
             "NetRMCostPerAssembly": tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
             "NetBOPCostAssembly": tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
@@ -295,8 +295,8 @@ function TabToolCost(props) {
             "TabId": 5
           },
           "WorkingRows": [],
-          "LoggedInUserId": loggedInUserId()
-
+          "LoggedInUserId": loggedInUserId(),
+          "BOPHandlingCharges": {}
         };
         if (!CostingViewMode) {
           dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
@@ -575,14 +575,14 @@ function TabToolCost(props) {
                         </div>
                       </div>
                       {/* <--------------------AG Grid convert by 21-10-2021------> */}
-                    </Col>
-                  </Row>}
+                    </Col >
+                  </Row >}
 
-              </form>
-            </div>
-          </Col>
-        </Row>
-      </div>
+              </form >
+            </div >
+          </Col >
+        </Row >
+      </div >
 
 
       {!CostingViewMode && IsApplicableProcessWise &&
@@ -598,19 +598,21 @@ function TabToolCost(props) {
         </div>
       }
 
-      {isDrawerOpen && <AddTool
-        isOpen={isDrawerOpen}
-        closeDrawer={closeDrawer}
-        isEditFlag={isEditFlag}
-        CostingViewMode={CostingViewMode}
-        ID={''}
-        setToolCost={setToolCost}
-        editIndex={editIndex}
-        rowObjData={rowObjData}
-        anchor={'right'}
-        ProcessOperationArray={[...processArray, ...operationArray]}
-        gridData={gridData}
-      />}
+      {
+        isDrawerOpen && <AddTool
+          isOpen={isDrawerOpen}
+          closeDrawer={closeDrawer}
+          isEditFlag={isEditFlag}
+          CostingViewMode={CostingViewMode}
+          ID={''}
+          setToolCost={setToolCost}
+          editIndex={editIndex}
+          rowObjData={rowObjData}
+          anchor={'right'}
+          ProcessOperationArray={[...processArray, ...operationArray]}
+          gridData={gridData}
+        />
+      }
     </>
   );
 };
