@@ -7,13 +7,13 @@ import { toastr } from 'react-redux-toastr';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom'
 import moment from 'moment'
-import { ProcessMaster, EMPTY_DATA } from '../../../config/constants'
+import { ProcessMaster, EMPTY_DATA, COMBINED_PROCESS } from '../../../config/constants'
 import ReactExport from 'react-export-excel';
 import { PROCESSLISTING_DOWNLOAD_EXCEl } from '../../../config/masterData'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { getCombinedProcessList } from '../../simulation/actions/Simulation'
+import { getCombinedProcessList, getListingForSimulationCombined } from '../../simulation/actions/Simulation'
 import { Row, Col, } from 'reactstrap';
 
 const gridOptions = {};
@@ -39,14 +39,29 @@ export function ProcessListingSimulation(props) {
 
     const dispatch = useDispatch()
     const processCostingList = useSelector(state => state.simulation.combinedProcessList)
+    const { isSimulation, selectionForListingMasterAPI, objectForMultipleSimulation, isImpactedMaster, list } = props;
+    const [tableData, setTableData] = useState(isImpactedMaster ? list : processCostingList)
 
     useEffect(() => {
-
-        let obj = {
-            technologyId: props?.technology,
-            vendorId: props?.vendorId
+        if (isSimulation && selectionForListingMasterAPI === 'Combined') {
+            props?.changeSetLoader(true)
+            dispatch(getListingForSimulationCombined(objectForMultipleSimulation, COMBINED_PROCESS, (res) => {
+                props?.changeSetLoader(false)
+            }))
         }
-        dispatch(getCombinedProcessList(obj, () => { }))
+        if (selectionForListingMasterAPI === 'Master') {
+            let obj = {
+                technologyId: props?.technology,
+                vendorId: props?.vendorId
+            }
+            props?.changeTokenCheckBox(false)
+            dispatch(getCombinedProcessList(obj, () => {
+                props?.changeTokenCheckBox(true)
+            }))
+        }
+
+
+
 
     }, [])
 
@@ -143,11 +158,15 @@ export function ProcessListingSimulation(props) {
     }
 
     const isFirstColumn = (params) => {
-        var displayedColumns = params.columnApi.getAllDisplayedColumns();
+        if (isSimulation) {
 
-        var thisIsFirstColumn = displayedColumns[0] === params.column;
+            var displayedColumns = params.columnApi.getAllDisplayedColumns();
+            var thisIsFirstColumn = displayedColumns[0] === params.column;
 
-        return thisIsFirstColumn;
+            return thisIsFirstColumn;
+        } else {
+            return false
+        }
 
     }
 
@@ -233,12 +252,12 @@ export function ProcessListingSimulation(props) {
                                 defaultColDef={defaultColDef}
                                 domLayout='autoHeight'
                                 floatingFilter={true}
-                                rowData={processCostingList}
+                                rowData={tableData}
                                 pagination={true}
                                 paginationPageSize={10}
                                 onGridReady={onGridReady}
                                 gridOptions={gridOptions}
-                                loadingOverlayComponent={'customLoadingOverlay'}
+                                // loadingOverlayComponent={'customLoadingOverlay'}
                                 noRowsOverlayComponent={'customNoRowsOverlay'}
                                 noRowsOverlayComponentParams={{
                                     title: EMPTY_DATA,
@@ -249,12 +268,14 @@ export function ProcessListingSimulation(props) {
                             >
                                 {/* <AgGridColumn field="TechnologyName" editable='false' headerName="Technology" minWidth={190}></AgGridColumn> */}
                                 <AgGridColumn field="CostingNumber" editable='false' headerName="Costing Number" minWidth={190}></AgGridColumn>
-                                <AgGridColumn field="PlantName" editable='false' headerName="Plant" minWidth={190}></AgGridColumn>
-                                <AgGridColumn field="PartName" editable='false' headerName="Part Name" minWidth={190}></AgGridColumn>
+                                {!isImpactedMaster && <AgGridColumn field="PlantName" editable='false' headerName="Plant" minWidth={190}></AgGridColumn>}
+                                {!isImpactedMaster && <AgGridColumn field="PartName" editable='false' headerName="Part Name" minWidth={190}></AgGridColumn>}
                                 <AgGridColumn field="PartNumber" editable='false' headerName="Part Number" minWidth={190}></AgGridColumn>
-                                <AgGridColumn suppressSizeToFit="true" editable='false' field="ConversionCost" headerName="Net CC" minWidth={190}></AgGridColumn>
+                                {!isImpactedMaster && <AgGridColumn suppressSizeToFit="true" editable='false' field="ConversionCost" headerName="Net CC" minWidth={190}></AgGridColumn>}
+                                {isImpactedMaster && <AgGridColumn field="OldNetCC" editable='false' headerName="Old Net CC" minWidth={190}></AgGridColumn>}
+                                {isImpactedMaster && <AgGridColumn field="NewNetCC" editable='false' headerName="New Net CC" minWidth={190}></AgGridColumn>}
                                 {/* <AgGridColumn field="RemainingTotal" editable='false' headerName="Remaining Fields Total" minWidth={190}></AgGridColumn> */}
-                                <AgGridColumn suppressSizeToFit="true" field="TotalCost" headerName="Total" minWidth={190}></AgGridColumn>
+                                {!isImpactedMaster && <AgGridColumn suppressSizeToFit="true" field="TotalCost" headerName="Total" minWidth={190}></AgGridColumn>}
                                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={190} cellRenderer='effectiveDateFormatter'></AgGridColumn>
                                 <AgGridColumn field="CostingId" headerName="CostingId" hide></AgGridColumn>
 
