@@ -93,14 +93,13 @@ function RMDomesticListing(props) {
             dispatch(getListingForSimulationCombined(objectForMultipleSimulation, RMDOMESTIC, (res) => {
                 props?.changeSetLoader(false)
             }))
-        }
-        setvalue({ min: 0, max: 0 });
-        if (selectionForListingMasterAPI === 'Master') {
+        } else {
             if (isSimulation) {
                 props?.changeTokenCheckBox(false)
             }
             getDataList()
         }
+        setvalue({ min: 0, max: 0 });
     }, [])
 
 
