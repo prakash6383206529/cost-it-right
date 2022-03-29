@@ -57,11 +57,6 @@ function RMSimulation(props) {
 
     }, [])
 
-    useEffect(() => {
-
-        // }, 300);
-    }, [])
-
     const verifySimulation = debounce(() => {
         let basicRateCount = 0
         let basicScrapCount = 0
