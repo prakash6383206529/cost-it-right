@@ -144,6 +144,7 @@ const CostingSummaryTable = (props) => {
       setIsViewConversionCost(false)
       setViewBOP(false)
       setPdfName(viewCostingData[0].partId)
+      console.log('viewCostingData[0]: ', viewCostingData[0].partId);
     }
   }, [viewCostingData])
 
@@ -751,7 +752,7 @@ const CostingSummaryTable = (props) => {
             <Col md={simulationMode ? "12" : "8"} className="text-right">
               {!simulationMode &&
                 <ReactToPrint
-                  bodyClass='mx-2 mt-3 remove-space-border'
+                  bodyClass='mx-2 my-3 remove-space-border'
                   documentTitle={`${pdfName}-detailed-costing`}
                   content={reactToPrintContent}
                   onAfterPrint={handleAfterPrintDetail}
@@ -760,8 +761,8 @@ const CostingSummaryTable = (props) => {
                 />
               }
               {!simulationDrawer && <ReactToPrint
-                bodyClass={`mt-3 ${simulationMode ? 'mx-1 simulation-print' : 'mx-2'}`}
-                documentTitle={`${pdfName}-costing`}
+                bodyClass={`my-3 ${simulationMode ? 'mx-1 simulation-print' : 'mx-2'}`}
+                documentTitle={`${simulationMode ? 'Compare-costing.pdf' : `${pdfName}-costing`}`}
                 content={reactToPrintContent}
                 onAfterPrint={handleAfterPrint}
                 onBeforeGetContent={handleOnBeforeGetContent}
