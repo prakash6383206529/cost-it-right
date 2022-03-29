@@ -759,14 +759,14 @@ const CostingSummaryTable = (props) => {
                   trigger={reactToPrintTriggerDetail}
                 />
               }
-              <ReactToPrint
+              {!simulationDrawer && <ReactToPrint
                 bodyClass={`mt-3 ${simulationMode ? 'mx-1 simulation-print' : 'mx-2'}`}
                 documentTitle={`${pdfName}-costing`}
                 content={reactToPrintContent}
                 onAfterPrint={handleAfterPrint}
                 onBeforeGetContent={handleOnBeforeGetContent}
                 trigger={reactToPrintTrigger}
-              />
+              />}
               {
                 !simulationMode && <>
 
