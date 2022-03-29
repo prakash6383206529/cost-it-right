@@ -24,6 +24,7 @@ import {
   CHECK_IS_DISCOUNT_DATA_CHANGE,
   SET_NEW_ARRAY_FOR_COSTING,
   FORGING_CALCULATOR_MACHININGSTOCK_SECTION,
+  SET_MASTER_BATCH_OBJ,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -2224,19 +2225,19 @@ export function saveAssemblyBOPHandlingCharge(data, callback) {
 }
 
 
-export function setAllCostingInArray(data,isNewArray){
-  return (dispatch)=>{
+export function setAllCostingInArray(data, isNewArray) {
+  return (dispatch) => {
     // IF isNewArray THEN WE ARE REPLACING WHOLE ARRAY WITH NEW VALUE ELSE WE ARE APPENDING VALUE IN OLD ARRAY
-    if(isNewArray){
+    if (isNewArray) {
       dispatch({
-        type:SET_NEW_ARRAY_FOR_COSTING,
-        payload:data
+        type: SET_NEW_ARRAY_FOR_COSTING,
+        payload: data
       })
-    }else{
-      
+    } else {
+
       dispatch({
-        type:SET_ARRAY_FOR_COSTING,
-        payload:data
+        type: SET_ARRAY_FOR_COSTING,
+        payload: data
       })
     }
   }
@@ -2356,7 +2357,7 @@ export function isDiscountDataChange(isDataChange) {
  * @description: Used for storing part no from costing summary
  * @param {*} data
  */
- export function setForgingCalculatorMachiningStockSection(data) {
+export function setForgingCalculatorMachiningStockSection(data) {
   return (dispatch) => {
     dispatch({
       type: FORGING_CALCULATOR_MACHININGSTOCK_SECTION,
@@ -2365,4 +2366,12 @@ export function isDiscountDataChange(isDataChange) {
   }
 }
 
-
+export function setMasterBatchObj(data) {
+  console.log('data: ', data);
+  return (dispatch) => {
+    dispatch({
+      type: SET_MASTER_BATCH_OBJ,
+      payload: data
+    })
+  }
+}

@@ -20,7 +20,7 @@ import { ViewCostingContext } from '../../CostingDetails';
 import { createToprowObjAndSave } from '../../../CostingUtil';
 
 function PartCompoment(props) {
-  
+
   const { rmData, bopData, ccData, item } = props;
 
   const [IsOpen, setIsOpen] = useState(false);
@@ -31,7 +31,7 @@ function PartCompoment(props) {
   const { ComponentItemDiscountData, CloseOpenAccordion } = useSelector(state => state.costing)
 
   const costData = useContext(costingInfoContext);
-  
+
   const CostingViewMode = useContext(ViewCostingContext);
   const netPOPrice = useContext(NetPOPriceContext);
 
@@ -46,7 +46,7 @@ function PartCompoment(props) {
           CostingId: item.CostingId !== null ? item.CostingId : "00000000-0000-0000-0000-000000000000",
           PartId: item.PartId,
           AssemCostingId: costData.CostingId,
-          subAsmCostingId:props.subAssembId !== null ? props.subAssembId:EMPTY_GUID
+          subAsmCostingId: props.subAssembId !== null ? props.subAssembId : EMPTY_GUID
         }
         dispatch(getRMCCTabData(data, false, (res) => {
           if (res && res.data && res.data.Result) {
@@ -72,7 +72,7 @@ function PartCompoment(props) {
 
 
 
-/*************************************************************ACCORDIAN SAVE COMMENTED FOR NOW (MAY BE REMOVE IT LATER)*******************************************************************************/
+  /*************************************************************ACCORDIAN SAVE COMMENTED FOR NOW (MAY BE REMOVE IT LATER)*******************************************************************************/
   // useEffect(() => {
   //   // OBJECT FOR SENDING OBJECT TO API
   //  if (!CostingViewMode  && Count > 0 && Object.keys(ComponentItemData).length > 0 && checkIsDataChange === true) {
@@ -214,9 +214,9 @@ function PartCompoment(props) {
    */
   return (
     <>
-  
+
       <tr className="accordian-row" onClick={() => toggle(item.BOMLevel, item.PartNumber)} id={`${item && item.PartNumber}`}>
-        
+
         <td>
           <span style={{ position: 'relative' }} className={`cr-prt-nm1 cr-prt-link1 ${item && item.BOMLevel}`}>
             {item && item.PartNumber}<div className={`${item.IsOpen ? 'Open' : 'Close'}`}></div>
@@ -230,8 +230,8 @@ function PartCompoment(props) {
         <td>{item.CostingPartDetails && item.CostingPartDetails.Quantity !== undefined ? checkForNull(item.CostingPartDetails.Quantity) : 1}</td>
         <td>{item.CostingPartDetails && item.CostingPartDetails.TotalCalculatedRMBOPCCCost !== null ? checkForDecimalAndNull(checkForNull(item.CostingPartDetails.TotalRawMaterialsCost) + checkForNull(item.CostingPartDetails.TotalBoughtOutPartCost) + checkForNull(item.CostingPartDetails.TotalConversionCost), initialConfiguration.NoOfDecimalForPrice) : 0}</td>
         {costData.IsAssemblyPart && <td>{checkForDecimalAndNull((checkForNull(item.CostingPartDetails.TotalRawMaterialsCost) + checkForNull(item.CostingPartDetails.TotalBoughtOutPartCost) + checkForNull(item.CostingPartDetails.TotalConversionCost)) * item.CostingPartDetails.Quantity, initialConfiguration.NoOfDecimalForPrice)}</td>}
-
-        <td className="text-right"><div className={`${item.IsLocked ? 'lock_icon' : ''}`}>{''}</div></td>
+        {/*WHEN COSTING OF THAT PART IS  APPROVED SO COSTING COMES AUTOMATICALLY FROM BACKEND AND THIS KEY WILL COME TRUE (WORK LIKE VIEW MODE)*/}
+        <td className="text-right"><div className={`${(item.IsLocked || item.IsPartLocked) ? 'lock_icon' : ''}`}>{''}</div></td>
 
       </tr>
       {item.IsOpen && <tr>
@@ -242,7 +242,6 @@ function PartCompoment(props) {
                 index={props.index}
                 data={rmData}
                 setRMCost={props.setRMCost}
-                setRMMasterBatchCost={props.setRMMasterBatchCost}
                 item={item}
               />
 
@@ -257,10 +256,8 @@ function PartCompoment(props) {
               <ProcessCost
                 index={props.index}
                 data={ccData}
-                rmFinishWeight={rmData.length > 0 && rmData[0].FinishWeight !== undefined ? rmData[0].FinishWeight : 0}
-                setProcessCost={props.setProcessCost}
-                setOperationCost={props.setOperationCost}
-                setOtherOperationCost={props.setOtherOperationCost}
+                rmFinishWeight={rmData && rmData.length > 0 && rmData[0].FinishWeight !== undefined ? rmData[0].FinishWeight : 0}
+                setConversionCost={props.setConversionCost}
                 setToolCost={props.setToolCost}
                 item={item}
               />

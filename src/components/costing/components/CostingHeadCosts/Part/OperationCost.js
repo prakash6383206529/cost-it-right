@@ -13,6 +13,8 @@ import { gridDataAdded, isDataChange, setRMCCErrors } from '../../../actions/Cos
 
 let counter = 0;
 function OperationCost(props) {
+  const { item } = props;
+  const IsLocked = item.IsLocked || item.IsPartLocked
 
   const { register, control, formState: { errors }, setValue } = useForm({
     mode: 'onChange',
@@ -38,16 +40,16 @@ function OperationCost(props) {
       index: 0,
       BOMLevel: props.item.BOMLevel,
       PartNumber: props.item.PartNumber,
-      PartType:props.item.PartType
+      PartType: props.item.PartType
     }
-    if (!CostingViewMode) {
+    if (!CostingViewMode && !IsLocked) {
       if (props.IsAssemblyCalculation) {
-        props.setAssemblyOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false,props.item)
+        props.setAssemblyOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false, props.item)
       } else {
         props.setOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
       }
 
-      if(JSON.stringify(gridData) !== JSON.stringify(OldGridData)){
+      if (JSON.stringify(gridData) !== JSON.stringify(OldGridData)) {
         dispatch(isDataChange(true))
       }
     }
@@ -231,7 +233,7 @@ function OperationCost(props) {
               </div>
             </Col>
             <Col md={'4'}>
-              {!CostingViewMode && <button
+              {(!CostingViewMode && !IsLocked) && <button
                 type="button"
                 className={'user-btn'}
                 onClick={DrawerToggle}>
@@ -296,7 +298,7 @@ function OperationCost(props) {
                                     handleQuantityChange(e, index)
                                   }}
                                   errors={errors && errors.OperationGridFields && errors.OperationGridFields[index] !== undefined ? errors.OperationGridFields[index].Quantity : ''}
-                                  disabled={CostingViewMode ? true : false}
+                                  disabled={(CostingViewMode || IsLocked) ? true : false}
                                 />
                               }
                             </td>
@@ -331,7 +333,7 @@ function OperationCost(props) {
                                         handleLabourQuantityChange(e, index)
                                       }}
                                       errors={errors && errors.OperationGridFields && errors.OperationGridFields[index] !== undefined ? errors.OperationGridFields[index].LabourQuantity : ''}
-                                      disabled={CostingViewMode ? true : false}
+                                      disabled={(CostingViewMode || IsLocked) ? true : false}
                                     />
                                     :
                                     '-'
@@ -358,8 +360,8 @@ function OperationCost(props) {
                               <td>{item.IsLabourRateExist ? item.LabourQuantity : '-'}</td>}
                             <td>{netCost(item)}</td>
                             <td>
-                              {!CostingViewMode && <button className="Edit  mr-2 mb-0 align-middle" type={'button'} onClick={() => editItem(index)} />}
-                              {!CostingViewMode && <button className="Delete mb-0 align-middle" type={'button'} onClick={() => deleteItem(index, item.OperationId)} />}
+                              {(!CostingViewMode && !IsLocked) && <button className="Edit  mr-2 mb-0 align-middle" type={'button'} onClick={() => editItem(index)} />}
+                              {(!CostingViewMode && !IsLocked) && <button className="Delete mb-0 align-middle" type={'button'} onClick={() => deleteItem(index, item.OperationId)} />}
                             </td>
                           </tr>
                       )

@@ -21,6 +21,7 @@ import OperationCostExcludedOverhead from './OperationCostExcludedOverhead';
 let counter = 0;
 function ProcessCost(props) {
   const { data, item } = props
+  const IsLocked = item.IsLocked || item.IsPartLocked
 
   const { register, control, formState: { errors }, setValue } = useForm({
     mode: 'onChange',
@@ -32,7 +33,7 @@ function ProcessCost(props) {
   const trimValue = getConfigurationKey()
   const trimForMeasurment = trimValue.NoOfDecimalForInputOutput
   const trimForCost = trimValue.NoOfDecimalForPrice
- 
+
   const [calciIndex, setCalciIndex] = useState('')
   const [isDrawerOpen, setDrawerOpen] = useState(false)
 
@@ -69,13 +70,13 @@ function ProcessCost(props) {
       BOMLevel: props.item.BOMLevel,
       PartNumber: props.item.PartNumber,
     }
-    if (!CostingViewMode) {
+    if (!CostingViewMode && !IsLocked) {
       selectedIds(gridData)
 
       if (JSON.stringify(gridData) !== JSON.stringify(oldGridData)) {
         dispatch(isDataChange(true))
       }
-      props.setProcessCost(tabData, Params, item)
+      props.setConversionCost(tabData, Params, item)
     }
   }, [tabData]);
 
@@ -293,7 +294,7 @@ function ProcessCost(props) {
 
 
 
- 
+
 
   const handleQuantityChange = (event, index) => {
     let tempArr = []
@@ -361,7 +362,7 @@ function ProcessCost(props) {
    * @method setOperationCost
    * @description SET BOP COST
    */
-  const setOperationCost = (operationGrid,params, index) => {
+  const setOperationCost = (operationGrid, params, index) => {
     let OperationCostTotal = 0
     OperationCostTotal = operationGrid && operationGrid.reduce((accummlator, el) => {
       return accummlator + checkForNull(el.OperationCost)
@@ -375,10 +376,10 @@ function ProcessCost(props) {
     }
 
     setTabData(tempArr)
-    props.setOperationCost(tempArr,params, item)
+    // props.setOperationCost(tempArr, params, item)
   }
 
-  const setOtherOperationCost = (otherOperationGrid,params, index) => {
+  const setOtherOperationCost = (otherOperationGrid, params, index) => {
     let OtherOperationCostTotal = 0
     OtherOperationCostTotal = otherOperationGrid && otherOperationGrid.reduce((accummlator, el) => {
       return accummlator + checkForNull(el.OperationCost)
@@ -392,7 +393,7 @@ function ProcessCost(props) {
     }
 
     setTabData(tempArr)
-    props.setOtherOperationCost(tempArr, props.index, item)
+    // props.setOtherOperationCost(tempArr, props.index, item)
   }
 
   /**
@@ -455,7 +456,7 @@ function ProcessCost(props) {
               <div className="left-border">{'Process Cost:'}</div>
             </Col>
             <Col md={'2'}>
-              {!CostingViewMode && <button
+              {(!CostingViewMode && !IsLocked) && <button
                 type="button"
                 className={'user-btn'}
                 onClick={DrawerToggle}
@@ -516,7 +517,7 @@ function ProcessCost(props) {
                                   }}
 
                                   // errors={}
-                                  disabled={CostingViewMode ? true : false}
+                                  disabled={(CostingViewMode || IsLocked) ? true : false}
                                 />
                               }
                             </span>
@@ -550,7 +551,7 @@ function ProcessCost(props) {
 
                           </td>
                           <td>
-                            {!CostingViewMode && <button className="Delete" type={'button'} onClick={() => deleteItem(index)} />}
+                            {(!CostingViewMode && !IsLocked) && <button className="Delete" type={'button'} onClick={() => deleteItem(index)} />}
                           </td>
                         </tr>
                       )
@@ -605,7 +606,7 @@ function ProcessCost(props) {
           technology={costData.ETechnologyType}
           calculatorData={gridData[calciIndex]}
           isOpen={isCalculator}
-          CostingViewMode={CostingViewMode}
+          CostingViewMode={CostingViewMode || IsLocked}
           rmFinishWeight={props.rmFinishWeight}
           closeDrawer={closeCalculatorDrawer}
           anchor={'right'}

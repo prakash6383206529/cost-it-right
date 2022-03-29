@@ -7,7 +7,7 @@ import { checkForDecimalAndNull } from '../../../../../helper';
 import { ViewCostingContext } from '../../CostingDetails';
 
 function PartSurfaceTreatment(props) {
-  
+
   const { item } = props;
 
   const [IsOpen, setIsOpen] = useState(false);
@@ -63,8 +63,8 @@ function PartSurfaceTreatment(props) {
     item.CostingPartDetails.SurfaceTreatmentDetails = []
     item.CostingPartDetails.TransportationDetails = []
   }
- // console.log(CostingViewMode)
-  console.log(!item.CostingPartDetails.NetSurfaceTreatmentCost)
+  // 
+
 
   /**
    * @method render
