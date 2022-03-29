@@ -225,7 +225,7 @@ class MachineRateListing extends Component {
     */
     costingHeadFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue === 'VBC' ? 'Vendor Based' : 'Zero Based';
+        return cellValue === 'VBC' || 'Vendor Based' ? 'Vendor Based' : 'Zero Based';
     }
 
     /**
