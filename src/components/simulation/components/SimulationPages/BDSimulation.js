@@ -427,7 +427,7 @@ function BDSimulation(props) {
                 }
 
                 {
-                    showMainSimulation && <Simulation isRMPage={true} />
+                    showMainSimulation && <Simulation isMasterSummaryDrawer={true} isCancelClicked={true} isRMPage={true} />
                 }
                 {
                     showRunSimulationDrawer &&
