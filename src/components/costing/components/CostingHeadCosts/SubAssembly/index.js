@@ -8,6 +8,7 @@ import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, } fro
 import AddAssemblyOperation from '../../Drawers/AddAssemblyOperation';
 import { ViewCostingContext } from '../../CostingDetails';
 import { EMPTY_GUID } from '../../../../../config/constants';
+import _ from 'lodash'
 
 function AssemblyPart(props) {
   const { children, item, index } = props;
@@ -19,7 +20,7 @@ function AssemblyPart(props) {
   const CostingViewMode = useContext(ViewCostingContext);
   const costData = useContext(costingInfoContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { CostingEffectiveDate } = useSelector(state => state.costing)
+  const { CostingEffectiveDate, setArrayForCosting } = useSelector(state => state.costing)
   const dispatch = useDispatch()
 
   const toggle = (BOMLevel, PartNumber) => {
@@ -44,7 +45,16 @@ function AssemblyPart(props) {
             dispatch(saveAssemblyBOPHandlingCharge(obj, () => {
             }))
           }
+          // let tempArr = setArrayForCosting
+          let array = [];
+          array = JSON.parse(localStorage.getItem('costingArray'))
+          Data.CostingChildPartDetails && Data.CostingChildPartDetails.map(item => {
+            array.push(item)
+          })
+          let uniqueArary = _.uniqBy(array, v => JSON.stringify([v.PartNumber, v.AssemblyPartNumber]))
+          localStorage.setItem('costingArray', JSON.stringify(uniqueArary));
           props.toggleAssembly(BOMLevel, PartNumber, Data)
+
         }
       }))
     } else {
@@ -79,12 +89,9 @@ function AssemblyPart(props) {
         ccData={el.CostingPartDetails !== null && el.CostingPartDetails.CostingConversionCost}
         setPartDetails={props.setPartDetails}
         setRMCost={props.setRMCost}
-        setRMMasterBatchCost={props.setRMMasterBatchCost}
         setBOPCost={props.setBOPCost}
         setBOPHandlingCost={props.setBOPHandlingCost}
-        setProcessCost={props.setProcessCost}
-        setOperationCost={props.setOperationCost}
-        setOtherOperationCost={props.setOtherOperationCost}
+        setConversionCost={props.setConversionCost}
         setToolCost={props.setToolCost}
         subAssembId={item.CostingId}
       />
@@ -100,12 +107,9 @@ function AssemblyPart(props) {
       setPartDetails={props.setPartDetails}
       toggleAssembly={props.toggleAssembly}
       setRMCost={props.setRMCost}
-      setRMMasterBatchCost={props.setRMMasterBatchCost}
       setBOPCost={props.setBOPCost}
       setBOPHandlingCost={props.setBOPHandlingCost}
-      setProcessCost={props.setProcessCost}
-      setOperationCost={props.setOperationCost}
-      setOtherOperationCost={props.setOtherOperationCost}
+      setConversionCost={props.setConversionCost}
       setToolCost={props.setToolCost}
       setAssemblyOperationCost={props.setAssemblyOperationCost}
       setAssemblyToolCost={props.setAssemblyToolCost}
@@ -128,11 +132,11 @@ function AssemblyPart(props) {
   */
   return (
     <>
-      <tr className="costing-highlight-row accordian-row">
+      <tr className="costing-highlight-row accordian-row" key={item.PartId}>
         <div style={{ display: 'contents' }} onClick={() => toggle(item.BOMLevel, item.PartNumber)}>
-          <td>
+          <td >
             <span style={{ position: 'relative' }} className={`cr-prt-nm1 cr-prt-link1 ${item && item.PartType !== "Sub Assembly" && item.PartType !== "Assembly" && "L1"}`}>
-              <div className={`${item.IsOpen ? 'Open' : 'Close'}`}></div>{item && item.PartNumber}
+              <div className={`${item.CostingPartDetails.IsOpen ? 'Open' : 'Close'}`}></div>{item && item.PartNumber}
             </span>
           </td>
           <td>{item && item.BOMLevel}</td>
@@ -160,7 +164,7 @@ function AssemblyPart(props) {
           <td>{'-'}</td>
           {/* {costData.IsAssemblyPart && <td>{item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity ? checkForDecimalAndNull(item.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity, initialConfiguration.NoOfDecimalForPrice) : 0}</td>} */}
           {/* {costData.IsAssemblyPart && <td>{item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity ? checkForDecimalAndNull(item.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity, initialConfiguration.NoOfDecimalForPrice) : 0}</td>} */}
-          {costData.IsAssemblyPart && <td>{checkForDecimalAndNull(checkForNull(item.CostingPartDetails.TotalRawMaterialsCostWithQuantity) + checkForNull(item.CostingPartDetails.TotalBoughtOutPartCostWithQuantity) + checkForNull(item.CostingPartDetails.TotalConversionCostWithQuantity), initialConfiguration.NoOfDecimalForPrice) * item.CostingPartDetails.Quantity}</td>}
+          {costData.IsAssemblyPart && <td>{checkForDecimalAndNull(checkForNull(item.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity), initialConfiguration.NoOfDecimalForPrice)}</td>}
 
         </div>
         <td>
@@ -179,11 +183,11 @@ function AssemblyPart(props) {
         </td>
       </tr>
 
-      {item.IsOpen && nestedPartComponent}
+      {item.CostingPartDetails.IsOpen && nestedPartComponent}
 
-      {item.IsOpen && nestedBOP}
+      {item.CostingPartDetails.IsOpen && nestedBOP}
 
-      {item.IsOpen && nestedAssembly}
+      {item.CostingPartDetails.IsOpen && nestedAssembly}
 
       {IsDrawerOpen && <AddAssemblyOperation
         isOpen={IsDrawerOpen}

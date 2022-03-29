@@ -16,12 +16,15 @@ import {
   EMPTY_GUID,
   SET_PLASTIC_ARR,
   SET_ASSEM_BOP_CHARGE,
+  SET_ARRAY_FOR_COSTING,
   CHECK_IS_DATA_CHANGE,
   CHECK_IS_OVERHEAD_AND_PROFIT_DATA_CHANGE,
   CHECK_IS_PACKAGE_AND_FREIGHT_DATA_CHANGE,
   CHECK_IS_TOOL_DATA_CHANGE,
   CHECK_IS_DISCOUNT_DATA_CHANGE,
+  SET_NEW_ARRAY_FOR_COSTING,
   FORGING_CALCULATOR_MACHININGSTOCK_SECTION,
+  SET_MASTER_BATCH_OBJ,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -257,10 +260,10 @@ export function updateVBCSOBDetail(requestData, callback) {
 }
 
 /**
- * @method getZBCCostingByCostingId
+ * @method getBriefCostingById
  * @description GET COSTING DETAIL BY COSTING ID
  */
-export function getZBCCostingByCostingId(CostingId, callback) {
+export function getBriefCostingById(CostingId, callback) {
   return (dispatch) => {
     if (CostingId !== '') {
       dispatch({
@@ -275,13 +278,13 @@ export function getZBCCostingByCostingId(CostingId, callback) {
         type: SET_COSTING_DATALIST_BY_COSTINGID,
         payload: [],
       })
-      const request = axios.get(`${API.getZBCCostingByCostingId}/${CostingId}`, headers);
+      const request = axios.get(`${API.getBriefCostingById}/${CostingId}`, headers);
       request.then((response) => {
 
         if (response.data.Result) {
           dispatch({
             type: GET_COSTING_DATA_BY_COSTINGID,
-            payload: response.data.Data,
+            payload: response.data.DataList[0],
           })
           dispatch({
             type: SET_ACTUAL_COSTING_DATALIST_BY_COSTINGID,
@@ -442,7 +445,6 @@ export function getVBCDetailByVendorId(data, callback) {
  */
 export function getRMCCTabData(data, IsUseReducer, callback) {
   return (dispatch) => {
-    
     const request = axios.get(`${API.getRMCCTabData}/${data.CostingId}/${data.PartId}/${data.AssemCostingId}/${data.subAsmCostingId}`, headers);
     request.then((response) => {
       if (IsUseReducer && response.data.Result) {
@@ -451,7 +453,7 @@ export function getRMCCTabData(data, IsUseReducer, callback) {
           type: SET_RMCC_TAB_DATA,
           payload: TabData,
         });
-        //callback(response);
+        callback(response);
       } else {
         callback(response);
       }
@@ -468,9 +470,6 @@ export function getRMCCTabData(data, IsUseReducer, callback) {
  * @description SET RMCC TAB DATA  
  */
 export function setRMCCData(TabData, callback) {
-
-
-
   return (dispatch) => {
     dispatch({
       type: SET_RMCC_TAB_DATA,
@@ -2224,6 +2223,25 @@ export function saveAssemblyBOPHandlingCharge(data, callback) {
   }
 }
 
+
+export function setAllCostingInArray(data, isNewArray) {
+  return (dispatch) => {
+    // IF isNewArray THEN WE ARE REPLACING WHOLE ARRAY WITH NEW VALUE ELSE WE ARE APPENDING VALUE IN OLD ARRAY
+    if (isNewArray) {
+      dispatch({
+        type: SET_NEW_ARRAY_FOR_COSTING,
+        payload: data
+      })
+    } else {
+
+      dispatch({
+        type: SET_ARRAY_FOR_COSTING,
+        payload: data
+      })
+    }
+  }
+}
+
 /**
  * @method getVBCExistingCosting
  * @description get VBC Costing Select List By Part
@@ -2358,3 +2376,11 @@ export function setSelectedIds(data) {                  //THIS METHOD WILL SAVE 
 }
 
 
+export function setMasterBatchObj(data) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_MASTER_BATCH_OBJ,
+      payload: data
+    })
+  }
+}

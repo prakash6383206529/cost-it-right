@@ -16,7 +16,7 @@ import CostingDetailStepTwo from './CostingDetailStepTwo';
 import { APPROVED, DRAFT, EMPTY_GUID, PENDING, REJECTED, VBC, WAITING_FOR_APPROVAL, ZBC, EMPTY_GUID_0, COSTING, APPROVED_BY_SIMULATION } from '../../../config/constants';
 import {
   getPartInfo, checkPartWithTechnology, createZBCCosting, createVBCCosting, getZBCExistingCosting, getVBCExistingCosting,
-  updateZBCSOBDetail, updateVBCSOBDetail, storePartNumber, getZBCCostingByCostingId, deleteDraftCosting, getPartSelectListByTechnology,
+  updateZBCSOBDetail, updateVBCSOBDetail, storePartNumber, getBriefCostingById, deleteDraftCosting, getPartSelectListByTechnology,
   setOverheadProfitData, setComponentOverheadItemData, setPackageAndFreightData, setComponentPackageFreightItemData, setToolTabData,
   setComponentToolItemData, setComponentDiscountOtherItemData, gridDataAdded, getCostingSpecificTechnology, setRMCCData, setComponentItemData, getNCCExistingCosting, createNCCCosting, saveAssemblyBOPHandlingCharge,
 } from '../actions/Costing'
@@ -28,8 +28,8 @@ import BOMUpload from '../../massUpload/BOMUpload';
 import Clientbasedcostingdrawer from './ClientBasedCostingDrawer';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import AddNCCDrawer from './AddNCCDrawer';
-import { reactLocalStorage } from 'reactjs-localstorage';
 import LoaderCustom from '../../common/LoaderCustom';
+import { reactLocalStorage } from 'reactjs-localstorage';
 import { debounce } from 'lodash';
 
 export const ViewCostingContext = React.createContext()
@@ -121,7 +121,7 @@ function CostingDetails(props) {
 
   useEffect(() => {
     if (reactLocalStorage.get('location') === '/costing') {
-
+      localStorage.setItem('costingArray', [])
       setValue('Technology', '')
       setValue('Part', '')
       reset()
@@ -131,6 +131,7 @@ function CostingDetails(props) {
       dispatch(getPartSelectListByTechnology('', () => { }))
       dispatch(getPartInfo('', () => { }))
       dispatch(gridDataAdded(false))
+
     }
   }, [])
 
@@ -558,11 +559,11 @@ function CostingDetails(props) {
   const closeCopyCostingDrawer = (e = '', costingId = '', type = '') => {
     //nextToggle()
     setIsCopyCostingDrawer(false)
-    dispatch(getZBCCostingByCostingId('', (res) => { }))
+    dispatch(getBriefCostingById('', (res) => { }))
 
     if (type === ZBC) {
       setCostingData({ costingId: costingId, type })
-      dispatch(getZBCCostingByCostingId(costingId, (res) => {
+      dispatch(getBriefCostingById(costingId, (res) => {
         setTimeout(() => {
           setStepTwo(true)
           setStepOne(false)
@@ -572,7 +573,7 @@ function CostingDetails(props) {
 
     if (type === VBC) {
       setCostingData({ costingId: costingId, type })
-      dispatch(getZBCCostingByCostingId(costingId, (res) => {
+      dispatch(getBriefCostingById(costingId, (res) => {
 
         setTimeout(() => {
           setStepTwo(true)
@@ -708,7 +709,7 @@ function CostingDetails(props) {
       return false;
     }
 
-    dispatch(getZBCCostingByCostingId('', (res) => { }))
+    dispatch(getBriefCostingById('', (res) => { }))
 
     if (checkSOBTotal() && type === ZBC) {
       let tempData = zbcPlantGrid[index]
@@ -741,7 +742,7 @@ function CostingDetails(props) {
           setPartInfo(res.data.Data)
           setCostingData({ costingId: res.data.Data.CostingId, type })
           /***********ADDED THIS DISPATCH METHOD FOR GETTING ZBC DETAIL************/
-          dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, (res) => {
+          dispatch(getBriefCostingById(res.data.Data.CostingId, (res) => {
             setIsCostingViewMode(false)
             setStepTwo(true)
             setStepOne(false)
@@ -782,7 +783,7 @@ function CostingDetails(props) {
 
       dispatch(createVBCCosting(data, (res) => {
         if (res.data.Result) {
-          dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, () => {
+          dispatch(getBriefCostingById(res.data.Data.CostingId, () => {
 
 
             setIsCostingViewMode(false)
@@ -820,19 +821,33 @@ function CostingDetails(props) {
         EffectiveDate: effectiveDate,
       }
 
+      // remove it
+      dispatch(createZBCCosting(data, (res) => {
+        if (res.data.Result) {
+          setPartInfo(res.data.Data)
+          setCostingData({ costingId: res.data.Data.CostingId, type })
+          /***********ADDED THIS DISPATCH METHOD FOR GETTING ZBC DETAIL************/
+          dispatch(getBriefCostingById(res.data.Data.CostingId, (res) => {
+            setIsCostingViewMode(false)
+            setStepTwo(true)
+            setStepOne(false)
+          }))
+        }
+      }),
+      )
 
-      // dispatch(createNCCCosting(data,(res)=>{
-      //   if (res.data.Result) {
-      //     setPartInfo(res.data.Data)
-      //     setCostingData({ costingId: res.data.Data.CostingId, type })
-      //     /***********ADDED THIS DISPATCH METHOD FOR GETTING ZBC DETAIL************/
-      //     dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, (res) => {
-      //       setIsCostingViewMode(false)
-      //       setStepTwo(true)
-      //       setStepOne(false)
-      //     }))
-      //   }
-      // }))
+      dispatch(createNCCCosting(data, (res) => {
+        if (res.data.Result) {
+          setPartInfo(res.data.Data)
+          setCostingData({ costingId: res.data.Data.CostingId, type })
+          /***********ADDED THIS DISPATCH METHOD FOR GETTING ZBC DETAIL************/
+          dispatch(getBriefCostingById(res.data.Data.CostingId, (res) => {
+            setIsCostingViewMode(false)
+            setStepTwo(true)
+            setStepOne(false)
+          }))
+        }
+      }))
     }
 
     else {
@@ -936,7 +951,7 @@ function CostingDetails(props) {
         LoggedInUserId: loggedInUserId(),
       }
       dispatch(updateZBCSOBDetail(data, (res) => {
-        dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => {
+        dispatch(getBriefCostingById(tempData.SelectedCostingVersion.value, (res) => {
           resetSOBChanged()
           setStepTwo(true)
           setStepOne(false)
@@ -958,7 +973,7 @@ function CostingDetails(props) {
         DestinationPlantId: tempData.DestinationPlantId
       }
       dispatch(updateVBCSOBDetail(data, (res) => {
-        dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => {
+        dispatch(getBriefCostingById(tempData.SelectedCostingVersion.value, (res) => {
 
 
           resetSOBChanged()
@@ -975,12 +990,12 @@ function CostingDetails(props) {
    * @description MOVE TO COSTING DETAIL
    */
   const moveToCostingDetail = (index, type) => {
-    dispatch(getZBCCostingByCostingId('', (res) => { }))
+    dispatch(getBriefCostingById('', (res) => { }))
 
     if (type === ZBC) {
       let tempData = zbcPlantGrid[index]
       setCostingData({ costingId: tempData.SelectedCostingVersion.value, type })
-      dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => {
+      dispatch(getBriefCostingById(tempData.SelectedCostingVersion.value, (res) => {
         setTimeout(() => {
           setStepTwo(true)
           setStepOne(false)
@@ -991,7 +1006,7 @@ function CostingDetails(props) {
     if (type === VBC) {
       let tempData = vbcVendorGrid[index]
       setCostingData({ costingId: tempData.SelectedCostingVersion.value, type })
-      dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => {
+      dispatch(getBriefCostingById(tempData.SelectedCostingVersion.value, (res) => {
 
 
         setTimeout(() => {
@@ -1004,12 +1019,12 @@ function CostingDetails(props) {
     if (type === NCC) {
       let tempData = nccGrid[index]
       setCostingData({ costingId: tempData.SelectedCostingVersion.value, type })
-      // dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => {
-      //   setTimeout(() => {
-      //     setStepTwo(true)
-      //     setStepOne(false)
-      //   }, 500)
-      // }))
+      dispatch(getBriefCostingById(tempData.SelectedCostingVersion.value, (res) => {
+        setTimeout(() => {
+          setStepTwo(true)
+          setStepOne(false)
+        }, 500)
+      }))
     }
   }
 
@@ -1202,11 +1217,9 @@ function CostingDetails(props) {
    * @description used to Reset form
    */
   const backToFirstStep = () => {
-    dispatch(getZBCCostingByCostingId('', (res) => {
+    dispatch(getBriefCostingById('', (res) => { }))
 
-
-    }))
-
+    localStorage.setItem('costingArray', [])
     dispatch(setRMCCData([], () => { }))                            //THIS WILL CLEAR RM CC REDUCER
     dispatch(setComponentItemData({}, () => { }))
 
@@ -1232,7 +1245,11 @@ function CostingDetails(props) {
     setZBCPlantGrid([])
     setVBCVendorGrid([])
     setNccGrid([])
-    nextToggle()
+
+    setTimeout(() => {
+
+      nextToggle()
+    }, 700);
 
     dispatch(getPartInfo(part.value !== undefined ? part.value : partNumber.partId, (res) => {
       let Data = res.data.Data;
@@ -1938,7 +1955,7 @@ function CostingDetails(props) {
                     {/* ****************************************NCC UI HERE************************************************************* */}
                     {IsOpenVendorSOBDetails && (
                       <>
-                        {/* <Row className="align-items-center">
+                        <Row className="align-items-center">
                           <Col md={'6'} className={"mb-2 mt-3"}>
                             <h6 className="dark-blue-text sec-heading">NCC:</h6>
                           </Col>
@@ -1955,10 +1972,10 @@ function CostingDetails(props) {
                               ""
                             )}
                           </Col>
-                        </Row> */}
+                        </Row>
 
                         {/* NCC PLANT GRID FOR COSTING */}
-                        {/* <Row>
+                        <Row>
                           <Col md="12" className={"costing-table-container"}>
                             <Table
                               className="table cr-brdr-main costing-table-next costing-table-vbc"
@@ -2036,11 +2053,10 @@ function CostingDetails(props) {
                               </tbody>
                             </Table>
                           </Col>
-                        </Row> */}
+                        </Row>
                       </>
                     )}
 
-                    {/* ******************************************************VBC UI HERE *********************************************************************** */}
 
                     {IsOpenVendorSOBDetails && (
                       <>
