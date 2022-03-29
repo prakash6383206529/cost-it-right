@@ -12,6 +12,7 @@ import PackageAndFreight from '../CostingHeadCosts/PackageAndFreight';
 import Toaster from '../../../common/Toaster';
 import { MESSAGES } from '../../../../config/message';
 import { ViewCostingContext } from '../CostingDetails';
+import { createToprowObjAndSave } from '../../CostingUtil';
 import { Link } from 'react-scroll';
 
 function TabPackagingFreight(props) {
@@ -24,7 +25,7 @@ function TabPackagingFreight(props) {
   const CostingViewMode = useContext(ViewCostingContext);
   const netPOPrice = useContext(NetPOPriceContext);
 
-  const { PackageAndFreightTabData, CostingEffectiveDate, ComponentItemDiscountData, RMCCTabData, SurfaceTabData, OverheadProfitTabData, DiscountCostData, checkIsFreightPackageChange } = useSelector(state => state.costing)
+  const { PackageAndFreightTabData, CostingEffectiveDate, ComponentItemDiscountData, RMCCTabData, SurfaceTabData, OverheadProfitTabData, DiscountCostData, ToolTabData, getAssemBOPCharge, checkIsFreightPackageChange } = useSelector(state => state.costing)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
   useEffect(() => {
@@ -168,52 +169,20 @@ function TabPackagingFreight(props) {
         "CostingPartDetails": PackageAndFreightTabData && PackageAndFreightTabData[0].CostingPartDetails
       }
       if (costData.IsAssemblyPart === true) {
-
-        let assemblyRequestedData = {
-          "TopRow": {
-            "CostingId": tabData.CostingId,
-            "CostingNumber": tabData.CostingNumber,
-            "TotalRawMaterialsCostWithQuantity": tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
-            "TotalBoughtOutPartCostWithQuantity": tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
-            "TotalConversionCostWithQuantity": tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
-            "TotalCalculatedRMBOPCCCostWithQuantity": tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity + tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity + tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
-            "TotalCalculatedRMBOPCCCostPerAssembly": tabData.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
-            "NetRMCostPerAssembly": tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
-            "NetBOPCostAssembly": tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
-            "NetConversionCostPerAssembly": tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
-            "NetRMBOPCCCost": tabData.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
-            "SurfaceTreatmentCostPerAssembly": surfaceTabData.CostingPartDetails?.SurfaceTreatmentCost,
-            "TransportationCostPerAssembly": surfaceTabData.CostingPartDetails?.TransportationCost,
-            "TotalSurfaceTreatmentCostPerAssembly": surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
-            "NetSurfaceTreatmentCost": surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
-            "NetOverheadAndProfits": overHeadAndProfitTabData.CostingPartDetails ? (checkForNull(overHeadAndProfitTabData.CostingPartDetails.OverheadCost) + checkForNull(overHeadAndProfitTabData.CostingPartDetails.ProfitCost) + checkForNull(overHeadAndProfitTabData.CostingPartDetails.RejectionCost) + checkForNull(overHeadAndProfitTabData.CostingPartDetails.ICCCost) + checkForNull(overHeadAndProfitTabData.CostingPartDetails.PaymentTermCost)) : 0,
-            "NetPackagingAndFreightCost": PackageAndFreightTabData && PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost,
-            "NetToolCost": discountAndOtherTabData?.CostingPartDetails?.TotalToolCost,
-            "NetOtherCost": discountAndOtherTabData?.CostingPartDetails?.NetOtherCost,
-            "NetDiscounts": discountAndOtherTabData?.CostingPartDetails?.NetDiscountsCost,
-            "TotalCostINR": netPOPrice,
-            "TabId": 4
-          },
-          "WorkingRows": [],
-          "LoggedInUserId": loggedInUserId(),
-          "BOPHandlingCharges": {}
-        }
-
         if (!CostingViewMode) {
-
+          let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 4)
           dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
         }
-
+        dispatch(saveCostingPackageFreightTab(data, res => {
+          if (res.data.Result) {
+            Toaster.success(MESSAGES.PACKAGE_FREIGHT_COSTING_SAVE_SUCCESS);
+            dispatch(setComponentPackageFreightItemData({}, () => { }))
+            InjectDiscountAPICall()
+          }
+        }))
       }
-      dispatch(saveCostingPackageFreightTab(data, res => {
-        if (res.data.Result) {
-          Toaster.success(MESSAGES.PACKAGE_FREIGHT_COSTING_SAVE_SUCCESS);
-          dispatch(setComponentPackageFreightItemData({}, () => { }))
-          InjectDiscountAPICall()
-        }
-      }))
-    }
 
+    }
   }
 
 
