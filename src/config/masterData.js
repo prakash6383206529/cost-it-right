@@ -1886,7 +1886,7 @@ export const BOPDomesticSimulation = [
     { label: "BoughtOutPartCategory", value: "BoughtOutPartCategory" },
     { label: "DestinationPlant", value: "DestinationPlant", },
     { label: "Vendor", value: "Vendor" },
-    { label: "NumberOfPieces", value: "NumberOfPieces" },
+    { label: "Quantity", value: "NumberOfPieces" },
     { label: "BasicRate", value: "BasicRate" },
     { label: "NewBasicRate", value: "NewBasicRate" },
     { label: "NetLandedCost", value: "NetLandedCost" },
@@ -1901,7 +1901,7 @@ export const BOPImportSimulation = [
     { label: "BoughtOutPartCategory", value: "BoughtOutPartCategory" },
     { label: "DestinationPlant", value: "DestinationPlant", },
     { label: "Vendor", value: "Vendor" },
-    { label: "NumberOfPieces", value: "NumberOfPieces" },
+    { label: "Quantity", value: "NumberOfPieces" },
     { label: "BasicRate", value: "BasicRate" },
     { label: "NewBasicRate", value: "NewBasicRate" },
     { label: "NetLandedCost", value: "NetLandedCost" },
@@ -2631,8 +2631,8 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADBOP = [
 
     { label: "BOP Name", value: "BoughtOutPartName" },
     { label: "BOP Number", value: "BoughtOutPartNumber" },
-    { label: "Old BOP Cost", value: "OldBOPCost" },
-    { label: "New BOP Cost", value: "NewBOPCost" },
+    { label: "Old BOP Cost", value: "OldNetBoughtOutPartCost" },
+    { label: "New BOP Cost", value: "NewNetBoughtOutPartCost" },
     { label: "BOP Variance", value: "NetBoughtOutPartCostVariance" },
 
     { label: "Old PO Price", value: "OldPOPrice" },
@@ -2652,7 +2652,7 @@ export const BOP_DOMESTIC_DOWNLOAD_EXCEl = [
     { label: "Plant(Code)", value: "Plants", },
     { label: "DestinationPlant(Code)", value: "DestinationPlant", },
     { label: "Vendor(Code)", value: "Vendor", },
-    { label: "NumberOfPieces", value: "NumberOfPieces", },
+    { label: "Quantity", value: "NumberOfPieces", },
     { label: "BasicRate", value: "BasicRate", },
     { label: "NetCost", value: "NetLandedCost", },
     { label: "EffectiveDate", value: "EffectiveDate", }
@@ -2668,7 +2668,7 @@ export const BOP_IMPORT_DOWNLOAD_EXCEl = [
     { label: "Plant(Code)", value: "Plants", },
     { label: "DestinationPlant(Code)", value: "DestinationPlant", },
     { label: "Vendor(Code)", value: "Vendor", },
-    { label: "NumberOfPieces", value: "NumberOfPieces", },
+    { label: "Quantity", value: "NumberOfPieces", },
     { label: "BasicRate", value: "BasicRate", },
     { label: "NetCost", value: "NetLandedCostConversion", },
     { label: "EffectiveDate", value: "EffectiveDate", },
@@ -3050,6 +3050,15 @@ export const BOPGridForToken = [
     { label: "NewBOPCost", value: "NewBOPCost" },
     { label: "BOPVariance", value: "BOPVariance" },
 ]
+export const ERGridForToken = [
+    { label: "Currency", value: "Currency" },
+    { label: "OldPOPrice", value: "OldPOPrice" },
+    { label: "OldNetPOPriceOtherCurrency", value: "OldNetPOPriceOtherCurrency" },
+    { label: "NewNetPOPriceOtherCurrency", value: "NewNetPOPriceOtherCurrency" },
+    { label: "POVariance", value: "POVariance" },
+    { label: "OldExchangeRate", value: "OldExchangeRate" },
+    { label: "NewExchangeRate", value: "NewExchangeRate" },
+]
 
 export const InitialGridForToken = [
 
@@ -3202,6 +3211,22 @@ export const ImpactedERDownload = [
     { label: "EffectiveDate", value: "EffectiveDate" },
 ]
 
+export const EXCHANGESIMULATIONDOWNLOAD = [
+    { label: "Costing Head", value: "CostingHead" },
+    { label: "CostingNumber", value: "CostingNumber" },
+    { label: "Part No", value: "PartNo" },
+    { label: "Part Name", value: "PartName" },
+    { label: "ECN Number", value: "ECNNumber" },
+    { label: "Revision Number", value: "RevisionNumber" },
+    { label: "Vendor Name", value: "VendorName" },
+    { label: "Currency", value: "Currency" },
+    { label: "OldNetPOPriceOtherCurrency", value: "OldNetPOPriceOtherCurrency" },
+    { label: "NewNetPOPriceOtherCurrency", value: "NewNetPOPriceOtherCurrency" },
+    { label: "Old Exchange Rate", value: "OldExchangeRate" },
+    { label: "NewExchangeRate", value: "NewExchangeRate" },
+    { label: "PO Price", value: "OldPOPrice" },
+    { label: "Variance", value: "Variance" }
+]
 export const RMImpactedDownloadArray = ["RawMaterial", "RMGrade", "RMSpec", "RawMaterialCode", "Category", "TechnologyName", "VendorName", "UOM", "OldBasicRate", "NewBasicRate", "OldScrapRate", "NewScrapRate", "RMFreightCost", "RMShearingCost", "EffectiveDate"]
 
 export const OperationImpactDownloadArray = ["OperationName", "OperationCode", "UOM", "OldOperationRate", "NewOperationRate", "EffectiveDate",]

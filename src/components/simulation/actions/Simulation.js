@@ -1176,14 +1176,14 @@ export function getListingForSimulationCombined(requestData, master, callback) {
                     case BOPDOMESTIC:
                         dispatch({
                             type: GET_BOP_DOMESTIC_DATA_LIST,
-                            payload: response.data.Data
+                            payload: response.data.DataList
                         })
                         break;
 
                     case BOPIMPORT:
                         dispatch({
                             type: GET_BOP_IMPORT_DATA_LIST,
-                            payload: response.data.Data
+                            payload: response.data.DataList
                         })
                         break;
 
