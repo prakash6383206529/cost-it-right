@@ -9,7 +9,7 @@ import { EMPTY_DATA } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
 import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected } from '../../../../../helper';
 import { ViewCostingContext } from '../../CostingDetails';
-import { gridDataAdded, isDataChange, setRMCCErrors } from '../../../actions/Costing';
+import { gridDataAdded, isDataChange, setRMCCErrors, setSelectedIds } from '../../../actions/Costing';
 import WarningMessagge from '../../../../common/WarningMessage'
 import Popup from 'reactjs-popup';
 
@@ -45,6 +45,8 @@ function OperationCostExcludedOverhead(props) {
       } else {
         props.setOtherOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
       }
+
+
       if (JSON.stringify(gridData) !== JSON.stringify(OldGridData)) {
         dispatch(isDataChange(true))
       }
@@ -134,6 +136,7 @@ function OperationCostExcludedOverhead(props) {
       }
       return null;
     })
+    dispatch(setSelectedIds(Ids))
   }
 
   const deleteItem = (index, OperationId) => {
@@ -143,6 +146,7 @@ function OperationCostExcludedOverhead(props) {
     })
     setIds(Ids && Ids.filter(item => item !== OperationId))
     setGridData(tempArr)
+    dispatch(setSelectedIds(Ids && Ids.filter(item => item !== OperationId)))
   }
 
   const editItem = (index) => {

@@ -123,7 +123,9 @@ function ViewRM(props) {
                   <td>{item.BurningLossWeight ? checkForDecimalAndNull(item.BurningLossWeight, initialConfiguration.NoOfDecimalForInputOutput) : '-'}</td>
                   <td>{checkForDecimalAndNull(item.NetLandedCost, initialConfiguration.NoOfDecimalForPrice)}</td>
                   <td>
-                    {item?.Remark ? item.Remark : "-"}
+                    <div className='text-overflow' title={item.Remark}>
+                      {item?.Remark ? item.Remark : "-"}
+                    </div>
                   </td>
 
                 </tr>

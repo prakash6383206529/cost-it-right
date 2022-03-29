@@ -10,9 +10,8 @@ import { loggedInUserId } from '../../../helper';
 import { ExcelRenderer } from 'react-excel-renderer';
 import { getJsDateFromExcel } from "../../../helper/validation";
 import imgCloud from '../../../assests/images/uploadcloud.png';
-import NewReport from '../../report/components/CostingBenchmarkReport'
-import TooltipCustom from '../../common/Tooltip';
 import { COMBINED_PROCESS, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, BOPDOMESTIC, BOPIMPORT, } from '../../../config/constants';
+
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -535,7 +534,7 @@ class SimulationUploadDrawer extends Component {
                                     <Col md="12">
                                         <label className="d-inline-block w-auto">Upload</label>
                                         <div class="tooltip-n ml-1 tooltip-left"><i className="fa fa-info-circle text-primary tooltip-icon"></i>
-                                            <span class="tooltiptext">Please upload the file with data. The file can be downloaded from previous screen.</span>
+                                            <span class="tooltiptext text-center">Please upload the file with data. The file can be downloaded from previous screen.</span>
                                         </div>
                                         <div className="input-group mt-1 input-withouticon " >
                                             <div className="file-uploadsection">

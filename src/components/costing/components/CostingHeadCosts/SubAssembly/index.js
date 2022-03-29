@@ -12,7 +12,6 @@ import { EMPTY_GUID } from '../../../../../config/constants';
 function AssemblyPart(props) {
   const { children, item, index } = props;
 
-
   const [IsOpen, setIsOpen] = useState(false);
   const [Count, setCount] = useState(0);
   const [IsDrawerOpen, setDrawerOpen] = useState(false)

@@ -1355,6 +1355,7 @@ export const IS_COSTING_EFFECTIVE_DATE_DISABLED = 'IS_COSTING_EFFECTIVE_DATE_DIS
 export const SET_CUTOFF_RMC = 'SET_CUTOFF_RMC';
 export const GET_COSTING_SPECIFIC_TECHNOLOGY = 'GET_COSTING_SPECIFIC_TECHNOLOGY'
 export const FORGING_CALCULATOR_MACHININGSTOCK_SECTION = 'FORGING_CALCULATOR_MACHININGSTOCK_SECTION';
+export const SELECTED_IDS_OF_OPERATION_AND_OTHEROPERATION = 'SELECTED_IDS_OF_OPERATION_AND_OTHEROPERATION'
 
 //WEIGHT CALCULATION COSTING RM DRAWER
 export const GET_RAW_MATERIAL_CALCI_INFO = 'GET_RAW_MATERIAL_CALCI_INFO'
@@ -1513,6 +1514,7 @@ export const GET_VERIFY_PROFIT_SIMULATION_LIST = 'GET_VERIFY_PROFIT_SIMULATION_L
 export const SET_SHOW_SIMULATION_PAGE = 'SET_SHOW_SIMULATION_PAGE'
 export const GET_TOKEN_SELECT_LIST = 'GET_TOKEN_SELECT_LIST'
 export const GET_VALUE_TO_SHOW_COSTING_SIMULATION = 'GET_VALUE_TO_SHOW_COSTING_SIMULATION'
+export const GET_KEYS_FOR_DOWNLOAD_SUMMARY = 'GET_KEYS_FOR_DOWNLOAD_SUMMARY'
 
 //SIMULATION APPROVAL
 export const GET_SIMULATION_DEPARTMENT_LIST = 'GET_SIMULATION_DEPARTMENT_LIST'
@@ -1539,6 +1541,7 @@ export const APPROVED_BY_SIMULATION = 'ApprovedBySimulation'
 export const PUSHED = 'Pushed'
 export const ERROR = 'Error'
 export const POUPDATED = 'POUpdated'
+export const LINKED = 'Linked'
 
 //DECIMAL VALUES FOR PRICE
 export const TWO_DECIMAL_PRICE = 2
@@ -1766,6 +1769,11 @@ export const Sob = "SOB"
 export const AssemblyPart = "Assembly-part"
 export const ComponentPart = "Component-part"
 export const AssemblyWiseImpactt = "AssemblyWise-Impact"
+export const RMImpact = "RawMaterial-Impact"
+export const BOPImpact = "BOP-Impact"
+export const OPerationImpact = "Operation-Impact"
+export const ExchangeRateImpact = "ExchangeRate-Impact"
+export const ImpactMaster = "ImpactMaster"
 
 export const MachineRate = "Machine-rate"
 export const ProcessMaster = "Process "
@@ -1829,4 +1837,4 @@ export const LEVEL1 = 'L1';
 export const SUB_ASSEMBLY = 'Sub Assembly';
 
 //VERSION 
-export const VERSION = "V1.2.80.7";
+export const VERSION = "V1.2.92";

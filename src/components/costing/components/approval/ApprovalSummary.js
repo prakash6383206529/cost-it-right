@@ -38,7 +38,7 @@ function ApprovalSummary(props) {
   const [showPushDrawer, setShowPushDrawer] = useState(false)
   const [viewButton, setViewButton] = useState(false)
   const [pushButton, setPushButton] = useState(false)
-  const [isLoader, setIsLoader] =useState(false);
+  const [isLoader, setIsLoader] = useState(false);
 
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
   useEffect(() => {
@@ -51,11 +51,11 @@ function ApprovalSummary(props) {
   const approvalSummaryHandler = () => {
     setIsLoader(true)
     dispatch(getApprovalSummary(approvalNumber, approvalProcessId, loggedInUser, (res) => {
-    
+
       const { PartDetails, ApprovalDetails, ApprovalLevelStep, DepartmentId, Technology, ApprovalProcessId,
         ApprovalProcessSummaryId, ApprovalNumber, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow,
         CostingId, PartId } = res?.data?.Data?.Costings[0];
-    
+
       const technologyId = res?.data?.Data?.Costings[0].PartDetails.TechnologyId
       const partNumber = PartDetails.PartNumber
       setIsLoader(false)
@@ -77,7 +77,7 @@ function ApprovalSummary(props) {
         ReasonId: ApprovalDetails[0].ReasonId
       })
     }),
-    
+
     )
   }
 
@@ -126,11 +126,11 @@ function ApprovalSummary(props) {
   return (
 
     <>
-    <CalculatorWrapper />
+      <CalculatorWrapper />
       {
         showListing === false &&
         <>
-         {isLoader && <LoaderCustom />}
+          {isLoader && <LoaderCustom />}
           <div className="container-fluid approval-summary-page">
             {/* <Errorbox customClass="d-none" errorText="There is some error in your page" /> */}
             <h2 className="heading-main">Approval Summary</h2>
@@ -173,20 +173,20 @@ function ApprovalSummary(props) {
                         </span>
                       </th>
                       <th>
-                        <span className="d-block grey-text">{`Assembly No./Part No.`}</span>
-                        <span className="d-block">
+                        <span className="d-block grey-text">{`Assembly/Part No.`}</span>
+                        <span className="d-block  one-line-overflow" title={partDetail.PartNumber}>
                           {partDetail.PartNumber ? partDetail.PartNumber : '-'}
                         </span>
                       </th>
                       <th>
-                        <span className="d-block grey-text">{`Assembly Name/Part Name`}</span>
-                        <span className="d-block">
+                        <span className="d-block grey-text">{`Assembly/Part Name`}</span>
+                        <span className="d-block one-line-overflow" title={partDetail.PartName}>
                           {partDetail.PartName ? partDetail.PartName : '-'}
                         </span>
                       </th>
                       <th>
-                        <span className="d-block grey-text">{`Assembly Description/Part Description`}</span>
-                        <span className="d-block">
+                        <span className="d-block grey-text">{`Assembly/Part Description`}</span>
+                        <span className="d-block one-line-overflow describtion" title={partDetail.Description}>
                           {partDetail.Description ? partDetail.Description : '-'}
                         </span>
                       </th>

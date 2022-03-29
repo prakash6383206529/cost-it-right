@@ -973,7 +973,7 @@ class AddRMImport extends Component {
       selectedVendorPlants, HasDifferentSource, sourceLocation, UOM, currency,
       effectiveDate, remarks, RawMaterialID, isEditFlag, files, Technology, netCost, oldDate, netCurrencyCost, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, isSourceChange, uploadAttachements, currencyValue, IsFinancialDataChanged } = this.state;
 
-    const { initialConfiguration ,fieldsObj} = this.props;
+    const { initialConfiguration, fieldsObj } = this.props;
     this.setState({ setDisable: true, disablePopup: false })
 
     if (vendorName.length <= 0) {
