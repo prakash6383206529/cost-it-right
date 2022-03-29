@@ -571,12 +571,9 @@ class AddInterestRate extends Component {
 
                               }}
                               component={renderDatePicker}
-                              disabled={isEditFlag ? true : false
-                              }
+                              disabled={false}
                               className="form-control"
-
                             />
-
                           </div>
                         </div>
                       </Col>
