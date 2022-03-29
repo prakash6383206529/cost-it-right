@@ -6749,10 +6749,10 @@ left: 17rem;
   }
 }
 .loader-wrapper {
-  height: calc(100vh - 924px);
+  height: 668px;
   overflow: hidden;
   @media screen and (max-width: $miniDesktop) {
-    height: calc(100vh - 668px);
+    height: 412px;
   }
 }
 
