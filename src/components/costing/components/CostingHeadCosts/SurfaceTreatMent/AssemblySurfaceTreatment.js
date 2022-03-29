@@ -99,7 +99,7 @@ function AssemblySurfaceTreatment(props) {
     <>
       <tr>
         <div className="accordian-row" style={{ display: 'contents' }}
-          onClick={() => { toggle(item.BOMLevel, item.PartNumber, true) }} // UNCOMMENT IT WHEN CHILD PART SURFACE TREATMENT START
+        // onClick={() => { toggle(item.BOMLevel, item.PartNumber, true) }} // UNCOMMENT IT WHEN CHILD PART SURFACE TREATMENT START
         >
 
           <td>
@@ -147,7 +147,7 @@ function AssemblySurfaceTreatment(props) {
                 // DrawerToggle()
               }}
             >
-              <div className={`${CostingViewMode ? 'fa fa-eye pr-1':'plus' }`}></div> Surface T.</button>
+              <div className={`${CostingViewMode ? 'fa fa-eye pr-1' : 'plus'}`}></div> Surface T.</button>
           }
         </td>
       </tr>
