@@ -565,7 +565,11 @@ export const API = {
 
   // PROCESS COST CALCULATION
   getProcessCalculation: `${BASE_URL}/costing/get-process-calculation-by-technology`,
+  getProcessMachiningCalculation: `${BASE_URL}/costing/get-process-machining-calculation-details`,
   saveProcessCostCalculation: `${BASE_URL}/costing/save-process-calculation-by-technology`,
+  saveDefaultProcessCostCalculation: `${BASE_URL}/costing/save-process-default-calculation-details`,
+  saveMachiningProcessCostCalculation: `${BASE_URL}/costing/save-process-machining-calculation-details`,
+  getProcessDefaultCalculation: `${BASE_URL}/costing/get-process-default-calculation-details`,
 
   //COST WORKING API
   getCostingBySupplier: `${BASE_URL}/costing-sheet-metal/get-costings-by-supplier`,
@@ -1809,4 +1813,4 @@ export const LEVEL1 = 'L1';
 export const SUB_ASSEMBLY = 'Sub Assembly';
 
 //VERSION 
-export const VERSION = "V1.2.98";
+export const VERSION = "V1.2.99";

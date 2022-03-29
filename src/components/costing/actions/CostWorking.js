@@ -898,6 +898,45 @@ export function saveProcessCostCalculationData(data, callback) {
   }
 }
 
+
+export function saveMachiningProcessCostCalculationData(data, callback) {
+
+  return (dispatch) => {
+    const request = axios.post(API.saveMachiningProcessCostCalculation, data, headers)
+    request
+      .then((response) => {
+        if (response.data.Result) {
+          callback(response)
+        }
+      })
+      .catch((error) => {
+        dispatch({ type: API_FAILURE })
+        apiErrors(error)
+      })
+  }
+}
+
+
+/**
+ * @method saveDefaultProcessCostCalculationData
+ * @description Save Process Cost Calculation Data
+ */
+export function saveDefaultProcessCostCalculationData(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.saveDefaultProcessCostCalculation, data, headers)
+    request
+      .then((response) => {
+        if (response.data.Result) {
+          callback(response)
+        }
+      })
+      .catch((error) => {
+        dispatch({ type: API_FAILURE })
+        apiErrors(error)
+      })
+  }
+}
+
 /**
  * @method getRawMaterialCalculationByTechnology
  * @description Get raw materical calculator data by technology
@@ -925,6 +964,58 @@ export function getProcessCalculation(costingId, processId, processCalculationId
     });
   };
 }
+
+
+
+export function getProcessMachiningCalculation(costingId, processId, processCalculationId, callback) {
+  return (dispatch) => {
+    //dispatch({ type: API_REQUEST });
+    const queryParams = `costingId=${costingId}&processId=${processId}&weightCalculationId=${processCalculationId ? processCalculationId : 0}`
+    const request = axios.get(`${API.getProcessMachiningCalculation}?${queryParams}`, headers);
+    request.then((response) => {
+      if (response.data.Result) {
+        // dispatch({
+        //   type: GET_RAW_MATERIAL_CALCI_INFO,
+        //   payload: response.data.Data,
+        // });
+        callback(response);
+      } else {
+        Toaster.error(MESSAGES.SOME_ERROR);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      // apiErrors(error);
+    });
+  };
+}
+
+
+export function getProcessDefaultCalculation(costingId, processId, processCalculationId, callback) {
+  return (dispatch) => {
+    //dispatch({ type: API_REQUEST });
+    const queryParams = `costingId=${costingId}&processId=${processId}&weightCalculationId=${processCalculationId ? processCalculationId : 0}`
+    const request = axios.get(`${API.getProcessDefaultCalculation}?${queryParams}`, headers);
+    request.then((response) => {
+      if (response.data.Result) {
+        // dispatch({
+        //   type: GET_RAW_MATERIAL_CALCI_INFO,
+        //   payload: response.data.Data,
+        // });
+        callback(response);
+      } else {
+        Toaster.error(MESSAGES.SOME_ERROR);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      // apiErrors(error);
+    });
+  };
+}
+
+
+
 
 /**
  * @method bulkUploadCosting
