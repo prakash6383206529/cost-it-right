@@ -453,7 +453,7 @@ export function getRMCCTabData(data, IsUseReducer, callback) {
           type: SET_RMCC_TAB_DATA,
           payload: TabData,
         });
-        //callback(response);
+        callback(response);
       } else {
         callback(response);
       }

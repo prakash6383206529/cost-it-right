@@ -1281,7 +1281,7 @@ function TabRMCC(props) {
                           <th className="py-3 align-middle" style={{ minWidth: '70px' }}>{`Level`}</th>
                           <th className="py-3 align-middle" style={{ minWidth: '100px' }}>{`Type`}</th>
                           <th className="py-3 align-middle" style={{ minWidth: '100px' }}>{`RM Cost`}</th>
-                          <th className="py-3 align-middle" style={{ minWidth: '100px' }}>{`BOP Cost`}</th>
+                          <th className="py-3 align-middle" style={{ minWidth: '100px' }}>{`Insert Cost`}</th>
                           <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`CC`}</th>
                           <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`Quantity`} {/*<button class="Edit ml-1 mb-0 align-middle" type="button" title="Edit Costing"></button>*/}</th>
                           <th className="py-3 align-middle" style={{ minWidth: '100px' }}>{`RMC + CC/Pc`}</th>
@@ -1292,7 +1292,7 @@ function TabRMCC(props) {
                                 type="button"
                                 className={'user-btn add-oprn-btn'}
                                 onClick={bopHandlingDrawer}>
-                                <div className={`${RMCHeaderData !== null && RMCHeaderData.IsApplyBOPHandlingCharges ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`BOP H`}</button>}
+                                <div className={`${RMCHeaderData !== null && RMCHeaderData.IsApplyBOPHandlingCharges ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`Insert H`}</button>}
                             </th>
                           }
                         </tr>
