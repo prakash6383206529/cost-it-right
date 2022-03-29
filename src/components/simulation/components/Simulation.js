@@ -71,14 +71,16 @@ function Simulation(props) {
     const [loader, setloader] = useState(false)
     const [tokenCheckBox, setTokenCheckBox] = useState(false)
     const [objectForCombinedTokenAPI, setObjectForCombinedTokenAPI] = useState('')
+    const [inputLoader, setInputLoader] = useState(false)
 
     const dispatch = useDispatch()
     const vendorSelectList = useSelector(state => state.comman.vendorWithVendorCodeSelectList)
 
     useEffect(() => {
+        setInputLoader(true)
         dispatch(getSelectListOfMasters(() => { }))
         dispatch(getCostingTechnologySelectList(() => { }))
-        dispatch(getVendorWithVendorCodeSelectList(() => { }))
+        dispatch(getVendorWithVendorCodeSelectList(() => { setInputLoader(false) }))
         setShowEditTable(false)
         if (props.isRMPage) {
             setValue('Technology', { label: selectedTechnologyForSimulation?.label, value: selectedTechnologyForSimulation?.value })
@@ -888,8 +890,8 @@ function Simulation(props) {
                                 master.value === '3' &&
                                 <div className="d-inline-flex justify-content-start align-items-center mr-3">
                                     <div className="flex-fills label">Vendor:</div>
-                                    <div className="flex-fills hide-label pl-0">
-                                        <TooltipCustom customClass="combine-tooltip" tooltipText="please enter the first few letters to see vendors" />
+                                    <div className="flex-fills hide-label pl-0 p-relative">
+                                        {inputLoader && <LoaderCustom customClass="input-loader vendor-input combine-process" />}
                                         <AsyncSearchableSelectHookForm
                                             label={''}
                                             name={'Vendor'}
@@ -903,6 +905,7 @@ function Simulation(props) {
                                             mandatory={false}
                                             handleChange={handleVendorChange}
                                             errors={errors.Masters}
+                                            NoOptionMessage={"Please enter first few letters to see vendors"}
                                         />
                                     </div>
                                 </div>
