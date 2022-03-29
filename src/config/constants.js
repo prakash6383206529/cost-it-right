@@ -478,7 +478,7 @@ export const API = {
   getVBCDetailByVendorId: `${BASE_URL}/costing/get-vbc-vendor-by-id`,
   updateZBCSOBDetail: `${BASE_URL}/costing/bulk-update-zbc-sob-detail`,
   updateVBCSOBDetail: `${BASE_URL}/costing/bulk-update-vbc-sob-detail`,
-  getZBCCostingByCostingId: `${BASE_URL}/costing/get-zbc-costing-detail-by-id`,
+  getBriefCostingById: `${BASE_URL}/costing/get-zbc-costing-detail-by-id`,
   getVBCCostingByCostingId: `${BASE_URL}/costing/get-vbc-costing-detail-by-id`,
   deleteDraftCosting: `${BASE_URL}/costing/delete-draft-costing`,
   getNCCCExistingCosting: `${BASE_URL}/costing/get-ncc-exist-costings-list`,
@@ -565,7 +565,11 @@ export const API = {
 
   // PROCESS COST CALCULATION
   getProcessCalculation: `${BASE_URL}/costing/get-process-calculation-by-technology`,
+  getProcessMachiningCalculation: `${BASE_URL}/costing/get-process-machining-calculation-details`,
   saveProcessCostCalculation: `${BASE_URL}/costing/save-process-calculation-by-technology`,
+  saveDefaultProcessCostCalculation: `${BASE_URL}/costing/save-process-default-calculation-details`,
+  saveMachiningProcessCostCalculation: `${BASE_URL}/costing/save-process-machining-calculation-details`,
+  getProcessDefaultCalculation: `${BASE_URL}/costing/get-process-default-calculation-details`,
 
   //COST WORKING API
   getCostingBySupplier: `${BASE_URL}/costing-sheet-metal/get-costings-by-supplier`,
@@ -1265,6 +1269,8 @@ export const GET_PART_SELECTLIST_BY_TECHNOLOGY = 'GET_PART_SELECTLIST_BY_TECHNOL
 export const BOP_DRAWER_LIST = 'BOP_DRAWER_LIST'
 export const SET_PLASTIC_ARR = 'SET_PLASTIC_ARR'
 export const SET_ASSEM_BOP_CHARGE = 'SET_ASSEM_BOP_CHARGE'
+
+export const SET_ARRAY_FOR_COSTING = 'SET_ARRAY_FOR_COSTING'
 export const CHECK_IS_DATA_CHANGE = 'CHECK_IS_DATA_CHANGE'
 export const CHECK_IS_OVERHEAD_AND_PROFIT_DATA_CHANGE = 'CHECK_IS_OVERHEAD_AND_PROFIT_DATA_CHANGE'
 export const CHECK_IS_PACKAGE_AND_FREIGHT_DATA_CHANGE = 'CHECK_IS_PACKAGE_AND_FREIGHT_DATA_CHANGE'
@@ -1273,6 +1279,7 @@ export const CHECK_IS_DISCOUNT_DATA_CHANGE = 'CHECK_IS_DISCOUNT_DATA_CHANGE'
 
 
 
+export const SET_NEW_ARRAY_FOR_COSTING = 'SET_NEW_ARRAY_FOR_COSTING'
 
 //WEIGHT CALCULATION COSTING
 
@@ -1339,6 +1346,7 @@ export const SET_CUTOFF_RMC = 'SET_CUTOFF_RMC';
 export const GET_COSTING_SPECIFIC_TECHNOLOGY = 'GET_COSTING_SPECIFIC_TECHNOLOGY'
 export const FORGING_CALCULATOR_MACHININGSTOCK_SECTION = 'FORGING_CALCULATOR_MACHININGSTOCK_SECTION';
 export const SELECTED_IDS_OF_OPERATION_AND_OTHEROPERATION = 'SELECTED_IDS_OF_OPERATION_AND_OTHEROPERATION'
+export const SET_MASTER_BATCH_OBJ = 'SET_MASTER_BATCH_OBJ'
 
 //WEIGHT CALCULATION COSTING RM DRAWER
 export const GET_RAW_MATERIAL_CALCI_INFO = 'GET_RAW_MATERIAL_CALCI_INFO'
@@ -1805,4 +1813,4 @@ export const LEVEL1 = 'L1';
 export const SUB_ASSEMBLY = 'Sub Assembly';
 
 //VERSION 
-export const VERSION = "V1.2.96";
+export const VERSION = "V1.2.100";

@@ -12,16 +12,18 @@ import { EMPTY_DATA, MASS, TIME } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
 import { costingInfoContext } from '../../CostingDetailStepTwo';
 import VariableMhrDrawer from '../../Drawers/processCalculatorDrawer/VariableMhrDrawer'
-import { getProcessCalculation } from '../../../actions/CostWorking';
+import { getProcessMachiningCalculation, getProcessDefaultCalculation } from '../../../actions/CostWorking';
 import { gridDataAdded, isDataChange, setIsToolCostUsed, setRMCCErrors } from '../../../actions/Costing';
 import { ViewCostingContext } from '../../CostingDetails';
 import { HOUR } from '../../../../../config/constants';
 import Popup from 'reactjs-popup';
 import OperationCostExcludedOverhead from './OperationCostExcludedOverhead';
+import { MACHINING, FORGING, DIE_CASTING, Ferrous_Casting, } from '../../../../../config/masterData'
 
 let counter = 0;
 function ProcessCost(props) {
   const { data, item } = props
+  const IsLocked = item.IsLocked || item.IsPartLocked
 
   const { register, control, formState: { errors }, setValue, getValues } = useForm({
     mode: 'onChange',
@@ -64,13 +66,13 @@ function ProcessCost(props) {
       BOMLevel: props.item.BOMLevel,
       PartNumber: props.item.PartNumber,
     }
-    if (!CostingViewMode) {
+    if (!CostingViewMode && !IsLocked) {
       selectedIds(gridData)
 
       if (JSON.stringify(gridData) !== JSON.stringify(oldGridData)) {
         dispatch(isDataChange(true))
       }
-      props.setProcessCost(tabData, Params, item)
+      props.setConversionCost(tabData, Params, item)
     }
   }, [tabData]);
 
@@ -83,19 +85,34 @@ function ProcessCost(props) {
     let tempArr = []
     let tempData = gridData[id]
     // const calciData = gridData[id]
-
     /****************************FOR GETING CALCULATED VALUE IN CALCULATOR**************************/
-    dispatch(getProcessCalculation(costData.CostingId, tempData.ProcessId, tempData.ProcessCalculationId, costData.TechnologyId, 'default', res => {
-      if (res && res.data && res.data.Data) {
-        const data = res.data.Data
-        tempData = { ...tempData, WeightCalculatorRequest: data, }
-        tempArr = Object.assign([...gridData], { [id]: tempData })
-        setTimeout(() => {
-          setGridData(tempArr)
-          setIsCalculator(true)
-        }, 100)
-      }
-    }))
+    if ((costData.TechnologyId === MACHINING || costData.TechnologyId === FORGING || costData.TechnologyId === Ferrous_Casting || costData.TechnologyId === DIE_CASTING) && tempData.UOMType === TIME) {
+      //getProcessDefaultCalculation
+      dispatch(getProcessMachiningCalculation(costData.CostingId, tempData.ProcessId, tempData.ProcessCalculationId, res => {
+        if (res && res.data && res.data.Data) {
+          const data = res.data.Data
+          tempData = { ...tempData, WeightCalculatorRequest: data, }
+          tempArr = Object.assign([...gridData], { [id]: tempData })
+          setTimeout(() => {
+            setGridData(tempArr)
+            setIsCalculator(true)
+          }, 100)
+        }
+      }))
+
+    } else {
+      dispatch(getProcessDefaultCalculation(costData.CostingId, tempData.ProcessId, tempData.ProcessCalculationId, res => {
+        if (res && res.data && res.data.Data) {
+          const data = res.data.Data
+          tempData = { ...tempData, WeightCalculatorRequest: data, }
+          tempArr = Object.assign([...gridData], { [id]: tempData })
+          setTimeout(() => {
+            setGridData(tempArr)
+            setIsCalculator(true)
+          }, 100)
+        }
+      }))
+    }
     // setCalculatorData(calciData)
   }
 
@@ -390,7 +407,7 @@ function ProcessCost(props) {
    * @method setOperationCost
    * @description SET BOP COST
    */
-  const setOperationCost = (operationGrid, index) => {
+  const setOperationCost = (operationGrid, params, index) => {
     let OperationCostTotal = 0
     OperationCostTotal = operationGrid && operationGrid.reduce((accummlator, el) => {
       return accummlator + checkForNull(el.OperationCost)
@@ -404,10 +421,10 @@ function ProcessCost(props) {
     }
 
     setTabData(tempArr)
-    props.setOperationCost(tempArr, props.index, item)
+    // props.setOperationCost(tempArr, params, item)
   }
 
-  const setOtherOperationCost = (otherOperationGrid, index) => {
+  const setOtherOperationCost = (otherOperationGrid, params, index) => {
     let OtherOperationCostTotal = 0
     OtherOperationCostTotal = otherOperationGrid && otherOperationGrid.reduce((accummlator, el) => {
       return accummlator + checkForNull(el.OperationCost)
@@ -421,7 +438,7 @@ function ProcessCost(props) {
     }
 
     setTabData(tempArr)
-    props.setOtherOperationCost(tempArr, props.index, item)
+    // props.setOtherOperationCost(tempArr, props.index, item)
   }
 
   /**
@@ -483,7 +500,7 @@ function ProcessCost(props) {
               <div className="left-border">{'Process Cost:'}</div>
             </Col>
             <Col md={'2'}>
-              {!CostingViewMode && <button
+              {(!CostingViewMode && !IsLocked) && <button
                 type="button"
                 className={'user-btn'}
                 onClick={DrawerToggle}
@@ -545,7 +562,7 @@ function ProcessCost(props) {
                                   }}
 
                                   // errors={}
-                                  disabled={CostingViewMode ? true : false}
+                                  disabled={(CostingViewMode || IsLocked) ? true : false}
                                 />
                               }
                             </span>
@@ -576,7 +593,7 @@ function ProcessCost(props) {
                             }
                           </td>
                           <td>
-                            {!CostingViewMode && <button className="Delete" type={'button'} onClick={() => deleteItem(index)} />}
+                            {(!CostingViewMode && !IsLocked) && <button className="Delete" type={'button'} onClick={() => deleteItem(index)} />}
                             <Popup trigger={<button id={`popUpTriggers${index}`} className="Comment-box ml-2" type={'button'} />}
                               position="top center">
                               <TextAreaHookForm
@@ -598,12 +615,12 @@ function ProcessCost(props) {
                                 customClassName={"withBorder"}
                                 errors={errors && errors.ProcessGridFields && errors.ProcessGridFields[index] !== undefined ? errors.ProcessGridFields[index].remarkPopUp : ''}
                                 //errors={errors && errors.remarkPopUp && errors.remarkPopUp[index] !== undefined ? errors.remarkPopUp[index] : ''}                        
-                                disabled={CostingViewMode ? true : false}
+                                disabled={(CostingViewMode || IsLocked) ? true : false}
                                 hidden={false}
                               />
                               <Row>
                                 <Col md="12" className='remark-btn-container'>
-                                  <button className='submit-button mr-2' disabled={CostingViewMode ? true : false} onClick={() => onRemarkPopUpClickk(index)} > <div className='save-icon'></div> </button>
+                                  <button className='submit-button mr-2' disabled={(CostingViewMode || IsLocked) ? true : false} onClick={() => onRemarkPopUpClickk(index)} > <div className='save-icon'></div> </button>
                                   <button className='reset' onClick={() => onRemarkPopUpClosee(index)} > <div className='cancel-icon'></div></button>
                                 </Col>
                               </Row>
@@ -663,7 +680,7 @@ function ProcessCost(props) {
           technology={costData.ETechnologyType}
           calculatorData={gridData[calciIndex]}
           isOpen={isCalculator}
-          CostingViewMode={CostingViewMode}
+          CostingViewMode={CostingViewMode || IsLocked}
           rmFinishWeight={props.rmFinishWeight}
           closeDrawer={closeCalculatorDrawer}
           anchor={'right'}

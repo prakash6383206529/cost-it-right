@@ -74,87 +74,8 @@ function VariableMhrDrawer(props) {
 
       if (calculatorData.UOMType === TIME) {
         switch (process) {
-          case FACING:
-            return (
-              <Facing
-                CostingViewMode={props.CostingViewMode}
-                calculateMachineTime={calculateMachineTime}
-                technology={technology}
-                calculatorData={calculatorData}
-              />
-            )
-          case DRILLING:
-            return (
-              <Drilling
-                CostingViewMode={props.CostingViewMode}
-                calculateMachineTime={calculateMachineTime}
-                technology={technology}
-                calculatorData={calculatorData}
-              />
-            )
-          case TURNING:
-            return (
-              <Turning
-                CostingViewMode={props.CostingViewMode}
-                calculateMachineTime={calculateMachineTime}
-                technology={technology}
-                calculatorData={calculatorData}
-              />
-            )
-          case CHAMFERING:
-            return (
-              <Chamfering
-                CostingViewMode={props.CostingViewMode}
-                calculateMachineTime={calculateMachineTime}
-                technology={technology}
-                calculatorData={calculatorData}
-              />
-            )
-          case FACEMILING:
-            return (
-              <FaceMilling
-                CostingViewMode={props.CostingViewMode}
-                calculateMachineTime={calculateMachineTime}
-                technology={technology}
-                calculatorData={calculatorData}
-              />
-            )
-          case SIDEFACEMILING:
-            return (
-              <SideFaceMiling
-                CostingViewMode={props.CostingViewMode}
-                calculateMachineTime={calculateMachineTime}
-                technology={technology}
-                calculatorData={calculatorData}
-              />
-            )
-          case SLOTCUTTING:
-            return (
-              <SlotCutting
-                CostingViewMode={props.CostingViewMode}
-                calculateMachineTime={calculateMachineTime}
-                technology={technology}
-                calculatorData={calculatorData}
-              />
-            )
-          case CHAMFERINGMILLER:
-            return (
-              <ChamferingMiller
-                CostingViewMode={props.CostingViewMode}
-                calculateMachineTime={calculateMachineTime}
-                technology={technology}
-                calculatorData={calculatorData}
-              />
-            )
-          case ENDMILL:
-            return (
-              <EndMill
-                CostingViewMode={props.CostingViewMode}
-                calculateMachineTime={calculateMachineTime}
-                technology={technology}
-                calculatorData={calculatorData}
-              />
-            )
+
+          // 2 MORE PROCESS WILL BE ADDED HERE
           case BROACHING:
             return (
               <Broaching

@@ -3,7 +3,7 @@ import { Row, Col } from 'reactstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import AddToComparisonDrawer from './AddToComparisonDrawer'
 import {
-  setCostingViewData, setCostingApprovalData, createZBCCosting, createVBCCosting, getZBCCostingByCostingId,
+  setCostingViewData, setCostingApprovalData, createZBCCosting, createVBCCosting, getBriefCostingById,
   storePartNumber, getSingleCostingDetails
 } from '../actions/Costing'
 import ViewBOP from './Drawers/ViewBOP'
@@ -361,7 +361,7 @@ const CostingSummaryTable = (props) => {
 
       dispatch(createZBCCosting(data, (res) => {
         if (res.data.Result) {
-          dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, () => {
+          dispatch(getBriefCostingById(res.data.Data.CostingId, () => {
             setPartInfo(res.data.Data)
 
             showDetail(res.data.Data, { costingId: res.data.Data.CostingId, type })
@@ -398,11 +398,11 @@ const CostingSummaryTable = (props) => {
         Price: partInfo.Price,
         EffectiveDate: partInfo.EffectiveDate,
       }
-      dispatch(getZBCCostingByCostingId('', (res) => { }))
+      dispatch(getBriefCostingById('', (res) => { }))
       dispatch(createVBCCosting(data, (res) => {
         if (res.data.Result) {
 
-          dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, () => {
+          dispatch(getBriefCostingById(res.data.Data.CostingId, () => {
             showDetail(res.data.Data, { costingId: res.data.Data.CostingId, type })
             setPartInfo(res.data.Data)
           }))
@@ -423,13 +423,13 @@ const CostingSummaryTable = (props) => {
     let tempData = viewCostingData[index]
     const type = viewCostingData[index].zbc === 0 ? 'ZBC' : 'VBC'
     if (type === ZBC) {
-      dispatch(getZBCCostingByCostingId(tempData.costingId, (res) => {
+      dispatch(getBriefCostingById(tempData.costingId, (res) => {
         history.push('/costing')
         showDetail(partInfoStepTwo, { costingId: tempData.costingId, type })
       }))
     }
     if (type === VBC) {
-      dispatch(getZBCCostingByCostingId(tempData.costingId, (res) => {
+      dispatch(getBriefCostingById(tempData.costingId, (res) => {
         if (res.data.Result) {
           history.push('/costing')
           showDetail(partInfoStepTwo, { costingId: tempData.costingId, type })
