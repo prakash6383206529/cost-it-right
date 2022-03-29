@@ -3134,9 +3134,17 @@ export const RMGridForToken = [
     { label: "PO Price Old", value: "OldPOPrice" },
     { label: "PO Price New", value: "NewPOPrice" },
     { label: "PO Variance", value: "Variance" },
-    { label: "Old Basic Rate", value: "OldNetRawMaterialsCost" },
-    { label: 'New Basic Rate', value: 'NewNetRawMaterialsCost' },
-    { label: "RM Variance", value: "RMVariance" },
+    { label: "Old Basic Rate", value: "OldRMRate" },
+    { label: 'New Basic Rate', value: 'NewRMRate' },
+    { label: "RM Variance", value: "RMCVariance" },
+
+
+    // { label: "PO Price Old", value: "OldPOPrice" },
+    // { label: "PO Price New", value: "NewPOPrice" },
+    // { label: "PO Variance", value: "Variance" },
+    // { label: "Old Basic Rate", value: "OldNetRawMaterialsCost" },
+    // { label: 'New Basic Rate', value: 'NewNetRawMaterialsCost' },
+    // { label: "RM Variance", value: "RMVariance" },
 
 ]
 
