@@ -28,12 +28,9 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
 import { getListingForSimulationCombined } from '../../simulation/actions/Simulation';
 
-
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
-
-
 const gridOptions = {};
 
 
@@ -42,21 +39,16 @@ function RMDomesticListing(props) {
 
 
 
-
     const [value, setvalue] = useState({ min: 0, max: 0 });
     const [maxRange, setmaxRange] = useState(0);
     const [isBulkUpload, setisBulkUpload] = useState(false);
     const [shown, setshown] = useState(isSimulation ? true : false);
-
     const [gridApi, setgridApi] = useState(null);                      // DONT DELETE THIS STATE , IT IS USED BY AG GRID
     const [gridColumnApi, setgridColumnApi] = useState(null);          // DONT DELETE THIS STATE , IT IS USED BY AG GRID
-
     const [loader, setloader] = useState(false);
     const dispatch = useDispatch();
-
     const rmDataList = useSelector((state) => state.material.rmDataList);
     const filteredRMData = useSelector((state) => state.material.filteredRMData);
-
     const [showPopup, setShowPopup] = useState(false)
     const [deletedId, setDeletedId] = useState('')
     const [showPopupBulk, setShowPopupBulk] = useState(false)
@@ -64,13 +56,10 @@ function RMDomesticListing(props) {
     const [viewAction, setViewAction] = useState(ViewRMAccessibility)
 
 
-
-
     /**
     * @method FIRST RNDER COMPONENT
     * @description Called after rendering the component
     */
-
 
     const callFilterApi = () => {
         if (isSimulation || shown) {
@@ -112,8 +101,6 @@ function RMDomesticListing(props) {
             return rmDataList
         }
     }
-
-
 
     /**
     * @method hideForm
@@ -172,9 +159,6 @@ function RMDomesticListing(props) {
         }
         props.getDetails(data);
     }
-
-
-
 
     /**
     * @method deleteItem
@@ -240,11 +224,8 @@ function RMDomesticListing(props) {
             isDeleteButton = false
         }
 
-
         return (
             <>
-
-
                 {viewAction && < button className="View mr5" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
                 {isEditbale && <button className="Edit mr-2 align-middle" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
                 {isDeleteButton && <button className="Delete align-middle" type={'button'} onClick={() => deleteItem(cellValue)} />}
@@ -263,7 +244,6 @@ function RMDomesticListing(props) {
 
         return data;
     }
-
 
 
     const costFormatter = (props) => {
@@ -358,7 +338,7 @@ function RMDomesticListing(props) {
 
     const onPageSizeChanged = (newPageSize) => {
         var value = document.getElementById('page-size').value;
-        gridApi.paginationSetPageSize(Number(value));
+        gridApi.paginationSetPageSize(Number(newPageSize));
     };
 
     const returnExcelColumn = (data = [], TempData) => {
