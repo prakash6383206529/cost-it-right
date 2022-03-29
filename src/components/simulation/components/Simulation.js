@@ -71,14 +71,16 @@ function Simulation(props) {
     const [loader, setloader] = useState(false)
     const [tokenCheckBox, setTokenCheckBox] = useState(false)
     const [objectForCombinedTokenAPI, setObjectForCombinedTokenAPI] = useState('')
+    const [inputLoader, setInputLoader] = useState(false)
 
     const dispatch = useDispatch()
     const vendorSelectList = useSelector(state => state.comman.vendorWithVendorCodeSelectList)
 
     useEffect(() => {
+        setInputLoader(true)
         dispatch(getSelectListOfMasters(() => { }))
         dispatch(getCostingTechnologySelectList(() => { }))
-        dispatch(getVendorWithVendorCodeSelectList(() => { }))
+        dispatch(getVendorWithVendorCodeSelectList(() => { setInputLoader(false) }))
         setShowEditTable(false)
         if (props.isRMPage) {
             setValue('Technology', { label: selectedTechnologyForSimulation?.label, value: selectedTechnologyForSimulation?.value })
@@ -878,7 +880,8 @@ function Simulation(props) {
                                 master.value === '3' &&
                                 <div className="d-inline-flex justify-content-start align-items-center mr-3">
                                     <div className="flex-fills label">Vendor:</div>
-                                    <div className="flex-fills hide-label pl-0">
+                                    <div className="flex-fills hide-label pl-0 p-relative">
+                                        {inputLoader && <LoaderCustom customClass="input-loader vendor-input combine-process" />}
                                         <AsyncSearchableSelectHookForm
                                             label={''}
                                             name={'Vendor'}
@@ -898,7 +901,7 @@ function Simulation(props) {
                                 </div>
                             }
                             {showTokenDropdown &&
-                                <div className="d-inline-flex justify-content-start align-items-center">
+                                <div className="d-inline-flex justify-content-start align-items-center w-72 mt-2">
                                     <div className="flex-fills label">Token:</div>
                                     <div className="flex-fills hide-label pl-0">
                                         <SearchableSelectHookForm
