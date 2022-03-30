@@ -155,6 +155,10 @@ function OperationSTSimulation(props) {
 
 
     const cancel = () => {
+        list && list.map((item) => {
+            item.NewRate = undefined
+            return null
+        })
         setShowMainSimulation(true)
     }
 
@@ -423,7 +427,7 @@ function OperationSTSimulation(props) {
                 }
 
                 {
-                    showMainSimulation && <Simulation isRMPage={true} />
+                    showMainSimulation && <Simulation isMasterSummaryDrawer={true} isCancelClicked={true} isRMPage={true} />
                 }
                 {
                     showRunSimulationDrawer &&
