@@ -62,17 +62,17 @@ function UomTimeProcessDefaultCalculator(props) {
     const setSpindleSpeed = () => {
         const cuttingDiameter = Number(getValues('cuttingDiameter'))
         const cuttingSpeed = Number(getValues('cuttingSpeed'))
-        const spindleSpeed = (1000 * checkForNull(cuttingSpeed)) / (3.14 * checkForNull(cuttingDiameter))
-        setDataToSend(prevState => ({ ...prevState, spindleSpeed: spindleSpeed }))
-        setValue('spindleSpeed', checkForDecimalAndNull(spindleSpeed, getConfigurationKey().NoOfDecimalForInputOutput))
+        const SpindleSpeed = (1000 * checkForNull(cuttingSpeed)) / (3.14 * checkForNull(cuttingDiameter))
+        setDataToSend(prevState => ({ ...prevState, SpindleSpeed: SpindleSpeed }))
+        setValue('spindleSpeed', checkForDecimalAndNull(SpindleSpeed, getConfigurationKey().NoOfDecimalForInputOutput))
     }
 
     const setFeed = () => {
         const feedPerTooth = Number(getValues('feedPerTooth'))
         const noOfTooth = Number(getValues('noOfTooth'))
-        const feed = (checkForNull(dataToSend.spindleSpeed) * checkForNull(feedPerTooth) * checkForNull(noOfTooth))
-        setDataToSend(prevState => ({ ...prevState, feed: feed }))
-        setValue('feedAutoCalculated', checkForDecimalAndNull(feed, getConfigurationKey().NoOfDecimalForInputOutput))
+        const Feed = (checkForNull(dataToSend.SpindleSpeed) * checkForNull(feedPerTooth) * checkForNull(noOfTooth))
+        setDataToSend(prevState => ({ ...prevState, Feed: Feed }))
+        setValue('feedAutoCalculated', checkForDecimalAndNull(Feed, getConfigurationKey().NoOfDecimalForInputOutput))
     }
 
     const setTotalLengthDepth = () => {
@@ -81,7 +81,7 @@ function UomTimeProcessDefaultCalculator(props) {
         const totalLengthDepth = (checkForNull(lengthDepth) * checkForNull(noOfPasses))
         setDataToSend(prevState => ({ ...prevState, totalLengthDepth: totalLengthDepth }))
         setValue('totalLengthDepth', checkForDecimalAndNull(totalLengthDepth, getConfigurationKey().NoOfDecimalForInputOutput))
-        const cuttingTimeMins = totalLengthDepth / checkForNull(dataToSend.feed);
+        const cuttingTimeMins = totalLengthDepth / checkForNull(dataToSend.Feed);
         setDataToSend(prevState => ({ ...prevState, cuttingTimeMins: cuttingTimeMins }))
         setValue('cuttingTimeMins', checkForDecimalAndNull(cuttingTimeMins, getConfigurationKey().NoOfDecimalForInputOutput))
     }
@@ -133,10 +133,10 @@ function UomTimeProcessDefaultCalculator(props) {
         obj.UnitType = props.calculatorData.UOMType
         obj.CuttingDiameter = value.cuttingDiameter//
         obj.CuttingSpeed = value.cuttingSpeed
-        obj.SpindleSpeed = dataToSend.spindleSpeed
+        obj.SpindleSpeed = dataToSend.SpindleSpeed
         obj.FeedPerTooth = value.feedPerTooth
         obj.NoOFTeeth = value.noOfTooth
-        obj.Feed = dataToSend.feed
+        obj.Feed = dataToSend.Feed
         obj.Doc = value.doc
         obj.LengthDepth = value.lengthDepth
         obj.NoOfPass = value.noOfPasses
