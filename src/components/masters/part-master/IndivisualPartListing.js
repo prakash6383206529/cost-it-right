@@ -494,13 +494,11 @@ class IndivisualPartListing extends Component {
                 <div className={`ag-grid-react part-manage-component ${DownloadAccessibility ? "show-table-btn" : ""}`}>
                     {this.state.isLoader && <LoaderCustom />}
                     <Row className="pt-3 no-filter-row">
-                        <Col md="8">
-                            <div className="warning-message mt-1">
-                                {this.state.warningMessage && <WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} />}
-                            </div>
-                        </Col>
-                        <Col md="6" className="search-user-block pr-0">
+                        <Col md="12" className="search-user-block pr-0">
                             <div className="d-flex justify-content-end bd-highlight w100">
+                                <div className="warning-message d-flex align-items-center">
+                                    {this.state.warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
+                                </div>
                                 <div>
                                     <button title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch(this)}><div class="filter mr-0"></div></button>
                                     {AddAccessibility && (
