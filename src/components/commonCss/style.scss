@@ -7150,6 +7150,9 @@ left: 17rem;
   border-bottom: none !important;
   border-top: none !important;
 }
+@page {
+  margin: 0mm 1mm 1mm 0mm;
+}
 
 @media print { 
   .remove-space-border {
