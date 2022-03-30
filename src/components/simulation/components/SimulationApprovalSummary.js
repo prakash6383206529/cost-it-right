@@ -192,7 +192,7 @@ function SimulationApprovalSummary(props) {
                 });
 
                 uniqueArr && uniqueArr.map(item => {
-                    requestData.push({ CostingId: item.CostingId, delta: item.Variance, IsSinglePartImpact: false })
+                    requestData.push({ CostingId: item.CostingId, delta: item.POVariance, IsSinglePartImpact: false })
                     return null
                 })
 
