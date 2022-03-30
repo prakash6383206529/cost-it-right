@@ -23,6 +23,13 @@
     flex-flow: column;
     -ms-flex-flow: column;
     justify-content: space-between;
+    .calculator-cross {
+      cursor: pointer;
+      width: 24px;
+      position: absolute;
+      right: -13px;
+      top: -13px;
+    }
   }
   
   .buttons {
