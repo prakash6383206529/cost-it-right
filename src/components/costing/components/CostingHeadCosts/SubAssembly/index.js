@@ -9,6 +9,7 @@ import AddAssemblyOperation from '../../Drawers/AddAssemblyOperation';
 import { ViewCostingContext } from '../../CostingDetails';
 import { EMPTY_GUID } from '../../../../../config/constants';
 import _ from 'lodash'
+import DayTime from '../../../../common/DayTimeWrapper';
 
 function AssemblyPart(props) {
   const { children, item, index } = props;
@@ -24,6 +25,8 @@ function AssemblyPart(props) {
   const dispatch = useDispatch()
 
   const toggle = (BOMLevel, PartNumber) => {
+    if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
+
     setIsOpen(!IsOpen)
     setCount(Count + 1)
     if (Object.keys(costData).length > 0) {
@@ -31,8 +34,10 @@ function AssemblyPart(props) {
         CostingId: item.CostingId !== null ? item.CostingId : "00000000-0000-0000-0000-000000000000",
         PartId: item.PartId,
         AssemCostingId: costData.CostingId,
-        subAsmCostingId: props.subAssembId !== null ? props.subAssembId : EMPTY_GUID
+        subAsmCostingId: props.subAssembId !== null ? props.subAssembId : EMPTY_GUID,
+        EffectiveDate: CostingEffectiveDate
       }
+
       dispatch(getRMCCTabData(data, false, (res) => {
         if (res && res.data && res.data.Result) {
           let Data = res.data.DataList[0];
@@ -40,7 +45,7 @@ function AssemblyPart(props) {
             let obj = {
               IsApplyBOPHandlingCharges: true,
               BOPHandlingPercentage: Data.CostingPartDetails.BOPHandlingPercentage,
-              BOPHandlingCharges: Data.CostingPartDetails.BOPHandlingCharges
+              BOPHandlingCharges: Data.CostingPartDetails.BOPHandlingCharges,
             }
             dispatch(saveAssemblyBOPHandlingCharge(obj, () => {
             }))
@@ -60,6 +65,7 @@ function AssemblyPart(props) {
     } else {
       props.toggleAssembly(BOMLevel, PartNumber)
     }
+
   }
 
   /**

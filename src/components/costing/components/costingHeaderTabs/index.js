@@ -36,7 +36,6 @@ function CostingHeaderTabs(props) {
   const [IsCalledAPI, setIsCalledAPI] = useState(true);
   const [effectiveDate, setEffectiveDate] = useState(DayTime(costingData.EffectiveDate).isValid() ? DayTime(costingData.EffectiveDate) : '');
 
-
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
   const netPOPrice = useContext(NetPOPriceContext);
@@ -305,6 +304,7 @@ function CostingHeaderTabs(props) {
                   showYearDropdown
                   dateFormat="dd/MM/yyyy"
                   //maxDate={new Date()}
+                  minDate={new Date(costData.PartEffectiveDate)}         // USER SHOULD NOT BE ABLE TO SELECT EFFECTIVE DATE, OF BEFORE THE PART WAS CREATED
                   dropdownMode="select"
                   placeholderText="Select date"
                   className="withBorder"

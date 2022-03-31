@@ -1008,7 +1008,7 @@ class AddOverhead extends Component {
                               }}
                               component={renderDatePicker}
                               className="form-control"
-                              disabled={false}
+                              disabled={isViewMode}
 
                             />
                           </div>

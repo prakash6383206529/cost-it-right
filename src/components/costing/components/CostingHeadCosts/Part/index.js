@@ -13,6 +13,9 @@ import { EMPTY_GUID, LEVEL1 } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
 import { MESSAGES } from '../../../../../config/message';
 import { ViewCostingContext } from '../../CostingDetails';
+import { createToprowObjAndSave } from '../../../CostingUtil';
+import DayTime from '../../../../common/DayTimeWrapper';
+
 
 function PartCompoment(props) {
 
@@ -27,7 +30,6 @@ function PartCompoment(props) {
   const { ComponentItemDiscountData, CloseOpenAccordion } = useSelector(state => state.costing)
 
   const costData = useContext(costingInfoContext);
-
   const CostingViewMode = useContext(ViewCostingContext);
   const netPOPrice = useContext(NetPOPriceContext);
 
@@ -43,7 +45,8 @@ function PartCompoment(props) {
           CostingId: item.CostingId !== null ? item.CostingId : "00000000-0000-0000-0000-000000000000",
           PartId: item.PartId,
           AssemCostingId: costData.CostingId,
-          subAsmCostingId: props.subAssembId !== null ? props.subAssembId : EMPTY_GUID
+          subAsmCostingId: props.subAssembId !== null ? props.subAssembId : EMPTY_GUID,
+          EffectiveDate: CostingEffectiveDate
         }
         dispatch(getRMCCTabData(data, false, (res) => {
           if (res && res.data && res.data.Result) {
