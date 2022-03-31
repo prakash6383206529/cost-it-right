@@ -1,6 +1,6 @@
 @import "./cssVariable.scss";
 @import "./style.scss";
-// @import '../../../public/assets/css/css2.css';
+// @import '/public/assets/css/css2.css';
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700&display=swap");
 // @import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,500;0,700;1,400&display=swap");
 // @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,600;1,500;1,700&display=swap");
@@ -2090,20 +2090,6 @@ form .form-control {
   }
 }
 
-.ag-overlay-panel {
-  .nodate-section {
-    img {
-      width: 90px;
-    }
-    .my-2 {
-      margin-top: 0 !important;
-      h5 {
-        font-size: 1rem;
-      }
-    }
-  }
-}
-
 // textarea.form-control {
 //   height: calc(2.25rem + 2px);
 // }
@@ -2952,7 +2938,7 @@ body {
 
       td {
         font-size: calc(14px * 80 / 100);
-        padding: calc(15px * 80 / 100) calc(27px * 80 / 100);
+        padding: calc(15px * 80 / 100) calc(15px * 80 / 100);
 
         .custom-checkbox {
           font-size: calc(14px * 80 / 100);
@@ -3028,13 +3014,13 @@ body {
           height: calc(32px * 80 / 100);
         }
         .paging-container {
-          margin-top: -43px;
+          margin-top: -41px;
           &::before {
             top: calc(14px * 80 / 100);
           }
           .paging-dropdown {
             width: auto;
-            // height: calc(32px * 80 / 100);
+            height: calc(32px * 80 / 100);
           }
         }
       }
