@@ -105,7 +105,7 @@ function ViewRM(props) {
               return (
                 <tr key={index}>
                   {isAssemblyCosting && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
-                  <td><div className='text-overflow' title={item.RMName}>{item.RMName}</div></td>
+                  <td className='text-overflow'><span title={item.RMName}>{item.RMName}</span></td>
                   <td>{checkForDecimalAndNull(item.RMRate, initialConfiguration.NoOfDecimalForPrice)}</td>
                   <td>{checkForDecimalAndNull(item.ScrapRate, initialConfiguration.NoOfDecimalForPrice)}</td>
                   <td>{checkForDecimalAndNull(item.ScrapRecoveryPercentage, initialConfiguration.NoOfDecimalForPrice)}</td>
@@ -124,7 +124,7 @@ function ViewRM(props) {
                   <td>{checkForDecimalAndNull(item.NetLandedCost, initialConfiguration.NoOfDecimalForPrice)}</td>
                   <td>
                     <div className='text-overflow' title={item.Remark}>
-                      {item?.Remark ? item.Remark : "-"}</div>
+                      <span>{item?.Remark ? item.Remark : "-"}</span></div>
                   </td>
 
                 </tr>
