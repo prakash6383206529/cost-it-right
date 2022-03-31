@@ -295,7 +295,7 @@ function OperationCost(props) {
                       return (
                         editIndex === index ?
                           <tr key={index}>
-                            <td>{item.OperationName}</td>
+                            <td className='text-overflow'><span title={item.OperationName}>{item.OperationName}</span> </td>
                             <td>{item.OperationCode}</td>
                             <td>{item.UOM}</td>
                             <td>{item.Rate}</td>
@@ -373,7 +373,7 @@ function OperationCost(props) {
                           </tr>
                           :
                           <tr key={index}>
-                            <td>{item.OperationName}</td>
+                            <td className='text-overflow'><span title={item.OperationName}>{item.OperationName}</span> </td>
                             <td>{item.OperationCode}</td>
                             <td>{item.UOM}</td>
                             <td>{item.Rate}</td>
