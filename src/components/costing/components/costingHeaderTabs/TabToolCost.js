@@ -335,7 +335,7 @@ function TabToolCost(props) {
     return (
       <>
         <button className="Edit mr-2 align-middle" type={'button'} onClick={() => editItem(props?.rowIndex, props?.agGridReact?.props?.rowData)} />
-        <button className="Delete align-middle" type={'button'} onClick={() => deleteItem(props?.rowIndex, props?.agGridReact?.props?.rowData)} />
+        {CostingViewMode && <button className="Delete align-middle" type={'button'} onClick={() => deleteItem(props?.rowIndex, props?.agGridReact?.props?.rowData)} />}
       </>
     )
   }
