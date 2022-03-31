@@ -53,7 +53,10 @@ function MachiningStockTable(props) {
 
   const handleVolumeChange = () => {
 
-    calculateforgingVolumeAndWeight()
+    setTimeout(() => {
+
+      calculateforgingVolumeAndWeight()
+    }, 500);
 
   }
 
@@ -84,26 +87,31 @@ function MachiningStockTable(props) {
     if ((value.label === "Circular") || (value.label === "Semi Circular") || (value.label === "Quarter Circular")) {
 
       setCircularMachiningStock(true)
-    }
-    else {
-      setCircularMachiningStock(false)
+      setSquareMachiningStock(false)
+      setRectangularMachiningStock(false)
+      setIrregularMachiningStock(false)
     }
 
-    if (value.label === "Square") {
+    else if (value.label === "Square") {
       setSquareMachiningStock(true)
-    }
-    else {
-      setSquareMachiningStock(false)
-    }
-    if (value.label === "Rectangular") {
-      setRectangularMachiningStock(true)
-    }
-    else {
+      setCircularMachiningStock(false)
       setRectangularMachiningStock(false)
+      setIrregularMachiningStock(false)
     }
-    if (value.label === "Irregular") {
-      setDisable(false)
+
+    else if (value.label === "Rectangular") {
+      setRectangularMachiningStock(true)
+      setSquareMachiningStock(false)
+      setCircularMachiningStock(false)
+      setIrregularMachiningStock(false)
+
+    }
+    else if (value.label === "Irregular") {
+      setSquareMachiningStock(false)
+      setCircularMachiningStock(false)
+      setRectangularMachiningStock(false)
       setIrregularMachiningStock(true)
+      setDisable(false)
     }
     else {
       setIrregularMachiningStock(false)
@@ -122,7 +130,7 @@ function MachiningStockTable(props) {
     const Height = checkForNull(getValues('Height'))
     const No = checkForNull(getValues('No'))
     const MachiningStock = getValues('MachiningStock')
-    const forgingV = getValues('forgingVolume')
+    const forgingV = checkForNull(getValues('forgingVolume'))
 
     let Volume = 0;
     let GrossWeight = 0;
@@ -175,9 +183,9 @@ function MachiningStockTable(props) {
         GrossWeight = (Volume * No * rmRowData.Density) / 1000000
         break;
       case 'Irregular':
-
-
         Volume = forgingV
+
+
         GrossWeight = (forgingV * No * rmRowData.Density) / 1000000
         break;
       default:
@@ -314,13 +322,42 @@ function MachiningStockTable(props) {
     setValue('majorDiameter', tempObj.MajorDiameter)
     setValue('minorDiameter', tempObj.MinorDiameter)
     setValue('Length', tempObj.Length)
-    setValue('height', tempObj.Height)
+    setValue('Height', tempObj.Height)
     setValue('Breadth', tempObj.Breadth)
     setValue('No', tempObj.No)
     setValue('MachiningStock', { label: tempObj.TypesOfMachiningStock, value: tempObj.TypesOfMachiningStockId })
     setValue('grossWeight', tempObj.GrossWeight)
     setValue('forgingVolume', tempObj.Volume)
     setValue('description', tempObj.Description)
+
+    if (tempObj.TypesOfMachiningStock === 'Circular' || tempObj.TypesOfMachiningStock === 'Semi Circular' || tempObj.TypesOfMachiningStock === 'Quarter Circular') {
+      setDisableMachineType(true)
+      setCircularMachiningStock(true)
+      setSquareMachiningStock(false)
+      setRectangularMachiningStock(false)
+      setIrregularMachiningStock(false)
+    }
+    else if (tempObj.TypesOfMachiningStock === 'Square') {
+      setDisableMachineType(true)
+      setSquareMachiningStock(true)
+      setCircularMachiningStock(false)
+      setRectangularMachiningStock(false)
+      setIrregularMachiningStock(false)
+    }
+    else if (tempObj.TypesOfMachiningStock === 'Rectangular') {
+      setDisableMachineType(true)
+      setRectangularMachiningStock(true)
+      setSquareMachiningStock(false)
+      setCircularMachiningStock(false)
+      setIrregularMachiningStock(false)
+    }
+    else {
+      setDisableMachineType(true)
+      setIrregularMachiningStock(true)
+      setSquareMachiningStock(false)
+      setCircularMachiningStock(false)
+      setRectangularMachiningStock(false)
+    }
   }
 
   /**
@@ -334,13 +371,14 @@ function MachiningStockTable(props) {
     setValue('majorDiameter', '')
     setValue('minorDiameter', '')
     setValue('Length', '')
-    setValue('height', '')
+    setValue('Height', '')
     setValue('Breadth', '')
     setValue('No', '')
     setValue('MachiningStock', '')
     setValue('grossWeight', '')
     setValue('forgingVolume', '')
     setValue('description', '')
+    setDisableMachineType(false)
 
   }
   /**
@@ -420,12 +458,10 @@ function MachiningStockTable(props) {
             mandatory={true}
             rules={{
               required: true,
-              //   pattern: {
-              //     //value: /^[0-9]*$/i,
-              //     value: /^[0-9]\d*(\.\d+)?$/i,
-              //     message: 'Invalid Number.',
-              //   },
-              //   // maxLength: 4,
+              maxLength: {
+                value: 200,
+                message: 'Length should not be more than 200'
+              },
             }}
             handleChange={() => { }}
             defaultValue={''}
@@ -810,7 +846,7 @@ function MachiningStockTable(props) {
                   return (
                     <Fragment>
                       <tr key={index}>
-                        <td> <div className='text-overflow' title={item.Description}>{item.Description !== null ? item.Description : '-'}</div></td>
+                        <td className='text-overflow'> <span title={item.Description}>{item.Description !== null ? item.Description : '-'}</span></td>
                         <td>{item.TypesOfMachiningStock !== null ? item.TypesOfMachiningStock : '-'}</td>
                         <td>{checkForDecimalAndNull(item.MajorDiameter, getConfigurationKey().NoOfDecimalForInputOutput) !== null ? checkForDecimalAndNull(item.MajorDiameter, getConfigurationKey().NoOfDecimalForInputOutput) : '-'}</td>
                         <td>{checkForDecimalAndNull(item.MinorDiameter, getConfigurationKey().NoOfDecimalForInputOutput) !== null ? checkForDecimalAndNull(item.MinorDiameter, getConfigurationKey().NoOfDecimalForInputOutput) : '-'}</td>

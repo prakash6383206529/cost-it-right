@@ -294,7 +294,7 @@ function OperationCostExcludedOverhead(props) {
                       return (
                         editIndex === index ?
                           <tr key={index}>
-                            <td>{item.OtherOperationName}</td>
+                            <td className='text-overflow'><span title={item.OtherOperationName}>{item.OtherOperationName}</span> </td>
                             <td>{item.OtherOperationCode}</td>
                             <td>{item.UOM}</td>
                             <td>{item.Rate}</td>
@@ -372,7 +372,7 @@ function OperationCostExcludedOverhead(props) {
                           </tr>
                           :
                           <tr key={index}>
-                            <td>{item.OtherOperationName}</td>
+                            <td className='text-overflow'><span title={item.OtherOperationName}>{item.OtherOperationName}</span> </td>
                             <td>{item.OtherOperationCode}</td>
                             <td>{item.UOM}</td>
                             <td>{item.Rate}</td>
