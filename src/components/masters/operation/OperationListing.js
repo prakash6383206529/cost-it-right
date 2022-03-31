@@ -174,11 +174,15 @@ class OperationListing extends Component {
                 }
             });
         } else {
-            this.props?.changeSetLoader(true)
+            if (this.props.isSimulation) {
+                this.props?.changeSetLoader(true)
+            }
 
             setTimeout(() => {
                 this.setState({ tableData: this.props.operationList })
-                this.props?.changeSetLoader(false)
+                if (this.props.isSimulation) {
+                    this.props?.changeSetLoader(false)
+                }
                 this.setState({ isLoader: false })
 
             }, 700);
