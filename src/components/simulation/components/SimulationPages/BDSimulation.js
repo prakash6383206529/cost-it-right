@@ -231,6 +231,11 @@ function BDSimulation(props) {
     }
 
     const cancel = () => {
+        list && list.map((item) => {
+            item.NewBasicRate = undefined
+            return null
+        })
+
         // props.cancelEditPage()
         setShowMainSimulation(true)
     }

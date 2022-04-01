@@ -997,16 +997,12 @@ function CostingSimulation(props) {
                                                     </>}
 
                                                     {(isOperation || showOperationColumn) && <>
-                                                        <AgGridColumn width={140} field="OperationName" headerName='Operation Name' ></AgGridColumn>
-                                                        <AgGridColumn width={140} field="OperationCode" headerName='Operation Code' ></AgGridColumn>
                                                         <AgGridColumn width={140} field="OldOperationCost" headerName='Old Oper Cost' cellRenderer="oldOPERFormatter" ></AgGridColumn>
                                                         <AgGridColumn width={140} field="NewOperationCost" headerName='New Oper Cost' cellRenderer="newOPERFormatter"></AgGridColumn>
                                                         <AgGridColumn width={140} field="OperationCostVariance" headerName='Oper Variance' ></AgGridColumn>
                                                     </>}
 
                                                     {(isBOPDomesticOrImport || showBOPColumn) && <>
-                                                        <AgGridColumn width={140} field="BoughtOutPartName" headerName='BOP Name' ></AgGridColumn>
-                                                        <AgGridColumn width={140} field="BoughtOutPartNumber" headerName='BOP Number' ></AgGridColumn>
                                                         <AgGridColumn width={140} field="OldNetBoughtOutPartCost" headerName='Old BOP Cost' cellRenderer={decimalFormatter} ></AgGridColumn>
                                                         <AgGridColumn width={140} field="NewNetBoughtOutPartCost" headerName='New BOP Cost' cellRenderer={decimalFormatter}></AgGridColumn>
                                                         <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" headerName='BOP Variance' cellRenderer={decimalFormatter} ></AgGridColumn>
