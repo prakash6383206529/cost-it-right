@@ -10,12 +10,12 @@ import { useDispatch, useSelector } from 'react-redux'
 import { costingHeadObjs, SIMULATIONAPPROVALSUMMARYDOWNLOADOperation, SIMULATIONAPPROVALSUMMARYDOWNLOADST } from '../../../config/masterData';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common';
 import { getApprovalSimulatedCostingSummary, getComparisionSimulationData, getAmmendentStatus, getImpactedMasterData, getLastSimulationData, uploadSimulationAttachment } from '../actions/Simulation'
-import { EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, ZBC, FILE_URL, SURFACETREATMENT, OPERATIONS } from '../../../config/constants';
+import { EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, ZBC, FILE_URL, SURFACETREATMENT, OPERATIONS, INR } from '../../../config/constants';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import Toaster from '../../common/Toaster';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
-import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId } from '../../../helper';
+import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId, getPOPriceAfterDecimal } from '../../../helper';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
 import LoaderCustom from '../../common/LoaderCustom';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
@@ -38,8 +38,9 @@ import { SimulationUtils } from '../SimulationUtils'
 import { SIMULATIONAPPROVALSUMMARYDOWNLOADRM } from '../../../config/masterData'
 import ViewAssembly from './ViewAssembly';
 import AssemblyWiseImpactSummary from './AssemblyWiseImpactSummary';
-import _ from 'lodash'
+import _, { debounce } from 'lodash'
 import CalculatorWrapper from '../../common/Calculator/CalculatorWrapper';
+import { approvalPushedOnSap } from '../../costing/actions/Approval';
 
 const gridOptions = {};
 const ExcelFile = ReactExport.ExcelFile;
@@ -736,6 +737,88 @@ function SimulationApprovalSummary(props) {
             setIsOpen(!IsOpen)
         }
     }
+
+    const callPushAPI = debounce(() => {
+        // setIsDisabled(true)
+        let temp = []
+        let uniqueArr = _.uniqBy(costingList, function (o) {
+            return o.CostingId;
+        });
+
+        uniqueArr && uniqueArr.map(item => {
+            const vendor = item.VendorName.split('(')[1]
+            const { netPo, quantity } = getPOPriceAfterDecimal(simulationDetail.DecimalOption, item.NewPOPrice)
+            temp.push({
+                CostingId: item.CostingId, effectiveDate: DayTime(simulationDetail.EffectiveDate).format('MM/DD/YYYY'), vendorCode: vendor.split(')')[0], materialNumber: item.PartNo, netPrice: netPo, plant: item.PlantCode ? item.PlantCode : '1511',
+                currencyKey: INR, basicUOM: 'NO', purchasingOrg: '', purchasingGroup: item.DepartmentCode ? item.DepartmentCode : 'MRPL', materialGroup: '', taxCode: 'YW', TokenNumber: simulationDetail.Token,
+                Quantity: quantity, DecimalOption: simulationDetail.DecimalOption
+            })
+        })
+
+
+
+        let simObj = {
+            LoggedInUserId: loggedInUserId(),
+            Request: temp
+        }
+        dispatch(approvalPushedOnSap(simObj, res => {
+            // setIsDisabled(false)
+            if (res && res.status && (res.status === 200 || res.status === 204)) {
+                Toaster.success('Approval pushed successfully.')
+            }
+        }))
+        setShowListing(true)
+
+
+
+        // else {
+
+        //     const { netPo, quantity } = getPOPriceAfterDecimal(approvalData[0].DecimalOption, dataSend[0].NewPOPrice ? dataSend[0].NewPOPrice : 0)
+        //     let pushdata = {
+        //         effectiveDate: dataSend[0].EffectiveDate ? DayTime(dataSend[0].EffectiveDate).format('MM/DD/YYYY') : '',
+        //         vendorCode: dataSend[0].VendorCode ? dataSend[0].VendorCode : '',
+        //         materialNumber: dataSend[1].PartNumber,
+        //         netPrice: netPo,
+        //         plant: dataSend[0].PlantCode ? dataSend[0].PlantCode : dataSend[0].DestinationPlantId ? dataSend[0].DestinationPlantCode : '',
+        //         currencyKey: dataSend[0].Currency ? dataSend[0].Currency : INR,
+        //         materialGroup: MaterialGroup?.label ? MaterialGroup.label.split('(')[0] : '',
+        //         taxCode: 'YW',
+        //         basicUOM: "NO",
+        //         purchasingGroup: PurchasingGroup?.label ? PurchasingGroup.label.split('(')[0] : '',
+        //         purchasingOrg: dataSend[0].CompanyCode ? dataSend[0].CompanyCode : '',
+        //         CostingId: approvalData[0].CostingId,
+        //         Quantity: quantity,
+        //         DecimalOption: approvalData[0].DecimalOption
+        //         // effectiveDate: '11/30/2021',
+        //         // vendorCode: '203670',
+        //         // materialNumber: 'S07004-003A0Y',
+        //         // materialGroup: 'M089',
+        //         // taxCode: 'YW',
+        //         // plant: '1401',
+        //         // netPrice: '30.00',
+        //         // currencyKey: 'INR',
+        //         // basicUOM: 'NO',
+        //         // purchasingOrg: 'MRPL',
+        //         // purchasingGroup: 'O02'
+
+        //     }
+        //     let obj = {
+        //         LoggedInUserId: loggedInUserId(),
+        //         Request: [pushdata]
+        //     }
+        //     dispatch(approvalPushedOnSap(obj, res => {
+        //         setIsDisabled(false)
+        //         if (res && res.status && (res.status === 200 || res.status === 204)) {
+        //             Toaster.success('Approval pushed successfully.')
+        //         }
+        //     }))
+        //     props.closeDrawer('', 'Push')
+        // }
+
+
+
+    }, 500)
+
     return (
         <>
             {showListing === false &&
@@ -1289,7 +1372,7 @@ domLayout='autoHeight'
                         <Row className="sf-btn-footer no-gutters justify-content-between">
                             <div className="col-sm-12 text-right bluefooter-butn">
                                 <Fragment>
-                                    <button type="submit" className="submit-button mr5 save-btn" onClick={() => setPushButton(true)}>
+                                    <button type="submit" className="submit-button mr5 save-btn" onClick={() => callPushAPI()}>
                                         <div className={"save-icon"}></div>{" "}
                                         {"RePush"}
                                     </button>
