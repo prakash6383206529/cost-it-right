@@ -20,7 +20,7 @@ import {
     ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl,
     BOPGridForToken,
     CostingSimulationDownloadBOP, CostingSimulationDownloadOperation, CostingSimulationDownloadRM, CostingSimulationDownloadST
-    , InitialGridForToken, LastGridForToken, OperationGridForToken, RMGridForToken, STGridForToken
+    , InitialGridForToken, LastGridForToken, OperationGridForToken, RMGridForToken, RMImpactedDownloadArray, STGridForToken
 } from '../../../config/masterData'
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -140,8 +140,7 @@ function CostingSimulation(props) {
                 return null
             })
 
-            dispatch(getSimulatedAssemblyWiseImpactDate(requestData, isAssemblyInDraft, (res) => {
-            }))
+            dispatch(getSimulatedAssemblyWiseImpactDate(requestData, isAssemblyInDraft, (res) => { }))
         }
 
     }, [tableData])

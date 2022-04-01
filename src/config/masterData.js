@@ -1897,7 +1897,7 @@ export const BOPImportSimulation = [
     { label: "BoughtOutPartCategory", value: "BoughtOutPartCategory" },
     { label: "DestinationPlant", value: "DestinationPlant", },
     { label: "Vendor", value: "Vendor" },
-    { label: "NumberOfPieces", value: "NumberOfPieces" },
+    { label: "Quantity", value: "NumberOfPieces" },
     { label: "BasicRate", value: "BasicRate" },
     { label: "NewBasicRate", value: "NewBasicRate" },
     { label: "NetLandedCost", value: "NetLandedCost" },
@@ -2512,11 +2512,13 @@ export const CostingSimulationDownloadST = [
     { label: "PO Price Old", value: "OldPOPrice" },
     { label: "PO Price New", value: "NewPOPrice" },
     { label: "PO Variance", value: "Variance" },
+
     { label: "OldSurfaceTreatmentRate", value: "OldSurfaceTreatmentRate" },
     { label: "NewSurfaceTreatmentRate", value: "NewSurfaceTreatmentRate" },
     { label: "OldSurfaceTreatmentCost", value: "OldSurfaceTreatmentCost" },
     { label: "NewSurfaceTreatmentCost", value: "NewSurfaceTreatmentCost" },
     { label: "OldTranspotationCost", value: "OldTranspotationCost" },
+    { label: "NewTranspotationCost", value: "NewTranspotationCost" },
     { label: "OldNetSurfaceTreatmentCost", value: "OldNetSurfaceTreatmentCost" },
     { label: "NewNetSurfaceTreatmentCost", value: "NewNetSurfaceTreatmentCost" },
     { label: "STVariance", value: "STVariance" },
@@ -2684,6 +2686,29 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADCP = [
 
 ]
 
+export const SIMULATIONAPPROVALSUMMARYDOWNLOADOPERATION = [
+
+    { label: "Costing Id", value: "CostingNumber" },
+    { label: "Part No", value: "PartNo" },
+    { label: "Part Name", value: "PartName" },
+    { label: "ECN Number", value: "ECNNumber" },
+    { label: "Revision Number", value: "RevisionNumber" },
+    { label: "Vendor Name", value: "VendorName" },
+    { label: "Plant", value: "PlantName" },
+
+    { label: "OperationName", value: "OperationName" },
+    { label: "OperationCode", value: "OperationCode" },
+    { label: "OldOperationCost", value: "OldOperationCost" },
+    { label: "NewOperationCost", value: "NewOperationCost" },
+    { label: "OperationCostVariance", value: "OperationCostVariance" },
+
+    { label: "Old PO Price", value: "OldPOPrice" },
+    { label: "New PO Price", value: "NewPOPrice" },
+    { label: "PO Variance", value: "POVariance" },
+
+
+]
+
 export const SIMULATIONAPPROVALSUMMARYDOWNLOADBOP = [
 
     { label: "Costing Id", value: "CostingNumber" },
@@ -2696,8 +2721,8 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADBOP = [
 
     { label: "BOP Name", value: "BoughtOutPartName" },
     { label: "BOP Number", value: "BoughtOutPartNumber" },
-    { label: "Old BOP Cost", value: "OldBOPCost" },
-    { label: "New BOP Cost", value: "NewBOPCost" },
+    { label: "Old BOP Cost", value: "OldNetBoughtOutPartCost" },
+    { label: "New BOP Cost", value: "NewNetBoughtOutPartCost" },
     { label: "BOP Variance", value: "NetBoughtOutPartCostVariance" },
 
     { label: "Old PO Price", value: "OldPOPrice" },
@@ -2717,7 +2742,7 @@ export const BOP_DOMESTIC_DOWNLOAD_EXCEl = [
     { label: "Plant(Code)", value: "Plants", },
     { label: "DestinationPlant(Code)", value: "DestinationPlant", },
     { label: "Vendor(Code)", value: "Vendor", },
-    { label: "NumberOfPieces", value: "NumberOfPieces", },
+    { label: "Quantity", value: "NumberOfPieces", },
     { label: "BasicRate", value: "BasicRate", },
     { label: "NetCost", value: "NetLandedCost", },
     { label: "EffectiveDate", value: "EffectiveDate", }
@@ -2733,7 +2758,7 @@ export const BOP_IMPORT_DOWNLOAD_EXCEl = [
     { label: "Plant(Code)", value: "Plants", },
     { label: "DestinationPlant(Code)", value: "DestinationPlant", },
     { label: "Vendor(Code)", value: "Vendor", },
-    { label: "NumberOfPieces", value: "NumberOfPieces", },
+    { label: "Quantity", value: "NumberOfPieces", },
     { label: "BasicRate", value: "BasicRate", },
     { label: "NetCost", value: "NetLandedCostConversion", },
     { label: "EffectiveDate", value: "EffectiveDate", },
@@ -3106,18 +3131,20 @@ export const OperationGridForToken = [
 ]
 
 export const RMGridForToken = [
-    { label: "Finish Weight", value: "RawMaterialFinishWeight" },
-    { label: "Gross Weight", value: "RawMaterialGrossWeight" },
     { label: "PO Price Old", value: "OldPOPrice" },
     { label: "PO Price New", value: "NewPOPrice" },
     { label: "PO Variance", value: "Variance" },
     { label: "Old Basic Rate", value: "OldRMRate" },
     { label: 'New Basic Rate', value: 'NewRMRate' },
-    { label: "ScrapRate", value: "OldScrapRate" },
-    { label: 'NewScrapRate', value: 'NewScrapRate' },
-    { label: "RM Cost Old", value: "OldRMPrice" },
-    { label: "RM Cost New", value: "NewRMPrice" },
     { label: "RM Variance", value: "RMCVariance" },
+
+
+    // { label: "PO Price Old", value: "OldPOPrice" },
+    // { label: "PO Price New", value: "NewPOPrice" },
+    // { label: "PO Variance", value: "Variance" },
+    // { label: "Old Basic Rate", value: "OldNetRawMaterialsCost" },
+    // { label: 'New Basic Rate', value: 'NewNetRawMaterialsCost' },
+    // { label: "RM Variance", value: "RMVariance" },
 
 ]
 
@@ -3127,6 +3154,7 @@ export const STGridForToken = [
     { label: "OldSurfaceTreatmentCost", value: "OldSurfaceTreatmentCost" },
     { label: "NewSurfaceTreatmentCost", value: "NewSurfaceTreatmentCost" },
     { label: "OldTranspotationCost", value: "OldTranspotationCost" },
+    { label: "NewTranspotationCost", value: "NewTranspotationCost" },
     { label: "OldNetSurfaceTreatmentCost", value: "OldNetSurfaceTreatmentCost" },
     { label: "NewNetSurfaceTreatmentCost", value: "NewNetSurfaceTreatmentCost" },
     { label: "STVariance", value: "STVariance" },
@@ -3150,6 +3178,7 @@ export const BOPGridForToken = [
     { label: "NewBOPCost", value: "NewBOPCost" },
     { label: "BOPVariance", value: "BOPVariance" },
 ]
+
 
 export const ExchangeRateGridForToken = [
     { label: "OperationName", value: "OperationName" },
@@ -3221,9 +3250,9 @@ export const LastGridForTokenSummary = [
 export const OperationGridForTokenSummary = [
     { label: "Operation Name", value: "OperationName" },
     { label: "Operation Code", value: "OperationCode" },
-    { label: "Old Net ST Cost", value: "OldNetSurfaceTreatmentCost" },
-    { label: "New Net ST Cost", value: "NewNetSurfaceTreatmentCost" },
-    { label: "ST Variance", value: "NetSurfaceTreatmentCostVariance" },
+    { label: "Old Operation Cost", value: "OldOperationCost" },
+    { label: "New Operation Cost", value: "NewOperationCost" },
+    { label: "Operation Variance", value: "OperationCostVariance" },
 
 ]
 

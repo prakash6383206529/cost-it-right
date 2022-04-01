@@ -152,7 +152,7 @@ export const impactmasterDownload = (impactedMasterData) => {
         tempObj.push(item.OldPOPrice)
         tempObj.push(item.NewPOPrice)
         tempObj.push(item.EffectiveDate)
-        rmArraySet.push(tempObj)
+        bopArraySet.push(tempObj)
     })
     impactedMasterData?.ExchangeRateImpactedMasterDataList && impactedMasterData?.ExchangeRateImpactedMasterDataList.map((item) => {
         let tempObj = []
@@ -166,7 +166,7 @@ export const impactmasterDownload = (impactedMasterData) => {
         tempObj.push(item.NewExchangeRate)
         tempObj.push(item.OldExchangeRate)
         tempObj.push(item.EffectiveDate)
-        rmArraySet.push(tempObj)
+        erArraySet.push(tempObj)
     })
     impactedMasterData?.CombinedProcessImpactedMasterDataList && impactedMasterData?.CombinedProcessImpactedMasterDataList.map((item) => {
         let tempObj = []

@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table } from 'reactstrap';
 import {
   setCostingDataList, setPOPrice, setRMCCBOPCostData, setSurfaceCostData,
-  setOverheadProfitCostData, setDiscountCost, showLoader, hideLoader,
+  setOverheadProfitCostData, setDiscountCost, showLoader, hideLoader, saveAssemblyPartRowCostingCalculation,
 } from '../actions/Costing';
 import { calculatePercentage, calculatePercentageValue, checkForDecimalAndNull, checkForNull } from '../../../helper';
 import DayTime from '../../common/DayTimeWrapper'
@@ -11,6 +11,8 @@ import CostingHeadTabs from './CostingHeaderTabs/index';
 import LoaderCustom from '../../common/LoaderCustom';
 import { useContext } from 'react';
 import { ViewCostingContext } from './CostingDetails';
+import { createToprowObjAndSave } from '../CostingUtil';
+import _ from 'lodash'
 
 export const costingInfoContext = React.createContext()
 export const netHeadCostContext = React.createContext()
@@ -35,7 +37,7 @@ function CostingDetailStepTwo(props) {
 
   const { initialConfiguration } = useSelector(state => state.auth)
   const { costingData, CostingDataList, NetPOPrice, RMCCBOPCost, SurfaceCostData, OverheadProfitCostData,
-    DiscountCostData, partNo, IsToolCostApplicable, showLoading } = useSelector(state => state.costing)
+    DiscountCostData, partNo, IsToolCostApplicable, showLoading, RMCCTabData, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, } = useSelector(state => state.costing)
 
   useEffect(() => {
     if (partNo.isChanged === true) {
@@ -215,6 +217,7 @@ function CostingDetailStepTwo(props) {
         let OverAllCost = 0;
         if (tempData && tempData !== undefined) {
           const ApplyCost = IsToolCostApplicable ? checkForNull(tempData?.ToolCost) : checkForNull(data?.ToolCost);
+
           OverAllCost =
             tempData.NetTotalRMBOPCC +
             tempData.NetSurfaceTreatmentCost +
@@ -230,6 +233,7 @@ function CostingDetailStepTwo(props) {
             NetPackagingAndFreight: tempData.NetPackagingAndFreight,
           }
         }
+
         let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
 
         dispatch(setCostingDataList('setHeaderCostToolTab', tempArr, () => {
@@ -242,11 +246,11 @@ function CostingDetailStepTwo(props) {
 
 
   const findApplicabilityCost = (data, Text, headCostData, costData, percent) => {
-    console.log('data: ', data);
-    console.log('headCostData: ', headCostData);
+
+
     if (data && Text && Object.keys(headCostData).length > 0) {
 
-      console.log(CostingDataList, "CostingDataListCostingDataList",);
+
       const ConversionCostForCalculation = headCostData?.IsAssemblyPart ? checkForNull(headCostData.NetConversionCost) - checkForNull(headCostData.TotalOtherOperationCostPerAssembly) : headCostData.ProcessCostTotal + headCostData.OperationCostTotal
       const RMBOPCC = checkForNull(headCostData.NetRawMaterialsCost) + checkForNull(headCostData.NetBoughtOutPartCost) + ConversionCostForCalculation
       const RMBOP = checkForNull(headCostData.NetRawMaterialsCost) + checkForNull(headCostData.NetBoughtOutPartCost);
@@ -265,7 +269,7 @@ function CostingDetailStepTwo(props) {
 
         case 'BOP':
           totalCost = headCostData.NetBoughtOutPartCost * calculatePercentage(percent)
-          console.log("COMING HERE", totalCost);
+
 
           break;
 
@@ -324,7 +328,7 @@ function CostingDetailStepTwo(props) {
         if (data.OtherCostType === 'Percentage') {
 
           const cost = checkForNull(findApplicabilityCost(data, data?.OtherCostApplicability, headerCostData, CostingData, data?.PercentageOtherCost))
-          console.log('cost: ', cost);
+
           // data.AnyOtherCost = calculatePercentageValue(SumOfTab, data.PercentageOtherCost)
           data.AnyOtherCost = cost
         }
@@ -375,6 +379,26 @@ function CostingDetailStepTwo(props) {
       }, 0)
       return TotalCost;
     }
+  }
+
+  const handleBackButton = () => {
+    if (RMCCTabData && RMCCTabData.length > 0) {
+      let tempArrForCosting = JSON.parse(localStorage.getItem('costingArray'))
+      const data = _.find(tempArrForCosting, ['IsPartLocked', true])
+      const bopData = _.find(tempArrForCosting, ['PartType', 'BOP'])
+      if (data !== undefined || bopData !== undefined) {
+        const tabData = RMCCTabData[0]
+        const surfaceTabData = SurfaceTabData[0]
+        const overHeadAndProfitTabData = OverheadProfitTabData[0]
+        const discountAndOtherTabData = DiscountCostData
+
+        let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, NetPOPrice, getAssemBOPCharge, 1, [])
+
+        dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
+      }
+
+    }
+    props.backBtn()
   }
 
   return (
@@ -461,7 +485,7 @@ function CostingDetailStepTwo(props) {
                   <button
                     type="button"
                     className="submit-button mr5 save-btn cr-bk-btn"
-                    onClick={props.backBtn} >
+                    onClick={handleBackButton} >
                     <div className={'back-icon'}></div>
                     {'Back '}
                   </button>

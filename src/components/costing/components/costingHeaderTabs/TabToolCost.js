@@ -21,26 +21,31 @@ import { AgGridReact } from 'ag-grid-react/lib/agGridReact';
 import { AgGridColumn } from 'ag-grid-react/lib/agGridColumn';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import AddTool from '../Drawers/AddTool';
+import { gridDataAdded } from '../../actions/Costing'
+import { createToprowObjAndSave } from '../../CostingUtil';
 
 function TabToolCost(props) {
 
-  const { handleSubmit, setValue,getValues,formState:{errors}} = useForm();
-
+  const { handleSubmit, setValue, getValues, formState: { errors } } = useForm();
   const dispatch = useDispatch()
   const IsToolCostApplicable = useSelector(state => state.costing.IsToolCostApplicable)
-
-  const [IsApplicableProcessWise, setIsApplicableProcessWise] = useState(IsToolCostApplicable);
+  const [IsApplicableProcessWise, setIsApplicableProcessWise] = useState(false);
   const [IsApplicablilityDisable, setIsApplicablilityDisable] = useState(true);
-
-  const { ToolTabData, CostingEffectiveDate, ToolsDataList, ComponentItemDiscountData,RMCCTabData,SurfaceTabData,OverheadProfitTabData,DiscountCostData,PackageAndFreightTabData,checkIsToolTabChange } = useSelector(state => state.costing)
+  const [isEditFlag, setIsEditFlag] = useState(false)
+  const [rowObjData, setRowObjData] = useState([])
+  const [editIndex, setEditIndex] = useState('')
+  const [isDrawerOpen, setDrawerOpen] = useState(false)
+  const { ToolTabData, CostingEffectiveDate, ToolsDataList, ComponentItemDiscountData, RMCCTabData, SurfaceTabData, OverheadProfitTabData, DiscountCostData, PackageAndFreightTabData, checkIsToolTabChange, getAssemBOPCharge } = useSelector(state => state.costing)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const [gridApi, setGridApi] = useState(null);
   const [gridColumnApi, setGridColumnApi] = useState(null);
-
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
   const netPOPrice = useContext(NetPOPriceContext);
-
+  const [processArray, setProcessArray] = useState([])
+  const [operationArray, setOperationArray] = useState([])
+  const [gridData, setGridData] = useState([])
 
   const dispense = () => {
     setIsApplicableProcessWise(IsToolCostApplicable)
@@ -50,6 +55,27 @@ function TabToolCost(props) {
   useEffect(() => {
     dispenseCallback()
   }, [IsToolCostApplicable])
+
+
+  useEffect(() => {
+
+    if (RMCCTabData && RMCCTabData.length > 0) {
+      let ProcessCostArray = []
+      let OperationCostArray = []
+
+      ProcessCostArray = RMCCTabData && RMCCTabData[0]?.CostingPartDetails?.CostingConversionCost?.CostingProcessCostResponse.map(el => {
+        return { label: el.ProcessName, value: el.ProcessId };
+      })
+      OperationCostArray = RMCCTabData && RMCCTabData[0]?.CostingPartDetails?.CostingConversionCost?.CostingOperationCostResponse.map(el => {
+        return { label: el.OperationName, value: el.OperationId };
+      });
+
+      setProcessArray(ProcessCostArray)
+      setOperationArray(OperationCostArray)
+    }
+
+  }, [RMCCTabData])
+
 
   useEffect(() => {
     if (Object.keys(costData).length > 0) {
@@ -67,6 +93,7 @@ function TabToolCost(props) {
     if (CostingViewMode === false) {
       let TopHeaderValues = ToolTabData && ToolTabData.length > 0 && ToolTabData[0].CostingPartDetails !== undefined ? ToolTabData[0].CostingPartDetails : null;
       //setTimeout(() => {
+
       let topHeaderData = {
         ToolCost: TopHeaderValues && TopHeaderValues.TotalToolCost,
         IsApplicableProcessWise: IsApplicableProcessWise,
@@ -75,6 +102,12 @@ function TabToolCost(props) {
         props.setHeaderCost(topHeaderData)
       }
       //}, 1500)
+    }
+
+    if (ToolTabData) {
+      if (ToolTabData[0]?.CostingPartDetails.IsToolCostProcessWise) {
+        setIsApplicableProcessWise(true)
+      }
     }
   }, [ToolTabData]);
 
@@ -161,12 +194,9 @@ function TabToolCost(props) {
 
         return i;
       });
-
     } catch (error) {
-
     }
     return tempArr;
-
   }
 
   /**
@@ -192,7 +222,9 @@ function TabToolCost(props) {
   useEffect(() => {
 
     if (IsApplicableProcessWise && props.activeTab === '5') {
-      dispatch(getToolsProcessWiseDataListByCostingID(costData.CostingId, () => { }))
+      dispatch(getToolsProcessWiseDataListByCostingID(costData.CostingId, (res) => {
+        if (res) { setGridData(res.data.DataList) }
+      }))
     }
 
   }, [IsApplicableProcessWise, props.activeTab])
@@ -203,9 +235,11 @@ function TabToolCost(props) {
   */
   const getTotal = () => {
     let cost = 0;
+
     cost = ToolsDataList && ToolsDataList.reduce((accummlator, el) => {
       return accummlator + checkForNull(el.NetToolCost);
     }, 0)
+
     return cost;
   }
 
@@ -214,14 +248,14 @@ function TabToolCost(props) {
   * @description SAVE COSTING
   */
   const saveCosting = (formData) => {
-    if(checkIsToolTabChange){
+    if (checkIsToolTabChange) {
 
       const tabData = RMCCTabData[0]
-      const surfaceTabData= SurfaceTabData[0]
-      const overHeadAndProfitTabData=OverheadProfitTabData[0]
-      const discountAndOtherTabData =DiscountCostData[0]
+      const surfaceTabData = SurfaceTabData[0]
+      const overHeadAndProfitTabData = OverheadProfitTabData[0]
+      const discountAndOtherTabData = DiscountCostData[0]
       const data = {
-        "IsToolCostProcessWise": false,
+        "IsToolCostProcessWise": IsApplicableProcessWise,
         "CostingId": costData.CostingId,
         "PartId": costData.PartId,
         "LoggedInUserId": loggedInUserId(),
@@ -231,45 +265,14 @@ function TabToolCost(props) {
         "CostingPartDetails": ToolTabData && ToolTabData[0].CostingPartDetails,
         "TotalCost": netPOPrice,
       }
-      if(costData.IsAssemblyPart === true){
-  
-        let assemblyRequestedData = {        
-          "TopRow": {
-            "CostingId":tabData.CostingId,
-            "CostingNumber": tabData.CostingNumber,
-            "TotalRawMaterialsCostWithQuantity": tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
-            "TotalBoughtOutPartCostWithQuantity": tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
-            "TotalConversionCostWithQuantity": tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
-            "TotalCalculatedRMBOPCCCostPerPC": tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity +tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity+ tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
-            "TotalCalculatedRMBOPCCCostPerAssembly": tabData.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
-            "NetRMCostPerAssembly": tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
-            "NetBOPCostAssembly": tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
-            "NetConversionCostPerAssembly":tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
-            "NetRMBOPCCCost":tabData.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
-            "TotalOperationCostPerAssembly": tabData.CostingPartDetails.TotalOperationCostPerAssembly,
-            "TotalOperationCostSubAssembly":checkForNull(tabData.CostingPartDetails?.TotalOperationCostSubAssembly),
-            "TotalOperationCostComponent": checkForNull(tabData.CostingPartDetails?.TotalOperationCostComponent),
-            "SurfaceTreatmentCostPerAssembly": surfaceTabData.CostingPartDetails?.SurfaceTreatmentCost,
-            "TransportationCostPerAssembly": surfaceTabData.CostingPartDetails?.TransportationCost,
-            "TotalSurfaceTreatmentCostPerAssembly": surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
-            "NetSurfaceTreatmentCost": surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
-            "NetOverheadAndProfits": overHeadAndProfitTabData.CostingPartDetails ?( checkForNull(overHeadAndProfitTabData.CostingPartDetails.OverheadCost) + checkForNull(overHeadAndProfitTabData.CostingPartDetails.ProfitCost)+ checkForNull(overHeadAndProfitTabData.CostingPartDetails.RejectionCost)+ checkForNull(overHeadAndProfitTabData.CostingPartDetails.ICCCost)+ checkForNull(overHeadAndProfitTabData.CostingPartDetails.PaymentTermCost)):0,
-            "NetPackagingAndFreightCost": PackageAndFreightTabData && PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost,
-            "NetToolCost": ToolTabData[0]?.CostingPartDetails?.TotalToolCost,
-            "NetOtherCost": discountAndOtherTabData?.CostingPartDetails?.NetOtherCost,
-            "NetDiscounts":discountAndOtherTabData?.CostingPartDetails?.NetDiscountsCost,
-            "TotalCostINR": netPOPrice,
-            "TabId":5
-          },
-           "WorkingRows": [],
-          "LoggedInUserId": loggedInUserId()
-        
-      };
-      if(!CostingViewMode){
-        dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData,res =>{      }))
+      if (costData.IsAssemblyPart === true) {
+
+        if (!CostingViewMode) {
+          let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 5)
+          dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
+        }
       }
-      }
-  
+
       dispatch(saveToolTab(data, res => {
         if (res.data.Result) {
           Toaster.success(MESSAGES.TOOL_TAB_COSTING_SAVE_SUCCESS);
@@ -287,6 +290,25 @@ function TabToolCost(props) {
     dispatch(saveDiscountOtherCostTab({ ...ComponentItemDiscountData, CallingFrom: 5 }, res => {
       dispatch(setComponentDiscountOtherItemData({}, () => { }))
     }))
+  }
+
+
+  const deleteItem = (index, data) => {
+    let tempArr = data && data.filter((el, i) => {
+      if (i === index) return false;
+      return true;
+    })
+    setGridData(tempArr)
+    setToolCost(tempArr)
+  }
+
+  const editItem = (index, data) => {
+
+    let tempArr = data && data.find((el, i) => i === index)
+    setEditIndex(index)
+    setIsEditFlag(true)
+    setRowObjData(tempArr)
+    setDrawerOpen(true)
   }
 
   /**
@@ -308,18 +330,19 @@ function TabToolCost(props) {
 
   // };
 
+  const buttonFormatter = (props) => {
+
+    return (
+      <>
+        <button className="Edit mr-2 align-middle" type={'button'} onClick={() => editItem(props?.rowIndex, props?.agGridReact?.props?.rowData)} />
+        <button className="Delete align-middle" type={'button'} onClick={() => deleteItem(props?.rowIndex, props?.agGridReact?.props?.rowData)} />
+      </>
+    )
+  }
+
   const frameworkComponents = {
-    // renderPlant: renderPlant,
-    // renderVendor: renderVendor,
-    // renderVendor: renderVendor,
-    // priceFormatter: priceFormatter,
-    // oldpriceFormatter: oldpriceFormatter,
-    // createdOnFormatter: createdOnFormatter,
-    // requestedOnFormatter: requestedOnFormatter,
-    // statusFormatter: statusFormatter,
-    // customLoadingOverlay: LoaderCustom,
     customNoRowsOverlay: NoContentFound,
-    // linkableFormatter: linkableFormatter
+    totalValueRenderer: buttonFormatter,
   };
   const onPageSizeChanged = (newPageSize) => {
     var value = document.getElementById('page-size').value;
@@ -327,8 +350,41 @@ function TabToolCost(props) {
   };
 
 
+  /**
+* @method DrawerToggle
+* @description TOGGLE DRAWER
+*/
+  const DrawerToggle = () => {
+    setEditIndex('')
+    setRowObjData(gridData)
+    setIsEditFlag(false)
+    setDrawerOpen(true)
+  }
 
-
+  const closeDrawer = (e = '', rowData = {}) => {
+    if (Object.keys(rowData).length > 0) {
+      let rowArray = {
+        IsCostForPerAssembly: props.IsAssemblyCalculation ? true : false,
+        ToolOperationId: rowData.ToolOperationId,
+        ProcessOrOperation: rowData.ProcessOrOperation,
+        ToolCategory: rowData.ToolCategory,
+        ToolName: rowData.ToolName,
+        Quantity: rowData.Quantity,
+        ToolCost: rowData.ToolCost,
+        Life: rowData.Life,
+        NetToolCost: rowData.NetToolCost,
+      }
+      if (editIndex !== '' && isEditFlag) {
+        let tempArr = Object.assign([...gridData], { [editIndex]: rowArray })
+        setGridData(tempArr)
+      } else {
+        let tempArr = [...gridData, rowArray]
+        setGridData(tempArr)
+      }
+      dispatch(gridDataAdded(true))
+    }
+    setDrawerOpen(false)
+  }
 
   /**
   * @method onSubmit
@@ -355,7 +411,7 @@ function TabToolCost(props) {
                             onChange={onPressApplicability}
                             checked={IsApplicableProcessWise}
                             id="normal-switch"
-                            disabled={IsApplicablilityDisable || IsApplicableProcessWise || CostingViewMode}
+                            disabled={CostingViewMode}
                             background="#4DC771"
                             onColor="#4DC771"
                             onHandleColor="#ffffff"
@@ -374,7 +430,18 @@ function TabToolCost(props) {
                 </Col>
                 <Col md="3" className="px-30 py-4 border-section text-dark-blue pl10">
                   {"Net Tool Cost"}
-                  {IsApplicableProcessWise && <span className="d-inline-block pl-2 font-weight-500">{getTotal()}</span>}
+                  {IsApplicableProcessWise && <span className="d-inline-block pl-2 font-weight-500">{checkForDecimalAndNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost, initialConfiguration.NoOfDecimalForPrice)}</span>}
+
+                  {IsApplicableProcessWise &&
+                    <Col >
+                      {!CostingViewMode && <button
+                        type="button"
+                        className={'user-btn'}
+                        onClick={DrawerToggle}
+                      >
+                        <div className={'plus'}></div>ADD TOOL</button>}
+                    </Col>
+                  }
                 </Col>
               </Row>
 
@@ -383,7 +450,6 @@ function TabToolCost(props) {
                 className="form"
                 onSubmit={handleSubmit(onSubmit)}
               >
-
                 {!IsApplicableProcessWise &&
                   <Row>
                     <Col md="12">
@@ -398,14 +464,14 @@ function TabToolCost(props) {
                                       {item.PartName}
                                     </span>
                                   </td>
-                                  <td className="pl10">{checkForDecimalAndNull(item?.CostingPartDetails?.TotalToolCost, initialConfiguration.NoOfDecimalForPrice)}</td>
+                                  <td className="pl10">{checkForDecimalAndNull(item.CostingPartDetails.TotalToolCost, initialConfiguration.NoOfDecimalForPrice)}</td>
                                 </tr>
                                 <tr>
                                   <td colSpan={2} className="cr-innerwrap-td pb-3">
                                     <div>
                                       <Tool
                                         index={index}
-                                        IsApplicableProcessWise={item?.CostingPartDetails?.IsToolCostProcessWise}
+                                        IsApplicableProcessWise={item.CostingPartDetails.IsToolCostProcessWise}
                                         data={item}
                                         // headCostRMCCBOPData={props.headCostRMCCBOPData}
                                         setOverAllApplicabilityCost={setOverAllApplicabilityCost}
@@ -428,7 +494,7 @@ function TabToolCost(props) {
                     <Col>
                       {/* <----------------------START AG Grid convert on 21-10-2021---------------------------------------------> */}
                       <div className="ag-grid-react">
-                        <div className={`ag-grid-wrapper height-width-wrapper ${ToolsDataList && ToolsDataList?.length <=0 ?"overlay-contain": ""}`}>
+                        <div className={`ag-grid-wrapper height-width-wrapper ${gridData && gridData?.length <= 0 ? "overlay-contain" : ""}`}>
                           <div className="ag-grid-header">
                             {/* <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => onFilterTextBoxChanged(e)} /> */}
                           </div>
@@ -439,7 +505,7 @@ function TabToolCost(props) {
                               floatingFilter={true}
                               domLayout='autoHeight'
                               // columnDefs={c}
-                              rowData={ToolsDataList}
+                              rowData={gridData}
                               pagination={true}
                               paginationPageSize={10}
                               onGridReady={onGridReady}
@@ -455,15 +521,18 @@ function TabToolCost(props) {
                               rowSelection={'multiple'}
                             >
                               {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
-                              <AgGridColumn field="ToolOperationId" headerName=" "></AgGridColumn>
+                              {/* <AgGridColumn field="ToolOperationId" headerName=" "></AgGridColumn> */}
                               <AgGridColumn field="BOMLevel" headerName="BOMLevel"></AgGridColumn>
                               <AgGridColumn field="PartNumber" headerName="Part Number"></AgGridColumn>
                               <AgGridColumn field="ProcessOrOperation" headerName="Process/Operation"></AgGridColumn>
                               <AgGridColumn field="ToolCategory" headerName="Tool Category" ></AgGridColumn>
                               <AgGridColumn field="ToolName" headerName="Tool Name"></AgGridColumn>
                               <AgGridColumn field="ToolCost" headerName="ToolCost"></AgGridColumn>
+                              <AgGridColumn field="Quantity" headerName="Quantity"></AgGridColumn>
                               <AgGridColumn field="Life" headerName="Life"></AgGridColumn>
+                              {/* NET TOOL COST */}
                               <AgGridColumn field="NetToolCost" headerName="Net Tool Cost"></AgGridColumn>
+                              <AgGridColumn width={160} field="Life" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                             </AgGridReact>
                             <div className="paging-container d-inline-block float-right">
                               <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
@@ -476,14 +545,44 @@ function TabToolCost(props) {
                         </div>
                       </div>
                       {/* <--------------------AG Grid convert by 21-10-2021------> */}
-                    </Col>
-                  </Row>}
+                    </Col >
+                  </Row >}
 
-              </form>
-            </div>
-          </Col>
-        </Row>
-      </div>
+              </form >
+            </div >
+          </Col >
+        </Row >
+      </div >
+
+
+      {!CostingViewMode && IsApplicableProcessWise &&
+        <div className="col-sm-12 text-right bluefooter-butn btn-stciky-container">
+          <button
+            type={'button'}
+            className="submit-button mr5 save-btn"
+            onClick={saveCosting}
+          >
+            <div className={'save-icon'}></div>
+            {'Save'}
+          </button>
+        </div>
+      }
+
+      {
+        isDrawerOpen && <AddTool
+          isOpen={isDrawerOpen}
+          closeDrawer={closeDrawer}
+          isEditFlag={isEditFlag}
+          CostingViewMode={CostingViewMode}
+          ID={''}
+          setToolCost={setToolCost}
+          editIndex={editIndex}
+          rowObjData={rowObjData}
+          anchor={'right'}
+          ProcessOperationArray={[...processArray, ...operationArray]}
+          gridData={gridData}
+        />
+      }
     </>
   );
 };

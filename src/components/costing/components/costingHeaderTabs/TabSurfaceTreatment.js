@@ -136,9 +136,9 @@ function TabSurfaceTreatment(props) {
   * @description FORMATE DATA FOR SET PART DETAILS
   */
   const formatData = (Params, Data, aar) => {
-    
-    
-    
+
+
+
     let tempArr = [];
     try {
       tempArr = aar && aar.map(i => {
@@ -168,7 +168,7 @@ function TabSurfaceTreatment(props) {
           i.CostingPartDetails.TransportationCost = checkForNull(Data.TransportationCost);
           i.CostingPartDetails.SurfaceTreatmentDetails = Data.SurfaceTreatmentDetails;
           i.CostingPartDetails.TransportationDetails = Data.TransportationDetails;
-          
+
           i.IsOpen = !Data.IsOpen;
 
         } else {
@@ -199,6 +199,7 @@ function TabSurfaceTreatment(props) {
   * @description SET ASSEMBLY DETAILS
   */
   const setAssembly = (params, Children, arr) => {
+    console.log('params: ', params);
 
     let tempArr = [];
     try {
@@ -234,7 +235,8 @@ function TabSurfaceTreatment(props) {
           i.IsOpen = params.IsCollapse ? !i.IsOpen : false;
           i.IsOpenAssemblyDrawer = false;
 
-        } else {
+        }
+        else {
           setAssembly(params, Children, i.CostingChildPartDetails)
         }
         return i;
@@ -300,7 +302,7 @@ function TabSurfaceTreatment(props) {
   * @description DISPATCHED SURFACE COST
   */
   const dispatchSurfaceCost = (surfaceGrid, params, arr) => {
-    
+
     let tempArr = [];
     try {
 

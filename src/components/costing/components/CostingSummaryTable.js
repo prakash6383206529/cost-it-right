@@ -3,7 +3,7 @@ import { Row, Col } from 'reactstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import AddToComparisonDrawer from './AddToComparisonDrawer'
 import {
-  setCostingViewData, setCostingApprovalData, createZBCCosting, createVBCCosting, getZBCCostingByCostingId,
+  setCostingViewData, setCostingApprovalData, createZBCCosting, createVBCCosting, getBriefCostingById,
   storePartNumber, getSingleCostingDetails
 } from '../actions/Costing'
 import ViewBOP from './Drawers/ViewBOP'
@@ -23,6 +23,7 @@ import DayTime from '../../common/DayTimeWrapper'
 import { getVolumeDataByPartAndYear } from '../../masters/actions/Volume'
 import { isFinalApprover } from '../actions/Approval';
 import cirHeader from "../../../assests/images/logo/CIRlogo.jpg";
+import Logo from '../../../assests/images/logo/company-logo.svg';
 import LoaderCustom from '../../common/LoaderCustom'
 import ReactToPrint from 'react-to-print';
 
@@ -88,6 +89,7 @@ const CostingSummaryTable = (props) => {
   const partInfo = useSelector((state) => state.costing.partInfo)
   const partNumber = useSelector(state => state.costing.partNo);
   const { initialConfiguration, topAndLeftMenuData } = useSelector(state => state.auth)
+  const [pdfName, setPdfName] = useState('')
 
   const componentRef = useRef();
   const onBeforeContentResolve = useRef(null)
@@ -141,6 +143,8 @@ const CostingSummaryTable = (props) => {
       setIsViewRM(false)
       setIsViewConversionCost(false)
       setViewBOP(false)
+      setPdfName(viewCostingData[0].partId)
+      console.log('viewCostingData[0]: ', viewCostingData[0].partId);
     }
   }, [viewCostingData])
 
@@ -357,7 +361,7 @@ const CostingSummaryTable = (props) => {
 
       dispatch(createZBCCosting(data, (res) => {
         if (res.data.Result) {
-          dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, () => {
+          dispatch(getBriefCostingById(res.data.Data.CostingId, () => {
             setPartInfo(res.data.Data)
 
             showDetail(res.data.Data, { costingId: res.data.Data.CostingId, type })
@@ -394,11 +398,11 @@ const CostingSummaryTable = (props) => {
         Price: partInfo.Price,
         EffectiveDate: partInfo.EffectiveDate,
       }
-      dispatch(getZBCCostingByCostingId('', (res) => { }))
+      dispatch(getBriefCostingById('', (res) => { }))
       dispatch(createVBCCosting(data, (res) => {
         if (res.data.Result) {
 
-          dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, () => {
+          dispatch(getBriefCostingById(res.data.Data.CostingId, () => {
             showDetail(res.data.Data, { costingId: res.data.Data.CostingId, type })
             setPartInfo(res.data.Data)
           }))
@@ -419,13 +423,13 @@ const CostingSummaryTable = (props) => {
     let tempData = viewCostingData[index]
     const type = viewCostingData[index].zbc === 0 ? 'ZBC' : 'VBC'
     if (type === ZBC) {
-      dispatch(getZBCCostingByCostingId(tempData.costingId, (res) => {
+      dispatch(getBriefCostingById(tempData.costingId, (res) => {
         history.push('/costing')
         showDetail(partInfoStepTwo, { costingId: tempData.costingId, type })
       }))
     }
     if (type === VBC) {
-      dispatch(getZBCCostingByCostingId(tempData.costingId, (res) => {
+      dispatch(getBriefCostingById(tempData.costingId, (res) => {
         if (res.data.Result) {
           history.push('/costing')
           showDetail(partInfoStepTwo, { costingId: tempData.costingId, type })
@@ -725,7 +729,7 @@ const CostingSummaryTable = (props) => {
     })
   }
   const reactToPrintTrigger = useCallback(() => {
-    return <button className="user-btn mr-1 mb-2 px-2" title='pdf' disabled={viewCostingData?.length > 2 ? true : false}> <div className='pdf-detail'></div></button>
+    return (simulationMode ? <button className="user-btn mr-1 mb-2 px-2" title='pdf' disabled={viewCostingData?.length > 3 ? true : false}> <div className='pdf-detail'></div></button> : <button className="user-btn mr-1 mb-2 px-2" title='pdf' disabled={viewCostingData?.length > 2 ? true : false}> <div className='pdf-detail'></div></button>)
   }, [viewCostingData])
 
   const reactToPrintContent = () => {
@@ -745,54 +749,58 @@ const CostingSummaryTable = (props) => {
               </Col>
             )}
 
-            {
-              !simulationMode &&
-              <Col md="8" className="text-right">
+            <Col md={simulationMode ? "12" : "8"} className="text-right">
+              {!simulationMode &&
                 <ReactToPrint
-                  bodyClass='mx-2 mt-3 remove-space-border'
-                  documentTitle="Costing-Summary-detail"
+                  bodyClass='mx-2 my-3 remove-space-border'
+                  documentTitle={`${pdfName}-detailed-costing`}
                   content={reactToPrintContent}
                   onAfterPrint={handleAfterPrintDetail}
                   onBeforeGetContent={handleOnBeforeGetContentDetail}
                   trigger={reactToPrintTriggerDetail}
                 />
-                <ReactToPrint
-                  bodyClass='pt5'
-                  documentTitle="Costing-Summary"
-                  content={reactToPrintContent}
-                  onAfterPrint={handleAfterPrint}
-                  onBeforeGetContent={handleOnBeforeGetContent}
-                  trigger={reactToPrintTrigger}
-                />
-                {(!viewMode && !isFinalApproverShow) && (
-                  <button class="user-btn mr-1 mb-2 approval-btn" disabled={isWarningFlag} onClick={() => checkCostings()}>
-                    <div className="send-for-approval"></div>
-                    {'Send For Approval'}
+              }
+              {!simulationDrawer && <ReactToPrint
+                bodyClass={`my-3 ${simulationMode ? 'mx-1 simulation-print' : 'mx-2'}`}
+                documentTitle={`${simulationMode ? 'Compare-costing.pdf' : `${pdfName}-costing`}`}
+                content={reactToPrintContent}
+                onAfterPrint={handleAfterPrint}
+                onBeforeGetContent={handleOnBeforeGetContent}
+                trigger={reactToPrintTrigger}
+              />}
+              {
+                !simulationMode && <>
+
+                  {(!viewMode && !isFinalApproverShow) && (
+                    <button class="user-btn mr-1 mb-2 approval-btn" disabled={isWarningFlag} onClick={() => checkCostings()}>
+                      <div className="send-for-approval"></div>
+                      {'Send For Approval'}
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    className={'user-btn mb-2 comparison-btn'}
+                    onClick={addComparisonDrawerToggle}
+                  >
+                    <div className="compare-arrows"></div>
+                    Add To Comparison{' '}
                   </button>
-                )}
-                <button
-                  type="button"
-                  className={'user-btn mb-2 comparison-btn'}
-                  onClick={addComparisonDrawerToggle}
-                >
-                  <div className="compare-arrows"></div>
-                  Add To Comparison{' '}
-                </button>
-                {isWarningFlag && <WarningMessage dClass={"col-md-12 pr-0 justify-content-end"} message={'A costing is pending for approval for this part or one of it\'s child part. Please approve that first'} />}
-                {(showWarningMsg && !warningMsg) && <WarningMessage dClass={"col-md-12 pr-0 justify-content-end"} message={'Costing for this part/Assembly is not yet done!'} />}
-              </Col>
-            }
+                  {isWarningFlag && <WarningMessage dClass={"col-md-12 pr-0 justify-content-end"} message={'A costing is pending for approval for this part or one of it\'s child part. Please approve that first'} />}
+                  {(showWarningMsg && !warningMsg) && <WarningMessage dClass={"col-md-12 pr-0 justify-content-end"} message={'Costing for this part/Assembly is not yet done!'} />}
+                </>}
+            </Col>
           </Row>
           <div ref={componentRef}>
-            <Row id="summaryPdf" className={`${customClass} ${drawerDetailPDF ? 'remove-space-border' : ''}`}>
+            <Row id="summaryPdf" className={`${customClass} ${drawerDetailPDF ? 'remove-space-border' : ''} ${simulationMode ? "simulation-print" : ""}`}>
               {(drawerDetailPDF || pdfHead) &&
                 <>
-                  <Col md="12" className='pdf-header-wrapper'>
-                    <img src={cirHeader} className="pdf-header-img" alt={'Cost it right'} />
+                  <Col md="12" className='pdf-header-wrapper d-flex justify-content-between'>
+                    <img src={Logo} alt={'Compnay-logo'} />
+                    <img src={cirHeader} alt={'Cost it right'} />
                   </Col>
-                  <Col md="12">
-                    <h3 className='left-border'>Costing Summary:</h3>
-                  </Col>
+                  {/* <Col md="12">
+                    <h3>Costing Summary:</h3>
+                  </Col> */}
                 </>}
 
               <Col md="12">
@@ -1038,7 +1046,7 @@ const CostingSummaryTable = (props) => {
                           anchor={'right'}
                           index={index}
                           isPDFShow={true}
-                          STreatmentShow={false}
+                          stCostShow={false}
 
                         />
                       </th></tr>}
@@ -1094,7 +1102,7 @@ const CostingSummaryTable = (props) => {
                           anchor={'right'}
                           index={index}
                           isPDFShow={true}
-                          STreatmentShow={true}
+                          stCostShow={true}
                         />
                       </th></tr>}
 
@@ -1292,7 +1300,7 @@ const CostingSummaryTable = (props) => {
                         {viewCostingData &&
                           viewCostingData.map((data) => {
                             return (
-                              <td className={`align-table ${pdfHead || drawerDetailPDF ? 'border-none' : ''}`}>
+                              <td className={` ${pdfHead || drawerDetailPDF ? '' : ''}`}>
                                 <div class="d-flex mt7">
                                   <span class="d-inline-block w-50">
                                     {data.CostingHeading !== VARIANCE ? data.toolApplicability.applicability : ''}

@@ -60,7 +60,7 @@ class OperationListing extends Component {
             selectedRowData: [],
             showPopup: false,
             deletedId: '',
-            isLoader: false
+            isLoader: false,
         }
     }
 
@@ -69,16 +69,13 @@ class OperationListing extends Component {
         this.props.getTechnologySelectList(() => { })
         this.props.getOperationSelectList(() => { })
         this.props.getVendorWithVendorCodeSelectList()
-        if (this.props.isSimulation) {
-            if (this.props.selectionForListingMasterAPI === 'Combined') {
-                this.props?.changeSetLoader(true)
-                this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, OPERATIONS, (res) => {
-                    this.props?.changeSetLoader(false)
-                    this.setState({ tableData: res.data.DataList })
-                })
-            }
-        }
-        if (this.props.selectionForListingMasterAPI === 'Master') {
+        if (this.props.isSimulation && this.props.selectionForListingMasterAPI === 'Combined') {
+            this.props?.changeSetLoader(true)
+            this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, OPERATIONS, (res) => {
+                this.props?.changeSetLoader(false)
+                this.setState({ tableData: res.data.DataList })
+            })
+        } else {
             this.getTableListData(null, null, null, null)
         }
 
@@ -136,7 +133,7 @@ class OperationListing extends Component {
         }
 
 
-        if (isMasterSummaryDrawer !== undefined && !isMasterSummaryDrawer) {
+        if ((isMasterSummaryDrawer !== undefined && !isMasterSummaryDrawer)) {
             if (this.props.isSimulation) {
                 this.props?.changeTokenCheckBox(false)
             }
@@ -177,9 +174,12 @@ class OperationListing extends Component {
                 }
             });
         } else {
+            this.props?.changeSetLoader(true)
 
             setTimeout(() => {
                 this.setState({ tableData: this.props.operationList })
+                this.props?.changeSetLoader(false)
+                this.setState({ isLoader: false })
 
             }, 700);
 
@@ -511,7 +511,7 @@ class OperationListing extends Component {
 
     onPageSizeChanged = (newPageSize) => {
         var value = document.getElementById('page-size').value;
-        this.state.gridApi.paginationSetPageSize(Number(value));
+        this.state.gridApi.paginationSetPageSize(Number(newPageSize));
     };
 
     onBtExport = () => {

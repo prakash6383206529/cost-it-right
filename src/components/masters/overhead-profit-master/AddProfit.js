@@ -971,7 +971,7 @@ class AddProfit extends Component {
                               }}
                               component={renderDatePicker}
                               className="form-control"
-                              disabled={isEditFlag ? true : false}
+                              disabled={false}
 
                             />
                           </div>

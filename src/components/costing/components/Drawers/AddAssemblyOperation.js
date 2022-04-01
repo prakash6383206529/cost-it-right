@@ -16,7 +16,7 @@ function AddAssemblyOperation(props) {
 
   const dispatch = useDispatch()
 
-  const {RMCCTabData, CostingEffectiveDate , getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData} = useSelector(state => state.costing)
+  const { RMCCTabData, CostingEffectiveDate, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData } = useSelector(state => state.costing)
 
   const costData = useContext(costingInfoContext)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
@@ -68,7 +68,7 @@ function AddAssemblyOperation(props) {
       "PartNumber": item.PartNumber,
       "PartTypeId": item.PartTypeId,
       "Type": item.PartType,
-      "SubAssemblyCostingId":item.SubAssemblyCostingId,
+      "SubAssemblyCostingId": item.SubAssemblyCostingId,
       "PlantId": costData.PlantId,
       "VendorId": costData.VendorId,
       "VendorCode": costData.VendorCode,
@@ -124,29 +124,29 @@ function AddAssemblyOperation(props) {
       }
     }
 
-    if(!CostingViewMode){
+    if (!CostingViewMode) {
       dispatch(saveAssemblyCostingRMCCTab(requestData, res => {
         const tabData = RMCCTabData[0]
         const surfaceTabData = SurfaceTabData[0]
         const overHeadAndProfitTabData = OverheadProfitTabData[0]
         const discountAndOtherTabData = DiscountCostData
-  
-  
+
+
         let assemblyWorkingRow = []
         tabData && tabData.CostingChildPartDetails && tabData.CostingChildPartDetails.map((item) => {
-          if(item.PartType === 'Sub Assembly'){
-  
+          if (item.PartType === 'Sub Assembly') {
+
             let subAssemblyObj = {
               "CostingId": item.CostingId,
-              "SubAssemblyCostingId":item.SubAssemblyCostingId,
+              "SubAssemblyCostingId": item.SubAssemblyCostingId,
               "CostingNumber": "", // Need to find out how to get it.
-              "TotalRawMaterialsCostWithQuantity": item.PartType=== 'Part' ?item.CostingPartDetails?.TotalRawMaterialsCost * item.CostingPartDetails.Quantity :item.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
-              "TotalBoughtOutPartCostWithQuantity":item.PartType=== 'Part' ?item.CostingPartDetails?.TotalBoughtOutPartCost * item.CostingPartDetails.Quantity :item.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
-              "TotalConversionCostWithQuantity":item.PartType=== 'Part' ?item.CostingPartDetails?.TotalConversionCost * item.CostingPartDetails.Quantity :item.CostingPartDetails?.TotalConversionCostWithQuantity,
+              "TotalRawMaterialsCostWithQuantity": item.PartType === 'Part' ? item.CostingPartDetails?.TotalRawMaterialsCost * item.CostingPartDetails.Quantity : item.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
+              "TotalBoughtOutPartCostWithQuantity": item.PartType === 'Part' ? item.CostingPartDetails?.TotalBoughtOutPartCost * item.CostingPartDetails.Quantity : item.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
+              "TotalConversionCostWithQuantity": item.PartType === 'Part' ? item.CostingPartDetails?.TotalConversionCost * item.CostingPartDetails.Quantity : item.CostingPartDetails?.TotalConversionCostWithQuantity,
               "TotalCalculatedRMBOPCCCostPerPC": item.CostingPartDetails?.TotalRawMaterialsCost + item.CostingPartDetails?.TotalBoughtOutPartCost + item.CostingPartDetails?.TotalConversionCost,
               "TotalCalculatedRMBOPCCCostPerAssembly": item.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
               "TotalOperationCostPerAssembly": checkForNull(item.CostingPartDetails?.TotalOperationCostPerAssembly),
-              "TotalOperationCostSubAssembly":checkForNull(item.CostingPartDetails?.TotalOperationCostSubAssembly),
+              "TotalOperationCostSubAssembly": checkForNull(item.CostingPartDetails?.TotalOperationCostSubAssembly),
               "TotalOperationCostComponent": item.CostingPartDetails.TotalOperationCostComponent,
               "SurfaceTreatmentCostPerAssembly": 0,
               "TransportationCostPerAssembly": 0,
@@ -158,7 +158,7 @@ function AddAssemblyOperation(props) {
           }
         })
         let assemblyRequestedData = {
-  
+
           "TopRow": {
             "CostingId": tabData.CostingId,
             "CostingNumber": tabData.CostingNumber,
@@ -172,13 +172,13 @@ function AddAssemblyOperation(props) {
             "NetConversionCostPerAssembly": tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
             "NetRMBOPCCCost": tabData.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
             "TotalOperationCostPerAssembly": tabData.CostingPartDetails.TotalOperationCostPerAssembly,
-          "TotalOperationCostSubAssembly":checkForNull(tabData.CostingPartDetails?.TotalOperationCostSubAssembly),
-          "TotalOperationCostComponent": checkForNull(tabData.CostingPartDetails?.TotalOperationCostComponent),
+            "TotalOperationCostSubAssembly": checkForNull(tabData.CostingPartDetails?.TotalOperationCostSubAssembly),
+            "TotalOperationCostComponent": checkForNull(tabData.CostingPartDetails?.TotalOperationCostComponent),
             "SurfaceTreatmentCostPerAssembly": surfaceTabData.CostingPartDetails?.SurfaceTreatmentCost,
             "TransportationCostPerAssembly": surfaceTabData.CostingPartDetails?.TransportationCost,
             "TotalSurfaceTreatmentCostPerAssembly": surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
             "NetSurfaceTreatmentCost": surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
-            "NetOverheadAndProfits": overHeadAndProfitTabData.CostingPartDetails ?( checkForNull(overHeadAndProfitTabData.CostingPartDetails.OverheadCost) + checkForNull(overHeadAndProfitTabData.CostingPartDetails.ProfitCost)+ checkForNull(overHeadAndProfitTabData.CostingPartDetails.RejectionCost)+ checkForNull(overHeadAndProfitTabData.CostingPartDetails.ICCCost)+ checkForNull(overHeadAndProfitTabData.CostingPartDetails.PaymentTermCost)):0,
+            "NetOverheadAndProfits": overHeadAndProfitTabData.CostingPartDetails ? (checkForNull(overHeadAndProfitTabData.CostingPartDetails.OverheadCost) + checkForNull(overHeadAndProfitTabData.CostingPartDetails.ProfitCost) + checkForNull(overHeadAndProfitTabData.CostingPartDetails.RejectionCost) + checkForNull(overHeadAndProfitTabData.CostingPartDetails.ICCCost) + checkForNull(overHeadAndProfitTabData.CostingPartDetails.PaymentTermCost)) : 0,
             "NetPackagingAndFreightCost": PackageAndFreightTabData && PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost,
             "NetToolCost": ToolTabData[0]?.CostingPartDetails?.TotalToolCost,
             "NetOtherCost": discountAndOtherTabData?.AnyOtherCost,
@@ -194,7 +194,7 @@ function AddAssemblyOperation(props) {
             "BOPHandlingCharges": getAssemBOPCharge.BOPHandlingCharges
           },
           "LoggedInUserId": loggedInUserId()
-  
+
         }
         dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
         props.closeDrawer('')
@@ -235,7 +235,6 @@ function AddAssemblyOperation(props) {
                       <Col md="3" className="cr-costlabel"><span className="d-inline-block align-middle">{`Operation Cost: ${item.CostingPartDetails && item.CostingPartDetails.TotalOperationCostPerAssembly !== null ? item.CostingPartDetails.TotalOperationCostPerAssembly : 0}`}</span></Col>
                       {/* <Col md="3" className="cr-costlabel text-center"><span className="d-inline-block align-middle">{`Tool Cost: ${item.CostingPartDetails && item.CostingPartDetails.TotalToolCostPerAssembly !== null ? item.CostingPartDetails.TotalToolCostPerAssembly : 0}`}</span></Col> */}
                       <Col md="3" className="cr-costlabel text-center"><span className="d-inline-block align-middle">{``}</span></Col>
-                      <Col md="3" className="cr-costlabel text-center"><span className="d-inline-block align-middle">{`Net Operation Cost: ${item.CostingPartDetails && item.CostingPartDetails.GrandTotalCost !== null ? item.CostingPartDetails.TotalOperationCostPerAssembly + item.CostingPartDetails.TotalToolCostPerAssembly : 0}`}</span></Col>
 
                       <Col md="3" className="switch cr-costlabel text-right">
                         {/* <label className="switch-level d-inline-flex w-auto mb-0">
@@ -294,7 +293,7 @@ function AddAssemblyOperation(props) {
                   type={'button'}
                   className="submit-button mr15 save-btn"
                   onClick={saveData} >
-                                      <div className={'save-icon'}></div>
+                  <div className={'save-icon'}></div>
                   {'SAVE'}
                 </button>
               </div>

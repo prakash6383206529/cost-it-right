@@ -4,8 +4,8 @@ import { Row, Col, } from 'reactstrap';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import NoContentFound from '../../common/NoContentFound';
-import { BOPDOMESTIC, BOPIMPORT, EMPTY_DATA, ImpactMaster, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, TOFIXEDVALUE } from '../../../config/constants';
-import { getCombinedProcessCostingSimulationList, getComparisionSimulationData, getCostingSimulationList, getExchangeCostingSimulationList, getImpactedMasterData, saveSimulationForRawMaterial } from '../actions/Simulation';
+import { AssemblyWiseImpactt, BOPDOMESTIC, BOPIMPORT, EMPTY_DATA, ImpactMaster, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, TOFIXEDVALUE } from '../../../config/constants';
+import { getCombinedProcessCostingSimulationList, getComparisionSimulationData, getCostingSimulationList, getImpactedMasterData, getExchangeCostingSimulationList, getSimulatedAssemblyWiseImpactDate, saveSimulationForRawMaterial } from '../actions/Simulation';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
 import { checkForDecimalAndNull, checkForNull, formatRMSimulationObject, formViewData, getConfigurationKey, loggedInUserId, userDetails } from '../../../helper';
@@ -14,13 +14,16 @@ import { EMPTY_GUID, EXCHNAGERATE, COMBINED_PROCESS, ZBC } from '../../../config
 import Toaster from '../../common/Toaster';
 import { Redirect } from 'react-router';
 import { setCostingViewData } from '../../costing/actions/Costing';
+import { COMBINEDPROCESSSIMULATION, ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl, CPGridForTokenSummary, BOPGridForToken, ERGridForToken, CostingSimulationDownloadRM, EXCHANGESIMULATIONDOWNLOAD, InitialGridForToken, LastGridForToken, OperationGridForToken, RMGridForToken, STGridForToken } from '../../../config/masterData'
 import ReactExport from 'react-export-excel';
 import LoaderCustom from '../../common/LoaderCustom';
 import { Errorbox } from '../../common/ErrorBox';
-import { impactmasterDownload, SimulationUtils } from '../SimulationUtils'
-import { BOPGridForToken, COMBINEDPROCESSSIMULATION, CPGridForTokenSummary, ERGridForToken, EXCHANGESIMULATIONDOWNLOAD, InitialGridForToken, LastGridForToken, OperationGridForToken, RMGridForToken, STGridForToken } from '../../../config/masterData';
 import { AgGridReact } from 'ag-grid-react/lib/agGridReact';
 import { AgGridColumn } from 'ag-grid-react/lib/agGridColumn';
+import { impactmasterDownload, SimulationUtils } from '../SimulationUtils'
+import ViewAssembly from './ViewAssembly';
+import _ from 'lodash';
+
 const gridOptions = {};
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -69,6 +72,7 @@ function OtherCostingSimulation(props) {
     const [showExchangeRateColumn, setShowExchangeRateColumn] = useState(false);
     const [showCombinedProcessColumn, setShowCombinedProcessColumn] = useState(false)
     const [showMachineRateColumn, setShowMachineRateColumn] = useState(false);
+    const [assemblyImpactButtonTrue, setAssemblyImpactButtonTrue] = useState(true);
 
     const isExchangeRate = String(selectedMasterForSimulation?.value) === EXCHNAGERATE;
     const isCombinedProcess = String(selectedMasterForSimulation?.value) === COMBINED_PROCESS;
@@ -86,12 +90,45 @@ function OtherCostingSimulation(props) {
     const [amendmentDetails, setAmendmentDetails] = useState({})
 
     const dispatch = useDispatch()
+    const simulationAssemblyListSummary = useSelector((state) => state.simulation.simulationAssemblyListSummary)
 
     useEffect(() => {
         getCostingList()
         dispatch(getImpactedMasterData(simulationId, (res) => { }))
     }, [])
 
+    useEffect(() => {
+        let count = 0
+        tableData && tableData.map((item) => {
+
+            if (item.IsAssemblyExist === true) {
+                count++
+            }
+        })
+        if (count !== 0) {
+            setAssemblyImpactButtonTrue(true)
+        } else {
+            setAssemblyImpactButtonTrue(false)
+        }
+
+
+        if (tableData !== undefined && (Object.keys(tableData).length !== 0 || tableData.length > 0)) {
+            let requestData = []
+            let isAssemblyInDraft = false
+
+            let uniqueArr = _.uniqBy(tableData, function (o) {
+                return o.CostingId;
+            });
+
+            uniqueArr && uniqueArr.map(item => {
+                requestData.push({ CostingId: item.CostingId, delta: item.Variance, IsSinglePartImpact: false })
+                return null
+            })
+
+            dispatch(getSimulatedAssemblyWiseImpactDate(requestData, isAssemblyInDraft, (res) => { }))
+        }
+
+    }, [tableData])
 
     const getCostingList = () => {
         switch (Number(selectedMasterForSimulation?.value)) {
@@ -172,7 +209,6 @@ function OtherCostingSimulation(props) {
 
     const costingList = useSelector(state => state.simulation.costingSimulationList)
     const costingSimulationListAllKeys = useSelector(state => state.simulation.costingSimulationListAllKeys)
-
 
     useEffect(() => {
         hideColumn()
@@ -499,18 +535,13 @@ function OtherCostingSimulation(props) {
 
 
 
-
-    useEffect(() => {
-        setLoader(false)
-    }, [hideDataColumn])
-
     const returnExcelColumn = (data = [], TempData) => {
         let temp = []
         temp = SimulationUtils(TempData)
 
         return (<ExcelSheet data={temp} name={'Costing'}>
             {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
-        </ExcelSheet>);
+        </ExcelSheet >);
     }
 
     const returnExcelColumnImpactedMaster = () => {
@@ -550,6 +581,17 @@ function OtherCostingSimulation(props) {
         return (<ExcelSheet data={TempData} name={'Costing'}>
             {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
         </ExcelSheet>);
+    }
+
+
+
+    const returnExcelColumnSecond = (data = []) => {
+
+        return (
+
+            <ExcelSheet data={simulationAssemblyListSummary} name={AssemblyWiseImpactt}>
+                {ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl && ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+            </ExcelSheet>);
     }
 
     const renderColumn = () => {
@@ -613,7 +655,6 @@ function OtherCostingSimulation(props) {
         switch (Number(master)) {
             case Number(EXCHNAGERATE):
                 return returnExcelColumn(isTokenAPI ? finalGrid : EXCHANGESIMULATIONDOWNLOAD, selectedRowData.length > 0 ? selectedRowData : costingList && costingList.length > 0 ? costingList : [])
-
             case Number(COMBINED_PROCESS):
                 return returnExcelColumn(isTokenAPI ? finalGrid : COMBINEDPROCESSSIMULATION, selectedRowData.length > 0 ? selectedRowData : costingList && costingList.length > 0 ? costingList : [])
 
@@ -743,14 +784,14 @@ function OtherCostingSimulation(props) {
                                                 <ExcelFile filename={'Costing'} fileExtension={'.xls'} element={
                                                     <button title="Download" type="button" className={'user-btn mr5'} ><div className="download mr-0"></div></button>}>
                                                     {renderColumn()}
-                                                    {/* {returnExcelColumnSecond()} */}
+                                                    {returnExcelColumnSecond()}
                                                     {returnExcelColumnImpactedMaster()}
 
                                                 </ExcelFile> :
                                                 <ExcelFile filename={'Costing'} fileExtension={'.xls'} element={
                                                     <button title="Download" type="button" className={'user-btn mr5'} ><div className="download mr-0"></div></button>}>
                                                     {renderColumn()}
-                                                    {/* {returnExcelColumnSecond()} */}
+                                                    {returnExcelColumnSecond()}
                                                 </ExcelFile>
 
                                             }
@@ -948,6 +989,7 @@ function OtherCostingSimulation(props) {
                                 vendorIdState={vendorIdState}
                                 EffectiveDate={simulationDetail.EffectiveDate}
                                 amendmentDetails={amendmentDetails}
+                                assemblyImpactButtonTrue={assemblyImpactButtonTrue}
                             />}
                     </div>
 

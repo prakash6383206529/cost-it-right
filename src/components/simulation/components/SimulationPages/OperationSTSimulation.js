@@ -154,6 +154,10 @@ function OperationSTSimulation(props) {
 
 
     const cancel = () => {
+        list && list.map((item) => {
+            item.NewRate = undefined
+            return null
+        })
         setShowMainSimulation(true)
     }
 
@@ -368,6 +372,7 @@ function OperationSTSimulation(props) {
                                                 {!isImpactedMaster && <>
                                                     <AgGridColumn field={`${isbulkUpload ? 'DestinationPlant' : 'Plants'}`} editable='false' headerName="Plant" minWidth={190}></AgGridColumn>
                                                 </>}
+                                                <AgGridColumn field="NumberOfPieces" editable='false' headerName="Quantity" minWidth={140}></AgGridColumn>
                                                 <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Net Rate" marryChildren={true} >
                                                     <AgGridColumn width={120} field="Rate" editable='false' headerName="Old" cellRenderer='oldCPFormatter' colId="Rate"></AgGridColumn>
                                                     <AgGridColumn width={120} cellRenderer='newRateFormatter' editable={!isImpactedMaster} field="NewRate" headerName="New" colId='NewRate'></AgGridColumn>
@@ -420,7 +425,7 @@ function OperationSTSimulation(props) {
                 }
 
                 {
-                    showMainSimulation && <Simulation isRMPage={true} />
+                    showMainSimulation && <Simulation isMasterSummaryDrawer={true} isCancelClicked={true} isRMPage={true} />
                 }
                 {
                     showRunSimulationDrawer &&
