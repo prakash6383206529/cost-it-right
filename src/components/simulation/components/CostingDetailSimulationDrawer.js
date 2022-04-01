@@ -161,11 +161,11 @@ function CostingDetailSimulationDrawer(props) {
                                             Number(master) === Number(OPERATIONS) &&
                                             <>
                                                 <Col md="3">
-                                                    <label>Old Operation Rate</label>
+                                                    <label>Old Operation Cost</label>
                                                     <label className={`${pricesDetail.OldOperationCost > pricesDetail.NewOperationCost ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.OldOperationCost, getConfigurationKey().NoOfDecimalForPrice)}</label>
                                                 </Col>
                                                 <Col md="3">
-                                                    <label>New Operation Rate</label>
+                                                    <label>New Operation Cost</label>
                                                     <label className={`${pricesDetail.OldOperationCost > pricesDetail.NewOperationCost ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.NewOperationCost, getConfigurationKey().NoOfDecimalForPrice)}</label>
                                                 </Col>
                                             </>
