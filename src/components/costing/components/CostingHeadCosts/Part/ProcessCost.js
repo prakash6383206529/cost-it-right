@@ -531,7 +531,7 @@ function ProcessCost(props) {
                     gridData.map((item, index) => {
                       return (
                         <tr key={index}>
-                          <td>{item.ProcessName}</td>
+                          <td className='text-overflow'><span title={item.ProcessName}>{item.ProcessName}</span></td>
                           <td>{item.Tonnage ? checkForNull(item.Tonnage) : '-'}</td>
                           <td>{item.MHR}</td>
                           <td>{item.UOM}</td>

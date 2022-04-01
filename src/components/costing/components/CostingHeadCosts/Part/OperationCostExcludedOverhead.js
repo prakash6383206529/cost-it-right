@@ -294,7 +294,7 @@ function OperationCostExcludedOverhead(props) {
                       return (
                         editIndex === index ?
                           <tr key={index}>
-                            <td>{item.OtherOperationName}</td>
+                            <td className='text-overflow'><span title={item.OtherOperationName}>{item.OtherOperationName}</span> </td>
                             <td>{item.OtherOperationCode}</td>
                             <td>{item.UOM}</td>
                             <td>{item.Rate}</td>
@@ -372,7 +372,7 @@ function OperationCostExcludedOverhead(props) {
                           </tr>
                           :
                           <tr key={index}>
-                            <td>{item.OtherOperationName}</td>
+                            <td className='text-overflow'><span title={item.OtherOperationName}>{item.OtherOperationName}</span> </td>
                             <td>{item.OtherOperationCode}</td>
                             <td>{item.UOM}</td>
                             <td>{item.Rate}</td>
@@ -387,7 +387,7 @@ function OperationCostExcludedOverhead(props) {
                             <td>
                               {(!CostingViewMode && !IsLocked) && <button className="Edit  mr-2 mb-0 align-middle" type={'button'} onClick={() => editItem(index)} />}
                               {(!CostingViewMode && !IsLocked) && <button className="Delete mb-0 align-middle" type={'button'} onClick={() => deleteItem(index, item.OtherOperationId)} />}
-                              <Popup trigger={<button id={`popUppTriggerss${index}`} className="Comment-box ml-2" type={'button'} />}
+                              <Popup trigger={<button id={`popUppTriggerss${index}`} className="Comment-box ml-2 align-middle" type={'button'} />}
                                 position="top center">
                                 <TextAreaHookForm
                                   label="Remark:"

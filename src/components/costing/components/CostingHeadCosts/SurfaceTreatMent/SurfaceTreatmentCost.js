@@ -227,7 +227,7 @@ function SurfaceTreatmentCost(props) {
                       return (
                         editIndex === index ?
                           <tr key={index}>
-                            <td>{item.OperationName}</td>
+                            <td className='text-overflow'><span title={item.OperationName}>{item.OperationName}</span> </td>
                             <td style={{ width: 200 }}>
                               {
                                 <TextFieldHookForm
@@ -302,7 +302,7 @@ function SurfaceTreatmentCost(props) {
                           </tr>
                           :
                           <tr key={index}>
-                            <td>{item.OperationName}</td>
+                            <td className='text-overflow'><span title={item.OperationName}>{item.OperationName}</span></td>
                             <td style={{ width: 200 }}>{item.SurfaceArea}</td>
                             <td>{item.UOM}</td>
                             <td>{item.RatePerUOM}</td>
