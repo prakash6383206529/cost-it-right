@@ -39,34 +39,6 @@ function AssemblyWiseImpactSummary(props) {
         if (dataForAssemblyImpact !== undefined && (Object.keys(dataForAssemblyImpact).length !== 0 || dataForAssemblyImpact.length > 0) && count === 0) {
             let requestData = []
             let isAssemblyInDraft = false
-            if (isPartImpactAssembly) {
-                let obj = {
-                    CostingId: dataForAssemblyImpact?.CostingId,
-                    delta: dataForAssemblyImpact?.Variance,
-                    IsSinglePartImpact: true
-                }
-                requestData = [obj]
-
-            } else {
-                let uniqueArr = _.uniqBy(dataForAssemblyImpact, function (o) {
-                    return o.CostingId;
-                });
-                uniqueArr && uniqueArr.map(item => {
-                    requestData.push({ CostingId: item.CostingId, delta: isImpactDrawer ? item.Variance : item.POVariance, IsSinglePartImpact: false })
-                    return null
-                })
-
-            }
-            setCount(1)
-            dispatch(getSimulatedAssemblyWiseImpactDate(requestData, isAssemblyInDraft, (res) => {
-
-                if (res && res.data && res.data.DataList && res.data.DataList.length !== 0) {
-                    setShowTableData(true)
-                }
-                else if (res && res?.data && res?.data?.DataList && res?.data?.DataList?.length === 0) {
-                    setShowTableData(false)
-                }
-            }))
 
         }
         setloader(false)
@@ -106,7 +78,6 @@ function AssemblyWiseImpactSummary(props) {
     const onBtExport = () => {
         let tempArr = []
         tempArr = simulationAssemblyListSummary
-
 
         return returnExcelColumn(ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl, tempArr)
     };

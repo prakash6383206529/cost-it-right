@@ -15,7 +15,7 @@ import BulkUpload from '../../massUpload/BulkUpload';
 import { BOP_DOMESTIC_DOWNLOAD_EXCEl, } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
 import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
-import { getConfigurationKey, CheckApprovalApplicableMaster, getFilteredData } from '../../../helper';
+import { getConfigurationKey, getFilteredData } from '../../../helper';
 import { BopDomestic, } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -80,28 +80,36 @@ class BOPDomesticListing extends Component {
             vendor_id: vendorId,
             plant_id: plantId,
         }
-        this.setState({ isLoader: true })
         const { isMasterSummaryDrawer } = this.props
 
+        if (this.props.isSimulation && this.props.selectionForListingMasterAPI === 'Combined') {
+            this.props?.changeSetLoader(true)
+            this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, BOPDOMESTIC, (res) => {
+                this.props?.changeSetLoader(false)
 
-        if (isMasterSummaryDrawer !== undefined && !isMasterSummaryDrawer) {
-            if (this.props.isSimulation) {
-                this.props?.changeTokenCheckBox(false)
-            }
-            this.props.getBOPDomesticDataList(filterData, (res) => {
-                if (this.props.isSimulation) {
-                    this.props?.changeTokenCheckBox(true)
-                }
-                this.setState({ isLoader: false })
-                if (res && res.status === 200) {
-                    let Data = res.data.DataList;
-                    this.setState({ tableData: Data })
-                } else if (res && res.response && res.response.status === 412) {
-                    this.setState({ tableData: [] })
-                } else {
-                    this.setState({ tableData: [] })
-                }
             })
+        } else {
+
+            this.setState({ isLoader: true })
+            if (isMasterSummaryDrawer !== undefined && !isMasterSummaryDrawer) {
+                if (this.props.isSimulation) {
+                    this.props?.changeTokenCheckBox(false)
+                }
+                this.props.getBOPDomesticDataList(filterData, (res) => {
+                    this.setState({ isLoader: false })
+                    if (this.props.isSimulation) {
+                        this.props?.changeTokenCheckBox(true)
+                    }
+                    if (res && res.status === 200) {
+                        let Data = res.data.DataList;
+                        this.setState({ tableData: Data })
+                    } else if (res && res.response && res.response.status === 412) {
+                        this.setState({ tableData: [] })
+                    } else {
+                        this.setState({ tableData: [] })
+                    }
+                })
+            }
         }
     }
 
@@ -273,9 +281,10 @@ class BOPDomesticListing extends Component {
     }
 
     plantFormatter = (props) => {
-
+        let checkValue
         const rowData = props.data
-        return rowData.IsVendor === 'Vendor Based' ? rowData.DestinationPlant : rowData.Plants
+        checkValue = (!this.props.isSimulation) ? 'Vendor Based' : true
+        return rowData.IsVendor === checkValue ? rowData.DestinationPlant : rowData.Plants
     }
 
     formToggle = () => {
@@ -314,16 +323,16 @@ class BOPDomesticListing extends Component {
 
     onPageSizeChanged = (newPageSize) => {
         var value = document.getElementById('page-size').value;
-        this.state.gridApi.paginationSetPageSize(Number(value));
+        this.state.gridApi.paginationSetPageSize(Number(newPageSize));
     };
 
     onBtExport = () => {
         let tempArr = []
         if (this.props.isSimulation === true) {
             const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-            data && data.map((item => {
+            data && data.map((item => (
                 tempArr.push(item.data)
-            }))
+            )))
         } else {
             tempArr = this.props.bopDomesticList && this.props.bopDomesticList
         }
@@ -370,16 +379,7 @@ class BOPDomesticListing extends Component {
 
     getFilterBOPData = () => {
         if (this.props.isSimulation) {
-            if (this.props.selectionForListingMasterAPI === 'Combined') {
-                this.props?.changeSetLoader(true)
-                this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, BOPDOMESTIC, () => {
-                    this.props?.changeSetLoader(false)
-
-                })
-            }
-            if (this.props.selectionForListingMasterAPI === 'Master') {
-                return getFilteredData(this.props.bopDomesticList, BOP_MASTER_ID)
-            }
+            return getFilteredData(this.props.bopDomesticList, BOP_MASTER_ID)
         }
         else {
             return this.props.bopDomesticList
@@ -410,6 +410,7 @@ class BOPDomesticListing extends Component {
             resizable: true,
             filter: true,
             sortable: true,
+            headerCheckboxSelectionFilteredOnly: true,
             headerCheckboxSelection: isFirstColumn,
             checkboxSelection: isFirstColumn
         };
@@ -442,9 +443,11 @@ class BOPDomesticListing extends Component {
                 {/* {this.state.isLoader && <LoaderCustom />} */}
                 {(this.state.isLoader && !this.props.isMasterSummaryDrawer) && <LoaderCustom />}
                 < form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate >
-                    <Row className={`pt-4 filter-row-large  ${this.props.isSimulation ? 'simulation-filter' : ''}`}>
-
-                        <Col md="6" lg="6" className="search-user-block mb-3">
+                    <Row className={`mt-4 filter-row-large  ${this.props.isSimulation ? 'simulation-filter zindex-0 ' : ''}`}>
+                        <Col md="6" lg="6">
+                            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                        </Col>
+                        <Col md="6" lg="6" className="mb-2">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
                                     {this.state.shown ? (
@@ -505,9 +508,6 @@ class BOPDomesticListing extends Component {
                     <Col>
 
                         <div className={`ag-grid-wrapper height-width-wrapper ${this.props.bopDomesticList && this.props.bopDomesticList?.length <= 0 ? "overlay-contain" : ""}`}>
-                            <div className="ag-grid-header">
-                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
-                            </div>
                             <div className={`ag-theme-material ${(this.state.isLoader && !this.props.isMasterSummaryDrawer) && "max-loader-height"}`}>
                                 <AgGridReact
                                     defaultColDef={defaultColDef}

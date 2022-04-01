@@ -39,7 +39,7 @@ function ViewBOP(props) {
           <Table className="table cr-brdr-main" size="sm">
             <thead>
               <tr>
-                {IsAssemblyCosting && <th>{`Part No.`}</th>}
+                {IsAssemblyCosting && <th>{`Insert No.`}</th>}
                 <th>{`Insert Part No.`}</th>
                 <th>{`Insert Part Name`}</th>
                 <th>{`Currency`}</th>
@@ -106,7 +106,7 @@ function ViewBOP(props) {
 
                   <tr>
                     <td colSpan={7}>
-                      <NoContentFound title={EMPTY_DATA} />
+                      {isPDFShow ? <div className='text-center'>0</div> : <NoContentFound title={EMPTY_DATA} />}
                     </td>
                   </tr>
               }
@@ -119,7 +119,7 @@ function ViewBOP(props) {
       {
         IsAssemblyCosting &&
         <Row className="mx-0">
-          <Col md="12">
+          <Col md="12" className='px-0'>
             <br />
             <Row>
               <Col md="12">

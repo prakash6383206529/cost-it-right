@@ -25,7 +25,7 @@ const gridOptions = {
 
 };
 function OperationSTSimulation(props) {
-    const { list, isbulkUpload, rowCount, isImpactedMaster, masterId, lastRevision, tokenForMultiSimulation } = props
+    const { list, isbulkUpload, rowCount, isImpactedMaster, masterId, lastRevision, tokenForMultiSimulation, isOperationMaster } = props
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')
@@ -68,16 +68,15 @@ function OperationSTSimulation(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let valueShow
         let master = isImpactedMaster ? masterId : selectedMasterForSimulation?.value
-        switch (Number(master)) {
-            case Number(SURFACETREATMENT):
-                valueShow = lastRevision ? row.OldSurfaceTreatmentCost : row.OldOperationRate
-                break;
-            case Number(OPERATIONS):
-                valueShow = lastRevision ? row.OldNetOperationCost : row.OldOperationRate
-                break;
-
-            default:
-                break;
+        if (lastRevision) {
+            if (Number(master) === Number(SURFACETREATMENT) || row.IsSurfaceTreatmenOperation === true) {
+                valueShow = row.OldSurfaceTreatmentRatePerUOM
+            }
+            if (Number(master) === Number(OPERATIONS) || row.IsSurfaceTreatmenOperation === false) {
+                valueShow = row.OldOperationBasicRate
+            }
+        } else {
+            valueShow = row.OldOperationRate
         }
         const value = beforeSaveCell(cell)
         return (
@@ -98,16 +97,15 @@ function OperationSTSimulation(props) {
         const value = beforeSaveCell(cell)
         let valueShow
         let master = isImpactedMaster ? masterId : selectedMasterForSimulation?.value
-        switch (Number(master)) {
-            case Number(SURFACETREATMENT):
-                valueShow = lastRevision ? row.NewSurfaceTreatmentCost : row.NewOperationRate
-                break;
-            case Number(OPERATIONS):
-                valueShow = lastRevision ? row.NewNetOperationCost : row.NewOperationRate
-                break;
-
-            default:
-                break;
+        if (lastRevision) {
+            if (Number(master) === Number(SURFACETREATMENT) || row.IsSurfaceTreatmenOperation === true) {
+                valueShow = row.NewSurfaceTreatmentRatePerUOM
+            }
+            if (Number(master) === Number(OPERATIONS) || row.IsSurfaceTreatmenOperation === false) {
+                valueShow = row.NewOperationBasicRate
+            }
+        } else {
+            valueShow = row.NewOperationRate
         }
         return (
             <>
@@ -157,6 +155,10 @@ function OperationSTSimulation(props) {
 
 
     const cancel = () => {
+        list && list.map((item) => {
+            item.NewRate = undefined
+            return null
+        })
         setShowMainSimulation(true)
     }
 
@@ -372,6 +374,7 @@ function OperationSTSimulation(props) {
                                                 {!isImpactedMaster && <>
                                                     <AgGridColumn field={`${isbulkUpload ? 'DestinationPlant' : 'Plants'}`} editable='false' headerName="Plant" minWidth={190}></AgGridColumn>
                                                 </>}
+                                                <AgGridColumn field="NumberOfPieces" editable='false' headerName="Quantity" minWidth={140}></AgGridColumn>
                                                 <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Net Rate" marryChildren={true} >
                                                     <AgGridColumn width={120} field="Rate" editable='false' headerName="Old" cellRenderer='oldCPFormatter' colId="Rate"></AgGridColumn>
                                                     <AgGridColumn width={120} cellRenderer='newRateFormatter' editable={!isImpactedMaster} field="NewRate" headerName="New" colId='NewRate'></AgGridColumn>
@@ -424,7 +427,7 @@ function OperationSTSimulation(props) {
                 }
 
                 {
-                    showMainSimulation && <Simulation isRMPage={true} />
+                    showMainSimulation && <Simulation isMasterSummaryDrawer={true} isCancelClicked={true} isRMPage={true} />
                 }
                 {
                     showRunSimulationDrawer &&

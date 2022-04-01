@@ -60,7 +60,7 @@ class OperationListing extends Component {
             selectedRowData: [],
             showPopup: false,
             deletedId: '',
-            isLoader: false
+            isLoader: false,
         }
     }
 
@@ -69,16 +69,13 @@ class OperationListing extends Component {
         this.props.getTechnologySelectList(() => { })
         this.props.getOperationSelectList(() => { })
         this.props.getVendorWithVendorCodeSelectList()
-        if (this.props.isSimulation) {
-            if (this.props.selectionForListingMasterAPI === 'Combined') {
-                this.props?.changeSetLoader(true)
-                this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, OPERATIONS, (res) => {
-                    this.props?.changeSetLoader(false)
-                    this.setState({ tableData: res.data.DataList })
-                })
-            }
-        }
-        if (this.props.selectionForListingMasterAPI === 'Master') {
+        if (this.props.isSimulation && this.props.selectionForListingMasterAPI === 'Combined') {
+            this.props?.changeSetLoader(true)
+            this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, OPERATIONS, (res) => {
+                this.props?.changeSetLoader(false)
+                this.setState({ tableData: res.data.DataList })
+            })
+        } else {
             this.getTableListData(null, null, null, null)
         }
 
@@ -136,7 +133,7 @@ class OperationListing extends Component {
         }
 
 
-        if (isMasterSummaryDrawer !== undefined && !isMasterSummaryDrawer) {
+        if ((isMasterSummaryDrawer !== undefined && !isMasterSummaryDrawer)) {
             if (this.props.isSimulation) {
                 this.props?.changeTokenCheckBox(false)
             }
@@ -177,9 +174,12 @@ class OperationListing extends Component {
                 }
             });
         } else {
+            this.props?.changeSetLoader(true)
 
             setTimeout(() => {
                 this.setState({ tableData: this.props.operationList })
+                this.props?.changeSetLoader(false)
+                this.setState({ isLoader: false })
 
             }, 700);
 
@@ -511,7 +511,7 @@ class OperationListing extends Component {
 
     onPageSizeChanged = (newPageSize) => {
         var value = document.getElementById('page-size').value;
-        this.state.gridApi.paginationSetPageSize(Number(value));
+        this.state.gridApi.paginationSetPageSize(Number(newPageSize));
     };
 
     onBtExport = () => {
@@ -628,10 +628,12 @@ class OperationListing extends Component {
                 <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
                     <form>
 
-                        <Row className="pt-4 filter-row-large blue-before">
-                            {(!isSimulation) &&
-
-                                <Col md="6" lg="6" className="search-user-block mb-3">
+                        <Row className={`pt-4 filter-row-large blue-before ${isSimulation ? "zindex-0" : ""}`}>
+                            <Col md="6" lg="6">
+                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                            </Col>
+                            <Col md="6" lg="6" className=" mb-3 d-flex justify-content-end">
+                                {(!isSimulation) &&
                                     <div className="d-flex justify-content-end bd-highlight w100">
                                         <div>
                                             {this.state.shown ?
@@ -674,26 +676,20 @@ class OperationListing extends Component {
 
                                                         {this.onBtExport()}
                                                     </ExcelFile>
-
                                                 </>
-
-
                                             }
-                                            <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => this.resetState()}>
-                                                <div className="refresh mr-0"></div>
-                                            </button>
-
                                         </div>
                                     </div>
-                                </Col>
-                            }
+                                }
+                                <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => this.resetState()}>
+                                    <div className="refresh mr-0"></div>
+                                </button>
+                            </Col>
+
                         </Row>
                     </form>
 
                     <div className={`ag-grid-wrapper height-width-wrapper ${this.getFilterOperationData() && this.getFilterOperationData()?.length <= 0 ? "overlay-contain" : ""}`}>
-                        <div className="ag-grid-header">
-                            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
-                        </div>
                         <div className={`ag-theme-material ${(this.state.isLoader && !this.props.isMasterSummaryDrawer) && "max-loader-height"}`}>
                             <AgGridReact
                                 defaultColDef={defaultColDef}

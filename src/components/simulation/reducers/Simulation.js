@@ -17,6 +17,7 @@ import {
     SET_SHOW_SIMULATION_PAGE,
     GET_TOKEN_SELECT_LIST,
     GET_VALUE_TO_SHOW_COSTING_SIMULATION,
+    GET_KEYS_FOR_DOWNLOAD_SUMMARY,
 } from '../../../config/constants';
 
 const initialState = {
@@ -142,6 +143,12 @@ export default function SimulationReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 costingSimulationListAllKeys: action.payload
+            }
+        case GET_KEYS_FOR_DOWNLOAD_SUMMARY:
+            return {
+                ...state,
+                loading: false,
+                keysForDownloadSummary: action.payload
             }
 
         default:

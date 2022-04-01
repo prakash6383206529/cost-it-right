@@ -464,20 +464,20 @@ class AddInterestRate extends Component {
                     <Row>
                       {this.state.IsVendor && (
                         <>
-                        <Col md="3" className='mb-4'>
+                          <Col md="3" className='mb-4'>
 
-                          <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                          {this.state.inputLoader && <LoaderCustom customClass={`input-loader interest-rate-vendor-loader `} />}
-                          <AsyncSelect
-                            name="vendorName"
-                            ref={this.myRef}
-                            key={this.state.updateAsyncDropdown}
-                            loadOptions={promiseOptions}
-                            onChange={(e) => this.handleVendorName(e)}
-                            noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
-                            value={this.state.vendorName} isDisabled={isEditFlag ? true : false} />
-                          {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
-                            
+                            <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
+                            {this.state.inputLoader && <LoaderCustom customClass={`input-loader interest-rate-vendor-loader `} />}
+                            <AsyncSelect
+                              name="vendorName"
+                              ref={this.myRef}
+                              key={this.state.updateAsyncDropdown}
+                              loadOptions={promiseOptions}
+                              onChange={(e) => this.handleVendorName(e)}
+                              noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
+                              value={this.state.vendorName} isDisabled={isEditFlag ? true : false} />
+                            {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
+
                           </Col>
                           <Col md="3" >
                             <Field
@@ -650,12 +650,9 @@ class AddInterestRate extends Component {
                               }}
                               // disabled={isEditFlag ? true : false}
                               component={renderDatePicker}
-                              disabled={isEditFlag ? true : false
-                              }
+                              disabled={false}
                               className="form-control"
-                            //minDate={moment()}
                             />
-
                           </div>
                         </div>
                       </Col>

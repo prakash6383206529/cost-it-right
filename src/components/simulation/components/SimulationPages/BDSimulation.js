@@ -122,6 +122,11 @@ function BDSimulation(props) {
         return (cell === true || cell === 'Vendor Based') ? 'Vendor Based' : 'Zero Based';
     }
 
+    const quantityFormatter = (props) => {
+        const row = props?.data;
+        return (isImpactedMaster) ? row.Quantity : row.NumberOfPieces
+    }
+
     const newBasicRateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -185,14 +190,13 @@ function BDSimulation(props) {
     const NewcostFormatter = (props) => {
         const row = props?.data;
         if (isImpactedMaster) {
-            return row.NewNetBoughtOutPartCost
+            return row.NewNetBoughtOutPartCost ? row.NewNetBoughtOutPartCost : '-'
         } else {
             if (!row.NewBasicRate || Number(row.BasicRate) === Number(row.NewBasicRate) || row.NewBasicRate === '') return ''
+            const BasicRate = Number(row.BasicRate) / Number(row.NumberOfPieces)
             const NewBasicRate = Number(row.NewBasicRate) / Number(row.NumberOfPieces)
-            const classGreen = (NewBasicRate > row.NetLandedCost) ? 'red-value form-control' : (NewBasicRate < row.NetLandedCost) ? 'green-value form-control' : 'form-class'
-
-
-            return row.NewBasicRate != null ? <span className={classGreen}>{checkForDecimalAndNull(Number(row.NewBasicRate) / Number(row.NumberOfPieces), getConfigurationKey().NoOfDecimalForPrice)}            </span> : ''
+            const classGreen = (BasicRate < NewBasicRate) ? 'red-value form-control' : (BasicRate > NewBasicRate) ? 'green-value form-control' : 'form-class'
+            return row.NewBasicRate != null ? <span className={classGreen}>{checkForDecimalAndNull(Number(row.NewBasicRate) / Number(row.NumberOfPieces), getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
 
         }
     }
@@ -200,14 +204,11 @@ function BDSimulation(props) {
     const OldcostFormatter = (props) => {
         const row = props?.data;
         if (isImpactedMaster) {
-            return row.OldNetBoughtOutPartCost
+            return row.OldNetBoughtOutPartCost ? row.OldNetBoughtOutPartCost : '-'
         } else {
             if (!row.BasicRate || row.BasicRate === '') return ''
-            const BasicRate = Number(row.BasicRate) / Number(row.NumberOfPieces)
-            const classGreen = (BasicRate > row.NetLandedCost) ? 'red-value form-control' : (BasicRate < row.NetLandedCost) ? 'green-value form-control' : 'form-class'
 
-
-            return row.BasicRate != null ? <span className={classGreen}>{checkForDecimalAndNull(Number(row.BasicRate) / Number(row.NumberOfPieces), getConfigurationKey().NoOfDecimalForPrice)}            </span> : ''
+            return row.BasicRate != null ? checkForDecimalAndNull(Number(row.BasicRate) / Number(row.NumberOfPieces), getConfigurationKey().NoOfDecimalForPrice) : ''
 
         }
     }
@@ -278,6 +279,7 @@ function BDSimulation(props) {
         newBasicRateFormatter: newBasicRateFormatter,
         cellChange: cellChange,
         oldBasicRateFormatter: oldBasicRateFormatter,
+        quantityFormatter: quantityFormatter
     };
 
     return (
@@ -365,6 +367,7 @@ function BDSimulation(props) {
                                             {!isImpactedMaster && <AgGridColumn field="Vendor" editable='false' headerName="Vendor" minWidth={140}></AgGridColumn>}
                                             {!isImpactedMaster && <AgGridColumn field="DestinationPlant" editable='false' headerName="DestinationPlant" minWidth={140}></AgGridColumn>}
 
+                                            <AgGridColumn field="Quantity" editable='false' headerName="Quantity" minWidth={140} cellRenderer='quantityFormatter'></AgGridColumn>
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName="Basic Rate (INR)" marryChildren={true} width={240}>
                                                 <AgGridColumn width={120} field="BasicRate" editable='false' headerName="Old" cellRenderer='oldBasicRateFormatter' colId="BasicRate"></AgGridColumn>
                                                 <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' editable={!isImpactedMaster} onCellValueChanged='cellChange' field="NewBasicRate" headerName="New" colId='NewBasicRate'></AgGridColumn>
@@ -424,7 +427,7 @@ function BDSimulation(props) {
                 }
 
                 {
-                    showMainSimulation && <Simulation isRMPage={true} />
+                    showMainSimulation && <Simulation isMasterSummaryDrawer={true} isCancelClicked={true} isRMPage={true} />
                 }
                 {
                     showRunSimulationDrawer &&

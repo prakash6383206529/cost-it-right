@@ -13,6 +13,7 @@ import Toaster from '../../../common/Toaster';
 import { MESSAGES } from '../../../../config/message';
 import { ViewCostingContext } from '../CostingDetails';
 import { Link } from 'react-scroll';
+import { createToprowObjAndSave } from '../../CostingUtil';
 
 function TabPackagingFreight(props) {
 
@@ -24,7 +25,7 @@ function TabPackagingFreight(props) {
   const CostingViewMode = useContext(ViewCostingContext);
   const netPOPrice = useContext(NetPOPriceContext);
 
-  const { PackageAndFreightTabData, CostingEffectiveDate, ComponentItemDiscountData,RMCCTabData,SurfaceTabData,OverheadProfitTabData,DiscountCostData,checkIsFreightPackageChange } = useSelector(state => state.costing)
+  const { PackageAndFreightTabData, CostingEffectiveDate, ComponentItemDiscountData, RMCCTabData, SurfaceTabData, OverheadProfitTabData, DiscountCostData, ToolTabData, getAssemBOPCharge, checkIsFreightPackageChange } = useSelector(state => state.costing)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
   useEffect(() => {
@@ -149,12 +150,12 @@ function TabPackagingFreight(props) {
   */
   const saveCosting = () => {
 
-    if(checkIsFreightPackageChange){
+    if (checkIsFreightPackageChange) {
 
       const tabData = RMCCTabData[0]
-      const surfaceTabData= SurfaceTabData[0]
-      const overHeadAndProfitTabData=OverheadProfitTabData[0]
-      const discountAndOtherTabData =DiscountCostData[0]
+      const surfaceTabData = SurfaceTabData[0]
+      const overHeadAndProfitTabData = OverheadProfitTabData[0]
+      const discountAndOtherTabData = DiscountCostData[0]
       const data = {
         "CostingId": costData.CostingId,
         "PartId": costData.PartId,
@@ -167,43 +168,14 @@ function TabPackagingFreight(props) {
         //"NetPackagingAndFreight": PackageAndFreightTabData && PackageAndFreightTabData[0].NetPackagingAndFreight,
         "CostingPartDetails": PackageAndFreightTabData && PackageAndFreightTabData[0].CostingPartDetails
       }
-      if(costData.IsAssemblyPart === true){
-  
-    let assemblyRequestedData = {        
-      "TopRow": {
-        "CostingId":tabData.CostingId,
-        "CostingNumber": tabData.CostingNumber,
-        "TotalRawMaterialsCostWithQuantity": tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
-        "TotalBoughtOutPartCostWithQuantity": tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
-        "TotalConversionCostWithQuantity": tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
-        "TotalCalculatedRMBOPCCCostPerPC": tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity +tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity+ tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
-        "TotalCalculatedRMBOPCCCostPerAssembly": tabData.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
-        "NetRMCostPerAssembly": tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
-        "NetBOPCostAssembly": tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
-        "NetConversionCostPerAssembly":tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
-        "NetRMBOPCCCost":tabData.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
-        "SurfaceTreatmentCostPerAssembly": surfaceTabData.CostingPartDetails?.SurfaceTreatmentCost,
-        "TransportationCostPerAssembly": surfaceTabData.CostingPartDetails?.TransportationCost,
-        "TotalSurfaceTreatmentCostPerAssembly": surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
-        "NetSurfaceTreatmentCost": surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
-        "NetOverheadAndProfits": overHeadAndProfitTabData.CostingPartDetails ?(checkForNull(overHeadAndProfitTabData.CostingPartDetails.OverheadCost) + checkForNull(overHeadAndProfitTabData.CostingPartDetails.ProfitCost)+ checkForNull(overHeadAndProfitTabData.CostingPartDetails.RejectionCost)+ checkForNull(overHeadAndProfitTabData.CostingPartDetails.ICCCost)+ checkForNull(overHeadAndProfitTabData.CostingPartDetails.PaymentTermCost)):0,
-        "NetPackagingAndFreightCost": PackageAndFreightTabData && PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost,
-        "NetToolCost": discountAndOtherTabData?.CostingPartDetails?.TotalToolCost,
-        "NetOtherCost": discountAndOtherTabData?.CostingPartDetails?.NetOtherCost,
-        "NetDiscounts":discountAndOtherTabData?.CostingPartDetails?.NetDiscountsCost,
-        "TotalCostINR": netPOPrice,
-        "TabId": 4
-      },
-       "WorkingRows": [],
-      "LoggedInUserId": loggedInUserId()
-    
-  }
-  
-    if(!CostingViewMode){
-  
-    dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData,res =>{      }))
+      if (costData.IsAssemblyPart === true) {
+
+        if (!CostingViewMode) {
+          let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 4)
+
+          dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
         }
-    
+
       }
       dispatch(saveCostingPackageFreightTab(data, res => {
         if (res.data.Result) {
@@ -287,7 +259,7 @@ function TabPackagingFreight(props) {
                   </Col>
                 </Row>
                 <div className="col-sm-12 text-right bluefooter-butn sticky-btn-footer packaging-freight-btn-save">
-                  {!CostingViewMode &&  <Link  to="costing-header" spy={true} smooth={true} offset={-350} delay={100}> <button
+                  {!CostingViewMode && <Link to="costing-header" spy={true} smooth={true} offset={-350} delay={100}> <button
                     type={"button"}
                     className="submit-button mr5 save-btn"
                     onClick={saveCosting}

@@ -3,7 +3,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { useSelector, useDispatch } from 'react-redux';
 import { Col, Row, Table } from 'reactstrap';
 import OperationCost from './OperationCost';
-import { NumberFieldHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
+import { NumberFieldHookForm, TextFieldHookForm, TextAreaHookForm } from '../../../../layout/HookFormInputs';
 import ToolCost from './ToolCost';
 import AddProcess from '../../Drawers/AddProcess';
 import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey } from '../../../../../helper';
@@ -12,30 +12,30 @@ import { EMPTY_DATA, MASS, TIME } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
 import { costingInfoContext } from '../../CostingDetailStepTwo';
 import VariableMhrDrawer from '../../Drawers/processCalculatorDrawer/VariableMhrDrawer'
-import { getProcessCalculation } from '../../../actions/CostWorking';
+import { getProcessMachiningCalculation, getProcessDefaultCalculation } from '../../../actions/CostWorking';
 import { gridDataAdded, isDataChange, setIsToolCostUsed, setRMCCErrors } from '../../../actions/Costing';
 import { ViewCostingContext } from '../../CostingDetails';
 import { HOUR } from '../../../../../config/constants';
+import Popup from 'reactjs-popup';
 import OperationCostExcludedOverhead from './OperationCostExcludedOverhead';
+import { MACHINING, FORGING, DIE_CASTING, Ferrous_Casting, } from '../../../../../config/masterData'
 
 let counter = 0;
 function ProcessCost(props) {
   const { data, item } = props
+  const IsLocked = item.IsLocked || item.IsPartLocked
 
-  const { register, control, formState: { errors }, setValue } = useForm({
+  const { register, control, formState: { errors }, setValue, getValues } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   })
-
   const [gridData, setGridData] = useState(data && data.CostingProcessCostResponse)
-
   const trimValue = getConfigurationKey()
   const trimForMeasurment = trimValue.NoOfDecimalForInputOutput
   const trimForCost = trimValue.NoOfDecimalForPrice
 
   const [calciIndex, setCalciIndex] = useState('')
   const [isDrawerOpen, setDrawerOpen] = useState(false)
-
   const [Ids, setIds] = useState([])
   const [MachineIds, setMachineIds] = useState([])
   const [isOpen, setIsOpen] = useState(data && data.IsShowToolCost)
@@ -44,17 +44,13 @@ function ProcessCost(props) {
   const [tabToolData, setTabToolData] = useState(props.data)
   const [isCalculator, setIsCalculator] = useState(false)
   const [calculatorData, setCalculatorData] = useState({})
-
+  const [remarkPopUpData, setRemarkPopUpData] = useState("")
   const dispatch = useDispatch()
-
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
-
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { CostingEffectiveDate } = useSelector(state => state.costing)
-
   const { rmFinishWeight } = props
-
   // const fieldValues = useWatch({
   //   control,
   //   name: ['ProcessGridFields'],
@@ -70,13 +66,13 @@ function ProcessCost(props) {
       BOMLevel: props.item.BOMLevel,
       PartNumber: props.item.PartNumber,
     }
-    if (!CostingViewMode) {
+    if (!CostingViewMode && !IsLocked) {
       selectedIds(gridData)
 
       if (JSON.stringify(gridData) !== JSON.stringify(oldGridData)) {
         dispatch(isDataChange(true))
       }
-      props.setProcessCost(tabData, Params, item)
+      props.setConversionCost(tabData, Params, item)
     }
   }, [tabData]);
 
@@ -89,21 +85,35 @@ function ProcessCost(props) {
     let tempArr = []
     let tempData = gridData[id]
     // const calciData = gridData[id]
-
     /****************************FOR GETING CALCULATED VALUE IN CALCULATOR**************************/
-    dispatch(getProcessCalculation(costData.CostingId, tempData.ProcessId, tempData.ProcessCalculationId, costData.TechnologyId, 'default', res => {
-      if (res && res.data && res.data.Data) {
-        const data = res.data.Data
-        tempData = { ...tempData, WeightCalculatorRequest: data, }
-        tempArr = Object.assign([...gridData], { [id]: tempData })
-        setTimeout(() => {
-          setGridData(tempArr)
-          setIsCalculator(true)
-        }, 100)
-      }
-    }))
-    // setCalculatorData(calciData)
+    if ((costData.TechnologyId === MACHINING || costData.TechnologyId === FORGING || costData.TechnologyId === Ferrous_Casting || costData.TechnologyId === DIE_CASTING) && tempData.UOMType === TIME) {
+      //getProcessDefaultCalculation
+      dispatch(getProcessMachiningCalculation(costData.CostingId, tempData.ProcessId, tempData.ProcessCalculationId, res => {
+        if (res && res.data && res.data.Data) {
+          const data = res.data.Data
+          tempData = { ...tempData, WeightCalculatorRequest: data, }
+          tempArr = Object.assign([...gridData], { [id]: tempData })
+          setTimeout(() => {
+            setGridData(tempArr)
+            setIsCalculator(true)
+          }, 100)
+        }
+      }))
 
+    } else {
+      dispatch(getProcessDefaultCalculation(costData.CostingId, tempData.ProcessId, tempData.ProcessCalculationId, res => {
+        if (res && res.data && res.data.Data) {
+          const data = res.data.Data
+          tempData = { ...tempData, WeightCalculatorRequest: data, }
+          tempArr = Object.assign([...gridData], { [id]: tempData })
+          setTimeout(() => {
+            setGridData(tempArr)
+            setIsCalculator(true)
+          }, 100)
+        }
+      }))
+    }
+    // setCalculatorData(calciData)
   }
 
   const closeCalculatorDrawer = (e, value, weightData = {}) => {
@@ -171,6 +181,30 @@ function ProcessCost(props) {
     setIsOpen(!isOpen)
   }
 
+  const onRemarkPopUpClickk = (index) => {
+    setRemarkPopUpData(getValues(`${ProcessGridFields}.${index}.remarkPopUp`))
+    let tempArr = []
+    let tempData = gridData[index]
+    tempData = {
+      ...tempData,
+      Remark: getValues(`${ProcessGridFields}.${index}.remarkPopUp`)
+    }
+    tempArr = Object.assign([...gridData], { [index]: tempData })
+    // setGridData(tempArr)
+
+    if (getValues(`${ProcessGridFields}.${index}.remarkPopUp`)) {
+      Toaster.success('Remark saved successfully')
+    }
+    setTabData(tempArr)
+    var button = document.getElementById(`popUpTriggers${index}`)
+    button.click()
+  }
+
+  const onRemarkPopUpClosee = (index) => {
+    var button = document.getElementById(`popUpTriggers${index}`)
+    button.click()
+  }
+
   useEffect(() => {
     dispatch(setIsToolCostUsed(isOpen))
   }, [isOpen])
@@ -212,7 +246,8 @@ function ProcessCost(props) {
           ProcessCost: el.MachineRate * processQuantity,
           UOMType: el.UnitType,
           UOMTypeId: el.UnitTypeId,
-          ProductionPerHour: '-'
+          ProductionPerHour: '-',
+
         }
       })
 
@@ -235,6 +270,7 @@ function ProcessCost(props) {
         NetConversionCost: ProcessCostTotal + checkForNull(tabData.OperationCostTotal !== null ? tabData.OperationCostTotal : 0,) + checkForNull(tabData.OtherOperationCostTotal !== null ? tabData.OtherOperationCostTotal : 0),
         ProcessCostTotal: ProcessCostTotal,
         CostingProcessCostResponse: tempArr,
+
       }
 
       setGridData(tempArr)
@@ -304,10 +340,6 @@ function ProcessCost(props) {
     }, 200)
   }
 
-
-
-
-
   const handleQuantityChange = (event, index) => {
     let tempArr = []
     let tempData = gridData[index]
@@ -332,6 +364,7 @@ function ProcessCost(props) {
         NetConversionCost: ProcessCostTotal + checkForNull(tabData.OperationCostTotal !== null ? tabData.OperationCostTotal : 0,) + checkForNull(tabData.OtherOperationCostTotal !== null ? tabData.OtherOperationCostTotal : 0),
         ProcessCostTotal: ProcessCostTotal,
         CostingProcessCostResponse: gridTempArr,
+
       }
 
       setTabData(tempArr)
@@ -374,7 +407,7 @@ function ProcessCost(props) {
    * @method setOperationCost
    * @description SET BOP COST
    */
-  const setOperationCost = (operationGrid, index) => {
+  const setOperationCost = (operationGrid, params, index) => {
     let OperationCostTotal = 0
     OperationCostTotal = operationGrid && operationGrid.reduce((accummlator, el) => {
       return accummlator + checkForNull(el.OperationCost)
@@ -388,10 +421,10 @@ function ProcessCost(props) {
     }
 
     setTabData(tempArr)
-    props.setOperationCost(tempArr, props.index, item)
+    // props.setOperationCost(tempArr, params, item)
   }
 
-  const setOtherOperationCost = (otherOperationGrid, index) => {
+  const setOtherOperationCost = (otherOperationGrid, params, index) => {
     let OtherOperationCostTotal = 0
     OtherOperationCostTotal = otherOperationGrid && otherOperationGrid.reduce((accummlator, el) => {
       return accummlator + checkForNull(el.OperationCost)
@@ -405,7 +438,7 @@ function ProcessCost(props) {
     }
 
     setTabData(tempArr)
-    props.setOtherOperationCost(tempArr, props.index, item)
+    // props.setOtherOperationCost(tempArr, props.index, item)
   }
 
   /**
@@ -439,7 +472,6 @@ function ProcessCost(props) {
     dispatch(setRMCCErrors({}))
     counter = 0
   }
-
   const ProcessGridFields = 'ProcessGridFields'
 
   /**
@@ -468,7 +500,7 @@ function ProcessCost(props) {
               <div className="left-border">{'Process Cost:'}</div>
             </Col>
             <Col md={'2'}>
-              {!CostingViewMode && <button
+              {(!CostingViewMode && !IsLocked) && <button
                 type="button"
                 className={'user-btn'}
                 onClick={DrawerToggle}
@@ -479,7 +511,6 @@ function ProcessCost(props) {
           </Row>
 
           <Row>
-
             {/*OPERATION COST GRID */}
             <Col md="12">
               <Table className="table cr-brdr-main costing-process-cost-section" size="sm">
@@ -531,7 +562,7 @@ function ProcessCost(props) {
                                   }}
 
                                   // errors={}
-                                  disabled={CostingViewMode ? true : false}
+                                  disabled={(CostingViewMode || IsLocked) ? true : false}
                                 />
                               }
                             </span>
@@ -541,9 +572,7 @@ function ProcessCost(props) {
                               onClick={() => toggleWeightCalculator(index)}
                             />
                           </td>
-
                           <td style={{ width: 100 }}>
-
                             {
                               <TextFieldHookForm
                                 label=""
@@ -562,10 +591,40 @@ function ProcessCost(props) {
                                 disabled={true}
                               />
                             }
-
                           </td>
                           <td>
-                            {!CostingViewMode && <button className="Delete" type={'button'} onClick={() => deleteItem(index)} />}
+                            {(!CostingViewMode && !IsLocked) && <button className="Delete" type={'button'} onClick={() => deleteItem(index)} />}
+                            <Popup trigger={<button id={`popUpTriggers${index}`} className="Comment-box ml-2" type={'button'} />}
+                              position="top center">
+                              <TextAreaHookForm
+                                label="Remark:"
+                                name={`${ProcessGridFields}.${index}.remarkPopUp`}
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                mandatory={false}
+                                rules={{
+                                  maxLength: {
+                                    value: 75,
+                                    message: "Remark should be less than 75 word"
+                                  },
+                                }}
+                                handleChange={(e) => { }}
+                                defaultValue={item.Remark ?? item.Remark}
+                                className=""
+                                customClassName={"withBorder"}
+                                errors={errors && errors.ProcessGridFields && errors.ProcessGridFields[index] !== undefined ? errors.ProcessGridFields[index].remarkPopUp : ''}
+                                //errors={errors && errors.remarkPopUp && errors.remarkPopUp[index] !== undefined ? errors.remarkPopUp[index] : ''}                        
+                                disabled={(CostingViewMode || IsLocked) ? true : false}
+                                hidden={false}
+                              />
+                              <Row>
+                                <Col md="12" className='remark-btn-container'>
+                                  <button className='submit-button mr-2' disabled={(CostingViewMode || IsLocked) ? true : false} onClick={() => onRemarkPopUpClickk(index)} > <div className='save-icon'></div> </button>
+                                  <button className='reset' onClick={() => onRemarkPopUpClosee(index)} > <div className='cancel-icon'></div></button>
+                                </Col>
+                              </Row>
+                            </Popup>
                           </td>
                         </tr>
                       )
@@ -621,7 +680,7 @@ function ProcessCost(props) {
           technology={costData.ETechnologyType}
           calculatorData={gridData[calciIndex]}
           isOpen={isCalculator}
-          CostingViewMode={CostingViewMode}
+          CostingViewMode={CostingViewMode || IsLocked}
           rmFinishWeight={props.rmFinishWeight}
           closeDrawer={closeCalculatorDrawer}
           anchor={'right'}

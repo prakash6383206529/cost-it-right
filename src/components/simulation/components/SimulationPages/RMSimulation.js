@@ -9,14 +9,13 @@ import Toaster from '../../../common/Toaster';
 import { runVerifySimulation } from '../../actions/Simulation';
 import { Fragment } from 'react';
 import { TextFieldHookForm } from '../../../layout/HookFormInputs';
-import { useForm, Controller, useWatch } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import RunSimulationDrawer from '../RunSimulationDrawer';
 import VerifySimulation from '../VerifySimulation';
 import { useDispatch, useSelector } from 'react-redux';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { data } from 'jquery';
 import Simulation from '../Simulation';
 import { VBC, ZBC } from '../../../../config/constants';
 import { debounce } from 'lodash'
@@ -27,21 +26,18 @@ const gridOptions = {
 
 
 function RMSimulation(props) {
-    const { isDomestic, list, isbulkUpload, rowCount, technology, master, isImpactedMaster, costingAndPartNo, tokenForMultiSimulation } = props
-    const [showSimulation, setShowSimulation] = useState(false)
+    const { list, isbulkUpload, rowCount, technology, master, isImpactedMaster, costingAndPartNo, tokenForMultiSimulation } = props
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')
     const [colorClass, setColorClass] = useState('')
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
-    const [rowData, setRowData] = useState(null);
-    const [update, setUpdate] = useState(true)
     const [showMainSimulation, setShowMainSimulation] = useState(false)
     const [textFilterSearch, setTextFilterSearch] = useState('')
     const [isDisable, setIsDisable] = useState(false)
 
-    const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
+    const { register, control, setValue, formState: { errors }, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
     })
@@ -50,7 +46,6 @@ function RMSimulation(props) {
 
     const dispatch = useDispatch()
 
-    const selectedTechnologyForSimulation = useSelector(state => state.simulation.selectedTechnologyForSimulation)
     const { selectedMasterForSimulation } = useSelector(state => state.simulation)
     const { filteredRMData } = useSelector(state => state.material)
     useEffect(() => {
@@ -308,7 +303,6 @@ function RMSimulation(props) {
     }
 
     const NewcostFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         if (!row.NewBasicRate || Number(row.BasicRate) === Number(row.NewBasicRate) || row.NewBasicRate === '') return ''
         const NewBasicRate = Number(row.NewBasicRate) + checkForNull(row.RMFreightCost) + checkForNull(row.RMShearingCost)
@@ -338,27 +332,14 @@ function RMSimulation(props) {
         })
     }
 
-    const options = {
-        clearSearch: true,
-        noDataText: <NoContentFound title={EMPTY_DATA} />,
-        paginationShowsTotal: renderPaginationShowsTotal(),
-        prePage: <span className="prev-page-pg"></span>, // Previous page button text
-        nextPage: <span className="next-page-pg"></span>, // Next page button text
-        firstPage: <span className="first-page-pg"></span>, // First page button text
-        lastPage: <span className="last-page-pg"></span>,
-
-    };
-
     const cancel = () => {
-        // props.cancelEditPage()
+        list && list.map((item) => {
+            item.NewBasicRate = undefined
+            item.NewScrapRate = undefined
+            return null
+        })
         setShowMainSimulation(true)
     }
-    const cellEditProp = {
-        mode: 'click',
-        blurToSave: true,
-        beforeSaveCell: beforeSaveCell,
-        afterSaveCell: afterSaveCell,
-    };
 
     const closeDrawer = (e = '') => {
         setShowRunSimulationDrawer(false)
@@ -484,22 +465,21 @@ function RMSimulation(props) {
                                                 <div className="refresh mr-0"></div>
                                             </button>
                                         </div>
-                                        {/* {list && list.map( item=> {
-                                            return <>
-                                             <div className={`d-flex simulation-label-container ${isbulkUpload ? "mt-5 pt-2" : ''}`}>
+                                        <>
+                                            {!isImpactedMaster && <div className={`d-flex simulation-label-container ${isbulkUpload ? "mt-5 pt-2" : ''}`}>
                                                 <div className='d-flex pl-3'>
-                                                 <label>Technology: </label>
-                                                  <p className='technology mx-1' title={item.TechnologyName}>{item.TechnologyName}</p>
+                                                    <label>Technology: </label>
+                                                    <p className='technology mx-1' title={list[0].TechnologyName}>{list[0].TechnologyName}</p>
                                                 </div>
                                                 <div className='d-flex pl-3'>
-                                                 <label className='mx-1'>Vendor:</label>
-                                                 <p title={item.VendorName}>{item.VendorName}</p>
+                                                    <label className='mx-1'>Vendor:</label>
+                                                    <p title={list[0].VendorName}>{list[0].VendorName}</p>
                                                 </div>
-                                             </div>
-                                            </>
-                                               
-                                        })} */}
-                                        {/* <------------Don't remove the code it will use in future----> */}
+                                            </div>}
+                                        </>
+
+
+
                                     </div>
                                     <div className="ag-theme-material" style={{ width: '100%' }}>
                                         <AgGridReact
@@ -601,7 +581,7 @@ function RMSimulation(props) {
                 }
 
                 {
-                    showMainSimulation && <Simulation isRMPage={true} />
+                    showMainSimulation && <Simulation isMasterSummaryDrawer={true} isCancelClicked={true} isRMPage={true} />
                 }
                 {
                     showRunSimulationDrawer &&

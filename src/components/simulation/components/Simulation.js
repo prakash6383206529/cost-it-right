@@ -88,9 +88,11 @@ function Simulation(props) {
     const technologySelectList = useSelector(state => state.costing.technologySelectList)
     const exchangeRateDataList = useSelector(state => state.exchangeRate.exchangeRateDataList)
 
-    // useEffect(() => {
-    //     editTable()
-    // }, [rmDomesticListing, rmImportListing])
+    useEffect(() => {
+        if (technology && (technology?.value !== undefined && technology?.value !== '')) {
+            setShowTokenDropdown(true)
+        }
+    }, [technology])
 
     const handleMasterChange = (value) => {
         dispatch(setFilterForRM({ costingHeadTemp: '', plantId: '', RMid: '', RMGradeid: '', Vendorid: '' }))
@@ -217,12 +219,13 @@ function Simulation(props) {
             item = item.DepartmentCode
             return item
         })
-        let tempValue = token
-        tempValue = tempValue && tempValue.map((item) => {
-            let object = {}
-            object.SimulationId = item.value
-            return object
-        })
+        // let tempValue = token
+        // tempValue = tempValue && tempValue.map((item) => {
+        //     let object = {}
+        //     object.SimulationId = item.value
+        //     return object
+        // })
+        let tempValue = [{ SimulationId: token.value }]
 
         let obj = {
 
@@ -235,21 +238,21 @@ function Simulation(props) {
 
         switch (value.value) {
             case RMDOMESTIC:
-                return (<RMDomesticListing isSimulation={true} technology={technology.value} apply={editTable} objectForMultipleSimulation={obj} selectionForListingMasterAPI={selectionForListingMasterAPI} loaderTokenAPI={loader} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} />)
+                return (<RMDomesticListing isSimulation={true} technology={technology.value} isMasterSummaryDrawer={props.isCancelClicked ? props.isMasterSummaryDrawer : false} apply={editTable} objectForMultipleSimulation={obj} selectionForListingMasterAPI={selectionForListingMasterAPI} loaderTokenAPI={loader} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} />)
             case RMIMPORT:
-                return (<RMImportListing isSimulation={true} technology={technology.value} apply={editTable} objectForMultipleSimulation={obj} tokenArray={token} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} />)
+                return (<RMImportListing isSimulation={true} technology={technology.value} isMasterSummaryDrawer={props.isCancelClicked ? props.isMasterSummaryDrawer : false} apply={editTable} objectForMultipleSimulation={obj} tokenArray={token} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} />)
             case MACHINERATE:
                 return (<MachineRateListing isSimulation={true} isMasterSummaryDrawer={false} technology={technology.value} objectForMultipleSimulation={obj} apply={editTable} tokenArray={token} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} />)
             case BOPDOMESTIC:
-                return (<BOPDomesticListing isSimulation={true} isMasterSummaryDrawer={false} technology={technology.value} objectForMultipleSimulation={obj} apply={editTable} tokenArray={token} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} />)
+                return (<BOPDomesticListing isSimulation={true} isMasterSummaryDrawer={props.isCancelClicked ? props.isMasterSummaryDrawer : false} technology={technology.value} objectForMultipleSimulation={obj} apply={editTable} tokenArray={token} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} />)
             case BOPIMPORT:
-                return (<BOPImportListing isSimulation={true} isMasterSummaryDrawer={false} technology={technology.value} objectForMultipleSimulation={obj} apply={editTable} tokenArray={token} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} />)
+                return (<BOPImportListing isSimulation={true} isMasterSummaryDrawer={props.isCancelClicked ? props.isMasterSummaryDrawer : false} technology={technology.value} objectForMultipleSimulation={obj} apply={editTable} tokenArray={token} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} />)
             case EXCHNAGERATE:
                 return (<ExchangeRateListing isSimulation={true} technology={technology.value} apply={editTable} tokenArray={token} objectForMultipleSimulation={obj} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} />)
             case OPERATIONS:
-                return (<OperationListing isSimulation={true} isMasterSummaryDrawer={false} technology={technology.value} objectForMultipleSimulation={obj} apply={editTable} isOperationST={OPERATIONS} tokenArray={token} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} />)
+                return (<OperationListing isSimulation={true} isMasterSummaryDrawer={props.isCancelClicked ? props.isMasterSummaryDrawer : false} technology={technology.value} objectForMultipleSimulation={obj} apply={editTable} isOperationST={OPERATIONS} tokenArray={token} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} />)
             case SURFACETREATMENT:
-                return (<OperationListing isSimulation={true} isMasterSummaryDrawer={false} technology={technology.value} objectForMultipleSimulation={obj} apply={editTable} isOperationST={SURFACETREATMENT} tokenArray={token} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} />)
+                return (<OperationListing isSimulation={true} isMasterSummaryDrawer={props.isCancelClicked ? props.isMasterSummaryDrawer : false} technology={technology.value} objectForMultipleSimulation={obj} apply={editTable} isOperationST={SURFACETREATMENT} tokenArray={token} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} />)
             // case BOPIMPORT:
             //     return (<OverheadListing isSimulation={true} technology={technology.value} apply={editTable} />)
             // case BOPIMPORT:
@@ -317,8 +320,17 @@ function Simulation(props) {
         setShowEditTable(false)
         setIsBulkUpload(false)
         // setTableData([])
+        setShowEditTable(false)
         setMaster({ label: master.label, value: master.value })
         setTechnology({ label: technology.label, value: technology.value })
+        setTimeout(() => {
+            setShowEditTable(true)
+        }, 200);
+
+        setSelectionForListingMasterAPI('Master')
+        setTimeout(() => {
+            dispatch(setTechnologyForSimulation(technology))
+        }, 200);
     }
 
     /**
@@ -734,12 +746,14 @@ function Simulation(props) {
     }
 
     const editMasterPage = (page) => {
-        let tempObject = token && token.map((item) => {
-            let obj = {}
-            obj.SimulationId = item.value
-            return obj
+        // let tempObject = token && token.map((item) => {
+        //     let obj = {}
+        //     obj.SimulationId = item.value
+        //     return obj
 
-        })
+        // })
+        let tempObject = token.length !== 0 ? [{ SimulationId: token.value }] : []
+
         switch (page) {
             case RMDOMESTIC:
                 return <RMSimulation isDomestic={true} cancelEditPage={cancelEditPage} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : getFilteredData(rmDomesticListing, RM_MASTER_ID)} technology={technology.label} master={master.label} tokenForMultiSimulation={tempObject} />  //IF WE ARE USING BULK UPLOAD THEN ONLY TABLE DATA WILL BE USED OTHERWISE DIRECT LISTING
@@ -862,13 +876,12 @@ function Simulation(props) {
                                             mandatory={false}
                                             handleChange={handleTokenChange}
                                             errors={errors.Masters}
-                                            isMulti={true}
                                         />
                                     </div>
                                 </div>
                             }
 
-                            {(token?.length !== 0 && token !== null && tokenCheckBox) && <button className='user-btn' onClick={callAPIOnClick}>
+                            {(token?.length !== 0 && token !== null && tokenCheckBox) && <button className='user-btn ml-2' onClick={callAPIOnClick}>
                                 <div className='save-icon'></div>
                             </button>}
                         </Col>
@@ -900,23 +913,22 @@ function Simulation(props) {
                             </div>
                         </Row>
                     }
-
-
-                    {showUploadDrawer &&
-                        <SimulationUploadDrawer
-                            isOpen={showUploadDrawer}
-                            closeDrawer={closeDrawer}
-                            anchor={"right"}
-                            master={master}
-                        />}
                 </div>
             }
+
             {loader ? <LoaderCustom /> :
 
                 <div className="simulation-edit">
                     {showEditTable && editMasterPage(master.value)}
                 </div>
             }
+            {showUploadDrawer &&
+                <SimulationUploadDrawer
+                    isOpen={showUploadDrawer}
+                    closeDrawer={closeDrawer}
+                    anchor={"right"}
+                    master={master}
+                />}
         </div>
     );
 }

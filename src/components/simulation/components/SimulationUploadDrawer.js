@@ -11,8 +11,6 @@ import { ExcelRenderer } from 'react-excel-renderer';
 import { getJsDateFromExcel } from "../../../helper/validation";
 import imgCloud from '../../../assests/images/uploadcloud.png';
 
-
-import TooltipCustom from '../../common/Tooltip';
 import { BOPDOMESTIC, BOPIMPORT, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -493,7 +491,7 @@ class SimulationUploadDrawer extends Component {
                                     <Col md="12">
                                         <label className="d-inline-block w-auto">Upload</label>
                                         <div class="tooltip-n ml-1 tooltip-left"><i className="fa fa-info-circle text-primary tooltip-icon"></i>
-                                            <span class="tooltiptext">Please upload the file with data. The file can be downloaded from previous screen.</span>
+                                            <span class="tooltiptext text-center">Please upload the file with data. The file can be downloaded from previous screen.</span>
                                         </div>
                                         <div className="input-group mt-1 input-withouticon " >
                                             <div className="file-uploadsection">
