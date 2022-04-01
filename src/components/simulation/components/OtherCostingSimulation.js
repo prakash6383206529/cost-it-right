@@ -31,7 +31,7 @@ const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function OtherCostingSimulation(props) {
-    const { simulationId, isFromApprovalListing, master } = props
+    const { simulationId, isFromApprovalListing, master, statusForLinkedToken } = props
 
     const { control, getValues, setValue } = useForm({
         mode: 'onBlur',
@@ -751,6 +751,7 @@ function OtherCostingSimulation(props) {
     const VerifyImpact = () => {
         setIsVerifyImpactDrawer(true)
     }
+    const isRowSelectable = rowNode => statusForLinkedToken === true ? false : true;
     return (
         <>
             {
@@ -831,6 +832,7 @@ function OtherCostingSimulation(props) {
                                                     suppressRowClickSelection={true}
                                                     rowSelection={'multiple'}
                                                     onSelectionChanged={onRowSelect}
+                                                    isRowSelectable={isRowSelectable}
                                                 >
                                                     <AgGridColumn width={150} field="CostingNumber" headerName='Costing ID'></AgGridColumn>
                                                     <AgGridColumn width={110} field="PartNo" headerName='Part No.'></AgGridColumn>
