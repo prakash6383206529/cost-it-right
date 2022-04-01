@@ -156,8 +156,7 @@ class FreightListing extends Component {
   */
   costingHeadFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-
-    return cellValue ? 'Vendor Based' : 'Zero Based';
+    return cellValue ? cellValue : ""
 
   }
 
