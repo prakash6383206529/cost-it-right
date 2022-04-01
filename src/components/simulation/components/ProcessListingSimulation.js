@@ -40,7 +40,6 @@ export function ProcessListingSimulation(props) {
     const dispatch = useDispatch()
     const processCostingList = useSelector(state => state.simulation.combinedProcessList)
     const { isSimulation, selectionForListingMasterAPI, objectForMultipleSimulation, isImpactedMaster, list } = props;
-    const [tableData, setTableData] = useState(isImpactedMaster ? list : processCostingList)
 
     useEffect(() => {
         if (isSimulation && selectionForListingMasterAPI === 'Combined') {
@@ -252,7 +251,7 @@ export function ProcessListingSimulation(props) {
                                 defaultColDef={defaultColDef}
                                 domLayout='autoHeight'
                                 floatingFilter={true}
-                                rowData={tableData}
+                                rowData={isImpactedMaster ? list : processCostingList}
                                 pagination={true}
                                 paginationPageSize={10}
                                 onGridReady={onGridReady}
