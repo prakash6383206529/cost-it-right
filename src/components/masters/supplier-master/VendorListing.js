@@ -76,7 +76,7 @@ class VendorListing extends Component {
             showPopup: false,
             deletedId: '',
             isViewMode: false,
-            isLoader:false
+            isLoader: false
 
         }
     }
@@ -221,9 +221,9 @@ class VendorListing extends Component {
             vendorName: vendorName,
             country: country,
         }
-        this.setState({isLoader:true})
+        this.setState({ isLoader: true })
         this.props.getSupplierDataList(skip, obj, take, isPagination, res => {
-            this.setState({isLoader:false})
+            this.setState({ isLoader: false })
             if (res.status === 202) {
                 this.setState({ pageNo: 0 })
                 this.setState({ totalRecordCount: 0 })
@@ -708,13 +708,13 @@ class VendorListing extends Component {
                                 </div>
                             </Col>
                         )}
-                        <Col md="6">
-                            {this.state.warningMessage && <WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} />}
-                        </Col>
-                        <Col md="6" lg="6">
-                            <div className="d-flex justify-content-end bd-highlight w100">
-                                <div>
 
+                        <Col md="12">
+                            <div className="d-flex justify-content-end bd-highlight w100">
+                                <div className="warning-message d-flex align-items-center">
+                                    {this.state.warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
+                                </div>
+                                <div>
                                     <button title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch(this)}><div class="filter mr-0"></div></button>
                                     {AddAccessibility && (
                                         <button
@@ -758,8 +758,8 @@ class VendorListing extends Component {
                         </Col>
                     </Row>
                 </form>
-                <div className={`ag-grid-wrapper height-width-wrapper pt-2  ${this.props.supplierDataList && this.props.supplierDataList?.length <=0 ?"overlay-contain": ""}`}>
-                <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
+                <div className={`ag-grid-wrapper height-width-wrapper pt-2  ${this.props.supplierDataList && this.props.supplierDataList?.length <= 0 ? "overlay-contain" : ""}`}>
+                    <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
                         <AgGridReact
                             defaultColDef={defaultColDef}
                             floatingFilter={true}
