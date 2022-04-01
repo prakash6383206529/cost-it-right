@@ -32,7 +32,9 @@ class AddExchangeRate extends Component {
       showPopup: false,
       updatedObj: {},
       setDisable: false,
-      disablePopup: false
+      disablePopup: false,
+      minEffectiveDate: '',
+      isFinancialDataChange: false
 
     }
   }
@@ -119,7 +121,7 @@ class AddExchangeRate extends Component {
             const { currencySelectList } = this.props;
 
             const currencyObj = currencySelectList && currencySelectList.find(item => Number(item.Value) === Data.CurrencyId)
-
+            this.setState({ minEffectiveDate: Data.EffectiveDate })
             this.setState({
               isEditFlag: true,
               // isLoader: false,
@@ -161,6 +163,35 @@ class AddExchangeRate extends Component {
     // this.props.getExchangeRateData('', (res) => { })
   }
 
+  onFinancialDataChange = (e) => {
+
+    if (e.target.name === "CurrencyExchangeRate") {
+      if (e.target.value == this.state.DataToChange.CurrencyExchangeRate && this.state.DataToChange.BankRate == this.props.filedObj.BankRate && this.state.DataToChange.BankCommissionPercentage == this.props.filedObj.BankCommissionPercentage && this.state.DataToChange.CustomRate == this.props.filedObj.CustomRate) {
+        this.setState({ isFinancialDataChange: false })
+        return
+      }
+    } else if (e.target.name === "BankRate") {
+      if (e.target.value == this.state.DataToChange.BankRate && this.state.DataToChange.CurrencyExchangeRate == this.props.filedObj.CurrencyExchangeRate && this.state.DataToChange.BankCommissionPercentage == this.props.filedObj.BankCommissionPercentage && this.state.DataToChange.CustomRate == this.props.filedObj.CustomRate) {
+        this.setState({ isFinancialDataChange: false })
+        return
+      }
+    }
+    else if (e.target.name === "BankCommissionPercentage") {
+      if (e.target.value == this.state.DataToChange.BankCommissionPercentage && this.state.DataToChange.BankRate == this.props.filedObj.BankRate && this.state.DataToChange.CurrencyExchangeRate == this.props.filedObj.CurrencyExchangeRate && this.state.DataToChange.CustomRate == this.props.filedObj.CustomRate) {
+        this.setState({ isFinancialDataChange: false })
+        return
+      }
+    }
+    else if (e.target.name === "CustomRate") {
+      if (e.target.value == this.state.DataToChange.CustomRate && this.state.DataToChange.BankRate == this.props.filedObj.BankRate && this.state.DataToChange.BankCommissionPercentage == this.props.filedObj.BankCommissionPercentage && this.state.DataToChange.CurrencyExchangeRate == this.props.filedObj.CurrencyExchangeRate) {
+        this.setState({ isFinancialDataChange: false })
+        return
+      }
+    }
+    this.setState({ isFinancialDataChange: true })
+
+  }
+
   /**
   * @method onSubmit
   * @description Used to Submit the form
@@ -179,7 +210,15 @@ class AddExchangeRate extends Component {
         return false;
       }
 
-      this.setState({ setDisable: true, disablePopup:false })
+      if (this.state.isFinancialDataChange) {
+        if ((DayTime(DataToChange.EffectiveDate).format("DD/MM/YYYY") === DayTime(effectiveDate).format("DD/MM/YYYY"))) {
+          this.setState({ setDisable: false })
+          Toaster.warning('Please update the effective date')
+          return false
+        }
+      }
+
+      this.setState({ setDisable: true, disablePopup: false })
       let updateData = {
         ExchangeRateId: ExchangeRateId,
         CurrencyId: currency.value,
@@ -297,6 +336,7 @@ class AddExchangeRate extends Component {
                           label="Currency"
                           component={searchableSelect}
                           placeholder={"Select"}
+                          onChange={this.onFinancialDataChange}
                           options={this.renderListing("currency")}
                           //onKeyUp={(e) => this.changeItemDesc(e)}
                           validate={
@@ -320,7 +360,8 @@ class AddExchangeRate extends Component {
                           validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
                           component={renderText}
                           required={true}
-                          disabled={false}
+                          onChange={this.onFinancialDataChange}
+                          disabled={isViewMode}
                           className=" "
                           customClassName="withBorder"
                         />
@@ -333,7 +374,8 @@ class AddExchangeRate extends Component {
                           placeholder={"Enter"}
                           validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
                           component={renderText}
-                          disabled={false}
+                          disabled={isViewMode}
+                          onChange={this.onFinancialDataChange}
                           className=" "
                           customClassName=" withBorder"
                         />
@@ -347,7 +389,8 @@ class AddExchangeRate extends Component {
                           validate={[positiveAndDecimalNumber, maxLength10, decimalLengthThree]}
                           component={renderText}
                           max={100}
-                          disabled={false}
+                          disabled={isViewMode}
+                          onChange={this.onFinancialDataChange}
                           className=" "
                           customClassName=" withBorder"
                         />
@@ -361,7 +404,8 @@ class AddExchangeRate extends Component {
                           placeholder={"Enter"}
                           validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
                           component={renderText}
-                          disabled={false}
+                          disabled={isViewMode}
+                          onChange={this.onFinancialDataChange}
                           className=" "
                           customClassName=" withBorder"
                         />
@@ -387,11 +431,12 @@ class AddExchangeRate extends Component {
                               placeholderText="Select date"
                               className="withBorder"
                               autoComplete={"off"}
+                              minDate={new Date(this.state.minEffectiveDate)}
                               disabledKeyboardNavigation
                               validate={[required]}
                               onChangeRaw={(e) => e.preventDefault()}
                               required
-                              disabled={isEditFlag ? true : false}
+                              disabled={isViewMode || !this.state.isFinancialDataChange}
 
                             />
                             {/* <Field
@@ -456,7 +501,7 @@ class AddExchangeRate extends Component {
 */
 function mapStateToProps(state) {
   const { exchangeRate, } = state;  //why not selector jere......from
-  const filedObj = selector(state, 'OperationCode', 'EffectiveDate', 'BankCommissionPercentage');
+  const filedObj = selector(state, 'OperationCode', 'EffectiveDate', 'BankCommissionPercentage', 'BankRate', 'CustomRate', 'CurrencyExchangeRate');
   const { exchangeRateData, currencySelectList } = exchangeRate;
 
   let initialValues = {};
