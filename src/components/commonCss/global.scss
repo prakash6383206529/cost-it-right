@@ -622,18 +622,9 @@ a:hover {
         }
       }
       .ag-grid-wrapper {
-        min-height: calc(100vh - 300px);
-        &.add-volume-table {
-          min-height: calc(100vh - 250px);
-        }
         &.rminsights_table {
           min-height: auto;
           height: auto !important;
-        }
-      }
-      .drawer-wrapper {
-        .ag-grid-wrapper {
-          min-height: calc(100vh - 240px);
         }
       }
       .search-user-block {
