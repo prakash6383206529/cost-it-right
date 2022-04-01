@@ -40,6 +40,7 @@ function SimulationApprovalListing(props) {
     const [reasonId, setReasonId] = useState('')
     const [showApprovalSumary, setShowApprovalSummary] = useState(false)
     const [redirectCostingSimulation, setRedirectCostingSimulation] = useState(false)
+    const [statusForLinkedToken, setStatusForLinkedToken] = useState(false)
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [rowData, setRowData] = useState(null);
@@ -200,8 +201,10 @@ function SimulationApprovalListing(props) {
     }
 
     const viewDetails = (rowObj) => {
+        console.log('rowObj: ', rowObj.Status);
         setApprovalData({ approvalProcessId: rowObj.ApprovalProcessId, approvalNumber: rowObj.ApprovalNumber, SimulationTechnologyHead: rowObj.SimulationTechnologyHead, SimulationTechnologyId: rowObj.SimulationTechnologyId })
         if (rowObj?.Status === 'Draft' || rowObj.SimulationType === 'Provisional' || rowObj?.Status === 'Linked') {
+            setStatusForLinkedToken(rowObj?.Status === 'Linked')
             dispatch(setMasterForSimulation({ label: rowObj.SimulationTechnologyHead, value: rowObj.SimulationTechnologyId }))
             setRedirectCostingSimulation(true)
         } else {
@@ -407,7 +410,8 @@ function SimulationApprovalListing(props) {
                 state: {
                     isFromApprovalListing: true,
                     approvalProcessId: approvalData.approvalProcessId,
-                    master: approvalData.SimulationTechnologyId
+                    master: approvalData.SimulationTechnologyId,
+                    statusForLinkedToken: statusForLinkedToken
                 }
 
             }}
