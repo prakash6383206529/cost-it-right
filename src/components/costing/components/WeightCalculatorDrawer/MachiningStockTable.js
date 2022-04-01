@@ -10,7 +10,7 @@ import Toaster from '../../../common/Toaster'
 import WarningMessage from '../../../common/WarningMessage'
 function MachiningStockTable(props) {
 
-  const { rmRowData, diableMachiningStock,hotcoldErrors ,disableAll} = props
+  const { rmRowData, diableMachiningStock, hotcoldErrors, disableAll } = props
   const trimValue = getConfigurationKey()
   const trim = trimValue.NoOfDecimalForInputOutput
   const [forgingVolume, setForgingVolume] = useState('')
@@ -54,7 +54,7 @@ function MachiningStockTable(props) {
   const handleVolumeChange = () => {
 
     setTimeout(() => {
-      
+
       calculateforgingVolumeAndWeight()
     }, 500);
 
@@ -92,21 +92,21 @@ function MachiningStockTable(props) {
       setIrregularMachiningStock(false)
     }
 
-   else if (value.label === "Square") {
+    else if (value.label === "Square") {
       setSquareMachiningStock(true)
       setCircularMachiningStock(false)
       setRectangularMachiningStock(false)
       setIrregularMachiningStock(false)
     }
-   
-   else if (value.label === "Rectangular") {
+
+    else if (value.label === "Rectangular") {
       setRectangularMachiningStock(true)
       setSquareMachiningStock(false)
       setCircularMachiningStock(false)
       setIrregularMachiningStock(false)
 
     }
-   else if (value.label === "Irregular") {
+    else if (value.label === "Irregular") {
       setSquareMachiningStock(false)
       setCircularMachiningStock(false)
       setRectangularMachiningStock(false)
@@ -119,7 +119,7 @@ function MachiningStockTable(props) {
   }
 
   const calculateforgingVolumeAndWeight = (value) => {
-    const description =getValues('description')
+    const description = getValues('description')
     const majorDiameter = checkForNull(getValues('majorDiameter'))
 
     const minorDiameter = checkForNull(getValues('minorDiameter'))
@@ -136,7 +136,7 @@ function MachiningStockTable(props) {
     let GrossWeight = 0;
     if ((minorDiameter > majorDiameter)) {
       reset({
-        description:description,
+        description: description,
         minorDiameter: 0,
         majorDiameter: majorDiameter,
         Length: Length,
@@ -182,9 +182,9 @@ function MachiningStockTable(props) {
         Volume = (Length * Breadth * Height)
         GrossWeight = (Volume * No * rmRowData.Density) / 1000000
         break;
-      case 'Irregular': 
+      case 'Irregular':
         Volume = forgingV
-        
+
 
         GrossWeight = (forgingV * No * rmRowData.Density) / 1000000
         break;
@@ -198,8 +198,8 @@ function MachiningStockTable(props) {
     setValue('grossWeight', checkForDecimalAndNull(GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
     setGrossWeight(GrossWeight)
 
-    
-    
+
+
 
   }
 
@@ -218,7 +218,7 @@ function MachiningStockTable(props) {
    * @description For updating and adding row
    */
   const addRow = () => {
-    const GrossWeight = checkForNull(grossWeight)   
+    const GrossWeight = checkForNull(grossWeight)
     const Volume = checkForNull(forgingVolume)
     const MajorDiameter = checkForNull(getValues('majorDiameter'))
     const MinorDiameter = checkForNull(getValues('minorDiameter'))
@@ -228,14 +228,14 @@ function MachiningStockTable(props) {
     const Breadth = checkForNull(getValues('Breadth'))
     const No = checkForNull(getValues('No'))
     const MachiningStock = getValues('MachiningStock')
-  
+
     setDisableMachineType(false)
-    if(Object.keys(errors).length>0||'finishedWeight' in hotcoldErrors >0){
+    if (Object.keys(errors).length > 0 || 'finishedWeight' in hotcoldErrors > 0) {
       return false
     }
 
-    if ( GrossWeight === 0  || Volume === 0  || MachiningStock === '' || Description === '') {
-      
+    if (GrossWeight === 0 || Volume === 0 || MachiningStock === '' || Description === '') {
+
       Toaster.warning("Please fill all the mandatory fields first.")
       return false;
     }
@@ -292,7 +292,7 @@ function MachiningStockTable(props) {
 
 
     reset({
-      
+
       majorDiameter: '',
       minorDiameter: '',
       description: '',
@@ -330,28 +330,28 @@ function MachiningStockTable(props) {
     setValue('forgingVolume', tempObj.Volume)
     setValue('description', tempObj.Description)
 
-    if(tempObj.TypesOfMachiningStock==='Circular' || tempObj.TypesOfMachiningStock==='Semi Circular'||tempObj.TypesOfMachiningStock==='Quarter Circular'){
+    if (tempObj.TypesOfMachiningStock === 'Circular' || tempObj.TypesOfMachiningStock === 'Semi Circular' || tempObj.TypesOfMachiningStock === 'Quarter Circular') {
       setDisableMachineType(true)
       setCircularMachiningStock(true)
       setSquareMachiningStock(false)
       setRectangularMachiningStock(false)
       setIrregularMachiningStock(false)
     }
-    else if(tempObj.TypesOfMachiningStock==='Square'){
+    else if (tempObj.TypesOfMachiningStock === 'Square') {
       setDisableMachineType(true)
       setSquareMachiningStock(true)
       setCircularMachiningStock(false)
       setRectangularMachiningStock(false)
       setIrregularMachiningStock(false)
     }
-    else if (tempObj.TypesOfMachiningStock==='Rectangular'){
+    else if (tempObj.TypesOfMachiningStock === 'Rectangular') {
       setDisableMachineType(true)
       setRectangularMachiningStock(true)
       setSquareMachiningStock(false)
       setCircularMachiningStock(false)
       setIrregularMachiningStock(false)
     }
-    else{
+    else {
       setDisableMachineType(true)
       setIrregularMachiningStock(true)
       setSquareMachiningStock(false)
@@ -403,7 +403,7 @@ function MachiningStockTable(props) {
       }
       return true
     })
-  
+
 
     props.tableValue(tempData)
     setTableData(tempData)
@@ -487,14 +487,14 @@ function MachiningStockTable(props) {
                     value: /^\d{1,3}(\.\d{0,3})?$/i,
                     message: 'Maximum length for interger is 3 and for decimal is 3',
                   },
-                  
+
                 }}
                 handleChange={() => { }}
                 defaultValue={''}
                 className=""
                 customClassName={'withBorder'}
                 errors={errors.Length}
-                disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue || disableAll  ? true : false}
+                disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue || disableAll ? true : false}
               />
             </Col>
           </>}
@@ -517,7 +517,7 @@ function MachiningStockTable(props) {
                       value: /^\d{0,3}(\.\d{0,5})?$/i,
                       message: 'Maximum length for interger is 3 and for decimal is 5',
                     },
-                   
+
                   }}
                   handleChange={() => { }}
                   defaultValue={''}
@@ -543,7 +543,7 @@ function MachiningStockTable(props) {
                       value: /^\d{0,3}(\.\d{0,5})?$/i,
                       message: 'Maximum length for interger is 3 and for decimal is 5',
                     },
-                  
+
                     // maxLength: 4,
                   }}
                   handleChange={() => { }}
@@ -607,7 +607,7 @@ function MachiningStockTable(props) {
                     value: /^\d{0,3}(\.\d{0,3})?$/i,
                     message: 'Maximum length for interger is 3 and for decimal is 3',
                   },
-                
+
                   // maxLength: 4,
                 }}
                 handleChange={() => { }}
@@ -648,7 +648,7 @@ function MachiningStockTable(props) {
                 className=""
                 customClassName={'withBorder'}
                 errors={errors.No}
-                disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue || disableAll  ? true : false}
+                disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue || disableAll ? true : false}
               />
             </Col>
 
@@ -692,14 +692,14 @@ function MachiningStockTable(props) {
                     value: /^\d{0,3}(\.\d{0,3})?$/i,
                     message: 'Maximum length for interger is 3 and for decimal is 3',
                   },
-                
+
                 }}
                 handleChange={() => { }}
                 defaultValue={''}
                 className=""
                 customClassName={'withBorder'}
                 errors={errors.Height}
-                disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue || disableAll  ? true : false}
+                disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue || disableAll ? true : false}
               />
             </Col>
 
@@ -846,7 +846,7 @@ function MachiningStockTable(props) {
                   return (
                     <Fragment>
                       <tr key={index}>
-                        <td> <div className='text-overflow' title={item.Description}>{item.Description !== null ? item.Description : '-'}</div></td>
+                        <td className='text-overflow'> <span title={item.Description}>{item.Description !== null ? item.Description : '-'}</span></td>
                         <td>{item.TypesOfMachiningStock !== null ? item.TypesOfMachiningStock : '-'}</td>
                         <td>{checkForDecimalAndNull(item.MajorDiameter, getConfigurationKey().NoOfDecimalForInputOutput) !== null ? checkForDecimalAndNull(item.MajorDiameter, getConfigurationKey().NoOfDecimalForInputOutput) : '-'}</td>
                         <td>{checkForDecimalAndNull(item.MinorDiameter, getConfigurationKey().NoOfDecimalForInputOutput) !== null ? checkForDecimalAndNull(item.MinorDiameter, getConfigurationKey().NoOfDecimalForInputOutput) : '-'}</td>
@@ -867,7 +867,7 @@ function MachiningStockTable(props) {
                               <button
                                 className="Edit mr-2"
                                 type={'button'}
-                                disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue || disableAll? true : false}
+                                disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue || disableAll ? true : false}
                                 onClick={() => editRow(index)}
                               />
                               <button
