@@ -388,7 +388,7 @@ function OperationCost(props) {
                             <td>
                               {(!CostingViewMode && !IsLocked) && <button className="Edit  mr-2 mb-0 align-middle" type={'button'} onClick={() => editItem(index)} />}
                               {(!CostingViewMode && !IsLocked) && <button className="Delete mb-0 align-middle" type={'button'} onClick={() => deleteItem(index, item.OperationId)} />}
-                              <Popup trigger={<button id={`popUpTriggerss${index}`} className="Comment-box ml-2" type={'button'} />}
+                              <Popup trigger={<button id={`popUpTriggerss${index}`} className="Comment-box ml-2 align-middle" type={'button'} />}
                                 position="top center">
                                 <TextAreaHookForm
                                   label="Remark:"
