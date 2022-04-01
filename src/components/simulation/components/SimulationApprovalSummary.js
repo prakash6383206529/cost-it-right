@@ -909,55 +909,6 @@ function SimulationApprovalSummary(props) {
             }
         }))
         setShowListing(true)
-
-
-
-        // else {
-
-        //     const { netPo, quantity } = getPOPriceAfterDecimal(approvalData[0].DecimalOption, dataSend[0].NewPOPrice ? dataSend[0].NewPOPrice : 0)
-        //     let pushdata = {
-        //         effectiveDate: dataSend[0].EffectiveDate ? DayTime(dataSend[0].EffectiveDate).format('MM/DD/YYYY') : '',
-        //         vendorCode: dataSend[0].VendorCode ? dataSend[0].VendorCode : '',
-        //         materialNumber: dataSend[1].PartNumber,
-        //         netPrice: netPo,
-        //         plant: dataSend[0].PlantCode ? dataSend[0].PlantCode : dataSend[0].DestinationPlantId ? dataSend[0].DestinationPlantCode : '',
-        //         currencyKey: dataSend[0].Currency ? dataSend[0].Currency : INR,
-        //         materialGroup: MaterialGroup?.label ? MaterialGroup.label.split('(')[0] : '',
-        //         taxCode: 'YW',
-        //         basicUOM: "NO",
-        //         purchasingGroup: PurchasingGroup?.label ? PurchasingGroup.label.split('(')[0] : '',
-        //         purchasingOrg: dataSend[0].CompanyCode ? dataSend[0].CompanyCode : '',
-        //         CostingId: approvalData[0].CostingId,
-        //         Quantity: quantity,
-        //         DecimalOption: approvalData[0].DecimalOption
-        //         // effectiveDate: '11/30/2021',
-        //         // vendorCode: '203670',
-        //         // materialNumber: 'S07004-003A0Y',
-        //         // materialGroup: 'M089',
-        //         // taxCode: 'YW',
-        //         // plant: '1401',
-        //         // netPrice: '30.00',
-        //         // currencyKey: 'INR',
-        //         // basicUOM: 'NO',
-        //         // purchasingOrg: 'MRPL',
-        //         // purchasingGroup: 'O02'
-
-        //     }
-        //     let obj = {
-        //         LoggedInUserId: loggedInUserId(),
-        //         Request: [pushdata]
-        //     }
-        //     dispatch(approvalPushedOnSap(obj, res => {
-        //         setIsDisabled(false)
-        //         if (res && res.status && (res.status === 200 || res.status === 204)) {
-        //             Toaster.success('Approval pushed successfully.')
-        //         }
-        //     }))
-        //     props.closeDrawer('', 'Push')
-        // }
-
-
-
     }, 500)
 
     return (

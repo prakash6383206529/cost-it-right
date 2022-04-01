@@ -55,7 +55,6 @@ function ApprovalSummary(props) {
       const { PartDetails, ApprovalDetails, ApprovalLevelStep, DepartmentId, Technology, ApprovalProcessId,
         ApprovalProcessSummaryId, ApprovalNumber, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow,
         CostingId, PartId, PurchasingGroup, MaterialGroup, DecimalOption } = res?.data?.Data?.Costings[0];
-      console.log('DecimalOption: ', DecimalOption);
 
       const technologyId = res?.data?.Data?.Costings[0].PartDetails.TechnologyId
       const partNumber = PartDetails.PartNumber
@@ -132,7 +131,6 @@ function ApprovalSummary(props) {
   }
 
   const callPushAPI = debounce(() => {
-    console.log('approvalData?.DecimalOption: ', approvalData);
     const { netPo, quantity } = getPOPriceAfterDecimal(approvalData?.DecimalOption, dataSend.NewPOPrice ? dataSend.NewPOPrice : 0)
     let pushdata = {
       effectiveDate: dataSend[0].EffectiveDate ? DayTime(dataSend[0].EffectiveDate).format('MM/DD/YYYY') : '',
