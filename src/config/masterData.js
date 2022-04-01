@@ -2445,16 +2445,17 @@ export const CostingSimulationDownloadRM = [
     { label: "Revision Number", value: "RevisionNumber" },
     { label: "Finish Weight", value: "RawMaterialFinishWeight" },
     { label: "Gross Weight", value: "RawMaterialGrossWeight" },
-    { label: "PO Price Old", value: "OldPOPrice" },
-    { label: "PO Price New", value: "NewPOPrice" },
+    { label: "Old PO Price", value: "OldPOPrice" },
+    { label: "New PO Price", value: "NewPOPrice" },
     { label: "PO Variance", value: "Variance" },
     { label: "Old Basic Rate", value: "OldRMRate" },
     { label: 'New Basic Rate', value: 'NewRMRate' },
     { label: "ScrapRate", value: "OldScrapRate" },
     { label: 'NewScrapRate', value: 'NewScrapRate' },
-    { label: "RM Cost Old", value: "OldRMPrice" },
-    { label: "RM Cost New", value: "NewRMPrice" },
+    { label: "Old RM Cost", value: "OldRMPrice" },
+    { label: "New RM Cost", value: "NewRMPrice" },
     { label: "RM Variance", value: "RMCVariance" },
+
     { label: "OldOverheadCost", value: "OldOverheadCost" },
     { label: "NewOverheadCost", value: "NewOverheadCost" },
     { label: "OldProfitCost", value: "OldProfitCost" },
@@ -2486,8 +2487,8 @@ export const CostingSimulationDownloadST = [
     { label: "Part Name", value: "PartName" },
     { label: "ECN Number", value: "ECNNumber" },
     { label: "Revision Number", value: "RevisionNumber" },
-    { label: "PO Price Old", value: "OldPOPrice" },
-    { label: "PO Price New", value: "NewPOPrice" },
+    { label: "Old PO Price", value: "OldPOPrice" },
+    { label: "New PO Price", value: "NewPOPrice" },
     { label: "PO Variance", value: "Variance" },
 
     { label: "OldSurfaceTreatmentRate", value: "OldSurfaceTreatmentRate" },
@@ -2531,8 +2532,8 @@ export const CostingSimulationDownloadOperation = [
     { label: "Part Name", value: "PartName" },
     { label: "ECN Number", value: "ECNNumber" },
     { label: "Revision Number", value: "RevisionNumber" },
-    { label: "PO Price Old", value: "OldPOPrice" },
-    { label: "PO Price New", value: "NewPOPrice" },
+    { label: "Old PO Price", value: "OldPOPrice" },
+    { label: "New PO Price", value: "NewPOPrice" },
     { label: "PO Variance", value: "Variance" },
 
     { label: "OperationName", value: "OperationName" },
@@ -2575,8 +2576,8 @@ export const CostingSimulationDownloadBOP = [
     { label: "Part Name", value: "PartName" },
     { label: "ECN Number", value: "ECNNumber" },
     { label: "Revision Number", value: "RevisionNumber" },
-    { label: "PO Price Old", value: "OldPOPrice" },
-    { label: "PO Price New", value: "NewPOPrice" },
+    { label: "Old PO Price", value: "OldPOPrice" },
+    { label: "New PO Price", value: "NewPOPrice" },
     { label: "PO Variance", value: "Variance" },
 
     { label: "BoughtOutPartName", value: "BoughtOutPartName" },
@@ -2614,12 +2615,13 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADRM = [
     { label: "Revision Number", value: "RevisionNumber" },
     { label: "Vendor Name", value: "VendorName" },
     { label: "Plant", value: "PlantName" },
-    { label: "PO Price Old", value: "OldPOPrice" },
-    { label: "PO Price New", value: "NewPOPrice" },
+    { label: "Plant Code", value: "PlantCode" },
+    { label: "Old PO Price", value: "OldPOPrice" },
+    { label: "New PO Price", value: "NewPOPrice" },
     { label: "PO Variance", value: "POVariance" },
-    { label: "RM Cost Old", value: "OldRMPrice" },
-    { label: "RM Cost New", value: "NewRMPrice" },
-    { label: "RM Variance", value: "Variance" },
+    { label: "Old RM Cost", value: "OldRMPrice" },
+    { label: "New RM Cost", value: "NewRMPrice" },
+    { label: "RM Variance", value: "RMVariance" },
 
 ]
 
@@ -3075,8 +3077,6 @@ export const ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl = [
 
 
 export const OperationGridForToken = [
-    { label: "OperationName", value: "OperationName" },
-    { label: "OperationCode", value: "OperationCode" },
     { label: "OldOperationRate", value: "OldOperationRate" },
     { label: "NewOperationRate", value: "NewOperationRate" },
     { label: "OperationVariance", value: "OperationVariance" },
@@ -3087,21 +3087,12 @@ export const OperationGridForToken = [
 ]
 
 export const RMGridForToken = [
-    { label: "PO Price Old", value: "OldPOPrice" },
-    { label: "PO Price New", value: "NewPOPrice" },
+    { label: "Old PO Price", value: "OldPOPrice" },
+    { label: "New PO Price", value: "NewPOPrice" },
     { label: "PO Variance", value: "Variance" },
-    { label: "Old Basic Rate", value: "OldRMRate" },
-    { label: 'New Basic Rate', value: 'NewRMRate' },
-    { label: "RM Variance", value: "RMCVariance" },
-
-
-    // { label: "PO Price Old", value: "OldPOPrice" },
-    // { label: "PO Price New", value: "NewPOPrice" },
-    // { label: "PO Variance", value: "Variance" },
-    // { label: "Old Basic Rate", value: "OldNetRawMaterialsCost" },
-    // { label: 'New Basic Rate', value: 'NewNetRawMaterialsCost' },
-    // { label: "RM Variance", value: "RMVariance" },
-
+    { label: "Old Basic Rate", value: "OldNetRawMaterialsCost" },
+    { label: 'New Basic Rate', value: 'NewNetRawMaterialsCost' },
+    { label: "RM Variance", value: "RMVariance" }
 ]
 
 export const STGridForToken = [
@@ -3118,8 +3109,6 @@ export const STGridForToken = [
 ]
 
 export const BOPGridForToken = [
-    { label: "BoughtOutPartName", value: "BoughtOutPartName" },
-    { label: "BoughtOutPartNumber", value: "BoughtOutPartNumber" },
     { label: "OldBOPCost", value: "OldBOPCost" },
     { label: "NewBOPCost", value: "NewBOPCost" },
     { label: "BOPVariance", value: "BOPVariance" },
@@ -3146,8 +3135,8 @@ export const InitialGridForToken = [
     { label: "Part Name", value: "PartName" },
     { label: "ECN Number", value: "ECNNumber" },
     { label: "Revision Number", value: "RevisionNumber" },
-    { label: "PO Price Old", value: "OldPOPrice" },
-    { label: "PO Price New", value: "NewPOPrice" },
+    { label: "Old PO Price", value: "OldPOPrice" },
+    { label: "New PO Price", value: "NewPOPrice" },
     { label: "PO Variance", value: "Variance" },
 ]
 
@@ -3200,8 +3189,8 @@ export const OperationGridForTokenSummary = [
 
 export const RMGridForTokenSummary = [
     { label: "RawMaterial Grade", value: "RMGrade" },
-    { label: "RM Cost Old", value: "OldRMPrice" },
-    { label: "RM Cost New", value: "NewRMPrice" },
+    { label: "Old RM Cost", value: "OldRMPrice" },
+    { label: "New RM Cost", value: "NewRMPrice" },
     { label: "RM Variance", value: "RMVariance" },
 
 ]
