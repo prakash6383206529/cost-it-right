@@ -5992,12 +5992,7 @@ left: 17rem;
   }
 }
 // <----START Remark popup css->
-.popup-content  {
-  // width: 189px;
-  // div {
-  //   left: 53%;
-  // }
-}
+
 .remark-btn-container {
   display: flex;
   justify-content: flex-end;
@@ -6009,23 +6004,7 @@ left: 17rem;
   }
 }
 // <----END Remark popup css->
-.rm-table-body {
-  .rm-part-name {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    @media screen and (max-width:$miniDesktop) {
-      max-width: 140px;
-    }
-  }
-  tr:first-child {
-    .rm-part-name {
-      border-top: transparent !important;
-    }
-  }
-}
+
 .break-word {
   word-break: break-word !important;
 }
