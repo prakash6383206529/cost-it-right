@@ -30,7 +30,10 @@
 
 .edit_pencil_icon { @include icons("../../assests/images/WhitePencil-Icon.svg", 12px, 12px);}
 
-.Delete { @include icons("../../assests/images/Group-8857.svg");}
+.Delete { 
+    @include icons("../../assests/images/Group-8857.svg");
+    @include extra-icon-styles;
+}
 
 .Comment-box { @include icons("../../assests/images/Comment-box.svg"); }
 
@@ -60,9 +63,10 @@
     position: $positio-relative;
     margin-right: 5px;
 }
-.plus-icon-square {@include icons("../../assests/images/add-icons.png", 43px, 35px);
+.plus-icon-square {@include icons("../../assests/images/add-icons.png", 43px, 35px,none);
     margin-top: 5px;
     background-position: center right;
+    cursor: pointer;
 }
 .calculate-icon {@include icons("../../assests/images/tool.svg", 43px, 35px);
     margin-top: 8px;
@@ -96,7 +100,7 @@
 
 .refresh-icon { @include icons("../../assests/images/refresh_icon.svg");}
 
-.blurPlus-icon-square {@include icons("../../assests/images/bluradd.png", 43px, 35px);
+.blurPlus-icon-square {@include icons("../../assests/images/bluradd.png", 43px, 35px, none);
     margin-top: 8px;
     background-position: center right;
     pointer-events: none;
