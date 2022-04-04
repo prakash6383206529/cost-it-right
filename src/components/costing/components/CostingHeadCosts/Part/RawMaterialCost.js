@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { EMPTY_DATA, PLASTIC } from '../../../../../config/constants'
 import { NumberFieldHookForm, TextFieldHookForm, TextAreaHookForm } from '../../../../layout/HookFormInputs'
 import Toaster from '../../../../common/Toaster'
-import { calculatePercentage, calculatePercentageValue, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey, isRMDivisorApplicable, maxLength20 } from '../../../../../helper'
+import { calculatePercentage, calculatePercentageValue, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey, isRMDivisorApplicable } from '../../../../../helper'
 import OpenWeightCalculator from '../../WeightCalculatorDrawer'
 import { getRawMaterialCalculationByTechnology, } from '../../../actions/CostWorking'
 import { ViewCostingContext } from '../../CostingDetails'
@@ -22,8 +22,8 @@ import 'reactjs-popup/dist/index.css';
 let counter = 0;
 function RawMaterialCost(props) {
   const { item } = props;
-  const IsLocked = item.IsLocked || item.IsPartLocked
-  const { register, handleSubmit, control, setValue, getValues, formState: { errors }, reset, setError } = useForm({
+  const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
+  const { register, handleSubmit, control, setValue, getValues, formState: { errors }, reset } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: {
@@ -79,9 +79,6 @@ function RawMaterialCost(props) {
   }, [])
 
   useEffect(() => {
-
-
-
     setTimeout(() => {
       const Params = {
         index: props.index,
@@ -189,6 +186,7 @@ function RawMaterialCost(props) {
         setValue(`${rmGridFields}.${index}.ScrapRecoveryPercentage`, checkForDecimalAndNull(item.RecoveryPercentage, getConfigurationKey().NoOfDecimalForInputOutput))
         setValue(`${rmGridFields}.${index}.BurningLossWeight`, checkForDecimalAndNull(item.BurningValue, getConfigurationKey().NoOfDecimalForInputOutput))
         setValue(`${rmGridFields}.${index}.ScrapWeight`, checkForDecimalAndNull(item.ScrapWeight, getConfigurationKey().NoOfDecimalForInputOutput))
+        return null
       })
     }
 
@@ -708,11 +706,12 @@ function RawMaterialCost(props) {
       setValue(`${rmGridFields}.${index}.ScrapRecoveryPercentage`, checkForDecimalAndNull(item.RecoveryPercentage, getConfigurationKey().NoOfDecimalForInputOutput))
       setValue(`${rmGridFields}.${index}.BurningLossWeight`, checkForDecimalAndNull(item.BurningValue, getConfigurationKey().NoOfDecimalForInputOutput))
       setValue(`${rmGridFields}.${index}.ScrapWeight`, checkForDecimalAndNull(item.ScrapWeight, getConfigurationKey().NoOfDecimalForInputOutput))
+      return null
     })
     setGridData(tempArr)
 
     let selectedIds = []
-    tempArr.map(el => { selectedIds.push(el.RawMaterialId) })
+    tempArr.map(el => (selectedIds.push(el.RawMaterialId)))
     setIds(selectedIds)
 
     setIsApplyMasterBatch(false)
@@ -800,7 +799,7 @@ function RawMaterialCost(props) {
 
   // THIS WILL CALLED WHEN RM REMOVED FROM GRID TO RESET MASTERBATCH DATA
   useEffect(() => {
-    let tempArr = []
+
     if (gridData && gridData.length === 0) {
       const Params = {
         BOMLevel: props.item.BOMLevel,

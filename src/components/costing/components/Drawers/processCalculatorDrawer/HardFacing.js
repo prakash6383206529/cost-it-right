@@ -31,10 +31,10 @@ function HardFacing(props) {
         totalCycleTimeMins: WeightCalculatorRequest && WeightCalculatorRequest.TotalCycleTimeMins !== undefined ? WeightCalculatorRequest.TotalCycleTimeMins : '',
         TotalCycleTimeSec: WeightCalculatorRequest && WeightCalculatorRequest.TotalCycleTimeSec !== undefined ? WeightCalculatorRequest.TotalCycleTimeSec : '',
         efficiencyPercentage: WeightCalculatorRequest && WeightCalculatorRequest.EfficiencyPercentage !== undefined ? WeightCalculatorRequest.EfficiencyPercentage : '',
-        partsPerHour: WeightCalculatorRequest && WeightCalculatorRequest.PartsPerHour !== undefined ? WeightCalculatorRequest.PartsPerHour : '',
+        partsPerHour: WeightCalculatorRequest && WeightCalculatorRequest.PartPerHour !== undefined ? WeightCalculatorRequest.PartPerHour : '',
         processCost: WeightCalculatorRequest && WeightCalculatorRequest.ProcessCost !== undefined ? WeightCalculatorRequest.ProcessCost : '',
     }
-    const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
+    const { register, handleSubmit, control, setValue, getValues, formState: { errors }, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
         defaultValues: defaultValues,
@@ -50,8 +50,8 @@ function HardFacing(props) {
         setPartsPerHour()    //partsPerHour
     }, [fieldValues])
 
-    const trim = getConfigurationKey().NoOfDecimalForInputOutput
-    const { technology, process, calculateMachineTime } = props
+
+    const { calculateMachineTime } = props
     const [totalMachiningTime, setTotalMachiningTime] = useState(WeightCalculatorRequest && WeightCalculatorRequest.TotalMachiningTime !== undefined ? WeightCalculatorRequest.TotalMachiningTime : '')
 
     const setSpindleSpeed = () => {
@@ -128,7 +128,7 @@ function HardFacing(props) {
         obj.TotalCycleTimeMins = dataToSend.totalCycleTimeMins
         obj.TotalCycleTimeSec = dataToSend.TotalCycleTimeSec
         obj.EfficiencyPercentage = value.efficiencyPercentage
-        obj.PartsPerHour = dataToSend.partsPerHour
+        obj.PartPerHour = dataToSend.partsPerHour
         obj.ProcessCost = dataToSend.processCost
         obj.TotalMachiningTime = totalMachiningTime
         obj.MachineRate = props.calculatorData.MHR
