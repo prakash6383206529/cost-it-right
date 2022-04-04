@@ -301,7 +301,7 @@ class AddIndivisualPart extends Component {
         this.cancel()
         return false;
       }
-      this.setState({ setDisable: true, disablePopup:false })
+      this.setState({ setDisable: true, disablePopup: false })
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: PartId }
       })
@@ -442,18 +442,20 @@ class AddIndivisualPart extends Component {
                           </Col>
 
                           <Col md="3">
-                            <Field
-                              label={`Part Description`}
-                              name={"Description"}
-                              type="text"
-                              placeholder={""}
-                              validate={[maxLength80, checkWhiteSpaces]}
-                              component={renderText}
-                              required={false}
-                              className=""
-                              customClassName={"withBorder"}
-                              disabled={isViewMode}
-                            />
+                            <span>
+                              <Field
+                                label={`Part Description`}
+                                name={"Description"}
+                                type="text"
+                                placeholder={""}
+                                validate={[maxLength80, checkWhiteSpaces]}
+                                component={renderText}
+                                required={false}
+                                className=""
+                                customClassName={"withBorder"}
+                                disabled={isViewMode}
+                              />
+                            </span>
                           </Col>
                           {initialConfiguration?.IsProductMasterConfigurable ? (
 
