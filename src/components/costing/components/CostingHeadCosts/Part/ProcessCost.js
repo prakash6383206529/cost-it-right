@@ -143,7 +143,7 @@ function ProcessCost(props) {
     tempData = {
       ...tempData,
       Quantity: tempData.UOMType === TIME ? checkForNull(weightData.ProcessCost / weightData.MachineRate) : weightData.Quantity,
-      ProductionPerHour: tempData.UOMType === TIME ? checkForNull(weightData.PartPerHour) : '-',
+      ProductionPerHour: tempData.UOMType === TIME ? checkForNull(weightData.PartsPerHour) : '-',
       ProcessCost: weightData.ProcessCost,
       IsCalculatedEntry: true,
       ProcessCalculationId: weightData.ProcessCalculationId,
@@ -169,7 +169,7 @@ function ProcessCost(props) {
       setGridData(tempArray)
       setValue(`${ProcessGridFields}.${calciIndex}.Quantity`, tempData.UOMType === TIME ? checkForDecimalAndNull((weightData.ProcessCost / weightData.MachineRate), getConfigurationKey().NoOfDecimalForInputOutput) : weightData.Quantity)
       setValue(`${ProcessGridFields}.${calciIndex}.ProcessCost`, checkForDecimalAndNull(weightData.ProcessCost, getConfigurationKey().NoOfDecimalForPrice))
-      // setValue(`${ProcessGridFields}.${calciIndex}.ProductionPerHour`,weightData.UOMType === TIME ? checkForDecimalAndNull(weightData.Quantity):'-')
+      // setValue(`${ProcessGridFields}.${calciIndex}.ProductionPerHour`, weightData.UOMType === TIME ? checkForDecimalAndNull(weightData.PartsPerHour, getConfigurationKey().NoOfDecimalForInputOutput) : '-')
     }, 100)
   }
 
