@@ -89,7 +89,7 @@ function HardFacing(props) {
         setValue('partsPerHour', checkForDecimalAndNull(partsPerHour, getConfigurationKey().NoOfDecimalForInputOutput))
         const processCost = (props?.calculatorData?.MHR) / partsPerHour
         setDataToSend(prevState => ({ ...prevState, processCost: processCost }))
-        setValue('processCost', checkForDecimalAndNull(processCost, getConfigurationKey().NoOfDecimalForInputOutput))
+        setValue('processCost', checkForDecimalAndNull(processCost, getConfigurationKey().NoOfDecimalForPrice))
     }
 
     const onSubmit = (value) => {
@@ -104,7 +104,7 @@ function HardFacing(props) {
         obj.UnitOfMeasurementId = props.calculatorData.UnitOfMeasurementId
         obj.MachineRateId = props.calculatorData.MachineRateId
         obj.PartNumber = costData.PartNumber
-        obj.ProcessId = props.calculatorData.ProcessId
+        obj.ProcessIdRef = props.calculatorData.ProcessId
         obj.ProcessName = props.calculatorData.ProcessName
         obj.ProcessDescription = props.calculatorData.ProcessDescription
         obj.MachineName = costData.MachineName
