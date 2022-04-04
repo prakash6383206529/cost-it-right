@@ -204,7 +204,7 @@ function PushButtonDrawer(props) {
                 </Col>
               </Row>
 
-              <Row className="pl-3">
+              {/* <Row className="pl-3">
                 <Col md="12">
                   <SearchableSelectHookForm
                     label={"Material Group"}
@@ -222,9 +222,9 @@ function PushButtonDrawer(props) {
                     disabled={true}
                   />
                 </Col>
-              </Row>
+              </Row> */}
 
-              <Row className="pl-3">
+              {/* <Row className="pl-3">
                 <Col md="12">
                   <SearchableSelectHookForm
                     label={"Purchasing Group"}
@@ -242,7 +242,7 @@ function PushButtonDrawer(props) {
                     disabled={true}
                   />
                 </Col>
-              </Row>
+              </Row> */}
 
               <Row className="sf-btn-footer no-gutters justify-content-between">
                 <div className="col-sm-12 text-right bluefooter-butn">

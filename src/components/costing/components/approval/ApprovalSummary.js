@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, Table } from 'reactstrap'
-import { checkForDecimalAndNull, checkVendorPlantConfigurable, formViewData, loggedInUserId } from '../../../../helper'
-import { getApprovalSummary } from '../../actions/Approval'
+import { checkForDecimalAndNull, checkVendorPlantConfigurable, formViewData, getPOPriceAfterDecimal, loggedInUserId } from '../../../../helper'
+import { approvalPushedOnSap, getApprovalSummary } from '../../actions/Approval'
 import { setCostingViewData, storePartNumber } from '../../actions/Costing'
 import ApprovalWorkFlow from './ApprovalWorkFlow'
 import ApproveRejectDrawer from './ApproveRejectDrawer'
@@ -16,6 +16,9 @@ import { Errorbox } from '../../../common/ErrorBox'
 import { Redirect } from 'react-router'
 import LoaderCustom from '../../../common/LoaderCustom';
 import CalculatorWrapper from '../../../common/Calculator/CalculatorWrapper'
+import { debounce } from 'lodash'
+import Toaster from '../../../common/Toaster'
+import { INR } from '../../../../config/constants'
 
 function ApprovalSummary(props) {
   const { approvalNumber, approvalProcessId } = props.location.state
@@ -126,6 +129,49 @@ function ApprovalSummary(props) {
   if (showListing) {
     return <Redirect to="/approval-listing" />
   }
+
+  const callPushAPI = debounce(() => {
+    const { netPo, quantity } = getPOPriceAfterDecimal(approvalData?.DecimalOption, dataSend.NewPOPrice ? dataSend.NewPOPrice : 0)
+    let pushdata = {
+      effectiveDate: dataSend[0].EffectiveDate ? DayTime(dataSend[0].EffectiveDate).format('MM/DD/YYYY') : '',
+      vendorCode: dataSend[0].VendorCode ? dataSend[0].VendorCode : '',
+      materialNumber: dataSend[1].PartNumber,
+      netPrice: netPo,
+      plant: dataSend[0].PlantCode ? dataSend[0].PlantCode : dataSend[0].DestinationPlantId ? dataSend[0].DestinationPlantCode : '',
+      currencyKey: dataSend[0].Currency ? dataSend[0].Currency : INR,
+      materialGroup: '',
+      taxCode: 'YW',
+      basicUOM: "NO",
+      purchasingGroup: '',
+      purchasingOrg: dataSend[0].CompanyCode ? dataSend[0].CompanyCode : '',
+      CostingId: approvalData.CostingId,
+      Quantity: quantity,
+      DecimalOption: approvalData.DecimalOption
+      // effectiveDate: '11/30/2021',
+      // vendorCode: '203670',
+      // materialNumber: 'S07004-003A0Y',
+      // materialGroup: 'M089',
+      // taxCode: 'YW',
+      // plant: '1401',
+      // netPrice: '30.00',
+      // currencyKey: 'INR',
+      // basicUOM: 'NO',
+      // purchasingOrg: 'MRPL',
+      // purchasingGroup: 'O02'
+
+    }
+    let obj = {
+      LoggedInUserId: loggedInUserId(),
+      Request: [pushdata]
+    }
+    dispatch(approvalPushedOnSap(obj, res => {
+      if (res && res.status && (res.status === 200 || res.status === 204)) {
+        Toaster.success('Approval pushed successfully.')
+      }
+    }))
+    setShowListing(true)
+
+  }, 500)
 
   return (
 
@@ -417,7 +463,7 @@ function ApprovalSummary(props) {
             <Row className="sf-btn-footer no-gutters justify-content-between">
               <div className="col-sm-12 text-right bluefooter-butn">
                 <Fragment>
-                  <button type="submit" className="submit-button mr5 save-btn" onClick={() => setPushButton(true)}>
+                  <button type="submit" className="submit-button mr5 save-btn" onClick={() => callPushAPI()}>
                     <div className={"save-icon"}></div>
                     {"Repush"}
                   </button>
