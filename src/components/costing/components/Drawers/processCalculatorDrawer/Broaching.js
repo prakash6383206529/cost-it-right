@@ -113,7 +113,6 @@ function Broaching(props) {
         if (e.name === 'majorDiameter') {
             minorDia = getValues('minorDiameter')
             majorDia = e.value
-
         } else {
             minorDia = e.value
             majorDia = getValues('majorDiameter')
@@ -121,12 +120,10 @@ function Broaching(props) {
 
         if (minorDia && majorDia && Number(minorDia) > Number(majorDia)) {
             Toaster.warning('Minor diameter cannot be greater than major diameter')
-
             if (e.name === 'majorDiameter') {
                 setTimeout(() => {
                     setValue('majorDiameter', "")
                 }, 400);
-
             } else {
                 setTimeout(() => {
                     setValue('minorDiameter', "")
@@ -134,7 +131,6 @@ function Broaching(props) {
             }
             return false
         }
-
     }, 500)
 
     const onSubmit = (value) => {
