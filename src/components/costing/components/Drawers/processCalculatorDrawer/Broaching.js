@@ -8,6 +8,7 @@ import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUser
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 import { saveMachiningProcessCostCalculationData } from '../../../actions/CostWorking'
 import Toaster from '../../../../common/Toaster'
+import { debounce } from 'lodash'
 
 function Broaching(props) {
     const WeightCalculatorRequest = props.calculatorData.WeightCalculatorRequest
@@ -100,8 +101,41 @@ function Broaching(props) {
         setValue('partsPerHour', checkForDecimalAndNull(partsPerHour, getConfigurationKey().NoOfDecimalForInputOutput))
         const processCost = (props?.calculatorData?.MHR) / checkForNull(partsPerHour)
         setDataToSend(prevState => ({ ...prevState, processCost: processCost }))
-        setValue('processCost', checkForDecimalAndNull(processCost, getConfigurationKey().NoOfDecimalForInputOutput))
+        setValue('processCost', checkForDecimalAndNull(processCost, getConfigurationKey().NoOfDecimalForPrice))
     }
+
+
+    const handleDiameterChange = debounce((e) => {
+
+        let majorDia;
+        let minorDia;
+
+        if (e.name === 'majorDiameter') {
+            minorDia = getValues('minorDiameter')
+            majorDia = e.value
+
+        } else {
+            minorDia = e.value
+            majorDia = getValues('majorDiameter')
+        }
+
+        if (minorDia && majorDia && Number(minorDia) > Number(majorDia)) {
+            Toaster.warning('Minor diameter cannot be greater than major diameter')
+
+            if (e.name === 'majorDiameter') {
+                setTimeout(() => {
+                    setValue('majorDiameter', "")
+                }, 400);
+
+            } else {
+                setTimeout(() => {
+                    setValue('minorDiameter', "")
+                }, 400);
+            }
+            return false
+        }
+
+    }, 500)
 
     const onSubmit = (value) => {
         let obj = {}
@@ -115,7 +149,7 @@ function Broaching(props) {
         obj.UnitOfMeasurementId = props.calculatorData.UnitOfMeasurementId
         obj.MachineRateId = props.calculatorData.MachineRateId
         obj.PartNumber = costData.PartNumber
-        obj.ProcessId = props.calculatorData.ProcessId
+        obj.ProcessIdRef = props.calculatorData.ProcessId
         obj.ProcessName = props.calculatorData.ProcessName
         obj.ProcessDescription = props.calculatorData.ProcessDescription
         obj.MachineName = costData.MachineName
@@ -233,7 +267,7 @@ function Broaching(props) {
                                                         message: 'Maximum length for interger is 4 and for decimal is 7',
                                                     },
                                                 }}
-                                                handleChange={() => { }}
+                                                handleChange={(e) => handleDiameterChange(e.target)}
                                                 defaultValue={''}
                                                 className=""
                                                 customClassName={'withBorder'}
@@ -259,7 +293,7 @@ function Broaching(props) {
                                                         message: 'Maximum length for interger is 4 and for decimal is 7',
                                                     },
                                                 }}
-                                                handleChange={() => { }}
+                                                handleChange={(e) => handleDiameterChange(e.target)}
                                                 defaultValue={''}
                                                 className=""
                                                 customClassName={'withBorder'}
