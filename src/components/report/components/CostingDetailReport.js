@@ -582,10 +582,7 @@ function ReportListing(props) {
                         <AgGridColumn field='NetToolCost' headerName='Net Tool Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                         <AgGridColumn field='OtherCostPercentage' headerName='Other Cost Percentage' cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
                         <AgGridColumn field='AnyOtherCost' headerName='Any Other Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
-                        <AgGridColumn field='OtherCost' headerName='Other Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
-                        <AgGridColumn field='NetOtherCost' headerName='Net Other Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
-                        <AgGridColumn field='TotalOtherCost' headerName='Total Other Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
-                        <AgGridColumn field='EffectiveDate' headerName='Effective Date' cellRenderer='effectiveDateFormatter' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
+                        <AgGridColumn field='EffectiveDate' headerName='Effective Date' cellRenderer='effectiveDateFormatter'></AgGridColumn>
                         <AgGridColumn field='Currency' headerName='Currency' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='NetPOPriceOtherCurrency' headerName='Net PO Price Other Currency' cellRenderer='hyphenFormatter'></AgGridColumn>
                         {/* <AgGridColumn field='NetPOPrice' headerName='Net PO Price' cellRenderer='hyphenFormatter'></AgGridColumn> */}
