@@ -4,7 +4,7 @@ import { Row, Col, } from 'reactstrap';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import NoContentFound from '../../common/NoContentFound';
-import { EMPTY_DATA, EXCHNAGERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, BOPDOMESTIC, BOPIMPORT, MACHINERATE } from '../../../config/constants';
+import { EMPTY_DATA, EXCHNAGERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, BOPDOMESTIC, BOPIMPORT, MACHINERATE, OVERHEAD } from '../../../config/constants';
 import { SearchableSelectHookForm } from '../../layout/HookFormInputs'
 import { getVerifyBoughtOutPartSimulationList, getVerifyMachineRateSimulationList, getVerifyOverheadProfitSimulationList, getVerifyProfitSimulationList, getVerifySimulationList, getVerifySurfaceTreatmentSimulationList } from '../actions/Simulation';
 import RunSimulationDrawer from './RunSimulationDrawer';
@@ -49,7 +49,7 @@ function VerifySimulation(props) {
     const isExchangeRate = Number(selectedMasterForSimulation.value) === (Number(EXCHNAGERATE));
     const isBOPDomesticOrImport = ((Number(selectedMasterForSimulation.value) === Number(BOPDOMESTIC)) || (Number(selectedMasterForSimulation.value) === Number(BOPIMPORT)))
     const isMachineRate = Number(selectedMasterForSimulation.value) === (Number(MACHINERATE));
-    const isOverHeadProfit = Number(selectedMasterForSimulation.value) === (Number(BOPIMPORT));
+    const isOverHeadProfit = Number(selectedMasterForSimulation.value) === (Number(OVERHEAD));
 
     // const isAssemblyCosting = true
     const dispatch = useDispatch()
@@ -574,7 +574,7 @@ function VerifySimulation(props) {
 
                                                 {isOverHeadProfit === true &&
                                                     <>
-                                                        <AgGridColumn width={120} field="RMName" headerName="RM Name" ></AgGridColumn>
+                                                        <AgGridColumn width={120} field="OverheadName" headerName="Overhead Name" ></AgGridColumn>
                                                     </>
                                                 }
 
