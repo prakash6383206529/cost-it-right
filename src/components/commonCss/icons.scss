@@ -177,7 +177,7 @@
 .Add-file {@include icons("../../assests/images/add-file4.svg");
     @include extra-icon-styles;
 }
-.lock_icon { @include icons("../../assests/images/lock_icon.png", 28px, 26px);
+.lock_icon { @include icons("../../assests/images/lock.svg", 17px, 17px);
     cursor: pointer;
     background-position: center;
     display: inline-block;
