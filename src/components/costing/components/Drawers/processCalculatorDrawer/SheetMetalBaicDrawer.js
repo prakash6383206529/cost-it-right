@@ -134,6 +134,7 @@ function SheetMetalBaicDrawer(props) {
     obj.Cavity = value.Cavity
     obj.Quantity = props.calculatorData.UOMType === TIME ? Number(checkForNull(processCost) / checkForNull(props.calculatorData.MHR)) : Number(quantityState)
     obj.ProcessCost = processCost
+    obj.MachineRate = props?.calculatorData?.MHR
     obj.LoggedInUserId = loggedInUserId()
     obj.UnitTypeId = props.calculatorData.UOMTypeId
     obj.UnitType = props.calculatorData.UOMType

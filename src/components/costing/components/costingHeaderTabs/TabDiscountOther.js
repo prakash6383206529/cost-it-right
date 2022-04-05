@@ -192,7 +192,7 @@ function TabDiscountOther(props) {
             setValue('HundiDiscountType', OtherCostDetails.DiscountCostType !== null ? { label: OtherCostDetails.DiscountCostType, value: OtherCostDetails.DiscountCostType } : '')
 
             setValue('Currency', OtherCostDetails.Currency !== null ? { label: OtherCostDetails.Currency, value: OtherCostDetails.CurrencyId } : [])
-            setValue('NetPOPriceOtherCurrency', OtherCostDetails.NetPOPriceOtherCurrency !== null ? OtherCostDetails.NetPOPriceOtherCurrency : '')
+            setValue('NetPOPriceOtherCurrency', OtherCostDetails.NetPOPriceOtherCurrency !== null ? checkForDecimalAndNull(OtherCostDetails.NetPOPriceOtherCurrency, initialConfiguration.NoOfDecimalForPrice) : '')
             setNetPoPriceCurrencyState(OtherCostDetails.NetPOPriceOtherCurrency !== null ? OtherCostDetails.NetPOPriceOtherCurrency : '')
             setValue('Remarks', OtherCostDetails.Remark !== null ? OtherCostDetails.Remark : '')
             setEffectiveDate(DayTime(OtherCostDetails.EffectiveDate).isValid() ? DayTime(OtherCostDetails.EffectiveDate) : '')
