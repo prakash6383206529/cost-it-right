@@ -1735,7 +1735,12 @@ export const EXCHNAGERATE = '8'
 export const MACHINERATE = '9'
 export const OVERHEAD = 'Overhead'
 export const PROFIT = 'Profits'
-// export constse
+
+// BULK UPLOAD
+export const SHEETMETAL_GROUP_BULKUPLOAD = 1
+export const PLASTIC_GROUP_BULKUPLOAD = 2
+export const MACHINING_GROUP_BULKUPLOAD = 3
+
 
 export const REASON_ID = 2
 export const TOFIXEDVALUE = 10
@@ -1813,4 +1818,4 @@ export const LEVEL1 = 'L1';
 export const SUB_ASSEMBLY = 'Sub Assembly';
 
 //VERSION 
-export const VERSION = "V1.2.112";
+export const VERSION = "V1.2.114";
