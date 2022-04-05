@@ -59,10 +59,6 @@ function VerifySimulation(props) {
 
     const verifyCostingList = (plantId = '', rawMatrialId = '') => {
         const plant = filteredRMData.plantId && filteredRMData.plantId.value ? filteredRMData.plantId.value : null
-<<<<<<< HEAD
-
-=======
->>>>>>> 5489c8f22 (unnecessary code removed)
         switch (Number(selectedMasterForSimulation.value)) {
             case Number(RMDOMESTIC):
                 dispatch(getVerifySimulationList(props.token, plant, rawMatrialId, (res) => {
