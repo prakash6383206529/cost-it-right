@@ -330,7 +330,7 @@ class AddExchangeRate extends Component {
                 >
                   <div className="add-min-height">
                     <Row>
-                      <Col md="4">
+                      <Col md="3">
                         <Field
                           name="Currency"
                           type="text"
@@ -352,7 +352,7 @@ class AddExchangeRate extends Component {
                           disabled={isEditFlag ? true : false}
                         />
                       </Col>
-                      <Col md="4">
+                      <Col md="3">
                         <Field
                           label={`Currency Exchange Rate(INR)`}
                           name={"CurrencyExchangeRate"}
@@ -367,7 +367,7 @@ class AddExchangeRate extends Component {
                           customClassName="withBorder"
                         />
                       </Col>
-                      <Col md="4">
+                      <Col md="3">
                         <Field
                           label={`Bank Rate(INR)`}
                           name={"BankRate"}
@@ -381,7 +381,7 @@ class AddExchangeRate extends Component {
                           customClassName=" withBorder"
                         />
                       </Col>
-                      <Col md="4">
+                      <Col md="3">
                         <Field
                           label={`Bank Commission(%)`}
                           name={"BankCommissionPercentage"}
@@ -397,7 +397,7 @@ class AddExchangeRate extends Component {
                         />
                       </Col>
 
-                      <Col md="4">
+                      <Col md="3">
                         <Field
                           label={`Custom Rate(INR)`}
                           name={"CustomRate"}
@@ -411,7 +411,7 @@ class AddExchangeRate extends Component {
                           customClassName=" withBorder"
                         />
                       </Col>
-                      <Col md="4">
+                      <Col md="3">
                         <div className="form-group">
                           <label>
                             Effective Date
