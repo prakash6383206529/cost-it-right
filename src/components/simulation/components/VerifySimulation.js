@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
-import { useForm, Controller } from 'react-hook-form'
 import { Row, Col, } from 'reactstrap';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import NoContentFound from '../../common/NoContentFound';
 import { EMPTY_DATA, EXCHNAGERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, BOPDOMESTIC, BOPIMPORT, MACHINERATE, OVERHEAD } from '../../../config/constants';
-import { SearchableSelectHookForm } from '../../layout/HookFormInputs'
 import { getVerifyBoughtOutPartSimulationList, getVerifyMachineRateSimulationList, getVerifyOverheadProfitSimulationList, getVerifyProfitSimulationList, getVerifySimulationList, getVerifySurfaceTreatmentSimulationList } from '../actions/Simulation';
 import RunSimulationDrawer from './RunSimulationDrawer';
 import CostingSimulation from './CostingSimulation';
@@ -18,7 +16,6 @@ import LoaderCustom from '../../common/LoaderCustom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { node } from 'prop-types';
 import { debounce } from 'lodash'
 // import AssemblySimulation from './AssemblySimulation';
 
@@ -26,7 +23,6 @@ const gridOptions = {};
 
 function VerifySimulation(props) {
     const { cancelVerifyPage, token } = props
-    const [shown, setshown] = useState(false);
     const [selectedRowData, setSelectedRowData] = useState([]);
 
     const [selectedIds, setSelectedIds] = useState('')
@@ -37,11 +33,9 @@ function VerifySimulation(props) {
     const [hideRunButton, setHideRunButton] = useState(false)
     const [simulationDrawer, setSimulationDrawer] = useState(false)
     const [costingPage, setSimulationCostingPage] = useState(false)
-    const [material, setMaterial] = useState([])
     const [objs, setObj] = useState({})
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
-    const [rowData, setRowData] = useState(null);
     // const [showAssemblyPage, setShowAssemblyPage] = useState(false);   // REJECTED ASSEMBLY
     const { filteredRMData } = useSelector(state => state.material)
     const { selectedMasterForSimulation } = useSelector(state => state.simulation)
@@ -65,7 +59,6 @@ function VerifySimulation(props) {
 
     const verifyCostingList = (plantId = '', rawMatrialId = '') => {
         const plant = filteredRMData.plantId && filteredRMData.plantId.value ? filteredRMData.plantId.value : null
-        // if (props.token) {
         switch (Number(selectedMasterForSimulation.value)) {
             case Number(RMDOMESTIC):
                 dispatch(getVerifySimulationList(props.token, plant, rawMatrialId, (res) => {
@@ -116,8 +109,6 @@ function VerifySimulation(props) {
                         setTokenNo(data.TokenNumber)
                         setSimualtionId(data.SimulationId)
                         setSimulationTechnologyId(data.SimulationtechnologyId)
-                        // setMasterId(data.SimulationtechnologyId)
-                        // setVerifyList(data.SimulationCombinedProcessImpactedCostings)
                         setHideRunButton(false)
                     }
                 }))
@@ -135,8 +126,6 @@ function VerifySimulation(props) {
                         setTokenNo(data.TokenNumber)
                         setSimualtionId(data.SimulationId)
                         setSimulationTechnologyId(data.SimulationtechnologyId)
-                        // setMasterId(data.SimulationtechnologyId)
-                        // setVerifyList(data.SimulationCombinedProcessImpactedCostings)
                         setHideRunButton(false)
                     }
                 }))
@@ -153,8 +142,6 @@ function VerifySimulation(props) {
                         }
                         setTokenNo(data.TokenNumber)
                         setSimualtionId(data.SimulationId)
-                        // setMasterId(data.SimulationtechnologyId)
-                        // setVerifyList(data.SimulationCombinedProcessImpactedCostings)
                         setHideRunButton(false)
                     }
                 }))
@@ -171,8 +158,6 @@ function VerifySimulation(props) {
                         }
                         setTokenNo(data.TokenNumber)
                         setSimualtionId(data.SimulationId)
-                        // setMasterId(data.SimulationtechnologyId)
-                        // setVerifyList(data.simulationBoughtOutPartImpactedCostings)
                         setHideRunButton(false)
                     }
                 }))
@@ -189,8 +174,6 @@ function VerifySimulation(props) {
                         }
                         setTokenNo(data.TokenNumber)
                         setSimualtionId(data.SimulationId)
-                        // setMasterId(data.SimulationtechnologyId)
-                        // setVerifyList(data.simulationBoughtOutPartImpactedCostings)
                         setHideRunButton(false)
                     }
                 }))
@@ -244,13 +227,6 @@ function VerifySimulation(props) {
 
     const verifyList = useSelector(state => state.simulation.simulationVerifyList)
 
-    const buttonFormatter = (cell, row, enumObject, rowIndex) => {
-        return (
-            <>
-                <button className="View" type={'button'} onClick={() => { }} />
-            </>
-        )
-    }
     const newBRFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -309,7 +285,6 @@ function VerifySimulation(props) {
 
         var selectedRows = gridApi.getSelectedRows();
         if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
-        var selected = gridApi.getSelectedNodes()
         setSelectedRowData(selectedRows)
 
     }
@@ -389,15 +364,6 @@ function VerifySimulation(props) {
 
     }, 500)
 
-    const assemblySimulation = debounce(() => {
-        if (selectedRowData.length === 0) {
-            Toaster.warning('Please select atleast one costing.')
-            return false
-        }
-        // setShowAssemblyPage(true)   // REJECTED ASSEMBLY
-
-    }, 500)
-
     const closeDrawer = (e = '', mode) => {
         if (mode === true) {
             setSimulationDrawer(false)
@@ -405,10 +371,6 @@ function VerifySimulation(props) {
         } else {
             setSimulationDrawer(false)
         }
-    }
-
-    const cancelAssemblyPage = () => {
-        // setShowAssemblyPage(false)   // REJECTED ASSEMBLY
     }
 
     const isFirstColumn = (params) => {
@@ -455,7 +417,6 @@ function VerifySimulation(props) {
         renderVendor: renderVendor,
         renderPlant: renderPlant,
         renderRM: renderRM,
-        buttonFormatter: buttonFormatter,
         newBRFormatter: newBRFormatter,
         newSRFormatter: newSRFormatter,
         customLoadingOverlay: LoaderCustom,
