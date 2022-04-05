@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useWatch } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useSelector, useDispatch } from 'react-redux';
 import { Col, Row, Table } from 'reactstrap';
@@ -15,7 +15,6 @@ import VariableMhrDrawer from '../../Drawers/processCalculatorDrawer/VariableMhr
 import { getProcessMachiningCalculation, getProcessDefaultCalculation } from '../../../actions/CostWorking';
 import { gridDataAdded, isDataChange, setIsToolCostUsed, setRMCCErrors } from '../../../actions/Costing';
 import { ViewCostingContext } from '../../CostingDetails';
-import { HOUR } from '../../../../../config/constants';
 import Popup from 'reactjs-popup';
 import OperationCostExcludedOverhead from './OperationCostExcludedOverhead';
 import { MACHINING, FORGING, DIE_CASTING, Ferrous_Casting, } from '../../../../../config/masterData'
@@ -23,7 +22,7 @@ import { MACHINING, FORGING, DIE_CASTING, Ferrous_Casting, } from '../../../../.
 let counter = 0;
 function ProcessCost(props) {
   const { data, item } = props
-  const IsLocked = item.IsLocked || item.IsPartLocked
+  const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
 
   const { register, control, formState: { errors }, setValue, getValues } = useForm({
     mode: 'onChange',
@@ -33,7 +32,6 @@ function ProcessCost(props) {
   const trimValue = getConfigurationKey()
   const trimForMeasurment = trimValue.NoOfDecimalForInputOutput
   const trimForCost = trimValue.NoOfDecimalForPrice
-
   const [calciIndex, setCalciIndex] = useState('')
   const [isDrawerOpen, setDrawerOpen] = useState(false)
   const [Ids, setIds] = useState([])
@@ -41,9 +39,7 @@ function ProcessCost(props) {
   const [isOpen, setIsOpen] = useState(data && data.IsShowToolCost)
   const [tabData, setTabData] = useState(props.data)
   const [oldGridData, setOldGridData] = useState(data && data.CostingProcessCostResponse)
-  const [tabToolData, setTabToolData] = useState(props.data)
   const [isCalculator, setIsCalculator] = useState(false)
-  const [calculatorData, setCalculatorData] = useState({})
   const [remarkPopUpData, setRemarkPopUpData] = useState("")
   const dispatch = useDispatch()
   const costData = useContext(costingInfoContext);
@@ -81,6 +77,7 @@ function ProcessCost(props) {
    * @description For opening weight calculator
   */
   const toggleWeightCalculator = (id) => {
+
     setCalciIndex(id)
     let tempArr = []
     let tempData = gridData[id]
@@ -122,8 +119,6 @@ function ProcessCost(props) {
     if (Object.keys(weightData).length === 0) return false;
 
     let tempData = gridData[calciIndex]
-    let time
-    let netCost
     let tempArray
     let tempArr2 = [];
     //********************************THIS CALCULATION IS FOR MACHINING TECHNOLOGY ,WIIL BE USED LATER DEPEND ON REQUIREMENT******************************************* */
@@ -169,17 +164,10 @@ function ProcessCost(props) {
       setGridData(tempArray)
       setValue(`${ProcessGridFields}.${calciIndex}.Quantity`, tempData.UOMType === TIME ? checkForDecimalAndNull((weightData.ProcessCost / weightData.MachineRate), getConfigurationKey().NoOfDecimalForInputOutput) : weightData.Quantity)
       setValue(`${ProcessGridFields}.${calciIndex}.ProcessCost`, checkForDecimalAndNull(weightData.ProcessCost, getConfigurationKey().NoOfDecimalForPrice))
-      // setValue(`${ProcessGridFields}.${calciIndex}.ProductionPerHour`,weightData.UOMType === TIME ? checkForDecimalAndNull(weightData.Quantity):'-')
+      // setValue(`${ProcessGridFields}.${calciIndex}.ProductionPerHour`, weightData.UOMType === TIME ? checkForDecimalAndNull(weightData.PartsPerHour, getConfigurationKey().NoOfDecimalForInputOutput) : '-')
     }, 100)
   }
 
-  /**
-   * @method onToolToggle
-   * @description TOOL COST TOGGLE
-   */
-  const onToolToggle = () => {
-    setIsOpen(!isOpen)
-  }
 
   const onRemarkPopUpClickk = (index) => {
     setRemarkPopUpData(getValues(`${ProcessGridFields}.${index}.remarkPopUp`))
@@ -258,6 +246,7 @@ function ProcessCost(props) {
       tempArr && tempArr.map((el, index) => {
         setValue(`${ProcessGridFields}.${index}.ProcessCost`, checkForDecimalAndNull(el.ProcessCost, initialConfiguration.NoOfDecimalForPrice))
         setValue(`${ProcessGridFields}.${index}.Quantity`, el.Quantity)
+        return null
       })
 
       let ProcessCostTotal = 0
@@ -327,6 +316,7 @@ function ProcessCost(props) {
       tempArrAfterDelete.map(el => {
         selectedIds.push(el.ProcessId)
         selectedMachineIds.push(el.MachineRateId)
+        return null
 
       })
       setGridData(tempArrAfterDelete)
@@ -336,6 +326,7 @@ function ProcessCost(props) {
       tempArrAfterDelete && tempArrAfterDelete.map((el, i) => {
         setValue(`${ProcessGridFields}.${i}.ProcessCost`, checkForDecimalAndNull(el.ProcessCost, initialConfiguration.NoOfDecimalForPrice))
         setValue(`${ProcessGridFields}.${i}.Quantity`, el.Quantity)
+        return null
       })
     }, 200)
   }
@@ -531,7 +522,7 @@ function ProcessCost(props) {
                     gridData.map((item, index) => {
                       return (
                         <tr key={index}>
-                          <td>{item.ProcessName}</td>
+                          <td className='text-overflow'><span title={item.ProcessName}>{item.ProcessName}</span></td>
                           <td>{item.Tonnage ? checkForNull(item.Tonnage) : '-'}</td>
                           <td>{item.MHR}</td>
                           <td>{item.UOM}</td>

@@ -156,7 +156,7 @@ function VerifyImpactDrawer(props) {
                         <a onClick={() => setShowAssemblyWise(!showAssemblyWise)} className={`${showAssemblyWise ? 'minus-icon' : 'plus-icon'} pull-right`}></a>
                       </div>
                     </Col>
-                    {showAssemblyWise && <div className="accordian-content w-100 px-3 impacted-min-height">
+                    {showAssemblyWise && <div className="accordian-content w-100 px-3">
                       <AssemblyWiseImpactSummary
                         dataForAssemblyImpact={dataForAssemblyImpactInVerifyImpact}
                         impactType={'AssemblySummary'}

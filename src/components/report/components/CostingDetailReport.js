@@ -438,18 +438,14 @@ function ReportListing(props) {
                 <h1 className="mb-0">Report</h1>
 
                 <Row className="pt-3 blue-before ">
-
-                    <Col md="8">
-                        <div className="warning-message mt-1">
-                            {warningMessage && <WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} />}
-                        </div>
-                    </Col>
-                    <Col md="6">
+                    <Col md="3">
                         <button title="Last Week" type="button" class="user-btn mr5" onClick={() => lastWeekFilter()}><div class="swap rotate90 mr-2"></div>Last Week</button>
                     </Col>
-
-                    <Col md="6" lg="6" className="search-user-block mb-3">
+                    <Col md="9" lg="9" className="search-user-block mb-3">
                         <div className="d-flex justify-content-end bd-highlight excel-btn w100 mb-4 pb-2">
+                            <div className="warning-message d-flex align-items-center">
+                                {warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
+                            </div>
                             <div>
                                 <button disabled={enableSearchFilterSearchButton} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
                                 <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => resetState()}>

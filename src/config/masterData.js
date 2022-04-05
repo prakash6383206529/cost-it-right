@@ -2555,6 +2555,9 @@ export const CostingSimulationDownloadBOP = [
 
     { label: "BoughtOutPartName", value: "BoughtOutPartName" },
     { label: "BoughtOutPartNumber", value: "BoughtOutPartNumber" },
+    { label: "OldNetBoughtOutPartCost", value: "OldNetBoughtOutPartCost" },
+    { label: "NewNetBoughtOutPartCost", value: "NewNetBoughtOutPartCost" },
+    { label: "NetBoughtOutPartCostVariance", value: "NetBoughtOutPartCostVariance" },
     { label: "OldBOPCost", value: "OldBOPCost" },
     { label: "NewBOPCost", value: "NewBOPCost" },
     { label: "BOPVariance", value: "BOPVariance" },
@@ -3050,9 +3053,8 @@ export const ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl = [
 
 
 export const OperationGridForToken = [
-    { label: "OldOperationRate", value: "OldOperationRate" },
-    { label: "NewOperationRate", value: "NewOperationRate" },
-    { label: "OperationVariance", value: "OperationVariance" },
+    { label: "Operation Name", value: "OperationName" },
+    { label: "Operation Code", value: "OperationCode" },
     { label: "OldOperationCost", value: "OldOperationCost" },
     { label: "NewOperationCost", value: "NewOperationCost" },
     { label: "OperationCostVariance", value: "OperationCostVariance" },

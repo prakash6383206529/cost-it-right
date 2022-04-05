@@ -144,7 +144,6 @@ const CostingSummaryTable = (props) => {
       setIsViewConversionCost(false)
       setViewBOP(false)
       setPdfName(viewCostingData[0].partId)
-      console.log('viewCostingData[0]: ', viewCostingData[0].partId);
     }
   }, [viewCostingData])
 
@@ -430,7 +429,8 @@ const CostingSummaryTable = (props) => {
     }
     if (type === VBC) {
       dispatch(getBriefCostingById(tempData.costingId, (res) => {
-        if (res.data.Result) {
+        console.log('res: ', res);
+        if (res?.data?.Result) {
           history.push('/costing')
           showDetail(partInfoStepTwo, { costingId: tempData.costingId, type })
         }
@@ -752,7 +752,7 @@ const CostingSummaryTable = (props) => {
             <Col md={simulationMode ? "12" : "8"} className="text-right">
               {!simulationMode &&
                 <ReactToPrint
-                  bodyClass='mx-2 my-3 remove-space-border'
+                  bodyClass='mx-2 mt-3 remove-space-border'
                   documentTitle={`${pdfName}-detailed-costing`}
                   content={reactToPrintContent}
                   onAfterPrint={handleAfterPrintDetail}

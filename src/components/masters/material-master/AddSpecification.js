@@ -486,7 +486,7 @@ class AddSpecification extends Component {
                           this.state.RawMaterial.length === 0) &&
                           AddAccessibilityRMANDGRADE ? (
                           <div
-                            className={"plus-icon-square blurPlus-icon-square right mt30"}
+                            className={"plus-icon-square blurPlus-icon-square right"}
                           ></div>
                         ) : (
                           AddAccessibilityRMANDGRADE && (

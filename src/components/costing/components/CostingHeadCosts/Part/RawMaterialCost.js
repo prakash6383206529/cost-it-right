@@ -25,9 +25,8 @@ import { SHEETMETAL, RUBBER, FORGING, DIE_CASTING, PLASTIC, CORRUGATEDBOX, Ferro
 let counter = 0;
 function RawMaterialCost(props) {
   const { item } = props;
-  const IsLocked = item.IsLocked || item.IsPartLocked
-  const { register, handleSubmit, control, setValue, getValues, formState: { errors }, reset, } = useForm({
-
+  const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
+  const { register, handleSubmit, control, setValue, getValues, formState: { errors }, reset } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: {
@@ -1083,7 +1082,7 @@ function RawMaterialCost(props) {
 
                         return (
                           <tr key={index} className=''>
-                            <td><span title={item.RMName} className='rm-part-name'>{item.RMName}</span></td>
+                            <td className='text-overflow'><span title={item.RMName}>{item.RMName}</span></td>
                             <td>{item.RMRate}</td>
                             <td>{item.ScrapRate}</td>
                             <td>{item.UOM}</td>
