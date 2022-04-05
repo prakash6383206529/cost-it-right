@@ -436,7 +436,7 @@ class AddExchangeRate extends Component {
                               validate={[required]}
                               onChangeRaw={(e) => e.preventDefault()}
                               required
-                              disabled={isViewMode || !this.state.isFinancialDataChange}
+                              disabled={isViewMode || (!this.state.isFinancialDataChange && isEditFlag)}
 
                             />
 
