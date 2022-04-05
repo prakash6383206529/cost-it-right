@@ -665,7 +665,7 @@ class AddFreight extends Component {
                             <Col md="3">
                               <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
                               <div className="d-flex justify-space-between align-items-center p-relative async-select">
-                                {true && <LoaderCustom customClass={`vendor-input-loader`} />}
+                                {this.state.inputLoader && <LoaderCustom customClass={`vendor-input-loader`} />}
                                 <div className="fullinput-icon">
                                   <AsyncSelect
                                     name="vendorName"
@@ -675,7 +675,7 @@ class AddFreight extends Component {
                                     onChange={(e) => this.handleVendorName(e)}
                                     value={this.state.vendorName}
                                     noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
-                                    isDisabled={(isEditFlag || this.state.inputLoader) ? true : true} />
+                                    isDisabled={(isEditFlag || this.state.inputLoader) ? true : false} />
                                   {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
                                 </div>
                                 {!isEditFlag && (
