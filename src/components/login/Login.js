@@ -26,7 +26,7 @@ class Login extends Component {
       isSubmitted: false,
       isRedirect: false,
       flag: false,
-      inputLoader:false
+      inputLoader: false
     };
   }
 
@@ -57,8 +57,8 @@ class Login extends Component {
       password: values.Password,
       grant_type: 'password',
     }
-      this.setState({inputLoader:true})    
-      this.props.loginUserAPI(values, (res) => {
+    this.setState({ inputLoader: true })
+    this.props.loginUserAPI(values, (res) => {
 
       // this.props.TokenAPI(reqParams, (res) => {
       if (res && res.status === 200) {
@@ -67,20 +67,20 @@ class Login extends Component {
 
         reactLocalStorage.setObject("userDetail", userDetail);
         setTimeout(() => {
-          this.setState({inputLoader:false})
+          this.setState({ inputLoader: false })
         }, 1500)
         this.props.logUserIn();
-       
+
         // this.setState({ isRedirect: true })
         setTimeout(() => {
           window.location.replace("/");
         }, 1000)
       }
       setTimeout(() => {
-        this.setState({inputLoader:false})
+        this.setState({ inputLoader: false })
       }, 1500)
     })
-   
+
     // });
   }
 
@@ -154,9 +154,9 @@ class Login extends Component {
                       maxLength={26}
                     />
                   </div>
-                  
+
                   <div className="text-center p-relative">
-                  {this.state.inputLoader && <LoaderCustom customClass="input-loader login-loader"/>}
+                    {this.state.inputLoader && <LoaderCustom customClass="login-loader" />}
                     <input
                       type="submit"
                       disabled={isSubmitted ? true : false}

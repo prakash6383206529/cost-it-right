@@ -456,7 +456,7 @@ class AddRMImport extends Component {
             this.props.fetchSpecificationDataAPI(Data.RMGrade, res => {
 
               setTimeout(() => {
-                const { gradeSelectList, rmSpecification, cityList, categoryList, rawMaterialNameSelectList, UOMSelectList , currencySelectList, technologySelectList, plantSelectList } = this.props;
+                const { gradeSelectList, rmSpecification, cityList, categoryList, rawMaterialNameSelectList, UOMSelectList, currencySelectList, technologySelectList, plantSelectList } = this.props;
 
                 const materialNameObj = rawMaterialNameSelectList && rawMaterialNameSelectList.find(item => item.Value === Data.RawMaterial)
                 const gradeObj = gradeSelectList && gradeSelectList.find(item => item.Value === Data.RMGrade)
@@ -1291,7 +1291,7 @@ class AddRMImport extends Component {
                               />
                               <div className={"right-title"}>
                                 Vendor Based
-                                  </div>
+                              </div>
                             </label>
                           </Col>
                         </Row>
@@ -1301,7 +1301,7 @@ class AddRMImport extends Component {
                               <h5>{"Raw Material:"}</h5>
                             </div>
                           </Col>
-                          <Col md="4">
+                          <Col md="3">
                             <Field
                               label="Technology"
                               type="text"
@@ -1316,7 +1316,7 @@ class AddRMImport extends Component {
                               disabled={isEditFlag || isViewFlag}
                             />
                           </Col>
-                          <Col md="4">
+                          <Col md="3">
                             <div className="d-flex justify-space-between align-items-center inputwith-icon">
                               <div className="fullinput-icon">
                                 <Field
@@ -1341,7 +1341,7 @@ class AddRMImport extends Component {
                               )}
                             </div>
                           </Col>
-                          <Col md="4">
+                          <Col md="3">
                             <div className="d-flex justify-space-between align-items-center inputwith-icon">
                               <div className="fullinput-icon">
                                 <Field
@@ -1362,7 +1362,7 @@ class AddRMImport extends Component {
 
                             </div>
                           </Col>
-                          <Col md="4">
+                          <Col md="3">
                             <div className="d-flex justify-space-between align-items-center inputwith-icon">
                               <div className="fullinput-icon">
                                 <Field
@@ -1382,7 +1382,7 @@ class AddRMImport extends Component {
 
                             </div>
                           </Col>
-                          <Col md="4">
+                          <Col md="3">
                             <div className="d-flex justify-space-between align-items-center inputwith-icon">
                               <div className="fullinput-icon">
                                 <Field
@@ -1401,7 +1401,7 @@ class AddRMImport extends Component {
                               </div>
                             </div>
                           </Col>
-                          <Col md="4">
+                          <Col md="3">
                             <Field
                               label={`Code`}
                               name={'Code'}
@@ -1418,7 +1418,7 @@ class AddRMImport extends Component {
                           </Col>
 
                           {(this.state.IsVendor === false && (
-                            <Col md="4">
+                            <Col md="3">
                               <Field
                                 label="Plant"
                                 name="SourceSupplierPlantId"
@@ -1435,14 +1435,14 @@ class AddRMImport extends Component {
                                 component={renderMultiSelectField}
                                 mendatory={true}
                                 className="multiselect-with-border"
-                                
+
                               // disabled={this.state.IsVendor || isEditFlag ? true : false}
                               />
                             </Col>)
                           )}
                           {
                             (this.state.IsVendor === true && getConfigurationKey().IsDestinationPlantConfigure) &&
-                            <Col md="4">
+                            <Col md="3">
                               <Field
                                 label={'Destination Plant'}
                                 name="DestinationPlant"
@@ -1487,10 +1487,10 @@ class AddRMImport extends Component {
                               )}
                             </div>
                           </Col>
-                          <Col md="4" className='mb-4'>
+                          <Col md="3" className='mb-4'>
                             <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                            {!this.state.isLoader && this.state.inputLoader && <LoaderCustom customClass={`input-loader ${this.state.IsVendor ? 'vendor-based' : 'zero-based'} `} />}
-                            <div className="d-flex justify-space-between align-items-center inputwith-icon async-select">
+                            <div className="d-flex justify-space-between align-items-center p-relative async-select">
+                              {!this.state.isLoader && this.state.inputLoader && <LoaderCustom customClass={`vendor-input-loader`} />}
                               <div className="fullinput-icon">
                                 <AsyncSelect
                                   name="DestinationSupplierId"
@@ -1500,7 +1500,7 @@ class AddRMImport extends Component {
                                   onChange={(e) => this.handleVendorName(e)}
                                   value={this.state.vendorName}
                                   noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
-                                  isDisabled={isEditFlag || isViewFlag} />
+                                  isDisabled={isEditFlag || isViewFlag || this.state.inputLoader} />
 
                                 {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
                               </div>
@@ -1508,7 +1508,7 @@ class AddRMImport extends Component {
                             </div>
                           </Col>
                           {initialConfiguration && initialConfiguration.IsVendorPlantConfigurable && this.state.IsVendor && (
-                            <Col md="4">
+                            <Col md="3">
                               <Field
                                 label="Vendor Plant"
                                 name="DestinationSupplierPlantId"
@@ -1530,7 +1530,7 @@ class AddRMImport extends Component {
                           {(this.state.HasDifferentSource ||
                             this.state.IsVendor) && (
                               <>
-                                <Col md="4">
+                                <Col md="3">
                                   <Field
                                     label={`Source`}
                                     name={"Source"}
@@ -1545,7 +1545,7 @@ class AddRMImport extends Component {
                                     customClassName=" withBorder"
                                   />
                                 </Col>
-                                <Col md="4">
+                                <Col md="3">
                                   <Field
                                     name="SourceSupplierCityId"
                                     type="text"
@@ -1571,7 +1571,7 @@ class AddRMImport extends Component {
                               <h5>{"Cost:"}</h5>
                             </div>
                           </Col>
-                          <Col md="4">
+                          <Col md="3">
                             <div className="d-flex justify-space-between align-items-center inputwith-icon">
                               <div className="fullinput-icon">
                                 <Field
@@ -1591,7 +1591,7 @@ class AddRMImport extends Component {
 
                             </div>
                           </Col>
-                          <Col md="4">
+                          <Col md="3">
                             <Field
                               name="Currency"
                               type="text"
@@ -1608,7 +1608,7 @@ class AddRMImport extends Component {
                               {this.state.showWarning && <WarningMessage dClass="mt-1" message={`${this.state.currency.label} rate is not present in the Exchange Master`} />}
                             </Field>
                           </Col>
-                          <Col md="4">
+                          <Col md="3">
                             <div className="form-group">
                               <div className="inputbox date-section">
                                 <Field
@@ -1633,7 +1633,7 @@ class AddRMImport extends Component {
                             </div>
                           </Col>
                           {/* NOT APPLICABLE FOR RE */}
-                          {/* <Col md="4">
+                          {/* <Col md="3">
                             <Field
                               label={`Cut Off Price (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label}/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label})`}
                               name={"cutOffPrice"}
@@ -1648,7 +1648,7 @@ class AddRMImport extends Component {
                               onChange={this.handleCutOfChange}
                             />
                           </Col> */}
-                          <Col md="4">
+                          <Col md="3">
                             <Field
                               label={`Basic Rate(${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label}/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label})`}
                               name={"BasicRate"}
@@ -1663,7 +1663,7 @@ class AddRMImport extends Component {
                               customClassName=" withBorder"
                             />
                           </Col>
-                          <Col md="4">
+                          <Col md="3">
                             <Field
                               label={`Scrap Rate (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label}/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label})`}
                               name={"ScrapRate"}
@@ -1679,7 +1679,7 @@ class AddRMImport extends Component {
                               disabled={isViewFlag}
                             />
                           </Col>
-                          {/* <Col md="4">
+                          {/* <Col md="3">
                             <Field
                               label={`Freight Cost (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label}/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label})`}
                               name={"FreightCharge"}
@@ -1694,7 +1694,7 @@ class AddRMImport extends Component {
                               disabled={isViewFlag}
                             />
                           </Col>
-                          <Col md="4">
+                          <Col md="3">
                             <Field
                               label={`Shearing Cost (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label}/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label})`}
                               name={"ShearingCost"}
@@ -1709,7 +1709,7 @@ class AddRMImport extends Component {
                               disabled={isViewFlag}
                             />
                           </Col> */}
-                          <Col md="4">
+                          <Col md="3">
                             <Field
                               label={`Net Cost (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label}/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label})`}
                               name={"NetLandedCost"}
@@ -1726,7 +1726,7 @@ class AddRMImport extends Component {
                           </Col>
                           {
                             this.state.showCurrency &&
-                            <Col md="4">
+                            <Col md="3">
                               <Field
                                 label={`Net Cost (INR/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label})`}
                                 name={"NetLandedCostCurrency"}
@@ -1796,10 +1796,10 @@ class AddRMImport extends Component {
                                         Drag and Drop or{" "}
                                         <span className="text-primary">
                                           Browse
-                                            </span>
+                                        </span>
                                         <br />
-                                            file to upload
-                                          </span>
+                                        file to upload
+                                      </span>
                                     </div>
                                   )
                                 }

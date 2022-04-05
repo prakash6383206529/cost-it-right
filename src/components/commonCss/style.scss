@@ -5867,119 +5867,16 @@ left: 17rem;
     height: 412px;
   }
 }
-
-// <------START  dropdown input field loader----->
 .p-relative {
   position: relative;
+}
+.error-wrapper {
   .withBorder {
     .text-help {
       margin: -1px 5px;
     }
   } 
 }
-.input-loader {
-    left: 11px;
-    right: 11px;
-    top: 29px;
-    bottom: 19px;
-    border-radius: 5px;
-    @-moz-document url-prefix() {      //firefox css
-      top:30px
-    }
-    align-items: flex-end;
-    .loaderinner {
-      font-size: 30px;
-      padding-right: 0;
-      margin-right: -15px;
-      @-moz-document url-prefix() {      //firefox css
-        margin-right: -17px;
-      }
-      .img_loader {
-        max-width: 70px;
-        user-select: none;
-      }
-    }
-    &.vendor-input {
-      left: 16px;
-      right: 52px;
-      top: 32px;
-      bottom: 37px;
-    .loaderinner {
-      margin-right: -14px;
-      @-moz-document url-prefix() {      //firefox css
-        margin-right: -28px;
-      }
-      }
-    }
-    &.add-rm-vendor {
-      left: 3px;
-      right: 38px;
-      top: 30px;
-      bottom: 24px;
-    }
-    &.login-loader {
-     top: 0;
-     bottom: 0;
-     right: 0;
-     left: 0;
-     align-items: center;
-     .loaderinner {
-       margin-right: 0;
-       padding-right: 1em;
-       font-size: 15px;
-       .img_loader {
-         margin-bottom: -10px;
-       }
-     }
-    }
-    &.zero-based {
-      left: 16px;
-      bottom: 19px;
-      top: 32px;
-      right: 49px;
-      &.col-4-loader {
-        right: 51px;
-      }
-    }
-    &.vendor-based {
-      left: 16px;
-      top: 32px;
-      bottom: 18px;
-      right: 49px;
-      &.col-4-loader {
-        bottom: 19px;
-        right: 51px;
-      }
-    }
-    &.switch-vendor {
-      left: 16px;
-      top: 32px;
-      bottom: 51px;
-      right: 51px;
-    }
-    &.masters-vendor-loader {
-      left: 16px;
-      right: 16px;
-      top: 29px;
-      bottom: 39px;
-    }
-    &.interest-rate-vendor-loader {
-      @extend .masters-vendor-loader;
-      bottom: 1px;
-    }
-    &.combine-process {
-      left: 1px;
-      right: 1px;
-      top: 1px;
-      bottom: 1px;
-      .loaderinner {
-        @-moz-document url-prefix() {      //firefox css
-          margin-right: -18px;
-        }
-        }
-    }
-}
-// <------END input field loader----->
 
 .verify-drawer {
   .ag-grid-wrapper.height-width-wrapper {

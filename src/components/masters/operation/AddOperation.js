@@ -917,8 +917,8 @@ class AddOperation extends Component {
                       )}
                       {this.state.IsVendor && (
                         <Col md="3"><label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                          {this.state.inputLoader && <LoaderCustom customClass={`input-loader vendor-input `} />}
-                          <div className="d-flex justify-space-between align-items-center inputwith-icon async-select">
+                          <div className="d-flex justify-space-between align-items-center p-relative async-select">
+                            {this.state.inputLoader && <LoaderCustom customClass={`vendor-input-loader`} />}
                             <div className="fullinput-icon">
                               <AsyncSelect
                                 name="vendorName"
@@ -928,7 +928,7 @@ class AddOperation extends Component {
                                 onChange={(e) => this.handleVendorName(e)}
                                 value={this.state.vendorName}
                                 noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
-                                isDisabled={isEditFlag ? true : false} />
+                                isDisabled={(isEditFlag || this.state.inputLoader) ? true : false} />
                               {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
                             </div>
                             {!isEditFlag && (
