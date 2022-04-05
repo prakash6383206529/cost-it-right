@@ -95,7 +95,7 @@ function ViewRM(props) {
               {/* <th>{`Freight Cost`}</th>
                     <th>{`Shearing Cost`}</th> */}
               <th>{`Burning Loss Weight`}</th>
-              <th >{`Net RM Cost`}</th>
+              <th >{`Net RM Cost/Pc`}</th>
               <th className="costing-border-right">{`Remark`}</th>
 
             </tr>

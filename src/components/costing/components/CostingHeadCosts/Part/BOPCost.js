@@ -253,7 +253,7 @@ function BOPCost(props) {
         if (!CostingViewMode && !IsLocked) {
           props.setBOPHandlingCost(gridData, BOPHandlingFields, Params, item)
         }
-      }, 200)
+      }, 500)
 
     } else {
       setValue('BOPHandlingCharges', 0)
