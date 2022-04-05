@@ -942,15 +942,6 @@ class AddRMImport extends Component {
 
   deleteFile = (FileId, OriginalFileName) => {
     if (FileId != null) {
-      let deleteData = {
-        Id: FileId,
-        DeletedBy: loggedInUserId(),
-      }
-      // this.props.fileDeleteRMDomestic(deleteData, (res) => {
-      //   Toaster.success('File has been deleted successfully.')
-      //   let tempArr = this.state.files.filter(item => item.FileId !== FileId)
-      //   this.setState({ files: tempArr })
-      // })
       let tempArr = this.state.files.filter((item) => item.FileId !== FileId)
       this.setState({ files: tempArr })
     }
@@ -1449,7 +1440,7 @@ class AddRMImport extends Component {
                                 optionLabel={(option) => option.Text}
                                 component={renderMultiSelectField}
                                 mendatory={true}
-                                disabled={isViewFlag}
+                                disabled={isEditFlag || isViewFlag}
                                 className="multiselect-with-border"
 
                               // disabled={this.state.IsVendor || isEditFlag ? true : false}
