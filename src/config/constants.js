@@ -562,6 +562,20 @@ export const API = {
   UpdateCostingWeightCalculation: `${BASE_URL}/costing-sheet-metal/update-costing-weight-calculation`,
   getRawMaterialCalculationByTechnology: `${BASE_URL}/costing/get-raw-material-calculation-by-technology`,
   saveRawMaterialCalciData: `${BASE_URL}/costing/save-raw-material-calculation-by-technology`,
+  getRawMaterialCalculationForSheetMetal: `${BASE_URL}/costing/get-raw-material-sheet-metal-calculation-details`,
+  saveRawMaterialCalculationForSheetMetal: `${BASE_URL}/costing/save-raw-material-sheet-metal-calculation-details`,
+  getRawMaterialCalculationForForging: `${BASE_URL}/costing/get-raw-material-forging-calculation-details`,
+  saveRawMaterialCalculationForForging: `${BASE_URL}/costing/save-raw-material-forging-calculation-details`,
+  getRawMaterialCalculationForFerrous: `${BASE_URL}/costing/get-raw-material-ferrous-casting-calculation-details`,
+  saveRawMaterialCalculationForFerrous: `${BASE_URL}/costing/save-raw-material-ferrous-casting-calculation-details`,
+  getRawMaterialCalculationForPlastic: `${BASE_URL}/costing/get-raw-material-plastic-calculation-details`,
+  saveRawMaterialCalculationForPlastic: `${BASE_URL}/costing/save-raw-material-plastic-calculation-details`,
+  getRawMaterialCalculationForCorrugatedBox: `${BASE_URL}/costing/get-raw-material-corrugated-box-calculation-details`,
+  saveRawMaterialCalculationForCorrugatedBox: `${BASE_URL}/costing/save-raw-material-corrugated-box-calculation-details`,
+  getRawMaterialCalculationForDieCasting: `${BASE_URL}/costing/get-raw-material-die-casting-calculation-details`,
+  saveRawMaterialCalculationForDieCasting: `${BASE_URL}/costing/save-raw-material-die-casting-calculation-details`,
+  getRawMaterialCalculationForRubber: `${BASE_URL}/costing/get-raw-material-rubber-calculation-details`,
+  saveRawMaterialCalculationForRubber: `${BASE_URL}/costing/save-raw-material-rubber-calculation-details`,
 
 
   // PROCESS COST CALCULATION

@@ -1773,14 +1773,12 @@ export const AcceptableOperationUOM = ['Mass', 'Dimensionless', 'Volume', 'Area'
 export const AcceptableFuelUOM = ['Mass', 'Volume']
 export const AcceptablePowerUOM = ['Power']
 export const AcceptableSheetMetalUOM = ['Kilogram', 'Gram', 'Milligram']
-export const MULTIPLERMTECHNOLOGY = [4, 5, 7, 8, 14, 16, 17, 6, 9, 10, 2, 15]
+export const MULTIPLERMTECHNOLOGY = [4, 5, 7, 8, 14, 16, 17, 6, 9, 10, 2, 15, 23]
 
 export function isMultipleRMAllow(technology) {
-    const allowedMultipleRM = [4, 5, 7, 8, 14, 16, 17, 6, 9, 10, 2, 15]
+    const allowedMultipleRM = [4, 5, 7, 8, 14, 16, 17, 6, 9, 10, 2, 15, 23]
     return allowedMultipleRM.includes(technology);
 }
-
-
 
 export const SHEETMETAL = 1
 export const FORGING = 2
@@ -2998,8 +2996,9 @@ export const ZBCPLANT_DOWNLOAD_EXCEl = [
     { label: "CityName", value: "CityName", },
 ]
 export const REPORT_DOWNLOAD_EXCEl = [
-    { label: "CostingVersion", value: "CostingVersion", },
+    { label: "CostingNumber", value: "CostingNumber", },
     { label: "TechnologyName", value: "TechnologyName" },
+    { label: "Company", value: "DepartmentName" },
     { label: "Company", value: "DepartmentName" },
     { label: "CreatedDate", value: "CreatedDate", },
     { label: "Status", value: "Status", },
@@ -3011,40 +3010,72 @@ export const REPORT_DOWNLOAD_EXCEl = [
     { label: "PlantName", value: "PlantName", },
     { label: "VendorName", value: "VendorName", },
     { label: "VendorCode", value: "VendorCode", },
+    { label: "PlantName", value: "PlantName", },
+    { label: "PlantCode", value: "PlantCode", },
+    { label: "PartName", value: "PartName", },
+    { label: "PartNumber", value: "PartNumber", },
+    { label: "ECN", value: "ECNNumber", },
+    { label: "PartType", value: "PartType", },
+    { label: "DepartmentCode", value: "DepartmentCode", },
+    { label: "DepartmentName", value: "DepartmentName", },
+    { label: "Rev", value: "RevisionNumber", },
+    { label: "RawMaterialCode", value: "RawMaterialCode", },
     { label: "RawMaterialName", value: "RawMaterialName", },
-    { label: "RMGrade", value: "RMGrade", },
-    { label: "RMSpecification", value: "RMSpecification", },
-    { label: "GrossWeight", value: "GrossWeight", },
-    { label: "FinishWeight", value: "FinishWeight", },
-    // { label: "ScrapWeight", value: "ScrapWeight", },
+    { label: "RMGrade", value: "RawMaterialGrade", },
+    { label: "RMSpecification", value: "RawMaterialSpecification", },
+    { label: "RawMaterialRate", value: "RawMaterialRate", },
+    { label: "GrossWeight", value: "RawMaterialGrossWeight", },
+    { label: "FinishWeight", value: "RawMaterialFinishWeight", },
+    { label: "ScrapWeight", value: "RawMaterialScrapWeight", },
     { label: "NetRawMaterialsCost", value: "NetRawMaterialsCost", },
     { label: "NetInsertCost", value: "NetBoughtOutPartCost", },
     { label: "NetProcessCost", value: "NetProcessCost", },
     { label: "NetOperationCost", value: "NetOperationCost", },
     { label: "SurfaceTreatmentCost", value: "SurfaceTreatmentCost", },
-    { label: "TransportationCost", value: "TransportationCost", },
+    { label: "NetSurfaceTreatmentCost", value: "NetSurfaceTreatmentCost", },
     { label: "NetConversionCost", value: "NetConversionCost", },
     { label: "ModelTypeForOverheadAndProfit", value: "ModelTypeForOverheadAndProfit", },
-    { label: "OverheadOn", value: "OverheadOn", },
-    { label: "ProfitOn", value: "ProfitOn", },
-    { label: "RejectOn", value: "RejectOn", },
-    { label: "ICCOn", value: "ICCOn", },
-    { label: "PaymentTermCost", value: "PaymentTermCost", },
-    { label: "NetOverheadAndProfitCost", value: "NetOverheadAndProfitCost", },
-    { label: "PackagingCost", value: "PackagingCost", },
-    { label: "FreightCost", value: "FreightCost", },
-    { label: "NetFreightPackagingCost", value: "NetFreightPackagingCost", },
-    { label: "ToolMaintenaceCost", value: "ToolMaintenaceCost", },
-    { label: "ToolPrice", value: "ToolPrice", },
-    { label: "AmorizationQuantity", value: "AmorizationQuantity", },
-    { label: "NetToolCost", value: "NetToolCost", },
-    { label: "TotalCost", value: "TotalCost", },
+    { label: "Overhead Applicability", value: "OverheadApplicability", },
+    { label: "Overhead Percentage", value: "OverheadPercentage", },
+    { label: "Overhead Combined Cost", value: "OverheadCombinedCost", },
+    { label: "Profit Applicability", value: "ProfitApplicability", },
+    { label: "Profit Percentage", value: "ProfitPercentage", },
+    { label: "Profit Cost", value: "ProfitCost", },
+    { label: "Net Overhead And Profit Cost", value: "NetOverheadAndProfitCost", },
+    { label: "Rejection Applicability", value: "RejectionApplicability", },
+    { label: "Rejection Percentage", value: "RejectionPercentage", },
+    { label: "Rejection Cost", value: "RejectionCost", },
+    { label: "ICC Applicability", value: "ICCApplicability", },
+    { label: "ICC Interest Rate", value: "ICCInterestRate", },
+    { label: "Net ICC Cost", value: "NetICCCost", },
+    { label: "Payment Terms On", value: "PaymentTermsOn", },
+    { label: "Payment Term Cost", value: "PaymentTermCost", },
+    { label: "Packaging Cost Percentage", value: "PackagingCostPercentage", },
+    { label: "Packaging Cost", value: "PackagingCost", },
+    { label: "Freight Percentage", value: "FreightPercentage", },
+    { label: "Freight Cost", value: "FreightCost", },
+    { label: "Transportation Cost", value: "TransportationCost", },
+    { label: "FreightType", value: "FreightType", },
+    { label: "DiscountCost", value: "DiscountCost", },
     { label: "NetDiscountsCost", value: "NetDiscountsCost", },
+    { label: "Hundi/DiscountPercentage", value: "HundiOrDiscountPercentage", },
+    { label: "Hundi/DiscountValue", value: "HundiOrDiscountValue", },
+    { label: "ToolCost", value: "ToolCost", },
+    { label: "ToolLife", value: "ToolLife", },
+    { label: "ToolMaintenanceCost", value: "ToolMaintenanceCost", },
+    { label: "NetToolCost", value: "NetToolCost", },
+    { label: "OtherCostPercentage", value: "OtherCostPercentage", },
     { label: "AnyOtherCost", value: "AnyOtherCost", },
-    { label: "NetPOPrice", value: "NetPOPrice", },
+    { label: "OtherCost", value: "OtherCost", },
+    { label: "NetOtherCost", value: "NetOtherCost", },
+    { label: "TotalOtherCost", value: "TotalOtherCost", },
+    { label: "EffectiveDate", value: "EffectiveDate", },
+    { label: "Currency", value: "Currency", },
+    { label: "NetPOPriceOtherCurrency", value: "NetPOPriceOtherCurrency", },
     { label: "Remark", value: "Remark", },
     { label: 'SANumber', value: 'SANumber' },
-    { label: 'LineNumber', value: 'LineNumber' }
+    { label: 'LineNumber', value: 'LineNumber' },
+    { label: 'Status', value: 'Status' }
 ]
 export const REPORT_DOWNLOAD_SAP_EXCEl = [
     { label: "Sr No", value: "SrNo" }, //Serial no
@@ -3055,17 +3086,13 @@ export const REPORT_DOWNLOAD_SAP_EXCEl = [
     { label: "Reason", value: "Reason" }, //Reason
     { label: "Text", value: "Text" }, //Text
     { label: "Person Requesting Change", value: "PersonRequestingChange" }, //Person CLICKING DOWNLOAD BUTTON (lOGGED IN USER)
-
 ]
 
 export const decimalOption = [
     { label: 'Round Off', value: 'RoundOff' },
     { label: 'Truncate', value: 'Truncate' },
     { label: 'Per 100', value: 'Per100' },
-    { label: "CreatedBy", value: "CreatedBy", }
-
 ]
-
 
 export const ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl = [
     { label: "Assembly Number", value: "PartNumber", },

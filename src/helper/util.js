@@ -1,13 +1,11 @@
-import React from 'react';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import DayTime from '../components/common/DayTimeWrapper';
-import { MESSAGES } from '../config/message'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import { checkForDecimalAndNull, checkForNull } from './validation'
 import {
   G, KG, MG, PLASTIC, SHEET_METAL, WIRING_HARNESS, PLATING, SPRINGS, HARDWARE, NON_FERROUS_LPDDC, MACHINING,
-  ELECTRONICS, RIVET, NON_FERROUS_HPDC, RUBBER, NON_FERROUS_GDC, FORGING, FASTNERS, RIVETS, ELECTRICAL_PROPRIETARY, MECHANICAL_PROPRIETARY, RMDOMESTIC, RMIMPORT, BOPDOMESTIC, BOPIMPORT, PROCESS, OPERATION, OPERATIONS, SURFACETREATMENT, MACHINERATE, OVERHEAD, PROFIT, EXCHNAGERATE,
+  ELECTRONICS, RIVET, NON_FERROUS_HPDC, RUBBER, NON_FERROUS_GDC, FORGING, FASTNERS, RIVETS, RMDOMESTIC, RMIMPORT, BOPDOMESTIC, BOPIMPORT, PROCESS, OPERATIONS, SURFACETREATMENT, MACHINERATE, OVERHEAD, PROFIT, EXCHNAGERATE,
 } from '../config/constants'
 import { getConfigurationKey } from './auth'
 
@@ -257,18 +255,6 @@ export const displayValue = (value) => {
   }
 }
 
-/**
- * @method onLogout
- * @descriptin LOGOUT THEN REDIRECT TO LOGIN PAGE
- **/
-function onLogout() {
-  reactLocalStorage.setObject('isUserLoggedIn', false)
-  reactLocalStorage.setObject('userDetail', {})
-  toast.success(MESSAGES.LOGOUT_SUCCESS)
-  setTimeout(() => {
-    window.location.assign('/login')
-  }, 100)
-}
 
 /**
  * @method convertObjectToArray
@@ -355,6 +341,7 @@ export function renderOptionList(categoriesMaster) {
     obj.label = val
     obj.value = val
     categoryArray.push(obj)
+    return null
   })
   return categoryArray
 }
@@ -547,7 +534,6 @@ export function formViewData(costingSummary) {
   let temp = []
   let dataFromAPI = costingSummary
   let obj = {}
-  let type = dataFromAPI.CostingHeading ? dataFromAPI.CostingHeading : 'other'
 
   obj.zbc = dataFromAPI.TypeOfCosting || dataFromAPI.TypeOfCosting === 0 ? dataFromAPI.TypeOfCosting : '-'
   obj.IsApprovalLocked = dataFromAPI.IsApprovalLocked !== null ? dataFromAPI.IsApprovalLocked : '-'
@@ -804,6 +790,7 @@ export function findLostWeight(tableVal) {
     } else {
       sum = sum + item.LossWeight
     }
+    return null
   })
 
   return sum
@@ -872,11 +859,13 @@ export function calculateScrapWeight(grossWeight, finishWeight) {
 
 export function calculateScrapCost(scrapWeight, scrapRate) {
   const scrapCost = scrapWeight * scrapRate
+  console.log('scrapCost: ', scrapCost);
   return scrapCost
 }
 
 export function calculateNetLandedCost(rmRate, grossWeight, scrapWeight, scrapRate) {
   const netLandedCost = (rmRate * grossWeight) - (scrapWeight * scrapRate)
+  console.log('netLandedCost: ', netLandedCost);
   return netLandedCost
 }
 
