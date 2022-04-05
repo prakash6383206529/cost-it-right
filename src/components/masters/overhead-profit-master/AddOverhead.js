@@ -19,7 +19,6 @@ import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from '../../../assests/images/red-cross.png'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { debounce } from 'lodash';
-import TooltipCustom from '../../common/Tooltip';
 import AsyncSelect from 'react-select/async';
 
 const selector = formValueSelector('AddOverhead');
@@ -854,7 +853,7 @@ class AddOverhead extends Component {
                         </Col>
                       </Row>
                       <Row>
-                        <Col md="4" >
+                        <Col md="3" >
                           <Field
                             name="ModelType"
                             type="text"
@@ -878,9 +877,9 @@ class AddOverhead extends Component {
                         </Col>
                         {this.state.IsVendor && costingHead === "vendor" && (
                           <>
-                            <Col md="4" >
+                            <Col md="3" >
                               <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                              {this.state.inputLoader && <LoaderCustom customClass={`input-loader masters-vendor-loader`} />}
+                              {this.state.inputLoader && <LoaderCustom customClass={`vendor-input-loader-second-col`} />}
                               <AsyncSelect
                                 name="vendorName"
                                 ref={this.myRef}
@@ -889,10 +888,12 @@ class AddOverhead extends Component {
                                 onChange={(e) => this.handleVendorName(e)}
                                 value={this.state.vendorName}
                                 noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
-                                isDisabled={isEditFlag ? true : false} />
+                                isDisabled={(isEditFlag || this.state.inputLoader) ? true : false} />
                               {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
+
+
                             </Col>
-                            <Col md="4" >
+                            <Col md="3" >
                               <Field
                                 name="Plant"
                                 type="text"
@@ -916,7 +917,7 @@ class AddOverhead extends Component {
                           </>
                         )}
                         {this.state.IsVendor && costingHead === "client" && (
-                          <Col md="4">
+                          <Col md="3">
                             <Field
                               name="clientName"
                               type="text"
@@ -939,7 +940,7 @@ class AddOverhead extends Component {
                           </Col>
                         )}
 
-                        <Col md="4" >
+                        <Col md="3" >
                           <Field
                             name="OverheadApplicability"
                             type="text"
@@ -964,7 +965,7 @@ class AddOverhead extends Component {
                           />
                         </Col>
                         {!isHideOverhead && (
-                          <Col md="4">
+                          <Col md="3">
                             <Field
                               label={`Overhead (%)`}
                               name={"OverheadPercentage"}
@@ -986,7 +987,7 @@ class AddOverhead extends Component {
                           </Col>
                         )}
                         {!isHideRM && (
-                          <Col md="4">
+                          <Col md="3">
                             <Field
                               label={`Overhead on RM (%)`}
                               name={"OverheadRMPercentage"}
@@ -1002,7 +1003,7 @@ class AddOverhead extends Component {
                           </Col>
                         )}
                         {!isHideCC && (
-                          <Col md="4">
+                          <Col md="3">
                             <Field
                               label={`Overhead on CC (%)`}
                               name={"OverheadMachiningCCPercentage"}
@@ -1018,7 +1019,7 @@ class AddOverhead extends Component {
                           </Col>
                         )}
                         {!isHideBOP && (
-                          <Col md="4">
+                          <Col md="3">
                             <Field
                               label={`Overhead on BOP (%)`}
                               name={"OverheadBOPPercentage"}
@@ -1033,7 +1034,7 @@ class AddOverhead extends Component {
                             />
                           </Col>
                         )}
-                        <Col md="4">
+                        <Col md="3">
 
                           <div className="inputbox date-section form-group">
                             <Field

@@ -27,7 +27,7 @@ import AddVendorDrawer from '../supplier-master/AddVendorDrawer'
 import Dropzone from 'react-dropzone-uploader'
 import 'react-dropzone-uploader/dist/styles.css'
 import 'react-datepicker/dist/react-datepicker.css'
-import { FILE_URL, ZBC, RM_MASTER_ID, SHEET_METAL,EMPTY_GUID } from '../../../config/constants'
+import { FILE_URL, ZBC, RM_MASTER_ID, SHEET_METAL, EMPTY_GUID } from '../../../config/constants'
 import DayTime from '../../common/DayTimeWrapper'
 import TooltipCustom from '../../common/Tooltip';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -1070,7 +1070,7 @@ class AddRMDomestic extends Component {
       CutOffPrice: values.cutOffPrice,
       IsCutOffApplicable: values.cutOffPrice < values.NetLandedCost ? true : false,
       RawMaterialCode: values.Code,
-      JaliScrapCost: values.CircleScrapCost ? values.CircleScrapCost : '' ,// THIS KEY FOR CIRCLE SCRAP COST
+      JaliScrapCost: values.CircleScrapCost ? values.CircleScrapCost : '',// THIS KEY FOR CIRCLE SCRAP COST
       IsFinancialDataChanged: isDateChange ? true : false
     }
     if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(RM_MASTER_ID) !== true)) {
@@ -1311,7 +1311,7 @@ class AddRMDomestic extends Component {
                     >
                       <div className="add-min-height">
                         <Row>
-                          <Col md="4" className="switch mb15">
+                          <Col md="12" className="switch mb15">
                             <label className="switch-level">
                               <div className={"left-title"}>Zero Based</div>
                               <Switch
@@ -1339,7 +1339,7 @@ class AddRMDomestic extends Component {
                               <h5>{"Raw Material:"}</h5>
                             </div>
                           </Col>
-                          <Col md="4">
+                          <Col md="3">
                             <Field
                               label="Technology"
                               type="text"
@@ -1358,7 +1358,7 @@ class AddRMDomestic extends Component {
                               disabled={isEditFlag || isViewFlag}
                             />
                           </Col>
-                          <Col md="4">
+                          <Col md="3">
                             <div className="d-flex justify-space-between align-items-center inputwith-icon">
                               <div className="fullinput-icon">
                                 <Field
@@ -1387,7 +1387,7 @@ class AddRMDomestic extends Component {
                               )}
                             </div>
                           </Col>
-                          <Col md="4">
+                          <Col md="3">
                             <div className="d-flex justify-space-between align-items-center inputwith-icon">
                               <div className="fullinput-icon">
                                 <Field
@@ -1406,7 +1406,7 @@ class AddRMDomestic extends Component {
                               </div>
                             </div>
                           </Col>
-                          <Col md="4">
+                          <Col md="3">
                             <div className="d-flex justify-space-between align-items-center inputwith-icon">
                               <div className="fullinput-icon">
                                 <Field
@@ -1426,7 +1426,7 @@ class AddRMDomestic extends Component {
                               </div>
                             </div>
                           </Col>
-                          <Col md="4">
+                          <Col md="3">
                             <TooltipCustom tooltipText="RM category will come here like CutToFit, CutToLength." />
                             <Field
                               name="CategoryId"
@@ -1442,7 +1442,7 @@ class AddRMDomestic extends Component {
                               disabled={isEditFlag || isViewFlag}
                             />
                           </Col>
-                          <Col md="4">
+                          <Col md="3">
                             <Field
                               label={`Code`}
                               name={'Code'}
@@ -1458,7 +1458,7 @@ class AddRMDomestic extends Component {
                           </Col>
 
                           {(this.state.IsVendor === false && (
-                            <Col md="4">
+                            <Col md="3">
                               <Field
                                 label="Plant"
                                 name="SourceSupplierPlantId"
@@ -1476,14 +1476,14 @@ class AddRMDomestic extends Component {
                                 mendatory={true}
                                 disabled={isViewFlag}
                                 className="multiselect-with-border"
-                             
+
 
                               />
                             </Col>)
                           )}
                           {
                             (this.state.IsVendor === true && getConfigurationKey().IsDestinationPlantConfigure) &&
-                            <Col md="4">
+                            <Col md="3">
                               <Field
                                 label={'Destination Plant'}
                                 name="DestinationPlant"
@@ -1529,11 +1529,11 @@ class AddRMDomestic extends Component {
                             </div>
                           </Col>
 
-                          <Col md="4" className='mb-4'>
+                          <Col md="3" className='mb-4'>
 
                             <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                            {!this.state.isLoader && this.state.inputLoader && <LoaderCustom customClass={`input-loader ${this.state.IsVendor ? 'vendor-based col-4-loader' : 'zero-based col-4-loader'} `} />}
-                            <div className="d-flex justify-space-between align-items-center inputwith-icon async-select">
+                            <div className="d-flex justify-space-between align-items-center p-relative async-select">
+                              {!this.state.isLoader && this.state.inputLoader && <LoaderCustom customClass={`vendor-input-loader`} />}
                               <div className="fullinput-icon">
                                 <AsyncSelect
                                   name="DestinationSupplierId"
@@ -1543,7 +1543,7 @@ class AddRMDomestic extends Component {
                                   onChange={(e) => this.handleVendorName(e)}
                                   value={this.state.vendorName}
                                   noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
-                                  isDisabled={isEditFlag || isViewFlag}
+                                  isDisabled={isEditFlag || isViewFlag || this.state.inputLoader}
                                 />
                                 {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
                               </div>
@@ -1556,7 +1556,7 @@ class AddRMDomestic extends Component {
                             </div>
                           </Col>
                           {initialConfiguration.IsVendorPlantConfigurable && this.state.IsVendor && (
-                            <Col md="4">
+                            <Col md="3">
                               <Field
                                 label="Vendor Plant"
                                 name="DestinationSupplierPlantId"
@@ -1579,7 +1579,7 @@ class AddRMDomestic extends Component {
                           {(this.state.HasDifferentSource ||
                             this.state.IsVendor) && (
                               <>
-                                <Col md="4">
+                                <Col md="3">
                                   <Field
                                     label={`Source`}
                                     name={"Source"}
@@ -1595,7 +1595,7 @@ class AddRMDomestic extends Component {
 
                                   />
                                 </Col>
-                                <Col md="4">
+                                <Col md="3">
                                   <Field
                                     name="SourceSupplierCityId"
                                     type="text"
@@ -1619,7 +1619,7 @@ class AddRMDomestic extends Component {
                               <h5>{"Cost:"}</h5>
                             </div>
                           </Col>
-                          <Col md="4">
+                          <Col md="3">
                             <div className="d-flex justify-space-between align-items-center inputwith-icon">
                               <div className="fullinput-icon">
                                 <Field
@@ -1639,7 +1639,7 @@ class AddRMDomestic extends Component {
 
                             </div>
                           </Col>
-                          <Col md="4">
+                          <Col md="3">
                             <Field
                               label={`Cut Off Price (INR/${this.state.UOM.label ? this.state.UOM.label : 'UOM'})`}
                               name={"cutOffPrice"}
@@ -1654,7 +1654,7 @@ class AddRMDomestic extends Component {
                               customClassName=" withBorder"
                             />
                           </Col>
-                          <Col md="4">
+                          <Col md="3">
                             <Field
                               label={`Basic Rate (INR/${this.state.UOM.label ? this.state.UOM.label : 'UOM'})`}
                               name={"BasicRate"}
@@ -1672,7 +1672,7 @@ class AddRMDomestic extends Component {
                           </Col>
                           {
                             !this.state.showExtraCost &&
-                            <Col md="4">
+                            <Col md="3">
                               <Field
                                 label={`Scrap Rate (INR/${this.state.UOM.label ? this.state.UOM.label : 'UOM'})`}
                                 name={"ScrapRate"}
@@ -1689,7 +1689,7 @@ class AddRMDomestic extends Component {
                               />
                             </Col>
                           }
-                          <Col md="4">
+                          <Col md="3">
                             <Field
                               label={`Freight Cost (INR/${this.state.UOM.label ? this.state.UOM.label : 'UOM'})`}
                               name={"FrieghtCharge"}
@@ -1705,7 +1705,7 @@ class AddRMDomestic extends Component {
                               disabled={isViewFlag}
                             />
                           </Col>
-                          <Col md="4">
+                          <Col md="3">
                             <Field
                               label={`Shearing Cost (INR/${this.state.UOM.label ? this.state.UOM.label : 'UOM'})`}
                               name={"ShearingCost"}
@@ -1725,7 +1725,7 @@ class AddRMDomestic extends Component {
                           {
                             this.state.showExtraCost &&
                             <>
-                              <Col md="4">
+                              <Col md="3">
                                 <Field
                                   label={`Circle Scrap Cost (INR/${this.state.UOM.label ? this.state.UOM.label : 'UOM'}) `}
                                   name={"CircleScrapCost"}
@@ -1739,7 +1739,7 @@ class AddRMDomestic extends Component {
                                   customClassName=" withBorder"
                                 />
                               </Col>
-                              <Col md="4">
+                              <Col md="3">
                                 <Field
                                   label={`Jali Scrap Cost (INR/${this.state.UOM.label ? this.state.UOM.label : 'UOM'})`}
                                   name={"JaliScrapCost"}
@@ -1755,7 +1755,7 @@ class AddRMDomestic extends Component {
                               </Col>
                             </>
                           }
-                          <Col md="4">
+                          <Col md="3">
                             <Field
                               label={`Net Cost (INR/${this.state.UOM.label ? this.state.UOM.label : 'UOM'})`}
                               name={"NetLandedCost"}
@@ -1770,7 +1770,7 @@ class AddRMDomestic extends Component {
                               customClassName=" withBorder"
                             />
                           </Col>
-                          <Col md="4">
+                          <Col md="3">
                             <div className="inputbox date-section form-group">
                               <Field
                                 label="Effective Date"
@@ -1818,7 +1818,7 @@ class AddRMDomestic extends Component {
                               disabled={isViewFlag}
                               maxLength="512"
                               rows="6"
-                           
+
                             />
                           </Col>
                           <Col md="3">
@@ -1877,7 +1877,7 @@ class AddRMDomestic extends Component {
                                   const fileURL = `${FILE_URL}${withOutTild}`;
                                   return (
                                     <div className={"attachment images"}>
-                                      <a href={fileURL} target="_blank">
+                                      <a href={fileURL} target="_blank" rel="noreferrer" title={f.OriginalFileName}>
                                         {f.OriginalFileName}
                                       </a>
                                       {/* <a href={fileURL} target="_blank" download={f.FileName}>

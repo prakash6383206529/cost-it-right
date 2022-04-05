@@ -13,7 +13,7 @@ import { MESSAGES } from '../../../config/message';
 import { loggedInUserId, userDetails } from "../../../helper/auth";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
-import { FILE_URL,ZBC } from '../../../config/constants';
+import { FILE_URL, ZBC } from '../../../config/constants';
 import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom';
 import attachClose from '../../../assests/images/red-cross.png'
@@ -591,7 +591,7 @@ class AddProfit extends Component {
   */
   onSubmit = debounce((values) => {
     const { costingHead, IsVendor, ModelType, vendorName, client, overheadAppli, remarks, ProfitID,
-      isRM, isCC, isBOP, isOverheadPercent, isEditFlag, files, effectiveDate, DataToChange, DropdownChanged, plant,uploadAttachements } = this.state;
+      isRM, isCC, isBOP, isOverheadPercent, isEditFlag, files, effectiveDate, DataToChange, DropdownChanged, plant, uploadAttachements } = this.state;
     const userDetail = userDetails()
 
     if (vendorName.length <= 0) {
@@ -814,7 +814,7 @@ class AddProfit extends Component {
                         </Col>
                       </Row>
                       <Row>
-                        <Col md="4" >
+                        <Col md="3" >
                           <Field
                             name="ModelType"
                             type="text"
@@ -839,21 +839,22 @@ class AddProfit extends Component {
                         </Col>
                         {this.state.IsVendor && costingHead === "vendor" && (
                           <>
-                            <Col md="4">
-                            <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                                {this.state.inputLoader && <LoaderCustom customClass={`input-loader masters-vendor-loader`} />}
-                                <AsyncSelect
-                                  name="vendorName"
-                                  ref={this.myRef}
-                                  key={this.state.updateAsyncDropdown}
-                                  loadOptions={promiseOptions}
-                                  onChange={(e) => this.handleVendorName(e)}
-                                  value={this.state.vendorName}
-                                  noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
-                                  isDisabled={isEditFlag ? true : false} />
-                                {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
-                              </Col>
-                            <Col md="4" >
+                            <Col md="3">
+                              <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
+                              {this.state.inputLoader && <LoaderCustom customClass={`vendor-input-loader-second-col`} />}
+                              <AsyncSelect
+                                name="vendorName"
+                                ref={this.myRef}
+                                key={this.state.updateAsyncDropdown}
+                                loadOptions={promiseOptions}
+                                onChange={(e) => this.handleVendorName(e)}
+                                value={this.state.vendorName}
+                                noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
+                                isDisabled={(isEditFlag || this.state.inputLoader) ? true : false} />
+                              {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
+
+                            </Col>
+                            <Col md="3" >
                               <Field
                                 name="Plant"
                                 type="text"
@@ -877,7 +878,7 @@ class AddProfit extends Component {
                           </>
                         )}
                         {this.state.IsVendor && costingHead === "client" && (
-                          <Col md="4">
+                          <Col md="3">
                             <Field
                               name="clientName"
                               type="text"
@@ -900,7 +901,7 @@ class AddProfit extends Component {
                           </Col>
                         )}
 
-                        <Col md="4" >
+                        <Col md="3" >
                           <Field
                             name="ProfitApplicabilityId"
                             type="text"
@@ -926,7 +927,7 @@ class AddProfit extends Component {
                           />
                         </Col>
                         {!isHideOverhead && (
-                          <Col md="4">
+                          <Col md="3">
                             <Field
                               label={`Profit (%)`}
                               name={"ProfitPercentage"}
@@ -948,7 +949,7 @@ class AddProfit extends Component {
                           </Col>
                         )}
                         {!isHideRM && (
-                          <Col md="4">
+                          <Col md="3">
                             <Field
                               label={`Profit on RM (%)`}
                               name={"ProfitRMPercentage"}
@@ -964,7 +965,7 @@ class AddProfit extends Component {
                           </Col>
                         )}
                         {!isHideCC && (
-                          <Col md="4">
+                          <Col md="3">
                             <Field
                               label={`Profit on CC (Machining) (%)`}
                               name={"ProfitMachiningCCPercentage"}
@@ -981,7 +982,7 @@ class AddProfit extends Component {
                           </Col>
                         )}
                         {!isHideBOP && (
-                          <Col md="4">
+                          <Col md="3">
                             <Field
                               label={`Profit on BOP (%)`}
                               name={"ProfitBOPPercentage"}
@@ -997,7 +998,7 @@ class AddProfit extends Component {
                             />
                           </Col>
                         )}
-                        <Col md="4">
+                        <Col md="3">
                           <div className="inputbox date-section form-group">
                             <Field
                               label="Effective Date"
