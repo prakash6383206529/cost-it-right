@@ -3,7 +3,7 @@ import { useForm, Controller, useWatch } from 'react-hook-form'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 import { useDispatch, useSelector } from 'react-redux'
 import { Col, Row } from 'reactstrap'
-import { saveRawMaterialCalciData } from '../../../actions/CostWorking'
+import { saveRawMaterialCalculationForSheetMetal } from '../../../actions/CostWorking'
 import HeaderTitle from '../../../../common/HeaderTitle'
 import { SearchableSelectHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
 import { checkForDecimalAndNull, checkForNull, loggedInUserId, calculateWeight, setValueAccToUOM, } from '../../../../../helper'
@@ -63,7 +63,7 @@ function Sheet(props) {
     }
 
     const {
-        register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
+        register, handleSubmit, control, setValue, getValues, formState: { errors }, } = useForm({
             mode: 'onChange',
             reValidateMode: 'onChange',
             defaultValues: defaultValues,
@@ -72,7 +72,6 @@ function Sheet(props) {
 
     const localStorage = reactLocalStorage.getObject('InitialConfiguration');
 
-    const [isOneSide, setIsOneSide] = useState(WeightCalculatorRequest && WeightCalculatorRequest.IsOneSide ? WeightCalculatorRequest.IsOneSide : false)
     const [UOMDimension, setUOMDimension] = useState(
         WeightCalculatorRequest && Object.keys(WeightCalculatorRequest).length !== 0
             ? {
@@ -81,7 +80,6 @@ function Sheet(props) {
             }
             : [],
     )
-    let extraObj = {}
     const [dataToSend, setDataToSend] = useState({
         GrossWeight: WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== null ? WeightCalculatorRequest.GrossWeight : '',
         FinishWeight: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? convert(WeightCalculatorRequest.FinishWeight, WeightCalculatorRequest.UOMForDimension) : ''
@@ -91,12 +89,8 @@ function Sheet(props) {
     const tempOldObj = WeightCalculatorRequest
     const [GrossWeight, setGrossWeights] = useState(WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== null ? WeightCalculatorRequest.GrossWeight : '')
     const [FinishWeightOfSheet, setFinishWeights] = useState(WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? convert(WeightCalculatorRequest.FinishWeight, WeightCalculatorRequest.UOMForDimension) : '')
-    // const [FinishWeightOfSheet, setFinishWeights] = useState('')
     const UOMSelectList = useSelector((state) => state.comman.UOMSelectList)
     // const localStorage = reactLocalStorage.getObject('InitialConfiguration');
-
-    let SheetWidth = getValues('SheetWidth')
-    let length = getValues('SheetLength')
 
 
     const fieldValues = useWatch({
@@ -131,12 +125,13 @@ function Sheet(props) {
 
 
     useEffect(() => {
-        setWeightOfSheet()
-        setNoOfStrips()
-        setComponentPerStrips()
-        setNoOfComponent()
-        setGrossWeight()
-        //     setFinishWeight()
+        if (!CostingViewMode) {
+            setWeightOfSheet()
+            setNoOfStrips()
+            setComponentPerStrips()
+            setNoOfComponent()
+            setGrossWeight()
+        }
     }, [fieldValues])
 
     const setFinishWeight = (e) => {
@@ -179,7 +174,6 @@ function Sheet(props) {
     }
 
     const setNoOfStrips = () => {
-        const stripWidth = getValues('StripWidth')
         const stripNo = parseInt(checkForNull(getValues('SheetLength')) / checkForNull(getValues('StripWidth')))
         setValue('StripsNumber', checkForNull(stripNo))
     }
@@ -269,23 +263,15 @@ function Sheet(props) {
         }
         let data = {
             LayoutType: 'Sheet',
-            WeightCalculationId: WeightCalculatorRequest && WeightCalculatorRequest.WeightCalculationId ? WeightCalculatorRequest.WeightCalculationId : "00000000-0000-0000-0000-000000000000",
+            SheetMetalCalculationId: WeightCalculatorRequest && WeightCalculatorRequest.SheetMetalCalculationId ? WeightCalculatorRequest.SheetMetalCalculationId : "0",
             IsChangeApplied: isChangeApplies, //NEED TO MAKE IT DYNAMIC how to do,
-            PartId: costData.PartId,
-            RawMaterialId: rmRowData.RawMaterialId,
-            CostingId: costData.CostingId,
-            TechnologyId: costData.TechnologyId,
+            BaseCostingIdRef: costData.CostingId,
             CostingRawMaterialDetailId: rmRowData.RawMaterialDetailId,
-            RawMaterialName: rmRowData.RMName,
-            RawMaterialType: rmRowData.MaterialType,
-            BasicRatePerUOM: rmRowData.RMRate,
-            ScrapRate: rmRowData.ScrapRate,
-            NetLandedCost: dataToSend.GrossWeight * rmRowData.RMRate - (dataToSend.GrossWeight - getValues('FinishWeightOfSheet')) * rmRowData.ScrapRate,
-            PartNumber: costData.PartNumber,
-            TechnologyName: costData.TechnologyName,
-            Density: rmRowData.Density,
+            RawMaterialIdRef: rmRowData.RawMaterialId,
+            LoggedInUserId: loggedInUserId(),
+            RawMaterialCost: dataToSend.GrossWeight * rmRowData.RMRate - (dataToSend.GrossWeight - getValues('FinishWeightOfSheet')) * rmRowData.ScrapRate,
             UOMForDimensionId: UOMDimension ? UOMDimension.value : '',
-            UOMForDimension: UOMDimension ? UOMDimension.label : '', // till here common
+            UOMForDimension: UOMDimension ? UOMDimension.label : '',
             Cavity: values.Cavity,
             Thickness: values.SheetThickness,
             LengthOfSheet: values.SheetLength,
@@ -299,21 +285,15 @@ function Sheet(props) {
             UOMId: rmRowData.UOMId,
             UOM: rmRowData.UOM,
             NetSurfaceArea: values.NetSurfaceArea,
-            //Common
             GrossWeight: (dataToSend.newGrossWeight === undefined || dataToSend.newGrossWeight === 0) ? GrossWeight : dataToSend.newGrossWeight,
             FinishWeight: getValues('FinishWeightOfSheet'),
-            LoggedInUserId: loggedInUserId()
         }
 
-
-        let obj = {
-        }
-
-        dispatch(saveRawMaterialCalciData(data, res => {
+        dispatch(saveRawMaterialCalculationForSheetMetal(data, res => {
             if (res.data.Result) {
                 data.WeightCalculationId = res.data.Identity
                 Toaster.success("Calculation saved successfully")
-                props.toggleDrawer('', data, obj)
+                props.toggleDrawer('', data)
             }
         }))
     }
@@ -322,7 +302,6 @@ function Sheet(props) {
         setValue('UOMDimension', { label: value.label, value: value.value })
         setUOMDimension(value)
         let grossWeight = GrossWeight
-        // let finishWeight = FinishWeightOfSheet
         setUnit(value.label)
         setDataToSend(prevState => ({ ...prevState, newGrossWeight: setValueAccToUOM(grossWeight, value.label), newFinishWeight: setValueAccToUOM(FinishWeightOfSheet, value.label) }))
         setTimeout(() => {
