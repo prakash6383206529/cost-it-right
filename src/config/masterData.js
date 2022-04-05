@@ -1840,7 +1840,7 @@ export const RMDomesticSimulation = [
 export const RMImportSimulation = [
     { label: "CostingHead", value: "CostingHead" },
     { label: "RawMaterial", value: "RawMaterial" },
-    {label:"RMCode",value:"RawMaterialCode"},
+    { label: "RMCode", value: "RawMaterialCode" },
     { label: "RMGrade", value: "RMGrade" },
     { label: "RMSpec", value: "RMSpec" },
     { label: "RawMaterialCode", value: "RawMaterialCode", },
@@ -2959,8 +2959,6 @@ export const decimalOption = [
     { label: 'Round Off', value: 'RoundOff' },
     { label: 'Truncate', value: 'Truncate' },
     { label: 'Per 100', value: 'Per100' },
-    { label: "CreatedBy", value: "CreatedBy", }
-
 ]
 
 
