@@ -203,10 +203,18 @@ function CostingHeaderTabs(props) {
     }
 
 
-    if (RMCCTabData && RMCCTabData.length > 0 && activeTab !== '1') {
+    if (RMCCTabData && RMCCTabData.length > 0 && activeTab !== '1' && CostingViewMode === false) {
+
+
       let tempArrForCosting = JSON.parse(localStorage.getItem('costingArray'))
       const data = _.find(tempArrForCosting, ['IsPartLocked', true])
-      if (data !== undefined) {
+
+      const lockedData = _.find(tempArrForCosting, ['IsLocked', true])
+
+      const bopData = _.find(tempArrForCosting, ['PartType', 'BOP'])
+
+      if (data !== undefined || bopData !== undefined || lockedData !== undefined) {
+
         const tabData = RMCCTabData[0]
         const surfaceTabData = SurfaceTabData[0]
         const overHeadAndProfitTabData = OverheadProfitTabData[0]

@@ -3,11 +3,11 @@ import { Row, Col } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
 import { TextFieldHookForm, } from '../../../../layout/HookFormInputs'
-import { clampingTime, feedByMin, findRpm, passesNo, totalMachineTime, } from './CommonFormula'
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, } from '../../../../../helper'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 import { saveMachiningProcessCostCalculationData } from '../../../actions/CostWorking'
 import Toaster from '../../../../common/Toaster'
+import { debounce } from 'lodash'
 
 function Broaching(props) {
     const WeightCalculatorRequest = props.calculatorData.WeightCalculatorRequest
@@ -35,10 +35,10 @@ function Broaching(props) {
         totalCycleTimeMins: WeightCalculatorRequest && WeightCalculatorRequest.TotalCycleTimeMins !== undefined ? WeightCalculatorRequest.TotalCycleTimeMins : '',
         TotalCycleTimeSec: WeightCalculatorRequest && WeightCalculatorRequest.TotalCycleTimeSec !== undefined ? WeightCalculatorRequest.TotalCycleTimeSec : '',
         efficiencyPercentage: WeightCalculatorRequest && WeightCalculatorRequest.EfficiencyPercentage !== undefined ? WeightCalculatorRequest.EfficiencyPercentage : '',
-        partsPerHour: WeightCalculatorRequest && WeightCalculatorRequest.PartsPerHour !== undefined ? WeightCalculatorRequest.PartsPerHour : '',
+        partsPerHour: WeightCalculatorRequest && WeightCalculatorRequest.PartPerHour !== undefined ? WeightCalculatorRequest.PartPerHour : '',
         processCost: WeightCalculatorRequest && WeightCalculatorRequest.ProcessCost !== undefined ? WeightCalculatorRequest.ProcessCost : '',
     }
-    const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
+    const { register, handleSubmit, control, setValue, getValues, formState: { errors }, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
         defaultValues: defaultValues,
@@ -55,8 +55,8 @@ function Broaching(props) {
         setPartsPerHour()    //partsPerHour
     }, [fieldValues])
 
-    const trim = getConfigurationKey().NoOfDecimalForInputOutput
-    const { technology, process, calculateMachineTime } = props
+
+    const { calculateMachineTime } = props
     const [totalMachiningTime, setTotalMachiningTime] = useState(WeightCalculatorRequest && WeightCalculatorRequest.TotalMachiningTime !== undefined ? WeightCalculatorRequest.TotalMachiningTime : '')
 
     const setBroachingForce = () => {
@@ -100,8 +100,37 @@ function Broaching(props) {
         setValue('partsPerHour', checkForDecimalAndNull(partsPerHour, getConfigurationKey().NoOfDecimalForInputOutput))
         const processCost = (props?.calculatorData?.MHR) / checkForNull(partsPerHour)
         setDataToSend(prevState => ({ ...prevState, processCost: processCost }))
-        setValue('processCost', checkForDecimalAndNull(processCost, getConfigurationKey().NoOfDecimalForInputOutput))
+        setValue('processCost', checkForDecimalAndNull(processCost, getConfigurationKey().NoOfDecimalForPrice))
     }
+
+
+    const handleDiameterChange = debounce((e) => {
+
+        let majorDia;
+        let minorDia;
+
+        if (e.name === 'majorDiameter') {
+            minorDia = getValues('minorDiameter')
+            majorDia = e.value
+        } else {
+            minorDia = e.value
+            majorDia = getValues('majorDiameter')
+        }
+
+        if (minorDia && majorDia && Number(minorDia) > Number(majorDia)) {
+            Toaster.warning('Minor diameter cannot be greater than major diameter')
+            if (e.name === 'majorDiameter') {
+                setTimeout(() => {
+                    setValue('majorDiameter', "")
+                }, 400);
+            } else {
+                setTimeout(() => {
+                    setValue('minorDiameter', "")
+                }, 400);
+            }
+            return false
+        }
+    }, 500)
 
     const onSubmit = (value) => {
         let obj = {}
@@ -115,7 +144,7 @@ function Broaching(props) {
         obj.UnitOfMeasurementId = props.calculatorData.UnitOfMeasurementId
         obj.MachineRateId = props.calculatorData.MachineRateId
         obj.PartNumber = costData.PartNumber
-        obj.ProcessId = props.calculatorData.ProcessId
+        obj.ProcessIdRef = props.calculatorData.ProcessId
         obj.ProcessName = props.calculatorData.ProcessName
         obj.ProcessDescription = props.calculatorData.ProcessDescription
         obj.MachineName = costData.MachineName
@@ -142,7 +171,7 @@ function Broaching(props) {
         obj.TotalCycleTimeMins = dataToSend.totalCycleTimeMins
         obj.TotalCycleTimeSec = dataToSend.TotalCycleTimeSec
         obj.EfficiencyPercentage = value.efficiencyPercentage
-        obj.PartsPerHour = dataToSend.partsPerHour
+        obj.PartPerHour = dataToSend.partsPerHour
         obj.ProcessCost = dataToSend.processCost
         obj.TotalMachiningTime = totalMachiningTime
         obj.MachineRate = props.calculatorData.MHR
@@ -233,7 +262,7 @@ function Broaching(props) {
                                                         message: 'Maximum length for interger is 4 and for decimal is 7',
                                                     },
                                                 }}
-                                                handleChange={() => { }}
+                                                handleChange={(e) => handleDiameterChange(e.target)}
                                                 defaultValue={''}
                                                 className=""
                                                 customClassName={'withBorder'}
@@ -259,7 +288,7 @@ function Broaching(props) {
                                                         message: 'Maximum length for interger is 4 and for decimal is 7',
                                                     },
                                                 }}
-                                                handleChange={() => { }}
+                                                handleChange={(e) => handleDiameterChange(e.target)}
                                                 defaultValue={''}
                                                 className=""
                                                 customClassName={'withBorder'}
