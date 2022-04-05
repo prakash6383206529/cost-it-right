@@ -5,8 +5,8 @@ import Toaster from "../common/Toaster";
 import { connect } from "react-redux";
 import { Loader } from "../common/Loader";
 import {
-  minLength3, minLength6, minLength5,minLength10, maxLength11, maxLength12,maxLength25, required, email,passwordValidate,validatePassword , noSpace, alphabetsOnlyForName, minLength7, maxLength18,
-  maxLength10, maxLength6, vlidatePhoneNumber,checkWhiteSpaces, alphaNumeric ,maxLength15 , postiveNumber, maxLength80, maxLength5, acceptAllExceptSingleSpecialCharacter
+  minLength3, minLength6, minLength10, maxLength11, maxLength12, required, email, minLength7, maxLength18,
+  maxLength6, checkWhiteSpaces, maxLength15, postiveNumber, maxLength80, maxLength5, acceptAllExceptSingleSpecialCharacter
 } from "../../helper/validation";
 import { renderPasswordInputField, focusOnError, renderEmailInputField, renderText, searchableSelect, renderMultiSelectField, } from "../layout/FormInputs";
 import {
@@ -194,6 +194,7 @@ class UserRegistration extends Component {
       roleList && roleList.map(item => {
         if (item.RoleName === 'SuperAdmin') return false
         temp.push({ label: item.RoleName, value: item.RoleId })
+        return null
       });
       return temp;
     }
@@ -244,6 +245,7 @@ class UserRegistration extends Component {
       levelSelectList && levelSelectList.map(item => {
         if (item.Value === '0') return false;
         temp.push({ label: item.Text, value: item.Value })
+        return null
       });
       return temp;
     }
@@ -252,6 +254,7 @@ class UserRegistration extends Component {
       simulationLevelSelectList && simulationLevelSelectList.map(item => {
         if (item.Value === '0') return false
         temp.push({ label: item.Text, value: item.Value })
+        return null
       })
       return temp;
     }
@@ -260,6 +263,7 @@ class UserRegistration extends Component {
       masterLevelSelectList && masterLevelSelectList.map(item => {
         if (item.Value === '0') return false
         temp.push({ label: item.Text, value: item.Value })
+        return null
       })
       return temp;
     }
@@ -342,7 +346,7 @@ class UserRegistration extends Component {
             const depatArr = []
             const RoleObj = roleList && roleList.find(item => item.RoleId === Data.RoleId)
             if (Data.IsMultipleDepartmentAllowed) {
-              Data.Departments && Data.Departments.map(item => { depatArr.push({ Text: item.DepartmentName, Value: item.DepartmentId }) })
+              Data.Departments && Data.Departments.map(item => (depatArr.push({ Text: item.DepartmentName, Value: item.DepartmentId })))
             } else {
               DepartmentObj = departmentList && departmentList.find(item => item.DepartmentId === Data.DepartmentId)
             }
@@ -478,18 +482,7 @@ class UserRegistration extends Component {
    */
   moduleDataHandler = (data, ModuleName) => {
     const { Modules } = this.state;
-    let tempArray = [];
     let temp111 = data;
-
-    let isAnyChildChecked = data && data.map((item, i) => {
-      let index = item.Actions.findIndex(el => el.IsChecked === true)
-      if (index !== -1) {
-        temp111[i].IsChecked = true;
-        tempArray.push(index)
-      }
-      return null;
-
-    })
 
     let isParentChecked = temp111.findIndex(el => el.IsChecked === true)
     const isAvailable = Modules && Modules.findIndex(a => a.ModuleName === ModuleName)
@@ -1009,7 +1002,7 @@ class UserRegistration extends Component {
 
     const { reset, registerUserData, initialConfiguration } = this.props;
     const { department, role, city, isEditFlag, Modules, oldModules, TechnologyLevelGrid,
-      oldTechnologyLevelGrid, UserId, HeadLevelGrid, oldHeadLevelGrid, masterLevelGrid } = this.state;
+      oldTechnologyLevelGrid, UserId, HeadLevelGrid, masterLevelGrid } = this.state;
     const userDetails = reactLocalStorage.getObject("userDetail")
 
     if (TechnologyLevelGrid && TechnologyLevelGrid.length === 0) {
@@ -1050,13 +1043,14 @@ class UserRegistration extends Component {
         Master: item.Master,
         Level: item.Level,
       })
+      return null
     })
 
     let multiDeptArr = []
 
-    department && department.map((item) => {
+    department && department.map((item) => (
       multiDeptArr.push({ DepartmentId: item.Value, DepartmentName: item.Text })
-    })
+    ))
 
 
     if (isEditFlag) {
@@ -1202,7 +1196,7 @@ class UserRegistration extends Component {
   };
 
   render() {
-    const { handleSubmit, initialConfiguration, loading } = this.props;
+    const { handleSubmit, initialConfiguration } = this.props;
     const { isSubmitted, isLoader } = this.state;
     return (
       <div className="container-fluid">
@@ -1235,7 +1229,7 @@ class UserRegistration extends Component {
                           name={"FirstName"}
                           type="text"
                           placeholder={'Enter'}
-                          validate={[required,minLength3, maxLength15]}
+                          validate={[required, minLength3, maxLength15]}
                           component={renderText}
                           required={true}
                           // maxLength={26}
@@ -1264,7 +1258,7 @@ class UserRegistration extends Component {
                           placeholder={'Enter'}
                           component={renderText}
                           isDisabled={false}
-                          validate={[postiveNumber,minLength10, maxLength12, checkWhiteSpaces]}
+                          validate={[postiveNumber, minLength10, maxLength12, checkWhiteSpaces]}
                           required={false}
                           // maxLength={10}
                           customClassName={'withBorder'}
@@ -1278,7 +1272,7 @@ class UserRegistration extends Component {
                               name={"PhoneNumber"}
                               type="text"
                               placeholder={'Enter'}
-                              validate={[postiveNumber, minLength10, maxLength12 ]}
+                              validate={[postiveNumber, minLength10, maxLength12]}
                               component={renderText}
                               //required={true}
                               maxLength={12}
@@ -1329,7 +1323,7 @@ class UserRegistration extends Component {
                             placeholder={'Enter'}
                             component={renderText}
                             isDisabled={false}
-                            validate={[required,minLength3, maxLength15]}
+                            validate={[required, minLength3, maxLength15]}
                             required={true}
                             maxLength={70}
                             disabled={this.state.isEditFlag ? true : false}
@@ -1346,7 +1340,7 @@ class UserRegistration extends Component {
                               component={renderPasswordInputField}
                               onChange={this.passwordPatternHandler}
                               validate={[required, minLength6, maxLength18, checkWhiteSpaces]}
-                             
+
                               isShowHide={this.state.isShowHidePassword}
                               showHide={this.showHidePasswordHandler}
                               required={true}
@@ -1425,7 +1419,7 @@ class UserRegistration extends Component {
                           name={"ZipCode"}
                           type="text"
                           placeholder={'Enter'}
-                          validate={[postiveNumber, minLength5, maxLength5]}
+                          validate={[postiveNumber, maxLength6]}
                           component={renderText}
                           //required={true}
                           maxLength={6}
@@ -1579,9 +1573,6 @@ class UserRegistration extends Component {
                               label="Technology"
                               component={searchableSelect}
                               options={this.searchableSelectType('technology')}
-                              //onKeyUp={(e) => this.changeItemDesc(e)}
-                              //validate={(this.state.technology == null || this.state.technology.length == 0) ? [required] : []}
-                              //required={true}
                               handleChangeDescription={this.technologyHandler}
                               valueDescription={this.state.technology}
                             />
@@ -1593,9 +1584,6 @@ class UserRegistration extends Component {
                               label="Level"
                               component={searchableSelect}
                               options={this.searchableSelectType('level')}
-                              //onKeyUp={(e) => this.changeItemDesc(e)}
-                              //validate={(this.state.level == null || this.state.level.length == 0) ? [required] : []}
-                              //required={true}
                               handleChangeDescription={this.levelHandler}
                               valueDescription={this.state.level}
                             />
@@ -1692,9 +1680,6 @@ class UserRegistration extends Component {
                               label="Head"
                               component={searchableSelect}
                               options={this.searchableSelectType('heads')}
-                              //onKeyUp={(e) => this.changeItemDesc(e)}
-                              //validate={(this.state.technology == null || this.state.technology.length == 0) ? [required] : []}
-                              //required={true}
                               handleChangeDescription={this.headHandler}
                               valueDescription={this.state.simulationHeads}
                             />
@@ -1706,9 +1691,6 @@ class UserRegistration extends Component {
                               label="Level"
                               component={searchableSelect}
                               options={this.searchableSelectType('simualtionLevel')}
-                              //onKeyUp={(e) => this.changeItemDesc(e)}
-                              //validate={(this.state.level == null || this.state.level.length == 0) ? [required] : []}
-                              //required={true}
                               handleChangeDescription={this.simualtionLevelHandler}
                               valueDescription={this.state.simualtionLevel}
                             />
@@ -1809,9 +1791,6 @@ class UserRegistration extends Component {
                                   label="Level"
                                   component={searchableSelect}
                                   options={this.searchableSelectType('masterLevel')}
-                                  //onKeyUp={(e) => this.changeItemDesc(e)}
-                                  //validate={(this.state.level == null || this.state.level.length == 0) ? [required] : []}
-                                  //required={true}
                                   handleChangeDescription={this.masterLevelHandler}
                                   valueDescription={this.state.masterLevel}
                                 />
@@ -1927,12 +1906,6 @@ class UserRegistration extends Component {
 function validate(values) {
   let errors = {};
 
-  // if (!values.phone) {
-  //   errors.phone = langs.validation_messages.phone_number_required;
-  // }
-  // if (vlidatePhoneNumber(values.phone)) {
-  //   errors.phone = langs.validation_messages.phone_number_pattern;
-  // }
   if (values.passwordConfirm !== values.Password) {
     errors.passwordConfirm =
       langs.validation_messages.password_confirm_password;
