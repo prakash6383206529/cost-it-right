@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useForm, Controller, dispatch } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { useSelector, useDispatch } from 'react-redux';
 import { Col, Row, Table } from 'reactstrap';
 import AddBOP from '../../Drawers/AddBOP';
@@ -7,7 +7,7 @@ import { NumberFieldHookForm, TextFieldHookForm } from '../../../../layout/HookF
 import NoContentFound from '../../../../common/NoContentFound';
 import { EMPTY_DATA } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
-import { calculatePercentage, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, setValueAccToUOM } from '../../../../../helper';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected } from '../../../../../helper';
 import { ViewCostingContext } from '../../CostingDetails';
 import { gridDataAdded, isDataChange, setRMCCErrors } from '../../../actions/Costing';
 import { INR } from '../../../../../config/constants';
@@ -16,7 +16,7 @@ import _ from 'lodash'
 let counter = 0;
 function BOPCost(props) {
   const { item, data } = props;
-  const IsLocked = item.IsLocked || item.IsPartLocked
+  const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
 
   const { register, handleSubmit, control, formState: { errors }, setValue, getValues } = useForm({
     mode: 'onChange',
@@ -134,7 +134,7 @@ function BOPCost(props) {
     setGridData(tempArr)
 
     let selectedIds = []
-    tempArr.map(el => { selectedIds.push(el.BoughtOutPartId) })
+    tempArr.map(el => (selectedIds.push(el.BoughtOutPartId)))
     setIds(selectedIds)
 
   }
@@ -253,7 +253,7 @@ function BOPCost(props) {
         if (!CostingViewMode && !IsLocked) {
           props.setBOPHandlingCost(gridData, BOPHandlingFields, Params, item)
         }
-      }, 200)
+      }, 500)
 
     } else {
       setValue('BOPHandlingCharges', 0)
