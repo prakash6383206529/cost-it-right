@@ -46,6 +46,34 @@ function ReportListing(props) {
     const [enableSearchFilterSearchButton, setEnableSearchFilterButton] = useState(true)
     const [reportListingDataStateArray, setReportListingDataStateArray] = useState([])
 
+
+    var filterParams = {
+        comparator: function (filterLocalDateAtMidnight, cellValue) {
+            var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+            var newDate = filterLocalDateAtMidnight != null ? DayTime(filterLocalDateAtMidnight).format('DD/MM/YYYY') : '';
+            setFloatingFilterData({ ...floatingFilterData, EffectiveDate: newDate })
+            if (dateAsString == null) return -1;
+            var dateParts = dateAsString.split('/');
+            var cellDate = new Date(
+                Number(dateParts[2]),
+                Number(dateParts[1]) - 1,
+                Number(dateParts[0])
+            );
+            if (filterLocalDateAtMidnight.getTime() === cellDate.getTime()) {
+                return 0;
+            }
+            if (cellDate < filterLocalDateAtMidnight) {
+                return -1;
+            }
+            if (cellDate > filterLocalDateAtMidnight) {
+                return 1;
+            }
+
+        },
+        browserDatePicker: true,
+        minValidYear: 2000,
+    };
+
     let filterClick = false
 
     const dispatch = useDispatch()
@@ -272,6 +300,10 @@ function ReportListing(props) {
             }
 
         } else {
+
+            if (value.column.colId === "EffectiveDate") {
+                return false
+            }
 
             setFloatingFilterData({ ...floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter })
         }
@@ -553,7 +585,7 @@ function ReportListing(props) {
                         <AgGridColumn field='OtherCost' headerName='Other Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                         <AgGridColumn field='NetOtherCost' headerName='Net Other Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                         <AgGridColumn field='TotalOtherCost' headerName='Total Other Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
-                        <AgGridColumn field='EffectiveDate' headerName='Effective Date' cellRenderer='effectiveDateFormatter'></AgGridColumn>
+                        <AgGridColumn field='EffectiveDate' headerName='Effective Date' cellRenderer='effectiveDateFormatter' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                         <AgGridColumn field='Currency' headerName='Currency' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='NetPOPriceOtherCurrency' headerName='Net PO Price Other Currency' cellRenderer='hyphenFormatter'></AgGridColumn>
                         {/* <AgGridColumn field='NetPOPrice' headerName='Net PO Price' cellRenderer='hyphenFormatter'></AgGridColumn> */}
