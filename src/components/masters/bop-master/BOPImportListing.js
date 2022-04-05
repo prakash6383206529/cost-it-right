@@ -297,11 +297,11 @@ class BOPImportListing extends Component {
 
         return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
     }
+
     plantFormatter = (props) => {
-        let checkValue
         const rowData = props.data
-        checkValue = (!this.props.isSimulation) ? 'Vendor Based' : true
-        return rowData.IsVendor === checkValue ? rowData.DestinationPlant : rowData.Plants
+        return rowData.IsVendor === 'true' ? rowData.DestinationPlant : rowData.Plants
+
     }
 
     formToggle = () => {

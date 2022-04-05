@@ -279,13 +279,12 @@ class BOPDomesticListing extends Component {
         return cellValue          // IN SUMMARY DRAWER COSTING HEAD IS ROWDATA.COSTINGHEAD & IN MAIN DOMESTIC LISTING IT IS CELLVALUE
 
     }
-
     plantFormatter = (props) => {
-        let checkValue
         const rowData = props.data
-        checkValue = (!this.props.isSimulation) ? 'Vendor Based' : true
-        return rowData.IsVendor === checkValue ? rowData.DestinationPlant : rowData.Plants
+        return rowData.IsVendor === 'true' ? rowData.DestinationPlant : rowData.Plants
+
     }
+
 
     formToggle = () => {
         this.props.displayForm()
@@ -322,7 +321,6 @@ class BOPDomesticListing extends Component {
     };
 
     onPageSizeChanged = (newPageSize) => {
-        var value = document.getElementById('page-size').value;
         this.state.gridApi.paginationSetPageSize(Number(newPageSize));
     };
 
