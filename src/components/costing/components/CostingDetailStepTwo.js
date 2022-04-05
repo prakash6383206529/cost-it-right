@@ -381,11 +381,12 @@ function CostingDetailStepTwo(props) {
   }
 
   const handleBackButton = () => {
-    if (RMCCTabData && RMCCTabData.length > 0) {
+    if (RMCCTabData && RMCCTabData.length > 0 && CostingViewMode === false) {
       let tempArrForCosting = JSON.parse(localStorage.getItem('costingArray'))
       const data = _.find(tempArrForCosting, ['IsPartLocked', true])
       const bopData = _.find(tempArrForCosting, ['PartType', 'BOP'])
-      if (data !== undefined || bopData !== undefined) {
+      const lockedData = _.find(tempArrForCosting, ['IsLocked', true])
+      if (data !== undefined || bopData !== undefined || lockedData !== undefined) {
         const tabData = RMCCTabData[0]
         const surfaceTabData = SurfaceTabData[0]
         const overHeadAndProfitTabData = OverheadProfitTabData[0]
