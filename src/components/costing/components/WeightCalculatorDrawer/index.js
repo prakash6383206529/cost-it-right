@@ -1,5 +1,4 @@
-import React, { useState, useEffect, Fragment } from 'react'
-import { useDispatch } from 'react-redux'
+import React from 'react'
 import { Row, Col, Container, } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
 import WeightCalculator from './sheetMetal'
@@ -15,7 +14,7 @@ import Ferrous from './Ferrous'
 
 
 function OpenWeightCalculator(props) {
-  const { rmRowData, isEditFlag, item, isSummary, rmMBDetail, CostingViewMode } = props
+  const { rmRowData, item, isSummary, rmMBDetail, CostingViewMode, rmData, technology } = props
   let appyMasterBatch;
   let totalRM;
   if (!isSummary) {
@@ -48,8 +47,6 @@ function OpenWeightCalculator(props) {
     }
   }
 
-  const technology = props.technology;
-
 
   /**
    * @method toggleDrawer
@@ -61,8 +58,6 @@ function OpenWeightCalculator(props) {
     }
     props.closeDrawer('', weightData, originalWeight)
   }
-
-  const dispatch = useDispatch()
 
   /**
    * @method render
@@ -138,6 +133,7 @@ function OpenWeightCalculator(props) {
             toggleDrawer={toggleDrawer}
             CostingViewMode={CostingViewMode ? CostingViewMode : false}
             item={item}
+            rmData={rmData}
           />
         )
 

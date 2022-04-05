@@ -5,7 +5,7 @@ import {
   UPDATE_COSTING_RM_SUCCESS, GET_BOP_LIST_SUCCESS, ADD_BOP_COSTING_SUCCESS, GET_OTHER_OPERATION_LIST_SUCCESS, ADD_OTHER_OPERATION_COSTING_SUCCESS, ADD_UNIT_OTHER_OPERATION_COSTING_DATA,
   GET_MHR_LIST_SUCCESS, ADD_MHR_FOR_PROCESS_GRID_DATA, GET_PROCESSES_LIST_SUCCESS, SAVE_PROCESS_COSTING_SUCCESS, GET_OTHER_OPERATION_SELECT_LIST_SUCCESS, SAVE_OTHER_OPERATION_COSTING_SUCCESS,
   ADD_PROCESS_COSTING_SUCCESS, SET_COSTING_DETAIL_ROW_DATA, UPDATE_COSTING_OTHER_OPERATION_SUCCESS, SAVE_COSTING_AS_DRAFT_SUCCESS, ADD_BOP_GRID_COSTING_SUCCESS,
-  SAVE_BOP_COSTING_SUCCESS, GET_RAW_MATERIAL_CALCI_INFO, GET_BULKUPLOAD_COSTING_LIST, config
+  SAVE_BOP_COSTING_SUCCESS, GET_RAW_MATERIAL_CALCI_INFO, GET_BULKUPLOAD_COSTING_LIST, config, EMPTY_GUID, FERROUS_CALCULATOR_RESET,
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
@@ -60,6 +60,285 @@ export function getWeightCalculationLayoutType(callback) {
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
       callback(error);
+      apiErrors(error);
+    });
+  };
+}
+/**
+ * @method getRawMaterialCalculationForSheetMetal
+ * @description Get raw materical calculator data for Sheet Metal
+*/
+export function getRawMaterialCalculationForSheetMetal(costingId, rawMaterialId, weightCalculationId, callback) {
+  return (dispatch) => {
+    const queryParams = `costingId=${costingId}&rawMaterialId=${rawMaterialId}&weightCalculationId=${weightCalculationId ? weightCalculationId : "0"}`
+    const request = axios.get(`${API.getRawMaterialCalculationForSheetMetal}?${queryParams}`, headers);
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      } else {
+        Toaster.error(MESSAGES.SOME_ERROR);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
+
+/**
+ * @method saveRawMaterialCalculationForSheetMetal
+ * @description save raw materical calculator data for Sheet Metal
+*/
+export function saveRawMaterialCalculationForSheetMetal(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.saveRawMaterialCalculationForSheetMetal, data, headers);
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      apiErrors(error);
+    });
+  };
+}
+
+/**
+ * @method getRawMaterialCalculationForForging
+ * @description Get raw materical calculator data for Forging
+*/
+export function getRawMaterialCalculationForForging(costingId, rawMaterialId, weightCalculationId, callback) {
+  return (dispatch) => {
+    const queryParams = `costingId=${costingId}&rawMaterialId=${rawMaterialId}&weightCalculationId=${weightCalculationId ? weightCalculationId : "0"}`
+    const request = axios.get(`${API.getRawMaterialCalculationForForging}?${queryParams}`, headers);
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      } else {
+        Toaster.error(MESSAGES.SOME_ERROR);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
+/**
+ * @method saveRawMaterialCalculationForForging
+ * @description save raw materical calculator data for Forging
+*/
+export function saveRawMaterialCalculationForForging(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.saveRawMaterialCalculationForForging, data, headers);
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      apiErrors(error);
+    });
+  };
+}
+
+/**
+ * @method getRawMaterialCalculationForFerrous
+ * @description Get raw materical calculator data for Ferrous
+*/
+export function getRawMaterialCalculationForFerrous(costingId, rawMaterialId, weightCalculationId, callback) {
+  return (dispatch) => {
+    //dispatch({ type: API_REQUEST });
+    const queryParams = `costingId=${costingId}&rawMaterialId=${EMPTY_GUID}&weightCalculationId=${weightCalculationId ? weightCalculationId : "0"}`
+    const request = axios.get(`${API.getRawMaterialCalculationForFerrous}?${queryParams}`, headers);
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      } else {
+        Toaster.error(MESSAGES.SOME_ERROR);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
+
+/**
+ * @method saveRawMaterialCalculationForFerrous
+ * @description save raw materical calculator data for Ferrous
+*/
+export function saveRawMaterialCalculationForFerrous(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.saveRawMaterialCalculationForFerrous, data, headers);
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      apiErrors(error);
+    });
+  };
+}
+
+/**
+ * @method getRawMaterialCalculationForPlastic
+ * @description Get raw materical calculator data for Plastic
+*/
+export function getRawMaterialCalculationForPlastic(costingId, rawMaterialId, weightCalculationId, callback) {
+  return (dispatch) => {
+    //dispatch({ type: API_REQUEST });
+    const queryParams = `costingId=${costingId}&rawMaterialId=${rawMaterialId}&weightCalculationId=${weightCalculationId ? weightCalculationId : "0"}`
+    const request = axios.get(`${API.getRawMaterialCalculationForPlastic}?${queryParams}`, headers);
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      } else {
+        Toaster.error(MESSAGES.SOME_ERROR);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
+
+/**
+ * @method saveRawMaterialCalculationForPlastic
+ * @description save raw materical calculator data for Plastic
+*/
+export function saveRawMaterialCalculationForPlastic(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.saveRawMaterialCalculationForPlastic, data, headers);
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      apiErrors(error);
+    });
+  };
+}
+
+/**
+ * @method getRawMaterialCalculationForCorrugatedBox
+ * @description Get raw materical calculator data for CorrugatedBox
+*/
+export function getRawMaterialCalculationForCorrugatedBox(costingId, rawMaterialId, weightCalculationId, callback) {
+  return (dispatch) => {
+    //dispatch({ type: API_REQUEST });
+    const queryParams = `costingId=${costingId}&rawMaterialId=${rawMaterialId}&weightCalculationId=${weightCalculationId ? weightCalculationId : "0"}`
+    const request = axios.get(`${API.getRawMaterialCalculationForCorrugatedBox}?${queryParams}`, headers);
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      } else {
+        Toaster.error(MESSAGES.SOME_ERROR);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
+/**
+ * @method saveRawMaterialCalculationForCorrugatedBox
+ * @description save raw materical calculator data for Corrugated Box
+*/
+export function saveRawMaterialCalculationForCorrugatedBox(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.saveRawMaterialCalculationForCorrugatedBox, data, headers);
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      apiErrors(error);
+    });
+  };
+}
+
+/**
+ * @method getRawMaterialCalculationForDieCasting
+ * @description Get raw materical calculator data for DieCasting
+*/
+export function getRawMaterialCalculationForDieCasting(costingId, rawMaterialId, weightCalculationId, callback) {
+  return (dispatch) => {
+    //dispatch({ type: API_REQUEST });
+    const queryParams = `costingId=${costingId}&rawMaterialId=${rawMaterialId}&weightCalculationId=${weightCalculationId ? weightCalculationId : "0"}`
+    const request = axios.get(`${API.getRawMaterialCalculationForDieCasting}?${queryParams}`, headers);
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      } else {
+        Toaster.error(MESSAGES.SOME_ERROR);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
+
+/**
+ * @method saveRawMaterialCalculationForDieCasting
+ * @description save raw materical calculator data for die casting
+*/
+export function saveRawMaterialCalculationForDieCasting(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.saveRawMaterialCalculationForDieCasting, data, headers);
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      apiErrors(error);
+    });
+  };
+}
+/**
+ * @method getRawMaterialCalculationForRubber
+ * @description Get raw materical calculator data for Rubber
+*/
+export function getRawMaterialCalculationForRubber(costingId, rawMaterialId, weightCalculationId, callback) {
+  return (dispatch) => {
+    const queryParams = `costingId=${costingId}&rawMaterialId=${rawMaterialId}&weightCalculationId=${weightCalculationId ? weightCalculationId : "0"}`
+    const request = axios.get(`${API.getRawMaterialCalculationForRubber}?${queryParams}`, headers);
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      } else {
+        Toaster.error(MESSAGES.SOME_ERROR);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
+/**
+ * @method saveRawMaterialCalculationForRubber
+ * @description save raw materical calculator data for Rubber
+*/
+export function saveRawMaterialCalculationForRubber(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.saveRawMaterialCalculationForRubber, data, headers);
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
       apiErrors(error);
     });
   };
@@ -754,55 +1033,9 @@ export function saveRawMaterialCalciData(data, callback) {
 */
 
 export function getCostingBulkUploadList(callback) {
-  // let JSON = {
-  //   status: 200,
-  //   data: {
-  //     DataList: [
-  //       {
-  //         CostingStatus: 'In Progress',
-  //         NoOfCorrectRow: 0,
-  //         NoOfIncorrectRow: 0,
-  //         FileNameId: 1,
-  //         FileName: 'BulkUpload1',
-
-  //       },
-  //       {
-  //         CostingStatus: 'Pending For Approval',
-  //         NoOfCorrectRow: 5,
-  //         NoOfIncorrectRow: 2,
-  //         FileNameId: 2,
-  //         FileName: 'BulkUpload2',
-
-  //       },
-  //       {
-  //         CostingStatus: 'Approved',
-  //         NoOfCorrectRow: 2,
-  //         NoOfIncorrectRow: 1,
-  //         FileNameId: 3,
-  //         FileName: 'BulkUpload3',
-
-  //       },
-  //       {
-  //         CostingStatus: 'Error',
-  //         NoOfCorrectRow: 3,
-  //         NoOfIncorrectRow: 1,
-  //         FileNameId: 4,
-  //         FileName: 'BulkUpload4',
-
-  //       },
-  //     ],
-  //   },
-  // }
-
 
   return (dispatch) => {
 
-    // dispatch({
-    //   type: GET_BULKUPLOAD_COSTING_LIST,
-    //   payload: JSON.data.DataList,
-    // });
-    // callback(JSON);
-    // callback(JSON)
     dispatch({ type: API_REQUEST });
     const request = axios.get(`${API.getCostingBulkUploadList}`, headers);
     request.then((response) => {
@@ -998,10 +1231,7 @@ export function getProcessDefaultCalculation(costingId, processId, processCalcul
     const request = axios.get(`${API.getProcessDefaultCalculation}?${queryParams}`, headers);
     request.then((response) => {
       if (response.data.Result) {
-        // dispatch({
-        //   type: GET_RAW_MATERIAL_CALCI_INFO,
-        //   payload: response.data.Data,
-        // });
+
         callback(response);
       } else {
         Toaster.error(MESSAGES.SOME_ERROR);
@@ -1013,9 +1243,6 @@ export function getProcessDefaultCalculation(costingId, processId, processCalcul
     });
   };
 }
-
-
-
 
 /**
  * @method bulkUploadCosting
@@ -1050,4 +1277,12 @@ export function machiningBulkUploadCosting(data, callback) {
       //apiErrors(error);
     });
   };
+}
+export function setFerrousCalculatorReset(data) {
+  return (dispatch) => {
+    dispatch({
+      type: FERROUS_CALCULATOR_RESET,
+      payload: data,
+    })
+  }
 }

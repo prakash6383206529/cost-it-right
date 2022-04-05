@@ -1,18 +1,17 @@
 import React, { useState, useContext, useEffect, Fragment } from 'react'
-import { Row, Col, Container } from 'reactstrap'
+import { Row, Col } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { costingInfoContext } from '../CostingDetailStepTwo'
 import { useDispatch, useSelector } from 'react-redux'
 import { TextFieldHookForm, } from '../../../layout/HookFormInputs'
 import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, findLostWeight, getConfigurationKey, loggedInUserId } from '../../../../helper'
 import LossStandardTable from './LossStandardTable'
-import { saveRawMaterialCalciData } from '../../actions/CostWorking'
-import { KG } from '../../../../config/constants'
+import { saveRawMaterialCalculationForPlastic } from '../../actions/CostWorking'
 import Toaster from '../../../common/Toaster'
 import { setPlasticArray } from '../../actions/Costing'
 
 function Plastic(props) {
-  const { item, rmRowData, isSummary } = props
+  const { item, rmRowData, isSummary, CostingViewMode } = props
   let totalRM
   if (!isSummary) {
     const { CostingPartDetails } = item
@@ -62,15 +61,12 @@ function Plastic(props) {
 
 
 
-  const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
+  const { register, control, setValue, getValues, formState: { errors }, } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: defaultValues,
   })
-  // if (WeightCalculatorRequest &&
-  //   WeightCalculatorRequest.LossData !== undefined) {
-  //   setTableVal(WeightCalculatorRequest.LossData)
-  // }
+
   const fieldValues = useWatch({
     control,
     name: ['netWeight', 'runnerWeight', 'finishedWeight'],
@@ -88,9 +84,10 @@ function Plastic(props) {
   ]
 
   useEffect(() => {
-    // dispatch(setPlasticArray(WeightCalculatorRequest.LossOfTypeDetails ? WeightCalculatorRequest.LossOfTypeDetails : []))
-    calculateGrossWeight()
-    calculateRemainingCalculation(lostWeight)
+    if (CostingViewMode !== true) {
+      calculateGrossWeight()
+      calculateRemainingCalculation(lostWeight)
+    }
   }, [fieldValues])
 
   useEffect(() => {
@@ -154,10 +151,6 @@ function Plastic(props) {
     updatedValue.materialCost = materialCost
 
     setDataToSend(updatedValue)
-    // setTimeout(() => {
-
-    //   setDataToSend({ ...dataToSend, totalGrossWeight: grossWeight, scrapWeight: scrapWeight, rmCost: rmCost, scrapCost: scrapCost, materialCost: materialCost })
-    // }, 500);
 
     setValue('grossWeight', checkForDecimalAndNull(grossWeight, getConfigurationKey().NoOfDecimalForInputOutput)) // SETING FINAL GROSS WEIGHT VALUE
     setValue('scrapWeight', checkForDecimalAndNull(scrapWeight, getConfigurationKey().NoOfDecimalForInputOutput))
@@ -167,28 +160,15 @@ function Plastic(props) {
     setLostWeight(lostSum)
 
   }
-
   const onSubmit = () => {
     let obj = {}
-    obj.LayoutType = 'Pipe'
-    obj.WeightCalculationId = WeightCalculatorRequest && WeightCalculatorRequest.WeightCalculationId ? WeightCalculatorRequest.WeightCalculationId : "00000000-0000-0000-0000-000000000000"
-    obj.IsChangeApplied = true //Need to make it dynamic
-    obj.PartId = costData.PartId
-    obj.RawMaterialId = rmRowData.RawMaterialId
-    obj.CostingId = costData.CostingId
+    obj.PlasticWeightCalculatorId = WeightCalculatorRequest && WeightCalculatorRequest.PlasticWeightCalculatorId ? WeightCalculatorRequest.PlasticWeightCalculatorId : "0"
+    obj.BaseCostingIdRef = costData.CostingId
     obj.TechnologyId = costData.TechnologyId
-    obj.CostingRawMaterialDetailId = rmRowData.RawMaterialDetailId
-    obj.RawMaterialName = rmRowData.RMName
-    obj.RawMaterialType = rmRowData.MaterialType
-    obj.BasicRatePerUOM = totalRM
-    obj.ScrapRate = rmRowData.ScrapRate
-    obj.NetLandedCost = dataToSend.materialCost
-    obj.PartNumber = costData.PartNumber
-    obj.TechnologyName = costData.TechnologyName
-    obj.Density = rmRowData.Density
-    obj.UOMId = rmRowData.UOMId
-    obj.UOM = rmRowData.UOM
-    obj.UOMForDimension = KG
+    obj.RawMaterialIdRef = rmRowData.RawMaterialId
+    obj.CostingRawMaterialDetailsIdRef = rmRowData.RawMaterialDetailId
+    obj.RawMaterialCost = dataToSend.materialCost
+    obj.NetRMCost = dataToSend.NetRMCost
     obj.NetWeight = getValues('netWeight')
     obj.RunnerWeight = getValues('runnerWeight')
     obj.GrossWeight = dataToSend.grossWeight
@@ -196,17 +176,16 @@ function Plastic(props) {
     obj.ScrapWeight = dataToSend.scrapWeight
     obj.RMCost = dataToSend.rmCost
     obj.ScrapCost = dataToSend.scrapCost
-    obj.NetRMCost = dataToSend.materialCost
     obj.BurningValue = dataToSend.burningValue
     obj.LoggedInUserId = loggedInUserId()
     let tempArr = []
-    tableVal && tableVal.map(item => {
-      tempArr.push({ LossOfType: item.LossOfType, LossPercentage: item.LossPercentage, LossWeight: item.LossWeight, CostingCalculationDetailId: "00000000-0000-0000-0000-000000000000" })
-    })
+    tableVal && tableVal.map(item => (
+      tempArr.push({ LossOfType: item.LossOfType, LossPercentage: item.LossPercentage, LossWeight: item.LossWeight, CostingCalculationDetailId: "0" })
+    ))
     obj.LossOfTypeDetails = tempArr
     obj.NetLossWeight = lostWeight
 
-    dispatch(saveRawMaterialCalciData(obj, res => {
+    dispatch(saveRawMaterialCalculationForPlastic(obj, res => {
       if (res.data.Result) {
         obj.WeightCalculationId = res.data.Identity
         Toaster.success("Calculation saved successfully")
@@ -331,15 +310,6 @@ function Plastic(props) {
                     control={control}
                     register={register}
                     mandatory={false}
-                    // rules={{
-                    //   required: true,
-                    //   pattern: {
-                    //     //value: /^[0-9]*$/i,
-                    //     value: /^[0-9]\d*(\.\d+)?$/i,
-                    //     message: 'Invalid Number.',
-                    //   },
-                    //   // maxLength: 4,
-                    // }}
                     handleChange={() => { }}
                     defaultValue={''}
                     className=""
@@ -356,15 +326,6 @@ function Plastic(props) {
                     control={control}
                     register={register}
                     mandatory={false}
-                    // rules={{
-                    //   required: true,
-                    //   pattern: {
-                    //     //value: /^[0-9]*$/i,
-                    //     value: /^[0-9]\d*(\.\d+)?$/i,
-                    //     message: 'Invalid Number.',
-                    //   },
-                    //   // maxLength: 4,
-                    // }}
                     handleChange={() => { }}
                     defaultValue={''}
                     className=""
@@ -381,15 +342,6 @@ function Plastic(props) {
                     control={control}
                     register={register}
                     mandatory={false}
-                    // rules={{
-                    //   required: true,
-                    //   pattern: {
-                    //     //value: /^[0-9]*$/i,
-                    //     value: /^[0-9]\d*(\.\d+)?$/i,
-                    //     message: 'Invalid Number.',
-                    //   },
-                    //   // maxLength: 4,
-                    // }}
                     handleChange={() => { }}
                     defaultValue={WeightCalculatorRequest &&
                       WeightCalculatorRequest.ScrapWeight !== undefined
@@ -425,15 +377,6 @@ function Plastic(props) {
                     control={control}
                     register={register}
                     mandatory={false}
-                    // rules={{
-                    //   required: true,
-                    //   pattern: {
-                    //     //value: /^[0-9]*$/i,
-                    //     value: /^[0-9]\d*(\.\d+)?$/i,
-                    //     message: 'Invalid Number.',
-                    //   },
-                    //   // maxLength: 4,
-                    // }}
                     handleChange={() => { }}
                     defaultValue={''}
                     className=""
@@ -450,15 +393,6 @@ function Plastic(props) {
                     control={control}
                     register={register}
                     mandatory={false}
-                    // rules={{
-                    //   required: false,
-                    //   pattern: {
-                    //     value: /^[0-9\b]+$/i,
-                    //     //value: /^[0-9]\d*(\.\d+)?$/i,
-                    //     message: 'Invalid Number.',
-                    //   },
-                    //   // maxLength: 4,
-                    // }}
                     handleChange={() => { }}
                     defaultValue={''}
                     className=""
@@ -477,15 +411,6 @@ function Plastic(props) {
                     control={control}
                     register={register}
                     mandatory={false}
-                    // rules={{
-                    //   required: false,
-                    //   pattern: {
-                    //     //value: /^[0-9]*$/i,
-                    //     value: /^[0-9]\d*(\.\d+)?$/i,
-                    //     message: 'Invalid Number.',
-                    //   },
-                    //   // maxLength: 4,
-                    // }}
                     handleChange={() => { }}
                     defaultValue={''}
                     className=""

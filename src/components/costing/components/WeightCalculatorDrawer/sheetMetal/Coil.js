@@ -1,17 +1,18 @@
-import React, { useState, useContext, useEffect, useCallback } from 'react'
+import React, { useState, useContext, useEffect } from 'react'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 import { useDispatch, useSelector } from 'react-redux'
 import { Col, Row } from 'reactstrap'
-import { saveRawMaterialCalciData } from '../../../actions/CostWorking'
+import { saveRawMaterialCalculationForSheetMetal } from '../../../actions/CostWorking'
 import HeaderTitle from '../../../../common/HeaderTitle'
 import { SearchableSelectHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
 import { checkForDecimalAndNull, checkForNull, loggedInUserId, calculateWeight, convertmmTocm, setValueAccToUOM, } from '../../../../../helper'
 import { getUOMSelectList } from '../../../../../actions/Common'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import Toaster from '../../../../common/Toaster'
-import { G, KG, MG, STD, } from '../../../../../config/constants'
+import { G, KG, MG, } from '../../../../../config/constants'
 import { AcceptableSheetMetalUOM } from '../../../../../config/masterData'
+import { ViewCostingContext } from '../../CostingDetails'
 
 
 
@@ -44,6 +45,7 @@ function Coil(props) {
     }
 
     const costData = useContext(costingInfoContext)
+    const CostingViewMode = useContext(ViewCostingContext);
 
     const defaultValues = {
         StripWidth: WeightCalculatorRequest && WeightCalculatorRequest.StripWidth !== null ? WeightCalculatorRequest.StripWidth : '',
@@ -56,7 +58,7 @@ function Coil(props) {
     }
 
     const {
-        register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
+        register, handleSubmit, control, setValue, getValues, formState: { errors }, } = useForm({
             mode: 'onChange',
             reValidateMode: 'onChange',
             defaultValues: defaultValues,
@@ -69,7 +71,6 @@ function Coil(props) {
             ? { label: WeightCalculatorRequest.UOMForDimension, value: WeightCalculatorRequest.UOMForDimensionId, }
             : [],
     )
-    let extraObj = {}
     const [dataToSend, setDataToSend] = useState({
         GrossWeight: WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== null ? WeightCalculatorRequest.GrossWeight : '',
         FinishWeight: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? convert(WeightCalculatorRequest.FinishWeight, WeightCalculatorRequest.UOMForDimension) : ''
@@ -136,8 +137,9 @@ function Coil(props) {
         }
     }
     useEffect(() => {
-        // calculateNetSurfaceArea()
-        setGrossWeight()
+        if (!CostingViewMode) {
+            setGrossWeight()
+        }
     }, [fieldValues])
 
 
@@ -210,21 +212,13 @@ function Coil(props) {
         }
         let data = {
             LayoutType: 'Coil',
-            WeightCalculationId: WeightCalculatorRequest && WeightCalculatorRequest.WeightCalculationId ? WeightCalculatorRequest.WeightCalculationId : "00000000-0000-0000-0000-000000000000",
+            SheetMetalCalculationId: WeightCalculatorRequest && WeightCalculatorRequest.SheetMetalCalculationId ? WeightCalculatorRequest.SheetMetalCalculationId : "0",
             IsChangeApplied: isChangeApplies, //NEED TO MAKE IT DYNAMIC how to do,
-            PartId: costData.PartId,
-            RawMaterialId: rmRowData.RawMaterialId,
-            CostingId: costData.CostingId,
-            TechnologyId: costData.TechnologyId,
+            BaseCostingIdRef: costData.CostingId,
             CostingRawMaterialDetailId: rmRowData.RawMaterialDetailId,
-            RawMaterialName: rmRowData.RMName,
-            RawMaterialType: rmRowData.MaterialType,
-            BasicRatePerUOM: rmRowData.RMRate,
-            ScrapRate: rmRowData.ScrapRate,
-            NetLandedCost: dataToSend.GrossWeight * rmRowData.RMRate - (dataToSend.GrossWeight - getValues('FinishWeight')) * rmRowData.ScrapRate,
-            PartNumber: costData.PartNumber,
-            TechnologyName: costData.TechnologyName,
-            Density: rmRowData.Density,
+            RawMaterialIdRef: rmRowData.RawMaterialId,
+            LoggedInUserId: loggedInUserId(),
+            RawMaterialCost: dataToSend.GrossWeight * rmRowData.RMRate - (dataToSend.GrossWeight - getValues('FinishWeight')) * rmRowData.ScrapRate,
             UOMForDimensionId: UOMDimension ? UOMDimension.value : '',
             UOMForDimension: UOMDimension ? UOMDimension.label : '',
             Thickness: values.Thickness,
@@ -237,15 +231,14 @@ function Coil(props) {
             NetSurfaceArea: values.NetSurfaceArea,
             GrossWeight: (dataToSend.newGrossWeight === undefined || dataToSend.newGrossWeight === 0) ? dataToSend.GrossWeight : dataToSend.newGrossWeight,
             FinishWeight: getValues('FinishWeight'),
-            LoggedInUserId: loggedInUserId()
         }
 
-        let obj = {}
-        dispatch(saveRawMaterialCalciData(data, res => {
+
+        dispatch(saveRawMaterialCalculationForSheetMetal(data, res => {
             if (res.data.Result) {
                 data.WeightCalculationId = res.data.Identity
                 Toaster.success("Calculation saved successfully")
-                props.toggleDrawer('', data, obj)
+                props.toggleDrawer('', data)
             }
         }))
     }
@@ -261,45 +254,7 @@ function Coil(props) {
             setValue('GrossWeight', checkForDecimalAndNull(setValueAccToUOM(grossWeight, value.label), localStorage.NoOfDecimalForInputOutput))
             setValue('FinishWeight', checkForDecimalAndNull(setValueAccToUOM(FinishWeight, value.label), localStorage.NoOfDecimalForInputOutput))
         }, 500);
-        //         setTimeout(() => {
-        //             setValue('GrossWeight', checkForDecimalAndNull(grossWeight, localStorage.NoOfDecimalForInputOutput))
-        //             setValue('FinishWeight', checkForDecimalAndNull(finishWeight, localStorage.NoOfDecimalForInputOutput))
-        //         }, 100);
-        // switch (value.label) {
-        //     case KG:
-        //         grossWeight = grossWeight / 1000
-        //         finishWeight = finishWeight / 1000
-        //         setFinishWeights(FinishWeight * 1000)
-        //         setDataToSend(prevState => ({ ...prevState, newGrossWeight: grossWeight, newFinishWeight: finishWeight }))
-        //         setTimeout(() => {
-        //             setValue('GrossWeight', checkForDecimalAndNull(grossWeight, localStorage.NoOfDecimalForInputOutput))
-        //             setValue('FinishWeight', checkForDecimalAndNull(finishWeight, localStorage.NoOfDecimalForInputOutput))
-        //         }, 100);
-        //         break;
-        //     case G:
 
-        //         grossWeight = grossWeight
-        //         finishWeight = finishWeight
-        //         setFinishWeights(FinishWeight * 1000)
-        //         setDataToSend(prevState => ({ ...prevState, newGrossWeight: grossWeight, newFinishWeight: finishWeight }))
-        //         setTimeout(() => {
-        //             setValue('GrossWeight', checkForDecimalAndNull(grossWeight, localStorage.NoOfDecimalForInputOutput))
-        //             setValue('FinishWeight', checkForDecimalAndNull(finishWeight, localStorage.NoOfDecimalForInputOutput))
-        //         }, 100);
-        //         break;
-        //     case MG:
-        //         grossWeight = grossWeight * 1000
-        //         finishWeight = finishWeight * 1000
-        //         setFinishWeights(FinishWeight / 1000)
-        //         setDataToSend(prevState => ({ ...prevState, newGrossWeight: grossWeight, newFinishWeight: finishWeight }))
-        //         setTimeout(() => {
-        //             setValue('GrossWeight', checkForDecimalAndNull(grossWeight, localStorage.NoOfDecimalForInputOutput))
-        //             setValue('FinishWeight', checkForDecimalAndNull(finishWeight, localStorage.NoOfDecimalForInputOutput))
-        //         }, 100);
-        //         break;
-        //     default:
-        //         break;
-        // }
     }
 
     const UnitFormat = () => {
@@ -482,11 +437,6 @@ function Coil(props) {
                                         mandatory={false}
                                         rules={{
                                             required: false,
-                                            // pattern: {
-                                            //   value: /^[0-9]*$/i,
-                                            //   message: 'Invalid Number.'
-                                            // },
-                                            // maxLength: 3,
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -523,20 +473,21 @@ function Coil(props) {
                             </Row>
                         </div>
 
-                        <div className="col-sm-12 text-right px-0 mt-4">
-                            <button
-                                type={'button'}
-                                className="reset mr15 cancel-btn"
-                                onClick={cancel} >
-                                <div className={'cancel-icon'}></div> {'Cancel'}
-                            </button>
-                            <button
-                                type={'submit'}
-                                className="submit-button save-btn">
-                                <div className={'save-icon'}></div>
-                                {'Save'}
-                            </button>
-                        </div>
+                        {!CostingViewMode &&
+                            <div className="col-sm-12 text-right px-0 mt-4">
+                                <button
+                                    type={'button'}
+                                    className="reset mr15 cancel-btn"
+                                    onClick={cancel} >
+                                    <div className={'cancel-icon'}></div> {'Cancel'}
+                                </button>
+                                <button
+                                    type={'submit'}
+                                    className="submit-button save-btn">
+                                    <div className={'save-icon'}></div>
+                                    {'Save'}
+                                </button>
+                            </div>}
 
                     </form>
                 </div>
