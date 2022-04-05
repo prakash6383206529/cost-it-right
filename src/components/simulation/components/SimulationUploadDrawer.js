@@ -10,8 +10,10 @@ import { loggedInUserId } from '../../../helper';
 import { ExcelRenderer } from 'react-excel-renderer';
 import { getJsDateFromExcel } from "../../../helper/validation";
 import imgCloud from '../../../assests/images/uploadcloud.png';
-import { COMBINED_PROCESS, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, BOPDOMESTIC, BOPIMPORT, } from '../../../config/constants';
+import _ from 'lodash'
 
+import { COMBINED_PROCESS, BOPDOMESTIC, BOPIMPORT, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
+import { BoughtOutPartDomesticFileHeads, BoughtOutPartImportFileHeads, MachineRateFileHeads, OperationFileHeads, RawMaterialDomesticFileHeads, RawMaterialImportFileHeads } from '../../../config/masterData';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -129,6 +131,43 @@ class SimulationUploadDrawer extends Component {
 
                 } else {
                     fileHeads = resp.rows[0];
+                    let checkForFileHead
+                    switch (String(this.props.master.value)) {
+
+                        case String(RMDOMESTIC):
+                            checkForFileHead = _.isEqual(fileHeads, RawMaterialDomesticFileHeads) ? true : false
+                            break;
+
+                        case String(RMIMPORT):
+                            checkForFileHead = _.isEqual(fileHeads, RawMaterialImportFileHeads) ? true : false
+                            break;
+
+                        case String(BOPDOMESTIC):
+                            checkForFileHead = _.isEqual(fileHeads, BoughtOutPartDomesticFileHeads) ? true : false
+                            break;
+
+                        case String(BOPIMPORT):
+                            checkForFileHead = _.isEqual(fileHeads, BoughtOutPartImportFileHeads) ? true : false
+                            break;
+
+                        case String(OPERATIONS):
+                        case String(SURFACETREATMENT):
+                            checkForFileHead = _.isEqual(fileHeads, OperationFileHeads) ? true : false
+                            break;
+
+                        case String(MACHINERATE):
+                            checkForFileHead = _.isEqual(fileHeads, MachineRateFileHeads) ? true : false
+                            break;
+
+                        // CONDITION FOR COMBINED PROCESS;
+
+                        default:
+                            break;
+                    }
+                    if (!checkForFileHead) {
+                        Toaster.warning('Please select file of same Master')
+                        return false
+                    }
                     let fileData = [];
                     let basicRateCount = 0
                     let scrapRateCount = 0
