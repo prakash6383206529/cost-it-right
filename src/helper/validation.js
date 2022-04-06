@@ -372,6 +372,11 @@ export const strongPassword = value =>
         ? ""
         : 'Password should contain at-least : | one lower case letter(a-z) | one upper case letter(A-Z) | one digit(0-9) | one special character.';
 
+export const percentageOfNumber = (num, percentage) => {
+    const number = (num == null || isNaN(Number(num)) || num === undefined || num === Infinity || num === -Infinity) ? 0 : Number(num);
+    return (number / 100) * percentage;
+}
+
 //CHECK IS COSTING EFFECTIVE DATE SELECTED
 export const decimalAndNumberValidation = (value) => {
     return value && !/^\d{0,4}(\.\d{0,7})?$/i.test(value) ? 'Maximum length for integer is 4 and for decimal is 7' : undefined;
