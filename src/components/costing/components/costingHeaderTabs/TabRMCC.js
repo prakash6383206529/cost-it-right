@@ -17,9 +17,7 @@ import { ViewCostingContext } from '../CostingDetails';
 import DayTime from '../../../common/DayTimeWrapper'
 import AddBOPHandling from '../Drawers/AddBOPHandling';
 import { createToprowObjAndSave } from '../../CostingUtil';
-import { Link } from 'react-scroll';
 import _ from 'lodash'
-import { reactLocalStorage } from 'reactjs-localstorage';
 
 function TabRMCC(props) {
 
@@ -876,7 +874,8 @@ function TabRMCC(props) {
 
           i.IsOpen = !i.IsOpen;
 
-        } else {
+        }
+        else {
 
           i.IsOpen = false;
           formatData(BOMLevel, PartNumber, Data, i.CostingChildPartDetails, item)

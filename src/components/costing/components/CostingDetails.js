@@ -33,6 +33,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { debounce } from 'lodash';
 
 export const ViewCostingContext = React.createContext()
+export const EditCostingContext = React.createContext()
 
 function IsolateReRender(control) {
   const values = useWatch({
@@ -93,6 +94,8 @@ function CostingDetails(props) {
 
   //FOR VIEW MODE COSTING
   const [IsCostingViewMode, setIsCostingViewMode] = useState(false)
+  // FOR EDIT MODE COSTING
+  const [IsCostingEditMode, setIsCostingEditMode] = useState(false)
 
   // client based costing
   const [clientDrawer, setClientDrawer] = useState(false)
@@ -744,6 +747,7 @@ function CostingDetails(props) {
           /***********ADDED THIS DISPATCH METHOD FOR GETTING ZBC DETAIL************/
           dispatch(getBriefCostingById(res.data.Data.CostingId, (res) => {
             setIsCostingViewMode(false)
+            setIsCostingEditMode(true)
             setStepTwo(true)
             setStepOne(false)
           }))
@@ -784,9 +788,8 @@ function CostingDetails(props) {
       dispatch(createVBCCosting(data, (res) => {
         if (res.data.Result) {
           dispatch(getBriefCostingById(res.data.Data.CostingId, () => {
-
-
             setIsCostingViewMode(false)
+            setIsCostingEditMode(false)
             setStepTwo(true)
             setStepOne(false)
           }))
@@ -829,6 +832,7 @@ function CostingDetails(props) {
           /***********ADDED THIS DISPATCH METHOD FOR GETTING ZBC DETAIL************/
           dispatch(getBriefCostingById(res.data.Data.CostingId, (res) => {
             setIsCostingViewMode(false)
+            setIsCostingEditMode(false)
             setStepTwo(true)
             setStepOne(false)
           }))
@@ -843,6 +847,7 @@ function CostingDetails(props) {
           /***********ADDED THIS DISPATCH METHOD FOR GETTING ZBC DETAIL************/
           dispatch(getBriefCostingById(res.data.Data.CostingId, (res) => {
             setIsCostingViewMode(false)
+            setIsCostingEditMode(false)
             setStepTwo(true)
             setStepOne(false)
           }))
@@ -871,6 +876,7 @@ function CostingDetails(props) {
       warningMessageHandle('ERROR_WARNING')
     } else {
       setIsCostingViewMode(true)
+      setIsCostingEditMode(false)
       moveToCostingDetail(index, type)
     }
   }
@@ -891,6 +897,7 @@ function CostingDetails(props) {
       warningMessageHandle('ERROR_WARNING')
     } else {
       setIsCostingViewMode(false)
+      setIsCostingEditMode(true)
       moveToCostingDetail(index, type)
     }
   }
@@ -1050,6 +1057,7 @@ function CostingDetails(props) {
 
       /*Copy Costing Drawer code here*/
       setIsCostingViewMode(false)
+      setIsCostingEditMode(false)
       setIsCopyCostingDrawer(true)
 
       if (type === ZBC) {
@@ -1098,7 +1106,7 @@ function CostingDetails(props) {
     let reqData = { Id: Item.CostingId, UserId: loggedInUserId() }
     dispatch(deleteDraftCosting(reqData, () => {
       setIsCostingViewMode(false)
-
+      setIsCostingEditMode(false)
       let tempArray = []
 
       if (type === ZBC) {
@@ -2211,13 +2219,15 @@ function CostingDetails(props) {
                 )}
                 {stepTwo && (
                   <ViewCostingContext.Provider value={IsCostingViewMode} >
-                    <CostingDetailStepTwo
-                      backBtn={backToFirstStep}
-                      partInfo={Object.keys(props.partInfoStepTwo).length > 0 ? props.partInfoStepTwo : partInfoStepTwo}
-                      costingInfo={Object.keys(props.costingData).length > 0 ? props.costingData : costingData}
-                      toggle={props.toggle}
-                      IsCostingViewMode={IsCostingViewMode}
-                    />
+                    <EditCostingContext.Provider value={IsCostingEditMode} >
+                      <CostingDetailStepTwo
+                        backBtn={backToFirstStep}
+                        partInfo={Object.keys(props.partInfoStepTwo).length > 0 ? props.partInfoStepTwo : partInfoStepTwo}
+                        costingInfo={Object.keys(props.costingData).length > 0 ? props.costingData : costingData}
+                        toggle={props.toggle}
+                        IsCostingViewMode={IsCostingViewMode}
+                      />
+                    </EditCostingContext.Provider>
                   </ViewCostingContext.Provider>
                 )}
               </form>
