@@ -861,13 +861,15 @@ function TabRMCC(props) {
         if (i.IsAssemblyPart === true) {
           i.CostingPartDetails = { ...i.CostingPartDetails };
 
-          if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
+          if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel && i.AssemblyPartNumber === item.AssemblyPartNumber) {
             i.CostingPartDetails = Data
             i.IsOpen = !i.IsOpen
+          } else {
+            i.IsOpen = false
           }
           formatData(BOMLevel, PartNumber, Data, i.CostingChildPartDetails, item)
 
-        } else if (i.PartNumber === PartNumber && i.BOMLevel === BOMLevel) {
+        } else if (i.PartNumber === PartNumber && i.BOMLevel === BOMLevel && i.AssemblyPartNumber === item.AssemblyPartNumber) {
 
           i.CostingPartDetails = { ...Data, Quantity: i.CostingPartDetails.Quantity };
 
