@@ -7,6 +7,7 @@ import { TextFieldHookForm, } from '../../../../layout/HookFormInputs'
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../../helper'
 import LossStandardTable from '../LossStandardTable'
 import { saveRawMaterialCalculationForDieCasting } from '../../../actions/CostWorking'
+import { KG } from '../../../../../config/constants'
 import Toaster from '../../../../common/Toaster'
 
 
@@ -30,7 +31,7 @@ function
         scrapWeight: WeightCalculatorRequest && WeightCalculatorRequest.ScrapWeight !== undefined ? WeightCalculatorRequest.ScrapWeight : '',
         rmCost: WeightCalculatorRequest && WeightCalculatorRequest.RMCost !== undefined ? WeightCalculatorRequest.RMCost : '',
         scrapCost: WeightCalculatorRequest && WeightCalculatorRequest.ScrapCost !== undefined ? WeightCalculatorRequest.ScrapCost : '',
-        materialCost: WeightCalculatorRequest && WeightCalculatorRequest.RawMaterialCost !== undefined ? WeightCalculatorRequest.RawMaterialCost : '',
+        materialCost: WeightCalculatorRequest && WeightCalculatorRequest.NetRMCost !== undefined ? WeightCalculatorRequest.NetRMCost : '',
 
     }
 
@@ -39,14 +40,14 @@ function
     const [dataToSend, setDataToSend] = useState({})
     const [nonFerrousDropDown, setNonFerrousDropDown] = useState(false)
 
-    const { rmRowData, activeTab, isHpdc, CostingViewMode } = props
+    const { rmRowData, activeTab, isHpdc } = props
 
 
 
-    const { register, control, setValue, getValues, formState: { errors }, } = useForm({
+    const { register, control, setValue, getValues, handleSubmit, formState: { errors }, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
-        defaultValues: defaultValues,
+        // defaultValues: defaultValues,
     })
 
     const fieldValues = useWatch({
@@ -107,11 +108,9 @@ function
 
     }
     useEffect(() => {
-        if (CostingViewMode !== true) {
-            burningValue()
-            handlGrossWeight()
-            calculateRemainingCalculation(lostWeight)
-        }
+        burningValue()
+        handlGrossWeight()
+        calculateRemainingCalculation(lostWeight)
     }, [fieldValues])
 
 
@@ -145,10 +144,14 @@ function
             scrapWeight = checkForNull(castingWeight) - checkForNull(finishedWeight) //FINAL Casting Weight - FINISHED WEIGHT
 
         }
+
         const recovery = checkForNull(Number(getValues('recovery')) / 100)
+
         const rmCost = checkForNull(grossWeight) * checkForNull(rmRowData.RMRate) //FINAL GROSS WEIGHT - RMRATE
         const scrapCost = checkForNull(checkForNull(scrapWeight) * checkForNull(rmRowData.ScrapRate) * recovery)
         const materialCost = checkForNull(rmCost) - checkForNull(scrapCost)
+
+
         const updatedValue = dataToSend
         updatedValue.totalGrossWeight = grossWeight
         updatedValue.scrapWeight = scrapWeight
@@ -177,14 +180,19 @@ function
         setValue('burningValue', checkForDecimalAndNull(burningValue, getConfigurationKey().NoOfDecimalForInputOutput))
     }
 
-
     const onSubmit = () => {
         let obj = {}
         obj.LayoutType = activeTab === '1' ? 'GDC' : activeTab === '2' ? 'LPDC' : 'HPDC'
-        obj.DieCastingWeightCalculatorId = WeightCalculatorRequest && WeightCalculatorRequest.DieCastingWeightCalculatorId ? WeightCalculatorRequest.DieCastingWeightCalculatorId : "0"
-        obj.BaseCostingIdRef = costData.CostingId
-        obj.RawMaterialIdRef = rmRowData.RawMaterialId
-        obj.CostingRawMaterialDetailsIdRef = rmRowData.RawMaterialDetailId
+        obj.WeightCalculationId = WeightCalculatorRequest && WeightCalculatorRequest.WeightCalculationId ? WeightCalculatorRequest.WeightCalculationId : "00000000-0000-0000-0000-000000000000"
+        obj.IsChangeApplied = true //Need to make it dynamic
+        obj.PartId = costData.PartId
+        obj.RawMaterialId = rmRowData.RawMaterialId
+        obj.CostingId = costData.CostingId
+        obj.TechnologyId = costData.TechnologyId
+        obj.RawMaterialType = rmRowData.MaterialType
+        obj.UOMId = rmRowData.UOMId
+        obj.UOM = rmRowData.UOM
+        obj.UOMForDimension = KG
         obj.ShotWeight = getValues('shotWeight')
         obj.NumberOfCavity = getValues('cavity')
         obj.BurningPercentage = getValues('burningPercent')
@@ -197,12 +205,13 @@ function
         obj.ScrapWeight = dataToSend.scrapWeight
         obj.RMCost = dataToSend.rmCost
         obj.ScrapCost = dataToSend.scrapCost
-        obj.RawMaterialCost = dataToSend.materialCost
+        // obj.NetRMCost = dataToSend.materialCost
+        obj.NetLandedCost = dataToSend.materialCost
         obj.LoggedInUserId = loggedInUserId()
         let tempArr = []
-        tableVal && tableVal.map(item => (
-            tempArr.push({ LossOfType: item.LossOfType, LossPercentage: item.LossPercentage, LossWeight: item.LossWeight, CostingCalculationDetailId: "0" })
-        ))
+        tableVal && tableVal.map(item => {
+            tempArr.push({ LossOfType: item.LossOfType, LossPercentage: item.LossPercentage, LossWeight: item.LossWeight, CostingCalculationDetailId: "00000000-0000-0000-0000-000000000000" })
+        })
         obj.LossOfTypeDetails = tempArr
         obj.NetLossWeight = lostWeight
 
@@ -213,7 +222,9 @@ function
                 props.toggleDrawer('', obj)
             }
         }))
+
     }
+
 
     const onCancel = () => {
         props.toggleDrawer('')
@@ -222,8 +233,7 @@ function
         <Fragment>
             <Row>
 
-                <form noValidate className="form"
-
+                <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}
                 >
                     <Col md="12">
                         <div className="costing-border px-4">
@@ -334,18 +344,17 @@ function
 
                                 <Col md="3">
                                     <TextFieldHookForm
-                                        label={`Casting Weight(${activeTab === '3' ? `before machining` : `kg`})`}
+                                        label={`Casting Weight(${activeTab == '3' ? `before machining` : `kg`})`}
                                         name={'castingWeight'}
                                         Controller={Controller}
                                         control={control}
                                         register={register}
                                         mandatory={false}
                                         rules={{
-                                            required: false,
+                                            required: true,
                                             pattern: {
-
-                                                value: /^[0-9]\d*(\.\d+)?$/i,
-                                                message: 'Invalid Number.',
+                                                value: /^\d{0,4}(\.\d{0,7})?$/i,
+                                                message: 'Maximum length for interger is 4 and for decimal is 7',
                                             },
 
                                         }}
@@ -373,7 +382,8 @@ function
                                 LossDropDown={LossDropDown}
                                 isPlastic={false}
                                 isNonFerrous={true}
-
+                                isFerrous={false}
+                                NonFerrousErrors={errors}
                             />
 
                             <Row className={'mt25'}>
@@ -411,11 +421,10 @@ function
                                         register={register}
                                         mandatory={false}
                                         rules={{
-                                            required: false,
+                                            required: true,
                                             pattern: {
-
-                                                value: /^[0-9]\d*(\.\d+)?$/i,
-                                                message: 'Invalid Number.',
+                                                value: /^\d{0,4}(\.\d{0,7})?$/i,
+                                                message: 'Maximum length for interger is 4 and for decimal is 7',
                                             },
 
                                         }}
@@ -456,13 +465,15 @@ function
                                         register={register}
                                         mandatory={false}
                                         rules={{
-                                            required: false,
+                                            required: true,
                                             pattern: {
-
-                                                value: /^[0-9]\d*(\.\d+)?$/i,
+                                                value: /^\d*\.?\d*$/,
                                                 message: 'Invalid Number.',
                                             },
-
+                                            max: {
+                                                value: 100,
+                                                message: 'Percentage should be less than 100'
+                                            },
                                         }}
                                         handleChange={() => { }}
 
@@ -544,9 +555,12 @@ function
                         </button>
                         <button
                             type="submit"
-                            disabled={props.CostingViewMode}
-                            onClick={onSubmit} className="submit-button save-btn">
-                            <div className={'save-icon'}></div>
+                            disabled={props.CostingViewMode ? props.CostingViewMode : false}
+                            className="btn-primary save-btn"
+                        >
+                            <div className={'check-icon'}>
+                                <i class="fa fa-check" aria-hidden="true"></i>
+                            </div>
                             {'SAVE'}
                         </button>
                     </div>
