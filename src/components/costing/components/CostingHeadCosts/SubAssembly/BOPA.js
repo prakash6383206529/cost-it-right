@@ -1,0 +1,69 @@
+import React, { useContext, useState, useEffect } from 'react';
+import { costingInfoContext } from '../../CostingDetailStepTwo';
+import { getBOPData, } from '../../../actions/Costing';
+import { useDispatch, useSelector } from 'react-redux';
+import { checkForDecimalAndNull } from '../../../../../helper';
+
+function BOPA(props) {
+  const { children, item } = props;
+
+  const dispatch = useDispatch()
+  const [IsOpen, setIsOpen] = useState(false);
+
+  const costData = useContext(costingInfoContext);
+  const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
+
+  useEffect(() => {
+    if (Object.keys(costData).length > 0) {
+      const data = {
+        CostingId: item.CostingId !== null ? item.CostingId : "00000000-0000-0000-0000-000000000000",
+        PartId: item.PartId,
+        //PlantId: costData.PlantId,
+      }
+      setTimeout(() => {
+        dispatch(getBOPData(data, (res) => {
+          if (res && res.data && res.data.Result) {
+            // let Data = res.data.DataList[0].CostingPartDetails;
+            // props.setPartDetails(BOMLevel, PartNumber, Data)
+          }
+        }))
+      }, 500)
+    }
+  }, [])
+
+  const toggle = () => {
+    setIsOpen(!IsOpen)
+  }
+
+  /**
+  * @method render
+  * @description Renders the component
+  */
+  return (
+    <>
+      <tr>
+        <td>
+          <span style={{ position: 'relative' }} className={`cr-prt-nm1 cr-prt-link1 ${item && item.BOMLevel}`}>
+            {item && item.PartNumber}
+          </span>
+        </td>
+
+        <td>{item && item.PartName}</td>
+        <td>{item && item.BOMLevel}</td>
+        <td>{item && item.PartType}</td>
+        <td>{item?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity ? item?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity : 'Sheet Metal'}</td>
+        <td>{item?.CostingPartDetails?.QuantityForSubAssembly ? checkForDecimalAndNull(item.CostingPartDetails.QuantityForSubAssembly, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+        <td>{item?.CostingPartDetails?.CostPerPiece ? checkForDecimalAndNull(item.CostingPartDetails.CostPerPiece, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+        <td>{item?.CostingPartDetails?.CostPerAssembly ? checkForDecimalAndNull(item.CostingPartDetails.CostPerAssembly, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+        <td></td>
+        <td></td>
+
+
+
+
+      </tr>
+    </ >
+  );
+}
+
+export default BOPA;
