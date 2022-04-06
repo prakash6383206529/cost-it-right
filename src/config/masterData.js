@@ -677,9 +677,9 @@ export const BOP_ZBC_DOMESTIC = [
     { label: 'Specification', value: 'Specification', },
     { label: 'UOM', value: 'UOM', }, //*
     { label: 'PlantCode', value: 'PlantCode', }, //*
-    { label: 'VendorCode', value: 'VendorCode', }, //*
+    { label: 'VendorName', value: 'VendorName', }, //*
     { label: 'MinimumOrderQuantity', value: 'MinimumOrderQuantity', }, //*
-    { label: 'BasicRate(INR)', value: 'BasicRate(INR)', }, //*
+    { label: 'BasicRate', value: 'BasicRate', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', },
     { label: 'Remark', value: 'Remark' }
 ]
@@ -692,9 +692,9 @@ export const BOP_ZBC_DOMESTIC_TempData = [
         'Specification': '20 mm',
         'UOM': 'Gallon',
         'PlantCode': 'Plant101',
-        'VendorCode': 'Systematix',
+        'VendorName': 'Systematix',
         'MinimumOrderQuantity': '10',
-        'BasicRate(INR)': '100',
+        'BasicRate': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }
