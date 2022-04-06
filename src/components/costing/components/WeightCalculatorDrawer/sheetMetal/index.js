@@ -1,6 +1,5 @@
 import React, { Fragment, useState } from 'react'
-import { useDispatch } from 'react-redux'
-import { Row, Col, TabContent, TabPane, Nav, NavItem, NavLink, Container, } from 'reactstrap'
+import { Row, Col, TabContent, TabPane, Nav, NavItem, NavLink, } from 'reactstrap'
 import classnames from 'classnames'
 import Pipe from './Pipe'
 import SectionL from './SectionL'
@@ -99,56 +98,6 @@ function WeightCalculator(props) {
                 Sheet
               </NavLink>
             </NavItem>
-            {/* <NavItem>
-              <NavLink
-                className={classnames({ active: activeTab === '3' })}
-                onClick={() => {
-                  toggle('3')
-                }}
-              >
-                Bracket
-              </NavLink>
-            </NavItem> */}
-            {/* <NavItem>
-              <NavLink
-                className={classnames({ active: activeTab === '3' })}
-                onClick={() => {
-                  toggle('3')
-                }}
-              >
-                Plate
-              </NavLink>
-            </NavItem> */}
-            {/* <NavItem>
-              <NavLink
-                className={classnames({ active: activeTab === '4' })}
-                onClick={() => {
-                  toggle('4')
-                }}
-              >
-                L Section
-              </NavLink>
-            </NavItem> */}
-            {/* <NavItem>
-              <NavLink
-                className={classnames({ active: activeTab === '5' })}
-                onClick={() => {
-                  toggle('5')
-                }}
-              >
-                C Section
-              </NavLink>
-            </NavItem> */}
-            {/* <NavItem>
-              <NavLink
-                className={classnames({ active: activeTab === '6' })}
-                onClick={() => {
-                  toggle('6')
-                }}
-              >
-                Z Section
-              </NavLink>
-            </NavItem> */}
           </Nav>
           <TabContent activeTab={activeTab}>
             {activeTab === '1' && (
@@ -167,16 +116,6 @@ function WeightCalculator(props) {
                 <Sheet rmRowData={props.rmRowData} isEditFlag={props.isEditFlag} toggleDrawer={toggleDrawer} />
               </TabPane>
             )}
-            {/* {activeTab === '2' && (
-              <TabPane tabId="2">
-                <Bracket />
-              </TabPane>
-            )} */}
-            {/* {activeTab === '3' && (
-              <TabPane tabId="3">
-                <Plate />
-              </TabPane>
-            )} */}
             {activeTab === '4' && (
               <TabPane tabId="4">
                 <SectionL />

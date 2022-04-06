@@ -4,8 +4,8 @@ import {
   SET_CED_ROW_DATA_TO_COST_SUMMARY, SET_FREIGHT_ROW_DATA_TO_COST_SUMMARY, SET_INVENTORY_ROW_DATA_TO_COST_SUMMARY, GET_FREIGHT_HEAD_SUCCESS, GET_FREIGHT_AMOUNT_DATA_SUCCESS,
   EMPTY_COSTING_DATA, GET_ZBC_COSTING_SELECTLIST_BY_PART, GET_COSTING_TECHNOLOGY_SELECTLIST, GET_COSTING_PART_SELECTLIST, GET_PART_INFO, GET_COSTING_DATA_BY_COSTINGID,
   GET_FREIGHT_FULL_TRUCK_CAPACITY_SELECTLIST, GET_RATE_CRITERIA_BY_CAPACITY, SET_RMCC_TAB_DATA, SET_COSTING_DATALIST_BY_COSTINGID, SET_ACTUAL_COSTING_DATALIST_BY_COSTINGID, SET_PO_PRICE, SET_RMCCBOP_DATA,
-  SET_SURFACE_COST_DATA, SET_OVERHEAD_PROFIT_COST_DATA, SET_DISCOUNT_COST_DATA, GET_COSTING_DETAILS_BY_COSTING_ID, SET_COSTING_VIEW_DATA, VIEW_COSTING_DATA,
-  STORE_PART_VALUE, GET_COST_SUMMARY_BY_PART_PLANT, SET_COSTING_APPROVAL_DATA, GET_COSTING_BY_VENDOR_VENDOR_PLANT, GET_COSTING_STATUS, SET_ITEM_DATA, SELECTED_IDS_OF_OPERATION_AND_OTHEROPERATION,
+  SET_SURFACE_COST_DATA, SET_OVERHEAD_PROFIT_COST_DATA, SET_DISCOUNT_COST_DATA, GET_COSTING_DETAILS_BY_COSTING_ID, SET_COSTING_VIEW_DATA,
+  STORE_PART_VALUE, GET_COST_SUMMARY_BY_PART_PLANT, SET_COSTING_APPROVAL_DATA, GET_COSTING_STATUS, SET_ITEM_DATA, SELECTED_IDS_OF_OPERATION_AND_OTHEROPERATION,
   SET_SURFACE_TAB_DATA, SET_OVERHEAD_PROFIT_TAB_DATA, SET_PACKAGE_AND_FREIGHT_TAB_DATA, SET_TOOL_TAB_DATA, SET_COMPONENT_ITEM_DATA, SET_COMPONENT_OVERHEAD_ITEM_DATA,
   SET_COMPONENT_PACKAGE_FREIGHT_ITEM_DATA, SET_COMPONENT_TOOL_ITEM_DATA, SET_COMPONENT_DISCOUNT_ITEM_DATA, GET_RM_DRAWER_DATA_LIST, GET_PROCESS_DRAWER_DATA_LIST,
   GET_PART_COSTING_PLANT_SELECTLIST, GET_PART_COSTING_VENDOR_SELECT_LIST, GET_PART_SELECTLIST_BY_TECHNOLOGY, SET_SURFACE_COST_FOR_OVERHEAD_TAB_DATA, SET_EXCHANGE_RATE_CURRENCY_DATA,
@@ -573,7 +573,6 @@ export function getBOPData(data, callback) {
     const request = axios.get(`${API.getBOPData}/${data.PartId}`, headers);
     request.then((response) => {
       if (response.data.Result) {
-        let TabData = response.data.DataList;
         callback(response);
       }
     }).catch((error) => {
@@ -1767,7 +1766,7 @@ export function getCostingFreight(data, callback) {
             payload: response.data.Data,
           })
           callback(response)
-        } else if (response.data == '') {
+        } else if (response.data === '') {
           dispatch({ type: API_FAILURE })
           Toaster.warning('No content available for selected freight.')
         }
@@ -1848,9 +1847,9 @@ export function getSingleCostingDetails(costingId, callback) {
 export const setCostingViewData = (data) => (dispatch) => {
   let temp = []
   // temp.push(VIEW_COSTING_DATA)
-  data.map((val) => {
+  data.map((val) => (
     temp.push(val)
-  })
+  ))
   dispatch({
     type: SET_COSTING_VIEW_DATA,
     payload: temp,
@@ -1873,7 +1872,7 @@ export function storePartNumber(partNo) {
 
 export function getCostingSummaryByplantIdPartNo(partNo, plantId, callback) {
   return (dispatch) => {
-    if (partNo !== '' && plantId != '') {
+    if (partNo !== '' && plantId !== '') {
       const request = axios.get(`${API.getCostingSummaryByplantIdPartNo}/${partNo}/${plantId}/0`, headers,)
       request
         .then((response) => {
@@ -1923,9 +1922,9 @@ export function saveCopyCosting(data, callback) {
 export const setCostingApprovalData = (data) => (dispatch) => {
   let temp = []
   // temp.push(VIEW_COSTING_DATA)
-  data.map((val) => {
+  data.map((val) => (
     temp.push(val)
-  })
+  ))
   dispatch({
     type: SET_COSTING_APPROVAL_DATA,
     payload: temp,
