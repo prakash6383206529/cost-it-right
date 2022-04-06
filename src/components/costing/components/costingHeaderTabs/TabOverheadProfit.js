@@ -173,8 +173,8 @@ function TabOverheadProfit(props) {
   const dispatchOverheadDetail = (data, params, arr) => {
 
     const { overheadObj, profitObj, modelType } = data;
+    console.log('profitObj: ', profitObj);
     console.log('overheadObj: ', overheadObj);
-
     let OverheadCost = checkForNull(overheadObj.OverheadRMTotalCost) +
       checkForNull(overheadObj.OverheadBOPTotalCost) +
       checkForNull(overheadObj.OverheadCCTotalCost);
