@@ -3032,19 +3032,10 @@ export const ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl = [
 
 ]
 
-<<<<<<< HEAD
-export const OperationGridForToken = [
-    { label: "OperationName", value: "OperationName" },
-    { label: "OperationCode", value: "OperationCode" },
-    { label: "OldOperationRate", value: "OldOperationRate" },
-    { label: "NewOperationRate", value: "NewOperationRate" },
-    { label: "OperationVariance", value: "OperationVariance" },
-=======
 
 export const OperationGridForToken = [
     { label: "Operation Name", value: "OperationName" },
     { label: "Operation Code", value: "OperationCode" },
->>>>>>> m1-frontend
     { label: "OldOperationCost", value: "OldOperationCost" },
     { label: "NewOperationCost", value: "NewOperationCost" },
     { label: "OperationCostVariance", value: "OperationCostVariance" },
@@ -3052,28 +3043,12 @@ export const OperationGridForToken = [
 ]
 
 export const RMGridForToken = [
-<<<<<<< HEAD
-    { label: "Finish Weight", value: "RawMaterialFinishWeight" },
-    { label: "Gross Weight", value: "RawMaterialGrossWeight" },
-    { label: "PO Price Old", value: "OldPOPrice" },
-    { label: "PO Price New", value: "NewPOPrice" },
-    { label: "PO Variance", value: "Variance" },
-    { label: "Old Basic Rate", value: "OldRMRate" },
-    { label: 'New Basic Rate', value: 'NewRMRate' },
-    { label: "ScrapRate", value: "OldScrapRate" },
-    { label: 'NewScrapRate', value: 'NewScrapRate' },
-    { label: "RM Cost Old", value: "OldRMPrice" },
-    { label: "RM Cost New", value: "NewRMPrice" },
-    { label: "RM Variance", value: "RMCVariance" },
-
-=======
     { label: "Old PO Price", value: "OldPOPrice" },
     { label: "New PO Price", value: "NewPOPrice" },
     { label: "PO Variance", value: "Variance" },
     { label: "Old Basic Rate", value: "OldNetRawMaterialsCost" },
     { label: 'New Basic Rate', value: 'NewNetRawMaterialsCost' },
     { label: "RM Variance", value: "RMVariance" }
->>>>>>> m1-frontend
 ]
 
 export const STGridForToken = [

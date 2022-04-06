@@ -1148,16 +1148,12 @@ function TabAssemblyTechnology(props) {
     let tempArr = [];
     try {
 
-      console.log('subAssemblyTechnologyArray: ', subAssemblyTechnologyArray);
       tempArr = subAssemblyTechnologyArray && subAssemblyTechnologyArray.map(i => {
-        console.log('i: ', i);
-
 
         const { CostingChildPartDetails, } = Children;
         const params = { BOMLevel: BOMLevel, PartNumber: PartNumber };
 
         if (i.IsAssemblyPart === true && i.PartNumber === PartNumber && i.BOMLevel === BOMLevel) {
-          console.log(i.PartNumber, 'BOMLevel: ds', PartNumber);
 
           i.CostingChildPartDetails = BOMLevel !== LEVEL0 ? ChangeBOMLeveL(Children.CostingChildPartDetails, BOMLevel) : i.CostingChildPartDetails;
           i.CostingPartDetails = Children.CostingPartDetails;

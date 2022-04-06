@@ -14,7 +14,7 @@ import { setSubAssemblyTechnologyArray } from '../../../actions/SubAssembly.js';
 
 function AssemblyTechnology(props) {
     const { children, item, index, getCostPerPiece } = props;
-    console.log('children: ', children);
+
 
 
     const [IsOpen, setIsOpen] = useState(false);
@@ -31,17 +31,12 @@ function AssemblyTechnology(props) {
     const { subAssemblyTechnologyArray } = useSelector(state => state.SubAssembly)
 
     const toggle = (BOMLevel, PartNumber) => {
-        console.log('PartNumber: ', PartNumber);
-        console.log('BOMLevel: ', BOMLevel);
         setIsOpen(!IsOpen)
         setCount(Count + 1)
         if (Object.keys(costData).length > 0) {
 
-            console.log('tempObject: ', tempObject[0].CostingChildPartDetails[1]);
             if (PartNumber == '010101') {
-                console.log(tempObject, 'tempObjecttempObject');
                 // dispatch(setSubAssemblyTechnologyArray(subAssembly010101))
-                console.log('subAssembly010101: ', subAssembly010101[0]);
                 props.toggleAssembly(BOMLevel, PartNumber, subAssembly010101[0])
             }
 
