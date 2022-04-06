@@ -115,7 +115,14 @@ function SimulationInsights(props) {
 
   const onRowSelect = () => {
     var selectedRows = gridApi.getSelectedRows();
-    setSimulationInsightsReportExcelData(selectedRows)
+
+    if (selectedRows.length > 0) {
+      setSimulationInsightsReportExcelData(selectedRows)
+    } else {
+
+      setSimulationInsightsReportExcelData(simulationInsightsReport)
+    }
+
   }
 
 
