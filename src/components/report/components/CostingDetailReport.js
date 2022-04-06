@@ -165,6 +165,18 @@ function ReportListing(props) {
         return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
     }
 
+
+    const partTypeAssemblyFormatter = (props) => {
+
+        const cellValue = props?.value;
+        if (props.data.PartType === "Assembly") {
+            return "Multiple RM"
+
+        } else {
+            return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
+        }
+    }
+
     /**
     * @method decimalPriceFormatter
     */
@@ -385,6 +397,7 @@ function ReportListing(props) {
         linkableFormatter: linkableFormatter,
         createDateFormatter: createDateFormatter,
         hyphenFormatter: hyphenFormatter,
+        partTypeAssemblyFormatter: partTypeAssemblyFormatter,
         simulatedOnFormatter: simulatedOnFormatter,
         customNoRowsOverlay: NoContentFound,
         dateFormatter: dateFormatter,
@@ -530,11 +543,11 @@ function ReportListing(props) {
                         <AgGridColumn field='DepartmentCode' headerName='Department Code' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='DepartmentName' headerName='Department Name' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='RevisionNumber' headerName='Revision Number' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='RawMaterialCode' headerName='RM Code' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='RawMaterialName' headerName='RM Name' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='RawMaterialGrade' headerName='RM Grade' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='RawMaterialSpecification' headerName='RM Specs' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='RawMaterialRate' headerName='RM Rate' cellRenderer='decimalPriceFormatter'></AgGridColumn>
+                        <AgGridColumn field='RawMaterialCode' headerName='RM Code' cellRenderer='partTypeAssemblyFormatter'></AgGridColumn>
+                        <AgGridColumn field='RawMaterialName' headerName='RM Name' cellRenderer='partTypeAssemblyFormatter'></AgGridColumn>
+                        <AgGridColumn field='RawMaterialGrade' headerName='RM Grade' cellRenderer='partTypeAssemblyFormatter'></AgGridColumn>
+                        <AgGridColumn field='RawMaterialSpecification' headerName='RM Specs' cellRenderer='partTypeAssemblyFormatter'></AgGridColumn>
+                        <AgGridColumn field='RawMaterialRate' headerName='RM Rate' cellRenderer='partTypeAssemblyFormatter'></AgGridColumn>
                         <AgGridColumn field='RawMaterialScrapWeight' headerName='Scrap Weight' cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
                         <AgGridColumn field='RawMaterialGrossWeight' headerName='Gross Weight' cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
                         {/* <AgGridColumn field='GrossWeight' headerName='Gross Weight' cellRenderer='hyphenFormatter'></AgGridColumn> */}
