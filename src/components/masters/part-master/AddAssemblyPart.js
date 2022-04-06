@@ -4,8 +4,8 @@ import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col } from 'reactstrap';
 import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength75, maxLength20, maxLength80, maxLength512 } from "../../../helper/validation";
 import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
-import { renderText, renderTextAreaField, focusOnError, renderDatePicker, renderMultiSelectField } from "../../layout/FormInputs";
-import { getPlantSelectListByType, } from '../../../actions/Common';
+import { renderText, renderTextAreaField, focusOnError, renderDatePicker, renderMultiSelectField, searchableSelect } from "../../layout/FormInputs";
+import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common';
 import {
   createAssemblyPart, updateAssemblyPart, getAssemblyPartDetail, fileUploadPart, fileDeletePart,
   getBOMViewerTreeDataByPartIdAndLevel, getProductGroupSelectList
@@ -61,7 +61,8 @@ class AddAssemblyPart extends Component {
       updatedObj: {},
       updatedObjDraft: {},
       setDisable: false,
-      disablePopup: false
+      disablePopup: false,
+      TechnologySelected: {}
 
     }
   }
@@ -73,6 +74,7 @@ class AddAssemblyPart extends Component {
   componentDidMount() {
     this.props.getPlantSelectListByType(ZBC, () => { })
     this.props.getProductGroupSelectList(() => { })
+    this.props.getTechnologySelectList(() => { })
     this.getDetails()
   }
 
@@ -156,6 +158,12 @@ class AddAssemblyPart extends Component {
     });
     this.setState({ DropdownChanged: false })
   };
+
+  handleTechnologyChange = (event) => {
+
+    console.log(event, "e");
+    this.setState({ DropdownChanged: false, TechnologySelected: event, })
+  }
 
   closeChildDrawer = (e = '', childData = {}) => {
     this.setState({ isOpenChildDrawer: false }, () => {
@@ -251,7 +259,7 @@ class AddAssemblyPart extends Component {
   * @description Used show listing of unit of measurement
   */
   renderListing = (label) => {
-    const { plantSelectList, productGroupSelectList } = this.props;
+    const { plantSelectList, productGroupSelectList, technologySelectList } = this.props;
     const temp = [];
 
     if (label === 'plant') {
@@ -273,6 +281,18 @@ class AddAssemblyPart extends Component {
     }
 
 
+    if (label === 'technology') {
+      technologySelectList &&
+        technologySelectList.map((item) => {
+
+          if (item.Value === '0') return false
+          temp.push({ label: item.Text, value: item.Value })
+          return null
+        })
+      return temp
+    }
+
+
   }
 
   /**
@@ -281,7 +301,7 @@ class AddAssemblyPart extends Component {
   */
   checkIsFormFilled = () => {
     const { fieldsObj } = this.props;
-    if (fieldsObj.BOMNumber === undefined || fieldsObj.AssemblyPartNumber === undefined || fieldsObj.AssemblyPartName === undefined) {
+    if (fieldsObj.BOMNumber === undefined || fieldsObj.AssemblyPartNumber === undefined || fieldsObj.AssemblyPartName === undefined) {         //|| Object.keys(this.state.TechnologySelected).length === 0     DONT DELETE
       return false;
     } else {
       return true;
@@ -825,11 +845,29 @@ console.log(BOMViewerData,"BOMViewerData",actualBOMTreeData,"isEditFlag",isEditF
                         }
 
 
+                        {/* <Col md="3">           // WORK IN PROGRESS DONT DELETE
+                          <Field
+                            label="Technology"
+                            type="text"
+                            name="TechnologyId"
+                            component={searchableSelect}
+                            placeholder={"Technology"}
+                            options={this.renderListing("technology")}
+                            validate={
+                              this.state.Technology == null || this.state.Technology.length === 0 ? [required] : []}
+                            required={true}
+                            handleChangeDescription={
+                              this.handleTechnologyChange
+                            }
+                            valueDescription={this.state.Technology}
+                            disabled={isEditFlag || isViewMode}
+                          />
+                        </Col> */}
+
+
                         <Col md="3">
                           <div className="form-group">
-
                             <div className="inputbox date-section">
-
                               <Field
                                 label="Effective Date"
                                 name="EffectiveDate"
@@ -844,11 +882,12 @@ console.log(BOMViewerData,"BOMViewerData",actualBOMTreeData,"isEditFlag",isEditF
                                 component={renderDatePicker}
                                 className="form-control"
                                 disabled={isEditFlag && !isViewMode ? getConfigurationKey().IsBOMEditable ? false : true : (isViewMode)}
-
                               />
                             </div>
                           </div>
                         </Col>
+
+
                         <Col md="3">
                           <button
                             type="button"
@@ -992,6 +1031,7 @@ console.log(BOMViewerData,"BOMViewerData",actualBOMTreeData,"isEditFlag",isEditF
               isOpen={isOpenChildDrawer}
               closeDrawer={this.closeChildDrawer}
               isEditFlag={false}
+              //TechnologySelected={this.props.TechnologySelected} DONT DELETE
               ID={""}
               anchor={"right"}
               setChildPartsData={this.setChildPartsData}
@@ -1003,6 +1043,7 @@ console.log(BOMViewerData,"BOMViewerData",actualBOMTreeData,"isEditFlag",isEditF
             <BOMViewer
               isOpen={isOpenBOMViewerDrawer}
               closeDrawer={this.closeBOMViewerDrawer}
+              //TechnologySelected={this.state.TechnologySelected} DONT DELETE
               isEditFlag={this.state.isEditFlag}
               PartId={this.state.PartId}
               anchor={"right"}
@@ -1031,9 +1072,9 @@ console.log(BOMViewerData,"BOMViewerData",actualBOMTreeData,"isEditFlag",isEditF
 */
 function mapStateToProps(state) {
   const fieldsObj = selector(state, 'BOMNumber', 'AssemblyPartNumber', 'AssemblyPartName', 'ECNNumber', 'RevisionNumber',
-    'Description', 'DrawingNumber', 'GroupCode', 'Remark')
+    'Description', 'DrawingNumber', 'GroupCode', 'Remark', 'TechnologyId')
   const { comman, part, auth } = state;
-  const { plantSelectList } = comman;
+  const { plantSelectList, technologySelectList } = comman;
   const { partData, actualBOMTreeData, productGroupSelectList } = part;
   const { initialConfiguration } = auth;
   let initialValues = {};
@@ -1051,7 +1092,7 @@ function mapStateToProps(state) {
     }
   }
 
-  return { plantSelectList, partData, actualBOMTreeData, fieldsObj, initialValues, initialConfiguration, productGroupSelectList }
+  return { plantSelectList, partData, actualBOMTreeData, fieldsObj, initialValues, initialConfiguration, productGroupSelectList, technologySelectList }
 
 }
 
@@ -1065,6 +1106,7 @@ export default connect(mapStateToProps, {
   getPlantSelectListByType,
   fileUploadPart,
   fileDeletePart,
+  getTechnologySelectList,
   createAssemblyPart,
   updateAssemblyPart,
   getAssemblyPartDetail,

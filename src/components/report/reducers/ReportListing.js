@@ -17,14 +17,10 @@ export default function ReportListingReducers(state = initialState, action) {
             let temp = action.payload
             let Arr = []
             temp && temp.map(item => {
-                if (item.Status === CREATED_BY_ASSEMBLY) {
-                    return false
-                } else {
-                    Arr.push(item)
-                    return Arr
-                }
-            })
+                Arr.push(item)
+                return Arr
 
+            })
 
             return {
                 ...state,
