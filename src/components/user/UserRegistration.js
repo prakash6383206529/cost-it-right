@@ -26,6 +26,7 @@ import HeaderTitle from "../common/HeaderTitle";
 import PermissionsTabIndex from "./RolePermissions/PermissionsTabIndex";
 import { EMPTY_GUID } from "../../config/constants";
 import PopupMsgWrapper from "../common/PopupMsgWrapper";
+var CryptoJS = require('crypto-js')
 
 class UserRegistration extends Component {
   constructor(props) {
@@ -1005,6 +1006,18 @@ class UserRegistration extends Component {
       oldTechnologyLevelGrid, UserId, HeadLevelGrid, masterLevelGrid } = this.state;
     const userDetails = reactLocalStorage.getObject("userDetail")
 
+    var key = CryptoJS.enc.Utf8.parse('gQUJ79YKYm22Cazw');
+    var iv = CryptoJS.enc.Utf8.parse('eTEFSa0PinFKTQNB');
+
+    var encryptedpassword = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse(values.Password), key,
+      {
+        keySize: 128 / 8,
+        iv: iv,
+        mode: CryptoJS.mode.CBC,
+        padding: CryptoJS.pad.Pkcs7
+      });
+
+
     if (TechnologyLevelGrid && TechnologyLevelGrid.length === 0) {
       Toaster.warning('Users technology level should not be empty.')
       return false;
@@ -1069,7 +1082,7 @@ class UserRegistration extends Component {
         CityName: department.label,
         UserProfileId: registerUserData.UserProfileId,
         UserName: values.UserName ? values.UserName.trim() : '',
-        Password: this.state.isShowPwdField ? values.Password : '',
+        Password: this.state.isShowPwdField ? encryptedpassword.toString() : '',
         RoleId: role.value,
         PlantId: (userDetails && userDetails.Plants) ? userDetails.Plants[0].PlantId : '',
         // DepartmentId: department.value,
@@ -1136,10 +1149,9 @@ class UserRegistration extends Component {
 
       }
     } else {
-
       let userData = {
         UserName: !initialConfiguration.IsLoginEmailConfigure ? values.UserName.trim() : null,
-        Password: values.Password,
+        Password: encryptedpassword.toString(),
         RoleId: role.value,
         PlantId: (userDetails && userDetails.Plants) ? userDetails.Plants[0].PlantId : '',
         DepartmentId: getConfigurationKey().IsMultipleDepartmentAllowed ? EMPTY_GUID : department.value,
@@ -1166,9 +1178,9 @@ class UserRegistration extends Component {
         SimulationTechnologyLevels: tempHeadLevelArray,
         MasterLevels: tempMasterLevelArray
       }
+
       this.setState({ isLoader: true })
       this.props.registerUserAPI(userData, res => {
-
         this.setState({ isSubmitted: false, })
 
         if (res && res.data && res.data.Result) {

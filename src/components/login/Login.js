@@ -17,6 +17,7 @@ import secondLogo from '../../assests/images/logo/CIRlogo.svg'
 import errorImg from '../../assests/images/box.png'
 import { VERSION } from '../../config/constants'
 import LoaderCustom from "../common/LoaderCustom";
+var CryptoJS = require('crypto-js')
 
 class Login extends Component {
   constructor(props) {
@@ -52,9 +53,19 @@ class Login extends Component {
    */
   onSubmit(values) {
 
+    var key = CryptoJS.enc.Utf8.parse('gQUJ79YKYm22Cazw');
+    var iv = CryptoJS.enc.Utf8.parse('eTEFSa0PinFKTQNB');
+    var encryptedpassword = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse(values.Password), key,
+      {
+        keySize: 128 / 8,
+        iv: iv,
+        mode: CryptoJS.mode.CBC,
+        padding: CryptoJS.pad.Pkcs7
+      });
+
     let reqParams = {
       username: values.UserName,
-      password: values.Password,
+      password: encryptedpassword.toString(),
       grant_type: 'password',
     }
     this.setState({ inputLoader: true })
@@ -167,7 +178,7 @@ class Login extends Component {
                   </div>
 
                   <div className="text-center p-relative">
-                    {this.state.inputLoader && <LoaderCustom customClass="login-loader" />}
+                    {this.state.inputLoader && <LoaderCustom customClass="input-loader login-loader" />}
                     <input
                       type="submit"
                       disabled={isSubmitted ? true : false}
