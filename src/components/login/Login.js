@@ -167,7 +167,7 @@ class Login extends Component {
                   </div>
 
                   <div className="text-center p-relative">
-                    {this.state.inputLoader && <LoaderCustom customClass="input-loader login-loader" />}
+                    {this.state.inputLoader && <LoaderCustom customClass="login-loader" />}
                     <input
                       type="submit"
                       disabled={isSubmitted ? true : false}

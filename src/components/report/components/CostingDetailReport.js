@@ -523,6 +523,7 @@ function ReportListing(props) {
                         noRowsOverlayComponent={'customNoRowsOverlay'}
                         noRowsOverlayComponentParams={{
                             title: EMPTY_DATA,
+                            imagClass: 'imagClass'
                         }}
                         suppressRowClickSelection={true}
                         rowSelection={'multiple'}
