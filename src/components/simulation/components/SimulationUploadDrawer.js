@@ -10,10 +10,10 @@ import { loggedInUserId } from '../../../helper';
 import { ExcelRenderer } from 'react-excel-renderer';
 import { getJsDateFromExcel } from "../../../helper/validation";
 import imgCloud from '../../../assests/images/uploadcloud.png';
+import _ from 'lodash'
 
-
-import TooltipCustom from '../../common/Tooltip';
 import { BOPDOMESTIC, BOPIMPORT, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
+import { BoughtOutPartDomesticFileHeads, BoughtOutPartImportFileHeads, MachineRateFileHeads, OperationFileHeads, RawMaterialDomesticFileHeads, RawMaterialImportFileHeads } from '../../../config/masterData';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -131,6 +131,43 @@ class SimulationUploadDrawer extends Component {
 
                 } else {
                     fileHeads = resp.rows[0];
+                    let checkForFileHead
+                    switch (String(this.props.master.value)) {
+
+                        case String(RMDOMESTIC):
+                            checkForFileHead = _.isEqual(fileHeads, RawMaterialDomesticFileHeads) ? true : false
+                            break;
+
+                        case String(RMIMPORT):
+                            checkForFileHead = _.isEqual(fileHeads, RawMaterialImportFileHeads) ? true : false
+                            break;
+
+                        case String(BOPDOMESTIC):
+                            checkForFileHead = _.isEqual(fileHeads, BoughtOutPartDomesticFileHeads) ? true : false
+                            break;
+
+                        case String(BOPIMPORT):
+                            checkForFileHead = _.isEqual(fileHeads, BoughtOutPartImportFileHeads) ? true : false
+                            break;
+
+                        case String(OPERATIONS):
+                        case String(SURFACETREATMENT):
+                            checkForFileHead = _.isEqual(fileHeads, OperationFileHeads) ? true : false
+                            break;
+
+                        case String(MACHINERATE):
+                            checkForFileHead = _.isEqual(fileHeads, MachineRateFileHeads) ? true : false
+                            break;
+
+                        // CONDITION FOR COMBINED PROCESS;
+
+                        default:
+                            break;
+                    }
+                    if (!checkForFileHead) {
+                        Toaster.warning('Please select file of same Master')
+                        return false
+                    }
                     let fileData = [];
                     let basicRateCount = 0
                     let scrapRateCount = 0
@@ -493,7 +530,7 @@ class SimulationUploadDrawer extends Component {
                                     <Col md="12">
                                         <label className="d-inline-block w-auto">Upload</label>
                                         <div class="tooltip-n ml-1 tooltip-left"><i className="fa fa-info-circle text-primary tooltip-icon"></i>
-                                            <span class="tooltiptext">Please upload the file with data. The file can be downloaded from previous screen.</span>
+                                            <span class="tooltiptext text-center">Please upload the file with data. The file can be downloaded from previous screen.</span>
                                         </div>
                                         <div className="input-group mt-1 input-withouticon " >
                                             <div className="file-uploadsection">

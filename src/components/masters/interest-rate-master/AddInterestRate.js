@@ -426,7 +426,7 @@ class AddInterestRate extends Component {
                         <Col md="3" className='mb-4'>
 
                           <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                          {this.state.inputLoader && <LoaderCustom customClass={`input-loader interest-rate-vendor-loader `} />}
+                          {this.state.inputLoader && <LoaderCustom customClass={`vendor-input-loader-col`} />}
                           <AsyncSelect
                             name="vendorName"
                             ref={this.myRef}
@@ -434,7 +434,7 @@ class AddInterestRate extends Component {
                             loadOptions={promiseOptions}
                             onChange={(e) => this.handleVendorName(e)}
                             noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
-                            value={this.state.vendorName} isDisabled={isEditFlag ? true : false} />
+                            value={this.state.vendorName} isDisabled={(isEditFlag || this.state.inputLoader) ? true : false} />
                           {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
 
                         </Col>
@@ -571,12 +571,9 @@ class AddInterestRate extends Component {
 
                               }}
                               component={renderDatePicker}
-                              disabled={isEditFlag ? true : false
-                              }
+                              disabled={isEditFlag || isViewMode}
                               className="form-control"
-
                             />
-
                           </div>
                         </div>
                       </Col>

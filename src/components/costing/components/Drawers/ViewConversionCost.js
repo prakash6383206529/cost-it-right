@@ -54,8 +54,7 @@ function ViewConversionCost(props) {
     if (IsShowToolCost) {
       setIsShowToolCost(IsShowToolCost)
     }
-    if (IsAssemblyCosting === true) {
-
+    if (IsAssemblyCosting === true && isPDFShow === false) {
       let temp = []
       let uniqueTemp = []
       CostingProcessCostResponse && CostingProcessCostResponse.map(item => {
@@ -89,7 +88,17 @@ function ViewConversionCost(props) {
       setOtherCostingOperationCostResponse(otherOperationCost)
       setTransportCost(transportCost)
       setSurfaceTreatmentCost(surfaceCost)
-    } else {
+    }
+    else if (IsAssemblyCosting === true && isPDFShow === true) {
+      setCostingProcessCost(CostingProcessCostResponse ? CostingProcessCostResponse : [])
+      setCostingOperationCostResponse(CostingOperationCostResponse ? CostingOperationCostResponse : [])
+      // setcostingToolsCost(CostingToolsCostResponse)
+      setOtherCostingOperationCostResponse(CostingOtherOperationCostResponse ? CostingOtherOperationCostResponse : [])
+      setTransportCost(netTransportationCostView ? netTransportationCostView : [])
+      setSurfaceTreatmentCost(surfaceTreatmentDetails ? surfaceTreatmentDetails : [])
+    }
+
+    else {
       setCostingProcessCost(CostingProcessCostResponse ? CostingProcessCostResponse : [])
       setCostingOperationCostResponse(CostingOperationCostResponse ? CostingOperationCostResponse : [])
       // setcostingToolsCost(CostingToolsCostResponse)
@@ -174,7 +183,7 @@ function ViewConversionCost(props) {
           <Table className="table cr-brdr-main conversion-cost" size="sm">
             <thead>
               <tr>
-                {partNumberList.length === 0 && IsAssemblyCosting && <th>{`Part No`}</th>}
+                {partNumberList.length === 0 && (IsAssemblyCosting && isPDFShow) && <th>{`Part No`}</th>}
                 <th>{`Process Name`}</th>
                 <th>{`Process Description`}</th>
                 <th>{`Machine Name`}</th>
@@ -194,8 +203,8 @@ function ViewConversionCost(props) {
                   return (
                     <tr key={index}>
                       {IsAssemblyCosting && partNumberList.length === 0 && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
-                      <td><div className='text-overflow' title={item.ProcessName}>{item.ProcessName ? item.ProcessName : '-'}</div></td>
-                      <td><div className='text-overflow' title={item.ProcessDescription}>{item.ProcessDescription ? item.ProcessDescription : '-'}</div></td>
+                      <td className='text-overflow'><span title={item.ProcessName}>{item.ProcessName ? item.ProcessName : '-'}</span></td>
+                      <td className='text-overflow'><span title={item.ProcessDescription}>{item.ProcessDescription ? item.ProcessDescription : '-'}</span></td>
                       <td>{item.MachineName ? item.MachineName : '-'}</td>
                       <td>{item.Tonnage ? item.Tonnage : '-'}</td>
                       <td>{item.UOM ? item.UOM : '-'}</td>
@@ -447,7 +456,7 @@ function ViewConversionCost(props) {
                   return (
                     <tr key={index}>
                       {IsAssemblyCosting && partNumberList.length === 0 && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
-                      <td><div className='text-overflow' title={item.OperationName}>{item.OperationName ? item.OperationName : '-'}</div></td>
+                      <td className='text-overflow'><span title={item.OperationName}>{item.OperationName ? item.OperationName : '-'}</span></td>
                       <td>{item.SurfaceArea ? item.SurfaceArea : '-'}</td>
                       <td>{item.UOM ? item.UOM : '-'}</td>
                       <td>{item.RatePerUOM ? checkForDecimalAndNull(item.RatePerUOM, initialConfiguration.NoOfDecimalForPrice) : 0}</td>

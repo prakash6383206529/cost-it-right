@@ -239,7 +239,7 @@ function TransportationCost(props) {
                 />
               </Col>
               <Col md="3">
-                <div className='p-relative'>
+                <div className='p-relative error-wrapper'>
                   <TextFieldHookForm
                     label={`${TransportationType === 'Percentage' ? 'Percentage' : 'Rate'}`}
                     name={`Rate`}
@@ -256,7 +256,7 @@ function TransportationCost(props) {
                       },
                     }}
                     defaultValue={''}
-                    className=""
+                    className="mtn1"
                     customClassName={'withBorder'}
                     handleChange={(e) => {
                       e.preventDefault()
@@ -265,7 +265,7 @@ function TransportationCost(props) {
                     errors={errors && errors.Rate}
                     disabled={TransportationType === 'Fixed' || CostingViewMode ? true : false}
                   />
-                  {TransportationType === 'Percentage' && percentageLimit && <WarningMessage dClass={"error-message"} message={"Percentage cannot be greater than 100"} />}
+                  {TransportationType === 'Percentage' && percentageLimit && <WarningMessage dClass={"error-message"} textClass={`${percentageLimit ? 'pt-1' : ''}`} message={"Percentage cannot be greater than 100"} />}
                 </div>
               </Col>
               <Col md="3">

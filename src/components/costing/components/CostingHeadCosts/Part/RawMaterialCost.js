@@ -8,12 +8,12 @@ import { useDispatch, useSelector } from 'react-redux'
 import { EMPTY_DATA, PLASTIC } from '../../../../../config/constants'
 import { NumberFieldHookForm, TextFieldHookForm, TextAreaHookForm } from '../../../../layout/HookFormInputs'
 import Toaster from '../../../../common/Toaster'
-import { calculatePercentage, calculatePercentageValue, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey, isRMDivisorApplicable, maxLength20 } from '../../../../../helper'
+import { calculatePercentage, calculatePercentageValue, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey, isRMDivisorApplicable } from '../../../../../helper'
 import OpenWeightCalculator from '../../WeightCalculatorDrawer'
 import { getRawMaterialCalculationByTechnology, } from '../../../actions/CostWorking'
 import { ViewCostingContext } from '../../CostingDetails'
 import { G, INR, KG, MG } from '../../../../../config/constants'
-import { gridDataAdded, isDataChange, setRMCCErrors, setRMCutOff } from '../../../actions/Costing'
+import { gridDataAdded, isDataChange, setMasterBatchObj, setRMCCErrors, setRMCutOff } from '../../../actions/Costing'
 import { getTechnology, technologyForDensity, isMultipleRMAllow } from '../../../../../config/masterData'
 import TooltipCustom from '../../../../common/Tooltip'
 import Popup from 'reactjs-popup';
@@ -22,8 +22,8 @@ import 'reactjs-popup/dist/index.css';
 let counter = 0;
 function RawMaterialCost(props) {
   const { item } = props;
-
-  const { register, handleSubmit, control, setValue, getValues, formState: { errors }, reset, setError } = useForm({
+  const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
+  const { register, handleSubmit, control, setValue, getValues, formState: { errors }, reset } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: {
@@ -75,6 +75,7 @@ function RawMaterialCost(props) {
         return setGridLength(0)
     }
 
+
   }, [])
 
   useEffect(() => {
@@ -85,7 +86,7 @@ function RawMaterialCost(props) {
         PartNumber: props.item.PartNumber,
       }
 
-      if (!CostingViewMode) {
+      if (!CostingViewMode && !IsLocked) {
 
         props.setRMCost(gridData, Params, item)
         if (JSON.stringify(gridData) !== JSON.stringify(oldGridData)) {
@@ -99,7 +100,6 @@ function RawMaterialCost(props) {
         let isCutOffApplicableCount = 0
         let totalCutOff = 0
         gridData && gridData.map(item => {
-
           if (item.IsCutOffApplicable) {
             isCutOffApplicableCount = isCutOffApplicableCount + 1
             totalCutOff = totalCutOff + checkForNull(item.CutOffRMC)
@@ -186,6 +186,7 @@ function RawMaterialCost(props) {
         setValue(`${rmGridFields}.${index}.ScrapRecoveryPercentage`, checkForDecimalAndNull(item.RecoveryPercentage, getConfigurationKey().NoOfDecimalForInputOutput))
         setValue(`${rmGridFields}.${index}.BurningLossWeight`, checkForDecimalAndNull(item.BurningValue, getConfigurationKey().NoOfDecimalForInputOutput))
         setValue(`${rmGridFields}.${index}.ScrapWeight`, checkForDecimalAndNull(item.ScrapWeight, getConfigurationKey().NoOfDecimalForInputOutput))
+        return null
       })
     }
 
@@ -246,13 +247,22 @@ function RawMaterialCost(props) {
     let tempArr = []
     let tempData = gridData[index]
     setEditCalculation(false)
-    if (checkForNull(event.target.value) >= 0) {
+    let grossValue = event
 
-      if (IsFinishWeightValid(event.target.value, tempData.FinishWeight)) {
-        const GrossWeight = checkForNull(event.target.value)
+    if (checkForNull(grossValue) >= 0) {
+
+      if (IsFinishWeightValid(grossValue, tempData.FinishWeight)) {
+        const GrossWeight = checkForNull(grossValue)
         const FinishWeight = tempData.FinishWeight !== undefined ? tempData.FinishWeight : 0
+        let scrapWeight = checkForNull(GrossWeight - FinishWeight);
 
-        const scrapWeight = checkForNull(GrossWeight - FinishWeight);
+        // Recovered scrap weight calculate
+        let recoveredScrapWeight;
+        if (isScrapRecoveryPercentageApplied && tempData.ScrapRecoveryPercentage !== undefined && tempData.ScrapRecoveryPercentage !== 0) {
+          const ScrapRecoveryPercentage = checkForNull(tempData.ScrapRecoveryPercentage);
+          recoveredScrapWeight = scrapWeight * calculatePercentage(ScrapRecoveryPercentage);
+          scrapWeight = recoveredScrapWeight
+        }
 
         // const ApplicableFinishWeight = (checkForNull(tempData.FinishWeight) !== 0) ? scrapWeight * tempData.ScrapRate : 0;
         const ScrapCost = (checkForNull(tempData.FinishWeight) !== 0) ? scrapWeight * tempData.ScrapRate : 0;
@@ -271,7 +281,6 @@ function RawMaterialCost(props) {
         tempArr = Object.assign([...gridData], { [index]: tempData })
 
         if (IsApplyMasterBatch) {
-
           const scrapWeight = checkForNull(GrossWeight - FinishWeight);
           const RMRate = calculatePercentageValue(tempData.RMRate, (100 - getValues('MBPercentage')));
           const RMRatePlusMasterBatch = (RMRate + checkForNull(getValues('RMTotal'))) * GrossWeight;
@@ -292,16 +301,16 @@ function RawMaterialCost(props) {
         }
         dispatch(setRMCutOff({ IsCutOffApplicable: tempData.IsCutOffApplicable, CutOffRMC: CutOffRMC }))
         setGridData(tempArr)
-        setValue(`${rmGridFields}.${index}.GrossWeight`, event.target.value)
+        setValue(`${rmGridFields}.${index}.GrossWeight`, grossValue)
         setValue(`${rmGridFields}.${index}.FinishWeight`, checkForNull(tempData.FinishWeight))
       } else {
-        const GrossWeight = checkForNull(event.target.value)
-        const FinishWeight = tempData.FinishWeight !== undefined ? tempData.FinishWeight : 0
+        const GrossWeight = checkForNull(grossValue)
+        const FinishWeight = 0                                           //Finish weight will be zero when  Gross Weight < Finish weight
+        // let scrapWeight = checkForNull(GrossWeight - FinishWeight);
+        let scrapWeight = 0
 
-        const scrapWeight = checkForNull(GrossWeight - FinishWeight);
         const ScrapCost = (checkForNull(tempData.FinishWeight) !== 0) ? scrapWeight * tempData.ScrapRate : 0;
         const CutOffRMC = tempData.IsCutOffApplicable ? (GrossWeight * checkForNull(tempData.CutOffPrice)) - ScrapCost : 0;
-
         const ApplicableFinishWeight = 0;
         const NetLandedCost = (GrossWeight * tempData.RMRate) - ApplicableFinishWeight;
         tempData = {
@@ -313,7 +322,8 @@ function RawMaterialCost(props) {
           WeightCalculationId: "00000000-0000-0000-0000-000000000000",
           IsCalculatedEntry: false,
           CutOffRMC: CutOffRMC,
-          ScrapWeight: scrapWeight
+          ScrapWeight: scrapWeight,
+          ScrapRecoveryPercentage: 0
         }
         tempArr = Object.assign([...gridData], { [index]: tempData })
 
@@ -332,17 +342,18 @@ function RawMaterialCost(props) {
             WeightCalculationId: "00000000-0000-0000-0000-000000000000",
             IsCalculatedEntry: false,
             CutOffRMC: CutOffRMC,
-            ScrapWeight: scrapWeight
+            ScrapWeight: scrapWeight,
+            ScrapRecoveryPercentage: 0
           }
           tempArr = Object.assign([...gridData], { [index]: tempData })
         }
         dispatch(setRMCutOff({ IsCutOffApplicable: tempData.IsCutOffApplicable, CutOffRMC: CutOffRMC }))
         setGridData(tempArr)
-        setValue(`${rmGridFields}.${index}.GrossWeight`, event.target.value)
+        setValue(`${rmGridFields}.${index}.GrossWeight`, grossValue)
         setValue(`${rmGridFields}.${index}.FinishWeight`, 0)
+        setValue(`${rmGridFields}.${index}.ScrapRecoveryPercentage`, 0)
         Toaster.warning('Gross Weight should not be less than Finish Weight')
       }
-
     }
   }
 
@@ -354,16 +365,18 @@ function RawMaterialCost(props) {
     let tempArr = []
     let tempData = gridData[index]
     setEditCalculation(false)
-    if (checkForNull(event.target.value) <= 0) {
 
+    let finishValue = event
 
-      const FinishWeight = checkForNull(event.target.value);
+    if (checkForNull(finishValue) <= 0) {
+      // const FinishWeight = checkForNull(finishValue);
+      const FinishWeight = 0;
       const GrossWeight = tempData.GrossWeight !== undefined ? checkForNull(tempData.GrossWeight) : 0;
-
-      const scrapWeight = checkForNull(GrossWeight - FinishWeight);
+      // let scrapWeight = checkForNull(GrossWeight - FinishWeight);
+      let scrapWeight = 0;
+      // ternary condition
       const ScrapCost = FinishWeight !== 0 ? scrapWeight * checkForNull(tempData.ScrapRate) : 0;
       const CutOffRMC = tempData.IsCutOffApplicable ? (GrossWeight * checkForNull(tempData.CutOffPrice)) - ScrapCost : 0;
-
       const NetLandedCost = (GrossWeight * tempData.RMRate) - ScrapCost;
       tempData = {
         ...tempData,
@@ -374,6 +387,7 @@ function RawMaterialCost(props) {
         IsCalculatedEntry: false,
         CutOffRMC: CutOffRMC,
         ScrapWeight: scrapWeight,
+        ScrapRecoveryPercentage: 0,
         Remark: remarkPopUpData ? remarkPopUpData : ""
       }
       tempArr = Object.assign([...gridData], { [index]: tempData })
@@ -394,6 +408,7 @@ function RawMaterialCost(props) {
           IsCalculatedEntry: false,
           CutOffRMC: CutOffRMC,
           ScrapWeight: scrapWeight,
+          ScrapRecoveryPercentage: 0,
           Remark: remarkPopUpData ? remarkPopUpData : ""
         }
         tempArr = Object.assign([...gridData], { [index]: tempData })
@@ -401,15 +416,26 @@ function RawMaterialCost(props) {
       dispatch(setRMCutOff({ IsCutOffApplicable: tempData.IsCutOffApplicable, CutOffRMC: CutOffRMC }))
       setGridData(tempArr)
       setValue(`${rmGridFields}.${index}.FinishWeight`, FinishWeight)
+      setValue(`${rmGridFields}.${index}.ScrapRecoveryPercentage`, 0)
       //Toaster.warning('Please enter valid weight.')
 
     } else {
-      const FinishWeight = checkForNull(event.target.value);
+      let FinishWeight = checkForNull(finishValue);
       const GrossWeight = tempData.GrossWeight !== undefined ? checkForNull(tempData.GrossWeight) : 0;
 
       if (IsFinishWeightValid(GrossWeight, FinishWeight)) {
 
-        const scrapWeight = checkForNull(GrossWeight - FinishWeight);
+        let scrapWeight = checkForNull(GrossWeight - FinishWeight);
+
+        // Recovered scrap weight calculate
+        let recoveredScrapWeight;
+        if (isScrapRecoveryPercentageApplied && tempData.ScrapRecoveryPercentage !== undefined && tempData.ScrapRecoveryPercentage !== 0) {
+          const ScrapRecoveryPercentage = checkForNull(tempData.ScrapRecoveryPercentage);
+          recoveredScrapWeight = scrapWeight * calculatePercentage(ScrapRecoveryPercentage);
+          scrapWeight = recoveredScrapWeight
+        }
+
+        // ternary condition
         const ScrapCost = FinishWeight !== 0 ? scrapWeight * checkForNull(tempData.ScrapRate) : 0;
         const CutOffRMC = tempData.IsCutOffApplicable ? ((GrossWeight * checkForNull(tempData.CutOffPrice)) - ScrapCost) : 0;
 
@@ -454,7 +480,12 @@ function RawMaterialCost(props) {
 
       } else {
 
-        const scrapWeight = checkForNull(GrossWeight - FinishWeight);
+        FinishWeight = 0           //Finish weight will be zero when Finish weight > Gross Weight
+
+        // let scrapWeight = checkForNull(GrossWeight - FinishWeight);
+
+        let scrapWeight = 0;
+
         const ScrapCost = FinishWeight !== 0 ? scrapWeight * tempData.ScrapRate : 0;
         const CutOffRMC = tempData.IsCutOffApplicable ? (GrossWeight * checkForNull(tempData.CutOffPrice)) - ScrapCost : 0;
         const NetLandedCost = (GrossWeight * tempData.RMRate) - 0;
@@ -466,6 +497,7 @@ function RawMaterialCost(props) {
           WeightCalculatorRequest: {},
           CutOffRMC: CutOffRMC,
           ScrapWeight: scrapWeight,
+          ScrapRecoveryPercentage: 0,
           Remark: remarkPopUpData ? remarkPopUpData : ""
         }
         tempArr = Object.assign([...gridData], { [index]: tempData })
@@ -486,6 +518,7 @@ function RawMaterialCost(props) {
             IsCalculatedEntry: false,
             CutOffRMC: CutOffRMC,
             ScrapWeight: scrapWeight,
+            ScrapRecoveryPercentage: 0,
             Remark: remarkPopUpData ? remarkPopUpData : ""
           }
           tempArr = Object.assign([...gridData], { [index]: tempData })
@@ -495,6 +528,8 @@ function RawMaterialCost(props) {
         Toaster.warning('Finish weight should not be greater then gross weight.')
         setTimeout(() => {
           setValue(`${rmGridFields}.${index}.FinishWeight`, 0)
+          setValue(`${rmGridFields}.${index}.ScrapRecoveryPercentage`, 0)
+
         }, 200)
 
       }
@@ -671,26 +706,23 @@ function RawMaterialCost(props) {
       setValue(`${rmGridFields}.${index}.ScrapRecoveryPercentage`, checkForDecimalAndNull(item.RecoveryPercentage, getConfigurationKey().NoOfDecimalForInputOutput))
       setValue(`${rmGridFields}.${index}.BurningLossWeight`, checkForDecimalAndNull(item.BurningValue, getConfigurationKey().NoOfDecimalForInputOutput))
       setValue(`${rmGridFields}.${index}.ScrapWeight`, checkForDecimalAndNull(item.ScrapWeight, getConfigurationKey().NoOfDecimalForInputOutput))
+      return null
     })
     setGridData(tempArr)
 
     let selectedIds = []
-    tempArr.map(el => { selectedIds.push(el.RawMaterialId) })
+    tempArr.map(el => (selectedIds.push(el.RawMaterialId)))
     setIds(selectedIds)
 
     setIsApplyMasterBatch(false)
   }
 
-
   const onRemarkPopUpClick = (index) => {
-
     setRemarkPopUpData(getValues(`${rmGridFields}.${index}.remarkPopUp`))
     let tempArr = []
     let tempData = gridData[index]
-
     tempData = {
       ...tempData,
-
       Remark: getValues(`${rmGridFields}.${index}.remarkPopUp`)
     }
     tempArr = Object.assign([...gridData], { [index]: tempData })
@@ -699,16 +731,11 @@ function RawMaterialCost(props) {
     if (getValues(`${rmGridFields}.${index}.remarkPopUp`)) {
       Toaster.success('Remark saved successfully')
     }
-
     var button = document.getElementById(`popUpTrigger${index}`)
     button.click()
-
-
   }
 
-
   const onRemarkPopUpClose = (index) => {
-
     var button = document.getElementById(`popUpTrigger${index}`)
     button.click()
   }
@@ -718,11 +745,21 @@ function RawMaterialCost(props) {
   * @description ON PRESS APPLY MASTER BATCH
   */
   const onPressApplyMasterBatch = () => {
+    reset({
+      MBName: '',
+      MBPrice: '',
+      MBPercentage: '',
+      RMTotal: '',
+    })
+
+    dispatch(isDataChange(true))
+    setEditCalculation(false)
     setIsApplyMasterBatch(!IsApplyMasterBatch)
   }
 
   useEffect(() => {
-    if (IsApplyMasterBatch === false && gridData && gridData.length > 0 && CostingViewMode === false && editCalculation === false) {
+    if (IsApplyMasterBatch === false && gridData && gridData.length > 0 && CostingViewMode === false && editCalculation === false && IsLocked === false) {
+
       let tempArr = []
       let tempData = gridData[0]
       const GrossWeight = tempData?.GrossWeight !== undefined ? tempData.GrossWeight : 0
@@ -732,40 +769,37 @@ function RawMaterialCost(props) {
       const NetLandedCost = (GrossWeight * tempData?.RMRate) - ApplicableFinishWeight;
       tempData = { ...tempData, NetLandedCost: isRMDivisorApplicable(costData.TechnologyName) ? checkForDecimalAndNull(NetLandedCost / RMDivisor, initialConfiguration.NoOfDecimalForPrice) : NetLandedCost, }
       tempArr = Object.assign([...gridData], { 0: tempData })
-      setGridData(tempArr)
+
       setValue(`${rmGridFields}.${0}.GrossWeight`, GrossWeight)
       setValue(`${rmGridFields}.${0}.FinishWeight`, checkForNull(tempData?.FinishWeight))
+      const MasterBatchObj = {
+        "MasterBatchRMId": '',
+        "IsApplyMasterBatch": IsApplyMasterBatch,
+        "MasterBatchRMName": '',
+        "MasterBatchRMPrice": 0,
+        "MasterBatchPercentage": 0,
+        "MasterBatchTotal": 0,
+      }
 
+      if (!CostingViewMode && !IsLocked) {
+        dispatch(setMasterBatchObj(MasterBatchObj))
+      }
       setTimeout(() => {
-
-        const Params = {
-          BOMLevel: props.item.BOMLevel,
-          PartNumber: props.item.PartNumber,
-        }
         reset({
           MBName: '',
           MBPrice: '',
           MBPercentage: '',
           RMTotal: '',
         })
-        const MasterBatchObj = {
-          "MasterBatchRMId": '',
-          "IsApplyMasterBatch": IsApplyMasterBatch,
-          "MasterBatchRMName": '',
-          "MasterBatchRMPrice": 0,
-          "MasterBatchPercentage": 0,
-          "MasterBatchTotal": 0,
-        }
-        if (!CostingViewMode) {
-          props.setRMMasterBatchCost(tempArr, MasterBatchObj, Params)
-        }
+
       }, 200)
+      setGridData(tempArr)
     }
   }, [IsApplyMasterBatch])
 
   // THIS WILL CALLED WHEN RM REMOVED FROM GRID TO RESET MASTERBATCH DATA
   useEffect(() => {
-    let tempArr = []
+
     if (gridData && gridData.length === 0) {
       const Params = {
         BOMLevel: props.item.BOMLevel,
@@ -785,8 +819,10 @@ function RawMaterialCost(props) {
         "MasterBatchPercentage": 0,
         "MasterBatchTotal": 0,
       }
-      if (!CostingViewMode) {
-        props.setRMMasterBatchCost(tempArr, MasterBatchObj, Params)
+
+      if (!CostingViewMode && !IsLocked) {
+        dispatch(setMasterBatchObj(MasterBatchObj))
+
       }
     }
   }, [gridData])
@@ -820,25 +856,19 @@ function RawMaterialCost(props) {
 
       tempData = { ...tempData, NetLandedCost: isRMDivisorApplicable(costData.TechnologyName) ? checkForDecimalAndNull(NetLandedCost / RMDivisor, initialConfiguration.NoOfDecimalForPrice) : NetLandedCost, }
       let tempArr = Object.assign([...gridData], { 0: tempData })
+
+      const MasterBatchObj = {
+        "MasterBatchRMId": getValues('MBId'),
+        "IsApplyMasterBatch": IsApplyMasterBatch,
+        "MasterBatchRMName": getValues('MBName'),
+        "MasterBatchRMPrice": getValues('MBPrice'),
+        "MasterBatchPercentage": checkForNull(value),
+        "MasterBatchTotal": getValues('RMTotal'),
+      }
+
+      dispatch(setMasterBatchObj(MasterBatchObj))
       setGridData(tempArr)
 
-      setTimeout(() => {
-
-        const Params = {
-          BOMLevel: props.item.BOMLevel,
-          PartNumber: props.item.PartNumber,
-        }
-
-        const MasterBatchObj = {
-          "MasterBatchRMId": getValues('MBId'),
-          "IsApplyMasterBatch": IsApplyMasterBatch,
-          "MasterBatchRMName": getValues('MBName'),
-          "MasterBatchRMPrice": getValues('MBPrice'),
-          "MasterBatchPercentage": checkForNull(value),
-          "MasterBatchTotal": getValues('RMTotal'),
-        }
-        props.setRMMasterBatchCost(tempArr, MasterBatchObj, Params)
-      }, 200)
 
     } else {
 
@@ -901,7 +931,7 @@ function RawMaterialCost(props) {
               <div className="left-border">{'Raw Material Cost:'}</div>
             </Col>
             <Col md={'2'}>
-              {!CostingViewMode && gridData && isShowAddBtn() &&
+              {!CostingViewMode && !IsLocked && gridData && isShowAddBtn() &&
                 <button
                   type="button"
                   className={'user-btn'}
@@ -943,7 +973,7 @@ function RawMaterialCost(props) {
 
                         return (
                           <tr key={index} className=''>
-                            <td className='rm-part-name'><span title={item.RMName}>{item.RMName}</span></td>
+                            <td className='text-overflow'><span title={item.RMName}>{item.RMName}</span></td>
                             <td>{item.RMRate}</td>
                             <td>{item.ScrapRate}</td>
                             <td>{item.UOM}</td>
@@ -978,10 +1008,10 @@ function RawMaterialCost(props) {
                                 customClassName={'withBorder'}
                                 handleChange={(e) => {
                                   e.preventDefault()
-                                  handleGrossWeightChange(e, index)
+                                  handleGrossWeightChange(e?.target?.value, index)
                                 }}
-                                errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].GrossWeight : ''}
-                                disabled={CostingViewMode ? true : false}
+                                errors={!gridData[index].GrossWeight && errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].GrossWeight : ''}
+                                disabled={(CostingViewMode || IsLocked) ? true : false}
                               />
                             </td>
 
@@ -1005,15 +1035,14 @@ function RawMaterialCost(props) {
                                 customClassName={'withBorder'}
                                 handleChange={(e) => {
                                   e.preventDefault()
-                                  handleFinishWeightChange(e, index)
+                                  handleFinishWeightChange(e?.target?.value, index)
                                 }}
-                                errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].FinishWeight : ''}
-                                disabled={CostingViewMode ? true : false}
+                                errors={!gridData[index].FinishWeight && errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].FinishWeight : ''}
+                                disabled={(CostingViewMode || IsLocked) ? true : false}
                               />
                             </td>
 
                             {
-
                               costData.TechnologyName === PLASTIC && <td>{checkForDecimalAndNull(item.BurningLossWeight, initialConfiguration.NoOfDecimalForInputOutput)}</td>
                             }
                             {
@@ -1045,7 +1074,7 @@ function RawMaterialCost(props) {
                                     handleScrapRecoveryChange(e, index)
                                   }}
                                   errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].ScrapRecoveryPercentage : ''}
-                                  disabled={CostingViewMode ? true : false}
+                                  disabled={CostingViewMode || IsLocked || (gridData[index].FinishWeight === 0) || (gridData[index].FinishWeight === "") || (gridData[index].FinishWeight === null) || (gridData[index].FinishWeight === undefined) ? true : false}
                                 />
                               </td>
                             }
@@ -1054,7 +1083,7 @@ function RawMaterialCost(props) {
                               {item?.NetLandedCost !== undefined ? checkForDecimalAndNull(item.NetLandedCost, initialConfiguration.NoOfDecimalForPrice) : ''}
                             </td>
                             <td>
-                              {!CostingViewMode && <button
+                              {!CostingViewMode && !IsLocked && <button
                                 className="Delete "
                                 type={'button'}
                                 onClick={() => deleteItem(index)}
@@ -1069,26 +1098,23 @@ function RawMaterialCost(props) {
                                   register={register}
                                   mandatory={false}
                                   rules={{
-
-
                                     maxLength: {
                                       value: 75,
                                       message: "Remark should be less than 75 word"
                                     },
                                   }}
-
                                   handleChange={(e) => { }}
                                   defaultValue={item.Remark ?? item.Remark}
                                   className=""
                                   customClassName={"withBorder"}
                                   errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].remarkPopUp : ''}
                                   //errors={errors && errors.remarkPopUp && errors.remarkPopUp[index] !== undefined ? errors.remarkPopUp[index] : ''}                        
-                                  disabled={CostingViewMode ? true : false}
+                                  disabled={(CostingViewMode || IsLocked) ? true : false}
                                   hidden={false}
                                 />
                                 <Row>
                                   <Col md="12" className='remark-btn-container'>
-                                    <button className='submit-button mr-2' disabled={CostingViewMode ? true : false} onClick={() => onRemarkPopUpClick(index)} > <div className='save-icon'></div> </button>
+                                    <button className='submit-button mr-2' disabled={(CostingViewMode || IsLocked) ? true : false} onClick={() => onRemarkPopUpClick(index)} > <div className='save-icon'></div> </button>
                                     <button className='reset' onClick={() => onRemarkPopUpClose(index)} > <div className='cancel-icon'></div></button>
                                   </Col>
                                 </Row>
@@ -1112,7 +1138,7 @@ function RawMaterialCost(props) {
               </Col>
             </Row>
 
-            <Row >
+            <Row>
               {/* IF THERE IS NEED TO APPLY FOR MULTIPLE TECHNOLOGY, CAN MODIFIED BELOW CONDITION */}
               {costData.TechnologyName === PLASTIC &&
                 <Col md="2" className="py-3 pr-1 mb-width">
@@ -1124,7 +1150,7 @@ function RawMaterialCost(props) {
                     <input
                       type="checkbox"
                       checked={IsApplyMasterBatch}
-                      disabled={(CostingViewMode || gridData.length !== 1) ? true : false}
+                      disabled={(CostingViewMode || IsLocked || gridData.length !== 1) ? true : false}
                     />
                     <span
                       className=" before-box"
@@ -1140,7 +1166,7 @@ function RawMaterialCost(props) {
               {IsApplyMasterBatch && costData.TechnologyName === PLASTIC &&
                 <>
                   <div>
-                    <button onClick={MasterBatchToggle} title={'Add Master Batch'} disabled={CostingViewMode} type="button" class="user-btn mt30"><div class="plus"></div>Add Master Batch</button>
+                    <button onClick={MasterBatchToggle} title={'Add Master Batch'} disabled={(CostingViewMode || IsLocked)} type="button" class="user-btn mt30"><div class="plus"></div>Add Master Batch</button>
                   </div>
                   {/* <Col md="2" > */}
                   <TextFieldHookForm
@@ -1221,7 +1247,7 @@ function RawMaterialCost(props) {
                         handleMBPercentage(e.target.value)
                       }}
                       errors={errors.MBPercentage}
-                      disabled={(CostingViewMode || checkForNull(getValues('MBPrice')) === 0) ? true : false}
+                      disabled={(CostingViewMode || IsLocked || checkForNull(getValues('MBPrice')) === 0) ? true : false}
                     />
                   </Col>
                   <Col md="2">
@@ -1265,9 +1291,9 @@ function RawMaterialCost(props) {
         isWeightDrawerOpen && (
           <OpenWeightCalculator
             isOpen={isWeightDrawerOpen}
-            CostingViewMode={CostingViewMode}
+            CostingViewMode={CostingViewMode || IsLocked}
             closeDrawer={closeWeightDrawer}
-            isEditFlag={CostingViewMode ? false : true}
+            isEditFlag={(CostingViewMode || IsLocked) ? false : true}
             inputDiameter={inputDiameter}
             item={item}
             technology={costData.ETechnologyType}

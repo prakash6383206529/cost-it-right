@@ -45,6 +45,7 @@ import {
     PROCESS,
     GET_RM_DOMESTIC_LIST,
     GET_VALUE_TO_SHOW_COSTING_SIMULATION,
+    GET_KEYS_FOR_DOWNLOAD_SUMMARY,
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
@@ -352,11 +353,23 @@ export function getApprovalSimulatedCostingSummary(params, callback) {
         const queryParameter = `${params.approvalTokenNumber}/${params.approvalId}/${params.loggedInUserId}`;
         const request = axios.get(`${API.getApprovalSimulatedCostingSummary}/${queryParameter}`, headers)
         request.then((response) => {
-            if (response.data.Result) {
+            if (response.data.Result || response.status === 204) {
+                let tempData = {
+                    IsBoughtOutPartSimulation: response.status === 204 ? false : response?.data?.Data?.IsBoughtOutPartSimulation,
+                    IsExchangeRateSimulation: response.status === 204 ? false : response?.data?.Data?.IsExchangeRateSimulation,
+                    IsOperationSimulation: response.status === 204 ? false : response?.data?.Data?.IsOperationSimulation,
+                    IsRawMaterialSimulation: response.status === 204 ? false : response?.data?.Data?.IsRawMaterialSimulation,
+                    IsSurfaceTreatmentSimulation: response.status === 204 ? false : response?.data?.Data?.IsSurfaceTreatmentSimulation
+                }
+                dispatch({
+                    type: GET_KEYS_FOR_DOWNLOAD_SUMMARY,
+                    payload: tempData,
+                })
                 dispatch({
                     type: GET_APPROVAL_SIMULATION_COSTING_SUMMARY,
-                    payload: response.data.DataList,
+                    payload: response.status === 204 ? [] : response.data.DataList,
                 })
+
                 callback(response)
             }
         }).catch((error) => {
@@ -365,7 +378,6 @@ export function getApprovalSimulatedCostingSummary(params, callback) {
         })
     }
 }
-
 export function getAllSimulationApprovalList(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
@@ -1164,14 +1176,14 @@ export function getListingForSimulationCombined(requestData, master, callback) {
                     case BOPDOMESTIC:
                         dispatch({
                             type: GET_BOP_DOMESTIC_DATA_LIST,
-                            payload: response.data.Data
+                            payload: response.data.DataList
                         })
                         break;
 
                     case BOPIMPORT:
                         dispatch({
                             type: GET_BOP_IMPORT_DATA_LIST,
-                            payload: response.data.Data
+                            payload: response.data.DataList
                         })
                         break;
 

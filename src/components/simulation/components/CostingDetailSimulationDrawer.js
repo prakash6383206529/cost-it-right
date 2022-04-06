@@ -161,11 +161,11 @@ function CostingDetailSimulationDrawer(props) {
                                             Number(master) === Number(OPERATIONS) &&
                                             <>
                                                 <Col md="3">
-                                                    <label>Old Operation Rate</label>
+                                                    <label>Old Operation Cost</label>
                                                     <label className={`${pricesDetail.OldOperationCost > pricesDetail.NewOperationCost ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.OldOperationCost, getConfigurationKey().NoOfDecimalForPrice)}</label>
                                                 </Col>
                                                 <Col md="3">
-                                                    <label>New Operation Rate</label>
+                                                    <label>New Operation Cost</label>
                                                     <label className={`${pricesDetail.OldOperationCost > pricesDetail.NewOperationCost ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.NewOperationCost, getConfigurationKey().NoOfDecimalForPrice)}</label>
                                                 </Col>
                                             </>
@@ -174,11 +174,11 @@ function CostingDetailSimulationDrawer(props) {
                                             (Number(master) === Number(BOPDOMESTIC) || Number(master) === Number(BOPIMPORT)) &&
                                             <>
                                                 <Col md="3">
-                                                    <label>Old BOP Rate</label>
+                                                    <label>Old BOP Cost</label>
                                                     <label className={`${pricesDetail.OldBOPCost > pricesDetail.NewBOPCost ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.OldBOPCost, getConfigurationKey().NoOfDecimalForPrice)}</label>
                                                 </Col>
                                                 <Col md="3">
-                                                    <label>New BOP Rate</label>
+                                                    <label>New BOP Cost</label>
                                                     <label className={`${pricesDetail.OldBOPCost > pricesDetail.NewBOPCost ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.NewBOPCost, getConfigurationKey().NoOfDecimalForPrice)}</label>
                                                 </Col>
                                             </>

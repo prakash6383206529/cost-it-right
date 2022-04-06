@@ -794,7 +794,7 @@ class AddProfit extends Component {
                         </Col>
                       </Row>
                       <Row>
-                        <Col md="4" >
+                        <Col md="3" >
                           <Field
                             name="ModelType"
                             type="text"
@@ -818,9 +818,9 @@ class AddProfit extends Component {
                           />
                         </Col>
                         {this.state.IsVendor && costingHead === "vendor" && (
-                          <Col md="4">
+                          <Col md="3">
                             <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                            {this.state.inputLoader && <LoaderCustom customClass={`input-loader masters-vendor-loader`} />}
+                            {this.state.inputLoader && <LoaderCustom customClass={`vendor-input-loader-second-col`} />}
                             <AsyncSelect
                               name="vendorName"
                               ref={this.myRef}
@@ -829,13 +829,13 @@ class AddProfit extends Component {
                               onChange={(e) => this.handleVendorName(e)}
                               value={this.state.vendorName}
                               noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
-                              isDisabled={isEditFlag ? true : false} />
+                              isDisabled={(isEditFlag || this.state.inputLoader) ? true : false} />
                             {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
 
                           </Col>
                         )}
                         {this.state.IsVendor && costingHead === "client" && (
-                          <Col md="4">
+                          <Col md="3">
                             <Field
                               name="clientName"
                               type="text"
@@ -858,7 +858,7 @@ class AddProfit extends Component {
                           </Col>
                         )}
 
-                        <Col md="4" >
+                        <Col md="3" >
                           <Field
                             name="ProfitApplicabilityId"
                             type="text"
@@ -884,7 +884,7 @@ class AddProfit extends Component {
                           />
                         </Col>
                         {!isHideOverhead && (
-                          <Col md="4">
+                          <Col md="3">
                             <Field
                               label={`Profit (%)`}
                               name={"ProfitPercentage"}
@@ -906,7 +906,7 @@ class AddProfit extends Component {
                           </Col>
                         )}
                         {!isHideRM && (
-                          <Col md="4">
+                          <Col md="3">
                             <Field
                               label={`Profit on RM (%)`}
                               name={"ProfitRMPercentage"}
@@ -922,7 +922,7 @@ class AddProfit extends Component {
                           </Col>
                         )}
                         {!isHideCC && (
-                          <Col md="4">
+                          <Col md="3">
                             <Field
                               label={`Profit on CC (%)`}
                               name={"ProfitMachiningCCPercentage"}
@@ -939,7 +939,7 @@ class AddProfit extends Component {
                           </Col>
                         )}
                         {!isHideBOP && (
-                          <Col md="4">
+                          <Col md="3">
                             <Field
                               label={`Profit on BOP (%)`}
                               name={"ProfitBOPPercentage"}
@@ -955,7 +955,7 @@ class AddProfit extends Component {
                             />
                           </Col>
                         )}
-                        <Col md="4">
+                        <Col md="3">
                           <div className="inputbox date-section form-group">
                             <Field
                               label="Effective Date"
@@ -971,7 +971,7 @@ class AddProfit extends Component {
                               }}
                               component={renderDatePicker}
                               className="form-control"
-                              disabled={isEditFlag ? true : false}
+                              disabled={isViewMode}
 
                             />
                           </div>

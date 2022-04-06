@@ -16,7 +16,7 @@ import CostingDetailStepTwo from './CostingDetailStepTwo';
 import { APPROVED, DRAFT, EMPTY_GUID, PENDING, REJECTED, VBC, WAITING_FOR_APPROVAL, ZBC, EMPTY_GUID_0, COSTING, APPROVED_BY_SIMULATION } from '../../../config/constants';
 import {
   getPartInfo, checkPartWithTechnology, createZBCCosting, createVBCCosting, getZBCExistingCosting, getVBCExistingCosting,
-  updateZBCSOBDetail, updateVBCSOBDetail, storePartNumber, getZBCCostingByCostingId, deleteDraftCosting, getPartSelectListByTechnology,
+  updateZBCSOBDetail, updateVBCSOBDetail, storePartNumber, getBriefCostingById, deleteDraftCosting, getPartSelectListByTechnology,
   setOverheadProfitData, setComponentOverheadItemData, setPackageAndFreightData, setComponentPackageFreightItemData, setToolTabData,
   setComponentToolItemData, setComponentDiscountOtherItemData, gridDataAdded, getCostingSpecificTechnology, setRMCCData, setComponentItemData, getNCCExistingCosting, createNCCCosting, saveAssemblyBOPHandlingCharge,
 } from '../actions/Costing'
@@ -26,7 +26,6 @@ import { MESSAGES } from '../../../config/message';
 import BOMUpload from '../../massUpload/BOMUpload';
 
 import Clientbasedcostingdrawer from './ClientBasedCostingDrawer';
-import TooltipCustom from '../../common/Tooltip';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import AddNCCDrawer from './AddNCCDrawer';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -34,6 +33,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { debounce } from 'lodash';
 
 export const ViewCostingContext = React.createContext()
+export const EditCostingContext = React.createContext()
 
 function IsolateReRender(control) {
   const values = useWatch({
@@ -94,6 +94,8 @@ function CostingDetails(props) {
 
   //FOR VIEW MODE COSTING
   const [IsCostingViewMode, setIsCostingViewMode] = useState(false)
+  // FOR EDIT MODE COSTING
+  const [IsCostingEditMode, setIsCostingEditMode] = useState(false)
 
   // client based costing
   const [clientDrawer, setClientDrawer] = useState(false)
@@ -122,7 +124,7 @@ function CostingDetails(props) {
 
   useEffect(() => {
     if (reactLocalStorage.get('location') === '/costing') {
-
+      localStorage.setItem('costingArray', [])
       setValue('Technology', '')
       setValue('Part', '')
       reset()
@@ -132,6 +134,7 @@ function CostingDetails(props) {
       dispatch(getPartSelectListByTechnology('', () => { }))
       dispatch(getPartInfo('', () => { }))
       dispatch(gridDataAdded(false))
+
     }
   }, [])
 
@@ -559,11 +562,11 @@ function CostingDetails(props) {
   const closeCopyCostingDrawer = (e = '', costingId = '', type = '') => {
     //nextToggle()
     setIsCopyCostingDrawer(false)
-    dispatch(getZBCCostingByCostingId('', (res) => { }))
+    dispatch(getBriefCostingById('', (res) => { }))
 
     if (type === ZBC) {
       setCostingData({ costingId: costingId, type })
-      dispatch(getZBCCostingByCostingId(costingId, (res) => {
+      dispatch(getBriefCostingById(costingId, (res) => {
         setTimeout(() => {
           setStepTwo(true)
           setStepOne(false)
@@ -573,7 +576,7 @@ function CostingDetails(props) {
 
     if (type === VBC) {
       setCostingData({ costingId: costingId, type })
-      dispatch(getZBCCostingByCostingId(costingId, (res) => {
+      dispatch(getBriefCostingById(costingId, (res) => {
 
         setTimeout(() => {
           setStepTwo(true)
@@ -709,7 +712,7 @@ function CostingDetails(props) {
       return false;
     }
 
-    dispatch(getZBCCostingByCostingId('', (res) => { }))
+    dispatch(getBriefCostingById('', (res) => { }))
 
     if (checkSOBTotal() && type === ZBC) {
       let tempData = zbcPlantGrid[index]
@@ -742,8 +745,9 @@ function CostingDetails(props) {
           setPartInfo(res.data.Data)
           setCostingData({ costingId: res.data.Data.CostingId, type })
           /***********ADDED THIS DISPATCH METHOD FOR GETTING ZBC DETAIL************/
-          dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, (res) => {
+          dispatch(getBriefCostingById(res.data.Data.CostingId, (res) => {
             setIsCostingViewMode(false)
+            setIsCostingEditMode(true)
             setStepTwo(true)
             setStepOne(false)
           }))
@@ -783,10 +787,9 @@ function CostingDetails(props) {
 
       dispatch(createVBCCosting(data, (res) => {
         if (res.data.Result) {
-          dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, () => {
-
-
+          dispatch(getBriefCostingById(res.data.Data.CostingId, () => {
             setIsCostingViewMode(false)
+            setIsCostingEditMode(false)
             setStepTwo(true)
             setStepOne(false)
           }))
@@ -827,8 +830,9 @@ function CostingDetails(props) {
           setPartInfo(res.data.Data)
           setCostingData({ costingId: res.data.Data.CostingId, type })
           /***********ADDED THIS DISPATCH METHOD FOR GETTING ZBC DETAIL************/
-          dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, (res) => {
+          dispatch(getBriefCostingById(res.data.Data.CostingId, (res) => {
             setIsCostingViewMode(false)
+            setIsCostingEditMode(false)
             setStepTwo(true)
             setStepOne(false)
           }))
@@ -841,8 +845,9 @@ function CostingDetails(props) {
           setPartInfo(res.data.Data)
           setCostingData({ costingId: res.data.Data.CostingId, type })
           /***********ADDED THIS DISPATCH METHOD FOR GETTING ZBC DETAIL************/
-          dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, (res) => {
+          dispatch(getBriefCostingById(res.data.Data.CostingId, (res) => {
             setIsCostingViewMode(false)
+            setIsCostingEditMode(false)
             setStepTwo(true)
             setStepOne(false)
           }))
@@ -871,6 +876,7 @@ function CostingDetails(props) {
       warningMessageHandle('ERROR_WARNING')
     } else {
       setIsCostingViewMode(true)
+      setIsCostingEditMode(false)
       moveToCostingDetail(index, type)
     }
   }
@@ -891,6 +897,7 @@ function CostingDetails(props) {
       warningMessageHandle('ERROR_WARNING')
     } else {
       setIsCostingViewMode(false)
+      setIsCostingEditMode(true)
       moveToCostingDetail(index, type)
     }
   }
@@ -951,7 +958,7 @@ function CostingDetails(props) {
         LoggedInUserId: loggedInUserId(),
       }
       dispatch(updateZBCSOBDetail(data, (res) => {
-        dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => {
+        dispatch(getBriefCostingById(tempData.SelectedCostingVersion.value, (res) => {
           resetSOBChanged()
           setStepTwo(true)
           setStepOne(false)
@@ -973,7 +980,7 @@ function CostingDetails(props) {
         DestinationPlantId: tempData.DestinationPlantId
       }
       dispatch(updateVBCSOBDetail(data, (res) => {
-        dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => {
+        dispatch(getBriefCostingById(tempData.SelectedCostingVersion.value, (res) => {
 
 
           resetSOBChanged()
@@ -990,12 +997,12 @@ function CostingDetails(props) {
    * @description MOVE TO COSTING DETAIL
    */
   const moveToCostingDetail = (index, type) => {
-    dispatch(getZBCCostingByCostingId('', (res) => { }))
+    dispatch(getBriefCostingById('', (res) => { }))
 
     if (type === ZBC) {
       let tempData = zbcPlantGrid[index]
       setCostingData({ costingId: tempData.SelectedCostingVersion.value, type })
-      dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => {
+      dispatch(getBriefCostingById(tempData.SelectedCostingVersion.value, (res) => {
         setTimeout(() => {
           setStepTwo(true)
           setStepOne(false)
@@ -1006,7 +1013,7 @@ function CostingDetails(props) {
     if (type === VBC) {
       let tempData = vbcVendorGrid[index]
       setCostingData({ costingId: tempData.SelectedCostingVersion.value, type })
-      dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => {
+      dispatch(getBriefCostingById(tempData.SelectedCostingVersion.value, (res) => {
 
 
         setTimeout(() => {
@@ -1019,7 +1026,7 @@ function CostingDetails(props) {
     if (type === NCC) {
       let tempData = nccGrid[index]
       setCostingData({ costingId: tempData.SelectedCostingVersion.value, type })
-      dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => {
+      dispatch(getBriefCostingById(tempData.SelectedCostingVersion.value, (res) => {
         setTimeout(() => {
           setStepTwo(true)
           setStepOne(false)
@@ -1050,6 +1057,7 @@ function CostingDetails(props) {
 
       /*Copy Costing Drawer code here*/
       setIsCostingViewMode(false)
+      setIsCostingEditMode(false)
       setIsCopyCostingDrawer(true)
 
       if (type === ZBC) {
@@ -1098,7 +1106,7 @@ function CostingDetails(props) {
     let reqData = { Id: Item.CostingId, UserId: loggedInUserId() }
     dispatch(deleteDraftCosting(reqData, () => {
       setIsCostingViewMode(false)
-
+      setIsCostingEditMode(false)
       let tempArray = []
 
       if (type === ZBC) {
@@ -1217,11 +1225,9 @@ function CostingDetails(props) {
    * @description used to Reset form
    */
   const backToFirstStep = () => {
-    dispatch(getZBCCostingByCostingId('', (res) => {
+    dispatch(getBriefCostingById('', (res) => { }))
 
-
-    }))
-
+    localStorage.setItem('costingArray', [])
     dispatch(setRMCCData([], () => { }))                            //THIS WILL CLEAR RM CC REDUCER
     dispatch(setComponentItemData({}, () => { }))
 
@@ -1247,7 +1253,11 @@ function CostingDetails(props) {
     setZBCPlantGrid([])
     setVBCVendorGrid([])
     setNccGrid([])
-    nextToggle()
+
+    setTimeout(() => {
+
+      nextToggle()
+    }, 700);
 
     dispatch(getPartInfo(part.value !== undefined ? part.value : partNumber.partId, (res) => {
       let Data = res.data.Data;
@@ -1654,10 +1664,9 @@ function CostingDetails(props) {
                         />
                       </Col>
                       <Col className="col-md-15">
-                        {inputLoader && <LoaderCustom customClass="input-loader" />}
-                        <TooltipCustom tooltipText="Please enter first few digits to see the part numbers" />
+                        {inputLoader && <LoaderCustom customClass="part-input-loader" />}
                         <AsyncSearchableSelectHookForm
-                          label={"Assembly No./Part No."}
+                          label={"Assembly/Part No."}
                           name={"Part"}
                           placeholder={"Select"}
                           Controller={Controller}
@@ -1670,13 +1679,13 @@ function CostingDetails(props) {
                           isLoading={false}
                           handleChange={handlePartChange}
                           errors={errors.Part}
-                          disabled={technology.length === 0 ? true : false}
+                          disabled={(technology.length === 0 || inputLoader) ? true : false}
                           NoOptionMessage={"Please enter first few digits to see the part numbers"}
                         />
                       </Col>
                       <Col className="col-md-15">
                         <TextFieldHookForm
-                          label="Assembly Name/Part Name"
+                          label="Assembly/Part Name"
                           name={"PartName"}
                           title={titleObj.partNameTitle}
                           Controller={Controller}
@@ -2210,13 +2219,15 @@ function CostingDetails(props) {
                 )}
                 {stepTwo && (
                   <ViewCostingContext.Provider value={IsCostingViewMode} >
-                    <CostingDetailStepTwo
-                      backBtn={backToFirstStep}
-                      partInfo={Object.keys(props.partInfoStepTwo).length > 0 ? props.partInfoStepTwo : partInfoStepTwo}
-                      costingInfo={Object.keys(props.costingData).length > 0 ? props.costingData : costingData}
-                      toggle={props.toggle}
-                      IsCostingViewMode={IsCostingViewMode}
-                    />
+                    <EditCostingContext.Provider value={IsCostingEditMode} >
+                      <CostingDetailStepTwo
+                        backBtn={backToFirstStep}
+                        partInfo={Object.keys(props.partInfoStepTwo).length > 0 ? props.partInfoStepTwo : partInfoStepTwo}
+                        costingInfo={Object.keys(props.costingData).length > 0 ? props.costingData : costingData}
+                        toggle={props.toggle}
+                        IsCostingViewMode={IsCostingViewMode}
+                      />
+                    </EditCostingContext.Provider>
                   </ViewCostingContext.Provider>
                 )}
               </form>

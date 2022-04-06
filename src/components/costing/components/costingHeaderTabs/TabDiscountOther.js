@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
 import {
   getDiscountOtherCostTabData, saveDiscountOtherCostTab, fileUploadCosting, fileDeleteCosting,
-  getExchangeRateByCurrency, setDiscountCost, setComponentDiscountOtherItemData, saveAssemblyPartRowCostingCalculation,
+  getExchangeRateByCurrency, setDiscountCost, setComponentDiscountOtherItemData, saveAssemblyPartRowCostingCalculation, saveAssemblyBOPHandlingCharge,
 } from '../../actions/Costing';
 import { getCurrencySelectList, } from '../../../../actions/Common';
 import { costingInfoContext, netHeadCostContext, NetPOPriceContext } from '../CostingDetailStepTwo';
@@ -21,6 +21,7 @@ import { ViewCostingContext } from '../CostingDetails';
 import { useHistory } from "react-router-dom";
 import redcrossImg from '../../../../assests/images/red-cross.png'
 import { debounce } from 'lodash'
+import { createToprowObjAndSave } from '../../CostingUtil';
 
 function TabDiscountOther(props) {
   // ********* INITIALIZE REF FOR DROPZONE ********
@@ -53,18 +54,20 @@ function TabDiscountOther(props) {
 
   const currencySelectList = useSelector(state => state.comman.currencySelectList)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { DiscountCostData, ExchangeRateData, CostingEffectiveDate, RMCCTabData, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, CostingDataList } = useSelector(state => state.costing)
+  const { DiscountCostData, ExchangeRateData, CostingEffectiveDate, RMCCTabData, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, CostingDataList, getAssemBOPCharge } = useSelector(state => state.costing)
   const [totalCost, setTotalCost] = useState(0)
   const [discountObj, setDiscountObj] = useState({})
   const [otherCostApplicability, setOtherCostApplicability] = useState([])
   const [discountCostApplicability, setDiscountCostApplicability] = useState([])
   const [netPoPriceCurrencyState, setNetPoPriceCurrencyState] = useState('')
+
   const costingHead = useSelector(state => state.comman.costingHead)
 
   useEffect(() => {
     // CostingViewMode CONDITION IS USED TO AVOID CALCULATION IN VIEWMODE
     if (CostingViewMode === false) {
       if (props.activeTab !== '6') {
+
         setValue('NetPOPriceINR', DiscountCostData !== undefined && checkForDecimalAndNull((netPOPrice - netPOPrice * calculatePercentage(DiscountCostData.HundiOrDiscountPercentage)), initialConfiguration.NoOfDecimalForPrice))
         setValue('HundiOrDiscountPercentage', DiscountCostData !== undefined && DiscountCostData.HundiOrDiscountPercentage !== null ? DiscountCostData.HundiOrDiscountPercentage : '')
         setValue('HundiOrDiscountValue', DiscountCostData !== undefined && DiscountCostData.DiscountCostType === 'Percentage' ? DiscountCostData !== undefined && (netPOPrice * calculatePercentage(DiscountCostData.HundiOrDiscountPercentage)) : DiscountCostData?.HundiOrDiscountValue)
@@ -190,7 +193,7 @@ function TabDiscountOther(props) {
             setValue('HundiDiscountType', OtherCostDetails.DiscountCostType !== null ? { label: OtherCostDetails.DiscountCostType, value: OtherCostDetails.DiscountCostType } : '')
 
             setValue('Currency', OtherCostDetails.Currency !== null ? { label: OtherCostDetails.Currency, value: OtherCostDetails.CurrencyId } : [])
-            setValue('NetPOPriceOtherCurrency', OtherCostDetails.NetPOPriceOtherCurrency !== null ? OtherCostDetails.NetPOPriceOtherCurrency : '')
+            setValue('NetPOPriceOtherCurrency', OtherCostDetails.NetPOPriceOtherCurrency !== null ? checkForDecimalAndNull(OtherCostDetails.NetPOPriceOtherCurrency, initialConfiguration.NoOfDecimalForPrice) : '')
             setNetPoPriceCurrencyState(OtherCostDetails.NetPOPriceOtherCurrency !== null ? OtherCostDetails.NetPOPriceOtherCurrency : '')
             setValue('Remarks', OtherCostDetails.Remark !== null ? OtherCostDetails.Remark : '')
             setEffectiveDate(DayTime(OtherCostDetails.EffectiveDate).isValid() ? DayTime(OtherCostDetails.EffectiveDate) : '')
@@ -724,42 +727,8 @@ function TabDiscountOther(props) {
       "Attachements": updatedFiles
     }
     if (costData.IsAssemblyPart === true) {
-
-      let assemblyRequestedData = {
-        "TopRow": {
-          "CostingId": tabData.CostingId,
-          "CostingNumber": tabData.CostingNumber,
-          "TotalRawMaterialsCostWithQuantity": tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
-          "TotalBoughtOutPartCostWithQuantity": tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
-          "TotalConversionCostWithQuantity": tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
-          "TotalCalculatedRMBOPCCCostPerPC": tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity + tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity + tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
-          "TotalCalculatedRMBOPCCCostPerAssembly": tabData.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
-          "NetRMCostPerAssembly": tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
-          "NetBOPCostAssembly": tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
-          "NetConversionCostPerAssembly": tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
-          "NetRMBOPCCCost": tabData.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
-          "TotalOperationCostPerAssembly": tabData.CostingPartDetails.TotalOperationCostPerAssembly,
-          "TotalOperationCostSubAssembly": checkForNull(tabData.CostingPartDetails?.TotalOperationCostSubAssembly),
-          "TotalOperationCostComponent": checkForNull(tabData.CostingPartDetails?.TotalOperationCostComponent),
-          "SurfaceTreatmentCostPerAssembly": surfaceTabData.CostingPartDetails?.SurfaceTreatmentCost,
-          "TransportationCostPerAssembly": surfaceTabData.CostingPartDetails?.TransportationCost,
-          "TotalSurfaceTreatmentCostPerAssembly": surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
-          "NetSurfaceTreatmentCost": surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
-          "NetOverheadAndProfits": overHeadAndProfitTabData.CostingPartDetails ? (checkForNull(overHeadAndProfitTabData.CostingPartDetails.OverheadCost) + checkForNull(overHeadAndProfitTabData.CostingPartDetails.ProfitCost) + checkForNull(overHeadAndProfitTabData.CostingPartDetails.RejectionCost) + checkForNull(overHeadAndProfitTabData.CostingPartDetails.ICCCost) + checkForNull(overHeadAndProfitTabData.CostingPartDetails.PaymentTermCost)) : 0,
-          "NetPackagingAndFreightCost": PackageAndFreightTabData && PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost,
-          "NetToolCost": ToolTabData[0]?.CostingPartDetails?.TotalToolCost,
-          "NetOtherCost": discountAndOtherTabData?.AnyOtherCost,
-          "NetDiscounts": discountAndOtherTabData?.HundiOrDiscountValue,
-          "TotalCostINR": netPOPrice,
-          "TabId": 6
-        },
-        "WorkingRows": [],
-        "LoggedInUserId": loggedInUserId()
-
-      }
-
+      let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 6)
       if (!CostingViewMode) {
-
         dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
       }
     }
@@ -769,8 +738,11 @@ function TabDiscountOther(props) {
         if (res.data.Result) {
           Toaster.success(MESSAGES.OTHER_DISCOUNT_COSTING_SAVE_SUCCESS);
           dispatch(setComponentDiscountOtherItemData({}, () => { }))
+
+          dispatch(saveAssemblyBOPHandlingCharge({}, () => { }))
           if (gotoNextValue) {
             props.toggle('2')
+
             history.push('/costing-summary')
           }
         }

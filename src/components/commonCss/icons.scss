@@ -1,0 +1,268 @@
+ 
+@mixin icons($path, $width:32px, $height:32px, $background-size:contain) {
+    background: transparent url($path) 0% 0% no-repeat padding-box;
+    width: $width;
+    height:$height;
+    opacity: 1;
+    background-size: $background-size;
+    border: none;
+}
+@mixin extra-icon-styles {
+    margin: 0 auto;
+    color: #3d4465;
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+.Add { 
+    @include icons("../../assests/images/Group 8861.svg");
+    @include extra-icon-styles;
+}
+.Edit {
+    @include icons("../../assests/images/Group 8860.svg");
+    @include extra-icon-styles;
+}
+
+.right-hand-arrow { @include icons("../../assests/images/right-hand-arrow.svg", 24px, 24px);}
+
+.Balance {  @include icons("../../assests/images/balance.svg");}
+
+.edit-details-btn { @include icons("../../assests/images/pencil-icon.svg", 25px, 13px);}
+
+.edit_pencil_icon { @include icons("../../assests/images/WhitePencil-Icon.svg", 12px, 12px);}
+
+.Delete { 
+    @include icons("../../assests/images/Group-8857.svg");
+    @include extra-icon-styles;
+}
+
+.Comment-box { @include icons("../../assests/images/Comment-box.svg"); }
+
+.View { @include icons("../../assests/images/Group-8858.svg");
+ @include extra-icon-styles;
+}
+.hirarchy-btn { @include icons("../../assests/images/hirarchy-btn.svg", $background-size:none);
+    background-color: #cef2fb;
+    margin-left: 5px;
+    border-radius: 4px;
+}
+.Download { @include icons("../../assests/images/Group 8859.svg");
+    @include extra-icon-styles;
+}
+.SaveIcon {  @include icons("../../assests/images/RightTick.svg");
+    @include extra-icon-styles;
+}
+.CancelIcon { @include icons("../../assests/images/Cross-icon.svg");
+    @include extra-icon-styles;
+}
+.CalculatorIcon { @include icons("../../assests/images/tool.svg");
+    background-color: #ffffff;
+    @include extra-icon-styles;
+}
+.edit-icon { @include icons("../../assests/images/Union 1.svg", 14px, 14px);
+    float: left;
+    position: $positio-relative;
+    margin-right: 5px;
+}
+.plus-icon-square {@include icons("../../assests/images/add-icons.png", 43px, 35px,none);
+    margin-top: 5px;
+    background-position: center right;
+    cursor: pointer;
+}
+.calculate-icon {@include icons("../../assests/images/tool.svg", 43px, 35px);
+    margin-top: 8px;
+    background-position: center right;
+}
+.plus-icon {@include icons("../../assests/images/Group 10491.svg", 22px,22px); }
+
+.plus {@include icons("../../assests/images/Path 15286.svg", 12px,12px); }
+
+.swap {@include icons("../../assests/images/swap-logo.svg", 18px, 18px); }
+
+.go-to-top { @include icons("../../assests/images/go-to-top.svg", 22px, 22px); }
+
+.minus-icon { @include icons("../../assests/images/Group 10490.svg", 22px, 22px); }
+
+.Add-icon {  @include icons("../../assests/images/Group 10401.svg", 72px, 20px);} // nowhere use this icon
+
+.Edit-icon { @include icons("../../assests/images/Group 10396.svg", 72px, 20px);} // nowhere use this icon
+
+.Delete-icon {  @include icons("../../assests/images/Group 10398.svg", 72px, 20px); } // nowhere use this icon
+
+.View-icon {  @include icons("../../assests/images/Group 10399.svg", 72px, 20px); } // nowhere use this icon
+
+.Download-icon {  @include icons("../../assests/images/Group 10400.svg", 72px, 20px); } // nowhere use this icon
+
+.pdf-detail { @include icons("../../assests/images/pdf-detail.svg");}
+
+.backspace { @include icons("../../assests/images/backspace.svg");}
+
+.upload { @include icons("../../assests/images/upload.png", 14px, 14px);}
+
+.refresh-icon { @include icons("../../assests/images/refresh_icon.svg");}
+
+.blurPlus-icon-square {@include icons("../../assests/images/bluradd.png", 43px, 35px, none);
+    margin-top: 8px;
+    background-position: center right;
+    pointer-events: none;
+  }
+
+.download { @include icons("../../assests/images/download.png", 14px, 14px);
+    margin-right: 5px;
+  }
+
+.cancel-icon-white {
+    @include icons("../../assests/images/times.png", 14px, 14px);
+    filter: brightness(100);
+}
+.cancel-icon {
+    @include icons("../../assests/images/times.png", 11px, 11px);
+    margin-right: 5px;
+}
+.next-icon { @include icons("../../assests/images/right-arrow-white.svg", 16px, 11px);
+     margin-left: 5px;
+}
+.back-icon { @include icons("../../assests/images/back.png", 8px, 13px); 
+    margin-right: 5px;
+}
+.add-rounded {@include icons("../../assests/images/add-bom.svg", 30px, 30px);}
+
+.send-for-approval { @include icons("../../assests/images/send-for-approval.svg", 13px, 16px);
+    margin-right: 5px;
+}
+.compare-arrows {  @include icons("../../assests/images/compare.svg", 20px, 14px);
+    margin-right: 5px;
+}
+.hirarchy-icon { @include icons("../../assests/images/hirarchy-icon.svg", 18px , 12px);
+    margin-right: 5px;
+}
+.trashred-icon {  @include icons("../../assests/images/trash-red.svg", 11px, 14px);
+    margin-right: 5px;
+}
+.save-icon {  @include icons("../../assests/images/check.png", 18px, 12px);
+    margin-right: 5px;
+}
+.filter { @include icons("../../assests/images/filter.png", 12px, 12px);
+    margin-right: 5px;
+}
+.refresh {  @include icons("../../assests/images/refresh-icon.svg", 14px, 14px);
+    margin-right: 5px;
+}
+.Bulk {  @include icons("../../assests/images/Upload.svg");
+    @include extra-icon-styles;
+}
+.Activate {  @include icons("../../assests/images/Activate.svg");
+    @include extra-icon-styles;
+}
+.Copy.All { @include icons("../../assests/images/Copy.svg");
+    @include extra-icon-styles;
+}
+.Create { @include icons("../../assests/images/Create.svg");
+    @include extra-icon-styles;
+}
+.Approve { @include icons("../../assests/images/Approve.svg");
+    @include extra-icon-styles;
+}
+.SOB { @include icons("../../assests/images/sob-icon.svg");
+    @include extra-icon-styles;
+}
+.Run { @include icons("../../assests/images/Run.svg");
+    @include extra-icon-styles;
+}
+.Run-icon { @include icons("../../assests/images/run-icon.svg", 30px, 30px);
+    filter: brightness(100);
+}
+.Save { @include icons("../../assests/images/Save.svg");
+    @include extra-icon-styles;
+}
+.Add-file {@include icons("../../assests/images/add-file4.svg");
+    @include extra-icon-styles;
+}
+.lock_icon { @include icons("../../assests/images/lock.svg", 17px, 17px);
+    cursor: pointer;
+    background-position: center;
+    display: inline-block;
+}
+.CalculatorIcon:disabled, .Add:disabled, .Edit:disabled, .Delete:disabled, .View:disabled, .Download:disabled, .Bulk:disabled, .Activate:disabled, .Create:disabled, .Copy:disabled, .Approve:disabled, .Run:disabled, .Save:disabled, .Add-file:disabled, .SaveIcon:disabled, .CancelIcon:disabled, .CalculatorIcon:disabled {
+    border: none !important;
+    opacity: 0.5;
+}
+.plus, .cross-icon, .check-icon, .upload {
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 5px;
+}
+
+.cross-icon, .check-icon {
+  width: 20px;
+  padding-right: 3px;
+  vertical-align: middle;
+  font-size: 11px;
+  font-weight: 300;
+  margin-right: 0 !important;
+  height: 11px !important;
+  line-height: 11px !important;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.cross-icon {
+  img {
+    height: inherit;
+  }
+}
+.check-icon {
+  height: 13px !important;
+  line-height: 13px !important;
+  width: 28px;
+}
+
+@media (max-width: $belowLaptop) {
+    .Add, .Edit, .Balance, .Delete, .View, .Comment-box, .Download, .Bulk, .Activate, .Create, .Copy, .Approve, .Run, .SOB, .Save, .Add-file, .SaveIcon, .CancelIcon, .CalculatorIcon, .right-hand-arrow, .Copy.All {
+        width: calc(32px * 80 / 100);
+        height: calc(32px * 80 / 100);
+        background-size: contain;
+    }
+}
+.previous-btn {
+    font-family: "agGridMaterial";
+    font-size: 22px;
+    line-height: 22px;
+    font-style: normal;
+    font-weight: normal;
+    font-feature-settings: normal;
+    font-variant: normal;
+    text-transform: none;
+    -webkit-font-smoothing: antialiased;
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    color: #959cb6;
+    margin-top: 4px;
+    &:disabled {
+        background-color: #ffffff !important;
+        border: none !important;
+    }
+    &::before {
+        content: "\f125";
+    }
+    &:hover {
+        color: $customPrimary-Hover;
+    }
+}
+.next-btn {
+    @extend .previous-btn;
+}
+.next-btn::before {
+    content: "\f11f";
+}
+
+@keyframes rightArrow {
+    0% { -webkit-transform: translateX(0); opacity: 1 }
+    100% { -webkit-transform: translateX(-0.4em); opacity: 1 }
+  }
+  .right-hand-arrow {
+    animation: rightArrow 0.6s infinite alternate ease-in-out;
+    margin-bottom: 0;
+  }

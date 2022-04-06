@@ -5,26 +5,32 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRawMaterialNameChild } from '../../masters/actions/Material';
 import NoContentFound from '../../common/NoContentFound';
-import { BOPDOMESTIC, BOPIMPORT, TOFIXEDVALUE, EMPTY_DATA, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
-import { getComparisionSimulationData, getCostingBoughtOutPartSimulationList, getCostingSimulationList, getCostingSurfaceTreatmentSimulationList, setShowSimulationPage } from '../actions/Simulation';
+import { BOPDOMESTIC, BOPIMPORT, TOFIXEDVALUE, EMPTY_DATA, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, RMImpact, BOPImpact, OPerationImpact, ExchangeRateImpact, ImpactMaster } from '../../../config/constants';
+import { getComparisionSimulationData, getCostingBoughtOutPartSimulationList, getCostingSimulationList, getCostingSurfaceTreatmentSimulationList, setShowSimulationPage, getSimulatedAssemblyWiseImpactDate, getImpactedMasterData } from '../actions/Simulation';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
 import { checkForDecimalAndNull, checkForNull, formViewData, getConfigurationKey, userDetails } from '../../../helper';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
-import { EMPTY_GUID, ZBC } from '../../../config/constants';
+import { EMPTY_GUID, ZBC, AssemblyWiseImpactt } from '../../../config/constants';
 import Toaster from '../../common/Toaster';
 import { Redirect } from 'react-router';
 import { getPlantSelectListByType } from '../../../actions/Common';
 import { setCostingViewData } from '../../costing/actions/Costing';
-import { CostingSimulationDownloadBOP, CostingSimulationDownloadOperation, CostingSimulationDownloadRM, CostingSimulationDownloadST } from '../../../config/masterData'
+import {
+    ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl,
+    BOPGridForToken,
+    CostingSimulationDownloadBOP, CostingSimulationDownloadOperation, CostingSimulationDownloadRM, CostingSimulationDownloadST
+    , InitialGridForToken, LastGridForToken, OperationGridForToken, RMGridForToken, RMImpactedDownloadArray, STGridForToken
+} from '../../../config/masterData'
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../common/LoaderCustom';
 import { Errorbox } from '../../common/ErrorBox';
-import { SimulationUtils } from '../SimulationUtils'
+import { impactmasterDownload, SimulationUtils } from '../SimulationUtils'
 import ViewAssembly from './ViewAssembly';
+import _ from 'lodash';
 
 const gridOptions = {};
 
@@ -33,7 +39,7 @@ const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function CostingSimulation(props) {
-    const { simulationId, isFromApprovalListing, master, } = props
+    const { simulationId, isFromApprovalListing, master, statusForLinkedToken } = props
 
     const { formState: getValues, setValue } = useForm({
         mode: 'onBlur',
@@ -93,6 +99,8 @@ function CostingSimulation(props) {
     const isRMDomesticOrRMImport = ((Number(master) === Number(RMDOMESTIC)) || (Number(master) === Number(RMIMPORT)));
     const isBOPDomesticOrImport = ((Number(master) === Number(BOPDOMESTIC)) || (Number(master) === Number(BOPIMPORT)))
     const isMachineRate = Number(master) === (Number(MACHINERATE));
+    const simulationAssemblyListSummary = useSelector((state) => state.simulation.simulationAssemblyListSummary)
+    const impactedMasterData = useSelector(state => state.comman.impactedMasterData)
 
     const dispatch = useDispatch()
 
@@ -100,6 +108,7 @@ function CostingSimulation(props) {
         getCostingList()
         dispatch(getPlantSelectListByType(ZBC, () => { }))
         dispatch(getRawMaterialNameChild(() => { }))
+        dispatch(getImpactedMasterData(simulationId, () => { }))
     }, [])
 
     useEffect(() => {
@@ -115,6 +124,24 @@ function CostingSimulation(props) {
         } else {
             setAssemblyImpactButtonTrue(false)
         }
+
+
+        if (tableData !== undefined && (Object.keys(tableData).length !== 0 || tableData.length > 0)) {
+            let requestData = []
+            let isAssemblyInDraft = false
+
+            let uniqueArr = _.uniqBy(tableData, function (o) {
+                return o.CostingId;
+            });
+
+            uniqueArr && uniqueArr.map(item => {
+                requestData.push({ CostingId: item.CostingId, delta: item.Variance, IsSinglePartImpact: false })
+                return null
+            })
+
+            dispatch(getSimulatedAssemblyWiseImpactDate(requestData, isAssemblyInDraft, (res) => { }))
+        }
+
     }, [tableData])
 
     window.onbeforeunload = (e) => {
@@ -139,29 +166,14 @@ function CostingSimulation(props) {
                 }
                 item.Variance = (item.OldPOPrice - item.NewPOPrice).toFixed(getConfigurationKey().NoOfDecimalForPrice)
                 //  ********** ADDED NEW FIELDS FOR ADDING THE OLD AND NEW RM COST / PC BUT NOT GETTING THE AS SUM IN DOWNLOAD **********
-                switch (Number(selectedMasterForSimulation.value)) {
-                    case Number(RMIMPORT):
-                    case Number(RMDOMESTIC):
-                        item.RMCVariance = (checkForNull(item.OldRMPrice).toFixed(TOFIXEDVALUE) -
-                            checkForNull(item.NewRMPrice).toFixed(TOFIXEDVALUE))
-                        return item
-                    case Number(SURFACETREATMENT):
-                        item.STVariance = (checkForNull(item.OldSurfaceTreatmentCost).toFixed(TOFIXEDVALUE) -
-                            checkForNull(item.NewSurfaceTreatmentCost).toFixed(TOFIXEDVALUE))
-                        return item
-                    case Number(OPERATIONS):
-                        item.OperationVariance = (checkForNull(item.OldOperationCost).toFixed(TOFIXEDVALUE) -
-                            checkForNull(item.NewOperationCost).toFixed(TOFIXEDVALUE))
-                        return item
-                    case Number(BOPDOMESTIC):
-                    case Number(BOPIMPORT):
-                        item.BOPVariance = (checkForNull(item.OldBOPCost).toFixed(TOFIXEDVALUE) -
-                            checkForNull(item.NewBOPCost).toFixed(TOFIXEDVALUE))
-                        return item
-                    default:
-                        break;
-                }
-
+                item.RMCVariance = (checkForNull(item.OldRMPrice).toFixed(TOFIXEDVALUE) -
+                    checkForNull(item.NewRMPrice).toFixed(TOFIXEDVALUE))
+                item.STVariance = (checkForNull(item.OldSurfaceTreatmentCost).toFixed(TOFIXEDVALUE) -
+                    checkForNull(item.NewSurfaceTreatmentCost).toFixed(TOFIXEDVALUE))
+                item.OperationVariance = (checkForNull(item.OldOperationRate).toFixed(TOFIXEDVALUE) -
+                    checkForNull(item.NewOperationRate).toFixed(TOFIXEDVALUE))
+                item.BOPVariance = (checkForNull(item.OldBOPCost).toFixed(TOFIXEDVALUE) -
+                    checkForNull(item.NewBOPCost).toFixed(TOFIXEDVALUE))
             })
             let uniqeArray = []
             const map = new Map();
@@ -665,9 +677,33 @@ function CostingSimulation(props) {
         temp = SimulationUtils(TempData)    // common function 
 
 
-        return (<ExcelSheet data={temp} name={'Costing'}>
-            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
-        </ExcelSheet>);
+        return (
+
+            <ExcelSheet data={temp} name={'Costing'}>
+                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+            </ExcelSheet>
+
+        );
+    }
+
+
+
+    const returnExcelColumnSecond = (data = []) => {
+
+        return (
+
+            <ExcelSheet data={simulationAssemblyListSummary} name={AssemblyWiseImpactt}>
+                {ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl && ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+            </ExcelSheet>);
+    }
+
+    const returnExcelColumnImpactedMaster = () => {
+        let multiDataSet = impactmasterDownload(impactedMasterData)
+
+        return (
+
+            <ExcelSheet dataSet={multiDataSet} name={ImpactMaster} />
+        );
     }
 
     const renderColumn = () => {
@@ -691,18 +727,49 @@ function CostingSimulation(props) {
             // ************ CONCAT ALL DATA IN SINGLE ARRAY *********** */
             arrayOFCorrectObjIndividual = arrayOFCorrectObjIndividual.concat(temp);
         })
+        let finalGrid = [], isTokenAPI = false
+        if (showBOPColumn === true || showRMColumn === true || showOperationColumn === true || showSurfaceTreatmentColumn === true ||
+            showExchangeRateColumn === true || showMachineRateColumn === true) {
+            if (showBOPColumn || isBOPDomesticOrImport) {
+                finalGrid = [...finalGrid, ...BOPGridForToken]
+                isTokenAPI = true
+            }
+            if (showRMColumn || isRMDomesticOrRMImport) {
+                finalGrid = [...finalGrid, ...RMGridForToken]
+                isTokenAPI = true
+            }
+            if (showOperationColumn || isOperation) {
+                finalGrid = [...finalGrid, ...OperationGridForToken]
+                isTokenAPI = true
+            }
+            if (showSurfaceTreatmentColumn || isSurfaceTreatment) {
+                finalGrid = [...finalGrid, ...STGridForToken]
+                isTokenAPI = true
+            }
+            // if (showExchangeRateColumn || isOperation) {         
+            //     finalGrid = [...finalGrid, ...OperationGridForToken]
+            // isTokenAPI = true
+            // }
+            // if (showMachineRateColumn || isMachineRate) {
+            //     finalGrid = [...finalGrid, ...OperationGridForToken]
+            // isTokenAPI = true
+            // }
+
+            // CONDITION FOR COMBINED PROCESS
+            finalGrid = [...InitialGridForToken, ...finalGrid, ...LastGridForToken]
+        }
 
         switch (Number(master)) {
             case Number(RMDOMESTIC):
             case Number(RMIMPORT):
-                return returnExcelColumn(CostingSimulationDownloadRM, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : costingList && costingList?.length > 0 ? costingList : [])
+                return returnExcelColumn(isTokenAPI ? finalGrid : CostingSimulationDownloadRM, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : costingList && costingList?.length > 0 ? costingList : [])
             case Number(SURFACETREATMENT):
-                return returnExcelColumn(CostingSimulationDownloadST, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : costingList && costingList?.length > 0 ? costingList : [])
+                return returnExcelColumn(isTokenAPI ? finalGrid : CostingSimulationDownloadST, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : costingList && costingList?.length > 0 ? costingList : [])
             case Number(OPERATIONS):
-                return returnExcelColumn(CostingSimulationDownloadOperation, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : costingList && costingList?.length > 0 ? costingList : [])
+                return returnExcelColumn(isTokenAPI ? finalGrid : CostingSimulationDownloadOperation, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : costingList && costingList?.length > 0 ? costingList : [])
             case Number(BOPDOMESTIC):
             case Number(BOPIMPORT):
-                return returnExcelColumn(CostingSimulationDownloadBOP, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : costingList && costingList?.length > 0 ? costingList : [])
+                return returnExcelColumn(isTokenAPI ? finalGrid : CostingSimulationDownloadBOP, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : costingList && costingList?.length > 0 ? costingList : [])
             default:
                 return 'foo'
         }
@@ -752,7 +819,7 @@ function CostingSimulation(props) {
     }
     const errorBoxClass = () => {
         let temp
-        temp = status === (null && '') ? 'd-none' : ''
+        temp = (status === '' || status === null || status === undefined) ? 'd-none' : ''
         return temp
     }
 
@@ -793,7 +860,7 @@ function CostingSimulation(props) {
         decimalFormatter: decimalFormatter,
     };
 
-    // const isRowSelectable = rowNode => rowNode.data ? selectedCostingIds.length > 0 && !selectedCostingIds.includes(rowNode.data.CostingId) : false;
+    const isRowSelectable = rowNode => statusForLinkedToken === true ? false : true;
     return (
         <>
             {
@@ -821,10 +888,23 @@ function CostingSimulation(props) {
                                     <Col md="3" lg="3" className="search-user-block mb-3">
                                         <div className="d-flex justify-content-end bd-highlight w100">
 
-                                            <ExcelFile filename={'Costing'} fileExtension={'.xls'} element={
-                                                <button title="Download" type="button" className={'user-btn mr5'}><div className="download mr-0"></div></button>}>
-                                                {renderColumn()}
-                                            </ExcelFile>
+                                            {(showRMColumn || showBOPColumn || showOperationColumn ||
+                                                showMachineRateColumn || showExchangeRateColumn || showSurfaceTreatmentColumn)
+                                                ?
+                                                <ExcelFile filename={'Costing'} fileExtension={'.xls'} element={
+                                                    <button title="Download" type="button" className={'user-btn mr5'} ><div className="download mr-0"></div></button>}>
+                                                    {renderColumn()}
+                                                    {returnExcelColumnSecond()}
+                                                    {returnExcelColumnImpactedMaster()}
+
+                                                </ExcelFile> :
+                                                <ExcelFile filename={'Costing'} fileExtension={'.xls'} element={
+                                                    <button title="Download" type="button" className={'user-btn mr5'} ><div className="download mr-0"></div></button>}>
+                                                    {renderColumn()}
+                                                    {returnExcelColumnSecond()}
+                                                </ExcelFile>
+
+                                            }
                                             <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
                                                 <div className="refresh mr-0"></div>
                                             </button>
@@ -861,7 +941,7 @@ function CostingSimulation(props) {
                                                     rowSelection={'multiple'}
                                                     // frameworkComponents={frameworkComponents}
                                                     onSelectionChanged={onRowSelect}
-                                                // isRowSelectable={isRowSelectable}
+                                                    isRowSelectable={isRowSelectable}
                                                 >
                                                     <AgGridColumn width={150} field="CostingNumber" headerName='Costing ID'></AgGridColumn>
                                                     <AgGridColumn width={140} field="CostingHead" headerName='Costing Head'></AgGridColumn>

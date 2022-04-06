@@ -6,11 +6,12 @@ import { getToolCategoryList } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import Drawer from '@material-ui/core/Drawer';
 import { TextFieldHookForm, SearchableSelectHookForm, } from '../../../layout/HookFormInputs';
-import { checkForDecimalAndNull, checkForNull } from '../../../../helper';
+import { checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../helper';
+import { data } from 'jquery';
 
 function AddTool(props) {
 
-  const { rowObjData, isEditFlag, ProcessOperationArray, gridData } = props;
+  const { rowObjData, isEditFlag, ProcessOperationArray, gridData, editIndex, CostingViewMode } = props;
 
   const defaultValues = {
     ToolOperationId: rowObjData?.ToolOperationId ? rowObjData.ToolOperationId : '',
@@ -35,6 +36,7 @@ function AddTool(props) {
   const [tool, setTool] = useState(isEditFlag && rowObjData?.ToolCategory ? { label: rowObjData.ToolCategory, value: rowObjData.ToolCategory } : []);
   const [ToolForProcessOperation, setToolForProcessOperation] = useState(isEditFlag && rowObjData?.ProcessOrOperation ? { label: rowObjData.ProcessOrOperation, value: rowObjData.ProcessOrOperation } : []);
   const [selectedTools, setSelectedTool] = useState();
+  const [dataToSend, setDataToSend] = useState({});
 
   const fieldValues = useWatch({
     control,
@@ -72,8 +74,9 @@ function AddTool(props) {
   * @description GET NET TOOL COST
   */
   const getNetToolCost = () => {
-    const cost = checkForNull(fieldValues.Quantity) * checkForNull(fieldValues.ToolCost) / checkForNull(fieldValues.Life)
-    return checkForDecimalAndNull(cost, 2);
+    const cost = checkForNull(getValues("Quantity")) * checkForNull(getValues("ToolCost")) / checkForNull(getValues("Life"))
+    setDataToSend(prevState => ({ ...prevState, netToolCost: cost }))
+    return checkForDecimalAndNull(cost, getConfigurationKey().NoOfDecimalForPrice);
   }
 
   /**
@@ -143,8 +146,23 @@ function AddTool(props) {
       Quantity: getValues('Quantity'),
       ToolCost: getValues('ToolCost'),
       Life: getValues('Life'),
-      TotalToolCost: getValues('TotalToolCost'),
+      NetToolCost: dataToSend.netToolCost,
     }
+
+    if (formData.ProcessOrOperation === undefined || formData.ToolCategory === undefined || formData.ToolName === undefined || formData.Quantity === undefined || formData.ToolCost === undefined || formData.Life === undefined) {
+      return false
+    }
+
+    let tempArr = []
+
+    if (isEditFlag) {
+      tempArr = Object.assign([...gridData], { [editIndex]: formData })
+    }
+    else {
+      tempArr = [...rowObjData, formData]
+    }
+
+    props.setToolCost(tempArr, JSON.stringify(tempArr) !== JSON.stringify(rowObjData) ? true : false)
     toggleDrawer('', formData)
   }
 
@@ -166,8 +184,9 @@ function AddTool(props) {
       Quantity: data.Quantity,
       ToolCost: data.ToolCost,
       Life: data.Life,
-      TotalToolCost: data.TotalToolCost,
+      NetToolCost: dataToSend.netToolCost, //NET TOOL COST
     }
+
     toggleDrawer('', formData)
   }
 
@@ -211,7 +230,7 @@ function AddTool(props) {
                       mandatory={true}
                       handleChange={handleProcessOperationChange}
                       errors={errors.ProcessOrOperation}
-                      disabled={isEditFlag ? true : false}
+                      disabled={isEditFlag || CostingViewMode ? true : false}
                     />
                   </Col>
 
@@ -229,7 +248,7 @@ function AddTool(props) {
                       mandatory={true}
                       handleChange={handleToolChange}
                       errors={errors.ToolCategory}
-                      disabled={isEditFlag ? true : false}
+                      disabled={isEditFlag || CostingViewMode ? true : false}
                     />
                   </Col>
 
@@ -254,7 +273,7 @@ function AddTool(props) {
                       className=""
                       customClassName={'withBorder'}
                       errors={errors.ToolName}
-                      disabled={isEditFlag ? true : false}
+                      disabled={isEditFlag || CostingViewMode ? true : false}
                     />
                   </Col>
 
@@ -279,7 +298,7 @@ function AddTool(props) {
                       className=""
                       customClassName={'withBorder'}
                       errors={errors.Quantity}
-                      disabled={false}
+                      disabled={CostingViewMode}
                     />
                   </Col>
 
@@ -304,7 +323,7 @@ function AddTool(props) {
                       className=""
                       customClassName={'withBorder'}
                       errors={errors.ToolCost}
-                      disabled={false}
+                      disabled={CostingViewMode}
                     />
                   </Col>
 
@@ -329,7 +348,7 @@ function AddTool(props) {
                       className=""
                       customClassName={'withBorder'}
                       errors={errors.Life}
-                      disabled={false}
+                      disabled={CostingViewMode}
                     />
                   </Col>
 
@@ -372,8 +391,9 @@ function AddTool(props) {
                       type={'button'}
                       className="submit-button save-btn"
                       onClick={addRow}
+                      disabled={CostingViewMode}
                     >
-                                          <div className={'save-icon'}></div>
+                      <div className={'save-icon'}></div>
                       {'Save'}
                     </button>
                   </div>

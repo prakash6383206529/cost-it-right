@@ -5,7 +5,7 @@ import { useForm, Controller } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { loggedInUserId, userDetails } from '../../../helper/auth'
 import NoContentFound from '../../common/NoContentFound'
-import { EMPTY_DATA } from '../../../config/constants'
+import { EMPTY_DATA, LINKED } from '../../../config/constants'
 import DayTime from '../../common/DayTimeWrapper'
 import { checkForDecimalAndNull } from '../../../helper'
 import { DRAFT, EMPTY_GUID, APPROVED, PUSHED, ERROR, WAITING_FOR_APPROVAL, REJECTED, POUPDATED } from '../../../config/constants'
@@ -40,6 +40,7 @@ function SimulationApprovalListing(props) {
     const [reasonId, setReasonId] = useState('')
     const [showApprovalSumary, setShowApprovalSummary] = useState(false)
     const [redirectCostingSimulation, setRedirectCostingSimulation] = useState(false)
+    const [statusForLinkedToken, setStatusForLinkedToken] = useState(false)
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [rowData, setRowData] = useState(null);
@@ -199,7 +200,8 @@ function SimulationApprovalListing(props) {
 
     const viewDetails = (rowObj) => {
         setApprovalData({ approvalProcessId: rowObj.ApprovalProcessId, approvalNumber: rowObj.ApprovalNumber, SimulationTechnologyHead: rowObj.SimulationTechnologyHead, SimulationTechnologyId: rowObj.SimulationTechnologyId })
-        if (rowObj.Status === 'Draft' || rowObj.SimulationType === 'Provisional') {
+        if (rowObj?.Status === 'Draft' || rowObj.SimulationType === 'Provisional' || rowObj?.Status === 'Linked') {
+            setStatusForLinkedToken(rowObj?.Status === 'Linked')
             dispatch(setMasterForSimulation({ label: rowObj.SimulationTechnologyHead, value: rowObj.SimulationTechnologyId }))
             setRedirectCostingSimulation(true)
         } else {
@@ -341,7 +343,7 @@ function SimulationApprovalListing(props) {
     }
 
     const isRowSelectable = (rowNode) => {
-        if (rowNode.data.Status === APPROVED || rowNode.data.Status === REJECTED || rowNode.data.Status === WAITING_FOR_APPROVAL || rowNode.data.Status === PUSHED || rowNode.data.Status === POUPDATED || rowNode.data.Status === ERROR) {
+        if (rowNode.data.Status === APPROVED || rowNode.data.Status === REJECTED || rowNode.data.Status === WAITING_FOR_APPROVAL || rowNode.data.Status === PUSHED || rowNode.data.Status === POUPDATED || rowNode.data.Status === ERROR || rowNode.data.Status === LINKED) {
             return false;
         } else {
             return true
@@ -405,7 +407,8 @@ function SimulationApprovalListing(props) {
                 state: {
                     isFromApprovalListing: true,
                     approvalProcessId: approvalData.approvalProcessId,
-                    master: approvalData.SimulationTechnologyId
+                    master: approvalData.SimulationTechnologyId,
+                    statusForLinkedToken: statusForLinkedToken
                 }
 
             }}

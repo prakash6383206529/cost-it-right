@@ -15,7 +15,7 @@ import BulkUpload from '../../massUpload/BulkUpload';
 import { BOP_DOMESTIC_DOWNLOAD_EXCEl, } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
 import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
-import { getConfigurationKey, CheckApprovalApplicableMaster, getFilteredData } from '../../../helper';
+import { getConfigurationKey, getFilteredData } from '../../../helper';
 import { BopDomestic, } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -221,9 +221,10 @@ class BOPDomesticListing extends Component {
     }
 
     plantFormatter = (props) => {
-
+        let checkValue
         const rowData = props.data
-        return rowData.IsVendor === 'Vendor Based' ? rowData.DestinationPlant : rowData.Plants
+        checkValue = (!this.props.isSimulation) ? 'Vendor Based' : true
+        return rowData.IsVendor === checkValue ? rowData.DestinationPlant : rowData.Plants
     }
 
     formToggle = () => {
@@ -262,16 +263,16 @@ class BOPDomesticListing extends Component {
 
     onPageSizeChanged = (newPageSize) => {
         var value = document.getElementById('page-size').value;
-        this.state.gridApi.paginationSetPageSize(Number(value));
+        this.state.gridApi.paginationSetPageSize(Number(newPageSize));
     };
 
     onBtExport = () => {
         let tempArr = []
         if (this.props.isSimulation === true) {
             const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-            data && data.map((item => {
+            data && data.map((item => (
                 tempArr.push(item.data)
-            }))
+            )))
         } else {
             tempArr = this.props.bopDomesticList && this.props.bopDomesticList
         }
@@ -349,6 +350,7 @@ class BOPDomesticListing extends Component {
             resizable: true,
             filter: true,
             sortable: true,
+            headerCheckboxSelectionFilteredOnly: true,
             headerCheckboxSelection: isFirstColumn,
             checkboxSelection: isFirstColumn
         };
@@ -446,7 +448,6 @@ class BOPDomesticListing extends Component {
                     <Col>
 
                         <div className={`ag-grid-wrapper height-width-wrapper ${this.props.bopDomesticList && this.props.bopDomesticList?.length <= 0 ? "overlay-contain" : ""}`}>
-
                             <div className={`ag-theme-material ${(this.state.isLoader && !this.props.isMasterSummaryDrawer) && "max-loader-height"}`}>
                                 <AgGridReact
                                     defaultColDef={defaultColDef}

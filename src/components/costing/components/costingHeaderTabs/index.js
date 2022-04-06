@@ -18,11 +18,16 @@ import {
 } from '../../actions/Costing';
 import { checkForNull, loggedInUserId } from '../../../../helper';
 import { LEVEL1 } from '../../../../config/constants';
-import { ViewCostingContext } from '../CostingDetails';
+import { EditCostingContext, ViewCostingContext } from '../CostingDetails';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import DayTime from '../../../common/DayTimeWrapper'
+<<<<<<< HEAD
 import TabAssemblyTechnology from './TabAssemblyTechnology';
+=======
+import { createToprowObjAndSave } from '../../CostingUtil';
+import _ from 'lodash'
+>>>>>>> m1-frontend
 
 function CostingHeaderTabs(props) {
   const dispatch = useDispatch()
@@ -30,15 +35,23 @@ function CostingHeaderTabs(props) {
   const { ComponentItemData, ComponentItemOverheadData, ComponentItemPackageFreightData, ComponentItemToolData,
     ComponentItemDiscountData, IsIncludedSurfaceInOverheadProfit, costingData, CostingEffectiveDate,
     IsCostingDateDisabled, ActualCostingDataList, CostingDataList, RMCCTabData, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData, checkIsDataChange, checkIsOverheadProfitChange, checkIsFreightPackageChange, checkIsToolTabChange } = useSelector(state => state.costing)
+<<<<<<< HEAD
+=======
+
+>>>>>>> m1-frontend
   const [activeTab, setActiveTab] = useState('1');
   const [IsOpenViewHirarchy, setIsOpenViewHirarchy] = useState(false);
   const [IsCalledAPI, setIsCalledAPI] = useState(true);
   const [effectiveDate, setEffectiveDate] = useState(DayTime(costingData.EffectiveDate).isValid() ? DayTime(costingData.EffectiveDate) : '');
+<<<<<<< HEAD
 
+=======
+>>>>>>> m1-frontend
 
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
   const netPOPrice = useContext(NetPOPriceContext);
+  const CostingEditMode = useContext(EditCostingContext);
 
   const ActualTotalCost = ActualCostingDataList && ActualCostingDataList.length > 0 && ActualCostingDataList[0].TotalCost !== undefined ? ActualCostingDataList[0].TotalCost : 0;
 
@@ -202,6 +215,31 @@ function CostingHeaderTabs(props) {
       dispatch(isDataChange(false))
     }
 
+
+    if (RMCCTabData && RMCCTabData.length > 0 && activeTab !== '1' && CostingViewMode === false) {
+
+
+      let tempArrForCosting = JSON.parse(localStorage.getItem('costingArray'))
+      const data = _.find(tempArrForCosting, ['IsPartLocked', true])
+
+      const lockedData = _.find(tempArrForCosting, ['IsLocked', true])
+
+      const bopData = _.find(tempArrForCosting, ['PartType', 'BOP'])
+
+      if (data !== undefined || bopData !== undefined || lockedData !== undefined) {
+
+        const tabData = RMCCTabData[0]
+        const surfaceTabData = SurfaceTabData[0]
+        const overHeadAndProfitTabData = OverheadProfitTabData[0]
+        const discountAndOtherTabData = DiscountCostData
+
+        let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 1, [])
+
+        dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
+      }
+
+    }
+
   }, [activeTab])
 
 
@@ -213,6 +251,7 @@ function CostingHeaderTabs(props) {
       const surfaceTabData = SurfaceTabData && SurfaceTabData[0]
       const overHeadAndProfitTabData = OverheadProfitTabData && OverheadProfitTabData[0]
       const discountAndOtherTabData = DiscountCostData
+<<<<<<< HEAD
       tabData && tabData.CostingChildPartDetails && tabData.CostingChildPartDetails.map((item) => {
         if (item.PartType === 'Sub Assembly') {
           let subAssemblyObj = {
@@ -273,8 +312,10 @@ function CostingHeaderTabs(props) {
           "BOPHandlingCharges": getAssemBOPCharge && getAssemBOPCharge.BOPHandlingCharges
         },
         "LoggedInUserId": loggedInUserId()
+=======
+>>>>>>> m1-frontend
 
-      }
+      let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, tabId)
       dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
     }
   }
@@ -347,13 +388,14 @@ function CostingHeaderTabs(props) {
                   showYearDropdown
                   dateFormat="dd/MM/yyyy"
                   //maxDate={new Date()}
+                  minDate={new Date(costData.PartEffectiveDate)}         // USER SHOULD NOT BE ABLE TO SELECT EFFECTIVE DATE, OF BEFORE THE PART WAS CREATED
                   dropdownMode="select"
                   placeholderText="Select date"
                   className="withBorder"
                   autoComplete={"off"}
                   disabledKeyboardNavigation
                   onChangeRaw={(e) => e.preventDefault()}
-                  disabled={(CostingViewMode || IsCostingDateDisabled || ActualTotalCost > 0) ? true : false}
+                  disabled={(CostingViewMode || IsCostingDateDisabled || (CostingEditMode & costData?.EffectiveDate !== null && costData?.EffectiveDate !== undefined && DayTime(new Date(costData?.EffectiveDate)).isValid())) ? true : false}
                 />
               </div>
             </div>
@@ -411,12 +453,17 @@ function CostingHeaderTabs(props) {
                 setHeaderCost={props.setHeaderCost}
                 backBtn={props.backBtn}
                 activeTab={activeTab}
+<<<<<<< HEAD
               /> :
                 <TabRMCC
                   setHeaderCost={props.setHeaderCost}
                   backBtn={props.backBtn}
                   activeTab={activeTab}
                 />}
+=======
+
+              />
+>>>>>>> m1-frontend
             </TabPane>
             <TabPane tabId="2">
               <TabSurfaceTreatment

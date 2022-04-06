@@ -84,30 +84,30 @@ function VerifyImpactDrawer(props) {
               <Row >
                 <Col md="12">
                   <div className="border impact-drawer-header">
-                  <span class=" mr-2">
-                    <span class="grey-text d-block">Vendor :</span>
-                    <span>{amendmentDetails.Vendor}</span>
-                  </span>
+                    <span class=" mr-2">
+                      <span class="grey-text d-block">Vendor :</span>
+                      <span>{amendmentDetails.Vendor}</span>
+                    </span>
 
-                  <span class=" mr-2 pl-3">
-                    <span class="grey-text d-block">Technology:</span>
-                    <span>{amendmentDetails.Technology}</span>
-                  </span>
+                    <span class=" mr-2 pl-3">
+                      <span class="grey-text d-block">Technology:</span>
+                      <span>{amendmentDetails.Technology}</span>
+                    </span>
 
-                  <span class=" mr-2 pl-3">
-                    <span class="grey-text d-block">Master:</span>
-                    <span>{amendmentDetails.SimulationAppliedOn}</span>
-                  </span>
+                    <span class=" mr-2 pl-3">
+                      <span class="grey-text d-block">Master:</span>
+                      <span>{amendmentDetails.SimulationAppliedOn}</span>
+                    </span>
 
-                  <span class=" mr-2 pl-3">
-                    <span class="grey-text d-block">Costing Head:</span>
-                    <span>{amendmentDetails.CostingHead}</span>
-                  </span>
+                    <span class=" mr-2 pl-3">
+                      <span class="grey-text d-block">Costing Head:</span>
+                      <span>{amendmentDetails.CostingHead}</span>
+                    </span>
 
-                  <span class=" mr-2 pl-3">
-                    <span class="grey-text d-block">Effective Date:</span>
-                    <span>{DayTime(amendmentDetails.EffectiveDate).format('DD-MM-YYYY')}</span>
-                  </span>
+                    <span class=" mr-2 pl-3">
+                      <span class="grey-text d-block">Effective Date:</span>
+                      <span>{DayTime(amendmentDetails.EffectiveDate).format('DD-MM-YYYY')}</span>
+                    </span>
                   </div>
                 </Col>
               </Row>
@@ -156,7 +156,7 @@ function VerifyImpactDrawer(props) {
                         <a onClick={() => setShowAssemblyWise(!showAssemblyWise)} className={`${showAssemblyWise ? 'minus-icon' : 'plus-icon'} pull-right`}></a>
                       </div>
                     </Col>
-                    {showAssemblyWise && <div className="accordian-content w-100 px-3 impacted-min-height">
+                    {showAssemblyWise && <div className="accordian-content w-100 px-3">
                       <AssemblyWiseImpactSummary
                         dataForAssemblyImpact={dataForAssemblyImpactInVerifyImpact}
                         impactType={'AssemblySummary'}
