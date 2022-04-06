@@ -1,44 +1,50 @@
+@import '../commonCss/cssVariable.scss';
 :not(.login-container.signup-form){
     .simulation-history-page{
         .react-bs-table-container{
             .react-bs-table{
                 margin-top: 0px;
-                .react-bs-container-body{
+
+                .react-bs-container-body {
                     min-height: calc(100vh - 376px);
                 }
             }
         }
     }
-    .simulation-main{
-        .react-bs-table-container{
-            .react-bs-table{
-                .react-bs-container-body{
+
+    .simulation-main {
+        .react-bs-table-container {
+            .react-bs-table {
+                .react-bs-container-body {
                     min-height: calc(100vh - 542px);
                 }
             }
         }
     }
-    .simulation-edit{
-        .react-bs-table-container{
-            .react-bs-table{
-                .react-bs-container-body{
+
+    .simulation-edit {
+        .react-bs-table-container {
+            .react-bs-table {
+                .react-bs-container-body {
                     min-height: calc(100vh - 464px);
                 }
             }
-            &.verify-simulation-table{
-                .react-bs-table{
-                    .react-bs-container-body{
+
+            &.verify-simulation-table {
+                .react-bs-table {
+                    .react-bs-container-body {
                         min-height: calc(100vh - 474px);
                     }
                 }
             }
         }
     }
-    .report-listing-page{
-        .react-bs-table-container{
-            .react-bs-table{
-                .react-bs-container-body{
-                    .react-bs-table-no-data{
+
+    .report-listing-page {
+        .react-bs-table-container {
+            .react-bs-table {
+                .react-bs-container-body {
+                    .react-bs-table-no-data {
                         display: inline-block;
                         width: 1580px;
                     }
@@ -46,16 +52,19 @@
             }
         }
     }
-    .react-bs-table-container{
-        .react-bs-table{
-            .react-bs-container-body{
+
+    .react-bs-table-container {
+        .react-bs-table {
+            .react-bs-container-body {
                 min-height: calc(100vh - 395px);
-                .table{
-                    tbody{
-                        tr:last-child{
-                            td{
+
+                .table {
+                    tbody {
+                        tr:last-child {
+                            td {
                                 border-bottom: 1px solid #C2CBE8;
-                                &.react-bs-table-no-data{
+
+                                &.react-bs-table-no-data {
                                     border-bottom: none;
                                 }
                             }
@@ -65,17 +74,20 @@
             }
         }
     }
-  }
+}
+
 .react-bs-table-container {
-    .react-bs-table{
+    .react-bs-table {
         position: relative;
-        .table-header-wrapper{
+
+        .table-header-wrapper {
             position: relative;
             z-index: 10;
         }
     }
 }
-.loader_container{
+
+.loader_container {
     position: absolute;
     left: 0px;
     right: 0px;
@@ -87,15 +99,15 @@
     flex-direction: column;
     display: flex;
     z-index: 10;
-    background: rgba(255, 255, 255,0.9);
+    background: rgba(255, 255, 255, 0.9);
 
-    .img_loader{
+    .img_loader {
         max-width: 330px;
         object-fit: contain;
         max-height: 100%;
     }
 
-    .loaderinner{
+    .loaderinner {
         display: inline-block;
         font-size: 30px;
         padding: 0em;
@@ -108,6 +120,7 @@
         justify-content: center;
         max-height: 240px;
     }
+
     [class*=loader-] {
         display: inline-block;
         width: 1em;
@@ -117,27 +130,33 @@
         pointer-events: none;
     }
 }
-.add-page-loader{position: fixed;z-index: 15;}
-.container-fluid{
+
+.add-page-loader {
+    position: fixed;
+    z-index: 15;
+}
+
+.container-fluid {
     position: relative;
 }
 
-@media(max-width:1600px){
+@media(max-width:1600px) {
     :not(.login-container.signup-form) {
-        .react-bs-table-container{
-            .react-bs-table{
-                .react-bs-container-body{
-                    .react-bs-table-no-data{
+        .react-bs-table-container {
+            .react-bs-table {
+                .react-bs-container-body {
+                    .react-bs-table-no-data {
                         display: inline-block;
                         width: 1270px;
                     }
                 }
             }
         }
-        .report-listing-page .react-bs-table-container{
-            .react-bs-table{
-                .react-bs-container-body{
-                    .react-bs-table-no-data{
+
+        .report-listing-page .react-bs-table-container {
+            .react-bs-table {
+                .react-bs-container-body {
+                    .react-bs-table-no-data {
                         display: inline-block;
                         width: 1270px;
                     }
@@ -149,10 +168,10 @@
     // firefox css start
     @-moz-document url-prefix() {
         :not(.login-container.signup-form) {
-            .react-bs-table-container{
-                .react-bs-table{
-                    .react-bs-container-body{
-                        .react-bs-table-no-data{
+            .react-bs-table-container {
+                .react-bs-table {
+                    .react-bs-container-body {
+                        .react-bs-table-no-data {
                             display: inline-block;
                             width: 1255px;
                         }
@@ -161,29 +180,31 @@
             }
         }
     }
+
     // firefox css end
 
 
-    .MuiDrawer-paper{:not(.login-container.signup-form) {
-        .react-bs-table-container{
-            .react-bs-table{
-                .react-bs-container-body{
-                    .react-bs-table-no-data{
-                        display: table-cell;
-                        width: auto;
+    .MuiDrawer-paper {
+        :not(.login-container.signup-form) {
+            .react-bs-table-container {
+                .react-bs-table {
+                    .react-bs-container-body {
+                        .react-bs-table-no-data {
+                            display: table-cell;
+                            width: auto;
+                        }
                     }
                 }
             }
         }
-      }
     }
 
-    body .approval-listing-page{
-        .react-bs-table-container{
-            .react-bs-table{
-                .react-bs-container-body{
-                    .react-bs-table-no-data{
-                        width:1470px !important;
+    body .approval-listing-page {
+        .react-bs-table-container {
+            .react-bs-table {
+                .react-bs-container-body {
+                    .react-bs-table-no-data {
+                        width: 1470px !important;
                     }
                 }
             }
@@ -192,59 +213,63 @@
 
     // firefox css start
     @-moz-document url-prefix() {
-        body .approval-listing-page{
-            .react-bs-table-container{
-                .react-bs-table{
-                    .react-bs-container-body{
-                        .react-bs-table-no-data{
-                            width:1460px !important;
+        body .approval-listing-page {
+            .react-bs-table-container {
+                .react-bs-table {
+                    .react-bs-container-body {
+                        .react-bs-table-no-data {
+                            width: 1460px !important;
                         }
                     }
                 }
             }
         }
     }
+
     // firefox css end
 }
 
-@media(max-width:1366px){
-    .blue-box{
-        .main-section{
-            > .left-side-menu{
+@media(max-width:1366px) {
+    .blue-box {
+        .main-section {
+            >.left-side-menu {
                 min-height: calc(100vh - 160px);
             }
         }
     }
+
     :not(.login-container.signup-form) {
-        .simulation-history-page{
-            .react-bs-table-container{
-                .react-bs-table{
-                    .react-bs-container-body{
+        .simulation-history-page {
+            .react-bs-table-container {
+                .react-bs-table {
+                    .react-bs-container-body {
                         min-height: calc(100vh - 295px);
                     }
                 }
             }
         }
 
-        .simulation-main{
-            .react-bs-table-container{
-                .react-bs-table{
-                    .react-bs-container-body{
+        .simulation-main {
+            .react-bs-table-container {
+                .react-bs-table {
+                    .react-bs-container-body {
                         min-height: calc(100vh - 473px);
                     }
                 }
             }
         }
-        .simulation-edit{
-            .react-bs-table-container{
-                .react-bs-table{
-                    .react-bs-container-body{
+
+        .simulation-edit {
+            .react-bs-table-container {
+                .react-bs-table {
+                    .react-bs-container-body {
                         min-height: calc(100vh - 417px);
                     }
                 }
-                &.verify-simulation-table{
-                    .react-bs-table{
-                        .react-bs-container-body{
+
+                &.verify-simulation-table {
+                    .react-bs-table {
+                        .react-bs-container-body {
                             min-height: calc(100vh - 421px);
                         }
                     }
@@ -252,61 +277,67 @@
             }
         }
 
-        .react-bs-table-container{
-            .react-bs-table{
-                .react-bs-container-body{
+        .react-bs-table-container {
+            .react-bs-table {
+                .react-bs-container-body {
                     min-height: calc(100vh - 360px);
-                    .react-bs-table-no-data{
+
+                    .react-bs-table-no-data {
                         width: 1075px;
                     }
                 }
             }
         }
-        .report-listing-page .react-bs-table-container{
-            .react-bs-table{
-                .react-bs-container-body{
+
+        .report-listing-page .react-bs-table-container {
+            .react-bs-table {
+                .react-bs-container-body {
                     min-height: calc(100vh - 360px);
-                    .react-bs-table-no-data{
+
+                    .react-bs-table-no-data {
                         width: 1075px;
                     }
                 }
             }
         }
+
         // firefox css start
         @-moz-document url-prefix() {
-            .react-bs-table-container{
-                .react-bs-table{
-                    .react-bs-container-body{
-                        .react-bs-table-no-data{
+            .react-bs-table-container {
+                .react-bs-table {
+                    .react-bs-container-body {
+                        .react-bs-table-no-data {
                             width: 1070px;
                         }
                     }
                 }
             }
         }
-        // firefox css end
-      }
 
-      .MuiDrawer-paper{:not(.login-container.signup-form) {
-        .react-bs-table-container{
-            .react-bs-table{
-                .react-bs-container-body{
-                    .react-bs-table-no-data{
-                        display: table-cell;
-                        width: auto;
+        // firefox css end
+    }
+
+    .MuiDrawer-paper {
+        :not(.login-container.signup-form) {
+            .react-bs-table-container {
+                .react-bs-table {
+                    .react-bs-container-body {
+                        .react-bs-table-no-data {
+                            display: table-cell;
+                            width: auto;
+                        }
                     }
                 }
             }
         }
-      }
     }
-    
-    body .approval-listing-page{
-        .react-bs-table-container{
-            .react-bs-table{
-                .react-bs-container-body{
-                    .react-bs-table-no-data{
-                        width:1250px !important;
+
+    body .approval-listing-page {
+        .react-bs-table-container {
+            .react-bs-table {
+                .react-bs-container-body {
+                    .react-bs-table-no-data {
+                        width: 1250px !important;
                     }
                 }
             }
@@ -315,12 +346,12 @@
 
     // firefox css start
     @-moz-document url-prefix() {
-        body .approval-listing-page{
-            .react-bs-table-container{
-                .react-bs-table{
-                    .react-bs-container-body{
-                        .react-bs-table-no-data{
-                            width:1233px !important;
+        body .approval-listing-page {
+            .react-bs-table-container {
+                .react-bs-table {
+                    .react-bs-container-body {
+                        .react-bs-table-no-data {
+                            width: 1233px !important;
                         }
                     }
                 }
@@ -329,3 +360,66 @@
     }
       
 }
+// <------START  dropdown input field loader----->
+ @mixin inputLoader($top:2px, $bottom:2px, $right:34px, $left:1px, $responsiveTop:$top, $responsiveBottom:$bottom, $responsiveRight:37px, $responsiveLeft:$left, $mozilaTop:$top, $mozilaBottom: $bottom, $mozilaRight:$right, ) {
+     top: $top;
+     bottom: $bottom;
+     right: $right;
+     left: $left;
+     border-radius: 4px;
+     align-items: flex-end;
+     @-moz-document url-prefix() {
+        top: $mozilaTop;
+        bottom: $mozilaBottom;
+        right: $mozilaRight;
+     }
+     @media screen and (min-width:$middleDesktop) {
+        top: $responsiveTop;
+        bottom: $responsiveBottom;
+        right: $responsiveRight;
+     }
+     .loaderinner {
+        font-size: 30px;
+        padding-right: 0;
+        margin-right: -15px;
+        @-moz-document url-prefix() {      //firefox css
+          margin-right: -17px;
+        }
+        .img_loader {
+          max-width: 70px;
+          user-select: none;
+        }
+      }
+ }
+
+ .vendor-input-loader {
+    @include inputLoader($mozilaRight:36px ) 
+  }
+ .part-input-loader {
+    @include inputLoader(29px, 19px, 11px, 11px, $responsiveRight:11px, $responsiveBottom:19px, $mozilaBottom:18px ) ;
+    @-moz-document url-prefix() {
+        @media screen and (min-width:$middleDesktop) {
+            bottom: 18px;
+        }
+    }
+   
+  }
+
+ .vendor-input-loader-second-col {
+    @include inputLoader(29px, 41px, 16px, 16px, $responsiveRight:16px )
+ }
+ .vendor-input-loader-first-col {
+    @include inputLoader(29px, 41px, 16px, 16px, $responsiveRight:17px, $responsiveTop:30px, $responsiveBottom:40px, $mozilaTop:30px, $mozilaBottom:40px, $mozilaRight:16px )
+ }
+ .vendor-input-loader-col {
+    @include inputLoader(29px, 1px, 16px, 16px, $responsiveRight:17px, $mozilaTop:30px, $mozilaRight:17px, $responsiveTop:30px )
+ }
+ .login-loader {
+     @include inputLoader(8px, 0, 0, 0, 10px, 0, 0, 0 );
+     align-items:center;
+     border-radius: 3px;
+     .img_loader {
+         margin-bottom: 0;
+     }
+ }
+// <------END input field loader----->

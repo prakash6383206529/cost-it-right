@@ -1664,7 +1664,7 @@ function CostingDetails(props) {
                         />
                       </Col>
                       <Col className="col-md-15">
-                        {inputLoader && <LoaderCustom customClass="input-loader" />}
+                        {inputLoader && <LoaderCustom customClass="part-input-loader" />}
                         <AsyncSearchableSelectHookForm
                           label={"Assembly/Part No."}
                           name={"Part"}
@@ -1679,7 +1679,7 @@ function CostingDetails(props) {
                           isLoading={false}
                           handleChange={handlePartChange}
                           errors={errors.Part}
-                          disabled={technology.length === 0 ? true : false}
+                          disabled={(technology.length === 0 || inputLoader) ? true : false}
                           NoOptionMessage={"Please enter first few digits to see the part numbers"}
                         />
                       </Col>
