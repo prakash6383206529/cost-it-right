@@ -19,6 +19,7 @@ function SimulationInsights(props) {
 
   const dispatch = useDispatch()
   const [simulationInsightsReport, setSimulationInsight] = useState([])
+  const [simulationInsightsReportExcelData, setSimulationInsightsReportExcelData] = useState([])
   const [tableHeaderColumnDefs, setTableHeaderColumnDefs] = useState([])
   const [gridApi, setGridApi] = useState(null);
   const [gridColumnApi, setGridColumnApi] = useState(null);
@@ -31,6 +32,7 @@ function SimulationInsights(props) {
     dispatch(getSimulationInsightReport(res => {
       const data = res.data.DataList
       setSimulationInsight(data[0].Data)
+      setSimulationInsightsReportExcelData(data[0].Data)
 
       let arr = [];
       let simulationInsightExcel = [];
@@ -90,8 +92,7 @@ function SimulationInsights(props) {
 
 
   const onBtExport = () => {
-
-    return returnExcelColumn(simulationInsightDownloadExcel, simulationInsightsReport)
+    return returnExcelColumn(simulationInsightDownloadExcel, simulationInsightsReportExcelData)
   };
 
 
@@ -112,12 +113,26 @@ function SimulationInsights(props) {
   }
 
 
+  const onRowSelect = () => {
+    var selectedRows = gridApi.getSelectedRows();
+    setSimulationInsightsReportExcelData(selectedRows)
+  }
+
+
   const onGridReady = (params) => {
     setGridApi(params.api)
     setGridColumnApi(params.columnApi)
     params.api.paginationGoToPage(0);
 
   };
+
+
+  const isFirstColumn = (params) => {
+    var displayedColumns = params.columnApi.getAllDisplayedColumns();
+    var thisIsFirstColumn = displayedColumns[0] === params.column;
+    return thisIsFirstColumn;
+  }
+
   const gridOptions = {
     clearSearch: true,
     enableFilter: true,
@@ -130,6 +145,8 @@ function SimulationInsights(props) {
     filter: true,
     sortable: true,
     floatingFilter: true,
+    headerCheckboxSelection: isFirstColumn,
+    checkboxSelection: isFirstColumn
   };
   const frameworkComponents = {
     customLoadingOverlay: LoaderCustom,
@@ -188,6 +205,7 @@ function SimulationInsights(props) {
               }}
               frameworkComponents={frameworkComponents}
               suppressRowClickSelection={true}
+              onSelectionChanged={onRowSelect}
               rowSelection={'multiple'}
             >
 
