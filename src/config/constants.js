@@ -145,6 +145,7 @@ export const API = {
   checkCostingExistForPart: `${BASE_URL}/masters-part-bill-of-material/check-exist-costing-by-part`,
   deleteExisCostingByPartID: `${BASE_URL}/masters-part-bill-of-material/delete-exist-costing-by-part`,
 
+
   //CATEGORY MASTER
   createcategoryTypeAPI: `${BASE_URL}/masters-category/create-type`,
   createCategoryAPI: `${BASE_URL}/masters-category/create`,
@@ -993,6 +994,9 @@ export const PRODUCT_GROUPCODE_SELECTLIST = 'PRODUCT_GROUPCODE_SELECTLIST'
 export const GET_ASSEMBLY_PART_SELECTLIST = 'GET_ASSEMBLY_PART_SELECTLIST'
 export const GET_COMPONENT_PART_SELECTLIST = 'GET_COMPONENT_PART_SELECTLIST'
 export const GET_BOUGHTOUT_PART_SELECTLIST = 'GET_BOUGHTOUT_PART_SELECTLIST'
+
+//SUB ASSEMBLY
+export const SUB_ASSEMBLY_TECHNOLOGY_ARRAY = 'SUB_ASSEMBLY_TECHNOLOGY_ARRAY'
 
 //NEW PART MASTER
 export const GET_ALL_NEW_PARTS_SUCCESS = 'GET_ALL_NEW_PARTS_SUCCESS'

@@ -355,4 +355,8 @@ export const CheckIsCostingDateSelected = (costingDate) => {
     return !IsSelected;
 }
 
+export const percentageOfNumber = (num, percentage) => {
+    const number = (num == null || isNaN(Number(num)) || num === undefined || num === Infinity || num === -Infinity) ? 0 : Number(num);
+    return (number / 100) * percentage;
+}
 
