@@ -1117,7 +1117,7 @@ const CostingSummaryTable = (props) => {
                               < td >
                                 <span>{data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.netSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(data.netSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice)}</span>
                                 {
-                                  (data.CostingHeading !== VARIANCE && icons && !(Number(master) === Number(SURFACETREATMENT))) && (!pdfHead && !drawerDetailPDF) &&
+                                  (data.CostingHeading !== VARIANCE && icons) && (!pdfHead && !drawerDetailPDF) &&
                                   <button
                                     type="button"
                                     class="float-right mb-0 View "

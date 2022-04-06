@@ -42,7 +42,7 @@ class AddPower extends Component {
       temp: 0,
       StateName: [],
       isViewMode: this.props?.data?.isViewMode ? true : false,
-      isVendorNameNotSelected:false,
+      isVendorNameNotSelected: false,
 
       selectedPlants: [],
       effectiveDate: new Date(),
@@ -76,7 +76,7 @@ class AddPower extends Component {
       handleChange: true,
       AddChanged: true,
       setDisable: false,
-      inputLoader:false
+      inputLoader: false
     }
   }
 
@@ -385,14 +385,14 @@ class AddPower extends Component {
   * @method onPressVendor
   * @description Used for Vendor checked
   */
-   onPressVendor = () => {
+  onPressVendor = () => {
     this.setState({
       IsVendor: !this.state.IsVendor,
       vendorName: [],
       selectedVendorPlants: [],
     });
-      this.setState({inputLoader:true})
-      this.props.getVendorWithVendorCodeSelectList(()=>{ this.setState({inputLoader:false})})
+    this.setState({ inputLoader: true })
+    this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
   }
 
   /**
@@ -401,7 +401,7 @@ class AddPower extends Component {
   */
   handleVendorName = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ vendorName: newValue,isVendorNameNotSelected:false, selectedVendorPlants: [] }, () => {
+      this.setState({ vendorName: newValue, isVendorNameNotSelected: false, selectedVendorPlants: [] }, () => {
         const { vendorName } = this.state;
         const result = vendorName && vendorName.label ? getVendorCode(vendorName.label) : '';
         this.setState({ VendorCode: result })
@@ -1031,7 +1031,7 @@ class AddPower extends Component {
     const { initialConfiguration, fieldsObj } = this.props;
 
     if (vendorName.length <= 0) {
-      this.setState({ isVendorNameNotSelected: true ,setDisable:false})      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
+      this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
       return false
     }
     this.setState({ isVendorNameNotSelected: false })
@@ -1227,7 +1227,7 @@ class AddPower extends Component {
       let tempArr = []
 
       tempArr = this.renderListing("VendorNameList").filter(i =>
-        i.label!==null && i.label.toLowerCase().includes(inputValue.toLowerCase())
+        i.label !== null && i.label.toLowerCase().includes(inputValue.toLowerCase())
       );
 
       if (tempArr.length <= 100) {
@@ -1291,32 +1291,32 @@ class AddPower extends Component {
                       <Row>
                         {this.state.IsVendor &&
                           <>
-                            <Col md="4">
+                            <Col md="3">
 
-                            <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                             {this.state.inputLoader  && <LoaderCustom customClass={`input-loader switch-vendor `}/>}
-                             <div className="d-flex justify-space-between align-items-center inputwith-icon async-select">
-                             <div className="fullinput-icon">
-                             <AsyncSelect 
-                             name="vendorName" 
-                             ref={this.myRef} 
-                             key={this.state.updateAsyncDropdown} 
-                             loadOptions={promiseOptions} 
-                             onChange={(e) => this.handleVendorName(e)} 
-                             value={this.state.vendorName}
-                             noOptionsMessage={({inputValue}) => !inputValue ? "Please enter vendor name/code" : "No results found"} 
-                             isDisabled={isEditFlag ? true : false} />
-                             {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
-                             </div>
-                           {!isEditFlag && (
-                                <div
-                                  onClick={this.vendorToggler}
-                                  className={"plus-icon-square  right"}
-                                ></div>
-                              )}
-                           </div> 
+                              <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
+                              <div className="d-flex justify-space-between align-items-center p-relative async-select">
+                                {this.state.inputLoader && <LoaderCustom customClass={`vendor-input-loader`} />}
+                                <div className="fullinput-icon">
+                                  <AsyncSelect
+                                    name="vendorName"
+                                    ref={this.myRef}
+                                    key={this.state.updateAsyncDropdown}
+                                    loadOptions={promiseOptions}
+                                    onChange={(e) => this.handleVendorName(e)}
+                                    value={this.state.vendorName}
+                                    noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
+                                    isDisabled={isEditFlag ? true : false} />
+                                  {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
+                                </div>
+                                {!isEditFlag && (
+                                  <div
+                                    onClick={this.vendorToggler}
+                                    className={"plus-icon-square  right"}
+                                  ></div>
+                                )}
+                              </div>
                             </Col>
-                            {initialConfiguration && initialConfiguration.IsVendorPlantConfigurable && <Col md="4">
+                            {initialConfiguration && initialConfiguration.IsVendorPlantConfigurable && <Col md="3">
                               <Field
                                 label="Vendor Plant"
                                 name="VendorPlant"
@@ -1332,7 +1332,7 @@ class AddPower extends Component {
                                 disabled={isViewMode}
                               />
                             </Col>}
-                            <Col md="4">
+                            <Col md="3">
                               <div className="d-flex justify-space-between align-items-center inputwith-icon">
                                 <div className="fullinput-icon">
                                   <Field
