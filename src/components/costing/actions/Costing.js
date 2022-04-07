@@ -830,7 +830,7 @@ export function saveAssemblyCostingRMCCTab(data, callback) {
  */
 export function getSurfaceTreatmentTabData(data, IsUseReducer, callback) {
   return (dispatch) => {
-    const request = axios.get(`${API.getSurfaceTreatmentTabData}/${data.CostingId}/${data.PartId}/${data.AssemCostingId}`, headers);
+    const request = axios.get(`${API.getSurfaceTreatmentTabData}/${data.CostingId}/${data.AssemCostingId}/${data.SubAsmCostingId}`, headers);
     request.then((response) => {
       if (response.data.Result) {
         if (IsUseReducer && response.data.Result) {
@@ -884,9 +884,9 @@ export function setSurfaceCostInOverheadProfit(IsIncluded, callback) {
  * @method saveComponentCostingSurfaceTab
  * @description SAVE COMPONENT COSTING SURFACE TAB
  */
-export function saveComponentCostingSurfaceTab(data, callback) {
+export function saveCostingSurfaceTab(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.saveComponentCostingSurfaceTab, data, headers);
+    const request = axios.post(API.saveCostingSurfaceTab, data, headers);
     request.then((response) => {
       callback(response);
     }).catch((error) => {
@@ -897,20 +897,7 @@ export function saveComponentCostingSurfaceTab(data, callback) {
 }
 
 /**
- * @method saveCostingSurfaceTreatmentTab
- * @description SAVE COSTING SURFACE TREATMENT TAB
- */
-export function saveCostingSurfaceTreatmentTab(data, callback) {
-  return (dispatch) => {
-    const request = axios.post(API.saveCostingSurfaceTreatmentTab, data, headers,)
-    request.then((response) => {
-      callback(response)
-    }).catch((error) => {
-      dispatch({ type: API_FAILURE })
-      apiErrors(error)
-    })
-  }
-}
+ *
 
 /**
  * @method getSurfaceTreatmentDrawerDataList

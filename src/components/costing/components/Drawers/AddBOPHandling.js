@@ -11,7 +11,6 @@ import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigura
 import Toaster from '../../../common/Toaster';
 import { useDispatch } from 'react-redux';
 import { isDataChange, saveAssemblyBOPHandlingCharge } from '../../actions/Costing';
-import { NetPOPriceContext } from '../CostingDetailStepTwo';
 
 function AddBOPHandling(props) {
   const CostingViewMode = useContext(ViewCostingContext);

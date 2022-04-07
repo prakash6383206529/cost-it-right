@@ -502,8 +502,7 @@ export const API = {
   getToolCategoryList: `${BASE_URL}/costing/select-list-tool-category`,
 
   getSurfaceTreatmentTabData: `${BASE_URL}/costing/get-costing-detail-for-surface-treatment`,
-  saveCostingSurfaceTreatmentTab: `${BASE_URL}/costing/save-costing-detail-for-surface-treatment`,
-  saveComponentCostingSurfaceTab: `${BASE_URL}/costing/save-componenet-costing-detail-for-surface-treatment`,
+  saveCostingSurfaceTab: `${BASE_URL}/costing/save-costing-detail-for-surface-treatment`,
   getSurfaceTreatmentDrawerDataList: `${BASE_URL}/costing/get-zbc-costing-surface-treatment-operation-list`,
   getSurfaceTreatmentDrawerVBCDataList: `${BASE_URL}/costing/get-vbc-costing-surface-treatment-operation-list`,
 
