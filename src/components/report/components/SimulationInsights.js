@@ -9,6 +9,7 @@ import { ReportMaster, EMPTY_DATA } from '../../../config/constants';
 import LoaderCustom from '../../common/LoaderCustom';
 import { getSimulationInsightReport } from '../actions/SimulationInsight';
 import { useDispatch } from 'react-redux';
+import DayTime from '../../common/DayTimeWrapper'
 
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -27,6 +28,37 @@ function SimulationInsights(props) {
   const [simulationInsightDownloadExcel, setSimulationInsightDownloadExcel] = useState([])
 
 
+  var filterParams = {
+    comparator: function (filterLocalDateAtMidnight, cellValue) {
+      // var dateAsString = cellValue != null ? DayTime(cellValue).format('MM/DD/YYYY') : '';
+
+      var dateAsString = cellValue != null ? cellValue.split('-') : '';
+      if (dateAsString) {
+        dateAsString = dateAsString[0] + '/' + dateAsString[1] + '/' + dateAsString[2];
+      }
+      if (dateAsString == null) return -1;
+      var dateParts = dateAsString.split('/');
+      var cellDate = new Date(
+        Number(dateParts[2]),
+        Number(dateParts[1]) - 1,
+        Number(dateParts[0])
+      );
+      if (filterLocalDateAtMidnight.getTime() === cellDate.getTime()) {
+        return 0;
+      }
+      if (cellDate < filterLocalDateAtMidnight) {
+        return -1;
+      }
+      if (cellDate > filterLocalDateAtMidnight) {
+        return 1;
+      }
+
+    },
+    browserDatePicker: true,
+    minValidYear: 2000,
+  };
+
+
   useEffect(() => {
     setLoader(true)
     dispatch(getSimulationInsightReport(res => {
@@ -42,7 +74,7 @@ function SimulationInsights(props) {
           let obj = {
             field: "DisplayStatus",
             headerName: "Display Status",
-            cellRendererFramework: (params) => <div className={params.value}>{params.value}</div>
+            cellRendererFramework: (params) => <div className={params.value}>{params.value}</div>,
             //cellStyle: { background: "green" },    // DO NOT DELETE THIS
             //cellClass: ["Draft"]                       // DO NOT DELETE THIS
           }
@@ -69,6 +101,35 @@ function SimulationInsights(props) {
           }
           arr.push(obj)
           simulationInsightExcel.push(obj1)
+        } else if (ele.field === "CreatedDate") {
+
+          let obj = {
+            field: "CreatedDate",
+            headerName: "Created Date",
+            filter: "agDateColumnFilter",
+            filterParams: filterParams
+          }
+          let obj1 = {
+            label: ele.headerName,
+            value: ele.field
+          }
+          arr.push(obj)
+          simulationInsightExcel.push(obj1)
+        } else if (ele.field === "EffectiveDate") {
+
+          let obj = {
+            field: "EffectiveDate",
+            headerName: "EffectiveDate",
+            filter: "agDateColumnFilter",
+            filterParams: filterParams
+          }
+          let obj1 = {
+            label: ele.headerName,
+            value: ele.field
+          }
+          arr.push(obj)
+          simulationInsightExcel.push(obj1)
+
         }
         else {
           let obj1 = {
