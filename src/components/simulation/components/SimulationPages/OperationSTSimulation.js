@@ -255,7 +255,7 @@ function OperationSTSimulation(props) {
         obj.SimulationTechnologyId = selectedMasterForSimulation.value
         obj.LoggedInUserId = loggedInUserId()
 
-        obj.CostingHead = list[0].IsVendor === true ? VBC : ZBC
+        obj.CostingHead = list[0].CostingHead === "Vendor Based" ? VBC : ZBC
         obj.TechnologyId = selectedTechnologyForSimulation.value
         obj.TechnologyName = selectedTechnologyForSimulation.label
 
