@@ -26,18 +26,12 @@ function AddBOPHandling(props) {
 
   useEffect(() => {
 
-    const childPartDetail = RMCCTabData[0]?.CostingChildPartDetails
+    const childPartDetail = JSON.parse(localStorage.getItem('costingArray'))
+    console.log('childPartDetail: ', childPartDetail);
     let BOPSum = 0
     childPartDetail && childPartDetail.map((el) => {
       if (el.PartType === 'BOP') {
         BOPSum = BOPSum + (el.CostingPartDetails.TotalBoughtOutPartCost * el.CostingPartDetails.Quantity)
-      } else if (el.PartType === 'Sub Assembly') {
-        el.CostingChildPartDetails && el.CostingChildPartDetails.map(item => {
-          if (item.PartType === 'BOP') {
-            BOPSum = BOPSum + (item.CostingPartDetails.TotalBoughtOutPartCost * item.CostingPartDetails.Quantity)
-
-          }
-        })
       }
     })
     setValue('BOPCost', BOPSum)
@@ -52,7 +46,7 @@ function AddBOPHandling(props) {
 
   }, [])
 
- 
+
 
 
   const handleBOPPercentageChange = (value) => {
@@ -105,7 +99,7 @@ function AddBOPHandling(props) {
   }
 
   const saveHandleCharge = () => {
-  
+
 
     let obj = {
       IsApplyBOPHandlingCharges: true,
@@ -113,7 +107,7 @@ function AddBOPHandling(props) {
       BOPHandlingCharges: getValues('BOPHandlingCharges')
     }
     dispatch(saveAssemblyBOPHandlingCharge(obj))
-  
+
     setTimeout(() => {
       props.closeDrawer('')
     }, 500);

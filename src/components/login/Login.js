@@ -71,6 +71,7 @@ class Login extends Component {
     this.setState({ inputLoader: true })
     // this.props.loginUserAPI(values, (res) => {
     this.props.TokenAPI(reqParams, (res) => {
+      console.log('res: ', res);
 
       if (res && res.status === 200) {
         this.setState({ isLoader: false, isSubmitted: false });
