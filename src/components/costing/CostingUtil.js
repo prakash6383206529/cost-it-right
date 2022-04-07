@@ -64,7 +64,8 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
     "WorkingRows": assemblyWorkingRow,
     "BOPHandlingCharges": {
       "AssemblyCostingId": tabData && tabData.CostingId,
-      "IsApplyBOPHandlingCharges": true,
+      "IsApplyBOPHandlingCharges": getAssemBOPCharge && getAssemBOPCharge.IsApplyBOPHandlingCharges,
+      "BOPHandlingChargeApplicability": getAssemBOPCharge && getAssemBOPCharge.BOPHandlingChargeApplicability,
       "BOPHandlingPercentage": getAssemBOPCharge && getAssemBOPCharge.BOPHandlingPercentage,
       "BOPHandlingCharges": getAssemBOPCharge && getAssemBOPCharge.BOPHandlingCharges
     },
