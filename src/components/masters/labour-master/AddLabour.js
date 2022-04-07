@@ -32,7 +32,7 @@ class AddLabour extends Component {
       isEditFlag: false,
       LabourDetailId: '',
       isViewMode: this.props?.data?.isViewMode ? true : false,
-      isVendorNameNotSelected:false,
+      isVendorNameNotSelected: false,
 
       IsEmployeContractual: true,
       IsVendor: false,
@@ -51,7 +51,7 @@ class AddLabour extends Component {
       isDisable: false,
       DropdownChanged: true,
       setDisable: false,
-      inputLoader:false,
+      inputLoader: false,
     }
   }
 
@@ -60,11 +60,11 @@ class AddLabour extends Component {
    * @description called after render the component
    */
   componentDidMount() {
-    this.setState({inputLoader:true})
+    this.setState({ inputLoader: true })
     this.props.getFuelComboData(() => { })
     this.props.getPlantListByState('', () => { })
     this.props.getMachineTypeSelectList(() => { })
-    this.props.labourTypeVendorSelectList(() => { this.setState({inputLoader:false}) })
+    this.props.labourTypeVendorSelectList(() => { this.setState({ inputLoader: false }) })
     this.props.getLabourTypeByMachineTypeSelectList('', () => { })
     this.getDetail()
   }
@@ -213,7 +213,7 @@ class AddLabour extends Component {
     this.setState({
       IsEmployeContractual: !this.state.IsEmployeContractual,
     })
-    
+
   }
 
   /**
@@ -233,7 +233,7 @@ class AddLabour extends Component {
    */
   handleVendorName = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ vendorName: newValue, selectedVendorPlants: [],isVendorNameNotSelected:false })
+      this.setState({ vendorName: newValue, selectedVendorPlants: [], isVendorNameNotSelected: false })
     } else {
       this.setState({ vendorName: [], selectedVendorPlants: [] })
     }
@@ -556,7 +556,7 @@ class AddLabour extends Component {
     const userDetail = userDetails()
 
     if (vendorName.length <= 0) {
-      this.setState({ isVendorNameNotSelected: true ,setDisable:false})      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
+      this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
       return false
     }
     this.setState({ isVendorNameNotSelected: false })
@@ -640,7 +640,7 @@ class AddLabour extends Component {
       let tempArr = []
 
       tempArr = this.renderListing("VendorNameList").filter(i =>
-        i.label!==null && i.label.toLowerCase().includes(inputValue.toLowerCase())
+        i.label !== null && i.label.toLowerCase().includes(inputValue.toLowerCase())
       );
 
       if (tempArr.length <= 100) {
@@ -712,23 +712,23 @@ class AddLabour extends Component {
                         </div>
                       </Col>
                       {this.state.IsEmployeContractual && (
-                        <Col md="4">
-                           <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                           {this.state.inputLoader  && <LoaderCustom customClass={`input-loader masters-vendor-loader `}/>}
-                           <AsyncSelect 
-                           name="vendorName" 
-                           ref={this.myRef} 
-                           key={this.state.updateAsyncDropdown} 
-                           loadOptions={promiseOptions} 
-                           onChange={(e) => this.handleVendorName(e)} 
-                           value={this.state.vendorName} 
-                           noOptionsMessage={({inputValue}) => !inputValue ? "Please enter vendor name/code" : "No results found"}
-                           isDisabled={isEditFlag ? true : isDisable ? true : false} />
-                           {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
-                          
+                        <Col md="3">
+                          <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
+                          {this.state.inputLoader && <LoaderCustom customClass={`vendor-input-loader-first-col`} />}
+                          <AsyncSelect
+                            name="vendorName"
+                            ref={this.myRef}
+                            key={this.state.updateAsyncDropdown}
+                            loadOptions={promiseOptions}
+                            onChange={(e) => this.handleVendorName(e)}
+                            value={this.state.vendorName}
+                            noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
+                            isDisabled={(isEditFlag || this.state.inputLoader) ? true : isDisable ? true : false} />
+                          {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
+
                         </Col>
                       )}
-                      <Col md="4">
+                      <Col md="3">
                         <div className="form-group">
                           <Field
                             name="state"
@@ -745,7 +745,7 @@ class AddLabour extends Component {
                             disabled={isEditFlag ? true : isDisable ? true : false}
                           /></div>
                       </Col>
-                      <Col md="4">
+                      <Col md="3">
                         <div className="form-group">
                           <Field
                             name="Plant"

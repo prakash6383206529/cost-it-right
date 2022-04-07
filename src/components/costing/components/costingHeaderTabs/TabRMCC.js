@@ -17,9 +17,7 @@ import { ViewCostingContext } from '../CostingDetails';
 import DayTime from '../../../common/DayTimeWrapper'
 import AddBOPHandling from '../Drawers/AddBOPHandling';
 import { createToprowObjAndSave } from '../../CostingUtil';
-import { Link } from 'react-scroll';
 import _ from 'lodash'
-import { reactLocalStorage } from 'reactjs-localstorage';
 
 function TabRMCC(props) {
 
@@ -863,20 +861,23 @@ function TabRMCC(props) {
         if (i.IsAssemblyPart === true) {
           i.CostingPartDetails = { ...i.CostingPartDetails };
 
-          if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
+          if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel && i.AssemblyPartNumber === item.AssemblyPartNumber) {
             i.CostingPartDetails = Data
             i.IsOpen = !i.IsOpen
+          } else {
+            i.IsOpen = false
           }
           formatData(BOMLevel, PartNumber, Data, i.CostingChildPartDetails, item)
 
-        } else if (i.PartNumber === PartNumber && i.BOMLevel === BOMLevel) {
+        } else if (i.PartNumber === PartNumber && i.BOMLevel === BOMLevel && i.AssemblyPartNumber === item.AssemblyPartNumber) {
 
           i.CostingPartDetails = { ...Data, Quantity: i.CostingPartDetails.Quantity };
 
 
           i.IsOpen = !i.IsOpen;
 
-        } else {
+        }
+        else {
 
           i.IsOpen = false;
           formatData(BOMLevel, PartNumber, Data, i.CostingChildPartDetails, item)

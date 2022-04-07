@@ -5,7 +5,7 @@ import {
   setCostingDataList, setPOPrice, setRMCCBOPCostData, setSurfaceCostData,
   setOverheadProfitCostData, setDiscountCost, showLoader, hideLoader, saveAssemblyPartRowCostingCalculation,
 } from '../actions/Costing';
-import { calculatePercentage, calculatePercentageValue, checkForDecimalAndNull, checkForNull } from '../../../helper';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull } from '../../../helper';
 import DayTime from '../../common/DayTimeWrapper'
 import CostingHeadTabs from './CostingHeaderTabs/index';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -34,6 +34,7 @@ function CostingDetailStepTwo(props) {
   }, []);
 
   const CostingViewMode = useContext(ViewCostingContext);
+
 
   const { initialConfiguration } = useSelector(state => state.auth)
   const { costingData, CostingDataList, NetPOPrice, RMCCBOPCost, SurfaceCostData, OverheadProfitCostData,
@@ -494,7 +495,6 @@ function CostingDetailStepTwo(props) {
               </Row>
 
               <Row className="sepration-box"></Row>
-
               <Row>
                 <Col md="12">
                   <costingInfoContext.Provider value={costingData} >

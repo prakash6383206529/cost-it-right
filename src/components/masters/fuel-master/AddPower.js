@@ -1291,11 +1291,11 @@ class AddPower extends Component {
                       <Row>
                         {this.state.IsVendor &&
                           <>
-                            <Col md="4">
+                            <Col md="3">
 
                               <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                              {this.state.inputLoader && <LoaderCustom customClass={`input-loader switch-vendor `} />}
-                              <div className="d-flex justify-space-between align-items-center inputwith-icon async-select">
+                              <div className="d-flex justify-space-between align-items-center p-relative async-select">
+                                {this.state.inputLoader && <LoaderCustom customClass={`vendor-input-loader`} />}
                                 <div className="fullinput-icon">
                                   <AsyncSelect
                                     name="vendorName"
@@ -1316,7 +1316,7 @@ class AddPower extends Component {
                                 )}
                               </div>
                             </Col>
-                            {initialConfiguration && initialConfiguration.IsVendorPlantConfigurable && <Col md="4">
+                            {initialConfiguration && initialConfiguration.IsVendorPlantConfigurable && <Col md="3">
                               <Field
                                 label="Vendor Plant"
                                 name="VendorPlant"
@@ -1332,7 +1332,7 @@ class AddPower extends Component {
                                 disabled={isViewMode}
                               />
                             </Col>}
-                            <Col md="4">
+                            <Col md="3">
                               <div className="d-flex justify-space-between align-items-center inputwith-icon">
                                 <div className="fullinput-icon">
                                   <Field

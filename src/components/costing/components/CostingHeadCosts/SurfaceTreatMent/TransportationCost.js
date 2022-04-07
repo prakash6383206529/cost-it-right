@@ -239,7 +239,7 @@ function TransportationCost(props) {
                 />
               </Col>
               <Col md="3">
-                <div className='p-relative'>
+                <div className='p-relative error-wrapper'>
                   <TextFieldHookForm
                     label={`${TransportationType === 'Percentage' ? 'Percentage' : 'Rate'}`}
                     name={`Rate`}

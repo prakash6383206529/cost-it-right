@@ -561,6 +561,20 @@ export const API = {
   UpdateCostingWeightCalculation: `${BASE_URL}/costing-sheet-metal/update-costing-weight-calculation`,
   getRawMaterialCalculationByTechnology: `${BASE_URL}/costing/get-raw-material-calculation-by-technology`,
   saveRawMaterialCalciData: `${BASE_URL}/costing/save-raw-material-calculation-by-technology`,
+  getRawMaterialCalculationForSheetMetal: `${BASE_URL}/costing/get-raw-material-sheet-metal-calculation-details`,
+  saveRawMaterialCalculationForSheetMetal: `${BASE_URL}/costing/save-raw-material-sheet-metal-calculation-details`,
+  getRawMaterialCalculationForForging: `${BASE_URL}/costing/get-raw-material-forging-calculation-details`,
+  saveRawMaterialCalculationForForging: `${BASE_URL}/costing/save-raw-material-forging-calculation-details`,
+  getRawMaterialCalculationForFerrous: `${BASE_URL}/costing/get-raw-material-ferrous-casting-calculation-details`,
+  saveRawMaterialCalculationForFerrous: `${BASE_URL}/costing/save-raw-material-ferrous-casting-calculation-details`,
+  getRawMaterialCalculationForPlastic: `${BASE_URL}/costing/get-raw-material-plastic-calculation-details`,
+  saveRawMaterialCalculationForPlastic: `${BASE_URL}/costing/save-raw-material-plastic-calculation-details`,
+  getRawMaterialCalculationForCorrugatedBox: `${BASE_URL}/costing/get-raw-material-corrugated-box-calculation-details`,
+  saveRawMaterialCalculationForCorrugatedBox: `${BASE_URL}/costing/save-raw-material-corrugated-box-calculation-details`,
+  getRawMaterialCalculationForDieCasting: `${BASE_URL}/costing/get-raw-material-die-casting-calculation-details`,
+  saveRawMaterialCalculationForDieCasting: `${BASE_URL}/costing/save-raw-material-die-casting-calculation-details`,
+  getRawMaterialCalculationForRubber: `${BASE_URL}/costing/get-raw-material-rubber-calculation-details`,
+  saveRawMaterialCalculationForRubber: `${BASE_URL}/costing/save-raw-material-rubber-calculation-details`,
 
 
   // PROCESS COST CALCULATION
@@ -1362,6 +1376,7 @@ export const IS_COSTING_EFFECTIVE_DATE_DISABLED = 'IS_COSTING_EFFECTIVE_DATE_DIS
 export const SET_CUTOFF_RMC = 'SET_CUTOFF_RMC';
 export const GET_COSTING_SPECIFIC_TECHNOLOGY = 'GET_COSTING_SPECIFIC_TECHNOLOGY'
 export const FORGING_CALCULATOR_MACHININGSTOCK_SECTION = 'FORGING_CALCULATOR_MACHININGSTOCK_SECTION';
+export const FERROUS_CALCULATOR_RESET = 'FERROUS_CALCULATOR_RESET';
 export const SELECTED_IDS_OF_OPERATION_AND_OTHEROPERATION = 'SELECTED_IDS_OF_OPERATION_AND_OTHEROPERATION'
 export const SET_MASTER_BATCH_OBJ = 'SET_MASTER_BATCH_OBJ'
 
@@ -1760,7 +1775,12 @@ export const EXCHNAGERATE = '8'
 export const MACHINERATE = '9'
 export const OVERHEAD = 'Overhead'
 export const PROFIT = 'Profits'
-// export constse
+
+// BULK UPLOAD
+export const SHEETMETAL_GROUP_BULKUPLOAD = 1
+export const PLASTIC_GROUP_BULKUPLOAD = 2
+export const MACHINING_GROUP_BULKUPLOAD = 3
+
 
 export const REASON_ID = 2
 export const TOFIXEDVALUE = 10
@@ -1845,4 +1865,4 @@ export const LEVEL1 = 'L1';
 export const SUB_ASSEMBLY = 'Sub Assembly';
 
 //VERSION 
-export const VERSION = "V1.2.113";
+export const VERSION = "V1.2.118.1";

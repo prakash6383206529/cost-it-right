@@ -73,7 +73,7 @@ class AddChildDrawer extends Component {
         const { isEditFlag, childType } = this.state;
         return (
             <div>
-                <Drawer anchor={this.props.anchor} open={this.props.isOpen} 
+                <Drawer anchor={this.props.anchor} open={this.props.isOpen}
                 // onClose={(e) => this.toggleDrawer(e)}
                 >
                     <Container>
@@ -132,6 +132,7 @@ class AddChildDrawer extends Component {
                                 {childType === ASSEMBLY &&
                                     <AddAssemblyForm
                                         toggleDrawer={this.toggleDrawer}
+                                        //TechnologySelected={this.props.TechnologySelected} DONT DELETE
                                         selectedPartType={this.state.selectedPartType}
                                         setChildParts={this.setChildParts}
                                         BOMViewerData={this.props.BOMViewerData}
@@ -142,6 +143,7 @@ class AddChildDrawer extends Component {
                                     <AddComponentForm
                                         toggleDrawer={this.toggleDrawer}
                                         selectedPartType={this.state.selectedPartType}
+                                        //TechnologySelected={this.props.TechnologySelected}   DONT DELETE
                                         setChildParts={this.setChildParts}
                                         BOMViewerData={this.props.BOMViewerData}
                                     />
@@ -151,6 +153,7 @@ class AddChildDrawer extends Component {
                                     <AddBOPForm
                                         toggleDrawer={this.toggleDrawer}
                                         selectedPartType={this.state.selectedPartType}
+                                        //TechnologySelected={this.props.TechnologySelected}  DONT DELETE
                                         setChildParts={this.setChildParts}
                                         BOMViewerData={this.props.BOMViewerData}
                                     />
