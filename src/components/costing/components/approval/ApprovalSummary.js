@@ -136,7 +136,7 @@ function ApprovalSummary(props) {
       effectiveDate: dataSend[0].EffectiveDate ? DayTime(dataSend[0].EffectiveDate).format('MM/DD/YYYY') : '',
       vendorCode: dataSend[0].VendorCode ? dataSend[0].VendorCode : '',
       materialNumber: dataSend[1].PartNumber,
-      netPrice: netPo,
+      netPrice: dataSend.NewPOPrice,
       plant: dataSend[0].PlantCode ? dataSend[0].PlantCode : dataSend[0].DestinationPlantId ? dataSend[0].DestinationPlantCode : '',
       currencyKey: dataSend[0].Currency ? dataSend[0].Currency : INR,
       materialGroup: '',
