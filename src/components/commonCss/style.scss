@@ -2308,7 +2308,7 @@ button:disabled{pointer-events: none;}
     }
   }
   .search-user-block{
-    padding-right: 130px !important;
+    padding-right: 131px !important;
   }
 }
 
@@ -2363,7 +2363,6 @@ button:disabled{pointer-events: none;}
     filter: opacity(0.5);
   }
 }
-
 // ============issues fixing end=============
 .tooltip_custom_right{
   float: right;
@@ -2394,16 +2393,17 @@ button:disabled{pointer-events: none;}
   display: inline-block;
   .tooltiptext {
     visibility: hidden;
-    min-width: 250px;
+    min-width: 300px;
     background-color: #D0D8E5;
     color: #3d4465;
-    text-align: right;
+    text-align: center;
     border-radius: 6px;
-    padding: 5px 15px 5px 5px;
+    padding: 5px 10px;
+    /* Position the tooltip */
     position: absolute;
     z-index: 1;
     bottom: 100%;
-    left: -115px;
+    left: -140px;
     margin-left: -4px;
     font-size: 14px;
     &:after {
@@ -3565,9 +3565,10 @@ body{
     min-width: unset;
     width: 100%;
   }
+  .red-value, .green-value {
+    max-width: 100% !important;
+  }
 }
-
-
 
 .sm-headrgroup-table{
   .react-bs-table-pagination{
@@ -3599,8 +3600,8 @@ body{
     width: 125px;
   }
   td:nth-child(9),td:nth-child(10),td:nth-child(11),td:nth-child(12),td:nth-child(13),td:nth-child(14),td:nth-child(15),td:nth-child(16){
-    min-width: 125px;
-    width: 125px;
+    min-width: 110px;
+    width: 110px;
   }
 }
 .weight-calculator-headings{
@@ -3651,6 +3652,7 @@ body{
   font-size: 16px;
   width: 100%;
   display: inline-block;
+  word-break: break-all;
   &.success{
     background-color: #DBF4E2;
     border-color: #DBF4E2;
@@ -3675,6 +3677,14 @@ body{
 }
 // toastr css end
 
+// drawer-attachment
+.drawer-attachment{
+  margin-bottom: 20px;
+  .dzu-dropzone{
+    min-height: 130px;
+  }
+}
+// drawer-attachment
 .normal-switch{
   line-height: initial;
   margin-bottom: auto !important;
@@ -5284,7 +5294,7 @@ body{
   }
 }
 //simulation filter cancel button css 28-09-2021
-@media (max-width:1366px) {
+@media (max-width:$belowLaptop) {
   .simulation-filter {
     .filter-block {
       margin-bottom: 15px;
@@ -5303,6 +5313,17 @@ body{
   .add-min-height {
     @media (max-width:$belowLaptop) {  
       min-height: calc(100vh - 214px) !important;
+    }
+  }
+}
+@media (max-width:$miniDesktop) {
+  .simulation-main {
+    .filter-block {
+      .flex-fills:last-child {
+        min-width: 230px;
+        max-width: 255px;
+        width: auto;
+      } 
     }
   }
 }
@@ -5387,6 +5408,10 @@ body{
      }
   }
 }
+.combine-tooltip {
+  right: -20px;
+  top: 8px;
+}
 
 .part-manage-component {
   .ag-paging-panel {
@@ -5414,6 +5439,27 @@ position:absolute;
 bottom: 1rem;
 left: 17rem;
 }
+// FG-Wise table css Start
+.fgwise-table {
+  .cr-brdr-main {
+    width: 100% !important;
+  }
+  border: 1px solid #3333;
+  table {
+   th {
+     border: 1px solid #3333 !important;
+     border-top: none !important;
+     &:last-child {
+       border-left: none !important;
+       border-right: none !important;
+     }
+     &.second-last-child {
+      border-right: none !important;
+     }
+   }
+  }
+}
+// FG-Wise table css End
 .approve-reject-drawer-loader {
   min-height: 75rem;
 }
@@ -5421,6 +5467,12 @@ left: 17rem;
   .warning-text {
     left: 1rem;
     top: 1rem;
+  }
+}
+
+.re-summary-table {
+  .red-value {
+    max-width: 70px !important;
   }
 }
 // <------START popup CSS-------->
@@ -5444,7 +5496,7 @@ left: 17rem;
 }
 .costing-table-container {
   table {
-    .vendor {min-width: 140px;}
+   .vendor {min-width: 140px;}
     .destination-plant {min-width: 165px;}
     .costing-version { min-width: 200px;}
     .share-of-business {min-width: 110px;}
@@ -5535,12 +5587,6 @@ left: 17rem;
   bottom: 23px;
 }
 
-.add-min-width {
-    width: 100%;
-    th {
-      width: 25%; 
-   }
-}
 .with-border-table {
   border: none;
   td {
@@ -5551,6 +5597,12 @@ left: 17rem;
 .hide-border {
   border: none;
   table {
+    tbody {
+      &::before {
+        content: none !important;
+      }
+      border-bottom: none !important;
+    }
     margin-bottom: 0;
     border: 1px solid #3333 !important;
     th {
@@ -5559,6 +5611,9 @@ left: 17rem;
     td {
       border: 1px solid #3333;
     }
+  }
+  .fg-name-heading {
+    width: 21rem;
   }
 }
 .add-min-width {
@@ -5578,7 +5633,13 @@ left: 17rem;
   margin-top: 15px;
   margin-bottom: 15px;
 }
-
+.re-warning {
+  margin-left: 15px;
+  margin-top: -15px;
+  img {
+    margin-bottom: 20px;
+  }
+}
 // <--------START costing tooltip css -------->
 .costing-tooltip {
   right: -16px;
@@ -5728,7 +5789,7 @@ left: 17rem;
  height: auto;
 }
 .width33 {width: 33.33%;}
-.fs1.font-weight-500.py-3 {font-size: 16px;}
+.fs1.font-weight-500.py-3 {font-size: 16px;}git 
 
 .sticky-btn-footer {
   position: sticky !important;
@@ -5748,6 +5809,16 @@ left: 17rem;
   padding: 2px 15px !important;
 }
 
+//START error box delete icon spacing css
+.error-box-container {
+  position: relative;
+  img {
+    position: absolute;
+    top: 13px;
+    right: 13px;
+  }
+}
+
 // PDF Img style
 .pdf-header-wrapper{
   display: flex;
@@ -5760,6 +5831,8 @@ left: 17rem;
     margin-bottom: 5px;
   }
 }
+
+//END error box delete icon spacing css
 .ag-pinned-right-header {
   .ag-header-row-column-group {
     border-right:  solid #e5eaf9;
@@ -5779,6 +5852,7 @@ left: 17rem;
   }
 }
 //END Radio hook custom css//
+
 .pdf-loader {
   top: 0;
   left: -28px;
@@ -5896,7 +5970,6 @@ left: 17rem;
   .calculator {
     max-width: 280px;
     min-width: 280px;
-    right: -65px;
     .calculator-key {
       line-height: 65px;
       font-size: 1.625rem;
@@ -6018,12 +6091,19 @@ left: 17rem;
 }
 // <-----END compare costing table--->
 
+.inputwith-icon.async-select {
+
+  min-width:45px;
+  
+  }
+
 // <-----START Loader center--->
 .max-loader-height {
   max-height: 32vh;
   overflow-x: hidden;
 }
 // <-----END Loader center--->
+
  
   //<-----------START Zoom in zoom out header UI destroy prevent css------->
   @media screen and (max-width:$belowLaptop) {
@@ -6183,8 +6263,19 @@ left: 17rem;
       }
     }
   }
+}
 
-}  
+.fg-wise-table {
+  .text-overflow {
+    @media screen and (max-width:$miniDesktop) {
+      max-width: 100px;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+  }
+}
+ 
 
 .forging-length-wrapper {
   .text-help {
@@ -6198,7 +6289,6 @@ left: 17rem;
 .select__menu {
   z-index: 12 !important;
 }
-
 // <-------START simulation token dropdown css------>
 .css-yk16xz-control, .css-1pahdxg-control {
   height: auto !important;
@@ -6218,6 +6308,11 @@ left: 17rem;
 .simulation-labels {
   .flex-fills.label {
     min-width: fit-content !important;
+  }
+  .w-72 {
+    .flex-fills.label {
+      min-width: 72px !important;
+    }
   }
 }
 @media screen and (min-width:$middleDesktop) {
