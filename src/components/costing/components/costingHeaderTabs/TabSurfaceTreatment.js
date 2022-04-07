@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useForm, } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
-import { getSurfaceTreatmentTabData, setSurfaceData, saveCostingSurfaceTreatmentTab, setSurfaceCostInOverheadProfit } from '../../actions/Costing';
+import { getSurfaceTreatmentTabData, setSurfaceData } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import { checkForNull, } from '../../../../helper';
 import PartSurfaceTreatment from '../CostingHeadCosts/SurfaceTreatMent/PartSurfaceTreatment';
@@ -29,7 +29,8 @@ function TabSurfaceTreatment(props) {
       const data = {
         CostingId: costData.CostingId,
         PartId: costData.PartId,
-        AssemCostingId: costData.CostingId
+        AssemCostingId: costData.CostingId,
+        SubAsmCostingId: costData.CostingId
       }
       dispatch(getSurfaceTreatmentTabData(data, true, () => { }))
     }
@@ -672,6 +673,7 @@ function TabSurfaceTreatment(props) {
                                     setTransportationCost={setTransportationCost}
                                     setAssemblySurfaceCost={setAssemblySurfaceCost}
                                     setAssemblyTransportationCost={setAssemblyTransportationCost}
+                                    SubAssembId={item.CostingId}
                                   />
                                 </>
                               )

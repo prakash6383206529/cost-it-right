@@ -3,7 +3,7 @@ import { Row, Col } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import Toaster from '../../../../common/Toaster'
-import { saveRawMaterialCalciData } from '../../../actions/CostWorking'
+import { saveRawMaterialCalculationForForging } from '../../../actions/CostWorking'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 
 import {
@@ -13,25 +13,15 @@ import {
 import {
   checkForDecimalAndNull,
   checkForNull,
-  findLostWeight,
   getConfigurationKey,
-  checkPercentageValue,
   loggedInUserId
 
 } from '../../../../../helper'
 import MachiningStockTable from '../MachiningStockTable'
 import LossStandardTable from '../LossStandardTable'
-import { data } from 'react-dom-factories'
-import { KG } from '../../../../../config/constants'
-
-
-
-
 
 function HotForging(props) {
-  const { rmRowData } = props
-  const trimValue = getConfigurationKey()
-  const trim = trimValue.NoOfDecimalForInputOutput
+  const { rmRowData, CostingViewMode } = props
   const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest
   const defaultValues = {
     finishedWeight: WeightCalculatorRequest &&
@@ -67,8 +57,8 @@ function HotForging(props) {
       ? WeightCalculatorRequest.EndBitLoss
       : '',
     TotalInputWeight: WeightCalculatorRequest &&
-      WeightCalculatorRequest.InputWeight !== undefined
-      ? WeightCalculatorRequest.InputWeight
+      WeightCalculatorRequest.TotalInputWeight !== undefined
+      ? WeightCalculatorRequest.TotalInputWeight
       : '',
     ScrapWeight: WeightCalculatorRequest &&
       WeightCalculatorRequest.ScrapWeight !== undefined
@@ -83,8 +73,8 @@ function HotForging(props) {
       ? WeightCalculatorRequest.RecoveryPercentage
       : '',
     NetRMCostComponent: WeightCalculatorRequest &&
-      WeightCalculatorRequest.NetRMCost !== undefined
-      ? WeightCalculatorRequest.NetRMCost
+      WeightCalculatorRequest.RawMaterialCost !== undefined
+      ? WeightCalculatorRequest.RawMaterialCost
       : ''
   }
   const {
@@ -93,7 +83,6 @@ function HotForging(props) {
     control,
     setValue,
     getValues,
-    reset,
     formState: { errors },
   } = useForm({
     mode: 'onChange',
@@ -101,7 +90,9 @@ function HotForging(props) {
     defaultValues: defaultValues,
   })
   const { forgingCalculatorMachiningStockSectionValue } = useSelector(state => state.costing)
-
+  useEffect(() => {
+    console.log(WeightCalculatorRequest, 'hefhuhf');
+  }, [])
 
   useEffect(() => {
 
@@ -114,12 +105,10 @@ function HotForging(props) {
   console.log(fieldValues, 'fieldValues');
 
   const dispatch = useDispatch()
-  const [inputWeightValue, setInputWeightValue] = useState(0)
   const [forgeWeightValue, setForgeWeightValue] = useState(WeightCalculatorRequest && WeightCalculatorRequest.ForgedWeight ? WeightCalculatorRequest.ForgedWeight : 0)
   const [lostWeight, setLostWeight] = useState(WeightCalculatorRequest && WeightCalculatorRequest.NetLossWeight ? WeightCalculatorRequest.NetLossWeight : 0)
-  const [inputLengthValue, setInputLengthValue] = useState(WeightCalculatorRequest && WeightCalculatorRequest.InputLength ? WeightCalculatorRequest.InputLength : 0)
   const [tableVal, setTableVal] = useState(WeightCalculatorRequest && WeightCalculatorRequest.LossOfTypeDetails !== null ? WeightCalculatorRequest.LossOfTypeDetails : [])
-  const [tableV, setTableV] = useState(WeightCalculatorRequest && WeightCalculatorRequest.CostingRawMaterialForgingWeightCalculators !== null ? WeightCalculatorRequest.CostingRawMaterialForgingWeightCalculators : [])
+  const [tableV, setTableV] = useState(WeightCalculatorRequest && WeightCalculatorRequest.ForgingStockDetails !== null ? WeightCalculatorRequest.ForgingStockDetails : [])
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
   const [dataSend, setDataSend] = useState({})
   const [totalMachiningStock, setTotalMachiningStock] = useState(WeightCalculatorRequest && WeightCalculatorRequest.TotalMachiningStock ? WeightCalculatorRequest.TotalMachiningStock : 0)
@@ -127,15 +116,17 @@ function HotForging(props) {
 
   const costData = useContext(costingInfoContext)
   useEffect(() => {
-    calculateForgeWeight()
-    calculateInputLength()
-    calculateNoOfPartsPerLength()
-    calculateEndBitLength()
-    calculateEndBitLoss()
-    calculateTotalInputWeight()
-    calculateScrapWeight()
-    calculateScrapCost()
-    calculateNetRmCostComponent()
+    if (!CostingViewMode) {
+      calculateForgeWeight()
+      calculateInputLength()
+      calculateNoOfPartsPerLength()
+      calculateEndBitLength()
+      calculateEndBitLoss()
+      calculateTotalInputWeight()
+      calculateScrapWeight()
+      calculateScrapCost()
+      calculateNetRmCostComponent()
+    }
 
   }, [fieldValues, lostWeight])
 
@@ -145,24 +136,13 @@ function HotForging(props) {
    */
   const calculateForgeWeight = () => {
 
-
     const finishedWeight = checkForNull(getValues('finishedWeight'))
-
-
-
-    const forgedWeight = finishedWeight + totalMachiningStock
-
-
-
-
+    const forgedWeight = checkForNull(finishedWeight) + checkForNull(totalMachiningStock)
     let obj = dataSend
     obj.forgedWeight = forgedWeight
     setDataSend(obj)
     setValue('forgedWeight', checkForDecimalAndNull(forgedWeight, initialConfiguration.NoOfDecimalForInputOutput))
-
     setForgeWeightValue(forgedWeight)
-
-
   }
 
 
@@ -173,11 +153,9 @@ function HotForging(props) {
 
   const calculateInputLength = () => {
 
-    const BilletDiameter = getValues('BilletDiameter')
-
-    const forgedWeight = forgeWeightValue
-
-    const InputLength = (forgedWeight + lostWeight) / (0.7857 * Math.pow(BilletDiameter, 2) * rmRowData.Density / 1000000)
+    const BilletDiameter = checkForNull(getValues('BilletDiameter'))
+    const forgedWeight = checkForNull(forgeWeightValue)
+    const InputLength = (checkForNull(forgedWeight) + checkForNull(lostWeight)) / (0.7857 * Math.pow(BilletDiameter, 2) * rmRowData.Density / 1000000)
 
     let obj = dataSend
     obj.InputLength = InputLength
@@ -190,17 +168,13 @@ function HotForging(props) {
    * @method calculateNoOfPartsPerLength
    * @description calculate No Of Parts Per Length
    */
-
   const calculateNoOfPartsPerLength = () => {
     const BilletLength = checkForDecimalAndNull(getValues('BilletLength'), getConfigurationKey().NoOfDecimalForInputOutput)
     const InputLength = dataSend.InputLength
     const NoOfPartsPerLength = parseInt(BilletLength / InputLength)
-
     let obj = dataSend
     obj.NoOfPartsPerLength = NoOfPartsPerLength
-
     setDataSend(obj)
-
     setValue('NoOfPartsPerLength', checkForDecimalAndNull(NoOfPartsPerLength, getConfigurationKey().NoOfDecimalForPrice))
 
   }
@@ -218,9 +192,7 @@ function HotForging(props) {
     obj.EndBitLength = EndBitLength
     setDataSend(obj)
     setValue('EndBitLength', checkForDecimalAndNull(EndBitLength, getConfigurationKey().NoOfDecimalForPrice))
-
   }
-
 
   /**
   * @method calculateEndBitLoss
@@ -228,21 +200,12 @@ function HotForging(props) {
   */
   const calculateEndBitLoss = () => {
     const BilletDiameter = checkForNull(getValues('BilletDiameter'))
-
-    const EndBitLength = dataSend.EndBitLength
-
-    const NoOfPartsPerLength = dataSend.NoOfPartsPerLength
-
-    const EndBitLoss = (0.7857 * BilletDiameter * BilletDiameter * EndBitLength * (rmRowData.Density / 1000000) / NoOfPartsPerLength)
-
-
+    const EndBitLength = checkForNull(dataSend.EndBitLength)
+    const NoOfPartsPerLength = checkForNull(dataSend.NoOfPartsPerLength)
+    const EndBitLoss = (0.7857 * checkForNull(BilletDiameter) * checkForNull(BilletDiameter) * checkForNull(EndBitLength) * (rmRowData.Density / 1000000) / checkForNull(NoOfPartsPerLength))
     let obj = dataSend
     obj.EndBitLoss = EndBitLoss
-
-
     setDataSend(obj)
-
-
     setValue('EndBitLoss', checkForDecimalAndNull(EndBitLoss, getConfigurationKey().NoOfDecimalForPrice))
 
   }
@@ -253,18 +216,12 @@ function HotForging(props) {
   */
 
   const calculateTotalInputWeight = () => {
-
-
-    const forgedWeight = forgeWeightValue
-
-    const EndBitLoss = dataSend.EndBitLoss
-    const TotalInputWeight = forgedWeight + lostWeight + EndBitLoss
-
+    const forgedWeight = checkForNull(forgeWeightValue)
+    const EndBitLoss = checkForNull(dataSend.EndBitLoss)
+    const TotalInputWeight = checkForNull(forgedWeight) + checkForNull(lostWeight) + checkForNull(EndBitLoss)
     let obj = dataSend
     obj.TotalInputWeight = TotalInputWeight
-
     setDataSend(obj)
-
     setValue('TotalInputWeight', checkForDecimalAndNull(TotalInputWeight, initialConfiguration.NoOfDecimalForInputOutput))
 
   }
@@ -285,7 +242,6 @@ function HotForging(props) {
     obj.ScrapWeight = ScrapWeight
 
     setDataSend(obj)
-
     setValue('ScrapWeight', checkForDecimalAndNull(ScrapWeight, initialConfiguration.NoOfDecimalForInputOutput))
 
   }
@@ -299,12 +255,8 @@ function HotForging(props) {
     const ScrapCost = (ScrapWeight * ScrapRecoveryPercentage * rmRowData.ScrapRate) / 100
     let obj = dataSend
     obj.ScrapCost = ScrapCost
-
     setDataSend(obj)
-
     setValue('ScrapCost', checkForDecimalAndNull(ScrapCost, getConfigurationKey().NoOfDecimalForPrice))
-
-
   }
 
   /**
@@ -318,75 +270,55 @@ function HotForging(props) {
     const NetRMCostComponent = (TotalInputWeight * rmRowData.RMRate - ScrapCost)
     let obj = dataSend
     obj.NetRMCostComponent = NetRMCostComponent
-
     setDataSend(obj)
-
-
     setValue('NetRMCostComponent', checkForDecimalAndNull(NetRMCostComponent, getConfigurationKey().NoOfDecimalForPrice))
-
   }
 
   /**
    * @method onSubmit
    * @description Form submission Function
    */
+
   const onSubmit = (values) => {
     let obj = {}
-
     obj.LayoutType = 'Hot'
-    obj.WeightCalculationId = WeightCalculatorRequest && WeightCalculatorRequest.WeightCalculationId ? WeightCalculatorRequest.WeightCalculationId : "00000000-0000-0000-0000-000000000000"
-    obj.IsChangeApplied = true //Need to make it dynamic
-    obj.PartId = costData.PartId
-    obj.RawMaterialId = rmRowData.RawMaterialId
-    obj.CostingId = costData.CostingId
-    obj.TechnologyId = costData.TechnologyId
-    obj.CostingRawMaterialDetailId = rmRowData.RawMaterialDetailId
-    obj.RawMaterialName = rmRowData.RMName
-    obj.RawMaterialType = rmRowData.MaterialType
-    obj.BasicRatePerUOM = rmRowData.RMRate
-    obj.ScrapRate = rmRowData.ScrapRate
-    obj.PartNumber = costData.PartNumber
-    obj.TechnologyName = costData.TechnologyName
-    obj.Density = rmRowData.Density
-    obj.UOMId = rmRowData.UOMId
-    obj.UOM = rmRowData.UOM
-    obj.UOMForDimension = KG
+    obj.ForgingWeightCalculatorId = WeightCalculatorRequest && WeightCalculatorRequest.ForgingWeightCalculatorId ? WeightCalculatorRequest.ForgingWeightCalculatorId : "0"
+    obj.CostingRawMaterialDetailsIdRef = rmRowData.RawMaterialDetailId
+    obj.RawMaterialIdRef = rmRowData.RawMaterialId
+    obj.BaseCostingIdRef = costData.CostingId
+    obj.LoggedInUserId = loggedInUserId()
     obj.FinishWeight = getValues('finishedWeight')
     obj.ForgedWeight = dataSend.forgedWeight
+    obj.GrossWeight = dataSend.TotalInputWeight
     obj.BilletDiameter = getValues('BilletDiameter')
     obj.BilletLength = getValues('BilletLength')
     obj.InputLength = dataSend.InputLength
     obj.NoOfPartsPerLength = dataSend.NoOfPartsPerLength
     obj.EndBitLength = dataSend.EndBitLength
     obj.EndBitLoss = dataSend.EndBitLoss
-    obj.InputWeight = dataSend.TotalInputWeight // BIND IT WITH GROSS WEIGHT KEY
-    obj.GrossWeight = dataSend.TotalInputWeight
+    obj.TotalInputWeight = dataSend.TotalInputWeight // BIND IT WITH GROSS WEIGHT KEY
     obj.ScrapWeight = dataSend.ScrapWeight
     obj.RecoveryPercentage = getValues('ScrapRecoveryPercentage')
     obj.ScrapCost = dataSend.ScrapCost
-    obj.NetRMCost = dataSend.NetRMCostComponent // BIND IT WITH NETLANDED COST
-    obj.NetLandedCost = dataSend.NetRMCostComponent
-
-
-    obj.LoggedInUserId = loggedInUserId()
+    obj.RawMaterialCost = dataSend.NetRMCostComponent
 
     let tempArr = []
-    tableVal && tableVal.map(item => {
-      tempArr.push({ LossOfType: item.LossOfType, FlashLoss: item.FlashLoss, FlashLossId: item.FlashLossId, LossPercentage: item.LossPercentage, FlashLength: item.FlashLength, FlashThickness: item.FlashThickness, FlashWidth: item.FlashWidth, BarDiameter: item.BarDiameter, BladeThickness: item.BladeThickness, LossWeight: item.LossWeight, CostingCalculationDetailId: "00000000-0000-0000-0000-000000000000" })
-    })
+    tableVal && tableVal.map(item => (
+      tempArr.push({ LossOfType: item.LossOfType, FlashLoss: item.FlashLoss, FlashLossId: item.FlashLossId, LossPercentage: item.LossPercentage, FlashLength: item.FlashLength, FlashThickness: item.FlashThickness, FlashWidth: item.FlashWidth, BarDiameter: item.BarDiameter, BladeThickness: item.BladeThickness, LossWeight: item.LossWeight, CostingCalculationDetailId: "0" })
+    ))
     obj.LossOfTypeDetails = tempArr
     obj.NetLossWeight = lostWeight
 
     let tempArray = []
 
-    tableV && tableV.map(item => {
-      tempArray.push({ TypesOfMachiningStock: item.TypesOfMachiningStock, TypesOfMachiningStockId: item.TypesOfMachiningStockId, Description: item.Description, MajorDiameter: item.MajorDiameter, MinorDiameter: item.MinorDiameter, Length: item.Length, Breadth: item.Breadth, Height: item.Height, No: item.No, GrossWeight: item.GrossWeight, Volume: item.Volume, CostingCalculationDetailId: "00000000-0000-0000-0000-000000000000" })
-    })
-    obj.CostingRawMaterialForgingWeightCalculators = tempArray
+    tableV && tableV.map(item => (
+      tempArray.push({ TypesOfMachiningStock: item.TypesOfMachiningStock, TypesOfMachiningStockId: item.TypesOfMachiningStockId, Description: item.Description, MajorDiameter: item.MajorDiameter, MinorDiameter: item.MinorDiameter, Length: item.Length, Breadth: item.Breadth, Height: item.Height, No: item.No, GrossWeight: item.GrossWeight, Volume: item.Volume, ForgingWeightCalculatorId: "00000000-0000-0000-0000-000000000000" })
+    ))
+    obj.ForgingStockDetails = tempArray
     obj.TotalMachiningStock = totalMachiningStock
 
 
-    dispatch(saveRawMaterialCalciData(obj, res => {
+    dispatch(saveRawMaterialCalculationForForging(obj, res => {
       if (res.data.Result) {
         obj.WeightCalculationId = res.data.Identity
         Toaster.success("Calculation saved successfully")
@@ -395,13 +327,13 @@ function HotForging(props) {
     }))
   }
   const TotalMachiningStock = (value) => {
-
-
     setTotalMachiningStock(value)
   }
 
   useEffect(() => {
-    calculateForgeWeight()
+    if (!CostingViewMode) {
+      calculateForgeWeight()
+    }
   }, [totalMachiningStock])
 
   /**
@@ -413,13 +345,10 @@ function HotForging(props) {
   }
 
   const tableData = (value = []) => {
-
     setTableVal(value)
   }
 
   const setLoss = (value) => {
-
-
     setLostWeight(value)
   }
   const dropDown = [
@@ -473,7 +402,6 @@ function HotForging(props) {
     },
   ]
   const handleFinishWeight = (value) => {
-    console.log('value: ', value);
     if (value.target.value === 0 || value.target.value === "" || value.target.value === null) {
       setDisableAll(true)
     }
@@ -491,7 +419,6 @@ function HotForging(props) {
             <Col md="12" className='px-0'>
               <div className="border px-3 pt-3">
                 <Row>
-
                   <Col md="12">
                     <Row>
                       <Col md="3">
@@ -524,7 +451,7 @@ function HotForging(props) {
                       dropDownMenu={machineDropDown}
                       CostingViewMode={props.CostingViewMode ? props.CostingViewMode : false}
                       netWeight={WeightCalculatorRequest && WeightCalculatorRequest.TotalMachiningStock !== null ? WeightCalculatorRequest.TotalMachiningStock : ''}
-                      sendTable={WeightCalculatorRequest ? (WeightCalculatorRequest.CostingRawMaterialForgingWeightCalculators?.length > 0 ? WeightCalculatorRequest.CostingRawMaterialForgingWeightCalculators : []) : []}
+                      sendTable={WeightCalculatorRequest ? (WeightCalculatorRequest.ForgingStockDetails?.length > 0 ? WeightCalculatorRequest.ForgingStockDetails : []) : []}
                       tableValue={tableData1}
                       rmRowData={props.rmRowData}
                       calculation={TotalMachiningStock}
@@ -543,15 +470,6 @@ function HotForging(props) {
                     control={control}
                     register={register}
                     mandatory={false}
-                    // rules={{
-                    //   required: true,
-                    //   pattern: {
-                    //     //value: /^[0-9]*$/i,
-                    //     value: /^[0-9]\d*(\.\d+)?$/i,
-                    //     message: 'Invalid Number.',
-                    //   },
-                    //   // maxLength: 4,
-                    // }}
                     handleChange={() => { }}
                     defaultValue={''}
                     className=""
@@ -636,15 +554,6 @@ function HotForging(props) {
                   control={control}
                   register={register}
                   mandatory={false}
-                  // rules={{
-                  //   required: true,
-                  //   pattern: {
-                  //     //value: /^[0-9]*$/i,
-                  //     value: /^[0-9]\d*(\.\d+)?$/i,
-                  //     message: 'Invalid Number.',
-                  //   },
-                  //   // maxLength: 4,
-                  // }}
                   handleChange={() => { }}
                   defaultValue={''}
                   className=""
@@ -661,15 +570,6 @@ function HotForging(props) {
                   control={control}
                   register={register}
                   mandatory={false}
-                  // rules={{
-                  //   required: true,
-                  //   pattern: {
-                  //     //value: /^[0-9]*$/i,
-                  //     value: /^[0-9]\d*(\.\d+)?$/i,
-                  //     message: 'Invalid Number.',
-                  //   },
-                  //   // maxLength: 4,
-                  // }}
                   handleChange={() => { }}
                   defaultValue={''}
                   className=""
@@ -686,15 +586,6 @@ function HotForging(props) {
                   control={control}
                   register={register}
                   mandatory={false}
-                  // rules={{
-                  //   required: true,
-                  //   pattern: {
-                  //     //value: /^[0-9]*$/i,
-                  //     value: /^[0-9]\d*(\.\d+)?$/i,
-                  //     message: 'Invalid Number.',
-                  //   },
-                  //   // maxLength: 4,
-                  // }}
                   handleChange={() => { }}
                   defaultValue={''}
                   className=""
@@ -712,15 +603,6 @@ function HotForging(props) {
                   control={control}
                   register={register}
                   mandatory={false}
-                  // rules={{
-                  //   required: true,
-                  //   pattern: {
-                  //     //value: /^[0-9]*$/i,
-                  //     value: /^[0-9]\d*(\.\d+)?$/i,
-                  //     message: 'Invalid Number.',
-                  //   },
-                  //   // maxLength: 4,
-                  // }}
                   handleChange={() => { }}
                   defaultValue={''}
                   className=""
@@ -738,15 +620,6 @@ function HotForging(props) {
                   control={control}
                   register={register}
                   mandatory={false}
-                  // rules={{
-                  //   required: true,
-                  //   pattern: {
-                  //     //value: /^[0-9]*$/i,
-                  //     value: /^[0-9]\d*(\.\d+)?$/i,
-                  //     message: 'Invalid Number.',
-                  //   },
-                  //   // maxLength: 4,
-                  // }}
                   handleChange={() => { }}
                   defaultValue={''}
                   className=""
@@ -763,15 +636,6 @@ function HotForging(props) {
                   control={control}
                   register={register}
                   mandatory={false}
-                  // rules={{
-                  //   required: true,
-                  //   pattern: {
-                  //     //value: /^[0-9]*$/i,
-                  //     value: /^[0-9]\d*(\.\d+)?$/i,
-                  //     message: 'Invalid Number.',
-                  //   },
-                  //   // maxLength: 4,
-                  // }}
                   handleChange={() => { }}
                   defaultValue={''}
                   className=""
@@ -791,7 +655,6 @@ function HotForging(props) {
                   rules={{
                     required: true,
                     pattern: {
-                      //value: /^[0-9]*$/i,
                       value: /^[0-9]\d*(\.\d+)?$/i,
                       message: 'Invalid Number.',
                     },
@@ -799,7 +662,6 @@ function HotForging(props) {
                       value: 100,
                       message: 'Percentage cannot be greater than 100'
                     },
-                    // maxLength: 4,
                   }}
                   handleChange={() => { }}
                   defaultValue={''}
@@ -817,15 +679,6 @@ function HotForging(props) {
                   control={control}
                   register={register}
                   mandatory={false}
-                  // rules={{
-                  //   required: true,
-                  //   pattern: {
-                  //     //value: /^[0-9]*$/i,
-                  //     value: /^[0-9]\d*(\.\d+)?$/i,
-                  //     message: 'Invalid Number.',
-                  //   },
-                  //   // maxLength: 4,
-                  // }}
                   handleChange={() => { }}
                   defaultValue={''}
                   className=""
@@ -843,15 +696,6 @@ function HotForging(props) {
                   control={control}
                   register={register}
                   mandatory={false}
-                  // rules={{
-                  //   required: true,
-                  //   pattern: {
-                  //     //value: /^[0-9]*$/i,
-                  //     value: /^[0-9]\d*(\.\d+)?$/i,
-                  //     message: 'Invalid Number.',
-                  //   },
-                  //   // maxLength: 4,
-                  // }}
                   handleChange={() => { }}
                   defaultValue={''}
                   className=""

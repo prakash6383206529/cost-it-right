@@ -558,6 +558,7 @@ export default function costingReducer(state = initialState, action) {
         ...state,
         masterBatchObj: action.payload
       }
+
     default:
       return state
   }

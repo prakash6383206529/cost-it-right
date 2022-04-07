@@ -799,20 +799,6 @@ function TabRMCC(props) {
         const updatedArr1 = mapArray(RMCCTabData)
 
         dispatch(setRMCCData(updatedArr1, () => { }))
-
-
-
-
-        // setAssembly(BOMLevel, PartNumber, Children, i.CostingChildPartDetails)
-        // }
-        // else {
-        //   // i.CostingPartDetails.TotalBoughtOutPartCost = setBOPCostAssembly(i.CostingChildPartDetails)
-        //   // i.CostingPartDetails.TotalBoughtOutPartCostWithQuantity =    i.CostingPartDetails.TotalBoughtOutPartCost * i.CostingPartDetails.Quantity
-        //   const total = i.CostingPartDetails.TotalRawMaterialsCostWithQuantity + i.CostingPartDetails.TotalBoughtOutPartCostWithQuantity + i.CostingPartDetails.TotalConversionCostWithQuantity
-        //   i.CostingPartDetails.TotalCalculatedRMBOPCCCost = total
-        //   i.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = i.CostingPartDetails.TotalCalculatedRMBOPCCCost * i.CostingPartDetails.Quantity;
-        //   setAssembly(BOMLevel, PartNumber, Children, i.CostingChildPartDetails)
-        // }
         return i;
       });
 

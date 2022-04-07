@@ -46,6 +46,7 @@ function CostingHeaderTabs(props) {
 
   useEffect(() => {
 
+
     // CALLED WHEN OTHER TAB CLICKED WITHOUT SAVING TO RMCC CURRENT TAB.
     if (!CostingViewMode && Object.keys(ComponentItemData).length > 0 && ComponentItemData.IsOpen !== false && activeTab !== '1' && IsCalledAPI && checkIsDataChange) {
 
@@ -314,7 +315,8 @@ function CostingHeaderTabs(props) {
                   showYearDropdown
                   dateFormat="dd/MM/yyyy"
                   //maxDate={new Date()}
-                  minDate={new Date(costData.PartEffectiveDate)}         // USER SHOULD NOT BE ABLE TO SELECT EFFECTIVE DATE, OF BEFORE THE PART WAS CREATED
+                  // USER SHOULD NOT BE ABLE TO SELECT EFFECTIVE DATE, OF BEFORE THE PART WAS CREATED
+                  minDate={costData.LastApproveEffectiveDate !== null ? (costData.PartEffectiveDate < costData.LastApproveEffectiveDate ? new Date(costData.LastApproveEffectiveDate) : new Date(costData.PartEffectiveDate)) : new Date(costData.PartEffectiveDate)}
                   dropdownMode="select"
                   placeholderText="Select date"
                   className="withBorder"
