@@ -3883,25 +3883,25 @@ export const ListForPartCost = [
         VendorName: 'Vendor 1',
         SettledPrice: 10,
         SOBPercentage: 50,
-        Delta: 5,
+        DeltaValue: 5,
         // NetCost: 7.5
     }, {
         VendorName: 'Vendor 2',
         SettledPrice: 15,
         SOBPercentage: 0,
-        Delta: 5,
+        DeltaValue: 5,
         // NetCost: 0
     }, {
         VendorName: 'Vendor 3',
         SettledPrice: 10,
         SOBPercentage: 0,
-        Delta: 5,
+        DeltaValue: 5,
         // NetCost: 0
     }, {
         VendorName: 'Vendor 4',
         SettledPrice: 20,
         SOBPercentage: 50,
-        Delta: 10,
+        DeltaValue: 10,
         // NetCost: 5
     },
 ]

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Drawer from '@material-ui/core/Drawer';
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
@@ -25,6 +25,7 @@ function EditPartCost(props) {
     const [DeltaSign, setDeltaSign] = useState('')
     const [DeltaValue, setDeltaValue] = useState(0)
     const [gridData, setGridData] = useState(ListForPartCost)
+    console.log('gridData: ', gridData);
     const [weightedCost, setWeightedCost] = useState(0)
     const dispatch = useDispatch()
 
@@ -37,6 +38,17 @@ function EditPartCost(props) {
         reValidateMode: 'onChange',
     })
 
+    useEffect(() => {
+        gridData && gridData.map((item, index) => {
+            setValue(`${PartCostFields}.${index}.DeltaValue`, item.DeltaValue)
+            setValue(`${PartCostFields}.${index}.DeltaSign`, item.DeltaSign)
+            setValue(`${PartCostFields}.${index}.SOBPercentage`, item.SOBPercentage)
+            setValue(`${PartCostFields}.${index}.NetCost`, item.NetCost)
+            setDeltaSign(item.DeltaSign)
+        })
+
+    }, [gridData])
+
     const onSubmit = (values) => {
         let changeTempObject = tempObject[0].CostingChildPartDetails
         let targetBOMLevel = props.tabAssemblyIndividualPartDetail.BOMLevel
@@ -44,19 +56,23 @@ function EditPartCost(props) {
         let targetAssemblyPartNumber = props.tabAssemblyIndividualPartDetail.AssemblyPartNumber
         let costPerPieceTotal = 0
         let costPerAssemblyTotal = 0
+
         changeTempObject && changeTempObject.map((item) => {
 
-            if (targetBOMLevel == item.BOMLevel && targetPartNo == item.PartNumber && targetAssemblyPartNumber == item.AssemblyPartNumber) {
+            if (targetBOMLevel === item.BOMLevel && targetPartNo === item.PartNumber && targetAssemblyPartNumber === item.AssemblyPartNumber) {
                 item.CostingPartDetails.CostPerPiece = weightedCost
                 item.CostingPartDetails.CostPerAssembly = Number(weightedCost) * Number(item.CostingPartDetails.QuantityForSubAssembly)
             }
-
-            costPerPieceTotal = Number(costPerPieceTotal) + Number(item?.CostingPartDetails?.CostPerPiece)
-            costPerAssemblyTotal = Number(costPerAssemblyTotal) + Number(item?.CostingPartDetails?.CostPerAssembly)
-
+            if (item?.CostingPartDetails?.CostPerPiece && item?.CostingPartDetails?.CostPerAssembly) {
+                costPerPieceTotal = Number(costPerPieceTotal) + Number(item?.CostingPartDetails?.CostPerPiece)
+                costPerAssemblyTotal = Number(costPerAssemblyTotal) + Number(item?.CostingPartDetails?.CostPerAssembly)
+            }
+            return null
         })
 
-        dispatch(setSubAssemblyTechnologyArray(changeTempObject))
+        tempObject[0].CostingPartDetails.CostPerPiece = costPerPieceTotal
+        tempObject[0].CostingPartDetails.CostPerAssembly = costPerAssemblyTotal
+        dispatch(setSubAssemblyTechnologyArray(tempObject))
 
         props.getCostPerPiece(weightedCost)
         props.closeDrawer('')
@@ -68,22 +84,26 @@ function EditPartCost(props) {
 
         ListForPartCost && ListForPartCost.map((item, index) => {
 
-            let tempDeltaValue = getValues(`PartCostFields.${index}.DeltaValue`)
-            let tempSOBPercentage = getValues(`PartCostFields.${index}.SOBPercentage`)
+            let tempDeltaValue = getValues(`${PartCostFields}.${index}.DeltaValue`)
+            let tempSOBPercentage = getValues(`${PartCostFields}.${index}.SOBPercentage`)
+            let tempDeltaSign = getValues(`${PartCostFields}.${index}.DeltaSign`)
 
             if (Number(gridIndex) === Number(index)) {
 
-                if (getValues(`PartCostFields.${index}.DeltaSign`)?.label === '+') {
+                item.SOBPercentage = tempSOBPercentage
+                item.DeltaValue = tempDeltaValue
+                item.DeltaSign = tempDeltaSign
+                if (tempDeltaSign?.label === '+') {
 
                     const temp = percentageOfNumber(Number(item.SettledPrice) + Number(tempDeltaValue), tempSOBPercentage)
                     item.NetCost = temp
-                    setValue(`PartCostFields.${index}.NetCost`, temp)
+                    setValue(`${PartCostFields}.${index}.NetCost`, temp)
 
-                } if (getValues(`PartCostFields.${index}.DeltaSign`)?.label === '-') {
+                } if (tempDeltaSign?.label === '-') {
 
                     const temp = percentageOfNumber(Number(item.SettledPrice) - Number(tempDeltaValue), tempSOBPercentage)
                     item.NetCost = temp
-                    setValue(`PartCostFields.${index}.NetCost`, temp)
+                    setValue(`${PartCostFields}.${index}.NetCost`, temp)
                 }
             }
             WeightedCost = checkForNull(WeightedCost) + checkForNull(item.NetCost)
@@ -171,7 +191,7 @@ function EditPartCost(props) {
                                                     <td>{checkForDecimalAndNull(item.SettledPrice, initialConfiguration.NoOfDecimalForPrice)}</td>
                                                     <td width={20}>
                                                         <NumberFieldHookForm
-                                                            name={`PartCostFields.${index}.SOBPercentage`}
+                                                            name={`${PartCostFields}.${index}.SOBPercentage`}
                                                             Controller={Controller}
                                                             control={control}
                                                             register={register}
@@ -196,7 +216,7 @@ function EditPartCost(props) {
                                                     </td>
                                                     <td width="40%">
                                                         <SearchableSelectHookForm
-                                                            name={`PartCostFields.${index}.DeltaSign`}
+                                                            name={`${PartCostFields}.${index}.DeltaSign`}
                                                             placeholder={"Select"}
                                                             Controller={Controller}
                                                             control={control}
@@ -210,7 +230,7 @@ function EditPartCost(props) {
                                                         />
 
                                                         <NumberFieldHookForm
-                                                            name={`PartCostFields.${index}.DeltaValue`}
+                                                            name={`${PartCostFields}.${index}.DeltaValue`}
                                                             Controller={Controller}
                                                             control={control}
                                                             register={register}
@@ -236,7 +256,7 @@ function EditPartCost(props) {
                                                     </td>
                                                     <td width="40%">
                                                         <NumberFieldHookForm
-                                                            name={`PartCostFields.${index}.NetCost`}
+                                                            name={`${PartCostFields}.${index}.NetCost`}
                                                             Controller={Controller}
                                                             control={control}
                                                             register={register}

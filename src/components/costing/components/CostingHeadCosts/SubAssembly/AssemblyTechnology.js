@@ -1,16 +1,15 @@
 import React, { useContext, useState, } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { costingInfoContext } from '../../CostingDetailStepTwo';
-import { getRMCCTabData, saveAssemblyBOPHandlingCharge, } from '../../../actions/Costing';
-import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, } from '../../../../../helper';
+import { checkForDecimalAndNull, CheckIsCostingDateSelected, } from '../../../../../helper';
 import AddAssemblyOperation from '../../Drawers/AddAssemblyOperation';
 import { ViewCostingContext } from '../../CostingDetails';
-import { EMPTY_GUID } from '../../../../../config/constants';
 import EditPartCost from './EditPartCost';
 import PartCompomentA from './PartComponentA';
 import BOPA from './BOPA';
-import { constRMCCTabData, subAssembly010101, subAssemblyAssemPart, tempObject } from '../../../../../config/masterData';
+import { subAssembly010101, subAssemblyAssemPart, tempObject } from '../../../../../config/masterData';
 import { setSubAssemblyTechnologyArray } from '../../../actions/SubAssembly.js';
+import AddProcess from '../../Drawers/AddProcess';
 
 function AssemblyTechnology(props) {
     const { children, item, index, getCostPerPiece } = props;
@@ -20,7 +19,8 @@ function AssemblyTechnology(props) {
     const [IsOpen, setIsOpen] = useState(false);
     const [Count, setCount] = useState(0);
     const [partCostDrawer, setPartCostDrawer] = useState(false);
-    const [IsDrawerOpen, setDrawerOpen] = useState(false)
+    const [isOperationDrawerOpen, setIsOperationDrawerOpen] = useState(false)
+    const [isProcessDrawerOpen, setIsProcessDrawerOpen] = useState(false)
     const [tabAssemblyIndividualPartDetail, setTabAssemblyIndividualPartDetail] = useState({})
 
     const CostingViewMode = useContext(ViewCostingContext);
@@ -35,22 +35,23 @@ function AssemblyTechnology(props) {
         setCount(Count + 1)
         if (Object.keys(costData).length > 0) {
 
-            if (PartNumber == '010101') {
+            if (PartNumber === '010101') {
                 // dispatch(setSubAssemblyTechnologyArray(subAssembly010101))
                 props.toggleAssembly(BOMLevel, PartNumber, subAssembly010101[0])
             }
 
-            else if (PartNumber == 'Assem Part No. 10') {
+            else if (PartNumber === 'Assem Part No. 10') {
                 // dispatch(setSubAssemblyTechnologyArray(subAssemblyAssemPart))
                 props.toggleAssembly(BOMLevel, PartNumber, subAssemblyAssemPart)
             }
 
             else {
                 dispatch(setSubAssemblyTechnologyArray(tempObject))
-                props.toggleAssembly(BOMLevel, PartNumber, tempObject)
+                // props.toggleAssembly(BOMLevel, PartNumber, tempObject)
+
             }
 
-            // props.toggleAssembly(BOMLevel, PartNumber, subAssemblyTechnologyArray)
+            props.toggleAssembly(BOMLevel, PartNumber, subAssemblyTechnologyArray)
 
         } else {
             props.toggleAssembly(BOMLevel, PartNumber)
@@ -58,20 +59,37 @@ function AssemblyTechnology(props) {
     }
 
     /**
-    * @method DrawerToggle
+    * @method OperationDrawerToggle
     * @description TOGGLE DRAWER
     */
-    const DrawerToggle = () => {
+    const OperationDrawerToggle = () => {
         if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
-        setDrawerOpen(true)
+        setIsOperationDrawerOpen(true)
     }
 
     /**
-     * @method closeDrawer
+     * @method closeOperationDrawer
      * @description HIDE RM DRAWER
      */
-    const closeDrawer = (e = '', rowData = {}) => {
-        setDrawerOpen(false)
+    const closeOperationDrawer = (e = '', rowData = {}) => {
+        setIsOperationDrawerOpen(false)
+    }
+
+    /**
+    * @method ProcessDrawerToggle
+    * @description TOGGLE DRAWER
+    */
+    const ProcessDrawerToggle = () => {
+        if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
+        setIsProcessDrawerOpen(true)
+    }
+
+    /**
+     * @method closeProcessDrawer
+     * @description HIDE RM DRAWER
+     */
+    const closeProcessDrawer = (e = '', rowData = {}) => {
+        setIsProcessDrawerOpen(false)
     }
 
     const closeDrawerPartCost = (e = '') => {
@@ -184,21 +202,29 @@ function AssemblyTechnology(props) {
                             onClick={() => viewOrEditItemDetails(item)}>
                         </button>}
                 </td>
-                <td>
-                    {checkForNull(item?.CostingPartDetails?.TotalOperationCostPerAssembly) !== 0 ?
-                        <button
-                            type="button"
-                            className={'user-btn add-oprn-btn'}
-                            onClick={DrawerToggle}>
-                            <div className={'fa fa-eye pr-1'}></div>OPER</button>
-                        :
-                        <button
-                            type="button"
-                            className={'user-btn add-oprn-btn'}
-                            onClick={DrawerToggle}>
-                            <div className={`${CostingViewMode ? 'fa fa-eye pr-1' : 'plus'}`}></div>{'OPER'}</button>}
-                </td>
-            </tr>
+
+
+                {item?.CostingPartDetails?.PartType === 'Assembly' ? <td>
+                    <button
+                        type="button"
+                        className={'user-btn '}
+                        onClick={ProcessDrawerToggle}
+                    >
+                        <div className={'plus'}></div>PROCESS
+                    </button>
+
+                    <button
+                        type="button"
+                        className={'user-btn mr5'}
+                        onClick={OperationDrawerToggle}
+                    >
+                        <div className={'plus'}></div>OPERATION
+                    </button>
+                </td> :
+                    <td></td>
+                }
+
+            </tr >
 
             {item.IsOpen && nestedPartComponent}
 
@@ -206,28 +232,42 @@ function AssemblyTechnology(props) {
 
             {item.IsOpen && nestedAssembly}
 
-            {IsDrawerOpen && <AddAssemblyOperation
-                isOpen={IsDrawerOpen}
-                closeDrawer={closeDrawer}
-                isEditFlag={false}
-                ID={''}
-                anchor={'right'}
-                item={item}
-                CostingViewMode={CostingViewMode}
-                setAssemblyOperationCost={props.setAssemblyOperationCost}
-                setAssemblyToolCost={props.setAssemblyToolCost}
-            />}
+            {
+                isOperationDrawerOpen && <AddAssemblyOperation
+                    isOpen={isOperationDrawerOpen}
+                    closeDrawer={closeOperationDrawer}
+                    isEditFlag={false}
+                    ID={''}
+                    anchor={'right'}
+                    item={item}
+                    CostingViewMode={CostingViewMode}
+                    setAssemblyOperationCost={props.setAssemblyOperationCost}
+                    setAssemblyToolCost={props.setAssemblyToolCost}
+                />
+            }
+            {isProcessDrawerOpen && (
+                <AddProcess
+                    isOpen={isProcessDrawerOpen}
+                    closeDrawer={closeProcessDrawer}
+                    isEditFlag={false}
+                    ID={''}
+                    anchor={'right'}
+                // Ids={Ids}
+                // MachineIds={MachineIds}
+                />
+            )}
+            {
+                partCostDrawer && <EditPartCost
+                    isOpen={partCostDrawer}
+                    closeOperationDrawer={closeDrawerPartCost}
+                    // approvalData={approvalData}
+                    anchor={'bottom'}
+                    // masterId={OPERATIONS_ID}
+                    tabAssemblyIndividualPartDetail={tabAssemblyIndividualPartDetail}
 
-            {partCostDrawer && <EditPartCost
-                isOpen={partCostDrawer}
-                closeDrawer={closeDrawerPartCost}
-                // approvalData={approvalData}
-                anchor={'bottom'}
-                // masterId={OPERATIONS_ID}
-                tabAssemblyIndividualPartDetail={tabAssemblyIndividualPartDetail}
-
-                getCostPerPiece={getCostPerPiece}
-            />}
+                    getCostPerPiece={getCostPerPiece}
+                />
+            }
 
         </ >
     );

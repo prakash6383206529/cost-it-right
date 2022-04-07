@@ -2,22 +2,18 @@ import React, { useEffect, useContext, useState } from 'react';
 import { useForm, } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
-import PartCompoment from '../CostingHeadCosts/Part'
 import {
-  getRMCCTabData, setRMCCData, saveComponentCostingRMCCTab, setComponentItemData,
+  setRMCCData, saveComponentCostingRMCCTab, setComponentItemData,
   saveDiscountOtherCostTab, setComponentDiscountOtherItemData, CloseOpenAccordion, saveAssemblyPartRowCostingCalculation, isDataChange
 } from '../../actions/Costing';
 import { costingInfoContext, NetPOPriceContext } from '../CostingDetailStepTwo';
 import { checkForNull, CheckIsCostingDateSelected, loggedInUserId } from '../../../../helper';
-import AssemblyPart from '../CostingHeadCosts/SubAssembly';
 import { LEVEL0, LEVEL1, } from '../../../../config/constants';
 import Toaster from '../../../common/Toaster';
 import { MESSAGES } from '../../../../config/message';
 import { ViewCostingContext } from '../CostingDetails';
 import DayTime from '../../../common/DayTimeWrapper'
 import AddBOPHandling from '../Drawers/AddBOPHandling';
-import { Link } from 'react-scroll';
-import { subAssemblyTechnologyArray } from '../../../../config/masterData';
 import AssemblyTechnology from '../CostingHeadCosts/SubAssembly/AssemblyTechnology';
 
 function TabAssemblyTechnology(props) {
@@ -1135,8 +1131,8 @@ function TabAssemblyTechnology(props) {
   const toggleAssembly = (BOMLevel, PartNumber, Children = {}) => {
 
     let arr = setAssembly(BOMLevel, PartNumber, Children, subAssemblyTechnologyArray)
-    let arr1 = assemblyCalculation(arr, 'BOP')
-    dispatch(setRMCCData(arr1, () => { }))
+    // let arr1 = assemblyCalculation(arr, 'BOP')
+    // dispatch(setRMCCData(arr1, () => { }))
   }
 
   /**
@@ -1156,61 +1152,13 @@ function TabAssemblyTechnology(props) {
         if (i.IsAssemblyPart === true && i.PartNumber === PartNumber && i.BOMLevel === BOMLevel) {
 
           i.CostingChildPartDetails = BOMLevel !== LEVEL0 ? ChangeBOMLeveL(Children.CostingChildPartDetails, BOMLevel) : i.CostingChildPartDetails;
-          i.CostingPartDetails = Children.CostingPartDetails;
-
-          // i.CostingPartDetails.TotalRawMaterialsCost = getRMTotalCostForAssembly(CostingChildPartDetails, Children.CostingPartDetails.TotalRawMaterialsCost, params);
-          // i.CostingPartDetails.TotalRawMaterialsCost = setRMCostForAssembly(CostingChildPartDetails);
-          // i.CostingPartDetails.TotalBoughtOutPartCost = getBOPTotalCostForAssembly(CostingChildPartDetails, Children.CostingPartDetails.TotalBoughtOutPartCost, params);
-          // i.CostingPartDetails.TotalBoughtOutPartCost = setBOPCostAssembly (CostingChildPartDetails);
-          // i.CostingPartDetails.TotalProcessCost = getProcessTotalCost(CostingChildPartDetails, Children.CostingPartDetails.TotalProcessCost, params);
-          // i.CostingPartDetails.TotalOperationCost = getOperationTotalCost(CostingChildPartDetails, Children.CostingPartDetails.TotalOperationCost, params);
-          // i.CostingPartDetails.TotalToolCost = getToolTotalCost(CostingChildPartDetails, Children.CostingPartDetails.TotalToolCost, params);
-
-          // i.CostingPartDetails.TotalConversionCost = getProcessTotalCostForAssembly(CostingChildPartDetails, Children.CostingPartDetails.TotalProcessCost, params) +
-          //   getOperationTotalCostForAssembly(CostingChildPartDetails, Children.CostingPartDetails.TotalOperationCost, params) +
-          //   GetOperationCostTotal(CostingPartDetails.CostingOperationCostResponse) +
-          //   GetToolCostTotal(CostingPartDetails.CostingToolCostResponse);
-
-          // i.CostingPartDetails.TotalConversionCost = getProcessTotalCost(CostingChildPartDetails, CostingPartDetails.TotalProcessCost, params) +
-          //   getOperationTotalCost(CostingChildPartDetails, CostingPartDetails.TotalOperationCost, params) +
-          //   getOperationTotalCostForAssembly(CostingChildPartDetails, Children.CostingPartDetails.TotalOperationCostPerAssembly, params) +
-          //   getToolTotalCostForAssembly(CostingChildPartDetails, Children.CostingPartDetails.TotalToolCostPerAssembly, params);
-          // i.CostingPartDetails.TotalConversionCost = setConversionCostAssembly(CostingChildPartDetails) 
-          // +
-          // getOperationTotalCost(CostingChildPartDetails, CostingPartDetails.TotalOperationCost, params) +
-          // getOperationTotalCostForAssembly(CostingChildPartDetails, Children.CostingPartDetails.TotalOperationCostPerAssembly, params) +
-          // getToolTotalCostForAssembly(CostingChildPartDetails, Children.CostingPartDetails.TotalToolCostPerAssembly, params);
-          // checkForNull(i.CostingPartDetails.TotalOperationCostPerAssembly) +
-          // checkForNull(i.CostingPartDetails.TotalToolCostPerAssembly);
-
-          // i.CostingPartDetails.TotalCalculatedRMBOPCCCost = (getTotalCostForAssembly(CostingChildPartDetails, CostingPartDetails, 'ALL', 0, params)) +
-          //   checkForNull(CostingPartDetails.TotalOperationCostPerAssembly);
-
-          // i.CostingPartDetails.TotalCalculatedRMBOPCCCost = getRMTotalCostForAssembly(CostingChildPartDetails, CostingPartDetails.TotalRawMaterialsCost, params) +
-          //   getBOPTotalCostForAssembly(CostingChildPartDetails, CostingPartDetails.TotalBoughtOutPartCost, params) +
-          //   getProcessTotalCost(CostingChildPartDetails, CostingPartDetails.TotalProcessCost, params) +
-          //   getOperationTotalCost(CostingChildPartDetails, CostingPartDetails.TotalOperationCost, params) +
-          //   getOperationTotalCostForAssembly(CostingChildPartDetails, CostingPartDetails.TotalOperationCostPerAssembly, params) +
-          //   getToolTotalCostForAssembly(CostingChildPartDetails, CostingPartDetails.TotalToolCostPerAssembly, params);
-
-
+          // i.CostingPartDetails = Children.CostingPartDetails;
           i.IsAssemblyPart = true;
           i.IsOpen = !i.IsOpen;
-          // i.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = getRMBOPCCTotalCostWithQuantity(CostingChildPartDetails) * i.CostingPartDetails.Quantity;
-          // i.CostingPartDetails.TotalRawMaterialsCostWithQuantity = getRMTotalCostForAssemblyWithQuantity(CostingChildPartDetails, 0, params);
-          // i.CostingPartDetails.TotalBoughtOutPartCostWithQuantity = getBOPTotalCostForAssemblyWithQuantity(CostingChildPartDetails, 0, params);
-          // i.CostingPartDetails.TotalConversionCostWithQuantity = getCCTotalCostForAssemblyWithQuantity(CostingChildPartDetails, 0, params);
-          // i.CostingPartDetails.TotalRawMaterialsCostWithQuantity =    i.CostingPartDetails.TotalRawMaterialsCost *  i.CostingPartDetails.Quantity;
-          // i.CostingPartDetails.TotalBoughtOutPartCostWithQuantity =  i.CostingPartDetails.TotalBoughtOutPartCost *  i.CostingPartDetails.Quantity;
-          // i.CostingPartDetails.TotalConversionCostWithQuantity =  i.CostingPartDetails.TotalConversionCost *  i.CostingPartDetails.Quantity;
-          // const total = i.CostingPartDetails.TotalRawMaterialsCostWithQuantity +i.CostingPartDetails.TotalBoughtOutPartCostWithQuantity +  i.CostingPartDetails.TotalConversionCostWithQuantity
-          // i.CostingPartDetails.TotalCalculatedRMBOPCCCost = total
-          // i.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity =(total) * i.CostingPartDetails.Quantity;
+
           setAssembly(BOMLevel, PartNumber, Children, i.CostingChildPartDetails)
         }
         else {
-          // i.CostingPartDetails.TotalBoughtOutPartCost = setBOPCostAssembly(i.CostingChildPartDetails)
-          // i.CostingPartDetails.TotalBoughtOutPartCostWithQuantity =    i.CostingPartDetails.TotalBoughtOutPartCost * i.CostingPartDetails.Quantity
           const total = i.CostingPartDetails.TotalRawMaterialsCostWithQuantity + i.CostingPartDetails.TotalBoughtOutPartCostWithQuantity + i.CostingPartDetails.TotalConversionCostWithQuantity
           i.CostingPartDetails.TotalCalculatedRMBOPCCCost = total
           i.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = i.CostingPartDetails.TotalCalculatedRMBOPCCCost * i.CostingPartDetails.Quantity;

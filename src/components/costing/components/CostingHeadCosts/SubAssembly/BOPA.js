@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { checkForDecimalAndNull } from '../../../../../helper';
 
 function BOPA(props) {
-  const { children, item } = props;
+  const { item } = props;
 
   const dispatch = useDispatch()
   const [IsOpen, setIsOpen] = useState(false);
@@ -30,10 +30,6 @@ function BOPA(props) {
       }, 500)
     }
   }, [])
-
-  const toggle = () => {
-    setIsOpen(!IsOpen)
-  }
 
   /**
   * @method render
