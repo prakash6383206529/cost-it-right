@@ -66,10 +66,10 @@ class Login extends Component {
     let reqParams = {
       username: values.UserName,
       password: encryptedpassword.toString(),
-      grant_type: 'password',
+      // grant_type: 'password',
     }
     this.setState({ inputLoader: true })
-    this.props.loginUserAPI(values, (res) => {
+    this.props.loginUserAPI(reqParams, (res) => {
 
       // this.props.TokenAPI(reqParams, (res) => {
       if (res && res.status === 200) {
