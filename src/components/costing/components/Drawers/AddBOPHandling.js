@@ -25,9 +25,7 @@ function AddBOPHandling(props) {
 
 
   useEffect(() => {
-
     const childPartDetail = JSON.parse(localStorage.getItem('costingArray'))
-    console.log('childPartDetail: ', childPartDetail);
     let BOPSum = 0
     childPartDetail && childPartDetail.map((el) => {
       if (el.PartType === 'BOP') {
@@ -36,14 +34,14 @@ function AddBOPHandling(props) {
     })
     setValue('BOPCost', BOPSum)
     if (RMCCTabData[0].CostingPartDetails.IsApplyBOPHandlingCharges) {
+      setValue('BOPCost', RMCCTabData[0].CostingPartDetails.BOPHandlingChargeApplicability)
       setValue('BOPHandlingPercentage', RMCCTabData[0].CostingPartDetails.BOPHandlingPercentage)
       setValue('BOPHandlingCharges', RMCCTabData[0].CostingPartDetails.BOPHandlingCharges)
     } else if (getAssemBOPCharge && Object.keys(getAssemBOPCharge).length > 0) {
+      setValue('BOPCost', getAssemBOPCharge && getAssemBOPCharge.BOPHandlingChargeApplicability)
       setValue('BOPHandlingPercentage', getAssemBOPCharge && getAssemBOPCharge.BOPHandlingPercentage)
       setValue('BOPHandlingCharges', getAssemBOPCharge && getAssemBOPCharge.BOPHandlingCharges)
-
     }
-
   }, [])
 
 
@@ -103,6 +101,7 @@ function AddBOPHandling(props) {
 
     let obj = {
       IsApplyBOPHandlingCharges: true,
+      BOPHandlingChargeApplicability: getValues('BOPCost'),
       BOPHandlingPercentage: getValues('BOPHandlingPercentage'),
       BOPHandlingCharges: getValues('BOPHandlingCharges')
     }
