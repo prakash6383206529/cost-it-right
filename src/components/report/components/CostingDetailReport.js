@@ -566,6 +566,8 @@ function ReportListing(props) {
                                 {warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                             </div>
                             <div>
+                                <button disabled={enableSearchFilterSearchButton} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
+                                <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => resetState()}></button>
                                 <ExcelFile filename={ReportMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
                                     {renderColumn(ReportMaster)}
                                 </ExcelFile>
@@ -576,7 +578,6 @@ function ReportListing(props) {
                                 <ExcelFile filename={ReportSAPMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>Encoded Download</button>}>
                                     {renderColumnSAPEncoded(ReportSAPMaster)}
                                 </ExcelFile>
-
 
                             </div>
                         </div>
@@ -603,13 +604,14 @@ function ReportListing(props) {
                         paginationPageSize={10}
                         onGridReady={onGridReady}
                         gridOptions={gridOptions}
-                        loadingOverlayComponent={'customLoadingOverlay'}
+                        //loadingOverlayComponent={'customLoadingOverlay'}
                         noRowsOverlayComponent={'customNoRowsOverlay'}
                         noRowsOverlayComponentParams={{
                             title: EMPTY_DATA,
                             imagClass: 'imagClass'
                         }}
                         suppressRowClickSelection={true}
+                        suppressPaginationPanel={true}
                         rowSelection={'multiple'}
                         frameworkComponents={frameworkComponents}
                         onSelectionChanged={onRowSelect}
