@@ -12,7 +12,7 @@ import { gridDataAdded } from '../../../actions/Costing';
 import { ViewCostingContext } from '../../CostingDetails'
 
 function SurfaceTreatmentCost(props) {
-
+  console.log(props.data, "props.data");
 
   const CostingViewMode = useContext(ViewCostingContext);
 
@@ -39,9 +39,10 @@ function SurfaceTreatmentCost(props) {
       index: props.index,
       BOMLevel: props.item.BOMLevel,
       PartNumber: props.item.PartNumber,
+
     }
     if (props.IsAssemblyCalculation) {
-      props.setAssemblySurfaceCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
+      props.setAssemblySurfaceCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false, props.item)
     } else {
 
       props.setSurfaceCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
@@ -51,12 +52,12 @@ function SurfaceTreatmentCost(props) {
   }, [gridData]);
 
 
-  useEffect(() => {
-    if (props?.data && props.data.length > 0) {
+  // useEffect(() => {
+  //   if (props?.data && props.data.length > 0) {
 
-      setGridData(props.data)
-    }
-  }, [props.data])
+  //     setGridData(props.data)
+  //   }
+  // }, [props.data])
 
   /**
   * @method DrawerToggle
@@ -97,8 +98,11 @@ function SurfaceTreatmentCost(props) {
       setGridData(tempArr)
       selectedIds(tempArr)
       dispatch(gridDataAdded(true))
+
+
     }
     setDrawerOpen(false)
+
   }
 
   /**

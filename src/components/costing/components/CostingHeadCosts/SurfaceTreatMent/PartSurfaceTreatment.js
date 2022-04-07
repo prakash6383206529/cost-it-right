@@ -83,6 +83,7 @@ function PartSurfaceTreatment(props) {
           <td>{item && item.PartType}</td>
           <td>{item.CostingPartDetails.SurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.SurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
           <td>{item.CostingPartDetails.TransportationCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TransportationCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+          <td>{item?.Quantity ? item.Quantity : 2}</td>
           <td>{item.CostingPartDetails.NetSurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.NetSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
         </div>
         <td>
@@ -118,7 +119,9 @@ function PartSurfaceTreatment(props) {
         transportationData={item.CostingPartDetails.TransportationDetails}
         setSurfaceCost={props.setSurfaceCost}
         setTransportationCost={props.setTransportationCost}
-        IsAssemblyCalculation={false}
+        IsAssemblyCalculation={props.IsAssemblyCalculation}
+        setAssemblySurfaceCost={props.setAssemblySurfaceCost}
+        setAssemblyTransportationCost={props.setAssemblyTransportationCost}
       />}
 
     </ >

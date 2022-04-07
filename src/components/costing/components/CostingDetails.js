@@ -1228,6 +1228,7 @@ function CostingDetails(props) {
     dispatch(getBriefCostingById('', (res) => { }))
 
     localStorage.setItem('costingArray', [])
+    localStorage.setItem('surfaceCostingArray', [])
     dispatch(setRMCCData([], () => { }))                            //THIS WILL CLEAR RM CC REDUCER
     dispatch(setComponentItemData({}, () => { }))
 

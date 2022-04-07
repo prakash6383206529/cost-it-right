@@ -11,7 +11,7 @@ import WarningMessage from '../../../../common/WarningMessage';
 
 function TransportationCost(props) {
   const { data, item } = props;
-
+  console.log("COMING IN TRANSPORTATION COST");
 
   const CostingViewMode = useContext(ViewCostingContext);
   const defaultValues = {
@@ -76,7 +76,8 @@ function TransportationCost(props) {
     }
 
     if (props.IsAssemblyCalculation) {
-      props.setAssemblyTransportationCost(tempObj, Params, JSON.stringify(tempObj) !== JSON.stringify(OldTransportObj) ? true : false)
+      props.setAssemblyTransportationCost(tempObj, Params, item)
+      props.getTransportationObj(tempObj)
     } else {
       props.setTransportationCost(tempObj, Params)
       props.getTransportationObj(tempObj)
