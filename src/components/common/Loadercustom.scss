@@ -375,6 +375,9 @@
    
   }
 
+ .vendor-loader {
+    @include inputLoader(1px, 1px, 1px, 1px )
+ }
  .vendor-input-loader-second-col {
     @include inputLoader(29px, 41px, 16px, 16px, $responsiveRight:16px )
  }
