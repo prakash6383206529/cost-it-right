@@ -11,7 +11,6 @@ import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigura
 import Toaster from '../../../common/Toaster';
 import { useDispatch } from 'react-redux';
 import { isDataChange, saveAssemblyBOPHandlingCharge } from '../../actions/Costing';
-import { NetPOPriceContext } from '../CostingDetailStepTwo';
 
 function AddBOPHandling(props) {
   const CostingViewMode = useContext(ViewCostingContext);
@@ -25,34 +24,26 @@ function AddBOPHandling(props) {
 
 
   useEffect(() => {
-
-    const childPartDetail = RMCCTabData[0]?.CostingChildPartDetails
+    const childPartDetail = JSON.parse(localStorage.getItem('costingArray'))
     let BOPSum = 0
     childPartDetail && childPartDetail.map((el) => {
       if (el.PartType === 'BOP') {
         BOPSum = BOPSum + (el.CostingPartDetails.TotalBoughtOutPartCost * el.CostingPartDetails.Quantity)
-      } else if (el.PartType === 'Sub Assembly') {
-        el.CostingChildPartDetails && el.CostingChildPartDetails.map(item => {
-          if (item.PartType === 'BOP') {
-            BOPSum = BOPSum + (item.CostingPartDetails.TotalBoughtOutPartCost * item.CostingPartDetails.Quantity)
-
-          }
-        })
       }
     })
     setValue('BOPCost', BOPSum)
     if (RMCCTabData[0].CostingPartDetails.IsApplyBOPHandlingCharges) {
+      setValue('BOPCost', RMCCTabData[0].CostingPartDetails.BOPHandlingChargeApplicability)
       setValue('BOPHandlingPercentage', RMCCTabData[0].CostingPartDetails.BOPHandlingPercentage)
       setValue('BOPHandlingCharges', RMCCTabData[0].CostingPartDetails.BOPHandlingCharges)
     } else if (getAssemBOPCharge && Object.keys(getAssemBOPCharge).length > 0) {
+      setValue('BOPCost', getAssemBOPCharge && getAssemBOPCharge.BOPHandlingChargeApplicability)
       setValue('BOPHandlingPercentage', getAssemBOPCharge && getAssemBOPCharge.BOPHandlingPercentage)
       setValue('BOPHandlingCharges', getAssemBOPCharge && getAssemBOPCharge.BOPHandlingCharges)
-
     }
-
   }, [])
 
- 
+
 
 
   const handleBOPPercentageChange = (value) => {
@@ -105,15 +96,16 @@ function AddBOPHandling(props) {
   }
 
   const saveHandleCharge = () => {
-  
+
 
     let obj = {
       IsApplyBOPHandlingCharges: true,
+      BOPHandlingChargeApplicability: getValues('BOPCost'),
       BOPHandlingPercentage: getValues('BOPHandlingPercentage'),
       BOPHandlingCharges: getValues('BOPHandlingCharges')
     }
     dispatch(saveAssemblyBOPHandlingCharge(obj))
-  
+
     setTimeout(() => {
       props.closeDrawer('')
     }, 500);

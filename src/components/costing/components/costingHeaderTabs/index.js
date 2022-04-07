@@ -18,7 +18,7 @@ import {
 } from '../../actions/Costing';
 import { checkForNull, loggedInUserId } from '../../../../helper';
 import { LEVEL1 } from '../../../../config/constants';
-import { ViewCostingContext } from '../CostingDetails';
+import { EditCostingContext, ViewCostingContext } from '../CostingDetails';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import DayTime from '../../../common/DayTimeWrapper'
@@ -31,6 +31,7 @@ function CostingHeaderTabs(props) {
   const { ComponentItemData, ComponentItemOverheadData, ComponentItemPackageFreightData, ComponentItemToolData,
     ComponentItemDiscountData, IsIncludedSurfaceInOverheadProfit, costingData, CostingEffectiveDate,
     IsCostingDateDisabled, ActualCostingDataList, CostingDataList, RMCCTabData, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData, checkIsDataChange, checkIsOverheadProfitChange, checkIsFreightPackageChange, checkIsToolTabChange } = useSelector(state => state.costing)
+
   const [activeTab, setActiveTab] = useState('1');
   const [IsOpenViewHirarchy, setIsOpenViewHirarchy] = useState(false);
   const [IsCalledAPI, setIsCalledAPI] = useState(true);
@@ -39,10 +40,12 @@ function CostingHeaderTabs(props) {
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
   const netPOPrice = useContext(NetPOPriceContext);
+  const CostingEditMode = useContext(EditCostingContext);
 
   const ActualTotalCost = ActualCostingDataList && ActualCostingDataList.length > 0 && ActualCostingDataList[0].TotalCost !== undefined ? ActualCostingDataList[0].TotalCost : 0;
 
   useEffect(() => {
+
 
     // CALLED WHEN OTHER TAB CLICKED WITHOUT SAVING TO RMCC CURRENT TAB.
     if (!CostingViewMode && Object.keys(ComponentItemData).length > 0 && ComponentItemData.IsOpen !== false && activeTab !== '1' && IsCalledAPI && checkIsDataChange) {
@@ -312,14 +315,15 @@ function CostingHeaderTabs(props) {
                   showYearDropdown
                   dateFormat="dd/MM/yyyy"
                   //maxDate={new Date()}
-                  minDate={new Date(costData.PartEffectiveDate)}         // USER SHOULD NOT BE ABLE TO SELECT EFFECTIVE DATE, OF BEFORE THE PART WAS CREATED
+                  // USER SHOULD NOT BE ABLE TO SELECT EFFECTIVE DATE, OF BEFORE THE PART WAS CREATED
+                  minDate={costData.LastApproveEffectiveDate !== null ? (costData.PartEffectiveDate < costData.LastApproveEffectiveDate ? new Date(costData.LastApproveEffectiveDate) : new Date(costData.PartEffectiveDate)) : new Date(costData.PartEffectiveDate)}
                   dropdownMode="select"
                   placeholderText="Select date"
                   className="withBorder"
                   autoComplete={"off"}
                   disabledKeyboardNavigation
                   onChangeRaw={(e) => e.preventDefault()}
-                  disabled={(CostingViewMode || IsCostingDateDisabled || ActualTotalCost > 0) ? true : false}
+                  disabled={(CostingViewMode || IsCostingDateDisabled || (CostingEditMode & costData?.EffectiveDate !== null && costData?.EffectiveDate !== undefined && DayTime(new Date(costData?.EffectiveDate)).isValid())) ? true : false}
                 />
               </div>
             </div>

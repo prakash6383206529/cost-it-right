@@ -6,6 +6,7 @@ import { checkForDecimalAndNull, } from '../../../../../helper';
 import PartSurfaceTreatment from './PartSurfaceTreatment';
 import SurfaceTreatment from '.';
 import { ViewCostingContext } from '../../CostingDetails';
+import { EMPTY_GUID } from '../../../../../config/constants';
 
 function AssemblySurfaceTreatment(props) {
   const { children, item, index } = props;
@@ -32,7 +33,8 @@ function AssemblySurfaceTreatment(props) {
       const data = {
         CostingId: item.CostingId !== null ? item.CostingId : "00000000-0000-0000-0000-000000000000",
         PartId: item.PartId,
-        AssemCostingId: costData.CostingId
+        AssemCostingId: costData.CostingId,
+        SubAsmCostingId: props.SubAssembId !== null ? props.SubAssembId : EMPTY_GUID,
       }
       dispatch(getSurfaceTreatmentTabData(data, false, (res) => {
         if (res && res.data && res.data.Result) {
@@ -72,6 +74,7 @@ function AssemblySurfaceTreatment(props) {
         setPartDetails={props.setPartDetails}
         setSurfaceCost={props.setSurfaceCost}
         setTransportationCost={props.setTransportationCost}
+        SubAssembId={item.CostingId}
       />
     }
   })
@@ -88,6 +91,7 @@ function AssemblySurfaceTreatment(props) {
       setTransportationCost={props.setTransportationCost}
       setAssemblySurfaceCost={props.setAssemblySurfaceCost}
       setAssemblyTransportationCost={props.setAssemblyTransportationCost}
+      SubAssembId={item.CostingId}
     />
   })
 

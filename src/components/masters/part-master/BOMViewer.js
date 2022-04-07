@@ -475,6 +475,7 @@ class BOMViewer extends Component {
               <AddChildDrawer
                 isOpen={isOpenChildDrawer}
                 closeDrawer={this.closeChildDrawer}
+                //TechnologySelected={this.props.TechnologySelected} DONT DELETE
                 isEditFlag={false}
                 ID={""}
                 anchor={"right"}
