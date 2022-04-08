@@ -19,6 +19,7 @@ export const netHeadCostContext = React.createContext()
 export const SurfaceCostContext = React.createContext()
 export const NetPOPriceContext = React.createContext()
 
+
 function CostingDetailStepTwo(props) {
 
   const dispatch = useDispatch()
@@ -35,10 +36,9 @@ function CostingDetailStepTwo(props) {
 
   const CostingViewMode = useContext(ViewCostingContext);
 
-
   const { initialConfiguration } = useSelector(state => state.auth)
   const { costingData, CostingDataList, NetPOPrice, RMCCBOPCost, SurfaceCostData, OverheadProfitCostData,
-    DiscountCostData, partNo, IsToolCostApplicable, showLoading, RMCCTabData, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, } = useSelector(state => state.costing)
+    DiscountCostData, partNo, IsToolCostApplicable, showLoading, RMCCTabData, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, CostingEffectiveDate } = useSelector(state => state.costing)
 
   useEffect(() => {
     if (partNo.isChanged === true) {
@@ -393,7 +393,7 @@ function CostingDetailStepTwo(props) {
         const overHeadAndProfitTabData = OverheadProfitTabData[0]
         const discountAndOtherTabData = DiscountCostData
 
-        let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, NetPOPrice, getAssemBOPCharge, 1, [])
+        let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, NetPOPrice, getAssemBOPCharge, 1, CostingEffectiveDate)
 
         dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
       }
