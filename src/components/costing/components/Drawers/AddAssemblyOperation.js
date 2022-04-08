@@ -13,7 +13,6 @@ import { createToprowObjAndSave } from '../../CostingUtil';
 function AddAssemblyOperation(props) {
   const { item, CostingViewMode } = props;
   const [IsOpenTool, setIsOpenTool] = useState(false);
-
   const dispatch = useDispatch()
 
   const { RMCCTabData, CostingEffectiveDate, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData } = useSelector(state => state.costing)
@@ -59,6 +58,8 @@ function AddAssemblyOperation(props) {
   * @description SAVE DATA ASSEMBLY
   */
   const saveData = () => {
+    // props.setOperationCostFunction(item?.CostingPartDetails?.TotalOperationCostPerAssembly)
+    props.setProcessCostFunction(item?.CostingPartDetails?.TotalProcessCostPerAssembly)
     let requestData = {
       "CostingId": item.CostingId,
       "CostingNumber": item.CostingNumber,
