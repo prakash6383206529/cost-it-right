@@ -102,7 +102,7 @@ function SurfaceTreatment(props) {
         },
       }
       if (!CostingViewMode) {
-        let assemblyRequestedData = createToprowObjAndSave(surfaceTabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 2)
+        let assemblyRequestedData = createToprowObjAndSave(surfaceTabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 2, CostingEffectiveDate)
         dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
 
         dispatch(saveCostingSurfaceTab(requestData, res => {
