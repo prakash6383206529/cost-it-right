@@ -43,9 +43,10 @@ function AssemblyPart(props) {
           let Data = res.data.DataList[0];
           if (Data.CostingPartDetails.IsApplyBOPHandlingCharges) {
             let obj = {
-              IsApplyBOPHandlingCharges: true,
+              IsApplyBOPHandlingCharges: Data.CostingPartDetails.IsApplyBOPHandlingCharges,
               BOPHandlingPercentage: Data.CostingPartDetails.BOPHandlingPercentage,
               BOPHandlingCharges: Data.CostingPartDetails.BOPHandlingCharges,
+              BOPHandlingChargeApplicability: Data.CostingPartDetails.BOPHandlingChargeApplicability
             }
             dispatch(saveAssemblyBOPHandlingCharge(obj, () => {
             }))
