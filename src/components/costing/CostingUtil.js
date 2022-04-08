@@ -1,5 +1,7 @@
 import { checkForNull, loggedInUserId } from "../../helper"
-export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, tabId, setArrayForCosting) => {
+import DayTime from "../common/DayTimeWrapper";
+
+export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, tabId, effectiveDate) => {
 
   let Arr = JSON.parse(localStorage.getItem('costingArray'))
   let assemblyWorkingRow = []
@@ -47,6 +49,7 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
       "NetDiscounts": discountAndOtherTabData?.HundiOrDiscountValue,
       "TotalCostINR": netPOPrice,
       "TabId": tabId,
+      "EffectiveDate": DayTime(new Date(effectiveDate)),
       "TotalRawMaterialsCostWithQuantity": tabData && tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
       "TotalBoughtOutPartCostWithQuantity": tabData && tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
       "TotalConversionCostWithQuantity": tabData && tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
