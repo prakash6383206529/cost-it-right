@@ -6,16 +6,14 @@ import { Container, Row, Col, } from 'reactstrap';
 import Toaster from '../../common/Toaster';
 import Drawer from '@material-ui/core/Drawer';
 import { bulkUploadCosting } from '../../costing/actions/CostWorking'
-import { loggedInUserId } from '../../../helper';
 import { ExcelRenderer } from 'react-excel-renderer';
 import { getJsDateFromExcel } from "../../../helper/validation";
 import imgCloud from '../../../assests/images/uploadcloud.png';
 import _ from 'lodash'
 
 import { COMBINED_PROCESS, BOPDOMESTIC, BOPIMPORT, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
-import { BoughtOutPartDomesticFileHeads, BoughtOutPartImportFileHeads, MachineRateFileHeads, OperationFileHeads, RawMaterialDomesticFileHeads, RawMaterialImportFileHeads } from '../../../config/masterData';
+import { BoughtOutPartDomesticFileHeads, BoughtOutPartImportFileHeads, CombinedProcessFileHeads, MachineRateFileHeads, OperationFileHeads, RawMaterialDomesticFileHeads, RawMaterialImportFileHeads } from '../../../config/masterData';
 
-const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
@@ -159,7 +157,9 @@ class SimulationUploadDrawer extends Component {
                             checkForFileHead = _.isEqual(fileHeads, MachineRateFileHeads) ? true : false
                             break;
 
-                        // CONDITION FOR COMBINED PROCESS;
+                        case String(COMBINED_PROCESS):
+                            checkForFileHead = _.isEqual(fileHeads, CombinedProcessFileHeads) ? true : false
+                            break;
 
                         default:
                             break;
@@ -170,7 +170,6 @@ class SimulationUploadDrawer extends Component {
                     }
                     let fileData = [];
                     let basicRateCount = 0
-                    let scrapRateCount = 0
                     let correctRowCount = 0
                     let NoOfRowsWithoutChange = 0
                     switch (Number(this.props.master.value)) {
@@ -520,11 +519,6 @@ class SimulationUploadDrawer extends Component {
         if (fileData.length === 0) {
             Toaster.warning("Please select a file to upload.")
             return false
-        }
-
-        let obj = {
-            file: fileData,
-            LoggedInUserId: loggedInUserId(),
         }
 
         // this.props.bulkUploadCosting(obj, (res) => {
