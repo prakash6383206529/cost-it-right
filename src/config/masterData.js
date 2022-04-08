@@ -3479,6 +3479,8 @@ export const constRMCCTabData = [{
     CostPerPiece: undefined,
     CostPerAssembly: undefined,
     QuantityForSubAssembly: 68,
+    IsLocked: false,
+    IsPartLocked: false,
     CostingPartDetails: [{
         JsonStage: "_part",
         AssemblyPartId: "75dc678a-3b90-4c88-a4cd-64f81bd0fdf5",
@@ -3531,12 +3533,14 @@ export const constRMCCTabData = [{
         TempRM: null,
         TempBOP: null,
         TempCC: null,
-        TempRMBOPCC: null
+        TempRMBOPCC: null,
+        IsLocked: false,
+        IsPartLocked: false,
+
     }],
     CostingChildPartDetails:
         [{
             JsonStage: "_apart",
-            IsPartLocked: false,
             IsCostingLocked: false,
             AssemblyPartId: "75dc678a-3b90-4c88-a4cd-64f81bd0fdf5",
             AssemblyCostingId: "1f91aba6-d4e8-48be-8a21-e24e8af5803f",
@@ -3563,6 +3567,7 @@ export const constRMCCTabData = [{
             IsAssemblyPart: true,
             Sequence: 0,
             IsLocked: false,
+            IsPartLocked: false,
             CostingPartDetails: {
                 JsonStage: "_innerPartDetail",
                 AssemblyPartId: null,
@@ -3615,7 +3620,10 @@ export const constRMCCTabData = [{
                 TempRM: null,
                 TempBOP: null,
                 TempCC: null,
-                TempRMBOPCC: null
+                TempRMBOPCC: null,
+                IsLocked: false,
+                IsPartLocked: false,
+
             },
             CostingChildPartDetails: []
         }]
@@ -3660,6 +3668,7 @@ export const tempObject = [
         "CostPerPiece": 43,
         "CostPerAssembly": undefined,
         "QuantityForSubAssembly": 1,
+
 
         "CostingPartDetails": {
             "JsonStage": "_part",
@@ -3713,7 +3722,10 @@ export const tempObject = [
             "TempRM": null,
             "TempBOP": null,
             "TempCC": null,
-            "TempRMBOPCC": null
+            "TempRMBOPCC": null,
+            "IsLocked": null,
+            "IsPartLocked": false,
+
         },
         "CostingChildPartDetails": [
             {
@@ -3742,6 +3754,7 @@ export const tempObject = [
                 "IsShowToolCost": null,
                 "IsAssemblyPart": false,
                 "Sequence": 0,
+
                 "CostingPartDetails": {
                     "JsonStage": "_innerPartDetail",
                     "AssemblyPartId": null,
@@ -3794,7 +3807,10 @@ export const tempObject = [
                     "TempRM": null,
                     "TempBOP": null,
                     "TempCC": null,
-                    "TempRMBOPCC": null
+                    "TempRMBOPCC": null,
+                    "IsLocked": null,
+                    "IsPartLocked": false,
+
                 },
                 "CostingChildPartDetails": []
             },
@@ -3824,6 +3840,7 @@ export const tempObject = [
                 "IsShowToolCost": null,
                 "IsAssemblyPart": true,
                 "Sequence": 0,
+
                 "CostingPartDetails": {
                     "JsonStage": "_innerPartDetail",
                     "AssemblyPartId": null,
@@ -3876,7 +3893,10 @@ export const tempObject = [
                     "TempRM": null,
                     "TempBOP": null,
                     "TempCC": null,
-                    "TempRMBOPCC": null
+                    "TempRMBOPCC": null,
+                    "IsLocked": null,
+                    "IsPartLocked": false,
+
                 },
                 "CostingChildPartDetails": []
             },
@@ -3906,6 +3926,7 @@ export const tempObject = [
                 "IsShowToolCost": null,
                 "IsAssemblyPart": true,
                 "Sequence": 0,
+
                 "CostingPartDetails": {
                     "JsonStage": "_innerPartDetail",
                     "AssemblyPartId": null,
@@ -3958,7 +3979,10 @@ export const tempObject = [
                     "TempRM": null,
                     "TempBOP": null,
                     "TempCC": null,
-                    "TempRMBOPCC": null
+                    "TempRMBOPCC": null,
+                    "IsLocked": null,
+                    "IsPartLocked": false,
+
                 },
                 "CostingChildPartDetails": []
             },
@@ -3988,6 +4012,7 @@ export const tempObject = [
                 "IsShowToolCost": null,
                 "IsAssemblyPart": false,
                 "Sequence": 0,
+
                 "CostingPartDetails": {
                     "JsonStage": "_innerPartDetail",
                     "AssemblyPartId": null,
@@ -4040,7 +4065,10 @@ export const tempObject = [
                     "TempRM": null,
                     "TempBOP": null,
                     "TempCC": null,
-                    "TempRMBOPCC": null
+                    "TempRMBOPCC": null,
+                    "IsLocked": null,
+                    "IsPartLocked": false,
+
                 },
                 "CostingChildPartDetails": []
             }

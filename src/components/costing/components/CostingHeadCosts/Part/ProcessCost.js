@@ -22,14 +22,15 @@ import { debounce } from 'lodash';
 let counter = 0;
 function ProcessCost(props) {
   const { data, item } = props
-  const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
+  const IsLocked = (item?.IsLocked ? item?.IsLocked : false) || (item?.IsPartLocked ? item?.IsPartLocked : false)
   const processGroup = getConfigurationKey().IsMachineProcessGroup
   // const processGroup = false
   const { register, control, formState: { errors }, setValue, getValues } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   })
-  const [gridData, setGridData] = useState(data && data.CostingProcessCostResponse)
+  const [gridData, setGridData] = useState([])
+  console.log('data && data.CostingProcessCostResponse: ', data && data.CostingProcessCostResponse);
   const trimValue = getConfigurationKey()
   const trimForCost = trimValue.NoOfDecimalForPrice
   const [calciIndex, setCalciIndex] = useState('')
@@ -110,8 +111,8 @@ function ProcessCost(props) {
   useEffect(() => {
     const Params = {
       index: props.index,
-      BOMLevel: props.item.BOMLevel,
-      PartNumber: props.item.PartNumber,
+      BOMLevel: props?.item?.BOMLevel,
+      PartNumber: props?.item?.PartNumber,
     }
     if (!CostingViewMode && !IsLocked) {
       selectedIds(gridData)
@@ -458,7 +459,7 @@ function ProcessCost(props) {
       let apiArr = formatMainArr(tempArr)
       let tempArr2 = {
         ...tabData,
-        NetConversionCost: ProcessCostTotal + checkForNull(tabData.OperationCostTotal !== null ? tabData.OperationCostTotal : 0,) + checkForNull(tabData.OtherOperationCostTotal !== null ? tabData.OtherOperationCostTotal : 0),
+        NetConversionCost: ProcessCostTotal + checkForNull(tabData?.OperationCostTotal !== null ? tabData?.OperationCostTotal : 0,) + checkForNull(tabData?.OtherOperationCostTotal !== null ? tabData?.OtherOperationCostTotal : 0),
         ProcessCostTotal: ProcessCostTotal,
         CostingProcessCostResponse: apiArr,
       }
@@ -466,6 +467,7 @@ function ProcessCost(props) {
       setGridData(tempArr)
       dispatch(setProcessGroupGrid(formatReducerArray(tempArr)))
       setTabData(tempArr2)
+      props.setProcessCostFunction(tempArr2?.ProcessCostTotal)
       selectedIds(tempArr)
       dispatch(gridDataAdded(true))
       dispatch(setSelectedDataOfCheckBox([]))
@@ -656,6 +658,7 @@ function ProcessCost(props) {
       setIds(selectedIds)
       setMachineIds(selectedMachineIds)
       setTabData(tempArr2)
+      props.setProcessCostFunction(tempArr2?.ProcessCostTotal)
       tempArrAfterDelete && tempArrAfterDelete.map((el, i) => {
         setValue(`${ProcessGridFields}.${i}.ProcessCost`, checkForDecimalAndNull(el.ProcessCost, initialConfiguration.NoOfDecimalForPrice))
         setValue(`${ProcessGridFields}.${i}.Quantity`, checkForDecimalAndNull(el.Quantity, getConfigurationKey().NoOfDecimalForInputOutput))
@@ -782,6 +785,7 @@ function ProcessCost(props) {
       }
       setIsFromApi(false)
       setTabData(tempArr)
+      props.setProcessCostFunction(tempArr?.ProcessCostTotal)
       setGridData(gridTempArr)
       dispatch(setProcessGroupGrid(formatReducerArray(gridTempArr)))
       setValue(`${ProcessGridFields}.${index}.ProcessCost`, checkForDecimalAndNull(processCost, initialConfiguration.NoOfDecimalForPrice))
@@ -811,6 +815,7 @@ function ProcessCost(props) {
       }
       setIsFromApi(false)
       setTabData(tempArr)
+      props.setProcessCostFunction(tempArr?.ProcessCostTotal)
       setGridData(gridTempArr)
       dispatch(setProcessGroupGrid(formatReducerArray(gridTempArr)))
       setTimeout(() => {
@@ -956,7 +961,7 @@ function ProcessCost(props) {
     // })
     let tempArr = {
       ...tabData,
-      NetConversionCost: OperationCostTotal + checkForNull(tabData && tabData.ProcessCostTotal !== null ? tabData.ProcessCostTotal : 0,) + checkForNull(tabData && tabData.OtherOperationCostTotal !== null ? tabData.OtherOperationCostTotal : 0,),
+      NetConversionCost: OperationCostTotal + checkForNull(tabData && tabData.ProcessCostTotal !== null ? tabData.ProcessCostTotal : 0) + checkForNull(tabData && tabData.OtherOperationCostTotal !== null ? tabData.OtherOperationCostTotal : 0,),
       OperationCostTotal: OperationCostTotal,
       CostingOperationCostResponse: operationGrid,
       CostingProcessCostResponse: apiArr
@@ -964,6 +969,7 @@ function ProcessCost(props) {
 
     setIsFromApi(false)
     setTabData(tempArr)
+    props.setProcessCostFunction(tempArr?.ProcessCostTotal)
     // props.setOperationCost(tempArr, params, item)
   }
 
@@ -986,13 +992,14 @@ function ProcessCost(props) {
     // })
     let tempArr = {
       ...tabData,
-      NetConversionCost: (OtherOperationCostTotal + checkForNull(tabData && tabData.ProcessCostTotal !== null ? tabData.ProcessCostTotal : 0,) + checkForNull(tabData && tabData.OperationCostTotal !== null ? tabData.OperationCostTotal : 0,)).toFixed(10),
+      NetConversionCost: (OtherOperationCostTotal + checkForNull(tabData && tabData.ProcessCostTotal !== null ? tabData.ProcessCostTotal : 0) + checkForNull(tabData && tabData.OperationCostTotal !== null ? tabData.OperationCostTotal : 0,)).toFixed(10),
       OtherOperationCostTotal: OtherOperationCostTotal,
       CostingOtherOperationCostResponse: otherOperationGrid,
       CostingProcessCostResponse: apiArr
     }
     setIsFromApi(false)
     setTabData(tempArr)
+    props.setProcessCostFunction(tempArr?.ProcessCostTotal)
     // props.setOtherOperationCost(tempArr, props.index, item)
   }
 
@@ -1336,24 +1343,27 @@ function ProcessCost(props) {
             </Col>
           </Row>
 
-          <OperationCost
-            data={props.data && props.data.CostingOperationCostResponse}
-            setOperationCost={setOperationCost}
-            item={props.item}
-            IsAssemblyCalculation={false}
-            rmFinishWeight={rmFinishWeight}
-          />
+          {!props.isAssemblyTechnology &&
+            <>
+              <OperationCost
+                data={props.data && props.data.CostingOperationCostResponse}
+                setOperationCost={setOperationCost}
+                item={props.item}
+                IsAssemblyCalculation={false}
+                rmFinishWeight={rmFinishWeight}
+              />
 
-          <OperationCostExcludedOverhead
-            data={props.data && props.data.CostingOtherOperationCostResponse}
-            setOtherOperationCost={setOtherOperationCost}
-            item={props.item}
-            IsAssemblyCalculation={false}
-            rmFinishWeight={rmFinishWeight}
-          />
+              <OperationCostExcludedOverhead
+                data={props.data && props.data.CostingOtherOperationCostResponse}
+                setOtherOperationCost={setOtherOperationCost}
+                item={props.item}
+                IsAssemblyCalculation={false}
+                rmFinishWeight={rmFinishWeight}
+              />
+            </>}
 
-        </div>
-      </div>
+        </div >
+      </div >
       {isDrawerOpen && (
         <AddProcess
           isOpen={isDrawerOpen}
@@ -1365,19 +1375,22 @@ function ProcessCost(props) {
           MachineIds={MachineIds}
           groupMachineId={groupNameMachine}
         />
-      )}
-      {isCalculator && (
-        <VariableMhrDrawer
-          technology={calculatorTechnology}
-          calculatorData={calculatorData}
-          isOpen={isCalculator}
-          item={item}
-          CostingViewMode={CostingViewMode || IsLocked}
-          rmFinishWeight={props.rmFinishWeight}
-          closeDrawer={closeCalculatorDrawer}
-          anchor={'right'}
-        />
-      )}
+      )
+      }
+      {
+        isCalculator && (
+          <VariableMhrDrawer
+            technology={calculatorTechnology}
+            calculatorData={calculatorData}
+            isOpen={isCalculator}
+            item={item}
+            CostingViewMode={CostingViewMode || IsLocked}
+            rmFinishWeight={props.rmFinishWeight}
+            closeDrawer={closeCalculatorDrawer}
+            anchor={'right'}
+          />
+        )
+      }
     </>
   )
 }

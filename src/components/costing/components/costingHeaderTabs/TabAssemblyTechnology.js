@@ -15,6 +15,7 @@ import { ViewCostingContext } from '../CostingDetails';
 import DayTime from '../../../common/DayTimeWrapper'
 import AddBOPHandling from '../Drawers/AddBOPHandling';
 import AssemblyTechnology from '../CostingHeadCosts/SubAssembly/AssemblyTechnology';
+import { setSubAssemblyTechnologyArray } from '../../actions/SubAssembly.js';
 
 function TabAssemblyTechnology(props) {
 
@@ -29,6 +30,10 @@ function TabAssemblyTechnology(props) {
 
   const [isOpenBOPDrawer, setIsOpenBOPDrawer] = useState(false)
   const [costPerPiece, setcostPerPiece] = useState('')
+  const [operationCostValue, setOperationCostValue] = useState('')
+  const [processCostValue, setprocessCostValue] = useState('')
+  console.log('operationCostValue: ', operationCostValue);
+  console.log('processCostValue: ', processCostValue);
 
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
@@ -37,6 +42,22 @@ function TabAssemblyTechnology(props) {
 
   const getCostPerPiece = (value) => {
     setcostPerPiece(value)
+  }
+
+  const setOperationCostFunction = (value) => {
+    setOperationCostValue(value)
+    let temp = subAssemblyTechnologyArray
+    temp[0].operationCostValue = value
+    dispatch(setSubAssemblyTechnologyArray(temp))
+
+  }
+
+  const setProcessCostFunction = (value) => {
+    setprocessCostValue(value)
+    let temp = subAssemblyTechnologyArray
+    temp[0].processCostValue = value
+    dispatch(setSubAssemblyTechnologyArray(temp))
+
   }
 
   useEffect(() => {
@@ -1699,6 +1720,8 @@ function TabAssemblyTechnology(props) {
                           <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`Technology`}</th>
                           <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`Quantity`} </th>
                           <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`Cost/Pc`}</th>
+                          <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`Operation Cost`}</th>
+                          <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`Process Cost`}</th>
                           <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`Cost/Assembly`}</th>
                           <th className="py-3 align-middle" style={{ minWidth: '100px' }}>{`Action`}</th>
                           {
@@ -1715,7 +1738,6 @@ function TabAssemblyTechnology(props) {
                       </thead>
 
                       <tbody>
-                        {console.log('subAssemblyTechnologyArray: ', subAssemblyTechnologyArray)}
                         {
                           subAssemblyTechnologyArray && subAssemblyTechnologyArray.map((item, index) => {
                             return (
@@ -1739,6 +1761,8 @@ function TabAssemblyTechnology(props) {
                                   subAssembId={item.CostingId}
 
                                   getCostPerPiece={getCostPerPiece}
+                                  setOperationCostFunction={setOperationCostFunction}
+                                  setProcessCostFunction={setProcessCostFunction}
                                 />
                               </>
                             )

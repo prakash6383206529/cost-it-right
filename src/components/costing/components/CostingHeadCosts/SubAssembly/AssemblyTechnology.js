@@ -10,9 +10,11 @@ import BOPA from './BOPA';
 import { subAssembly010101, subAssemblyAssemPart, tempObject } from '../../../../../config/masterData';
 import { setSubAssemblyTechnologyArray } from '../../../actions/SubAssembly.js';
 import AddProcess from '../../Drawers/AddProcess';
+import AddAssemblyProcess from '../../Drawers/AddAssemblyProcess';
 
 function AssemblyTechnology(props) {
     const { children, item, index, getCostPerPiece } = props;
+    console.log('item: ds', item);
 
 
 
@@ -184,6 +186,10 @@ function AssemblyTechnology(props) {
                     <td>{item?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity ? item?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity : 'Sheet Metal'}</td>
                     <td>{item?.CostingPartDetails?.QuantityForSubAssembly ? checkForDecimalAndNull(item.CostingPartDetails.QuantityForSubAssembly, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                     <td>{item?.CostingPartDetails?.CostPerPiece ? checkForDecimalAndNull(item.CostingPartDetails.CostPerPiece, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+
+                    <td>{item?.PartType === 'Assembly' ? subAssemblyTechnologyArray[0].operationCostValue : '-'}</td>
+                    <td>{item?.PartType === 'Assembly' ? subAssemblyTechnologyArray[0].processCostValue : '-'}</td>
+
                     <td>{item?.CostingPartDetails?.CostPerAssembly ? checkForDecimalAndNull(item.CostingPartDetails.CostPerAssembly, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
 
 
@@ -243,15 +249,20 @@ function AssemblyTechnology(props) {
                     CostingViewMode={CostingViewMode}
                     setAssemblyOperationCost={props.setAssemblyOperationCost}
                     setAssemblyToolCost={props.setAssemblyToolCost}
+                    setOperationCostFunction={props.setOperationCostFunction}
+                // setProcessCostFunction={props.setProcessCostFunction}
                 />
             }
             {isProcessDrawerOpen && (
-                <AddProcess
+                <AddAssemblyProcess
                     isOpen={isProcessDrawerOpen}
                     closeDrawer={closeProcessDrawer}
                     isEditFlag={false}
                     ID={''}
                     anchor={'right'}
+                    ccData={subAssemblyTechnologyArray[0].CostingPartDetails !== null && subAssemblyTechnologyArray[0].CostingPartDetails.CostingConversionCost}
+                    setProcessCostFunction={props.setProcessCostFunction}
+
                 // Ids={Ids}
                 // MachineIds={MachineIds}
                 />
@@ -259,7 +270,7 @@ function AssemblyTechnology(props) {
             {
                 partCostDrawer && <EditPartCost
                     isOpen={partCostDrawer}
-                    closeOperationDrawer={closeDrawerPartCost}
+                    closeDrawer={closeDrawerPartCost}
                     // approvalData={approvalData}
                     anchor={'bottom'}
                     // masterId={OPERATIONS_ID}
