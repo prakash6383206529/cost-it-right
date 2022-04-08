@@ -43,7 +43,7 @@ function EditPartCost(props) {
             setValue(`${PartCostFields}.${index}.DeltaValue`, item.DeltaValue)
             setValue(`${PartCostFields}.${index}.DeltaSign`, item.DeltaSign)
             setValue(`${PartCostFields}.${index}.SOBPercentage`, item.SOBPercentage)
-            setValue(`${PartCostFields}.${index}.NetCost`, item.NetCost)
+            setValue(`${PartCostFields}.${index}.NetCost`, checkForDecimalAndNull(item.NetCost, initialConfiguration.NoOfDecimalForPrice))
             setDeltaSign(item.DeltaSign)
         })
 
@@ -97,13 +97,13 @@ function EditPartCost(props) {
 
                     const temp = percentageOfNumber(Number(item.SettledPrice) + Number(tempDeltaValue), tempSOBPercentage)
                     item.NetCost = temp
-                    setValue(`${PartCostFields}.${index}.NetCost`, temp)
+                    setValue(`${PartCostFields}.${index}.NetCost`, checkForDecimalAndNull(temp, initialConfiguration.NoOfDecimalForPrice))
 
                 } if (tempDeltaSign?.label === '-') {
 
                     const temp = percentageOfNumber(Number(item.SettledPrice) - Number(tempDeltaValue), tempSOBPercentage)
                     item.NetCost = temp
-                    setValue(`${PartCostFields}.${index}.NetCost`, temp)
+                    setValue(`${PartCostFields}.${index}.NetCost`, checkForDecimalAndNull(temp, initialConfiguration.NoOfDecimalForPrice))
                 }
             }
             WeightedCost = checkForNull(WeightedCost) + checkForNull(item.NetCost)
@@ -169,7 +169,8 @@ function EditPartCost(props) {
                                         <th>Parent Assembly Number: { }</th>
                                         <th>Part Number: { }</th>
                                         <th>Part Name: { }</th>
-                                        <th>Weighted Cost: {weightedCost}</th>
+                                        <th>Weighted Cost: {checkForDecimalAndNull(weightedCost, initialConfiguration.NoOfDecimalForPrice)}</th>
+                                        <th></th>
                                     </tr>
                                 </thead>
                                 <br />
@@ -214,7 +215,7 @@ function EditPartCost(props) {
                                                             errors={errors.SOBPercentage}
                                                         />
                                                     </td>
-                                                    <td width="40%">
+                                                    <td >
                                                         <SearchableSelectHookForm
                                                             name={`${PartCostFields}.${index}.DeltaSign`}
                                                             placeholder={"Select"}
@@ -254,7 +255,7 @@ function EditPartCost(props) {
                                                         />
                                                         {/* {checkForDecimalAndNull(item.Delta, initialConfiguration.NoOfDecimalForPrice)} */}
                                                     </td>
-                                                    <td width="40%">
+                                                    <td >
                                                         <NumberFieldHookForm
                                                             name={`${PartCostFields}.${index}.NetCost`}
                                                             Controller={Controller}

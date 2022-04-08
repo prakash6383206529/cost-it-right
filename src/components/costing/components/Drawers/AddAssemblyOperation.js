@@ -12,7 +12,7 @@ import { createToprowObjAndSave, findSurfaceTreatmentData } from '../../CostingU
 function AddAssemblyOperation(props) {
   const { item, CostingViewMode } = props;
   const [IsOpenTool, setIsOpenTool] = useState(false);
-  const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
+  const IsLocked = (item?.IsLocked ? item?.IsLocked : false) || (item?.IsPartLocked ? item?.IsPartLocked : false)
 
   const dispatch = useDispatch()
 
