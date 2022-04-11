@@ -70,7 +70,7 @@ function RubberCalciTab(props) {
                             // disabled={rmRowData && Object.keys(rmRowData.WeightCalculatorRequest).length === 0 ? false : rmRowData.WeightCalculatorRequest.LayoutType !== null && getTabno(rmRowData.WeightCalculatorRequest.LayoutType) !== '1' ? true : false}
                             >
                                 Standard
-              </NavLink>
+                            </NavLink>
                         </NavItem>
                         <NavItem>
                             <NavLink
@@ -82,7 +82,7 @@ function RubberCalciTab(props) {
                             // disabled={rmRowData && Object.keys(rmRowData.WeightCalculatorRequest).length === 0 ? false : rmRowData.WeightCalculatorRequest.LayoutType !== null && getTabno(rmRowData.WeightCalculatorRequest.LayoutType) !== '2' ? true : false}
                             >
                                 Hose
-              </NavLink>
+                            </NavLink>
                         </NavItem>
 
 
