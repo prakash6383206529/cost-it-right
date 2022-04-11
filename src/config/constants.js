@@ -1823,6 +1823,7 @@ export const ExchangeMaster = "Exchange-rate"
 export const FreightMaster = "Freight"
 export const InterestMaster = "Interest-rate"
 export const ReportMaster = "Report-rate"
+export const UserListing = "User-Listing"
 
 export const simulationMaster = "Simulation"
 export const DashboardMaster = "Analytics and Reports"
