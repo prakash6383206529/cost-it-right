@@ -88,7 +88,7 @@ class BOMViewer extends Component {
   }
 
   closeChildDrawer = (e = '', childData = {}) => {
-    
+
 
     this.setState({ isOpenChildDrawer: false }, () => {
       this.setChildPartsData(childData)
@@ -111,7 +111,7 @@ class BOMViewer extends Component {
 
       this.props.getBOMViewerTreeDataByPartIdAndLevel(childData.PartId, 1, res => {
         let Data = res.data.Data.FlowPoints;
-        
+
 
         const DeleteNodeL1 = getRandomSixDigit();
         Data && Data.map((el, index) => {
@@ -134,23 +134,23 @@ class BOMViewer extends Component {
         })
 
         setTimeout(() => {
-          
-  
+
+
           tempArray && tempArray.map((el, i) => {
             if (el.Level === 'L1') {
               outputArray.push(el.Input)
             }
             return null;
           })
-  
+
           //GET INDEX OF L0 LEVEL OBJECTS
           let isAvailable = flowpoints.findIndex(el => el.Level === 'L0')
-  
+
           let flowPointstempArray = Object.assign([...flowpoints], { [isAvailable]: Object.assign({}, flowpoints[isAvailable], { Outputs: [...flowpoints[isAvailable].Outputs, ...outputArray], }) })
-          
-  
+
+
           this.setState({ flowpoints: [...flowPointstempArray, ...tempArray] })
-  
+
         }, 200)
       })
 
@@ -258,7 +258,7 @@ class BOMViewer extends Component {
     }
 
     let isEqual = _.isEqual(this.state.bomFromAPI, this.state.flowpoints)
-    console.log('isEqual: ', isEqual);
+
     if (this.state.isCancel) {
       this.props.closeDrawer('', this.state.ActualBOMData, this.state.isSaved, isEqual)
     } else {
@@ -483,7 +483,7 @@ class BOMViewer extends Component {
               <AddChildDrawer
                 isOpen={isOpenChildDrawer}
                 closeDrawer={this.closeChildDrawer}
-                //TechnologySelected={this.props.TechnologySelected} DONT DELETE
+                TechnologySelected={this.props.TechnologySelected}
                 isEditFlag={false}
                 ID={""}
                 anchor={"right"}
