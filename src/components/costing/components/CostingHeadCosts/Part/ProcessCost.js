@@ -21,15 +21,14 @@ import { MACHINING, FORGING, DIE_CASTING, Ferrous_Casting, } from '../../../../.
 
 let counter = 0;
 function ProcessCost(props) {
-  const { data, item } = props
+  const { data, item, isAssemblyTechnology } = props
   const IsLocked = (item?.IsLocked ? item?.IsLocked : false) || (item?.IsPartLocked ? item?.IsPartLocked : false)
 
   const { register, control, formState: { errors }, setValue, getValues } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   })
-  const [gridData, setGridData] = useState([])
-  console.log('data && data.CostingProcessCostResponse: ', data && data.CostingProcessCostResponse);
+  const [gridData, setGridData] = useState(isAssemblyTechnology ? [] : data && data.CostingProcessCostResponse)    //  WIP_SM
   const trimValue = getConfigurationKey()
   const trimForMeasurment = trimValue.NoOfDecimalForInputOutput
   const trimForCost = trimValue.NoOfDecimalForPrice
@@ -69,7 +68,9 @@ function ProcessCost(props) {
       if (JSON.stringify(gridData) !== JSON.stringify(oldGridData)) {
         dispatch(isDataChange(true))
       }
-      // props?.setConversionCost(tabData, Params, item)            WIP_SM
+      if (!isAssemblyTechnology) {
+        props?.setConversionCost(tabData, Params, item)
+      }
     }
   }, [tabData]);
 
@@ -162,7 +163,9 @@ function ProcessCost(props) {
 
     setTimeout(() => {
       setTabData(tempArr2)
-      props.setProcessCostFunction(tempArr2?.ProcessCostTotal)
+      if (isAssemblyTechnology) {
+        props.setProcessCostFunction(tempArr2?.ProcessCostTotal)
+      }
       setGridData(tempArray)
       setValue(`${ProcessGridFields}.${calciIndex}.Quantity`, tempData.UOMType === TIME ? checkForDecimalAndNull((weightData.ProcessCost / weightData.MachineRate), getConfigurationKey().NoOfDecimalForInputOutput) : weightData.Quantity)
       setValue(`${ProcessGridFields}.${calciIndex}.ProcessCost`, checkForDecimalAndNull(weightData.ProcessCost, getConfigurationKey().NoOfDecimalForPrice))
@@ -186,7 +189,9 @@ function ProcessCost(props) {
       Toaster.success('Remark saved successfully')
     }
     setTabData(tempArr)
-    props.setProcessCostFunction(tempArr?.ProcessCostTotal)
+    if (isAssemblyTechnology) {
+      props.setProcessCostFunction(tempArr?.ProcessCostTotal)
+    }
     var button = document.getElementById(`popUpTriggers${index}`)
     button.click()
   }
@@ -267,7 +272,9 @@ function ProcessCost(props) {
 
       setGridData(tempArr)
       setTabData(tempArr2)
-      props.setProcessCostFunction(tempArr2?.ProcessCostTotal)
+      if (isAssemblyTechnology) {
+        props.setProcessCostFunction(tempArr2?.ProcessCostTotal)
+      }
       selectedIds(tempArr)
       dispatch(gridDataAdded(true))
     }
@@ -327,7 +334,9 @@ function ProcessCost(props) {
       setIds(selectedIds)
       setMachineIds(selectedMachineIds)
       setTabData(tempArr2)
-      props.setProcessCostFunction(tempArr2?.ProcessCostTotal)
+      if (isAssemblyTechnology) {
+        props.setProcessCostFunction(tempArr2?.ProcessCostTotal)
+      }
       tempArrAfterDelete && tempArrAfterDelete.map((el, i) => {
         setValue(`${ProcessGridFields}.${i}.ProcessCost`, checkForDecimalAndNull(el.ProcessCost, initialConfiguration.NoOfDecimalForPrice))
         setValue(`${ProcessGridFields}.${i}.Quantity`, el.Quantity)
@@ -364,7 +373,9 @@ function ProcessCost(props) {
       }
 
       setTabData(tempArr)
-      props.setProcessCostFunction(tempArr?.ProcessCostTotal)
+      if (isAssemblyTechnology) {
+        props.setProcessCostFunction(tempArr?.ProcessCostTotal)
+      }
       setGridData(gridTempArr)
       setValue(`${ProcessGridFields}.${index}.ProcessCost`, checkForDecimalAndNull(ProcessCost, initialConfiguration.NoOfDecimalForPrice))
     } else {
@@ -391,7 +402,9 @@ function ProcessCost(props) {
       }
 
       setTabData(tempArr)
-      props.setProcessCostFunction(tempArr?.ProcessCostTotal)
+      if (isAssemblyTechnology) {
+        props.setProcessCostFunction(tempArr?.ProcessCostTotal)
+      }
       setGridData(gridTempArr)
       setTimeout(() => {
         setValue(`${ProcessGridFields}.${index}.Quantity`, "")
@@ -419,8 +432,9 @@ function ProcessCost(props) {
     }
 
     setTabData(tempArr)
-    props.setProcessCostFunction(tempArr?.ProcessCostTotal)
-    // props.setOperationCost(tempArr, params, item)
+    if (isAssemblyTechnology) {
+      props.setProcessCostFunction(tempArr?.ProcessCostTotal)
+    }
   }
 
   const setOtherOperationCost = (otherOperationGrid, params, index) => {
@@ -437,8 +451,9 @@ function ProcessCost(props) {
     }
 
     setTabData(tempArr)
-    props.setProcessCostFunction(tempArr?.ProcessCostTotal)
-    // props.setOtherOperationCost(tempArr, props.index, item)
+    if (isAssemblyTechnology) {
+      props.setProcessCostFunction(tempArr?.ProcessCostTotal)
+    }
   }
 
   /**
@@ -641,7 +656,7 @@ function ProcessCost(props) {
             </Col>
           </Row>
 
-          {!props.isAssemblyTechnology &&
+          {!isAssemblyTechnology &&
             <>
               <OperationCost
                 data={props.data && props.data.CostingOperationCostResponse}
@@ -658,7 +673,7 @@ function ProcessCost(props) {
               />
             </>}
 
-          {!props.isAssemblyTechnology && isOpen && <ToolCost
+          {!isAssemblyTechnology && isOpen && <ToolCost
             data={props.data && props.data.CostingToolsCostResponse}
             setToolCost={setToolCost}
             item={props.item}

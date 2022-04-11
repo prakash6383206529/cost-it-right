@@ -815,6 +815,7 @@ export function saveAssemblyCostingRMCCTab(data, callback) {
     request.then((response) => {
       callback(response);
     }).catch((error) => {
+      console.log('error: ds', error);
       dispatch({ type: API_FAILURE });
       apiErrors(error);
     });

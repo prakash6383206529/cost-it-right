@@ -264,6 +264,7 @@ function PartCompoment(props) {
                 setConversionCost={props.setConversionCost}
                 setToolCost={props.setToolCost}
                 item={item}
+                isAssemblyTechnology={false}
               />
             </div>
           </div >

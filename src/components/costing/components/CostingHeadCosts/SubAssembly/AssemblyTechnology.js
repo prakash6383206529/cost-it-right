@@ -105,7 +105,7 @@ function AssemblyTechnology(props) {
                 item={el}
                 rmData={el?.CostingPartDetails?.CostingRawMaterialsCost}
                 bopData={el.CostingPartDetails !== null && el.CostingPartDetails.CostingBoughtOutPartCost}
-                ccData={el.CostingPartDetails !== null && el.CostingPartDetails.CostingConversionCost}
+                ccData={el.CostingPartDetails !== null && el.CostingPartDetails}
                 setPartDetails={props.setPartDetails}
                 setRMCost={props.setRMCost}
                 setRMMasterBatchCost={props.setRMMasterBatchCost}
@@ -185,12 +185,27 @@ function AssemblyTechnology(props) {
                     <td>{item && item.PartType}</td>
                     <td>{item?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity ? item?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity : 'Sheet Metal'}</td>
                     <td>{item?.CostingPartDetails?.QuantityForSubAssembly ? checkForDecimalAndNull(item.CostingPartDetails.QuantityForSubAssembly, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
-                    <td>{item?.CostingPartDetails?.CostPerPiece ? checkForDecimalAndNull(item.CostingPartDetails.CostPerPiece, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                    <td>{item?.CostingPartDetails?.CostPerPiece && item?.PartType === 'Assembly' ? '-' : checkForDecimalAndNull(item.CostingPartDetails.CostPerPiece, initialConfiguration.NoOfDecimalForPrice)}</td>
 
-                    <td>{item?.PartType === 'Assembly' ? subAssemblyTechnologyArray[0].operationCostValue : '-'}</td>
-                    <td>{item?.PartType === 'Assembly' ? subAssemblyTechnologyArray[0].processCostValue : '-'}</td>
+                    <td>{item?.PartType === 'Assembly' && subAssemblyTechnologyArray[0].operationCostValue ? subAssemblyTechnologyArray[0].operationCostValue : '-'}</td>
+                    <td>{item?.PartType === 'Assembly' && subAssemblyTechnologyArray[0].processCostValue ? subAssemblyTechnologyArray[0].processCostValue : '-'}</td>
 
-                    <td>{item?.CostingPartDetails?.CostPerAssembly ? checkForDecimalAndNull(item.CostingPartDetails.CostPerAssembly, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                    <td>
+                        {item?.CostingPartDetails?.CostPerAssembly ? checkForDecimalAndNull(item.CostingPartDetails.CostPerAssembly, initialConfiguration.NoOfDecimalForPrice) : '-'}
+                        {item?.PartType === 'Assembly' &&
+                            (item?.CostingPartDetails?.CostPerAssembly || item.CostingPartDetails?.CostPerAssembly) ?
+                            <div class="tooltip-n ml-2"><i className="fa fa-info-circle text-primary tooltip-icon"></i>
+                                <span class="tooltiptext">
+                                    {`Total Operation's Cost:  ${subAssemblyTechnologyArray[0].operationCostValue ? checkForDecimalAndNull(subAssemblyTechnologyArray[0].operationCostValue, initialConfiguration.NoOfDecimalForPrice) : '-'}`}
+                                    <br></br>
+                                    {`Total Process Cost:  ${subAssemblyTechnologyArray[0].processCostValue ? checkForDecimalAndNull(subAssemblyTechnologyArray[0].processCostValue, initialConfiguration.NoOfDecimalForPrice) : '-'}`}
+                                    <br></br>
+                                    {/* {`Child Parts Conversion Cost:- ${checkForDecimalAndNull(item.CostingPartDetails.TotalConversionCost - item.CostingPartDetails.CostPerAssembly, initialConfiguration.NoOfDecimalForPrice)}`} */}
+                                    {`Total Child's Cost:  ${checkForDecimalAndNull(item.CostingPartDetails.CostPerAssemblyPopup, initialConfiguration.NoOfDecimalForPrice)}`}
+                                </span>
+                            </div> : ''
+                        }
+                    </td>
 
 
                     {/* <td>{item?.CostingPartDetails?.TotalCalculatedRMBOPCCCost ? checkForDecimalAndNull(item.CostingPartDetails.TotalCalculatedRMBOPCCCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td> */}
@@ -250,6 +265,7 @@ function AssemblyTechnology(props) {
                     setAssemblyOperationCost={props.setAssemblyOperationCost}
                     setAssemblyToolCost={props.setAssemblyToolCost}
                     setOperationCostFunction={props.setOperationCostFunction}
+                    isAssemblyTechnology={true}
                 // setProcessCostFunction={props.setProcessCostFunction}
                 />
             }

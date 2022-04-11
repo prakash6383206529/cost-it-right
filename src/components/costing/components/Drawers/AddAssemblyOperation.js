@@ -11,7 +11,7 @@ import { loggedInUserId, checkForDecimalAndNull, checkForNull } from '../../../.
 import { createToprowObjAndSave } from '../../CostingUtil';
 
 function AddAssemblyOperation(props) {
-  const { item, CostingViewMode } = props;
+  const { item, CostingViewMode, isAssemblyTechnology } = props;
   const [IsOpenTool, setIsOpenTool] = useState(false);
   const dispatch = useDispatch()
 
@@ -58,8 +58,9 @@ function AddAssemblyOperation(props) {
   * @description SAVE DATA ASSEMBLY
   */
   const saveData = () => {
-    // props.setOperationCostFunction(item?.CostingPartDetails?.TotalOperationCostPerAssembly)
-    props.setProcessCostFunction(item?.CostingPartDetails?.TotalProcessCostPerAssembly)
+    if (isAssemblyTechnology) {
+      props.setOperationCostFunction(item?.CostingPartDetails?.TotalOperationCostPerAssembly)
+    }
     let requestData = {
       "CostingId": item.CostingId,
       "CostingNumber": item.CostingNumber,

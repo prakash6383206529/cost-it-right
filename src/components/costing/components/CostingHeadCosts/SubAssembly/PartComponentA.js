@@ -139,6 +139,8 @@ function PartCompomentA(props) {
                                 setOtherOperationCost={props.setOtherOperationCost}
                                 setToolCost={props.setToolCost}
                                 item={item}
+                                setProcessCostFunction={props.setProcessCostFunction}
+                                isAssemblyTechnology={true}
                             />
                         </div>
                     </div >

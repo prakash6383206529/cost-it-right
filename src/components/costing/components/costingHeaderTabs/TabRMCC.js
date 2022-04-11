@@ -1244,7 +1244,6 @@ function TabRMCC(props) {
    * @description Used to Submit the form
    */
   const onSubmit = (values) => { }
-  console.log(RMCCTabData?.CostingPartDetails, 'RMCCTabDataRMCCTabData');
   return (
 
     <>
@@ -1295,6 +1294,7 @@ function TabRMCC(props) {
                                     item={item}
                                     rmData={item.CostingPartDetails.CostingRawMaterialsCost}
                                     bopData={item.CostingPartDetails.CostingBoughtOutPartCost}
+                                    ccData={item.CostingPartDetails.CostingConversionCost}
                                     setPartDetails={setPartDetails}
                                     setRMCost={setRMCost}
                                     setBOPCost={setBOPCost}

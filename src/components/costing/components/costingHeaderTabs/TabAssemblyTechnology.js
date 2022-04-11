@@ -32,8 +32,8 @@ function TabAssemblyTechnology(props) {
   const [costPerPiece, setcostPerPiece] = useState('')
   const [operationCostValue, setOperationCostValue] = useState('')
   const [processCostValue, setprocessCostValue] = useState('')
-  console.log('operationCostValue: ', operationCostValue);
-  console.log('processCostValue: ', processCostValue);
+  console.log('operationCostValue: 76', operationCostValue);
+  console.log('processCostValue: 76', processCostValue);
 
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
@@ -47,7 +47,9 @@ function TabAssemblyTechnology(props) {
   const setOperationCostFunction = (value) => {
     setOperationCostValue(value)
     let temp = subAssemblyTechnologyArray
+    temp[0].CostingPartDetails.CostPerAssembly = temp[0].CostingPartDetails.CostPerAssembly - temp[0].operationCostValue
     temp[0].operationCostValue = value
+    temp[0].CostingPartDetails.CostPerAssembly = temp[0].CostingPartDetails.CostPerAssembly + value
     dispatch(setSubAssemblyTechnologyArray(temp))
 
   }
@@ -55,7 +57,10 @@ function TabAssemblyTechnology(props) {
   const setProcessCostFunction = (value) => {
     setprocessCostValue(value)
     let temp = subAssemblyTechnologyArray
+
+    temp[0].CostingPartDetails.CostPerAssembly = temp[0].CostingPartDetails.CostPerAssembly - temp[0].processCostValue
     temp[0].processCostValue = value
+    temp[0].CostingPartDetails.CostPerAssembly = temp[0].CostingPartDetails.CostPerAssembly + value
     dispatch(setSubAssemblyTechnologyArray(temp))
 
   }
