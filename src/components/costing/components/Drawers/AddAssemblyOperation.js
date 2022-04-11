@@ -10,7 +10,7 @@ import { loggedInUserId, checkForDecimalAndNull, checkForNull } from '../../../.
 import { createToprowObjAndSave, findSurfaceTreatmentData } from '../../CostingUtil';
 
 function AddAssemblyOperation(props) {
-  const { item, CostingViewMode } = props;
+  const { item, CostingViewMode, isAssemblyTechnology } = props;
   const [IsOpenTool, setIsOpenTool] = useState(false);
   const IsLocked = (item?.IsLocked ? item?.IsLocked : false) || (item?.IsPartLocked ? item?.IsPartLocked : false)
 
@@ -48,6 +48,9 @@ function AddAssemblyOperation(props) {
   const saveData = () => {
     let stCostingData = findSurfaceTreatmentData(item)
 
+    if (isAssemblyTechnology) {
+      props.setOperationCostFunction(item?.CostingPartDetails?.TotalOperationCostPerAssembly)
+    }
     let requestData = {
       "CostingId": item.CostingId,
       "CostingNumber": item.CostingNumber,

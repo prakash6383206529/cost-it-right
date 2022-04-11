@@ -1503,6 +1503,12 @@ function TabRMCC(props) {
 
   }
 
+  /**
+   * @method onSubmit
+   * @description Used to Submit the form
+   */
+  const onSubmit = (values) => { }
+
   return (
     <>
       <div className="login-container signup-form" id="rm-cc-costing-header">
