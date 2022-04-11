@@ -171,14 +171,12 @@ function OtherCostingSimulation(props) {
                 case String(EXCHNAGERATE):
                     item.POVariance = (checkForNull(item.OldNetPOPriceOtherCurrency).toFixed(TOFIXEDVALUE) -
                         checkForNull(item.NewNetPOPriceOtherCurrency).toFixed(TOFIXEDVALUE))
-                    console.log('item.POVariance: ', item.POVariance);
                     item.Variance = (checkForNull(item.OldExchangeRate).toFixed(TOFIXEDVALUE) -
                         checkForNull(item.NewExchangeRate).toFixed(TOFIXEDVALUE))
 
                     break;
                 case String(COMBINED_PROCESS):
                     item.POVariance = checkForDecimalAndNull(item.OldPOPrice - item.NewPOPrice, getConfigurationKey().NoOfDecimalForPrice)
-                    console.log('POVariance: ds', item.POVariance);
                     item.Variance = checkForDecimalAndNull(item.OldNetCC - item.NewNetCC, getConfigurationKey().NoOfDecimalForPrice)
                     break;
                 default:
@@ -433,12 +431,6 @@ function OtherCostingSimulation(props) {
         const classGreen = (row.NewNetOverheadAndProfitCost > row.OldNetOverheadAndProfitCost) ? 'red-value form-control' : (row.NewNetOverheadAndProfitCost < row.OldNetOverheadAndProfitCost) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
-
-    // const varianceFormatter = (props) => {
-    //     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-    //     const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-    //     return cell
-    // }
 
     const oldCCFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -730,7 +722,6 @@ function OtherCostingSimulation(props) {
         newCostFormatter: newCostFormatter,
         customLoadingOverlay: LoaderCustom,
         customNoRowsOverlay: NoContentFound,
-        // varianceFormatter: varianceFormatter,
         overheadFormatter: overheadFormatter,
         profitFormatter: profitFormatter,
         rejectionFormatter: rejectionFormatter,
@@ -913,7 +904,6 @@ function OtherCostingSimulation(props) {
                                                     </>}
 
 
-                                                    {/* <AgGridColumn width={140} field="Variance" headerName='Variance' cellRenderer='varianceFormatter'></AgGridColumn> */}
                                                     <AgGridColumn width={100} field="CostingId" headerName='Actions' type="rightAligned" cellRenderer='buttonFormatter'></AgGridColumn>
 
                                                 </AgGridReact>
