@@ -26,8 +26,7 @@ class AddAssemblyForm extends Component {
    */
     componentDidMount() {
         const { BOMViewerData } = this.props;
-
-        this.props.getAssemblyPartSelectList(() => { })
+        this.props.getAssemblyPartSelectList(this.props?.TechnologySelected.value, () => { })
 
         let tempArr = [];
         BOMViewerData && BOMViewerData.map(el => {
