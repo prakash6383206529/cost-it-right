@@ -18,7 +18,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from "../../../assests/images/red-cross.png";
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
-import { debounce } from 'lodash';
+import _, { debounce } from 'lodash';
 
 class AddIndivisualPart extends Component {
   constructor(props) {
@@ -44,8 +44,8 @@ class AddIndivisualPart extends Component {
       showPopup: false,
       updatedObj: {},
       setDisable: false,
-      disablePopup: false
-
+      disablePopup: false,
+      isBomEditable: false
     }
   }
 
@@ -89,7 +89,8 @@ class AddIndivisualPart extends Component {
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
               files: Data.Attachements,
               ProductGroup: productArray,
-              oldProductGroup: productArray
+              oldProductGroup: productArray,
+              isBomEditable: Data.IsBOMEditable
             }, () => this.setState({ isLoader: false }))
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
             let files = Data.Attachements && Data.Attachements.map((item) => {
@@ -285,20 +286,56 @@ class AddIndivisualPart extends Component {
   onSubmit = debounce((values) => {
     const { PartId, selectedPlants, effectiveDate, isEditFlag, files, DataToCheck, DropdownChanged, ProductGroup, oldProductGroup, uploadAttachements } = this.state;
     const { initialConfiguration } = this.props;
-
+    let isStructureChanges
     let plantArray = selectedPlants && selectedPlants.map((item) => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
 
     let productArray = (initialConfiguration?.IsProductMasterConfigurable) ? ProductGroup && ProductGroup.map((item) => ({ GroupCode: item.Text })) : [{ GroupCode: values.GroupCode }]
+
     if (isEditFlag) {
-
-
+      let isGroupCodeChange
+      if (!this.state.isBomEditable) {
+        if (this.props.initialConfiguration?.IsProductMasterConfigurable) {
+          let isEqualValue = _.isEqual(this.state.DataToCheck.GroupCodeList, productArray)
+          isGroupCodeChange = isEqualValue ? false : true
+        } else {
+          let isEqualValue = String(this.state.DataToCheck.GroupCode) === String(values.GroupCode)
+          isGroupCodeChange = isEqualValue ? false : true
+        }
+      }
+      //THIS CONDITION TO CHECK IF ALL VALUES ARE SAME (IF YES, THEN NO NEED TO CALL UPDATE API JUST SEND IT TO LISTING PAGE)
       if (DropdownChanged && String(DataToCheck.PartName) === String(values.PartName) && String(DataToCheck.Description) === String(values.Description) &&
         String(DataToCheck.GroupCode) === String(values.GroupCode) && String(DataToCheck.ECNNumber) === String(values.ECNNumber) &&
-        String(DataToCheck.RevisionNumber) === String(values.RevisionNumber) && String(DataToCheck.DrawingNumber) === String(values.DrawingNumber) && String(oldProductGroup) === String(ProductGroup)
-        && uploadAttachements) {
+        String(DataToCheck.RevisionNumber) === String(values.RevisionNumber) && String(DataToCheck.DrawingNumber) === String(values.DrawingNumber)
+        && !isGroupCodeChange && uploadAttachements) {
         this.cancel()
         return false;
       }
+
+      //THIS CONDITION IS TO CHECK IF IsBomEditable KEY FROM API IS FALSE AND THERE IS CHANGE ON ONLY PART DESCRIPTION ,PART NAME AND ATTACHMENT(TO UPDATE EXISTING RECORD)
+      if (this.state.isBomEditable === false && !isGroupCodeChange && String(DataToCheck.ECNNumber) === String(values.ECNNumber) &&
+        String(DataToCheck.RevisionNumber) === String(values.RevisionNumber) && String(DataToCheck.DrawingNumber) === String(values.DrawingNumber) &&
+        String(oldProductGroup) === String(ProductGroup)) {
+        isStructureChanges = false
+      }
+
+      //THIS CONDITION IS TO CHECK IF IsBomEditable KEY FROM API IS FALSE AND TEHRE IS CHANGE IN OTHER FIELD ALSO APART FROM PART DESCRIPTION,NAME AND ATTACHMENT (TO CREATE NEW RECORD)
+      else if (this.state.isBomEditable === false && (isGroupCodeChange || String(DataToCheck.ECNNumber) !== String(values.ECNNumber) ||
+        String(DataToCheck.RevisionNumber) !== String(values.RevisionNumber) || String(DataToCheck.DrawingNumber) !== String(values.DrawingNumber)
+        || String(oldProductGroup) !== String(ProductGroup))) {
+        // IF THERE ARE CHANGES ,THEN REVISION NO SHOULD BE CHANGED
+        if (String(DataToCheck.RevisionNumber) === String(values.RevisionNumber) || DayTime(DataToCheck.EffectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(this.state.effectiveDate).format('YYYY-MM-DD HH:mm:ss')) {
+          Toaster.warning('Please edit Revision no and Effective date')
+          return false
+        } else {
+          isStructureChanges = true
+        }
+      }
+      // THIS CONDITION IS WHEN IsBomEditable KEY FROM API IS TRUE (WHATEVER USER CHANGE OLD RECORD WILL GET UPDATE)
+      else {
+        isStructureChanges = false
+      }
+
+
       this.setState({ setDisable: true, disablePopup: false })
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: PartId }
@@ -316,13 +353,18 @@ class AddIndivisualPart extends Component {
         Remark: values.Remark,
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
         Attachements: updatedFiles,
-        IsForcefulUpdated: true,
-        GroupCodeList: productArray
+        IsForcefulUpdated: false,
+        GroupCodeList: productArray,
+        IsStructureChanges: isStructureChanges
       }
 
-      if (isEditFlag) {
-        this.setState({ showPopup: true, updatedObj: updateData })
-      }
+      this.props.updatePart(updateData, (res) => {
+        this.setState({ setDisable: false })
+        if (res?.data?.Result) {
+          Toaster.success(MESSAGES.UPDATE_PART_SUCESS);
+          this.cancel()
+        }
+      });
 
 
 
