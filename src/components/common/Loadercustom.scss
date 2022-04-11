@@ -347,6 +347,7 @@
         top: $responsiveTop;
         bottom: $responsiveBottom;
         right: $responsiveRight;
+        left: $responsiveLeft;
      }
      .loaderinner {
         font-size: 30px;
@@ -366,10 +367,12 @@
     @include inputLoader($mozilaRight:36px ) 
   }
  .part-input-loader {
-    @include inputLoader(29px, 19px, 11px, 11px, $responsiveRight:11px, $responsiveBottom:19px, $mozilaBottom:18px ) ;
+    @include inputLoader(29px, 19px, 11px, 12px, $responsiveRight:11px, $responsiveBottom:19px, $responsiveLeft:11px, $mozilaBottom:19px ) ;
     @-moz-document url-prefix() {
+        left:11px;
         @media screen and (min-width:$middleDesktop) {
-            bottom: 18px;
+            top:30px;
+            left:11px;
         }
     }
    
