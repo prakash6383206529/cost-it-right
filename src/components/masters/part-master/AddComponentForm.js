@@ -30,7 +30,7 @@ class AddComponentForm extends Component {
  */
   componentDidMount() {
     const { BOMViewerData } = this.props;
-    this.props.getComponentPartSelectList(() => { })
+    this.props.getComponentPartSelectList(this.props?.TechnologySelected.value, () => { })
 
     let tempArr = [];
     BOMViewerData && BOMViewerData.map(el => {
@@ -85,7 +85,7 @@ class AddComponentForm extends Component {
   */
   renderListing = (label) => {
     const { componentPartSelectList } = this.props;
-  
+
     const { BOMViewerData } = this.props;
     let tempArr = [];
     BOMViewerData && BOMViewerData.map(el => {
@@ -188,7 +188,7 @@ class AddComponentForm extends Component {
       let tempArr = []
 
       tempArr = this.renderListing("part").filter(i =>
-        i.label!==null && i.label.toLowerCase().includes(inputValue.toLowerCase())
+        i.label !== null && i.label.toLowerCase().includes(inputValue.toLowerCase())
       );
 
       if (tempArr.length <= 100) {
@@ -223,7 +223,7 @@ class AddComponentForm extends Component {
               <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter first few digits to see the part numbers" />
               <AsyncSelect name="PartNumber" ref={this.myRef} key={this.state.updateAsyncDropdown} cacheOptions defaultOptions loadOptions={promiseOptions} onChange={(e) => this.handlePartChange(e)} />
               {this.state.isPartNoNotSelected && <div className='text-help'>This field is required.</div>}
-     
+
             </Col>
             <Col md="6">
               <Field
@@ -372,7 +372,7 @@ function mapStateToProps({ part }) {
       ECNNumber: DrawerPartData.ECNNumber,
       RevisionNumber: DrawerPartData.RevisionNumber,
       DrawingNumber: DrawerPartData.DrawingNumber,
-      GroupCode: DrawerPartData.GroupCodeList? (DrawerPartData.GroupCodeList.length>0?(DrawerPartData.GroupCodeList[0].GroupCode?DrawerPartData.GroupCodeList[0].GroupCode:""):"") :"",
+      GroupCode: DrawerPartData.GroupCodeList ? (DrawerPartData.GroupCodeList.length > 0 ? (DrawerPartData.GroupCodeList[0].GroupCode ? DrawerPartData.GroupCodeList[0].GroupCode : "") : "") : "",
       BOMNumber: DrawerPartData.BOMNumber,
     }
 

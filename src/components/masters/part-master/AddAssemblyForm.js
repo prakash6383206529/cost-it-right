@@ -25,8 +25,7 @@ class AddAssemblyForm extends Component {
    * @description called after render the component
    */
     componentDidMount() {
-
-        this.props.getAssemblyPartSelectList(() => { })
+        this.props.getAssemblyPartSelectList(this.props?.TechnologySelected.value, () => { })
 
     }
 

@@ -132,8 +132,6 @@ class BOMViewer extends Component {
         })
 
 
-
-
         setTimeout(() => {
 
           tempArray && tempArray.map((el, i) => {
@@ -257,7 +255,7 @@ class BOMViewer extends Component {
     }
 
     let isEqual = _.isEqual(this.state.bomFromAPI, this.state.flowpoints)
-    console.log('isEqual: ', isEqual);
+
     if (this.state.isCancel) {
       this.props.closeDrawer('', this.state.ActualBOMData, this.state.isSaved, isEqual)
     } else {
@@ -482,7 +480,7 @@ class BOMViewer extends Component {
               <AddChildDrawer
                 isOpen={isOpenChildDrawer}
                 closeDrawer={this.closeChildDrawer}
-                //TechnologySelected={this.props.TechnologySelected} DONT DELETE
+                TechnologySelected={this.props.TechnologySelected}
                 isEditFlag={false}
                 ID={""}
                 anchor={"right"}

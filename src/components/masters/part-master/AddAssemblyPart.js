@@ -109,6 +109,7 @@ class AddAssemblyPart extends Component {
               // isLoader: false,
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
               files: Data.Attachements,
+              TechnologySelected: { label: Data.TechnologyName ? Data.TechnologyName : "", value: Data.TechnologyIdRef ? Data.TechnologyIdRef : "" },
               ChildParts: Data.ChildParts,
               BOMViewerData: Data.ChildParts,
               ProductGroup: productArray,
@@ -163,7 +164,7 @@ class AddAssemblyPart extends Component {
 
   handleTechnologyChange = (event) => {
 
-    console.log(event, "e");
+
     this.setState({ DropdownChanged: true, TechnologySelected: event, })
   }
 
@@ -180,7 +181,6 @@ class AddAssemblyPart extends Component {
   setChildPartsData = (childData) => {
     const { BOMViewerData, } = this.state;
     const tempArray = [];
-
 
     const posX = BOMViewerData && BOMViewerData.length > 0 ? 450 * (BOMViewerData.filter(el => el.Level === 'L1').length - 1) : 50;
 
@@ -303,7 +303,7 @@ class AddAssemblyPart extends Component {
   */
   checkIsFormFilled = () => {
     const { fieldsObj } = this.props;
-    if (fieldsObj.BOMNumber === undefined || fieldsObj.AssemblyPartNumber === undefined || fieldsObj.AssemblyPartName === undefined) {         //|| Object.keys(this.state.TechnologySelected).length === 0     DONT DELETE
+    if (fieldsObj.BOMNumber === undefined || fieldsObj.AssemblyPartNumber === undefined || fieldsObj.AssemblyPartName === undefined || Object.keys(this.state.TechnologySelected).length === 0) {
       return false;
     } else {
       return true;
@@ -374,7 +374,6 @@ class AddAssemblyPart extends Component {
   }
 
   closeBOMViewerDrawer = (e = '', drawerData, isSaved, isEqual) => {
-    console.log('isEqual from assembly part: ', isEqual);
 
     this.setState({ isOpenBOMViewerDrawer: false, BOMViewerData: drawerData, avoidAPICall: isSaved, BOMChanged: isEqual ? false : true })
   }
@@ -532,11 +531,8 @@ class AddAssemblyPart extends Component {
   * @description Used to Submit the form
   */
   onSubmit = debounce((values) => {
-    console.log('values: ', values);
+
     const { PartId, isEditFlag, selectedPlants, BOMViewerData, files, avoidAPICall, DataToCheck, DropdownChanged, ProductGroup, oldProductGroup, BOMChanged } = this.state;
-    console.log('DropdownChanged: ', DropdownChanged);
-    console.log('BOMChanged: ', BOMChanged);
-    console.log(DataToCheck.GroupCode, "DataToCheck.GroupCode");
     const { actualBOMTreeData, fieldsObj, partData } = this.props;
     const { initialConfiguration } = this.props;
 
@@ -587,7 +583,7 @@ class AddAssemblyPart extends Component {
       //THIS CONDITION IS TO CHECK IF IsBomEditable KEY FROM API IS FALSE AND THERE IS CHANGE ON ONLY PART DESCRIPTION ,PART NAME AND ATTACHMENT(TO UPDATE EXISTING RECORD)
       if (this.state.isBomEditable === false && !isGroupCodeChange && String(DataToCheck.ECNNumber) === String(values.ECNNumber) &&
         String(DataToCheck.RevisionNumber) === String(values.RevisionNumber) && String(DataToCheck.DrawingNumber) === String(values.DrawingNumber) && !BOMChanged) {
-        console.log("COMING IN IF");
+
         isStructureChanges = false
       }
 
@@ -595,8 +591,8 @@ class AddAssemblyPart extends Component {
       else if (this.state.isBomEditable === false && (isGroupCodeChange || String(DataToCheck.ECNNumber) !== String(values.ECNNumber) ||
         String(DataToCheck.RevisionNumber) !== String(values.RevisionNumber) || String(DataToCheck.DrawingNumber) !== String(values.DrawingNumber)
         || BOMChanged)) {
-        console.log("COMING IN  THESE", this.state.effectiveDate.$d);
-        console.log(DataToCheck.EffectiveDate, "DataToCheck.EffectiveDate", DayTime(this.state.effectiveDate).format('YYYY-MM-DD HH:mm:ss'));
+
+
         // IF THERE ARE CHANGES ,THEN REVISION NO SHOULD BE CHANGED
         if (String(DataToCheck.RevisionNumber) === String(values.RevisionNumber) || String(DataToCheck.BOMNumber) === String(values.BOMNumber) || DayTime(DataToCheck.EffectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(this.state.effectiveDate).format('YYYY-MM-DD HH:mm:ss')) {
           Toaster.warning('Please edit Revision no , BOM no and Effective date')
@@ -607,7 +603,7 @@ class AddAssemblyPart extends Component {
       }
       // THIS CONDITION IS WHEN IsBomEditable KEY FROM API IS TRUE (WHATEVER USER CHANGE OLD RECORD WILL GET UPDATE)
       else {
-        console.log("COMING IN THSES else");
+
         isStructureChanges = false
       }
 
@@ -621,6 +617,7 @@ class AddAssemblyPart extends Component {
         AssemblyPartId: PartId,
         AssemblyPartName: values.AssemblyPartName,
         AssemblyPartNumber: values.AssemblyPartNumber,
+        TechnologyIdRef: this.state.TechnologySelected.value ? this.state.TechnologySelected.value : "",
         Description: values.Description,
         ECNNumber: values.ECNNumber,
         RevisionNumber: values.RevisionNumber,
@@ -637,7 +634,7 @@ class AddAssemblyPart extends Component {
         GroupCodeList: productArray,
         IsStructureChanges: isStructureChanges
       }
-      console.log(updateData, "UPDTAE");
+
       this.props.updateAssemblyPart(updateData, (res) => {
         if (res.data.Result) {
           Toaster.success(MESSAGES.UPDATE_BOM_SUCCESS);
@@ -654,6 +651,7 @@ class AddAssemblyPart extends Component {
         AssemblyPartNumber: values.AssemblyPartNumber,
         AssemblyPartName: values.AssemblyPartName,
         AssemblyPartId: '',
+        TechnologyIdRef: this.state.TechnologySelected.value ? this.state.TechnologySelected.value : "",
         ChildParts: childPartArray,
         LoggedInUserId: loggedInUserId(),
         BOMNumber: values.BOMNumber,
@@ -706,8 +704,8 @@ class AddAssemblyPart extends Component {
   }
 
   isFieldChange = (event, field) => {
-    console.log('field: ', field);
-    console.log('event: ', event);
+
+
     const { DataToCheck } = this.state
     let isChangeInField = false
     switch (field) {
@@ -937,8 +935,9 @@ class AddAssemblyPart extends Component {
                           </Col>
                         }
 
-
-                        {/* <Col md="3">           // WORK IN PROGRESS DONT DELETE
+                        {/* 
+                        //WORK IN PROGRESS DONT DELETE */}
+                        <Col md="3">
                           <Field
                             label="Technology"
                             type="text"
@@ -947,15 +946,15 @@ class AddAssemblyPart extends Component {
                             placeholder={"Technology"}
                             options={this.renderListing("technology")}
                             validate={
-                              this.state.Technology == null || this.state.Technology.length === 0 ? [required] : []}
+                              this.state.TechnologySelected == null || Object.keys(this.state.TechnologySelected).length === 0 ? [required] : []}
                             required={true}
                             handleChangeDescription={
                               this.handleTechnologyChange
                             }
-                            valueDescription={this.state.Technology}
+                            valueDescription={this.state.TechnologySelected}
                             disabled={isEditFlag || isViewMode}
                           />
-                        </Col> */}
+                        </Col>
 
 
                         <Col md="3">
@@ -1124,7 +1123,7 @@ class AddAssemblyPart extends Component {
               isOpen={isOpenChildDrawer}
               closeDrawer={this.closeChildDrawer}
               isEditFlag={false}
-              //TechnologySelected={this.props.TechnologySelected} DONT DELETE
+              TechnologySelected={this.state.TechnologySelected}
               ID={""}
               anchor={"right"}
               setChildPartsData={this.setChildPartsData}
@@ -1136,7 +1135,7 @@ class AddAssemblyPart extends Component {
             <BOMViewer
               isOpen={isOpenBOMViewerDrawer}
               closeDrawer={this.closeBOMViewerDrawer}
-              //TechnologySelected={this.state.TechnologySelected} DONT DELETE
+              TechnologySelected={this.state.TechnologySelected}
               isEditFlag={this.state.isEditFlag}
               PartId={this.state.PartId}
               anchor={"right"}
