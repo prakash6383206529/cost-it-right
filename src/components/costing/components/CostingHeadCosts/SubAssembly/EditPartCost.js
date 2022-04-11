@@ -31,6 +31,7 @@ function EditPartCost(props) {
 
     const PartCostFields = 'PartCostFields';
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
+    const { subAssemblyTechnologyArray } = useSelector(state => state.SubAssembly)
 
     const { register, handleSubmit, control, setValue, getValues, formState: { errors },
     } = useForm({
@@ -50,7 +51,8 @@ function EditPartCost(props) {
     }, [gridData])
 
     const onSubmit = (values) => {
-        let changeTempObject = tempObject[0].CostingChildPartDetails
+        let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray
+        let changeTempObject = tempsubAssemblyTechnologyArray[0].CostingChildPartDetails
         let targetBOMLevel = props.tabAssemblyIndividualPartDetail.BOMLevel
         let targetPartNo = props.tabAssemblyIndividualPartDetail.PartNumber
         let targetAssemblyPartNumber = props.tabAssemblyIndividualPartDetail.AssemblyPartNumber
@@ -70,9 +72,10 @@ function EditPartCost(props) {
             return null
         })
 
-        tempObject[0].CostingPartDetails.CostPerPiece = costPerPieceTotal
-        tempObject[0].CostingPartDetails.CostPerAssembly = costPerAssemblyTotal
-        dispatch(setSubAssemblyTechnologyArray(tempObject))
+        tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerPiece = costPerPieceTotal
+        tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerAssemblyPopup = costPerAssemblyTotal
+        tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerAssembly = costPerAssemblyTotal + (checkForNull(tempsubAssemblyTechnologyArray[0].processCostValue) + checkForNull(tempsubAssemblyTechnologyArray[0].operationCostValue))
+        dispatch(setSubAssemblyTechnologyArray(tempsubAssemblyTechnologyArray))
 
         props.getCostPerPiece(weightedCost)
         props.closeDrawer('')
