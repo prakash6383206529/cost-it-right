@@ -22,6 +22,13 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import { toastr } from 'react-redux-toastr';
+import ReactExport from 'react-export-excel';
+import { USER_LISTING_DOWNLOAD_EXCEl } from '../../config/masterData';
+import { UserListing } from '../../config/constants';
+
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 
@@ -55,7 +62,7 @@ class UsersListing extends Component {
 			deletedId: '',
 			cell: [],
 			row: [],
-			isLoader:false
+			isLoader: false
 		}
 	}
 
@@ -110,6 +117,21 @@ class UsersListing extends Component {
 	}
 
 
+	onBtExport = () => {
+		let tempArr = []
+
+		tempArr = this.props.userDataList
+		return this.returnExcelColumn(USER_LISTING_DOWNLOAD_EXCEl, tempArr)
+	};
+
+	returnExcelColumn = (data = [], TempData) => {
+
+		return (
+			<ExcelSheet data={TempData} name={UserListing}>
+				{data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+			</ExcelSheet>);
+	}
+
 
 	// Get updated user list after any action performed.
 	getUpdatedData = () => {
@@ -126,9 +148,9 @@ class UsersListing extends Component {
 			DepartmentId: departmentId,
 			RoleId: roleId,
 		}
-		this.setState({isLoader:true})
+		this.setState({ isLoader: true })
 		this.props.getAllUserDataAPI(data, res => {
-			this.setState({isLoader:false})
+			this.setState({ isLoader: false })
 			if (res.status === 204 && res.data === '') {
 				this.setState({ userData: [], })
 			} else if (res && res.data && res.data.DataList) {
@@ -613,14 +635,13 @@ class UsersListing extends Component {
 								<div className="d-flex justify-content-end bd-highlight w100">
 									{AddAccessibility && (
 										<div>
-											{this.state.shown ? (
-												<button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
-													<div className="cancel-icon-white"></div></button>
-											) : (
-												<button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
-													<div className="filter mr-0"></div>
-												</button>
-											)}
+											<ExcelFile filename={'BOP Domestic'} fileExtension={'.xls'} element={
+												<button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+													{/* DOWNLOAD */}
+												</button>}>
+
+												{this.onBtExport()}
+											</ExcelFile>
 											<button
 												type="button"
 												className={"user-btn mr5"}
@@ -640,7 +661,7 @@ class UsersListing extends Component {
 							</Col>
 						</Row>
 					</form>
-					<div className={`ag-grid-wrapper height-width-wrapper ${this.props.userDataList && this.props.userDataList?.length <=0 ?"overlay-contain": ""}`}>
+					<div className={`ag-grid-wrapper height-width-wrapper ${this.props.userDataList && this.props.userDataList?.length <= 0 ? "overlay-contain" : ""}`}>
 						<div className="ag-grid-header">
 							<input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
 						</div>
