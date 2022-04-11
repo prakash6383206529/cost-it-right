@@ -24,6 +24,7 @@ function StandardRub(props) {
 
     const costData = useContext(costingInfoContext)
     const [tableData, setTableData] = useState([])
+    const [timeOutId, setTimeoutId] = useState([])
     const [rmDropDownData, setRmDropDownData] = useState([])
     const [rmRowDataState, setRmRowDataState] = useState({})
     const [gridApi, setGridApi] = useState(null);
@@ -78,6 +79,44 @@ function StandardRub(props) {
 
 
 
+    const handleInnerDiameter = (e) => {
+
+        clearTimeout(timeOutId);
+        let timeout = setTimeout(() => {
+
+            const InnerDiameter = e
+            const OuterDiameter = Number(getValues('OuterDiameter'))
+            if (InnerDiameter && OuterDiameter && InnerDiameter > OuterDiameter) {
+                Toaster.warning('Inner diameter cannot be greater than outer diameter')
+                setTimeout(() => {
+                    setValue('InnerDiameter', 0)
+                }, 300);
+                return false
+            }
+        }, 1000)
+
+        setTimeoutId(timeout)
+    }
+
+    const handleOuterDiameter = (e) => {
+
+        clearTimeout(timeOutId);
+        let timeout = setTimeout(() => {
+
+            const InnerDiameter = Number(getValues('InnerDiameter'))
+            const OuterDiameter = e
+            if (InnerDiameter && OuterDiameter && InnerDiameter > OuterDiameter) {
+                Toaster.warning('Inner diameter cannot be greater than outer diameter')
+                setTimeout(() => {
+                    setValue('OuterDiameter', 0)
+                }, 300);
+                return false
+            }
+
+        }, 1000);
+        setTimeoutId(timeout)
+
+    }
 
     const calculateTotalLength = () => {
 
@@ -96,10 +135,10 @@ function StandardRub(props) {
         const OuterDiameter = Number(getValues('OuterDiameter'))
 
         if (InnerDiameter && OuterDiameter && InnerDiameter > OuterDiameter) {
-            Toaster.warning('Inner diameter cannot be greater than outer diameter')
-            setTimeout(() => {
-                setValue('OuterDiameter', 0)
-            }, 300);
+            // Toaster.warning('Inner diameter cannot be greater than outer diameter')
+            // setTimeout(() => {
+            //     setValue('OuterDiameter', 0)
+            // }, 300);
             return false
 
         }
@@ -131,16 +170,15 @@ function StandardRub(props) {
         }
 
 
+        if (Number(getValues('GrossWeight'))) {
+            let ScrapWeight = checkForNull(dataToSend.GrossWeight) - checkForNull(FinishWeight)
+            setDataToSend(prevState => ({ ...prevState, ScrapWeight: ScrapWeight }))
+            setValue('ScrapWeight', checkForDecimalAndNull(ScrapWeight, getConfigurationKey().NoOfDecimalForInputOutput))
 
-        let ScrapWeight = checkForNull(dataToSend.GrossWeight) - checkForNull(FinishWeight)
-        setDataToSend(prevState => ({ ...prevState, ScrapWeight: ScrapWeight }))
-        setValue('ScrapWeight', checkForDecimalAndNull(ScrapWeight, getConfigurationKey().NoOfDecimalForInputOutput))
-
-        let NetRmCost = checkForNull(dataToSend.GrossWeight) * checkForNull(rmRowDataState.RMRate) - checkForNull(rmRowDataState.ScrapRate) * ScrapWeight
-        setDataToSend(prevState => ({ ...prevState, NetRmCost: NetRmCost }))
-        setValue('NetRmCost', checkForDecimalAndNull(NetRmCost, getConfigurationKey().NoOfDecimalForInputOutput))
-
-
+            let NetRmCost = checkForNull(dataToSend.GrossWeight) * checkForNull(rmRowDataState.RMRate) - checkForNull(rmRowDataState.ScrapRate) * ScrapWeight
+            setDataToSend(prevState => ({ ...prevState, NetRmCost: NetRmCost }))
+            setValue('NetRmCost', checkForDecimalAndNull(NetRmCost, getConfigurationKey().NoOfDecimalForInputOutput))
+        }
 
     }
 
@@ -160,10 +198,7 @@ function StandardRub(props) {
             setValue('InnerDiameter', obj.OuterDiameter)
             setValue('Length', obj.Length)
             setValue('CuttingAllowance', obj.CuttingAllowance)
-
-
         }
-
     }
 
     const hyphenFormatter = (props) => {
@@ -245,13 +280,6 @@ function StandardRub(props) {
         })
         setRmDropDownData(arr2)
     }
-
-
-
-
-
-
-
 
     const onSubmit = () => {
         let obj = {}
@@ -366,7 +394,7 @@ function StandardRub(props) {
                                                     },
                                                     // maxLength: 4,
                                                 }}
-                                                handleChange={() => { }}
+                                                handleChange={(e) => handleInnerDiameter(e.target.value)}
                                                 defaultValue={''}
                                                 className=""
                                                 customClassName={'withBorder'}
@@ -391,7 +419,7 @@ function StandardRub(props) {
                                                 //     },
                                                 //     // maxLength: 4,
                                                 //   }}
-                                                handleChange={() => { }}
+                                                handleChange={(e) => handleOuterDiameter(e.target.value)}
                                                 defaultValue={''}
                                                 className=""
                                                 customClassName={'withBorder'}
