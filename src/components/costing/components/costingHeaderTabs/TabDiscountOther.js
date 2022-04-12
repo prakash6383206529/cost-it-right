@@ -75,7 +75,7 @@ function TabDiscountOther(props) {
         // setValue('HundiDiscountType',DiscountCostData !==undefined && DiscountCostData.DiscountCostType)
 
         let topHeaderData = {
-          DiscountsAndOtherCost: checkForNull(getValues('HundiOrDiscountValue'), 2),
+          DiscountsAndOtherCost: checkForNull(DiscountCostData?.HundiOrDiscountValue),
           HundiOrDiscountPercentage: getValues('HundiOrDiscountPercentage'),
           AnyOtherCost: checkForNull(getValues('AnyOtherCost')),
           DiscountCostType: checkForNull(DiscountCostData !== undefined && DiscountCostData.DiscountCostType),
@@ -186,8 +186,8 @@ function TabDiscountOther(props) {
             setValue('HundiOrDiscountPercentage', OtherCostDetails.HundiOrDiscountPercentage !== null ? OtherCostDetails.HundiOrDiscountPercentage : '')
             setValue('OtherCostDescription', OtherCostDetails.OtherCostDescription !== null ? OtherCostDetails.OtherCostDescription : '')
             setValue('NetPOPriceINR', OtherCostDetails.NetPOPriceINR !== null ? checkForDecimalAndNull(OtherCostDetails.NetPOPriceINR, initialConfiguration.NoOfDecimalForPrice) : '')
-            setValue('HundiOrDiscountValue', OtherCostDetails.HundiOrDiscountValue !== null ? OtherCostDetails.HundiOrDiscountValue : '')
-            setValue('AnyOtherCost', OtherCostDetails.AnyOtherCost !== null ? OtherCostDetails.AnyOtherCost : '')
+            setValue('HundiOrDiscountValue', OtherCostDetails.HundiOrDiscountValue !== null ? checkForDecimalAndNull(OtherCostDetails.HundiOrDiscountValue, initialConfiguration.NoOfDecimalForPrice) : '')
+            setValue('AnyOtherCost', OtherCostDetails.AnyOtherCost !== null ? checkForDecimalAndNull(OtherCostDetails.AnyOtherCost, initialConfiguration.NoOfDecimalForPrice) : '')
             setValue('PercentageOtherCost', OtherCostDetails.PercentageOtherCost !== null ? OtherCostDetails.PercentageOtherCost : '')
             setValue('OtherCostType', OtherCostDetails.OtherCostType !== null ? { label: OtherCostDetails.OtherCostType, value: OtherCostDetails.OtherCostType } : '')
             setValue('HundiDiscountType', OtherCostDetails.DiscountCostType !== null ? { label: OtherCostDetails.DiscountCostType, value: OtherCostDetails.DiscountCostType } : '')
