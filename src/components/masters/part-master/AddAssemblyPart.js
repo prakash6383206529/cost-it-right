@@ -39,13 +39,11 @@ class AddAssemblyPart extends Component {
       isViewMode: this.props?.data?.isViewMode ? true : false,
       isLoader: false,
       PartId: '',
-
       selectedPlants: [],
       effectiveDate: '',
       files: [],
       ProductGroup: [],
       oldProductGroup: [],
-
       isOpenChildDrawer: false,
       isOpenBOMViewerDrawer: false,
       BOMViewerData: [],
@@ -163,8 +161,6 @@ class AddAssemblyPart extends Component {
   };
 
   handleTechnologyChange = (event) => {
-
-
     this.setState({ DropdownChanged: true, TechnologySelected: event, })
   }
 
@@ -374,7 +370,6 @@ class AddAssemblyPart extends Component {
   }
 
   closeBOMViewerDrawer = (e = '', drawerData, isSaved, isEqual) => {
-
     this.setState({ isOpenBOMViewerDrawer: false, BOMViewerData: drawerData, avoidAPICall: isSaved, BOMChanged: isEqual ? false : true })
   }
 
@@ -531,7 +526,6 @@ class AddAssemblyPart extends Component {
   * @description Used to Submit the form
   */
   onSubmit = debounce((values) => {
-
     const { PartId, isEditFlag, selectedPlants, BOMViewerData, files, avoidAPICall, DataToCheck, DropdownChanged, ProductGroup, oldProductGroup, BOMChanged } = this.state;
     const { actualBOMTreeData, fieldsObj, partData } = this.props;
     const { initialConfiguration } = this.props;
@@ -571,7 +565,6 @@ class AddAssemblyPart extends Component {
     if (isEditFlag) {
       let isGroupCodeChange = this.checkGroupCodeChange(values)
 
-
       if (!DropdownChanged && String(DataToCheck.AssemblyPartName) === String(values.AssemblyPartName) && !isGroupCodeChange && String(DataToCheck.Description) === String(values.Description) &&
         String(DataToCheck.ECNNumber) === String(values.ECNNumber) && String(DataToCheck.RevisionNumber) === String(values.RevisionNumber) &&
         String(DataToCheck.DrawingNumber) === String(values.DrawingNumber) && BOMChanged === false) {
@@ -583,7 +576,6 @@ class AddAssemblyPart extends Component {
       //THIS CONDITION IS TO CHECK IF IsBomEditable KEY FROM API IS FALSE AND THERE IS CHANGE ON ONLY PART DESCRIPTION ,PART NAME AND ATTACHMENT(TO UPDATE EXISTING RECORD)
       if (this.state.isBomEditable === false && !isGroupCodeChange && String(DataToCheck.ECNNumber) === String(values.ECNNumber) &&
         String(DataToCheck.RevisionNumber) === String(values.RevisionNumber) && String(DataToCheck.DrawingNumber) === String(values.DrawingNumber) && !BOMChanged) {
-
         isStructureChanges = false
       }
 
@@ -591,7 +583,6 @@ class AddAssemblyPart extends Component {
       else if (this.state.isBomEditable === false && (isGroupCodeChange || String(DataToCheck.ECNNumber) !== String(values.ECNNumber) ||
         String(DataToCheck.RevisionNumber) !== String(values.RevisionNumber) || String(DataToCheck.DrawingNumber) !== String(values.DrawingNumber)
         || BOMChanged)) {
-
 
         // IF THERE ARE CHANGES ,THEN REVISION NO SHOULD BE CHANGED
         if (String(DataToCheck.RevisionNumber) === String(values.RevisionNumber) || String(DataToCheck.BOMNumber) === String(values.BOMNumber) || DayTime(DataToCheck.EffectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(this.state.effectiveDate).format('YYYY-MM-DD HH:mm:ss')) {
@@ -603,7 +594,6 @@ class AddAssemblyPart extends Component {
       }
       // THIS CONDITION IS WHEN IsBomEditable KEY FROM API IS TRUE (WHATEVER USER CHANGE OLD RECORD WILL GET UPDATE)
       else {
-
         isStructureChanges = false
       }
 
@@ -642,10 +632,7 @@ class AddAssemblyPart extends Component {
         }
       });
 
-
-
     } else {
-
       this.setState({ setDisable: true })
       let formData = {
         AssemblyPartNumber: values.AssemblyPartNumber,
@@ -667,9 +654,7 @@ class AddAssemblyPart extends Component {
         NumberOfChildParts: BOMViewerData && BOMViewerData.length - 1,
         BOMLevelCount: BOMLevelCount,
         GroupCodeList: productArray
-
       }
-
       this.props.createAssemblyPart(formData, (res) => {
         this.setState({ setDisable: false })
         if (res?.data?.Result === true) {
@@ -704,8 +689,6 @@ class AddAssemblyPart extends Component {
   }
 
   isFieldChange = (event, field) => {
-
-
     const { DataToCheck } = this.state
     let isChangeInField = false
     switch (field) {
@@ -736,9 +719,7 @@ class AddAssemblyPart extends Component {
         return isChangeInField
 
     }
-
   }
-
   checkGroupCodeChange = (newGroupCodeValue) => {
     let isGroupCodeChange
     let productArray = (this.props.initialConfiguration?.IsProductMasterConfigurable) ? this.state.ProductGroup && this.state.ProductGroup.map((item) => ({ GroupCode: item.Text })) : [{ GroupCode: newGroupCodeValue.GroupCode }]
