@@ -187,7 +187,6 @@ function TabDiscountOther(props) {
             setValue('PercentageOtherCost', OtherCostDetails.PercentageOtherCost !== null ? OtherCostDetails.PercentageOtherCost : '')
             setValue('OtherCostType', OtherCostDetails.OtherCostType !== null ? { label: OtherCostDetails.OtherCostType, value: OtherCostDetails.OtherCostType } : '')
             setValue('HundiDiscountType', OtherCostDetails.DiscountCostType !== null ? { label: OtherCostDetails.DiscountCostType, value: OtherCostDetails.DiscountCostType } : '')
-
             setValue('Currency', OtherCostDetails.Currency !== null ? { label: OtherCostDetails.Currency, value: OtherCostDetails.CurrencyId } : [])
             setValue('NetPOPriceOtherCurrency', OtherCostDetails.NetPOPriceOtherCurrency !== null ? checkForDecimalAndNull(OtherCostDetails.NetPOPriceOtherCurrency, initialConfiguration.NoOfDecimalForPrice) : '')
             setNetPoPriceCurrencyState(OtherCostDetails.NetPOPriceOtherCurrency !== null ? OtherCostDetails.NetPOPriceOtherCurrency : '')
@@ -247,25 +246,45 @@ function TabDiscountOther(props) {
     if (!CostingViewMode) {
 
       setValue('NetPOPriceINR', DiscountCostData && checkForDecimalAndNull(netPOPrice, initialConfiguration.NoOfDecimalForPrice))
-
-      // setValue('HundiOrDiscountValue', DiscountCostData && checkForDecimalAndNull(DiscountCostData.HundiOrDiscountValue,initialConfiguration.NoOfDecimalForPrice))
       if (otherCostType.value === 'Percentage') {
         setValue('AnyOtherCost', DiscountCostData !== undefined ? checkForDecimalAndNull(DiscountCostData.AnyOtherCost, initialConfiguration.NoOfDecimalForPrice) : 0)
       }
       if (hundiscountType.value === 'Percentage') {
         setValue('HundiOrDiscountValue', DiscountCostData && checkForDecimalAndNull(DiscountCostData.HundiOrDiscountValue, initialConfiguration.NoOfDecimalForPrice))
       }
-
       if (IsCurrencyChange && ExchangeRateData !== undefined && ExchangeRateData.CurrencyExchangeRate !== undefined) {
         setValue('NetPOPriceOtherCurrency', checkForDecimalAndNull((DiscountCostData && netPOPrice / ExchangeRateData.CurrencyExchangeRate), initialConfiguration.NoOfDecimalForPrice))
         setNetPoPriceCurrencyState(DiscountCostData && netPOPrice / ExchangeRateData.CurrencyExchangeRate)
       }
-
-
-      // setValue('HundiDiscountType', DiscountCostData.DiscountCostType !== null ? { label: DiscountCostData.DiscountCostType, value: DiscountCostData.DiscountCostType } : '')
     }
   }, [props]);
 
+  /**
+  * @method handleDiscountChange
+  * @description HANDLE DISCOUNT CHANGE
+  */
+  const handleDiscountChange = (event) => {
+    if (!CostingViewMode) {
+      if (!isNaN(event.target.value)) {
+
+        // let topHeaderData = {
+        //   DiscountsAndOtherCost: checkForDecimalAndNull(getValues('HundiOrDiscountValue'), initialConfiguration.NoOfDecimalForPrice),
+        //   HundiOrDiscountPercentage: checkForNull(event.target.value),
+        //   AnyOtherCost: checkForNull(getValues('AnyOtherCost')),
+        //   DiscountCostType: hundiscountType.value
+        // }
+        // props.setHeaderCost(topHeaderData)
+
+        setDiscountObj({
+          ...discountObj,
+          HundiOrDiscountPercentage: checkForNull(event.target.value)
+        })
+
+      } else {
+        Toaster.warning('Please enter valid number.')
+      }
+    }
+  }
 
   const setValueForTopHeader = () => {
 
@@ -287,9 +306,6 @@ function TabDiscountOther(props) {
     setValueForTopHeader()
   }, [discountObj])
 
-
-
-
   /**
   * @method handleAnyOtherCostChange
   * @description HANDLE ANY OTHER COST CHANGE
@@ -297,18 +313,10 @@ function TabDiscountOther(props) {
   const handleAnyOtherCostChange = (event) => {
     if (!CostingViewMode) {
       if (!isNaN(event.target.value)) {
-
         setDiscountObj({
           ...discountObj,
           AnyOtherCost: event.target.value
         })
-        // let topHeaderData = {
-        //   DiscountsAndOtherCost: checkForNull(getValues('HundiOrDiscountValue')),
-        //   HundiOrDiscountPercentage: checkForNull(getValues('HundiOrDiscountPercentage')),
-        //   AnyOtherCost: checkForNull(event.target.value),
-        // }
-        // props.setHeaderCost(topHeaderData)
-
       } else {
         Toaster.warning('Please enter valid number.')
       }
@@ -319,30 +327,12 @@ function TabDiscountOther(props) {
   * @description HANDLE ANY OTHER COST CHANGE
   */
   const handleDiscountCostChange = (event) => {
-    const NetPOPriceINR = checkForNull(getValues('NetPOPriceINR'))
     if (!CostingViewMode) {
       if (!isNaN(event.target.value)) {
-        if (checkForNull(event.target.value) > totalCost) {
-          setTimeout(() => {
-            setValue('HundiOrDiscountValue', 0)
-          }, 300);
-          setDiscountObj({
-            ...discountObj,
-            HundiOrDiscountValue: 0,
-            NetPOPriceINR: NetPOPriceINR
-
-          })
-
-          Toaster.warning("Hundi/Discount Value should not be greater then Total Cost ")
-          return false
-        }
-        else {
-          setDiscountObj({
-            ...discountObj,
-            HundiOrDiscountValue: checkForNull(event.target.value)
-          })
-        }
-
+        setDiscountObj({
+          ...discountObj,
+          HundiOrDiscountValue: checkForNull(event.target.value)
+        })
       } else {
         Toaster.warning('Please enter valid number.')
       }
@@ -353,22 +343,12 @@ function TabDiscountOther(props) {
   * @description HANDLE ANY OTHER COST CHANGE
   */
   const handleDiscountPercenatgeCostChange = (event) => {
-
     if (!CostingViewMode) {
       if (!isNaN(event.target.value)) {
-        // let topHeaderData = {
-        //   DiscountsAndOtherCost: checkForNull(event.target.value),
-        //   HundiOrDiscountPercentage: checkForNull(getValues('HundiOrDiscountPercentage')),
-        //   AnyOtherCost: checkForNull(getValues('AnyOtherCost')),
-        //   DiscountCostType: hundiscountType.value
-        // }
-        // props.setHeaderCost(topHeaderData)
-
         setDiscountObj({
           ...discountObj,
           HundiOrDiscountPercentage: checkForNull(event.target.value)
         })
-
       } else {
         Toaster.warning('Please enter valid number.')
       }
@@ -390,14 +370,6 @@ function TabDiscountOther(props) {
           AnyOtherCost: 0,
           OtherCostPercentage: 0
         })
-        // let topHeaderData = {
-        //   DiscountsAndOtherCost: checkForNull(getValues('HundiOrDiscountValue')),
-        //   HundiOrDiscountPercentage: checkForNull(getValues('HundiOrDiscountPercentage')),
-        //   AnyOtherCost: 0,
-        //   OtherCostType: newValue.value,
-        //   PercentageOtherCost: 0,
-        // }
-        // props.setHeaderCost(topHeaderData)
       } else {
         setOtherCostType([])
       }
@@ -418,15 +390,6 @@ function TabDiscountOther(props) {
           ...discountObj,
           DiscountCostType: newValue.value
         })
-        // let topHeaderData = {
-        //   DiscountsAndOtherCost: checkForNull(getValues('HundiOrDiscountValue')),
-        //   HundiOrDiscountPercentage: checkForNull(getValues('HundiOrDiscountPercentage')),
-        //   AnyOtherCost: checkForNull(getValues('AnyOtherCost')),
-        //   OtherCostType: otherCostType.value,
-        //   PercentageOtherCost: checkForNull(getValues('PercentageOtherCost')),
-        //   DiscountCostType: newValue.value
-        // }
-        // props.setHeaderCost(topHeaderData)
       } else {
         setHundiDiscountType([])
       }
@@ -445,15 +408,6 @@ function TabDiscountOther(props) {
           ...discountObj,
           OtherCostPercentage: checkForNull(event.target.value)
         })
-        // let topHeaderData = {
-        //   DiscountsAndOtherCost: checkForNull(getValues('HundiOrDiscountValue')),
-        //   HundiOrDiscountPercentage: checkForNull(getValues('HundiOrDiscountPercentage')),
-        //   AnyOtherCost: checkForNull(event.target.value),
-        //   OtherCostType: Object.keys(otherCostType).length > 0 ? otherCostType.value : '',
-        //   PercentageOtherCost: checkForNull(event.target.value),
-        // }
-        // props.setHeaderCost(topHeaderData)
-
       } else {
         Toaster.warning('Please enter valid number.')
       }
@@ -479,7 +433,6 @@ function TabDiscountOther(props) {
   const handleCurrencyChange = (newValue) => {
     if (newValue && newValue !== '') {
       setCurrency(newValue)
-      //let ReqParams = { Currency: newValue.label, EffectiveDate: moment(effectiveDate).local().format('DD-MM-YYYY') }
       dispatch(getExchangeRateByCurrency(newValue.label, DayTime(CostingEffectiveDate).format('YYYY-MM-DD'), res => {
         if (res && res.data && res.data.Result) {
           let Data = res.data.Data;
@@ -716,16 +669,13 @@ function TabDiscountOther(props) {
       }
     }
     if (!CostingViewMode) {
-
       dispatch(saveDiscountOtherCostTab(data, res => {
         if (res.data.Result) {
           Toaster.success(MESSAGES.OTHER_DISCOUNT_COSTING_SAVE_SUCCESS);
           dispatch(setComponentDiscountOtherItemData({}, () => { }))
-
           dispatch(saveAssemblyBOPHandlingCharge({}, () => { }))
           if (gotoNextValue) {
             props.toggle('2')
-
             history.push('/costing-summary')
           }
         }
@@ -756,10 +706,6 @@ function TabDiscountOther(props) {
       DiscountApplicability: value.label
     })
   }
-
-
-
-
   return (
     <>
       <div className="login-container signup-form">
