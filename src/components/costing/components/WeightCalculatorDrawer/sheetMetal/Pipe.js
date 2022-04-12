@@ -162,6 +162,15 @@ function Pipe(props) {
   }, [isOneSide])
   const setFinishWeight = (e) => {
     const FinishWeightOfSheet = e.target.value
+    const grossWeight = checkForNull(getValues('GrossWeight'))
+    if (e.target.value > grossWeight) {
+      setTimeout(() => {
+        setValue('FinishWeightOfSheet', 0)
+      }, 200);
+
+      Toaster.warning('Finish Weight should not be greater than gross weight')
+      return false
+    }
     switch (UOMDimension.label) {
       case G:
         setTimeout(() => {
@@ -425,7 +434,7 @@ function Pipe(props) {
       GrossWeight: (dataToSend.newGrossWeight === undefined || dataToSend.newGrossWeight === 0) ? dataToSend.GrossWeight : dataToSend.newGrossWeight,
       FinishWeight: getValues('FinishWeightOfSheet'),
     }
-    console.log(data, 'data');
+
     dispatch(saveRawMaterialCalculationForSheetMetal(data, res => {
 
       if (res.data.Result) {
@@ -482,8 +491,8 @@ function Pipe(props) {
                     rules={{
                       required: true,
                       pattern: {
-                        value: /^[0-9]\d*(\.\d+)?$/i,
-                        message: 'Invalid Number.',
+                        value: /^\d{0,4}(\.\d{0,6})?$/i,
+                        message: 'Maximum length for interger is 4 and for decimal is 6',
                       },
                     }}
                     handleChange={() => { }}
@@ -505,8 +514,8 @@ function Pipe(props) {
                     rules={{
                       required: true,
                       pattern: {
-                        value: /^[0-9]\d*(\.\d+)?$/i,
-                        message: 'Invalid Number.',
+                        value: /^\d{0,4}(\.\d{0,6})?$/i,
+                        message: 'Maximum length for interger is 4 and for decimal is 6',
                       },
                     }}
                     handleChange={() => { }}
@@ -550,8 +559,8 @@ function Pipe(props) {
                     rules={{
                       required: false,
                       pattern: {
-                        value: /^[0-9]\d*(\.\d+)?$/i,
-                        message: 'Invalid Number.',
+                        value: /^\d{0,4}(\.\d{0,6})?$/i,
+                        message: 'Maximum length for interger is 4 and for decimal is 6',
                       },
                     }}
                     handleChange={() => { }}
@@ -573,8 +582,8 @@ function Pipe(props) {
                     rules={{
                       required: true,
                       pattern: {
-                        value: /^[0-9]\d*(\.\d+)?$/i,
-                        message: 'Invalid Number.',
+                        value: /^\d{0,4}(\.\d{0,6})?$/i,
+                        message: 'Maximum length for interger is 4 and for decimal is 6',
                       },
                     }}
                     handleChange={() => { }}
@@ -806,6 +815,10 @@ function Pipe(props) {
                     mandatory={false}
                     rules={{
                       required: false,
+                      pattern: {
+                        value: /^\d{0,4}(\.\d{0,6})?$/i,
+                        message: 'Maximum length for interger is 4 and for decimal is 6',
+                      },
                     }}
                     handleChange={setFinishWeight}
                     defaultValue={''}
