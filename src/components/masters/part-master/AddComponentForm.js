@@ -19,7 +19,6 @@ class AddComponentForm extends Component {
       selectedParts: [],
       updateAsyncDropdown: false,
       isPartNoNotSelected: false,
-
     }
   }
 
@@ -84,7 +83,6 @@ class AddComponentForm extends Component {
   */
   renderListing = (label) => {
     const { componentPartSelectList } = this.props;
-
     const { BOMViewerData } = this.props;
     let tempArr = [];
     BOMViewerData && BOMViewerData.map(el => {
@@ -155,12 +153,10 @@ class AddComponentForm extends Component {
 
     this.myRef.current.select.state.value = []
     if (isAddMore) {
-
       this.props.setChildParts(childData)
       this.setState({ updateAsyncDropdown: !this.state.updateAsyncDropdown })       //UPDATING RANDOM STATE FOR RERENDERING OF COMPONENT AFTER CLICKING ON ADD MORE BUTTON
 
     } else {
-
       this.props.toggleDrawer('', childData)
     }
 
@@ -182,14 +178,11 @@ class AddComponentForm extends Component {
   */
   render() {
     const { handleSubmit, isEditFlag } = this.props;
-
     const filterList = (inputValue) => {
       let tempArr = []
-
       tempArr = this.renderListing("part").filter(i =>
         i.label !== null && i.label.toLowerCase().includes(inputValue.toLowerCase())
       );
-
       if (tempArr.length <= 100) {
         return tempArr
       } else {
@@ -201,8 +194,9 @@ class AddComponentForm extends Component {
       new Promise(resolve => {
         resolve(filterList(inputValue));
 
-
       });
+
+
     return (
       <>
         <form
@@ -211,9 +205,7 @@ class AddComponentForm extends Component {
           onSubmit={handleSubmit(this.onSubmit.bind(this))}
           onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
         >
-
           <Row>
-
             <Col md="6">
               <label>{"Part No."}<span className="asterisk-required">*</span></label>
               <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter first few digits to see the part numbers" />
