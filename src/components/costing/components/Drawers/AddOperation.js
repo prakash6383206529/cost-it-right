@@ -22,7 +22,6 @@ function AddOperation(props) {
   const [selectedRowData, setSelectedRowData] = useState([]);
   const [gridApi, setGridApi] = useState(null);
   const [gridColumnApi, setGridColumnApi] = useState(null);
-  const [rowData, setRowData] = useState(null);
   const dispatch = useDispatch()
   const costData = useContext(costingInfoContext)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
@@ -85,24 +84,6 @@ function AddOperation(props) {
   }, []);
 
 
-  /**
-  * @method renderPaginationShowsTotal
-  * @description Pagination
-  */
-  const renderPaginationShowsTotal = (start, to, total) => {
-    return <GridTotalFormate start={start} to={to} total={total} />
-  }
-
-  const options = {
-    clearSearch: true,
-    noDataText: (tableData === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
-    prePage: <span className="prev-page-pg"></span>, // Previous page button text
-    nextPage: <span className="next-page-pg"></span>, // Next page button text
-    firstPage: <span className="first-page-pg"></span>, // First page button text
-    lastPage: <span className="last-page-pg"></span>,
-
-  };
-
   const onRowSelect = () => {
     var selectedRows = gridApi.getSelectedRows();
     setSelectedRowData(selectedRows)
@@ -116,22 +97,6 @@ function AddOperation(props) {
     // }
 
   }
-
-  const onSelectAll = (isSelected, rows) => {
-    if (isSelected) {
-      setSelectedRowData(rows)
-    } else {
-      setSelectedRowData([])
-    }
-  }
-
-  const selectRowProp = {
-    mode: 'checkbox',
-    clickToSelect: true,
-    unselectable: selectedIds,
-    onSelect: onRowSelect,
-    onSelectAll: onSelectAll
-  };
 
   /**
   * @method addRow
@@ -153,9 +118,6 @@ function AddOperation(props) {
     props.closeDrawer()
   }
 
-  const onSubmit = data => {
-    toggleDrawer('')
-  }
   const isFirstColumn = (params) => {
     var displayedColumns = params.columnApi.getAllDisplayedColumns();
     var thisIsFirstColumn = displayedColumns[0] === params.column;
@@ -234,7 +196,7 @@ function AddOperation(props) {
                     <h3>{'Add Operation:'}</h3>
                   </div>
                   <div
-                    onClick={(e) => toggleDrawer(e)}
+                    onClick={cancel}
                     className={'close-button right'}>
                   </div>
                 </Col>
