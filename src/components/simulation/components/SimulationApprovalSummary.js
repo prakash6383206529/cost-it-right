@@ -737,9 +737,9 @@ function SimulationApprovalSummary(props) {
             const vendor = item.VendorName.split('(')[1]
             const { netPo, quantity } = getPOPriceAfterDecimal(simulationDetail.DecimalOption, item.NewPOPrice)
             temp.push({
-                CostingId: item.CostingId, effectiveDate: DayTime(simulationDetail.EffectiveDate).format('MM/DD/YYYY'), vendorCode: vendor.split(')')[0], materialNumber: item.PartNo, netPrice: netPo, plant: item.PlantCode ? item.PlantCode : '1511',
-                currencyKey: INR, basicUOM: 'NO', purchasingOrg: '', purchasingGroup: item?.DepartmentCode, materialGroup: '', taxCode: 'YW', TokenNumber: simulationDetail.Token,
-                Quantity: quantity, DecimalOption: simulationDetail.DecimalOption
+                CostingId: item.CostingId, effectiveDate: DayTime(simulationDetail.EffectiveDate).format('MM/DD/YYYY'), vendorCode: vendor.split(')')[0], materialNumber: item.PartNo, netPrice: item.NewPOPrice, plant: item.PlantCode ? item.PlantCode : '1511',
+                currencyKey: INR, basicUOM: 'NO', purchasingOrg: item.DepartmentCode ? item.DepartmentCode : 'MRPL', purchasingGroup: '', materialGroup: '', taxCode: 'YW', TokenNumber: simulationDetail.Token,
+                DecimalOption: simulationDetail.DecimalOption
             })
         })
 
