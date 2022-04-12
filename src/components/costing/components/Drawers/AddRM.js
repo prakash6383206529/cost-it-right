@@ -1,20 +1,18 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, useSelector, } from 'react-redux';
-import { useForm, Controller } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { Container, Row, Col, } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
 import { getRMDrawerDataList, getRMDrawerVBCDataList } from '../../actions/Costing';
 import NoContentFound from '../../../common/NoContentFound';
 import { EMPTY_DATA } from '../../../../config/constants';
-import { GridTotalFormate } from '../../../common/TableGridFunctions';
 import Toaster from '../../../common/Toaster';
 import { costingInfoContext } from '../CostingDetailStepTwo';
-import { EMPTY_GUID, PLASTIC, ZBC } from '../../../../config/constants';
+import { EMPTY_GUID, ZBC } from '../../../../config/constants';
 import LoaderCustom from '../../../common/LoaderCustom';
-import { getGradeFilterByRawMaterialSelectList, getGradeSelectList, getRawMaterialFilterSelectList, getRawMaterialNameChild } from '../../../masters/actions/Material';
-import { SearchableSelectHookForm } from '../../../layout/HookFormInputs';
+import { getGradeSelectList, getRawMaterialFilterSelectList } from '../../../masters/actions/Material';
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../../helper';
-import { isMultipleRMAllow} from '../../../../config/masterData'
+import { isMultipleRMAllow } from '../../../../config/masterData'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -23,14 +21,13 @@ const gridOptions = {};
 function AddRM(props) {
 
   const { IsApplyMasterBatch, Ids } = props;
-  const { register, handleSubmit, control, setValue, getValues } = useForm({
+  const { handleSubmit } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   })
 
   const [tableData, setTableDataList] = useState([]);
   const [selectedRowData, setSelectedRowData] = useState([]);
-  const [selectedIds, setSelectedIds] = useState(Ids);
   const [gridApi, setGridApi] = useState(null);
   const [gridColumnApi, setGridColumnApi] = useState(null);
 
@@ -40,7 +37,6 @@ function AddRM(props) {
 
   const { rmDrawerList, CostingEffectiveDate } = useSelector(state => state.costing)
   const { initialConfiguration } = useSelector(state => state.auth)
-  const { filterRMSelectList } = useSelector(state => state.material)
 
   useEffect(() => {
     setSelectedRowData([])
@@ -49,48 +45,12 @@ function AddRM(props) {
     getDataList()
   }, []);
 
-  /**
-  * @method renderPaginationShowsTotal
-  * @description Pagination
-  */
-  const renderPaginationShowsTotal = (start, to, total) => {
-    return <GridTotalFormate start={start} to={to} total={total} />
-  }
-  /**
-    * @method handleRMChange
-    * @description  used to handle row material selection
-    */
-  const handleRMChange = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
-      dispatch(getGradeFilterByRawMaterialSelectList(newValue.value, res => { }))
-
-    } else {
-      dispatch(getGradeSelectList(res => { }))
-    }
-  }
-  const options = {
-    clearSearch: true,
-    noDataText: (rmDrawerList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
-    paginationShowsTotal: renderPaginationShowsTotal,
-    prePage: <span className="prev-page-pg"></span>, // Previous page button text
-    nextPage: <span className="next-page-pg"></span>, // Next page button text
-    firstPage: <span className="first-page-pg"></span>, // First page button text
-    lastPage: <span className="last-page-pg"></span>,
-
-  };
-
-  // const onRowSelect = (row, isSelected, e) => {
-  //   setSelectedRowData(row)
-  // }
-
-  // const onSelectAll = (isSelected, rows) => { }
-
   const onRowSelect = (row, isSelected, e) => {
 
     //BELOW CONDITION, WHEN PLASTIC TECHNOLOGY SELECTED, MULTIPLE RM'S CAN BE ADDED
     if (isMultipleRMAllow(costData.ETechnologyType)) {
       var selectedRows = gridApi.getSelectedRows();
-      if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
+      if (JSON.stringify(selectedRows) === JSON.stringify(Ids)) return false
       setSelectedRowData(selectedRows)
       // if (isSelected) {
       //   let tempArr = [...selectedRowData, row]
@@ -101,8 +61,7 @@ function AddRM(props) {
       //   setSelectedRowData(tempArr)
       // }
     } else {
-      var selectedRows = gridApi.getSelectedRows();
-      if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
+      if (JSON.stringify(selectedRows) === JSON.stringify(Ids)) return false
       setSelectedRowData(selectedRows[0])
       // if (isSelected) {
       //   setSelectedRowData(row)
@@ -112,27 +71,6 @@ function AddRM(props) {
     }
   }
 
-  const onSelectAll = (isSelected, rows) => {
-    if (isMultipleRMAllow(costData.ETechnologyType)) {
-      if (isSelected) {
-        setSelectedRowData(rows)
-      } else {
-        setSelectedRowData([])
-      }
-    } else {
-
-    }
-  }
-
-  const selectRowProp = {
-    mode: isMultipleRMAllow(costData.ETechnologyType) ? 'checkbox' : 'radio',
-    //onSelect: onRowSelect,
-    //mode: 'checkbox',
-    clickToSelect: true,
-    unselectable: selectedIds,
-    onSelect: onRowSelect,
-    onSelectAll: onSelectAll
-  };
 
   const netLandedFormat = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -219,55 +157,6 @@ function AddRM(props) {
 
   }
 
-  /**
-  * @method filterList
-  * @description Filter user listing on the basis of role and department
-  */
-  const filterList = () => {
-    const RMid = getValues('RawMaterialId') ? getValues('RawMaterialId').value : null;
-    const RMGradeid = getValues('RawMaterialGradeId') ? getValues('RawMaterialGradeId').value : null;
-    getDataList(RMid, RMGradeid)
-  }
-
-  /**
-   * @method renderListing
-   * @description Used to show type of listing
-   */
-  const renderListing = (label) => {
-
-
-    const temp = [];
-
-    if (label === 'material') {
-      filterRMSelectList && filterRMSelectList.RawMaterials && filterRMSelectList.RawMaterials.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
-        return null;
-      });
-      return temp;
-    }
-    if (label === 'grade') {
-      filterRMSelectList && filterRMSelectList.Grades && filterRMSelectList.Grades.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
-        return null;
-      });
-      return temp;
-    }
-
-  }
-
-  /**
-  * @method resetFilter
-  * @description Reset user filter
-  */
-  const resetFilter = () => {
-    setValue('RawMaterialId', '')
-    setValue('RawMaterialGradeId', '')
-    dispatch(getRawMaterialFilterSelectList(res => { }))
-    dispatch(getRawMaterialNameChild(() => { }))
-    getDataList()
-  }
 
   const toggleDrawer = (event) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
@@ -289,7 +178,7 @@ function AddRM(props) {
     resizable: true,
     filter: true,
     sortable: true,
-    headerCheckboxSelection: isMultipleRMAllow(costData.ETechnologyType)? isFirstColumn : false,
+    headerCheckboxSelection: isMultipleRMAllow(costData.ETechnologyType) ? isFirstColumn : false,
     checkboxSelection: isFirstColumn
   };
 
@@ -323,7 +212,7 @@ function AddRM(props) {
     customNoRowsOverlay: NoContentFound,
   };
 
-  const isRowSelectable = rowNode => rowNode.data ? !selectedIds.includes(rowNode.data.RawMaterialId) : false;
+  const isRowSelectable = rowNode => rowNode.data ? !Ids.includes(rowNode.data.RawMaterialId) : false;
 
   const resetState = () => {
     gridOptions.columnApi.resetColumnState();
@@ -349,7 +238,7 @@ function AddRM(props) {
                     <h3>{'ADD RM: '}</h3>
                   </div>
                   <div
-                    onClick={(e) => toggleDrawer(e)}
+                    onClick={cancel}
                     className={'close-button right'}>
                   </div>
                 </Col>
@@ -403,7 +292,7 @@ function AddRM(props) {
 
               <Row className="mx-0">
                 <Col className="hidepage-size">
-                  <div className={`ag-grid-wrapper height-width-wrapper  min-height-auto ${rmDrawerList && rmDrawerList?.length <=0 ?"overlay-contain": ""} `}>
+                  <div className={`ag-grid-wrapper height-width-wrapper  min-height-auto ${rmDrawerList && rmDrawerList?.length <= 0 ? "overlay-contain" : ""} `}>
                     <div className="ag-grid-header">
                       <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                       <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
@@ -432,7 +321,7 @@ function AddRM(props) {
                           imagClass: "imagClass"
                         }}
                         suppressRowClickSelection={true}
-                        rowSelection={isMultipleRMAllow(costData.ETechnologyType)&& !IsApplyMasterBatch ? 'multiple' : 'single'}
+                        rowSelection={isMultipleRMAllow(costData.ETechnologyType) && !IsApplyMasterBatch ? 'multiple' : 'single'}
                         frameworkComponents={frameworkComponents}
                         onSelectionChanged={onRowSelect}
                         isRowSelectable={isRowSelectable}
@@ -467,7 +356,7 @@ function AddRM(props) {
 
               <Row className="sf-btn-footer no-gutters justify-content-between mx-0">
                 <div className="col-sm-12 text-left bluefooter-butn d-flex justify-content-end">
-                <button
+                  <button
                     type={'button'}
                     className="reset cancel-btn mr5"
                     onClick={cancel} >

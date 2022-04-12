@@ -676,6 +676,8 @@ function RawMaterialCost(props) {
         finishWeight = weightData.FinishWeight
         netLandedCost = weightData.RawMaterialCost
       }
+
+
       const FinishWeight = finishWeight
       const GrossWeight = grossWeight
       const RecoveryPercentage = weightData.RecoveryPercentage
@@ -993,6 +995,7 @@ function RawMaterialCost(props) {
   const onSubmit = (values) => { }
 
   // const rmGridFields = 'rmGridFields'
+
 
   /**
    * @method render
