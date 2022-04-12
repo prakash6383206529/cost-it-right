@@ -5,50 +5,40 @@ import Drawer from '@material-ui/core/Drawer';
 import { TextFieldHookForm } from '../../../layout/HookFormInputs';
 import { ViewCostingContext } from '../CostingDetails';
 import { useContext } from 'react';
-import { useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../helper';
 import Toaster from '../../../common/Toaster';
 import { useDispatch } from 'react-redux';
-import { isDataChange, saveAssemblyBOPHandlingCharge } from '../../actions/Costing';
+import { isDataChange } from '../../actions/Costing';
 
 function AddBOPHandling(props) {
+  const { item } = props
   const CostingViewMode = useContext(ViewCostingContext);
-  const { RMCCTabData, getAssemBOPCharge } = useSelector(state => state.costing)
   const dispatch = useDispatch()
 
-  const { register, handleSubmit, control, setValue, getValues, formState: { errors } } = useForm({
+  const { register, control, setValue, getValues, formState: { errors } } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   })
-
 
   useEffect(() => {
     const childPartDetail = JSON.parse(localStorage.getItem('costingArray'))
     let BOPSum = 0
     childPartDetail && childPartDetail.map((el) => {
-      if (el.PartType === 'BOP') {
-        BOPSum = BOPSum + (el.CostingPartDetails.TotalBoughtOutPartCost * el.CostingPartDetails.Quantity)
+      if (el.PartType === 'BOP' && el.AssemblyPartNumber === item.PartNumber) {
+        BOPSum = BOPSum + (checkForNull(el.CostingPartDetails.TotalBoughtOutPartCost) * checkForNull(el.CostingPartDetails.Quantity))
       }
+      return BOPSum
     })
     setValue('BOPCost', BOPSum)
-    if (RMCCTabData[0].CostingPartDetails.IsApplyBOPHandlingCharges) {
-      setValue('BOPCost', RMCCTabData[0].CostingPartDetails.BOPHandlingChargeApplicability)
-      setValue('BOPHandlingPercentage', RMCCTabData[0].CostingPartDetails.BOPHandlingPercentage)
-      setValue('BOPHandlingCharges', RMCCTabData[0].CostingPartDetails.BOPHandlingCharges)
-    } else if (getAssemBOPCharge && Object.keys(getAssemBOPCharge).length > 0) {
-      setValue('BOPCost', getAssemBOPCharge && getAssemBOPCharge.BOPHandlingChargeApplicability)
-      setValue('BOPHandlingPercentage', getAssemBOPCharge && getAssemBOPCharge.BOPHandlingPercentage)
-      setValue('BOPHandlingCharges', getAssemBOPCharge && getAssemBOPCharge.BOPHandlingCharges)
-    }
+    let obj = childPartDetail && childPartDetail.filter(assyItem => assyItem.PartNumber === item.PartNumber && assyItem.AssemblyPartNumber === item.AssemblyPartNumber && (assyItem.PartType === 'Sub Assembly' || assyItem.PartType === 'Assembly'))
+    setValue('BOPCost', obj[0].CostingPartDetails.IsApplyBOPHandlingCharges ? checkForNull(obj[0].CostingPartDetails.BOPHandlingChargeApplicability) : BOPSum)
+    setValue('BOPHandlingPercentage', checkForNull(obj[0]?.CostingPartDetails.BOPHandlingPercentage))
+    setValue('BOPHandlingCharges', checkForNull(obj[0]?.CostingPartDetails.BOPHandlingCharges))
   }, [])
-
-
-
 
   const handleBOPPercentageChange = (value) => {
     if (!isNaN(value)) {
-
       if (value > 100) {
         setValue('BOPHandlingPercentage', 0)
         setValue('BOPHandlingCharges', 0)
@@ -56,15 +46,12 @@ function AddBOPHandling(props) {
       }
       dispatch(isDataChange(true))
       setValue('BOPHandlingCharges', checkForDecimalAndNull(getValues('BOPCost') * calculatePercentage(value), getConfigurationKey().NoOfDecimalForPrice))
-
     } else {
       setValue('BOPHandlingCharges', 0)
       setValue('BOPHandlingPercentage', 0)
       Toaster.warning('Please enter valid number.')
     }
   }
-
-
 
   /**
 * @method toggleDrawer
@@ -75,37 +62,16 @@ function AddBOPHandling(props) {
       return;
     }
     props.closeDrawer('')
-    // props.setBOPCostWithAsssembly()
   };
 
-  const setBOPCostAssembly = (arr) => {
-    const total = arr && arr.reduce((accummlator, item) => {
-      if (item.PartType === 'BOP') {
-        return accummlator + item.CostingPartDetails.TotalBoughtOutPartCost * item.Quantity
-      } else {
-        return accummlator + item.CostingPartDetails.TotalBoughtOutPartCostWithQuantity * item.Quantity
-      }
-    }, 0)
-
-    return total
-  }
-
-  const getBOPTotalCost = (tabData) => {
-    const TotalBoughtOutPartCost = setBOPCostAssembly(tabData.CostingChildPartDetails)
-    return (tabData.CostingPartDetails.TotalBoughtOutPartCost * tabData.CostingPartDetails.Quantity) + checkForNull(getValues('BOPHandlingCharges'))
-  }
-
   const saveHandleCharge = () => {
-
-
     let obj = {
       IsApplyBOPHandlingCharges: true,
       BOPHandlingChargeApplicability: getValues('BOPCost'),
       BOPHandlingPercentage: getValues('BOPHandlingPercentage'),
       BOPHandlingCharges: getValues('BOPHandlingCharges')
     }
-    dispatch(saveAssemblyBOPHandlingCharge(obj))
-
+    props.setBOPCostWithAsssembly(obj, item)
     setTimeout(() => {
       props.closeDrawer('')
     }, 500);

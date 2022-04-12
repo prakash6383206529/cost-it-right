@@ -23,6 +23,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper'
 import ScrollToTop from '../../common/ScrollToTop'
+import AddLimit from './AddLimit'
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -132,8 +133,8 @@ class VolumeListing extends Component {
       showData: false,
       showPopup: false,
       deletedId: '',
-      isLoader: false
-
+      isLoader: false,
+      limit: false,
     }
   }
 
@@ -402,6 +403,24 @@ class VolumeListing extends Component {
   }
 
   /**
+ * @method LimitHandleChange
+ * @description Open Limit Side Drawer
+ */
+  limitHandler = () => {
+    this.setState({ limit: true });
+  };
+
+
+  /**
+  * @method  closeLimitDrawer
+  * @description CLOSE Limit Side Drawer
+  */
+  closeLimitDrawer = () => {
+    this.setState({ limit: false });
+  };
+
+
+  /**
    * @method render
    * @description Renders the component
    */
@@ -415,7 +434,8 @@ class VolumeListing extends Component {
       isBudgetedBulkUpload,
       AddAccessibility,
       BulkUploadAccessibility,
-      DownloadAccessibility
+      DownloadAccessibility,
+      limit
     } = this.state
     const ExcelFile = ReactExport.ExcelFile;
 
@@ -467,6 +487,13 @@ class VolumeListing extends Component {
                     ) : (
                       ""
                     )}
+                    <button
+                      type="button"
+                      className={"user-btn mr5"}
+                      onClick={this.limitHandler}
+                    >
+                      Add Limit
+                    </button>
                     {AddAccessibility && (
                       <button
                         type="button"
@@ -596,6 +623,16 @@ class VolumeListing extends Component {
           {
             this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.VOLUME_DELETE_ALERT}`} />
           }
+
+          {limit && (
+            <AddLimit
+              isOpen={limit}
+              closeDrawer={this.closeLimitDrawer}
+              isEditFlag={false}
+              ID={""}
+              anchor={"right"}
+            />
+          )}
         </div>
       </>
     )

@@ -27,7 +27,12 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
         "TotalSurfaceTreatmentCostPerAssembly": surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
         "NetSurfaceTreatmentCost": surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
         "TotalCostINR": item.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
-        "NetRMBOPCCCost": item.CostingPartDetails?.TotalCalculatedRMBOPCCCost
+        "NetRMBOPCCCost": item.CostingPartDetails?.TotalCalculatedRMBOPCCCost,
+        "IsApplyBOPHandlingCharges": item.CostingPartDetails?.IsApplyBOPHandlingCharges,
+        "BOPHandlingPercentage": item.CostingPartDetails?.BOPHandlingPercentage,
+        "BOPHandlingCharges": item.CostingPartDetails?.BOPHandlingCharges,
+        "BOPHandlingChargeApplicability": item.CostingPartDetails?.BOPHandlingChargeApplicability
+
       }
       assemblyWorkingRow.push(subAssemblyObj)
     }
@@ -67,10 +72,10 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
     "WorkingRows": assemblyWorkingRow,
     "BOPHandlingCharges": {
       "AssemblyCostingId": tabData && tabData.CostingId,
-      "IsApplyBOPHandlingCharges": getAssemBOPCharge && getAssemBOPCharge.IsApplyBOPHandlingCharges,
-      "BOPHandlingChargeApplicability": getAssemBOPCharge && getAssemBOPCharge.BOPHandlingChargeApplicability,
-      "BOPHandlingPercentage": getAssemBOPCharge && getAssemBOPCharge.BOPHandlingPercentage,
-      "BOPHandlingCharges": getAssemBOPCharge && getAssemBOPCharge.BOPHandlingCharges
+      "IsApplyBOPHandlingCharges": tabData && tabData.CostingPartDetails.IsApplyBOPHandlingCharges,
+      "BOPHandlingChargeApplicability": tabData && tabData.CostingPartDetails.BOPHandlingChargeApplicability,
+      "BOPHandlingPercentage": tabData && tabData.CostingPartDetails.BOPHandlingPercentage,
+      "BOPHandlingCharges": tabData && tabData.CostingPartDetails.BOPHandlingCharges
     },
     "LoggedInUserId": loggedInUserId()
 

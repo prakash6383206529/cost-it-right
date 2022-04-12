@@ -77,8 +77,6 @@ function RawMaterialCost(props) {
       default:
         return setGridLength(0)
     }
-
-
   }, [])
 
   useEffect(() => {
@@ -88,7 +86,6 @@ function RawMaterialCost(props) {
         BOMLevel: props.item.BOMLevel,
         PartNumber: props.item.PartNumber,
       }
-
       if (!CostingViewMode && !IsLocked) {
 
         props.setRMCost(gridData, Params, item)
