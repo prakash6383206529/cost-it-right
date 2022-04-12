@@ -10,7 +10,6 @@ import { getCurrencySelectList, } from '../../../../actions/Common';
 import { costingInfoContext, netHeadCostContext, NetPOPriceContext } from '../CostingDetailStepTwo';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../helper';
 import { NumberFieldHookForm, SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../../layout/HookFormInputs';
-import { maxLength512 } from '../../../../helper/validation'
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import { FILE_URL } from '../../../../config/constants';
@@ -35,10 +34,8 @@ function TabDiscountOther(props) {
   const [currency, setCurrency] = useState([]);
   const [files, setFiles] = useState([]);
   const [IsOpen, setIsOpen] = useState(false);
-  const [initialFiles, setInitialFiles] = useState([]);
   const [effectiveDate, setEffectiveDate] = useState('');
   const [CurrencyExchangeRate, setCurrencyExchangeRate] = useState('');
-  const [GoToNext, setGoToNext] = useState(false);
   const [otherCostType, setOtherCostType] = useState([]);
   const [hundiscountType, setHundiDiscountType] = useState([])
   const [isDisable, setIsDisable] = useState(false)
@@ -268,33 +265,6 @@ function TabDiscountOther(props) {
     }
   }, [props]);
 
-  /**
-  * @method handleDiscountChange
-  * @description HANDLE DISCOUNT CHANGE
-  */
-  const handleDiscountChange = (event) => {
-    if (!CostingViewMode) {
-      if (!isNaN(event.target.value)) {
-
-        // let topHeaderData = {
-        //   DiscountsAndOtherCost: checkForDecimalAndNull(getValues('HundiOrDiscountValue'), initialConfiguration.NoOfDecimalForPrice),
-        //   HundiOrDiscountPercentage: checkForNull(event.target.value),
-        //   AnyOtherCost: checkForNull(getValues('AnyOtherCost')),
-        //   DiscountCostType: hundiscountType.value
-        // }
-        // props.setHeaderCost(topHeaderData)
-
-        setDiscountObj({
-          ...discountObj,
-          HundiOrDiscountPercentage: checkForNull(event.target.value)
-        })
-
-      } else {
-        Toaster.warning('Please enter valid number.')
-      }
-    }
-  }
-
 
   const setValueForTopHeader = () => {
 
@@ -348,28 +318,35 @@ function TabDiscountOther(props) {
   * @description HANDLE ANY OTHER COST CHANGE
   */
   const handleDiscountCostChange = (event) => {
-
+    const NetPOPriceINR = checkForNull(getValues('NetPOPriceINR'))
     if (!CostingViewMode) {
       if (!isNaN(event.target.value)) {
-        // let topHeaderData = {
-        //   DiscountsAndOtherCost: checkForNull(event.target.value),
-        //   HundiOrDiscountPercentage: checkForNull(getValues('HundiOrDiscountPercentage')),
-        //   AnyOtherCost: checkForNull(getValues('AnyOtherCost')),
-        //   DiscountCostType: hundiscountType.value
-        // }
-        // props.setHeaderCost(topHeaderData)
+        if (checkForNull(event.target.value) > totalCost) {
+          setTimeout(() => {
+            setValue('HundiOrDiscountValue', 0)
+          }, 300);
+          setDiscountObj({
+            ...discountObj,
+            HundiOrDiscountValue: 0,
+            NetPOPriceINR: NetPOPriceINR
 
-        setDiscountObj({
-          ...discountObj,
-          HundiOrDiscountValue: checkForNull(event.target.value)
-        })
+          })
+
+          Toaster.warning("Hundi/Discount Value should not be greater then Total Cost ")
+          return false
+        }
+        else {
+          setDiscountObj({
+            ...discountObj,
+            HundiOrDiscountValue: checkForNull(event.target.value)
+          })
+        }
 
       } else {
         Toaster.warning('Please enter valid number.')
       }
     }
   }
-
   /**
   * @method handleAnyOtherCostChange
   * @description HANDLE ANY OTHER COST CHANGE
@@ -790,8 +767,8 @@ function TabDiscountOther(props) {
                     <Table className="table cr-brdr-main cr-bg-tbl mt-1" size="sm" >
                       <thead>
                         <tr>
-                          <th className="fs1 font-weight-500 py-3" className="width33">{``}</th>
-                          <th className="fs1 font-weight-500 py-3" className="width33">{``}</th>
+                          <th className="fs1 font-weight-500 py-3 width33" >{``}</th>
+                          <th className="fs1 font-weight-500 py-3 width33" >{``}</th>
                           {/* <th className="fs1 font-weight-500 py-3" >{`Total Cost: ${DiscountCostData && DiscountCostData.NetPOPriceINR !== undefined ? checkForDecimalAndNull(DiscountCostData.NetPOPriceINR, initialConfiguration.NoOfDecimalForPrice) : 0}`}</th> */}
                           <th className="fs1 font-weight-500 py-3" >{`Total Cost: ${totalCost && totalCost !== undefined ? checkForDecimalAndNull(totalCost, initialConfiguration.NoOfDecimalForPrice) : 0}`}</th>
                         </tr>
@@ -1139,7 +1116,7 @@ function TabDiscountOther(props) {
                           PreviewComponent={Preview}
                           //onSubmit={this.handleSubmit}
                           accept="*"
-                          initialFiles={initialFiles}
+                          initialFiles={[]}
                           maxFiles={4}
                           maxSizeBytes={20000000}
                           inputContent={(files, extra) =>
