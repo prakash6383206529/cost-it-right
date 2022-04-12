@@ -32,8 +32,6 @@ body {
   color: #000;
   background-color: #EDF0F5;
 }
-
-
 .supplierRadio {
   margin-left: 5px;
 }
@@ -494,7 +492,6 @@ input.form-control{
   float: right;
 }
 
-
 .selected-box {
   width: 18px;
   height: 18px;
@@ -518,8 +515,6 @@ input.form-control{
   font-size: 14px;
   cursor: pointer;
 }
-
-
 
 .my-custom-class {
   margin: 0;
@@ -932,9 +927,6 @@ button.user-btn.pull-right {
     }
   }
 }
-
-
-
 
 .drawer-edit{     margin-top: 31px;
   margin-left: 5px;
@@ -1447,10 +1439,6 @@ body {
 		border-color: #f8a000;
 	}
 }
-
-
-
-
 .workflow-row {
 	padding: 0 15px;
 	.col-lg-3 {
@@ -4028,7 +4016,6 @@ body{
   }
   // simulation page
 
-
   .sf-mainheader{
      .img-xs{
       width: calc(30px * 80 / 100);
@@ -4118,12 +4105,9 @@ body{
 
     // right side .content-page
     body{
-      
-
       h3{
         font-size: calc(22px * 80 / 100);
       }
-
       // drawer css starts
       .drawer-wrapper{
         .drawer-body{
@@ -4143,7 +4127,6 @@ body{
         }
       }
       // drawer css End
-
 
       .nodate-section {
         margin: calc(30px * 80 / 100) 0;
@@ -4168,8 +4151,6 @@ body{
         height: calc(32px * 80 / 100);
         width: auto;
       }
-
-
       .show-table-btn{
         .react-bs-table-tool-bar{
           .col-lg-8{
@@ -4185,13 +4166,9 @@ body{
           padding-right: 115px !important;
         }
       }
-
       .no-filter-row .search-user-block{
         bottom: calc(-32px * 80 / 100);
       }
-
-
-
       .edit-btn,.btn-danger{
         .cross-icon{
           width: calc(25px * 80 / 100);
@@ -4202,42 +4179,34 @@ body{
           }
         }
       }
-
       .cancel-icon-white{
         width: calc(14px * 80 /100);
         height: calc(14px * 80 /100);
-      }
-      
+      }  
       .cancel-icon{
         width: calc(11px * 80 /100);
         height: calc(11px * 80 /100);
-      }
-      
+      }  
       .next-icon{
         width: calc(16px * 80 /100);
         height: calc(11px * 80 /100);
       }
-      
       .back-icon{
         width: calc(8px * 80 /100);
         height: calc(13px * 80 /100);
-      }
-      
+      } 
       .add-rounded{
         width: calc(30px * 80 /100);
         height: calc(30px * 80 /100);
       }
-      
       .send-for-approval{
         width: calc(13px * 80 /100);
         height: calc(16px * 80 /100);
       }
-      
       .compare-arrows{
         width: calc(20px * 80 /100);
         height: calc(14px * 80 /100);
       }
-      
       .save-icon{
         width: calc(18px * 80 /100);
         height: calc(12px * 80 /100);
@@ -5371,7 +5340,6 @@ body{
   margin:0;
   display: flex !important;
   .form-group.inputbox.withBorder {
-   
     min-height: 0;
     margin-bottom: 0 !important;
     label {
@@ -5512,7 +5480,6 @@ left: 17rem;
       }
    }
   }
-
 }
 
   .update-vendor-loader {
@@ -5592,7 +5559,6 @@ left: 17rem;
   td {
     border: 1px solid #C2CBE8 ;
   }
-
 }
 .hide-border {
   border: none;
@@ -6092,9 +6058,7 @@ left: 17rem;
 // <-----END compare costing table--->
 
 .inputwith-icon.async-select {
-
   min-width:45px;
-  
   }
 
 // <-----START Loader center--->
@@ -6104,7 +6068,6 @@ left: 17rem;
 }
 // <-----END Loader center--->
 
- 
   //<-----------START Zoom in zoom out header UI destroy prevent css------->
   @media screen and (max-width:$belowLaptop) {
     .fixed-top {
