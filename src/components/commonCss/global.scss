@@ -6,8 +6,6 @@
 // @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,600;1,500;1,700&display=swap");
 @import "../../../node_modules/ag-grid-community/src/styles/ag-grid.scss";
 @import "../../../node_modules/ag-grid-community/src/styles/ag-theme-material/sass/ag-theme-material-mixin";
-@import "../../../node_modules/react-toastify/scss/main.scss";
-@import "../../../node_modules/react-toastify/scss/toast.scss";
 body {
   font-family: "Roboto", sans-serif !important;
   // font-family: "IBM Plex Sans", sans-serif !important;
@@ -657,6 +655,7 @@ a:hover {
               height: 100%;
               text-overflow: ellipsis;
               overflow: hidden;
+              padding-right: 3px;
               .red-value,
               .green-value,
               .form-control {
@@ -847,8 +846,9 @@ a:hover {
   border: 1px solid #e5eaf9;
 }
 .ag-cell-focus {
+  box-shadow: 0 0 5px #256bd1 !important;
   border-width: 1px 1px 1px 1px !important;
-  transition: all 0.15s ease-in;
+  transition: all linear;
   &:first-child:focus {
     border-left: 1px solid #256bd1 !important;
   }
@@ -2505,7 +2505,9 @@ td,
   .Rejected,
   .History,
   .ApprovedBySimulation,
-  .ApprovedByAssembly {
+  .ApprovedByAssembly,
+  .ApprovedByASMSimulation,
+  .CreatedByAssembly {
     background-color: #da94a1;
     min-width: 90px;
     height: 30px;
@@ -2529,7 +2531,9 @@ td,
   }
   .Approved,
   .ApprovedBySimulation,
-  .ApprovedByAssembly {
+  .ApprovedByASMSimulation,
+  .ApprovedByAssembly,
+  .CreatedByAssembly {
     background-color: #4dc771;
   }
   .History {
@@ -2735,7 +2739,7 @@ body {
 
       th,
       td {
-        padding: calc(10px * 80 / 100) calc(15px * 80 / 100);
+        padding: calc(10px * 80 / 100) calc(27px * 80 / 100);
       }
 
       td {
@@ -2999,3 +3003,51 @@ body {
   width: 100%;
 }
 // <-------------END toaster style--------------->
+
+@keyframes example {
+  from { box-shadow: 0 0 0px #256bd1 !important;
+    border: 1px solid #256bd1;}
+  to {box-shadow: 0 0 5px #256bd1 !important;
+   }
+ }
+input[type=text], textarea, button, .dzu-inputLabel,.searchable {
+   transition: all linear;
+  -webkit-transition: all linear;
+  -moz-transition: all linear;
+  -ms-transition: all linear;
+  -o-transition: all linear;
+  outline: 0px;
+  border: 1px solid transparent;
+}
+
+@mixin focusMixin($shadowColor:#256bd1, $borderColor:#256bd1 ) {
+  box-shadow: 0 0 5px $shadowColor !important;
+  border: 1px solid $borderColor !important;   
+  animation-name: example;    
+  animation-duration: 0.3s;
+}
+input[type=text]:focus, textarea:focus, button:focus, input:focus, .select__control--is-focused, .css-1pahdxg-control {
+    @include focusMixin();
+}
+.approve-reject-btn:focus {
+  @include focusMixin(#fc5774, #fc5774);
+}
+.approve-button:focus {
+  @include focusMixin(#4dc771, #4dc771);
+}
+.searchable input:focus,.basic-multi-select input:focus, .css-2b097c-container input:focus, .btn-link:focus{
+  border: none  !important;
+  box-shadow: none !important;
+}
+.react-datepicker .react-datepicker__navigation {
+  &--next:focus {
+  border: 0.45rem solid transparent  !important;
+  border-left-color: #ccc !important;
+  box-shadow: 0 0 5px #f0f2f5 !important;
+}
+&--previous:focus {
+  border: 0.45rem solid transparent  !important;
+  box-shadow: 0 0 5px #f0f2f5 !important;
+  border-right-color: #ccc !important;
+}
+}
