@@ -298,6 +298,7 @@ function SimulationApprovalListing(props) {
             tempArrIsPushedButtonShow.push(item.IsPushedButtonShow)
             tempArrReason.push(item.ReasonId)
             tempArrTechnology.push(item.TechnologyName)
+            console.log('item.TechnologyName: ', item.TechnologyName);
         })
 
         if (!allEqual(arr)) {
@@ -436,6 +437,7 @@ function SimulationApprovalListing(props) {
         resizable: true,
         filter: true,
         sortable: true,
+        headerCheckboxSelectionFilteredOnly: true,
         headerCheckboxSelection: isFirstColumn,
         checkboxSelection: isFirstColumn
     };
