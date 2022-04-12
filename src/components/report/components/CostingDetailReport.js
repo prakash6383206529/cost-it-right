@@ -31,7 +31,6 @@ const gridOptions = {};
 function ReportListing(props) {
 
     const [selectedRowData, setSelectedRowData] = useState([]);
-    const [selectedIds, setSelectedIds] = useState(props.Ids);
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [rowData, setRowData] = useState(null);
@@ -436,8 +435,7 @@ function ReportListing(props) {
     const onRowSelect = () => {
 
         var selectedRows = gridApi.getSelectedRows();
-        if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
-        var selected = gridApi.getSelectedNodes()
+        if (JSON.stringify(selectedRows) === JSON.stringify(props.Ids)) return false
         setSelectedRowData(selectedRows)
 
     }
@@ -445,7 +443,7 @@ function ReportListing(props) {
     const renderColumn = (fileName) => {
 
         let tempData
-        if (selectedRowData.length == 0) {
+        if (selectedRowData.length === 0) {
             tempData = reportListingData
         }
         else {
@@ -471,38 +469,24 @@ function ReportListing(props) {
             tempData = selectedRowData
         }
         return returnExcelColumnSAP(REPORT_DOWNLOAD_SAP_EXCEl, tempData)
-
-
     }
 
 
     const renderColumnSAPEncoded = (fileName) => {
-
         let tempData = []
-
         if (selectedRowData.length === 0) {
-
-
             tempData = reportListingData
-
         }
         else {
             tempData = selectedRowData
-
         }
         return returnExcelColumnSAPEncoded(REPORT_DOWNLOAD_SAP_EXCEl, tempData)
-
-
     }
 
 
 
 
     const returnExcelColumnSAP = (data = [], TempData) => {
-
-        // 
-        let temp = []
-
         return (<ExcelSheet data={TempData} name={ReportSAPMaster}>
             {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} />)}
         </ExcelSheet>);
@@ -510,21 +494,11 @@ function ReportListing(props) {
 
 
     const returnExcelColumnSAPEncoded = (data = [], TempData) => {
-
-        // 
         let temp = []
-
-
-
         TempData && TempData.map(item => {
-
             temp.push({ SrNo: btoa(item.SrNo), SANumber: btoa(item.SANumber), LineNumber: btoa(item.LineNumber), CreatedDate: btoa(item.CreatedDate), NetPOPrice: btoa(item.NetPOPrice), Reason: btoa(item.Reason), Text: btoa(item.Text), PersonRequestingChange: btoa(item.PersonRequestingChange) })
             return null;
         });
-
-
-
-
         return (<ExcelSheet data={temp} name={ReportSAPMaster}>
             {data && data.map((ele, index) => < ExcelColumn key={index} label={ele.label} value={ele.value} />)}
         </ExcelSheet>);
@@ -623,7 +597,7 @@ function ReportListing(props) {
                         <AgGridColumn field='VendorCode' headerName='Vendor(Code)' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='PlantName' headerName='Plant' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='PlantCode' headerName='Plant(Code)' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='PartName' headerName='Part' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='PartName' headerName='Part Name' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='PartNumber' headerName='Part Number' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='ECNNumber' headerName='ECN Number' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='PartType' headerName='Part Type' cellRenderer='hyphenFormatter'></AgGridColumn>
