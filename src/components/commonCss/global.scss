@@ -1,14 +1,10 @@
 @import "./cssVariable.scss";
 @import "./style.scss";
-// @import '/public/assets/css/css2.css';
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700&display=swap");
-// @import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,500;0,700;1,400&display=swap");
-// @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,600;1,500;1,700&display=swap");
 @import "../../../node_modules/ag-grid-community/src/styles/ag-grid.scss";
 @import "../../../node_modules/ag-grid-community/src/styles/ag-theme-material/sass/ag-theme-material-mixin";
 body {
   font-family: "Roboto", sans-serif !important;
-  // font-family: "IBM Plex Sans", sans-serif !important;
   position: relative;
 }
 
@@ -30,7 +26,6 @@ body a {
 
 ::placeholder {
   color: #999;
-  // left: 0px !important;
 }
 body a,
 body button {
@@ -228,19 +223,6 @@ a:hover {
     object-fit: contain;
   }
 }
-
-//tried half working
-// .approve-hover-btn {
-
-//   &:hover,
-//   &:not(.disabled):active:focus {
-//     background-color: #4dc771;
-//   }
-// }
-
-// .save-btn:hover {
-//   background-color: #4dc771;
-//  }
 .blue-text {
   color: #316bd1;
   padding: 5px;
@@ -294,17 +276,6 @@ a:hover {
   border: none;
   cursor: pointer;
 }
-
-// .approve-button {
-//   width: 120px;
-//   height: 32px;
-//   background: $colorPrimary 0% 0% no-repeat padding-box;
-//   box-shadow: 0px 5px 10px #0000000f;
-//   border-radius: 4px;
-//   opacity: 1;
-//   border: none;
-//   cursor: pointer;
-// }
 
 .add-button {
   width: 80px;
@@ -370,7 +341,6 @@ a:hover {
 .approve-button,
 .approve-reject-btn {
   background-color: #4dc771;
-  // border-color: #4dc771;
   color: #fff;
   background-size: 10px 10px !important;
   padding: 0 12px;
@@ -396,7 +366,6 @@ a:hover {
   }
   &:hover {
     background-color: #42d06c;
-    // border-color: #42d06c;
   }
 }
 .approve-reject-btn {
@@ -459,7 +428,6 @@ a:hover {
         }
       }
     }
-
     .my-custom-header {
       th {
         border-top: none;
@@ -471,23 +439,19 @@ a:hover {
         font-weight: $font-medium;
       }
     }
-
     tr.userlisting-row td {
       font-size: 14px;
       color: #8a91ac;
     }
-
     td,
     th {
       vertical-align: middle;
     }
-
     td {
       &:last-child {
         text-align: center;
       }
     }
-
     label {
       margin-bottom: 0 !important;
       > div {
@@ -495,7 +459,6 @@ a:hover {
       }
     }
   }
-
   .react-bs-table-pagination {
     border-top: 0px;
     .col-md-6 {
@@ -529,7 +492,6 @@ a:hover {
               box-shadow: 0 0 0 0rem rgba(0, 123, 255, 0.25);
             }
           }
-
           .page-item.active {
             .page-link {
               z-index: 1;
@@ -540,23 +502,19 @@ a:hover {
           }
         }
       }
-
       &:nth-last-child(2) {
         order: 2;
         justify-content: flex-end;
       }
     }
-
     p {
       font-size: $font-14;
       color: #95a5ba !important;
       order: 2;
       align-self: center;
     }
-
     span {
       order: 1;
-
       .btn-secondary {
         background-color: transparent;
         border: none;
@@ -578,7 +536,6 @@ a:hover {
           color: #256bd1;
           box-shadow: 0 0 0 0rem rgba(130, 138, 145, 0.5);
         }
-
         &:after {
           margin-left: 15px;
           top: 2px;
@@ -586,7 +543,6 @@ a:hover {
         }
       }
     }
-
     p,
     span {
       display: inline-block;
@@ -856,7 +812,6 @@ a:hover {
     border-left: 1px solid #256bd1 !important;
   }
 }
-
 // ag-grid-react end
 
 .react-bs-table-search-form {
@@ -870,36 +825,30 @@ a:hover {
     border-radius: 4px;
     margin-left: 10px;
   }
-
   input {
     .form-control {
       font-weight: $font-light !important;
     }
   }
-
   ::-webkit-input-placeholder {
     /* Edge */
     color: $lightblue;
     opacity: 0.6;
   }
-
   :-ms-input-placeholder {
     /* Internet Explorer 10-11 */
     color: $lightblue;
     opacity: 0.6;
   }
-
   ::placeholder {
     color: $lightblue;
     opacity: 0.6;
   }
 }
-
 .grant-user-grid {
   .table-bordered {
     border: 1px solid #c2cbe8 !important;
   }
-
   tr {
     th {
       vertical-align: middle;
@@ -907,17 +856,14 @@ a:hover {
       text-align: center;
       color: $headinlightgblack;
       font-size: $font-16;
-
       &:first-child {
         text-align: left;
       }
     }
-
     .crud-label {
       font-size: $font-14;
       vertical-align: top !important;
     }
-
     th,
     td {
       padding: 10px 27px;
@@ -925,7 +871,6 @@ a:hover {
       border-top: 1px solid #dfe6f1 !important;
       vertical-align: middle !important;
     }
-
     td {
       font-size: $font-14;
       padding: 15px 27px;
@@ -936,39 +881,32 @@ a:hover {
           vertical-align: middle;
         }
       }
-
       .custom-checkbox {
         color: $lightblue;
         font-size: 14px;
         font-weight: $font-regular;
         margin-bottom: 0 !important;
-
         label {
           margin-bottom: 0 !important;
           border: #ff6600 1px solid !important;
         }
       }
-
       .custom-checkbox .before-box {
         padding-left: 0;
       }
     }
-
     td.select-all-block {
       background-color: #f1f4f7;
       white-space: nowrap;
-
       span {
         font-size: $font-14;
         color: $colorSecondary;
         font-weight: $font-regular;
       }
-
       span {
         display: inline-block;
         vertical-align: middle;
       }
-
       input {
         margin-right: 4px;
       }
@@ -995,7 +933,6 @@ h3 {
 }
 .drawer-wrapper {
   width: 465px;
-
   .drawer-heading {
     background-color: #eaf0f9;
     border: #ced9e9 1px solid;
@@ -1003,18 +940,15 @@ h3 {
     border-right-width: 0;
     padding: 22px 16px;
     margin-bottom: 15px;
-
     h3 {
       font-size: 22px;
       font-weight: $font-medium;
       color: $headinlightgblack;
     }
-
     .header-wrapper.left {
       width: 95%;
       float: left;
     }
-
     .close-button {
       width: 15px;
       height: 15px;
@@ -1025,10 +959,8 @@ h3 {
       cursor: pointer;
     }
   }
-
   .drawer-body {
     padding: 15px 16px;
-
     .left-details {
       width: 40%;
       text-align: left;
@@ -1039,7 +971,6 @@ h3 {
       text-transform: capitalize;
       opacity: 1;
     }
-
     .right-details {
       width: 60%;
       text-align: left;
@@ -1050,7 +981,6 @@ h3 {
       text-transform: capitalize;
       opacity: 1;
     }
-
     .left-details,
     .right-details {
       padding: 0px 0 9px 0;
@@ -1263,13 +1193,11 @@ p {
   color: $white;
   border-color: $colorPrimary;
   text-transform: uppercase;
-
   &:hover {
     // background: $customPrimary-Hover;
     // border-color: $customPrimary-Hover;
     color: $white;
   }
-
   .active {
     background: $customPrimary-Hover;
     border-color: $customPrimary-Hover;
@@ -1285,13 +1213,11 @@ p {
   background: $colorPrimary;
   color: $white;
   border-color: #f6c30f;
-
   &:hover {
     background: $customPrimary-Hover;
     border-color: $customPrimary-Hover;
     color: $white;
   }
-
   .active {
     background: $customPrimary-Hover;
     border-color: $customPrimary-Hover;
@@ -1301,7 +1227,6 @@ p {
 .black-btn {
   background-color: #000;
   color: $white;
-
   &:hover {
     background-color: #494747;
     color: $white;
@@ -1310,7 +1235,6 @@ p {
 
 .main-logo {
   width: 175px;
-
   img {
     width: 100%;
   }
@@ -1330,7 +1254,6 @@ p {
   font-size: 1.2rem;
   box-shadow: 0 3px 7px 1px rgba(0, 0, 0, 0.1);
   transition: 0.3s all ease-in-out;
-
   &:hover {
     background-color: #e6b711;
   }
@@ -1364,7 +1287,6 @@ p {
     cursor: pointer;
     top: -2px;
   }
-
   .customFileInput {
     display: block;
     overflow: hidden;
@@ -1372,24 +1294,15 @@ p {
     height: 35px;
     position: relative;
     cursor: pointer;
-
     input {
       height: 30px;
       margin-left: -2px;
     }
-
     &::-webkit-file-upload-button {
       visibility: hidden;
     }
-
-    &:hover::after {
-    }
-
     &:active {
       outline: 0;
-
-      &::after {
-      }
     }
   }
 }
@@ -1696,7 +1609,6 @@ button .fas {
   position: relative;
   padding-left: 27px;
   margin-top: 0px;
-  // cursor: pointer;
 
   input[type="checkbox"] {
     opacity: 0;
@@ -1716,7 +1628,6 @@ button .fas {
   }
 
   input[type="checkbox"]:checked + .before-box:before {
-    // content: "\2714";
     content: "";
     font-size: 13px;
     text-align: center;
@@ -1795,14 +1706,9 @@ footer {
 }
 
 .input-withouticon {
-  // .input-group-prepend {   position: absolute;
-  // right                            : 17px;
-  // bottom                           : 21px;
-  // }
   .form-control {
     padding: 0;
   }
-
   .text-help {
     position: absolute;
     bottom: 0;
@@ -1833,7 +1739,6 @@ form .form-control {
 
 .mutipleSelect .select__control {
   border: none;
-
   box-shadow: none;
 }
 
@@ -1875,7 +1780,6 @@ form .form-control {
 .nodate-section {
   color: #8a91ac;
   margin: 30px 0;
-
   img {
     width: 90px;
   }
@@ -1913,7 +1817,6 @@ form .form-control {
   max-height: 170px;
   overflow-y: auto;
 }
-
 .rrt-confirm-holder .rrt-confirm {
   .rrt-buttons-holder {
     padding: 0 10px;
@@ -1921,7 +1824,6 @@ form .form-control {
     width: 100%;
     text-align: center;
     padding-bottom: 30px;
-
     .rrt-button {
       background: #fff;
       color: #8a91ac;
@@ -1937,12 +1839,10 @@ form .form-control {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-
       &:hover {
         background-color: #fff;
         border-color: #256bd1;
         color: #256bd1;
-
         &:active {
           background-color: #fff;
           border-color: #256bd1;
@@ -1954,11 +1854,9 @@ form .form-control {
     .rrt-button.rrt-ok-btn {
       background: $colorPrimary;
       color: #fff;
-
       &:hover {
         background: #1d59af;
       }
-
       &:active {
         background: #1d59af;
       }
@@ -2011,7 +1909,6 @@ form .form-control {
   text-align: center;
   line-height: 20px;
   padding: 0 15px;
-
   .follow-count {
     color: #000;
     font-size: 1.2rem;
@@ -2028,7 +1925,6 @@ form .form-control {
       .follow-count {
         color: #dbdcde;
       }
-
       .following-text {
         color: #dbdcde;
       }
@@ -2124,7 +2020,6 @@ form .form-control {
 
   .input-withouticon {
     margin-bottom: 10px;
-
     .text-help {
       bottom: 1;
     }
@@ -2134,7 +2029,6 @@ form .form-control {
     p {
       padding: 0 15px;
     }
-
     .footer-form {
       padding: 0 15px;
     }
@@ -2146,10 +2040,8 @@ form .form-control {
     left: 0;
     margin: 9px;
   }
-
   .custom-modalfooter {
     padding: 0;
-
     .btn {
       font-size: 0.9rem;
     }
@@ -2200,7 +2092,6 @@ form .form-control {
 
   .btn-black {
     background-color: #000;
-
     &:hover {
       background-color: #000;
     }
@@ -2216,24 +2107,15 @@ form .form-control {
     margin-top: 25px;
     margin-bottom: 15px;
   }
-
   .following-text {
     font-size: 12px;
   }
-
   .small-btn {
     padding: 6px 4px;
   }
 }
 
 body {
-  // main tabs design
-  // .btn-secondary {
-  //   background-color: rgb(12, 75, 146);
-  //   border-color    : rgb(18, 91, 173);
-  //   text-transform  : uppercase;
-  // }
-
   .custom-select:disabled {
     border-radius: 0;
     padding-left: 6px;
@@ -2594,20 +2476,6 @@ body {
     margin-bottom: 15px;
   }
 }
-
-// drawer medium (i.e. used on costing page calculator drawer)
-// .drawer-md {
-//   .MuiDrawer-paperAnchorRight {
-//     left: 430px;
-//   }
-// }
-.calculator-drawer {
-  .form-group {
-    label {
-      // min-height: 44px;
-    }
-  }
-}
 // drawer medium end
 // costing page ui fixes
 .w90px {
@@ -2732,31 +2600,25 @@ body {
       th {
         font-size: calc(14px * 80 / 100);
       }
-
       .crud-label {
         font-size: calc(14px * 80 / 100);
       }
-
       th,
       td {
         padding: calc(10px * 80 / 100) calc(27px * 80 / 100);
       }
-
       td {
         font-size: calc(14px * 80 / 100);
         padding: calc(15px * 80 / 100) calc(15px * 80 / 100);
-
         .custom-checkbox {
           font-size: calc(14px * 80 / 100);
           display: inline-flex;
           align-items: center;
-
           .before-box:before {
             width: calc(18px * 80 / 100);
             height: calc(18px * 80 / 100);
             top: 0px;
           }
-
           input[type="checkbox"]:checked + .before-box:before {
             line-height: calc(17px * 80 / 100);
             background-image: url("../../assests/images/check.png");
@@ -2765,7 +2627,6 @@ body {
           }
         }
       }
-
       td.select-all-block {
         span {
           font-size: calc(14px * 80 / 100);
@@ -2796,7 +2657,6 @@ body {
         }
         &.no-tab-page {
           .ag-grid-wrapper {
-            //  min-height: auto; //code comment by banti
             min-height: 470px;
             height: auto !important;
           }
@@ -2834,7 +2694,6 @@ body {
         .sm-edit-page {
           .ag-grid-wrapper {
             min-height: calc(100vh - 213px);
-            // height: calc(100vh - 213px) !important;
           }
         }
       }
@@ -3004,6 +2863,7 @@ body {
 }
 // <-------------END toaster style--------------->
 
+//<--------------START Input and button focus CSS------->
 @keyframes example {
   from { box-shadow: 0 0 0px #256bd1 !important;
     border: 1px solid #256bd1;}
@@ -3051,3 +2911,4 @@ input[type=text]:focus, textarea:focus, button:focus, input:focus, .select__cont
   border-right-color: #ccc !important;
 }
 }
+//<--------------END Input and button focus CSS------->
