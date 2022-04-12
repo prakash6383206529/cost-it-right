@@ -31,6 +31,9 @@ const gridOptions = {};
 function ReportListing(props) {
 
     const [selectedRowData, setSelectedRowData] = useState([]);
+    const [searchButtonClicked, setSearchButtonClicked] = useState(false);
+    const [filterModel, setFilterModel] = useState({});
+    const [selectedIds, setSelectedIds] = useState(props.Ids);
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [rowData, setRowData] = useState(null);
@@ -234,9 +237,18 @@ function ReportListing(props) {
         }
         dispatch(getCostingReport(skip, take, isPagination, newData, isLastWeek, (res) => {
             if (res) {
+                let isReset = true
                 setLoader(false)
+                setTimeout(() => {
+                    for (var prop in floatingFilterData) {
+                        if (floatingFilterData[prop] !== "") {
+                            isReset = false
+                        }
+                    }
+                    // Sets the filter model via the grid API
+                    isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(filterModel))
+                }, 300);
             }
-
         }))
     }
 
@@ -301,22 +313,26 @@ function ReportListing(props) {
     const onFloatingFilterChanged = (value) => {
 
         setEnableSearchFilterButton(false)
-        setWarningMessage(true)
+
+        // Gets filter model via the grid API
+        const model = gridOptions?.api?.getFilterModel();
+        setFilterModel(model)
 
         if (value?.filterInstance?.appliedModel === null || value?.filterInstance?.appliedModel?.filter === "") {
             setWarningMessage(false)
 
             if (!filterClick) {
-
                 setFloatingFilterData({ ...floatingFilterData, [value.column.colId]: "" })                                                         // DYNAMICALLY SETTING KEY:VALUE PAIRS IN OBJECT THAT WE ARE RECEIVING FROM THE FLOATING FILTER
             }
 
         } else {
-
+            if (!searchButtonClicked) {
+                setWarningMessage(true)
+            }
+            // setSearchButtonClicked(false)
             if (value.column.colId === "EffectiveDate") {
                 return false
             }
-
             setFloatingFilterData({ ...floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter })
         }
         filterClick = false
@@ -330,10 +346,11 @@ function ReportListing(props) {
         setPageNo(1)
         setCurrentRowIndex(0)
         gridOptions?.columnApi?.resetColumnState();
-        gridOptions?.api?.setFilterModel(null);
+        //gridOptions?.api?.setFilterModel(null);
         getTableData(0, 100, true, floatingFilterData, false);
         setEnableSearchFilterButton(true)
         filterClick = true
+        setSearchButtonClicked(true)
     }
 
 
@@ -416,10 +433,9 @@ function ReportListing(props) {
     };
 
 
-
     const resetState = () => {
         gridOptions?.columnApi?.resetColumnState();
-        gridOptions?.api?.setFilterModel(null);
+        setSearchButtonClicked(false)
 
         for (var prop in floatingFilterData) {
             floatingFilterData[prop] = ""
