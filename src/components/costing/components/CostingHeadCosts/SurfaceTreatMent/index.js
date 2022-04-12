@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm, } from 'react-hook-form';
-import { saveAssemblyPartRowCostingCalculation, saveComponentCostingSurfaceTab, saveDiscountOtherCostTab, setComponentDiscountOtherItemData } from '../../../actions/Costing';
+import { saveAssemblyPartRowCostingCalculation, saveCostingSurfaceTab, saveDiscountOtherCostTab, setComponentDiscountOtherItemData } from '../../../actions/Costing';
 import SurfaceTreatmentCost from './SurfaceTreatmentCost';
 import TransportationCost from './TransportationCost';
 import Drawer from '@material-ui/core/Drawer';
@@ -104,10 +104,10 @@ function SurfaceTreatment(props) {
         },
       }
       if (!CostingViewMode) {
-        let assemblyRequestedData = createToprowObjAndSave(surfaceTabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 2)
+        let assemblyRequestedData = createToprowObjAndSave(surfaceTabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 2, CostingEffectiveDate)
         dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
 
-        dispatch(saveComponentCostingSurfaceTab(requestData, res => {
+        dispatch(saveCostingSurfaceTab(requestData, res => {
           if (res.data.Result) {
             Toaster.success(MESSAGES.SURFACE_TREATMENT_COSTING_SAVE_SUCCESS);
             InjectDiscountAPICall()
@@ -137,7 +137,7 @@ function SurfaceTreatment(props) {
           "TransportationDetails": item.CostingPartDetails.TransportationDetails,
         },
       }
-      dispatch(saveComponentCostingSurfaceTab(requestData, res => {
+      dispatch(saveCostingSurfaceTab(requestData, res => {
         if (res.data.Result) {
           Toaster.success(MESSAGES.SURFACE_TREATMENT_COSTING_SAVE_SUCCESS);
           InjectDiscountAPICall()

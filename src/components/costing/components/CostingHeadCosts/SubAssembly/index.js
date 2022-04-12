@@ -10,6 +10,7 @@ import { ViewCostingContext } from '../../CostingDetails';
 import { EMPTY_GUID } from '../../../../../config/constants';
 import _ from 'lodash'
 import DayTime from '../../../../common/DayTimeWrapper';
+import AddBOPHandling from '../../Drawers/AddBOPHandling';
 
 function AssemblyPart(props) {
   const { children, item, index } = props;
@@ -17,6 +18,7 @@ function AssemblyPart(props) {
   const [IsOpen, setIsOpen] = useState(false);
   const [Count, setCount] = useState(0);
   const [IsDrawerOpen, setDrawerOpen] = useState(false)
+  const [isOpenBOPDrawer, setIsOpenBOPDrawer] = useState(false)
 
   const CostingViewMode = useContext(ViewCostingContext);
   const costData = useContext(costingInfoContext);
@@ -43,9 +45,10 @@ function AssemblyPart(props) {
           let Data = res.data.DataList[0];
           if (Data.CostingPartDetails.IsApplyBOPHandlingCharges) {
             let obj = {
-              IsApplyBOPHandlingCharges: true,
+              IsApplyBOPHandlingCharges: Data.CostingPartDetails.IsApplyBOPHandlingCharges,
               BOPHandlingPercentage: Data.CostingPartDetails.BOPHandlingPercentage,
               BOPHandlingCharges: Data.CostingPartDetails.BOPHandlingCharges,
+              BOPHandlingChargeApplicability: Data.CostingPartDetails.BOPHandlingChargeApplicability
             }
             dispatch(saveAssemblyBOPHandlingCharge(obj, () => {
             }))
@@ -85,6 +88,20 @@ function AssemblyPart(props) {
     setDrawerOpen(false)
   }
 
+  //THSI IS FOR BOP HANDLING DRAWER
+
+  const bopHandlingDrawer = () => {
+    if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
+    setIsOpenBOPDrawer(true)
+  }
+
+  const handleBOPCalculationAndClose = (e = '') => {
+    setIsOpenBOPDrawer(false)
+  }
+
+
+
+
   const nestedPartComponent = children && children.map(el => {
     if (el.PartType === 'Part') {
       return <PartCompoment
@@ -120,6 +137,7 @@ function AssemblyPart(props) {
       setAssemblyOperationCost={props.setAssemblyOperationCost}
       setAssemblyToolCost={props.setAssemblyToolCost}
       subAssembId={item.CostingId}
+      setBOPCostWithAsssembly={props.setBOPCostWithAsssembly}
 
     />
   })
@@ -174,7 +192,20 @@ function AssemblyPart(props) {
           {costData.IsAssemblyPart && <td>{checkForDecimalAndNull(checkForNull(item.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity), initialConfiguration.NoOfDecimalForPrice)}</td>}
 
         </div>
+        {/* 
+        {
+          costData.IsAssemblyPart && <td>
+            {
+            }
+          </td>
+        } */}
         <td>
+          <button
+            type="button"
+            className={'user-btn add-oprn-btn ml-1'}
+            onClick={bopHandlingDrawer}>
+            <div className={`${item?.CostingPartDetails?.IsApplyBOPHandlingCharges !== null && item?.CostingPartDetails?.IsApplyBOPHandlingCharges.IsApplyBOPHandlingCharges ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`BOP H`}</button>
+
           {checkForNull(item?.CostingPartDetails?.TotalOperationCostPerAssembly) !== 0 ?
             <button
               type="button"
@@ -207,6 +238,18 @@ function AssemblyPart(props) {
         setAssemblyOperationCost={props.setAssemblyOperationCost}
         setAssemblyToolCost={props.setAssemblyToolCost}
       />}
+      {
+        isOpenBOPDrawer &&
+        <AddBOPHandling
+          isOpen={isOpenBOPDrawer}
+          item={item}
+          closeDrawer={handleBOPCalculationAndClose}
+          isEditFlag={false}
+          ID={''}
+          anchor={'right'}
+          setBOPCostWithAsssembly={props.setBOPCostWithAsssembly}
+        />
+      }
     </ >
   );
 }

@@ -7,6 +7,7 @@ import PartSurfaceTreatment from './PartSurfaceTreatment';
 import SurfaceTreatment from '.';
 import { ViewCostingContext } from '../../CostingDetails';
 import _ from 'lodash'
+import { EMPTY_GUID } from '../../../../../config/constants';
 
 function AssemblySurfaceTreatment(props) {
   const { children, item, index } = props;
@@ -33,7 +34,8 @@ function AssemblySurfaceTreatment(props) {
       const data = {
         CostingId: item.CostingId !== null ? item.CostingId : "00000000-0000-0000-0000-000000000000",
         PartId: item.PartId,
-        AssemCostingId: costData.CostingId
+        AssemCostingId: costData.CostingId,
+        SubAsmCostingId: props.SubAssembId !== null ? props.SubAssembId : EMPTY_GUID,
       }
       dispatch(getSurfaceTreatmentTabData(data, true, (res) => {
         if (res && res.data && res.data.Result) {
@@ -85,6 +87,7 @@ function AssemblySurfaceTreatment(props) {
         setAssemblySurfaceCost={props.setAssemblySurfaceCost}
         setAssemblyTransportationCost={props.setAssemblyTransportationCost}
         IsAssemblyCalculation={true}
+        SubAssembId={item.CostingId}
       />
     }
   })
@@ -102,6 +105,7 @@ function AssemblySurfaceTreatment(props) {
       setAssemblySurfaceCost={props.setAssemblySurfaceCost}
       setAssemblyTransportationCost={props.setAssemblyTransportationCost}
       IsAssemblyCalculation={true}
+      SubAssembId={item.CostingId}
     />
   })
 

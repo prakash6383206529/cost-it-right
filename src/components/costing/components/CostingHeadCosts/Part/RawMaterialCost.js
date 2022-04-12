@@ -77,8 +77,6 @@ function RawMaterialCost(props) {
       default:
         return setGridLength(0)
     }
-
-
   }, [])
 
   useEffect(() => {
@@ -88,7 +86,6 @@ function RawMaterialCost(props) {
         BOMLevel: props.item.BOMLevel,
         PartNumber: props.item.PartNumber,
       }
-
       if (!CostingViewMode && !IsLocked) {
 
         props.setRMCost(gridData, Params, item)
@@ -1068,7 +1065,7 @@ function RawMaterialCost(props) {
                       <th style={{ width: "190px" }}>{`Gross Weight`}</th>
                       <th style={{ width: "190px" }}>{`Finish Weight`}</th>
                       {isScrapRecoveryPercentageApplied && <th style={{ width: "200px" }}>{`Scrap Recovery %`}</th>}
-                      {costData.TechnologyName === PLASTIC && <th style={{ width: "190px" }}>{'Burning Loss Weight'}</th>}
+                      {costData.ETechnologyType === PLASTIC && <th style={{ width: "190px" }}>{'Burning Loss Weight'}</th>}
                       <th style={{ width: "190px" }}>{`Scrap Weight`}</th>
                       {/* //Add i here for MB+ */}
                       <th style={{ width: "190px" }}>{`Net RM Cost ${isRMDivisorApplicable(costData.TechnologyName) ? '/(' + RMDivisor + ')' : ''}`}</th>
@@ -1152,7 +1149,7 @@ function RawMaterialCost(props) {
                             </td>
 
                             {
-                              costData.TechnologyName === PLASTIC && <td>{checkForDecimalAndNull(item.BurningLossWeight, initialConfiguration.NoOfDecimalForInputOutput)}</td>
+                              costData.ETechnologyType === PLASTIC && <td>{checkForDecimalAndNull(item.BurningLossWeight, initialConfiguration.NoOfDecimalForInputOutput)}</td>
                             }
                             {
                               isScrapRecoveryPercentageApplied &&
@@ -1249,7 +1246,7 @@ function RawMaterialCost(props) {
 
             <Row>
               {/* IF THERE IS NEED TO APPLY FOR MULTIPLE TECHNOLOGY, CAN MODIFIED BELOW CONDITION */}
-              {costData.TechnologyName === PLASTIC &&
+              {costData.ETechnologyType === PLASTIC &&
                 <Col md="2" className="py-3 pr-1 mb-width">
                   <label
                     className={`custom-checkbox mb-0`}
@@ -1272,7 +1269,7 @@ function RawMaterialCost(props) {
               }
 
               {/* IF THERE IS NEED TO APPLY FOR MULTIPLE TECHNOLOGY, CAN MODIFIED BELOW CONDITION */}
-              {IsApplyMasterBatch && costData.TechnologyName === PLASTIC &&
+              {IsApplyMasterBatch && costData.ETechnologyType === PLASTIC &&
                 <>
                   <div>
                     <button onClick={MasterBatchToggle} title={'Add Master Batch'} disabled={(CostingViewMode || IsLocked)} type="button" class="user-btn mt30"><div class="plus"></div>Add Master Batch</button>

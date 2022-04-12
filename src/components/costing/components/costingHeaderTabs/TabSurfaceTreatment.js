@@ -29,7 +29,8 @@ function TabSurfaceTreatment(props) {
       const data = {
         CostingId: costData.CostingId,
         PartId: costData.PartId,
-        AssemCostingId: costData.CostingId
+        AssemCostingId: costData.CostingId,
+        SubAsmCostingId: costData.CostingId
       }
       dispatch(getSurfaceTreatmentTabData(data, true, res => {
         let tempArr = [];
@@ -509,6 +510,8 @@ function TabSurfaceTreatment(props) {
         obj.CostingPartDetails.TransportationDetails = TransportationObj
         obj.CostingPartDetails.NetSurfaceTreatmentCost = (checkForNull(obj.CostingPartDetails.SurfaceTreatmentCost) + checkForNull(TransportationObj.TransportationCost)) * (obj.Quantity ? obj.Quantity : 2)
         break;
+      default:
+        break;
     }
     return obj
   }
@@ -547,7 +550,6 @@ function TabSurfaceTreatment(props) {
  */
 
   const updateCostingValuesInStructure = () => {
-    console.log("COMING IN UPDATE MAP");
     //MAKING THIS MAP ARRAY COMMON
     const mapArray = (data) => data.map(item => {
       let newItem = item
@@ -951,6 +953,7 @@ function TabSurfaceTreatment(props) {
                                     setTransportationCost={setTransportationCost}
                                     setAssemblySurfaceCost={setAssemblySurfaceCost}
                                     setAssemblyTransportationCost={setAssemblyTransportationCost}
+                                    SubAssembId={item.CostingId}
                                   />
                                 </>
                               )

@@ -1850,7 +1850,7 @@ export const SurfaceTreatmentSimulation = [
 
 export const OperationSimulation = [
     { label: "Technology", value: "Technology" },
-    { label: "CostingHead", value: "IsVendor" },
+    { label: "CostingHead", value: "CostingHead" },
     { label: "OperationName", value: "OperationName" },
     { label: "OperationCode", value: "OperationCode" },
     { label: "DestinationPlant", value: "Plants" },
@@ -2410,7 +2410,6 @@ export const CostingSimulationDownloadRM = [
     { label: "RawMaterial Grade", value: "RMGrade" },
     { label: "RM Specs", value: "RMSpec" },
     { label: "RM Code", value: "RMCode" },
-    { label: "PlantCode", value: "PlantCode" },
     { label: "Part No", value: "PartNo" },
     { label: "Part Name", value: "PartName" },
     { label: "ECN Number", value: "ECNNumber" },
@@ -2455,7 +2454,6 @@ export const CostingSimulationDownloadST = [
     { label: "Vendor Name", value: "VendorName" },
     { label: "Plant Code", value: "PlantCode" },
     { label: "Technology", value: "Technology" },
-    { label: "PlantCode", value: "PlantCode" },
     { label: "Part No", value: "PartNo" },
     { label: "Part Name", value: "PartName" },
     { label: "ECN Number", value: "ECNNumber" },
@@ -2500,7 +2498,6 @@ export const CostingSimulationDownloadOperation = [
     { label: "Vendor Name", value: "VendorName" },
     { label: "Plant Code", value: "PlantCode" },
     { label: "Technology", value: "Technology" },
-    { label: "PlantCode", value: "PlantCode" },
     { label: "Part No", value: "PartNo" },
     { label: "Part Name", value: "PartName" },
     { label: "ECN Number", value: "ECNNumber" },
@@ -2544,7 +2541,6 @@ export const CostingSimulationDownloadBOP = [
     { label: "Vendor Name", value: "VendorName" },
     { label: "Plant Code", value: "PlantCode" },
     { label: "Technology", value: "Technology" },
-    { label: "PlantCode", value: "PlantCode" },
     { label: "Part No", value: "PartNo" },
     { label: "Part Name", value: "PartName" },
     { label: "ECN Number", value: "ECNNumber" },
@@ -2584,6 +2580,7 @@ export const CostingSimulationDownloadBOP = [
 
 export const SIMULATIONAPPROVALSUMMARYDOWNLOADRM = [
     { label: "Costing Id", value: "CostingNumber" },
+    { label: "RawMaterial Name", value: "RMName" },
     { label: "RawMaterial Grade", value: "RMGrade" },
     { label: "Part No", value: "PartNo" },
     { label: "Part Name", value: "PartName" },
@@ -3065,8 +3062,8 @@ export const RMGridForToken = [
     { label: "Old PO Price", value: "OldPOPrice" },
     { label: "New PO Price", value: "NewPOPrice" },
     { label: "PO Variance", value: "Variance" },
-    { label: "Old Basic Rate", value: "OldNetRawMaterialsCost" },
-    { label: 'New Basic Rate', value: 'NewNetRawMaterialsCost' },
+    { label: "Old RM Cost/Pc", value: "OldNetRawMaterialsCost" },
+    { label: 'New RM Cost/Pc', value: 'NewNetRawMaterialsCost' },
     { label: "RM Variance", value: "RMVariance" }
 ]
 
@@ -3105,7 +3102,6 @@ export const InitialGridForToken = [
     { label: "Vendor Name", value: "VendorName" },
     { label: "Plant Code", value: "PlantCode" },
     { label: "Technology", value: "Technology" },
-    { label: "PlantCode", value: "PlantCode" },
     { label: "Part No", value: "PartNo" },
     { label: "Part Name", value: "PartName" },
     { label: "ECN Number", value: "ECNNumber" },
@@ -3163,6 +3159,7 @@ export const OperationGridForTokenSummary = [
 ]
 
 export const RMGridForTokenSummary = [
+    { label: "RawMaterial Name", value: "RMName" },
     { label: "RawMaterial Grade", value: "RMGrade" },
     { label: "Old RM Cost", value: "OldRMPrice" },
     { label: "New RM Cost", value: "NewRMPrice" },

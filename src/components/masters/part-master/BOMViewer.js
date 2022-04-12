@@ -10,6 +10,7 @@ import Drawer from '@material-ui/core/Drawer';
 import { ASSEMBLY } from '../../../config/constants';
 import { getRandomSixDigit } from '../../../helper/util';
 import VisualAdDrawer from './VisualAdDrawer';
+import _ from 'lodash'
 
 class BOMViewer extends Component {
   constructor(props) {
@@ -32,6 +33,7 @@ class BOMViewer extends Component {
       isOpenChildDrawer: false,
 
       ActualBOMData: [],
+      bomFromAPI: [],
       isCancel: false,
       isSaved: false,
       partType: ''
@@ -49,6 +51,7 @@ class BOMViewer extends Component {
       this.props.getBOMViewerTree(PartId, res => {
         if (res && res.status === 200) {
           let Data = res.data.Data;
+          this.setState({ bomFromAPI: Data.FlowPoints })
           let tempArray = [...Data.FlowPoints, ...NewAddedLevelOneChilds]
 
           let outputArray = [];
@@ -65,7 +68,7 @@ class BOMViewer extends Component {
           tempArray = Object.assign([...tempArray], { [isAvailable]: Object.assign({}, tempArray[isAvailable], { Outputs: outputArray, }) })
 
           setTimeout(() => {
-            this.setState({ flowpoints: tempArray, ActualBOMData: tempArray, isSaved: avoidAPICall, })
+            this.setState({ flowpoints: tempArray, ActualBOMData: tempArray, isSaved: avoidAPICall })
             this.props.setActualBOMData(tempArray)
           }, 200);
 
@@ -253,10 +256,14 @@ class BOMViewer extends Component {
       return;
     }
 
+    let isEqual = _.isEqual(this.state.bomFromAPI, this.state.flowpoints)
+    console.log('isEqual: ', isEqual);
     if (this.state.isCancel) {
-      this.props.closeDrawer('', this.state.ActualBOMData, this.state.isSaved)
+      this.props.closeDrawer('', this.state.ActualBOMData, this.state.isSaved, isEqual)
     } else {
-      this.props.closeDrawer('', this.state.flowpoints, this.state.isSaved)
+      // TO CHECK WHETHER THE FLOWPOINTS COMING FROM API AND ON CLOSING DRAWER ARE SAME OR NOT .FOR SAME isEqual WILL BE TRUE ELSE FALSE
+
+      this.props.closeDrawer('', this.state.flowpoints, this.state.isSaved, isEqual)
     }
   };
 
