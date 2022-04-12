@@ -466,7 +466,9 @@ function TabDiscountOther(props) {
   const onPressChangeCurrency = () => {
     setCurrency([])
     setIsCurrencyChange(!IsCurrencyChange)
-    setCurrencyExchangeRate('')
+    setCurrencyExchangeRate(0)
+    setValue('NetPOPriceOtherCurrency', 0)
+    setNetPoPriceCurrencyState(0)
   }
 
   /**
@@ -704,7 +706,7 @@ function TabDiscountOther(props) {
       "Attachements": updatedFiles
     }
     if (costData.IsAssemblyPart === true) {
-      let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 6)
+      let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 6, CostingEffectiveDate)
       if (!CostingViewMode) {
         dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
       }

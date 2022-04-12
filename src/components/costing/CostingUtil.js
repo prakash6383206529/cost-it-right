@@ -1,5 +1,7 @@
 import { checkForNull, loggedInUserId } from "../../helper"
-export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, tabId, setArrayForCosting) => {
+import DayTime from "../common/DayTimeWrapper";
+
+export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, tabId, effectiveDate) => {
 
   let Arr = JSON.parse(localStorage.getItem('costingArray'))
   let assemblyWorkingRow = []
@@ -25,7 +27,12 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
         "TotalSurfaceTreatmentCostPerAssembly": surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
         "NetSurfaceTreatmentCost": surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
         "TotalCostINR": item.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
-        "NetRMBOPCCCost": item.CostingPartDetails?.TotalCalculatedRMBOPCCCost
+        "NetRMBOPCCCost": item.CostingPartDetails?.TotalCalculatedRMBOPCCCost,
+        "IsApplyBOPHandlingCharges": item.CostingPartDetails?.IsApplyBOPHandlingCharges,
+        "BOPHandlingPercentage": item.CostingPartDetails?.BOPHandlingPercentage,
+        "BOPHandlingCharges": item.CostingPartDetails?.BOPHandlingCharges,
+        "BOPHandlingChargeApplicability": item.CostingPartDetails?.BOPHandlingChargeApplicability
+
       }
       assemblyWorkingRow.push(subAssemblyObj)
     }
@@ -47,6 +54,7 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
       "NetDiscounts": discountAndOtherTabData?.HundiOrDiscountValue,
       "TotalCostINR": netPOPrice,
       "TabId": tabId,
+      "EffectiveDate": DayTime(new Date(effectiveDate)),
       "TotalRawMaterialsCostWithQuantity": tabData && tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
       "TotalBoughtOutPartCostWithQuantity": tabData && tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
       "TotalConversionCostWithQuantity": tabData && tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
@@ -64,9 +72,10 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
     "WorkingRows": assemblyWorkingRow,
     "BOPHandlingCharges": {
       "AssemblyCostingId": tabData && tabData.CostingId,
-      "IsApplyBOPHandlingCharges": true,
-      "BOPHandlingPercentage": getAssemBOPCharge && getAssemBOPCharge.BOPHandlingPercentage,
-      "BOPHandlingCharges": getAssemBOPCharge && getAssemBOPCharge.BOPHandlingCharges
+      "IsApplyBOPHandlingCharges": tabData && tabData.CostingPartDetails.IsApplyBOPHandlingCharges,
+      "BOPHandlingChargeApplicability": tabData && tabData.CostingPartDetails.BOPHandlingChargeApplicability,
+      "BOPHandlingPercentage": tabData && tabData.CostingPartDetails.BOPHandlingPercentage,
+      "BOPHandlingCharges": tabData && tabData.CostingPartDetails.BOPHandlingCharges
     },
     "LoggedInUserId": loggedInUserId()
 

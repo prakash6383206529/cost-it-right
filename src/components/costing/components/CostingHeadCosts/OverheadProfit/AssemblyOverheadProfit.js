@@ -107,7 +107,7 @@ function AssemblyOverheadProfit(props) {
 
 
     if (!CostingViewMode && checkIsOverheadProfitChange) {
-      let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 3)
+      let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 3, CostingEffectiveDate)
 
       dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
       dispatch(saveAssemblyOverheadProfitTab(reqData, res => {

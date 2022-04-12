@@ -4,13 +4,13 @@ import { useForm, Controller, } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import Toaster from '../../../common/Toaster'
 import Drawer from '@material-ui/core/Drawer'
-import { SearchableSelectHookForm, TextFieldHookForm, TextAreaHookForm, DatePickerHookForm, } from '../../../layout/HookFormInputs'
-import { getReasonSelectList, getAllApprovalDepartment, getAllApprovalUserFilterByDepartment, sendForApprovalBySender, isFinalApprover, } from '../../actions/Approval'
+import { SearchableSelectHookForm, TextFieldHookForm, TextAreaHookForm, DatePickerHookForm, NumberFieldHookForm, } from '../../../layout/HookFormInputs'
+import { getReasonSelectList, getAllApprovalDepartment, getAllApprovalUserFilterByDepartment, sendForApprovalBySender, isFinalApprover } from '../../actions/Approval'
 import { getConfigurationKey, userDetails } from '../../../../helper/auth'
-import { setCostingApprovalData, setCostingViewData, } from '../../actions/Costing'
+import { setCostingApprovalData, setCostingViewData, fileUploadCosting } from '../../actions/Costing'
 import { getVolumeDataByPartAndYear } from '../../../masters/actions/Volume'
 
-import { checkForDecimalAndNull, checkForNull } from '../../../../helper'
+import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../helper'
 import DayTime from '../../../common/DayTimeWrapper'
 import WarningMessage from '../../../common/WarningMessage'
 import { renderDatePicker } from '../../../layout/FormInputs'
@@ -19,6 +19,9 @@ import "react-datepicker/dist/react-datepicker.css";
 import { REASON_ID } from '../../../../config/constants'
 import PushSection from '../../../common/PushSection'
 import { debounce } from 'lodash'
+import Dropzone from 'react-dropzone-uploader'
+import { FILE_URL } from "../../../../config/constants";
+import redcrossImg from "../../../../assests/images/red-cross.png";
 
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
@@ -47,6 +50,11 @@ const SendForApproval = (props) => {
   const [isFinalApproverShow, setIsFinalApproverShow] = useState(false)
   const [approver, setApprover] = useState('')
   const [isDisable, setIsDisable] = useState('')
+  const [isRegularize, setIsReggularize] = useState(false);
+  const [files, setFiles] = useState([]);
+  const [IsOpen, setIsOpen] = useState(false);
+  const [initialFiles, setInitialFiles] = useState([]);
+  // const [showDate,setDate] = useState(false)
   // const [showDate,setDate] = useState(false)
   const userData = userDetails()
 
@@ -421,6 +429,11 @@ const SendForApproval = (props) => {
     setSelectedApproverLevelId({ levelName: data.levelName, levelId: data.levelId })
   }
 
+  const handleChangeQuantity = (e) => {
+    console.log("handleChangeQuantity");
+    let temp = [];
+  };
+
   useEffect(() => { }, [viewApprovalData])
 
   const toggleDrawer = (event) => {
@@ -433,6 +446,82 @@ const SendForApproval = (props) => {
     dispatch(setCostingApprovalData([]))
     props.closeDrawer('', 'Cancel')
   }
+
+  // specify upload params and url for your files
+  const getUploadParams = ({ file, meta }) => {
+    return { url: "https://httpbin.org/post" };
+  };
+  // called every time a file's `status` changes
+  const handleChangeStatus = ({ meta, file }, status) => {
+    if (status === "removed") {
+      const removedFileName = file.name;
+      let tempArr =
+        files &&
+        files.filter((item) => item.OriginalFileName !== removedFileName);
+      setFiles(tempArr);
+      setIsOpen(!IsOpen);
+    }
+
+    if (status === "done") {
+      let data = new FormData();
+      data.append("file", file);
+      dispatch(
+        fileUploadCosting(data, (res) => {
+          let Data = res.data[0];
+          files.push(Data);
+          setFiles(files);
+          setIsOpen(!IsOpen);
+        })
+      );
+    }
+
+    if (status === "rejected_file_type") {
+      Toaster.warning("Allowed only xls, doc, jpeg, pdf files.");
+    }
+  };
+
+  const deleteFile = (FileId, OriginalFileName) => {
+    if (FileId != null) {
+      let deleteData = {
+        Id: FileId,
+        DeletedBy: loggedInUserId(),
+      };
+      // dispatch(
+      //   fileDeleteCosting(deleteData, (res) => {
+      //     Toaster.success("File has been deleted successfully.");
+      //     let tempArr = files && files.filter((item) => item.FileId !== FileId);
+      //     setFiles(tempArr);
+      //     setIsOpen(!IsOpen);
+      //   })
+      // );
+    }
+    if (FileId == null) {
+      let tempArr =
+        files && files.filter((item) => item.FileName !== OriginalFileName);
+      setFiles(tempArr);
+      setIsOpen(!IsOpen);
+    }
+  };
+
+  const Preview = ({ meta }) => {
+    const { name, percent, status } = meta;
+    return (
+      <span
+        style={{
+          alignSelf: "flex-start",
+          margin: "10px 3%",
+          fontFamily: "Helvetica",
+        }}
+      >
+        {/* {Math.round(percent)}% */}
+      </span>
+    );
+  };
+  const checkboxHandler = () => {
+    Toaster.warning("Please upload files");
+    setIsReggularize(!isRegularize);
+  };
+
   const reasonField = 'reasonField'
   const dateField = 'dateField'
 
@@ -705,6 +794,39 @@ const SendForApproval = (props) => {
                         }
 
                         <Col md="12">
+                          <NumberFieldHookForm
+                            label="Quantity"
+                            name={"Quantity"}
+                            Controller={Controller}
+                            control={control}
+                            register={register}
+                            mandatory={true}
+                            handleChange={() => { }}
+                            defaultValue={""}
+                            className=""
+                            customClassName={"withBorder"}
+                            handleChange={handleChangeQuantity}
+                            //errors={errors.remarks}
+                            disabled={false}
+                          />
+                        </Col>
+                        <Col md="12" className="py-3 ">
+                          <span className="d-inline-block">
+                            <label
+                              className={`custom-checkbox mb-0`}
+                              onChange={checkboxHandler}>
+                              Regularize
+                              <input
+                                type="checkbox"
+                              />
+                              <span
+                                className=" before-box"
+                                onChange={checkboxHandler}
+                              />
+                            </label>
+                          </span>
+                        </Col>
+                        <Col md="12">
                           <TextAreaHookForm
                             label="Remarks"
                             name={"remarks"}
@@ -742,6 +864,79 @@ const SendForApproval = (props) => {
                     </Row>
 
                 }
+                {isRegularize ? (
+                  <Row className="mb-4">
+                    <Col md="3" className="height152-label">
+                      <label>Upload Attachment (upload up to 4 files)</label>
+                      {files && files.length >= 4 ? (
+                        <div class="alert alert-danger" role="alert">
+                          Maximum file upload limit has been reached.
+                        </div>
+                      ) : (
+                        <Dropzone
+                          getUploadParams={getUploadParams}
+                          onChangeStatus={handleChangeStatus}
+                          PreviewComponent={Preview}
+                          mandatory={true}
+                          //onSubmit={this.handleSubmit}
+                          accept="*"
+                          initialFiles={initialFiles}
+                          maxFiles={4}
+                          maxSizeBytes={2000000000}
+                          inputContent={(files, extra) =>
+                            extra.reject ? (
+                              "Image, audio and video files only"
+                            ) : (
+                              <div className="text-center">
+                                <i className="text-primary fa fa-cloud-upload"></i>
+                                <span className="d-block">
+                                  Drag and Drop or{" "}
+                                  <span className="text-primary">Browse</span>
+                                  <br />
+                                  file to upload
+                                </span>
+                              </div>
+                            )
+                          }
+                          styles={{
+                            dropzoneReject: {
+                              borderColor: "red",
+                              backgroundColor: "#DAA",
+                            },
+                            inputLabel: (files, extra) =>
+                              extra.reject ? { color: "red" } : {},
+                          }}
+                          classNames="draper-drop"
+                        // disabled={CostingViewMode ? true : false}
+                        />
+                      )}
+                    </Col>
+                    <Col md="3">
+                      <div className={"attachment-wrapper"}>
+                        {files &&
+                          files.map((f) => {
+                            const withOutTild = f.FileURL.replace("~", "");
+                            const fileURL = `${FILE_URL}${withOutTild}`;
+                            return (
+                              <div className={"attachment images"}>
+                                <a href={fileURL} target="_blank">
+                                  {f.OriginalFileName}
+                                </a>
+                                <img
+                                  alt={""}
+                                  className="float-right"
+                                  onClick={() =>
+                                    deleteFile(f.FileId, f.FileName)
+                                  }
+                                  src={redcrossImg}
+                                ></img>
+                              </div>
+                            );
+                          })}
+                      </div>
+                    </Col>
+                  </Row>
+                ) : null}
                 <Row className="mb-4">
                   <Col
                     md="12"
