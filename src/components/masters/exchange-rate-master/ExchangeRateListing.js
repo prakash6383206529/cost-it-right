@@ -412,7 +412,7 @@ class ExchangeRateListing extends Component {
                             </Row>
                         </form>
 
-                        <div className={`ag-grid-wrapper height-width-wrapper ${this.props.exchangeRateDataList && this.props.exchangeRateDataList?.length <= 0 ? "overlay-contain" : ""}`}>
+                        <div className={`ag-grid-wrapper ${this.props.isSimulation ? 'simulation-height' : 'height-width-wrapper'} ${this.props.exchangeRateDataList && this.props.exchangeRateDataList?.length <= 0 ? "overlay-contain" : ""}`}>
 
                             <div className="ag-theme-material">
                                 <AgGridReact
