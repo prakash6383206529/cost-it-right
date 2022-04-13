@@ -4,7 +4,7 @@ import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col } from 'reactstrap';
 import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength75, maxLength20, maxLength80, maxLength512 } from "../../../helper/validation";
 import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
-import { renderText, renderTextAreaField, focusOnError, renderDatePicker, renderMultiSelectField, searchableSelect } from "../../layout/FormInputs";
+import { renderText, renderTextAreaField, focusOnError, renderDatePicker, renderMultiSelectField } from "../../layout/FormInputs";
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common';
 import {
   createAssemblyPart, updateAssemblyPart, getAssemblyPartDetail, fileUploadPart, fileDeletePart,
@@ -497,20 +497,6 @@ class AddAssemblyPart extends Component {
   }
 
   /**
-  * @method confirmBOMDraft
-  * @description CONFIRM BOM DRAFT
-  */
-  confirmBOMDraft = (updateData) => {
-    const toastrConfirmOptions = {
-      onOk: () => {
-        this.confirmDraftItem(updateData)
-      },
-      onCancel: () => { },
-      component: () => <ConfirmComponent />,
-    };
-  }
-
-  /**
   * @method confirmDraftItem
   * @description DRAFT ASSEMBLY BOM
   */
@@ -531,8 +517,8 @@ class AddAssemblyPart extends Component {
   * @description Used to Submit the form
   */
   onSubmit = debounce((values) => {
-    const { PartId, isEditFlag, selectedPlants, BOMViewerData, files, avoidAPICall, DataToCheck, DropdownChanged, ProductGroup, oldProductGroup, BOMChanged } = this.state;
-    const { actualBOMTreeData, fieldsObj, partData } = this.props;
+    const { PartId, isEditFlag, selectedPlants, BOMViewerData, files, avoidAPICall, DataToCheck, DropdownChanged, ProductGroup, BOMChanged } = this.state;
+    const { partData } = this.props;
     const { initialConfiguration } = this.props;
 
     let plantArray = selectedPlants && selectedPlants.map((item) => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
