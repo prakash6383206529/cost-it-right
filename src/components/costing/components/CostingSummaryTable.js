@@ -517,39 +517,46 @@ const CostingSummaryTable = (props) => {
     // setViewBOPData(data)
   }
 
-  const moduleHandler = (id) => {
-    let temp = multipleCostings
-    if (temp.includes(id)) {
-      const ind = multipleCostings.findIndex((data) => data === id)
+  const moduleHandler = (id, check, data) => {
+    if (check === 'top') {
+      let temp = multipleCostings
+      if (temp.includes(id)) {
+        const ind = multipleCostings.findIndex((data) => data === id)
 
-      if (ind !== -1) {
-        temp.splice(ind, 1)
-      }
-
-      const checkInd = viewCostingData.findIndex((data) => data.costingId === id)
-      if (checkInd !== -1) {
-        if (viewCostingData[checkInd].IsApprovalLocked) {
-          setIsWarningFlag(!viewCostingData[checkInd].IsApprovalLocked)   // CONDITION IF ALREADY FOR A PART +PLANT /VENDOR+PLANT ,COSTING IS ALREADY SENT FOR APPROVAL
+        if (ind !== -1) {
+          temp.splice(ind, 1)
         }
-      }
 
-    } else {
+        const checkInd = viewCostingData.findIndex((data) => data.costingId === id)
+        if (checkInd !== -1) {
+          if (viewCostingData[checkInd].IsApprovalLocked) {
+            setIsWarningFlag(!viewCostingData[checkInd].IsApprovalLocked)   // CONDITION IF ALREADY FOR A PART +PLANT /VENDOR+PLANT ,COSTING IS ALREADY SENT FOR APPROVAL
+          }
+        }
 
-      temp.push(id)
-      const ind = multipleCostings.findIndex((data) => data === id)
-      const checkInd = viewCostingData.findIndex((data) => data.costingId === id)
+      } else {
 
-      if (temp.length > 1 && isWarningFlag) {
-        if (viewCostingData[checkInd].IsApprovalLocked === true) {
+        temp.push(id)
+        const ind = multipleCostings.findIndex((data) => data === id)
+        const checkInd = viewCostingData.findIndex((data) => data.costingId === id)
+
+        if (temp.length > 1 && isWarningFlag) {
+          if (viewCostingData[checkInd].IsApprovalLocked === true) {
+            setIsWarningFlag(viewCostingData[checkInd].IsApprovalLocked)
+          }
+        } else {
           setIsWarningFlag(viewCostingData[checkInd].IsApprovalLocked)
         }
-      } else {
-        setIsWarningFlag(viewCostingData[checkInd].IsApprovalLocked)
       }
+      setMultipleCostings(temp)
+      setFlag(!flag)
+    } else {
+
+      setIsWarningFlag(data?.IsApprovalLocked)
+      return data?.IsApprovalLocked
     }
 
-    setMultipleCostings(temp)
-    setFlag(!flag)
+
   }
 
   const sendForApprovalData = (costingIds) => {
@@ -736,6 +743,16 @@ const CostingSummaryTable = (props) => {
     return componentRef.current;
   };
 
+  const sendForApprovalDown = (data) => {
+    let temp = moduleHandler(data.costingId, 'down', data)
+    if (!temp) {
+      sendForApprovalData([data.costingId], index)
+      setShowApproval(true)
+    } else {
+      Toaster.warning('A costing is pending for approval for this part or one of it\'s child part. Please approve that first')
+    }
+  }
+
   return (
     <Fragment>
       {
@@ -823,7 +840,7 @@ const CostingSummaryTable = (props) => {
                                       {!pdfHead && !drawerDetailPDF && <div class="custom-check1 d-inline-block">
                                         <label
                                           className="custom-checkbox pl-0 mb-0"
-                                          onChange={() => moduleHandler(data.costingId)}
+                                          onChange={() => moduleHandler(data.costingId, 'top', data)}
                                         >
                                           {''}
                                           <input
@@ -835,7 +852,7 @@ const CostingSummaryTable = (props) => {
                                           <span
                                             className=" before-box"
                                             checked={multipleCostings.includes(data.costingId)}
-                                            onChange={() => moduleHandler(data.costingId)}
+                                            onChange={() => moduleHandler(data.costingId, 'top', data)}
                                           />
                                         </label>
                                       </div>}
@@ -1541,8 +1558,7 @@ const CostingSummaryTable = (props) => {
                                     class="user-btn"
                                     disabled={isWarningFlag}
                                     onClick={() => {
-                                      sendForApprovalData([data.costingId], index)
-                                      setShowApproval(true)
+                                      sendForApprovalDown(data)
                                     }}
                                   ><div className="send-for-approval"></div>
                                     Send For Approval
