@@ -518,7 +518,7 @@ const CostingSummaryTable = (props) => {
   }
 
   const moduleHandler = (id, check, data) => {
-    if (check === 'up') {
+    if (check === 'top') {
       let temp = multipleCostings
       if (temp.includes(id)) {
         const ind = multipleCostings.findIndex((data) => data === id)
@@ -843,7 +843,7 @@ const CostingSummaryTable = (props) => {
                                       {!pdfHead && !drawerDetailPDF && <div class="custom-check1 d-inline-block">
                                         <label
                                           className="custom-checkbox pl-0 mb-0"
-                                          onChange={() => moduleHandler(data.costingId, 'up', data)}
+                                          onChange={() => moduleHandler(data.costingId, 'top', data)}
                                         >
                                           {''}
                                           <input
@@ -855,7 +855,7 @@ const CostingSummaryTable = (props) => {
                                           <span
                                             className=" before-box"
                                             checked={multipleCostings.includes(data.costingId)}
-                                            onChange={() => moduleHandler(data.costingId, 'up', data)}
+                                            onChange={() => moduleHandler(data.costingId, 'top', data)}
                                           />
                                         </label>
                                       </div>}
