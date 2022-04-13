@@ -38,6 +38,7 @@ import MasterSendForApproval from '../MasterSendForApproval';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { animateScroll as scroll } from 'react-scroll';
 import AsyncSelect from 'react-select/async';
+import TooltipCustom from '../../common/Tooltip';
 
 
 const selector = formValueSelector('AddRMImport');
@@ -1391,6 +1392,7 @@ class AddRMImport extends Component {
                           <Col md="3">
                             <div className="d-flex justify-space-between align-items-center inputwith-icon">
                               <div className="fullinput-icon">
+                                <TooltipCustom tooltipText="RM category will come here like CutToFit, CutToLength." />
                                 <Field
                                   name="CategoryId"
                                   type="text"
