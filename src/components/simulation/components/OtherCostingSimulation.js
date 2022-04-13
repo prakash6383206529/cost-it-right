@@ -416,11 +416,19 @@ function OtherCostingSimulation(props) {
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
-    const varianceFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+    const VarianceFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return cell
+        let value
+        switch (master) {
+            case EXCHNAGERATE:
+                value = checkForDecimalAndNull(row.Variance, getConfigurationKey().NoOfDecimalForPrice)
+                break;
+            default:
+                break;
+        }
+        return value
     }
+
     const hideColumn = (props) => {
         setHideDataColumn({
             hideOverhead: costingList && costingList.length > 0 && (costingList[0].NewOverheadCost === 0 || costingList[0].OldOverheadCost === costingList[0].NewOverheadCost) ? true : false,
@@ -616,7 +624,7 @@ function OtherCostingSimulation(props) {
         newExchangeFormatter: newExchangeFormatter,
         customLoadingOverlay: LoaderCustom,
         customNoRowsOverlay: NoContentFound,
-        varianceFormatter: varianceFormatter,
+        VarianceFormatter: VarianceFormatter,
         overheadFormatter: overheadFormatter,
         profitFormatter: profitFormatter,
         rejectionFormatter: rejectionFormatter,
@@ -786,7 +794,7 @@ function OtherCostingSimulation(props) {
                                                     </>}
 
 
-                                                    <AgGridColumn width={140} field="Variance" headerName='Variance' cellRenderer='varianceFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="Variance" headerName='Variance' cellRenderer='VarianceFormatter'></AgGridColumn>
                                                     <AgGridColumn width={100} field="CostingId" headerName='Actions' type="rightAligned" cellRenderer='buttonFormatter'></AgGridColumn>
 
                                                 </AgGridReact>
