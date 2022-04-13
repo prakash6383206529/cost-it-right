@@ -1836,7 +1836,7 @@ export const RMImportSimulation = [
 
 export const SurfaceTreatmentSimulation = [
     { label: "Technology", value: "Technology" },
-    { label: "CostingHead", value: "IsVendor" },
+    { label: "CostingHead", value: "CostingHead" },
     { label: "OperationName", value: "OperationName" },
     { label: "OperationCode", value: "OperationCode" },
     { label: "DestinationPlant", value: "Plants" },
@@ -2424,8 +2424,8 @@ export const CostingSimulationDownloadRM = [
     { label: 'New Basic Rate', value: 'NewRMRate' },
     { label: "ScrapRate", value: "OldScrapRate" },
     { label: 'NewScrapRate', value: 'NewScrapRate' },
-    { label: "Old RM Cost", value: "OldRMPrice" },
-    { label: "New RM Cost", value: "NewRMPrice" },
+    { label: "Old RM Cost/Pc", value: "OldRMPrice" },
+    { label: "New RM Cost/Pc", value: "NewRMPrice" },
     { label: "RM Variance", value: "RMCVariance" },
 
     { label: "OldOverheadCost", value: "OldOverheadCost" },
