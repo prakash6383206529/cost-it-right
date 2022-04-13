@@ -444,6 +444,8 @@ function OtherCostingSimulation(props) {
         const classGreen = (row.NewNetCC > row.OldNetCC) ? 'red-value form-control' : (row.NewNetCC < row.OldNetCC) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
+
+
     const hideColumn = (props) => {
         setHideDataColumn({
             hideOverhead: costingList && costingList.length > 0 && (costingList[0].NewOverheadCost === 0 || costingList[0].OldOverheadCost === costingList[0].NewOverheadCost) ? true : false,
@@ -733,6 +735,7 @@ function OtherCostingSimulation(props) {
         newCostFormatter: newCostFormatter,
         customLoadingOverlay: LoaderCustom,
         customNoRowsOverlay: NoContentFound,
+        VarianceFormatter: VarianceFormatter,
         overheadFormatter: overheadFormatter,
         profitFormatter: profitFormatter,
         rejectionFormatter: rejectionFormatter,
@@ -748,7 +751,6 @@ function OtherCostingSimulation(props) {
         newCCFormatter: newCCFormatter,
         vendorFormatter: vendorFormatter,
         DecimalFormatter: DecimalFormatter,
-        VarianceFormatter: VarianceFormatter
     };
 
     const VerifyImpact = () => {
@@ -915,6 +917,7 @@ function OtherCostingSimulation(props) {
                                                     </>}
 
 
+                                                    <AgGridColumn width={140} field="Variance" headerName='Variance' cellRenderer='VarianceFormatter'></AgGridColumn>
                                                     <AgGridColumn width={100} field="CostingId" headerName='Actions' type="rightAligned" cellRenderer='buttonFormatter'></AgGridColumn>
 
                                                 </AgGridReact>
