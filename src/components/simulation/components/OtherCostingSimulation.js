@@ -1,22 +1,20 @@
 import React, { useState } from 'react';
-import { useForm, Controller, } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { Row, Col, } from 'reactstrap';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getRawMaterialNameChild } from '../../masters/actions/Material';
 import NoContentFound from '../../common/NoContentFound';
-import { AssemblyWiseImpactt, BOPDOMESTIC, BOPIMPORT, EMPTY_DATA, ImpactMaster, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, TOFIXEDVALUE } from '../../../config/constants';
-import { getComparisionSimulationData, getCostingSimulationList, getExchangeCostingSimulationList, getImpactedMasterData, getSimulatedAssemblyWiseImpactDate, saveSimulationForRawMaterial } from '../actions/Simulation';
+import { AssemblyWiseImpactt, EMPTY_DATA, ImpactMaster, TOFIXEDVALUE } from '../../../config/constants';
+import { getComparisionSimulationData, getExchangeCostingSimulationList, getImpactedMasterData, getSimulatedAssemblyWiseImpactDate, saveSimulationForRawMaterial } from '../actions/Simulation';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
-import { checkForDecimalAndNull, checkForNull, formatRMSimulationObject, formViewData, getConfigurationKey, loggedInUserId, userDetails } from '../../../helper';
+import { checkForDecimalAndNull, checkForNull, formViewData, getConfigurationKey, userDetails } from '../../../helper';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
-import { EMPTY_GUID, EXCHNAGERATE, ZBC } from '../../../config/constants';
+import { EMPTY_GUID, EXCHNAGERATE } from '../../../config/constants';
 import Toaster from '../../common/Toaster';
 import { Redirect } from 'react-router';
-import { getPlantSelectListByType } from '../../../actions/Common';
 import { setCostingViewData } from '../../costing/actions/Costing';
-import { ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl, BOPGridForToken, CostingSimulationDownloadRM, ERGridForToken, EXCHANGESIMULATIONDOWNLOAD, InitialGridForToken, LastGridForToken, OperationGridForToken, RMGridForToken, STGridForToken } from '../../../config/masterData'
+import { ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl, BOPGridForToken, ERGridForToken, EXCHANGESIMULATIONDOWNLOAD, InitialGridForToken, LastGridForToken, OperationGridForToken, RMGridForToken, STGridForToken } from '../../../config/masterData'
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -35,15 +33,12 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 function OtherCostingSimulation(props) {
     const { simulationId, isFromApprovalListing, master, statusForLinkedToken } = props
 
-    const { register, control, formState: { errors }, getValues, setValue } = useForm({
+    const { getValues, setValue } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onChange',
     })
 
-    const [shown, setshown] = useState(false);
-
     const [selectedRowData, setSelectedRowData] = useState([]);
-    const [selectedIds, setSelectedIds] = useState([])
     const [tokenNo, setTokenNo] = useState('')
     const [CostingDetailDrawer, setCostingDetailDrawer] = useState(false)
     const [isVerifyImpactDrawer, setIsVerifyImpactDrawer] = useState(false)
@@ -60,7 +55,6 @@ function OtherCostingSimulation(props) {
     const [disableApproveButton, setDisableApprovalButton] = useState(false)
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
-    const [rowData, setRowData] = useState(null);
     const [selectedCostingIds, setSelectedCostingIds] = useState();
     const [loader, setLoader] = useState(true)
     const [tableData, setTableData] = useState([])
@@ -108,6 +102,7 @@ function OtherCostingSimulation(props) {
             if (item.IsAssemblyExist === true) {
                 count++
             }
+            return null
         })
         if (count !== 0) {
             setAssemblyImpactButtonTrue(true)
@@ -168,6 +163,7 @@ function OtherCostingSimulation(props) {
                 default:
                     break;
             }
+            return null
         })
         let uniqeArray = []
         const map = new Map();
@@ -255,12 +251,12 @@ function OtherCostingSimulation(props) {
     const onRowSelect = () => {
         var selectedRows = gridApi.getSelectedRows();
         let temp = []
-        let selectedTemp = []
         selectedRows && selectedRows.map(item => {
             if (item.IsLockedBySimulation) {
                 temp.push(item.CostingNumber)
                 return false
             }
+            return null
         })
 
         if (temp.length > 1) {
@@ -290,7 +286,7 @@ function OtherCostingSimulation(props) {
         setIsApprovalDrawer(true)
         if (!isFromApprovalListing) {
 
-            const isChanged = JSON.stringify(oldArr) == JSON.stringify(selectedRowData)
+            const isChanged = JSON.stringify(oldArr) === JSON.stringify(selectedRowData)
             if (isChanged) {
                 setSaveDone(true)
             } else {
@@ -324,10 +320,6 @@ function OtherCostingSimulation(props) {
     const descriptionFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cell && cell !== null ? cell : '-'
-    }
-
-    const vendorFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell !== null ? cell : '-'
     }
 
     const ecnFormatter = (props) => {
@@ -463,22 +455,6 @@ function OtherCostingSimulation(props) {
 
     }
 
-
-    const filterList = () => {
-        const plant = getValues('plantCode').value
-        getCostingList(plant, material.value)
-    }
-    const resetFilter = () => {
-        setValue('plantCode', '')
-        setValue('rawMaterial', '')
-        setMaterial('')
-        getCostingList('', '')
-    }
-
-    const handleMaterial = (value) => {
-        setMaterial(value)
-    }
-
     useEffect(() => {
 
     }, [isView])
@@ -527,9 +503,11 @@ function OtherCostingSimulation(props) {
                 if (itemOut === item.CostingId) {
                     temp.push(item)
                 }
+                return null
             })
             // ************ CONCAT ALL DATA IN SINGLE ARRAY *********** */
             arrayOFCorrectObjIndividual = arrayOFCorrectObjIndividual.concat(temp);
+            return null
         })
         let finalGrid = [], isTokenAPI = false
         if (showBOPColumn === true || showRMColumn === true || showOperationColumn === true || showSurfaceTreatmentColumn === true ||
