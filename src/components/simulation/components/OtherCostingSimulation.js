@@ -468,8 +468,19 @@ function OtherCostingSimulation(props) {
 
     const VarianceFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        let value
+        switch (master) {
+            case EXCHNAGERATE:
+                value = checkForDecimalAndNull(row.Variance, getConfigurationKey().NoOfDecimalForPrice)
+                break;
+            case COMBINED_PROCESS:
+                value = checkForDecimalAndNull(row.NetCCVariance, getConfigurationKey().NoOfDecimalForPrice)
+                break;
 
-        return String(master) === String(EXCHNAGERATE) ? checkForDecimalAndNull(row.Variance, getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(row.NetCCVariance, getConfigurationKey().NoOfDecimalForPrice)
+            default:
+                break;
+        }
+        return value
     }
 
     const DecimalFormatter = (props) => {
