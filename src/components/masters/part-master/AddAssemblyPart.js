@@ -163,7 +163,6 @@ class AddAssemblyPart extends Component {
 
   handleTechnologyChange = (event) => {
 
-    console.log(event, "e");
     this.setState({ DropdownChanged: true, TechnologySelected: event, })
   }
 
@@ -374,7 +373,6 @@ class AddAssemblyPart extends Component {
   }
 
   closeBOMViewerDrawer = (e = '', drawerData, isSaved, isEqual) => {
-    console.log('isEqual from assembly part: ', isEqual);
 
     this.setState({ isOpenBOMViewerDrawer: false, BOMViewerData: drawerData, avoidAPICall: isSaved, BOMChanged: isEqual ? false : true })
   }
@@ -519,6 +517,7 @@ class AddAssemblyPart extends Component {
   confirmDraftItem = (updateData) => {
     let Data = { ...updateData, IsForceUpdate: true }
     this.props.updateAssemblyPart(Data, (res) => {
+      this.setState({ setDisable: false })
       if (res.data.Result) {
         Toaster.success(MESSAGES.UPDATE_BOM_SUCCESS);
         this.cancel()
@@ -532,11 +531,7 @@ class AddAssemblyPart extends Component {
   * @description Used to Submit the form
   */
   onSubmit = debounce((values) => {
-    console.log('values: ', values);
     const { PartId, isEditFlag, selectedPlants, BOMViewerData, files, avoidAPICall, DataToCheck, DropdownChanged, ProductGroup, oldProductGroup, BOMChanged } = this.state;
-    console.log('DropdownChanged: ', DropdownChanged);
-    console.log('BOMChanged: ', BOMChanged);
-    console.log(DataToCheck.GroupCode, "DataToCheck.GroupCode");
     const { actualBOMTreeData, fieldsObj, partData } = this.props;
     const { initialConfiguration } = this.props;
 
@@ -587,7 +582,6 @@ class AddAssemblyPart extends Component {
       //THIS CONDITION IS TO CHECK IF IsBomEditable KEY FROM API IS FALSE AND THERE IS CHANGE ON ONLY PART DESCRIPTION ,PART NAME AND ATTACHMENT(TO UPDATE EXISTING RECORD)
       if (this.state.isBomEditable === false && !isGroupCodeChange && String(DataToCheck.ECNNumber) === String(values.ECNNumber) &&
         String(DataToCheck.RevisionNumber) === String(values.RevisionNumber) && String(DataToCheck.DrawingNumber) === String(values.DrawingNumber) && !BOMChanged) {
-        console.log("COMING IN IF");
         isStructureChanges = false
       }
 
@@ -595,8 +589,6 @@ class AddAssemblyPart extends Component {
       else if (this.state.isBomEditable === false && (isGroupCodeChange || String(DataToCheck.ECNNumber) !== String(values.ECNNumber) ||
         String(DataToCheck.RevisionNumber) !== String(values.RevisionNumber) || String(DataToCheck.DrawingNumber) !== String(values.DrawingNumber)
         || BOMChanged)) {
-        console.log("COMING IN  THESE", this.state.effectiveDate.$d);
-        console.log(DataToCheck.EffectiveDate, "DataToCheck.EffectiveDate", DayTime(this.state.effectiveDate).format('YYYY-MM-DD HH:mm:ss'));
         // IF THERE ARE CHANGES ,THEN REVISION NO SHOULD BE CHANGED
         if (String(DataToCheck.RevisionNumber) === String(values.RevisionNumber) || String(DataToCheck.BOMNumber) === String(values.BOMNumber) || DayTime(DataToCheck.EffectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(this.state.effectiveDate).format('YYYY-MM-DD HH:mm:ss')) {
           Toaster.warning('Please edit Revision no , BOM no and Effective date')
@@ -607,7 +599,6 @@ class AddAssemblyPart extends Component {
       }
       // THIS CONDITION IS WHEN IsBomEditable KEY FROM API IS TRUE (WHATEVER USER CHANGE OLD RECORD WILL GET UPDATE)
       else {
-        console.log("COMING IN THSES else");
         isStructureChanges = false
       }
 
@@ -637,9 +628,9 @@ class AddAssemblyPart extends Component {
         GroupCodeList: productArray,
         IsStructureChanges: isStructureChanges
       }
-      console.log(updateData, "UPDTAE");
       this.props.updateAssemblyPart(updateData, (res) => {
-        if (res.data.Result) {
+        this.setState({ setDisable: false })
+        if (res?.data?.Result) {
           Toaster.success(MESSAGES.UPDATE_BOM_SUCCESS);
           this.cancel()
         }
@@ -706,8 +697,6 @@ class AddAssemblyPart extends Component {
   }
 
   isFieldChange = (event, field) => {
-    console.log('field: ', field);
-    console.log('event: ', event);
     const { DataToCheck } = this.state
     let isChangeInField = false
     switch (field) {
