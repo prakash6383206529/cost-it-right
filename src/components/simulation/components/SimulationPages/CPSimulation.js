@@ -128,6 +128,11 @@ function CPSimulation(props) {
 
 
     const cancel = () => {
+        list && list.map((item) => {
+            item.NewCC = undefined
+            return null
+        })
+
         setShowMainSimulation(true)
     }
 

@@ -167,15 +167,15 @@ function OtherCostingSimulation(props) {
             if (item.IsLockedBySimulation) {
                 setSelectedCostingIds(item.CostingId)
             }
-            switch (master) {
-                case EXCHNAGERATE:
+            switch (String(master)) {
+                case String(EXCHNAGERATE):
                     item.POVariance = (checkForNull(item.OldNetPOPriceOtherCurrency).toFixed(TOFIXEDVALUE) -
                         checkForNull(item.NewNetPOPriceOtherCurrency).toFixed(TOFIXEDVALUE))
                     item.Variance = (checkForNull(item.OldExchangeRate).toFixed(TOFIXEDVALUE) -
                         checkForNull(item.NewExchangeRate).toFixed(TOFIXEDVALUE))
 
                     break;
-                case COMBINED_PROCESS:
+                case String(COMBINED_PROCESS):
                     item.POVariance = checkForDecimalAndNull(item.OldPOPrice - item.NewPOPrice, getConfigurationKey().NoOfDecimalForPrice)
                     item.Variance = checkForDecimalAndNull(item.OldNetCC - item.NewNetCC, getConfigurationKey().NoOfDecimalForPrice)
                     break;
@@ -432,12 +432,6 @@ function OtherCostingSimulation(props) {
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
-    const varianceFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return cell
-    }
-
     const oldCCFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -473,13 +467,23 @@ function OtherCostingSimulation(props) {
     }
 
     const VarianceFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        let value
+        switch (master) {
+            case EXCHNAGERATE:
+                value = checkForDecimalAndNull(row.Variance, getConfigurationKey().NoOfDecimalForPrice)
+                break;
+            case COMBINED_PROCESS:
+                value = checkForDecimalAndNull(row.NetCCVariance, getConfigurationKey().NoOfDecimalForPrice)
+                break;
 
-        return String(master) === String(EXCHNAGERATE) ? row.Variance : checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)
+            default:
+                break;
+        }
+        return value
     }
 
-    const fourDecimalFormatter = (props) => {
+    const DecimalFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         return checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)
     }
@@ -729,7 +733,6 @@ function OtherCostingSimulation(props) {
         newCostFormatter: newCostFormatter,
         customLoadingOverlay: LoaderCustom,
         customNoRowsOverlay: NoContentFound,
-        varianceFormatter: varianceFormatter,
         overheadFormatter: overheadFormatter,
         profitFormatter: profitFormatter,
         rejectionFormatter: rejectionFormatter,
@@ -744,7 +747,7 @@ function OtherCostingSimulation(props) {
         oldCCFormatter: oldCCFormatter,
         newCCFormatter: newCCFormatter,
         vendorFormatter: vendorFormatter,
-        fourDecimalFormatter: fourDecimalFormatter,
+        DecimalFormatter: DecimalFormatter,
         VarianceFormatter: VarianceFormatter
     };
 
@@ -847,30 +850,30 @@ function OtherCostingSimulation(props) {
                                                             <AgGridColumn width={140} field="OldPOPrice" headerName='PO Price' cellRenderer='oldPOFormatter'></AgGridColumn>
                                                             <AgGridColumn width={140} field="OldNetPOPriceOtherCurrency" headerName='Old PO Price(in Currency)' cellRenderer='oldPOCurrencyFormatter'></AgGridColumn>
                                                             <AgGridColumn width={140} field="NewNetPOPriceOtherCurrency" headerName='New PO Price(in Currency)' cellRenderer='newPOCurrencyFormatter'></AgGridColumn>
-                                                            <AgGridColumn width={140} field="POVariance" headerName='PO Variance' cellRenderer='POVarianceFormatter'></AgGridColumn>
+                                                            <AgGridColumn width={140} field="POVariance" headerName='PO Variance' cellRenderer='DecimalFormatter'></AgGridColumn>
                                                             <AgGridColumn width={140} field="OldExchangeRate" headerName='Old Exchange Rate' cellRenderer='oldExchangeFormatter'></AgGridColumn>
                                                             <AgGridColumn width={140} field="NewExchangeRate" headerName='New Exchange Rate' cellRenderer='newExchangeFormatter'></AgGridColumn>
                                                         </>
                                                     }
                                                     {(String(master) === String(COMBINED_PROCESS) || showCombinedProcessColumn) &&
                                                         <>
-                                                            <AgGridColumn width={140} field="OldPOPrice" headerName='Old PO Price' cellRenderer='fourDecimalFormatter'></AgGridColumn>
-                                                            <AgGridColumn width={140} field="NewPOPrice" headerName='New PO Price' cellRenderer='fourDecimalFormatter'></AgGridColumn>
-                                                            <AgGridColumn width={140} field="POVariance" headerName='PO Variance' cellRenderer='fourDecimalFormatter'></AgGridColumn>
-                                                            <AgGridColumn width={140} field="OldNetCC" headerName='Old Net CC' cellRenderer='fourDecimalFormatter'></AgGridColumn>
-                                                            <AgGridColumn width={140} field="NewNetCC" headerName='New Net CC' cellRenderer='fourDecimalFormatter'></AgGridColumn>
+                                                            <AgGridColumn width={140} field="OldNetCC" headerName='Old Net CC' cellRenderer='DecimalFormatter'></AgGridColumn>
+                                                            <AgGridColumn width={140} field="NewNetCC" headerName='New Net CC' cellRenderer='DecimalFormatter'></AgGridColumn>
                                                         </>
                                                     }
-                                                    <AgGridColumn width={140} field="NetCCVariance" headerName='Variance' cellRenderer='VarianceFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="Variance" headerName='Variance' cellRenderer='VarianceFormatter'></AgGridColumn>
+                                                    {(String(master) === String(COMBINED_PROCESS) || showCombinedProcessColumn) &&
+                                                        <>
+                                                            <AgGridColumn width={140} field="OldPOPrice" headerName='Old PO Price' cellRenderer='oldPOFormatter'></AgGridColumn>
+                                                            <AgGridColumn width={140} field="NewPOPrice" headerName='New PO Price' cellRenderer='newPOFormatter'></AgGridColumn>
+                                                            <AgGridColumn width={140} field="POVariance" headerName=' PO Variance' cellRenderer='DecimalFormatter' ></AgGridColumn>
+                                                        </>
+                                                    }
 
                                                     {(showRMColumn) && <>
                                                         <AgGridColumn field="RawMaterialFinishWeight" hide headerName='Finish Weight'></AgGridColumn>
                                                         <AgGridColumn field="RawMaterialGrossWeight" hide headerName='Gross Weight'></AgGridColumn>
                                                     </>}
-
-                                                    <AgGridColumn width={140} field="OldPOPrice" headerName='Old PO Price' cellRenderer='oldPOFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="NewPOPrice" headerName='New PO Price' cellRenderer='newPOFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="Variance" headerName=' PO Variance' cellRenderer='variancePOFormatter' ></AgGridColumn>
 
                                                     {(showRMColumn) && <>
                                                         {/* <AgGridColumn width={140} field="OldRMCSum" headerName='Old RM Cost/Pc' cellRenderer='oldRMCFormatter'></AgGridColumn>
@@ -912,7 +915,6 @@ function OtherCostingSimulation(props) {
                                                     </>}
 
 
-                                                    <AgGridColumn width={140} field="Variance" headerName='Variance' cellRenderer='varianceFormatter'></AgGridColumn>
                                                     <AgGridColumn width={100} field="CostingId" headerName='Actions' type="rightAligned" cellRenderer='buttonFormatter'></AgGridColumn>
 
                                                 </AgGridReact>
