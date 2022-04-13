@@ -544,7 +544,7 @@ function ReportListing(props) {
             {isLoader && <LoaderCustom />}
             <form onSubmit={handleSubmit(onSubmit)} noValidate>
 
-                <h1 className="mb-0">Costing Detail Report</h1>
+                <h1 className="mb-0">Costing Details Report</h1>
 
                 <Row className="pt-3 blue-before ">
                     <Col md="3">

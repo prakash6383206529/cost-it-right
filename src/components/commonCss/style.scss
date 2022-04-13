@@ -1035,13 +1035,14 @@ button.user-btn.pull-right {
     max-width: 20%;
   }
 }
-.cr-prt-nm1.cr-prt-link1 {
-  white-space: nowrap;
+
+.part-name {
   padding-left: 20px;
+  position: relative;
     .Close {
     position: absolute;
     left: 0px;
-    top: 5px;
+    top: 6px;
     height: 10px;
     width: 15px;
     background: transparent url("../../assests/images/caret-down.svg") 0% 0% no-repeat padding-box;
@@ -1049,14 +1050,8 @@ button.user-btn.pull-right {
     border: none;
   }
   .Open {
-    position: absolute;
-    left: 0px;
-    top: 5px;
-    height: 10px;
-    width: 15px;
     background: transparent url("../../assests/images/caret-up.svg") 0% 0% no-repeat padding-box;
-    opacity: 1;
-    border: none;
+    @extend .Close;
   }
 }
 
@@ -5982,36 +5977,46 @@ left: 17rem;
 // <-------END Calculator css--------->
 
 // <-------------START Hover text overflow and show on hover css----------->
-  .text-overflow {
-    max-width: 130px;
-    min-width: 75px;
+  @mixin  overflow($maxWidth:140px, $minWidth:75px, $ResponsiveWith:$maxWidth, $lineClamp:1, $whiteSpace:nowrap) {
+    max-width: $maxWidth;
+    min-width: $minWidth;
     span {
     overflow: hidden;
     text-overflow: ellipsis;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: $lineClamp;
     display: -webkit-box;
     -webkit-box-orient: vertical;
+    white-space: $whiteSpace;
     }
+    @media  (min-width:$middleDesktop) {
+      max-width: $ResponsiveWith;
+    }
+  }
+  .overflow {
+    @include overflow($ResponsiveWith:175px)
+  }
+  .weight-calculator-headings {
+    .overflow {
+      @include overflow($ResponsiveWith:175px, $whiteSpace:normal)
+    }
+  }
+  .overflow-description {
+    @include overflow($maxWidth:175px)
+  }
+ .part-overflow {
+   @include overflow($ResponsiveWith:175px, $whiteSpace:normal)
+ }
+ .head-part-overflow {
+   @include overflow($ResponsiveWith:175px, $whiteSpace:normal)
+ }
+
+  .text-overflow {
+    @include overflow($minWidth:125px,$ResponsiveWith:175px, $whiteSpace:normal, $lineClamp:2)
   }
   .drawer-wrapper table tr:first-child td{
     border-top: none;
   }
-  .conversion-cost {
-    .text-overflow {
-      max-width: 230px;
-    }
-  }
-.one-line-overflow {
-  width: fit-content;
-  max-width: 150px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: block;
-  white-space: nowrap;
-  &.describtion {
-    max-width: 190px;
-  }
-}
+
 // <-------------END Hover text overflow and show on hover  css----------->
 
 // <-------START simulation-label-container css-------->
@@ -6285,4 +6290,18 @@ left: 17rem;
 }
 .pt5 {
   padding-top: 15px;
+}
+.btn-width {
+  min-width: 206px;
+}
+.btn-a {
+  background-color: transparent;
+  color: #256bd1;
+  &:hover {
+    color: #3D4465;
+  }
+  &:focus {
+    border: none !important;
+    box-shadow: none !important;
+  }
 }

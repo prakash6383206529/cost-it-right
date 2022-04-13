@@ -159,8 +159,8 @@ function AssemblyPart(props) {
     <>
       <tr className="costing-highlight-row accordian-row" key={item.PartId}>
         <div style={{ display: 'contents' }} onClick={() => toggle(item.BOMLevel, item.PartNumber)}>
-          <td >
-            <span style={{ position: 'relative' }} className={`cr-prt-nm1 cr-prt-link1 ${item && item.PartType !== "Sub Assembly" && item.PartType !== "Assembly" && "L1"}`}>
+          <td className='part-overflow'>
+            <span title={item && item.PartNumber} className={`part-name ${item && item.PartType !== "Sub Assembly" && item.PartType !== "Assembly" && "L1"}`}>
               <div className={`${item.CostingPartDetails.IsOpen ? 'Open' : 'Close'}`}></div>{item && item.PartNumber}
             </span>
           </td>
@@ -199,7 +199,7 @@ function AssemblyPart(props) {
             }
           </td>
         } */}
-        <td>
+        <td className='btn-width'>
           <button
             type="button"
             className={'user-btn add-oprn-btn ml-1'}

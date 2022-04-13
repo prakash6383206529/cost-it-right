@@ -66,12 +66,8 @@ const CostingSummaryTable = (props) => {
   const [drawerDetailPDF, setDrawerDetailPDF] = useState(false);
   const [icons, setIcon] = useState(true);
   const [loader, setLoader] = useState(false);
-
-
-
   const [flag, setFlag] = useState(false)
   const [isAttachment, setAttachment] = useState(false)
-
   /*CONSTANT FOR  CREATING AND EDITING COSTING*/
   const [stepOne, setStepOne] = useState(true);
   const [partInfoStepTwo, setPartInfo] = useState({});
@@ -95,12 +91,7 @@ const CostingSummaryTable = (props) => {
   const onBeforeContentResolveDetail = useRef(null)
 
   useEffect(() => {
-
   }, [multipleCostings])
-
-  // useEffect(() => {
-  //   
-  // }, [showWarningMsg])
 
   useEffect(() => {
     applyPermission(topAndLeftMenuData, selectedTechnology)
@@ -118,9 +109,7 @@ const CostingSummaryTable = (props) => {
           // setIsFinalApproverShow(false)
         }
       }))
-
     }
-
   }, [])
 
   useEffect(() => {
@@ -197,8 +186,6 @@ const CostingSummaryTable = (props) => {
       setViewConversionCostData({ conversionData: data, netTransportationCostView: netTransportationCostView, surfaceTreatmentDetails: surfaceTreatmentDetails, IsAssemblyCosting: IsAssemblyCosting, isSurfaceTreatmentCost: false })
     }
   }
-
-
   /**
  * @method viewSurfaceTreatmentCostData
  * @description SET SURFACE TREATMENT DATA FOR DRAWER  :REUSED CONVERSION COST DRAWER
@@ -214,7 +201,6 @@ const CostingSummaryTable = (props) => {
       let IsAssemblyCosting = viewCostingData[index].IsAssemblyCosting
       setViewConversionCostData({ conversionData: data, netTransportationCostView: netTransportationCostView, surfaceTreatmentDetails: surfaceTreatmentDetails, IsAssemblyCosting: IsAssemblyCosting, isSurfaceTreatmentCost: true })
     }
-
   }
 
   /**
@@ -876,12 +862,12 @@ const CostingSummaryTable = (props) => {
                                       {`${DayTime(data.costingDate).format('DD-MM-YYYY')}-${data.CostingNumber}-${data.status}`}{' '}
                                       {
                                         !viewMode &&
-                                        <a
-                                          class="text-primary d-inline-block change-version-block"
+                                        <button
+                                          class="text-primary d-inline-block btn-a"
                                           onClick={() => editHandler(index)}
                                         >
                                           {(!drawerDetailPDF && !pdfHead) && <small>Change version</small>}
-                                        </a>
+                                        </button>
                                       }
                                     </span>
                                     <span class="d-block">{checkForDecimalAndNull(data.poPrice, initialConfiguration.NoOfDecimalForPrice)}</span>
@@ -1489,9 +1475,9 @@ const CostingSummaryTable = (props) => {
                               <td>
                                 {
                                   data.CostingHeading !== VARIANCE &&
-                                    data.attachment && data.attachment.length == 0 ? (
+                                    data.attachment && data.attachment.length === 0 ? (
                                     'No attachment found'
-                                  ) : data.attachment.length == 1 ? (
+                                  ) : data.attachment.length === 1 ? (
 
                                     <>
                                       {data.attachment && data.CostingHeading !== VARIANCE &&
@@ -1514,10 +1500,10 @@ const CostingSummaryTable = (props) => {
                                   )
                                     : (
 
-                                      <a
-                                        href="javascript:void(0)"
+                                      <button
+                                        className='btn-a'
                                         onClick={() => viewAttachmentData(index)}
-                                      > {data.CostingHeading !== VARIANCE ? 'View Attachment' : ''}</a>
+                                      > {data.CostingHeading !== VARIANCE ? 'View Attachment' : ''}</button>
                                     )
                                 }
                               </td>
