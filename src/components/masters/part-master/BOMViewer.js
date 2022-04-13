@@ -21,17 +21,13 @@ class BOMViewer extends Component {
       BOPPart: [],
       isAddMore: false,
       displayDeleteIcon: false,
-
       displayEditIcon: false,
       EditIndex: '',
       updatedQuantity: '',
       isOpenVisualDrawer: false,
-
       selected_point: null,
-
       flowpoints: [],
       isOpenChildDrawer: false,
-
       ActualBOMData: [],
       bomFromAPI: [],
       isCancel: false,
@@ -53,9 +49,7 @@ class BOMViewer extends Component {
           let Data = res.data.Data;
           this.setState({ bomFromAPI: Data.FlowPoints })
           let tempArray = [...Data.FlowPoints, ...NewAddedLevelOneChilds]
-
           let outputArray = [];
-
           tempArray && tempArray.map((el, i) => {
             if (el.Level === 'L1') {
               outputArray.push(el.Input)
@@ -88,7 +82,6 @@ class BOMViewer extends Component {
   }
 
   closeChildDrawer = (e = '', childData = {}) => {
-
     this.setState({ isOpenChildDrawer: false }, () => {
       this.setChildPartsData(childData)
     })
@@ -103,7 +96,6 @@ class BOMViewer extends Component {
 
     let tempArray = [];
     let outputArray = [];
-
     const posX = flowpoints.length > 0 ? 450 * Math.abs(flowpoints.filter(el => el.Level === 'L1').length - 1) : 50;
 
     if (Object.keys(childData).length > 0 && childData.PartType === ASSEMBLY) {
@@ -130,8 +122,6 @@ class BOMViewer extends Component {
           })
           return null;
         })
-
-
 
 
         setTimeout(() => {
@@ -257,7 +247,7 @@ class BOMViewer extends Component {
     }
 
     let isEqual = _.isEqual(this.state.bomFromAPI, this.state.flowpoints)
-    console.log('isEqual: ', isEqual);
+
     if (this.state.isCancel) {
       this.props.closeDrawer('', this.state.ActualBOMData, this.state.isSaved, isEqual)
     } else {
@@ -482,7 +472,7 @@ class BOMViewer extends Component {
               <AddChildDrawer
                 isOpen={isOpenChildDrawer}
                 closeDrawer={this.closeChildDrawer}
-                //TechnologySelected={this.props.TechnologySelected} DONT DELETE
+                TechnologySelected={this.props.TechnologySelected}
                 isEditFlag={false}
                 ID={""}
                 anchor={"right"}

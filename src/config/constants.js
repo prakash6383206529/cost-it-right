@@ -1798,6 +1798,7 @@ export const ExchangeMaster = "Exchange-rate"
 export const FreightMaster = "Freight"
 export const InterestMaster = "Interest-rate"
 export const ReportMaster = "Report-rate"
+export const UserListing = "User-Listing"
 
 export const simulationMaster = "Simulation"
 export const DashboardMaster = "Analytics and Reports"
@@ -1832,4 +1833,4 @@ export const LEVEL1 = 'L1';
 export const SUB_ASSEMBLY = 'Sub Assembly';
 
 //VERSION 
-export const VERSION = "V1.2.128";
+export const VERSION = "V1.2.129";
