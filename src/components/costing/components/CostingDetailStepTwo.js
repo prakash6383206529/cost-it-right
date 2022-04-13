@@ -438,7 +438,7 @@ function CostingDetailStepTwo(props) {
                     <Table className="table cr-brdr-main mb-0" size="sm">
                       <thead>
                         <tr>
-                          <th style={{ width: '220px' }}>{``}</th>
+                          <th style={{ width: '100px' }}>{``}</th>
                           <th style={{ width: '100px' }}><span className="font-weight-500">{`${costingData?.IsAssemblyPart ? 'RM Cost/ Assembly' : 'RM Cost/Pc'}`}</span></th>
                           <th style={{ width: '120px' }}><span className="font-weight-500">{`${costingData?.IsAssemblyPart ? 'BOP Cost/ Assembly' : 'BOP Cost/ Pc'}`}</span></th>
                           <th style={{ width: '120px' }}><span className="font-weight-500">{`${costingData?.IsAssemblyPart ? 'Conversion Cost/Assembly' : 'Conversion Cost/Pc'}`}</span></th>
@@ -458,7 +458,7 @@ function CostingDetailStepTwo(props) {
                             CostingDataList && CostingDataList.map((item, index) => {
                               return (
                                 <>
-                                  <td className="cr-part-name"><span className="cr-prt-nm fs1 font-weight-500">{item.PartNumber}</span></td>
+                                  <td className="cr-part-name part-overflow pr-0 pl-2"><span className="cr-prt-nm fs1 font-weight-500" title={item.PartNumber}>{item.PartNumber}</span></td>
                                   <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.NetRMCost, initialConfiguration.NoOfDecimalForPrice)}</span></td>
                                   <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.NetBOPCost, initialConfiguration.NoOfDecimalForPrice)}</span></td>
                                   <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.NetConversionCost, initialConfiguration.NoOfDecimalForPrice)}</span></td>
