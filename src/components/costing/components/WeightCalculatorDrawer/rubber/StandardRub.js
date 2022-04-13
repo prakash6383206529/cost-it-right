@@ -25,13 +25,12 @@ function StandardRub(props) {
     const costData = useContext(costingInfoContext)
     const [tableData, setTableData] = useState([])
     const [timeOutId, setTimeoutId] = useState([])
+    const [totalRMCost, setTotalRMCost] = useState("")
     const [rmDropDownData, setRmDropDownData] = useState([])
     const [rmRowDataState, setRmRowDataState] = useState({})
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [dataToSend, setDataToSend] = useState({ ...WeightCalculatorRequest })
-
-
 
     const defaultValues = {
         shotWeight: WeightCalculatorRequest && WeightCalculatorRequest.ShotWeight !== null ? WeightCalculatorRequest.ShotWeight : '',
@@ -207,6 +206,35 @@ function StandardRub(props) {
     }
 
 
+    const deleteItem = () => {
+
+    }
+    const editItem = () => {
+
+    }
+
+
+    const buttonFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+
+        let isEditable;
+        if ((props?.agGridReact?.gridOptions?.rowData.length - 1) === props.rowIndex) {
+            isEditable = true
+        } else {
+            isEditable = false
+        }
+
+        return (
+            <>
+
+                {isEditable && <button className="Edit mr-2 align-middle" type={'button'} onClick={() => editItem()} />}
+                {isEditable && <button className="Delete align-middle" type={'button'} onClick={() => deleteItem()} />}
+            </>
+        )
+    };
+
+
     const defaultColDef = {
         resizable: true,
         filter: true,
@@ -279,6 +307,14 @@ function StandardRub(props) {
             return item.label !== obj.RmName
         })
         setRmDropDownData(arr2)
+
+        let tableDataArray = [...tableData, obj]
+
+        let totalRMCost = tableDataArray && tableDataArray.reduce((accummlator, el) => {
+            return accummlator + el.NetRmCost
+        }, 0)
+
+        setTotalRMCost(totalRMCost)
     }
 
     const onSubmit = () => {
@@ -290,22 +326,25 @@ function StandardRub(props) {
         obj.RawMaterialId = rmRowData.RawMaterialId
         obj.CostingId = costData.CostingId
         obj.TechnologyId = costData.TechnologyId
-        obj.CostingRawMaterialDetailId = rmRowData.RawMaterialDetailId
-        obj.RawMaterialName = rmRowData.RMName
-        obj.RawMaterialType = rmRowData.MaterialType
-        obj.BasicRatePerUOM = rmRowData.RMRate
-        obj.ScrapRate = rmRowData.ScrapRate
-        obj.NetLandedCost = grossWeights * rmRowData.RMRate - (grossWeights - getValues('finishWeight')) * rmRowData.ScrapRate
-        obj.PartNumber = costData.PartNumber
-        obj.TechnologyName = costData.TechnologyName
-        obj.Density = rmRowData.Density
-        obj.UOMId = rmRowData.UOMId
-        obj.UOM = rmRowData.UOM
+        // obj.CostingRawMaterialDetailId = rmRowData.RawMaterialDetailId
+        // obj.RawMaterialName = rmRowData.RMName
+        // obj.RawMaterialType = rmRowData.MaterialType
+        // obj.BasicRatePerUOM = rmRowData.RMRate
+        // obj.ScrapRate = rmRowData.ScrapRate
+        // obj.NetLandedCost = grossWeights * rmRowData.RMRate - (grossWeights - getValues('finishWeight')) * rmRowData.ScrapRate
+        // obj.PartNumber = costData.PartNumber
+        // obj.TechnologyName = costData.TechnologyName
+        // obj.Density = rmRowData.Density
+        // obj.UOMId = rmRowData.UOMId
+        // obj.UOM = rmRowData.UOM
         obj.UOMForDimension = KG
-        obj.ShotWeight = getValues('shotWeight')
-        obj.NumberOfCavity = getValues('noOfCavity')
-        obj.GrossWeight = grossWeights
-        obj.FinishWeight = getValues('finishWeight')
+
+
+        // obj.ShotWeight = getValues('shotWeight')
+        // obj.NumberOfCavity = getValues('noOfCavity')
+        // obj.GrossWeight = grossWeights
+        // obj.FinishWeight = getValues('finishWeight')
+        obj.CalculatedRmTableData = tableData
 
         dispatch(saveRawMaterialCalciData(obj, res => {
             if (res.data.Result) {
@@ -322,6 +361,8 @@ function StandardRub(props) {
 
     const frameworkComponents = {
         hyphenFormatter: hyphenFormatter,
+        totalValueRenderer: buttonFormatter,
+
 
     };
 
@@ -341,6 +382,19 @@ function StandardRub(props) {
                                 <Col md="12">
 
 
+                                    <Row className="mb-4 pb-2">
+                                        <Col md="12 d-flex weight-calculator-headings">
+                                            <div className="d-inline-block "><span className="grey-text d-block">RM Name:</span><span className="text-dark-blue one-line-overflow" title={rmRowDataState.RMName}>{`${rmRowDataState.RMName !== undefined ? rmRowDataState.RMName : ''}`}</span></div>
+                                            <div className="d-inline-block "><span className="grey-text d-block">Material:</span><span className="text-dark-blue">{`${rmRowDataState.MaterialType !== undefined ? rmRowDataState.MaterialType : ''}`}</span></div>
+                                            <div className="d-inline-block "><span className="grey-text d-block">Density(g/cm){<sup>3</sup>}):</span><span className="text-dark-blue">{`${rmRowDataState.Density !== undefined ? rmRowDataState.Density : ''}`}</span></div>
+                                            <div className="d-inline-block "><span className="grey-text d-block">RM Rate(INR):</span><span className="text-dark-blue">{`${rmRowDataState.RMRate !== undefined ? rmRowDataState.RMRate : ''}`}</span></div>
+                                            {props?.appyMasterBatch && < div className="d-inline-block "><span className="grey-text d-block">RM Rate(including Master Batch):</span><span className="text-dark-blue">{`${rmRowDataState.RMRate !== undefined ? checkForDecimalAndNull(5, getConfigurationKey().NoOfDecimalForInputOutput) : ''}`}</span></div>}
+                                            <div className="d-inline-block "><span className="grey-text d-block">Scrap Rate(INR):</span><span className="text-dark-blue">{`${rmRowDataState.ScrapRate !== undefined ? rmRowDataState.ScrapRate : ''}`}</span></div>
+                                            <div className="d-inline-block"><span className="grey-text d-block">Category:</span><span className="text-dark-blue">{`${rmRowDataState.RawMaterialCategory !== undefined ? rmRowDataState.RawMaterialCategory : ''}`}</span></div>
+
+                                        </Col>
+                                    </Row>
+
                                     <Col md="3">
                                         <SearchableSelectHookForm
                                             label={`Raw Material`}
@@ -359,22 +413,6 @@ function StandardRub(props) {
                                             disabled={props.CostingViewMode ? true : false}
                                         />
                                     </Col>
-
-
-                                    <Row className="mb-4 pb-2">
-                                        <Col md="12 d-flex weight-calculator-headings">
-                                            <div className="d-inline-block "><span className="grey-text d-block">RM Name:</span><span className="text-dark-blue one-line-overflow" title={rmRowDataState.RMName}>{`${rmRowDataState.RMName !== undefined ? rmRowDataState.RMName : ''}`}</span></div>
-                                            <div className="d-inline-block "><span className="grey-text d-block">Material:</span><span className="text-dark-blue">{`${rmRowDataState.MaterialType !== undefined ? rmRowDataState.MaterialType : ''}`}</span></div>
-                                            <div className="d-inline-block "><span className="grey-text d-block">Density(g/cm){<sup>3</sup>}):</span><span className="text-dark-blue">{`${rmRowDataState.Density !== undefined ? rmRowDataState.Density : ''}`}</span></div>
-                                            <div className="d-inline-block "><span className="grey-text d-block">RM Rate(INR):</span><span className="text-dark-blue">{`${rmRowDataState.RMRate !== undefined ? rmRowDataState.RMRate : ''}`}</span></div>
-                                            {props?.appyMasterBatch && < div className="d-inline-block "><span className="grey-text d-block">RM Rate(including Master Batch):</span><span className="text-dark-blue">{`${rmRowDataState.RMRate !== undefined ? checkForDecimalAndNull(5, getConfigurationKey().NoOfDecimalForInputOutput) : ''}`}</span></div>}
-                                            <div className="d-inline-block "><span className="grey-text d-block">Scrap Rate(INR):</span><span className="text-dark-blue">{`${rmRowDataState.ScrapRate !== undefined ? rmRowDataState.ScrapRate : ''}`}</span></div>
-                                            <div className="d-inline-block"><span className="grey-text d-block">Category:</span><span className="text-dark-blue">{`${rmRowDataState.RawMaterialCategory !== undefined ? rmRowDataState.RawMaterialCategory : ''}`}</span></div>
-
-                                        </Col>
-                                    </Row>
-
-
 
                                     <Row className={'mt15'}>
                                         <Col md="3">
@@ -676,21 +714,23 @@ function StandardRub(props) {
                                                 <AgGridColumn minWidth="150" field="OuterDiameter" headerName="Outer Dia " cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                                 <AgGridColumn minWidth="150" field="Length" headerName="Length(mm)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                                 <AgGridColumn minWidth="150" field="CuttingAllowance" headerName="Cutting Allowance" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                                <AgGridColumn minWidth="150" field="TotalLength" headerName="TotalLength" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                                 <AgGridColumn minWidth="150" field="Volume" headerName="Volume" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                                 <AgGridColumn minWidth="150" field="GrossWeight" headerName="Gross Weight" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                                 <AgGridColumn minWidth="150" field="FinishWeight" headerName="Finish Weight" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                                 <AgGridColumn minWidth="150" field="ScrapWeight" headerName="Scrap Weight" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                                 <AgGridColumn minWidth="150" field="NetRmCost" headerName="Net RM Cost/Component" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                                <AgGridColumn minWidth="120" field="ProcessId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                                <AgGridColumn minWidth="120" field="ProcessId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                             </AgGridReact>
 
                                         </div>
                                     </div>
-
                                 </Col>
                             </Row>
 
-
+                            <div className="bluefooter-butn text-right">
+                                <span className='pr-2'>Total RM Cost : <span >{checkForDecimalAndNull(totalRMCost, getConfigurationKey().NoOfDecimalForPrice)}</span></span>
+                            </div>
 
                         </Col>
                         <div className="mt25 col-md-12 text-right">
@@ -706,6 +746,7 @@ function StandardRub(props) {
                             <button
                                 type="submit"
                                 // disabled={isSubmitted ? true : false}
+                                onClick={onSubmit}
                                 className="btn-primary save-btn"
                             >
                                 <div className={'save-icon'}></div>
