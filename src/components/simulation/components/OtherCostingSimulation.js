@@ -4,11 +4,11 @@ import { Row, Col, } from 'reactstrap';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import NoContentFound from '../../common/NoContentFound';
-import { AssemblyWiseImpactt, BOPDOMESTIC, BOPIMPORT, EMPTY_DATA, ImpactMaster, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, TOFIXEDVALUE } from '../../../config/constants';
-import { getCombinedProcessCostingSimulationList, getComparisionSimulationData, getCostingSimulationList, getImpactedMasterData, getExchangeCostingSimulationList, getSimulatedAssemblyWiseImpactDate, saveSimulationForRawMaterial } from '../actions/Simulation';
+import { AssemblyWiseImpactt, EMPTY_DATA, ImpactMaster, TOFIXEDVALUE } from '../../../config/constants';
+import { getCombinedProcessCostingSimulationList, getComparisionSimulationData, getExchangeCostingSimulationList, getImpactedMasterData, getSimulatedAssemblyWiseImpactDate, saveSimulationForRawMaterial } from '../actions/Simulation';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
-import { checkForDecimalAndNull, checkForNull, formatRMSimulationObject, formViewData, getConfigurationKey, loggedInUserId, userDetails } from '../../../helper';
+import { checkForDecimalAndNull, checkForNull, formViewData, getConfigurationKey, userDetails } from '../../../helper';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
 import { EMPTY_GUID, EXCHNAGERATE, COMBINED_PROCESS, ZBC } from '../../../config/constants';
 import Toaster from '../../common/Toaster';
@@ -33,7 +33,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 function OtherCostingSimulation(props) {
     const { simulationId, isFromApprovalListing, master, statusForLinkedToken } = props
 
-    const { control, getValues, setValue } = useForm({
+    const { getValues, setValue } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onChange',
     })
@@ -104,6 +104,7 @@ function OtherCostingSimulation(props) {
             if (item.IsAssemblyExist === true) {
                 count++
             }
+            return null
         })
         if (count !== 0) {
             setAssemblyImpactButtonTrue(true)
@@ -182,6 +183,7 @@ function OtherCostingSimulation(props) {
                 default:
                     break;
             }
+            return null
         })
         let uniqeArray = []
         const map = new Map();
@@ -264,7 +266,6 @@ function OtherCostingSimulation(props) {
     const onRowSelect = () => {
         var selectedRows = gridApi.getSelectedRows();
         let temp = []
-
         selectedRows && selectedRows.map(item => {
             if (item.IsLockedBySimulation) {
                 temp.push(item.CostingNumber)
@@ -617,9 +618,11 @@ function OtherCostingSimulation(props) {
                 if (itemOut === item.CostingId) {
                     temp.push(item)
                 }
+                return null
             })
             // ************ CONCAT ALL DATA IN SINGLE ARRAY *********** */
             arrayOFCorrectObjIndividual = arrayOFCorrectObjIndividual.concat(temp);
+            return null
         })
         let finalGrid = [], isTokenAPI = false
         if (showBOPColumn === true || showRMColumn === true || showOperationColumn === true || showSurfaceTreatmentColumn === true ||
