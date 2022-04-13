@@ -4,7 +4,7 @@ import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col } from 'reactstrap';
 import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength75, maxLength20, maxLength80, maxLength512 } from "../../../helper/validation";
 import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
-import { renderText, renderTextAreaField, focusOnError, renderDatePicker, renderMultiSelectField } from "../../layout/FormInputs";
+import { renderText, renderTextAreaField, focusOnError, renderDatePicker, renderMultiSelectField, searchableSelect } from "../../layout/FormInputs";
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common';
 import {
   createAssemblyPart, updateAssemblyPart, getAssemblyPartDetail, fileUploadPart, fileDeletePart,
@@ -39,13 +39,11 @@ class AddAssemblyPart extends Component {
       isViewMode: this.props?.data?.isViewMode ? true : false,
       isLoader: false,
       PartId: '',
-
       selectedPlants: [],
       effectiveDate: '',
       files: [],
       ProductGroup: [],
       oldProductGroup: [],
-
       isOpenChildDrawer: false,
       isOpenBOMViewerDrawer: false,
       BOMViewerData: [],
@@ -109,6 +107,7 @@ class AddAssemblyPart extends Component {
               // isLoader: false,
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
               files: Data.Attachements,
+              TechnologySelected: { label: Data.TechnologyName ? Data.TechnologyName : "", value: Data.TechnologyIdRef ? Data.TechnologyIdRef : "" },
               ChildParts: Data.ChildParts,
               BOMViewerData: Data.ChildParts,
               ProductGroup: productArray,
@@ -162,7 +161,6 @@ class AddAssemblyPart extends Component {
   };
 
   handleTechnologyChange = (event) => {
-
     this.setState({ DropdownChanged: true, TechnologySelected: event, })
   }
 
@@ -179,7 +177,6 @@ class AddAssemblyPart extends Component {
   setChildPartsData = (childData) => {
     const { BOMViewerData, } = this.state;
     const tempArray = [];
-
 
     const posX = BOMViewerData && BOMViewerData.length > 0 ? 450 * (BOMViewerData.filter(el => el.Level === 'L1').length - 1) : 50;
 
@@ -302,7 +299,7 @@ class AddAssemblyPart extends Component {
   */
   checkIsFormFilled = () => {
     const { fieldsObj } = this.props;
-    if (fieldsObj.BOMNumber === undefined || fieldsObj.AssemblyPartNumber === undefined || fieldsObj.AssemblyPartName === undefined) {         //|| Object.keys(this.state.TechnologySelected).length === 0     DONT DELETE
+    if (fieldsObj.BOMNumber === undefined || fieldsObj.AssemblyPartNumber === undefined || fieldsObj.AssemblyPartName === undefined || Object.keys(this.state.TechnologySelected).length === 0) {
       return false;
     } else {
       return true;
@@ -373,7 +370,6 @@ class AddAssemblyPart extends Component {
   }
 
   closeBOMViewerDrawer = (e = '', drawerData, isSaved, isEqual) => {
-
     this.setState({ isOpenBOMViewerDrawer: false, BOMViewerData: drawerData, avoidAPICall: isSaved, BOMChanged: isEqual ? false : true })
   }
 
@@ -517,9 +513,8 @@ class AddAssemblyPart extends Component {
   * @description Used to Submit the form
   */
   onSubmit = debounce((values) => {
-    const { PartId, isEditFlag, selectedPlants, BOMViewerData, files, avoidAPICall, DataToCheck, DropdownChanged, ProductGroup, BOMChanged } = this.state;
-    const { partData } = this.props;
-    const { initialConfiguration } = this.props;
+    const { PartId, isEditFlag, selectedPlants, BOMViewerData, files, avoidAPICall, DataToCheck, DropdownChanged, ProductGroup, oldProductGroup, BOMChanged } = this.state;
+    const { actualBOMTreeData, fieldsObj, partData, initialConfiguration } = this.props;
 
     let plantArray = selectedPlants && selectedPlants.map((item) => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
     let productArray = (initialConfiguration?.IsProductMasterConfigurable) ? ProductGroup && ProductGroup.map((item) => ({ GroupCode: item.Text })) : [{ GroupCode: values.GroupCode }]
@@ -555,7 +550,6 @@ class AddAssemblyPart extends Component {
 
     if (isEditFlag) {
       let isGroupCodeChange = this.checkGroupCodeChange(values)
-
 
       if (!DropdownChanged && String(DataToCheck.AssemblyPartName) === String(values.AssemblyPartName) && !isGroupCodeChange && String(DataToCheck.Description) === String(values.Description) &&
         String(DataToCheck.ECNNumber) === String(values.ECNNumber) && String(DataToCheck.RevisionNumber) === String(values.RevisionNumber) &&
@@ -598,6 +592,7 @@ class AddAssemblyPart extends Component {
         AssemblyPartId: PartId,
         AssemblyPartName: values.AssemblyPartName,
         AssemblyPartNumber: values.AssemblyPartNumber,
+        TechnologyIdRef: this.state.TechnologySelected.value ? this.state.TechnologySelected.value : "",
         Description: values.Description,
         ECNNumber: values.ECNNumber,
         RevisionNumber: values.RevisionNumber,
@@ -622,15 +617,13 @@ class AddAssemblyPart extends Component {
         }
       });
 
-
-
     } else {
-
       this.setState({ setDisable: true })
       let formData = {
         AssemblyPartNumber: values.AssemblyPartNumber,
         AssemblyPartName: values.AssemblyPartName,
         AssemblyPartId: '',
+        TechnologyIdRef: this.state.TechnologySelected.value ? this.state.TechnologySelected.value : "",
         ChildParts: childPartArray,
         LoggedInUserId: loggedInUserId(),
         BOMNumber: values.BOMNumber,
@@ -646,9 +639,7 @@ class AddAssemblyPart extends Component {
         NumberOfChildParts: BOMViewerData && BOMViewerData.length - 1,
         BOMLevelCount: BOMLevelCount,
         GroupCodeList: productArray
-
       }
-
       this.props.createAssemblyPart(formData, (res) => {
         this.setState({ setDisable: false })
         if (res?.data?.Result === true) {
@@ -713,9 +704,7 @@ class AddAssemblyPart extends Component {
         return isChangeInField
 
     }
-
   }
-
   checkGroupCodeChange = (newGroupCodeValue) => {
     let isGroupCodeChange
     let productArray = (this.props.initialConfiguration?.IsProductMasterConfigurable) ? this.state.ProductGroup && this.state.ProductGroup.map((item) => ({ GroupCode: item.Text })) : [{ GroupCode: newGroupCodeValue.GroupCode }]
@@ -912,8 +901,9 @@ class AddAssemblyPart extends Component {
                           </Col>
                         }
 
-
-                        {/* <Col md="3">           // WORK IN PROGRESS DONT DELETE
+                        {/* 
+                        //WORK IN PROGRESS DONT DELETE */}
+                        <Col md="3">
                           <Field
                             label="Technology"
                             type="text"
@@ -922,15 +912,15 @@ class AddAssemblyPart extends Component {
                             placeholder={"Technology"}
                             options={this.renderListing("technology")}
                             validate={
-                              this.state.Technology == null || this.state.Technology.length === 0 ? [required] : []}
+                              this.state.TechnologySelected == null || Object.keys(this.state.TechnologySelected).length === 0 ? [required] : []}
                             required={true}
                             handleChangeDescription={
                               this.handleTechnologyChange
                             }
-                            valueDescription={this.state.Technology}
+                            valueDescription={this.state.TechnologySelected}
                             disabled={isEditFlag || isViewMode}
                           />
-                        </Col> */}
+                        </Col>
 
 
                         <Col md="3">
@@ -1099,7 +1089,7 @@ class AddAssemblyPart extends Component {
               isOpen={isOpenChildDrawer}
               closeDrawer={this.closeChildDrawer}
               isEditFlag={false}
-              //TechnologySelected={this.props.TechnologySelected} DONT DELETE
+              TechnologySelected={this.state.TechnologySelected}
               ID={""}
               anchor={"right"}
               setChildPartsData={this.setChildPartsData}
@@ -1111,7 +1101,7 @@ class AddAssemblyPart extends Component {
             <BOMViewer
               isOpen={isOpenBOMViewerDrawer}
               closeDrawer={this.closeBOMViewerDrawer}
-              //TechnologySelected={this.state.TechnologySelected} DONT DELETE
+              TechnologySelected={this.state.TechnologySelected}
               isEditFlag={this.state.isEditFlag}
               PartId={this.state.PartId}
               anchor={"right"}
