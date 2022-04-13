@@ -745,15 +745,12 @@ const CostingSummaryTable = (props) => {
 
   const sendForApprovalDown = (data) => {
     let temp = moduleHandler(data.costingId, 'down', data)
-    setTimeout(() => {
-
-      if (!temp) {
-        sendForApprovalData([data.costingId], index)
-        setShowApproval(true)
-      } else {
-        Toaster.warning('A costing is pending for approval for this part or one of it\'s child part. Please approve that first')
-      }
-    }, 700);
+    if (!temp) {
+      sendForApprovalData([data.costingId], index)
+      setShowApproval(true)
+    } else {
+      Toaster.warning('A costing is pending for approval for this part or one of it\'s child part. Please approve that first')
+    }
   }
 
   return (
