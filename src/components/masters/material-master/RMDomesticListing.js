@@ -528,7 +528,7 @@ function RMDomesticListing(props) {
             </Row>
             <Row>
                 <Col>
-                    <div className={`ag-grid-wrapper height-width-wrapper ${getFilterRMData() && getFilterRMData()?.length <= 0 ? "overlay-contain" : ""}`}>
+                    <div className={`ag-grid-wrapper ${props.isSimulation ? 'simulation-height' : 'height-width-wrapper'} ${getFilterRMData() && getFilterRMData()?.length <= 0 ? "overlay-contain" : ""}`}>
                         <div className={`ag-theme-material ${(loader && !props.isMasterSummaryDrawer) && "max-loader-height"}`}>
                             <AgGridReact
                                 style={{ height: '100%', width: '100%' }}

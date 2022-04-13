@@ -15,7 +15,6 @@
 [class*=" icon-"] {
   /* use !important to prevent issues with browser extensions that change fonts */
   font-family: "icomoon" !important;
-  speak: none;
   font-style: normal;
   font-weight: normal;
   font-variant: normal;
@@ -3826,11 +3825,11 @@ body{
       }
     }
   }
-  .exchange-rate {
-    .ag-grid-wrapper {
-      min-height: calc(100vh - 262px) !important;
-    }
-  }
+  // .exchange-rate {
+  //   .ag-grid-wrapper {
+  //     min-height: calc(100vh - 262px) !important;
+  //   }
+  // }
   // costing details page only end
 
 }// 1600px media query end
@@ -3840,11 +3839,11 @@ body{
       min-height: auto;
     }
   }
-    .exchange-rate {
-      .ag-grid-wrapper {
-        min-height: calc(100vh - 268px) !important;
-      }
-    }
+    // .exchange-rate {
+    //   .ag-grid-wrapper {
+    //     min-height: calc(100vh - 268px) !important;
+    //   }
+    // }
 }
 
 @media(max-height:900px) {
@@ -3853,11 +3852,11 @@ body{
   min-height: calc(100vh - 380px);
   }
 }
-.exchange-rate {
-  .ag-grid-wrapper {
-    min-height: calc(100vh - 150px) !important;
-  }
-}
+// .exchange-rate {
+//   .ag-grid-wrapper {
+//     min-height: calc(100vh - 150px) !important;
+//   }
+// }
 }
 @media(max-width:$belowLaptop){
   .overhead-profit-tab-costing{
@@ -5877,6 +5876,7 @@ left: 17rem;
     min-height: calc(100vh - 288px) !important;
   }
 }
+
 // <----Overhead and profit css----->
 .tooltip-container {
   position: relative;
@@ -5957,12 +5957,13 @@ left: 17rem;
 
     }
   }
+
 }
 @media screen and (min-width:$middleDesktop) {
   .calculator {
     right: -20px;
   }
-  
+
 }
 @-moz-document url-prefix() { 
   .calculator {
@@ -5975,7 +5976,9 @@ left: 17rem;
 }
 }
 // <-------END Calculator css--------->
-
+.simulation-height {
+  min-height: calc(100vh - 440px) !important;
+}
 // <-------------START Hover text overflow and show on hover css----------->
   @mixin  overflow($maxWidth:140px, $minWidth:75px, $ResponsiveWith:$maxWidth, $lineClamp:1, $whiteSpace:nowrap) {
     max-width: $maxWidth;
