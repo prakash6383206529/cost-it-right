@@ -1272,6 +1272,7 @@ p {
     color: black;
     display: flex;
     border: 1px solid #f6ca0c;
+    user-select: none;
     -webkit-user-select: none;
     cursor: pointer;
     font-size: 15px;
