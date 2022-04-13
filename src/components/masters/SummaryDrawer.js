@@ -10,15 +10,13 @@ import { Fragment } from 'react';
 import MasterSendForApproval from './MasterSendForApproval';
 import LoaderCustom from '../common/LoaderCustom';
 import OperationListing from './operation/OperationListing'
-import { BOP_MASTER_ID, RM_MASTER_ID, OPERATIONS_ID, MACHINE_MASTER_ID } from '../../config/constants';
+import { BOP_MASTER_ID, RM_MASTER_ID, OPERATIONS_ID, MACHINE_MASTER_ID, FILE_URL } from '../../config/constants';
 import MachineRateListing from './machine-master/MachineRateListing';
 
 function SummaryDrawer(props) {
     const { approvalData } = props
 
     const dispatch = useDispatch()
-
-
     /**
     * @method toggleDrawer
     * @description TOGGLE DRAWER
@@ -36,6 +34,7 @@ function SummaryDrawer(props) {
     }
 
     const [approvalLevelStep, setApprovalLevelStep] = useState([])
+    const [files, setFiles] = useState([])
     const [approvalDetails, setApprovalDetails] = useState({})
     const [approvalDrawer, setApprovalDrawer] = useState(false)
     const [rejectDrawer, setRejectDrawer] = useState(false)
@@ -52,6 +51,16 @@ function SummaryDrawer(props) {
             setApprovalLevelStep(Data.MasterSteps)
             setApprovalDetails({ IsSent: Data.IsSent, IsFinalLevelButtonShow: Data.IsFinalLevelButtonShow, ApprovalProcessId: Data.ApprovalProcessId, MasterApprovalProcessSummaryId: Data.ApprovalProcessSummaryId, Token: Data.Token, MasterId: Data.MasterId })
             setLoader(false)
+            if (Number(props.masterId) === RM_MASTER_ID) {
+                setFiles(Data.ImpactedMasterDataList[0].Files)
+            }
+            else if (Number(props.masterId) === BOP_MASTER_ID) {
+                setFiles(Data.ImpactedMasterDataListBOP[0].Files)
+            } else if (Number(props.masterId) === OPERATIONS_ID) {
+                setFiles(Data.ImpactedMasterDataListOperation[0].Files)
+            } else if (Number(props.masterId) === MACHINE_MASTER_ID) {
+                setFiles(Data.ImpactedMasterDataListMachine[0].Files)
+            }
         }))
 
         if (Number(props.masterId) === RM_MASTER_ID) {            // MASTER ID 1 FOR RAW MATERIAL
@@ -113,7 +122,29 @@ function SummaryDrawer(props) {
                                     <MachineRateListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' />}
 
 
+                                <Row>
+                                    <div className={"attachment-wrapper"}>
+                                        {files &&
+                                            files.map((f) => {
+                                                const withOutTild = f.FileURL?.replace(
+                                                    "~",
+                                                    ""
+                                                );
+                                                const fileURL = `${FILE_URL}${withOutTild}`;
+                                                return (
+                                                    <div className={"attachment images"}>
+                                                        <a href={fileURL} target="_blank" rel="noreferrer" title={f.OriginalFileName}>
+                                                            {f.OriginalFileName}
+                                                        </a>
+
+                                                    </div>
+                                                );
+                                            })}
+                                    </div>
+                                </Row>
                             </Col>
+
+
                         </Row>
                         {
                             !approvalDetails.IsSent &&
@@ -135,7 +166,7 @@ function SummaryDrawer(props) {
                     </div>
                 </div>
 
-            </Drawer>
+            </Drawer >
 
             {
                 (approvalDrawer || rejectDrawer) &&
@@ -149,7 +180,7 @@ function SummaryDrawer(props) {
                     IsFinalLevelButtonShow={approvalDetails.IsFinalLevelButtonShow}
                 />
             }
-        </div>
+        </div >
     );
 }
 
