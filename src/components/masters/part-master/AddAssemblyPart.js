@@ -513,6 +513,7 @@ class AddAssemblyPart extends Component {
   confirmDraftItem = (updateData) => {
     let Data = { ...updateData, IsForceUpdate: true }
     this.props.updateAssemblyPart(Data, (res) => {
+      this.setState({ setDisable: false })
       if (res.data.Result) {
         Toaster.success(MESSAGES.UPDATE_BOM_SUCCESS);
         this.cancel()
@@ -583,7 +584,6 @@ class AddAssemblyPart extends Component {
       else if (this.state.isBomEditable === false && (isGroupCodeChange || String(DataToCheck.ECNNumber) !== String(values.ECNNumber) ||
         String(DataToCheck.RevisionNumber) !== String(values.RevisionNumber) || String(DataToCheck.DrawingNumber) !== String(values.DrawingNumber)
         || BOMChanged)) {
-
         // IF THERE ARE CHANGES ,THEN REVISION NO SHOULD BE CHANGED
         if (String(DataToCheck.RevisionNumber) === String(values.RevisionNumber) || String(DataToCheck.BOMNumber) === String(values.BOMNumber) || DayTime(DataToCheck.EffectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(this.state.effectiveDate).format('YYYY-MM-DD HH:mm:ss')) {
           Toaster.warning('Please edit Revision no , BOM no and Effective date')
@@ -624,9 +624,9 @@ class AddAssemblyPart extends Component {
         GroupCodeList: productArray,
         IsStructureChanges: isStructureChanges
       }
-
       this.props.updateAssemblyPart(updateData, (res) => {
-        if (res.data.Result) {
+        this.setState({ setDisable: false })
+        if (res?.data?.Result) {
           Toaster.success(MESSAGES.UPDATE_BOM_SUCCESS);
           this.cancel()
         }
