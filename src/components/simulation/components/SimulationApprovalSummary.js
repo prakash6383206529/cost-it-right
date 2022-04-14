@@ -644,7 +644,6 @@ function SimulationApprovalSummary(props) {
 
     const varianceFormatter = (props) => {
         const cell = props?.value;
-        console.log('cell: ', cell);
         let variance = checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)
         variance = variance > 0 ? `+${variance}` : variance;
         return variance;

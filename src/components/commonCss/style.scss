@@ -2419,6 +2419,12 @@ button:disabled{pointer-events: none;}
       }
     }
   }
+  &.assembly-tooltip {
+    .tooltiptext {
+      min-width: 280px;
+      text-align: right;
+    }
+  }
 }
 
 .refresh-icon.tooltip-n{
@@ -3826,11 +3832,7 @@ body{
       }
     }
   }
-  // .exchange-rate {
-  //   .ag-grid-wrapper {
-  //     min-height: calc(100vh - 262px) !important;
-  //   }
-  // }
+ 
   // costing details page only end
 
 }// 1600px media query end
@@ -3840,11 +3842,7 @@ body{
       min-height: auto;
     }
   }
-    // .exchange-rate {
-    //   .ag-grid-wrapper {
-    //     min-height: calc(100vh - 268px) !important;
-    //   }
-    // }
+
 }
 
 @media(max-height:900px) {
@@ -3853,11 +3851,7 @@ body{
   min-height: calc(100vh - 380px);
   }
 }
-// .exchange-rate {
-//   .ag-grid-wrapper {
-//     min-height: calc(100vh - 150px) !important;
-//   }
-// }
+
 }
 @media(max-width:$belowLaptop){
   .overhead-profit-tab-costing{
@@ -3912,7 +3906,7 @@ body{
   .tooltip.show{opacity: 1;}
   .tooltip-n {
     .tooltiptext {
-      min-width: 240px;
+      min-width: 280px;
       left: -111px;
       font-size: calc(14px * 80 / 100);
     }
