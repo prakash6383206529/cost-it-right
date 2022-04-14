@@ -1836,7 +1836,7 @@ export const RMImportSimulation = [
 
 export const SurfaceTreatmentSimulation = [
     { label: "Technology", value: "Technology" },
-    { label: "CostingHead", value: "IsVendor" },
+    { label: "CostingHead", value: "CostingHead" },
     { label: "OperationName", value: "OperationName" },
     { label: "OperationCode", value: "OperationCode" },
     { label: "DestinationPlant", value: "Plants" },
@@ -2424,8 +2424,8 @@ export const CostingSimulationDownloadRM = [
     { label: 'New Basic Rate', value: 'NewRMRate' },
     { label: "ScrapRate", value: "OldScrapRate" },
     { label: 'NewScrapRate', value: 'NewScrapRate' },
-    { label: "Old RM Cost", value: "OldRMPrice" },
-    { label: "New RM Cost", value: "NewRMPrice" },
+    { label: "Old RM Cost/Pc", value: "OldRMPrice" },
+    { label: "New RM Cost/Pc", value: "NewRMPrice" },
     { label: "RM Variance", value: "RMCVariance" },
 
     { label: "OldOverheadCost", value: "OldOverheadCost" },
@@ -3041,6 +3041,18 @@ export const ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl = [
     { label: "Old PO Price/Assembly", value: "OldPrice", },
     { label: "New PO Price/Assembly", value: "NewPrice", },
     { label: "Variance/Assembly", value: "Variance", },
+
+]
+
+
+export const USER_LISTING_DOWNLOAD_EXCEl = [
+    { label: "Name", value: "FullName", },
+    { label: "User Name", value: "UserName", },
+    { label: "Email Id", value: "EmailAddress", },
+    { label: "Mobile No", value: "Mobile", },
+    { label: "Phone No", value: "PhoneNumber", },
+    { label: "Department", value: "DepartmentName", },
+    { label: "Role", value: "RoleName", }
 
 ]
 
