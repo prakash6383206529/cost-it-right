@@ -19,7 +19,7 @@ function PartOverheadProfit(props) {
   const dispatch = useDispatch()
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { ComponentItemDiscountData, CostingEffectiveDate,checkIsOverheadProfitChange } = useSelector(state => state.costing)
+  const { ComponentItemDiscountData, CostingEffectiveDate, checkIsOverheadProfitChange } = useSelector(state => state.costing)
 
   const costData = useContext(costingInfoContext);
   const netPOPrice = useContext(NetPOPriceContext);
@@ -68,7 +68,7 @@ function PartOverheadProfit(props) {
   * @description Used to Submit the form
   */
   const saveCosting = (values) => {
-    if(checkIsOverheadProfitChange){
+    if (checkIsOverheadProfitChange) {
       let reqData = {
         "CostingId": item.CostingId,
         "LoggedInUserId": loggedInUserId(),
@@ -106,7 +106,7 @@ function PartOverheadProfit(props) {
   }, [IsOpen])
 
 
- 
+
 
   /**
   * @method render
@@ -115,8 +115,8 @@ function PartOverheadProfit(props) {
   return (
     <>
       <tr id="assembly-costing-header" className="accordian-row" onClick={() => toggle(item.BOMLevel, item.PartNumber)}>
-        <td>
-          <span style={{ position: 'relative' }} className={`cr-prt-nm1 cr-prt-link1 ${item && item.BOMLevel}`}>
+        <td className='part-overflow'>
+          <span className={`part-name ${item && item.BOMLevel}`} title={`${item && item.PartNumber}-${item && item.BOMLevel}`}>
             {item && item.PartNumber}-{item && item.BOMLevel}<div className={`${item.IsOpen ? 'Open' : 'Close'}`}></div>
           </span>
         </td>
