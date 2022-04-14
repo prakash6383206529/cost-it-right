@@ -39,16 +39,12 @@ function TabDiscountOther(props) {
   const [otherCostType, setOtherCostType] = useState([]);
   const [hundiscountType, setHundiDiscountType] = useState([])
   const [isDisable, setIsDisable] = useState(false)
-
-
   const dispatch = useDispatch()
   let history = useHistory();
-
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
   const netPOPrice = useContext(NetPOPriceContext);
   const headerCosts = useContext(netHeadCostContext);
-
   const currencySelectList = useSelector(state => state.comman.currencySelectList)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { DiscountCostData, ExchangeRateData, CostingEffectiveDate, RMCCTabData, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, CostingDataList, getAssemBOPCharge } = useSelector(state => state.costing)
@@ -57,7 +53,6 @@ function TabDiscountOther(props) {
   const [otherCostApplicability, setOtherCostApplicability] = useState([])
   const [discountCostApplicability, setDiscountCostApplicability] = useState([])
   const [netPoPriceCurrencyState, setNetPoPriceCurrencyState] = useState('')
-
   const costingHead = useSelector(state => state.comman.costingHead)
 
   useEffect(() => {
@@ -322,9 +317,9 @@ function TabDiscountOther(props) {
     }
   }
   /**
-  * @method handleAnyOtherCostChange
-  * @description HANDLE ANY OTHER COST CHANGE
-  */
+ * @method handleAnyOtherCostChange
+ * @description HANDLE ANY OTHER COST CHANGE
+ */
   const handleDiscountCostChange = (event) => {
     if (!CostingViewMode) {
       if (!isNaN(event.target.value)) {
@@ -337,6 +332,7 @@ function TabDiscountOther(props) {
       }
     }
   }
+
   /**
   * @method handleAnyOtherCostChange
   * @description HANDLE ANY OTHER COST CHANGE
