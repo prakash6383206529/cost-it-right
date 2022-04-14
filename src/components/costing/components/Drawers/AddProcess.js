@@ -13,6 +13,7 @@ import LoaderCustom from '../../../common/LoaderCustom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import { FORGING, Ferrous_Casting, DIE_CASTING } from '../../../../config/masterData'
 const gridOptions = {};
 
 function AddProcess(props) {
@@ -20,7 +21,7 @@ function AddProcess(props) {
   const [tableData, setTableDataList] = useState([]);
   const [selectedRowData, setSelectedRowData] = useState([]);
   const [selectedIds, setSelectedIds] = useState(props.Ids);
-  const [selectedMachineIds,setSelectedMachineIds] = useState(props.MachineIds)
+  const [selectedMachineIds, setSelectedMachineIds] = useState(props.MachineIds)
   const [gridApi, setGridApi] = useState(null);
   const [gridColumnApi, setGridColumnApi] = useState(null);
   const [rowData, setRowData] = useState(null);
@@ -46,11 +47,24 @@ function AddProcess(props) {
   useEffect(() => {
     if (costData.VendorType === ZBC) {
 
-      const data = {
-        PlantId: costData.PlantId,
-        TechnologyId: costData.TechnologyId,
-        CostingId: costData.CostingId,
-        EffectiveDate: CostingEffectiveDate,
+      let data = {}
+
+      if (Number(costData.TechnologyId) === Number(FORGING) || Number(costData.TechnologyId) === Number(DIE_CASTING) || Number(costData.TechnologyId) === Number(Ferrous_Casting)) {
+        data = {
+          PlantId: costData.PlantId,
+          TechnologyId: String(`${costData.TechnologyId},14`),
+          CostingId: costData.CostingId,
+          EffectiveDate: CostingEffectiveDate,
+        }
+
+      } else {
+
+        data = {
+          PlantId: costData.PlantId,
+          TechnologyId: String(costData.TechnologyId),
+          CostingId: costData.CostingId,
+          EffectiveDate: CostingEffectiveDate,
+        }
       }
       dispatch(getProcessDrawerDataList(data, (res) => {
         if (res && res.status === 200) {
@@ -65,13 +79,28 @@ function AddProcess(props) {
 
     } else {
 
-      const data = {
-        VendorId: costData.VendorId,
-        TechnologyId: costData.TechnologyId,
-        VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
-        DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID,
-        CostingId: costData.CostingId,
-        EffectiveDate: CostingEffectiveDate,
+      let data = {}
+      if (Number(costData.TechnologyId) === Number(FORGING) || Number(costData.TechnologyId) === Number(DIE_CASTING) || Number(costData.TechnologyId) === Number(Ferrous_Casting)) {
+        data = {
+          VendorId: costData.VendorId,
+          TechnologyId: String(`${costData.TechnologyId},14`),
+          VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
+          DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID,
+          CostingId: costData.CostingId,
+          EffectiveDate: CostingEffectiveDate,
+        }
+      }
+
+      else {
+
+        data = {
+          VendorId: costData.VendorId,
+          TechnologyId: String(costData.TechnologyId),
+          VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
+          DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID,
+          CostingId: costData.CostingId,
+          EffectiveDate: CostingEffectiveDate,
+        }
       }
       dispatch(getProcessDrawerVBCDataList(data, (res) => {
         if (res && res.status === 200) {
@@ -86,8 +115,6 @@ function AddProcess(props) {
 
     }
   }, []);
-
-
 
   /**
   * @method renderPaginationShowsTotal
@@ -255,8 +282,8 @@ function AddProcess(props) {
 
               <Row className="mx-0">
                 <Col className="hidepage-size">
-                
-                  <div className={`ag-grid-wrapper min-height-auto height-width-wrapper ${processDrawerList && processDrawerList?.length <=0 ?"overlay-contain": ""}`}>
+
+                  <div className={`ag-grid-wrapper min-height-auto height-width-wrapper ${processDrawerList && processDrawerList?.length <= 0 ? "overlay-contain" : ""}`}>
                     <div className="ag-grid-header">
                       <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                       <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>

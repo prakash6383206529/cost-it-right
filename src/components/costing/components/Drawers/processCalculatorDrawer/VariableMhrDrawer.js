@@ -19,6 +19,7 @@ import { HOUR, TIME } from '../../../../../config/constants'
 import Broaching from './Broaching'
 import HardFacing from './HardFacing'
 
+
 function VariableMhrDrawer(props) {
   const { technology, calculatorData } = props
   const tonnage = calculatorData.Tonnage ? calculatorData.Tonnage : ''
@@ -68,29 +69,18 @@ function VariableMhrDrawer(props) {
     props.closeDrawer('', formValue, weightData)
   }
 
+
   const getProcessComponent = (process) => {
-
-    if (technology === MACHINING || technology === FORGING || technology === Ferrous_Casting || technology === DIE_CASTING) {
-
+    if (technology === "Machining") {
       if (calculatorData.UOMType === TIME) {
         switch (process) {
 
-          // 2 MORE PROCESS WILL BE ADDED HERE
           case BROACHING:
             return (
               <Broaching
                 CostingViewMode={props.CostingViewMode}
                 calculateMachineTime={calculateMachineTime}
-                tonnage={tonnage}
-                calculatorData={calculatorData}
-              />
-            )
-          case HARDFACING:
-            return (
-              <HardFacing
-                CostingViewMode={props.CostingViewMode}
-                calculateMachineTime={calculateMachineTime}
-                tonnage={tonnage}
+                technology={technology}
                 calculatorData={calculatorData}
               />
             )
@@ -100,13 +90,12 @@ function VariableMhrDrawer(props) {
                 CostingViewMode={props.CostingViewMode}
                 calculateMachineTime={calculateMachineTime}
                 tonnage={tonnage}
+                rmFinishWeight={props.rmFinishWeight}
                 calculatorData={calculatorData}
               />
             )
-
         }
       } else {
-
         return (
           <SheetMetalBaicDrawer
             CostingViewMode={props.CostingViewMode}
@@ -117,33 +106,69 @@ function VariableMhrDrawer(props) {
           />
         )
       }
-    }
-
-    else {
-      if (calculatorData.UOMType === TIME) {
-        return (
-          <SheetMetalBaicDrawer
-            CostingViewMode={props.CostingViewMode}
-            calculateMachineTime={calculateMachineTime}
-            tonnage={tonnage}
-            rmFinishWeight={props.rmFinishWeight}
-            calculatorData={calculatorData}
-          />
-        )
-
-      } else {
-        return (
-          <SheetMetalBaicDrawer
-            CostingViewMode={props.CostingViewMode}
-            calculateMachineTime={calculateMachineTime}
-            tonnage={tonnage}
-            rmFinishWeight={props.rmFinishWeight}
-            calculatorData={calculatorData}
-          />
-        )
+    } else if (technology === "Sheet Metal") {
+      switch (process) {
+        case 'Facing':
+          return (
+            <Facing
+              CostingViewMode={props.CostingViewMode}
+              calculateMachineTime={calculateMachineTime}
+              technology={technology}
+              calculatorData={calculatorData}
+            />
+          )
+        default:
+          return (
+            <SheetMetalBaicDrawer
+              CostingViewMode={props.CostingViewMode}
+              calculateMachineTime={calculateMachineTime}
+              tonnage={tonnage}
+              rmFinishWeight={props.rmFinishWeight}
+              calculatorData={calculatorData}
+            />
+          )
       }
+    } else if (technology === "Plastic") {
+      switch (process) {
+        case 'Injection Moulding':
+        // return (
+        //   <InjectionMoulding calculateMachineTime={calculateMachineTime} calculatorData={calculatorData} />
+        // )
+        default:
+          return (
+            <SheetMetalBaicDrawer
+              CostingViewMode={props.CostingViewMode}
+              calculateMachineTime={calculateMachineTime}
+              tonnage={tonnage}
+              rmFinishWeight={props.rmFinishWeight}
+              calculatorData={calculatorData}
+            />
+          )
+          break;
+      }
+    } else if (technology === "Non Ferrous HPDC") {
+      return (
+        <SheetMetalBaicDrawer
+          CostingViewMode={props.CostingViewMode}
+          calculateMachineTime={calculateMachineTime}
+          tonnage={tonnage}
+          rmFinishWeight={props.rmFinishWeight}
+          calculatorData={calculatorData}
+        />
+      )
+    } else {
+      return (
+        <SheetMetalBaicDrawer
+          CostingViewMode={props.CostingViewMode}
+          calculateMachineTime={calculateMachineTime}
+          tonnage={tonnage}
+          rmFinishWeight={props.rmFinishWeight}
+          calculatorData={calculatorData}
+        />
+      )
     }
   }
+
 
   return (
     <div>
