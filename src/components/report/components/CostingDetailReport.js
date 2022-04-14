@@ -22,7 +22,6 @@ const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 
-
 function ReportListing(props) {
 
     const [selectedRowData, setSelectedRowData] = useState([]);
@@ -45,7 +44,6 @@ function ReportListing(props) {
     const [enableSearchFilterSearchButton, setEnableSearchFilterButton] = useState(true)
     const [reportListingDataStateArray, setReportListingDataStateArray] = useState([])
 
-
     var filterParams = {
         comparator: function (filterLocalDateAtMidnight, cellValue) {
             var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
@@ -67,32 +65,26 @@ function ReportListing(props) {
             if (cellDate > filterLocalDateAtMidnight) {
                 return 1;
             }
-
         },
         browserDatePicker: true,
         minValidYear: 2000,
     };
 
     let filterClick = false
-
     const dispatch = useDispatch()
-
     const { handleSubmit, getValues } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onChange',
     })
 
-
     let reportListingData = useSelector((state) => state.report.reportListing)
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
-
 
     const simulatedOnFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         //return cell != null ? moment(cell).format('DD/MM/YYYY hh:mm A') : '';
         return cellValue != null ? cellValue : '';
     }
-
 
     const createDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -106,7 +98,6 @@ function ReportListing(props) {
         setCostingVersion(temp);
         return temp
     }
-
 
     // @method hyperLinkFormatter( This function will make the first column details into hyperlink )
 
@@ -124,7 +115,6 @@ function ReportListing(props) {
         )
     }
 
-
     const viewDetails = (UserId, cell, row) => {
 
         if (row.BaseCostingId && Object.keys(row.BaseCostingId).length > 0) {
@@ -138,10 +128,8 @@ function ReportListing(props) {
             },
             ))
         }
-
         setIsOpen(true)
         setUserId(UserId)
-
     }
 
     const closeUserDetails = () => {
@@ -164,9 +152,7 @@ function ReportListing(props) {
         return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
     }
 
-
     const partTypeAssemblyFormatter = (props) => {
-
         const cellValue = props?.value;
         if (props.data.PartType === "Assembly") {
             return "Multiple RM"
@@ -212,7 +198,6 @@ function ReportListing(props) {
    */
 
     const getTableData = (skip, take, isPagination, data, isLastWeek) => {
-
         let newData = {}
         if (isLastWeek) {
             let currentDate = new Date()
@@ -234,15 +219,12 @@ function ReportListing(props) {
         }))
     }
 
-
     useEffect(() => {
 
         setLoader(true)
         getTableData(0, 100, true, floatingFilterData, false);
 
     }, [])
-
-
 
     const onBtNext = () => {
 
@@ -255,24 +237,17 @@ function ReportListing(props) {
 
             setCurrentRowIndex(nextNo)
         }
-
     };
 
     const onBtPrevious = () => {
 
         if (currentRowIndex >= 10) {
-
             setPageNo(pageNo - 1)
             const previousNo = currentRowIndex - 10;
-
             apiCall(previousNo)
-
             setCurrentRowIndex(previousNo)
-
         }
     }
-
-
 
     const apiCall = (no) => {                      //COMMON FUNCTION FOR PREVIOUS & NEXT BUTTON
 
@@ -282,9 +257,7 @@ function ReportListing(props) {
 
             getTableData(no, 100, true, floatingFilterData, false);
         }
-
     }
-
 
     useEffect(() => {
 
@@ -296,12 +269,9 @@ function ReportListing(props) {
 
     }, [reportListingData])
 
-
     const onFloatingFilterChanged = (value) => {
-
         setEnableSearchFilterButton(false)
         setWarningMessage(true)
-
         if (value?.filterInstance?.appliedModel === null || value?.filterInstance?.appliedModel?.filter === "") {
             setWarningMessage(false)
 
@@ -322,9 +292,7 @@ function ReportListing(props) {
 
     }
 
-
     const onSearch = () => {
-
         setWarningMessage(false)
         setPageNo(1)
         setCurrentRowIndex(0)
@@ -335,11 +303,9 @@ function ReportListing(props) {
         filterClick = true
     }
 
-
     const isFirstColumn = (params) => {
         var displayedColumns = params.columnApi.getAllDisplayedColumns();
         var thisIsFirstColumn = displayedColumns[0] === params.column;
-
         return thisIsFirstColumn;
     }
 
@@ -352,7 +318,6 @@ function ReportListing(props) {
         checkboxSelection: isFirstColumn
     };
 
-
     const onGridReady = (params) => {
 
         setGridApi(params.api)
@@ -364,8 +329,6 @@ function ReportListing(props) {
     const onPageSizeChanged = (newPageSize) => {
         var value = document.getElementById('page-size').value;
         gridApi.paginationSetPageSize(Number(value));
-
-
         if (Number(newPageSize) === 10) {
             setPageSize10(true)
             setPageSize50(false)
@@ -386,11 +349,9 @@ function ReportListing(props) {
 
     };
 
-
     useEffect(() => {
 
     }, [tableData])
-
 
     const frameworkComponents = {
         linkableFormatter: linkableFormatter,
@@ -408,8 +369,6 @@ function ReportListing(props) {
         decimalPriceFormatter: decimalPriceFormatter
     };
 
-
-
     const resetState = () => {
         gridOptions?.columnApi?.resetColumnState();
         gridOptions?.api?.setFilterModel(null);
@@ -417,7 +376,6 @@ function ReportListing(props) {
         for (var prop in floatingFilterData) {
             floatingFilterData[prop] = ""
         }
-
         setFloatingFilterData(floatingFilterData)
         setWarningMessage(false)
         setPageNo(1)
@@ -443,7 +401,6 @@ function ReportListing(props) {
             tempData = selectedRowData
         }
         return returnExcelColumn(REPORT_DOWNLOAD_EXCEl, tempData)
-
     }
 
     const returnExcelColumn = (data = [], TempData) => {
@@ -631,8 +588,6 @@ function ReportListing(props) {
                     </div>
                 </div>
             </div>
-
-
             {
                 isOpen &&
                 <CostingDetailSimulationDrawer
@@ -644,11 +599,8 @@ function ReportListing(props) {
                     isSimulation={true}
                 />
             }
-
         </div >
     );
 }
-
-
 
 export default ReportListing

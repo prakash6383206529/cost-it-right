@@ -14,7 +14,6 @@ import { G, KG, MG, } from '../../../../../config/constants'
 import { AcceptableSheetMetalUOM } from '../../../../../config/masterData'
 import { ViewCostingContext } from '../../CostingDetails'
 
-
 function Coil(props) {
     const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest;
     const { rmRowData, isEditFlag } = props
@@ -235,7 +234,6 @@ function Coil(props) {
             GrossWeight: (dataToSend.newGrossWeight === undefined || dataToSend.newGrossWeight === 0) ? dataToSend.GrossWeight : dataToSend.newGrossWeight,
             FinishWeight: getValues('FinishWeight'),
         }
-
 
         dispatch(saveRawMaterialCalculationForSheetMetal(data, res => {
             if (res.data.Result) {

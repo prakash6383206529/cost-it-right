@@ -39,16 +39,12 @@ function TabDiscountOther(props) {
   const [otherCostType, setOtherCostType] = useState([]);
   const [hundiscountType, setHundiDiscountType] = useState([])
   const [isDisable, setIsDisable] = useState(false)
-
-
   const dispatch = useDispatch()
   let history = useHistory();
-
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
   const netPOPrice = useContext(NetPOPriceContext);
   const headerCosts = useContext(netHeadCostContext);
-
   const currencySelectList = useSelector(state => state.comman.currencySelectList)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { DiscountCostData, ExchangeRateData, CostingEffectiveDate, RMCCTabData, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, CostingDataList, getAssemBOPCharge } = useSelector(state => state.costing)
@@ -57,7 +53,6 @@ function TabDiscountOther(props) {
   const [otherCostApplicability, setOtherCostApplicability] = useState([])
   const [discountCostApplicability, setDiscountCostApplicability] = useState([])
   const [netPoPriceCurrencyState, setNetPoPriceCurrencyState] = useState('')
-
   const costingHead = useSelector(state => state.comman.costingHead)
 
   useEffect(() => {
@@ -254,14 +249,10 @@ function TabDiscountOther(props) {
       if (hundiscountType.value === 'Percentage') {
         setValue('HundiOrDiscountValue', DiscountCostData && checkForDecimalAndNull(DiscountCostData.HundiOrDiscountValue, initialConfiguration.NoOfDecimalForPrice))
       }
-
       if (IsCurrencyChange && ExchangeRateData !== undefined && ExchangeRateData.CurrencyExchangeRate !== undefined) {
         setValue('NetPOPriceOtherCurrency', checkForDecimalAndNull((DiscountCostData && netPOPrice / ExchangeRateData.CurrencyExchangeRate), initialConfiguration.NoOfDecimalForPrice))
         setNetPoPriceCurrencyState(DiscountCostData && netPOPrice / ExchangeRateData.CurrencyExchangeRate)
       }
-
-
-      // setValue('HundiDiscountType', DiscountCostData.DiscountCostType !== null ? { label: DiscountCostData.DiscountCostType, value: DiscountCostData.DiscountCostType } : '')
     }
   }, [props]);
 
@@ -314,39 +305,22 @@ function TabDiscountOther(props) {
     }
   }
   /**
-  * @method handleAnyOtherCostChange
-  * @description HANDLE ANY OTHER COST CHANGE
-  */
+ * @method handleAnyOtherCostChange
+ * @description HANDLE ANY OTHER COST CHANGE
+ */
   const handleDiscountCostChange = (event) => {
-    const NetPOPriceINR = checkForNull(getValues('NetPOPriceINR'))
     if (!CostingViewMode) {
       if (!isNaN(event.target.value)) {
-        if (checkForNull(event.target.value) > totalCost) {
-          setTimeout(() => {
-            setValue('HundiOrDiscountValue', 0)
-          }, 300);
-          setDiscountObj({
-            ...discountObj,
-            HundiOrDiscountValue: 0,
-            NetPOPriceINR: NetPOPriceINR
-
-          })
-
-          Toaster.warning("Hundi/Discount Value should not be greater then Total Cost ")
-          return false
-        }
-        else {
-          setDiscountObj({
-            ...discountObj,
-            HundiOrDiscountValue: checkForNull(event.target.value)
-          })
-        }
-
+        setDiscountObj({
+          ...discountObj,
+          HundiOrDiscountValue: checkForNull(event.target.value)
+        })
       } else {
         Toaster.warning('Please enter valid number.')
       }
     }
   }
+
   /**
   * @method handleAnyOtherCostChange
   * @description HANDLE ANY OTHER COST CHANGE
@@ -752,9 +726,6 @@ function TabDiscountOther(props) {
       DiscountApplicability: value.label
     })
   }
-
-
-
 
   return (
     <>
