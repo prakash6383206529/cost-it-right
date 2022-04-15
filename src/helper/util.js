@@ -555,8 +555,8 @@ export function formViewData(costingSummary) {
   obj.nConvCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetConversionCost ? dataFromAPI.CostingPartDetails.NetConversionCost : 0
   obj.nTotalRMBOPCC = dataFromAPI.CostingPartDetails && dataFromAPI.NetTotalRMBOPCC ? dataFromAPI.NetTotalRMBOPCC : 0
   obj.netSurfaceTreatmentCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetSurfaceTreatmentCost ? dataFromAPI.CostingPartDetails.NetSurfaceTreatmentCost : 0
-
-
+  obj.EtechnologyType = dataFromAPI.ETechnology && dataFromAPI.ETechnology ? dataFromAPI.ETechnology : 0
+  obj.RawMaterialCalculatorId = dataFromAPI.RawMaterialCalculatorId && dataFromAPI.RawMaterialCalculatorId ? dataFromAPI.RawMaterialCalculatorId : 0
   obj.modelType = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.ModelType ? dataFromAPI.CostingPartDetails.ModelType : '-'
   obj.aValue = { applicability: 'Applicability', value: 'Value', }
   obj.overheadOn = {
