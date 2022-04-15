@@ -8,7 +8,7 @@ import { costingInfoContext } from '../../CostingDetailStepTwo'
 
 import {
 
-  TextFieldHookForm,
+  NumberFieldHookForm,
 } from '../../../../layout/HookFormInputs'
 import {
   checkForDecimalAndNull,
@@ -91,7 +91,7 @@ function HotForging(props) {
   })
   const { forgingCalculatorMachiningStockSectionValue } = useSelector(state => state.costing)
   useEffect(() => {
-    console.log(WeightCalculatorRequest, 'hefhuhf');
+
   }, [])
 
   useEffect(() => {
@@ -102,7 +102,7 @@ function HotForging(props) {
     name: ['finishedWeight', 'BilletDiameter', 'BilletLength', 'ScrapRecoveryPercentage'],
 
   })
-  console.log(fieldValues, 'fieldValues');
+
 
   const dispatch = useDispatch()
   const [forgeWeightValue, setForgeWeightValue] = useState(WeightCalculatorRequest && WeightCalculatorRequest.ForgedWeight ? WeightCalculatorRequest.ForgedWeight : 0)
@@ -422,8 +422,8 @@ function HotForging(props) {
                   <Col md="12">
                     <Row>
                       <Col md="3">
-                        <TextFieldHookForm
-                          label={`Finished Weight(kg)`}
+                        <NumberFieldHookForm
+                          label={`Finished Weight (kg)`}
                           name={'finishedWeight'}
                           Controller={Controller}
                           control={control}
@@ -463,7 +463,7 @@ function HotForging(props) {
                 </Row>
 
                 <Col md="3" className='mt10 px-0'>
-                  <TextFieldHookForm
+                  <NumberFieldHookForm
                     label={`Forged Weight (Kg)`}
                     name={'forgedWeight'}
                     Controller={Controller}
@@ -499,8 +499,8 @@ function HotForging(props) {
             </Col>
             <Row className='mt20'>
               <Col md="3">
-                <TextFieldHookForm
-                  label={`Billet Diameter(mm)`}
+                <NumberFieldHookForm
+                  label={`Billet Diameter (mm)`}
                   name={'BilletDiameter'}
                   Controller={Controller}
                   control={control}
@@ -509,8 +509,8 @@ function HotForging(props) {
                   rules={{
                     required: true,
                     pattern: {
-                      value: /^\d{0,3}(\.\d{0,5})?$/i,
-                      message: 'Maximum length for interger is 3 and for decimal is 5',
+                      value: /^\d{0,6}(\.\d{0,4})?$/i,
+                      message: 'Maximum length for interger is 6 and for decimal is 4',
                     },
                   }}
                   handleChange={() => { }}
@@ -523,8 +523,8 @@ function HotForging(props) {
                 />
               </Col>
               <Col md="3">
-                <TextFieldHookForm
-                  label={`Billet Length(mm)`}
+                <NumberFieldHookForm
+                  label={`Billet Length (mm)`}
                   name={'BilletLength'}
                   Controller={Controller}
                   control={control}
@@ -533,8 +533,8 @@ function HotForging(props) {
                   rules={{
                     required: true,
                     pattern: {
-                      value: /^\d{0,3}(\.\d{0,5})?$/i,
-                      message: 'Maximum length for interger is 3 and for decimal is 5',
+                      value: /^\d{0,6}(\.\d{0,4})?$/i,
+                      message: 'Maximum length for interger is 6 and for decimal is 4',
                     },
                   }}
                   handleChange={() => { }}
@@ -547,8 +547,8 @@ function HotForging(props) {
                 />
               </Col>
               <Col md="3">
-                <TextFieldHookForm
-                  label={`Input Length(mm)`}
+                <NumberFieldHookForm
+                  label={`Input Length (mm)`}
                   name={'InputLength'}
                   Controller={Controller}
                   control={control}
@@ -563,7 +563,7 @@ function HotForging(props) {
                 />
               </Col>
               <Col md="3">
-                <TextFieldHookForm
+                <NumberFieldHookForm
                   label={`No Of Parts Per Length`}
                   name={'NoOfPartsPerLength'}
                   Controller={Controller}
@@ -579,7 +579,7 @@ function HotForging(props) {
                 />
               </Col>
               <Col md="3">
-                <TextFieldHookForm
+                <NumberFieldHookForm
                   label={`End Bit Length`}
                   name={'EndBitLength'}
                   Controller={Controller}
@@ -596,7 +596,7 @@ function HotForging(props) {
               </Col>
 
               <Col md="3">
-                <TextFieldHookForm
+                <NumberFieldHookForm
                   label={`End Bit Loss (Kg)`}
                   name={'EndBitLoss'}
                   Controller={Controller}
@@ -613,7 +613,7 @@ function HotForging(props) {
               </Col>
 
               <Col md="3">
-                <TextFieldHookForm
+                <NumberFieldHookForm
                   label={`Total Input Weight (Kg)`}
                   name={'TotalInputWeight'}
                   Controller={Controller}
@@ -629,7 +629,7 @@ function HotForging(props) {
                 />
               </Col>
               <Col md="3">
-                <TextFieldHookForm
+                <NumberFieldHookForm
                   label={`Scrap Weight (Kg)`}
                   name={'ScrapWeight'}
                   Controller={Controller}
@@ -645,7 +645,7 @@ function HotForging(props) {
                 />
               </Col>
               <Col md="3">
-                <TextFieldHookForm
+                <NumberFieldHookForm
                   label={`Scrap Recovery Percentage`}
                   name={'ScrapRecoveryPercentage'}
                   Controller={Controller}
@@ -672,7 +672,7 @@ function HotForging(props) {
                 />
               </Col>
               <Col md="3">
-                <TextFieldHookForm
+                <NumberFieldHookForm
                   label={`Scrap Cost`}
                   name={'ScrapCost'}
                   Controller={Controller}
@@ -689,7 +689,7 @@ function HotForging(props) {
               </Col>
 
               <Col md="3">
-                <TextFieldHookForm
+                <NumberFieldHookForm
                   label={`Net RM Cost/ Component`}
                   name={'NetRMCostComponent'}
                   Controller={Controller}
