@@ -3,11 +3,10 @@ import { Row, Col } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 import { useDispatch } from 'react-redux'
-import { TextFieldHookForm, } from '../../../../layout/HookFormInputs'
+import { NumberFieldHookForm, } from '../../../../layout/HookFormInputs'
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../../helper'
 import LossStandardTable from '../LossStandardTable'
 import { saveRawMaterialCalculationForDieCasting } from '../../../actions/CostWorking'
-import { KG } from '../../../../../config/constants'
 import Toaster from '../../../../common/Toaster'
 
 
@@ -39,15 +38,12 @@ function
     const [lostWeight, setLostWeight] = useState(WeightCalculatorRequest && WeightCalculatorRequest.NetLossWeight ? WeightCalculatorRequest.NetLossWeight : 0)
     const [dataToSend, setDataToSend] = useState({})
     const [nonFerrousDropDown, setNonFerrousDropDown] = useState(false)
-
-    const { rmRowData, activeTab, isHpdc } = props
-
-
+    const { rmRowData, activeTab, isHpdc, CostingViewMode } = props
 
     const { register, control, setValue, getValues, handleSubmit, formState: { errors }, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
-        // defaultValues: defaultValues,
+        defaultValues: defaultValues,
     })
 
     const fieldValues = useWatch({
@@ -104,16 +100,15 @@ function
 
         }
         setNonFerrousDropDown(dropDown)
-        //   return nonFerrousDropDown
 
     }
     useEffect(() => {
-        burningValue()
-        handlGrossWeight()
-        calculateRemainingCalculation(lostWeight)
+        if (!CostingViewMode) {
+            burningValue()
+            handlGrossWeight()
+            calculateRemainingCalculation(lostWeight)
+        }
     }, [fieldValues])
-
-
 
     const handlGrossWeight = () => {
         const grossWeight = checkForNull(Number(getValues('castingWeight'))) + dataToSend.burningValue + lostWeight
@@ -125,11 +120,7 @@ function
     }
 
     const calculateRemainingCalculation = (lostSum = 0) => {
-
-
-
         let scrapWeight = 0
-
         const castingWeight = Number(getValues("castingWeight"))
         const grossWeight = checkForNull(Number(getValues('castingWeight'))) + dataToSend.burningValue + lostSum
         const finishedWeight = checkForNull(Number(getValues('finishedWeight')))
@@ -144,23 +135,17 @@ function
             scrapWeight = checkForNull(castingWeight) - checkForNull(finishedWeight) //FINAL Casting Weight - FINISHED WEIGHT
 
         }
-
         const recovery = checkForNull(Number(getValues('recovery')) / 100)
-
         const rmCost = checkForNull(grossWeight) * checkForNull(rmRowData.RMRate) //FINAL GROSS WEIGHT - RMRATE
         const scrapCost = checkForNull(checkForNull(scrapWeight) * checkForNull(rmRowData.ScrapRate) * recovery)
         const materialCost = checkForNull(rmCost) - checkForNull(scrapCost)
-
-
         const updatedValue = dataToSend
         updatedValue.totalGrossWeight = grossWeight
         updatedValue.scrapWeight = scrapWeight
         updatedValue.rmCost = rmCost
         updatedValue.scrapCost = scrapCost
         updatedValue.materialCost = materialCost
-
         setDataToSend(updatedValue)
-
         setValue('grossWeight', checkForDecimalAndNull(grossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
         setValue('scrapWeight', checkForDecimalAndNull(scrapWeight, getConfigurationKey().NoOfDecimalForInputOutput))
         setValue('rmCost', checkForDecimalAndNull(rmCost, getConfigurationKey().NoOfDecimalForPrice))
@@ -183,16 +168,10 @@ function
     const onSubmit = () => {
         let obj = {}
         obj.LayoutType = activeTab === '1' ? 'GDC' : activeTab === '2' ? 'LPDC' : 'HPDC'
-        obj.WeightCalculationId = WeightCalculatorRequest && WeightCalculatorRequest.WeightCalculationId ? WeightCalculatorRequest.WeightCalculationId : "00000000-0000-0000-0000-000000000000"
-        obj.IsChangeApplied = true //Need to make it dynamic
-        obj.PartId = costData.PartId
-        obj.RawMaterialId = rmRowData.RawMaterialId
-        obj.CostingId = costData.CostingId
-        obj.TechnologyId = costData.TechnologyId
-        obj.RawMaterialType = rmRowData.MaterialType
-        obj.UOMId = rmRowData.UOMId
-        obj.UOM = rmRowData.UOM
-        obj.UOMForDimension = KG
+        obj.DieCastingWeightCalculatorId = WeightCalculatorRequest && WeightCalculatorRequest.DieCastingWeightCalculatorId ? WeightCalculatorRequest.DieCastingWeightCalculatorId : "0"
+        obj.BaseCostingIdRef = costData.CostingId
+        obj.RawMaterialIdRef = rmRowData.RawMaterialId
+        obj.CostingRawMaterialDetailsIdRef = rmRowData.RawMaterialDetailId
         obj.ShotWeight = getValues('shotWeight')
         obj.NumberOfCavity = getValues('cavity')
         obj.BurningPercentage = getValues('burningPercent')
@@ -205,13 +184,12 @@ function
         obj.ScrapWeight = dataToSend.scrapWeight
         obj.RMCost = dataToSend.rmCost
         obj.ScrapCost = dataToSend.scrapCost
-        // obj.NetRMCost = dataToSend.materialCost
-        obj.NetLandedCost = dataToSend.materialCost
+        obj.RawMaterialCost = dataToSend.materialCost
         obj.LoggedInUserId = loggedInUserId()
         let tempArr = []
-        tableVal && tableVal.map(item => {
-            tempArr.push({ LossOfType: item.LossOfType, LossPercentage: item.LossPercentage, LossWeight: item.LossWeight, CostingCalculationDetailId: "00000000-0000-0000-0000-000000000000" })
-        })
+        tableVal && tableVal.map(item => (
+            tempArr.push({ LossOfType: item.LossOfType, LossPercentage: item.LossPercentage, LossWeight: item.LossWeight, CostingCalculationDetailId: "0" })
+        ))
         obj.LossOfTypeDetails = tempArr
         obj.NetLossWeight = lostWeight
 
@@ -249,7 +227,7 @@ function
                                 {isHpdc &&
                                     <>
                                         <Col md="3" >
-                                            <TextFieldHookForm
+                                            <NumberFieldHookForm
                                                 label={`Shot Weight(Kg)`}
                                                 name={'shotWeight'}
                                                 Controller={Controller}
@@ -259,9 +237,8 @@ function
                                                 rules={{
                                                     required: true,
                                                     pattern: {
-
-                                                        value: /^[0-9]\d*(\.\d+)?$/i,
-                                                        message: 'Invalid Number.',
+                                                        value: /^\d{0,4}(\.\d{0,7})?$/i,
+                                                        message: 'Maximum length for interger is 4 and for decimal is 7',
                                                     },
 
                                                 }}
@@ -274,7 +251,7 @@ function
                                             />
                                         </Col>
                                         <Col md="3">
-                                            <TextFieldHookForm
+                                            <NumberFieldHookForm
                                                 label={`No. Of Cavity`}
                                                 name={'cavity'}
                                                 Controller={Controller}
@@ -284,11 +261,9 @@ function
                                                 rules={{
                                                     required: false,
                                                     pattern: {
-
-                                                        value: /^[0-9]\d*(\.\d+)?$/i,
-                                                        message: 'Invalid Number.',
+                                                        value: /^\d{0,4}(\.\d{0,7})?$/i,
+                                                        message: 'Maximum length for interger is 4 and for decimal is 7',
                                                     },
-
                                                 }}
                                                 handleChange={() => { }}
                                                 defaultValue={''}
@@ -299,8 +274,8 @@ function
                                             />
                                         </Col>
                                         <Col md="3" >
-                                            <TextFieldHookForm
-                                                label={`Burning %`}
+                                            <NumberFieldHookForm
+                                                label={`Burning (%)`}
                                                 name={'burningPercent'}
                                                 Controller={Controller}
                                                 control={control}
@@ -309,9 +284,12 @@ function
                                                 rules={{
                                                     required: true,
                                                     pattern: {
-
                                                         value: /^[0-9]\d*(\.\d+)?$/i,
                                                         message: 'Invalid Number.',
+                                                    },
+                                                    max: {
+                                                        value: 100,
+                                                        message: 'Percentage cannot be greater than 100'
                                                     },
 
                                                 }}
@@ -324,14 +302,13 @@ function
                                             />
                                         </Col>
                                         <Col md="3">
-                                            <TextFieldHookForm
+                                            <NumberFieldHookForm
                                                 label={`Burning Value`}
                                                 name={'burningValue'}
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
                                                 mandatory={true}
-
                                                 handleChange={() => { }}
                                                 defaultValue={''}
                                                 className=""
@@ -343,8 +320,8 @@ function
                                     </>}
 
                                 <Col md="3">
-                                    <TextFieldHookForm
-                                        label={`Casting Weight(${activeTab == '3' ? `before machining` : `kg`})`}
+                                    <NumberFieldHookForm
+                                        label={`Casting Weight(${activeTab === '3' ? `before machining` : `kg`})`}
                                         name={'castingWeight'}
                                         Controller={Controller}
                                         control={control}
@@ -356,7 +333,6 @@ function
                                                 value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                 message: 'Maximum length for interger is 4 and for decimal is 7',
                                             },
-
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -388,7 +364,7 @@ function
 
                             <Row className={'mt25'}>
                                 <Col md="3" >
-                                    <TextFieldHookForm
+                                    <NumberFieldHookForm
                                         label={`Gross Weight (Kg)`}
                                         name={'grossWeight'}
                                         Controller={Controller}
@@ -413,7 +389,7 @@ function
                                     />
                                 </Col>
                                 <Col md="3" >
-                                    <TextFieldHookForm
+                                    <NumberFieldHookForm
                                         label={`Finished Weight(Kg)`}
                                         name={'finishedWeight'}
                                         Controller={Controller}
@@ -421,7 +397,7 @@ function
                                         register={register}
                                         mandatory={false}
                                         rules={{
-                                            required: true,
+                                            required: false,
                                             pattern: {
                                                 value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                 message: 'Maximum length for interger is 4 and for decimal is 7',
@@ -438,7 +414,7 @@ function
                                 </Col>
 
                                 <Col md="3">
-                                    <TextFieldHookForm
+                                    <NumberFieldHookForm
                                         label={`Scrap Weight(Kg)`}
                                         name={'scrapWeight'}
                                         Controller={Controller}
@@ -457,7 +433,7 @@ function
                                     />
                                 </Col>
                                 <Col md="3">
-                                    <TextFieldHookForm
+                                    <NumberFieldHookForm
                                         label={`Scrap Recovery %`}
                                         name={'recovery'}
                                         Controller={Controller}
@@ -465,7 +441,7 @@ function
                                         register={register}
                                         mandatory={false}
                                         rules={{
-                                            required: true,
+                                            required: false,
                                             pattern: {
                                                 value: /^\d*\.?\d*$/,
                                                 message: 'Invalid Number.',
@@ -489,7 +465,7 @@ function
                                 {isHpdc &&
                                     <>
                                         <Col md="3">
-                                            <TextFieldHookForm
+                                            <NumberFieldHookForm
                                                 label={`RM Cost`}
                                                 name={'rmCost'}
                                                 Controller={Controller}
@@ -506,7 +482,7 @@ function
                                         </Col>
                                     </>}
                                 <Col md="3">
-                                    <TextFieldHookForm
+                                    <NumberFieldHookForm
                                         label={`Scrap Cost`}
                                         name={'scrapCost'}
                                         Controller={Controller}
@@ -523,7 +499,7 @@ function
                                 </Col>
 
                                 <Col md="3">
-                                    <TextFieldHookForm
+                                    <NumberFieldHookForm
                                         // Confirm this name from tanmay sir
                                         label={`Net RM Cost`}
                                         name={'materialCost'}

@@ -169,21 +169,21 @@ function ApprovalSummary(props) {
                           {partDetail.Technology ? partDetail.Technology : '-'}
                         </span>
                       </th>
-                      <th>
+                      <th className='overflow'>
                         <span className="d-block grey-text">{`Assembly/Part No.`}</span>
-                        <span className="d-block  one-line-overflow" title={partDetail.PartNumber}>
+                        <span className="d-block " title={partDetail.PartNumber}>
                           {partDetail.PartNumber ? partDetail.PartNumber : '-'}
                         </span>
                       </th>
-                      <th>
+                      <th className='overflow'>
                         <span className="d-block grey-text">{`Assembly/Part Name`}</span>
-                        <span className="d-block one-line-overflow" title={partDetail.PartName}>
+                        <span className="d-block" title={partDetail.PartName}>
                           {partDetail.PartName ? partDetail.PartName : '-'}
                         </span>
                       </th>
-                      <th>
+                      <th className='overflow-description'>
                         <span className="d-block grey-text">{`Assembly/Part Description`}</span>
-                        <span className="d-block one-line-overflow describtion" title={partDetail.Description}>
+                        <span className="d-block" title={partDetail.Description}>
                           {partDetail.Description ? partDetail.Description : '-'}
                         </span>
                       </th>

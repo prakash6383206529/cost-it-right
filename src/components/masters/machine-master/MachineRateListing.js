@@ -490,7 +490,7 @@ class MachineRateListing extends Component {
                 </form>
                 <Row>
                     <Col>
-                        <div className={`ag-grid-wrapper height-width-wrapper ${this.props.machineDatalist && this.props.machineDatalist?.length <= 0 ? "overlay-contain" : ""}`}>
+                        <div className={`ag-grid-wrapper ${this.props.isSimulation ? 'simulation-height' : 'height-width-wrapper'} ${this.props.machineDatalist && this.props.machineDatalist?.length <= 0 ? "overlay-contain" : ""}`}>
 
                             <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
                                 <AgGridReact

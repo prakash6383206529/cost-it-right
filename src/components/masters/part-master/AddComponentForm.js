@@ -20,7 +20,6 @@ class AddComponentForm extends Component {
       selectedParts: [],
       updateAsyncDropdown: false,
       isPartNoNotSelected: false,
-
     }
   }
 
@@ -30,7 +29,7 @@ class AddComponentForm extends Component {
  */
   componentDidMount() {
     const { BOMViewerData } = this.props;
-    this.props.getComponentPartSelectList(() => { })
+    this.props.getComponentPartSelectList(this.props?.TechnologySelected.value, () => { })
 
     let tempArr = [];
     BOMViewerData && BOMViewerData.map(el => {
@@ -85,7 +84,6 @@ class AddComponentForm extends Component {
   */
   renderListing = (label) => {
     const { componentPartSelectList } = this.props;
-  
     const { BOMViewerData } = this.props;
     let tempArr = [];
     BOMViewerData && BOMViewerData.map(el => {
@@ -156,12 +154,10 @@ class AddComponentForm extends Component {
     this.myRef.current.select.state.value = []
 
     if (isAddMore) {
-
       this.props.setChildParts(childData)
       this.setState({ updateAsyncDropdown: !this.state.updateAsyncDropdown })       //UPDATING RANDOM STATE FOR RERENDERING OF COMPONENT AFTER CLICKING ON ADD MORE BUTTON
 
     } else {
-
       this.props.toggleDrawer('', childData)
     }
 
@@ -183,14 +179,11 @@ class AddComponentForm extends Component {
   */
   render() {
     const { handleSubmit, isEditFlag } = this.props;
-
     const filterList = (inputValue) => {
       let tempArr = []
-
       tempArr = this.renderListing("part").filter(i =>
-        i.label!==null && i.label.toLowerCase().includes(inputValue.toLowerCase())
+        i.label !== null && i.label.toLowerCase().includes(inputValue.toLowerCase())
       );
-
       if (tempArr.length <= 100) {
         return tempArr
       } else {
@@ -202,9 +195,7 @@ class AddComponentForm extends Component {
       new Promise(resolve => {
         resolve(filterList(inputValue));
 
-
       });
-
 
 
     return (
@@ -215,15 +206,13 @@ class AddComponentForm extends Component {
           onSubmit={handleSubmit(this.onSubmit.bind(this))}
           onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
         >
-
           <Row>
-
             <Col md="6">
               <label>{"Part No."}<span className="asterisk-required">*</span></label>
               <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter first few digits to see the part numbers" />
               <AsyncSelect name="PartNumber" ref={this.myRef} key={this.state.updateAsyncDropdown} cacheOptions defaultOptions loadOptions={promiseOptions} onChange={(e) => this.handlePartChange(e)} />
               {this.state.isPartNoNotSelected && <div className='text-help'>This field is required.</div>}
-     
+
             </Col>
             <Col md="6">
               <Field
@@ -372,7 +361,7 @@ function mapStateToProps({ part }) {
       ECNNumber: DrawerPartData.ECNNumber,
       RevisionNumber: DrawerPartData.RevisionNumber,
       DrawingNumber: DrawerPartData.DrawingNumber,
-      GroupCode: DrawerPartData.GroupCodeList? (DrawerPartData.GroupCodeList.length>0?(DrawerPartData.GroupCodeList[0].GroupCode?DrawerPartData.GroupCodeList[0].GroupCode:""):"") :"",
+      GroupCode: DrawerPartData.GroupCodeList ? (DrawerPartData.GroupCodeList.length > 0 ? (DrawerPartData.GroupCodeList[0].GroupCode ? DrawerPartData.GroupCodeList[0].GroupCode : "") : "") : "",
       BOMNumber: DrawerPartData.BOMNumber,
     }
 

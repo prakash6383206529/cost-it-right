@@ -16,13 +16,9 @@ import { ViewCostingContext } from '../../CostingDetails'
 
 function Sheet(props) {
     const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest;
-
-
     const { rmRowData, isEditFlag } = props
-
     const costData = useContext(costingInfoContext)
     const CostingViewMode = useContext(ViewCostingContext);
-
 
     const convert = (FinishWeightOfSheet, dimmension) => {
         switch (dimmension) {
@@ -136,6 +132,15 @@ function Sheet(props) {
 
     const setFinishWeight = (e) => {
         const FinishWeightOfSheet = e.target.value
+        const grossWeight = checkForNull(getValues('GrossWeight'))
+        if (e.target.value > grossWeight) {
+            setTimeout(() => {
+                setValue('FinishWeightOfSheet', 0)
+            }, 200);
+
+            Toaster.warning('Finish Weight should not be greater than gross weight')
+            return false
+        }
         switch (UOMDimension.label) {
             case G:
                 setTimeout(() => {
@@ -252,8 +257,6 @@ function Sheet(props) {
      */
     const onSubmit = (values) => {
 
-
-
         if (WeightCalculatorRequest && WeightCalculatorRequest.WeightCalculationId !== "00000000-0000-0000-0000-000000000000") {
             if (tempOldObj.GrossWeight !== dataToSend.GrossWeight || tempOldObj.FinishWeight !== getValues('FinishWeightOfSheet') || tempOldObj.NetSurfaceArea !== dataToSend.NetSurfaceArea || tempOldObj.UOMForDimensionId !== UOMDimension.value) {
                 setIsChangeApplied(true)
@@ -345,17 +348,15 @@ function Sheet(props) {
                                         rules={{
                                             required: true,
                                             pattern: {
-                                                //value: /^[0-9]*$/i,
-                                                value: /^[0-9]\d*(\.\d+)?$/i,
-                                                message: 'Invalid Number.',
+                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
+                                                message: 'Maximum length for interger is 4 and for decimal is 6',
                                             },
-                                            // maxLength: 4,
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
                                         className=""
                                         customClassName={'withBorder'}
-                                        errors={errors.Thickness}
+                                        errors={errors.SheetThickness}
                                         disabled={isEditFlag ? false : true}
                                     />
                                 </Col>
@@ -370,17 +371,15 @@ function Sheet(props) {
                                         rules={{
                                             required: true,
                                             pattern: {
-                                                //value: /^[0-9]*$/i,
-                                                value: /^[0-9]\d*(\.\d+)?$/i,
-                                                message: 'Invalid Number.',
+                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
+                                                message: 'Maximum length for interger is 4 and for decimal is 6',
                                             },
-                                            // maxLength: 4,
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
                                         className=""
                                         customClassName={'withBorder'}
-                                        errors={errors.Width}
+                                        errors={errors.SheetWidth}
                                         disabled={isEditFlag ? false : true}
                                     />
                                 </Col>
@@ -396,17 +395,15 @@ function Sheet(props) {
                                         rules={{
                                             required: true,
                                             pattern: {
-                                                //value: /^[0-9]*$/i,
-                                                value: /^[0-9]\d*(\.\d+)?$/i,
-                                                message: 'Invalid Number.',
+                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
+                                                message: 'Maximum length for interger is 4 and for decimal is 6',
                                             },
-                                            // maxLength: 4,
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
                                         className=""
                                         customClassName={'withBorder'}
-                                        errors={errors.Length}
+                                        errors={errors.SheetLength}
                                         disabled={isEditFlag ? false : true}
                                     />
                                 </Col>
@@ -418,15 +415,6 @@ function Sheet(props) {
                                         control={control}
                                         register={register}
                                         mandatory={false}
-                                        // rules={{
-                                        //     required: true,
-                                        //     pattern: {
-                                        //         //value: /^[0-9]*$/i,
-                                        //         value: /^[0-9]\d*(\.\d+)?$/i,
-                                        //         message: 'Invalid Number.',
-                                        //     },
-                                        //     // maxLength: 4,
-                                        // }}
                                         handleChange={() => { }}
                                         defaultValue={''}
                                         className=""
@@ -456,17 +444,15 @@ function Sheet(props) {
                                         rules={{
                                             required: false,
                                             pattern: {
-                                                //value: /^[0-9]*$/i,
-                                                value: /^[0-9]\d*(\.\d+)?$/i,
-                                                message: 'Invalid Number.',
+                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
+                                                message: 'Maximum length for interger is 4 and for decimal is 6',
                                             },
-                                            // maxLength: 4,
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
                                         className=""
                                         customClassName={'withBorder'}
-                                        errors={errors.Thickness}
+                                        errors={errors.StripWidth}
                                         disabled={false}
                                     />
                                 </Col>
@@ -498,17 +484,15 @@ function Sheet(props) {
                                         rules={{
                                             required: true,
                                             pattern: {
-                                                //value: /^[0-9]*$/i,
-                                                value: /^[0-9]\d*(\.\d+)?$/i,
-                                                message: 'Invalid Number.',
+                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
+                                                message: 'Maximum length for interger is 4 and for decimal is 6',
                                             },
-                                            // maxLength: 4,
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
                                         className=""
                                         customClassName={'withBorder'}
-                                        errors={errors.Length}
+                                        errors={errors.BlankSize}
                                         disabled={isEditFlag ? false : true}
                                     />
                                 </Col>
@@ -520,15 +504,6 @@ function Sheet(props) {
                                         control={control}
                                         register={register}
                                         mandatory={false}
-                                        // rules={{
-                                        //     required: true,
-                                        //     pattern: {
-                                        //         //value: /^[0-9]*$/i,
-                                        //         value: /^[0-9]\d*(\.\d+)?$/i,
-                                        //         message: 'Invalid Number.',
-                                        //     },
-                                        //     // maxLength: 4,
-                                        // }}
                                         handleChange={() => { }}
                                         defaultValue={''}
                                         className=""
@@ -564,11 +539,9 @@ function Sheet(props) {
                                         rules={{
                                             required: true,
                                             pattern: {
-                                                //value: /^[0-9]*$/i,
-                                                value: /^[0-9]\d*(\.\d+)?$/i,
-                                                message: 'Invalid Number.',
+                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
+                                                message: 'Maximum length for interger is 4 and for decimal is 6',
                                             },
-                                            // maxLength: 4,
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -593,10 +566,9 @@ function Sheet(props) {
                                         rules={{
                                             required: false,
                                             pattern: {
-                                                value: /^[0-9]\d*(\.\d+)?$/i,
-                                                message: 'Invalid Number.'
+                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
+                                                message: 'Maximum length for interger is 4 and for decimal is 6',
                                             },
-                                            // maxLength: 3,
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -634,11 +606,6 @@ function Sheet(props) {
                                         mandatory={false}
                                         rules={{
                                             required: false,
-                                            // pattern: {
-                                            //   value: /^[0-9]*$/i,
-                                            //   message: 'Invalid Number.'
-                                            // },
-                                            // maxLength: 3,
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -659,10 +626,9 @@ function Sheet(props) {
                                         rules={{
                                             required: false,
                                             pattern: {
-                                                value: /^[0-9]\d*(\.\d+)?$/i,
-                                                message: 'Invalid Number.'
+                                                value: /^\d{0,4}(\.\d{0,7})?$/i,
+                                                message: 'Maximum length for interger is 4 and for decimal is 7',
                                             },
-                                            //  maxLength: 4,
                                         }}
                                         handleChange={setFinishWeight}
                                         defaultValue={''}

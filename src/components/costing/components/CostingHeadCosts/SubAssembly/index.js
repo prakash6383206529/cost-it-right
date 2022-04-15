@@ -159,8 +159,8 @@ function AssemblyPart(props) {
     <>
       <tr className="costing-highlight-row accordian-row" key={item.PartId}>
         <div style={{ display: 'contents' }} onClick={() => toggle(item.BOMLevel, item.PartNumber)}>
-          <td >
-            <span style={{ position: 'relative' }} className={`cr-prt-nm1 cr-prt-link1 ${item && item.PartType !== "Sub Assembly" && item.PartType !== "Assembly" && "L1"}`}>
+          <td className='part-overflow'>
+            <span title={item && item.PartNumber} className={`part-name ${item && item.PartType !== "Sub Assembly" && item.PartType !== "Assembly" && "L1"}`}>
               <div className={`${item.CostingPartDetails.IsOpen ? 'Open' : 'Close'}`}></div>{item && item.PartNumber}
             </span>
           </td>
@@ -172,7 +172,7 @@ function AssemblyPart(props) {
             {item?.CostingPartDetails?.TotalConversionCostWithQuantity ? checkForDecimalAndNull(checkForNull(item.CostingPartDetails.TotalConversionCostWithQuantity), initialConfiguration.NoOfDecimalForPrice) : 0}
             {
               (item?.CostingPartDetails?.TotalOperationCostPerAssembly || item.CostingPartDetails?.TotalOperationCostSubAssembly) ?
-                <div class="tooltip-n ml-2"><i className="fa fa-info-circle text-primary tooltip-icon"></i>
+                <div class="tooltip-n ml-2 assembly-tooltip"><i className="fa fa-info-circle text-primary tooltip-icon"></i>
                   <span class="tooltiptext">
                     {`Assembly's Conversion Cost:- ${checkForDecimalAndNull(item.CostingPartDetails.TotalOperationCostPerAssembly, initialConfiguration.NoOfDecimalForPrice)}`}
                     <br></br>
@@ -199,7 +199,7 @@ function AssemblyPart(props) {
             }
           </td>
         } */}
-        <td>
+        <td className='btn-width'>
           <button
             type="button"
             className={'user-btn add-oprn-btn ml-1'}

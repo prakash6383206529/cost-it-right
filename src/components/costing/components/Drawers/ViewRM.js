@@ -8,14 +8,13 @@ import { checkForDecimalAndNull } from '../../../../helper';
 import { Container, Row, Col, Table } from 'reactstrap'
 import NoContentFound from '../../../common/NoContentFound';
 import { EMPTY_DATA } from '../../../../config/constants';
-import { EMPTY_GUID } from '../../../../config/constants';
+import { SHEETMETAL, RUBBER, FORGING, DIE_CASTING, PLASTIC, CORRUGATEDBOX, Ferrous_Casting } from '../../../../config/masterData'
 import 'reactjs-popup/dist/index.css'
+import { getRawMaterialCalculationForCorrugatedBox, getRawMaterialCalculationForDieCasting, getRawMaterialCalculationForFerrous, getRawMaterialCalculationForForging, getRawMaterialCalculationForPlastic, getRawMaterialCalculationForRubber, getRawMaterialCalculationForSheetMetal, } from '../../actions/CostWorking'
 
 function ViewRM(props) {
 
   const { viewRMData, rmMBDetail, isAssemblyCosting, isPDFShow } = props
-
-
   /*
   * @method toggleDrawer
   * @description closing drawer
@@ -27,35 +26,70 @@ function ViewRM(props) {
   const [calciData, setCalciData] = useState({})
 
   useEffect(() => {
-
     setViewRM(viewRMData)
-
-
   }, [])
 
   const dispatch = useDispatch()
-
   const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
+  const setCalculatorData = (res, index) => {
+
+    if (res && res.data && res.data.Data) {
+      const data = res.data.Data
+      setCalciData({ ...viewRM[index], WeightCalculatorRequest: data })
+      setWeightCalculatorDrawer(true)
+    }
+  }
+
   const getWeightData = (index) => {
     setIndex(index)
-    if (viewRM[index].WeightCalculationId === '00000000-0000-0000-0000-000000000000') {
+    if (viewRM[index].RawMaterialCalculatorId === 0 || viewRM[index].RawMaterialCalculatorId === null) {
       Toaster.warning('Data is not avaliabe for calculator')
       return false
     }
     const tempData = viewCostingData[props.index]
+    switch ((Number(tempData.EtechnologyType))) {
 
-    dispatch(getRawMaterialCalculationByTechnology(tempData.costingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].WeightCalculationId, tempData.technologyId, res => {
-      if (res && res.data && res.data.Data) {
-        const data = res.data.Data
-        setCalciData({ ...viewRM[index], WeightCalculatorRequest: data })
-        setWeightCalculatorDrawer(true)
-      }
-    }))
-
+      case SHEETMETAL:
+        dispatch(getRawMaterialCalculationForSheetMetal(tempData.costingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
+          setCalculatorData(res, index)
+        }))
+        break;
+      case FORGING:
+        dispatch(getRawMaterialCalculationForForging(tempData.costingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
+          setCalculatorData(res, index)
+        }))
+        break;
+      case Ferrous_Casting:
+        dispatch(getRawMaterialCalculationForFerrous(tempData.costingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
+          setCalculatorData(res, index)
+        }))
+        break;
+      case PLASTIC:
+        dispatch(getRawMaterialCalculationForPlastic(tempData.costingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
+          setCalculatorData(res, index)
+        }))
+        break;
+      case CORRUGATEDBOX:
+        dispatch(getRawMaterialCalculationForCorrugatedBox(tempData.costingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
+          setCalculatorData(res, index)
+        }))
+        break;
+      case DIE_CASTING:
+        dispatch(getRawMaterialCalculationForDieCasting(tempData.costingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
+          setCalculatorData(res, index)
+        }))
+        break;
+      case RUBBER:
+        dispatch(getRawMaterialCalculationForRubber(tempData.costingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
+          setCalculatorData(res, index)
+        }))
+        break;
+      default:
+        return "none";
+    }
   }
-
 
   const toggleDrawer = (event) => {
     if (
@@ -115,7 +149,7 @@ function ViewRM(props) {
                   {!isPDFShow && <td><button
                     className="CalculatorIcon cr-cl-icon mr-auto ml-0"
                     type={"button"}
-                    disabled={item.WeightCalculationId === EMPTY_GUID}
+                    disabled={item.RawMaterialCalculatorId === 0}
                     onClick={() => { getWeightData(index) }}
                   /></td>}
                   <td>{item.FreightCost ? checkForDecimalAndNull(item.FreightCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
@@ -206,7 +240,7 @@ function ViewRM(props) {
                     isEditFlag={false}
                     isOpen={weightCalculatorDrawer}
                     closeDrawer={closeWeightDrawer}
-                    technology={viewCostingData[props.index].technologyId}
+                    technology={viewCostingData[props.index].EtechnologyType}
                     isSummary={true}
                     rmMBDetail={rmMBDetail} // MASTER BATCH DETAIL
                     CostingViewMode={true}   // THIS KEY WILL BE USE TO OPEN CALCI IN VIEW MODE
