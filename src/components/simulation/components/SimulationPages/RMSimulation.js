@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Row, Col, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
 import { EMPTY_DATA } from '../../../../config/constants';
@@ -37,7 +37,6 @@ function RMSimulation(props) {
     const [textFilterSearch, setTextFilterSearch] = useState('')
     const [isDisable, setIsDisable] = useState(false)
     const gridRef = useRef();
-
 
     const { register, control, setValue, formState: { errors }, } = useForm({
         mode: 'onChange',
@@ -479,6 +478,7 @@ function RMSimulation(props) {
                                     </div>
                                     <div className="ag-theme-material" style={{ width: '100%' }}>
                                         <AgGridReact
+                                            ref={gridRef}
                                             floatingFilter={true}
                                             style={{ height: '100%', width: '100%' }}
                                             defaultColDef={defaultColDef}
