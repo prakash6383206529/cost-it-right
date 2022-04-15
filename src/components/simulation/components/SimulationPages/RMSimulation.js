@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Row, Col, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
 import { EMPTY_DATA } from '../../../../config/constants';
@@ -36,6 +36,7 @@ function RMSimulation(props) {
     const [showMainSimulation, setShowMainSimulation] = useState(false)
     const [textFilterSearch, setTextFilterSearch] = useState('')
     const [isDisable, setIsDisable] = useState(false)
+    const gridRef = useRef();
 
     const { register, control, setValue, formState: { errors }, } = useForm({
         mode: 'onChange',
@@ -153,6 +154,7 @@ function RMSimulation(props) {
         setTextFilterSearch('')
         gridOptions?.columnApi?.resetColumnState();
         gridOptions?.api?.setFilterModel(null);
+        window.screen.width >= 1600 && gridRef.current.api.sizeColumnsToFit();
     }
 
     /**
@@ -360,10 +362,7 @@ function RMSimulation(props) {
 
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
-        window.screen.width >= 1600 && params.api.sizeColumnsToFit();
-        if (isImpactedMaster) {
-            window.screen.width >= 1365 && params.api.sizeColumnsToFit();
-        }
+        window.screen.width >= 1600 && gridRef.current.api.sizeColumnsToFit();
         params.api.paginationGoToPage(0);
     };
 
@@ -484,6 +483,7 @@ function RMSimulation(props) {
                                     </div>
                                     <div className="ag-theme-material" style={{ width: '100%' }}>
                                         <AgGridReact
+                                            ref={gridRef}
                                             floatingFilter={true}
                                             style={{ height: '100%', width: '100%' }}
                                             defaultColDef={defaultColDef}

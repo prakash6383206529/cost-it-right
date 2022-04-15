@@ -789,8 +789,6 @@ function SimulationApprovalSummary(props) {
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
-
-        window.screen.width >= 1600 && params.api.sizeColumnsToFit()
     };
 
 
@@ -803,15 +801,15 @@ function SimulationApprovalSummary(props) {
     };
 
     const onFilterTextBoxChanged = (e) => {
-        gridApi.setQuickFilter(e.target.value);
-        setTextFilterSearch(e.target.value)
+        gridApi?.setQuickFilter(e?.target?.value);
+        setTextFilterSearch(e?.target?.value)
     }
 
     const resetState = (e) => {
         gridApi.setQuickFilter('');
         setTextFilterSearch('')
-        gridOptions.columnApi.resetColumnState();
-        gridOptions.api.setFilterModel(null);
+        gridOptions?.columnApi?.resetColumnState();
+        gridOptions?.api?.setFilterModel(null);
     }
 
     const frameworkComponents = {

@@ -5616,24 +5616,7 @@ left: 17rem;
          font-size: 14px;
        }
   }
-  // <--------------START Part number showing on hover in costing sticky header --------->
-  .cr-part-name {
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    position:absolute;
-    border-top: none !important;
-    max-width: 120px;
-    padding-left: 5px !important;
-    &:hover {
-      span {
-        background-color:  #E7F2FC;
-      }
-      text-overflow: none;
-      max-width: 100%;
-    }
-  }
-   // <--------------END Part number showing on hover in costing sticky header --------->
+
   .rm-name-head {
     min-width: 125px;
   }
@@ -5840,6 +5823,12 @@ left: 17rem;
   .ag-overlay-wrapper {
     padding-top: 175px !important;
   }
+  .ag-grid-header {
+    display: flex;
+    button {
+      min-height: 30px;
+    }
+  }
 }
 // <----START Remark popup css->
 
@@ -5965,6 +5954,9 @@ left: 17rem;
 // <-------END Calculator css--------->
 .simulation-height {
   min-height: calc(100vh - 440px) !important;
+}
+.other-costing-simulation {
+  min-height: calc(100vh - 337px);
 }
 // <-------------START Hover text overflow and show on hover css----------->
   @mixin  overflow($maxWidth:140px, $minWidth:75px, $ResponsiveWith:$maxWidth, $lineClamp:1, $whiteSpace:nowrap) {

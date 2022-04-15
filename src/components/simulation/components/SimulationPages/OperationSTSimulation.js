@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Row, Col, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
 import { EMPTY_DATA, OPERATIONS, SURFACETREATMENT } from '../../../../config/constants';
@@ -14,7 +14,6 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import Simulation from '../Simulation';
-import OtherVerifySimulation from '../OtherVerifySimulation';
 import debounce from 'lodash.debounce';
 import { TextFieldHookForm } from '../../../layout/HookFormInputs';
 import { VBC, ZBC } from '../../../../config/constants';
@@ -35,7 +34,7 @@ function OperationSTSimulation(props) {
     const [selectedRowData, setSelectedRowData] = useState([]);
     const [tableData, setTableData] = useState([])
     const [isDisable, setIsDisable] = useState(false)
-
+    const gridRef = useRef();
 
     const { register, control, setValue, formState: { errors }, } = useForm({
         mode: 'onChange',
@@ -177,14 +176,7 @@ function OperationSTSimulation(props) {
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
-        window.screen.width >= 1600 && params.api.sizeColumnsToFit();
-        if (isImpactedMaster) {
-            window.screen.width >= 1365 && params.api.sizeColumnsToFit();
-        }
-        var allColumnIds = [];
-        params.columnApi.getAllColumns().forEach(function (column) {
-            allColumnIds.push(column.colId);
-        });
+        gridRef.current.api.sizeColumnsToFit();
 
     };
 
@@ -192,6 +184,7 @@ function OperationSTSimulation(props) {
         var value = document.getElementById('page-size').value;
         gridApi.paginationSetPageSize(Number(value));
     };
+
 
     const onFilterTextBoxChanged = (e) => {
         gridApi.setQuickFilter(e.target.value);
@@ -282,6 +275,12 @@ function OperationSTSimulation(props) {
             }
         }))
     }, 500);
+    const resetState = () => {
+        gridApi?.setQuickFilter('');
+        gridOptions?.columnApi?.resetColumnState();
+        gridOptions?.api?.setFilterModel(null);
+        gridRef.current.api.sizeColumnsToFit();
+    }
 
     return (
         <div>
@@ -341,9 +340,13 @@ function OperationSTSimulation(props) {
                                     <div className={`ag-grid-wrapper height-width-wrapper ${list && list?.length <= 0 ? "overlay-contain" : ""}`}>
                                         <div className="ag-grid-header">
                                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                                            <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
+                                                <div className="refresh mr-0"></div>
+                                            </button>
                                         </div>
                                         <div className="ag-theme-material" style={{ width: '100%' }}>
                                             <AgGridReact
+                                                ref={gridRef}
                                                 floatingFilter={true}
                                                 style={{ height: '100%', width: '100%' }}
                                                 defaultColDef={defaultColDef}
