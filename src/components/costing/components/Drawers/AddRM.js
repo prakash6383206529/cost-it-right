@@ -14,7 +14,7 @@ import LoaderCustom from '../../../common/LoaderCustom';
 import { getGradeFilterByRawMaterialSelectList, getGradeSelectList, getRawMaterialFilterSelectList, getRawMaterialNameChild } from '../../../masters/actions/Material';
 import { SearchableSelectHookForm } from '../../../layout/HookFormInputs';
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../../helper';
-import { isMultipleRMAllow} from '../../../../config/masterData'
+import { isMultipleRMAllow } from '../../../../config/masterData'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -87,9 +87,9 @@ function AddRM(props) {
 
   const onRowSelect = (row, isSelected, e) => {
 
+    var selectedRows = gridApi.getSelectedRows();
     //BELOW CONDITION, WHEN PLASTIC TECHNOLOGY SELECTED, MULTIPLE RM'S CAN BE ADDED
     if (isMultipleRMAllow(costData.ETechnologyType)) {
-      var selectedRows = gridApi.getSelectedRows();
       if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
       setSelectedRowData(selectedRows)
       // if (isSelected) {
@@ -101,7 +101,7 @@ function AddRM(props) {
       //   setSelectedRowData(tempArr)
       // }
     } else {
-      var selectedRows = gridApi.getSelectedRows();
+
       if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
       setSelectedRowData(selectedRows[0])
       // if (isSelected) {
@@ -289,7 +289,7 @@ function AddRM(props) {
     resizable: true,
     filter: true,
     sortable: true,
-    headerCheckboxSelection: isMultipleRMAllow(costData.ETechnologyType)? isFirstColumn : false,
+    headerCheckboxSelection: isMultipleRMAllow(costData.ETechnologyType) ? isFirstColumn : false,
     checkboxSelection: isFirstColumn
   };
 
@@ -403,7 +403,7 @@ function AddRM(props) {
 
               <Row className="mx-0">
                 <Col className="hidepage-size">
-                  <div className={`ag-grid-wrapper height-width-wrapper  min-height-auto ${rmDrawerList && rmDrawerList?.length <=0 ?"overlay-contain": ""} `}>
+                  <div className={`ag-grid-wrapper height-width-wrapper  min-height-auto ${rmDrawerList && rmDrawerList?.length <= 0 ? "overlay-contain" : ""} `}>
                     <div className="ag-grid-header">
                       <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                       <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
@@ -431,7 +431,7 @@ function AddRM(props) {
                           imagClass: "imagClass"
                         }}
                         suppressRowClickSelection={true}
-                        rowSelection={isMultipleRMAllow(costData.ETechnologyType)&& !IsApplyMasterBatch ? 'multiple' : 'single'}
+                        rowSelection={isMultipleRMAllow(costData.ETechnologyType) && !IsApplyMasterBatch ? 'multiple' : 'single'}
                         frameworkComponents={frameworkComponents}
                         onSelectionChanged={onRowSelect}
                         isRowSelectable={isRowSelectable}
@@ -466,7 +466,7 @@ function AddRM(props) {
 
               <Row className="sf-btn-footer no-gutters justify-content-between mx-0">
                 <div className="col-sm-12 text-left bluefooter-butn d-flex justify-content-end">
-                <button
+                  <button
                     type={'button'}
                     className="reset cancel-btn mr5"
                     onClick={cancel} >
