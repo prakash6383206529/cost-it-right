@@ -2489,6 +2489,7 @@ export const CostingSimulationDownloadST = [
 
     { label: "OldSurfaceTreatmentRate", value: "OldSurfaceTreatmentRate" },
     { label: "NewSurfaceTreatmentRate", value: "NewSurfaceTreatmentRate" },
+    { label: "SurfaceArea", value: "SurfaceArea" },
     { label: "OldSurfaceTreatmentCost", value: "OldSurfaceTreatmentCost" },
     { label: "NewSurfaceTreatmentCost", value: "NewSurfaceTreatmentCost" },
     { label: "OldTranspotationCost", value: "OldTranspotationCost" },
@@ -2536,6 +2537,7 @@ export const CostingSimulationDownloadOperation = [
     { label: "OldOperationRate", value: "OldOperationRate" },
     { label: "NewOperationRate", value: "NewOperationRate" },
     { label: "OperationVariance", value: "OperationVariance" },
+    { label: "Operation Quantity", value: "Quantity" },
     { label: "OldOperationCost", value: "OldOperationCost" },
     { label: "NewOperationCost", value: "NewOperationCost" },
     { label: "OperationCostVariance", value: "OperationCostVariance" },
@@ -2579,6 +2581,7 @@ export const CostingSimulationDownloadBOP = [
     { label: "OldNetBoughtOutPartCost", value: "OldNetBoughtOutPartCost" },
     { label: "NewNetBoughtOutPartCost", value: "NewNetBoughtOutPartCost" },
     { label: "NetBoughtOutPartCostVariance", value: "NetBoughtOutPartCostVariance" },
+    { label: "BOP Quantity", value: "BoughtOutPartQuantity" },
     { label: "OldBOPCost", value: "OldBOPCost" },
     { label: "NewBOPCost", value: "NewBOPCost" },
     { label: "BOPVariance", value: "BOPVariance" },
@@ -3114,6 +3117,7 @@ export const USER_LISTING_DOWNLOAD_EXCEl = [
 export const OperationGridForToken = [
     { label: "Operation Name", value: "OperationName" },
     { label: "Operation Code", value: "OperationCode" },
+    { label: "Operation Quantity", value: "Quantity" },
     { label: "OldOperationCost", value: "OldOperationCost" },
     { label: "NewOperationCost", value: "NewOperationCost" },
     { label: "OperationCostVariance", value: "OperationCostVariance" },
@@ -3132,6 +3136,7 @@ export const RMGridForToken = [
 export const STGridForToken = [
     { label: "OldSurfaceTreatmentRate", value: "OldSurfaceTreatmentRate" },
     { label: "NewSurfaceTreatmentRate", value: "NewSurfaceTreatmentRate" },
+    { label: "SurfaceArea", value: "SurfaceArea" },
     { label: "OldSurfaceTreatmentCost", value: "OldSurfaceTreatmentCost" },
     { label: "NewSurfaceTreatmentCost", value: "NewSurfaceTreatmentCost" },
     { label: "OldTranspotationCost", value: "OldTranspotationCost" },
@@ -3143,9 +3148,10 @@ export const STGridForToken = [
 ]
 
 export const BOPGridForToken = [
+    { label: "BoughtOutPartQuantity", value: "BoughtOutPartQuantity" },
     { label: "OldBOPCost", value: "OldBOPCost" },
     { label: "NewBOPCost", value: "NewBOPCost" },
-    { label: "BOPVariance", value: "BOPVariance" },
+    { label: "BOP Quantity", value: "BOPVariance" },
 ]
 export const ERGridForToken = [
     { label: "Currency", value: "Currency" },
