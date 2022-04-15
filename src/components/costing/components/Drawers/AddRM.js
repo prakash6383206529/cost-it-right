@@ -47,9 +47,9 @@ function AddRM(props) {
 
   const onRowSelect = (row, isSelected, e) => {
 
+    var selectedRows = gridApi.getSelectedRows();
     //BELOW CONDITION, WHEN PLASTIC TECHNOLOGY SELECTED, MULTIPLE RM'S CAN BE ADDED
     if (isMultipleRMAllow(costData.ETechnologyType)) {
-      var selectedRows = gridApi.getSelectedRows();
       if (JSON.stringify(selectedRows) === JSON.stringify(Ids)) return false
       setSelectedRowData(selectedRows)
       // if (isSelected) {
