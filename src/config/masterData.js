@@ -3048,6 +3048,16 @@ export const REPORT_DOWNLOAD_EXCEl = [
     { label: "ICC Applicability", value: "ICCApplicability", },
     { label: "ICC Interest Rate", value: "ICCInterestRate", },
     { label: "Net ICC Cost", value: "NetICCCost", },
+
+    { label: "Overhead CC Percentage", value: "OverheadCCPercentage", },
+    { label: "Overhead BOP Percentage", value: "OverheadBOPPercentage", },
+    { label: "Overhead RM Percentage", value: "OverheadRMPercentage", },
+    { label: "Overhead Fixed Percentage", value: "OverheadFixedPercentage", },
+    { label: "Profit CC Percentage", value: "ProfitCCPercentage", },
+    { label: "Profit BOP Percentage", value: "ProfitBOPPercentage", },
+    { label: "Profit RM Percentage", value: "ProfitRMPercentage", },
+    { label: "Profit Fixed Percentage", value: "ProfitFixedPercentage", },
+
     { label: "Payment Terms On", value: "PaymentTermsOn", },
     { label: "Payment Term Cost", value: "PaymentTermCost", },
     { label: "Packaging Cost Percentage", value: "PackagingCostPercentage", },
