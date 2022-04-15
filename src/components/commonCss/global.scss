@@ -215,6 +215,10 @@ a:hover {
   bottom: 4%;
   right: -5px;
   z-index: 999;
+  &:focus {
+    box-shadow: none !important;
+    border: none !important;
+  }
 }
 //END scroll to top button UI 10-12-2021
 .approval-btn {
