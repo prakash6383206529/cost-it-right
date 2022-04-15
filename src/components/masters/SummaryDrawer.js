@@ -123,24 +123,30 @@ function SummaryDrawer(props) {
 
 
                                 <Row>
-                                    <div className={"attachment-wrapper"}>
-                                        {files &&
-                                            files.map((f) => {
-                                                const withOutTild = f.FileURL?.replace(
-                                                    "~",
-                                                    ""
-                                                );
-                                                const fileURL = `${FILE_URL}${withOutTild}`;
-                                                return (
-                                                    <div className={"attachment images"}>
-                                                        <a href={fileURL} target="_blank" rel="noreferrer" title={f.OriginalFileName}>
-                                                            {f.OriginalFileName}
-                                                        </a>
+                                    <Col md="12">
+                                        <h5 className="left-border">Attachments</h5>
+                                    </Col>
+                                    <Col md="12">
+                                        <div className={"attachment-wrapper mt-0"}>
 
-                                                    </div>
-                                                );
-                                            })}
-                                    </div>
+                                            {files &&
+                                                files.map((f) => {
+                                                    const withOutTild = f.FileURL?.replace(
+                                                        "~",
+                                                        ""
+                                                    );
+                                                    const fileURL = `${FILE_URL}${withOutTild}`;
+                                                    return (
+                                                        <div className={"attachment images"}>
+                                                            <a href={fileURL} target="_blank" rel="noreferrer" title={f.OriginalFileName}>
+                                                                {f.OriginalFileName}
+                                                            </a>
+
+                                                        </div>
+                                                    );
+                                                })}
+                                        </div>
+                                    </Col>
                                 </Row>
                             </Col>
 
