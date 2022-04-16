@@ -10,7 +10,7 @@ import Toaster from '../../../../common/Toaster';
 import { MESSAGES } from '../../../../../config/message';
 import { costingInfoContext, NetPOPriceContext } from '../../CostingDetailStepTwo';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../../helper';
-import { createToprowObjAndSave } from '../../../CostingUtil';
+import { createToprowObjAndSave, findrmCctData } from '../../../CostingUtil';
 import { ViewCostingContext } from '../../CostingDetails';
 import { useState } from 'react';
 
@@ -71,6 +71,10 @@ function SurfaceTreatment(props) {
     if (transportationObject.UOM === "Percentage" && transportationObject.Rate !== null && transportationObject.Rate > 100) {
       return false
     }
+    let rmCcData = findrmCctData(item)
+    // THIS CONDITION IS USED FOR ASSEMBLY COSTING ,IN ASSEMBLY COSTING TOTAL COST IS SUM OF RMCCTAB DATA + SURFACE TREATEMNT TAB DATA OF THAT PART NUMBER (FOR PART/COMPONENT &ASSEMBLY KEY IS DIFFERENT)
+    let surfacTreatmentCost = (item.PartType === 'Component' || item.PartType === 'Part') ? checkForNull(item.CostingPartDetails.NetSurfaceTreatmentCost) : checkForNull(item.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostWithQuantitys)
+    let rmCCCost = rmCcData !== undefined && (rmCcData.PartType === 'Part') ? checkForNull(rmCcData?.CostingPartDetails?.TotalCalculatedRMBOPCCCost) : checkForNull(rmCcData?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity)
 
     if (props.IsAssemblyCalculation) {
       const tabData = RMCCTabData[0]
@@ -87,7 +91,8 @@ function SurfaceTreatment(props) {
         "NetSurfaceTreatmentCost": item.CostingPartDetails.NetSurfaceTreatmentCost,
         "EffectiveDate": CostingEffectiveDate,
         "LoggedInUserId": loggedInUserId(),
-        "TotalCost": netPOPrice,
+        // THIS CONDITION IS USED FOR ASSEMBLY COSTING ,IN ASSEMBLY COSTING TOTAL COST IS SUM OF RMCCTAB DATA + SURFACE TREATEMNT TAB DATA OF THAT PART NUMBER (FOR PART/COMPONENT &ASSEMBLY KEY IS DIFFERENT)
+        "TotalCost": costData.IsAssemblyPart ? rmCcData && Object.keys(rmCcData).length > 0 ? checkForNull(surfacTreatmentCost) + checkForNull(rmCCCost) : checkForNull(surfacTreatmentCost) : netPOPrice,
         "CostingPartDetails": {
           "CostingDetailId": "00000000-0000-0000-0000-000000000000",
           "IsAssemblyPart": true,
@@ -102,7 +107,7 @@ function SurfaceTreatment(props) {
         },
       }
       if (!CostingViewMode) {
-        let assemblyRequestedData = createToprowObjAndSave(surfaceTabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 2, CostingEffectiveDate)
+        let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 2, CostingEffectiveDate)
         dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
 
         dispatch(saveCostingSurfaceTab(requestData, res => {
@@ -125,7 +130,8 @@ function SurfaceTreatment(props) {
         "NetSurfaceTreatmentCost": item.CostingPartDetails.NetSurfaceTreatmentCost,
         "EffectiveDate": CostingEffectiveDate,
         "LoggedInUserId": loggedInUserId(),
-        "TotalCost": netPOPrice,
+        // THIS CONDITION IS USED FOR ASSEMBLY COSTING ,IN ASSEMBLY COSTING TOTAL COST IS SUM OF RMCCTAB DATA + SURFACE TREATEMNT TAB DATA OF THAT PART NUMBER (FOR PART/COMPONENT &ASSEMBLY KEY IS DIFFERENT)
+        "TotalCost": costData.IsAssemblyPart ? rmCcData && Object.keys(rmCcData).length > 0 ? checkForNull(surfacTreatmentCost) + checkForNull(rmCCCost) : checkForNull(surfacTreatmentCost) : netPOPrice,
         "CostingPartDetails": {
           "CostingDetailId": "00000000-0000-0000-0000-000000000000",
           "NetSurfaceTreatmentCost": item.CostingPartDetails.NetSurfaceTreatmentCost,

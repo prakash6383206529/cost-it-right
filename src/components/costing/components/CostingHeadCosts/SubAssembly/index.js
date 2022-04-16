@@ -219,6 +219,8 @@ function AssemblyPart(props) {
               onClick={DrawerToggle}>
               <div className={`${CostingViewMode ? 'fa fa-eye pr-1' : 'plus'}`}></div>{'OPER'}</button>}
         </td>
+        {/*WHEN COSTING OF THAT PART IS  APPROVED SO COSTING COMES AUTOMATICALLY FROM BACKEND AND THIS KEY WILL COME TRUE (WORK LIKE VIEW MODE)*/}
+        <td className="text-right"><div className={`${(item.IsLocked || item.IsPartLocked) ? 'lock_icon' : ''}`}>{''}</div></td>
       </tr>
 
       {item.CostingPartDetails.IsOpen && nestedPartComponent}
