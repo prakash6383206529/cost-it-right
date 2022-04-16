@@ -147,7 +147,7 @@ function AddProcess(props) {
   };
 
   const onFilterTextBoxChanged = (e) => {
-    this.state.gridApi.setQuickFilter(e.target.value);
+    gridApi.setQuickFilter(e.target.value);
   }
 
   const frameworkComponents = {
@@ -211,7 +211,6 @@ function AddProcess(props) {
                     </div>
                     <div
                       className="ag-theme-material"
-                      style={{ height: '100%', width: '100%' }}
                     >
                       <AgGridReact
                         style={{ height: '100%', width: '100%' }}
