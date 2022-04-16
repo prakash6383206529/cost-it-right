@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useEffect, useContext } from 'react';
 import { useForm, } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
-import { getSurfaceTreatmentTabData, setSurfaceData, saveCostingSurfaceTreatmentTab, setSurfaceCostInOverheadProfit } from '../../actions/Costing';
+import { getSurfaceTreatmentTabData, setSurfaceData } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import { checkForNull, } from '../../../../helper';
 import PartSurfaceTreatment from '../CostingHeadCosts/SurfaceTreatMent/PartSurfaceTreatment';
@@ -13,14 +13,9 @@ import _ from 'lodash'
 
 function TabSurfaceTreatment(props) {
 
-  const { netPOPrice } = props;
-
   const { handleSubmit, } = useForm();
-
   const dispatch = useDispatch()
-
   let SurfaceTabData = useSelector(state => state.costing.SurfaceTabData)
-
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
 
@@ -45,8 +40,15 @@ function TabSurfaceTreatment(props) {
     // CostingViewMode CONDITION IS USED TO AVOID CALCULATION IN VIEWMODE
     if (CostingViewMode === false) {
       let TopHeaderValues = SurfaceTabData && SurfaceTabData.length > 0 && SurfaceTabData[0].CostingPartDetails !== undefined ? SurfaceTabData[0].CostingPartDetails : null;
-      let topHeaderData = {
-        NetSurfaceTreatmentCost: TopHeaderValues && TopHeaderValues.NetSurfaceTreatmentCost !== null ? TopHeaderValues.NetSurfaceTreatmentCost : 0,
+      let topHeaderData = {}
+      if (costData.IsAssemblyPart) {
+        topHeaderData = {
+          NetSurfaceTreatmentCost: TopHeaderValues && TopHeaderValues.TotalCalculatedSurfaceTreatmentCostWithQuantitys !== null ? TopHeaderValues.TotalCalculatedSurfaceTreatmentCostWithQuantitys : 0,
+        }
+      } else {
+        topHeaderData = {
+          NetSurfaceTreatmentCost: TopHeaderValues && TopHeaderValues.NetSurfaceTreatmentCost !== null ? TopHeaderValues.NetSurfaceTreatmentCost : 0,
+        }
       }
       if (props.activeTab === '2') {
         props.setHeaderCost(topHeaderData)
@@ -141,14 +143,11 @@ function TabSurfaceTreatment(props) {
   * @description FORMATE DATA FOR SET PART DETAILS
   */
   const formatData = (Params, Data, aar) => {
-
-
-
     let tempArr = [];
     try {
       tempArr = aar && aar.map(i => {
 
-        const { CostingChildPartDetails, CostingPartDetails } = i;
+        const { CostingChildPartDetails } = i;
 
         if (i.IsAssemblyPart === true) {
           let NetSurfaceTreatmentCost = getSurfaceTreatmentTotalCost(i.CostingChildPartDetails, checkForNull(surfaceCost(Data.SurfaceTreatmentDetails)), Params) +
@@ -211,7 +210,7 @@ function TabSurfaceTreatment(props) {
 
       tempArr = arr && arr.map(i => {
 
-        const { CostingChildPartDetails, CostingPartDetails } = Children;
+        const { CostingChildPartDetails } = Children;
 
         if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
 
@@ -462,7 +461,7 @@ function TabSurfaceTreatment(props) {
   const surfaceCostSubAssembly = (arr) => {
     const total = arr && arr.reduce((accummlator, item) => {
       if (item.PartType === 'Sub Assembly') {
-        return accummlator + checkForNull(item.CostingPartDetails.SurfaceTreatmentCost) * checkForNull(item.Quantity ? item.Quantity : 3)
+        return accummlator + checkForNull(item.CostingPartDetails.TotalSurfaceTreatmentCostWithQuantity) * checkForNull(item.Quantity ? item.Quantity : 3)
       }
     }, 0)
     return total
@@ -470,7 +469,7 @@ function TabSurfaceTreatment(props) {
   const transportCostSubAssembly = (arr) => {
     const total = arr && arr.reduce((accummlator, item) => {
       if (item.PartType === 'Sub Assembly') {
-        return accummlator + checkForNull(item.CostingPartDetails.TransportationCost) * checkForNull(item.Quantity ? item.Quantity : 3)
+        return accummlator + checkForNull(item.CostingPartDetails.TotalTransportationCostWithQuantity) * checkForNull(item.Quantity ? item.Quantity : 3)
       }
     }, 0)
     return total
@@ -521,26 +520,33 @@ function TabSurfaceTreatment(props) {
     let subAssemblyObj = obj
     switch (type) {
       case 'Operation':
-        subAssemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly = surfaceGrid.length > 0 ? checkForNull(surfaceCost(surfaceGrid)) : checkForNull(subAssemblyObj.CostingPartDetails?.SurfaceTreatmentCostPerAssembly)
-        subAssemblyObj.CostingPartDetails.SurfaceTreatmentCostPerAssembly = surfaceGrid.length > 0 ? checkForNull(surfaceCost(surfaceGrid)) : checkForNull(subAssemblyObj.CostingPartDetails?.SurfaceTreatmentCostPerAssembly)
-        subAssemblyObj.CostingPartDetails.SurfaceTreatmentCostPerSubAssembly = checkForNull(surfaceCostSubAssembly(tempArr))
-        subAssemblyObj.CostingPartDetails.SurfaceTreatmentPerPart = surfaceCostPart(tempArr)
-        subAssemblyObj.CostingPartDetails.SurfaceTreatmentCost = checkForNull(subAssemblyObj.CostingPartDetails.SurfaceTreatmentCostPerAssembly) + checkForNull(subAssemblyObj.CostingPartDetails.SurfaceTreatmentCostPerSubAssembly) + checkForNull(subAssemblyObj.CostingPartDetails.SurfaceTreatmentPerPart)
-        subAssemblyObj.CostingPartDetails.NetSurfaceTreatmentCost = (checkForNull(subAssemblyObj.CostingPartDetails.SurfaceTreatmentCost) + checkForNull(subAssemblyObj.CostingPartDetails.TransportationCost)) * (subAssemblyObj.Quantity ? subAssemblyObj.Quantity : 3)
+        subAssemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly = surfaceGrid.length > 0 ? checkForNull(surfaceCost(surfaceGrid)) : checkForNull(subAssemblyObj.CostingPartDetails?.TotalSurfaceTreatmentCostPerAssembly) //OPERATION COST ADDED ON THAT PARTICULAR ASSEMBLY
+        subAssemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostPerSubAssembly = checkForNull(surfaceCostSubAssembly(tempArr)) // SURFACE TREATMENT COST OF IT'S SUBASSEMBLIES
+        subAssemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostComponent = surfaceCostPart(tempArr) //SURFACE TREATMENT COST OF COMPONENE OF THAT ASSEMBLY
+        subAssemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostWithQuantity = checkForNull(subAssemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly) + checkForNull(subAssemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostPerSubAssembly) + checkForNull(subAssemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostComponent)
+        subAssemblyObj.CostingPartDetails.SurfaceTreatmentCost = checkForNull(subAssemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly) + checkForNull(subAssemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostPerSubAssembly) + checkForNull(subAssemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostComponent)
+        subAssemblyObj.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostWithQuantitys = (checkForNull(subAssemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostWithQuantity) + checkForNull(subAssemblyObj.CostingPartDetails.TotalTransportationCostWithQuantity)) * checkForNull(subAssemblyObj?.Quantity)
+        subAssemblyObj.CostingPartDetails.SurfaceTreatmentDetails = surfaceGrid.length > 0 ? surfaceGrid : subAssemblyObj.CostingPartDetails.SurfaceTreatmentDetails;
+
         break;
       case 'Transport':
         subAssemblyObj.CostingPartDetails.TotalTransportationCostPerAssembly = Object.keys(TransportationObj).length > 0 ? checkForNull(TransportationObj?.TransportationCost) : 0
         subAssemblyObj.CostingPartDetails.TransportationCostPerAssembly = Object.keys(TransportationObj).length > 0 ? checkForNull(TransportationObj?.TransportationCost) : 0
-        subAssemblyObj.CostingPartDetails.TransportationCostPerSubAssembly = transportCostSubAssembly(tempArr)
-        subAssemblyObj.CostingPartDetails.TransportationCostPerPart = transportCostPart(tempArr)
-        subAssemblyObj.CostingPartDetails.TransportationCost = checkForNull(subAssemblyObj.CostingPartDetails.TransportationCostPerAssembly) + checkForNull(subAssemblyObj.CostingPartDetails.TransportationCostPerSubAssembly) + checkForNull(subAssemblyObj.CostingPartDetails.TransportationCostPerPart)
-        subAssemblyObj.CostingPartDetails.TransportationDetails = TransportationObj
-        subAssemblyObj.CostingPartDetails.NetSurfaceTreatmentCost = (checkForNull(subAssemblyObj.CostingPartDetails.SurfaceTreatmentCost) + checkForNull(subAssemblyObj.CostingPartDetails.TransportationCost)) * (subAssemblyObj.Quantity ? subAssemblyObj.Quantity : 3)
+        subAssemblyObj.CostingPartDetails.TotalTransportationCostPerSubAssembly = transportCostSubAssembly(tempArr)
+        subAssemblyObj.CostingPartDetails.TotalTransportationCostComponent = transportCostPart(tempArr)
+        subAssemblyObj.CostingPartDetails.TotalTransportationCostWithQuantity = checkForNull(subAssemblyObj.CostingPartDetails.TotalTransportationCostPerAssembly) + checkForNull(subAssemblyObj.CostingPartDetails.TotalTransportationCostPerSubAssembly) + checkForNull(subAssemblyObj.CostingPartDetails.TotalTransportationCostComponent)
+        subAssemblyObj.CostingPartDetails.TransportationCost = checkForNull(subAssemblyObj.CostingPartDetails.TotalTransportationCostPerAssembly) + checkForNull(subAssemblyObj.CostingPartDetails.TotalTransportationCostPerSubAssembly) + checkForNull(subAssemblyObj.CostingPartDetails.TotalTransportationCostComponent)
+        subAssemblyObj.CostingPartDetails.TransportationDetails = Object.keys(TransportationObj).length > 0 ? TransportationObj : subAssemblyObj.CostingPartDetails.TransportationDetails
+        subAssemblyObj.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostWithQuantitys = (checkForNull(subAssemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostWithQuantity) + checkForNull(subAssemblyObj.CostingPartDetails.TotalTransportationCostWithQuantity)) * checkForNull(subAssemblyObj?.Quantity)
         break;
       default:
         break;
     }
-    return obj
+    subAssemblyObj.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostPerAssembly = subAssemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly + subAssemblyObj.CostingPartDetails.TotalTransportationCostPerAssembly
+    subAssemblyObj.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostPerSubAssembly = subAssemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostPerSubAssembly + subAssemblyObj.CostingPartDetails.TotalTransportationCostPerSubAssembly
+    subAssemblyObj.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostComponent = subAssemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostComponent + subAssemblyObj.CostingPartDetails.TotalTransportationCostComponent
+    subAssemblyObj.CostingPartDetails.NetSurfaceTreatmentCost = checkForNull(subAssemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostWithQuantity) + checkForNull(subAssemblyObj.CostingPartDetails.TotalTransportationCostWithQuantity)
+    return subAssemblyObj
   }
 
 
@@ -555,18 +561,24 @@ function TabSurfaceTreatment(props) {
       let newItem = item
       let updatedArr = JSON.parse(localStorage.getItem('surfaceCostingArray'))
       let obj = updatedArr && updatedArr.find(updateditem => updateditem.PartNumber === newItem.PartNumber && updateditem.AssemblyPartNumber === newItem.AssemblyPartNumber)
-      newItem.CostingPartDetails.SurfaceTreatmentCostPerAssembly = checkForNull(obj.CostingPartDetails.SurfaceTreatmentCostPerAssembly)
-      newItem.CostingPartDetails.SurfaceTreatmentCostPerSubAssembly = checkForNull(obj.CostingPartDetails.SurfaceTreatmentCostPerSubAssembly)
-      newItem.CostingPartDetails.SurfaceTreatmentPerPart = checkForNull(obj.CostingPartDetails.SurfaceTreatmentPerPart)
-      newItem.CostingPartDetails.SurfaceTreatmentCost = checkForNull(obj.CostingPartDetails.SurfaceTreatmentCost)
-      newItem.CostingPartDetails.TransportationCostPerAssembly = checkForNull(obj.CostingPartDetails.TransportationCostPerAssembly)
-      newItem.CostingPartDetails.TransportationCostPerSubAssembly = checkForNull(obj.CostingPartDetails.TransportationCostPerSubAssembly)
-      newItem.CostingPartDetails.TransportationCostPerPart = checkForNull(obj.CostingPartDetails.TransportationCostPerPart)
-      newItem.CostingPartDetails.TransportationCost = checkForNull(obj.CostingPartDetails.TransportationCost)
-      newItem.CostingPartDetails.NetSurfaceTreatmentCost = checkForNull(obj.CostingPartDetails.NetSurfaceTreatmentCost)
-      newItem.CostingPartDetails.SurfaceTreatmentDetails = obj.CostingPartDetails?.SurfaceTreatmentDetails
-      newItem.CostingPartDetails.TransportationDetails = obj.CostingPartDetails?.TransportationDetails
+      console.log('obj: ', obj);
+      if (obj && Object.keys(obj).length > 0) {
 
+        newItem.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly = checkForNull(obj.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly)
+        newItem.CostingPartDetails.TotalSurfaceTreatmentCostPerSubAssembly = checkForNull(obj.CostingPartDetails.TotalSurfaceTreatmentCostPerSubAssembly)
+        newItem.CostingPartDetails.TotalSurfaceTreatmentCostComponent = checkForNull(obj.CostingPartDetails.TotalSurfaceTreatmentCostComponent)
+        newItem.CostingPartDetails.TotalSurfaceTreatmentCostWithQuantity = checkForNull(obj.CostingPartDetails.TotalSurfaceTreatmentCostWithQuantity)
+        newItem.CostingPartDetails.TotalTransportationCostPerAssembly = checkForNull(obj.CostingPartDetails.TotalTransportationCostPerAssembly)
+        newItem.CostingPartDetails.TotalTransportationCostPerSubAssembly = checkForNull(obj.CostingPartDetails.TotalTransportationCostPerSubAssembly)
+        newItem.CostingPartDetails.TotalTransportationCostComponent = checkForNull(obj.CostingPartDetails.TotalTransportationCostComponent)
+        newItem.CostingPartDetails.TotalTransportationCostWithQuantity = checkForNull(obj.CostingPartDetails.TotalTransportationCostWithQuantity)
+        newItem.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostWithQuantitys = checkForNull(obj.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostWithQuantitys)
+        newItem.CostingPartDetails.SurfaceTreatmentDetails = obj.CostingPartDetails?.SurfaceTreatmentDetails
+        newItem.CostingPartDetails.TransportationDetails = obj.CostingPartDetails?.TransportationDetails
+        newItem.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostPerAssembly = checkForNull(obj.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostPerAssembly)
+        newItem.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostPerSubAssembly = checkForNull(obj.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostPerSubAssembly)
+        newItem.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostComponent = checkForNull(obj.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostComponent)
+      }
 
       if (item.CostingChildPartDetails.length > 0) {
         mapArray(item.CostingChildPartDetails)
@@ -592,6 +604,8 @@ function TabSurfaceTreatment(props) {
   }
 
   const dispatchAssemblySurfaceCost = (surfaceGrid, params, arr, IsGridChanged, item) => {
+    console.log('params: ', params);
+    console.log('surfaceGrid: ', surfaceGrid);
 
     let tempArr = [];
     //FUNCTION TO CALCULATE THE COSITNG VALUE OF PARTS AND SUBASSEMBLIES
@@ -686,12 +700,16 @@ function TabSurfaceTreatment(props) {
         let assemblyObj = tempArrForCosting[0]
         // WILL RUN IF IT IS ASSEMBLY COSTING. WILL NOT RUN FOR COMPONENT COSTING
         if (assemblyObj.PartType === 'Assembly') {
-          assemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly = params.PartNumber === assemblyObj.PartNumber ? checkForNull(surfaceCost(surfaceGrid)) : 0
-          assemblyObj.CostingPartDetails.SurfaceTreatmentCostPerAssembly = params.PartNumber === assemblyObj.PartNumber ? checkForNull(surfaceCost(surfaceGrid)) : 0
-          assemblyObj.CostingPartDetails.SurfaceTreatmentCostPerSubAssembly = surfaceCostSubAssembly(subAssemblyArray)
-          assemblyObj.CostingPartDetails.SurfaceTreatmentPerPart = checkForNull(surfaceCostPart(subAssemblyArray))
-          assemblyObj.CostingPartDetails.SurfaceTreatmentCost = checkForNull(assemblyObj.CostingPartDetails.SurfaceTreatmentCostPerAssembly) + checkForNull(assemblyObj.CostingPartDetails.SurfaceTreatmentCostPerSubAssembly) + checkForNull(assemblyObj.CostingPartDetails.SurfaceTreatmentPerPart)
-          assemblyObj.CostingPartDetails.NetSurfaceTreatmentCost = checkForNull(assemblyObj.CostingPartDetails.SurfaceTreatmentCost) + checkForNull(assemblyObj.CostingPartDetails.TransportationCost)
+          assemblyObj.CostingPartDetails.SurfaceTreatmentDetails = params.PartNumber === assemblyObj.PartNumber ? surfaceGrid : assemblyObj.CostingPartDetails.SurfaceTreatmentDetails
+          assemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly = params.PartNumber === assemblyObj.PartNumber ? checkForNull(surfaceCost(surfaceGrid)) : checkForNull(assemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly)
+          assemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostPerSubAssembly = surfaceCostSubAssembly(subAssemblyArray)
+          assemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostComponent = checkForNull(surfaceCostPart(subAssemblyArray))
+          assemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostWithQuantity = checkForNull(assemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly) + checkForNull(assemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostPerSubAssembly) + checkForNull(assemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostComponent)
+          assemblyObj.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostWithQuantitys = checkForNull(assemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostWithQuantity) + checkForNull(assemblyObj.CostingPartDetails.TotalTransportationCostWithQuantity)
+          assemblyObj.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostPerAssembly = checkForNull(assemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly) + checkForNull(assemblyObj.CostingPartDetails.TotalTransportationCostPerAssembly)
+          assemblyObj.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostPerSubAssembly = checkForNull(assemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostPerSubAssembly) + checkForNull(assemblyObj.CostingPartDetails.TotalTransportationCostPerSubAssembly)
+          assemblyObj.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostComponent = checkForNull(assemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostComponent) + checkForNull(assemblyObj.CostingPartDetails.TotalTransportationCostComponent)
+          assemblyObj.CostingPartDetails.NetSurfaceTreatmentCost = checkForNull(assemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostWithQuantity) + checkForNull(assemblyObj.CostingPartDetails.TotalTransportationCostWithQuantity)
           tempArrForCosting = Object.assign([...tempArrForCosting], { [0]: assemblyObj })
         }
         // STORING CALCULATED AND UPDATED COSTING VALUE IN LOCAL STORAGE
@@ -835,12 +853,16 @@ function TabSurfaceTreatment(props) {
         let assemblyObj = tempArrForCosting[0]
         // WILL RUN IF IT IS ASSEMBLY COSTING. WILL NOT RUN FOR COMPONENT COSTING
         if (assemblyObj.PartType === 'Assembly') {
+          assemblyObj.CostingPartDetails.TransportationDetails = params.PartNumber === assemblyObj.PartNumber ? TransportationObj : assemblyObj.CostingPartDetails.TransportationDetails
           assemblyObj.CostingPartDetails.TotalTransportationCostPerAssembly = params.PartNumber === assemblyObj.PartNumber ? checkForNull(TransportationObj.TransportationCost) : 0
-          assemblyObj.CostingPartDetails.TransportationCostPerAssembly = params.PartNumber === assemblyObj.PartNumber ? checkForNull(TransportationObj.TransportationCost) : 0
-          assemblyObj.CostingPartDetails.TransportationCostPerSubAssembly = transportCostSubAssembly(subAssemblyArray)
-          assemblyObj.CostingPartDetails.TransportationCostPerPart = checkForNull(transportCostPart(subAssemblyArray))
-          assemblyObj.CostingPartDetails.TransportationCost = checkForNull(assemblyObj.CostingPartDetails.TransportationCostPerAssembly) + checkForNull(assemblyObj.CostingPartDetails.TransportationCostPerSubAssembly) + checkForNull(assemblyObj.CostingPartDetails.TransportationCostPerPart)
-          assemblyObj.CostingPartDetails.NetSurfaceTreatmentCost = checkForNull(assemblyObj.CostingPartDetails.SurfaceTreatmentCost) + checkForNull(assemblyObj.CostingPartDetails.TransportationCost)
+          assemblyObj.CostingPartDetails.TotalTransportationCostPerSubAssembly = transportCostSubAssembly(subAssemblyArray)
+          assemblyObj.CostingPartDetails.TotalTransportationCostComponent = checkForNull(transportCostPart(subAssemblyArray))
+          assemblyObj.CostingPartDetails.TotalTransportationCostWithQuantity = checkForNull(assemblyObj.CostingPartDetails.TotalTransportationCostPerAssembly) + checkForNull(assemblyObj.CostingPartDetails.TotalTransportationCostPerSubAssembly) + checkForNull(assemblyObj.CostingPartDetails.TotalTransportationCostComponent)
+          assemblyObj.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostWithQuantitys = checkForNull(assemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostWithQuantity) + checkForNull(assemblyObj.CostingPartDetails.TotalTransportationCostWithQuantity)
+          assemblyObj.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostPerAssembly = checkForNull(assemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly) + checkForNull(assemblyObj.CostingPartDetails.TotalTransportationCostPerAssembly)
+          assemblyObj.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostPerSubAssembly = checkForNull(assemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostPerSubAssembly) + checkForNull(assemblyObj.CostingPartDetails.TotalTransportationCostPerSubAssembly)
+          assemblyObj.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostComponent = checkForNull(assemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostComponent) + checkForNull(assemblyObj.CostingPartDetails.TotalTransportationCostComponent)
+          assemblyObj.CostingPartDetails.NetSurfaceTreatmentCost = checkForNull(assemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostWithQuantity) + checkForNull(assemblyObj.CostingPartDetails.TotalTransportationCostWithQuantity)
           tempArrForCosting = Object.assign([...tempArrForCosting], { [0]: assemblyObj })
         }
         // STORING CALCULATED AND UPDATED COSTING VALUE IN LOCAL STORAGE
@@ -936,6 +958,7 @@ function TabSurfaceTreatment(props) {
                                     setSurfaceCost={setSurfaceCost}
                                     setTransportationCost={setTransportationCost}
                                     IsAssemblyCalculation={false}
+                                    SubAssembId={item.CostingId}
                                   />
                                 </>
                               )

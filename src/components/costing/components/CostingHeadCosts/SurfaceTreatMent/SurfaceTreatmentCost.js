@@ -12,10 +12,9 @@ import { gridDataAdded } from '../../../actions/Costing';
 import { ViewCostingContext } from '../../CostingDetails'
 
 function SurfaceTreatmentCost(props) {
-  console.log(props.data, "props.data");
-
+  const { item } = props
   const CostingViewMode = useContext(ViewCostingContext);
-
+  const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
   const { register, control, formState: { errors } } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -52,12 +51,12 @@ function SurfaceTreatmentCost(props) {
   }, [gridData]);
 
 
-  // useEffect(() => {
-  //   if (props?.data && props.data.length > 0) {
+  useEffect(() => {
+    if (!props.IsAssemblyCalculation && props?.data && props.data.length > 0) {
 
-  //     setGridData(props.data)
-  //   }
-  // }, [props.data])
+      setGridData(props.data)
+    }
+  }, [props.data])
 
   /**
   * @method DrawerToggle
@@ -201,7 +200,7 @@ function SurfaceTreatmentCost(props) {
               <button
                 type="button"
                 className={'user-btn'}
-                disabled={CostingViewMode ? true : false}
+                disabled={(CostingViewMode || IsLocked) ? true : false}
                 onClick={DrawerToggle}>
                 <div className={'plus'}></div>SURFACE T.</button>
             </Col>

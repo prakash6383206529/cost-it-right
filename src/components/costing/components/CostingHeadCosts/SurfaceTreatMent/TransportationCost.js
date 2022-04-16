@@ -11,7 +11,7 @@ import WarningMessage from '../../../../common/WarningMessage';
 
 function TransportationCost(props) {
   const { data, item } = props;
-  console.log("COMING IN TRANSPORTATION COST");
+  const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
 
   const CostingViewMode = useContext(ViewCostingContext);
   const defaultValues = {
@@ -235,7 +235,7 @@ function TransportationCost(props) {
                   options={renderListing('UOM')}
                   mandatory={false}
                   handleChange={handleUOMChange}
-                  disabled={CostingViewMode ? true : false}
+                  disabled={(CostingViewMode || IsLocked) ? true : false}
                   errors={errors.UOM}
                 />
               </Col>
@@ -264,7 +264,7 @@ function TransportationCost(props) {
                       handleRateChange(e)
                     }}
                     errors={errors && errors.Rate}
-                    disabled={TransportationType === 'Fixed' || CostingViewMode ? true : false}
+                    disabled={TransportationType === 'Fixed' || (CostingViewMode || IsLocked) ? true : false}
                   />
                   {TransportationType === 'Percentage' && percentageLimit && <WarningMessage dClass={"error-message"} textClass={`${percentageLimit ? 'pt-1' : ''}`} message={"Percentage cannot be greater than 100"} />}
                 </div>
@@ -293,7 +293,7 @@ function TransportationCost(props) {
                     handleQuantityChange(e)
                   }}
                   errors={errors && errors.Quantity}
-                  disabled={(TransportationType === 'Fixed' || TransportationType === 'Percentage') || CostingViewMode ? true : false}
+                  disabled={(TransportationType === 'Fixed' || TransportationType === 'Percentage') || (CostingViewMode || IsLocked) ? true : false}
                 />
 
               </Col>
@@ -320,7 +320,7 @@ function TransportationCost(props) {
                     handleTransportChange(e)
                   }}
                   errors={errors && errors.TransportationCost}
-                  disabled={(TransportationType !== 'Fixed' || TransportationType === 'Percentage') || CostingViewMode ? true : false}
+                  disabled={(TransportationType !== 'Fixed' || TransportationType === 'Percentage') || (CostingViewMode || IsLocked) ? true : false}
                 />
 
               </Col>
