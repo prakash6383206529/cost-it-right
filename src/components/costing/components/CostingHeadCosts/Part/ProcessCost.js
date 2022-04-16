@@ -81,11 +81,9 @@ function ProcessCost(props) {
     setCalciIndex(id)
     let tempArr = []
     let tempData = gridData[id]
-
-
     // const calciData = gridData[id]
     /****************************FOR GETING CALCULATED VALUE IN CALCULATOR**************************/
-    if (tempData.Technology === "Machining" && tempData.UOMType === TIME) {
+    if (tempData.ProcessTechnologyId === MACHINING && tempData.UOMType === TIME) {
       //getProcessDefaultCalculation
       dispatch(getProcessMachiningCalculation(costData.CostingId, tempData.ProcessId, tempData.ProcessCalculationId, res => {
         if (res && res.data && res.data.Data) {
@@ -237,7 +235,7 @@ function ProcessCost(props) {
           UOMType: el.UnitType,
           UOMTypeId: el.UnitTypeId,
           ProductionPerHour: '-',
-          Technology: el.Technologies
+          ProcessTechnologyId: el.ProcessTechnologyId
 
 
         }
@@ -672,7 +670,7 @@ function ProcessCost(props) {
       )}
       {isCalculator && (
         <VariableMhrDrawer
-          technology={gridData[calciIndex].Technology}
+          technology={gridData[calciIndex].ProcessTechnologyId}
           calculatorData={gridData[calciIndex]}
           isOpen={isCalculator}
           CostingViewMode={CostingViewMode || IsLocked}

@@ -19,8 +19,6 @@ function AddProcess(props) {
 
   const [tableData, setTableDataList] = useState([]);
   const [selectedRowData, setSelectedRowData] = useState([]);
-  const [selectedIds, setSelectedIds] = useState(props.Ids);
-  const [selectedMachineIds, setSelectedMachineIds] = useState(props.MachineIds)
   const [gridApi, setGridApi] = useState(null);
   const [gridColumnApi, setGridColumnApi] = useState(null);
   const dispatch = useDispatch()

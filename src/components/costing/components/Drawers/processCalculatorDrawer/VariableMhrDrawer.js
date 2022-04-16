@@ -2,28 +2,17 @@ import React from 'react'
 import { Row, Col } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
 import Facing from './Facing'
-import Drilling from './Drilling'
-import Turning from './Turning'
-import Chamfering from './Chamfering'
-import FaceMilling from './FaceMilling'
-import SideFaceMiling from './SideFaceMiling'
-import SlotCutting from './SlotCutting'
-import ChamferingMiller from './ChamferingMiller'
-import EndMill from './EndMill'
 import UomTimeProcessDefaultCalculator from './UomTimeProcessDefaultCalculator'
 import { useDispatch } from 'react-redux'
 import SheetMetalBaicDrawer from './SheetMetalBaicDrawer'
-import InjectionMoulding from './InjectionMoulding'
-import { SHEETMETAL, RUBBER, PLASTIC, MACHINING, FORGING, DIE_CASTING, Ferrous_Casting, Non_Ferrous_HPDC, FACING, HARDFACING, BROACHING, DRILLING, TURNING, CHAMFERING, SIDEFACEMILING, SLOTCUTTING, CHAMFERINGMILLER, ENDMILL, FACEMILING } from '../../../../../config/masterData'
-import { HOUR, TIME } from '../../../../../config/constants'
+import { SHEETMETAL, RUBBER, PLASTIC, MACHINING, Non_Ferrous_HPDC, BROACHING } from '../../../../../config/masterData'
+import { TIME } from '../../../../../config/constants'
 import Broaching from './Broaching'
-import HardFacing from './HardFacing'
 
 
 function VariableMhrDrawer(props) {
   const { technology, calculatorData } = props
   const tonnage = calculatorData.Tonnage ? calculatorData.Tonnage : ''
-  const dispatch = useDispatch()
   const calculateMachineTime = (time, formValue) => {
 
     //   let obj={}
@@ -69,9 +58,8 @@ function VariableMhrDrawer(props) {
     props.closeDrawer('', formValue, weightData)
   }
 
-
   const getProcessComponent = (process) => {
-    if (technology === "Machining") {
+    if (technology === MACHINING) {
       if (calculatorData.UOMType === TIME) {
         switch (process) {
 
@@ -106,7 +94,7 @@ function VariableMhrDrawer(props) {
           />
         )
       }
-    } else if (technology === "Sheet Metal") {
+    } else if (technology === SHEETMETAL) {
       switch (process) {
         case 'Facing':
           return (
@@ -128,7 +116,7 @@ function VariableMhrDrawer(props) {
             />
           )
       }
-    } else if (technology === "Plastic") {
+    } else if (technology === PLASTIC) {
       switch (process) {
         case 'Injection Moulding':
         // return (
@@ -146,7 +134,7 @@ function VariableMhrDrawer(props) {
           )
           break;
       }
-    } else if (technology === "Non Ferrous HPDC") {
+    } else if (technology === Non_Ferrous_HPDC) {
       return (
         <SheetMetalBaicDrawer
           CostingViewMode={props.CostingViewMode}
