@@ -24,7 +24,6 @@ function AddProcess(props) {
   const dispatch = useDispatch()
 
   const costData = useContext(costingInfoContext)
-
   const { processDrawerList, CostingEffectiveDate } = useSelector(state => state.costing)
   const { initialConfiguration } = useSelector(state => state.auth)
 
@@ -41,7 +40,6 @@ function AddProcess(props) {
 
   useEffect(() => {
     if (costData.VendorType === ZBC) {
-
       let data = {}
 
       if (Number(costData.TechnologyId) === Number(FORGING) || Number(costData.TechnologyId) === Number(DIE_CASTING) || Number(costData.TechnologyId) === Number(Ferrous_Casting)) {
@@ -51,9 +49,7 @@ function AddProcess(props) {
           CostingId: costData.CostingId,
           EffectiveDate: CostingEffectiveDate,
         }
-
       } else {
-
         data = {
           PlantId: costData.PlantId,
           TechnologyId: String(costData.TechnologyId),
@@ -73,7 +69,6 @@ function AddProcess(props) {
       }))
 
     } else {
-
       let data = {}
       if (Number(costData.TechnologyId) === Number(FORGING) || Number(costData.TechnologyId) === Number(DIE_CASTING) || Number(costData.TechnologyId) === Number(Ferrous_Casting)) {
         data = {
@@ -85,9 +80,7 @@ function AddProcess(props) {
           EffectiveDate: CostingEffectiveDate,
         }
       }
-
       else {
-
         data = {
           VendorId: costData.VendorId,
           TechnologyId: String(costData.TechnologyId),
@@ -107,10 +100,8 @@ function AddProcess(props) {
           setTableDataList([])
         }
       }))
-
     }
   }, []);
-
 
   const onRowSelect = (row, isSelected, e) => {
     var selectedRows = gridApi.getSelectedRows();

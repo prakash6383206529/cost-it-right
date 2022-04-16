@@ -236,8 +236,6 @@ function ProcessCost(props) {
           UOMTypeId: el.UnitTypeId,
           ProductionPerHour: '-',
           ProcessTechnologyId: el.ProcessTechnologyId
-
-
         }
       })
 
