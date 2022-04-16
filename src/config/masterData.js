@@ -2464,6 +2464,7 @@ export const CostingSimulationDownloadST = [
 
     { label: "OldSurfaceTreatmentRate", value: "OldSurfaceTreatmentRate" },
     { label: "NewSurfaceTreatmentRate", value: "NewSurfaceTreatmentRate" },
+    { label: "SurfaceArea", value: "SurfaceArea" },
     { label: "OldSurfaceTreatmentCost", value: "OldSurfaceTreatmentCost" },
     { label: "NewSurfaceTreatmentCost", value: "NewSurfaceTreatmentCost" },
     { label: "OldTranspotationCost", value: "OldTranspotationCost" },
@@ -2511,6 +2512,7 @@ export const CostingSimulationDownloadOperation = [
     { label: "OldOperationRate", value: "OldOperationRate" },
     { label: "NewOperationRate", value: "NewOperationRate" },
     { label: "OperationVariance", value: "OperationVariance" },
+    { label: "Operation Quantity", value: "Quantity" },
     { label: "OldOperationCost", value: "OldOperationCost" },
     { label: "NewOperationCost", value: "NewOperationCost" },
     { label: "OperationCostVariance", value: "OperationCostVariance" },
@@ -2554,6 +2556,7 @@ export const CostingSimulationDownloadBOP = [
     { label: "OldNetBoughtOutPartCost", value: "OldNetBoughtOutPartCost" },
     { label: "NewNetBoughtOutPartCost", value: "NewNetBoughtOutPartCost" },
     { label: "NetBoughtOutPartCostVariance", value: "NetBoughtOutPartCostVariance" },
+    { label: "BOP Quantity", value: "BoughtOutPartQuantity" },
     { label: "OldBOPCost", value: "OldBOPCost" },
     { label: "NewBOPCost", value: "NewBOPCost" },
     { label: "BOPVariance", value: "BOPVariance" },
@@ -3008,6 +3011,16 @@ export const REPORT_DOWNLOAD_EXCEl = [
     { label: "ICC Applicability", value: "ICCApplicability", },
     { label: "ICC Interest Rate", value: "ICCInterestRate", },
     { label: "Net ICC Cost", value: "NetICCCost", },
+
+    { label: "Overhead CC Percentage", value: "OverheadCCPercentage", },
+    { label: "Overhead BOP Percentage", value: "OverheadBOPPercentage", },
+    { label: "Overhead RM Percentage", value: "OverheadRMPercentage", },
+    { label: "Overhead Fixed Percentage", value: "OverheadFixedPercentage", },
+    { label: "Profit CC Percentage", value: "ProfitCCPercentage", },
+    { label: "Profit BOP Percentage", value: "ProfitBOPPercentage", },
+    { label: "Profit RM Percentage", value: "ProfitRMPercentage", },
+    { label: "Profit Fixed Percentage", value: "ProfitFixedPercentage", },
+
     { label: "Payment Terms On", value: "PaymentTermsOn", },
     { label: "Payment Term Cost", value: "PaymentTermCost", },
     { label: "Packaging Cost Percentage", value: "PackagingCostPercentage", },
@@ -3016,22 +3029,18 @@ export const REPORT_DOWNLOAD_EXCEl = [
     { label: "Freight Cost", value: "FreightCost", },
     { label: "Transportation Cost", value: "TransportationCost", },
     { label: "FreightType", value: "FreightType", },
-    { label: "DiscountCost", value: "DiscountCost", },
-    { label: "NetDiscountsCost", value: "NetDiscountsCost", },
     { label: "Hundi/DiscountPercentage", value: "HundiOrDiscountPercentage", },
     { label: "Hundi/DiscountValue", value: "HundiOrDiscountValue", },
     { label: "ToolCost", value: "ToolCost", },
-    { label: "ToolLife", value: "ToolLife", },
+    { label: "Amortization Quantity (Tool Life)", value: "ToolLife", },
     { label: "ToolMaintenanceCost", value: "ToolMaintenanceCost", },
     { label: "NetToolCost", value: "NetToolCost", },
     { label: "OtherCostPercentage", value: "OtherCostPercentage", },
     { label: "AnyOtherCost", value: "AnyOtherCost", },
-    { label: "OtherCost", value: "OtherCost", },
-    { label: "NetOtherCost", value: "NetOtherCost", },
-    { label: "TotalOtherCost", value: "TotalOtherCost", },
     { label: "EffectiveDate", value: "EffectiveDate", },
     { label: "Currency", value: "Currency", },
     { label: "NetPOPriceOtherCurrency", value: "NetPOPriceOtherCurrency", },
+    { label: "NetPOPrice(INR)", value: "NetPOPriceINR", },
     { label: "Remark", value: "Remark", },
     { label: "Status", value: "Status", },
 
@@ -3064,6 +3073,7 @@ export const USER_LISTING_DOWNLOAD_EXCEl = [
 export const OperationGridForToken = [
     { label: "Operation Name", value: "OperationName" },
     { label: "Operation Code", value: "OperationCode" },
+    { label: "Operation Quantity", value: "Quantity" },
     { label: "OldOperationCost", value: "OldOperationCost" },
     { label: "NewOperationCost", value: "NewOperationCost" },
     { label: "OperationCostVariance", value: "OperationCostVariance" },
@@ -3082,6 +3092,7 @@ export const RMGridForToken = [
 export const STGridForToken = [
     { label: "OldSurfaceTreatmentRate", value: "OldSurfaceTreatmentRate" },
     { label: "NewSurfaceTreatmentRate", value: "NewSurfaceTreatmentRate" },
+    { label: "SurfaceArea", value: "SurfaceArea" },
     { label: "OldSurfaceTreatmentCost", value: "OldSurfaceTreatmentCost" },
     { label: "NewSurfaceTreatmentCost", value: "NewSurfaceTreatmentCost" },
     { label: "OldTranspotationCost", value: "OldTranspotationCost" },
@@ -3093,9 +3104,10 @@ export const STGridForToken = [
 ]
 
 export const BOPGridForToken = [
+    { label: "BoughtOutPartQuantity", value: "BoughtOutPartQuantity" },
     { label: "OldBOPCost", value: "OldBOPCost" },
     { label: "NewBOPCost", value: "NewBOPCost" },
-    { label: "BOPVariance", value: "BOPVariance" },
+    { label: "BOP Quantity", value: "BOPVariance" },
 ]
 export const ERGridForToken = [
     { label: "Currency", value: "Currency" },

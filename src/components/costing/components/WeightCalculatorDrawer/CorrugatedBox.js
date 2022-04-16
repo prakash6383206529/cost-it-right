@@ -4,7 +4,6 @@ import { costingInfoContext } from '../CostingDetailStepTwo'
 import { useDispatch, useSelector } from 'react-redux'
 import { Col, Row } from 'reactstrap'
 import { saveRawMaterialCalculationForCorrugatedBox } from '../../actions/CostWorking'
-
 import { TextFieldHookForm, } from '../../../layout/HookFormInputs'
 import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../helper'
 import { reactLocalStorage } from 'reactjs-localstorage'
@@ -50,7 +49,7 @@ function CorrugatedBox(props) {
     })
 
     useEffect(() => {
-        if (CostingViewMode !== true) {
+        if (!CostingViewMode) {
             setBurstingStrength()
             setWidthCuttingAllowance()
             setWidthSheet_LengthSheet()
@@ -86,7 +85,6 @@ function CorrugatedBox(props) {
         const lengthSheet = (2 * (parseInt(data.lengthBox) + parseInt(data.widthBox)) + parseInt(data.stichingLength)) / 25.4;
 
         setDataSend(prevState => ({ ...prevState, widthSheetWithDecimal: widthSheet, lengthSheetWithDecimal: lengthSheet }))
-
         setTimeout(() => {
 
             setValue('width_sheet', checkForDecimalAndNull(widthSheet, localStorage.NoOfDecimalForInputOutput))
@@ -226,11 +224,9 @@ function CorrugatedBox(props) {
                                         rules={{
                                             required: true,
                                             pattern: {
-
-                                                value: /^[0-9]\d*(\.\d+)?$/i,
-                                                message: 'Invalid Number.',
+                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
+                                                message: 'Maximum length for interger is 4 and for decimal is 6',
                                             },
-
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -251,9 +247,8 @@ function CorrugatedBox(props) {
                                         rules={{
                                             required: true,
                                             pattern: {
-
-                                                value: /^[0-9]\d*(\.\d+)?$/i,
-                                                message: 'Invalid Number.',
+                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
+                                                message: 'Maximum length for interger is 4 and for decimal is 6',
                                             },
 
                                         }}
@@ -277,9 +272,8 @@ function CorrugatedBox(props) {
                                         rules={{
                                             required: true,
                                             pattern: {
-
-                                                value: /^[0-9]\d*(\.\d+)?$/i,
-                                                message: 'Invalid Number.',
+                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
+                                                message: 'Maximum length for interger is 4 and for decimal is 6',
                                             },
 
                                         }}
@@ -331,9 +325,8 @@ function CorrugatedBox(props) {
                                         rules={{
                                             required: true,
                                             pattern: {
-
-                                                value: /^[0-9]\d*(\.\d+)?$/i,
-                                                message: 'Invalid Number.',
+                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
+                                                message: 'Maximum length for interger is 4 and for decimal is 6',
                                             },
 
                                         }}
@@ -356,8 +349,8 @@ function CorrugatedBox(props) {
                                         rules={{
                                             required: true,
                                             pattern: {
-                                                value: /^[0-9]\d*(\.\d+)?$/i,
-                                                message: 'Invalid Number.',
+                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
+                                                message: 'Maximum length for interger is 4 and for decimal is 6',
                                             },
 
                                         }}
@@ -382,8 +375,8 @@ function CorrugatedBox(props) {
                                         rules={{
                                             required: true,
                                             pattern: {
-                                                value: /^[0-9]\d*(\.\d+)?$/i,
-                                                message: 'Invalid Number.',
+                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
+                                                message: 'Maximum length for interger is 4 and for decimal is 6',
                                             },
 
                                         }}
@@ -407,9 +400,9 @@ function CorrugatedBox(props) {
                                         rules={{
                                             required: true,
                                             pattern: {
-                                                value: /^(0|[1-9]\d*)(\.\d+)?$/i,
-                                                message: 'Invalid Number.',
-                                            }
+                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
+                                                message: 'Maximum length for interger is 4 and for decimal is 6',
+                                            },
                                         }}
 
                                         handleChange={() => { }}
@@ -420,11 +413,7 @@ function CorrugatedBox(props) {
                                         disabled={props.CostingViewMode ? props.CostingViewMode : false}
                                     />
                                 </Col>
-
                             </Row>
-
-
-
 
                             <Row>
                                 <Col md="12" className={''}>
@@ -434,11 +423,6 @@ function CorrugatedBox(props) {
                                     />
                                 </Col>
                             </Row>
-
-
-
-
-
                             <Row className={'mt15 corrugated-box-label-wrapper'}>
 
                                 <Col md="3">
@@ -472,8 +456,8 @@ function CorrugatedBox(props) {
                                         rules={{
                                             required: true,
                                             pattern: {
-                                                value: /^[0-9]\d*(\.\d+)?$/i,
-                                                message: 'Invalid Number.',
+                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
+                                                message: 'Maximum length for interger is 4 and for decimal is 6',
                                             },
 
                                         }}
@@ -498,8 +482,8 @@ function CorrugatedBox(props) {
                                         rules={{
                                             required: false,
                                             pattern: {
-                                                value: /^[0-9]\d*(\.\d+)?$/i,
-                                                message: 'Invalid Number.',
+                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
+                                                message: 'Maximum length for interger is 4 and for decimal is 6',
                                             },
                                         }}
                                         handleChange={() => { }}
@@ -523,8 +507,8 @@ function CorrugatedBox(props) {
                                         rules={{
                                             required: true,
                                             pattern: {
-                                                value: /^[0-9]\d*(\.\d+)?$/i,
-                                                message: 'Invalid Number.',
+                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
+                                                message: 'Maximum length for interger is 4 and for decimal is 6',
                                             },
                                         }}
                                         handleChange={() => { }}
@@ -546,8 +530,8 @@ function CorrugatedBox(props) {
                                         rules={{
                                             required: true,
                                             pattern: {
-                                                value: /^[0-9]\d*(\.\d+)?$/i,
-                                                message: 'Invalid Number.',
+                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
+                                                message: 'Maximum length for interger is 4 and for decimal is 6',
                                             },
 
                                         }}
@@ -571,8 +555,8 @@ function CorrugatedBox(props) {
                                         rules={{
                                             required: false,
                                             pattern: {
-                                                value: /^[0-9]\d*(\.\d+)?$/i,
-                                                message: 'Invalid Number.',
+                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
+                                                message: 'Maximum length for interger is 4 and for decimal is 6',
                                             },
 
                                         }}
@@ -584,17 +568,8 @@ function CorrugatedBox(props) {
                                         disabled={true}
                                     />
                                 </Col>
-
-
                             </Row>
-
-
-
                             <hr className="mx-n4 w-auto" />
-
-
-
-
                             <Row>
                                 <Col md="12" className={''}>
                                     <HeaderTitle className="border-bottom"
@@ -602,8 +577,6 @@ function CorrugatedBox(props) {
                                         customClass={'underLine-title'}
                                     />
                                 </Col>
-
-
                                 <Col md="3">
                                     <TextFieldHookForm
                                         label={'Paper wt.+ Process Rejection(Kg)'}
@@ -615,8 +588,8 @@ function CorrugatedBox(props) {
                                         rules={{
                                             required: false,
                                             pattern: {
-                                                value: /^[0-9]\d*(\.\d+)?$/i,
-                                                message: 'Invalid Number.'
+                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
+                                                message: 'Maximum length for interger is 4 and for decimal is 6',
                                             },
 
                                         }}
@@ -628,9 +601,6 @@ function CorrugatedBox(props) {
                                         disabled={true}
                                     />
                                 </Col>
-
-
-
                             </Row>
                         </div>
 
@@ -655,9 +625,5 @@ function CorrugatedBox(props) {
             </div>
         </>
     )
-
-
-
-
 }
 export default CorrugatedBox

@@ -1,9 +1,8 @@
-import React, { useState, useEffect, useContext, useRef } from 'react';
+import React, { useState, useEffect, useContext, } from 'react';
 import { useDispatch, useSelector, } from 'react-redux';
 import { Container, Row, Col, } from 'reactstrap';
 import { getProcessDrawerDataList, getProcessDrawerVBCDataList } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
-import { GridTotalFormate } from '../../../common/TableGridFunctions';
 import NoContentFound from '../../../common/NoContentFound';
 import { EMPTY_DATA } from '../../../../config/constants';
 import Toaster from '../../../common/Toaster';
@@ -24,9 +23,7 @@ function AddProcess(props) {
   const [selectedMachineIds, setSelectedMachineIds] = useState(props.MachineIds)
   const [gridApi, setGridApi] = useState(null);
   const [gridColumnApi, setGridColumnApi] = useState(null);
-  const [rowData, setRowData] = useState(null);
   const dispatch = useDispatch()
-  const table = useRef()
 
   const costData = useContext(costingInfoContext)
 
@@ -116,28 +113,10 @@ function AddProcess(props) {
     }
   }, []);
 
-  /**
-  * @method renderPaginationShowsTotal
-  * @description Pagination
-  */
-  const renderPaginationShowsTotal = (start, to, total) => {
-    return <GridTotalFormate start={start} to={to} total={total} />
-  }
-
-  const options = {
-    clearSearch: true,
-    noDataText: (processDrawerList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
-    paginationShowsTotal: renderPaginationShowsTotal(),
-    prePage: <span className="prev-page-pg"></span>, // Previous page button text
-    nextPage: <span className="next-page-pg"></span>, // Next page button text
-    firstPage: <span className="first-page-pg"></span>, // First page button text
-    lastPage: <span className="last-page-pg"></span>,
-    sizePerPage: 5,
-  };
 
   const onRowSelect = (row, isSelected, e) => {
     var selectedRows = gridApi.getSelectedRows();
-    if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
+    if (JSON.stringify(selectedRows) === JSON.stringify(props.Ids)) return false
     setSelectedRowData(selectedRows)
     // if (isSelected) {
     //   let tempArr = [...selectedRowData, row]
@@ -148,31 +127,6 @@ function AddProcess(props) {
     //   setSelectedRowData(tempArr)
     // }
   }
-
-  const onSelectAll = (isSelected, rows) => {
-    if (isSelected) {
-      setSelectedRowData(rows)
-
-      // if (selectedRowData.length !== processDrawerList.length) {
-      //   setSelectedRowData(processDrawerList.map(row => row))
-      //   // setSelectedRowData(this?.refs?.table?.state?.data.map(row => row));
-      //   return processDrawerList.map(row => row.MachineRateId);
-      // } else {
-      //   return;
-      // }
-
-    } else {
-      setSelectedRowData([])
-    }
-  }
-
-  const selectRowProp = {
-    mode: 'checkbox',
-    clickToSelect: true,
-    unselectable: selectedIds,
-    onSelect: onRowSelect,
-    onSelectAll: onSelectAll,
-  };
 
   /**
   * @method addRow
@@ -192,10 +146,6 @@ function AddProcess(props) {
   */
   const cancel = () => {
     props.closeDrawer()
-  }
-
-  const onSubmit = data => {
-    toggleDrawer('')
   }
 
   const isFirstColumn = (params) => {
@@ -247,7 +197,7 @@ function AddProcess(props) {
 
   }, [tableData])
 
-  const isRowSelectable = rowNode => rowNode.data ? !selectedIds.includes(rowNode.data.ProcessId) || !selectedMachineIds.includes(rowNode.data.MachineRateId) : false;
+  const isRowSelectable = rowNode => rowNode.data ? !props.Ids.includes(rowNode.data.ProcessId) || !props.MachineIds.includes(rowNode.data.MachineRateId) : false;
 
   const resetState = () => {
     gridOptions.columnApi.resetColumnState();
@@ -274,7 +224,7 @@ function AddProcess(props) {
                     <h3>{'ADD Process:'}</h3>
                   </div>
                   <div
-                    onClick={(e) => toggleDrawer(e)}
+                    onClick={cancel}
                     className={'close-button right'}>
                   </div>
                 </Col>

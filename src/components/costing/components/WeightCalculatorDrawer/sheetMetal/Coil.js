@@ -14,13 +14,9 @@ import { G, KG, MG, } from '../../../../../config/constants'
 import { AcceptableSheetMetalUOM } from '../../../../../config/masterData'
 import { ViewCostingContext } from '../../CostingDetails'
 
-
-
 function Coil(props) {
     const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest;
-
     const { rmRowData, isEditFlag } = props
-
 
     const convert = (FinishWeightOfSheet, dimmension) => {
         switch (dimmension) {
@@ -82,8 +78,6 @@ function Coil(props) {
     const [FinishWeight, setFinishWeights] = useState(WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? convert(WeightCalculatorRequest.FinishWeight, WeightCalculatorRequest.UOMForDimension) : '')
     const UOMSelectList = useSelector((state) => state.comman.UOMSelectList)
 
-
-
     const fieldValues = useWatch({
         control,
         name: ['StripWidth', 'Thickness', 'Pitch', 'Cavity'],
@@ -116,6 +110,15 @@ function Coil(props) {
 
     const setFinishWeight = (e) => {
         const FinishWeight = e.target.value
+        const grossWeight = checkForNull(getValues('GrossWeight'))
+        if (e.target.value > grossWeight) {
+            setTimeout(() => {
+                setValue('FinishWeight', 0)
+            }, 200);
+
+            Toaster.warning('Finish Weight should not be greater than gross weight')
+            return false
+        }
         switch (UOMDimension.label) {
             case G:
                 setTimeout(() => {
@@ -202,7 +205,6 @@ function Coil(props) {
      */
     const onSubmit = (values) => {
 
-
         if (WeightCalculatorRequest && WeightCalculatorRequest.WeightCalculationId !== "00000000-0000-0000-0000-000000000000") {
             if (tempOldObj.GrossWeight !== dataToSend.GrossWeight || tempOldObj.FinishWeight !== dataToSend.FinishWeight || tempOldObj.NetSurfaceArea !== dataToSend.NetSurfaceArea || tempOldObj.UOMForDimensionId !== UOMDimension.value) {
                 setIsChangeApplied(true)
@@ -233,7 +235,6 @@ function Coil(props) {
             FinishWeight: getValues('FinishWeight'),
         }
 
-
         dispatch(saveRawMaterialCalculationForSheetMetal(data, res => {
             if (res.data.Result) {
                 data.WeightCalculationId = res.data.Identity
@@ -254,7 +255,6 @@ function Coil(props) {
             setValue('GrossWeight', checkForDecimalAndNull(setValueAccToUOM(grossWeight, value.label), localStorage.NoOfDecimalForInputOutput))
             setValue('FinishWeight', checkForDecimalAndNull(setValueAccToUOM(FinishWeight, value.label), localStorage.NoOfDecimalForInputOutput))
         }, 500);
-
     }
 
     const UnitFormat = () => {
@@ -292,11 +292,9 @@ function Coil(props) {
                                         rules={{
                                             required: true,
                                             pattern: {
-                                                //value: /^[0-9]*$/i,
-                                                value: /^[0-9]\d*(\.\d+)?$/i,
-                                                message: 'Invalid Number.',
+                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
+                                                message: 'Maximum length for interger is 4 and for decimal is 6',
                                             },
-                                            // maxLength: 4,
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -317,11 +315,9 @@ function Coil(props) {
                                         rules={{
                                             required: true,
                                             pattern: {
-                                                //value: /^[0-9]*$/i,
-                                                value: /^[0-9]\d*(\.\d+)?$/i,
-                                                message: 'Invalid Number.',
+                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
+                                                message: 'Maximum length for interger is 4 and for decimal is 6',
                                             },
-                                            // maxLength: 4,
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -342,11 +338,9 @@ function Coil(props) {
                                         rules={{
                                             required: true,
                                             pattern: {
-                                                //value: /^[0-9]*$/i,
-                                                value: /^[0-9]\d*(\.\d+)?$/i,
-                                                message: 'Invalid Number.',
+                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
+                                                message: 'Maximum length for interger is 4 and for decimal is 6',
                                             },
-                                            // maxLength: 4,
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -367,11 +361,9 @@ function Coil(props) {
                                         rules={{
                                             required: true,
                                             pattern: {
-                                                //value: /^[0-9]*$/i,
-                                                value: /^[0-9]\d*(\.\d+)?$/i,
-                                                message: 'Invalid Number.',
+                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
+                                                message: 'Maximum length for interger is 4 and for decimal is 6',
                                             },
-                                            // maxLength: 4,
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -396,10 +388,9 @@ function Coil(props) {
                                         rules={{
                                             required: false,
                                             pattern: {
-                                                value: /^[0-9]\d*(\.\d+)?$/i,
-                                                message: 'Invalid Number.'
+                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
+                                                message: 'Maximum length for interger is 4 and for decimal is 6',
                                             },
-                                            // maxLength: 3,
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -457,10 +448,9 @@ function Coil(props) {
                                         rules={{
                                             required: true,
                                             pattern: {
-                                                value: /^[0-9]\d*(\.\d+)?$/i,
-                                                message: 'Invalid Number.'
+                                                value: /^\d{0,4}(\.\d{0,7})?$/i,
+                                                message: 'Maximum length for interger is 4 and for decimal is 7',
                                             },
-                                            // maxLength: 4,
                                         }}
                                         handleChange={setFinishWeight}
                                         defaultValue={''}
