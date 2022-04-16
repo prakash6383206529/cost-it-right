@@ -85,6 +85,7 @@ function PartSurfaceTreatment(props) {
           <td>{item && item.PartType}</td>
           <td>{item.CostingPartDetails.SurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.SurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
           <td>{item.CostingPartDetails.TransportationCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TransportationCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+          <td>{item?.Quantity}</td>
           <td>{item.CostingPartDetails.NetSurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.NetSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
         </div>
         <td>
@@ -107,6 +108,8 @@ function PartSurfaceTreatment(props) {
               <div className={`${CostingViewMode ? 'fa fa-eye pr-1' : 'plus'}`}></div>Surface T.</button>
           }
         </td>
+        {/*WHEN COSTING OF THAT PART IS  APPROVED SO COSTING COMES AUTOMATICALLY FROM BACKEND AND THIS KEY WILL COME TRUE (WORK LIKE VIEW MODE)*/}
+        <td className="text-right lock-container"><div className={`${(item.IsLocked || item.IsPartLocked) ? 'lock_icon' : ''}`}>{''}</div></td>
       </tr>
 
       {IsDrawerOpen && <SurfaceTreatment

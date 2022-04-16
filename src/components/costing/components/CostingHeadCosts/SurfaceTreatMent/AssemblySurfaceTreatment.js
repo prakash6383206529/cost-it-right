@@ -2,7 +2,7 @@ import React, { useContext, useState, } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { costingInfoContext } from '../../CostingDetailStepTwo';
 import { getSurfaceTreatmentTabData } from '../../../actions/Costing';
-import { checkForDecimalAndNull, } from '../../../../../helper';
+import { checkForDecimalAndNull, checkForNull, } from '../../../../../helper';
 import PartSurfaceTreatment from './PartSurfaceTreatment';
 import SurfaceTreatment from '.';
 import { ViewCostingContext } from '../../CostingDetails';
@@ -113,24 +113,41 @@ function AssemblySurfaceTreatment(props) {
           </td>
           <td>{item && item.BOMLevel}</td>
           <td>{item && item.PartType}</td>
-          <td>{item.CostingPartDetails.SurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.SurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
-          <td>{item.CostingPartDetails.TransportationCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TransportationCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
-          <td>
-            {item.CostingPartDetails.NetSurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.NetSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : 0}
-            {/* {
-              item.CostingPartDetails && (item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly !== null) ?
+          <td>{item.CostingPartDetails.TotalSurfaceTreatmentCostWithQuantity !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalSurfaceTreatmentCostWithQuantity, initialConfiguration.NoOfDecimalForPrice) : 0}
+            {
+              item.CostingPartDetails && (item.CostingPartDetails.TotalSurfaceTreatmentCostWithQuantity !== null && item.CostingPartDetails.TotalSurfaceTreatmentCostWithQuantity !== 0) ?
                 <div class="tooltip-n ml-2"><i className="fa fa-info-circle text-primary tooltip-icon"></i>
                   <span class="tooltiptext">
-                    {`Assembly's Surface Treatment Cost:- ${item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly + item.CostingPartDetails.TotalTransportationCostPerAssembly}`}
+                    {`Assembly's Surface Treatment Cost:- ${checkForDecimalAndNull(item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly, initialConfiguration.NoOfDecimalForPrice)}`}
                     <br></br>
-                    {`Child Parts Surface Treatment Cost:- ${item.CostingPartDetails.NetSurfaceTreatmentCost - (item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly + item.CostingPartDetails.TotalTransportationCostPerAssembly)}`}
+                    {`Sub Assembly's Surface Treatment Cost:- ${checkForDecimalAndNull(item.CostingPartDetails.TotalSurfaceTreatmentCostPerSubAssembly, initialConfiguration.NoOfDecimalForPrice)}`}
+                    <br></br>
+                    {`Child Parts Surface Treatment Cost:- ${checkForDecimalAndNull(item.CostingPartDetails.TotalSurfaceTreatmentCostComponent, initialConfiguration.NoOfDecimalForPrice)}`}
                   </span>
                 </div> : ''
-            } */}
+            }
+          </td>
+          <td>{item.CostingPartDetails.TotalTransportationCostWithQuantity !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalTransportationCostWithQuantity, initialConfiguration.NoOfDecimalForPrice) : 0}
+            {
+              item.CostingPartDetails && (item.CostingPartDetails.TotalTransportationCostWithQuantity !== null && item.CostingPartDetails.TotalTransportationCostWithQuantity !== 0) ?
+                <div class="tooltip-n ml-2"><i className="fa fa-info-circle text-primary tooltip-icon"></i>
+                  <span class="tooltiptext">
+                    {`Assembly's Extra Cost:- ${checkForDecimalAndNull(item.CostingPartDetails.TotalTransportationCostPerAssembly, initialConfiguration.NoOfDecimalForPrice)}`}
+                    <br></br>
+                    {`Sub Assembly's Extra Cost:- ${checkForDecimalAndNull(item.CostingPartDetails.TotalTransportationCostPerSubAssembly, initialConfiguration.NoOfDecimalForPrice)}`}
+                    <br></br>
+                    {`Child Parts Extra Cost:- ${checkForDecimalAndNull(item.CostingPartDetails.TotalTransportationCostComponent, initialConfiguration.NoOfDecimalForPrice)}`}
+                  </span>
+                </div> : ''
+            }
+          </td>
+          <td>{checkForNull(item?.Quantity ? item.Quantity : 3)}</td>
+          <td>
+            {item.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostWithQuantitys !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostWithQuantitys, initialConfiguration.NoOfDecimalForPrice) : 0}
           </td>
         </div>
         <td>
-          {!CostingViewMode && (item.CostingPartDetails.NetSurfaceTreatmentCost !== 0) ?
+          {!CostingViewMode && (item.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostWithQuantitys !== 0) ?
             <button
               type="button"
               className={'user-btn surface-treatment-btn'}
@@ -154,6 +171,8 @@ function AssemblySurfaceTreatment(props) {
               <div className={`${CostingViewMode ? 'fa fa-eye pr-1' : 'plus'}`}></div> Surface T.</button>
           }
         </td>
+        {/*WHEN COSTING OF THAT PART IS  APPROVED SO COSTING COMES AUTOMATICALLY FROM BACKEND AND THIS KEY WILL COME TRUE (WORK LIKE VIEW MODE)*/}
+        <td className="text-right lock-container"><div className={`${(item.IsLocked || item.IsPartLocked) ? 'lock_icon' : ''}`}>{''}</div></td>
       </tr>
 
       {item.IsOpen && nestedPartComponent}
