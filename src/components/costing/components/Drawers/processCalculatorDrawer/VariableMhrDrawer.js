@@ -15,7 +15,6 @@ import { useDispatch } from 'react-redux'
 import SheetMetalBaicDrawer from './SheetMetalBaicDrawer'
 import InjectionMoulding from './InjectionMoulding'
 import { SHEETMETAL, RUBBER, PLASTIC, MACHINING, FORGING, DIE_CASTING, Ferrous_Casting, Non_Ferrous_HPDC, FACING, HARDFACING, BROACHING, DRILLING, TURNING, CHAMFERING, SIDEFACEMILING, SLOTCUTTING, CHAMFERINGMILLER, ENDMILL, FACEMILING } from '../../../../../config/masterData'
-
 import { HOUR, TIME } from '../../../../../config/constants'
 import Broaching from './Broaching'
 import HardFacing from './HardFacing'
@@ -71,13 +70,9 @@ function VariableMhrDrawer(props) {
 
   const getProcessComponent = (process) => {
 
-
-
     if (technology === MACHINING || technology === FORGING || technology === Ferrous_Casting || technology === DIE_CASTING) {
 
-
       if (calculatorData.UOMType === TIME) {
-
         switch (process) {
 
           // 2 MORE PROCESS WILL BE ADDED HERE
@@ -87,43 +82,31 @@ function VariableMhrDrawer(props) {
                 CostingViewMode={props.CostingViewMode}
                 calculateMachineTime={calculateMachineTime}
                 tonnage={tonnage}
-                rmFinishWeight={props.rmFinishWeight}
                 calculatorData={calculatorData}
               />
             )
-
-
           case HARDFACING:
             return (
               <HardFacing
                 CostingViewMode={props.CostingViewMode}
                 calculateMachineTime={calculateMachineTime}
                 tonnage={tonnage}
-                rmFinishWeight={props.rmFinishWeight}
                 calculatorData={calculatorData}
               />
             )
-
-
-
           default:
-
             return (
               <UomTimeProcessDefaultCalculator
                 CostingViewMode={props.CostingViewMode}
                 calculateMachineTime={calculateMachineTime}
                 tonnage={tonnage}
-                rmFinishWeight={props.rmFinishWeight}
                 calculatorData={calculatorData}
               />
             )
 
-
-
         }
       } else {
 
-
         return (
           <SheetMetalBaicDrawer
             CostingViewMode={props.CostingViewMode}
@@ -134,18 +117,10 @@ function VariableMhrDrawer(props) {
           />
         )
       }
-
-
-
-
-
     }
 
     else {
-
-
       if (calculatorData.UOMType === TIME) {
-
         return (
           <SheetMetalBaicDrawer
             CostingViewMode={props.CostingViewMode}
@@ -155,11 +130,8 @@ function VariableMhrDrawer(props) {
             calculatorData={calculatorData}
           />
         )
-
 
       } else {
-
-
         return (
           <SheetMetalBaicDrawer
             CostingViewMode={props.CostingViewMode}
@@ -169,16 +141,9 @@ function VariableMhrDrawer(props) {
             calculatorData={calculatorData}
           />
         )
-
       }
-
-
     }
-
   }
-
-
-
 
   return (
     <div>
