@@ -284,6 +284,13 @@ function CostingDetails(props) {
       applyPermission(topAndLeftMenuData, technology.label)
       reset({
         Part: '',
+        PartName: '',
+        Description: '',
+        ECNNumber: '',
+        DrawingNumber: '',
+        RevisionNumber: '',
+        ShareOfBusiness: '',
+        EffectiveDate: '',
       })
 
     } else {
