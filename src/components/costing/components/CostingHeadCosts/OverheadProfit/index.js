@@ -1671,7 +1671,7 @@ function OverheadProfit(props) {
                           register={register}
                           mandatory={false}
                           handleChange={() => { }}
-                          defaultValue={profitObj.ProfitCombinedTotalCost !== null ? profitObj.ProfitCombinedTotalCost : ''}
+                          defaultValue={profitObj.ProfitCombinedTotalCost !== null ? checkForDecimalAndNull(profitObj.ProfitCombinedTotalCost, initialConfiguration.NoOfDecimalForPrice) : ''}
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.ProfitCombinedTotalCost}
