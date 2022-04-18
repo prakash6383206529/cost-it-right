@@ -102,18 +102,18 @@ function WeightCalculator(props) {
           <TabContent activeTab={activeTab}>
             {activeTab === '1' && (
               <TabPane tabId="1">
-                <Pipe rmRowData={props.rmRowData} isEditFlag={props.isEditFlag} toggleDrawer={toggleDrawer} />
+                <Pipe rmRowData={props.rmRowData} isEditFlag={props.isEditFlag} toggleDrawer={toggleDrawer} item={props.item} />
               </TabPane>
             )}
             {activeTab === '2' && (
               <TabPane tabId="2">
-                <Coil rmRowData={props.rmRowData} isEditFlag={props.isEditFlag} toggleDrawer={toggleDrawer} />
+                <Coil rmRowData={props.rmRowData} isEditFlag={props.isEditFlag} toggleDrawer={toggleDrawer} item={props.item} />
               </TabPane>
             )}
             {/* THIS IS FOR SHEET  */}
             {activeTab === '3' && (
               <TabPane tabId="3">
-                <Sheet rmRowData={props.rmRowData} isEditFlag={props.isEditFlag} toggleDrawer={toggleDrawer} />
+                <Sheet rmRowData={props.rmRowData} isEditFlag={props.isEditFlag} toggleDrawer={toggleDrawer} item={props.item} />
               </TabPane>
             )}
             {activeTab === '4' && (

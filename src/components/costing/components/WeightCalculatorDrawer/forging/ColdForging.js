@@ -17,7 +17,7 @@ import MachiningStockTable from '../MachiningStockTable'
 import LossStandardTable from '../LossStandardTable'
 
 function ColdForging(props) {
-  const { rmRowData, CostingViewMode } = props
+  const { rmRowData, CostingViewMode, item } = props
   const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest
   const defaultValues = {
     finishedWeight: WeightCalculatorRequest &&
@@ -276,7 +276,7 @@ function ColdForging(props) {
     obj.ForgingWeightCalculatorId = WeightCalculatorRequest && WeightCalculatorRequest.ForgingWeightCalculatorId ? WeightCalculatorRequest.ForgingWeightCalculatorId : "0"
     obj.CostingRawMaterialDetailsIdRef = rmRowData.RawMaterialDetailId
     obj.RawMaterialIdRef = rmRowData.RawMaterialId
-    obj.BaseCostingIdRef = costData.CostingId
+    obj.BaseCostingIdRef = item.CostingId
     obj.FinishWeight = getValues('finishedWeight')
     obj.ForgedWeight = dataSend.forgedWeight
     obj.GrossWeight = dataSend.TotalInputWeight
