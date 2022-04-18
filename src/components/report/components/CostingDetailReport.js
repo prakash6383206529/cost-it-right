@@ -22,10 +22,11 @@ const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 
-
 function ReportListing(props) {
 
     const [selectedRowData, setSelectedRowData] = useState([]);
+    const [searchButtonClicked, setSearchButtonClicked] = useState(false);
+    const [filterModel, setFilterModel] = useState({});
     const [selectedIds, setSelectedIds] = useState(props.Ids);
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
@@ -45,7 +46,6 @@ function ReportListing(props) {
     const [floatingFilterData, setFloatingFilterData] = useState({ CostingNumber: "", TechnologyName: "", AmorizationQuantity: "", AnyOtherCost: "", CostingVersion: "", DisplayStatus: "", EffectiveDate: "", Currency: "", DepartmentCode: "", DepartmentName: "", DiscountCost: "", ECNNumber: "", FinalPOPrice: "", RawMaterialFinishWeight: "", FreightCost: "", FreightPercentage: "", FreightType: "", GrossWeight: "", HundiOrDiscountValue: "", ICCApplicability: "", ICCCost: "", ICCInterestRate: "", ICCOn: "", MasterBatchTotal: "", ModelTypeForOverheadAndProfit: "", ModifiedByName: "", ModifiedByUserName: "", ModifiedDate: "", NetBoughtOutPartCost: "", NetConversionCost: "", NetConvertedPOPrice: "", NetDiscountsCost: "", NetFreightPackaging: "", NetFreightPackagingCost: "", NetICCCost: "", NetOperationCost: "", NetOtherCost: "", NetOverheadAndProfitCost: "", NetPOPrice: "", NetPOPriceINR: "", NetPOPriceInCurrency: "", NetPOPriceOtherCurrency: "", NetProcessCost: "", NetRawMaterialsCost: "", NetSurfaceTreatmentCost: "", NetToolCost: "", NetTotalRMBOPCC: "", OtherCost: "", OtherCostPercentage: "", OverheadApplicability: "", OverheadCombinedCost: "", OverheadCost: "", OverheadOn: "", OverheadPercentage: "", PackagingCost: "", PackagingCostPercentage: "", PartName: "", PartNumber: "", PartType: "", PaymentTermCost: "", PaymentTermsOn: "", PlantCode: "", PlantName: "", ProfitApplicability: "", ProfitCost: "", ProfitOn: "", ProfitPercentage: "", RMGrade: "", RMSpecification: "", RawMaterialCode: "", RawMaterialGrossWeight: "", RawMaterialName: "", RawMaterialRate: "", RawMaterialScrapWeight: "", RawMaterialSpecification: "", RecordInsertedBy: "", RejectOn: "", RejectionApplicability: "", RejectionCost: "", RejectionPercentage: "", Remark: "", Rev: "", RevisionNumber: "", ScrapRate: "", ScrapWeight: "", SurfaceTreatmentCost: "", ToolCost: "", ToolLife: "", ToolMaintenaceCost: "", ToolPrice: "", ToolQuantity: "", TotalCost: "", TotalOtherCost: "", TotalRecordCount: "", TransportationCost: "", VendorCode: "", VendorName: "", Version: "", RawMaterialGrade: "", HundiOrDiscountPercentage: "", FromDate: "", ToDate: "" })
     const [enableSearchFilterSearchButton, setEnableSearchFilterButton] = useState(true)
     const [reportListingDataStateArray, setReportListingDataStateArray] = useState([])
-
 
     var filterParams = {
         comparator: function (filterLocalDateAtMidnight, cellValue) {
@@ -68,32 +68,26 @@ function ReportListing(props) {
             if (cellDate > filterLocalDateAtMidnight) {
                 return 1;
             }
-
         },
         browserDatePicker: true,
         minValidYear: 2000,
     };
 
     let filterClick = false
-
     const dispatch = useDispatch()
-
     const { handleSubmit, getValues } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onChange',
     })
 
-
     let reportListingData = useSelector((state) => state.report.reportListing)
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
-
 
     const simulatedOnFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         //return cell != null ? moment(cell).format('DD/MM/YYYY hh:mm A') : '';
         return cellValue != null ? cellValue : '';
     }
-
 
     const createDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -107,7 +101,6 @@ function ReportListing(props) {
         setCostingVersion(temp);
         return temp
     }
-
 
     // @method hyperLinkFormatter( This function will make the first column details into hyperlink )
 
@@ -125,7 +118,6 @@ function ReportListing(props) {
         )
     }
 
-
     const viewDetails = (UserId, cell, row) => {
 
         if (row.BaseCostingId && Object.keys(row.BaseCostingId).length > 0) {
@@ -139,9 +131,8 @@ function ReportListing(props) {
             },
             ))
         }
-
         setIsOpen(true)
-
+        setUserId(UserId)
     }
 
     const closeUserDetails = () => {
@@ -163,9 +154,7 @@ function ReportListing(props) {
         return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
     }
 
-
     const partTypeAssemblyFormatter = (props) => {
-
         const cellValue = props?.value;
         if (props.data.PartType === "Assembly") {
             return "Multiple RM"
@@ -211,7 +200,6 @@ function ReportListing(props) {
    */
 
     const getTableData = (skip, take, isPagination, data, isLastWeek) => {
-
         let newData = {}
         if (isLastWeek) {
             let currentDate = new Date()
@@ -227,12 +215,20 @@ function ReportListing(props) {
         }
         dispatch(getCostingReport(skip, take, isPagination, newData, isLastWeek, (res) => {
             if (res) {
+                let isReset = true
                 setLoader(false)
+                setTimeout(() => {
+                    for (var prop in floatingFilterData) {
+                        if (floatingFilterData[prop] !== "") {
+                            isReset = false
+                        }
+                    }
+                    // Sets the filter model via the grid API
+                    isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(filterModel))
+                }, 300);
             }
-
         }))
     }
-
 
     useEffect(() => {
 
@@ -240,8 +236,6 @@ function ReportListing(props) {
         getTableData(0, 100, true, floatingFilterData, false);
 
     }, [])
-
-
 
     const onBtNext = () => {
 
@@ -254,24 +248,17 @@ function ReportListing(props) {
 
             setCurrentRowIndex(nextNo)
         }
-
     };
 
     const onBtPrevious = () => {
 
         if (currentRowIndex >= 10) {
-
             setPageNo(pageNo - 1)
             const previousNo = currentRowIndex - 10;
-
             apiCall(previousNo)
-
             setCurrentRowIndex(previousNo)
-
         }
     }
-
-
 
     const apiCall = (no) => {                      //COMMON FUNCTION FOR PREVIOUS & NEXT BUTTON
 
@@ -281,9 +268,7 @@ function ReportListing(props) {
 
             getTableData(no, 100, true, floatingFilterData, false);
         }
-
     }
-
 
     useEffect(() => {
 
@@ -295,50 +280,49 @@ function ReportListing(props) {
 
     }, [reportListingData])
 
-
     const onFloatingFilterChanged = (value) => {
-
         setEnableSearchFilterButton(false)
-        setWarningMessage(true)
+
+        // Gets filter model via the grid API
+        const model = gridOptions?.api?.getFilterModel();
+        setFilterModel(model)
 
         if (value?.filterInstance?.appliedModel === null || value?.filterInstance?.appliedModel?.filter === "") {
             setWarningMessage(false)
 
             if (!filterClick) {
-
                 setFloatingFilterData({ ...floatingFilterData, [value.column.colId]: "" })                                                         // DYNAMICALLY SETTING KEY:VALUE PAIRS IN OBJECT THAT WE ARE RECEIVING FROM THE FLOATING FILTER
             }
 
         } else {
-
+            if (!searchButtonClicked) {
+                setWarningMessage(true)
+            }
+            // setSearchButtonClicked(false)
             if (value.column.colId === "EffectiveDate") {
                 return false
             }
-
             setFloatingFilterData({ ...floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter })
         }
         filterClick = false
 
     }
 
-
     const onSearch = () => {
-
         setWarningMessage(false)
         setPageNo(1)
         setCurrentRowIndex(0)
         gridOptions?.columnApi?.resetColumnState();
-        gridOptions?.api?.setFilterModel(null);
+        //gridOptions?.api?.setFilterModel(null);
         getTableData(0, 100, true, floatingFilterData, false);
         setEnableSearchFilterButton(true)
         filterClick = true
+        setSearchButtonClicked(true)
     }
-
 
     const isFirstColumn = (params) => {
         var displayedColumns = params.columnApi.getAllDisplayedColumns();
         var thisIsFirstColumn = displayedColumns[0] === params.column;
-
         return thisIsFirstColumn;
     }
 
@@ -351,7 +335,6 @@ function ReportListing(props) {
         checkboxSelection: isFirstColumn
     };
 
-
     const onGridReady = (params) => {
 
         setGridApi(params.api)
@@ -363,8 +346,6 @@ function ReportListing(props) {
     const onPageSizeChanged = (newPageSize) => {
         var value = document.getElementById('page-size').value;
         gridApi.paginationSetPageSize(Number(value));
-
-
         if (Number(newPageSize) === 10) {
             setPageSize10(true)
             setPageSize50(false)
@@ -385,11 +366,9 @@ function ReportListing(props) {
 
     };
 
-
     useEffect(() => {
 
     }, [tableData])
-
 
     const frameworkComponents = {
         linkableFormatter: linkableFormatter,
@@ -407,16 +386,13 @@ function ReportListing(props) {
         decimalPriceFormatter: decimalPriceFormatter
     };
 
-
-
     const resetState = () => {
         gridOptions?.columnApi?.resetColumnState();
-        gridOptions?.api?.setFilterModel(null);
+        setSearchButtonClicked(false)
 
         for (var prop in floatingFilterData) {
             floatingFilterData[prop] = ""
         }
-
         setFloatingFilterData(floatingFilterData)
         setWarningMessage(false)
         setPageNo(1)
@@ -427,8 +403,7 @@ function ReportListing(props) {
     const onRowSelect = () => {
 
         var selectedRows = gridApi.getSelectedRows();
-        if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
-        var selected = gridApi.getSelectedNodes()
+        if (JSON.stringify(selectedRows) === JSON.stringify(props.Ids)) return false
         setSelectedRowData(selectedRows)
 
     }
@@ -436,19 +411,16 @@ function ReportListing(props) {
     const renderColumn = (fileName) => {
 
         let tempData
-        if (selectedRowData.length == 0) {
+        if (selectedRowData.length === 0) {
             tempData = reportListingData
         }
         else {
             tempData = selectedRowData
         }
         return returnExcelColumn(REPORT_DOWNLOAD_EXCEl, tempData)
-
     }
 
     const returnExcelColumn = (data = [], TempData) => {
-        let temp = []
-
         return (<ExcelSheet data={TempData} name={ReportMaster}>
             {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} />)}
         </ExcelSheet>);
@@ -478,7 +450,7 @@ function ReportListing(props) {
             {isLoader && <LoaderCustom />}
             <form onSubmit={handleSubmit(onSubmit)} noValidate>
 
-                <h1 className="mb-0">Report</h1>
+                <h1 className="mb-0">Costing Details Report</h1>
 
                 <Row className="pt-3 blue-before ">
                     <Col md="3">
@@ -535,7 +507,7 @@ function ReportListing(props) {
                         <AgGridColumn field='VendorCode' headerName='Vendor(Code)' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='PlantName' headerName='Plant' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='PlantCode' headerName='Plant(Code)' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='PartName' headerName='Part' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='PartName' headerName='Part Name' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='PartNumber' headerName='Part Number' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='ECNNumber' headerName='ECN Number' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='PartType' headerName='Part Type' cellRenderer='hyphenFormatter'></AgGridColumn>
@@ -560,11 +532,11 @@ function ReportListing(props) {
                         <AgGridColumn field='NetSurfaceTreatmentCost' headerName='Net Surface Treatment Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                         <AgGridColumn field='ModelTypeForOverheadAndProfit' headerName='Model Type' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='OverheadApplicability' headerName='Overhead Applicability' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='OverheadPercentage' headerName='Overhead Percentage' cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
+                        <AgGridColumn field='OverheadPercentage' headerName='Overhead Percentage(Overall)' cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
                         <AgGridColumn field='OverheadCombinedCost' headerName='Overhead Combined Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                         {/* <AgGridColumn field='OverheadOn' headerName='Overhead On' cellRenderer='hyphenFormatter'></AgGridColumn> */}
                         <AgGridColumn field='ProfitApplicability' headerName='Profit Applicability' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='ProfitPercentage' headerName='Profit Percentage' cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
+                        <AgGridColumn field='ProfitPercentage' headerName='Profit Percentage(Overall)' cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
                         <AgGridColumn field='ProfitCost' headerName='Profit Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                         {/* <AgGridColumn field='ProfitOn' headerName='Profit On' cellRenderer='hyphenFormatter'></AgGridColumn> */}
                         <AgGridColumn field='NetOverheadAndProfitCost' headerName='Net Overhead And Profit Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
@@ -600,7 +572,7 @@ function ReportListing(props) {
                         {/* <AgGridColumn field='NetPOPrice' headerName='Net PO Price' cellRenderer='hyphenFormatter'></AgGridColumn> */}
                         <AgGridColumn field='NetPOPriceINR' headerName='Net PO Price (INR)' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='Remark' headerName='Remark' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn pinned="right" field="Status" headerName="Status" cellRenderer={'statusFormatter'}></AgGridColumn>
+                        <AgGridColumn width={"240px"} pinned="right" field="Status" headerName="Status" cellRenderer={'statusFormatter'}></AgGridColumn>
                         {/* <AgGridColumn field='BaseCostingId' headerName='BaseCostingId' cellRenderer='hyphenFormatter'></AgGridColumn> */}
                         {/* <AgGridColumn field='CreatedBy' headerName='CreatedBy' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='CreatedByName' headerName='CreatedByName' cellRenderer='hyphenFormatter'></AgGridColumn>
@@ -633,8 +605,6 @@ function ReportListing(props) {
                     </div>
                 </div>
             </div>
-
-
             {
                 isOpen &&
                 <CostingDetailSimulationDrawer
@@ -646,12 +616,8 @@ function ReportListing(props) {
                     isSimulation={true}
                 />
             }
-
-
         </div >
     );
 }
-
-
 
 export default ReportListing

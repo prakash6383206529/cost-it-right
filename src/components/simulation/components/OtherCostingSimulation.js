@@ -4,11 +4,11 @@ import { Row, Col, } from 'reactstrap';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import NoContentFound from '../../common/NoContentFound';
-import { AssemblyWiseImpactt, BOPDOMESTIC, BOPIMPORT, EMPTY_DATA, ImpactMaster, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, TOFIXEDVALUE } from '../../../config/constants';
-import { getCombinedProcessCostingSimulationList, getComparisionSimulationData, getCostingSimulationList, getImpactedMasterData, getExchangeCostingSimulationList, getSimulatedAssemblyWiseImpactDate, saveSimulationForRawMaterial } from '../actions/Simulation';
+import { AssemblyWiseImpactt, EMPTY_DATA, ImpactMaster, TOFIXEDVALUE } from '../../../config/constants';
+import { getCombinedProcessCostingSimulationList, getComparisionSimulationData, getExchangeCostingSimulationList, getImpactedMasterData, getSimulatedAssemblyWiseImpactDate, saveSimulationForRawMaterial } from '../actions/Simulation';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
-import { checkForDecimalAndNull, checkForNull, formatRMSimulationObject, formViewData, getConfigurationKey, loggedInUserId, userDetails } from '../../../helper';
+import { checkForDecimalAndNull, checkForNull, formViewData, getConfigurationKey, userDetails } from '../../../helper';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
 import { EMPTY_GUID, EXCHNAGERATE, COMBINED_PROCESS, ZBC } from '../../../config/constants';
 import Toaster from '../../common/Toaster';
@@ -33,7 +33,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 function OtherCostingSimulation(props) {
     const { simulationId, isFromApprovalListing, master, statusForLinkedToken } = props
 
-    const { control, getValues, setValue } = useForm({
+    const { getValues, setValue } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onChange',
     })
@@ -104,6 +104,7 @@ function OtherCostingSimulation(props) {
             if (item.IsAssemblyExist === true) {
                 count++
             }
+            return null
         })
         if (count !== 0) {
             setAssemblyImpactButtonTrue(true)
@@ -183,6 +184,7 @@ function OtherCostingSimulation(props) {
                 default:
                     break;
             }
+            return null
         })
         let uniqeArray = []
         const map = new Map();
@@ -265,7 +267,6 @@ function OtherCostingSimulation(props) {
     const onRowSelect = () => {
         var selectedRows = gridApi.getSelectedRows();
         let temp = []
-
         selectedRows && selectedRows.map(item => {
             if (item.IsLockedBySimulation) {
                 temp.push(item.CostingNumber)
@@ -445,6 +446,8 @@ function OtherCostingSimulation(props) {
         const classGreen = (row.NewNetCC > row.OldNetCC) ? 'red-value form-control' : (row.NewNetCC < row.OldNetCC) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
+
+
     const hideColumn = (props) => {
         setHideDataColumn({
             hideOverhead: costingList && costingList.length > 0 && (costingList[0].NewOverheadCost === 0 || costingList[0].OldOverheadCost === costingList[0].NewOverheadCost) ? true : false,
@@ -616,9 +619,11 @@ function OtherCostingSimulation(props) {
                 if (itemOut === item.CostingId) {
                     temp.push(item)
                 }
+                return null
             })
             // ************ CONCAT ALL DATA IN SINGLE ARRAY *********** */
             arrayOFCorrectObjIndividual = arrayOFCorrectObjIndividual.concat(temp);
+            return null
         })
         let finalGrid = [], isTokenAPI = false
         if (showBOPColumn === true || showRMColumn === true || showOperationColumn === true || showSurfaceTreatmentColumn === true ||
@@ -734,6 +739,7 @@ function OtherCostingSimulation(props) {
         newCostFormatter: newCostFormatter,
         customLoadingOverlay: LoaderCustom,
         customNoRowsOverlay: NoContentFound,
+        VarianceFormatter: VarianceFormatter,
         overheadFormatter: overheadFormatter,
         profitFormatter: profitFormatter,
         rejectionFormatter: rejectionFormatter,
@@ -749,7 +755,6 @@ function OtherCostingSimulation(props) {
         newCCFormatter: newCCFormatter,
         vendorFormatter: vendorFormatter,
         DecimalFormatter: DecimalFormatter,
-        VarianceFormatter: VarianceFormatter
     };
 
     const VerifyImpact = () => {
@@ -932,9 +937,9 @@ function OtherCostingSimulation(props) {
                                                         <AgGridColumn width={140} field="NewDiscountCost" hide={hideDataColumn.hideDiscount} cellRenderer='discountCostFormatter' headerName='New Discount'></AgGridColumn>
                                                     </>}
 
-                                                    <AgGridColumn width={100} field="CostingId" headerName='Actions' type="rightAligned" floatingFilter={false} cellRenderer='buttonFormatter' pinned="right"></AgGridColumn>
+                                                    <AgGridColumn width={100} field="CostingId" headerName='Actions' type="rightAligned" cellRenderer='buttonFormatter'></AgGridColumn>
 
-                                                </AgGridReact>
+                                                </AgGridReact >
 
                                                 <div className="paging-container d-inline-block float-right">
                                                     <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
@@ -943,11 +948,11 @@ function OtherCostingSimulation(props) {
                                                         <option value="100">100</option>
                                                     </select>
                                                 </div>
-                                            </div>
-                                        </div>
-                                    </Col>
-                                </Row>
-                            </div>
+                                            </div >
+                                        </div >
+                                    </Col >
+                                </Row >
+                            </div >
                             <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer">
                                 <div className="col-sm-12 text-right bluefooter-butn">
 
@@ -978,7 +983,7 @@ function OtherCostingSimulation(props) {
 
                                 </div>
                             </Row>
-                        </div>
+                        </div >
                         {isApprovalDrawer &&
                             <ApproveRejectDrawer
                                 isOpen={isApprovalDrawer}
@@ -994,9 +999,11 @@ function OtherCostingSimulation(props) {
                                 vendorId={vendorIdState}
                                 SimulationTechnologyId={SimulationTechnologyIdState}
                                 SimulationType={simulationTypeState}
-                            />}
+                            />
+                        }
 
-                        {isVerifyImpactDrawer &&
+                        {
+                            isVerifyImpactDrawer &&
                             <VerifyImpactDrawer
                                 isOpen={isVerifyImpactDrawer}
                                 anchor={'right'}
@@ -1011,15 +1018,17 @@ function OtherCostingSimulation(props) {
                                 EffectiveDate={simulationDetail.EffectiveDate}
                                 amendmentDetails={amendmentDetails}
                                 assemblyImpactButtonTrue={assemblyImpactButtonTrue}
-                            />}
-                    </div>
+                            />
+                        }
+                    </div >
 
             }
 
 
             {showApprovalHistory && <Redirect to='/simulation-history' />}
 
-            {CostingDetailDrawer &&
+            {
+                CostingDetailDrawer &&
                 <CostingDetailSimulationDrawer
                     isOpen={CostingDetailSimulationDrawer}
                     closeDrawer={closeDrawer2}
@@ -1030,7 +1039,8 @@ function OtherCostingSimulation(props) {
                     costingArr={costingArr}
                     master={selectedMasterForSimulation ? selectedMasterForSimulation.value : master}
                     isSimulation={true}
-                />}
+                />
+            }
         </>
 
     );

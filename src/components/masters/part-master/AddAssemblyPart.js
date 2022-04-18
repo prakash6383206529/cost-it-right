@@ -24,7 +24,7 @@ import { getRandomSixDigit } from '../../../helper/util';
 import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from "../../../assests/images/red-cross.png";
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
-import { debounce } from 'lodash';
+import _, { debounce } from 'lodash';
 
 const selector = formValueSelector('AddAssemblyPart')
 
@@ -39,13 +39,11 @@ class AddAssemblyPart extends Component {
       isViewMode: this.props?.data?.isViewMode ? true : false,
       isLoader: false,
       PartId: '',
-
       selectedPlants: [],
       effectiveDate: '',
       files: [],
       ProductGroup: [],
       oldProductGroup: [],
-
       isOpenChildDrawer: false,
       isOpenBOMViewerDrawer: false,
       BOMViewerData: [],
@@ -53,8 +51,8 @@ class AddAssemblyPart extends Component {
       NewAddedLevelOneChilds: [],
       avoidAPICall: false,
       DataToCheck: [],
-      DropdownChanged: true,
-      BOMChanged: true,
+      DropdownChanged: false,
+      BOMChanged: false,
       GroupCode: '',
       showPopup: false,
       showPopupDraft: false,
@@ -62,8 +60,9 @@ class AddAssemblyPart extends Component {
       updatedObjDraft: {},
       setDisable: false,
       disablePopup: false,
-      TechnologySelected: {}
-
+      TechnologySelected: {},
+      isBomEditable: false,
+      isDisableBomNo: false
     }
   }
 
@@ -108,10 +107,12 @@ class AddAssemblyPart extends Component {
               // isLoader: false,
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
               files: Data.Attachements,
+              TechnologySelected: { label: Data.TechnologyName ? Data.TechnologyName : "", value: Data.TechnologyIdRef ? Data.TechnologyIdRef : "" },
               ChildParts: Data.ChildParts,
               BOMViewerData: Data.ChildParts,
               ProductGroup: productArray,
-              oldProductGroup: productArray
+              oldProductGroup: productArray,
+              isBomEditable: Data.IsBOMEditable
             }, () => this.setState({ isLoader: false }))
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
             let files = Data.Attachements && Data.Attachements.map((item) => {
@@ -156,13 +157,11 @@ class AddAssemblyPart extends Component {
     this.setState({
       effectiveDate: date,
     });
-    this.setState({ DropdownChanged: false })
+    this.setState({ DropdownChanged: true })
   };
 
   handleTechnologyChange = (event) => {
-
-    console.log(event, "e");
-    this.setState({ DropdownChanged: false, TechnologySelected: event, })
+    this.setState({ DropdownChanged: true, TechnologySelected: event, })
   }
 
   closeChildDrawer = (e = '', childData = {}) => {
@@ -178,7 +177,6 @@ class AddAssemblyPart extends Component {
   setChildPartsData = (childData) => {
     const { BOMViewerData, } = this.state;
     const tempArray = [];
-
 
     const posX = BOMViewerData && BOMViewerData.length > 0 ? 450 * (BOMViewerData.filter(el => el.Level === 'L1').length - 1) : 50;
 
@@ -301,7 +299,7 @@ class AddAssemblyPart extends Component {
   */
   checkIsFormFilled = () => {
     const { fieldsObj } = this.props;
-    if (fieldsObj.BOMNumber === undefined || fieldsObj.AssemblyPartNumber === undefined || fieldsObj.AssemblyPartName === undefined) {         //|| Object.keys(this.state.TechnologySelected).length === 0     DONT DELETE
+    if (fieldsObj.BOMNumber === undefined || fieldsObj.AssemblyPartNumber === undefined || fieldsObj.AssemblyPartName === undefined || Object.keys(this.state.TechnologySelected).length === 0) {
       return false;
     } else {
       return true;
@@ -316,7 +314,6 @@ class AddAssemblyPart extends Component {
     const { fieldsObj } = this.props;
     const { BOMViewerData, isEditFlag } = this.state;
 
-    this.setState({ BOMChanged: false })
 
     if (this.checkIsFormFilled() === false) {
       Toaster.warning("Please fill the mandatory fields.")
@@ -372,8 +369,8 @@ class AddAssemblyPart extends Component {
 
   }
 
-  closeBOMViewerDrawer = (e = '', drawerData, isSaved) => {
-    this.setState({ isOpenBOMViewerDrawer: false, BOMViewerData: drawerData, avoidAPICall: isSaved })
+  closeBOMViewerDrawer = (e = '', drawerData, isSaved, isEqual) => {
+    this.setState({ isOpenBOMViewerDrawer: false, BOMViewerData: drawerData, avoidAPICall: isSaved, BOMChanged: isEqual ? false : true })
   }
 
   // specify upload params and url for your files
@@ -496,27 +493,13 @@ class AddAssemblyPart extends Component {
   }
 
   /**
-  * @method confirmBOMDraft
-  * @description CONFIRM BOM DRAFT
-  */
-  confirmBOMDraft = (updateData) => {
-    const toastrConfirmOptions = {
-      onOk: () => {
-        this.confirmDraftItem(updateData)
-      },
-      onCancel: () => { },
-      component: () => <ConfirmComponent />,
-    };
-  }
-  
-
-  /**
   * @method confirmDraftItem
   * @description DRAFT ASSEMBLY BOM
   */
   confirmDraftItem = (updateData) => {
     let Data = { ...updateData, IsForceUpdate: true }
     this.props.updateAssemblyPart(Data, (res) => {
+      this.setState({ setDisable: false })
       if (res.data.Result) {
         Toaster.success(MESSAGES.UPDATE_BOM_SUCCESS);
         this.cancel()
@@ -530,14 +513,14 @@ class AddAssemblyPart extends Component {
   * @description Used to Submit the form
   */
   onSubmit = debounce((values) => {
-    const { PartId, isEditFlag, selectedPlants, BOMViewerData, files, avoidAPICall, DataToCheck, DropdownChanged, ProductGroup, oldProductGroup, BOMChanged } = this.state;
-    const { actualBOMTreeData, fieldsObj, partData } = this.props;
+    const { PartId, isEditFlag, selectedPlants, BOMViewerData, files, avoidAPICall, DataToCheck, DropdownChanged, ProductGroup, BOMChanged } = this.state;
+    const { partData } = this.props;
     const { initialConfiguration } = this.props;
 
     let plantArray = selectedPlants && selectedPlants.map((item) => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
     let productArray = (initialConfiguration?.IsProductMasterConfigurable) ? ProductGroup && ProductGroup.map((item) => ({ GroupCode: item.Text })) : [{ GroupCode: values.GroupCode }]
     let childPartArray = [];
-
+    let isStructureChanges;
     // CONDITION CHANGE FOR (BOMViewerData.length === 0 || BOMViewerData.length === 1)
     if (BOMViewerData && isEditFlag ? (BOMViewerData.length === 0) : (BOMViewerData.length === 0 || BOMViewerData.length === 1)) {
       Toaster.warning('Need to add Child parts');
@@ -567,23 +550,50 @@ class AddAssemblyPart extends Component {
     })
 
     if (isEditFlag) {
+      let isGroupCodeChange = this.checkGroupCodeChange(values)
+
+      if (!DropdownChanged && String(DataToCheck.AssemblyPartName) === String(values.AssemblyPartName) && !isGroupCodeChange && String(DataToCheck.Description) === String(values.Description) &&
+        String(DataToCheck.ECNNumber) === String(values.ECNNumber) && String(DataToCheck.RevisionNumber) === String(values.RevisionNumber) &&
+        String(DataToCheck.DrawingNumber) === String(values.DrawingNumber) && BOMChanged === false) {
+        this.cancel()
+        return false;
+      }
 
 
-      // if (DropdownChanged && String(DataToCheck.AssemblyPartName) === String(values.AssemblyPartName) && String(DataToCheck.Description) === String(values.Description) &&
-      //   String(DataToCheck.ECNNumber) === String(values.ECNNumber) && String(DataToCheck.RevisionNumber) === String(values.RevisionNumber) &&
-      //   String(DataToCheck.DrawingNumber) === String(values.DrawingNumber) && String(DataToCheck.GroupCode) === String(values.GroupCode) && BOMChanged) {
-      //   this.cancel()
-      //   return false;
-      // }
-      this.setState({ setDisable: true,  disablePopup:false })
+      //THIS CONDITION IS TO CHECK IF IsBomEditable KEY FROM API IS FALSE AND THERE IS CHANGE ON ONLY PART DESCRIPTION ,PART NAME AND ATTACHMENT(TO UPDATE EXISTING RECORD)
+      if (this.state.isBomEditable === false && !isGroupCodeChange && String(DataToCheck.ECNNumber) === String(values.ECNNumber) &&
+        String(DataToCheck.RevisionNumber) === String(values.RevisionNumber) && String(DataToCheck.DrawingNumber) === String(values.DrawingNumber) && !BOMChanged) {
+        isStructureChanges = false
+      }
+
+      //THIS CONDITION IS TO CHECK IF IsBomEditable KEY FROM API IS FALSE AND TEHRE IS CHANGE IN OTHER FIELD ALSO APART FROM PART DESCRIPTION,NAME AND ATTACHMENT (TO CREATE NEW RECORD)
+      else if (this.state.isBomEditable === false && (isGroupCodeChange || String(DataToCheck.ECNNumber) !== String(values.ECNNumber) ||
+        String(DataToCheck.RevisionNumber) !== String(values.RevisionNumber) || String(DataToCheck.DrawingNumber) !== String(values.DrawingNumber)
+        || BOMChanged)) {
+        // IF THERE ARE CHANGES ,THEN REVISION NO SHOULD BE CHANGED
+        if (String(DataToCheck.RevisionNumber) === String(values.RevisionNumber) || String(DataToCheck.BOMNumber) === String(values.BOMNumber) || DayTime(DataToCheck.EffectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(this.state.effectiveDate).format('YYYY-MM-DD HH:mm:ss')) {
+          Toaster.warning('Please edit Revision no , BOM no and Effective date')
+          return false
+        } else {
+          isStructureChanges = true
+        }
+      }
+      // THIS CONDITION IS WHEN IsBomEditable KEY FROM API IS TRUE (WHATEVER USER CHANGE OLD RECORD WILL GET UPDATE)
+      else {
+        isStructureChanges = false
+      }
+
+      this.setState({ setDisable: true, disablePopup: false })
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: PartId }
       })
       let updateData = {
+        BOMNumber: values.BOMNumber,
         LoggedInUserId: loggedInUserId(),
         AssemblyPartId: PartId,
         AssemblyPartName: values.AssemblyPartName,
         AssemblyPartNumber: values.AssemblyPartNumber,
+        TechnologyIdRef: this.state.TechnologySelected.value ? this.state.TechnologySelected.value : "",
         Description: values.Description,
         ECNNumber: values.ECNNumber,
         RevisionNumber: values.RevisionNumber,
@@ -595,32 +605,26 @@ class AddAssemblyPart extends Component {
         Attachements: updatedFiles,
         ChildParts: childPartArray,
         NumberOfChildParts: BOMViewerData && avoidAPICall ? BOMViewerData.length - 1 : partData.NumberOfChildParts,
-        IsForcefulUpdated: true,
+        IsForcefulUpdated: false,
         BOMLevelCount: BOMLevelCount,
-        GroupCodeList: productArray
+        GroupCodeList: productArray,
+        IsStructureChanges: isStructureChanges
       }
-console.log(BOMViewerData,"BOMViewerData",actualBOMTreeData,"isEditFlag",isEditFlag);
-      if (JSON.stringify(BOMViewerData) !== JSON.stringify(actualBOMTreeData) && avoidAPICall && isEditFlag) {
-        if (fieldsObj.ECNNumber === partData.ECNNumber && fieldsObj.RevisionNumber === partData.RevisionNumber) {
-          this.setState({ setDisable: false })
-          this.confirmBOMDraft(updateData)
-          Toaster.warning("Please edit Revision No or ECN No.")
-          return false;
+      this.props.updateAssemblyPart(updateData, (res) => {
+        this.setState({ setDisable: false })
+        if (res?.data?.Result) {
+          Toaster.success(MESSAGES.UPDATE_BOM_SUCCESS);
+          this.cancel()
         }
-      }
-
-      if (isEditFlag) {
-        this.setState({ showPopup: true, updatedObj: updateData })
-      }
-
+      });
 
     } else {
-
       this.setState({ setDisable: true })
       let formData = {
         AssemblyPartNumber: values.AssemblyPartNumber,
         AssemblyPartName: values.AssemblyPartName,
         AssemblyPartId: '',
+        TechnologyIdRef: this.state.TechnologySelected.value ? this.state.TechnologySelected.value : "",
         ChildParts: childPartArray,
         LoggedInUserId: loggedInUserId(),
         BOMNumber: values.BOMNumber,
@@ -637,7 +641,6 @@ console.log(BOMViewerData,"BOMViewerData",actualBOMTreeData,"isEditFlag",isEditF
         BOMLevelCount: BOMLevelCount,
         GroupCodeList: productArray
       }
-
       this.props.createAssemblyPart(formData, (res) => {
         this.setState({ setDisable: false })
         if (res?.data?.Result === true) {
@@ -670,6 +673,56 @@ console.log(BOMViewerData,"BOMViewerData",actualBOMTreeData,"isEditFlag",isEditF
     this.setState({ showPopup: false, setDisable: false })
     this.setState({ showPopupDraft: false })
   }
+
+  isFieldChange = (event, field) => {
+    const { DataToCheck } = this.state
+    let isChangeInField = false
+    switch (field) {
+      case 'ECN':
+        if (String(event) !== DataToCheck.ECNNumber && this.state.isBomEditable === false) {
+          isChangeInField = true
+          this.setState({ isDisableBomNo: isChangeInField })
+        }
+        return isChangeInField
+      case 'Revision':
+        if (String(event) !== DataToCheck.RevisionNumber && this.state.isBomEditable === false) {
+          isChangeInField = true
+          this.setState({ isDisableBomNo: isChangeInField })
+        }
+        return isChangeInField
+      case 'Drawing':
+        if (String(event) !== DataToCheck.DrawingNumber && this.state.isBomEditable === false) {
+          isChangeInField = true
+          this.setState({ isDisableBomNo: isChangeInField })
+        }
+        return isChangeInField
+      case 'Group Code':
+        isChangeInField = this.checkGroupCodeChange(event)
+        this.setState({ isDisableBomNo: isChangeInField })
+        return isChangeInField
+      default:
+        this.setState({ isDisableBomNo: isChangeInField })
+        return isChangeInField
+
+    }
+  }
+  checkGroupCodeChange = (newGroupCodeValue) => {
+    let isGroupCodeChange
+    let productArray = (this.props.initialConfiguration?.IsProductMasterConfigurable) ? this.state.ProductGroup && this.state.ProductGroup.map((item) => ({ GroupCode: item.Text })) : [{ GroupCode: newGroupCodeValue.GroupCode }]
+    if (!this.state.isBomEditable) {
+
+      if (this.props.initialConfiguration?.IsProductMasterConfigurable) {
+        let isEqualValue = _.isEqual(this.state.DataToCheck.GroupCodeList, productArray)
+        isGroupCodeChange = isEqualValue ? false : true
+      } else {
+        let isEqualValue = String(this.state.DataToCheck.GroupCode) === String(newGroupCodeValue.GroupCode)
+        isGroupCodeChange = isEqualValue ? false : true
+      }
+    }
+
+    return isGroupCodeChange
+  }
+
   /**
   * @method render
   * @description Renders the component
@@ -720,7 +773,7 @@ console.log(BOMViewerData,"BOMViewerData",actualBOMTreeData,"isEditFlag",isEditF
                             required={true}
                             className=""
                             customClassName={"withBorder"}
-                            disabled={isEditFlag ? true : false}
+                            disabled={(isEditFlag && this.state.isDisableBomNo === false) ? true : false}
                           />
                         </Col>
                         <Col md="3">
@@ -779,6 +832,8 @@ console.log(BOMViewerData,"BOMViewerData",actualBOMTreeData,"isEditFlag",isEditF
                             className=""
                             customClassName={"withBorder"}
                             disabled={isViewMode}
+                            onChange={e => this.isFieldChange(e.target.value, 'ECN')}
+
                           />
                         </Col>
                         <Col md="3">
@@ -792,6 +847,7 @@ console.log(BOMViewerData,"BOMViewerData",actualBOMTreeData,"isEditFlag",isEditF
                             className=""
                             customClassName={"withBorder"}
                             disabled={isViewMode}
+                            onChange={e => this.isFieldChange(e.target.value, 'Revision')}
                           />
                         </Col>
                         <Col md="3">
@@ -805,6 +861,7 @@ console.log(BOMViewerData,"BOMViewerData",actualBOMTreeData,"isEditFlag",isEditF
                             className=""
                             customClassName={"withBorder"}
                             disabled={isViewMode}
+                            onChange={e => this.isFieldChange(e.target.value, 'Drawing')}
                           />
                         </Col>
                       </Row>
@@ -840,12 +897,14 @@ console.log(BOMViewerData,"BOMViewerData",actualBOMTreeData,"isEditFlag",isEditF
                               className=""
                               customClassName={"withBorder"}
                               disabled={isViewMode}
+                              onChange={e => this.isFieldChange(e.target.value, 'Group Code')}
                             />
                           </Col>
                         }
 
-
-                        {/* <Col md="3">           // WORK IN PROGRESS DONT DELETE
+                        {/* 
+                        //WORK IN PROGRESS DONT DELETE */}
+                        <Col md="3">
                           <Field
                             label="Technology"
                             type="text"
@@ -854,15 +913,15 @@ console.log(BOMViewerData,"BOMViewerData",actualBOMTreeData,"isEditFlag",isEditF
                             placeholder={"Technology"}
                             options={this.renderListing("technology")}
                             validate={
-                              this.state.Technology == null || this.state.Technology.length === 0 ? [required] : []}
+                              this.state.TechnologySelected == null || Object.keys(this.state.TechnologySelected).length === 0 ? [required] : []}
                             required={true}
                             handleChangeDescription={
                               this.handleTechnologyChange
                             }
-                            valueDescription={this.state.Technology}
+                            valueDescription={this.state.TechnologySelected}
                             disabled={isEditFlag || isViewMode}
                           />
-                        </Col> */}
+                        </Col>
 
 
                         <Col md="3">
@@ -1031,7 +1090,7 @@ console.log(BOMViewerData,"BOMViewerData",actualBOMTreeData,"isEditFlag",isEditF
               isOpen={isOpenChildDrawer}
               closeDrawer={this.closeChildDrawer}
               isEditFlag={false}
-              //TechnologySelected={this.props.TechnologySelected} DONT DELETE
+              TechnologySelected={this.state.TechnologySelected}
               ID={""}
               anchor={"right"}
               setChildPartsData={this.setChildPartsData}
@@ -1043,7 +1102,7 @@ console.log(BOMViewerData,"BOMViewerData",actualBOMTreeData,"isEditFlag",isEditF
             <BOMViewer
               isOpen={isOpenBOMViewerDrawer}
               closeDrawer={this.closeBOMViewerDrawer}
-              //TechnologySelected={this.state.TechnologySelected} DONT DELETE
+              TechnologySelected={this.state.TechnologySelected}
               isEditFlag={this.state.isEditFlag}
               PartId={this.state.PartId}
               anchor={"right"}

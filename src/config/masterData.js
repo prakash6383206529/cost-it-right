@@ -653,9 +653,9 @@ export const BOP_ZBC_DOMESTIC = [
     { label: 'Specification', value: 'Specification', },
     { label: 'UOM', value: 'UOM', }, //*
     { label: 'PlantCode', value: 'PlantCode', }, //*
-    { label: 'VendorCode', value: 'VendorCode', }, //*
+    { label: 'VendorName', value: 'VendorName', }, //*
     { label: 'MinimumOrderQuantity', value: 'MinimumOrderQuantity', }, //*
-    { label: 'BasicRate(INR)', value: 'BasicRate(INR)', }, //*
+    { label: 'BasicRate', value: 'BasicRate', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', },
     { label: 'Remark', value: 'Remark' }
 ]
@@ -668,9 +668,9 @@ export const BOP_ZBC_DOMESTIC_TempData = [
         'Specification': '20 mm',
         'UOM': 'Gallon',
         'PlantCode': 'Plant101',
-        'VendorCode': 'Systematix',
+        'VendorName': 'Systematix',
         'MinimumOrderQuantity': '10',
-        'BasicRate(INR)': '100',
+        'BasicRate': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }
@@ -1832,7 +1832,7 @@ export const RMImportSimulation = [
 
 export const SurfaceTreatmentSimulation = [
     { label: "Technology", value: "Technology" },
-    { label: "CostingHead", value: "IsVendor" },
+    { label: "CostingHead", value: "CostingHead" },
     { label: "OperationName", value: "OperationName" },
     { label: "OperationCode", value: "OperationCode" },
     { label: "DestinationPlant", value: "Plants" },
@@ -1846,7 +1846,7 @@ export const SurfaceTreatmentSimulation = [
 
 export const OperationSimulation = [
     { label: "Technology", value: "Technology" },
-    { label: "CostingHead", value: "IsVendor" },
+    { label: "CostingHead", value: "CostingHead" },
     { label: "OperationName", value: "OperationName" },
     { label: "OperationCode", value: "OperationCode" },
     { label: "DestinationPlant", value: "Plants" },
@@ -2406,7 +2406,6 @@ export const CostingSimulationDownloadRM = [
     { label: "RawMaterial Grade", value: "RMGrade" },
     { label: "RM Specs", value: "RMSpec" },
     { label: "RM Code", value: "RMCode" },
-    { label: "PlantCode", value: "PlantCode" },
     { label: "Part No", value: "PartNo" },
     { label: "Part Name", value: "PartName" },
     { label: "ECN Number", value: "ECNNumber" },
@@ -2420,8 +2419,8 @@ export const CostingSimulationDownloadRM = [
     { label: 'New Basic Rate', value: 'NewRMRate' },
     { label: "ScrapRate", value: "OldScrapRate" },
     { label: 'NewScrapRate', value: 'NewScrapRate' },
-    { label: "Old RM Cost", value: "OldRMPrice" },
-    { label: "New RM Cost", value: "NewRMPrice" },
+    { label: "Old RM Cost/Pc", value: "OldRMPrice" },
+    { label: "New RM Cost/Pc", value: "NewRMPrice" },
     { label: "RM Variance", value: "RMCVariance" },
 
     { label: "OldOverheadCost", value: "OldOverheadCost" },
@@ -2503,7 +2502,6 @@ export const CostingSimulationDownloadST = [
     { label: "Vendor Name", value: "VendorName" },
     { label: "Plant Code", value: "PlantCode" },
     { label: "Technology", value: "Technology" },
-    { label: "PlantCode", value: "PlantCode" },
     { label: "Part No", value: "PartNo" },
     { label: "Part Name", value: "PartName" },
     { label: "ECN Number", value: "ECNNumber" },
@@ -2514,6 +2512,7 @@ export const CostingSimulationDownloadST = [
 
     { label: "OldSurfaceTreatmentRate", value: "OldSurfaceTreatmentRate" },
     { label: "NewSurfaceTreatmentRate", value: "NewSurfaceTreatmentRate" },
+    { label: "SurfaceArea", value: "SurfaceArea" },
     { label: "OldSurfaceTreatmentCost", value: "OldSurfaceTreatmentCost" },
     { label: "NewSurfaceTreatmentCost", value: "NewSurfaceTreatmentCost" },
     { label: "OldTranspotationCost", value: "OldTranspotationCost" },
@@ -2548,7 +2547,6 @@ export const CostingSimulationDownloadOperation = [
     { label: "Vendor Name", value: "VendorName" },
     { label: "Plant Code", value: "PlantCode" },
     { label: "Technology", value: "Technology" },
-    { label: "PlantCode", value: "PlantCode" },
     { label: "Part No", value: "PartNo" },
     { label: "Part Name", value: "PartName" },
     { label: "ECN Number", value: "ECNNumber" },
@@ -2562,6 +2560,7 @@ export const CostingSimulationDownloadOperation = [
     { label: "OldOperationRate", value: "OldOperationRate" },
     { label: "NewOperationRate", value: "NewOperationRate" },
     { label: "OperationVariance", value: "OperationVariance" },
+    { label: "Operation Quantity", value: "Quantity" },
     { label: "OldOperationCost", value: "OldOperationCost" },
     { label: "NewOperationCost", value: "NewOperationCost" },
     { label: "OperationCostVariance", value: "OperationCostVariance" },
@@ -2592,7 +2591,6 @@ export const CostingSimulationDownloadBOP = [
     { label: "Vendor Name", value: "VendorName" },
     { label: "Plant Code", value: "PlantCode" },
     { label: "Technology", value: "Technology" },
-    { label: "PlantCode", value: "PlantCode" },
     { label: "Part No", value: "PartNo" },
     { label: "Part Name", value: "PartName" },
     { label: "ECN Number", value: "ECNNumber" },
@@ -2606,6 +2604,7 @@ export const CostingSimulationDownloadBOP = [
     { label: "OldNetBoughtOutPartCost", value: "OldNetBoughtOutPartCost" },
     { label: "NewNetBoughtOutPartCost", value: "NewNetBoughtOutPartCost" },
     { label: "NetBoughtOutPartCostVariance", value: "NetBoughtOutPartCostVariance" },
+    { label: "BOP Quantity", value: "BoughtOutPartQuantity" },
     { label: "OldBOPCost", value: "OldBOPCost" },
     { label: "NewBOPCost", value: "NewBOPCost" },
     { label: "BOPVariance", value: "BOPVariance" },
@@ -2632,6 +2631,7 @@ export const CostingSimulationDownloadBOP = [
 
 export const SIMULATIONAPPROVALSUMMARYDOWNLOADRM = [
     { label: "Costing Id", value: "CostingNumber" },
+    { label: "RawMaterial Name", value: "RMName" },
     { label: "RawMaterial Grade", value: "RMGrade" },
     { label: "Part No", value: "PartNo" },
     { label: "Part Name", value: "PartName" },
@@ -3076,6 +3076,16 @@ export const REPORT_DOWNLOAD_EXCEl = [
     { label: "ICC Applicability", value: "ICCApplicability", },
     { label: "ICC Interest Rate", value: "ICCInterestRate", },
     { label: "Net ICC Cost", value: "NetICCCost", },
+
+    { label: "Overhead CC Percentage", value: "OverheadCCPercentage", },
+    { label: "Overhead BOP Percentage", value: "OverheadBOPPercentage", },
+    { label: "Overhead RM Percentage", value: "OverheadRMPercentage", },
+    { label: "Overhead Fixed Percentage", value: "OverheadFixedPercentage", },
+    { label: "Profit CC Percentage", value: "ProfitCCPercentage", },
+    { label: "Profit BOP Percentage", value: "ProfitBOPPercentage", },
+    { label: "Profit RM Percentage", value: "ProfitRMPercentage", },
+    { label: "Profit Fixed Percentage", value: "ProfitFixedPercentage", },
+
     { label: "Payment Terms On", value: "PaymentTermsOn", },
     { label: "Payment Term Cost", value: "PaymentTermCost", },
     { label: "Packaging Cost Percentage", value: "PackagingCostPercentage", },
@@ -3084,22 +3094,18 @@ export const REPORT_DOWNLOAD_EXCEl = [
     { label: "Freight Cost", value: "FreightCost", },
     { label: "Transportation Cost", value: "TransportationCost", },
     { label: "FreightType", value: "FreightType", },
-    { label: "DiscountCost", value: "DiscountCost", },
-    { label: "NetDiscountsCost", value: "NetDiscountsCost", },
     { label: "Hundi/DiscountPercentage", value: "HundiOrDiscountPercentage", },
     { label: "Hundi/DiscountValue", value: "HundiOrDiscountValue", },
     { label: "ToolCost", value: "ToolCost", },
-    { label: "ToolLife", value: "ToolLife", },
+    { label: "Amortization Quantity (Tool Life)", value: "ToolLife", },
     { label: "ToolMaintenanceCost", value: "ToolMaintenanceCost", },
     { label: "NetToolCost", value: "NetToolCost", },
     { label: "OtherCostPercentage", value: "OtherCostPercentage", },
     { label: "AnyOtherCost", value: "AnyOtherCost", },
-    { label: "OtherCost", value: "OtherCost", },
-    { label: "NetOtherCost", value: "NetOtherCost", },
-    { label: "TotalOtherCost", value: "TotalOtherCost", },
     { label: "EffectiveDate", value: "EffectiveDate", },
     { label: "Currency", value: "Currency", },
     { label: "NetPOPriceOtherCurrency", value: "NetPOPriceOtherCurrency", },
+    { label: "NetPOPrice(INR)", value: "NetPOPriceINR", },
     { label: "Remark", value: "Remark", },
     { label: "CreatedBy", value: "CreatedBy", }
 ]
@@ -3146,9 +3152,22 @@ export const ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl = [
 ]
 
 
+export const USER_LISTING_DOWNLOAD_EXCEl = [
+    { label: "Name", value: "FullName", },
+    { label: "User Name", value: "UserName", },
+    { label: "Email Id", value: "EmailAddress", },
+    { label: "Mobile No", value: "Mobile", },
+    { label: "Phone No", value: "PhoneNumber", },
+    { label: "Department", value: "DepartmentName", },
+    { label: "Role", value: "RoleName", }
+
+]
+
+
 export const OperationGridForToken = [
     { label: "Operation Name", value: "OperationName" },
     { label: "Operation Code", value: "OperationCode" },
+    { label: "Operation Quantity", value: "Quantity" },
     { label: "OldOperationCost", value: "OldOperationCost" },
     { label: "NewOperationCost", value: "NewOperationCost" },
     { label: "OperationCostVariance", value: "OperationCostVariance" },
@@ -3159,14 +3178,15 @@ export const RMGridForToken = [
     { label: "Old PO Price", value: "OldPOPrice" },
     { label: "New PO Price", value: "NewPOPrice" },
     { label: "PO Variance", value: "Variance" },
-    { label: "Old Basic Rate", value: "OldNetRawMaterialsCost" },
-    { label: 'New Basic Rate', value: 'NewNetRawMaterialsCost' },
+    { label: "Old RM Cost/Pc", value: "OldNetRawMaterialsCost" },
+    { label: 'New RM Cost/Pc', value: 'NewNetRawMaterialsCost' },
     { label: "RM Variance", value: "RMVariance" }
 ]
 
 export const STGridForToken = [
     { label: "OldSurfaceTreatmentRate", value: "OldSurfaceTreatmentRate" },
     { label: "NewSurfaceTreatmentRate", value: "NewSurfaceTreatmentRate" },
+    { label: "SurfaceArea", value: "SurfaceArea" },
     { label: "OldSurfaceTreatmentCost", value: "OldSurfaceTreatmentCost" },
     { label: "NewSurfaceTreatmentCost", value: "NewSurfaceTreatmentCost" },
     { label: "OldTranspotationCost", value: "OldTranspotationCost" },
@@ -3178,9 +3198,10 @@ export const STGridForToken = [
 ]
 
 export const BOPGridForToken = [
+    { label: "BoughtOutPartQuantity", value: "BoughtOutPartQuantity" },
     { label: "OldBOPCost", value: "OldBOPCost" },
     { label: "NewBOPCost", value: "NewBOPCost" },
-    { label: "BOPVariance", value: "BOPVariance" },
+    { label: "BOP Quantity", value: "BOPVariance" },
 ]
 export const ERGridForToken = [
     { label: "Currency", value: "Currency" },
@@ -3211,7 +3232,6 @@ export const InitialGridForToken = [
     { label: "Vendor Name", value: "VendorName" },
     { label: "Plant Code", value: "PlantCode" },
     { label: "Technology", value: "Technology" },
-    { label: "PlantCode", value: "PlantCode" },
     { label: "Part No", value: "PartNo" },
     { label: "Part Name", value: "PartName" },
     { label: "ECN Number", value: "ECNNumber" },
@@ -3269,6 +3289,7 @@ export const OperationGridForTokenSummary = [
 ]
 
 export const RMGridForTokenSummary = [
+    { label: "RawMaterial Name", value: "RMName" },
     { label: "RawMaterial Grade", value: "RMGrade" },
     { label: "Old RM Cost", value: "OldRMPrice" },
     { label: "New RM Cost", value: "NewRMPrice" },

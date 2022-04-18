@@ -5,6 +5,7 @@ import { costingInfoContext } from '../../CostingDetailStepTwo';
 import SurfaceTreatment from '.';
 import { checkForDecimalAndNull } from '../../../../../helper';
 import { ViewCostingContext } from '../../CostingDetails';
+import { EMPTY_GUID } from '../../../../../config/constants';
 
 function PartSurfaceTreatment(props) {
 
@@ -33,7 +34,8 @@ function PartSurfaceTreatment(props) {
         const data = {
           CostingId: item.CostingId !== null ? item.CostingId : "00000000-0000-0000-0000-000000000000",
           PartId: item.PartId,
-          AssemCostingId: costData.CostingId
+          AssemCostingId: costData.CostingId,
+          SubAsmCostingId: props.SubAssembId !== null ? props.SubAssembId : EMPTY_GUID,
         }
         dispatch(getSurfaceTreatmentTabData(data, false, (res) => {
           if (res && res.data && res.data.Result) {
@@ -83,6 +85,7 @@ function PartSurfaceTreatment(props) {
           <td>{item && item.PartType}</td>
           <td>{item.CostingPartDetails.SurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.SurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
           <td>{item.CostingPartDetails.TransportationCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TransportationCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+          <td>{item?.Quantity}</td>
           <td>{item.CostingPartDetails.NetSurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.NetSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
         </div>
         <td>
@@ -105,6 +108,8 @@ function PartSurfaceTreatment(props) {
               <div className={`${CostingViewMode ? 'fa fa-eye pr-1' : 'plus'}`}></div>Surface T.</button>
           }
         </td>
+        {/*WHEN COSTING OF THAT PART IS  APPROVED SO COSTING COMES AUTOMATICALLY FROM BACKEND AND THIS KEY WILL COME TRUE (WORK LIKE VIEW MODE)*/}
+        <td className="text-right lock-container"><div className={`${(item.IsLocked || item.IsPartLocked) ? 'lock_icon' : ''}`}>{''}</div></td>
       </tr>
 
       {IsDrawerOpen && <SurfaceTreatment

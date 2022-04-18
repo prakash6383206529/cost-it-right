@@ -15,6 +15,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { getCombinedProcessList, getListingForSimulationCombined } from '../../simulation/actions/Simulation'
 import { Row, Col, } from 'reactstrap';
+import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper';
 
 const gridOptions = {};
 
@@ -156,6 +157,12 @@ export function ProcessListingSimulation(props) {
         return <div className={row.Status}>{row.DisplayStatus}</div>
     }
 
+
+    const DecimalFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return checkForDecimalAndNull(cellValue, getConfigurationKey().NoOfDecimalForPrice)
+    }
+
     const isFirstColumn = (params) => {
         if (isSimulation) {
 
@@ -184,7 +191,8 @@ export function ProcessListingSimulation(props) {
         customLoadingOverlay: LoaderCustom,
         customNoRowsOverlay: NoContentFound,
         effectiveDateFormatter: effectiveDateFormatter,
-        statusFormatter: statusFormatter
+        statusFormatter: statusFormatter,
+        DecimalFormatter: DecimalFormatter
     };
 
     const onRowSelect = () => {
@@ -270,11 +278,11 @@ export function ProcessListingSimulation(props) {
                                 {!isImpactedMaster && <AgGridColumn field="PlantName" editable='false' headerName="Plant" minWidth={190}></AgGridColumn>}
                                 {!isImpactedMaster && <AgGridColumn field="PartName" editable='false' headerName="Part Name" minWidth={190}></AgGridColumn>}
                                 <AgGridColumn field="PartNumber" editable='false' headerName="Part Number" minWidth={190}></AgGridColumn>
-                                {!isImpactedMaster && <AgGridColumn suppressSizeToFit="true" editable='false' field="ConversionCost" headerName="Net CC" minWidth={190}></AgGridColumn>}
+                                {!isImpactedMaster && <AgGridColumn suppressSizeToFit="true" editable='false' field="ConversionCost" headerName="Net CC" minWidth={190} cellRenderer='DecimalFormatter'></AgGridColumn>}
                                 {isImpactedMaster && <AgGridColumn field="OldNetCC" editable='false' headerName="Old Net CC" minWidth={190}></AgGridColumn>}
                                 {isImpactedMaster && <AgGridColumn field="NewNetCC" editable='false' headerName="New Net CC" minWidth={190}></AgGridColumn>}
                                 {/* <AgGridColumn field="RemainingTotal" editable='false' headerName="Remaining Fields Total" minWidth={190}></AgGridColumn> */}
-                                {!isImpactedMaster && <AgGridColumn suppressSizeToFit="true" field="TotalCost" headerName="Total" minWidth={190}></AgGridColumn>}
+                                {!isImpactedMaster && <AgGridColumn suppressSizeToFit="true" field="TotalCost" headerName="Total" minWidth={190} cellRenderer='DecimalFormatter'></AgGridColumn>}
                                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={190} cellRenderer='effectiveDateFormatter'></AgGridColumn>
                                 <AgGridColumn field="CostingId" headerName="CostingId" hide></AgGridColumn>
 

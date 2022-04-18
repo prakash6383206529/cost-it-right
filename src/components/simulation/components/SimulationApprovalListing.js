@@ -324,7 +324,8 @@ function SimulationApprovalListing(props) {
         else if (!allEqual(tempArrTechnology)) {
             Toaster.warning('Technology should be same for sending multiple costing for approval')
             gridApi.deselectAll()
-        } else {
+        }
+        else {
             setReasonId(selectedRows[0]?.ReasonId)
         }
 
