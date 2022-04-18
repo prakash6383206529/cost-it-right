@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Row, Col, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
 import { EMPTY_DATA } from '../../../../config/constants';
@@ -32,6 +32,8 @@ function BDSimulation(props) {
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [showMainSimulation, setShowMainSimulation] = useState(false)
+    const gridRef = useRef();
+    const [isDisable, setIsDisable] = useState(false)
 
     const { register, control, setValue, formState: { errors }, } = useForm({
         mode: 'onChange',
@@ -68,6 +70,7 @@ function BDSimulation(props) {
             Toaster.warning('There is no changes in new value. Please correct the data, then run simulation')
             return false
         }
+        setIsDisable(true)
         basicRateCount = 0
         // setShowVerifyPage(true)
         /**********POST METHOD TO CALL HERE AND AND SEND TOKEN TO VERIFY PAGE TODO ****************/
@@ -98,7 +101,7 @@ function BDSimulation(props) {
         obj.SimulationBoughtOutPart = tempArr
 
         dispatch(runVerifyBoughtOutPartSimulation(obj, res => {
-
+            setIsDisable(false)
             if (res.data.Result) {
                 setToken(res.data.Identity)
                 setShowVerifyPage(true)
@@ -254,9 +257,9 @@ function BDSimulation(props) {
     const onGridReady = (params) => {
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
-        window.screen.width >= 1920 && params.api.sizeColumnsToFit();
+        window.screen.width >= 1920 && gridRef.current.api.sizeColumnsToFit();
         if (isImpactedMaster) {
-            window.screen.width >= 1365 && params.api.sizeColumnsToFit();
+            gridRef.current.api.sizeColumnsToFit();
         }
         params.api.paginationGoToPage(0);
     };
@@ -273,7 +276,17 @@ function BDSimulation(props) {
     const cellChange = (props) => {
 
     }
-
+    const resetState = () => {
+        gridApi?.setQuickFilter('');
+        gridOptions?.columnApi?.resetColumnState();
+        gridOptions?.api?.setFilterModel(null);
+        if (!isImpactedMaster) {
+            window.screen.width >= 1600 && gridRef.current.api.sizeColumnsToFit();
+        }
+        else {
+            gridRef.current.api.sizeColumnsToFit();
+        }
+    }
     const frameworkComponents = {
         effectiveDateRenderer: effectiveDateFormatter,
         costingHeadFormatter: costingHeadFormatter,
@@ -344,9 +357,13 @@ function BDSimulation(props) {
                                 <div className="ag-grid-wrapper height-width-wrapper">
                                     <div className="ag-grid-header">
                                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                                        <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
+                                            <div className="refresh mr-0"></div>
+                                        </button>
                                     </div>
                                     <div className="ag-theme-material" style={{ width: '100%' }}>
                                         <AgGridReact
+                                            ref={gridRef}
                                             floatingFilter={true}
                                             style={{ height: '100%', width: '100%' }}
                                             defaultColDef={defaultColDef}
@@ -406,11 +423,11 @@ function BDSimulation(props) {
                             !isImpactedMaster &&
                             <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                                 <div className="col-sm-12 text-right bluefooter-butn">
-                                    <button type={"button"} className="mr15 cancel-btn" onClick={cancel}>
+                                    <button type={"button"} className="mr15 cancel-btn" onClick={cancel} disabled={isDisable}>
                                         <div className={"cancel-icon"}></div>
                                         {"CANCEL"}
                                     </button>
-                                    <button onClick={verifySimulation} type="submit" className="user-btn mr5 save-btn">
+                                    <button onClick={verifySimulation} type="submit" className="user-btn mr5 save-btn" disabled={isDisable}>
                                         <div className={"Run-icon"}>
                                         </div>{" "}
                                         {"Verify"}

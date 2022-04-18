@@ -17,6 +17,7 @@ import { ViewCostingContext } from '../CostingDetails';
 import DayTime from '../../../common/DayTimeWrapper'
 import { createToprowObjAndSave, findSurfaceTreatmentData } from '../../CostingUtil';
 import _ from 'lodash'
+import ScrollToTop from '../../../common/ScrollToTop';
 
 function TabRMCC(props) {
 
@@ -1260,8 +1261,9 @@ function TabRMCC(props) {
                 className="form"
                 onSubmit={handleSubmit(onSubmit)}
               >
-                <Row>
+                <Row id='go-top-top'>
                   <Col md="12">
+                    <ScrollToTop pointProp={"go-top-top"} />
                     <Table className="table cr-brdr-main mb-0 rmcc-main-headings" size="sm">
                       <thead>
                         <tr>
