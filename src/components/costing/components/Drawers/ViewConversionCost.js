@@ -589,11 +589,7 @@ function ViewConversionCost(props) {
                   }
 
                   {!props.viewConversionCostData.isSurfaceTreatmentCost && <br />}
-                  {isShowToolCost && (
-                    <div>
-                      {toolCostTableData()}
-                    </div>
-                  )}
+
 
 
                   {props.viewConversionCostData.isSurfaceTreatmentCost &&                   // SHOW ONLY WHEN NETSURFACETREATMENT COST EYE BUTTON IS CLICKED
