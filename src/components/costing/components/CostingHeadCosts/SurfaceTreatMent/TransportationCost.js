@@ -32,7 +32,7 @@ function TransportationCost(props) {
   const [Rate, setRate] = useState('')
   const [OldTransportObj, setOldTransportObj] = useState(data)
   const [TransportationType, setTransportationType] = useState()
-  const [transportCost, setTransportCost] = useState('')
+  const [transportCost, setTransportCost] = useState(checkForNull(data?.TransportationCost))
   const [percentageLimit, setPercentageLimit] = useState(false);
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
@@ -113,6 +113,7 @@ function TransportationCost(props) {
       const Quantity = getValues('Quantity')
 
       if (TransportationType === 'Percentage') {
+        console.log(item.CostingPartDetails.SurfaceTreatmentCost, "item.CostingPartDetails.SurfaceTreatmentCost");
         setTransportCost(checkForNull(item.CostingPartDetails.SurfaceTreatmentCost * calculatePercentage(event.target.value)))
         setValue('TransportationCost', checkForDecimalAndNull(item.CostingPartDetails.SurfaceTreatmentCost * calculatePercentage(event.target.value), initialConfiguration.NoOfDecimalForPrice))
         setRate(event.target.value)
