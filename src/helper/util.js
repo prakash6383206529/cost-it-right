@@ -829,19 +829,19 @@ export function getFilteredData(arr, id) {
 
     case 1:    // CASE 1 FOR RM 
 
-      const list = arr && arr.filter((item => item.IsRMAssociated === true))
+      const list = arr && arr.filter((item => item.IsRMAssociatedForSimulation === true))
       return list
 
 
     case 2:   //CASE 2 FOR BOP
 
-      const listBop = arr && arr.filter((item => item.IsBOPAssociated === true))
+      const listBop = arr && arr.filter((item => item.IsBOPAssociatedForSimulation === true))
       return listBop
 
 
     case 3:   //CASE 3 FOR OPERATIONS
 
-      const listOperation = arr && arr.filter((item => item.IsOperationAssociated === true))
+      const listOperation = arr && arr.filter((item => item.IsOperationAssociatedForSimulation === true))
       return listOperation
 
     case 4:   //CASE 4 FOR MACHINE
