@@ -9,6 +9,9 @@ import DayTime from '../../common/DayTimeWrapper'
 import { getImpactedMasterData, getLastSimulationData } from '../actions/Simulation';
 import AssemblyWiseImpact from './AssemblyWiseImpact';
 import AssemblyWiseImpactSummary from './AssemblyWiseImpactSummary';
+import Toaster from '../../common/Toaster';
+import WarningMessage from '../../common/WarningMessage';
+import NoContentFound from '../../common/NoContentFound';
 
 
 function VerifyImpactDrawer(props) {
@@ -25,8 +28,10 @@ function VerifyImpactDrawer(props) {
   const [fgWiseAcc, setFgWiseAcc] = useState(false)
   const lastSimulationData = useSelector(state => state.comman.lastSimulationData)
   const impactedMasterData = useSelector(state => state.comman.impactedMasterData)
-  const [lastRevisionDataAccordial, setLastRevisionDataAccordial] = useState(impactedMasterDataListForLastRevisionData <= 0 ? true : false)
+  const [lastRevisionDataAccordial, setLastRevisionDataAccordial] = useState(false)
   const [masterIdForLastRevision, setMasterIdForLastRevision] = useState('')
+  const [editWarning, setEditWarning] = useState(false)
+  const [filterStatus, setFilterStatus] = useState('There is no data for Last Revision.')
   const headerName = ['Revision No.', 'Name', 'Old Cost/Pc', 'New Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
   const parentField = ['PartNumber', '-', 'PartName', '-', '-', '-', 'VariancePerPiece', 'VolumePerYear', 'ImpactPerQuarter', 'ImpactPerYear']
   const childField = ['PartNumber', 'ECNNumber', 'PartName', 'OldCost', 'NewCost', 'Quantity', 'VariancePerPiece', '-', '-', '-']
@@ -50,6 +55,19 @@ function VerifyImpactDrawer(props) {
     }
     props.closeDrawer('', type)
   }
+
+  useEffect(() => {
+    let check = impactedMasterDataListForLastRevisionData?.RawMaterialImpactedMasterDataList?.length <= 0 &&
+      impactedMasterDataListForLastRevisionData?.OperationImpactedMasterDataList?.length <= 0 &&
+      impactedMasterDataListForLastRevisionData?.ExchangeRateImpactedMasterDataList?.length <= 0 &&
+      impactedMasterDataListForLastRevisionData?.BoughtOutPartImpactedMasterDataList?.length <= 0
+    if (lastRevisionDataAccordial && check) {
+      Toaster.warning('There is no data for Last Revision.')
+      setEditWarning(true)
+    } else {
+      setEditWarning(false)
+    }
+  }, [lastRevisionDataAccordial, impactedMasterDataListForLastRevisionData])
 
   useEffect(() => {
 
@@ -189,7 +207,9 @@ function VerifyImpactDrawer(props) {
                 </Col>
                 <div className="accordian-content w-100 px-3 impacted-min-height">
                   {lastRevisionDataAccordial && <Impactedmasterdata data={impactedMasterDataListForLastRevisionData} masterId={masterIdForLastRevision} viewCostingAndPartNo={false} lastRevision={true} />}
-
+                  <div align="center">
+                    {editWarning && <NoContentFound title={"There is no data for Last Revision."} />}
+                  </div>
                 </div>
               </Row>
 
@@ -202,6 +222,7 @@ function VerifyImpactDrawer(props) {
 
                 </div>
               </Row>
+
             </form>
           </div>
         </Container>
