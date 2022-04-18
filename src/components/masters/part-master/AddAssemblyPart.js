@@ -62,7 +62,8 @@ class AddAssemblyPart extends Component {
       disablePopup: false,
       TechnologySelected: {},
       isBomEditable: false,
-      isDisableBomNo: false
+      isDisableBomNo: false,
+      minEffectiveDate: '',
     }
   }
 
@@ -98,6 +99,7 @@ class AddAssemblyPart extends Component {
             return productArray
           })
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
+          this.setState({ minEffectiveDate: Data.EffectiveDate })
 
           this.setState({ DataToCheck: Data })
 
@@ -935,6 +937,7 @@ class AddAssemblyPart extends Component {
                                 validate={[required]}
                                 autoComplete={'off'}
                                 required={true}
+                                minDate={this.state.minEffectiveDate}
                                 changeHandler={(e) => {
                                 }}
                                 component={renderDatePicker}
