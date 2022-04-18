@@ -13,6 +13,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { debounce } from 'lodash'
+import LoaderCustom from '../../../../common/LoaderCustom';
 
 
 
@@ -24,6 +25,7 @@ function StandardRub(props) {
 
     const costData = useContext(costingInfoContext)
     const [tableData, setTableData] = useState([])
+    const [agGridTable, setAgGridTable] = useState(true)
     const [timeOutId, setTimeoutId] = useState([])
     const [totalRMCost, setTotalRMCost] = useState("")
     const [rmDropDownData, setRmDropDownData] = useState([])
@@ -77,6 +79,10 @@ function StandardRub(props) {
     }, [])
 
 
+    useEffect(() => {
+
+
+    }, [tableData])
 
     const handleInnerDiameter = (e) => {
 
@@ -206,8 +212,16 @@ function StandardRub(props) {
     }
 
 
-    const deleteItem = () => {
+    const deleteItem = (gridData) => {
+        setAgGridTable(false)
+        gridData.pop()
+        // grid.applyTransaction({ remove: [rowData] })
+        setTableData([...gridData])
+        // setAgGridTable(true)
 
+        setTimeout(() => {
+            setAgGridTable(true)
+        }, 300);
     }
     const editItem = () => {
 
@@ -217,6 +231,9 @@ function StandardRub(props) {
     const buttonFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+
+
+        // props.gridApi?.applyTransaction({ remove: gridOptions.rowData })
 
         let isEditable;
         if ((props?.agGridReact?.gridOptions?.rowData.length - 1) === props.rowIndex) {
@@ -228,8 +245,8 @@ function StandardRub(props) {
         return (
             <>
 
-                {isEditable && <button className="Edit mr-2 align-middle" type={'button'} onClick={() => editItem()} />}
-                {isEditable && <button className="Delete align-middle" type={'button'} onClick={() => deleteItem()} />}
+                {isEditable && <button className="Edit mr-2 align-middle" type={'button'} onClick={() => editItem} />}
+                {isEditable && <button className="Delete align-middle" type={'button'} onClick={() => deleteItem(props?.agGridReact?.gridOptions.rowData)} />}
             </>
         )
     };
@@ -686,9 +703,9 @@ function StandardRub(props) {
                                     </Row>
                                 </Col>
                             </div>
+                            {!agGridTable && <LoaderCustom />}
 
-
-                            <Row>
+                            {agGridTable && <Row>
                                 <Col>
                                     <div className={`ag-grid-wrapper height-width-wrapper ${tableData && tableData.length <= 0 ? "overlay-contain" : ""} `}>
 
@@ -727,6 +744,7 @@ function StandardRub(props) {
                                     </div>
                                 </Col>
                             </Row>
+                            }
 
                             <div className="bluefooter-butn text-right">
                                 <span className='pr-2'>Total RM Cost : <span >{checkForDecimalAndNull(totalRMCost, getConfigurationKey().NoOfDecimalForPrice)}</span></span>

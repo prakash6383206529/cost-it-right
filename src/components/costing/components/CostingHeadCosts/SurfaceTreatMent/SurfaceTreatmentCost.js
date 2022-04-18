@@ -12,10 +12,9 @@ import { gridDataAdded } from '../../../actions/Costing';
 import { ViewCostingContext } from '../../CostingDetails'
 
 function SurfaceTreatmentCost(props) {
-
-
+  const { item } = props
   const CostingViewMode = useContext(ViewCostingContext);
-
+  const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
   const { register, control, formState: { errors } } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -39,9 +38,10 @@ function SurfaceTreatmentCost(props) {
       index: props.index,
       BOMLevel: props.item.BOMLevel,
       PartNumber: props.item.PartNumber,
+
     }
     if (props.IsAssemblyCalculation) {
-      props.setAssemblySurfaceCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
+      props.setAssemblySurfaceCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false, props.item)
     } else {
 
       props.setSurfaceCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
@@ -52,7 +52,7 @@ function SurfaceTreatmentCost(props) {
 
 
   useEffect(() => {
-    if (props?.data && props.data.length > 0) {
+    if (!props.IsAssemblyCalculation && props?.data && props.data.length > 0) {
 
       setGridData(props.data)
     }
@@ -97,8 +97,11 @@ function SurfaceTreatmentCost(props) {
       setGridData(tempArr)
       selectedIds(tempArr)
       dispatch(gridDataAdded(true))
+
+
     }
     setDrawerOpen(false)
+
   }
 
   /**
@@ -197,7 +200,7 @@ function SurfaceTreatmentCost(props) {
               <button
                 type="button"
                 className={'user-btn'}
-                disabled={CostingViewMode ? true : false}
+                disabled={(CostingViewMode || IsLocked) ? true : false}
                 onClick={DrawerToggle}>
                 <div className={'plus'}></div>SURFACE T.</button>
             </Col>

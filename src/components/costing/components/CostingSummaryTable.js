@@ -1518,6 +1518,7 @@ const CostingSummaryTable = (props) => {
                                     : (
 
                                       <button
+                                        type='button'
                                         className='btn-a'
                                         onClick={() => viewAttachmentData(index)}
                                       > {data.CostingHeading !== VARIANCE ? 'View Attachment' : ''}</button>
