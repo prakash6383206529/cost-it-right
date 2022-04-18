@@ -12,6 +12,7 @@ import LoaderCustom from '../../../common/LoaderCustom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import { FORGING, Ferrous_Casting, DIE_CASTING } from '../../../../config/masterData'
 const gridOptions = {};
 
 function AddProcess(props) {
@@ -23,7 +24,6 @@ function AddProcess(props) {
   const dispatch = useDispatch()
 
   const costData = useContext(costingInfoContext)
-
   const { processDrawerList, CostingEffectiveDate } = useSelector(state => state.costing)
   const { initialConfiguration } = useSelector(state => state.auth)
 
@@ -40,12 +40,22 @@ function AddProcess(props) {
 
   useEffect(() => {
     if (costData.VendorType === ZBC) {
+      let data = {}
 
-      const data = {
-        PlantId: costData.PlantId,
-        TechnologyId: costData.TechnologyId,
-        CostingId: costData.CostingId,
-        EffectiveDate: CostingEffectiveDate,
+      if (Number(costData.TechnologyId) === Number(FORGING) || Number(costData.TechnologyId) === Number(DIE_CASTING) || Number(costData.TechnologyId) === Number(Ferrous_Casting)) {
+        data = {
+          PlantId: costData.PlantId,
+          TechnologyId: String(`${costData.TechnologyId},14`),
+          CostingId: costData.CostingId,
+          EffectiveDate: CostingEffectiveDate,
+        }
+      } else {
+        data = {
+          PlantId: costData.PlantId,
+          TechnologyId: String(costData.TechnologyId),
+          CostingId: costData.CostingId,
+          EffectiveDate: CostingEffectiveDate,
+        }
       }
       dispatch(getProcessDrawerDataList(data, (res) => {
         if (res && res.status === 200) {
@@ -59,14 +69,26 @@ function AddProcess(props) {
       }))
 
     } else {
-
-      const data = {
-        VendorId: costData.VendorId,
-        TechnologyId: costData.TechnologyId,
-        VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
-        DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID,
-        CostingId: costData.CostingId,
-        EffectiveDate: CostingEffectiveDate,
+      let data = {}
+      if (Number(costData.TechnologyId) === Number(FORGING) || Number(costData.TechnologyId) === Number(DIE_CASTING) || Number(costData.TechnologyId) === Number(Ferrous_Casting)) {
+        data = {
+          VendorId: costData.VendorId,
+          TechnologyId: String(`${costData.TechnologyId},14`),
+          VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
+          DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID,
+          CostingId: costData.CostingId,
+          EffectiveDate: CostingEffectiveDate,
+        }
+      }
+      else {
+        data = {
+          VendorId: costData.VendorId,
+          TechnologyId: String(costData.TechnologyId),
+          VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
+          DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID,
+          CostingId: costData.CostingId,
+          EffectiveDate: CostingEffectiveDate,
+        }
       }
       dispatch(getProcessDrawerVBCDataList(data, (res) => {
         if (res && res.status === 200) {
@@ -78,10 +100,8 @@ function AddProcess(props) {
           setTableDataList([])
         }
       }))
-
     }
   }, []);
-
 
   const onRowSelect = (row, isSelected, e) => {
     var selectedRows = gridApi.getSelectedRows();

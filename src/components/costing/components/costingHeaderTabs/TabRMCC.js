@@ -15,7 +15,7 @@ import Toaster from '../../../common/Toaster';
 import { MESSAGES } from '../../../../config/message';
 import { ViewCostingContext } from '../CostingDetails';
 import DayTime from '../../../common/DayTimeWrapper'
-import { createToprowObjAndSave } from '../../CostingUtil';
+import { createToprowObjAndSave, findSurfaceTreatmentData } from '../../CostingUtil';
 import _ from 'lodash'
 
 function TabRMCC(props) {
@@ -991,15 +991,17 @@ function TabRMCC(props) {
         let newItem = item
         let updatedArr = JSON.parse(localStorage.getItem('costingArray'))
         let obj = updatedArr && updatedArr.find(updateditem => updateditem.PartNumber === newItem.PartNumber && updateditem.AssemblyPartNumber === newItem.AssemblyPartNumber)
+        if (obj && Object.keys(obj).length > 0) {
 
-        newItem.CostingPartDetails.TotalOperationCostSubAssembly = checkForNull(obj.CostingPartDetails.TotalOperationCostSubAssembly)
-        newItem.CostingPartDetails.TotalOperationCostPerAssembly = checkForNull(obj.CostingPartDetails.TotalOperationCostPerAssembly)
-        newItem.CostingPartDetails.CostingOperationCostResponse = obj.CostingPartDetails.CostingOperationCostResponse
-        newItem.CostingPartDetails.TotalOperationCostComponent = checkForNull(obj.CostingPartDetails.TotalOperationCostComponent)
-        newItem.CostingPartDetails.TotalConversionCost = checkForNull(obj.CostingPartDetails.TotalConversionCost)
-        newItem.CostingPartDetails.TotalConversionCostWithQuantity = checkForNull(obj.CostingPartDetails.TotalConversionCostWithQuantity)
-        newItem.CostingPartDetails.TotalCalculatedRMBOPCCCost = checkForNull(obj.CostingPartDetails.TotalCalculatedRMBOPCCCost)
-        newItem.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = checkForNull(obj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity)
+          newItem.CostingPartDetails.TotalOperationCostSubAssembly = checkForNull(obj.CostingPartDetails.TotalOperationCostSubAssembly)
+          newItem.CostingPartDetails.TotalOperationCostPerAssembly = checkForNull(obj.CostingPartDetails.TotalOperationCostPerAssembly)
+          newItem.CostingPartDetails.CostingOperationCostResponse = obj.CostingPartDetails.CostingOperationCostResponse
+          newItem.CostingPartDetails.TotalOperationCostComponent = checkForNull(obj.CostingPartDetails.TotalOperationCostComponent)
+          newItem.CostingPartDetails.TotalConversionCost = checkForNull(obj.CostingPartDetails.TotalConversionCost)
+          newItem.CostingPartDetails.TotalConversionCostWithQuantity = checkForNull(obj.CostingPartDetails.TotalConversionCostWithQuantity)
+          newItem.CostingPartDetails.TotalCalculatedRMBOPCCCost = checkForNull(obj.CostingPartDetails.TotalCalculatedRMBOPCCCost)
+          newItem.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = checkForNull(obj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity)
+        }
         if (item.CostingChildPartDetails.length > 0) {
           mapArray(newItem.CostingChildPartDetails)
         }
@@ -1083,6 +1085,8 @@ function TabRMCC(props) {
     if (ErrorObjRMCC && Object.keys(ErrorObjRMCC).length > 0) return false;
 
     if (Object.keys(ComponentItemData).length > 0 && ComponentItemData.IsOpen !== false && checkIsDataChange === true) {
+
+      let stCostingData = findSurfaceTreatmentData(ComponentItemData)
       let requestData = {
         "NetRawMaterialsCost": ComponentItemData.CostingPartDetails.TotalRawMaterialsCost,
         "NetBoughtOutPartCost": ComponentItemData.CostingPartDetails.TotalBoughtOutPartCost,
@@ -1092,10 +1096,9 @@ function TabRMCC(props) {
         "NetOtherOperationCost": ComponentItemData.CostingPartDetails.CostingConversionCost && ComponentItemData.CostingPartDetails.CostingConversionCost.OtherOperationCostTotal !== undefined ? ComponentItemData.CostingPartDetails.CostingConversionCost.OtherOperationCostTotal : 0,
         "NetToolCost": ComponentItemData.CostingPartDetails.TotalToolCost,
         "NetTotalRMBOPCC": ComponentItemData.CostingPartDetails.TotalCalculatedRMBOPCCCost,
-        "TotalCost": costData.IsAssemblyPart ? ComponentItemData.CostingPartDetails.TotalCalculatedRMBOPCCCost : netPOPrice,
+        "TotalCost": costData.IsAssemblyPart ? (stCostingData && Object.keys(stCostingData).length > 0) ? (checkForNull(stCostingData?.CostingPartDetails?.NetSurfaceTreatmentCost) + checkForNull(ComponentItemData.CostingPartDetails.TotalCalculatedRMBOPCCCost)) : ComponentItemData.CostingPartDetails.TotalCalculatedRMBOPCCCost : netPOPrice,
         "LoggedInUserId": loggedInUserId(),
         "EffectiveDate": CostingEffectiveDate,
-
         "IsSubAssemblyComponentPart": costData.IsAssemblyPart,
         "CostingId": ComponentItemData.CostingId,
         "PartId": ComponentItemData.PartId,                              //ROOT ID
