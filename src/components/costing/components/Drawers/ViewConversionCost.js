@@ -556,7 +556,7 @@ function ViewConversionCost(props) {
                   return (
                     <NavItem>
                       <NavLink className={classnames({ active: activeTab === index })} onClick={() => setPartDetail(index, item)}>
-                        {item}
+                        <div className='drawer-part-name'><span title={item}> {item}</span></div>
                       </NavLink>
                     </NavItem>
                   )
