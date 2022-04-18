@@ -21,7 +21,6 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
-import { toastr } from 'react-redux-toastr';
 
 const gridOptions = {};
 
@@ -55,7 +54,7 @@ class UsersListing extends Component {
 			deletedId: '',
 			cell: [],
 			row: [],
-			isLoader:false
+			isLoader: false
 		}
 	}
 
@@ -126,9 +125,9 @@ class UsersListing extends Component {
 			DepartmentId: departmentId,
 			RoleId: roleId,
 		}
-		this.setState({isLoader:true})
+		this.setState({ isLoader: true })
 		this.props.getAllUserDataAPI(data, res => {
-			this.setState({isLoader:false})
+			this.setState({ isLoader: false })
 			if (res.status === 204 && res.data === '') {
 				this.setState({ userData: [], })
 			} else if (res && res.data && res.data.DataList) {
@@ -245,7 +244,7 @@ class UsersListing extends Component {
 				this.setState({ showPopup2: false })
 			}
 		};
-		return toastr.confirm(`${MESSAGES.USER_DELETE_ALERT}`, toastrConfirmOptions);
+		return Toaster.confirm(`${MESSAGES.USER_DELETE_ALERT}`, toastrConfirmOptions);
 	}
 
 	/**
@@ -630,7 +629,7 @@ class UsersListing extends Component {
 							</Col>
 						</Row>
 					</form>
-					<div className={`ag-grid-wrapper height-width-wrapper ${this.props.userDataList && this.props.userDataList?.length <=0 ?"overlay-contain": ""}`}>
+					<div className={`ag-grid-wrapper height-width-wrapper ${this.props.userDataList && this.props.userDataList?.length <= 0 ? "overlay-contain" : ""}`}>
 						<div className="ag-grid-header">
 							<input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
 						</div>
