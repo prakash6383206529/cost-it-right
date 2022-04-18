@@ -296,15 +296,31 @@ function TabDiscountOther(props) {
   const handleDiscountCostChange = (event) => {
     if (!CostingViewMode) {
       if (!isNaN(event.target.value)) {
-        setDiscountObj({
-          ...discountObj,
-          HundiOrDiscountValue: checkForNull(event.target.value)
-        })
+        if (checkForNull(event.target.value) > totalCost) {
+          setTimeout(() => {
+            setValue('HundiOrDiscountValue', 0)
+          }, 300);
+          setDiscountObj({
+            ...discountObj,
+            HundiOrDiscountValue: 0,
+            totalCost: totalCost
+          })
+          Toaster.warning("Hundi/Discount Value should not be greater then Total Cost ")
+          return false
+        }
+        else {
+          setDiscountObj({
+            ...discountObj,
+            HundiOrDiscountValue: checkForNull(event.target.value)
+          })
+        }
+
       } else {
         Toaster.warning('Please enter valid number.')
       }
     }
   }
+
 
   /**
   * @method handleAnyOtherCostChange
@@ -570,6 +586,9 @@ function TabDiscountOther(props) {
   * @description Used to Submit the form
   */
   const onSubmit = debounce((values, val, gotoNextValue) => {
+
+    if (errors && Object.keys(errors).length > 0) return false;
+
     const tabData = RMCCTabData[0]
     const surfaceTabData = SurfaceTabData[0]
     const overHeadAndProfitTabData = OverheadProfitTabData[0]
@@ -1094,7 +1113,7 @@ function TabDiscountOther(props) {
                     <div className="col-sm-12 text-right bluefooter-butn mt-3">
 
                       {!CostingViewMode && <button
-                        type="button"
+                        type="submit"
                         className="submit-button mr5 save-btn"
                         onClick={(data, e) => { handleSubmit(onSubmit(data, e, false)) }}
                         disabled={isDisable}
@@ -1104,7 +1123,7 @@ function TabDiscountOther(props) {
                       </button>}
 
                       {!CostingViewMode && <button
-                        type="button"
+                        type="submit"
                         className="submit-button save-btn"
                         onClick={(data, e) => { handleSubmit(onSubmit(data, e, true)) }}
                         disabled={isDisable}
