@@ -171,10 +171,13 @@ class SimulationUploadDrawer extends Component {
                     let fileData = [];
                     let basicRateCount = 0
                     let correctRowCount = 0
+                    let scrapRateLessBasicRate = 0
                     let NoOfRowsWithoutChange = 0
                     switch (Number(this.props.master.value)) {
                         case Number(RMDOMESTIC):
                             resp.rows.map((val, index) => {
+                                const scrapTemp = (val[15] !== val[14]) && val[15] ? val[15] : val[14]
+                                const basicTemp = (val[11] !== val[10]) && val[11] ? val[11] : val[10]
                                 if (val.length !== 0) {
                                     if (index > 0) {
                                         if ((val[11] !== '' && val[11] !== undefined && val[11] !== null && val[10] !== val[11]) ||
@@ -185,6 +188,10 @@ class SimulationUploadDrawer extends Component {
                                             val[15] === undefined || val[15] === null || val[14] === val[15])) {
                                             NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
                                             return false
+                                        }
+
+                                        if (basicTemp < scrapTemp) {
+                                            scrapRateLessBasicRate = 1
                                         }
                                         correctRowCount = correctRowCount + 1
                                         let obj = {}
@@ -206,6 +213,8 @@ class SimulationUploadDrawer extends Component {
 
                         case Number(RMIMPORT):
                             resp.rows.map((val, index) => {
+                                const scrapTemp = (val[13] !== val[12]) && val[13] ? val[13] : val[12]
+                                const basicTemp = (val[11] !== val[10]) && val[11] ? val[11] : val[10]
                                 if (val.length !== 0) {
                                     if (index > 0) {
                                         if ((val[11] !== '' && val[11] !== undefined && val[11] !== null && val[10] !== val[11]) || (val[13] !== '' && val[13] !== undefined && val[13] !== null && val[12] !== val[13])) {
@@ -214,6 +223,9 @@ class SimulationUploadDrawer extends Component {
                                         if ((val[11] === '' || val[11] === undefined || val[11] === null || val[10] === val[11]) && (val[13] === '' || val[13] === undefined || val[13] === null || val[12] === val[13])) {
                                             NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
                                             return false
+                                        }
+                                        if (basicTemp < scrapTemp) {
+                                            scrapRateLessBasicRate = 1
                                         }
                                         correctRowCount = correctRowCount + 1
                                         let obj = {}
@@ -422,10 +434,19 @@ class SimulationUploadDrawer extends Component {
                                 Toaster.warning('Please change at least one basic rate or scrap rate.')
                                 return false
                             }
+                            if (scrapRateLessBasicRate === 1) {
+                                Toaster.warning('Scrap Rate should be less than Basic Rate.')
+                                return false
+                            }
+
                             break;
                         case Number(RMIMPORT):
                             if (basicRateCount === 0) {
                                 Toaster.warning('Please change at least one basic rate.')
+                                return false
+                            }
+                            if (scrapRateLessBasicRate === 1) {
+                                Toaster.warning('Scrap Rate should be less than Basic Rate.')
                                 return false
                             }
                             break;
