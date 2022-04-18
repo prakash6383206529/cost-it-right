@@ -154,7 +154,10 @@ function RMSimulation(props) {
         setTextFilterSearch('')
         gridOptions?.columnApi?.resetColumnState();
         gridOptions?.api?.setFilterModel(null);
-        window.screen.width >= 1600 && gridRef.current.api.sizeColumnsToFit();
+        if (isImpactedMaster) {
+            window.screen.width >= 1600 && gridRef.current.api.sizeColumnsToFit();
+        }
+        window.screen.width >= 1921 && gridRef.current.api.sizeColumnsToFit();
     }
 
     /**
@@ -362,7 +365,10 @@ function RMSimulation(props) {
 
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
-        window.screen.width >= 1600 && gridRef.current.api.sizeColumnsToFit();
+        if (isImpactedMaster) {
+            window.screen.width >= 1600 && gridRef.current.api.sizeColumnsToFit();
+        }
+        window.screen.width >= 1921 && gridRef.current.api.sizeColumnsToFit();
         params.api.paginationGoToPage(0);
     };
 
