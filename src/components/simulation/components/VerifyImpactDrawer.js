@@ -26,7 +26,7 @@ function VerifyImpactDrawer(props) {
   const [lastRevisionDataAccordial, setLastRevisionDataAccordial] = useState(false)
   const [masterIdForLastRevision, setMasterIdForLastRevision] = useState('')
   const [editWarning, setEditWarning] = useState(false)
-  const [filterStatus, setFilterStatus] = useState('There is no data for Last Revision.')
+  const [filterStatus, setFilterStatus] = useState('There is no data for the Last Revision.')
   const headerName = ['Revision No.', 'Name', 'Old Cost/Pc', 'New Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
   const parentField = ['PartNumber', '-', 'PartName', '-', '-', '-', 'VariancePerPiece', 'VolumePerYear', 'ImpactPerQuarter', 'ImpactPerYear']
   const childField = ['PartNumber', 'ECNNumber', 'PartName', 'OldCost', 'NewCost', 'Quantity', 'VariancePerPiece', '-', '-', '-']
@@ -198,7 +198,7 @@ function VerifyImpactDrawer(props) {
                 <div className="accordian-content w-100 px-3 impacted-min-height">
                   {lastRevisionDataAccordial && <Impactedmasterdata data={impactedMasterDataListForLastRevisionData} masterId={masterIdForLastRevision} viewCostingAndPartNo={false} lastRevision={true} />}
                   <div align="center">
-                    {editWarning && <NoContentFound title={"There is no data for Last Revision."} />}
+                    {editWarning && <NoContentFound title={"There is no data for the Last Revision."} />}
                   </div>
                 </div>
               </Row>
