@@ -456,7 +456,7 @@ function ViewConversionCost(props) {
                   return (
                     <tr key={index}>
                       {IsAssemblyCosting && partNumberList.length === 0 && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
-                      <td className='text-overflow'><span title={item.OperationName}>{item.OperationName ? item.OperationName : '-'}</span></td>
+                      <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item.OperationName}>{item.OperationName ? item.OperationName : '-'}</span></td>
                       <td>{item.SurfaceArea ? item.SurfaceArea : '-'}</td>
                       <td>{item.UOM ? item.UOM : '-'}</td>
                       <td>{item.RatePerUOM ? checkForDecimalAndNull(item.RatePerUOM, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
