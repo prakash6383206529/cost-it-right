@@ -1915,7 +1915,7 @@ input:disabled{
   margin: 0 -30px -15px;
 }
 .add-min-height{
-  min-height: calc(100vh - 275px);
+  min-height: calc(100vh - 268px);
 }
 .role-permision-page{
   .add-min-height{
@@ -4128,14 +4128,6 @@ body{
           margin-bottom: 8px;
         }
       }
-      .edit-btn,.btn-danger,.btn-primary, .user-btn, .btn-primary-add, .apply, .btn-secondary, .add-cancel-btn{
-        font-size: calc(14px * 80 / 100);
-        padding-left: calc(15px * 80 / 100);
-        padding-right: calc(15px * 80 / 100);
-        line-height: calc(14px * 80 / 100);
-        height: calc(32px * 80 / 100);
-        width: auto;
-      }
       .show-table-btn{
         .react-bs-table-tool-bar{
           .col-lg-8{
@@ -5645,7 +5637,7 @@ left: 17rem;
         }
       }
     }
-}
+  }
 
 @media screen and (max-width:$middleDesktop) {
   .costing-summary-table {
@@ -5683,6 +5675,47 @@ left: 17rem;
     }
     .custom-check {
       font-size: 14px;
+    }
+  }
+
+  .edit-btn,.btn-danger,.btn-primary, .user-btn, .btn-primary-add, .apply, .btn-secondary, .add-cancel-btn, .cr-bk-btn, .save-btn, .cancel-btn,.reset-btn, .pdf-detail {
+  font-size: calc(14px * 80 / 100) !important;
+  padding-left: calc(15px * 80 / 100) !important;
+  padding-right: calc(15px * 80 / 100) !important;
+  line-height: calc(14px * 80 / 100) !important;
+  height: calc(32px * 80 / 100) !important;
+  width: auto !important;
+  }
+   .edit-icon, .edit-icon {
+    height: calc(12px * 80 / 100) !important;
+    width: calc(12px * 80 / 100) !important;
+  }
+  .costing-tabs-container {
+    .plus {
+      height: calc(12px * 80 / 100) !important;
+      width: calc(12px * 80 / 100) !important;
+    }
+    .save-btn, .cancel-btn {
+      font-size: 14px !important;
+      padding-left: 15px !important;
+      padding-right: 15px !important;
+      line-height: 14px !important;
+      height: 32px !important;
+      width: auto !important;
+    }
+  }
+
+  .goToTop {
+    width: 23px !important;
+    padding: 2px  !important;
+    padding-top: 5px  !important;
+    height: 22px  !important;
+    bottom: 4%  !important;
+    right: -3px  !important;
+    .go-to-top {
+      width: 19px !important;
+    height: 19px !important;
+
     }
   }
 }
