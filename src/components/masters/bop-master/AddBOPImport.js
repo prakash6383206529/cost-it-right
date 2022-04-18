@@ -129,11 +129,7 @@ class AddBOPImport extends Component {
       if (res.data.Result) {
         this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
       }
-
     })
-
-
-
   }
 
   componentDidUpdate(prevProps) {
@@ -175,7 +171,6 @@ class AddBOPImport extends Component {
     }
   }
 
-
   closeApprovalDrawer = (e = '', type) => {
     this.setState({ approveDrawer: false, setDisable: false })
     if (type === 'submit') {
@@ -183,7 +178,6 @@ class AddBOPImport extends Component {
       this.cancel()
     }
   }
-
 
   /**
   * @method getDetails
@@ -228,16 +222,13 @@ class AddBOPImport extends Component {
 
             if (getConfigurationKey().IsDestinationPlantConfigure) {
               let obj = plantSelectList && plantSelectList.find(item => item.Value === Data.DestinationPlantId)
-              plantObj = { label: obj.Text, value: obj.Value }
+              plantObj = { label: obj?.Text, value: obj?.Value }
             } else {
               plantObj = Data && Data.Plant.length > 0 ? { label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId } : []
             }
-
-
             this.setState({
               isEditFlag: true,
               IsFinancialDataChanged: false,
-              // isLoader: false,
               IsVendor: Data.IsVendor,
               BOPCategory: categoryObj && categoryObj !== undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
               selectedPlants: plantObj,
@@ -249,6 +240,7 @@ class AddBOPImport extends Component {
               oldDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
               files: Data.Attachements,
               UOM: uomObject && uomObject !== undefined ? { label: uomObject.Display, value: uomObject.Value } : [],
+              isLoader: false,
             }, () => this.setState({ isLoader: false }))
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
             let files = Data.Attachements && Data.Attachements.map((item) => {
