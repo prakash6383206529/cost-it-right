@@ -342,7 +342,7 @@ function CostingHeaderTabs(props) {
             </Col>}
         </Row>
 
-        <div>
+        <div className='costing-tabs-container'>
           <Nav tabs className="subtabs cr-subtabs-head">
             <NavItem>
               <NavLink className={classnames({ active: activeTab === '1' })} onClick={() => { toggle('1'); }}>

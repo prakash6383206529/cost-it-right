@@ -199,28 +199,33 @@ function AssemblyPart(props) {
             }
           </td>
         } */}
-        <td className='btn-width'>
-          <button
-            type="button"
-            className={'user-btn add-oprn-btn ml-1'}
-            onClick={bopHandlingDrawer}>
-            <div className={`${item?.CostingPartDetails?.IsApplyBOPHandlingCharges !== null && item?.CostingPartDetails?.IsApplyBOPHandlingCharges.IsApplyBOPHandlingCharges ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`Insert H`}</button>
+        <td>
+          <div className='d-flex justify-content-end align-items-center'>
+            <div className='d-flex'>
+              <button
+                type="button"
+                className={'user-btn add-oprn-btn mr-1'}
+                onClick={bopHandlingDrawer}>
+                <div className={`${item?.CostingPartDetails?.IsApplyBOPHandlingCharges !== null && item?.CostingPartDetails?.IsApplyBOPHandlingCharges.IsApplyBOPHandlingCharges ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`Insert H`}</button>
 
-          {checkForNull(item?.CostingPartDetails?.TotalOperationCostPerAssembly) !== 0 ?
-            <button
-              type="button"
-              className={'user-btn add-oprn-btn'}
-              onClick={DrawerToggle}>
-              <div className={'fa fa-eye pr-1'}></div>OPER</button>
-            :
-            <button
-              type="button"
-              className={'user-btn add-oprn-btn'}
-              onClick={DrawerToggle}>
-              <div className={`${CostingViewMode ? 'fa fa-eye pr-1' : 'plus'}`}></div>{'OPER'}</button>}
+              {checkForNull(item?.CostingPartDetails?.TotalOperationCostPerAssembly) !== 0 ?
+                <button
+                  type="button"
+                  className={'user-btn add-oprn-btn'}
+                  onClick={DrawerToggle}>
+                  <div className={'fa fa-eye pr-1'}></div>OPER</button>
+                :
+                <button
+                  type="button"
+                  className={'user-btn add-oprn-btn'}
+                  onClick={DrawerToggle}>
+                  <div className={`${CostingViewMode ? 'fa fa-eye pr-1' : 'plus'}`}></div>{'OPER'}</button>}
+            </div>
+            <div className={`${(item.IsLocked || item.IsPartLocked) ? 'lock_icon ml-3' : ''}`}>{''}</div>
+          </div>
         </td>
         {/*WHEN COSTING OF THAT PART IS  APPROVED SO COSTING COMES AUTOMATICALLY FROM BACKEND AND THIS KEY WILL COME TRUE (WORK LIKE VIEW MODE)*/}
-        <td className="text-right"><div className={`${(item.IsLocked || item.IsPartLocked) ? 'lock_icon' : ''}`}>{''}</div></td>
+        {/* <td className="text-right"></td> */}
       </tr>
 
       {item.CostingPartDetails.IsOpen && nestedPartComponent}
