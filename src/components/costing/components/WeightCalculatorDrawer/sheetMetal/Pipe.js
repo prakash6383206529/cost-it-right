@@ -43,7 +43,7 @@ function Pipe(props) {
     }
   }
 
-  const { rmRowData, isEditFlag } = props
+  const { rmRowData, isEditFlag, item } = props
 
   const costData = useContext(costingInfoContext)
   const CostingViewMode = useContext(ViewCostingContext);
@@ -398,7 +398,7 @@ function Pipe(props) {
       LayoutType: 'Pipe',
       SheetMetalCalculationId: WeightCalculatorRequest && WeightCalculatorRequest.SheetMetalCalculationId ? WeightCalculatorRequest.SheetMetalCalculationId : "0",
       IsChangeApplied: isChangeApplies, //NEED TO MAKE IT DYNAMIC how to do,
-      BaseCostingIdRef: costData.CostingId,
+      BaseCostingIdRef: item.CostingId,
       CostingRawMaterialDetailId: rmRowData.RawMaterialDetailId,
       RawMaterialIdRef: rmRowData.RawMaterialId,
       LoggedInUserId: loggedInUserId(),
