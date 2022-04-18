@@ -3114,6 +3114,7 @@ export const CombinedProcessSimulation = [
     { label: "RemainingTotal", value: "RemainingTotal" },
     { label: "TotalCost", value: "TotalCost" },
     { label: "EffectiveDate", value: "EffectiveDate" },
+    { label: "CostingId", value: "CostingId" },
     // { label: "DisplayStatus", value: "DisplayStatus" }
 ]
 
@@ -3295,8 +3296,6 @@ export const CPGridForTokenSummary = [
     { label: "Costing Number", value: "CostingNumber" },
     { label: "Old Net CC", value: "OldNetCC" },
     { label: "New Net CC", value: "NewNetCC" },
-    { label: "Part Number", value: "PartNumber" },
-    { label: "EffectiveDate", value: "EffectiveDate" },
 ]
 
 export const ImpactedRMDownload = [
@@ -3385,7 +3384,7 @@ export const BoughtOutPartImportFileHeads = ['CostingHead', 'BoughtOutPartNumber
 export const MachineRateFileHeads = ['CostingHead', 'Technologies', 'VendorName', 'DestinationPlant', 'MachineNumber', 'MachineTypeName', 'MachineTonnage', 'ProcessName', 'MachineRate', 'NewMachineRate', 'EffectiveDate']
 
 
-export const CombinedProcessFileHeads = ['TechnologyName', 'PartName', 'PartNumber', 'PlantName', 'ConversionCost', 'NewCC', 'RemainingTotal', 'TotalCost', 'EffectiveDate']
+export const CombinedProcessFileHeads = ['TechnologyName', 'PartName', 'PartNumber', 'PlantName', 'ConversionCost', 'NewCC', 'RemainingTotal', 'TotalCost', 'EffectiveDate', 'CostingId']
 
 export const TechnologyDropdownBulkUpload = [
     { label: 'Mechanical Proprietary, Sheet Metal, Hardware, Spring, Rivet', value: '1' },
