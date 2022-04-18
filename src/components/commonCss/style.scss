@@ -5999,7 +5999,9 @@ left: 17rem;
  .head-part-overflow {
    @include overflow($ResponsiveWith:175px, $whiteSpace:normal)
  }
-
+.drawer-part-name {
+  @include overflow(102px,$whiteSpace:normal)
+}
   .text-overflow {
     @include overflow($minWidth:125px,$ResponsiveWith:175px, $whiteSpace:normal, $lineClamp:2)
   }
