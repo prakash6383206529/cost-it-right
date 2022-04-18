@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRawMaterialNameChild } from '../../masters/actions/Material';
 import NoContentFound from '../../common/NoContentFound';
-import { BOPDOMESTIC, BOPIMPORT, COSTINGSIMULATIONROUND, TOFIXEDVALUE, EMPTY_DATA, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, RMImpact, BOPImpact, OPerationImpact, ExchangeRateImpact, ImpactMaster } from '../../../config/constants';
+import { BOPDOMESTIC, BOPIMPORT, COSTINGSIMULATIONROUND, TOFIXEDVALUE, EMPTY_DATA, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, ImpactMaster } from '../../../config/constants';
 import { getComparisionSimulationData, getCostingBoughtOutPartSimulationList, getCostingSimulationList, getCostingSurfaceTreatmentSimulationList, setShowSimulationPage, getSimulatedAssemblyWiseImpactDate, getImpactedMasterData } from '../actions/Simulation';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
@@ -20,7 +20,7 @@ import {
     ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl,
     BOPGridForToken,
     CostingSimulationDownloadBOP, CostingSimulationDownloadOperation, CostingSimulationDownloadRM, CostingSimulationDownloadST
-    , InitialGridForToken, LastGridForToken, OperationGridForToken, RMGridForToken, RMImpactedDownloadArray, STGridForToken
+    , InitialGridForToken, LastGridForToken, OperationGridForToken, RMGridForToken, STGridForToken
 } from '../../../config/masterData'
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -66,7 +66,6 @@ function CostingSimulation(props) {
     const [disableApproveButton, setDisableApprovalButton] = useState(false)
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
-    const [rowData, setRowData] = useState(null);
     const [selectedCostingIds, setSelectedCostingIds] = useState();
     const [loader, setLoader] = useState(true)
     const [vendorIdState, setVendorIdState] = useState("")
@@ -115,10 +114,10 @@ function CostingSimulation(props) {
     useEffect(() => {
         let count = 0
         tableData && tableData.map((item) => {
-
             if (item.IsAssemblyExist === true) {
                 count++
             }
+            return null
         })
         if (count !== 0) {
             setAssemblyImpactButtonTrue(true)
@@ -175,6 +174,7 @@ function CostingSimulation(props) {
                     checkForNull(item.NewOperationRate).toFixed(TOFIXEDVALUE))
                 item.BOPVariance = (checkForNull(item.OldBOPCost).toFixed(TOFIXEDVALUE) -
                     checkForNull(item.NewBOPCost).toFixed(TOFIXEDVALUE))
+                return null
             })
             let uniqeArray = []
             const map = new Map();
@@ -292,12 +292,12 @@ function CostingSimulation(props) {
     const onRowSelect = () => {
         var selectedRows = gridApi.getSelectedRows();
         let temp = []
-        let selectedTemp = []
-        selectedRows && selectedRows.map(item => {
+        selectedRows && selectedRows.map((item, index) => {
             if (item.IsLockedBySimulation) {
-                temp.push(item.CostingNumber)
+                temp.push(item.CostingNumber, index)
                 return false
             }
+            return null
         })
 
         if (temp.length > 1) {
@@ -306,7 +306,11 @@ function CostingSimulation(props) {
             gridApi.deselectAll()
             return false
         } else if (temp.length === 1) {
-            Toaster.warning(`This costing is under approval with token number ${selectedRows[0].LockedBySimulationToken ? selectedRows[0].LockedBySimulationToken : '-'} at ${selectedRows[0].LockedBySimulationProcessStep ? selectedRows[0].LockedBySimulationProcessStep : "-"} with ${selectedRows[0].LockedBySimulationStuckInWhichUser ? selectedRows[0].LockedBySimulationStuckInWhichUser : '-'} .`)
+            if (selectedRows[temp[1]].LockedBySimulationProcessStep === '' || selectedRows[temp[1]].LockedBySimulationProcessStep === null) {
+                Toaster.warning(`${selectedRows[temp[1]].LockedBySimulationStuckInWhichUser ? selectedRows[temp[1]].LockedBySimulationStuckInWhichUser : '-'}`)
+            } else {
+                Toaster.warning(`This costing is under approval with token number ${selectedRows[0].LockedBySimulationToken ? selectedRows[0].LockedBySimulationToken : '-'} at ${selectedRows[0].LockedBySimulationProcessStep ? selectedRows[0].LockedBySimulationProcessStep : "-"} with ${selectedRows[0].LockedBySimulationStuckInWhichUser ? selectedRows[0].LockedBySimulationStuckInWhichUser : '-'} .`)
+            }
             gridApi.deselectAll()
             return false
         } else {
@@ -352,7 +356,7 @@ function CostingSimulation(props) {
         setIsApprovalDrawer(true)
         if (!isFromApprovalListing) {
 
-            const isChanged = JSON.stringify(oldArr) == JSON.stringify(selectedRowData)
+            const isChanged = JSON.stringify(oldArr) === JSON.stringify(selectedRowData)
             if (isChanged) {
                 setSaveDone(true)
             } else {
@@ -387,10 +391,6 @@ function CostingSimulation(props) {
     const descriptionFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cell && cell !== null ? cell : '-'
-    }
-
-    const vendorFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell !== null ? cell : '-'
     }
 
     const ecnFormatter = (props) => {
@@ -477,33 +477,6 @@ function CostingSimulation(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const classGreen = (row.NewNetOverheadAndProfitCost > row.OldNetOverheadAndProfitCost) ? 'red-value form-control' : (row.NewNetOverheadAndProfitCost < row.OldNetOverheadAndProfitCost) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
-    }
-
-    const oldRMCalc = (row) => {
-        let temparr = costingArr.filter(item1 => item1.CostingId === row.CostingId)
-        const sum = temparr.reduce((accumulator, el) => {
-            if (temparr.length === 1) {
-                return checkForNull(row.OldRMPrice)
-            } else {
-                if (el.CostingId === row.CostingId) {
-                    return checkForNull(accumulator) + checkForNull(el.OldRMPrice)
-                }
-            }
-        }, 0)
-        return sum
-    }
-    const newRMCalc = (row) => {
-        let temparr = costingArr.filter(item1 => item1.CostingId === row.CostingId)
-        const sum = temparr.reduce((accumulator, el) => {
-            if (temparr.length === 1) {
-                return checkForNull(row.NewRMPrice)
-            } else {
-                if (el.CostingId === row.CostingId) {
-                    return checkForNull(accumulator) + checkForNull(el.NewRMPrice)
-                }
-            }
-        }, 0)
-        return sum
     }
 
     const oldRMCFormatter = (props) => {
@@ -659,22 +632,6 @@ function CostingSimulation(props) {
         // })
     }
 
-
-    const filterList = () => {
-        const plant = getValues('plantCode').value
-        getCostingList(plant, material.value)
-    }
-    const resetFilter = () => {
-        setValue('plantCode', '')
-        setValue('rawMaterial', '')
-        setMaterial('')
-        getCostingList('', '')
-    }
-
-    const handleMaterial = (value) => {
-        setMaterial(value)
-    }
-
     useEffect(() => {
 
     }, [isView])
@@ -732,9 +689,11 @@ function CostingSimulation(props) {
                 if (itemOut === item.CostingId) {
                     temp.push(item)
                 }
+                return null
             })
             // ************ CONCAT ALL DATA IN SINGLE ARRAY *********** */
             arrayOFCorrectObjIndividual = arrayOFCorrectObjIndividual.concat(temp);
+            return null
         })
         let finalGrid = [], isTokenAPI = false
         if (showBOPColumn === true || showRMColumn === true || showOperationColumn === true || showSurfaceTreatmentColumn === true ||
