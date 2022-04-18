@@ -139,7 +139,7 @@ function ViewRM(props) {
               return (
                 <tr key={index}>
                   {isAssemblyCosting && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
-                  <td className='text-overflow'><span title={item.RMName}>{item.RMName}</span></td>
+                  <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item.RMName}>{item.RMName}</span></td>
                   <td>{checkForDecimalAndNull(item.RMRate, initialConfiguration.NoOfDecimalForPrice)}</td>
                   <td>{checkForDecimalAndNull(item.ScrapRate, initialConfiguration.NoOfDecimalForPrice)}</td>
                   <td>{checkForDecimalAndNull(item.ScrapRecoveryPercentage, initialConfiguration.NoOfDecimalForPrice)}</td>
@@ -157,7 +157,7 @@ function ViewRM(props) {
                   <td>{item.BurningLossWeight ? checkForDecimalAndNull(item.BurningLossWeight, initialConfiguration.NoOfDecimalForInputOutput) : '-'}</td>
                   <td>{checkForDecimalAndNull(item.NetLandedCost, initialConfiguration.NoOfDecimalForPrice)}</td>
                   <td>
-                    <div className='text-overflow' title={item.Remark}>
+                    <div className={`${isPDFShow ? '' : 'text-overflow'}`} title={item.Remark}>
                       <span>{item?.Remark ? item.Remark : "-"}</span></div>
                   </td>
 
