@@ -21,7 +21,7 @@ const gridOptions = {
 
 };
 function ERSimulation(props) {
-    const { isDomestic, list, isbulkUpload, isImpactedMaster, costingAndPartNo, tokenForMultiSimulation } = props
+    const { list, isbulkUpload, isImpactedMaster, costingAndPartNo, tokenForMultiSimulation } = props
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')
@@ -29,12 +29,7 @@ function ERSimulation(props) {
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [showMainSimulation, setShowMainSimulation] = useState(false)
     const [selectedRowData, setSelectedRowData] = useState([]);
-
-    const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
-        mode: 'onChange',
-        reValidateMode: 'onChange',
-    })
-
+    const [isDisable, setIsDisable] = useState(false)
 
     const dispatch = useDispatch()
 
@@ -185,6 +180,7 @@ function ERSimulation(props) {
             Toaster.warning('Please select atleast one costing.')
             return false
         }
+        setIsDisable(true)
         let obj = {}
         obj.SimulationTechnologyId = selectedMasterForSimulation.value
         obj.LoggedInUserId = loggedInUserId()
@@ -205,6 +201,7 @@ function ERSimulation(props) {
         obj.SimulationExchangeRates = tempArr
 
         dispatch(runVerifyExchangeRateSimulation(obj, res => {
+            setIsDisable(false)
             if (res.data.Result) {
                 setToken(res.data.Identity)
                 setShowVerifyPage(true)
@@ -289,11 +286,11 @@ function ERSimulation(props) {
                             !isImpactedMaster &&
                             <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                                 <div className="col-sm-12 text-right bluefooter-butn">
-                                    <button type={"button"} className="mr15 cancel-btn" onClick={cancel}>
+                                    <button type={"button"} className="mr15 cancel-btn" onClick={cancel} disabled={isDisable}>
                                         <div className={"cancel-icon"}></div>
                                         {"CANCEL"}
                                     </button>
-                                    <button onClick={verifySimulation} type="submit" className="user-btn mr5 save-btn">
+                                    <button onClick={verifySimulation} type="submit" className="user-btn mr5 save-btn" disabled={isDisable}>
                                         <div className={"Run-icon"}>
                                         </div>{" "}
                                         {"Verify"}

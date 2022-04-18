@@ -73,16 +73,19 @@ function RMSimulation(props) {
             if ((li?.NewBasicRate === undefined ? Number(li?.BasicRate) : Number(li?.NewBasicRate)) < (li?.NewScrapRate === undefined ? Number(li?.ScrapRate) : Number(li?.NewScrapRate))) {
                 isScrapRateGreaterThanBasiRate = true
             }
+            if (isScrapRateGreaterThanBasiRate) {
+                li.NewBasicRate = li?.BasicRate
+                li.NewScrapRate = li?.ScrapRate
+                Toaster.warning('Scrap Rate should be less than Basic Rate')
+                return false
+            }
             return null;
         })
         if (basicRateCount === list.length && basicScrapCount === list.length) {
             Toaster.warning('There is no changes in new value. Please correct the data, then run simulation')
             return false
         }
-        if (isScrapRateGreaterThanBasiRate) {
-            Toaster.warning('Scrap Rate should be less than Basic Rate')
-            return false
-        }
+
         setIsDisable(true)
 
         basicRateCount = 0
@@ -262,10 +265,6 @@ function RMSimulation(props) {
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
-    const renderPaginationShowsTotal = (start, to, total) => {
-        return <GridTotalFormate start={start} to={to} total={total} />
-    }
-
     /**
   * @method beforeSaveCell
   * @description CHECK FOR ENTER NUMBER IN CELL
@@ -275,6 +274,9 @@ function RMSimulation(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         if ((row?.NewBasicRate === undefined ? Number(row?.BasicRate) : Number(row?.NewBasicRate)) <
             (row?.NewScrapRate === undefined ? Number(row?.ScrapRate) : Number(row?.NewScrapRate))) {
+            row.NewBasicRate = row?.BasicRate
+            row.NewScrapRate = row?.ScrapRate
+
             Toaster.warning('Scrap Rate should be less than Basic Rate')
             return false
         }
@@ -288,20 +290,8 @@ function RMSimulation(props) {
             Toaster.warning('Please enter a valid positive numbers.')
             return false
         }
+
         return true
-    }
-
-    const afterSaveCell = (row, cellName, cellValue, index) => {
-
-        if ((Number(row.NewBasicRate) + checkForNull(row.RMFreightCost) + checkForNull(row.RMShearingCost)) > row.NetLandedCost) {
-            setColorClass('red-value form-control')
-        } else if ((Number(row.NewBasicRate) + checkForNull(row.RMFreightCost) + checkForNull(row.RMShearingCost)) < row.NetLandedCost) {
-            setColorClass('green-value form-control')
-        } else {
-            setColorClass('form-class')
-        }
-        return false
-
     }
 
     const NewcostFormatter = (props) => {
@@ -381,6 +371,8 @@ function RMSimulation(props) {
     }
 
     const onCellValueChanged = (props) => {
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        console.log('row: ', row);
 
     }
 
@@ -556,7 +548,7 @@ function RMSimulation(props) {
                             !isImpactedMaster &&
                             <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                                 <div className="col-sm-12 text-right bluefooter-butn">
-                                    <button type={"button"} className="mr15 cancel-btn" onClick={cancel}>
+                                    <button type={"button"} className="mr15 cancel-btn" onClick={cancel} disabled={isDisable}>
                                         <div className={"cancel-icon"}></div>
                                         {"CANCEL"}
                                     </button>
