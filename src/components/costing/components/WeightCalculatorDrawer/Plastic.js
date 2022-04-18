@@ -169,7 +169,7 @@ function Plastic(props) {
   const onSubmit = () => {
     let obj = {}
     obj.PlasticWeightCalculatorId = WeightCalculatorRequest && WeightCalculatorRequest.PlasticWeightCalculatorId ? WeightCalculatorRequest.PlasticWeightCalculatorId : "0"
-    obj.BaseCostingIdRef = costData.CostingId
+    obj.BaseCostingIdRef = item.CostingId
     obj.TechnologyId = costData.TechnologyId
     obj.RawMaterialIdRef = rmRowData.RawMaterialId
     obj.CostingRawMaterialDetailsIdRef = rmRowData.RawMaterialDetailId

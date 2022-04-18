@@ -16,7 +16,7 @@ import { ViewCostingContext } from '../../CostingDetails'
 
 function Coil(props) {
     const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest;
-    const { rmRowData, isEditFlag } = props
+    const { rmRowData, isEditFlag, item } = props
 
     const convert = (FinishWeightOfSheet, dimmension) => {
         switch (dimmension) {
@@ -216,7 +216,7 @@ function Coil(props) {
             LayoutType: 'Coil',
             SheetMetalCalculationId: WeightCalculatorRequest && WeightCalculatorRequest.SheetMetalCalculationId ? WeightCalculatorRequest.SheetMetalCalculationId : "0",
             IsChangeApplied: isChangeApplies, //NEED TO MAKE IT DYNAMIC how to do,
-            BaseCostingIdRef: costData.CostingId,
+            BaseCostingIdRef: item.CostingId,
             CostingRawMaterialDetailId: rmRowData.RawMaterialDetailId,
             RawMaterialIdRef: rmRowData.RawMaterialId,
             LoggedInUserId: loggedInUserId(),

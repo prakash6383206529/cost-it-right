@@ -76,6 +76,7 @@ function OpenWeightCalculator(props) {
             rmRowData={props.rmRowData}
             isEditFlag={props.isEditFlag}
             toggleDrawer={toggleDrawer}
+            item={item}
             CostingViewMode={CostingViewMode ? CostingViewMode : false}
           />
         )
@@ -84,6 +85,7 @@ function OpenWeightCalculator(props) {
           <ForgingCalculator
             rmRowData={props.rmRowData}
             isEditFlag={props.isEditFlag}
+            item={item}
             toggleDrawer={toggleDrawer}
             CostingViewMode={CostingViewMode ? CostingViewMode : false}
           />
@@ -106,6 +108,7 @@ function OpenWeightCalculator(props) {
           isEditFlag={props.isEditFlag}
           toggleDrawer={toggleDrawer}
           rmData={rmData}
+          item={item}
           appyMasterBatch={appyMasterBatch}
           CostingViewMode={CostingViewMode ? CostingViewMode : false}
         />)
@@ -115,6 +118,7 @@ function OpenWeightCalculator(props) {
           rmRowData={props.rmRowData}
           isEditFlag={props.isEditFlag}
           toggleDrawer={toggleDrawer}
+          item={item}
           CostingViewMode={CostingViewMode ? CostingViewMode : false}
         />
         )
@@ -125,6 +129,7 @@ function OpenWeightCalculator(props) {
             rmRowData={props.rmRowData}
             isEditFlag={props.isEditFlag}
             toggleDrawer={toggleDrawer}
+            item={item}
             CostingViewMode={CostingViewMode ? CostingViewMode : false}
           />
         )

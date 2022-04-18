@@ -14,7 +14,7 @@ function CorrugatedBox(props) {
     const [dataSend, setDataSend] = useState({})
     const localStorage = reactLocalStorage.getObject('InitialConfiguration');
     const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest;
-    const { rmRowData, CostingViewMode } = props
+    const { rmRowData, CostingViewMode, item } = props
     const dispatch = useDispatch()
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const defaultValues = {
@@ -163,7 +163,7 @@ function CorrugatedBox(props) {
     const onSubmit = (Values) => {
         let data = {
             CorrugatedBoxWeightCalculatorId: WeightCalculatorRequest && WeightCalculatorRequest.CorrugatedBoxWeightCalculatorId ? WeightCalculatorRequest.CorrugatedBoxWeightCalculatorId : "0",
-            BaseCostingIdRef: costData.CostingId,
+            BaseCostingIdRef: item.CostingId,
             CostingRawMaterialDetailId: rmRowData.RawMaterialDetailId,
             LoggedInUserId: loggedInUserId(),
             RawMaterialIdRef: rmRowData.RawMaterialId,
