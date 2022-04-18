@@ -21,7 +21,6 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
-import { toastr } from 'react-redux-toastr';
 import ReactExport from 'react-export-excel';
 import { USER_LISTING_DOWNLOAD_EXCEl } from '../../config/masterData';
 import { UserListing } from '../../config/constants';
@@ -31,10 +30,6 @@ const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
-
-function enumFormatter(cell, row, enumObject) {
-	return enumObject[cell];
-}
 
 class UsersListing extends Component {
 	constructor(props) {
@@ -97,6 +92,7 @@ class UsersListing extends Component {
 				let obj = {}
 				Data && Data.map((el, i) => {
 					obj[el.DepartmentId] = el.DepartmentName
+					return null
 				})
 				this.setState({
 					departmentType: obj,
@@ -111,6 +107,7 @@ class UsersListing extends Component {
 				let obj = {}
 				Data && Data.map((el, i) => {
 					obj[el.RoleId] = el.RoleName
+					return null
 				})
 				this.setState({
 					roleType: obj,
@@ -231,7 +228,7 @@ class UsersListing extends Component {
 		}
 		this.props.activeInactiveUser(data, (res) => {
 			if (res && res.data && res.data.Result) {
-				if (this.state.cell == true) {
+				if (Boolean(this.state.cell) === true) {
 					Toaster.success(MESSAGES.USER_INACTIVE_SUCCESSFULLY)
 				} else {
 					Toaster.success(MESSAGES.USER_ACTIVE_SUCCESSFULLY)
@@ -272,7 +269,7 @@ class UsersListing extends Component {
 				this.setState({ showPopup2: false })
 			}
 		};
-		return toastr.confirm(`${MESSAGES.USER_DELETE_ALERT}`, toastrConfirmOptions);
+		return Toaster.confirm(`${MESSAGES.USER_DELETE_ALERT}`, toastrConfirmOptions);
 	}
 
 	/**
@@ -294,7 +291,6 @@ class UsersListing extends Component {
 	*/
 	buttonFormatter = (props) => {
 		const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-		const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
 		const { EditAccessibility } = this.state;
 		if (cellValue === loggedInUserId()) return null;
@@ -539,17 +535,7 @@ class UsersListing extends Component {
 	*/
 	render() {
 		const { handleSubmit, initialConfiguration, } = this.props;
-		const { EditAccessibility, departmentType, roleType, AddAccessibility } = this.state;
-		const options = {
-			clearSearch: true,
-			noDataText: (this.props.userDataList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
-			paginationShowsTotal: this.renderPaginationShowsTotal,
-			prePage: <span className="prev-page-pg"></span>, // Previous page button text
-			nextPage: <span className="next-page-pg"></span>, // Next page button text
-			firstPage: <span className="first-page-pg"></span>, // First page button text
-			lastPage: <span className="last-page-pg"></span>,
-
-		};
+		const { EditAccessibility, AddAccessibility } = this.state;
 
 		const defaultColDef = {
 			resizable: true,
