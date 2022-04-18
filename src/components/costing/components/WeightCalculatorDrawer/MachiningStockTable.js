@@ -174,7 +174,7 @@ function MachiningStockTable(props) {
         break;
       case 'Irregular':
         Volume = forgingV
-        console.log('forgingV: ', forgingV);
+
         GrossWeight = (forgingV * No * rmRowData.Density) / 1000000
         break;
       default:
