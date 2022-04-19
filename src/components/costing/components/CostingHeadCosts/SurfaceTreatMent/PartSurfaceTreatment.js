@@ -89,27 +89,29 @@ function PartSurfaceTreatment(props) {
           <td>{item.CostingPartDetails.NetSurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.NetSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
         </div>
         <td>
-          {!CostingViewMode && (item.CostingPartDetails.NetSurfaceTreatmentCost !== 0) ?
+          <div className='d-flex justify-content-end align-items-center'>
+            {!CostingViewMode && (item.CostingPartDetails.NetSurfaceTreatmentCost !== 0) ?
 
-            <button
-              type="button"
-              className={'user-btn surface-treatment-btn'}
-              //onClick={DrawerToggle}
-              onClick={() => toggle(item.BOMLevel, item.PartNumber)}
-            >
-              <div className={'fa fa-eye pr-1'}></div> Surface T.</button>
-            :
-            <button
-              type="button"
-              className={'user-btn surface-treatment-btn'}
-              //onClick={DrawerToggle}
-              onClick={() => toggle(item.BOMLevel, item.PartNumber)}
-            >
-              <div className={`${CostingViewMode ? 'fa fa-eye pr-1' : 'plus'}`}></div>Surface T.</button>
-          }
+              <button
+                type="button"
+                className={'user-btn surface-treatment-btn'}
+                //onClick={DrawerToggle}
+                onClick={() => toggle(item.BOMLevel, item.PartNumber)}
+              >
+                <div className={'fa fa-eye pr-1'}></div> Surface T.</button>
+              :
+              <button
+                type="button"
+                className={'user-btn surface-treatment-btn'}
+                //onClick={DrawerToggle}
+                onClick={() => toggle(item.BOMLevel, item.PartNumber)}
+              >
+                <div className={`${CostingViewMode ? 'fa fa-eye pr-1' : 'plus'}`}></div>Surface T.</button>
+            }
+            <div className={`lock-width ${(item.IsLocked || item.IsPartLocked) ? 'lock_icon' : ''}`}>{''}</div>
+          </div>
         </td>
         {/*WHEN COSTING OF THAT PART IS  APPROVED SO COSTING COMES AUTOMATICALLY FROM BACKEND AND THIS KEY WILL COME TRUE (WORK LIKE VIEW MODE)*/}
-        <td className="text-right lock-container"><div className={`${(item.IsLocked || item.IsPartLocked) ? 'lock_icon' : ''}`}>{''}</div></td>
       </tr>
 
       {IsDrawerOpen && <SurfaceTreatment
