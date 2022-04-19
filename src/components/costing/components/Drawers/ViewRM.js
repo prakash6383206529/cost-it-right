@@ -48,6 +48,7 @@ function ViewRM(props) {
       Toaster.warning('Data is not avaliabe for calculator')
       return false
     }
+
     const tempData = viewCostingData[props.index]
     switch ((Number(tempData.EtechnologyType))) {
 
