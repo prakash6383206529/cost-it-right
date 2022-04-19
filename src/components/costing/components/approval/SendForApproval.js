@@ -108,9 +108,6 @@ const SendForApproval = (props) => {
 
     }))
   }, [])
-  useEffect(() => {
-
-  }, [viewApprovalData])
   /**
    * @method renderDropdownListing
    * @description DROPDOWN
@@ -410,7 +407,7 @@ const SendForApproval = (props) => {
 
 
     // debounce_fun()
-    // console.log("After debounce");
+    // 
     // props.closeDrawer()
     dispatch(
       sendForApprovalBySender(obj, (res) => {
@@ -430,8 +427,7 @@ const SendForApproval = (props) => {
   }
 
   const handleChangeQuantity = (e) => {
-    console.log("handleChangeQuantity");
-    let temp = [];
+    let temp = []
   };
 
   useEffect(() => { }, [viewApprovalData])
@@ -793,7 +789,7 @@ const SendForApproval = (props) => {
                           showValidation && <span className="warning-top"><WarningMessage dClass="pl-3" message={'There is no approver added in this department'} /></span>
                         }
 
-                        <Col md="12">
+                        {false && <><Col md="12">
                           <NumberFieldHookForm
                             label="Quantity"
                             name={"Quantity"}
@@ -801,7 +797,6 @@ const SendForApproval = (props) => {
                             control={control}
                             register={register}
                             mandatory={true}
-                            handleChange={() => { }}
                             defaultValue={""}
                             className=""
                             customClassName={"withBorder"}
@@ -810,22 +805,24 @@ const SendForApproval = (props) => {
                             disabled={false}
                           />
                         </Col>
-                        <Col md="12" className="py-3 ">
-                          <span className="d-inline-block">
-                            <label
-                              className={`custom-checkbox mb-0`}
-                              onChange={checkboxHandler}>
-                              Regularize
-                              <input
-                                type="checkbox"
-                              />
-                              <span
-                                className=" before-box"
-                                onChange={checkboxHandler}
-                              />
-                            </label>
-                          </span>
-                        </Col>
+                          <Col md="12" className="py-3 ">
+                            <span className="d-inline-block">
+                              <label
+                                className={`custom-checkbox mb-0`}
+                                onChange={checkboxHandler}>
+                                Regularize
+                                <input
+                                  type="checkbox"
+                                />
+                                <span
+                                  className=" before-box"
+                                  onChange={checkboxHandler}
+                                />
+                              </label>
+                            </span>
+                          </Col>
+                        </>
+                        }
                         <Col md="12">
                           <TextAreaHookForm
                             label="Remarks"

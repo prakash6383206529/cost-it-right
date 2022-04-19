@@ -16,6 +16,7 @@ import { useState } from 'react';
 
 function SurfaceTreatment(props) {
   const { surfaceData, transportationData, item } = props;
+  const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
 
   const { handleSubmit } = useForm({
     mode: 'onChange',
@@ -251,7 +252,7 @@ function SurfaceTreatment(props) {
                   <button
                     type={'button'}
                     className="submit-button mr15 save-btn"
-                    disabled={CostingViewMode ? true : false}
+                    disabled={(CostingViewMode || IsLocked) ? true : false}
                     onClick={saveData} >
                     <div className={'save-icon'}></div>
                     {'SAVE'}
