@@ -275,11 +275,11 @@ function TabSurfaceTreatment(props) {
           if (i.PartType === 'Assembly') {
             let tempArrForCosting = JSON.parse(localStorage.getItem('surfaceCostingArray'))
             let subAssemblyArray = i.CostingChildPartDetails
-            console.log('subAssemblyArray: ', subAssemblyArray);
+
             let assemblyObj = tempArrForCosting[0]
             i.CostingPartDetails.TotalSurfaceTreatmentCostPerSubAssembly = surfaceCostSubAssembly(subAssemblyArray)
             i.CostingPartDetails.TotalSurfaceTreatmentCostComponent = checkForNull(surfaceCostPart(subAssemblyArray))
-            console.log(' i.CostingPartDetails.TotalSurfaceTreatmentCostComponent: ', i.CostingPartDetails.TotalSurfaceTreatmentCostComponent);
+
             i.CostingPartDetails.TotalSurfaceTreatmentCostWithQuantity = checkForNull(i.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly) + checkForNull(i.CostingPartDetails.TotalSurfaceTreatmentCostPerSubAssembly) + checkForNull(i.CostingPartDetails.TotalSurfaceTreatmentCostComponent)
             i.CostingPartDetails.TotalTransportationCostPerSubAssembly = transportCostSubAssembly(subAssemblyArray)
             i.CostingPartDetails.TotalTransportationCostComponent = checkForNull(transportCostPart(subAssemblyArray))
@@ -303,7 +303,7 @@ function TabSurfaceTreatment(props) {
             i.CostingPartDetails.SurfaceTreatmentCost = getTotalSurfaceCost(CostingChildPartDetails, Children.CostingPartDetails.SurfaceTreatmentCost, params);
             i.CostingPartDetails.TransportationCost = getTotalTransportationCost(CostingChildPartDetails, Children.CostingPartDetails.TransportationCost, params);
           }
-          console.log(i, "i");
+
           // let tempArrForCosting = JSON.parse(localStorage.getItem('surfaceCostingArray'))
 
           // if (params.BOMLevel !== LEVEL0) {
@@ -388,10 +388,10 @@ function TabSurfaceTreatment(props) {
     try {
 
       tempArr = arr && arr.map(i => {
-
+        let NetSurfaceTreatmentCost
         if (i.IsAssemblyPart === true) {
 
-          let NetSurfaceTreatmentCost = getSurfaceTreatmentTotalCost(i.CostingChildPartDetails, checkForNull(surfaceCost(surfaceGrid)), params) +
+          NetSurfaceTreatmentCost = getSurfaceTreatmentTotalCost(i.CostingChildPartDetails, checkForNull(surfaceCost(surfaceGrid)), params) +
             getTransportationTotalCost(i.CostingChildPartDetails, checkForNull(i.CostingPartDetails.TransportationCost), params) +
             getSurfaceTreatmentTotalCostForAssembly(i.CostingChildPartDetails, checkForNull(i.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly), params) +
             getTransportationTotalCostForAssembly(i.CostingChildPartDetails, checkForNull(i.CostingPartDetails.TotalTransportationCostPerAssembly), params);
@@ -406,18 +406,33 @@ function TabSurfaceTreatment(props) {
 
         } else if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
 
-          let NetSurfaceTreatmentCost = checkForNull(surfaceCost(surfaceGrid)) + checkForNull(i.CostingPartDetails.TransportationCost);
+          NetSurfaceTreatmentCost = checkForNull(surfaceCost(surfaceGrid)) + checkForNull(i.CostingPartDetails.TransportationCost);
 
           i.CostingPartDetails.NetSurfaceTreatmentCost = NetSurfaceTreatmentCost;
           i.CostingPartDetails.SurfaceTreatmentCost = surfaceCost(surfaceGrid);
           i.CostingPartDetails.SurfaceTreatmentDetails = surfaceGrid;
+
+
           //i.IsOpen = !i.IsOpen;
 
         } else {
           dispatchSurfaceCost(surfaceGrid, params, i.CostingChildPartDetails)
         }
+        let tempArr = JSON.parse(localStorage.getItem('surfaceCostingArray'))
+        console.log('tempArr: ', tempArr);
+        let partObj = tempArr[0]
+
+        partObj.CostingPartDetails.NetSurfaceTreatmentCost = NetSurfaceTreatmentCost
+        partObj.CostingPartDetails.SurfaceTreatmentCost = surfaceCost(surfaceGrid);
+        partObj.CostingPartDetails.SurfaceTreatmentDetails = surfaceGrid;
+        tempArr = Object.assign([...tempArr], { [0]: partObj })
+        console.log('tempArr after mnaipluate: ', tempArr);
+        // STORING CALCULATED AND UPDATED COSTING VALUE IN LOCAL STORAGE
+        localStorage.setItem('surfaceCostingArray', [])
+        localStorage.setItem('surfaceCostingArray', JSON.stringify(tempArr))
         return i;
       });
+
 
     } catch (error) {
 
@@ -603,10 +618,10 @@ function TabSurfaceTreatment(props) {
 
 
   const calculationForSubAssembly = (surfaceGrid, obj = {}, quantity, type = '', tempArr = [], TransportationObj = {}, params) => {
-    console.log('params: ', params);
-    console.log('surfaceGrid: ', surfaceGrid);
+
+
     let subAssemblyObj = obj
-    console.log(surfaceGrid.length > 0 && params.PartNumber === subAssemblyObj.PartNumber, "surfaceGrid.length > 0 && params.PartNumber === subAssemblyObj.PartNumber");
+
     switch (type) {
       case 'Operation':
         subAssemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly = (surfaceGrid.length > 0 || params.PartNumber === subAssemblyObj.PartNumber) ? checkForNull(surfaceCost(surfaceGrid)) : checkForNull(subAssemblyObj.CostingPartDetails?.TotalSurfaceTreatmentCostPerAssembly) //OPERATION COST ADDED ON THAT PARTICULAR ASSEMBLY
@@ -696,7 +711,7 @@ function TabSurfaceTreatment(props) {
   }
 
   const dispatchAssemblySurfaceCost = (surfaceGrid, params, arr, IsGridChanged, item) => {
-    console.log('surfaceGrid: ', surfaceGrid);
+
 
 
 
@@ -740,7 +755,7 @@ function TabSurfaceTreatment(props) {
             if (i === useLevel) {
               let tempArr = tempArrForCosting && tempArrForCosting.filter(item => item.AssemblyPartNumber === params.PartNumber)
               let partIndex = tempArrForCosting && tempArrForCosting.findIndex((x) => x.PartNumber === item.PartNumber && x.AssemblyPartNumber === item.AssemblyPartNumber)
-              console.log('partIndex: ', partIndex);
+
 
               let partObj = calculationForSubAssembly(surfaceGrid, item, quant, 'Operation', tempArr, {}, params)
 
