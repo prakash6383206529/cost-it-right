@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
 import {
-    required, upper, email, minLength7, maxLength70, maxLength80,minLength10, maxLength71 , maxLength5, maxLength12, alphaNumeric , acceptAllExceptSingleSpecialCharacter,
+    required, upper, email, minLength7, maxLength70, maxLength80, minLength10, maxLength71, maxLength5, maxLength12, alphaNumeric, acceptAllExceptSingleSpecialCharacter,
     maxLength15, postiveNumber, maxLength10, maxLength6, checkWhiteSpaces
 } from "../../../helper/validation";
 import { renderText, renderEmailInputField, renderMultiSelectField, searchableSelect } from "../../layout/FormInputs";
@@ -41,7 +41,7 @@ class AddVendorDrawer extends Component {
             DropdownChanged: true,
             isViewMode: this.props?.isViewMode ? true : false,
             setDisable: false
-     }
+        }
     }
 
     /**
@@ -339,7 +339,7 @@ class AddVendorDrawer extends Component {
     * @method onSubmit
     * @description Used to Submit the form
     */
-     onSubmit = debounce((values) => {
+    onSubmit = debounce((values) => {
         const { selectedVendorType, selectedVendorPlants, existedVendorPlants, city, VendorId, DropdownChanged, DataToCheck } = this.state;
         const { supplierData, vendorPlantSelectList } = this.props;
 
@@ -446,10 +446,10 @@ class AddVendorDrawer extends Component {
                     this.cancel(formData);
                 }
             })
-        } 
-        },500)
+        }
+    }, 500)
 
-    
+
     handleKeyDown = function (e) {
         if (e.key === 'Enter' && e.shiftKey === false) {
             e.preventDefault();
@@ -506,10 +506,10 @@ class AddVendorDrawer extends Component {
                                     <Col md="6">
                                         <Field
                                             label={`Vendor Name`}
-                                            name={"VendorName"}  
+                                            name={"VendorName"}
                                             type="text"
                                             placeholder={''}
-                                            validate={[required, alphaNumeric, maxLength71, checkWhiteSpaces]}
+                                            validate={[required, maxLength71, checkWhiteSpaces]}
                                             component={renderText}
                                             required={true}
                                             className=" "
@@ -525,7 +525,7 @@ class AddVendorDrawer extends Component {
                                             name={"VendorCode"}
                                             type="text"
                                             placeholder={''}
-                                            validate={[required,alphaNumeric, maxLength71, checkWhiteSpaces]}
+                                            validate={[required, alphaNumeric, maxLength71, checkWhiteSpaces]}
                                             component={renderText}
                                             required={true}
                                             normalize={upper}
