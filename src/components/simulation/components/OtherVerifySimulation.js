@@ -15,8 +15,8 @@ import LoaderCustom from '../../common/LoaderCustom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import OtherCostingSimulation from './OtherCostingSimulation';
 import { debounce } from 'lodash';
+import CostingSimulation from './CostingSimulation';
 const gridOptions = {};
 
 function OtherVerifySimulation(props) {
@@ -439,7 +439,7 @@ function OtherVerifySimulation(props) {
             }
             {
                 costingPage &&
-                <OtherCostingSimulation simulationId={simulationId} master={selectedMasterForSimulation.value} />
+                <CostingSimulation simulationId={simulationId} master={selectedMasterForSimulation.value} />
             }
             {
                 simulationDrawer &&
