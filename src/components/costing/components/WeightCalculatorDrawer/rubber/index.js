@@ -9,7 +9,6 @@ import StandardRub from './StandardRub'
 function RubberCalciTab(props) {
 
     const dispatch = useDispatch()
-    const { rmRowData } = props
 
 
     const getTabno = (layout) => {
@@ -90,12 +89,12 @@ function RubberCalciTab(props) {
                     <TabContent activeTab={activeTab}>
                         {activeTab === '1' && (
                             <TabPane tabId="1">
-                                <StandardRub rmRowData={props.rmRowData} isEditFlag={props.isEditFlag} toggleDrawer={toggleDrawer} />
+                                <StandardRub rmRowData={props.rmRowData} isEditFlag={props.isEditFlag} toggleDrawer={toggleDrawer} item={props.item} />
                             </TabPane>
                         )}
                         {activeTab === '2' && (
                             <TabPane tabId="2">
-                                <Rubber rmRowData={props.rmRowData} isEditFlag={props.isEditFlag} toggleDrawer={toggleDrawer} />
+                                <Rubber rmRowData={props.rmRowData} isEditFlag={props.isEditFlag} toggleDrawer={toggleDrawer} item={props.item} />
                             </TabPane>
                         )}
 

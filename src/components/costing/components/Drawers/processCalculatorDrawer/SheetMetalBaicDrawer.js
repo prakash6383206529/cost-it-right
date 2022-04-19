@@ -14,7 +14,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 function SheetMetalBaicDrawer(props) {
   /*******************************************************************************************************************************************************************/
 
-  const { rmFinishWeight } = props
+  const { rmFinishWeight, item } = props
 
   const costData = useContext(costingInfoContext);
   const WeightCalculatorRequest = props.calculatorData.WeightCalculatorRequest

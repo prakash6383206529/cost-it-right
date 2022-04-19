@@ -16,7 +16,7 @@ import { ViewCostingContext } from '../../CostingDetails'
 
 function Sheet(props) {
     const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest;
-    const { rmRowData, isEditFlag } = props
+    const { rmRowData, isEditFlag, item } = props
     const costData = useContext(costingInfoContext)
     const CostingViewMode = useContext(ViewCostingContext);
 
@@ -268,7 +268,7 @@ function Sheet(props) {
             LayoutType: 'Sheet',
             SheetMetalCalculationId: WeightCalculatorRequest && WeightCalculatorRequest.SheetMetalCalculationId ? WeightCalculatorRequest.SheetMetalCalculationId : "0",
             IsChangeApplied: isChangeApplies, //NEED TO MAKE IT DYNAMIC how to do,
-            BaseCostingIdRef: costData.CostingId,
+            BaseCostingIdRef: item.CostingId,
             CostingRawMaterialDetailId: rmRowData.RawMaterialDetailId,
             RawMaterialIdRef: rmRowData.RawMaterialId,
             LoggedInUserId: loggedInUserId(),
