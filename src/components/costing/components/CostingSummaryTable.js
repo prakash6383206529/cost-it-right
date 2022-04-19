@@ -1090,10 +1090,10 @@ const CostingSummaryTable = (props) => {
                             return (
                               <td>
                                 <span class="d-block small-grey-text">
-                                  {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.sTreatment, initialConfiguration.NoOfDecimalForPrice) : ''}
+                                  {data.CostingHeading !== VARIANCE ? (data.IsAssemblyCosting === true ? "Multiple Surface Treatment" : checkForDecimalAndNull(data.sTreatment, initialConfiguration.NoOfDecimalForPrice)) : ''}
                                 </span>
                                 <span class="d-block small-grey-text">
-                                  {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.tCost, initialConfiguration.NoOfDecimalForPrice) : ''}
+                                  {data.CostingHeading !== VARIANCE ? (data.IsAssemblyCosting === true ? "Multiple Surface Treatment" : checkForDecimalAndNull(data.tCost, initialConfiguration.NoOfDecimalForPrice)) : ''}
                                 </span>
                               </td>
                             )
