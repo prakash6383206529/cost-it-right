@@ -21,7 +21,7 @@ const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function AssemblyWiseImpact(props) {
-    const { impactType, dataForAssemblyImpact, isPartImpactAssembly, isImpactDrawer } = props;
+    const { impactType, dataForAssemblyImpact, isPartImpactAssembly, isImpactDrawer, simulationId } = props;
     const [gridApi, setgridApi] = useState(null);
     const [gridColumnApi, setgridColumnApi] = useState(null);
     const [loader, setloader] = useState(false);
@@ -42,13 +42,14 @@ function AssemblyWiseImpact(props) {
                 let obj = {
                     CostingId: dataForAssemblyImpact?.CostingId,
                     delta: isImpactDrawer ? dataForAssemblyImpact?.Variance : dataForAssemblyImpact.POVariance,
-                    IsSinglePartImpact: true
+                    IsSinglePartImpact: true,
+                    SimulationId: simulationId
                 }
                 requestData = [obj]
 
             } else {
                 dataForAssemblyImpact && dataForAssemblyImpact.map(item => {
-                    requestData.push({ CostingId: item.CostingId, delta: isImpactDrawer ? item.Variance : item.POVariance, IsSinglePartImpact: false })
+                    requestData.push({ CostingId: item.CostingId, delta: isImpactDrawer ? item.Variance : item.POVariance, IsSinglePartImpact: false, SimulationId: simulationId })
                     return null
                 })
             }
