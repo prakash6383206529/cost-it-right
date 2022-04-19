@@ -3,14 +3,15 @@ import { checkForDecimalAndNull } from '../../../../../src/helper'
 import { Container, Row, Col, Table, Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
 import NoContentFound from '../../../common/NoContentFound'
-import { EMPTY_DATA } from '../../../../config/constants'
+import { EMPTY_DATA, TIME } from '../../../../config/constants'
 import { useSelector, useDispatch } from 'react-redux'
 import classnames from 'classnames';
 import LoaderCustom from '../../../common/LoaderCustom'
 import { EMPTY_GUID } from '../../../../config/constants';
 import Toaster from '../../../common/Toaster';
 import VariableMhrDrawer from '../Drawers/processCalculatorDrawer/VariableMhrDrawer'
-import { getProcessCalculation } from '../../actions/CostWorking'
+import { getProcessCalculation, getProcessDefaultCalculation, getProcessMachiningCalculation } from '../../actions/CostWorking'
+import { MACHINING } from '../../../../config/masterData'
 
 function ViewConversionCost(props) {
 
@@ -44,6 +45,7 @@ function ViewConversionCost(props) {
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const [partNumberList, setPartNumberList] = useState([])
   const [index, setIndex] = useState(0)
+  const [indexForProcessCalculator, setIndexForProcessCalculator] = useState(0)
   const [loader, setLoader] = useState(false)
   const [weightCalculatorDrawer, setWeightCalculatorDrawer] = useState(false)
   const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
@@ -119,7 +121,6 @@ function ViewConversionCost(props) {
       if (tab === '1') {
         setIsCalledAPI(true)
       }
-
     }
   }
 
@@ -129,20 +130,30 @@ function ViewConversionCost(props) {
       Toaster.warning('Data is not avaliabe for calculator')
       return false
     }
-
+    setIndexForProcessCalculator(index)
     const tempData = viewCostingData[props.index]
 
     setTimeout(() => {
-      dispatch(getProcessCalculation(tempData.costingId, costingProcessCost[index].ProcessId, costingProcessCost[index].ProcessCalculationId, tempData.technologyId, 'default', res => {
-        if (res && res.data && res.data.Data) {
-          const data = res.data.Data
-          setCalciData({ ...costingProcessCost[index], WeightCalculatorRequest: data })
-          setWeightCalculatorDrawer(true)
-        }
-      }))
+      if (tempData?.netConversionCostView?.CostingProcessCostResponse[index].ProcessTechnologyId === MACHINING && tempData.netConversionCostView.CostingProcessCostResponse[index].UOMType === TIME) {
+        dispatch(getProcessMachiningCalculation(tempData?.netConversionCostView?.CostingProcessCostResponse[index].CostingId, tempData?.netConversionCostView?.CostingProcessCostResponse[index].ProcessId, tempData.ProcessCalculationId, res => {
+          if (res && res.data && res.data.Data) {
+            const data = res.data.Data
+            setCalciData({ ...costingProcessCost[index], WeightCalculatorRequest: data })
+            setWeightCalculatorDrawer(true)
+          }
+        }))
+
+      } else {
+        dispatch(getProcessDefaultCalculation(tempData?.netConversionCostView?.CostingProcessCostResponse[index].CostingId, tempData?.netConversionCostView?.CostingProcessCostResponse[index].ProcessId, tempData.ProcessCalculationId, res => {
+          if (res && res.data && res.data.Data) {
+            const data = res.data.Data
+            setCalciData({ ...costingProcessCost[index], WeightCalculatorRequest: data })
+            setWeightCalculatorDrawer(true)
+          }
+        }))
+      }
+
     }, 300);
-
-
   }
 
   const closeWeightDrawer = (e = "") => {
@@ -607,7 +618,7 @@ function ViewConversionCost(props) {
 
             {weightCalculatorDrawer && (
               <VariableMhrDrawer
-                technology={viewCostingData[props.index].technologyId}
+                technology={viewCostingData[props.index].netConversionCostView.CostingProcessCostResponse[indexForProcessCalculator].ProcessTechnologyId}
                 calculatorData={calciData}
                 isOpen={weightCalculatorDrawer}
                 CostingViewMode={true}
