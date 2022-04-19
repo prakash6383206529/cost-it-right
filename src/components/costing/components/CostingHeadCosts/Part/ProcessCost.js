@@ -85,7 +85,7 @@ function ProcessCost(props) {
     /****************************FOR GETING CALCULATED VALUE IN CALCULATOR**************************/
     if (tempData.ProcessTechnologyId === MACHINING && tempData.UOMType === TIME) {
       //getProcessDefaultCalculation
-      dispatch(getProcessMachiningCalculation(costData.CostingId, tempData.ProcessId, tempData.ProcessCalculationId, res => {
+      dispatch(getProcessMachiningCalculation(item.CostingId, tempData.ProcessId, tempData.ProcessCalculationId, res => {
         if (res && res.data && res.data.Data) {
           const data = res.data.Data
           tempData = { ...tempData, WeightCalculatorRequest: data, }
@@ -98,7 +98,7 @@ function ProcessCost(props) {
       }))
 
     } else {
-      dispatch(getProcessDefaultCalculation(costData.CostingId, tempData.ProcessId, tempData.ProcessCalculationId, res => {
+      dispatch(getProcessDefaultCalculation(item.CostingId, tempData.ProcessId, tempData.ProcessCalculationId, res => {
         if (res && res.data && res.data.Data) {
           const data = res.data.Data
           tempData = { ...tempData, WeightCalculatorRequest: data, }
@@ -671,6 +671,7 @@ function ProcessCost(props) {
           technology={gridData[calciIndex].ProcessTechnologyId}
           calculatorData={gridData[calciIndex]}
           isOpen={isCalculator}
+          item={item}
           CostingViewMode={CostingViewMode || IsLocked}
           rmFinishWeight={props.rmFinishWeight}
           closeDrawer={closeCalculatorDrawer}

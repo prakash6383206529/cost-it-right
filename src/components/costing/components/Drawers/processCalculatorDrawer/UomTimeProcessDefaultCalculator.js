@@ -117,7 +117,7 @@ function UomTimeProcessDefaultCalculator(props) {
         obj.CostingProcessDetailsId = WeightCalculatorRequest && WeightCalculatorRequest.CostingProcessDetailId ? WeightCalculatorRequest.CostingProcessDetailId : "00000000-0000-0000-0000-000000000000"
         obj.IsChangeApplied = true
         obj.TechnologyId = costData.TechnologyId
-        obj.BaseCostingId = costData.CostingId
+        obj.BaseCostingId = props?.item?.CostingId
         obj.TechnologyName = costData.TechnologyName
         obj.PartId = costData.PartId
         obj.UnitOfMeasurementId = props.calculatorData.UnitOfMeasurementId
@@ -369,7 +369,7 @@ function UomTimeProcessDefaultCalculator(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.lengthDepth}
-                                                disabled={false}
+                                                disabled={props.CostingViewMode ? props.CostingViewMode : false}
                                             />
                                         </Col>
                                         <Col md="4">
@@ -392,7 +392,7 @@ function UomTimeProcessDefaultCalculator(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.noOfPasses}
-                                                disabled={false}
+                                                disabled={props.CostingViewMode ? props.CostingViewMode : false}
                                             />
                                         </Col>
 
@@ -464,7 +464,7 @@ function UomTimeProcessDefaultCalculator(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.chipToChipTiming}
-                                                disabled={false}
+                                                disabled={props.CostingViewMode ? props.CostingViewMode : false}
                                             />
                                         </Col>
 
@@ -512,7 +512,7 @@ function UomTimeProcessDefaultCalculator(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.indexingTablePositioningTime}
-                                                disabled={false}
+                                                disabled={props.CostingViewMode ? props.CostingViewMode : false}
                                             />
                                         </Col>
 
@@ -536,7 +536,7 @@ function UomTimeProcessDefaultCalculator(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.loadingAndUnloadingTime}
-                                                disabled={false}
+                                                disabled={props.CostingViewMode ? props.CostingViewMode : false}
                                             />
                                         </Col>
 
@@ -598,7 +598,7 @@ function UomTimeProcessDefaultCalculator(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.efficiencyPercentage}
-                                                disabled={false}
+                                                disabled={props.CostingViewMode ? props.CostingViewMode : false}
                                             />
                                         </Col>
 

@@ -11,7 +11,7 @@ import Broaching from './Broaching'
 
 
 function VariableMhrDrawer(props) {
-  const { technology, calculatorData } = props
+  const { technology, calculatorData, item } = props
   const tonnage = calculatorData.Tonnage ? calculatorData.Tonnage : ''
   const calculateMachineTime = (time, formValue) => {
 
@@ -68,6 +68,7 @@ function VariableMhrDrawer(props) {
               <Broaching
                 CostingViewMode={props.CostingViewMode}
                 calculateMachineTime={calculateMachineTime}
+                item={item}
                 technology={technology}
                 calculatorData={calculatorData}
               />
@@ -78,6 +79,7 @@ function VariableMhrDrawer(props) {
                 CostingViewMode={props.CostingViewMode}
                 calculateMachineTime={calculateMachineTime}
                 tonnage={tonnage}
+                item={item}
                 rmFinishWeight={props.rmFinishWeight}
                 calculatorData={calculatorData}
               />
@@ -89,6 +91,7 @@ function VariableMhrDrawer(props) {
             CostingViewMode={props.CostingViewMode}
             calculateMachineTime={calculateMachineTime}
             tonnage={tonnage}
+            item={item}
             rmFinishWeight={props.rmFinishWeight}
             calculatorData={calculatorData}
           />
@@ -102,6 +105,7 @@ function VariableMhrDrawer(props) {
               CostingViewMode={props.CostingViewMode}
               calculateMachineTime={calculateMachineTime}
               technology={technology}
+              item={item}
               calculatorData={calculatorData}
             />
           )
@@ -111,6 +115,7 @@ function VariableMhrDrawer(props) {
               CostingViewMode={props.CostingViewMode}
               calculateMachineTime={calculateMachineTime}
               tonnage={tonnage}
+              item={item}
               rmFinishWeight={props.rmFinishWeight}
               calculatorData={calculatorData}
             />
@@ -128,6 +133,7 @@ function VariableMhrDrawer(props) {
               CostingViewMode={props.CostingViewMode}
               calculateMachineTime={calculateMachineTime}
               tonnage={tonnage}
+              item={item}
               rmFinishWeight={props.rmFinishWeight}
               calculatorData={calculatorData}
             />
@@ -140,6 +146,7 @@ function VariableMhrDrawer(props) {
           CostingViewMode={props.CostingViewMode}
           calculateMachineTime={calculateMachineTime}
           tonnage={tonnage}
+          item={item}
           rmFinishWeight={props.rmFinishWeight}
           calculatorData={calculatorData}
         />
@@ -150,6 +157,7 @@ function VariableMhrDrawer(props) {
           CostingViewMode={props.CostingViewMode}
           calculateMachineTime={calculateMachineTime}
           tonnage={tonnage}
+          item={item}
           rmFinishWeight={props.rmFinishWeight}
           calculatorData={calculatorData}
         />
