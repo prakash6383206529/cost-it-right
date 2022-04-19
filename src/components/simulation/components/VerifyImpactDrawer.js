@@ -26,7 +26,6 @@ function VerifyImpactDrawer(props) {
   const [lastRevisionDataAccordial, setLastRevisionDataAccordial] = useState(false)
   const [masterIdForLastRevision, setMasterIdForLastRevision] = useState('')
   const [editWarning, setEditWarning] = useState(false)
-  const [filterStatus, setFilterStatus] = useState('There is no data for the Last Revision.')
   const headerName = ['Revision No.', 'Name', 'Old Cost/Pc', 'New Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
   const parentField = ['PartNumber', '-', 'PartName', '-', '-', '-', 'VariancePerPiece', 'VolumePerYear', 'ImpactPerQuarter', 'ImpactPerYear']
   const childField = ['PartNumber', 'ECNNumber', 'PartName', 'OldCost', 'NewCost', 'Quantity', 'VariancePerPiece', '-', '-', '-']
@@ -51,7 +50,7 @@ function VerifyImpactDrawer(props) {
       impactedMasterDataListForLastRevisionData?.ExchangeRateImpactedMasterDataList?.length <= 0 &&
       impactedMasterDataListForLastRevisionData?.BoughtOutPartImpactedMasterDataList?.length <= 0
     if (lastRevisionDataAccordial && check) {
-      Toaster.warning('There is no data for Last Revision.')
+      Toaster.warning('There is no data for the Last Revision.')
       setEditWarning(true)
     } else {
       setEditWarning(false)
