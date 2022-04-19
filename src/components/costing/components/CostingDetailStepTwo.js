@@ -352,16 +352,23 @@ function CostingDetailStepTwo(props) {
       const data = _.find(tempArrForCosting, ['IsPartLocked', true])
       const bopData = _.find(tempArrForCosting, ['PartType', 'BOP'])
       const lockedData = _.find(tempArrForCosting, ['IsLocked', true])
+      const tabData = RMCCTabData[0]
+      const surfaceTabData = SurfaceTabData[0]
+      const overHeadAndProfitTabData = OverheadProfitTabData[0]
+      const discountAndOtherTabData = DiscountCostData
       if (data !== undefined || bopData !== undefined || lockedData !== undefined) {
-        const tabData = RMCCTabData[0]
-        const surfaceTabData = SurfaceTabData[0]
-        const overHeadAndProfitTabData = OverheadProfitTabData[0]
-        const discountAndOtherTabData = DiscountCostData
         let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, NetPOPrice, getAssemBOPCharge, 1, CostingEffectiveDate)
         dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
       }
-
+      let surfaceArrForCosting = JSON.parse(localStorage.getItem('surfaceCostingArray'))
+      const surfaceData = _.find(surfaceArrForCosting, ['IsPartLocked', true])
+      const surfaceLockedData = _.find(surfaceArrForCosting, ['IsLocked', true])
+      if (surfaceData !== undefined || surfaceLockedData !== undefined) {
+        let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, NetPOPrice, getAssemBOPCharge, 2, CostingEffectiveDate)
+        dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
+      }
     }
+
     props.backBtn()
   }
 

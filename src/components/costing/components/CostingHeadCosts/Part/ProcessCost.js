@@ -38,6 +38,7 @@ function ProcessCost(props) {
   const [MachineIds, setMachineIds] = useState([])
   const [isOpen, setIsOpen] = useState(data && data.IsShowToolCost)
   const [tabData, setTabData] = useState(props.data)
+  const [oldTabData, setOldTabData] = useState(props.data)
   const [oldGridData, setOldGridData] = useState(data && data.CostingProcessCostResponse)
   const [isCalculator, setIsCalculator] = useState(false)
   const [remarkPopUpData, setRemarkPopUpData] = useState("")
@@ -64,11 +65,12 @@ function ProcessCost(props) {
     }
     if (!CostingViewMode && !IsLocked) {
       selectedIds(gridData)
-
       if (JSON.stringify(gridData) !== JSON.stringify(oldGridData)) {
         dispatch(isDataChange(true))
       }
-      props.setConversionCost(tabData, Params, item)
+      if (JSON.stringify(tabData) !== JSON.stringify(oldTabData)) {
+        props.setConversionCost(tabData, Params, item)
+      }
     }
   }, [tabData]);
 
@@ -432,25 +434,7 @@ function ProcessCost(props) {
     // props.setOtherOperationCost(tempArr, props.index, item)
   }
 
-  /**
-   * @method setToolCost
-   * @description SET TOOL COST
-   */
-  const setToolCost = (toolGrid, Params) => {
-    let ToolsCostTotal = 0
-    ToolsCostTotal = toolGrid && toolGrid.reduce((accummlator, el) => {
-      return accummlator + checkForNull(el.TotalToolCost)
-    }, 0)
 
-    let tempObj = {
-      ...tabData,
-      //NetConversionCost: ToolsCostTotal + checkForNull(tabData && tabData.ProcessCostTotal !== null ? tabData.ProcessCostTotal : 0),
-      IsShowToolCost: true,
-      ToolsCostTotal: ToolsCostTotal,
-      CostingToolsCostResponse: toolGrid,
-    }
-    props.setToolCost(tempObj, Params)
-  }
 
   /**
    * @method setRMCCErrors
@@ -646,12 +630,7 @@ function ProcessCost(props) {
             IsAssemblyCalculation={false}
           />
 
-          {isOpen && <ToolCost
-            data={props.data && props.data.CostingToolsCostResponse}
-            setToolCost={setToolCost}
-            item={props.item}
-            IsAssemblyCalculation={false}
-          />}
+
 
         </div>
       </div>
