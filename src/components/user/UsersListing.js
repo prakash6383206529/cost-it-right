@@ -621,7 +621,7 @@ class UsersListing extends Component {
 								<div className="d-flex justify-content-end bd-highlight w100">
 									{AddAccessibility && (
 										<div>
-											<ExcelFile filename={'BOP Domestic'} fileExtension={'.xls'} element={
+											<ExcelFile filename={'User Listing'} fileExtension={'.xls'} element={
 												<button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
 													{/* DOWNLOAD */}
 												</button>}>
