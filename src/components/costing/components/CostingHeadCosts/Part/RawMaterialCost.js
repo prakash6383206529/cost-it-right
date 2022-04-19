@@ -139,7 +139,7 @@ function RawMaterialCost(props) {
         let rowArray = rowData && rowData.map(el => {
           return {
             RMName: `${el.RawMaterial} - ${el.RMGrade}`,
-            RMRate: (el.Currency === '-' || el.Currency === INR) ? el.NetLandedCost : el.NetLandedCostConversion,
+            RMRate: (el.EntryType === 'Domestic') ? el.NetLandedCost : el.NetLandedCostConversion,
             MaterialType: el.MaterialType,
             RMGrade: el.RMGrade,
             Density: el.Density,
