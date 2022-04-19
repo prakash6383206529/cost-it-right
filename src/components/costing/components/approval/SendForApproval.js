@@ -110,10 +110,6 @@ const SendForApproval = (props) => {
 
     }))
   }, [])
-  useEffect(() => {
-
-
-  }, [viewApprovalData])
   /**
    * @method renderDropdownListing
    * @description DROPDOWN
