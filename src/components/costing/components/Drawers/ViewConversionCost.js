@@ -125,17 +125,17 @@ function ViewConversionCost(props) {
   }
 
   const getWeightData = (index) => {
+    const tempData = viewCostingData[props.index]
 
-    if (costingProcessCost[index].ProcessCalculationId === '00000000-0000-0000-0000-000000000000') {
+    if (tempData?.netConversionCostView?.CostingProcessCostResponse[index].ProcessCalculatorId === 0) {
       Toaster.warning('Data is not avaliabe for calculator')
       return false
     }
-    setIndexForProcessCalculator(index)
-    const tempData = viewCostingData[props.index]
 
+    setIndexForProcessCalculator(index)
     setTimeout(() => {
       if (tempData?.netConversionCostView?.CostingProcessCostResponse[index].ProcessTechnologyId === MACHINING && tempData.netConversionCostView.CostingProcessCostResponse[index].UOMType === TIME) {
-        dispatch(getProcessMachiningCalculation(tempData?.netConversionCostView?.CostingProcessCostResponse[index].CostingId, tempData?.netConversionCostView?.CostingProcessCostResponse[index].ProcessId, tempData?.netConversionCostView?.CostingProcessCostResponse[index].ProcessCalculationId, res => {
+        dispatch(getProcessMachiningCalculation(tempData?.netConversionCostView?.CostingProcessCostResponse[index].CostingId, tempData?.netConversionCostView?.CostingProcessCostResponse[index].ProcessId, tempData?.netConversionCostView?.CostingProcessCostResponse[index].ProcessCalculatorId, res => {
           if (res && res.data && res.data.Data) {
             const data = res.data.Data
             setCalciData({ ...costingProcessCost[index], WeightCalculatorRequest: data })
@@ -144,7 +144,7 @@ function ViewConversionCost(props) {
         }))
 
       } else {
-        dispatch(getProcessDefaultCalculation(tempData?.netConversionCostView?.CostingProcessCostResponse[index].CostingId, tempData?.netConversionCostView?.CostingProcessCostResponse[index].ProcessId, tempData?.netConversionCostView?.CostingProcessCostResponse[index].ProcessCalculationId, res => {
+        dispatch(getProcessDefaultCalculation(tempData?.netConversionCostView?.CostingProcessCostResponse[index].CostingId, tempData?.netConversionCostView?.CostingProcessCostResponse[index].ProcessId, tempData?.netConversionCostView?.CostingProcessCostResponse[index].ProcessCalculatorId, res => {
           if (res && res.data && res.data.Data) {
             const data = res.data.Data
             setCalciData({ ...costingProcessCost[index], WeightCalculatorRequest: data })
