@@ -150,7 +150,7 @@ function ViewRM(props) {
                   {!isPDFShow && <td><button
                     className="CalculatorIcon cr-cl-icon mr-auto ml-0"
                     type={"button"}
-                    disabled={item.RawMaterialCalculatorId === 0}
+                    disabled={(item.RawMaterialCalculatorId === 0 || item.RawMaterialCalculatorId === null) ? true : false}
                     onClick={() => { getWeightData(index) }}
                   /></td>}
                   <td>{item.FreightCost ? checkForDecimalAndNull(item.FreightCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
