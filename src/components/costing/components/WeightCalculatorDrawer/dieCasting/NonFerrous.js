@@ -38,7 +38,7 @@ function
     const [lostWeight, setLostWeight] = useState(WeightCalculatorRequest && WeightCalculatorRequest.NetLossWeight ? WeightCalculatorRequest.NetLossWeight : 0)
     const [dataToSend, setDataToSend] = useState({})
     const [nonFerrousDropDown, setNonFerrousDropDown] = useState(false)
-    const { rmRowData, activeTab, isHpdc, CostingViewMode } = props
+    const { rmRowData, activeTab, isHpdc, CostingViewMode, item } = props
 
     const { register, control, setValue, getValues, handleSubmit, formState: { errors }, } = useForm({
         mode: 'onChange',
@@ -169,7 +169,7 @@ function
         let obj = {}
         obj.LayoutType = activeTab === '1' ? 'GDC' : activeTab === '2' ? 'LPDC' : 'HPDC'
         obj.DieCastingWeightCalculatorId = WeightCalculatorRequest && WeightCalculatorRequest.DieCastingWeightCalculatorId ? WeightCalculatorRequest.DieCastingWeightCalculatorId : "0"
-        obj.BaseCostingIdRef = costData.CostingId
+        obj.BaseCostingIdRef = item.CostingId
         obj.RawMaterialIdRef = rmRowData.RawMaterialId
         obj.CostingRawMaterialDetailsIdRef = rmRowData.RawMaterialDetailId
         obj.ShotWeight = getValues('shotWeight')

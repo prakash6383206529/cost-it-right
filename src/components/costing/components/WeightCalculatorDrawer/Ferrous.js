@@ -30,7 +30,7 @@ function Ferrous(props) {
     const [tableVal, setTableVal] = useState(WeightCalculatorRequest && WeightCalculatorRequest.LossOfTypeDetails !== null ? WeightCalculatorRequest.LossOfTypeDetails : [])
     const [lostWeight, setLostWeight] = useState(WeightCalculatorRequest && WeightCalculatorRequest.NetLossWeight ? WeightCalculatorRequest.NetLossWeight : 0)
     const [dataToSend, setDataToSend] = useState(WeightCalculatorRequest)
-    const { rmRowData, rmData, CostingViewMode } = props
+    const { rmRowData, rmData, CostingViewMode, item } = props
 
     const rmGridFields = 'rmGridFields';
 
@@ -176,7 +176,7 @@ function Ferrous(props) {
         obj.FerrousCastingWeightCalculatorId = WeightCalculatorRequest && WeightCalculatorRequest.ForgingWeightCalculatorId ? WeightCalculatorRequest.ForgingWeightCalculatorId : "0"
         obj.CostingRawMaterialDetailsIdRef = rmRowData.RawMaterialDetailId
         obj.RawMaterialIdRef = ""
-        obj.BaseCostingIdRef = costData.CostingId
+        obj.BaseCostingIdRef = item.CostingId
         obj.LoggedInUserId = loggedInUserId()
         obj.RawMaterialCost = dataToSend.NetRMCost
         obj.NetRMRate = dataToSend.NetRMRate

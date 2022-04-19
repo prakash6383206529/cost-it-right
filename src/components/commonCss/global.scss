@@ -215,6 +215,10 @@ a:hover {
   bottom: 4%;
   right: -5px;
   z-index: 999;
+  &:focus {
+    box-shadow: none !important;
+    border: none !important;
+  }
 }
 //END scroll to top button UI 10-12-2021
 .approval-btn {
@@ -650,7 +654,7 @@ a:hover {
         .ag-paging-row-summary-panel {
           order: 1;
           color: #959cb6;
-          margin-right: 80px;
+          margin-right: 50px;
         }
         .ag-paging-page-summary-panel {
           order: 0;
@@ -703,9 +707,9 @@ a:hover {
           pointer-events: none;
         }
         .paging-dropdown {
-          width: auto;
+          width: 45px;
           height: 32px;
-          padding: 6px 24px 6px 10px !important;
+          padding: 6px !important;
           display: inline-block;
           -moz-appearance: none;
           -webkit-appearance: none;
