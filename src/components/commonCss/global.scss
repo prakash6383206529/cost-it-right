@@ -803,13 +803,9 @@ a:hover {
   border: 1px solid #e5eaf9;
 }
 .ag-cell-focus {
-  box-shadow: 0 0 5px #256bd1 !important;
   border-width: 1px 1px 1px 1px !important;
   transition: all linear;
   &:first-child:focus {
-    border-left: 1px solid #256bd1 !important;
-  }
-  &.ag-cell-first-right-pinned {
     border-left: 1px solid #256bd1 !important;
   }
 }
