@@ -279,12 +279,6 @@ class BOPDomesticListing extends Component {
         return cellValue          // IN SUMMARY DRAWER COSTING HEAD IS ROWDATA.COSTINGHEAD & IN MAIN DOMESTIC LISTING IT IS CELLVALUE
 
     }
-    plantFormatter = (props) => {
-        const rowData = props.data
-        return rowData.IsVendor === 'true' ? rowData.DestinationPlant : rowData.Plants
-
-    }
-
 
     formToggle = () => {
         this.props.displayForm()
@@ -419,7 +413,6 @@ class BOPDomesticListing extends Component {
             hyphenFormatter: this.hyphenFormatter,
             costingHeadFormatter: this.costingHeadFormatter,
             effectiveDateFormatter: this.effectiveDateFormatter,
-            plantFormatter: this.plantFormatter
         };
 
         const onRowSelect = () => {
@@ -532,8 +525,7 @@ class BOPDomesticListing extends Component {
                                     <AgGridColumn field="BoughtOutPartCategory" headerName="Insert Category"></AgGridColumn>
                                     <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
                                     <AgGridColumn field="Specification" headerName="Specification" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="Plants" hide={getConfigurationKey().IsDestinationPlantConfigure !== false} cellRenderer={'hyphenFormatter'} headerName="Plant"></AgGridColumn>
-                                    <AgGridColumn field="DestinationPlant" hide={getConfigurationKey().IsDestinationPlantConfigure !== true} cellRenderer={'plantFormatter'} headerName="Plant(Code)"></AgGridColumn>
+                                    <AgGridColumn field="Plants" cellRenderer={'hyphenFormatter'} headerName="Plant(Code)"></AgGridColumn>
                                     <AgGridColumn field="Vendor" headerName="Vendor(Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn width={205} field="NumberOfPieces" headerName="Minimum Order Quantity"></AgGridColumn>
                                     <AgGridColumn field="BasicRate" headerName="Basic Rate"></AgGridColumn>
