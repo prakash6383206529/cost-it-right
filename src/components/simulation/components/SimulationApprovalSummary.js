@@ -177,12 +177,11 @@ function SimulationApprovalSummary(props) {
                 });
 
                 uniqueArr && uniqueArr.map(item => {
-                    requestData.push({ CostingId: item.CostingId, delta: item.POVariance, IsSinglePartImpact: false })
+                    requestData.push({ CostingId: item.CostingId, delta: item.POVariance, IsSinglePartImpact: false, SimulationId: SimulationId })
                     return null
                 })
 
-                dispatch(getSimulatedAssemblyWiseImpactDate(requestData, isAssemblyInDraft, (res) => {
-                }))
+                dispatch(getSimulatedAssemblyWiseImpactDate(requestData, isAssemblyInDraft, (res) => { }))
             }
 
             // const valueTemp = {
