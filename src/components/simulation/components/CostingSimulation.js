@@ -213,7 +213,6 @@ function CostingSimulation(props) {
     }
 
     const getCostingList = (plantId = '', rawMatrialId = '') => {
-        console.log('selectedMasterForSimulation?.value: ', selectedMasterForSimulation?.value);
         switch (Number(selectedMasterForSimulation?.value)) {
             case Number(RMDOMESTIC):
             case Number(RMIMPORT):
