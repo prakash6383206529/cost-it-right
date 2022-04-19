@@ -373,6 +373,9 @@ li.nav-item .logo {
       background-color: #d9e2f0;
       left: 0;
       top: 9px;
+      @media screen and (max-width:$max1367) {
+        top: 4px;
+      }
     }
   }
   .cr-logout-btn{
@@ -779,4 +782,19 @@ label.btn.btn-link.align-middle.checkbox-label {
   border-left: 1px solid #959CB6;
   padding-left: 16px;
   margin-left: 16px;
+}
+.username {
+  &.btn-secondary.dropdown-toggle {
+    font-size: 14px !important;
+  }
+  cursor: no-drop;
+  &:hover {
+    color: #256bd1 !important;
+  }
+  &:focus {
+    color: #256bd1 !important;
+  }
+  &:active {
+    color: #256bd1 !important;
+  }
 }
