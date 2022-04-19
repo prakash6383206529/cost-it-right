@@ -109,7 +109,7 @@ const SendForApproval = (props) => {
     }))
   }, [])
   useEffect(() => {
-    console.log(viewApprovalData, "VIEWAPROVALDATA");
+
 
   }, [viewApprovalData])
   /**
