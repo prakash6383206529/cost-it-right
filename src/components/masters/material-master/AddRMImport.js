@@ -1712,7 +1712,7 @@ class AddRMImport extends Component {
 
                               className=" "
                               customClassName=" withBorder mb-0"
-                              disabled={isEditFlag || isViewFlag}
+                              disabled={true}
                             />
                           </Col>
                           {
@@ -1729,7 +1729,7 @@ class AddRMImport extends Component {
 
                                 className=" "
                                 customClassName=" withBorder mb-0"
-                                disabled={isEditFlag || isViewFlag}
+                                disabled={true}
                               />
                             </Col>
                           }
