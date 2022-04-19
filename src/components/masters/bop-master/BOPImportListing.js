@@ -423,7 +423,6 @@ class BOPImportListing extends Component {
             hyphenFormatter: this.hyphenFormatter,
             costingHeadFormatter: this.costingHeadFormatter,
             effectiveDateFormatter: this.effectiveDateFormatter,
-            plantFormatter: this.plantFormatter
         };
 
         const onRowSelect = () => {
