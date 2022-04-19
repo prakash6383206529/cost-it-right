@@ -577,18 +577,23 @@ function TabRMCC(props) {
   }
 
   const setConversionCostInDataList = (conversionGrid, params, arr, item) => {
+    console.log('conversionGrid: ', conversionGrid);
 
     //FUNCTION TO CALCULATE THE COSITNG VALUE OF PARTS AND SUBASSEMBLIES
     const calculateValue = (useLevel, item, tempArrForCosting) => {
       let initialPartNo = ''
       let quant = ''
-      for (let i = useLevel; i > 0; i--) {
+      console.log("COMING HEEE1");
+      for (let i = useLevel; i >= 0; i--) {
+        console.log("COMING HEEE2");
         // THIS CONDITION IS FOR CALCULATING COSTING OF PART/COMPONENT ON THE LEVEL WE ARE WORKING
         if (item.PartType === "Part" || item.PartType === "Component") {
+          console.log("COMING HEEE3");
           // IF LEVEL WE ARE WORKING IS OF PART TYPE UNDER SOME SUBASSMEBLY OR ASSEMBLY
           if (i === useLevel) {
             let partIndex = tempArrForCosting && tempArrForCosting.findIndex((x) => x.PartNumber === item.PartNumber && x.AssemblyPartNumber === item.AssemblyPartNumber)
             let partObj = calculationForPart(conversionGrid, item, 'CC')
+            console.log('partObj: ', partObj);
             tempArrForCosting = Object.assign([...tempArrForCosting], { [partIndex]: partObj })
             initialPartNo = item.AssemblyPartNumber
             quant = item.CostingPartDetails.Quantity
@@ -614,41 +619,41 @@ function TabRMCC(props) {
 
     let tempArr = [];
     try {
-      // tempArr = arr && arr.map(i => {
-      // TO FIND THE LEVEL OF PART ON WHICH COSTING IS DONE
-      const level = params.BOMLevel
-      const useLevel = level.split('L')[1]
-
-      //GETTING LASTEST COSTING OF ASSEMBLY,SUBASSEMBLY AND PART FROM LOCAL STORAGE
-      let tempArrForCosting = JSON.parse(localStorage.getItem('costingArray'))
-      //CALCULATION FOR PART/COMPONENT AND SUBASSEMBLY COSTING (PROCESS/OPERATION,OTHEROPEARTION COST)
-      tempArrForCosting = calculateValue(useLevel, item, tempArrForCosting)
-      // THIS ARRAY IS FOR FINDING THE SUBASSEMBLIES  WHICH  HAVE SAME PART ON WHICH WE ARE DOING COSTING
-      let Arr = tempArrForCosting && tempArrForCosting.filter(costing => costing.PartNumber === item.PartNumber && costing.AssemblyPartNumber !== item.AssemblyPartNumber)
-      // THIS ARRAY IS FOR CALCUALTING THE COSTING OF ALL PARTS (WHICH HAVE SAME PART NUMBER ON WHICH WE ARE DOING COSTING) AND SUBASSEMBLY(CONTAINIG SAME PART NUMBER)
-      Arr && Arr.map(costingItem => {
-        const level = costingItem.BOMLevel
+      tempArr = arr && arr.map(i => {
+        // TO FIND THE LEVEL OF PART ON WHICH COSTING IS DONE
+        const level = params.BOMLevel
         const useLevel = level.split('L')[1]
-        tempArrForCosting = calculateValue(useLevel, costingItem, tempArrForCosting)
-      })
-      // MAIN ASSEMBLY CALCULATION
-      let subAssemblyArray = tempArrForCosting && tempArrForCosting.filter(item => item.BOMLevel === 'L1' && item.PartType === 'Sub Assembly')
-      let partAssemblyArray = tempArrForCosting && tempArrForCosting.filter(item => item.BOMLevel === 'L1' && item.PartType === 'Part')
-      let assemblyObj = tempArrForCosting[0]
-      // WILL RUN IF IT IS ASSEMBLY COSTING. WILL NOT RUN FOR COMPONENT COSTING
-      if (assemblyObj.CostingPartDetails.PartType === 'Assembly') {
-        assemblyObj.CostingPartDetails.TotalOperationCostSubAssembly = setOperationCostForAssembly(subAssemblyArray)
-        assemblyObj.CostingPartDetails.TotalOperationCostComponent = getCCTotalCostForAssembly(partAssemblyArray)
-        assemblyObj.CostingPartDetails.TotalConversionCostWithQuantity = setConversionCostAssembly(subAssemblyArray) + checkForNull(assemblyObj.CostingPartDetails.TotalOperationCostPerAssembly) + checkForNull(assemblyObj.CostingPartDetails.TotalOperationCostComponent)
-        assemblyObj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = checkForNull(assemblyObj.CostingPartDetails.TotalRawMaterialsCostWithQuantity) + checkForNull(assemblyObj.CostingPartDetails.TotalBoughtOutPartCostWithQuantity) + checkForNull(assemblyObj.CostingPartDetails.TotalConversionCostWithQuantity)
-        tempArrForCosting = Object.assign([...tempArrForCosting], { [0]: assemblyObj })
-      }
-      // STORING CALCULATED AND UPDATED COSTING VALUE IN LOCAL STORAGE
-      localStorage.setItem('costingArray', [])
-      localStorage.setItem('costingArray', JSON.stringify(tempArrForCosting))
 
-      //   return i;
-      // });
+        //GETTING LASTEST COSTING OF ASSEMBLY,SUBASSEMBLY AND PART FROM LOCAL STORAGE
+        let tempArrForCosting = JSON.parse(localStorage.getItem('costingArray'))
+        //CALCULATION FOR PART/COMPONENT AND SUBASSEMBLY COSTING (PROCESS/OPERATION,OTHEROPEARTION COST)
+        tempArrForCosting = calculateValue(useLevel, item, tempArrForCosting)
+        // THIS ARRAY IS FOR FINDING THE SUBASSEMBLIES  WHICH  HAVE SAME PART ON WHICH WE ARE DOING COSTING
+        let Arr = tempArrForCosting && tempArrForCosting.filter(costing => costing.PartNumber === item.PartNumber && costing.AssemblyPartNumber !== item.AssemblyPartNumber)
+        // THIS ARRAY IS FOR CALCUALTING THE COSTING OF ALL PARTS (WHICH HAVE SAME PART NUMBER ON WHICH WE ARE DOING COSTING) AND SUBASSEMBLY(CONTAINIG SAME PART NUMBER)
+        Arr && Arr.map(costingItem => {
+          const level = costingItem.BOMLevel
+          const useLevel = level.split('L')[1]
+          tempArrForCosting = calculateValue(useLevel, costingItem, tempArrForCosting)
+        })
+        // MAIN ASSEMBLY CALCULATION
+        let subAssemblyArray = tempArrForCosting && tempArrForCosting.filter(item => item.BOMLevel === 'L1' && item.PartType === 'Sub Assembly')
+        let partAssemblyArray = tempArrForCosting && tempArrForCosting.filter(item => item.BOMLevel === 'L1' && item.PartType === 'Part')
+        let assemblyObj = tempArrForCosting[0]
+        // WILL RUN IF IT IS ASSEMBLY COSTING. WILL NOT RUN FOR COMPONENT COSTING
+        if (assemblyObj.CostingPartDetails.PartType === 'Assembly') {
+          assemblyObj.CostingPartDetails.TotalOperationCostSubAssembly = setOperationCostForAssembly(subAssemblyArray)
+          assemblyObj.CostingPartDetails.TotalOperationCostComponent = getCCTotalCostForAssembly(partAssemblyArray)
+          assemblyObj.CostingPartDetails.TotalConversionCostWithQuantity = setConversionCostAssembly(subAssemblyArray) + checkForNull(assemblyObj.CostingPartDetails.TotalOperationCostPerAssembly) + checkForNull(assemblyObj.CostingPartDetails.TotalOperationCostComponent)
+          assemblyObj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = checkForNull(assemblyObj.CostingPartDetails.TotalRawMaterialsCostWithQuantity) + checkForNull(assemblyObj.CostingPartDetails.TotalBoughtOutPartCostWithQuantity) + checkForNull(assemblyObj.CostingPartDetails.TotalConversionCostWithQuantity)
+          tempArrForCosting = Object.assign([...tempArrForCosting], { [0]: assemblyObj })
+        }
+        // STORING CALCULATED AND UPDATED COSTING VALUE IN LOCAL STORAGE
+        localStorage.setItem('costingArray', [])
+        localStorage.setItem('costingArray', JSON.stringify(tempArrForCosting))
+
+        return i;
+      });
       // CALLING THIS FUNCTION TO UPDATE THE COSTING VALUE ON UI (RMMCCTABDATA REDUCER)
       updateCostingValuesInStructure()
     } catch (error) {
