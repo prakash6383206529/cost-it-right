@@ -830,7 +830,7 @@ export function saveAssemblyCostingRMCCTab(data, callback) {
  */
 export function getSurfaceTreatmentTabData(data, IsUseReducer, callback) {
   return (dispatch) => {
-    const request = axios.get(`${API.getSurfaceTreatmentTabData}/${data.CostingId}/${data.AssemCostingId}/${data.SubAsmCostingId}`, headers);
+    const request = axios.get(`${API.getSurfaceTreatmentTabData}/${data.CostingId}/${data.SubAsmCostingId}/${data.AssemCostingId}`, headers);
     request.then((response) => {
       if (response.data.Result) {
         if (IsUseReducer && response.data.Result) {
