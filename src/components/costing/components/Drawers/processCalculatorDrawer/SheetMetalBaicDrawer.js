@@ -122,7 +122,7 @@ function SheetMetalBaicDrawer(props) {
     let obj = {}
     obj.ProcessDefaultCalculatorId = props.calculatorData.ProcessDefaultCalculatorId ? props.calculatorData.ProcessDefaultCalculatorId : "00000000-0000-0000-0000-000000000000"
     obj.CostingProcessDetailsIdRef = WeightCalculatorRequest && WeightCalculatorRequest.CostingProcessDetailsIdRef ? WeightCalculatorRequest.CostingProcessDetailsIdRef : "00000000-0000-0000-0000-000000000000"
-    obj.BaseCostingIdRef = item.CostingId
+    obj.BaseCostingIdRef = props?.item?.CostingId
     obj.ProcessIdRef = props.calculatorData.ProcessId
     obj.IsChangeApplied = tempProcessObj === value.ProcessCost ? false : true
     obj.TechnologyId = costData.TechnologyId

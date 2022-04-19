@@ -82,8 +82,9 @@ function ProcessCost(props) {
     let tempArr = []
     let tempData = gridData[id]
     // const calciData = gridData[id]
+    /**********************************FOR MINDA IT WILL NOT WORK MAY BE LATER DON'T REMOVE NOW**************************************************************/
     /****************************FOR GETING CALCULATED VALUE IN CALCULATOR**************************/
-    // if ((costData.TechnologyId === MACHINING || costData.TechnologyId === FORGING || costData.TechnologyId === Ferrous_Casting || costData.TechnologyId === DIE_CASTING) && tempData.UOMType === TIME) {
+    // if (tempData.ProcessTechnologyId === MACHINING && tempData.UOMType === TIME) {
     //   //getProcessDefaultCalculation
     //   dispatch(getProcessMachiningCalculation(costData.CostingId, tempData.ProcessId, tempData.ProcessCalculationId, res => {
     //     if (res && res.data && res.data.Data) {
@@ -111,7 +112,7 @@ function ProcessCost(props) {
     //   }))
     // }
     // setCalculatorData(calciData)
-    dispatch(getProcessDefaultCalculation(costData.CostingId, tempData.ProcessId, tempData.ProcessCalculationId, res => {
+    dispatch(getProcessDefaultCalculation(item.CostingId, tempData.ProcessId, tempData.ProcessCalculationId, res => {
       if (res && res.data && res.data.Data) {
         const data = res.data.Data
         tempData = { ...tempData, WeightCalculatorRequest: data, }
@@ -679,9 +680,10 @@ function ProcessCost(props) {
       )}
       {isCalculator && (
         <VariableMhrDrawer
-          technology={costData.ETechnologyType}
+          technology={gridData[calciIndex].ProcessTechnologyId}
           calculatorData={gridData[calciIndex]}
           isOpen={isCalculator}
+          item={item}
           CostingViewMode={CostingViewMode || IsLocked}
           rmFinishWeight={props.rmFinishWeight}
           closeDrawer={closeCalculatorDrawer}
