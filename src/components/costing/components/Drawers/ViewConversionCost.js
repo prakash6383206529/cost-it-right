@@ -135,7 +135,7 @@ function ViewConversionCost(props) {
 
     setTimeout(() => {
       if (tempData?.netConversionCostView?.CostingProcessCostResponse[index].ProcessTechnologyId === MACHINING && tempData.netConversionCostView.CostingProcessCostResponse[index].UOMType === TIME) {
-        dispatch(getProcessMachiningCalculation(tempData?.netConversionCostView?.CostingProcessCostResponse[index].CostingId, tempData?.netConversionCostView?.CostingProcessCostResponse[index].ProcessId, tempData.ProcessCalculationId, res => {
+        dispatch(getProcessMachiningCalculation(tempData?.netConversionCostView?.CostingProcessCostResponse[index].CostingId, tempData?.netConversionCostView?.CostingProcessCostResponse[index].ProcessId, tempData?.netConversionCostView?.CostingProcessCostResponse[index].ProcessCalculationId, res => {
           if (res && res.data && res.data.Data) {
             const data = res.data.Data
             setCalciData({ ...costingProcessCost[index], WeightCalculatorRequest: data })
@@ -144,7 +144,7 @@ function ViewConversionCost(props) {
         }))
 
       } else {
-        dispatch(getProcessDefaultCalculation(tempData?.netConversionCostView?.CostingProcessCostResponse[index].CostingId, tempData?.netConversionCostView?.CostingProcessCostResponse[index].ProcessId, tempData.ProcessCalculationId, res => {
+        dispatch(getProcessDefaultCalculation(tempData?.netConversionCostView?.CostingProcessCostResponse[index].CostingId, tempData?.netConversionCostView?.CostingProcessCostResponse[index].ProcessId, tempData?.netConversionCostView?.CostingProcessCostResponse[index].ProcessCalculationId, res => {
           if (res && res.data && res.data.Data) {
             const data = res.data.Data
             setCalciData({ ...costingProcessCost[index], WeightCalculatorRequest: data })
