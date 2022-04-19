@@ -12,11 +12,10 @@ import { gridDataAdded } from '../../../actions/Costing';
 import { ViewCostingContext } from '../../CostingDetails'
 
 function SurfaceTreatmentCost(props) {
-  console.log('props: ', props);
   const { item } = props
   const tempArray = JSON.parse(localStorage.getItem('surfaceCostingArray'))
   let surfaceData = tempArray && tempArray.find(surfaceItem => surfaceItem.PartNumber === item.PartNumber && surfaceItem.AssemblyPartNumber === item.AssemblyPartNumber)
-  console.log('surfaceData: ', surfaceData);
+
   const CostingViewMode = useContext(ViewCostingContext);
   const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
   const { register, control, formState: { errors } } = useForm({
@@ -45,10 +44,9 @@ function SurfaceTreatmentCost(props) {
     }
     if (!CostingViewMode && !IsLocked) {
       if (props.IsAssemblyCalculation) {
-        console.log(gridData, "gridData");
         props.setAssemblySurfaceCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false, props.item)
       } else {
-
+        console.log("Coming in else");
         props.setSurfaceCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
       }
     }
@@ -57,12 +55,12 @@ function SurfaceTreatmentCost(props) {
   }, [gridData]);
 
 
-  useEffect(() => {
-    if (!props.IsAssemblyCalculation && props?.data && props.data.length > 0) {
+  // useEffect(() => {
+  //   if (!props.IsAssemblyCalculation && props?.data && props.data.length > 0) {
 
-      setGridData(surfaceData.CostingPartDetails.SurfaceTreatmentDetails)
-    }
-  }, [props.data])
+  //     setGridData(props.data)
+  //   }
+  // }, [props.data])
 
   /**
   * @method DrawerToggle
