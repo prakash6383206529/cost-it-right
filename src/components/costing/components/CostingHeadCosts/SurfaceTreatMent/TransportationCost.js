@@ -10,6 +10,7 @@ import { ViewCostingContext } from '../../CostingDetails'
 import WarningMessage from '../../../../common/WarningMessage';
 
 function TransportationCost(props) {
+
   const { data, item } = props;
   const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
 
@@ -32,7 +33,7 @@ function TransportationCost(props) {
   const [Rate, setRate] = useState('')
   const [OldTransportObj, setOldTransportObj] = useState(data)
   const [TransportationType, setTransportationType] = useState()
-  const [transportCost, setTransportCost] = useState('')
+  const [transportCost, setTransportCost] = useState(checkForNull(data?.TransportationCost))
   const [percentageLimit, setPercentageLimit] = useState(false);
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
@@ -60,6 +61,11 @@ function TransportationCost(props) {
     }
   }, [props.data])
 
+
+  useEffect(() => {
+    reCalculation()
+  }, [props.item.CostingPartDetails.SurfaceTreatmentCost])
+
   useEffect(() => {
     let tempObj = {
       TransporationDetailId: '',
@@ -75,11 +81,15 @@ function TransportationCost(props) {
       PartNumber: props.item.PartNumber,
     }
 
-    if (props.IsAssemblyCalculation) {
-      props.setAssemblyTransportationCost(tempObj, Params, JSON.stringify(tempObj) !== JSON.stringify(OldTransportObj) ? true : false)
-    } else {
-      props.setTransportationCost(tempObj, Params)
-      props.getTransportationObj(tempObj)
+    if (!CostingViewMode && !IsLocked) {
+
+      if (props.IsAssemblyCalculation) {
+        props.setAssemblyTransportationCost(tempObj, Params, item)
+        props.getTransportationObj(tempObj)
+      } else {
+        props.setTransportationCost(tempObj, Params)
+        props.getTransportationObj(tempObj)
+      }
     }
 
   }, [uom, Rate, Quantity, transportCost]);
@@ -167,6 +177,22 @@ function TransportationCost(props) {
     }
     else {
       Toaster.warning('Please enter valid number.')
+    }
+  }
+
+  const reCalculation = () => {
+
+    if (data.UOM === 'Rate') {
+      const cost = checkForNull(data.Rate) * checkForNull(data.Quantity);
+      setTransportCost(cost)
+      setValue('TransportationCost', checkForDecimalAndNull(cost, initialConfiguration.NoOfDecimalForPrice));
+    } else if (data.UOM === 'Fixed') {
+      setTransportCost(data.TransportationCost)
+      setValue('TransportationCost', checkForDecimalAndNull(data.TransportationCost, initialConfiguration.NoOfDecimalForPrice));
+    } else if (data.UOM === 'Percentage') {
+      setTransportCost(checkForNull(item.CostingPartDetails.SurfaceTreatmentCost * calculatePercentage(checkForNull(data.Rate))))
+      setValue('TransportationCost', checkForDecimalAndNull(item.CostingPartDetails.SurfaceTreatmentCost * calculatePercentage(data.Rate), initialConfiguration.NoOfDecimalForPrice))
+      setRate(data.Rate)
     }
   }
 

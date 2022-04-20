@@ -32,6 +32,7 @@ function BDSimulation(props) {
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [showMainSimulation, setShowMainSimulation] = useState(false)
+    const [isDisable, setIsDisable] = useState(false)
 
     const { register, control, setValue, formState: { errors }, } = useForm({
         mode: 'onChange',
@@ -68,6 +69,7 @@ function BDSimulation(props) {
             Toaster.warning('There is no changes in new value. Please correct the data, then run simulation')
             return false
         }
+        setIsDisable(true)
         basicRateCount = 0
         // setShowVerifyPage(true)
         /**********POST METHOD TO CALL HERE AND AND SEND TOKEN TO VERIFY PAGE TODO ****************/
@@ -98,7 +100,7 @@ function BDSimulation(props) {
         obj.SimulationBoughtOutPart = tempArr
 
         dispatch(runVerifyBoughtOutPartSimulation(obj, res => {
-
+            setIsDisable(false)
             if (res.data.Result) {
                 setToken(res.data.Identity)
                 setShowVerifyPage(true)
@@ -406,11 +408,11 @@ function BDSimulation(props) {
                             !isImpactedMaster &&
                             <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                                 <div className="col-sm-12 text-right bluefooter-butn">
-                                    <button type={"button"} className="mr15 cancel-btn" onClick={cancel}>
+                                    <button type={"button"} className="mr15 cancel-btn" onClick={cancel} disabled={isDisable}>
                                         <div className={"cancel-icon"}></div>
                                         {"CANCEL"}
                                     </button>
-                                    <button onClick={verifySimulation} type="submit" className="user-btn mr5 save-btn">
+                                    <button onClick={verifySimulation} type="submit" className="user-btn mr5 save-btn" disabled={isDisable}>
                                         <div className={"Run-icon"}>
                                         </div>{" "}
                                         {"Verify"}

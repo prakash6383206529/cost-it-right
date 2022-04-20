@@ -1915,7 +1915,7 @@ input:disabled{
   margin: 0 -30px -15px;
 }
 .add-min-height{
-  min-height: calc(100vh - 275px);
+  min-height: calc(100vh - 268px);
 }
 .role-permision-page{
   .add-min-height{
@@ -2010,10 +2010,10 @@ table{
 }
 .add-min-height{
   .btn-secondary,.btn-primary, .user-btn, .add-cancel-btn{
-    height: 40px;
+    height: 30px;
   }
   .reset-btn{
-    height: 40px;
+    height: 30px;
   }
   .mt30.reset-btn,.mt30.btn-primary,.user-btn.mt30, .add-cancel-btn.mt30{margin-top: 27px;}
 }
@@ -4128,14 +4128,6 @@ body{
           margin-bottom: 8px;
         }
       }
-      .edit-btn,.btn-danger,.btn-primary, .user-btn, .btn-primary-add, .apply, .btn-secondary, .add-cancel-btn{
-        font-size: calc(14px * 80 / 100);
-        padding-left: calc(15px * 80 / 100);
-        padding-right: calc(15px * 80 / 100);
-        line-height: calc(14px * 80 / 100);
-        height: calc(32px * 80 / 100);
-        width: auto;
-      }
       .show-table-btn{
         .react-bs-table-tool-bar{
           .col-lg-8{
@@ -5637,16 +5629,21 @@ left: 17rem;
   .rm-name-head {
     min-width: 125px;
   }
-  .view-rm-cost {
+  .view-rm-cost {  
     .drawer-1200 {
         min-width: 1106px;
-        .drawer-1500px {
-          max-width: calc(100vw - 287px);
-        }
+      }
+      .drawer-1500px {
+        max-width: 1140px;
+        min-width: 1140px;
       }
     }
-}
-
+  }
+  .view-rm-cost {
+    .container {
+      max-width: 1280px;
+    }
+  }
 @media screen and (max-width:$middleDesktop) {
   .costing-summary-table {
     thead{
@@ -5686,7 +5683,48 @@ left: 17rem;
     }
   }
 }
-
+@media screen and (max-width:$max1367) {
+  .edit-btn,.btn-danger,.btn-primary, .user-btn, .btn-primary-add, .apply, .btn-secondary, .add-cancel-btn, .cr-bk-btn, .save-btn, .cancel-btn,.reset-btn, .pdf-detail {
+    font-size: calc(14px * 80 / 100) !important;
+    padding-left: calc(15px * 80 / 100) !important;
+    padding-right: calc(15px * 80 / 100) !important;
+    line-height: calc(14px * 80 / 100) !important;
+    height: calc(32px * 80 / 100) !important;
+    width: auto !important;
+    }
+     .edit-icon, .edit-icon {
+      height: calc(12px * 80 / 100) !important;
+      width: calc(12px * 80 / 100) !important;
+    }
+    .costing-tabs-container {
+      .plus {
+        height: calc(12px * 80 / 100) !important;
+        width: calc(12px * 80 / 100) !important;
+      }
+      .save-btn, .cancel-btn {
+        font-size: 14px !important;
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+        line-height: 14px !important;
+        height: 32px !important;
+        width: auto !important;
+      }
+    }
+  
+    .goToTop {
+      width: 23px !important;
+      padding: 2px  !important;
+      padding-top: 5px  !important;
+      height: 22px  !important;
+      bottom: 4%  !important;
+      right: -3px  !important;
+      .go-to-top {
+        width: 19px !important;
+      height: 19px !important;
+  
+      }
+    }
+}
 .align-table {
   transform: translateY(-13px);
 }
@@ -5722,6 +5760,7 @@ left: 17rem;
 .version {
   color: #256bd1;
   margin-right: 15px;
+  font-size: 14px;
 }
 //END Navbar version css
 //START login page version css
@@ -5999,7 +6038,9 @@ left: 17rem;
  .head-part-overflow {
    @include overflow($ResponsiveWith:175px, $whiteSpace:normal)
  }
-
+.drawer-part-name {
+  @include overflow(102px,$whiteSpace:normal)
+}
   .text-overflow {
     @include overflow($minWidth:125px,$ResponsiveWith:175px, $whiteSpace:normal, $lineClamp:2)
   }
@@ -6168,15 +6209,11 @@ left: 17rem;
         .green-row{
           th,td{
           background-color: #DBF4E2!important;
-          border-color: #4DC771!important;
-          border: 2px solid !important;
           }
         }
         .red-row{
           th,td{
           background-color: #FEDCE2!important;
-          border-color: #FC5774!important;
-          border: 2px solid !important;
           }
         }
       }
@@ -6296,8 +6333,6 @@ left: 17rem;
   }
 }
 
-.lock-container{
-  max-width: 15px;
-  width: 15px;
-  min-width: 15px !important;
+.lock-width {
+  min-width: 33px;
 }

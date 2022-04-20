@@ -650,7 +650,7 @@ a:hover {
         .ag-paging-row-summary-panel {
           order: 1;
           color: #959cb6;
-          margin-right: 80px;
+          margin-right: 50px;
         }
         .ag-paging-page-summary-panel {
           order: 0;
@@ -703,9 +703,9 @@ a:hover {
           pointer-events: none;
         }
         .paging-dropdown {
-          width: auto;
+          width: 45px;
           height: 32px;
-          padding: 6px 24px 6px 10px !important;
+          padding: 6px !important;
           display: inline-block;
           -moz-appearance: none;
           -webkit-appearance: none;
@@ -803,13 +803,9 @@ a:hover {
   border: 1px solid #e5eaf9;
 }
 .ag-cell-focus {
-  box-shadow: 0 0 5px #256bd1 !important;
   border-width: 1px 1px 1px 1px !important;
   transition: all linear;
   &:first-child:focus {
-    border-left: 1px solid #256bd1 !important;
-  }
-  &.ag-cell-first-right-pinned {
     border-left: 1px solid #256bd1 !important;
   }
 }

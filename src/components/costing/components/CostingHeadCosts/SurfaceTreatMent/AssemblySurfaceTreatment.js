@@ -147,32 +147,35 @@ function AssemblySurfaceTreatment(props) {
           </td>
         </div>
         <td>
-          {!CostingViewMode && (item.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostWithQuantitys !== 0) ?
-            <button
-              type="button"
-              className={'user-btn surface-treatment-btn'}
-              //onClick={DrawerToggle}
-              onClick={() => {
-                toggle(item.BOMLevel, item.PartNumber, false)
-                // DrawerToggle()
-              }}
-            >
-              <div className={'fa fa-eye pr-1'}></div>Surface T</button>
-            :
-            <button
-              type="button"
-              className={'user-btn surface-treatment-btn'}
-              //onClick={DrawerToggle}
-              onClick={() => {
-                toggle(item.BOMLevel, item.PartNumber, false)
-                // DrawerToggle()
-              }}
-            >
-              <div className={`${CostingViewMode ? 'fa fa-eye pr-1' : 'plus'}`}></div> Surface T.</button>
-          }
+          <div className='d-flex align-items-center justify-content-end'>
+            {!CostingViewMode && (item.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostWithQuantitys !== 0) ?
+              <button
+                type="button"
+                className={'user-btn surface-treatment-btn'}
+                //onClick={DrawerToggle}
+                onClick={() => {
+                  //toggle(item.BOMLevel, item.PartNumber, false)
+                  DrawerToggle()
+                }}
+              >
+                <div className={'fa fa-eye pr-1'}></div>Surface T</button>
+              :
+              <button
+                type="button"
+                className={'user-btn surface-treatment-btn'}
+                //onClick={DrawerToggle}
+                onClick={() => {
+                  //  toggle(item.BOMLevel, item.PartNumber, false)
+                  DrawerToggle()
+                }}
+              >
+                <div className={`${CostingViewMode ? 'fa fa-eye pr-1' : 'plus'}`}></div> Surface T.</button>
+            }
+            <div className={`lock-width ${(item.IsLocked || item.IsPartLocked) ? 'lock_icon ml-3' : ''}`}>{''}</div>
+          </div>
         </td>
         {/*WHEN COSTING OF THAT PART IS  APPROVED SO COSTING COMES AUTOMATICALLY FROM BACKEND AND THIS KEY WILL COME TRUE (WORK LIKE VIEW MODE)*/}
-        <td className="text-right lock-container"><div className={`${(item.IsLocked || item.IsPartLocked) ? 'lock_icon' : ''}`}>{''}</div></td>
+
       </tr>
 
       {item.IsOpen && nestedPartComponent}

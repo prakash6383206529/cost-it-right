@@ -3,7 +3,7 @@ import { Row, Col, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
 import { EMPTY_DATA } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
-import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper';
+import { loggedInUserId } from '../../../../helper';
 import Toaster from '../../../common/Toaster';
 import { Fragment } from 'react';
 import RunSimulationDrawer from '../RunSimulationDrawer';
@@ -60,7 +60,6 @@ function OverheadSimulation(props) {
         let OverheadMachiningCCPercentageCount = 0
         let OverheadBOPPercentageCount = 0
         let OverheadPercentageCount = 0
-        let temp = 0
         let tempRM = 0
         let tempCC = 0
         let tempBOP = 0
@@ -68,7 +67,6 @@ function OverheadSimulation(props) {
         let tempRMBOP = 0
         let tempBOPCC = 0
         let tempRMCCBOP = 0
-        let tempElse = 0
         let stopflow = false
 
         let tempObjVal = new Set([]);
@@ -190,6 +188,7 @@ function OverheadSimulation(props) {
                 default:
                     return 'foo';
             }
+            return null
         })
 
         // SWITCH TO CHECK EVERY FIELD IS FILLED ACCPRDING TO THE APPLICABILITY CHECK
@@ -867,7 +866,7 @@ function OverheadSimulation(props) {
 
                     return null
                 }
-
+                return null
             })
         }
         gridApi.redrawRows()
@@ -994,7 +993,7 @@ function OverheadSimulation(props) {
                             !isImpactedMaster &&
                             <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                                 <div className="col-sm-12 text-right bluefooter-butn">
-                                    <button type={"button"} className="mr15 cancel-btn" onClick={cancel}>
+                                    <button type={"button"} className="mr15 cancel-btn" onClick={cancel} disabled={isDisable}>
                                         <div className={"cancel-icon"}></div>
                                         {"CANCEL"}
                                     </button>

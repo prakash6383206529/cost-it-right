@@ -21,7 +21,6 @@ import {
     GET_SELECTLIST_SIMULATION_TOKENS,
     GET_IMPACTED_MASTER_DATA,
     GET_LAST_SIMULATION_DATA,
-    SET_ATTACHMENT_FILE_DATA,
     GET_ASSEMBLY_SIMULATION_LIST,
     GET_VERIFY_MACHINERATE_SIMULATION_LIST,
     SET_DATA_TEMP,
@@ -30,7 +29,6 @@ import {
     GET_VERIFY_PROFIT_SIMULATION_LIST,
     SET_SHOW_SIMULATION_PAGE,
     GET_TOKEN_SELECT_LIST,
-    GET_RAW_MATERIAL_FILTER_DYNAMIC_DATA,
     RMDOMESTIC,
     RMIMPORT,
     BOPDOMESTIC,
@@ -45,14 +43,14 @@ import {
     GET_MACHINE_DATALIST_SUCCESS,
     EXCHNAGERATE,
     EXCHANGE_RATE_DATALIST,
-    PROCESS,
     GET_RM_DOMESTIC_LIST,
     GET_VALUE_TO_SHOW_COSTING_SIMULATION,
     GET_KEYS_FOR_DOWNLOAD_SUMMARY,
     COMBINED_PROCESS,
+    SET_ATTACHMENT_FILE_DATA,
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
-import { toastr } from 'react-redux-toastr'
+import Toaster from '../../common/Toaster';
 
 const headers = config
 
@@ -432,7 +430,7 @@ export function simulationApprovalRequestByApprove(data, callback) {
                 } else {
                     dispatch({ type: API_FAILURE })
                     if (response.data.Message) {
-                        toastr.error(response.data.Message)
+                        Toaster.error(response.data.Message)
                     }
                 }
             })
@@ -457,7 +455,7 @@ export function simulationRejectRequestByApprove(data, callback) {
             } else {
                 dispatch({ type: API_FAILURE })
                 if (response.data.Message) {
-                    toastr.error(response.data.Message)
+                    Toaster.error(response.data.Message)
                 }
             }
         }).catch((error) => {
@@ -481,7 +479,7 @@ export function simulationApprovalRequestBySender(data, callback) {
             } else {
                 dispatch({ type: API_FAILURE })
                 if (response.data.Message) {
-                    toastr.error(response.data.Message)
+                    Toaster.error(response.data.Message)
                 }
             }
         }).catch((error) => {
@@ -522,7 +520,7 @@ export function pushAPI(data, callback) {
             } else {
                 dispatch({ type: API_FAILURE })
                 if (response.data.Message) {
-                    toastr.error(response.data.Message)
+                    Toaster.error(response.data.Message)
                 }
             }
         }).catch((error) => {

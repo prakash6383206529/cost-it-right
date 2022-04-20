@@ -138,7 +138,7 @@ function Broaching(props) {
         obj.CostingProcessDetailId = WeightCalculatorRequest && WeightCalculatorRequest.CostingProcessDetailId ? WeightCalculatorRequest.CostingProcessDetailId : "00000000-0000-0000-0000-000000000000"
         obj.IsChangeApplied = true
         obj.TechnologyId = costData.TechnologyId
-        obj.BaseCostingId = costData.CostingId
+        obj.BaseCostingId = props?.item?.CostingId
         obj.TechnologyName = costData.TechnologyName
         obj.PartId = costData.PartId
         obj.UnitOfMeasurementId = props.calculatorData.UnitOfMeasurementId
@@ -256,7 +256,7 @@ function Broaching(props) {
                                                 register={register}
                                                 mandatory={false}
                                                 rules={{
-                                                    required: true,
+                                                    required: false,
                                                     pattern: {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                         message: 'Maximum length for interger is 4 and for decimal is 7',
@@ -267,7 +267,7 @@ function Broaching(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.majorDiameter}
-                                                disabled={false}
+                                                disabled={props.CostingViewMode ? true : false}
                                             />
                                         </Col>
                                     </Row>
@@ -282,7 +282,7 @@ function Broaching(props) {
                                                 register={register}
                                                 mandatory={false}
                                                 rules={{
-                                                    required: true,
+                                                    required: false,
                                                     pattern: {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                         message: 'Maximum length for interger is 4 and for decimal is 7',
@@ -341,7 +341,7 @@ function Broaching(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.cuttingResistance}
-                                                disabled={false}
+                                                disabled={props.CostingViewMode ? true : false}
                                             />
                                         </Col>
                                     </Row>
@@ -413,7 +413,7 @@ function Broaching(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.toolLength}
-                                                disabled={false}
+                                                disabled={props.CostingViewMode ? true : false}
                                             />
                                         </Col>
 
@@ -437,7 +437,7 @@ function Broaching(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.cuttingSpeedForward}
-                                                disabled={false}
+                                                disabled={props.CostingViewMode ? true : false}
                                             />
                                         </Col>
 
@@ -461,7 +461,7 @@ function Broaching(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.cuttingSpeedReturn}
-                                                disabled={false}
+                                                disabled={props.CostingViewMode ? true : false}
                                             />
                                         </Col>
 
@@ -500,7 +500,7 @@ function Broaching(props) {
                                                 mandatory={false}
                                                 handleChange={() => { }}
                                                 rules={{
-                                                    required: true,
+                                                    required: false,
                                                     pattern: {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                         message: 'Maximum length for interger is 4 and for decimal is 7',
@@ -510,7 +510,7 @@ function Broaching(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.chipToChipTiming}
-                                                disabled={false}
+                                                disabled={props.CostingViewMode ? true : false}
                                             />
                                         </Col>
 
@@ -523,7 +523,7 @@ function Broaching(props) {
                                                 register={register}
                                                 mandatory={false}
                                                 rules={{
-                                                    required: true,
+                                                    required: false,
                                                     pattern: {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                         message: 'Maximum length for interger is 4 and for decimal is 7',
@@ -547,7 +547,7 @@ function Broaching(props) {
                                                 register={register}
                                                 mandatory={false}
                                                 rules={{
-                                                    required: true,
+                                                    required: false,
                                                     pattern: {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                         message: 'Maximum length for interger is 4 and for decimal is 7',
@@ -558,7 +558,7 @@ function Broaching(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.indexingTablePositioningTime}
-                                                disabled={false}
+                                                disabled={props.CostingViewMode ? true : false}
                                             />
                                         </Col>
 
@@ -571,7 +571,7 @@ function Broaching(props) {
                                                 register={register}
                                                 mandatory={false}
                                                 rules={{
-                                                    required: true,
+                                                    required: false,
                                                     pattern: {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                         message: 'Maximum length for interger is 4 and for decimal is 7',
@@ -582,7 +582,7 @@ function Broaching(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.loadingAndUnloadingTime}
-                                                disabled={false}
+                                                disabled={props.CostingViewMode ? true : false}
                                             />
                                         </Col>
 
@@ -628,7 +628,7 @@ function Broaching(props) {
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
-                                                mandatory={false}
+                                                mandatory={true}
                                                 handleChange={() => { }}
                                                 rules={{
                                                     required: true,
@@ -646,7 +646,7 @@ function Broaching(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.efficiencyPercentage}
-                                                disabled={false}
+                                                disabled={props.CostingViewMode ? true : false}
                                             />
                                         </Col>
 

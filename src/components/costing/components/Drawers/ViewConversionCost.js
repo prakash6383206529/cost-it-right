@@ -3,14 +3,15 @@ import { checkForDecimalAndNull } from '../../../../../src/helper'
 import { Container, Row, Col, Table, Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
 import NoContentFound from '../../../common/NoContentFound'
-import { EMPTY_DATA } from '../../../../config/constants'
+import { EMPTY_DATA, TIME } from '../../../../config/constants'
 import { useSelector, useDispatch } from 'react-redux'
 import classnames from 'classnames';
 import LoaderCustom from '../../../common/LoaderCustom'
 import { EMPTY_GUID } from '../../../../config/constants';
 import Toaster from '../../../common/Toaster';
 import VariableMhrDrawer from '../Drawers/processCalculatorDrawer/VariableMhrDrawer'
-import { getProcessCalculation } from '../../actions/CostWorking'
+import { getProcessCalculation, getProcessDefaultCalculation, getProcessMachiningCalculation } from '../../actions/CostWorking'
+import { MACHINING } from '../../../../config/masterData'
 
 function ViewConversionCost(props) {
 
@@ -44,6 +45,7 @@ function ViewConversionCost(props) {
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const [partNumberList, setPartNumberList] = useState([])
   const [index, setIndex] = useState(0)
+  const [indexForProcessCalculator, setIndexForProcessCalculator] = useState(0)
   const [loader, setLoader] = useState(false)
   const [weightCalculatorDrawer, setWeightCalculatorDrawer] = useState(false)
   const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
@@ -119,30 +121,39 @@ function ViewConversionCost(props) {
       if (tab === '1') {
         setIsCalledAPI(true)
       }
-
     }
   }
 
   const getWeightData = (index) => {
+    const tempData = viewCostingData[props.index]
 
-    if (costingProcessCost[index].ProcessCalculationId === '00000000-0000-0000-0000-000000000000') {
+    if (tempData?.netConversionCostView?.CostingProcessCostResponse[index].ProcessCalculatorId === 0) {
       Toaster.warning('Data is not avaliabe for calculator')
       return false
     }
 
-    const tempData = viewCostingData[props.index]
-
+    setIndexForProcessCalculator(index)
     setTimeout(() => {
-      dispatch(getProcessCalculation(tempData.costingId, costingProcessCost[index].ProcessId, costingProcessCost[index].ProcessCalculationId, tempData.technologyId, 'default', res => {
-        if (res && res.data && res.data.Data) {
-          const data = res.data.Data
-          setCalciData({ ...costingProcessCost[index], WeightCalculatorRequest: data })
-          setWeightCalculatorDrawer(true)
-        }
-      }))
+      if (tempData?.netConversionCostView?.CostingProcessCostResponse[index].ProcessTechnologyId === MACHINING && tempData.netConversionCostView.CostingProcessCostResponse[index].UOMType === TIME) {
+        dispatch(getProcessMachiningCalculation(tempData?.netConversionCostView?.CostingProcessCostResponse[index].CostingId, tempData?.netConversionCostView?.CostingProcessCostResponse[index].ProcessId, tempData?.netConversionCostView?.CostingProcessCostResponse[index].ProcessCalculatorId, res => {
+          if (res && res.data && res.data.Data) {
+            const data = res.data.Data
+            setCalciData({ ...costingProcessCost[index], WeightCalculatorRequest: data })
+            setWeightCalculatorDrawer(true)
+          }
+        }))
+
+      } else {
+        dispatch(getProcessDefaultCalculation(tempData?.netConversionCostView?.CostingProcessCostResponse[index].CostingId, tempData?.netConversionCostView?.CostingProcessCostResponse[index].ProcessId, tempData?.netConversionCostView?.CostingProcessCostResponse[index].ProcessCalculatorId, res => {
+          if (res && res.data && res.data.Data) {
+            const data = res.data.Data
+            setCalciData({ ...costingProcessCost[index], WeightCalculatorRequest: data })
+            setWeightCalculatorDrawer(true)
+          }
+        }))
+      }
+
     }, 300);
-
-
   }
 
   const closeWeightDrawer = (e = "") => {
@@ -456,7 +467,7 @@ function ViewConversionCost(props) {
                   return (
                     <tr key={index}>
                       {IsAssemblyCosting && partNumberList.length === 0 && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
-                      <td className='text-overflow'><span title={item.OperationName}>{item.OperationName ? item.OperationName : '-'}</span></td>
+                      <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item.OperationName}>{item.OperationName ? item.OperationName : '-'}</span></td>
                       <td>{item.SurfaceArea ? item.SurfaceArea : '-'}</td>
                       <td>{item.UOM ? item.UOM : '-'}</td>
                       <td>{item.RatePerUOM ? checkForDecimalAndNull(item.RatePerUOM, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
@@ -556,7 +567,7 @@ function ViewConversionCost(props) {
                   return (
                     <NavItem>
                       <NavLink className={classnames({ active: activeTab === index })} onClick={() => setPartDetail(index, item)}>
-                        {item}
+                        <div className='drawer-part-name'><span title={item}> {item}</span></div>
                       </NavLink>
                     </NavItem>
                   )
@@ -589,11 +600,7 @@ function ViewConversionCost(props) {
                   }
 
                   {!props.viewConversionCostData.isSurfaceTreatmentCost && <br />}
-                  {isShowToolCost && (
-                    <div>
-                      {toolCostTableData()}
-                    </div>
-                  )}
+
 
 
                   {props.viewConversionCostData.isSurfaceTreatmentCost &&                   // SHOW ONLY WHEN NETSURFACETREATMENT COST EYE BUTTON IS CLICKED
@@ -611,7 +618,7 @@ function ViewConversionCost(props) {
 
             {weightCalculatorDrawer && (
               <VariableMhrDrawer
-                technology={viewCostingData[props.index].technologyId}
+                technology={viewCostingData[props.index].netConversionCostView.CostingProcessCostResponse[indexForProcessCalculator].ProcessTechnologyId}
                 calculatorData={calciData}
                 isOpen={weightCalculatorDrawer}
                 CostingViewMode={true}

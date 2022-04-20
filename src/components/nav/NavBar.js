@@ -757,7 +757,7 @@ class SideBar extends Component {
                           isOpen={this.state.dropdownOpen}
                           toggle={this.toggle}
                         >
-                          <DropdownToggle caret>
+                          <DropdownToggle caret className="username">
                             {isLoggedIn ? (
                               <>
                                 {/* <img

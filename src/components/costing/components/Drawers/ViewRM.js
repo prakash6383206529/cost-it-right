@@ -48,41 +48,42 @@ function ViewRM(props) {
       Toaster.warning('Data is not avaliabe for calculator')
       return false
     }
+
     const tempData = viewCostingData[props.index]
     switch ((Number(tempData.EtechnologyType))) {
 
       case SHEETMETAL:
-        dispatch(getRawMaterialCalculationForSheetMetal(tempData.costingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
+        dispatch(getRawMaterialCalculationForSheetMetal(tempData.netRMCostView[index].costingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
           setCalculatorData(res, index)
         }))
         break;
       case FORGING:
-        dispatch(getRawMaterialCalculationForForging(tempData.costingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
+        dispatch(getRawMaterialCalculationForForging(tempData.netRMCostView[index].costingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
           setCalculatorData(res, index)
         }))
         break;
       case Ferrous_Casting:
-        dispatch(getRawMaterialCalculationForFerrous(tempData.costingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
+        dispatch(getRawMaterialCalculationForFerrous(tempData.netRMCostView[index].costingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
           setCalculatorData(res, index)
         }))
         break;
       case PLASTIC:
-        dispatch(getRawMaterialCalculationForPlastic(tempData.costingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
+        dispatch(getRawMaterialCalculationForPlastic(tempData.netRMCostView[index].costingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
           setCalculatorData(res, index)
         }))
         break;
       case CORRUGATEDBOX:
-        dispatch(getRawMaterialCalculationForCorrugatedBox(tempData.costingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
+        dispatch(getRawMaterialCalculationForCorrugatedBox(tempData.netRMCostView[index].costingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
           setCalculatorData(res, index)
         }))
         break;
       case DIE_CASTING:
-        dispatch(getRawMaterialCalculationForDieCasting(tempData.costingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
+        dispatch(getRawMaterialCalculationForDieCasting(tempData.netRMCostView[index].costingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
           setCalculatorData(res, index)
         }))
         break;
       case RUBBER:
-        dispatch(getRawMaterialCalculationForRubber(tempData.costingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
+        dispatch(getRawMaterialCalculationForRubber(tempData.netRMCostView[index].costingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
           setCalculatorData(res, index)
         }))
         break;
@@ -139,7 +140,7 @@ function ViewRM(props) {
               return (
                 <tr key={index}>
                   {isAssemblyCosting && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
-                  <td className='text-overflow'><span title={item.RMName}>{item.RMName}</span></td>
+                  <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item.RMName}>{item.RMName}</span></td>
                   <td>{checkForDecimalAndNull(item.RMRate, initialConfiguration.NoOfDecimalForPrice)}</td>
                   <td>{checkForDecimalAndNull(item.ScrapRate, initialConfiguration.NoOfDecimalForPrice)}</td>
                   <td>{checkForDecimalAndNull(item.ScrapRecoveryPercentage, initialConfiguration.NoOfDecimalForPrice)}</td>
@@ -149,7 +150,7 @@ function ViewRM(props) {
                   {!isPDFShow && <td><button
                     className="CalculatorIcon cr-cl-icon mr-auto ml-0"
                     type={"button"}
-                    disabled={item.RawMaterialCalculatorId === 0}
+                    disabled={(item.RawMaterialCalculatorId === 0 || item.RawMaterialCalculatorId === null) ? true : false}
                     onClick={() => { getWeightData(index) }}
                   /></td>}
                   {/* <td>{item.FreightCost ? checkForDecimalAndNull(item.FreightCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
@@ -157,7 +158,7 @@ function ViewRM(props) {
                   <td>{item.BurningLossWeight ? checkForDecimalAndNull(item.BurningLossWeight, initialConfiguration.NoOfDecimalForInputOutput) : '-'}</td>
                   <td>{checkForDecimalAndNull(item.NetLandedCost, initialConfiguration.NoOfDecimalForPrice)}</td>
                   <td>
-                    <div className='text-overflow' title={item.Remark}>
+                    <div className={`${isPDFShow ? '' : 'text-overflow'}`} title={item.Remark}>
                       <span>{item?.Remark ? item.Remark : "-"}</span></div>
                   </td>
 

@@ -119,10 +119,7 @@ function MachiningStockTable(props) {
   const calculateforgingVolumeAndWeight = (value) => {
     const description = getValues('description')
     const majorDiameter = checkForNull(getValues('majorDiameter'))
-
     const minorDiameter = checkForNull(getValues('minorDiameter'))
-
-
     const Length = checkForNull(getValues('Length'))
     const Breadth = checkForNull(getValues('Breadth'))
     const Height = checkForNull(getValues('Height'))
@@ -145,9 +142,7 @@ function MachiningStockTable(props) {
         forgingV: forgingV
       })
       return Toaster.warning("Minor Diameter should be Smaller than Major Diameter")
-      // return false;
     }
-
 
     switch (MachiningStock?.label) {
       case 'Circular':
@@ -165,15 +160,12 @@ function MachiningStockTable(props) {
         break;
 
       case 'Quarter Circular':
-        Volume =
-          (0.7857 * (Math.pow(majorDiameter, 2) - Math.pow(minorDiameter, 2)) * Length / 4)
+        Volume = (0.7857 * (Math.pow(majorDiameter, 2) - Math.pow(minorDiameter, 2)) * Length / 4)
         GrossWeight = (Volume * rmRowData.Density) / 1000000
         break;
       case 'Square':
-
         Volume = (Length * Length * Height)
         GrossWeight = (Volume * No * rmRowData.Density) / 1000000
-
         break;
 
       case 'Rectangular':
@@ -183,22 +175,16 @@ function MachiningStockTable(props) {
       case 'Irregular':
         Volume = forgingV
 
-
         GrossWeight = (forgingV * No * rmRowData.Density) / 1000000
         break;
       default:
         return "none";
 
     }
-
     setValue('forgingVolume', checkForDecimalAndNull(Volume, getConfigurationKey().NoOfDecimalForInputOutput))
     setForgingVolume(Volume)
     setValue('grossWeight', checkForDecimalAndNull(GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
     setGrossWeight(GrossWeight)
-
-
-
-
   }
 
   const calculateTotalMachiningStock = (tableVal) => {
@@ -246,17 +232,11 @@ function MachiningStockTable(props) {
       setNetWeight(Number(NetWeight))
 
     } else {
-
       NetWeight = checkForNull(checkForNull(netWeight) + checkForNull(GrossWeight))
-
-
       setTimeout(() => {
         setNetWeight(Number(NetWeight))
       }, 400);
-
-
     }
-
 
     const obj = {
       MajorDiameter: MajorDiameter ? MajorDiameter : "-",
@@ -286,8 +266,6 @@ function MachiningStockTable(props) {
 
     props.calculation(NetWeight)
     props.tableValue(tempArray)
-
-
 
     reset({
 
