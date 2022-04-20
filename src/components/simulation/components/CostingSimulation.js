@@ -835,7 +835,9 @@ function CostingSimulation(props) {
         params.columnApi.getAllColumns().forEach(function (column) {
             allColumnIds.push(column.colId);
         });
+
         window.screen.width >= 1921 && gridRef.current.api.sizeColumnsToFit();
+
     };
 
     const onPageSizeChanged = (newPageSize) => {
@@ -962,6 +964,7 @@ function CostingSimulation(props) {
                                                 <AgGridReact
                                                     defaultColDef={defaultColDef}
                                                     floatingFilter={true}
+                                                    ref={gridRef}
                                                     domLayout='autoHeight'
                                                     floatingFilter={true}
                                                     // columnDefs={c}
