@@ -5629,16 +5629,21 @@ left: 17rem;
   .rm-name-head {
     min-width: 125px;
   }
-  .view-rm-cost {
+  .view-rm-cost {  
     .drawer-1200 {
         min-width: 1106px;
-        .drawer-1500px {
-          max-width: calc(100vw - 287px);
-        }
+      }
+      .drawer-1500px {
+        max-width: 1140px;
+        min-width: 1140px;
       }
     }
   }
-
+  .view-rm-cost {
+    .container {
+      max-width: 1280px;
+    }
+  }
 @media screen and (max-width:$middleDesktop) {
   .costing-summary-table {
     thead{
