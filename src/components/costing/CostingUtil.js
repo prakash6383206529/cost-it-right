@@ -47,7 +47,6 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
     //SURFACE TREATMENT SUBASSEMBLIES
     surfaceTreatmentArr && surfaceTreatmentArr.map((item) => {
       let rmCcTabSubAssembly = Arr && Arr.find(costingItem => costingItem.PartNumber === item.PartNumber && costingItem.AssemblyPartNumber === item.AssemblyPartNumber)
-      console.log('rmCcTabSubAssembly: ', rmCcTabSubAssembly);
       if (item.PartType === 'Sub Assembly') {
         let subAssemblyObj = {
           "CostingId": item.CostingId,

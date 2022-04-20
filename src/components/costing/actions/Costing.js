@@ -839,7 +839,7 @@ export function getSurfaceTreatmentTabData(data, IsUseReducer, callback) {
             type: SET_SURFACE_TAB_DATA,
             payload: TabData,
           });
-          callback();
+          callback(response);
         } else {
           callback(response);
         }
@@ -2367,7 +2367,6 @@ export function setSelectedIds(data) {                  //THIS METHOD WILL SAVE 
 
 
 export function setMasterBatchObj(data) {
-  console.log('data: ', data);
   return (dispatch) => {
     dispatch({
       type: SET_MASTER_BATCH_OBJ,

@@ -60,7 +60,6 @@ function AddAssemblyOperation(props) {
   */
   const saveData = () => {
     let stCostingData = findSurfaceTreatmentData(item)
-    console.log('stCostingData: ', stCostingData);
     let requestData = {
       "CostingId": item.CostingId,
       "CostingNumber": item.CostingNumber,

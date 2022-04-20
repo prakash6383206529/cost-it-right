@@ -414,7 +414,6 @@ const CostingSummaryTable = (props) => {
     }
     if (type === VBC) {
       dispatch(getBriefCostingById(tempData.costingId, (res) => {
-        console.log('res: ', res);
         if (res?.data?.Result) {
           history.push('/costing')
           showDetail(partInfoStepTwo, { costingId: tempData.costingId, type })
