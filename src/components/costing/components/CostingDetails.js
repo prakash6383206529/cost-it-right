@@ -125,6 +125,7 @@ function CostingDetails(props) {
   useEffect(() => {
     if (reactLocalStorage.get('location') === '/costing') {
       localStorage.setItem('costingArray', [])
+      localStorage.setItem('surfaceCostingArray', [])
       setValue('Technology', '')
       setValue('Part', '')
       reset()
@@ -1235,6 +1236,7 @@ function CostingDetails(props) {
     dispatch(getBriefCostingById('', (res) => { }))
 
     localStorage.setItem('costingArray', [])
+    localStorage.setItem('surfaceCostingArray', [])
     dispatch(setRMCCData([], () => { }))                            //THIS WILL CLEAR RM CC REDUCER
     dispatch(setComponentItemData({}, () => { }))
 
