@@ -802,6 +802,7 @@ function RawMaterialCost(props) {
 
   const onRemarkPopUpClose = (index) => {
     var button = document.getElementById(`popUpTrigger${index}`)
+    setValue(`${rmGridFields}.${index}.remarkPopUp`, gridData[index].Remark)
     button.click()
   }
 
