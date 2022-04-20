@@ -274,7 +274,8 @@ function SimulationApprovalSummary(props) {
                         ExchangeRateImpactedMasterDataList: [],
                         OperationImpactedMasterDataList: [],
                         RawMaterialImpactedMasterDataList: [],
-                        BoughtOutPartImpactedMasterDataList: []
+                        BoughtOutPartImpactedMasterDataList: [],
+                        CombinedProcessImpactedMasterDataList: [],
                     }
                     let masterId
                     let Data = []
@@ -405,7 +406,7 @@ function SimulationApprovalSummary(props) {
     const renderColumn = () => {
         let finalGrid = [], isTokenAPI = false
         if (showBOPColumn === true || showRMColumn === true || showOperationColumn === true || showSurfaceTreatmentColumn === true ||
-            showExchangeRateColumn === true || showMachineRateColumn === true) {
+            showExchangeRateColumn === true || showMachineRateColumn === true || showCombinedProcessColumn === true) {
             if (showBOPColumn || isBOPDomesticOrImport) {
                 finalGrid = [...finalGrid, ...BOPGridForTokenSummary]
                 isTokenAPI = true
@@ -570,7 +571,6 @@ function SimulationApprovalSummary(props) {
     const varianceFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        console.log('cell: ', cell);
         let roudOffOld = 0, rounfOffNew = 0
         roudOffOld = _.round(row.OldNetRawMaterialsCost, COSTINGSIMULATIONROUND)
         rounfOffNew = _.round(row.NewNetRawMaterialsCost, COSTINGSIMULATIONROUND)
@@ -1199,7 +1199,7 @@ function SimulationApprovalSummary(props) {
                                                                     </>
                                                                 }
                                                                 {
-                                                                    (String(SimulationTechnologyId) === String(COMBINED_PROCESS)) &&
+                                                                    (isCombinedProcess || keysForDownloadSummary.IsCombinedProcessSimulation) &&
                                                                     <>
                                                                         <AgGridColumn width={140} field="OldNetCC" cellRenderer='oldCCFormatter' headerName="Old CC" ></AgGridColumn>
                                                                         <AgGridColumn width={140} field="NewNetCC" cellRenderer='newCCFormatter' headerName="New CC" ></AgGridColumn>
@@ -1232,7 +1232,8 @@ function SimulationApprovalSummary(props) {
                                                                     </>
                                                                 }
                                                                 {(keysForDownloadSummary?.IsBoughtOutPartSimulation || keysForDownloadSummary?.IsSurfaceTreatmentSimulation || keysForDownloadSummary?.IsOperationSimulation ||
-                                                                    keysForDownloadSummary?.IsRawMaterialSimulation || keysForDownloadSummary?.IsExchangeRateSimulation || keysForDownloadSummary?.IsMachineRateSimulation) &&
+                                                                    keysForDownloadSummary?.IsRawMaterialSimulation || keysForDownloadSummary?.IsExchangeRateSimulation || keysForDownloadSummary?.IsMachineRateSimulation
+                                                                    || keysForDownloadSummary?.IsCombinedProcessSimulation) &&
                                                                     < AgGridColumn width={140} field="DraftPOPrice" headerName="Draft PO Price" ></AgGridColumn>}
                                                                 <AgGridColumn width={140} field="SimulationCostingId" pinned="right" cellRenderer='buttonFormatter' floatingFilter={false} headerName="Actions" type="rightAligned"></AgGridColumn>
                                                                 {/* <AgGridColumn field="Status" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>

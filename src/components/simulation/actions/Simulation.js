@@ -209,7 +209,9 @@ export function getCostingSimulationList(token, plantId, rawMatrialId, callback)
                     IsExchangeRateSimulation: response.data.Data.IsExchangeRateSimulation,
                     IsOperationSimulation: response.data.Data.IsOperationSimulation,
                     IsRawMaterialSimulation: response.data.Data.IsRawMaterialSimulation,
-                    IsSurfaceTreatmentSimulation: response.data.Data.IsSurfaceTreatmentSimulation
+                    IsSurfaceTreatmentSimulation: response.data.Data.IsSurfaceTreatmentSimulation,
+                    IsCombinedProcessSimulation: response.data.Data.IsCombinedProcessSimulation,
+
                 }
                 dispatch({
                     type: GET_VALUE_TO_SHOW_COSTING_SIMULATION,
@@ -361,7 +363,8 @@ export function getApprovalSimulatedCostingSummary(params, callback) {
                     IsExchangeRateSimulation: response.status === 204 ? false : response?.data?.Data?.IsExchangeRateSimulation,
                     IsOperationSimulation: response.status === 204 ? false : response?.data?.Data?.IsOperationSimulation,
                     IsRawMaterialSimulation: response.status === 204 ? false : response?.data?.Data?.IsRawMaterialSimulation,
-                    IsSurfaceTreatmentSimulation: response.status === 204 ? false : response?.data?.Data?.IsSurfaceTreatmentSimulation
+                    IsSurfaceTreatmentSimulation: response.status === 204 ? false : response?.data?.Data?.IsSurfaceTreatmentSimulation,
+                    IsCombinedProcessSimulation: response.status === 204 ? false : response?.data?.Data?.IsCombinedProcessSimulation,
                 }
                 dispatch({
                     type: GET_KEYS_FOR_DOWNLOAD_SUMMARY,
@@ -673,7 +676,9 @@ export function getExchangeCostingSimulationList(token, callback) {
                     IsExchangeRateSimulation: response.status === 204 ? false : response?.data?.Data?.IsExchangeRateSimulation,
                     IsOperationSimulation: response.status === 204 ? false : response?.data?.Data?.IsOperationSimulation,
                     IsRawMaterialSimulation: response.status === 204 ? false : response?.data?.Data?.IsRawMaterialSimulation,
-                    IsSurfaceTreatmentSimulation: response.status === 204 ? false : response?.data?.Data?.IsSurfaceTreatmentSimulation
+                    IsSurfaceTreatmentSimulation: response.status === 204 ? false : response?.data?.Data?.IsSurfaceTreatmentSimulation,
+                    IsCombinedProcessSimulation: response.status === 204 ? false : response?.data?.Data?.IsCombinedProcessSimulation,
+
                 }
                 dispatch({
                     type: GET_VALUE_TO_SHOW_COSTING_SIMULATION,
@@ -979,7 +984,8 @@ export function getCostingSurfaceTreatmentSimulationList(token, plantId, rawMatr
                     IsExchangeRateSimulation: response.status === 204 ? false : response?.data?.Data?.IsExchangeRateSimulation,
                     IsOperationSimulation: response.status === 204 ? false : response?.data?.Data?.IsOperationSimulation,
                     IsRawMaterialSimulation: response.status === 204 ? false : response?.data?.Data?.IsRawMaterialSimulation,
-                    IsSurfaceTreatmentSimulation: response.status === 204 ? false : response?.data?.Data?.IsSurfaceTreatmentSimulation
+                    IsSurfaceTreatmentSimulation: response.status === 204 ? false : response?.data?.Data?.IsSurfaceTreatmentSimulation,
+                    IsCombinedProcessSimulation: response.status === 204 ? false : response?.data?.Data?.IsCombinedProcessSimulation,
                 }
                 dispatch({
                     type: GET_VALUE_TO_SHOW_COSTING_SIMULATION,
@@ -1108,7 +1114,8 @@ export function getCostingBoughtOutPartSimulationList(token, callback) {
                     IsExchangeRateSimulation: response.status === 204 ? false : response?.data?.Data?.IsExchangeRateSimulation,
                     IsOperationSimulation: response.status === 204 ? false : response?.data?.Data?.IsOperationSimulation,
                     IsRawMaterialSimulation: response.status === 204 ? false : response?.data?.Data?.IsRawMaterialSimulation,
-                    IsSurfaceTreatmentSimulation: response.status === 204 ? false : response?.data?.Data?.IsSurfaceTreatmentSimulation
+                    IsSurfaceTreatmentSimulation: response.status === 204 ? false : response?.data?.Data?.IsSurfaceTreatmentSimulation,
+                    IsCombinedProcessSimulation: response.status === 204 ? false : response?.data?.Data?.IsCombinedProcessSimulation,
                 }
                 dispatch({
                     type: GET_VALUE_TO_SHOW_COSTING_SIMULATION,

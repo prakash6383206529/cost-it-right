@@ -135,6 +135,7 @@ function OtherCostingSimulation(props) {
         switch (Number(selectedMasterForSimulation?.value)) {
             case Number(EXCHNAGERATE):
                 dispatch(getExchangeCostingSimulationList(simulationId, (res) => {
+                    setLoader(false)
                     if (res.data.Result) {
                         dataSet(res)
                     }
@@ -142,11 +143,11 @@ function OtherCostingSimulation(props) {
                 break;
             case Number(COMBINED_PROCESS):
                 dispatch(getCombinedProcessCostingSimulationList(simulationId, (res) => {
+                    setLoader(false)
                     if (res.data.Result) {
                         dataSet(res)
                     }
                 }))
-                setLoader(false)  // REMOVE IT AFTER API INTEGRATTION todo
                 break;
             default:
                 break;
@@ -215,7 +216,7 @@ function OtherCostingSimulation(props) {
     useEffect(() => {
         hideColumn()
 
-    }, [tableData])
+    }, [costingList])
 
 
 
@@ -472,11 +473,11 @@ function OtherCostingSimulation(props) {
     const VarianceFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let value
-        switch (master) {
-            case EXCHNAGERATE:
+        switch (String(master)) {
+            case String(EXCHNAGERATE):
                 value = checkForDecimalAndNull(row.Variance, getConfigurationKey().NoOfDecimalForPrice)
                 break;
-            case COMBINED_PROCESS:
+            case String(COMBINED_PROCESS):
                 value = checkForDecimalAndNull(row.NetCCVariance, getConfigurationKey().NoOfDecimalForPrice)
                 break;
 
@@ -919,11 +920,26 @@ function OtherCostingSimulation(props) {
                                                         <AgGridColumn width={140} field="NewMachineRate" headerName='New Machine Rate' ></AgGridColumn>
                                                     </>}
 
+                                                    {(showCombinedProcessColumn || isCombinedProcess) && <>
+                                                        <AgGridColumn width={140} field="OldOverheadCost" hide={hideDataColumn.hideOverhead} cellRenderer='overheadFormatter' headerName='Old Overhead'></AgGridColumn>
+                                                        <AgGridColumn width={140} field="NewOverheadCost" hide={hideDataColumn.hideOverhead} cellRenderer='overheadFormatter' headerName='New Overhead'></AgGridColumn>
+                                                        <AgGridColumn width={140} field="OldProfitCost" hide={hideDataColumn.hideProfit} cellRenderer='profitFormatter' headerName='Old Profit'></AgGridColumn>
+                                                        <AgGridColumn width={140} field="NewProfitCost" hide={hideDataColumn.hideProfit} cellRenderer='profitFormatter' headerName='New Profit'></AgGridColumn>
+                                                        <AgGridColumn width={140} field="OldRejectionCost" hide={hideDataColumn.hideRejection} cellRenderer='rejectionFormatter' headerName='Old Rejection'></AgGridColumn>
+                                                        <AgGridColumn width={140} field="NewRejectionCost" hide={hideDataColumn.hideRejection} cellRenderer='rejectionFormatter' headerName='New Rejection'></AgGridColumn>
+                                                        <AgGridColumn width={140} field="OldICCCost" hide={hideDataColumn.hideICC} cellRenderer='costICCFormatter' headerName='Old ICC'></AgGridColumn>
+                                                        <AgGridColumn width={140} field="NewICCCost" hide={hideDataColumn.hideICC} cellRenderer='costICCFormatter' headerName='New ICC'></AgGridColumn>
+                                                        <AgGridColumn width={140} field="OldPaymentTermsCost" hide={hideDataColumn.hidePayment} cellRenderer='paymentTermFormatter' headerName='Old Payment Terms'></AgGridColumn>
+                                                        <AgGridColumn width={140} field="NewPaymentTermsCost" hide={hideDataColumn.hidePayment} cellRenderer='paymentTermFormatter' headerName='New Payment Terms'></AgGridColumn>
+                                                        <AgGridColumn width={140} field="OldOtherCost" hide={hideDataColumn.hideOtherCost} cellRenderer='otherCostFormatter' headerName='Old Other Cost'></AgGridColumn>
+                                                        <AgGridColumn width={140} field="NewOtherCost" hide={hideDataColumn.hideOtherCost} cellRenderer='otherCostFormatter' headerName='New Other Cost'></AgGridColumn>
+                                                        <AgGridColumn width={140} field="OldDiscountCost" hide={hideDataColumn.hideDiscount} cellRenderer='discountCostFormatter' headerName='Old Discount'></AgGridColumn>
+                                                        <AgGridColumn width={140} field="NewDiscountCost" hide={hideDataColumn.hideDiscount} cellRenderer='discountCostFormatter' headerName='New Discount'></AgGridColumn>
+                                                    </>}
 
-                                                    <AgGridColumn width={140} field="Variance" headerName='Variance' cellRenderer='VarianceFormatter'></AgGridColumn>
                                                     <AgGridColumn width={100} field="CostingId" headerName='Actions' type="rightAligned" cellRenderer='buttonFormatter'></AgGridColumn>
 
-                                                </AgGridReact>
+                                                </AgGridReact >
 
                                                 <div className="paging-container d-inline-block float-right">
                                                     <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
@@ -932,11 +948,11 @@ function OtherCostingSimulation(props) {
                                                         <option value="100">100</option>
                                                     </select>
                                                 </div>
-                                            </div>
-                                        </div>
-                                    </Col>
-                                </Row>
-                            </div>
+                                            </div >
+                                        </div >
+                                    </Col >
+                                </Row >
+                            </div >
                             <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer">
                                 <div className="col-sm-12 text-right bluefooter-butn">
 
@@ -967,7 +983,7 @@ function OtherCostingSimulation(props) {
 
                                 </div>
                             </Row>
-                        </div>
+                        </div >
                         {isApprovalDrawer &&
                             <ApproveRejectDrawer
                                 isOpen={isApprovalDrawer}
@@ -983,9 +999,11 @@ function OtherCostingSimulation(props) {
                                 vendorId={vendorIdState}
                                 SimulationTechnologyId={SimulationTechnologyIdState}
                                 SimulationType={simulationTypeState}
-                            />}
+                            />
+                        }
 
-                        {isVerifyImpactDrawer &&
+                        {
+                            isVerifyImpactDrawer &&
                             <VerifyImpactDrawer
                                 isOpen={isVerifyImpactDrawer}
                                 anchor={'right'}
@@ -1000,15 +1018,17 @@ function OtherCostingSimulation(props) {
                                 EffectiveDate={simulationDetail.EffectiveDate}
                                 amendmentDetails={amendmentDetails}
                                 assemblyImpactButtonTrue={assemblyImpactButtonTrue}
-                            />}
-                    </div>
+                            />
+                        }
+                    </div >
 
             }
 
 
             {showApprovalHistory && <Redirect to='/simulation-history' />}
 
-            {CostingDetailDrawer &&
+            {
+                CostingDetailDrawer &&
                 <CostingDetailSimulationDrawer
                     isOpen={CostingDetailSimulationDrawer}
                     closeDrawer={closeDrawer2}
@@ -1019,7 +1039,8 @@ function OtherCostingSimulation(props) {
                     costingArr={costingArr}
                     master={selectedMasterForSimulation ? selectedMasterForSimulation.value : master}
                     isSimulation={true}
-                />}
+                />
+            }
         </>
 
     );
