@@ -1633,7 +1633,7 @@ class AddRMDomestic extends Component {
                               name={"cutOffPrice"}
                               type="text"
                               placeholder={""}
-                              validate={[]}
+                              validate={[positiveAndDecimalNumber]}
                               component={renderText}
                               required={false}
                               disabled={isViewFlag}
