@@ -17,8 +17,7 @@ import LoaderCustom from '../../common/LoaderCustom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { node } from 'prop-types';
-import OtherCostingSimulation from './OtherCostingSimulation';
+import { debounce } from 'lodash';
 const gridOptions = {};
 
 function OtherVerifySimulation(props) {
@@ -251,7 +250,7 @@ function OtherVerifySimulation(props) {
                         <Col>
                             <Col>
                                 <div className={`ag-grid-react`}>
-                                    <div className={`ag-grid-wrapper height-width-wrapper ${verifyList && verifyList?.length <=0 ?"overlay-contain": ""}`}>
+                                    <div className={`ag-grid-wrapper height-width-wrapper ${verifyList && verifyList?.length <= 0 ? "overlay-contain" : ""}`}>
                                         <div className="ag-grid-header">
                                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                                             <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
@@ -332,7 +331,7 @@ function OtherVerifySimulation(props) {
             }
             {
                 costingPage &&
-                <OtherCostingSimulation simulationId={simulationId} master={selectedMasterForSimulation.value} />
+                <CostingSimulation simulationId={simulationId} master={selectedMasterForSimulation.value} />
             }
             {
                 simulationDrawer &&

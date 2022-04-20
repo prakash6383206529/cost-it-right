@@ -6,33 +6,34 @@ import ProcessCost from './ProcessCost';
 import RawMaterialCost from './RawMaterialCost';
 import {
   getRMCCTabData, saveComponentCostingRMCCTab, setComponentItemData, saveDiscountOtherCostTab,
-  setComponentDiscountOtherItemData, 
+  setComponentDiscountOtherItemData,
 } from '../../../actions/Costing';
-import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../../helper';
+import { checkForDecimalAndNull, checkForNull, loggedInUserId, CheckIsCostingDateSelected } from '../../../../../helper';
 import { EMPTY_GUID, LEVEL1 } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
 import { MESSAGES } from '../../../../../config/message';
 import { ViewCostingContext } from '../../CostingDetails';
 
 function PartCompoment(props) {
-  
+
   const { rmData, bopData, ccData, item } = props;
 
   const [IsOpen, setIsOpen] = useState(false);
   const [Count, setCount] = useState(0);
+  const { CostingEffectiveDate } = useSelector(state => state.costing)
 
   const dispatch = useDispatch()
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { ComponentItemDiscountData, CloseOpenAccordion } = useSelector(state => state.costing)
 
   const costData = useContext(costingInfoContext);
-  
   const CostingViewMode = useContext(ViewCostingContext);
   const netPOPrice = useContext(NetPOPriceContext);
 
 
 
   const toggle = (BOMLevel, PartNumber) => {
+    if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
     setIsOpen(!IsOpen)
     setCount(Count + 1)
     setTimeout(() => {
@@ -41,7 +42,8 @@ function PartCompoment(props) {
           CostingId: item.CostingId !== null ? item.CostingId : "00000000-0000-0000-0000-000000000000",
           PartId: item.PartId,
           AssemCostingId: costData.CostingId,
-          subAsmCostingId:props.subAssembId !== null ? props.subAssembId:EMPTY_GUID
+          subAsmCostingId: props.subAssembId !== null ? props.subAssembId : EMPTY_GUID,
+          EffectiveDate: CostingEffectiveDate
         }
         dispatch(getRMCCTabData(data, false, (res) => {
           if (res && res.data && res.data.Result) {
@@ -66,7 +68,7 @@ function PartCompoment(props) {
 
 
 
-/*************************************************************ACCORDIAN SAVE COMMENTED FOR NOW (MAY BE REMOVE IT LATER)*******************************************************************************/
+  /*************************************************************ACCORDIAN SAVE COMMENTED FOR NOW (MAY BE REMOVE IT LATER)*******************************************************************************/
   // useEffect(() => {
   //   // OBJECT FOR SENDING OBJECT TO API
   //  if (!CostingViewMode  && Count > 0 && Object.keys(ComponentItemData).length > 0 && checkIsDataChange === true) {
@@ -208,11 +210,11 @@ function PartCompoment(props) {
    */
   return (
     <>
-  
+
       <tr className="accordian-row" onClick={() => toggle(item.BOMLevel, item.PartNumber)} id={`${item && item.PartNumber}`}>
-        
-        <td>
-          <span style={{ position: 'relative' }} className={`cr-prt-nm1 cr-prt-link1 ${item && item.BOMLevel}`}>
+
+        <td className='part-overflow'>
+          <span className={`part-name ${item && item.BOMLevel}`} title={item && item.PartNumber}>
             {item && item.PartNumber}<div className={`${item.IsOpen ? 'Open' : 'Close'}`}></div>
           </span>
         </td>
@@ -224,8 +226,8 @@ function PartCompoment(props) {
         <td>{item.CostingPartDetails && item.CostingPartDetails.Quantity !== undefined ? checkForNull(item.CostingPartDetails.Quantity) : 1}</td>
         <td>{item.CostingPartDetails && item.CostingPartDetails.TotalCalculatedRMBOPCCCost !== null ? checkForDecimalAndNull(checkForNull(item.CostingPartDetails.TotalRawMaterialsCost) + checkForNull(item.CostingPartDetails.TotalBoughtOutPartCost) + checkForNull(item.CostingPartDetails.TotalConversionCost), initialConfiguration.NoOfDecimalForPrice) : 0}</td>
         {costData.IsAssemblyPart && <td>{checkForDecimalAndNull((checkForNull(item.CostingPartDetails.TotalRawMaterialsCost) + checkForNull(item.CostingPartDetails.TotalBoughtOutPartCost) + checkForNull(item.CostingPartDetails.TotalConversionCost)) * item.CostingPartDetails.Quantity, initialConfiguration.NoOfDecimalForPrice)}</td>}
-
-        <td className="text-right"><div className={`${item.IsLocked ? 'lock_icon' : ''}`}>{''}</div></td>
+        {/*WHEN COSTING OF THAT PART IS  APPROVED SO COSTING COMES AUTOMATICALLY FROM BACKEND AND THIS KEY WILL COME TRUE (WORK LIKE VIEW MODE)*/}
+        <td className="text-right"><div className={`${(item.IsLocked || item.IsPartLocked) ? 'lock_icon' : ''}`}>{''}</div></td>
 
       </tr>
       {item.IsOpen && <tr>
@@ -236,7 +238,6 @@ function PartCompoment(props) {
                 index={props.index}
                 data={rmData}
                 setRMCost={props.setRMCost}
-                setRMMasterBatchCost={props.setRMMasterBatchCost}
                 item={item}
               />
 
@@ -251,11 +252,8 @@ function PartCompoment(props) {
               <ProcessCost
                 index={props.index}
                 data={ccData}
-                rmFinishWeight={rmData.length > 0 && rmData[0].FinishWeight !== undefined ? rmData[0].FinishWeight : 0}
-                setProcessCost={props.setProcessCost}
-                setOperationCost={props.setOperationCost}
-                setOtherOperationCost={props.setOtherOperationCost}
-                setToolCost={props.setToolCost}
+                rmFinishWeight={rmData && rmData.length > 0 && rmData[0].FinishWeight !== undefined ? rmData[0].FinishWeight : 0}
+                setConversionCost={props.setConversionCost}
                 item={item}
               />
             </div>

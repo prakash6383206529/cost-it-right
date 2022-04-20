@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Row, Col, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
 import { EMPTY_DATA } from '../../../../config/constants';
@@ -9,14 +9,13 @@ import Toaster from '../../../common/Toaster';
 import { runVerifySimulation } from '../../actions/Simulation';
 import { Fragment } from 'react';
 import { TextFieldHookForm } from '../../../layout/HookFormInputs';
-import { useForm, Controller, useWatch } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import RunSimulationDrawer from '../RunSimulationDrawer';
 import VerifySimulation from '../VerifySimulation';
 import { useDispatch, useSelector } from 'react-redux';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { data } from 'jquery';
 import Simulation from '../Simulation';
 import { VBC, ZBC } from '../../../../config/constants';
 import { debounce } from 'lodash'
@@ -27,21 +26,20 @@ const gridOptions = {
 
 
 function RMSimulation(props) {
-    const { isDomestic, list, isbulkUpload, rowCount, technology, master, isImpactedMaster, costingAndPartNo } = props
-    const [showSimulation, setShowSimulation] = useState(false)
+    const { list, isbulkUpload, rowCount, technology, master, isImpactedMaster, costingAndPartNo, tokenForMultiSimulation } = props
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')
     const [colorClass, setColorClass] = useState('')
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
-    const [rowData, setRowData] = useState(null);
-    const [update, setUpdate] = useState(true)
     const [showMainSimulation, setShowMainSimulation] = useState(false)
     const [textFilterSearch, setTextFilterSearch] = useState('')
     const [isDisable, setIsDisable] = useState(false)
+    const gridRef = useRef();
 
-    const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
+
+    const { register, control, setValue, formState: { errors }, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
     })
@@ -50,7 +48,6 @@ function RMSimulation(props) {
 
     const dispatch = useDispatch()
 
-    const selectedTechnologyForSimulation = useSelector(state => state.simulation.selectedTechnologyForSimulation)
     const { selectedMasterForSimulation } = useSelector(state => state.simulation)
     const { filteredRMData } = useSelector(state => state.material)
     useEffect(() => {
@@ -76,16 +73,19 @@ function RMSimulation(props) {
             if ((li?.NewBasicRate === undefined ? Number(li?.BasicRate) : Number(li?.NewBasicRate)) < (li?.NewScrapRate === undefined ? Number(li?.ScrapRate) : Number(li?.NewScrapRate))) {
                 isScrapRateGreaterThanBasiRate = true
             }
+            if (isScrapRateGreaterThanBasiRate) {
+                li.NewBasicRate = li?.BasicRate
+                li.NewScrapRate = li?.ScrapRate
+                Toaster.warning('Scrap Rate should be less than Basic Rate')
+                return false
+            }
             return null;
         })
         if (basicRateCount === list.length && basicScrapCount === list.length) {
             Toaster.warning('There is no changes in new value. Please correct the data, then run simulation')
             return false
         }
-        if (isScrapRateGreaterThanBasiRate) {
-            Toaster.warning('Scrap Rate should be less than Basic Rate')
-            return false
-        }
+
         setIsDisable(true)
 
         basicRateCount = 0
@@ -132,6 +132,9 @@ function RMSimulation(props) {
             }
             return null;
         })
+
+
+        obj.SimulationIds = tokenForMultiSimulation
         obj.SimulationRawMaterials = tempArr
         dispatch(runVerifySimulation(obj, res => {
             setIsDisable(false)
@@ -153,6 +156,10 @@ function RMSimulation(props) {
         setTextFilterSearch('')
         gridOptions?.columnApi?.resetColumnState();
         gridOptions?.api?.setFilterModel(null);
+        if (isImpactedMaster) {
+            window.screen.width >= 1600 && gridRef.current.api.sizeColumnsToFit();
+        }
+        window.screen.width >= 1921 && gridRef.current.api.sizeColumnsToFit();
     }
 
     /**
@@ -262,10 +269,6 @@ function RMSimulation(props) {
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
-    const renderPaginationShowsTotal = (start, to, total) => {
-        return <GridTotalFormate start={start} to={to} total={total} />
-    }
-
     /**
   * @method beforeSaveCell
   * @description CHECK FOR ENTER NUMBER IN CELL
@@ -275,6 +278,9 @@ function RMSimulation(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         if ((row?.NewBasicRate === undefined ? Number(row?.BasicRate) : Number(row?.NewBasicRate)) <
             (row?.NewScrapRate === undefined ? Number(row?.ScrapRate) : Number(row?.NewScrapRate))) {
+            row.NewBasicRate = row?.BasicRate
+            row.NewScrapRate = row?.ScrapRate
+
             Toaster.warning('Scrap Rate should be less than Basic Rate')
             return false
         }
@@ -288,24 +294,11 @@ function RMSimulation(props) {
             Toaster.warning('Please enter a valid positive numbers.')
             return false
         }
+
         return true
     }
 
-    const afterSaveCell = (row, cellName, cellValue, index) => {
-
-        if ((Number(row.NewBasicRate) + checkForNull(row.RMFreightCost) + checkForNull(row.RMShearingCost)) > row.NetLandedCost) {
-            setColorClass('red-value form-control')
-        } else if ((Number(row.NewBasicRate) + checkForNull(row.RMFreightCost) + checkForNull(row.RMShearingCost)) < row.NetLandedCost) {
-            setColorClass('green-value form-control')
-        } else {
-            setColorClass('form-class')
-        }
-        return false
-
-    }
-
     const NewcostFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         if (!row.NewBasicRate || Number(row.BasicRate) === Number(row.NewBasicRate) || row.NewBasicRate === '') return ''
         const NewBasicRate = Number(row.NewBasicRate) + checkForNull(row.RMFreightCost) + checkForNull(row.RMShearingCost)
@@ -334,27 +327,14 @@ function RMSimulation(props) {
         })
     }
 
-    const options = {
-        clearSearch: true,
-        noDataText: <NoContentFound title={EMPTY_DATA} />,
-        paginationShowsTotal: renderPaginationShowsTotal(),
-        prePage: <span className="prev-page-pg"></span>, // Previous page button text
-        nextPage: <span className="next-page-pg"></span>, // Next page button text
-        firstPage: <span className="first-page-pg"></span>, // First page button text
-        lastPage: <span className="last-page-pg"></span>,
-
-    };
-
     const cancel = () => {
-        // props.cancelEditPage()
+        list && list.map((item) => {
+            item.NewBasicRate = undefined
+            item.NewScrapRate = undefined
+            return null
+        })
         setShowMainSimulation(true)
     }
-    const cellEditProp = {
-        mode: 'click',
-        blurToSave: true,
-        beforeSaveCell: beforeSaveCell,
-        afterSaveCell: afterSaveCell,
-    };
 
     const closeDrawer = (e = '') => {
         setShowRunSimulationDrawer(false)
@@ -373,10 +353,10 @@ function RMSimulation(props) {
 
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
-        window.screen.width >= 1600 && params.api.sizeColumnsToFit();
-        if(isImpactedMaster) {
-            window.screen.width >= 1365 && params.api.sizeColumnsToFit();
+        if (isImpactedMaster) {
+            window.screen.width >= 1600 && gridRef.current.api.sizeColumnsToFit();
         }
+        window.screen.width >= 1921 && gridRef.current.api.sizeColumnsToFit();
         params.api.paginationGoToPage(0);
 
     };
@@ -395,6 +375,8 @@ function RMSimulation(props) {
     }
 
     const onCellValueChanged = (props) => {
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        console.log('row: ', row);
 
     }
 
@@ -480,22 +462,21 @@ function RMSimulation(props) {
                                                 <div className="refresh mr-0"></div>
                                             </button>
                                         </div>
-                                        {/* {list && list.map( item=> {
-                                            return <>
-                                             <div className={`d-flex simulation-label-container ${isbulkUpload ? "mt-5 pt-2" : ''}`}>
+                                        <>
+                                            {!isImpactedMaster && <div className={`d-flex simulation-label-container ${isbulkUpload ? "mt-5 pt-2" : ''}`}>
                                                 <div className='d-flex pl-3'>
-                                                 <label>Technology: </label>
-                                                  <p className='technology mx-1' title={item.TechnologyName}>{item.TechnologyName}</p>
+                                                    <label>Technology: </label>
+                                                    <p className='technology mx-1' title={list[0].TechnologyName}>{list[0].TechnologyName}</p>
                                                 </div>
                                                 <div className='d-flex pl-3'>
-                                                 <label className='mx-1'>Vendor:</label>
-                                                 <p title={item.VendorName}>{item.VendorName}</p>
+                                                    <label className='mx-1'>Vendor:</label>
+                                                    <p title={list[0].VendorName}>{list[0].VendorName}</p>
                                                 </div>
-                                             </div>
-                                            </>
-                                               
-                                        })} */}
-                                        {/* <------------Don't remove the code it will use in future----> */}
+                                            </div>}
+                                        </>
+
+
+
                                     </div>
                                     <div className="ag-theme-material" style={{ width: '100%' }}>
                                         <AgGridReact
@@ -571,7 +552,7 @@ function RMSimulation(props) {
                             !isImpactedMaster &&
                             <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                                 <div className="col-sm-12 text-right bluefooter-butn">
-                                    <button type={"button"} className="mr15 cancel-btn" onClick={cancel}>
+                                    <button type={"button"} className="mr15 cancel-btn" onClick={cancel} disabled={isDisable}>
                                         <div className={"cancel-icon"}></div>
                                         {"CANCEL"}
                                     </button>
@@ -597,7 +578,7 @@ function RMSimulation(props) {
                 }
 
                 {
-                    showMainSimulation && <Simulation isRMPage={true} />
+                    showMainSimulation && <Simulation isMasterSummaryDrawer={true} isCancelClicked={true} isRMPage={true} />
                 }
                 {
                     showRunSimulationDrawer &&

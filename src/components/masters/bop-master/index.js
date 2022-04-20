@@ -209,6 +209,7 @@ class BOPMaster extends Component {
                       BulkUploadAccessibility={this.state.BulkUploadAccessibility}
                       DownloadAccessibility={this.state.DownloadAccessibility}
                       isMasterSummaryDrawer={false}
+                      selectionForListingMasterAPI='Master'
                     />
                   </TabPane>
                 )}
@@ -224,6 +225,7 @@ class BOPMaster extends Component {
                       DeleteAccessibility={this.state.DeleteAccessibility}
                       BulkUploadAccessibility={this.state.BulkUploadAccessibility}
                       DownloadAccessibility={this.state.DownloadAccessibility}
+                      selectionForListingMasterAPI='Master'
                     />
                   </TabPane>
                 )}

@@ -12,10 +12,12 @@ import { gridDataAdded } from '../../../actions/Costing';
 import { ViewCostingContext } from '../../CostingDetails'
 
 function SurfaceTreatmentCost(props) {
-
+  const { item } = props
+  const tempArray = JSON.parse(localStorage.getItem('surfaceCostingArray'))
+  let surfaceData = tempArray && tempArray.find(surfaceItem => surfaceItem.PartNumber === item.PartNumber && surfaceItem.AssemblyPartNumber === item.AssemblyPartNumber)
 
   const CostingViewMode = useContext(ViewCostingContext);
-
+  const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
   const { register, control, formState: { errors } } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -23,8 +25,8 @@ function SurfaceTreatmentCost(props) {
 
   const dispatch = useDispatch()
 
-  const [gridData, setGridData] = useState(props.data)
-  const [OldGridData, setOldGridData] = useState(props.data)
+  const [gridData, setGridData] = useState(surfaceData.CostingPartDetails.SurfaceTreatmentDetails)
+  const [OldGridData, setOldGridData] = useState(surfaceData.CostingPartDetails.SurfaceTreatmentDetails)
   const [rowObjData, setRowObjData] = useState({})
   const [editIndex, setEditIndex] = useState('')
   const [Ids, setIds] = useState([])
@@ -40,23 +42,25 @@ function SurfaceTreatmentCost(props) {
       BOMLevel: props.item.BOMLevel,
       PartNumber: props.item.PartNumber,
     }
-    if (props.IsAssemblyCalculation) {
-      props.setAssemblySurfaceCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
-    } else {
-
-      props.setSurfaceCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
+    if (!CostingViewMode && !IsLocked) {
+      if (props.IsAssemblyCalculation) {
+        props.setAssemblySurfaceCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false, props.item)
+      } else {
+        console.log("Coming in else");
+        props.setSurfaceCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
+      }
     }
     // }, 100)
     selectedIds(gridData)
   }, [gridData]);
 
 
-  useEffect(() => {
-    if (props?.data && props.data.length > 0) {
+  // useEffect(() => {
+  //   if (!props.IsAssemblyCalculation && props?.data && props.data.length > 0) {
 
-      setGridData(props.data)
-    }
-  }, [props.data])
+  //     setGridData(props.data)
+  //   }
+  // }, [props.data])
 
   /**
   * @method DrawerToggle
@@ -197,7 +201,7 @@ function SurfaceTreatmentCost(props) {
               <button
                 type="button"
                 className={'user-btn'}
-                disabled={CostingViewMode ? true : false}
+                disabled={(CostingViewMode || IsLocked) ? true : false}
                 onClick={DrawerToggle}>
                 <div className={'plus'}></div>SURFACE T.</button>
             </Col>
@@ -227,7 +231,7 @@ function SurfaceTreatmentCost(props) {
                       return (
                         editIndex === index ?
                           <tr key={index}>
-                            <td>{item.OperationName}</td>
+                            <td className='text-overflow'><span title={item.OperationName}>{item.OperationName}</span> </td>
                             <td style={{ width: 200 }}>
                               {
                                 <TextFieldHookForm
@@ -302,7 +306,7 @@ function SurfaceTreatmentCost(props) {
                           </tr>
                           :
                           <tr key={index}>
-                            <td>{item.OperationName}</td>
+                            <td className='text-overflow'><span title={item.OperationName}>{item.OperationName}</span></td>
                             <td style={{ width: 200 }}>{item.SurfaceArea}</td>
                             <td>{item.UOM}</td>
                             <td>{item.RatePerUOM}</td>
@@ -312,8 +316,8 @@ function SurfaceTreatmentCost(props) {
                               initialConfiguration.IsOperationLabourRateConfigure && <td>{item.IsLabourRateExist ? item.LabourQuantity : '-'}</td>}
                             <td>{item.SurfaceTreatmentCost ? checkForDecimalAndNull(item.SurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
                             <td>
-                              <button className="Edit mt15 mr-2" type={'button'} disabled={CostingViewMode ? true : false} onClick={() => editItem(index)} />
-                              <button className="Delete mt15" type={'button'} disabled={CostingViewMode ? true : false} onClick={() => deleteItem(index, item.OperationId)} />
+                              <button className="Edit mt15 mr-2" type={'button'} disabled={(CostingViewMode || IsLocked) ? true : false} onClick={() => editItem(index)} />
+                              <button className="Delete mt15" type={'button'} disabled={(CostingViewMode || IsLocked) ? true : false} onClick={() => deleteItem(index, item.OperationId)} />
                             </td>
                           </tr>
                       )

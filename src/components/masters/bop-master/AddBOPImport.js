@@ -129,11 +129,7 @@ class AddBOPImport extends Component {
       if (res.data.Result) {
         this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
       }
-
     })
-
-
-
   }
 
   componentDidUpdate(prevProps) {
@@ -175,7 +171,6 @@ class AddBOPImport extends Component {
     }
   }
 
-
   closeApprovalDrawer = (e = '', type) => {
     this.setState({ approveDrawer: false, setDisable: false })
     if (type === 'submit') {
@@ -183,7 +178,6 @@ class AddBOPImport extends Component {
       this.cancel()
     }
   }
-
 
   /**
   * @method getDetails
@@ -228,16 +222,13 @@ class AddBOPImport extends Component {
 
             if (getConfigurationKey().IsDestinationPlantConfigure) {
               let obj = plantSelectList && plantSelectList.find(item => item.Value === Data.DestinationPlantId)
-              plantObj = { label: obj.Text, value: obj.Value }
+              plantObj = { label: obj?.Text, value: obj?.Value }
             } else {
               plantObj = Data && Data.Plant.length > 0 ? { label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId } : []
             }
-
-
             this.setState({
               isEditFlag: true,
               IsFinancialDataChanged: false,
-              // isLoader: false,
               IsVendor: Data.IsVendor,
               BOPCategory: categoryObj && categoryObj !== undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
               selectedPlants: plantObj,
@@ -249,6 +240,7 @@ class AddBOPImport extends Component {
               oldDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
               files: Data.Attachements,
               UOM: uomObject && uomObject !== undefined ? { label: uomObject.Display, value: uomObject.Value } : [],
+              isLoader: false,
             }, () => this.setState({ isLoader: false }))
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
             let files = Data.Attachements && Data.Attachements.map((item) => {
@@ -1093,8 +1085,8 @@ class AddBOPImport extends Component {
                           </Col>
                           <Col md="3" className='mb-4'>
                             <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                            {!this.state.isLoader && this.state.inputLoader && <LoaderCustom customClass={`input-loader ${this.state.IsVendor ? 'vendor-based' : 'zero-based'} `} />}
-                            <div className="d-flex justify-space-between align-items-center inputwith-icon async-select">
+                            <div className="d-flex justify-space-between align-items-center p-relative async-select">
+                              {!this.state.isLoader && this.state.inputLoader && <LoaderCustom customClass={`vendor-input-loader ${this.state.IsVendor ? 'vendor-based' : 'zero-based'} `} />}
                               <div className="fullinput-icon">
                                 <AsyncSelect
                                   name="vendorName"
@@ -1104,7 +1096,7 @@ class AddBOPImport extends Component {
                                   onChange={(e) => this.handleVendorName(e)}
                                   value={this.state.vendorName}
                                   noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
-                                  isDisabled={isEditFlag ? true : false} />
+                                  isDisabled={(isEditFlag || this.state.inputLoader) ? true : false} />
                                 {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
                               </div>
                               {!isEditFlag && (
@@ -1456,7 +1448,7 @@ class AddBOPImport extends Component {
                 isOpen={this.state.approveDrawer}
                 closeDrawer={this.closeApprovalDrawer}
                 isEditFlag={false}
-                // masterId={BOP_MASTER_ID}
+                masterId={BOP_MASTER_ID}
                 type={'Sender'}
                 anchor={"right"}
                 approvalObj={this.state.approvalObj}

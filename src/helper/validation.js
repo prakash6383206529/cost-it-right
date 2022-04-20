@@ -15,6 +15,7 @@ export const minValue = min => value =>
 
 
 export const minValue1 = minValue(1);
+export const minValueLessThan1 = minValue(0.1);
 
 export const minLength1 = minLength(1);
 export const minLength2 = minLength(2);
@@ -108,7 +109,7 @@ export const selectRequired = value =>
     ? undefined : 'This field is required.');
 
 export const checkWhiteSpaces = value => {
-    
+
     return value && !value.toString().replace(/\s/g, '').length ? 'This field is invalid.' : undefined;
 }
 
@@ -148,9 +149,9 @@ export const specialName = value =>
         ? 'Please enter a valid name.' : undefined;
 
 export const validatePassword = value => {
-    
+
     return (value && /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[#?!@$%^&*-]).{5,}$/.test(value) === false);
-   
+
 }
 
 
@@ -314,9 +315,9 @@ export const trimDecimalPlace = (floatValue, Number) => {
 
 export const checkForDecimalAndNull = (floatValue, Number) => {
     const localStorage = reactLocalStorage.getObject('InitialConfiguration');
-    if(localStorage.IsRoundingVisible){
-        return checkForNull(_.round(floatValue,Number))
-    }else{
+    if (localStorage.IsRoundingVisible) {
+        return checkForNull(_.round(floatValue, Number))
+    } else {
 
         return checkForNull(trimDecimalPlace(floatValue, Number))
     }

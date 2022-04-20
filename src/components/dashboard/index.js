@@ -53,7 +53,7 @@ function Dashboard(props) {
               <Row className="m-0">
                 <div className="graph-box w-100">
                   <Row>
-                    <Col md="8"><h3 className="mb-0">Amendments Awaiting Approval</h3></Col>
+                    <Col md="8"><h3 className="mb-0">Amendments Approval Status</h3></Col>
                     <Col md="4" className="text-right">
                       <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc2(!acc2) }}>
                         {acc2 ? (
@@ -74,7 +74,7 @@ function Dashboard(props) {
               <Row className="m-0">
                 <div className="graph-box w-100">
                   <Row>
-                    <Col md="8"><h3 className="mb-0">Costings Awaiting Approval</h3></Col>
+                    <Col md="8"><h3 className="mb-0">Costings Approval Status</h3></Col>
                     <Col md="4" className="text-right">
                       <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc1(!acc1) }}>
                         {acc1 ? (
@@ -95,7 +95,7 @@ function Dashboard(props) {
                 <Row className="m-0">
                   <div className="graph-box w-100">
                     <Row>
-                      <Col md="8"><h3 className="mb-0">Masters Awaiting Approval</h3></Col>
+                      <Col md="8"><h3 className="mb-0">Masters Approval Status</h3></Col>
                       <Col md="4" className="text-right">
                         <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc3(!acc3) }}>
                           {acc3 ? (
@@ -110,22 +110,22 @@ function Dashboard(props) {
                       <Nav tabs className="subtabs mt-4">
                         {CheckApprovalApplicableMaster(RM_MASTER_ID) && <NavItem>
                           <NavLink className={classnames({ active: activeTab === '1' })} onClick={() => { toggle('1'); }}>
-                            RM Awaiting Approval
+                            RM Approval Status
                           </NavLink>
                         </NavItem>}
                         {CheckApprovalApplicableMaster(BOP_MASTER_ID) && <NavItem>
                           <NavLink className={classnames({ active: activeTab === '2' })} onClick={() => { toggle('2'); }}>
-                            BOP Awaiting Approval
+                            BOP Approval Status
                           </NavLink>
                         </NavItem>}
                         {CheckApprovalApplicableMaster(OPERATIONS_ID) && <NavItem>
                           <NavLink className={classnames({ active: activeTab === '3' })} onClick={() => { toggle('3'); }}>
-                            Operation Awaiting Approval
+                            Operation Approval Status
                           </NavLink>
                         </NavItem>}
                         {CheckApprovalApplicableMaster(MACHINE_MASTER_ID) && <NavItem>
                           <NavLink className={classnames({ active: activeTab === '4' })} onClick={() => { toggle('4'); }}>
-                            Machine Awaiting Approval
+                            Machine Approval Status
                           </NavLink>
                         </NavItem>}
 

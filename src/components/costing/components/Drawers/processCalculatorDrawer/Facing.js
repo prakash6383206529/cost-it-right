@@ -32,8 +32,6 @@ function Facing(props) {
     cuttingSpeed: WeightCalculatorRequest && WeightCalculatorRequest.CuttingSpeed !== undefined ? WeightCalculatorRequest.CuttingSpeed : '',
     doc: WeightCalculatorRequest && WeightCalculatorRequest.Doc !== undefined ? WeightCalculatorRequest.Doc : '',
     feedRev: WeightCalculatorRequest && WeightCalculatorRequest.FeedRev !== undefined ? WeightCalculatorRequest.FeedRev : '',
-    clampingPercentage: WeightCalculatorRequest && WeightCalculatorRequest.ClampingPercentage !== undefined ? WeightCalculatorRequest.ClampingPercentage : '',
-    clampingValue: WeightCalculatorRequest && WeightCalculatorRequest.ClampingValue !== undefined ? WeightCalculatorRequest.ClampingValue : '',
   }
 
   const { register, handleSubmit, control, setValue, getValues, formState: { errors }, } = useForm({
@@ -119,7 +117,7 @@ function Facing(props) {
     obj.CostingProcessDetailId = WeightCalculatorRequest && WeightCalculatorRequest.CostingProcessDetailId ? WeightCalculatorRequest.CostingProcessDetailId : "00000000-0000-0000-0000-000000000000"
     obj.IsChangeApplied = true
     obj.TechnologyId = costData.TechnologyId
-    obj.CostingId = costData.CostingId
+    obj.CostingId = props?.item?.CostingId
     obj.TechnologyName = costData.TechnologyName
     obj.PartId = costData.PartId
     obj.UnitOfMeasurementId = props.calculatorData.UnitOfMeasurementId

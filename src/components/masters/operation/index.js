@@ -114,6 +114,7 @@ class OperationsMaster extends Component {
                                                 BulkUploadAccessibility={this.state.BulkUploadAccessibility}
                                                 DownloadAccessibility={this.state.DownloadAccessibility}
                                                 isMasterSummaryDrawer={false}
+                                                selectionForListingMasterAPI='Master'
                                             />
                                         </TabPane>}
 

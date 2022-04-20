@@ -1,21 +1,20 @@
 import React, { Fragment, useState, useEffect } from 'react'
-import { Row, Col, Container, Table } from 'reactstrap'
+import { Row, Col, Table } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
-import { useDispatch, useSelector } from 'react-redux'
-import { SearchableSelectHookForm, TextFieldHookForm, } from '../../../layout/HookFormInputs'
+import { useSelector } from 'react-redux'
+import { SearchableSelectHookForm, TextAreaHookForm, NumberFieldHookForm, } from '../../../layout/HookFormInputs'
 import NoContentFound from '../../../common/NoContentFound'
 import { EMPTY_DATA } from '../../../../config/constants'
-import { checkForDecimalAndNull, checkForNull, findLostWeight, getConfigurationKey } from '../../../../helper'
+import { checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../helper'
 import Toaster from '../../../common/Toaster'
 function MachiningStockTable(props) {
 
-  const { rmRowData, diableMachiningStock,hotcoldErrors ,disableAll} = props
+  const { rmRowData, hotcoldErrors, disableAll } = props
   const trimValue = getConfigurationKey()
   const trim = trimValue.NoOfDecimalForInputOutput
   const [forgingVolume, setForgingVolume] = useState('')
   const [grossWeight, setGrossWeight] = useState('')
   const [showLabel, setIsShowLabel] = useState(false)
-  const dispatch = useDispatch()
   const [circularMachiningStock, setCircularMachiningStock] = useState(false)
   const [rectangularMachiningStock, setRectangularMachiningStock] = useState(false)
   const [squareMachiningStock, setSquareMachiningStock] = useState(false)
@@ -24,7 +23,7 @@ function MachiningStockTable(props) {
   const [disableMachineType, setDisableMachineType] = useState(false)
 
 
-  const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
+  const { register, control, setValue, getValues, reset, formState: { errors }, } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
     //defaultValues: defaultValues,
@@ -53,7 +52,7 @@ function MachiningStockTable(props) {
   const handleVolumeChange = () => {
 
     setTimeout(() => {
-      
+
       calculateforgingVolumeAndWeight()
     }, 500);
 
@@ -91,21 +90,21 @@ function MachiningStockTable(props) {
       setIrregularMachiningStock(false)
     }
 
-   else if (value.label === "Square") {
+    else if (value.label === "Square") {
       setSquareMachiningStock(true)
       setCircularMachiningStock(false)
       setRectangularMachiningStock(false)
       setIrregularMachiningStock(false)
     }
-   
-   else if (value.label === "Rectangular") {
+
+    else if (value.label === "Rectangular") {
       setRectangularMachiningStock(true)
       setSquareMachiningStock(false)
       setCircularMachiningStock(false)
       setIrregularMachiningStock(false)
 
     }
-   else if (value.label === "Irregular") {
+    else if (value.label === "Irregular") {
       setSquareMachiningStock(false)
       setCircularMachiningStock(false)
       setRectangularMachiningStock(false)
@@ -118,12 +117,9 @@ function MachiningStockTable(props) {
   }
 
   const calculateforgingVolumeAndWeight = (value) => {
-    const description =getValues('description')
+    const description = getValues('description')
     const majorDiameter = checkForNull(getValues('majorDiameter'))
-
     const minorDiameter = checkForNull(getValues('minorDiameter'))
-
-
     const Length = checkForNull(getValues('Length'))
     const Breadth = checkForNull(getValues('Breadth'))
     const Height = checkForNull(getValues('Height'))
@@ -135,7 +131,7 @@ function MachiningStockTable(props) {
     let GrossWeight = 0;
     if ((minorDiameter > majorDiameter)) {
       reset({
-        description:description,
+        description: description,
         minorDiameter: 0,
         majorDiameter: majorDiameter,
         Length: Length,
@@ -146,9 +142,7 @@ function MachiningStockTable(props) {
         forgingV: forgingV
       })
       return Toaster.warning("Minor Diameter should be Smaller than Major Diameter")
-      // return false;
     }
-
 
     switch (MachiningStock?.label) {
       case 'Circular':
@@ -166,24 +160,20 @@ function MachiningStockTable(props) {
         break;
 
       case 'Quarter Circular':
-        Volume =
-          (0.7857 * (Math.pow(majorDiameter, 2) - Math.pow(minorDiameter, 2)) * Length / 4)
+        Volume = (0.7857 * (Math.pow(majorDiameter, 2) - Math.pow(minorDiameter, 2)) * Length / 4)
         GrossWeight = (Volume * rmRowData.Density) / 1000000
         break;
       case 'Square':
-
         Volume = (Length * Length * Height)
         GrossWeight = (Volume * No * rmRowData.Density) / 1000000
-
         break;
 
       case 'Rectangular':
         Volume = (Length * Breadth * Height)
         GrossWeight = (Volume * No * rmRowData.Density) / 1000000
         break;
-      case 'Irregular': 
+      case 'Irregular':
         Volume = forgingV
-        
 
         GrossWeight = (forgingV * No * rmRowData.Density) / 1000000
         break;
@@ -191,22 +181,17 @@ function MachiningStockTable(props) {
         return "none";
 
     }
-
     setValue('forgingVolume', checkForDecimalAndNull(Volume, getConfigurationKey().NoOfDecimalForInputOutput))
     setForgingVolume(Volume)
     setValue('grossWeight', checkForDecimalAndNull(GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
     setGrossWeight(GrossWeight)
-
-    
-    
-
   }
 
   const calculateTotalMachiningStock = (tableVal) => {
     let sum = 0;
-    tableVal && tableVal.map(item => {
+    tableVal && tableVal.map(item => (
       sum = sum + item.GrossWeight
-    })
+    ))
     // props.TotalMachiningStock(sum)
     return sum
   }
@@ -217,7 +202,7 @@ function MachiningStockTable(props) {
    * @description For updating and adding row
    */
   const addRow = () => {
-    const GrossWeight = checkForNull(grossWeight)   
+    const GrossWeight = checkForNull(grossWeight)
     const Volume = checkForNull(forgingVolume)
     const MajorDiameter = checkForNull(getValues('majorDiameter'))
     const MinorDiameter = checkForNull(getValues('minorDiameter'))
@@ -227,14 +212,14 @@ function MachiningStockTable(props) {
     const Breadth = checkForNull(getValues('Breadth'))
     const No = checkForNull(getValues('No'))
     const MachiningStock = getValues('MachiningStock')
-  
+
     setDisableMachineType(false)
-    if(Object.keys(errors).length>0||'finishedWeight' in hotcoldErrors >0){
+    if (Object.keys(errors).length > 0 || 'finishedWeight' in hotcoldErrors > 0) {
       return false
     }
 
-    if ( GrossWeight === 0  || Volume === 0  || MachiningStock === '' || Description === '') {
-      
+    if (GrossWeight === 0 || Volume === 0 || MachiningStock === '' || Description === '') {
+
       Toaster.warning("Please fill all the mandatory fields first.")
       return false;
     }
@@ -247,17 +232,11 @@ function MachiningStockTable(props) {
       setNetWeight(Number(NetWeight))
 
     } else {
-
       NetWeight = checkForNull(checkForNull(netWeight) + checkForNull(GrossWeight))
-
-
       setTimeout(() => {
         setNetWeight(Number(NetWeight))
       }, 400);
-
-
     }
-
 
     const obj = {
       MajorDiameter: MajorDiameter ? MajorDiameter : "-",
@@ -288,10 +267,8 @@ function MachiningStockTable(props) {
     props.calculation(NetWeight)
     props.tableValue(tempArray)
 
-
-
     reset({
-      
+
       majorDiameter: '',
       minorDiameter: '',
       description: '',
@@ -329,28 +306,28 @@ function MachiningStockTable(props) {
     setValue('forgingVolume', tempObj.Volume)
     setValue('description', tempObj.Description)
 
-    if(tempObj.TypesOfMachiningStock==='Circular' || tempObj.TypesOfMachiningStock==='Semi Circular'||tempObj.TypesOfMachiningStock==='Quarter Circular'){
+    if (tempObj.TypesOfMachiningStock === 'Circular' || tempObj.TypesOfMachiningStock === 'Semi Circular' || tempObj.TypesOfMachiningStock === 'Quarter Circular') {
       setDisableMachineType(true)
       setCircularMachiningStock(true)
       setSquareMachiningStock(false)
       setRectangularMachiningStock(false)
       setIrregularMachiningStock(false)
     }
-    else if(tempObj.TypesOfMachiningStock==='Square'){
+    else if (tempObj.TypesOfMachiningStock === 'Square') {
       setDisableMachineType(true)
       setSquareMachiningStock(true)
       setCircularMachiningStock(false)
       setRectangularMachiningStock(false)
       setIrregularMachiningStock(false)
     }
-    else if (tempObj.TypesOfMachiningStock==='Rectangular'){
+    else if (tempObj.TypesOfMachiningStock === 'Rectangular') {
       setDisableMachineType(true)
       setRectangularMachiningStock(true)
       setSquareMachiningStock(false)
       setCircularMachiningStock(false)
       setIrregularMachiningStock(false)
     }
-    else{
+    else {
       setDisableMachineType(true)
       setIrregularMachiningStock(true)
       setSquareMachiningStock(false)
@@ -402,11 +379,15 @@ function MachiningStockTable(props) {
       }
       return true
     })
-  
+
 
     props.tableValue(tempData)
     setTableData(tempData)
 
+  }
+
+  const UnitFormat = () => {
+    return <>Volume (mm<sup>3</sup>)</>
   }
 
   return (
@@ -448,7 +429,7 @@ function MachiningStockTable(props) {
 
 
         <Col md="3">
-          <TextFieldHookForm
+          <TextAreaHookForm
             label={`Description`}
             name={'description'}
             Controller={Controller}
@@ -472,9 +453,9 @@ function MachiningStockTable(props) {
         </Col>
         {!irregularMachiningStock &&
           <>
-            <Col md="2">
-              <TextFieldHookForm
-                label={`Length(mm)`}
+            <Col md="2" className='forging-length-wrapper'>
+              <NumberFieldHookForm
+                label={`Length (mm)`}
                 name={'Length'}
                 Controller={Controller}
                 control={control}
@@ -486,14 +467,14 @@ function MachiningStockTable(props) {
                     value: /^\d{1,3}(\.\d{0,3})?$/i,
                     message: 'Maximum length for interger is 3 and for decimal is 3',
                   },
-                  
+
                 }}
                 handleChange={() => { }}
                 defaultValue={''}
                 className=""
                 customClassName={'withBorder'}
                 errors={errors.Length}
-                disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue || disableAll  ? true : false}
+                disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue || disableAll ? true : false}
               />
             </Col>
           </>}
@@ -503,7 +484,7 @@ function MachiningStockTable(props) {
           <>
             {!showLabel && (
               <Col md="3">
-                <TextFieldHookForm
+                <NumberFieldHookForm
                   label={`Major Diameter (mm)`}
                   name={'majorDiameter'}
                   Controller={Controller}
@@ -516,7 +497,7 @@ function MachiningStockTable(props) {
                       value: /^\d{0,3}(\.\d{0,5})?$/i,
                       message: 'Maximum length for interger is 3 and for decimal is 5',
                     },
-                   
+
                   }}
                   handleChange={() => { }}
                   defaultValue={''}
@@ -529,7 +510,7 @@ function MachiningStockTable(props) {
             )}
             {!showLabel && (
               <Col md="3">
-                <TextFieldHookForm
+                <NumberFieldHookForm
                   label={`Minor Diameter (mm)`}
                   name={'minorDiameter'}
                   Controller={Controller}
@@ -542,7 +523,7 @@ function MachiningStockTable(props) {
                       value: /^\d{0,3}(\.\d{0,5})?$/i,
                       message: 'Maximum length for interger is 3 and for decimal is 5',
                     },
-                  
+
                     // maxLength: 4,
                   }}
                   handleChange={() => { }}
@@ -562,7 +543,7 @@ function MachiningStockTable(props) {
           <>
 
             <Col md="2">
-              <TextFieldHookForm
+              <NumberFieldHookForm
                 label={`Number`}
                 name={'No'}
                 Controller={Controller}
@@ -593,8 +574,8 @@ function MachiningStockTable(props) {
 
 
             <Col md="2">
-              <TextFieldHookForm
-                label={`Height(mm)`}
+              <NumberFieldHookForm
+                label={`Height (mm)`}
                 name={'Height'}
                 Controller={Controller}
                 control={control}
@@ -606,7 +587,7 @@ function MachiningStockTable(props) {
                     value: /^\d{0,3}(\.\d{0,3})?$/i,
                     message: 'Maximum length for interger is 3 and for decimal is 3',
                   },
-                
+
                   // maxLength: 4,
                 }}
                 handleChange={() => { }}
@@ -622,7 +603,7 @@ function MachiningStockTable(props) {
           <>
 
             <Col md="2">
-              <TextFieldHookForm
+              <NumberFieldHookForm
                 label={`Number`}
                 name={'No'}
                 Controller={Controller}
@@ -647,14 +628,14 @@ function MachiningStockTable(props) {
                 className=""
                 customClassName={'withBorder'}
                 errors={errors.No}
-                disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue || disableAll  ? true : false}
+                disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue || disableAll ? true : false}
               />
             </Col>
 
 
 
             <Col md="2">
-              <TextFieldHookForm
+              <NumberFieldHookForm
                 label={`Breadth (mm)`}
                 name={'Breadth'}
                 Controller={Controller}
@@ -678,8 +659,8 @@ function MachiningStockTable(props) {
               />
             </Col>
             <Col md="2">
-              <TextFieldHookForm
-                label={`Height(mm)`}
+              <NumberFieldHookForm
+                label={`Height (mm)`}
                 name={'Height'}
                 Controller={Controller}
                 control={control}
@@ -691,14 +672,14 @@ function MachiningStockTable(props) {
                     value: /^\d{0,3}(\.\d{0,3})?$/i,
                     message: 'Maximum length for interger is 3 and for decimal is 3',
                   },
-                
+
                 }}
                 handleChange={() => { }}
                 defaultValue={''}
                 className=""
                 customClassName={'withBorder'}
                 errors={errors.Height}
-                disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue || disableAll  ? true : false}
+                disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue || disableAll ? true : false}
               />
             </Col>
 
@@ -706,7 +687,7 @@ function MachiningStockTable(props) {
         {irregularMachiningStock &&
           <>
             <Col md="3">
-              <TextFieldHookForm
+              <NumberFieldHookForm
                 label={`Number`}
                 name={'No'}
                 Controller={Controller}
@@ -716,7 +697,6 @@ function MachiningStockTable(props) {
                 rules={{
                   required: true,
                   pattern: {
-                    //value: /^[0-9]*$/i,
                     value: /^[0-9]\d*(\.\d+)?$/i,
                     message: 'Invalid Number.',
                   },
@@ -724,7 +704,6 @@ function MachiningStockTable(props) {
                     value: 3,
                     message: 'Length should not be more than 3'
                   },
-                  // maxLength: 4,
                 }}
                 handleChange={() => { }}
                 defaultValue={''}
@@ -736,22 +715,13 @@ function MachiningStockTable(props) {
             </Col>
           </>}
         <Col md="3">
-          <TextFieldHookForm
-            label={`Volume(mm^3)`}
+          <NumberFieldHookForm
+            label={UnitFormat()}
             name={'forgingVolume'}
             Controller={Controller}
             control={control}
             register={register}
             mandatory={false}
-            // rules={{
-            //   required: true,
-            //   pattern: {
-            //     //value: /^[0-9]*$/i,
-            //     value: /^[0-9]\d*(\.\d+)?$/i,
-            //     message: 'Invalid Number.',
-            //   },
-            //   // maxLength: 4,
-            // }}
             handleChange={handleVolumeChange}
             defaultValue={''}
             className=""
@@ -761,22 +731,13 @@ function MachiningStockTable(props) {
           />
         </Col>
         <Col md="3">
-          <TextFieldHookForm
-            label={`Gross Weight(kg)`}
+          <NumberFieldHookForm
+            label={`Gross Weight (kg)`}
             name={'grossWeight'}
             Controller={Controller}
             control={control}
             register={register}
             mandatory={false}
-            // rules={{
-            //   required: false,
-            //   pattern: {
-            //     value: /^[0-9\b]+$/i,
-            //     //value: /^[0-9]\d*(\.\d+)?$/i,
-            //     message: 'Invalid Number.',
-            //   },
-            //   // maxLength: 4,
-            // }}
             handleChange={() => { }}
             defaultValue={''}
             className=""
@@ -833,7 +794,7 @@ function MachiningStockTable(props) {
                 <th>{`Breadth (mm)`}</th>
                 <th>{`Height (mm)`}</th>
                 <th>{`Number`}</th>
-                <th>{`Volume (mm^3)`}</th>
+                <th>{UnitFormat()}</th>
                 <th>{`Gross Weight (Kg)`}</th>
 
                 <th>{`Actions`}</th>
@@ -845,7 +806,7 @@ function MachiningStockTable(props) {
                   return (
                     <Fragment>
                       <tr key={index}>
-                        <td> <div className='text-overflow' title={item.Description}>{item.Description !== null ? item.Description : '-'}</div></td>
+                        <td className='text-overflow'> <span title={item.Description}>{item.Description !== null ? item.Description : '-'}</span></td>
                         <td>{item.TypesOfMachiningStock !== null ? item.TypesOfMachiningStock : '-'}</td>
                         <td>{checkForDecimalAndNull(item.MajorDiameter, getConfigurationKey().NoOfDecimalForInputOutput) !== null ? checkForDecimalAndNull(item.MajorDiameter, getConfigurationKey().NoOfDecimalForInputOutput) : '-'}</td>
                         <td>{checkForDecimalAndNull(item.MinorDiameter, getConfigurationKey().NoOfDecimalForInputOutput) !== null ? checkForDecimalAndNull(item.MinorDiameter, getConfigurationKey().NoOfDecimalForInputOutput) : '-'}</td>
@@ -866,7 +827,7 @@ function MachiningStockTable(props) {
                               <button
                                 className="Edit mr-2"
                                 type={'button'}
-                                disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue || disableAll? true : false}
+                                disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue || disableAll ? true : false}
                                 onClick={() => editRow(index)}
                               />
                               <button
@@ -892,14 +853,9 @@ function MachiningStockTable(props) {
               )}
             </tbody>
 
-            {/* <span className="col-sm-4 ">{'30'}</span> */}
           </Table>
           <div className="col-md-12 text-right bluefooter-butn border">
-            {/* {props.isPlastic &&
-              // <span className="w-50 d-inline-block text-left">
-              //   {`Burning Loss Weight:`}
-              //   {checkForDecimalAndNull(burningWeight, trim)}
-              // </span>} */}
+
             <span className="w-50 d-inline-block">
               {`Total Machining Stock: `}
               {checkForDecimalAndNull(calculateTotalMachiningStock(tableData), trim)}

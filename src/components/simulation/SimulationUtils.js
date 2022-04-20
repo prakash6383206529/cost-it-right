@@ -1,10 +1,9 @@
+import { BOPImpactDownloadArray, ERImpactDownloadArray, OperationImpactDownloadArray, RMImpactedDownloadArray } from "../../config/masterData";
 
 
 export const SimulationUtils = (TempData) => {
 
-
     TempData && TempData.map(item => {
-
 
         if (item.CostingHead === true) {
             item.CostingHead = 'Vendor Based'
@@ -23,18 +22,12 @@ export const SimulationUtils = (TempData) => {
         item.NewICCCost = (item.NewICCCost === 0 ? item.OldICCCost : item.NewICCCost)
         item.NewPaymentTermsCost = (item.NewPaymentTermsCost === 0 ? item.OldPaymentTermsCost : item.NewPaymentTermsCost)
         item.NewOtherCost = (item.NewOtherCost === 0 ? item.OldOtherCost : item.NewOtherCost)
-        item.NewDiscountCost = (item.NewDiscountCost === 0 ? item.NOldDiscountCostewRMPrice : item.NewDiscountCost)
+        item.NewDiscountCost = ((item.NewDiscountCost === 0 || item.NewDiscountCost === undefined) ? item.OldDiscountCost : item.NewDiscountCost)
         item.NewNetOverheadAndProfitCost = (item.NewNetOverheadAndProfitCost === 0 ? item.OldNetOverheadAndProfitCost : item.NewNetOverheadAndProfitCost)
         return null
     });
 
-
-
-
     return TempData
-
-
-
 }
 
 export const checkForChangeInOverheadProfit1Values = (item) => {
@@ -109,3 +102,90 @@ export const checkForChangeInOverheadProfit3Values = (item) => {
         return item
 }
 
+export const impactmasterDownload = (impactedMasterData) => {
+    let rmArraySet = [], bopArraySet = []
+    let operationArraySet = [], erArraySet = []
+
+    impactedMasterData?.OperationImpactedMasterDataList && impactedMasterData?.OperationImpactedMasterDataList.map((item) => {
+        let tempObj = []
+
+        tempObj.push(item.OperationName)
+        tempObj.push(item.OperationCode)
+        tempObj.push(item.UOM)
+        tempObj.push(item.OldOperationRate)
+        tempObj.push(item.NewOperationRate)
+        tempObj.push(item.EffectiveDate)
+        operationArraySet.push(tempObj)
+    })
+
+    impactedMasterData?.RawMaterialImpactedMasterDataList && impactedMasterData?.RawMaterialImpactedMasterDataList.map((item) => {
+
+        let tempObj = []
+
+        tempObj.push(item.RawMaterial)
+        tempObj.push(item.RMGrade)
+        tempObj.push(item.RMSpec)
+        tempObj.push(item.RawMaterialCode)
+        tempObj.push(item.Category)
+        tempObj.push(item.TechnologyName)
+        tempObj.push(item.VendorName)
+        tempObj.push(item.UOM)
+        tempObj.push(item.OldBasicRate)
+        tempObj.push(item.NewBasicRate)
+        tempObj.push(item.OldScrapRate)
+        tempObj.push(item.NewScrapRate)
+        tempObj.push(item.RMFreightCost)
+        tempObj.push(item.RMShearingCost)
+        tempObj.push(item.EffectiveDate)
+        rmArraySet.push(tempObj)
+    })
+
+    impactedMasterData?.BoughtOutPartImpactedMasterDataList && impactedMasterData?.BoughtOutPartImpactedMasterDataList.map((item) => {
+        let tempObj = []
+        tempObj.push(item.BoughtOutPartNumber)
+        tempObj.push(item.BoughtOutPartName)
+        tempObj.push(item.Category)
+        tempObj.push(item.Vendor)
+        tempObj.push(item.PartNumber)
+        tempObj.push(item.OldBOPRate)
+        tempObj.push(item.NewBOPRate)
+        tempObj.push(item.OldPOPrice)
+        tempObj.push(item.NewPOPrice)
+        tempObj.push(item.EffectiveDate)
+        bopArraySet.push(tempObj)
+    })
+    impactedMasterData?.ExchangeRateImpactedMasterDataList && impactedMasterData?.ExchangeRateImpactedMasterDataList.map((item) => {
+        let tempObj = []
+        tempObj.push(item.Currency)
+        tempObj.push(item.CostingNumber)
+        tempObj.push(item.PartNumber)
+        tempObj.push(item.BankRate)
+        tempObj.push(item.BankCommissionPercentage)
+        tempObj.push(item.CustomRate)
+        tempObj.push(item.CurrencyExchangeRate)
+        tempObj.push(item.NewExchangeRate)
+        tempObj.push(item.OldExchangeRate)
+        tempObj.push(item.EffectiveDate)
+        erArraySet.push(tempObj)
+    })
+
+    const multiDataSet = [
+        {
+            columns: RMImpactedDownloadArray,
+            data: rmArraySet
+        }, {
+            ySteps: 5, //will put space of 5 rows,
+            columns: OperationImpactDownloadArray,
+            data: operationArraySet
+        }, {
+            ySteps: 5,
+            columns: BOPImpactDownloadArray,
+            data: bopArraySet
+        }, {
+            ySteps: 5,
+            columns: ERImpactDownloadArray,
+            data: erArraySet
+        }
+    ];
+    return multiDataSet
+}

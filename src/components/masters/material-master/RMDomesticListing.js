@@ -8,7 +8,7 @@ import {
     getRawMaterialFilterSelectList
 } from '../actions/Material';
 import { checkForDecimalAndNull } from "../../../helper/validation";
-import { EMPTY_DATA } from '../../../config/constants';
+import { EMPTY_DATA, RMDOMESTIC } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
@@ -23,39 +23,31 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
-import { CheckApprovalApplicableMaster, getConfigurationKey, getFilteredData,userDepartmetList } from '../../../helper';
+import { CheckApprovalApplicableMaster, getConfigurationKey, getFilteredData, userDepartmetList } from '../../../helper';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
-
+import { getListingForSimulationCombined } from '../../simulation/actions/Simulation';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
-
-
 const gridOptions = {};
 
 
 function RMDomesticListing(props) {
-    const { AddAccessibility, BulkUploadAccessibility, EditAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation, apply, ViewRMAccessibility } = props;
-
-
+    const { AddAccessibility, BulkUploadAccessibility, EditAccessibility, ViewRMAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation, apply, selectionForListingMasterAPI, objectForMultipleSimulation } = props;
 
 
     const [value, setvalue] = useState({ min: 0, max: 0 });
     const [maxRange, setmaxRange] = useState(0);
     const [isBulkUpload, setisBulkUpload] = useState(false);
     const [shown, setshown] = useState(isSimulation ? true : false);
-
     const [gridApi, setgridApi] = useState(null);                      // DONT DELETE THIS STATE , IT IS USED BY AG GRID
     const [gridColumnApi, setgridColumnApi] = useState(null);          // DONT DELETE THIS STATE , IT IS USED BY AG GRID
-
     const [loader, setloader] = useState(false);
     const dispatch = useDispatch();
-
     const rmDataList = useSelector((state) => state.material.rmDataList);
     const filteredRMData = useSelector((state) => state.material.filteredRMData);
-
     const [showPopup, setShowPopup] = useState(false)
     const [deletedId, setDeletedId] = useState('')
     const [showPopupBulk, setShowPopupBulk] = useState(false)
@@ -63,13 +55,10 @@ function RMDomesticListing(props) {
     const [viewAction, setViewAction] = useState(ViewRMAccessibility)
 
 
-
-
     /**
     * @method FIRST RNDER COMPONENT
     * @description Called after rendering the component
     */
-
 
     const callFilterApi = () => {
         if (isSimulation || shown) {
@@ -89,12 +78,18 @@ function RMDomesticListing(props) {
 
 
     useEffect(() => {
-
-        if (isSimulation) {
-
-            setvalue({ min: 0, max: 0 });
+        if (isSimulation && selectionForListingMasterAPI === 'Combined') {
+            props?.changeSetLoader(true)
+            dispatch(getListingForSimulationCombined(objectForMultipleSimulation, RMDOMESTIC, (res) => {
+                props?.changeSetLoader(false)
+            }))
+        } else {
+            if (isSimulation) {
+                props?.changeTokenCheckBox(false)
+            }
+            getDataList()
         }
-        getDataList()
+        setvalue({ min: 0, max: 0 });
     }, [])
 
 
@@ -105,8 +100,6 @@ function RMDomesticListing(props) {
             return rmDataList
         }
     }
-
-
 
     /**
     * @method hideForm
@@ -131,6 +124,9 @@ function RMDomesticListing(props) {
         setloader(true)
         if (!props.isMasterSummaryDrawer) {
             dispatch(getRMDomesticDataList(filterData, (res) => {
+                if (isSimulation) {
+                    props?.changeTokenCheckBox(true)
+                }
                 if (res && res.status === 200) {
                     let Data = res.data.DataList;
                     let DynamicData = res.data.DynamicData;
@@ -163,9 +159,6 @@ function RMDomesticListing(props) {
         }
         props.getDetails(data);
     }
-
-
-
 
     /**
     * @method deleteItem
@@ -212,25 +205,27 @@ function RMDomesticListing(props) {
         let isEditbale = false
         let isDeleteButton = false
 
-    
-            if (EditAccessibility && !rowData.IsRMAssociated) {
-                isEditbale = true
-            } else {
-                isEditbale = false
-            }
 
+        if (EditAccessibility && !rowData.IsRMAssociated) {
+            isEditbale = true
+        } else {
+            isEditbale = false
+        }
 
-            if (DeleteAccessibility && !rowData.IsRMAssociated) {
-                isDeleteButton = true
-            } else {
-                isDeleteButton = false
-            }
+        if (EditAccessibility && !rowData.IsRMAssociated) {
+            isEditbale = true
+        } else {
+            isEditbale = false
+        }
 
+        if (DeleteAccessibility && !rowData.IsRMAssociated) {
+            isDeleteButton = true
+        } else {
+            isDeleteButton = false
+        }
 
         return (
             <>
-
-
                 {viewAction && < button className="View mr5" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
                 {isEditbale && <button className="Edit mr-2 align-middle" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
                 {isDeleteButton && <button className="Delete align-middle" type={'button'} onClick={() => deleteItem(cellValue)} />}
@@ -249,7 +244,6 @@ function RMDomesticListing(props) {
 
         return data;
     }
-
 
 
     const costFormatter = (props) => {
@@ -290,9 +284,9 @@ function RMDomesticListing(props) {
     }
 
     /**
-  * @method shearingCostFormatter
-  * @description Renders buttons
-  */
+    * @method shearingCostFormatter
+    * @description Renders buttons
+    */
     const shearingCostFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : '-';
@@ -352,7 +346,7 @@ function RMDomesticListing(props) {
 
     const onPageSizeChanged = (newPageSize) => {
         var value = document.getElementById('page-size').value;
-        gridApi.paginationSetPageSize(Number(value));
+        gridApi.paginationSetPageSize(Number(newPageSize));
     };
 
     const returnExcelColumn = (data = [], TempData) => {
@@ -465,70 +459,76 @@ function RMDomesticListing(props) {
     return (
         <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
             {(loader && !props.isMasterSummaryDrawer) && <LoaderCustom />}
-            <Row className="filter-row-large pt-4 ">
-                {
-                    // SHOW FILTER BUTTON ONLY FOR RM MASTER NOT FOR SIMULATION AMD MASTER APPROVAL SUMMARY
-                    (!isSimulation && !props.isMasterSummaryDrawer) &&
-                    <Col md="6" lg="6" className="search-user-block mb-3">
-                        <div className="d-flex justify-content-end bd-highlight w100">
-                            <div>
-                                <>
-                                    {shown ? (
-                                        <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => { setshown(!shown) }}>
-                                            <div className="cancel-icon-white"></div>
-                                        </button>
-                                    ) : (<>
-                                    </>
-
-                                    )}
-                                    {AddAccessibility && (
-                                        <button
-                                            type="button"
-                                            className={"user-btn mr5"}
-                                            onClick={formToggle}
-                                            title="Add"
-                                        >
-                                            <div className={"plus mr-0"}></div>
-                                            {/* ADD */}
-                                        </button>
-                                    )}
-                                    {BulkUploadAccessibility && (
-                                        <button
-                                            type="button"
-                                            className={"user-btn mr5"}
-                                            onClick={bulkToggle}
-                                            title="Bulk Upload"
-                                        >
-                                            <div className={"upload mr-0"}></div>
-                                            {/* Bulk Upload */}
-                                        </button>
-                                    )}
-                                    {
-                                        DownloadAccessibility &&
+            <Row className={`filter-row-large pt-4 ${props?.isSimulation ? 'zindex-0 ' : ''}`}>
+                <Col md="6" lg="6">
+                    <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                </Col>
+                <Col md="6" lg="6" className="mb-3 d-flex justify-content-end">
+                    {
+                        // SHOW FILTER BUTTON ONLY FOR RM MASTER NOT FOR SIMULATION AMD MASTER APPROVAL SUMMARY
+                        (!props.isMasterSummaryDrawer) &&
+                        <>
+                            {!isSimulation &&
+                                <div className="d-flex justify-content-end bd-highlight w100">
+                                    <div>
                                         <>
-                                            <ExcelFile filename={'RM Domestic'} fileExtension={'.xls'} element={
-                                                <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-                                                    {/* DOWNLOAD */}
-                                                </button>}>
-                                                {onBtExport()}
-                                            </ExcelFile>
+                                            {shown ? (
+                                                <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => { setshown(!shown) }}>
+                                                    <div className="cancel-icon-white"></div>
+                                                </button>
+                                            ) : (<>
+                                            </>
+
+                                            )}
+                                            {AddAccessibility && (
+                                                <button
+                                                    type="button"
+                                                    className={"user-btn mr5"}
+                                                    onClick={formToggle}
+                                                    title="Add"
+                                                >
+                                                    <div className={"plus mr-0"}></div>
+                                                    {/* ADD */}
+                                                </button>
+                                            )}
+                                            {BulkUploadAccessibility && (
+                                                <button
+                                                    type="button"
+                                                    className={"user-btn mr5"}
+                                                    onClick={bulkToggle}
+                                                    title="Bulk Upload"
+                                                >
+                                                    <div className={"upload mr-0"}></div>
+                                                    {/* Bulk Upload */}
+                                                </button>
+                                            )}
+                                            {
+                                                DownloadAccessibility &&
+                                                <>
+                                                    <ExcelFile filename={'RM Domestic'} fileExtension={'.xls'} element={
+                                                        <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                                            {/* DOWNLOAD */}
+                                                        </button>}>
+                                                        {onBtExport()}
+                                                    </ExcelFile>
+                                                </>
+                                            }
+
                                         </>
-                                    }
-                                    <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
-                                        <div className="refresh mr-0"></div>
-                                    </button>
-                                </>
-                            </div>
-                        </div>
-                    </Col>
-                }
+                                    </div>
+                                </div>
+                            }
+                            <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
+                                <div className="refresh mr-0"></div>
+                            </button>
+                        </>
+                    }
+                </Col>
+
             </Row>
             <Row>
                 <Col>
-                    <div className={`ag-grid-wrapper height-width-wrapper ${getFilterRMData() && getFilterRMData()?.length <= 0 ? "overlay-contain" : ""}`}>
-                        <div className="ag-grid-header">
-                            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
-                        </div>
+                    <div className={`ag-grid-wrapper ${props.isSimulation ? 'simulation-height' : 'height-width-wrapper'} ${getFilterRMData() && getFilterRMData()?.length <= 0 ? "overlay-contain" : ""}`}>
                         <div className={`ag-theme-material ${(loader && !props.isMasterSummaryDrawer) && "max-loader-height"}`}>
                             <AgGridReact
                                 style={{ height: '100%', width: '100%' }}
@@ -584,9 +584,9 @@ function RMDomesticListing(props) {
                                 <AgGridColumn field="NetLandedCost" headerName="Net Cost(INR)" cellRenderer='costFormatter'></AgGridColumn>
 
                                 <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-            
+
                                 {CheckApprovalApplicableMaster(RM_MASTER_ID) && <AgGridColumn field="DisplayStatus" headerName="Status" cellRenderer='statusFormatter'></AgGridColumn>}
-                                
+
                                 {(!isSimulation && !props.isMasterSummaryDrawer) && <AgGridColumn width={160} field="RawMaterialId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                 <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
                                 <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>

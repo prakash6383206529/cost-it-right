@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { checkForDecimalAndNull } from "../../../helper/validation";
-import { EMPTY_DATA } from '../../../config/constants';
+import { BOPIMPORT, EMPTY_DATA } from '../../../config/constants';
 import { getBOPImportDataList, deleteBOP, getBOPCategorySelectList, getAllVendorSelectList, } from '../actions/BoughtOutParts';
 import { getPlantSelectList, } from '../../../actions/Common';
 import NoContentFound from '../../common/NoContentFound';
@@ -16,13 +16,14 @@ import { BOP_IMPORT_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
 import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
 import { BopImport, INR, BOP_MASTER_ID } from '../../../config/constants';
-import { getConfigurationKey, CheckApprovalApplicableMaster, getFilteredData } from '../../../helper';
+import { getConfigurationKey, getFilteredData } from '../../../helper';
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
+import { getListingForSimulationCombined } from '../../simulation/actions/Simulation';
 
 const ExcelFile = ReactExport.ExcelFile
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -63,7 +64,22 @@ class BOPImportListing extends Component {
         this.props.getBOPCategorySelectList(() => { })
         this.props.getPlantSelectList(() => { })
         this.props.getVendorWithVendorCodeSelectList(() => { })
-        this.getDataList()
+
+        if (this.props.isSimulation) {
+            if (this.props.selectionForListingMasterAPI === 'Combined') {
+                this.props?.changeSetLoader(true)
+                this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, BOPIMPORT, () => {
+                    this.props?.changeSetLoader(false)
+
+                })
+            }
+            if (this.props.selectionForListingMasterAPI === 'Master') {
+                this.getDataList()
+            }
+        }
+        else {
+            this.getDataList()
+        }
     }
 
     /**
@@ -71,8 +87,9 @@ class BOPImportListing extends Component {
     * @description GET DATALIST OF IMPORT BOP
     */
     getDataList = (bopFor = '', CategoryId = 0, vendorId = '', plantId = '',) => {
-
-
+        if (this.props.isSimulation) {
+            this.props?.changeTokenCheckBox(false)
+        }
         const filterData = {
             bop_for: bopFor,
             category_id: CategoryId,
@@ -81,6 +98,9 @@ class BOPImportListing extends Component {
         }
         this.setState({ isLoader: true })
         this.props.getBOPImportDataList(filterData, (res) => {
+            if (this.props.isSimulation) {
+                this.props?.changeTokenCheckBox(true)
+            }
             this.setState({ isLoader: false })
             if (res && res.status === 200) {
                 let Data = res.data.DataList;
@@ -222,20 +242,20 @@ class BOPImportListing extends Component {
         let isEditable = false
         let isDeleteButton = false
 
-        
-            if (EditAccessibility && !rowData.IsBOPAssociated) {
-                isEditable = true
-            } else {
-                isEditable = false
-            }
-        
-        
-            if (DeleteAccessibility && !rowData.IsBOPAssociated) {
-                isDeleteButton = true
-            } else {
-                isDeleteButton = false
-            }
-        
+
+        if (EditAccessibility && !rowData.IsBOPAssociated) {
+            isEditable = true
+        } else {
+            isEditable = false
+        }
+
+
+        if (DeleteAccessibility && !rowData.IsBOPAssociated) {
+            isDeleteButton = true
+        } else {
+            isDeleteButton = false
+        }
+
 
         return (
             <>
@@ -251,8 +271,15 @@ class BOPImportListing extends Component {
     * @description Renders Costing head
     */
     costingHeadFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue
+
+        let cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        if (cellValue === true) {
+            cellValue = 'Vendor Based'
+        } else if (cellValue === false) {
+            cellValue = 'Zero Based'
+        }
+        return cellValue          // IN SUMMARY DRAWER COSTING HEAD IS ROWDATA.COSTINGHEAD & IN MAIN DOMESTIC LISTING IT IS CELLVALUE
+
     }
 
     costFormatter = (cell, row, enumObject, rowIndex) => {
@@ -269,45 +296,7 @@ class BOPImportListing extends Component {
 
         return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
     }
-    plantFormatter = (props) => {
 
-        const rowData = props.data
-        return rowData.IsVendor === 'Vendor Based' ? rowData.DestinationPlant : rowData.Plants
-    }
-
-
-
-
-    /**
-    * @method filterList
-    * @description Filter user listing on the basis of role and department
-    */
-    filterList = () => {
-        const { costingHead, BOPCategory, plant, vendor } = this.state;
-
-        const costingHeadTemp = costingHead ? costingHead.value : '';
-        const categoryTemp = BOPCategory ? BOPCategory.value : 0;
-        const vendorTemp = vendor ? vendor.value : '';
-        const plantTemp = plant ? plant.value : '';
-
-        this.getDataList(costingHeadTemp, categoryTemp, vendorTemp, plantTemp)
-    }
-
-    /**
-    * @method resetFilter
-    * @description Reset user filter
-    */
-    resetFilter = () => {
-        this.setState({
-            costingHead: [],
-            BOPCategory: [],
-            plant: [],
-            vendor: [],
-        }, () => {
-            this.getDataList()
-        })
-
-    }
     formToggle = () => {
         this.props.displayForm()
     }
@@ -433,7 +422,6 @@ class BOPImportListing extends Component {
             hyphenFormatter: this.hyphenFormatter,
             costingHeadFormatter: this.costingHeadFormatter,
             effectiveDateFormatter: this.effectiveDateFormatter,
-            plantFormatter: this.plantFormatter
         };
 
         const onRowSelect = () => {
@@ -452,10 +440,12 @@ class BOPImportListing extends Component {
             <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
                 {this.state.isLoader && <LoaderCustom />}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-                    <Row className={`pt-4 filter-row-large  ${this.props.isSimulation ? 'simulation-filter' : ''}`}>
+                    <Row className={`pt-4 filter-row-large  ${this.props.isSimulation ? 'simulation-filter zindex-0' : ''}`}>
 
-
-                        <Col md="6" lg="6" className="search-user-block mb-3">
+                        <Col md="6" lg="6">
+                            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                        </Col>
+                        <Col md="6" lg="6" className=" mb-3">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
                                     {this.state.shown ? (
@@ -515,9 +505,6 @@ class BOPImportListing extends Component {
                     <Col>
 
                         <div className={`ag-grid-wrapper height-width-wrapper ${this.props.bopImportList && this.props.bopImportList?.length <= 0 ? "overlay-contain" : ""}`}>
-                            <div className="ag-grid-header">
-                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
-                            </div>
                             <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`} >
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
@@ -548,8 +535,7 @@ class BOPImportListing extends Component {
                                     <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
                                     <AgGridColumn field="Currency"></AgGridColumn>
                                     <AgGridColumn field="Specification" headerName="Specification" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="Plants" hide={getConfigurationKey().IsDestinationPlantConfigure !== false} cellRenderer={'hyphenFormatter'} headerName="Plant"></AgGridColumn>
-                                    <AgGridColumn field="DestinationPlant" hide={getConfigurationKey().IsDestinationPlantConfigure !== true} cellRenderer={'plantFormatter'} headerName="Plant(Code)"></AgGridColumn>
+                                    <AgGridColumn field="Plants" cellRenderer={'hyphenFormatter'} headerName="Plant(Code)"></AgGridColumn>
                                     <AgGridColumn field="Vendor" headerName="Vendor(Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="NumberOfPieces" headerName="Minimum Order Quantity"></AgGridColumn>
                                     <AgGridColumn field="BasicRate" headerName="Basic Rate"></AgGridColumn>
@@ -613,6 +599,7 @@ export default connect(mapStateToProps, {
     getPlantSelectList,
     getAllVendorSelectList,
     getVendorWithVendorCodeSelectList,
+    getListingForSimulationCombined
 })(reduxForm({
     form: 'BOPImportListing',
     enableReinitialize: true,

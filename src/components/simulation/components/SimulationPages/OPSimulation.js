@@ -6,17 +6,16 @@ import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper';
 import { GridTotalFormate } from '../../../common/TableGridFunctions';
 import Toaster from '../../../common/Toaster';
-import { runSimulationOnSelectedBoughtOutPartCosting, runSimulationOnSelectedOverheadProfitCosting, setData } from '../../actions/Simulation';
+import { runSimulationOnSelectedOverheadProfitCosting } from '../../actions/Simulation';
 import { Fragment } from 'react';
 import { TextFieldHookForm } from '../../../layout/HookFormInputs';
-import { useForm, Controller, useWatch } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import RunSimulationDrawer from '../RunSimulationDrawer';
 import VerifySimulation from '../VerifySimulation';
 import { useDispatch, useSelector } from 'react-redux';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { data } from 'jquery';
 import Simulation from '../Simulation';
 import { debounce } from 'lodash'
 import { VBC, ZBC } from '../../../../config/constants';
@@ -27,7 +26,7 @@ const gridOptions = {
 
 
 function OPSImulation(props) {
-    const { isDomestic, list, isbulkUpload, rowCount, technology, master, isImpactedMaster, costingAndPartNo } = props
+    const { list, isbulkUpload, rowCount, technology, master, isImpactedMaster, tokenForMultiSimulation } = props
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')
@@ -64,7 +63,6 @@ function OPSImulation(props) {
     const dispatch = useDispatch()
 
     const { selectedMasterForSimulation } = useSelector(state => state.simulation)
-    const { valdataTemp } = useSelector(state => state.simulation)
 
     const { filteredRMData } = useSelector(state => state.material)
     useEffect(() => {
@@ -98,10 +96,6 @@ function OPSImulation(props) {
             return null;
         })
 
-        
-        
-        
-        
         if (OverheadApplicabilityTypeCount === list.length && OverheadRMPercentageCount === list.length && OverheadMachiningCCPercentageCount === list.length
             && OverheadBOPPercentageCount === list.length) {
             Toaster.warning('There is no changes in new value.Please correct the data, then run simulation')
@@ -126,9 +120,7 @@ function OPSImulation(props) {
         }
         let tempArr = []
         list && list.map(item => {
-            
             let tempObj = {}
-            
             if (item.OverheadApplicabilityType !== item.NewOverheadApplicabilityType ||
                 Number(item.OverheadBOPPercentage) !== Number(item.NewOverheadBOPPercentage) ||
                 Number(item.OverheadRMPercentage) !== Number(item.NewOverheadRMPercentage) ||
@@ -163,10 +155,11 @@ function OPSImulation(props) {
 
                 return null;
             }
+            return null
         })
-        obj.SimulationRawMaterials = tempArr
-        
 
+        obj.SimulationIds = tokenForMultiSimulation
+        obj.SimulationRawMaterials = tempArr
         dispatch(runSimulationOnSelectedOverheadProfitCosting(obj, res => {
 
             setIsDisable(false)
@@ -359,7 +352,6 @@ function OPSImulation(props) {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const value = beforeSaveCell(cell)
-        
         return (
             <>
                 {
@@ -428,10 +420,6 @@ function OPSImulation(props) {
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
-    const renderPaginationShowsTotal = (start, to, total) => {
-        return <GridTotalFormate start={start} to={to} total={total} />
-    }
-
     /**
     * @method beforeSaveCell
     * @description CHECK FOR ENTER NUMBER IN CELL
@@ -460,19 +448,6 @@ function OPSImulation(props) {
         } else {
             return false
         }
-    }
-
-    const afterSaveCell = (row, cellName, cellValue, index) => {
-
-        if ((Number(row.NewBasicRate) + checkForNull(row.RMFreightCost) + checkForNull(row.RMShearingCost)) > row.NetLandedCost) {
-            setColorClass('red-value form-control')
-        } else if ((Number(row.NewBasicRate) + checkForNull(row.RMFreightCost) + checkForNull(row.RMShearingCost)) < row.NetLandedCost) {
-            setColorClass('green-value form-control')
-        } else {
-            setColorClass('form-class')
-        }
-        return false
-
     }
 
     const NewcostFormatter = (props) => {
@@ -813,8 +788,6 @@ function OPSImulation(props) {
     }
 
     const onCellValueChanged = (props) => {
-        const rowData = props?.data;
-        let value = false
         if ((props?.value === 'BOP' || props?.value === 'BOP + CC' || props?.value === 'CC' || props?.value === 'Fixed' || props?.value === 'RM'
             || props?.value === 'RM + BOP' || props?.value === 'RM + CC' || props?.value === 'RM + CC + BOP') && props?.value !== undefined) {
             list && list.map((item) => {
@@ -994,7 +967,7 @@ function OPSImulation(props) {
                         }
                         <Row>
                             <Col className="add-min-height mb-3 sm-edit-page">
-                                <div className={`ag-grid-wrapper height-width-wrapper ${list && list?.length <=0 ?"overlay-contain": ""}`}>
+                                <div className={`ag-grid-wrapper height-width-wrapper ${list && list?.length <= 0 ? "overlay-contain" : ""}`}>
                                     <div className="ag-grid-header">
                                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                                     </div>
@@ -1081,7 +1054,7 @@ function OPSImulation(props) {
                             !isImpactedMaster &&
                             <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                                 <div className="col-sm-12 text-right bluefooter-butn">
-                                    <button type={"button"} className="mr15 cancel-btn" onClick={cancel}>
+                                    <button type={"button"} className="mr15 cancel-btn" onClick={cancel} disabled={isDisable}>
                                         <div className={"cancel-icon"}></div>
                                         {"CANCEL"}
                                     </button>

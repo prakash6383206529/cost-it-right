@@ -23,10 +23,8 @@ function AddBOP(props) {
 
   const [tableData, setTableDataList] = useState([]);
   const [selectedRowData, setSelectedRowData] = useState([]);
-  const [selectedIds, setSelectedIds] = useState(props.Ids);
   const [gridApi, setGridApi] = useState(null);
   const [gridColumnApi, setGridColumnApi] = useState(null);
-  const [rowData, setRowData] = useState(null);
   const dispatch = useDispatch()
 
   const costData = useContext(costingInfoContext)
@@ -67,22 +65,10 @@ function AddBOP(props) {
     return <GridTotalFormate start={start} to={to} total={total} />
   }
 
-  const options = {
-    clearSearch: true,
-    noDataText: (bopDrawerList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
-    paginationShowsTotal: renderPaginationShowsTotal(),
-    prePage: <span className="prev-page-pg"></span>, // Previous page button text
-    nextPage: <span className="next-page-pg"></span>, // Next page button text
-    firstPage: <span className="first-page-pg"></span>, // First page button text
-    lastPage: <span className="last-page-pg"></span>,
-
-  };
-
   const onRowSelect = () => {
 
     var selectedRows = gridApi.getSelectedRows();
-    if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
-    var selected = gridApi.getSelectedNodes()
+    if (JSON.stringify(selectedRows) === JSON.stringify(props.Ids)) return false
     setSelectedRowData(selectedRows)
     // if (isSelected) {
     // } else {
@@ -93,29 +79,6 @@ function AddBOP(props) {
 
   }
 
-  const onSelectAll = (isSelected, rows) => {
-    if (isSelected) {
-      setSelectedRowData(rows)
-    } else {
-      setSelectedRowData([])
-    }
-  }
-
-  const selectRowProp = {
-    mode: 'checkbox',
-    clickToSelect: true,
-    unselectable: selectedIds,
-    onSelect: onRowSelect,
-    onSelectAll: onSelectAll
-  };
-
-  const renderNetLandedRate = () => {
-    return <>Net Cost<br /> INR/UOM</>
-  }
-
-  const renderNetLandedConversionRate = () => {
-    return <>Net Cost<br />USD/UOM</>
-  }
 
   const netLandedFormat = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -290,7 +253,7 @@ function AddBOP(props) {
 
   }, [tableData])
 
-  const isRowSelectable = rowNode => rowNode.data ? !selectedIds.includes(rowNode.data.BoughtOutPartId) : false;
+  const isRowSelectable = rowNode => rowNode.data ? !props.Ids.includes(rowNode.data.BoughtOutPartId) : false;
 
 
   const resetState = () => {
@@ -317,7 +280,7 @@ function AddBOP(props) {
                     <h3>{'ADD Insert:'}</h3>
                   </div>
                   <div
-                    onClick={(e) => toggleDrawer(e)}
+                    onClick={cancel}
                     className={'close-button right'}>
                   </div>
                 </Col>
@@ -358,7 +321,7 @@ function AddBOP(props) {
               </form >
               <Row className="mx-0">
                 <Col className="hidepage-size">
-                  <div className={`ag-grid-wrapper min-height-auto height-width-wrapper ${bopDrawerList && bopDrawerList?.length <=0 ?"overlay-contain": ""}`}>
+                  <div className={`ag-grid-wrapper min-height-auto height-width-wrapper ${bopDrawerList && bopDrawerList?.length <= 0 ? "overlay-contain" : ""}`}>
                     <div className="ag-grid-header">
                       <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                       <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>

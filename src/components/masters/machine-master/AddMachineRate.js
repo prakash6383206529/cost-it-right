@@ -90,7 +90,8 @@ class AddMachineRate extends Component {
       showPopup: false,
       updatedObj: {},
       setDisable: false,
-      disablePopup: false
+      disablePopup: false,
+      inputLoader: false,
 
     }
   }
@@ -238,7 +239,7 @@ class AddMachineRate extends Component {
 
           const Data = res.data.Data;
           this.setState({ DataToChange: Data })
-          this.props.getVendorListByVendorType(Data.IsVendor, () => { })
+          this.props.getVendorListByVendorType(Data.IsVendor, () => { this.setState({ inputLoader: false }) })
           if (Data.IsVendor) {
             this.props.getPlantBySupplier(Data.VendorId, () => { })
           }
@@ -315,8 +316,9 @@ class AddMachineRate extends Component {
       selectedVendorPlants: [],
       vendorLocation: [],
       selectedPlants: [],
+      inputLoader: true,
     }, () => {
-      this.props.getVendorListByVendorType(true, () => { })
+      this.props.getVendorListByVendorType(true, () => { this.setState({ inputLoader: false }) })
     });
   }
 
@@ -1287,6 +1289,7 @@ class AddMachineRate extends Component {
                         {this.state.IsVendor &&
                           <Col md="3">
                             <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
+                            {this.state.inputLoader && <LoaderCustom customClass={`vendor-input-loader-second-col`} />}
                             <AsyncSelect
                               name="vendorName"
                               ref={this.myRef}
@@ -1295,7 +1298,7 @@ class AddMachineRate extends Component {
                               onChange={(e) => this.handleVendorName(e)}
                               noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
                               value={this.state.vendorName}
-                              isDisabled={isEditFlag ? true : false} />
+                              isDisabled={(isEditFlag || this.state.inputLoader) ? true : false} />
                             {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
 
                           </Col>}
@@ -1560,7 +1563,7 @@ class AddMachineRate extends Component {
                                   <div className={'plus'}></div>ADD</button>
                                 <button
                                   type="button"
-                                  disabled={this.state.isViewFlag ? true : false}
+                                  disabled={isViewMode}
                                   className={`${isViewFlag ? 'disabled-button reset-btn' : 'reset-btn'}  mt30 pull-left`}
                                   onClick={this.resetProcessGridData}
                                 >Reset</button>

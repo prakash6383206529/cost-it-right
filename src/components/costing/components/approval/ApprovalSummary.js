@@ -136,7 +136,7 @@ function ApprovalSummary(props) {
       effectiveDate: dataSend[0].EffectiveDate ? DayTime(dataSend[0].EffectiveDate).format('MM/DD/YYYY') : '',
       vendorCode: dataSend[0].VendorCode ? dataSend[0].VendorCode : '',
       materialNumber: dataSend[1].PartNumber,
-      netPrice: netPo,
+      netPrice: dataSend.NewPOPrice,
       plant: dataSend[0].PlantCode ? dataSend[0].PlantCode : dataSend[0].DestinationPlantId ? dataSend[0].DestinationPlantCode : '',
       currencyKey: dataSend[0].Currency ? dataSend[0].Currency : INR,
       materialGroup: '',
@@ -222,21 +222,21 @@ function ApprovalSummary(props) {
                           {partDetail.Technology ? partDetail.Technology : '-'}
                         </span>
                       </th>
-                      <th>
-                        <span className="d-block grey-text">{`Assembly No./Part No.`}</span>
-                        <span className="d-block">
+                      <th className='overflow'>
+                        <span className="d-block grey-text">{`Assembly/Part No.`}</span>
+                        <span className="d-block " title={partDetail.PartNumber}>
                           {partDetail.PartNumber ? partDetail.PartNumber : '-'}
                         </span>
                       </th>
-                      <th>
-                        <span className="d-block grey-text">{`Assembly Name/Part Name`}</span>
-                        <span className="d-block">
+                      <th className='overflow'>
+                        <span className="d-block grey-text">{`Assembly/Part Name`}</span>
+                        <span className="d-block" title={partDetail.PartName}>
                           {partDetail.PartName ? partDetail.PartName : '-'}
                         </span>
                       </th>
-                      <th>
-                        <span className="d-block grey-text">{`Assembly Description/Part Description`}</span>
-                        <span className="d-block">
+                      <th className='overflow-description'>
+                        <span className="d-block grey-text">{`Assembly/Part Description`}</span>
+                        <span className="d-block" title={partDetail.Description}>
                           {partDetail.Description ? partDetail.Description : '-'}
                         </span>
                       </th>

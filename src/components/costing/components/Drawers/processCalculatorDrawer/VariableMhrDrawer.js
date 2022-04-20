@@ -2,25 +2,16 @@ import React from 'react'
 import { Row, Col } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
 import Facing from './Facing'
-import Drilling from './Drilling'
-import Turning from './Turning'
-import Chamfering from './Chamfering'
-import FaceMilling from './FaceMilling'
-import SideFaceMiling from './SideFaceMiling'
-import SlotCutting from './SlotCutting'
-import ChamferingMiller from './ChamferingMiller'
-import EndMill from './EndMill'
+import UomTimeProcessDefaultCalculator from './UomTimeProcessDefaultCalculator'
 import { useDispatch } from 'react-redux'
 import SheetMetalBaicDrawer from './SheetMetalBaicDrawer'
-import InjectionMoulding from './InjectionMoulding'
-import { SHEETMETAL, RUBBER, PLASTIC, MACHINING, Non_Ferrous_HPDC, FACING, DRILLING, TURNING, CHAMFERING, SIDEFACEMILING, SLOTCUTTING, CHAMFERINGMILLER, ENDMILL, FACEMILING } from '../../../../../config/masterData'
-
-import { HOUR, TIME } from '../../../../../config/constants'
+import { SHEETMETAL, RUBBER, PLASTIC, MACHINING, Non_Ferrous_HPDC, BROACHING } from '../../../../../config/masterData'
+import { TIME } from '../../../../../config/constants'
+import Broaching from './Broaching'
 
 function VariableMhrDrawer(props) {
-  const { technology, calculatorData } = props
+  const { technology, calculatorData, item } = props
   const tonnage = calculatorData.Tonnage ? calculatorData.Tonnage : ''
-  const dispatch = useDispatch()
   const calculateMachineTime = (time, formValue) => {
 
     //   let obj={}
@@ -85,6 +76,7 @@ function VariableMhrDrawer(props) {
               CostingViewMode={props.CostingViewMode}
               calculateMachineTime={calculateMachineTime}
               technology={technology}
+              item={item}
               calculatorData={calculatorData}
             />
           )
@@ -94,6 +86,7 @@ function VariableMhrDrawer(props) {
               CostingViewMode={props.CostingViewMode}
               calculateMachineTime={calculateMachineTime}
               tonnage={tonnage}
+              item={item}
               rmFinishWeight={props.rmFinishWeight}
               calculatorData={calculatorData}
             />
@@ -112,28 +105,20 @@ function VariableMhrDrawer(props) {
               CostingViewMode={props.CostingViewMode}
               calculateMachineTime={calculateMachineTime}
               tonnage={tonnage}
+              item={item}
               rmFinishWeight={props.rmFinishWeight}
               calculatorData={calculatorData}
             />
           )
-          
+
       }
-    } else if (technology === Non_Ferrous_HPDC) {
-      return (
-        <SheetMetalBaicDrawer
-          CostingViewMode={props.CostingViewMode}
-          calculateMachineTime={calculateMachineTime}
-          tonnage={tonnage}
-          rmFinishWeight={props.rmFinishWeight}
-          calculatorData={calculatorData}
-        />
-      )
     } else {
       return (
         <SheetMetalBaicDrawer
           CostingViewMode={props.CostingViewMode}
           calculateMachineTime={calculateMachineTime}
           tonnage={tonnage}
+          item={item}
           rmFinishWeight={props.rmFinishWeight}
           calculatorData={calculatorData}
         />

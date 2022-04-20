@@ -404,9 +404,9 @@ export function getSelectListPartType(callback) {
 * @method getAssemblyPartSelectList
 * @description GET ASSEMBLY PART SELECTLIST
 */
-export function getAssemblyPartSelectList(callback) {
+export function getAssemblyPartSelectList(data, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getAssemblyPartSelectList}`, headers);
+        const request = axios.get(`${API.getAssemblyPartSelectList}?technologyId=${data}`, headers);
         request.then((response) => {
             dispatch({
                 type: GET_ASSEMBLY_PART_SELECTLIST,
@@ -425,9 +425,9 @@ export function getAssemblyPartSelectList(callback) {
 * @method getComponentPartSelectList
 * @description GET COMPONENT PART SELECTLIST
 */
-export function getComponentPartSelectList(callback) {
+export function getComponentPartSelectList(data, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getComponentPartSelectList}`, headers);
+        const request = axios.get(`${API.getComponentPartSelectList}?technologyId=${data}`, headers);
         request.then((response) => {
             dispatch({
                 type: GET_COMPONENT_PART_SELECTLIST,

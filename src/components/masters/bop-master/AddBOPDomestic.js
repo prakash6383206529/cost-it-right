@@ -115,7 +115,6 @@ class AddBOPDomestic extends Component {
       this.props.getCityByCountry(cityId, 0, () => { })
     })
 
-
     let obj = {
       MasterId: BOP_MASTER_ID,
       DepartmentId: userDetails().DepartmentId,
@@ -128,8 +127,6 @@ class AddBOPDomestic extends Component {
       }
 
     })
-
-
   }
 
   componentDidUpdate(prevProps) {
@@ -218,21 +215,16 @@ class AddBOPDomestic extends Component {
             let categoryObj = bopCategorySelectList && bopCategorySelectList.find(item => Number(item.Value) === Data.CategoryId)
             if (getConfigurationKey().IsDestinationPlantConfigure) {
               let obj = plantSelectList && plantSelectList.find(item => item.Value === Data.DestinationPlantId)
-              plantObj = { label: obj.Text, value: obj.Value }
+              plantObj = { label: obj?.Text, value: obj?.Value }
             } else {
               plantObj = Data && Data.Plant.length > 0 ? { label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId } : []
             }
-
             let vendorPlantArray = Data && Data.VendorPlant.map((item) => ({ Text: item.PlantName, Value: item.PlantId }))
             let sourceLocationObj = cityList && cityList.find(item => Number(item.Value) === Data.SourceLocation)
             let uomObject = UOMSelectList && UOMSelectList.find(item => item.Value === Data.UnitOfMeasurementId)
-
-
-
             this.setState({
               IsFinancialDataChanged: false,
               isEditFlag: true,
-              // isLoader: false,
               IsVendor: Data.IsVendor,
               BOPCategory: categoryObj && categoryObj !== undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
               // selectedPartAssembly: partArray,
@@ -244,6 +236,7 @@ class AddBOPDomestic extends Component {
               oldDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
               files: Data.Attachements,
               UOM: uomObject && uomObject !== undefined ? { label: uomObject.Display, value: uomObject.Value } : [],
+              isLoader: false,
             }, () => this.setState({ isLoader: false }))
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
             let files = Data.Attachements && Data.Attachements.map((item) => {
@@ -1036,8 +1029,8 @@ class AddBOPDomestic extends Component {
                           </Col>
                           <Col md="3" className='mb-4'>
                             <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                            {!this.state.isLoader && this.state.inputLoader && <LoaderCustom customClass={`input-loader ${this.state.IsVendor ? 'vendor-based' : 'zero-based'} `} />}
-                            <div className="d-flex justify-space-between align-items-center inputwith-icon async-select">
+                            <div className="d-flex justify-space-between align-items-center p-relative async-select">
+                              {!this.state.isLoader && this.state.inputLoader && <LoaderCustom customClass={`vendor-input-loader`} />}
                               <div className="fullinput-icon">
                                 <AsyncSelect
                                   name="vendorName"
@@ -1047,7 +1040,7 @@ class AddBOPDomestic extends Component {
                                   onChange={(e) => this.handleVendorName(e)}
                                   value={this.state.vendorName}
                                   noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
-                                  isDisabled={isEditFlag ? true : false} />
+                                  isDisabled={(isEditFlag || this.state.inputLoader) ? true : false} />
                                 {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
                               </div>
                               {!isEditFlag && (

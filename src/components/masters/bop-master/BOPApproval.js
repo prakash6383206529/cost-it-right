@@ -14,6 +14,7 @@ import Toaster from '../../common/Toaster'
 import MasterSendForApproval from '../MasterSendForApproval';
 import { masterFinalLevelUser } from '../actions/Material'
 import { loggedInUserId, userDetails } from '../../../helper'
+import NoContentFound from '../../common/NoContentFound';
 
 
 
@@ -196,7 +197,8 @@ function BOPApproval(props) {
 
         statusFormatter: statusFormatter,
         linkableFormatter: linkableFormatter,
-        effectiveDateRenderer: effectiveDateFormatter
+        effectiveDateRenderer: effectiveDateFormatter,
+        customNoRowsOverlay:NoContentFound
 
     };
 
@@ -228,7 +230,7 @@ function BOPApproval(props) {
                 <Col>
 
                     <div className={`ag-grid-react`}>
-                        <div className={`ag-grid-wrapper height-width-wrapper ${approvalList && approvalList?.length <= 0 ? "overlay-contain" : ""}`}>
+                        <div className={`ag-grid-wrapper height-width-wrapper ${BopApprovalList && BopApprovalList?.length <= 0 ? "overlay-contain" : ""}`}>
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                             </div>

@@ -7,10 +7,12 @@ import Toaster from '../../../../common/Toaster';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull } from '../../../../../helper';
 import { getUOMSelectList } from '../../../../../actions/Common'
 import { ViewCostingContext } from '../../CostingDetails'
+import WarningMessage from '../../../../common/WarningMessage';
 
 function TransportationCost(props) {
-  const { data, item } = props;
 
+  const { data, item } = props;
+  const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
 
   const CostingViewMode = useContext(ViewCostingContext);
   const defaultValues = {
@@ -31,7 +33,8 @@ function TransportationCost(props) {
   const [Rate, setRate] = useState('')
   const [OldTransportObj, setOldTransportObj] = useState(data)
   const [TransportationType, setTransportationType] = useState()
-  const [transportCost, setTransportCost] = useState('')
+  const [transportCost, setTransportCost] = useState(checkForNull(data?.TransportationCost))
+  const [percentageLimit, setPercentageLimit] = useState(false);
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
@@ -58,6 +61,11 @@ function TransportationCost(props) {
     }
   }, [props.data])
 
+
+  useEffect(() => {
+    reCalculation()
+  }, [props.item.CostingPartDetails.SurfaceTreatmentCost])
+
   useEffect(() => {
     let tempObj = {
       TransporationDetailId: '',
@@ -73,10 +81,15 @@ function TransportationCost(props) {
       PartNumber: props.item.PartNumber,
     }
 
-    if (props.IsAssemblyCalculation) {
-      props.setAssemblyTransportationCost(tempObj, Params, JSON.stringify(tempObj) !== JSON.stringify(OldTransportObj) ? true : false)
-    } else {
-      props.setTransportationCost(tempObj, Params)
+    if (!CostingViewMode && !IsLocked) {
+
+      if (props.IsAssemblyCalculation) {
+        props.setAssemblyTransportationCost(tempObj, Params, item)
+        props.getTransportationObj(tempObj)
+      } else {
+        props.setTransportationCost(tempObj, Params)
+        props.getTransportationObj(tempObj)
+      }
     }
 
   }, [uom, Rate, Quantity, transportCost]);
@@ -113,6 +126,12 @@ function TransportationCost(props) {
         setTransportCost(checkForNull(item.CostingPartDetails.SurfaceTreatmentCost * calculatePercentage(event.target.value)))
         setValue('TransportationCost', checkForDecimalAndNull(item.CostingPartDetails.SurfaceTreatmentCost * calculatePercentage(event.target.value), initialConfiguration.NoOfDecimalForPrice))
         setRate(event.target.value)
+        if (event.target.value > 100) {
+          setPercentageLimit(true)
+        }
+        else if (event.target.value < 100) {
+          setPercentageLimit(false)
+        }
       } else {
         if (Quantity !== '') {
           const cost = Quantity * event.target.value;
@@ -127,6 +146,7 @@ function TransportationCost(props) {
       }
     } else {
       Toaster.warning('Please enter valid number.')
+      event.target.value = '';
     }
   }
 
@@ -160,6 +180,22 @@ function TransportationCost(props) {
     }
   }
 
+  const reCalculation = () => {
+
+    if (data.UOM === 'Rate') {
+      const cost = checkForNull(data.Rate) * checkForNull(data.Quantity);
+      setTransportCost(cost)
+      setValue('TransportationCost', checkForDecimalAndNull(cost, initialConfiguration.NoOfDecimalForPrice));
+    } else if (data.UOM === 'Fixed') {
+      setTransportCost(data.TransportationCost)
+      setValue('TransportationCost', checkForDecimalAndNull(data.TransportationCost, initialConfiguration.NoOfDecimalForPrice));
+    } else if (data.UOM === 'Percentage') {
+      setTransportCost(checkForNull(item.CostingPartDetails.SurfaceTreatmentCost * calculatePercentage(checkForNull(data.Rate))))
+      setValue('TransportationCost', checkForDecimalAndNull(item.CostingPartDetails.SurfaceTreatmentCost * calculatePercentage(data.Rate), initialConfiguration.NoOfDecimalForPrice))
+      setRate(data.Rate)
+    }
+  }
+
   /**
   * @method renderListing
   * @description RENDER LISTING
@@ -183,7 +219,6 @@ function TransportationCost(props) {
     }
 
   }
-
   /**
 * @method onSubmit
 * @description Used to Submit the form
@@ -225,36 +260,39 @@ function TransportationCost(props) {
                   options={renderListing('UOM')}
                   mandatory={false}
                   handleChange={handleUOMChange}
-                  disabled={CostingViewMode ? true : false}
+                  disabled={(CostingViewMode || IsLocked) ? true : false}
                   errors={errors.UOM}
                 />
               </Col>
               <Col md="3">
-                <TextFieldHookForm
-                  label={`${TransportationType === 'Percentage' ? 'Percentage' : 'Rate'}`}
-                  name={`Rate`}
-                  Controller={Controller}
-                  control={control}
-                  register={register}
-                  mandatory={false}
-                  rules={{
-                    required: false,
-                    pattern: {
-                      //value: /^[0-9]*$/i,
-                      value: /^[0-9]\d*(\.\d+)?$/i,
-                      message: 'Invalid Number.'
-                    },
-                  }}
-                  defaultValue={''}
-                  className=""
-                  customClassName={'withBorder'}
-                  handleChange={(e) => {
-                    e.preventDefault()
-                    handleRateChange(e)
-                  }}
-                  errors={errors && errors.Rate}
-                  disabled={TransportationType === 'Fixed' || CostingViewMode ? true : false}
-                />
+                <div className='p-relative error-wrapper'>
+                  <TextFieldHookForm
+                    label={`${TransportationType === 'Percentage' ? 'Percentage' : 'Rate'}`}
+                    name={`Rate`}
+                    Controller={Controller}
+                    control={control}
+                    register={register}
+                    mandatory={false}
+                    rules={{
+                      required: false,
+                      pattern: {
+                        //value: /^[0-9]*$/i,
+                        value: /^[0-9]\d*(\.\d+)?$/i,
+                        message: 'Invalid Number.'
+                      },
+                    }}
+                    defaultValue={''}
+                    className="mtn1"
+                    customClassName={'withBorder'}
+                    handleChange={(e) => {
+                      e.preventDefault()
+                      handleRateChange(e)
+                    }}
+                    errors={errors && errors.Rate}
+                    disabled={TransportationType === 'Fixed' || (CostingViewMode || IsLocked) ? true : false}
+                  />
+                  {TransportationType === 'Percentage' && percentageLimit && <WarningMessage dClass={"error-message"} textClass={`${percentageLimit ? 'pt-1' : ''}`} message={"Percentage cannot be greater than 100"} />}
+                </div>
               </Col>
               <Col md="3">
                 <TextFieldHookForm
@@ -280,7 +318,7 @@ function TransportationCost(props) {
                     handleQuantityChange(e)
                   }}
                   errors={errors && errors.Quantity}
-                  disabled={(TransportationType === 'Fixed' || TransportationType === 'Percentage') || CostingViewMode ? true : false}
+                  disabled={(TransportationType === 'Fixed' || TransportationType === 'Percentage') || (CostingViewMode || IsLocked) ? true : false}
                 />
 
               </Col>
@@ -307,7 +345,7 @@ function TransportationCost(props) {
                     handleTransportChange(e)
                   }}
                   errors={errors && errors.TransportationCost}
-                  disabled={(TransportationType !== 'Fixed' || TransportationType === 'Percentage') || CostingViewMode ? true : false}
+                  disabled={(TransportationType !== 'Fixed' || TransportationType === 'Percentage') || (CostingViewMode || IsLocked) ? true : false}
                 />
 
               </Col>
