@@ -142,7 +142,6 @@ function Icc(props) {
     const checkInventoryApplicability = (Text) => {
         if (headerCosts !== undefined && Text !== '') {
             const ConversionCostForCalculation = costData.IsAssemblyPart ? checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly) : headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal
-            console.log("H")
             const RMBOPCC = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation
             const RMBOP = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost;
             const RMCC = headerCosts.NetRawMaterialsCost + ConversionCostForCalculation;

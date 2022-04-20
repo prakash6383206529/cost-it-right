@@ -46,7 +46,6 @@ function SurfaceTreatmentCost(props) {
       if (props.IsAssemblyCalculation) {
         props.setAssemblySurfaceCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false, props.item)
       } else {
-        console.log("Coming in else");
         props.setSurfaceCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
       }
     }

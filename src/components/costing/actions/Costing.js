@@ -2367,7 +2367,6 @@ export function setSelectedIds(data) {                  //THIS METHOD WILL SAVE 
 
 
 export function setMasterBatchObj(data) {
-  console.log('data: ', data);
   return (dispatch) => {
     dispatch({
       type: SET_MASTER_BATCH_OBJ,

@@ -419,14 +419,11 @@ function TabSurfaceTreatment(props) {
           dispatchSurfaceCost(surfaceGrid, params, i.CostingChildPartDetails)
         }
         let tempArr = JSON.parse(localStorage.getItem('surfaceCostingArray'))
-        console.log('tempArr: ', tempArr);
         let partObj = tempArr[0]
-
         partObj.CostingPartDetails.NetSurfaceTreatmentCost = NetSurfaceTreatmentCost
         partObj.CostingPartDetails.SurfaceTreatmentCost = surfaceCost(surfaceGrid);
         partObj.CostingPartDetails.SurfaceTreatmentDetails = surfaceGrid;
         tempArr = Object.assign([...tempArr], { [0]: partObj })
-        console.log('tempArr after mnaipluate: ', tempArr);
         // STORING CALCULATED AND UPDATED COSTING VALUE IN LOCAL STORAGE
         localStorage.setItem('surfaceCostingArray', [])
         localStorage.setItem('surfaceCostingArray', JSON.stringify(tempArr))
