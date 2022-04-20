@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useForm } from 'react-hook-form'
 import { Row, Col, } from 'reactstrap';
 import { useEffect } from 'react';
@@ -101,6 +101,7 @@ function CostingSimulation(props) {
     const isExchangeRate = Number(master) === (Number(EXCHNAGERATE));
     const simulationAssemblyListSummary = useSelector((state) => state.simulation.simulationAssemblyListSummary)
     const impactedMasterData = useSelector(state => state.comman.impactedMasterData)
+    const gridRef = useRef();
 
     const dispatch = useDispatch()
 
@@ -812,7 +813,7 @@ function CostingSimulation(props) {
             allColumnIds.push(column.colId);
         });
 
-        window.screen.width <= 1366 ? params.columnApi.autoSizeColumns(allColumnIds) : params.api.sizeColumnsToFit()
+        window.screen.width >= 1921 && gridRef.current.api.sizeColumnsToFit();
 
     };
 
@@ -828,6 +829,7 @@ function CostingSimulation(props) {
     const resetState = () => {
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
+        window.screen.width >= 1921 && gridRef.current.api.sizeColumnsToFit();
     }
     const errorBoxClass = () => {
         let temp
@@ -939,6 +941,7 @@ function CostingSimulation(props) {
                                                 <AgGridReact
                                                     defaultColDef={defaultColDef}
                                                     floatingFilter={true}
+                                                    ref={gridRef}
                                                     domLayout='autoHeight'
                                                     // columnDefs={c}
                                                     rowData={tableData}
@@ -1065,7 +1068,7 @@ function CostingSimulation(props) {
                                                             <AgGridColumn width={140} field="OldDiscountCost" hide={hideDataColumn.hideDiscount} cellRenderer='discountCostFormatter' headerName='Old Discount'></AgGridColumn>
                                                             <AgGridColumn width={140} field="NewDiscountCost" hide={hideDataColumn.hideDiscount} cellRenderer='discountCostFormatter' headerName='New Discount'></AgGridColumn>
                                                         </>}
-                                                    <AgGridColumn width={110} field="CostingId" headerName='Actions' type="rightAligned" floatingFilter={false} cellRenderer='buttonFormatter' pinned="right"></AgGridColumn>
+                                                    <AgGridColumn width={120} field="CostingId" headerName='Actions' type="rightAligned" floatingFilter={false} cellRenderer='buttonFormatter' pinned="right"></AgGridColumn>
                                                 </AgGridReact>
 
                                                 <div className="paging-container d-inline-block float-right">
