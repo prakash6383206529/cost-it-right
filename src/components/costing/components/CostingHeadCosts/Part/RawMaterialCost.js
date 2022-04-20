@@ -51,7 +51,6 @@ function RawMaterialCost(props) {
   const [IsApplyMasterBatch, setIsApplyMasterBatch] = useState(item?.CostingPartDetails?.IsApplyMasterBatch ? true : false)
   const [Ids, setIds] = useState([])
   const [editCalculation, setEditCalculation] = useState(true)
-  const [remarkPopUpData, setRemarkPopUpData] = useState("")
   const [confirmPopup, setConfirmPopup] = useState(false)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { CostingEffectiveDate } = useSelector(state => state.costing)
@@ -431,7 +430,6 @@ function RawMaterialCost(props) {
         CutOffRMC: CutOffRMC,
         ScrapWeight: scrapWeight,
         ScrapRecoveryPercentage: 0,
-        Remark: remarkPopUpData ? remarkPopUpData : ""
       }
       tempArr = Object.assign([...gridData], { [index]: tempData })
 
@@ -452,7 +450,6 @@ function RawMaterialCost(props) {
           CutOffRMC: CutOffRMC,
           ScrapWeight: scrapWeight,
           ScrapRecoveryPercentage: 0,
-          Remark: remarkPopUpData ? remarkPopUpData : ""
         }
         tempArr = Object.assign([...gridData], { [index]: tempData })
       }
@@ -491,7 +488,6 @@ function RawMaterialCost(props) {
           IsCalculatedEntry: false,
           CutOffRMC: CutOffRMC,
           ScrapWeight: scrapWeight,
-          Remark: remarkPopUpData ? remarkPopUpData : ""
         }
         tempArr = Object.assign([...gridData], { [index]: tempData })
 
@@ -511,7 +507,6 @@ function RawMaterialCost(props) {
             IsCalculatedEntry: false,
             CutOffRMC: CutOffRMC,
             ScrapWeight: scrapWeight,
-            Remark: remarkPopUpData ? remarkPopUpData : ""
           }
           tempArr = Object.assign([...gridData], { [index]: tempData })
         }
@@ -539,7 +534,6 @@ function RawMaterialCost(props) {
           CutOffRMC: CutOffRMC,
           ScrapWeight: scrapWeight,
           ScrapRecoveryPercentage: 0,
-          Remark: remarkPopUpData ? remarkPopUpData : ""
         }
         tempArr = Object.assign([...gridData], { [index]: tempData })
 
@@ -560,7 +554,6 @@ function RawMaterialCost(props) {
             CutOffRMC: CutOffRMC,
             ScrapWeight: scrapWeight,
             ScrapRecoveryPercentage: 0,
-            Remark: remarkPopUpData ? remarkPopUpData : ""
           }
           tempArr = Object.assign([...gridData], { [index]: tempData })
         }
@@ -776,12 +769,10 @@ function RawMaterialCost(props) {
     let selectedIds = []
     tempArr.map(el => (selectedIds.push(el.RawMaterialId)))
     setIds(selectedIds)
-
     setIsApplyMasterBatch(false)
   }
 
   const onRemarkPopUpClick = (index) => {
-    setRemarkPopUpData(getValues(`${rmGridFields}.${index}.remarkPopUp`))
     let tempArr = []
     let tempData = gridData[index]
     tempData = {
