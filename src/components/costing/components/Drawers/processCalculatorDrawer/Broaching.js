@@ -256,7 +256,7 @@ function Broaching(props) {
                                                 register={register}
                                                 mandatory={false}
                                                 rules={{
-                                                    required: true,
+                                                    required: false,
                                                     pattern: {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                         message: 'Maximum length for interger is 4 and for decimal is 7',
@@ -282,7 +282,7 @@ function Broaching(props) {
                                                 register={register}
                                                 mandatory={false}
                                                 rules={{
-                                                    required: true,
+                                                    required: false,
                                                     pattern: {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                         message: 'Maximum length for interger is 4 and for decimal is 7',
@@ -500,7 +500,7 @@ function Broaching(props) {
                                                 mandatory={false}
                                                 handleChange={() => { }}
                                                 rules={{
-                                                    required: true,
+                                                    required: false,
                                                     pattern: {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                         message: 'Maximum length for interger is 4 and for decimal is 7',
@@ -523,7 +523,7 @@ function Broaching(props) {
                                                 register={register}
                                                 mandatory={false}
                                                 rules={{
-                                                    required: true,
+                                                    required: false,
                                                     pattern: {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                         message: 'Maximum length for interger is 4 and for decimal is 7',
@@ -547,7 +547,7 @@ function Broaching(props) {
                                                 register={register}
                                                 mandatory={false}
                                                 rules={{
-                                                    required: true,
+                                                    required: false,
                                                     pattern: {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                         message: 'Maximum length for interger is 4 and for decimal is 7',
@@ -571,7 +571,7 @@ function Broaching(props) {
                                                 register={register}
                                                 mandatory={false}
                                                 rules={{
-                                                    required: true,
+                                                    required: false,
                                                     pattern: {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                         message: 'Maximum length for interger is 4 and for decimal is 7',
@@ -628,7 +628,7 @@ function Broaching(props) {
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
-                                                mandatory={false}
+                                                mandatory={true}
                                                 handleChange={() => { }}
                                                 rules={{
                                                     required: true,
