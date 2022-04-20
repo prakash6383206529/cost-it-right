@@ -2471,10 +2471,14 @@ export const COMBINEDPROCESSSIMULATION = [
     { label: "Part Name", value: "PartName" },
     { label: "ECN Number", value: "ECNNumber" },
     { label: "Revision Number", value: "RevisionNumber" },
+
     { label: "PO Price Old", value: "OldPOPrice" },
     { label: "PO Price New", value: "NewPOPrice" },
+    { label: "PO Variance", value: "POVariance" },
     { label: 'Old Net CC', value: 'OldNetCC' },
     { label: "New Net CC", value: "NewNetCC" },
+    { label: "Variance", value: "CPVariance" },
+
     { label: "OldOverheadCost", value: "OldOverheadCost" },
     { label: "NewOverheadCost", value: "NewOverheadCost" },
     { label: "OldProfitCost", value: "OldProfitCost" },
@@ -2487,11 +2491,10 @@ export const COMBINEDPROCESSSIMULATION = [
     { label: "NewPaymentTermsCost", value: "NewPaymentTermsCost" },
     { label: "OldOtherCost", value: "OldOtherCost" },
     { label: "NewOtherCost", value: "NewOtherCost" },
-    { label: "OldDiscountCost", value: "NOldDiscountCostewRMPrice" },
+    { label: "OldDiscountCost", value: "OldDiscountCost" },
     { label: "NewDiscountCost", value: "NewDiscountCost" },
     { label: "OldNetOverheadAndProfitCost", value: "OldNetOverheadAndProfitCost" },
     { label: "NewNetOverheadAndProfitCost", value: "NewNetOverheadAndProfitCost" },
-    { label: "Variance", value: "Variance" }
 
     // { label: "EffectiveDate", value: "EffectiveDate" },
 ]
@@ -3284,6 +3287,7 @@ export const LastGridForTokenSummary = [
     { label: "Old PO Price", value: "OldPOPrice" },
     { label: "New PO Price", value: "NewPOPrice" },
     { label: "PO Variance", value: "POVariance" },
+    { label: "Draft PO Price", value: "DraftPOPrice" },
 ]
 
 export const OperationGridForTokenSummary = [
@@ -3320,10 +3324,16 @@ export const BOPGridForTokenSummary = [
     { label: "BOP Variance", value: "NetBoughtOutPartCostVariance" },
 ]
 
-export const CPGridForTokenSummary = [
-    { label: "Costing Number", value: "CostingNumber" },
-    { label: "Old Net CC", value: "OldNetCC" },
+export const CPGridForToken = [
+    { label: 'Old Net CC', value: 'OldNetCC' },
     { label: "New Net CC", value: "NewNetCC" },
+    { label: "Variance", value: "CPVariance" },
+]
+
+export const CPGridForTokenSummary = [
+    { label: 'Old Net CC', value: 'OldNetCC' },
+    { label: "New Net CC", value: "NewNetCC" },
+    { label: "Variance", value: "Variance" },
 ]
 
 export const ImpactedRMDownload = [

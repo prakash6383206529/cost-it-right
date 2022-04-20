@@ -5,8 +5,8 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRawMaterialNameChild } from '../../masters/actions/Material';
 import NoContentFound from '../../common/NoContentFound';
-import { BOPDOMESTIC, BOPIMPORT, COSTINGSIMULATIONROUND, TOFIXEDVALUE, EMPTY_DATA, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, ImpactMaster, EXCHNAGERATE } from '../../../config/constants';
-import { getComparisionSimulationData, getCostingBoughtOutPartSimulationList, getCostingSimulationList, getCostingSurfaceTreatmentSimulationList, setShowSimulationPage, getSimulatedAssemblyWiseImpactDate, getImpactedMasterData, getExchangeCostingSimulationList } from '../actions/Simulation';
+import { BOPDOMESTIC, BOPIMPORT, COSTINGSIMULATIONROUND, TOFIXEDVALUE, EMPTY_DATA, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, ImpactMaster, EXCHNAGERATE, COMBINED_PROCESS } from '../../../config/constants';
+import { getComparisionSimulationData, getCostingBoughtOutPartSimulationList, getCostingSimulationList, getCostingSurfaceTreatmentSimulationList, setShowSimulationPage, getSimulatedAssemblyWiseImpactDate, getImpactedMasterData, getExchangeCostingSimulationList, getCombinedProcessCostingSimulationList } from '../actions/Simulation';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
 import { checkForDecimalAndNull, checkForNull, formViewData, getConfigurationKey, userDetails } from '../../../helper';
@@ -19,8 +19,9 @@ import { setCostingViewData } from '../../costing/actions/Costing';
 import {
     ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl,
     BOPGridForToken,
+    COMBINEDPROCESSSIMULATION,
     CostingSimulationDownloadBOP, CostingSimulationDownloadOperation, CostingSimulationDownloadRM, CostingSimulationDownloadST
-    , ERGridForToken, EXCHANGESIMULATIONDOWNLOAD, InitialGridForToken, LastGridForToken, OperationGridForToken, RMGridForToken, STGridForToken
+    , CPGridForToken, ERGridForToken, EXCHANGESIMULATIONDOWNLOAD, InitialGridForToken, LastGridForToken, OperationGridForToken, RMGridForToken, STGridForToken
 } from '../../../config/masterData'
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -93,6 +94,7 @@ function CostingSimulation(props) {
     const [showSurfaceTreatmentColumn, setShowSurfaceTreatmentColumn] = useState(false);
     const [showExchangeRateColumn, setShowExchangeRateColumn] = useState(false);
     const [showMachineRateColumn, setShowMachineRateColumn] = useState(false);
+    const [showCombinedProcessColumn, setShowCombinedProcessColumn] = useState(false);
 
     const isSurfaceTreatment = (Number(master) === Number(SURFACETREATMENT));
     const isOperation = (Number(master) === Number(OPERATIONS));
@@ -100,6 +102,7 @@ function CostingSimulation(props) {
     const isBOPDomesticOrImport = ((Number(master) === Number(BOPDOMESTIC)) || (Number(master) === Number(BOPIMPORT)))
     const isMachineRate = Number(master) === (Number(MACHINERATE));
     const isExchangeRate = Number(master) === (Number(EXCHNAGERATE));
+    const isCombinedProcess = Number(master) === Number(COMBINED_PROCESS);
     const simulationAssemblyListSummary = useSelector((state) => state.simulation.simulationAssemblyListSummary)
     const impactedMasterData = useSelector(state => state.comman.impactedMasterData)
     const gridRef = useRef();
@@ -176,13 +179,19 @@ function CostingSimulation(props) {
                     checkForNull(item.NewOperationRate).toFixed(TOFIXEDVALUE))
                 item.BOPVariance = (checkForNull(item.OldBOPCost).toFixed(TOFIXEDVALUE) -
                     checkForNull(item.NewBOPCost).toFixed(TOFIXEDVALUE))
+                item.ERVariance = (checkForNull(item.OldExchangeRate).toFixed(TOFIXEDVALUE) -
+                    checkForNull(item.NewExchangeRate).toFixed(TOFIXEDVALUE))
+                item.CPVariance = (checkForNull(item.OldNetCC).toFixed(TOFIXEDVALUE) -
+                    checkForNull(item.NewNetCC).toFixed(TOFIXEDVALUE))
+
                 switch (String(master)) {
                     case EXCHNAGERATE:
                         item.POVariance = (checkForNull(item.OldNetPOPriceOtherCurrency).toFixed(TOFIXEDVALUE) -
                             checkForNull(item.NewNetPOPriceOtherCurrency).toFixed(TOFIXEDVALUE))
-                        item.ERVariance = (checkForNull(item.OldExchangeRate).toFixed(TOFIXEDVALUE) -
-                            checkForNull(item.NewExchangeRate).toFixed(TOFIXEDVALUE))
+                        break;
 
+                    case String(COMBINED_PROCESS):
+                        item.POVariance = checkForDecimalAndNull(item.OldPOPrice - item.NewPOPrice, getConfigurationKey().NoOfDecimalForPrice)
                         break;
                     default:
                         break;
@@ -242,6 +251,11 @@ function CostingSimulation(props) {
                     setCommonStateForList(res)
                 }))
                 break;
+            case Number(COMBINED_PROCESS):
+                dispatch(getCombinedProcessCostingSimulationList(simulationId, (res) => {
+                    setCommonStateForList(res)
+                }))
+                break;
 
             default:
                 break;
@@ -279,7 +293,7 @@ function CostingSimulation(props) {
         }
         setId(id)
         setPricesDetail({
-            CostingNumber: data.CostingNumber, PlantCode: data.PlantCode, OldPOPrice: data.OldPOPrice, NewPOPrice: data.NewPOPrice, OldRMPrice: data.OldNetRawMaterialsCost, NewRMPrice: data.NewNetRawMaterialsCost, CostingHead: data.CostingHead, OldNetSurfaceTreatmentCost: data.OldNetSurfaceTreatmentCost, NewNetSurfaceTreatmentCost: data.NewNetSurfaceTreatmentCost, OldOperationCost: data.OldOperationCost, NewOperationCost: data.NewOperationCost, OldBOPCost: data.OldNetBoughtOutPartCost, NewBOPCost: data.NewNetBoughtOutPartCost, OldExchangeRate: data.OldExchangeRate, NewExchangeRate: data.NewExchangeRate, OldNetPOPriceOtherCurrency: data.OldNetPOPriceOtherCurrency, NewNetPOPriceOtherCurrency: data.NewNetPOPriceOtherCurrency
+            CostingNumber: data.CostingNumber, PlantCode: data.PlantCode, OldPOPrice: data.OldPOPrice, NewPOPrice: data.NewPOPrice, OldRMPrice: data.OldNetRawMaterialsCost, NewRMPrice: data.NewNetRawMaterialsCost, CostingHead: data.CostingHead, OldNetSurfaceTreatmentCost: data.OldNetSurfaceTreatmentCost, NewNetSurfaceTreatmentCost: data.NewNetSurfaceTreatmentCost, OldOperationCost: data.OldOperationCost, NewOperationCost: data.NewOperationCost, OldBOPCost: data.OldNetBoughtOutPartCost, NewBOPCost: data.NewNetBoughtOutPartCost, OldExchangeRate: data.OldExchangeRate, NewExchangeRate: data.NewExchangeRate, OldNetPOPriceOtherCurrency: data.OldNetPOPriceOtherCurrency, NewNetPOPriceOtherCurrency: data.NewNetPOPriceOtherCurrency, NewNetCC: data.NewNetCC, OldNetCC: data.OldNetCC
         })
         dispatch(getComparisionSimulationData(obj, res => {
             const Data = res.data.Data
@@ -662,6 +676,7 @@ function CostingSimulation(props) {
         setShowRMColumn(costingSimulationListAllKeys?.IsRawMaterialSimulation === true ? true : false)
         setShowExchangeRateColumn(costingSimulationListAllKeys?.IsExchangeRateSimulation === true ? true : false)
         setShowMachineRateColumn(costingSimulationListAllKeys?.IsMachineRateSimulation === true ? true : false)
+        setShowCombinedProcessColumn(costingSimulationListAllKeys?.IsCombinedProcessSimulation === true ? true : false)
 
 
 
@@ -769,8 +784,12 @@ function CostingSimulation(props) {
             //     finalGrid = [...finalGrid, ...OperationGridForToken]
             // isTokenAPI = true
             // }
+            if (showCombinedProcessColumn || isCombinedProcess) {
+                finalGrid = [...finalGrid, ...CPGridForToken]
+                isTokenAPI = true
+            }
 
-            // CONDITION FOR COMBINED PROCESS
+
             finalGrid = [...InitialGridForToken, ...finalGrid, ...LastGridForToken]
         }
 
@@ -787,6 +806,8 @@ function CostingSimulation(props) {
                 return returnExcelColumn(isTokenAPI ? finalGrid : CostingSimulationDownloadBOP, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : costingList && costingList?.length > 0 ? costingList : [])
             case Number(EXCHNAGERATE):
                 return returnExcelColumn(isTokenAPI ? finalGrid : EXCHANGESIMULATIONDOWNLOAD, selectedRowData.length > 0 ? selectedRowData : costingList && costingList.length > 0 ? costingList : [])
+            case Number(COMBINED_PROCESS):
+                return returnExcelColumn(isTokenAPI ? finalGrid : COMBINEDPROCESSSIMULATION, selectedRowData.length > 0 ? selectedRowData : costingList && costingList.length > 0 ? costingList : [])
             default:
                 return 'foo'
         }
@@ -971,12 +992,6 @@ function CostingSimulation(props) {
                                                     onSelectionChanged={onRowSelect}
                                                     isRowSelectable={isRowSelectable}
                                                 >
-                                                    {/* <AgGridColumn width={150} field="CostingNumber" headerName='Costing ID'></AgGridColumn>
-                                                    <AgGridColumn width={110} field="PartNo" headerName='Part No.'></AgGridColumn>
-                                                    <AgGridColumn width={120} field="PartName" headerName='Part Name' cellRenderer='descriptionFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={110} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={130} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="VendorName" cellRenderer='vendorFormatter' headerName='Vendor'></AgGridColumn> */}
 
                                                     <AgGridColumn width={150} field="CostingNumber" headerName='Costing ID'></AgGridColumn>
                                                     <AgGridColumn width={140} field="CostingHead" headerName='Costing Head'></AgGridColumn>
@@ -1060,7 +1075,13 @@ function CostingSimulation(props) {
                                                             <AgGridColumn width={140} field="ERVariance" headerName='Variance' cellRenderer='varianceFormatter'></AgGridColumn>
                                                         </>
                                                     }
-
+                                                    {(isCombinedProcess || showCombinedProcessColumn) &&
+                                                        <>
+                                                            <AgGridColumn width={140} field="OldNetCC" headerName='Old Net CC' cellRenderer={decimalFormatter}></AgGridColumn>
+                                                            <AgGridColumn width={140} field="NewNetCC" headerName='New Net CC' cellRenderer={decimalFormatter}></AgGridColumn>
+                                                            <AgGridColumn width={140} field="CPVariance" headerName='Variance' cellRenderer={decimalFormatter}></AgGridColumn>
+                                                        </>
+                                                    }
                                                     {!(isExchangeRate) &&
                                                         <>
                                                             <AgGridColumn width={140} field="OldOverheadCost" hide={hideDataColumn.hideOverhead} cellRenderer='overheadFormatter' headerName='Old Overhead'></AgGridColumn>

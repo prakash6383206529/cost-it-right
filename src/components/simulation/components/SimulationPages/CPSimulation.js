@@ -68,8 +68,8 @@ function CPSimulation(props) {
             <>
                 {
                     isImpactedMaster ?
-                        Number(row.OldNetCC) :
-                        <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.ConversionCost)} </span>
+                        checkForDecimalAndNull(row.OldNetCC, getConfigurationKey().NoOfDecimalForPrice) :
+                        <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(row.ConversionCost, getConfigurationKey().NoOfDecimalForPrice)} </span>
                 }
 
             </>
@@ -84,8 +84,8 @@ function CPSimulation(props) {
             <>
                 {
                     isImpactedMaster ?
-                        row.NewNetCC :
-                        <span className={`${true ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.ConversionCost)} </span>
+                        checkForDecimalAndNull(row.NewNetCC, getConfigurationKey().NoOfDecimalForPrice) :
+                        <span className={`${true ? 'form-control' : ''}`} >{cell && value ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(row.ConversionCost, getConfigurationKey().NoOfDecimalForPrice)} </span>
                 }
 
             </>
