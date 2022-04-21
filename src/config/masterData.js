@@ -3012,8 +3012,6 @@ export const REPORT_DOWNLOAD_EXCEl = [
     { label: "NetPOPrice", value: "NetPOPrice", },
     { label: "PartNumber", value: "PartNumber", },
     { label: "PartName", value: "PartName", },
-    { label: "Rev", value: "Rev", },
-    { label: "ECN", value: "ECN", },
     { label: "PlantName", value: "PlantName", },
     { label: "VendorName", value: "VendorName", },
     { label: "VendorCode", value: "VendorCode", },

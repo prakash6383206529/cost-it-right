@@ -553,11 +553,11 @@ function RMDomesticListing(props) {
 
                                 <AgGridColumn field="TechnologyName" headerName="Technology"></AgGridColumn>
 
-                                <AgGridColumn field="RawMaterial" headerName="Raw Material"></AgGridColumn>
+                                <AgGridColumn field="RawMaterial" headerName="Raw Material"></AgGridColumn>
 
-                                <AgGridColumn field="RMGrade" headerName="RM Grade"></AgGridColumn>
+                                <AgGridColumn field="RMGrade" headerName="RM Grade"></AgGridColumn>
 
-                                <AgGridColumn field="RMSpec" headerName="RM Specs"></AgGridColumn>
+                                <AgGridColumn field="RMSpec" headerName="RM Specs"></AgGridColumn>
 
                                 <AgGridColumn field="RawMaterialCode" headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
 
@@ -573,19 +573,17 @@ function RMDomesticListing(props) {
 
                                 <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
 
-                                <AgGridColumn field="BasicRate" headerName="Basic Rate(INR)"></AgGridColumn>
+                                <AgGridColumn field="BasicRate" headerName="Basic Rate(INR)"></AgGridColumn>
 
-                                <AgGridColumn field="ScrapRate" headerName="Scrap Rate(INR)" ></AgGridColumn>
+                                <AgGridColumn field="ScrapRate" headerName="Scrap Rate(INR)" ></AgGridColumn>
 
-                                <AgGridColumn field="RMFreightCost" headerName="Freight Cost(INR)" cellRenderer='freightCostFormatter'></AgGridColumn>
+                                <AgGridColumn field="RMFreightCost" headerName="Freight Cost(INR)" cellRenderer='freightCostFormatter'></AgGridColumn>
 
-                                <AgGridColumn field="RMShearingCost" headerName="Shearing Cost(INR)" cellRenderer='shearingCostFormatter'></AgGridColumn>
+                                <AgGridColumn field="RMShearingCost" headerName="Shearing Cost(INR)" cellRenderer='shearingCostFormatter'></AgGridColumn>
 
-                                <AgGridColumn field="NetLandedCost" headerName="Net Cost(INR)" cellRenderer='costFormatter'></AgGridColumn>
+                                <AgGridColumn field="NetLandedCost" headerName="Net Cost(INR)" cellRenderer='costFormatter'></AgGridColumn>
 
                                 <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-
-                                {CheckApprovalApplicableMaster(RM_MASTER_ID) && <AgGridColumn field="DisplayStatus" headerName="Status" cellRenderer='statusFormatter'></AgGridColumn>}
 
                                 {(!isSimulation && !props.isMasterSummaryDrawer) && <AgGridColumn width={160} field="RawMaterialId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                 <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
