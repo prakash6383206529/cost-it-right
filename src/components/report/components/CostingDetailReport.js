@@ -16,7 +16,7 @@ import { ReportMaster, ReportSAPMaster, EMPTY_DATA } from '../../../config/const
 import LoaderCustom from '../../common/LoaderCustom';
 import WarningMessage from '../../common/WarningMessage'
 import CostingDetailSimulationDrawer from '../../simulation/components/CostingDetailSimulationDrawer'
-import { formViewData, checkForDecimalAndNull } from '../../../helper'
+import { formViewData, checkForDecimalAndNull, userDetails } from '../../../helper'
 import { getCostingReport } from '.././actions/ReportListing'
 
 
@@ -48,7 +48,7 @@ function ReportListing(props) {
     const [pageSize100, setPageSize100] = useState(false)
     const [pageNo, setPageNo] = useState(1)
     const [currentRowIndex, setCurrentRowIndex] = useState(0)
-    const [floatingFilterData, setFloatingFilterData] = useState({ CostingNumber: "", TechnologyName: "", AmorizationQuantity: "", AnyOtherCost: "", CostingVersion: "", DisplayStatus: "", EffectiveDate: "", Currency: "", DepartmentCode: "", DepartmentName: "", DiscountCost: "", ECNNumber: "", FinalPOPrice: "", RawMaterialFinishWeight: "", FreightCost: "", FreightPercentage: "", FreightType: "", GrossWeight: "", HundiOrDiscountValue: "", ICCApplicability: "", ICCCost: "", ICCInterestRate: "", ICCOn: "", MasterBatchTotal: "", ModelTypeForOverheadAndProfit: "", ModifiedByName: "", ModifiedByUserName: "", ModifiedDate: "", NetBoughtOutPartCost: "", NetConversionCost: "", NetConvertedPOPrice: "", NetDiscountsCost: "", NetFreightPackaging: "", NetFreightPackagingCost: "", NetICCCost: "", NetOperationCost: "", NetOtherCost: "", NetOverheadAndProfitCost: "", NetPOPrice: "", NetPOPriceINR: "", NetPOPriceInCurrency: "", NetPOPriceOtherCurrency: "", NetProcessCost: "", NetRawMaterialsCost: "", NetSurfaceTreatmentCost: "", NetToolCost: "", NetTotalRMBOPCC: "", OtherCost: "", OtherCostPercentage: "", OverheadApplicability: "", OverheadCombinedCost: "", OverheadCost: "", OverheadOn: "", OverheadPercentage: "", PackagingCost: "", PackagingCostPercentage: "", PartName: "", PartNumber: "", PartType: "", PaymentTermCost: "", PaymentTermsOn: "", PlantCode: "", PlantName: "", ProfitApplicability: "", ProfitCost: "", ProfitOn: "", ProfitPercentage: "", RMGrade: "", RMSpecification: "", RawMaterialCode: "", RawMaterialGrossWeight: "", RawMaterialName: "", RawMaterialRate: "", RawMaterialScrapWeight: "", RawMaterialSpecification: "", RecordInsertedBy: "", RejectOn: "", RejectionApplicability: "", RejectionCost: "", RejectionPercentage: "", Remark: "", Rev: "", RevisionNumber: "", ScrapRate: "", ScrapWeight: "", SurfaceTreatmentCost: "", ToolCost: "", ToolLife: "", ToolMaintenaceCost: "", ToolPrice: "", ToolQuantity: "", TotalCost: "", TotalOtherCost: "", TotalRecordCount: "", TransportationCost: "", VendorCode: "", VendorName: "", Version: "", RawMaterialGrade: "", HundiOrDiscountPercentage: "", FromDate: "", ToDate: "" })
+    const [floatingFilterData, setFloatingFilterData] = useState({ CostingNumber: "", TechnologyName: "", AmorizationQuantity: "", AnyOtherCost: "", CostingVersion: "", DisplayStatus: "", EffectiveDate: "", Currency: "", DepartmentCode: userDetails().Role === 'SuperAdmin' || userDetails().Role === 'Group Category Head' ? "" : JSON.parse(localStorage.getItem('departmentList')), DepartmentName: "", DiscountCost: "", ECNNumber: "", FinalPOPrice: "", RawMaterialFinishWeight: "", FreightCost: "", FreightPercentage: "", FreightType: "", GrossWeight: "", HundiOrDiscountValue: "", ICCApplicability: "", ICCCost: "", ICCInterestRate: "", ICCOn: "", MasterBatchTotal: "", ModelTypeForOverheadAndProfit: "", ModifiedByName: "", ModifiedByUserName: "", ModifiedDate: "", NetBoughtOutPartCost: "", NetConversionCost: "", NetConvertedPOPrice: "", NetDiscountsCost: "", NetFreightPackaging: "", NetFreightPackagingCost: "", NetICCCost: "", NetOperationCost: "", NetOtherCost: "", NetOverheadAndProfitCost: "", NetPOPrice: "", NetPOPriceINR: "", NetPOPriceInCurrency: "", NetPOPriceOtherCurrency: "", NetProcessCost: "", NetRawMaterialsCost: "", NetSurfaceTreatmentCost: "", NetToolCost: "", NetTotalRMBOPCC: "", OtherCost: "", OtherCostPercentage: "", OverheadApplicability: "", OverheadCombinedCost: "", OverheadCost: "", OverheadOn: "", OverheadPercentage: "", PackagingCost: "", PackagingCostPercentage: "", PartName: "", PartNumber: "", PartType: "", PaymentTermCost: "", PaymentTermsOn: "", PlantCode: "", PlantName: "", ProfitApplicability: "", ProfitCost: "", ProfitOn: "", ProfitPercentage: "", RMGrade: "", RMSpecification: "", RawMaterialCode: "", RawMaterialGrossWeight: "", RawMaterialName: "", RawMaterialRate: "", RawMaterialScrapWeight: "", RawMaterialSpecification: "", RecordInsertedBy: "", RejectOn: "", RejectionApplicability: "", RejectionCost: "", RejectionPercentage: "", Remark: "", Rev: "", RevisionNumber: "", ScrapRate: "", ScrapWeight: "", SurfaceTreatmentCost: "", ToolCost: "", ToolLife: "", ToolMaintenaceCost: "", ToolPrice: "", ToolQuantity: "", TotalCost: "", TotalOtherCost: "", TotalRecordCount: "", TransportationCost: "", VendorCode: "", VendorName: "", Version: "", RawMaterialGrade: "", HundiOrDiscountPercentage: "", FromDate: "", ToDate: "" })
     const [enableSearchFilterSearchButton, setEnableSearchFilterButton] = useState(true)
     const [reportListingDataStateArray, setReportListingDataStateArray] = useState([])
 
@@ -205,7 +205,7 @@ function ReportListing(props) {
    * @description getting approval list table
    */
 
-    const getTableData = (skip, take, isPagination, data, isLastWeek) => {
+    const getTableData = (skip, take, isPagination, data, isLastWeek, isCallApi) => {
         let newData = {}
         if (isLastWeek) {
             let currentDate = new Date()
@@ -219,7 +219,7 @@ function ReportListing(props) {
         else {
             newData = data
         }
-        dispatch(getCostingReport(skip, take, isPagination, newData, isLastWeek, (res) => {
+        dispatch(getCostingReport(skip, take, isPagination, newData, isLastWeek, isCallApi, (res) => {
             if (res) {
                 let isReset = true
                 setLoader(false)
@@ -239,7 +239,7 @@ function ReportListing(props) {
     useEffect(() => {
 
         setLoader(true)
-        getTableData(0, 100, true, floatingFilterData, false);
+        getTableData(0, 100, true, floatingFilterData, false, true);
 
     }, [])
 
@@ -269,10 +269,10 @@ function ReportListing(props) {
     const apiCall = (no) => {                      //COMMON FUNCTION FOR PREVIOUS & NEXT BUTTON
 
         if (floatingFilterData.FromDate) {
-            getTableData(no, 100, true, floatingFilterData, true);
+            getTableData(no, 100, true, floatingFilterData, true, true);
         } else {
 
-            getTableData(no, 100, true, floatingFilterData, false);
+            getTableData(no, 100, true, floatingFilterData, false, true);
         }
     }
 
@@ -308,7 +308,12 @@ function ReportListing(props) {
             if (value.column.colId === "EffectiveDate") {
                 return false
             }
-            setFloatingFilterData({ ...floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter })
+
+            if (value.column.colId !== "DepartmentCode" && (userDetails().Role !== 'SuperAdmin' && userDetails().Role !== 'Group Category Head')) {
+                setFloatingFilterData({ ...floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter, DepartmentCode: JSON.parse(localStorage.getItem('departmentList')) })
+            } else {
+                setFloatingFilterData({ ...floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter })
+            }
         }
         filterClick = false
 
@@ -320,7 +325,27 @@ function ReportListing(props) {
         setCurrentRowIndex(0)
         gridOptions?.columnApi?.resetColumnState();
         //gridOptions?.api?.setFilterModel(null);
-        getTableData(0, 100, true, floatingFilterData, false);
+
+        let departmentList = JSON.parse(localStorage.getItem('departmentList'))
+        departmentList = departmentList.split(",")
+        const found = departmentList.find(element => {
+            return element.toLowerCase() === floatingFilterData.DepartmentCode.toLowerCase()
+        })
+
+
+        if (floatingFilterData.DepartmentCode !== JSON.parse(localStorage.getItem('departmentList')) && (userDetails().Role !== 'SuperAdmin' && userDetails().Role !== 'Group Category Head')) {
+
+            if (found !== undefined) {
+                getTableData(0, 100, true, floatingFilterData, false, true);
+            } else {
+                getTableData(0, 100, true, floatingFilterData, false, false);
+            }
+
+        }
+        else {
+            getTableData(0, 100, true, floatingFilterData, false, true);
+
+        }
         setEnableSearchFilterButton(true)
         filterClick = true
         setSearchButtonClicked(true)
@@ -404,11 +429,19 @@ function ReportListing(props) {
         for (var prop in floatingFilterData) {
             floatingFilterData[prop] = ""
         }
+
+        if (userDetails().Role === 'SuperAdmin' || userDetails().Role === 'Group Category Head') {
+            floatingFilterData.DepartmentCode = ""
+
+        } else {
+            floatingFilterData.DepartmentCode = JSON.parse(localStorage.getItem('departmentList'))
+        }
+
         setFloatingFilterData(floatingFilterData)
         setWarningMessage(false)
         setPageNo(1)
         setCurrentRowIndex(0)
-        getTableData(0, 100, true, floatingFilterData, false);
+        getTableData(0, 100, true, floatingFilterData, false, true);
     }
 
     const onRowSelect = () => {
@@ -492,14 +525,14 @@ function ReportListing(props) {
         const tempRequestedBy = getValues('requestedBy') ? getValues('requestedBy').value : '00000000-0000-0000-0000-000000000000'
         const tempStatus = getValues('status') ? getValues('status').value : '00000000-0000-0000-0000-000000000000'
         // const type_of_costing = 
-        getTableData(tempPartNo, tempcreatedBy, tempRequestedBy, tempStatus)
+        getTableData(tempPartNo, tempcreatedBy, tempRequestedBy, tempStatus, true)
     }
 
     const lastWeekFilter = () => {
 
         setPageNo(1)
         setCurrentRowIndex(0)
-        getTableData(0, 100, true, floatingFilterData, true);
+        getTableData(0, 100, true, floatingFilterData, true, true);
     }
     return (
         <div className="container-fluid report-listing-page ag-grid-react">
