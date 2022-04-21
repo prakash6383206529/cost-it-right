@@ -214,7 +214,8 @@ function SimulationApprovalSummary(props) {
             //     quantity: 1
             // }
             setdataForAssemblyImpactForFg(SimulatedCostingList)
-            setShowButton(status.length > 245 ? true : false)
+
+
         }))
 
         const obj = {
@@ -225,7 +226,9 @@ function SimulationApprovalSummary(props) {
 
             if (res.status !== 204) {
                 const { Status, IsSuccessfullyUpdated } = res.data.DataList[0]
+                console.log('Status: ', Status);
                 setStatus(Status)
+                setShowButton(Status.length > 245 ? true : false)
                 setIsSuccessfullyUpdated(IsSuccessfullyUpdated)
             }
         }))
