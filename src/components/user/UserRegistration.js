@@ -1344,7 +1344,7 @@ class UserRegistration extends Component {
                         </div>}
                       {this.state.isShowPwdField &&
                         <>
-                          <div id="password" className="input-group password col-md-3">
+                          <div id="password" className="input-group password password-wrapper col-md-3">
                             <Field
                               name="Password"
                               label="Password"
@@ -1361,7 +1361,7 @@ class UserRegistration extends Component {
                               customClassName={'withBorderPWD'}
                             />
                           </div>
-                          <div className="input-group col-md-3">
+                          <div className="input-group col-md-3 password-wrapper">
                             <Field
                               name="passwordConfirm"
                               label="Confirm Password"
