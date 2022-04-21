@@ -6340,3 +6340,19 @@ left: 17rem;
       }
    }
 }
+.status-overflow {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+.see-data-btn {
+    background-color: transparent;
+    font-size: 12px;
+    color: #256bd1;
+    min-width: 100px;
+    &:focus {
+   box-shadow: none !important;
+   border: none  !important;
+    }
+}
