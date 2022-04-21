@@ -340,7 +340,6 @@ function ReportListing(props) {
             } else {
                 getTableData(0, 100, true, floatingFilterData, false, false);
             }
-
         }
         else {
             getTableData(0, 100, true, floatingFilterData, false, true);
