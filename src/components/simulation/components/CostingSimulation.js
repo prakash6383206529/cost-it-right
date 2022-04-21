@@ -758,7 +758,7 @@ function CostingSimulation(props) {
         })
         let finalGrid = [], isTokenAPI = false
         if (showBOPColumn === true || showRMColumn === true || showOperationColumn === true || showSurfaceTreatmentColumn === true ||
-            showExchangeRateColumn === true || showMachineRateColumn === true) {
+            showExchangeRateColumn === true || showMachineRateColumn === true || showCombinedProcessColumn === true) {
 
             if (showBOPColumn || isBOPDomesticOrImport) {
                 finalGrid = [...finalGrid, ...BOPGridForToken]
