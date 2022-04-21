@@ -219,7 +219,7 @@ function ReportListing(props) {
                 setLoader(false)
                 setTimeout(() => {
                     for (var prop in floatingFilterData) {
-                        if (floatingFilterData[prop] !== "") {
+                        if (prop !== 'DepartmentCode' && floatingFilterData[prop] !== "") {
                             isReset = false
                         }
                     }
