@@ -43,8 +43,8 @@ export function ProcessListingSimulation(props) {
     const { isSimulation, selectionForListingMasterAPI, objectForMultipleSimulation, isImpactedMaster, list } = props;
 
     useEffect(() => {
+        props?.changeSetLoader(true)
         if (isSimulation && selectionForListingMasterAPI === 'Combined') {
-            props?.changeSetLoader(true)
             dispatch(getListingForSimulationCombined(objectForMultipleSimulation, COMBINED_PROCESS, (res) => {
                 props?.changeSetLoader(false)
             }))
@@ -56,13 +56,10 @@ export function ProcessListingSimulation(props) {
             }
             props?.changeTokenCheckBox(false)
             dispatch(getCombinedProcessList(obj, () => {
+                props?.changeSetLoader(false)
                 props?.changeTokenCheckBox(true)
             }))
         }
-
-
-
-
     }, [])
 
     /**
