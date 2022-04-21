@@ -508,18 +508,18 @@ function ReportListing(props) {
 
                 <h1 className="mb-0">Costing Details Report</h1>
 
-                <Row className="pt-3 blue-before ">
-                    <Col md="3">
+                <Row className="pt-3 mb-2 blue-before">
+                    <Col md="2" lg="2">
                         <button title="Last Week" type="button" class="user-btn mr5" onClick={() => lastWeekFilter()}><div class="swap rotate90 mr-2"></div>Last Week</button>
                     </Col>
-                    <Col md="9" lg="9" className="search-user-block mb-3">
+                    <Col md="10" lg="10" className="search-user-block mb-3 px-0">
                         <div className="d-flex justify-content-end bd-highlight excel-btn w100 mb-4 pb-2">
                             <div className="warning-message d-flex align-items-center">
                                 {warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                             </div>
                             <div>
                                 <button disabled={enableSearchFilterSearchButton} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
-                                <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => resetState()}></button>
+                                <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => resetState()}><div className='refresh mr-0'></div></button>
                                 <ExcelFile filename={ReportMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
                                     {renderColumn(ReportMaster)}
                                 </ExcelFile>
@@ -539,7 +539,7 @@ function ReportListing(props) {
             </form>
 
 
-            <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+            <div className={`ag-grid-wrapper height-width-wrapper  ${reportListingData && reportListingData?.length <= 0 ? "overlay-contain" : ""}`}>
                 {/* <div className="ag-grid-header">
                     <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => onFilterTextBoxChanged(e)} />
                 </div> */}
@@ -560,7 +560,6 @@ function ReportListing(props) {
                         noRowsOverlayComponent={'customNoRowsOverlay'}
                         noRowsOverlayComponentParams={{
                             title: EMPTY_DATA,
-                            imagClass: 'imagClass'
                         }}
                         suppressRowClickSelection={true}
                         suppressPaginationPanel={true}
@@ -656,7 +655,7 @@ function ReportListing(props) {
                         <AgGridColumn field="CreatedBy" headerName="CreatedBy" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn width={"240px"} pinned="right" field="DisplayStatus" headerName="Status" cellRenderer={'statusFormatter'}></AgGridColumn>
                     </AgGridReact>
-                    <div className="paging-container d-inline-block float-right">
+                    <div className="paging-container d-inline-block float-right dropdown-btn">
                         <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
                             <option value="10" selected={true}>10</option>
                             <option value="50">50</option>
