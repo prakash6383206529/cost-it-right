@@ -2,9 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import NoContentFound from '../../common/NoContentFound';
-import { MESSAGES } from '../../../config/message';
-import { toastr } from 'react-redux-toastr';
-import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom'
 import moment from 'moment'
 import { ProcessMaster, EMPTY_DATA, COMBINED_PROCESS } from '../../../config/constants'
@@ -43,8 +40,8 @@ export function ProcessListingSimulation(props) {
     const { isSimulation, selectionForListingMasterAPI, objectForMultipleSimulation, isImpactedMaster, list } = props;
 
     useEffect(() => {
+        props?.changeSetLoader(true)
         if (isSimulation && selectionForListingMasterAPI === 'Combined') {
-            props?.changeSetLoader(true)
             dispatch(getListingForSimulationCombined(objectForMultipleSimulation, COMBINED_PROCESS, (res) => {
                 props?.changeSetLoader(false)
             }))
@@ -56,22 +53,11 @@ export function ProcessListingSimulation(props) {
             }
             props?.changeTokenCheckBox(false)
             dispatch(getCombinedProcessList(obj, () => {
+                props?.changeSetLoader(false)
                 props?.changeTokenCheckBox(true)
             }))
         }
-
-
-
-
     }, [])
-
-    /**
-    * @method costingHeadFormatter
-    * @description Renders Costing head
-    */
-    const costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell ? 'VBC' : 'ZBC';
-    }
 
     /**
     * @method effectiveDateFormatter
@@ -134,7 +120,6 @@ export function ProcessListingSimulation(props) {
             allColumnIds.push(column.colId);
         });
 
-        // window.screen.width <= 1366 ? params.columnApi.autoSizeColumns(allColumnIds) : params.api.sizeColumnsToFit()
     };
 
     const onPageSizeChanged = (newPageSize) => {
@@ -187,7 +172,6 @@ export function ProcessListingSimulation(props) {
     };
 
     const frameworkComponents = {
-        costingHeadRenderer: costingHeadFormatter,
         customLoadingOverlay: LoaderCustom,
         customNoRowsOverlay: NoContentFound,
         effectiveDateFormatter: effectiveDateFormatter,
@@ -197,8 +181,6 @@ export function ProcessListingSimulation(props) {
 
     const onRowSelect = () => {
         var selectedRowsList = gridApi.getSelectedRows();
-        let length = gridApi.getSelectedRows().length
-
         props.apply(selectedRowsList)
         setSelectedRows(selectedRowsList)
     }
