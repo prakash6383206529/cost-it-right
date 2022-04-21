@@ -52,7 +52,6 @@ function Broaching(props) {
         setBroachingForce()
         setCuttingTime()
         setTotalCycleTimeMins()   //totalCycleTimeMins
-        setPartsPerHour()    //partsPerHour
     }, [fieldValues])
 
 
@@ -90,19 +89,17 @@ function Broaching(props) {
         const TotalCycleTimeSec = (totalCycleTimeMins * 60)
         setDataToSend(prevState => ({ ...prevState, TotalCycleTimeSec: TotalCycleTimeSec }))
         setValue('TotalCycleTimeSec', checkForDecimalAndNull(TotalCycleTimeSec, getConfigurationKey().NoOfDecimalForInputOutput))
-    }
 
-
-    const setPartsPerHour = () => {
+        // SETPARTSPERHOUR FUNCTION CODE WRITTEN HERE BELOW
         const efficiencyPercentage = Number(getValues('efficiencyPercentage'))
-        const partsPerHour = (3600 / checkForNull(dataToSend.TotalCycleTimeSec)) * (checkForNull(efficiencyPercentage) / 100)
+        const partsPerHour = (3600 / checkForNull(TotalCycleTimeSec)) * (checkForNull(efficiencyPercentage) / 100)
         setDataToSend(prevState => ({ ...prevState, partsPerHour: partsPerHour }))
         setValue('partsPerHour', checkForDecimalAndNull(partsPerHour, getConfigurationKey().NoOfDecimalForInputOutput))
         const processCost = (props?.calculatorData?.MHR) / checkForNull(partsPerHour)
         setDataToSend(prevState => ({ ...prevState, processCost: processCost }))
         setValue('processCost', checkForDecimalAndNull(processCost, getConfigurationKey().NoOfDecimalForPrice))
-    }
 
+    }
 
     const handleDiameterChange = debounce((e) => {
 
@@ -256,7 +253,7 @@ function Broaching(props) {
                                                 register={register}
                                                 mandatory={false}
                                                 rules={{
-                                                    required: true,
+                                                    required: false,
                                                     pattern: {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                         message: 'Maximum length for interger is 4 and for decimal is 7',
@@ -282,7 +279,7 @@ function Broaching(props) {
                                                 register={register}
                                                 mandatory={false}
                                                 rules={{
-                                                    required: true,
+                                                    required: false,
                                                     pattern: {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                         message: 'Maximum length for interger is 4 and for decimal is 7',
@@ -500,7 +497,7 @@ function Broaching(props) {
                                                 mandatory={false}
                                                 handleChange={() => { }}
                                                 rules={{
-                                                    required: true,
+                                                    required: false,
                                                     pattern: {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                         message: 'Maximum length for interger is 4 and for decimal is 7',
@@ -523,7 +520,7 @@ function Broaching(props) {
                                                 register={register}
                                                 mandatory={false}
                                                 rules={{
-                                                    required: true,
+                                                    required: false,
                                                     pattern: {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                         message: 'Maximum length for interger is 4 and for decimal is 7',
@@ -547,7 +544,7 @@ function Broaching(props) {
                                                 register={register}
                                                 mandatory={false}
                                                 rules={{
-                                                    required: true,
+                                                    required: false,
                                                     pattern: {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                         message: 'Maximum length for interger is 4 and for decimal is 7',
@@ -571,7 +568,7 @@ function Broaching(props) {
                                                 register={register}
                                                 mandatory={false}
                                                 rules={{
-                                                    required: true,
+                                                    required: false,
                                                     pattern: {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                         message: 'Maximum length for interger is 4 and for decimal is 7',
@@ -628,7 +625,7 @@ function Broaching(props) {
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
-                                                mandatory={false}
+                                                mandatory={true}
                                                 handleChange={() => { }}
                                                 rules={{
                                                     required: true,

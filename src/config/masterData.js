@@ -3012,8 +3012,6 @@ export const REPORT_DOWNLOAD_EXCEl = [
     { label: "NetPOPrice", value: "NetPOPrice", },
     { label: "PartNumber", value: "PartNumber", },
     { label: "PartName", value: "PartName", },
-    { label: "Rev", value: "Rev", },
-    { label: "ECN", value: "ECN", },
     { label: "PlantName", value: "PlantName", },
     { label: "VendorName", value: "VendorName", },
     { label: "VendorCode", value: "VendorCode", },
@@ -3126,7 +3124,8 @@ export const USER_LISTING_DOWNLOAD_EXCEl = [
     { label: "Mobile No", value: "Mobile", },
     { label: "Phone No", value: "PhoneNumber", },
     { label: "Department", value: "DepartmentName", },
-    { label: "Role", value: "RoleName", }
+    { label: "Role", value: "RoleName", },
+    { label: "IsActive", value: "IsActive", }
 
 ]
 
@@ -3166,8 +3165,9 @@ export const STGridForToken = [
 
 export const BOPGridForToken = [
     { label: "BoughtOutPartQuantity", value: "BoughtOutPartQuantity" },
-    { label: "OldBOPCost", value: "OldBOPCost" },
-    { label: "NewBOPCost", value: "NewBOPCost" },
+    { label: "OldBOPCost", value: "OldNetBoughtOutPartCost" },
+    { label: "NewBOPCost", value: "NewNetBoughtOutPartCost" },
+    { label: "BOP Variance", value: "NetBoughtOutPartCostVariance" },
     { label: "BOP Quantity", value: "BOPVariance" },
 ]
 export const ERGridForToken = [
