@@ -119,7 +119,6 @@ function SimulationApprovalSummary(props) {
     const isCombinedProcess = String(SimulationTechnologyId) === COMBINED_PROCESS;
 
     const simulationAssemblyListSummary = useSelector((state) => state.simulation.simulationAssemblyListSummary)
-
     const [recordInsertStatusBox, setRecordInsertStatusBox] = useState(true);
     const [amendmentStatusBox, setAmendmentStatusBox] = useState(true);
     const [isDisabled, setIsDisabled] = useState(false);
@@ -134,6 +133,10 @@ function SimulationApprovalSummary(props) {
     const { keysForDownloadSummary } = useSelector(state => state.simulation)
     const [lastRevisionDataAccordian, setLastRevisionDataAccordian] = useState(impactedMasterDataListForLastRevisionData?.length >= 0 ? false : true)
     const [editWarning, setEditWarning] = useState(false)
+    const [toggleSeeData, setToggleSeeData] = useState(true)
+    const [toggleAmmendmentData, setToggleAmmendmentStatus] = useState(true)
+    const [showbutton, setShowButton] = useState(false)
+    const [ammendentButton, setAmmendmentButton] = useState(false)
 
     const headerName = ['Revision No.', 'Name', 'Old Cost/Pc', 'New Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
     const headerNameAssembly = ['Revision No.', 'Name', 'Level', 'Old Price/Pc', 'New Price/Pc', 'Applicable Quantity', 'Variance', '', '', 'Assembly Number']
@@ -145,6 +148,16 @@ function SimulationApprovalSummary(props) {
     })
     const userLoggedIn = loggedInUserId()
 
+    const funcForErrorBoxButton = () => {
+
+        const statusWithButton = <><p className={`${toggleSeeData ? 'status-overflow' : ''} `}><span>{status}</span></p>{<button className='see-data-btn' onClick={() => { setToggleSeeData(!toggleSeeData) }}>Show {toggleSeeData ? 'all' : 'less'} data</button>}</>
+        return statusWithButton
+    }
+    const funcForErrorBoxButtonForAmmendment = () => {
+
+        const statusWithButton = <><p className={`${toggleAmmendmentData ? 'status-overflow' : ''} `}><span>{status}</span></p>{<button className='see-data-btn' onClick={() => { setToggleAmmendmentStatus(!toggleAmmendmentData) }}>Show {toggleAmmendmentData ? 'all' : 'less'} data</button>}</>
+        return statusWithButton
+    }
 
     useEffect(() => {
         dispatch(getTechnologySelectList(() => { }))
@@ -209,6 +222,8 @@ function SimulationApprovalSummary(props) {
             //     quantity: 1
             // }
             setdataForAssemblyImpactForFg(SimulatedCostingList)
+            setShowButton(status.length > 245 ? true : false)
+            setAmmendmentButton(amendentStatus.length > 245 ? true : false)
         }))
         const obj = {
             approvalTokenNumber: approvalNumber
@@ -891,7 +906,7 @@ function SimulationApprovalSummary(props) {
 
                         {recordInsertStatusBox &&
                             <div className="error-box-container">
-                                <Errorbox customClass={errorBoxClass()} errorText={status} />
+                                <Errorbox customClass={errorBoxClass()} errorText={showbutton ? funcForErrorBoxButton() : status} />
                                 <img
                                     className="float-right"
                                     alt={""}
@@ -903,7 +918,7 @@ function SimulationApprovalSummary(props) {
 
                         {amendmentStatusBox &&
                             <div className="error-box-container">
-                                <Errorbox customClass={errorBoxClass()} errorText={amendentStatus} />
+                                <Errorbox customClass={errorBoxClass()} errorText={ammendentButton ? funcForErrorBoxButtonForAmmendment() : amendentStatus} />
                                 <img
                                     className="float-right"
                                     alt={""}
