@@ -675,8 +675,6 @@ function RawMaterialCost(props) {
         finishWeight = weightData.FinishWeight
         netLandedCost = weightData.RawMaterialCost
       }
-
-
       const FinishWeight = finishWeight
       const GrossWeight = grossWeight
       const RecoveryPercentage = weightData.RecoveryPercentage
