@@ -685,7 +685,6 @@ function ReportListing(props) {
                         {/* <AgGridColumn field='Status' headerName='Status' cellRenderer='hyphenFormatter'></AgGridColumn> */}
                         <AgGridColumn field="LineNumber" headerName="Line Number" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="SANumber" headerName="SANumber" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                        <AgGridColumn field="CreatedBy" headerName="CreatedBy" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn width={"240px"} pinned="right" field="DisplayStatus" headerName="Status" cellRenderer={'statusFormatter'}></AgGridColumn>
                     </AgGridReact>
                     <div className="paging-container d-inline-block float-right dropdown-btn">
