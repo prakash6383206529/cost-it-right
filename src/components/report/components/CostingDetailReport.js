@@ -16,7 +16,7 @@ import { ReportMaster, ReportSAPMaster, EMPTY_DATA } from '../../../config/const
 import LoaderCustom from '../../common/LoaderCustom';
 import WarningMessage from '../../common/WarningMessage'
 import CostingDetailSimulationDrawer from '../../simulation/components/CostingDetailSimulationDrawer'
-import { formViewData, checkForDecimalAndNull } from '../../../helper'
+import { formViewData, checkForDecimalAndNull, userDetails } from '../../../helper'
 import { getCostingReport } from '.././actions/ReportListing'
 
 
@@ -41,14 +41,14 @@ function ReportListing(props) {
     const [isLoader, setLoader] = useState(true)
     const [isOpen, setIsOpen] = useState(false)
     const [userId, setUserId] = useState(false)
-    const [warningMessage, setWarningMessage] = useState(true)
+    const [warningMessage, setWarningMessage] = useState(false)
     const [totalRecordCount, setTotalRecordCount] = useState(0)
     const [pageSize10, setPageSize10] = useState(true)
     const [pageSize50, setPageSize50] = useState(false)
     const [pageSize100, setPageSize100] = useState(false)
     const [pageNo, setPageNo] = useState(1)
     const [currentRowIndex, setCurrentRowIndex] = useState(0)
-    const [floatingFilterData, setFloatingFilterData] = useState({ CostingNumber: "", TechnologyName: "", AmorizationQuantity: "", AnyOtherCost: "", CostingVersion: "", DisplayStatus: "", EffectiveDate: "", Currency: "", DepartmentCode: "", DepartmentName: "", DiscountCost: "", ECNNumber: "", FinalPOPrice: "", RawMaterialFinishWeight: "", FreightCost: "", FreightPercentage: "", FreightType: "", GrossWeight: "", HundiOrDiscountValue: "", ICCApplicability: "", ICCCost: "", ICCInterestRate: "", ICCOn: "", MasterBatchTotal: "", ModelTypeForOverheadAndProfit: "", ModifiedByName: "", ModifiedByUserName: "", ModifiedDate: "", NetBoughtOutPartCost: "", NetConversionCost: "", NetConvertedPOPrice: "", NetDiscountsCost: "", NetFreightPackaging: "", NetFreightPackagingCost: "", NetICCCost: "", NetOperationCost: "", NetOtherCost: "", NetOverheadAndProfitCost: "", NetPOPrice: "", NetPOPriceINR: "", NetPOPriceInCurrency: "", NetPOPriceOtherCurrency: "", NetProcessCost: "", NetRawMaterialsCost: "", NetSurfaceTreatmentCost: "", NetToolCost: "", NetTotalRMBOPCC: "", OtherCost: "", OtherCostPercentage: "", OverheadApplicability: "", OverheadCombinedCost: "", OverheadCost: "", OverheadOn: "", OverheadPercentage: "", PackagingCost: "", PackagingCostPercentage: "", PartName: "", PartNumber: "", PartType: "", PaymentTermCost: "", PaymentTermsOn: "", PlantCode: "", PlantName: "", ProfitApplicability: "", ProfitCost: "", ProfitOn: "", ProfitPercentage: "", RMGrade: "", RMSpecification: "", RawMaterialCode: "", RawMaterialGrossWeight: "", RawMaterialName: "", RawMaterialRate: "", RawMaterialScrapWeight: "", RawMaterialSpecification: "", RecordInsertedBy: "", RejectOn: "", RejectionApplicability: "", RejectionCost: "", RejectionPercentage: "", Remark: "", Rev: "", RevisionNumber: "", ScrapRate: "", ScrapWeight: "", SurfaceTreatmentCost: "", ToolCost: "", ToolLife: "", ToolMaintenaceCost: "", ToolPrice: "", ToolQuantity: "", TotalCost: "", TotalOtherCost: "", TotalRecordCount: "", TransportationCost: "", VendorCode: "", VendorName: "", Version: "", RawMaterialGrade: "", HundiOrDiscountPercentage: "", FromDate: "", ToDate: "" })
+    const [floatingFilterData, setFloatingFilterData] = useState({ CostingNumber: "", TechnologyName: "", AmorizationQuantity: "", AnyOtherCost: "", CostingVersion: "", DisplayStatus: "", EffectiveDate: "", Currency: "", DepartmentCode: userDetails().Role === 'SuperAdmin' || userDetails().Role === 'Group Category Head' ? "" : JSON.parse(localStorage.getItem('departmentList')), DepartmentName: "", DiscountCost: "", ECNNumber: "", FinalPOPrice: "", RawMaterialFinishWeight: "", FreightCost: "", FreightPercentage: "", FreightType: "", GrossWeight: "", HundiOrDiscountValue: "", ICCApplicability: "", ICCCost: "", ICCInterestRate: "", ICCOn: "", MasterBatchTotal: "", ModelTypeForOverheadAndProfit: "", ModifiedByName: "", ModifiedByUserName: "", ModifiedDate: "", NetBoughtOutPartCost: "", NetConversionCost: "", NetConvertedPOPrice: "", NetDiscountsCost: "", NetFreightPackaging: "", NetFreightPackagingCost: "", NetICCCost: "", NetOperationCost: "", NetOtherCost: "", NetOverheadAndProfitCost: "", NetPOPrice: "", NetPOPriceINR: "", NetPOPriceInCurrency: "", NetPOPriceOtherCurrency: "", NetProcessCost: "", NetRawMaterialsCost: "", NetSurfaceTreatmentCost: "", NetToolCost: "", NetTotalRMBOPCC: "", OtherCost: "", OtherCostPercentage: "", OverheadApplicability: "", OverheadCombinedCost: "", OverheadCost: "", OverheadOn: "", OverheadPercentage: "", PackagingCost: "", PackagingCostPercentage: "", PartName: "", PartNumber: "", PartType: "", PaymentTermCost: "", PaymentTermsOn: "", PlantCode: "", PlantName: "", ProfitApplicability: "", ProfitCost: "", ProfitOn: "", ProfitPercentage: "", RMGrade: "", RMSpecification: "", RawMaterialCode: "", RawMaterialGrossWeight: "", RawMaterialName: "", RawMaterialRate: "", RawMaterialScrapWeight: "", RawMaterialSpecification: "", RecordInsertedBy: "", RejectOn: "", RejectionApplicability: "", RejectionCost: "", RejectionPercentage: "", Remark: "", Rev: "", RevisionNumber: "", ScrapRate: "", ScrapWeight: "", SurfaceTreatmentCost: "", ToolCost: "", ToolLife: "", ToolMaintenaceCost: "", ToolPrice: "", ToolQuantity: "", TotalCost: "", TotalOtherCost: "", TotalRecordCount: "", TransportationCost: "", VendorCode: "", VendorName: "", Version: "", RawMaterialGrade: "", HundiOrDiscountPercentage: "", FromDate: "", ToDate: "" })
     const [enableSearchFilterSearchButton, setEnableSearchFilterButton] = useState(true)
     const [reportListingDataStateArray, setReportListingDataStateArray] = useState([])
 
@@ -205,7 +205,7 @@ function ReportListing(props) {
    * @description getting approval list table
    */
 
-    const getTableData = (skip, take, isPagination, data, isLastWeek) => {
+    const getTableData = (skip, take, isPagination, data, isLastWeek, isCallApi) => {
         let newData = {}
         if (isLastWeek) {
             let currentDate = new Date()
@@ -219,13 +219,13 @@ function ReportListing(props) {
         else {
             newData = data
         }
-        dispatch(getCostingReport(skip, take, isPagination, newData, isLastWeek, (res) => {
+        dispatch(getCostingReport(skip, take, isPagination, newData, isLastWeek, isCallApi, (res) => {
             if (res) {
                 let isReset = true
                 setLoader(false)
                 setTimeout(() => {
                     for (var prop in floatingFilterData) {
-                        if (floatingFilterData[prop] !== "") {
+                        if (prop !== 'DepartmentCode' && floatingFilterData[prop] !== "") {
                             isReset = false
                         }
                     }
@@ -239,7 +239,7 @@ function ReportListing(props) {
     useEffect(() => {
 
         setLoader(true)
-        getTableData(0, 100, true, floatingFilterData, false);
+        getTableData(0, 100, true, floatingFilterData, false, true);
 
     }, [])
 
@@ -269,10 +269,10 @@ function ReportListing(props) {
     const apiCall = (no) => {                      //COMMON FUNCTION FOR PREVIOUS & NEXT BUTTON
 
         if (floatingFilterData.FromDate) {
-            getTableData(no, 100, true, floatingFilterData, true);
+            getTableData(no, 100, true, floatingFilterData, true, true);
         } else {
 
-            getTableData(no, 100, true, floatingFilterData, false);
+            getTableData(no, 100, true, floatingFilterData, false, true);
         }
     }
 
@@ -308,7 +308,12 @@ function ReportListing(props) {
             if (value.column.colId === "EffectiveDate") {
                 return false
             }
-            setFloatingFilterData({ ...floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter })
+
+            if (value.column.colId !== "DepartmentCode" && (userDetails().Role !== 'SuperAdmin' && userDetails().Role !== 'Group Category Head')) {
+                setFloatingFilterData({ ...floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter, DepartmentCode: JSON.parse(localStorage.getItem('departmentList')) })
+            } else {
+                setFloatingFilterData({ ...floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter })
+            }
         }
         filterClick = false
 
@@ -320,7 +325,26 @@ function ReportListing(props) {
         setCurrentRowIndex(0)
         gridOptions?.columnApi?.resetColumnState();
         //gridOptions?.api?.setFilterModel(null);
-        getTableData(0, 100, true, floatingFilterData, false);
+
+        let departmentList = JSON.parse(localStorage.getItem('departmentList'))
+        departmentList = departmentList.split(",")
+        const found = departmentList.find(element => {
+            return element.toLowerCase() === floatingFilterData.DepartmentCode.toLowerCase()
+        })
+
+
+        if (floatingFilterData.DepartmentCode !== JSON.parse(localStorage.getItem('departmentList')) && (userDetails().Role !== 'SuperAdmin' && userDetails().Role !== 'Group Category Head')) {
+
+            if (found !== undefined) {
+                getTableData(0, 100, true, floatingFilterData, false, true);
+            } else {
+                getTableData(0, 100, true, floatingFilterData, false, false);
+            }
+        }
+        else {
+            getTableData(0, 100, true, floatingFilterData, false, true);
+
+        }
         setEnableSearchFilterButton(true)
         filterClick = true
         setSearchButtonClicked(true)
@@ -404,11 +428,19 @@ function ReportListing(props) {
         for (var prop in floatingFilterData) {
             floatingFilterData[prop] = ""
         }
+
+        if (userDetails().Role === 'SuperAdmin' || userDetails().Role === 'Group Category Head') {
+            floatingFilterData.DepartmentCode = ""
+
+        } else {
+            floatingFilterData.DepartmentCode = JSON.parse(localStorage.getItem('departmentList'))
+        }
+
         setFloatingFilterData(floatingFilterData)
         setWarningMessage(false)
         setPageNo(1)
         setCurrentRowIndex(0)
-        getTableData(0, 100, true, floatingFilterData, false);
+        getTableData(0, 100, true, floatingFilterData, false, true);
     }
 
     const onRowSelect = () => {
@@ -492,14 +524,14 @@ function ReportListing(props) {
         const tempRequestedBy = getValues('requestedBy') ? getValues('requestedBy').value : '00000000-0000-0000-0000-000000000000'
         const tempStatus = getValues('status') ? getValues('status').value : '00000000-0000-0000-0000-000000000000'
         // const type_of_costing = 
-        getTableData(tempPartNo, tempcreatedBy, tempRequestedBy, tempStatus)
+        getTableData(tempPartNo, tempcreatedBy, tempRequestedBy, tempStatus, true)
     }
 
     const lastWeekFilter = () => {
 
         setPageNo(1)
         setCurrentRowIndex(0)
-        getTableData(0, 100, true, floatingFilterData, true);
+        getTableData(0, 100, true, floatingFilterData, true, true);
     }
     return (
         <div className="container-fluid report-listing-page ag-grid-react">
@@ -508,18 +540,18 @@ function ReportListing(props) {
 
                 <h1 className="mb-0">Costing Details Report</h1>
 
-                <Row className="pt-3 blue-before ">
-                    <Col md="3">
+                <Row className="pt-3 mb-2 blue-before">
+                    <Col md="2" lg="2">
                         <button title="Last Week" type="button" class="user-btn mr5" onClick={() => lastWeekFilter()}><div class="swap rotate90 mr-2"></div>Last Week</button>
                     </Col>
-                    <Col md="9" lg="9" className="search-user-block mb-3">
+                    <Col md="10" lg="10" className="search-user-block mb-3 px-0">
                         <div className="d-flex justify-content-end bd-highlight excel-btn w100 mb-4 pb-2">
                             <div className="warning-message d-flex align-items-center">
                                 {warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                             </div>
                             <div>
                                 <button disabled={enableSearchFilterSearchButton} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
-                                <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => resetState()}></button>
+                                <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => resetState()}><div className='refresh mr-0'></div></button>
                                 <ExcelFile filename={ReportMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
                                     {renderColumn(ReportMaster)}
                                 </ExcelFile>
@@ -539,7 +571,7 @@ function ReportListing(props) {
             </form>
 
 
-            <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+            <div className={`ag-grid-wrapper height-width-wrapper  ${reportListingData && reportListingData?.length <= 0 ? "overlay-contain" : ""}`}>
                 {/* <div className="ag-grid-header">
                     <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => onFilterTextBoxChanged(e)} />
                 </div> */}
@@ -560,7 +592,6 @@ function ReportListing(props) {
                         noRowsOverlayComponent={'customNoRowsOverlay'}
                         noRowsOverlayComponentParams={{
                             title: EMPTY_DATA,
-                            imagClass: 'imagClass'
                         }}
                         suppressRowClickSelection={true}
                         suppressPaginationPanel={true}
@@ -636,9 +667,9 @@ function ReportListing(props) {
                         <AgGridColumn field='AnyOtherCost' headerName='Any Other Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                         <AgGridColumn field='EffectiveDate' headerName='Effective Date' cellRenderer='effectiveDateFormatter' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                         <AgGridColumn field='Currency' headerName='Currency' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='NetPOPriceOtherCurrency' headerName='Net PO Price Other Currency' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='NetPOPriceOtherCurrency' headerName='Net PO Price Other Currency' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                         {/* <AgGridColumn field='NetPOPrice' headerName='Net PO Price' cellRenderer='hyphenFormatter'></AgGridColumn> */}
-                        <AgGridColumn field='NetPOPriceINR' headerName='Net PO Price (INR)' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='NetPOPriceINR' headerName='Net PO Price (INR)' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                         <AgGridColumn field='Remark' headerName='Remark' cellRenderer='hyphenFormatter'></AgGridColumn>
                         {/* <AgGridColumn field='BaseCostingId' headerName='BaseCostingId' cellRenderer='hyphenFormatter'></AgGridColumn> */}
                         {/* <AgGridColumn field='CreatedBy' headerName='CreatedBy' cellRenderer='hyphenFormatter'></AgGridColumn>
@@ -653,10 +684,9 @@ function ReportListing(props) {
                         {/* <AgGridColumn field='Status' headerName='Status' cellRenderer='hyphenFormatter'></AgGridColumn> */}
                         <AgGridColumn field="LineNumber" headerName="Line Number" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="SANumber" headerName="SANumber" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                        <AgGridColumn field="CreatedBy" headerName="CreatedBy" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn width={"240px"} pinned="right" field="DisplayStatus" headerName="Status" cellRenderer={'statusFormatter'}></AgGridColumn>
                     </AgGridReact>
-                    <div className="paging-container d-inline-block float-right">
+                    <div className="paging-container d-inline-block float-right dropdown-btn">
                         <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
                             <option value="10" selected={true}>10</option>
                             <option value="50">50</option>

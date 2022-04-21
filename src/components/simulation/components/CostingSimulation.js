@@ -835,7 +835,9 @@ function CostingSimulation(props) {
         params.columnApi.getAllColumns().forEach(function (column) {
             allColumnIds.push(column.colId);
         });
+
         window.screen.width >= 1921 && gridRef.current.api.sizeColumnsToFit();
+
     };
 
     const onPageSizeChanged = (newPageSize) => {
@@ -952,7 +954,7 @@ function CostingSimulation(props) {
                                 </Row>
                                 <Row>
                                     <Col>
-                                        <div className={`ag-grid-wrapper height-width-wrapper ${tableData && tableData?.length <= 0 ? "overlay-contain" : ""}`}>
+                                        <div className={`ag-grid-wrapper other-costing-simulation ${tableData && tableData?.length <= 0 ? "overlay-contain" : ""}`}>
                                             <div className="ag-grid-header">
                                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                                             </div>
@@ -962,6 +964,7 @@ function CostingSimulation(props) {
                                                 <AgGridReact
                                                     defaultColDef={defaultColDef}
                                                     floatingFilter={true}
+                                                    ref={gridRef}
                                                     domLayout='autoHeight'
                                                     floatingFilter={true}
                                                     // columnDefs={c}
@@ -1067,7 +1070,7 @@ function CostingSimulation(props) {
                                                         <>
                                                             <AgGridColumn width={220} field="OldNetPOPriceOtherCurrency" headerName='PO Price Old(in Currency)' cellRenderer='oldPOCurrencyFormatter'></AgGridColumn>
                                                             <AgGridColumn width={220} field="NewNetPOPriceOtherCurrency" headerName='PO Price New (in Currency)' cellRenderer='newPOCurrencyFormatter'></AgGridColumn>
-                                                            <AgGridColumn width={170} field="POVariance" headerName='PO Variance' ></AgGridColumn>
+                                                            <AgGridColumn width={170} field="POVariance" headerName='PO Variance' cellRenderer={decimalFormatter}></AgGridColumn>
                                                             <AgGridColumn width={170} field="OldExchangeRate" headerName='Exchange Rate Old' cellRenderer='oldExchangeFormatter'></AgGridColumn>
                                                             <AgGridColumn width={170} field="NewExchangeRate" headerName='Exchange Rate New' cellRenderer='newExchangeFormatter'></AgGridColumn>
                                                             <AgGridColumn width={140} field="ERVariance" headerName='Variance' cellRenderer='varianceFormatter'></AgGridColumn>
