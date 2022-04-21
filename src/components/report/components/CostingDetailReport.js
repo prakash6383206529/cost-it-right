@@ -41,7 +41,7 @@ function ReportListing(props) {
     const [isLoader, setLoader] = useState(true)
     const [isOpen, setIsOpen] = useState(false)
     const [userId, setUserId] = useState(false)
-    const [warningMessage, setWarningMessage] = useState(true)
+    const [warningMessage, setWarningMessage] = useState(false)
     const [totalRecordCount, setTotalRecordCount] = useState(0)
     const [pageSize10, setPageSize10] = useState(true)
     const [pageSize50, setPageSize50] = useState(false)
@@ -225,7 +225,7 @@ function ReportListing(props) {
                 setLoader(false)
                 setTimeout(() => {
                     for (var prop in floatingFilterData) {
-                        if (floatingFilterData[prop] !== "") {
+                        if (prop !== 'DepartmentCode' && floatingFilterData[prop] !== "") {
                             isReset = false
                         }
                     }
