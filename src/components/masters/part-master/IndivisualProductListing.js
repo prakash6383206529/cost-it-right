@@ -300,9 +300,9 @@ class IndivisualProductListing extends Component {
                 item.DrawingNumber = ' '
             } else if (item.EffectiveDate?.includes('T')) {
                 item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
-            } if (item.IsConsideredForMBOM === true) {
+            } else if (item.IsConsideredForMBOM === true) {
                 item.IsConsideredForMBOM = 'Yes'
-            } if (item.IsConsideredForMBOM === false) {
+            } else if (item.IsConsideredForMBOM === false) {
                 item.IsConsideredForMBOM = 'No'
             }
             return item
