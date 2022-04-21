@@ -3169,7 +3169,8 @@ export const USER_LISTING_DOWNLOAD_EXCEl = [
     { label: "Mobile No", value: "Mobile", },
     { label: "Phone No", value: "PhoneNumber", },
     { label: "Department", value: "DepartmentName", },
-    { label: "Role", value: "RoleName", }
+    { label: "Role", value: "RoleName", },
+    { label: "IsActive", value: "IsActive", }
 
 ]
 
