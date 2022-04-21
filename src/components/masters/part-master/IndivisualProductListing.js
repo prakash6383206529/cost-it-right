@@ -313,9 +313,9 @@ class IndivisualProductListing extends Component {
             }
             else if (item.EffectiveDate?.includes('T')) {
                 item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
-            } else if (item.IsConsideredForMBOM === true) {
+            } if (item.IsConsideredForMBOM === true) {
                 item.IsConsideredForMBOM = 'Yes'
-            } else if (item.IsConsideredForMBOM === false) {
+            } if (item.IsConsideredForMBOM === false) {
                 item.IsConsideredForMBOM = 'No'
             }
             return item
@@ -445,6 +445,7 @@ class IndivisualProductListing extends Component {
                             <AgGridColumn field="ProductGroupCode" headerName="Group Code"></AgGridColumn>
                             <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="IsConsideredForMBOM" headerName="Preferred for Impact Calculation" cellRenderer={'impactCalculationFormatter'}></AgGridColumn>
+                            <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                             <AgGridColumn field="ProductId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                         </AgGridReact>
