@@ -235,20 +235,6 @@ class IndivisualProductListing extends Component {
         }
     }
 
-    /**
-    * @method impactCalculationFormatter
-    * @description Renders buttons
-    */
-    impactCalculationFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        let val = ''
-        if (cellValue === true) {
-            val = 'Yes'
-        } else if (cellValue === false) {
-            val = 'No'
-        }
-        return val
-    }
 
     renderEffectiveDate = () => {
         return <> Effective <br /> Date </>
@@ -358,7 +344,6 @@ class IndivisualProductListing extends Component {
             customNoRowsOverlay: NoContentFound,
             hyphenFormatter: this.hyphenFormatter,
             effectiveDateFormatter: this.effectiveDateFormatter,
-            impactCalculationFormatter: this.impactCalculationFormatter
         };
 
         return (
@@ -446,7 +431,7 @@ class IndivisualProductListing extends Component {
                             <AgGridColumn field="ECNNumber" headerName="ECN No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                            <AgGridColumn field="IsConsideredForMBOM" headerName="Preferred for Impact Calculation" cellRenderer={'impactCalculationFormatter'}></AgGridColumn>
+                            <AgGridColumn field="IsConsideredForMBOM" headerName="Preferred for Impact Calculation" ></AgGridColumn>
                             <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                             <AgGridColumn field="ProductId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                         </AgGridReact>
