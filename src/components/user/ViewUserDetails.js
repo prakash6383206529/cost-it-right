@@ -54,14 +54,6 @@ class ViewUserDetails extends Component {
     }
   }
 
-  componentDidUpdate() {
-    // Object.keys(errors)
-    // .map((fieldName) => {
-    //   return `[name="${fieldName}"]`;
-    // })
-    // .join(",")
-  }
-
   getUserPermission = (UserId) => {
     this.props.getPermissionByUser(UserId, (res) => {
       if (res && res.data && res.data.Data) {
@@ -263,7 +255,7 @@ class ViewUserDetails extends Component {
                         customClass={'role-department-details'} />
                     </div>
                     <div className={'right-details pt-2'}>
-                      {`${registerUserData ? registerUserData.RoleName : ''} (${department})`}
+                      {`${registerUserData ? registerUserData.RoleName : ''} (${department ? department : '-'})`}
                       {/* <div
                         onClick={this.permissionToggle}
                         className={`${isPermissionOpen ? 'minus-icon' : 'plus-icon'} pull-right`}>
