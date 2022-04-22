@@ -222,8 +222,6 @@ function SimulationApprovalSummary(props) {
             //     quantity: 1
             // }
             setdataForAssemblyImpactForFg(SimulatedCostingList)
-            setShowButton(status.length > 245 ? true : false)
-            setAmmendmentButton(amendentStatus.length > 245 ? true : false)
         }))
         const obj = {
             approvalTokenNumber: approvalNumber
@@ -235,13 +233,14 @@ function SimulationApprovalSummary(props) {
                 const { RecordInsertStatus, IsSuccessfullyInsert, AmmendentStatus, IsAmmendentDone, AmmendentNumber } = res.data.DataList[0]
                 setStatus(RecordInsertStatus)
                 setIsSuccessfullyInsert(IsSuccessfullyInsert)
+                setShowButton(RecordInsertStatus.length > 245 ? true : false)
                 if (IsAmmendentDone) {
                     setAmendentstatus(`Amendment Number: ${AmmendentNumber},\u00A0 ${AmmendentStatus}`)
                 } else {
                     setAmendentstatus(`Amendment Status: \u00A0 ${(AmmendentStatus && AmmendentStatus !== null && AmmendentStatus !== "") ? AmmendentStatus : "-"
                         } `)
                 }
-
+                setAmmendmentButton(amendentStatus.length > 245 ? true : false)
             }
         }))
     }, [])

@@ -233,7 +233,7 @@ function SimulationInsights(props) {
     // <div>{`hello`}</div>
     <div className="container-fluid report-listing-page ag-grid-react">
       {loader && <LoaderCustom />}
-      <h1 className="mb-0">Report</h1>
+      <h1 className="mb-0">Simulation Insights Report</h1>
       <Row className="pt-4 blue-before ">
         <Col md="6" lg="6" className="search-user-block mb-3">
           <div className="d-flex justify-content-end bd-highlight excel-btn w100">
