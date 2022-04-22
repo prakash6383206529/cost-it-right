@@ -307,7 +307,7 @@ function ColdForging(props) {
     tableV && tableV.map(item => (
       tempArray.push({ TypesOfMachiningStock: item.TypesOfMachiningStock, TypesOfMachiningStockId: item.TypesOfMachiningStockId, Description: item.Description, MajorDiameter: item.MajorDiameter, MinorDiameter: item.MinorDiameter, Length: item.Length, Breadth: item.Breadth, Height: item.Height, No: item.No, GrossWeight: item.GrossWeight, Volume: item.Volume, ForgingWeighCalculatorId: "00000000-0000-0000-0000-000000000000" })
     ))
-    obj.CostingForgingRawMaterialDetails = tempArray
+    obj.ForgingStockDetails = tempArray
     obj.TotalMachiningStock = totalMachiningStock
 
 
