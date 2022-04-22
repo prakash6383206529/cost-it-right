@@ -19,7 +19,7 @@ class ViewUserDetails extends Component {
       isTechnologyOpen: false,
       Modules: [],
       TechnologyLevelGrid: [],
-      department: this.props?.registerUserData?.Departments && this.props?.registerUserData?.Departments[0]?.DepartmentName,
+      department: '',
       loader: false,
     }
   }
