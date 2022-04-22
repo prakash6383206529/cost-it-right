@@ -222,7 +222,7 @@ function SurfaceTreatmentCost(props) {
                     {initialConfiguration &&
                       initialConfiguration.IsOperationLabourRateConfigure && <th>{`Labour Quantity`}</th>}
                     <th>{`Cost`}</th>
-                    <th>{`Action`}</th>
+                    <th style={{ textAlign: "right" }}>{`Action`}</th>
                   </tr>
                 </thead>
                 <tbody >
@@ -316,8 +316,10 @@ function SurfaceTreatmentCost(props) {
                               initialConfiguration.IsOperationLabourRateConfigure && <td>{item.IsLabourRateExist ? item.LabourQuantity : '-'}</td>}
                             <td>{item.SurfaceTreatmentCost ? checkForDecimalAndNull(item.SurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
                             <td>
-                              <button className="Edit mt15 mr-2" type={'button'} disabled={(CostingViewMode || IsLocked) ? true : false} onClick={() => editItem(index)} />
-                              <button className="Delete mt15" type={'button'} disabled={(CostingViewMode || IsLocked) ? true : false} onClick={() => deleteItem(index, item.OperationId)} />
+                              <div className='action-btn-wrapper'>
+                                <button className="Edit" type={'button'} disabled={(CostingViewMode || IsLocked) ? true : false} onClick={() => editItem(index)} />
+                                <button className="Delete" type={'button'} disabled={(CostingViewMode || IsLocked) ? true : false} onClick={() => deleteItem(index, item.OperationId)} />
+                              </div>
                             </td>
                           </tr>
                       )
