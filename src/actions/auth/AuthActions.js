@@ -223,6 +223,10 @@ export function getAllUserDataAPI(data, callback) {
 */
 export function getUserDataAPI(UserId, callback) {
     return (dispatch) => {
+        dispatch({
+            type: GET_USER_UNIT_DATA_SUCCESS,
+            payload: [],
+        });
         dispatch({ type: API_REQUEST });
         const request = axios.get(`${API.getUserDataAPI}?userId=${UserId}`, headers);
         request.then((response) => {
