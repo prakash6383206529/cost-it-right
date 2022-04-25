@@ -6,6 +6,7 @@ import { checkForDecimalAndNull, checkForNull, } from '../../../../../helper';
 import PartSurfaceTreatment from './PartSurfaceTreatment';
 import SurfaceTreatment from '.';
 import { ViewCostingContext } from '../../CostingDetails';
+import _ from 'lodash'
 import { EMPTY_GUID } from '../../../../../config/constants';
 
 function AssemblySurfaceTreatment(props) {
@@ -36,10 +37,19 @@ function AssemblySurfaceTreatment(props) {
         AssemCostingId: costData.CostingId,
         SubAsmCostingId: props.SubAssembId !== null ? props.SubAssembId : EMPTY_GUID,
       }
-      dispatch(getSurfaceTreatmentTabData(data, false, (res) => {
+      dispatch(getSurfaceTreatmentTabData(data, true, (res) => {
         if (res && res.data && res.data.Result) {
           let Data = res.data.DataList[0];
+          // props.toggleAssembly(Params, Data)
+          let array = [];
+          array = JSON.parse(localStorage.getItem('surfaceCostingArray'))
+          Data.CostingChildPartDetails && Data.CostingChildPartDetails.map(item => {
+            array.push(item)
+          })
+          let uniqueArary = _.uniqBy(array, v => JSON.stringify([v.PartNumber, v.AssemblyPartNumber]))
+          localStorage.setItem('surfaceCostingArray', JSON.stringify(uniqueArary));
           props.toggleAssembly(Params, Data)
+
           if (IsCollapse === false) {
             DrawerToggle()
           }
@@ -74,6 +84,9 @@ function AssemblySurfaceTreatment(props) {
         setPartDetails={props.setPartDetails}
         setSurfaceCost={props.setSurfaceCost}
         setTransportationCost={props.setTransportationCost}
+        setAssemblySurfaceCost={props.setAssemblySurfaceCost}
+        setAssemblyTransportationCost={props.setAssemblyTransportationCost}
+        IsAssemblyCalculation={true}
         SubAssembId={item.CostingId}
       />
     }
@@ -91,6 +104,7 @@ function AssemblySurfaceTreatment(props) {
       setTransportationCost={props.setTransportationCost}
       setAssemblySurfaceCost={props.setAssemblySurfaceCost}
       setAssemblyTransportationCost={props.setAssemblyTransportationCost}
+      IsAssemblyCalculation={true}
       SubAssembId={item.CostingId}
     />
   })
@@ -103,7 +117,7 @@ function AssemblySurfaceTreatment(props) {
     <>
       <tr>
         <div className="accordian-row" style={{ display: 'contents' }}
-        // onClick={() => { toggle(item.BOMLevel, item.PartNumber, true) }} // UNCOMMENT IT WHEN CHILD PART SURFACE TREATMENT START
+          onClick={() => { toggle(item.BOMLevel, item.PartNumber, true) }} // UNCOMMENT IT WHEN CHILD PART SURFACE TREATMENT START
         >
 
           <td className='part-overflow'>
@@ -148,7 +162,7 @@ function AssemblySurfaceTreatment(props) {
         </div>
         <td>
           <div className='d-flex align-items-center justify-content-end'>
-            {!CostingViewMode && (item.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostWithQuantitys !== 0) ?
+            {!CostingViewMode && (item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly !== 0 || item.CostingPartDetails.TotalTransportationCostPerAssembly !== 0) ?
               <button
                 type="button"
                 className={'user-btn surface-treatment-btn'}
@@ -158,8 +172,9 @@ function AssemblySurfaceTreatment(props) {
                   DrawerToggle()
                 }}
               >
-                <div className={'fa fa-eye pr-1'}></div>Surface T</button>
+                <div className={'fa fa-eye pr-1'}></div>Surface Tr.</button>
               :
+
               <button
                 type="button"
                 className={'user-btn surface-treatment-btn'}
@@ -181,6 +196,7 @@ function AssemblySurfaceTreatment(props) {
       {item.IsOpen && nestedPartComponent}
 
       {item.IsOpen && nestedAssembly}
+
 
       {IsDrawerOpen && <SurfaceTreatment
         isOpen={IsDrawerOpen}
