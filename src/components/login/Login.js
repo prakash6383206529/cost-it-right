@@ -77,7 +77,18 @@ class Login extends Component {
         this.setState({ isLoader: false, isSubmitted: false });
 
         let userDetail = formatLoginResult(res.data);
+        let departmentList = ''
+        const dept = userDetail && userDetail.Department.map((item) => {
+          if (item.Role === 'SuperAdmin') {
+            return ''
+          } else {
+            return item.DepartmentCode
+          }
+
+        })
+        departmentList = dept.join(',')
         reactLocalStorage.setObject("userDetail", userDetail);
+        reactLocalStorage.setObject("departmentList", departmentList);
         setTimeout(() => {
           this.setState({ inputLoader: false })
         }, 1500)
