@@ -119,9 +119,7 @@ function SimulationApprovalSummary(props) {
     const isExchangeRate = String(SimulationTechnologyId) === EXCHNAGERATE;
 
     const simulationAssemblyListSummary = useSelector((state) => state.simulation.simulationAssemblyListSummary)
-
     const dispatch = useDispatch()
-
     const partSelectList = useSelector((state) => state.costing.partSelectList)
     const statusSelectList = useSelector((state) => state.approval.costingStatusList)
     const userList = useSelector(state => state.auth.userList)
@@ -130,6 +128,8 @@ function SimulationApprovalSummary(props) {
     const { keysForDownloadSummary } = useSelector(state => state.simulation)
     const [lastRevisionDataAccordian, setLastRevisionDataAccordian] = useState(impactedMasterDataListForLastRevisionData?.length >= 0 ? false : true)
     const [editWarning, setEditWarning] = useState(false)
+    const [toggleSeeData, setToggleSeeData] = useState(true)
+    const [showbutton, setShowButton] = useState(false)
 
     const headerName = ['Revision No.', 'Name', 'Old Cost/Pc', 'New Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
     const headerNameAssembly = ['Revision No.', 'Name', 'Old PO Price/Assembly', 'New PO Price/Assembly', 'Level', 'Variance/Assembly', '', '', '', 'Assembly Number']
@@ -139,6 +139,11 @@ function SimulationApprovalSummary(props) {
         reValidateMode: 'onChange',
     })
 
+    const funcForErrorBoxButton = () => {
+
+        const statusWithButton = <><p className={`${toggleSeeData ? 'status-overflow' : ''} `}><span>{status}</span></p>{<button className='see-data-btn' onClick={() => { setToggleSeeData(!toggleSeeData) }}>Show {toggleSeeData ? 'all' : 'less'} data</button>}</>
+        return statusWithButton
+    }
 
     useEffect(() => {
         dispatch(getTechnologySelectList(() => { }))
@@ -209,6 +214,8 @@ function SimulationApprovalSummary(props) {
             //     quantity: 1
             // }
             setdataForAssemblyImpactForFg(SimulatedCostingList)
+
+
         }))
 
         const obj = {
@@ -219,7 +226,9 @@ function SimulationApprovalSummary(props) {
 
             if (res.status !== 204) {
                 const { Status, IsSuccessfullyUpdated } = res.data.DataList[0]
+                console.log('Status: ', Status);
                 setStatus(Status)
+                setShowButton(Status.length > 245 ? true : false)
                 setIsSuccessfullyUpdated(IsSuccessfullyUpdated)
             }
         }))
@@ -992,7 +1001,7 @@ function SimulationApprovalSummary(props) {
                     <CalculatorWrapper />
                     {loader && <LoaderCustom />}
                     <div className={`container-fluid  smh-approval-summary-page ${loader === true ? 'loader-wrapper' : ''}`} id="go-to-top">
-                        <Errorbox customClass={errorBoxClass()} errorText={status} />
+                        <Errorbox customClass={errorBoxClass()} errorText={showbutton ? funcForErrorBoxButton() : status} />
                         <h2 className="heading-main">Approval Summary</h2>
                         <ScrollToTop pointProp={"go-to-top"} />
                         <Row>
