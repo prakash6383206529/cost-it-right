@@ -196,7 +196,7 @@ function ViewConversionCost(props) {
               <tr>
                 {partNumberList.length === 0 && (IsAssemblyCosting && isPDFShow) && <th>{`Part No`}</th>}
                 <th>{`Process Name`}</th>
-                <th>{`Process Description`}</th>
+                <th>{`Technology`}</th>
                 <th>{`Machine Name`}</th>
                 <th>{`Tonnage`}</th>
                 <th>{`UOM`}</th>
@@ -215,7 +215,7 @@ function ViewConversionCost(props) {
                     <tr key={index}>
                       {IsAssemblyCosting && partNumberList.length === 0 && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
                       <td className='text-overflow'><span title={item.ProcessName}>{item.ProcessName ? item.ProcessName : '-'}</span></td>
-                      <td className='text-overflow'><span title={item.ProcessDescription}>{item.ProcessDescription ? item.ProcessDescription : '-'}</span></td>
+                      <td className='text-overflow'><span title={item?.Technologies}>{item?.Technologies ? item?.Technologies : '-'}</span></td>
                       <td>{item.MachineName ? item.MachineName : '-'}</td>
                       <td>{item.Tonnage ? item.Tonnage : '-'}</td>
                       <td>{item.UOM ? item.UOM : '-'}</td>

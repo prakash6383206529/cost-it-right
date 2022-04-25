@@ -10,6 +10,7 @@ import Drawer from '@material-ui/core/Drawer';
 import { EMPTY_GUID, ZBC } from '../../../../config/constants';
 import LoaderCustom from '../../../common/LoaderCustom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
+import { FORGING, Ferrous_Casting, DIE_CASTING } from '../../../../config/masterData'
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 const gridOptions = {};
@@ -40,12 +41,22 @@ function AddProcess(props) {
 
   useEffect(() => {
     if (costData.VendorType === ZBC) {
+      let data = {}
 
-      const data = {
-        PlantId: costData.PlantId,
-        TechnologyId: costData.TechnologyId,
-        CostingId: costData.CostingId,
-        EffectiveDate: CostingEffectiveDate,
+      if (Number(costData.TechnologyId) === Number(FORGING) || Number(costData.TechnologyId) === Number(DIE_CASTING) || Number(costData.TechnologyId) === Number(Ferrous_Casting)) {
+        data = {
+          PlantId: costData.PlantId,
+          TechnologyId: String(`${costData.TechnologyId},14`),
+          CostingId: costData.CostingId,
+          EffectiveDate: CostingEffectiveDate,
+        }
+      } else {
+        data = {
+          PlantId: costData.PlantId,
+          TechnologyId: String(costData.TechnologyId),
+          CostingId: costData.CostingId,
+          EffectiveDate: CostingEffectiveDate,
+        }
       }
       dispatch(getProcessDrawerDataList(data, (res) => {
         if (res && res.status === 200) {
@@ -59,14 +70,26 @@ function AddProcess(props) {
       }))
 
     } else {
-
-      const data = {
-        VendorId: costData.VendorId,
-        TechnologyId: costData.TechnologyId,
-        VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
-        DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID,
-        CostingId: costData.CostingId,
-        EffectiveDate: CostingEffectiveDate,
+      let data = {}
+      if (Number(costData.TechnologyId) === Number(FORGING) || Number(costData.TechnologyId) === Number(DIE_CASTING) || Number(costData.TechnologyId) === Number(Ferrous_Casting)) {
+        data = {
+          VendorId: costData.VendorId,
+          TechnologyId: String(`${costData.TechnologyId},14`),
+          VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
+          DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID,
+          CostingId: costData.CostingId,
+          EffectiveDate: CostingEffectiveDate,
+        }
+      }
+      else {
+        data = {
+          VendorId: costData.VendorId,
+          TechnologyId: String(costData.TechnologyId),
+          VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
+          DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID,
+          CostingId: costData.CostingId,
+          EffectiveDate: CostingEffectiveDate,
+        }
       }
       dispatch(getProcessDrawerVBCDataList(data, (res) => {
         if (res && res.status === 200) {
@@ -78,9 +101,9 @@ function AddProcess(props) {
           setTableDataList([])
         }
       }))
-
     }
   }, []);
+
 
 
   const onRowSelect = (row, isSelected, e) => {
@@ -237,6 +260,7 @@ function AddProcess(props) {
                       >
                         <AgGridColumn field="MachineRateId" hide={true}></AgGridColumn>
                         <AgGridColumn cellClass="has-checkbox" field="ProcessName" headerName="Process Name"  ></AgGridColumn>
+                        <AgGridColumn field='Technologies' headerName='Technology'></AgGridColumn>
                         <AgGridColumn field="MachineNumber" headerName="Machine No."></AgGridColumn>
                         <AgGridColumn field="MachineName" headerName="Machine Name"></AgGridColumn>
                         <AgGridColumn field="MachineTypeName" headerName="Machine Type"></AgGridColumn>

@@ -237,7 +237,8 @@ function ProcessCost(props) {
           UOMType: el.UnitType,
           UOMTypeId: el.UnitTypeId,
           ProductionPerHour: '-',
-          ProcessTechnologyId: el.ProcessTechnologyId
+          ProcessTechnologyId: el.ProcessTechnologyId,
+          Technologies: el.Technologies
         }
       })
 
@@ -492,13 +493,14 @@ function ProcessCost(props) {
                 <thead>
                   <tr>
                     <th style={{ width: "150px" }}>{`Process Name`}</th>
+                    <th style={{ width: "150px" }}>{`Technology`}</th>
                     <th style={{ width: "170px" }}>{`Machine Tonnage`}</th>
                     <th style={{ width: "220px" }}>{`Machine Rate`}</th>
                     <th style={{ width: "220px" }}>{`UOM`}</th>
                     <th style={{ width: "220px" }}>{`Part/Hour`}</th>
                     <th style={{ width: "220px" }}>{`Quantity`}</th>
                     <th style={{ width: "220px" }} >{`Net Cost`}</th>
-                    <th style={{ width: "145px" }}>{`Action`}</th>
+                    <th style={{ width: "145px", textAlign: "right" }}>{`Action`}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -507,6 +509,7 @@ function ProcessCost(props) {
                       return (
                         <tr key={index}>
                           <td className='text-overflow'><span title={item.ProcessName}>{item.ProcessName}</span></td>
+                          <td>{item?.Technologies}</td>
                           <td>{item.Tonnage ? checkForNull(item.Tonnage) : '-'}</td>
                           <td>{item.MHR}</td>
                           <td>{item.UOM}</td>
@@ -568,38 +571,40 @@ function ProcessCost(props) {
                             }
                           </td>
                           <td>
-                            {(!CostingViewMode && !IsLocked) && <button className="Delete" type={'button'} onClick={() => deleteItem(index)} />}
-                            <Popup trigger={<button id={`popUpTriggers${index}`} className="Comment-box ml-2" type={'button'} />}
-                              position="top center">
-                              <TextAreaHookForm
-                                label="Remark:"
-                                name={`${ProcessGridFields}.${index}.remarkPopUp`}
-                                Controller={Controller}
-                                control={control}
-                                register={register}
-                                mandatory={false}
-                                rules={{
-                                  maxLength: {
-                                    value: 75,
-                                    message: "Remark should be less than 75 word"
-                                  },
-                                }}
-                                handleChange={(e) => { }}
-                                defaultValue={item.Remark ?? item.Remark}
-                                className=""
-                                customClassName={"withBorder"}
-                                errors={errors && errors.ProcessGridFields && errors.ProcessGridFields[index] !== undefined ? errors.ProcessGridFields[index].remarkPopUp : ''}
-                                //errors={errors && errors.remarkPopUp && errors.remarkPopUp[index] !== undefined ? errors.remarkPopUp[index] : ''}                        
-                                disabled={(CostingViewMode || IsLocked) ? true : false}
-                                hidden={false}
-                              />
-                              <Row>
-                                <Col md="12" className='remark-btn-container'>
-                                  <button className='submit-button mr-2' disabled={(CostingViewMode || IsLocked) ? true : false} onClick={() => onRemarkPopUpClickk(index)} > <div className='save-icon'></div> </button>
-                                  <button className='reset' onClick={() => onRemarkPopUpClosee(index)} > <div className='cancel-icon'></div></button>
-                                </Col>
-                              </Row>
-                            </Popup>
+                            <div className='action-btn-wrapper'>
+                              {(!CostingViewMode && !IsLocked) && <button className="Delete" type={'button'} onClick={() => deleteItem(index)} />}
+                              <Popup trigger={<button id={`popUpTriggers${index}`} className="Comment-box" type={'button'} />}
+                                position="top center">
+                                <TextAreaHookForm
+                                  label="Remark:"
+                                  name={`${ProcessGridFields}.${index}.remarkPopUp`}
+                                  Controller={Controller}
+                                  control={control}
+                                  register={register}
+                                  mandatory={false}
+                                  rules={{
+                                    maxLength: {
+                                      value: 75,
+                                      message: "Remark should be less than 75 word"
+                                    },
+                                  }}
+                                  handleChange={(e) => { }}
+                                  defaultValue={item.Remark ?? item.Remark}
+                                  className=""
+                                  customClassName={"withBorder"}
+                                  errors={errors && errors.ProcessGridFields && errors.ProcessGridFields[index] !== undefined ? errors.ProcessGridFields[index].remarkPopUp : ''}
+                                  //errors={errors && errors.remarkPopUp && errors.remarkPopUp[index] !== undefined ? errors.remarkPopUp[index] : ''}                        
+                                  disabled={(CostingViewMode || IsLocked) ? true : false}
+                                  hidden={false}
+                                />
+                                <Row>
+                                  <Col md="12" className='remark-btn-container'>
+                                    <button className='submit-button' disabled={(CostingViewMode || IsLocked) ? true : false} onClick={() => onRemarkPopUpClickk(index)} > <div className='save-icon'></div> </button>
+                                    <button className='reset' onClick={() => onRemarkPopUpClosee(index)} > <div className='cancel-icon'></div></button>
+                                  </Col>
+                                </Row>
+                              </Popup>
+                            </div>
                           </td>
                         </tr>
                       )
