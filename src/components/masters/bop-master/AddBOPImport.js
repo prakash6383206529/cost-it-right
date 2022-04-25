@@ -480,10 +480,8 @@ class AddBOPImport extends Component {
 
   handleCalculation = () => {
     const { fieldsObj, initialConfiguration } = this.props
-    // THIS CALCULATION IS FOR BASE
-    const NoOfPieces = fieldsObj && fieldsObj.NumberOfPieces !== undefined ? fieldsObj.NumberOfPieces : 1;
     const BasicRate = fieldsObj && fieldsObj.BasicRate !== undefined ? fieldsObj.BasicRate : 0;
-    const NetLandedCost = checkForNull((BasicRate / NoOfPieces) * this.state.currencyValue)
+    const NetLandedCost = checkForNull((BasicRate) * this.state.currencyValue)
 
 
     if (this.state.isEditFlag && Number(checkForDecimalAndNull(NetLandedCost, initialConfiguration.NoOfDecimalForPrice)) === Number(checkForDecimalAndNull(this.state.DataToChange?.NetLandedCostConversion, initialConfiguration.NoOfDecimalForPrice))) {
@@ -493,8 +491,8 @@ class AddBOPImport extends Component {
 
     }
 
-    this.setState({ netLandedcost: (BasicRate / NoOfPieces), netLandedConverionCost: NetLandedCost })
-    this.props.change('NetLandedCost', checkForDecimalAndNull((BasicRate / NoOfPieces), initialConfiguration.NoOfDecimalForPrice))
+    this.setState({ netLandedcost: (BasicRate), netLandedConverionCost: NetLandedCost })
+    this.props.change('NetLandedCost', checkForDecimalAndNull((BasicRate), initialConfiguration.NoOfDecimalForPrice))
     this.props.change('NetLandedCostCurrency', checkForDecimalAndNull(NetLandedCost, initialConfiguration.NoOfDecimalForPrice))
 
     // THIS CALCULATION IS FOR MINDA
@@ -698,14 +696,14 @@ class AddBOPImport extends Component {
     if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(BOP_MASTER_ID) !== true)) {
 
       if (DataToChange.IsVendor) {
-        if (DropdownChange && String(DataToChange.Source) === String(values.Source) && Number(DataToChange.NumberOfPieces) === Number(values.NumberOfPieces) &&
+        if (DropdownChange && String(DataToChange.Source) === String(values.Source) &&
           Number(DataToChange.BasicRate) === Number(values.BasicRate) && DataToChange.Remark === values.Remark && uploadAttachements) {
           this.cancel()
           return false;
         }
       }
       if (Boolean(DataToChange.IsVendor) === false) {
-        if (Number(DataToChange.NumberOfPieces) === Number(values.NumberOfPieces) && Number(DataToChange.BasicRate) === Number(values.BasicRate) && DataToChange.Remark === values.Remark && uploadAttachements) {
+        if (Number(DataToChange.BasicRate) === Number(values.BasicRate) && DataToChange.Remark === values.Remark && uploadAttachements) {
           this.cancel()
           return false;
         }
@@ -729,7 +727,7 @@ class AddBOPImport extends Component {
         UnitOfMeasurementId: UOM.value,
         NetLandedCostConversion: netLandedConverionCost,
         IsForcefulUpdated: true,
-        NumberOfPieces: values.NumberOfPieces,
+        NumberOfPieces: 1,
         IsFinancialDataChanged: isDateChange ? true : false
       }
 
@@ -781,7 +779,7 @@ class AddBOPImport extends Component {
         SourceLocation: sourceLocation.value,
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
         BasicRate: values.BasicRate,
-        NumberOfPieces: values.NumberOfPieces,
+        NumberOfPieces: 1,
         NetLandedCost: this.state.netLandedcost,
         Remark: values.Remark,
         IsActive: true,
@@ -816,14 +814,14 @@ class AddBOPImport extends Component {
 
 
         if (DataToChange.IsVendor) {
-          if (DropdownChange && String(DataToChange.Source) === String(values.Source) && Number(DataToChange.NumberOfPieces) === Number(values.NumberOfPieces) &&
+          if (DropdownChange && String(DataToChange.Source) === String(values.Source) &&
             Number(DataToChange.BasicRate) === Number(values.BasicRate) && DataToChange.Remark === values.Remark && uploadAttachements) {
             this.cancel()
             return false;
           }
         }
         if (Boolean(DataToChange.IsVendor) === false) {
-          if (Number(DataToChange.NumberOfPieces) === Number(values.NumberOfPieces) && Number(DataToChange.BasicRate) === Number(values.BasicRate) && DataToChange.Remark === values.Remark && uploadAttachements) {
+          if (Number(DataToChange.BasicRate) === Number(values.BasicRate) && DataToChange.Remark === values.Remark && uploadAttachements) {
             this.cancel()
             return false;
           }
@@ -1212,20 +1210,6 @@ class AddBOPImport extends Component {
                           </Col>
                           <Col md="3">
                             <Field
-                              label={`Minimum Order Quantity`}
-                              name={"NumberOfPieces"}
-                              type="text"
-                              placeholder={"Enter"}
-                              validate={[postiveNumber, maxLength10]}
-                              component={renderText}
-                              required={false}
-                              className=""
-                              disabled={isViewMode}
-                              customClassName=" withBorder"
-                            />
-                          </Col>
-                          <Col md="3">
-                            <Field
                               label={`Basic Rate (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
                               name={"BasicRate"}
                               type="text"
@@ -1489,7 +1473,6 @@ function mapStateToProps(state) {
       Specification: bopData.Specification,
       Source: bopData.Source,
       BasicRate: bopData.BasicRate,
-      NumberOfPieces: bopData.NumberOfPieces,
       NetLandedCost: bopData.NetLandedCost,
       Remark: bopData.Remark,
     }
