@@ -311,7 +311,7 @@ function CPSimulation(props) {
                         }
                         <form>
 
-                            <Row className={`pt-4 filter-row-large blue-before zindex-0`}>
+                            <Row className={`${isbulkUpload ? 'pt-5' : 'pt-4'} filter-row-large blue-before zindex-0`}>
                                 <Col md="6" lg="6">
                                     <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => onFilterTextBoxChanged(e)} />
                                 </Col>
