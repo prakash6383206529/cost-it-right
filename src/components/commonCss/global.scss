@@ -204,6 +204,15 @@ a:hover {
     background-color: #1d59af;
   }
 }
+.secondary-btn {
+  @extend .user-btn;
+  background-color: $secondaryBtn !important;
+  border: 1px solid $colorPrimary;
+  &:hover {
+    background-color: $colorPrimary !important;
+    transition: 0.3s all ease-in-out;
+  }
+}
 //START scroll to top button UI 10-12-2021
 .goToTop {
   width: 27px;
