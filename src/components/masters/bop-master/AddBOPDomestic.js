@@ -447,9 +447,9 @@ class AddBOPDomestic extends Component {
 
   handleCalculation = () => {
     const { fieldsObj, initialConfiguration } = this.props
-    const NoOfPieces = fieldsObj && fieldsObj.NumberOfPieces !== undefined ? fieldsObj.NumberOfPieces : 1; // MAY BE USED LATER IF USED IN CALCULATION
+    console.log('fieldsObj: ', fieldsObj);
     const BasicRate = fieldsObj && fieldsObj.BasicRate !== undefined ? fieldsObj.BasicRate : 0;
-    const NetLandedCost = checkForNull((BasicRate / NoOfPieces)) // THIS CALCULATION IS FOR BASE
+    const NetLandedCost = checkForNull(BasicRate)
 
     if (this.state.isEditFlag && Number(NetLandedCost) === Number(this.state.DataToCheck?.NetLandedCost)) {
 
@@ -661,29 +661,19 @@ class AddBOPDomestic extends Component {
         Attachements: updatedFiles,
         UnitOfMeasurementId: UOM.value,
         IsForcefulUpdated: true,
-        NumberOfPieces: values.NumberOfPieces,
+        NumberOfPieces: 1,
         IsFinancialDataChanged: isDateChange ? true : false
       }
-
-
-
       if (IsFinancialDataChanged) {
-
         if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
           this.setState({ showPopup: true, updatedObj: requestData })
           return false
-
         } else {
-
           this.setState({ setDisable: false })
           Toaster.warning('Please update the effective date')
           return false
         }
-
       }
-
-
-
       if ((DataToCheck.Remark) === (values.Remark) && uploadAttachements) {
         this.cancel()
         return false;
@@ -718,7 +708,7 @@ class AddBOPDomestic extends Component {
         SourceLocation: sourceLocation.value,
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
         BasicRate: values.BasicRate,
-        NumberOfPieces: values.NumberOfPieces,
+        NumberOfPieces: 1,
         NetLandedCost: this.state.NetLandedCost,
         Remark: values.Remark,
         IsActive: true,
@@ -1137,20 +1127,7 @@ class AddBOPDomestic extends Component {
                               />
                             </div>
                           </Col>
-                          <Col md="3">
-                            <Field
-                              label={`Minimum Order Quantity`}
-                              name={"NumberOfPieces"}
-                              type="text"
-                              placeholder={"Enter"}
-                              validate={[postiveNumber, maxLength10]}
-                              component={renderText}
-                              required={false}
-                              className=""
-                              customClassName=" withBorder"
-                              disabled={isViewMode}
-                            />
-                          </Col>
+
                           <Col md="3">
                             <Field
                               label={`Basic Rate/${this.state.UOM.label ? this.state.UOM.label : 'UOM'} (INR)`}
@@ -1390,7 +1367,7 @@ class AddBOPDomestic extends Component {
 */
 function mapStateToProps(state) {
   const { comman, supplier, boughtOutparts, part, auth } = state;
-  const fieldsObj = selector(state, 'NumberOfPieces', 'BasicRate',);
+  const fieldsObj = selector(state, 'BasicRate', 'NoOfPieces');
 
   const { bopCategorySelectList, bopData, } = boughtOutparts;
   const { plantList, filterPlantList, filterCityListBySupplier, cityList, UOMSelectList, plantSelectList, } = comman;
@@ -1406,7 +1383,6 @@ function mapStateToProps(state) {
       Specification: bopData.Specification,
       Source: bopData.Source,
       BasicRate: bopData.BasicRate,
-      NumberOfPieces: bopData.NumberOfPieces,
       NetLandedCost: bopData.NetLandedCost,
       Remark: bopData.Remark,
     }

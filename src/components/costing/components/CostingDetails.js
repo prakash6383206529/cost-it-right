@@ -125,6 +125,7 @@ function CostingDetails(props) {
   useEffect(() => {
     if (reactLocalStorage.get('location') === '/costing') {
       localStorage.setItem('costingArray', [])
+      localStorage.setItem('surfaceCostingArray', [])
       setValue('Technology', '')
       setValue('Part', '')
       reset()
