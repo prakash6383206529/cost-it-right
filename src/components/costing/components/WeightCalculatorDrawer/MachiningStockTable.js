@@ -2,7 +2,7 @@ import React, { Fragment, useState, useEffect } from 'react'
 import { Row, Col, Table } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useSelector } from 'react-redux'
-import { SearchableSelectHookForm, TextAreaHookForm, NumberFieldHookForm, } from '../../../layout/HookFormInputs'
+import { SearchableSelectHookForm, TextAreaHookForm, NumberFieldHookForm, TextFieldHookForm, } from '../../../layout/HookFormInputs'
 import NoContentFound from '../../../common/NoContentFound'
 import { EMPTY_DATA } from '../../../../config/constants'
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../helper'
@@ -429,7 +429,7 @@ function MachiningStockTable(props) {
 
 
         <Col md="3">
-          <TextAreaHookForm
+          <TextFieldHookForm
             label={`Description`}
             name={'description'}
             Controller={Controller}

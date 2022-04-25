@@ -43,6 +43,7 @@ import ViewAssembly from './ViewAssembly';
 import AssemblyWiseImpactSummary from './AssemblyWiseImpactSummary';
 import _ from 'lodash'
 import CalculatorWrapper from '../../common/Calculator/CalculatorWrapper';
+import { Errorbox } from '../../common/ErrorBox';
 
 const gridOptions = {};
 const ExcelFile = ReactExport.ExcelFile;
@@ -108,6 +109,7 @@ function SimulationApprovalSummary(props) {
     const isExchangeRate = String(SimulationTechnologyId) === EXCHNAGERATE;
 
     const simulationAssemblyListSummary = useSelector((state) => state.simulation.simulationAssemblyListSummary)
+    const [status, setStatus] = useState('')
 
     const dispatch = useDispatch()
 
@@ -118,6 +120,9 @@ function SimulationApprovalSummary(props) {
     const impactedMasterData = useSelector(state => state.comman.impactedMasterData)
     const { keysForDownloadSummary } = useSelector(state => state.simulation)
     const [lastRevisionDataAccordian, setLastRevisionDataAccordian] = useState(impactedMasterDataListForLastRevisionData?.length >= 0 ? false : true)
+    const [editWarning, setEditWarning] = useState(false)
+    const [toggleSeeData, setToggleSeeData] = useState(true)
+    const [showbutton, setShowButton] = useState(false)
 
     const headerName = ['Revision No.', 'Name', 'Old Cost/Pc', 'New Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
     const headerNameAssembly = ['Revision No.', 'Name', 'Old PO Price/Assembly', 'New PO Price/Assembly', 'Level', 'Variance/Assembly', '', '', '', 'Assembly Number']
@@ -127,6 +132,11 @@ function SimulationApprovalSummary(props) {
         reValidateMode: 'onChange',
     })
 
+    const funcForErrorBoxButton = () => {
+
+        const statusWithButton = <><p className={`${toggleSeeData ? 'status-overflow' : ''} `}><span>{status}</span></p>{<button className='see-data-btn' onClick={() => { setToggleSeeData(!toggleSeeData) }}>Show {toggleSeeData ? 'all' : 'less'} data</button>}</>
+        return statusWithButton
+    }
 
     useEffect(() => {
         dispatch(getTechnologySelectList(() => { }))
@@ -176,12 +186,11 @@ function SimulationApprovalSummary(props) {
                 });
 
                 uniqueArr && uniqueArr.map(item => {
-                    requestData.push({ CostingId: item.CostingId, delta: item.POVariance, IsSinglePartImpact: false })
+                    requestData.push({ CostingId: item.CostingId, delta: item.POVariance, IsSinglePartImpact: false, SimulationId: SimulationId })
                     return null
                 })
 
-                dispatch(getSimulatedAssemblyWiseImpactDate(requestData, isAssemblyInDraft, (res) => {
-                }))
+                dispatch(getSimulatedAssemblyWiseImpactDate(requestData, isAssemblyInDraft, (res) => { }))
             }
 
             // const valueTemp = {
@@ -193,9 +202,23 @@ function SimulationApprovalSummary(props) {
             //     quantity: 1
             // }
             setdataForAssemblyImpactForFg(SimulatedCostingList)
+            setShowButton(status.length > 245 ? true : false)
         }))
 
     }, [])
+
+    useEffect(() => {
+        let check = impactedMasterDataListForLastRevisionData?.RawMaterialImpactedMasterDataList?.length <= 0 &&
+            impactedMasterDataListForLastRevisionData?.OperationImpactedMasterDataList?.length <= 0 &&
+            impactedMasterDataListForLastRevisionData?.ExchangeRateImpactedMasterDataList?.length <= 0 &&
+            impactedMasterDataListForLastRevisionData?.BoughtOutPartImpactedMasterDataList?.length <= 0
+        if (lastRevisionDataAccordian && check) {
+            Toaster.warning('There is no data for the Last Revision.')
+            setEditWarning(true)
+        } else {
+            setEditWarning(false)
+        }
+    }, [lastRevisionDataAccordian, impactedMasterDataListForLastRevisionData])
 
     const hideColumn = (props) => {
         setShowBOPColumn(keysForDownloadSummary?.IsBoughtOutPartSimulation === true ? true : false)
@@ -877,7 +900,7 @@ function SimulationApprovalSummary(props) {
                     <CalculatorWrapper />
                     {loader && <LoaderCustom />}
                     <div className={`container-fluid  smh-approval-summary-page ${loader === true ? 'loader-wrapper' : ''}`} id="go-to-top">
-                        {/* <Errorbox customClass="" errorText="There is some error in your page" /> */}
+                        {/* <Errorbox errorText={showbutton ? funcForErrorBoxButton() : status} /> */} {/*please uncomment this code on the mil and RE*/}
                         <h2 className="heading-main">Approval Summary</h2>
                         <ScrollToTop pointProp={"go-to-top"} />
                         <Row>
@@ -1337,11 +1360,17 @@ function SimulationApprovalSummary(props) {
                             </Col>
 
                             {lastRevisionDataAccordian &&
-
-                                <div className="accordian-content w-100 px-3 impacted-min-height">
-                                    {showLastRevisionData && <Impactedmasterdata data={impactedMasterDataListForLastRevisionData} masterId={simulationDetail.SimulationTechnologyId} viewCostingAndPartNo={false} lastRevision={true} />}
-                                    {impactedMasterDataListForLastRevisionData?.length === 0 ? <div className='border'><NoContentFound title={EMPTY_DATA} /></div> : ""}
-                                </div>
+                                <>
+                                    <div className="accordian-content w-100 px-3 impacted-min-height">
+                                        {showLastRevisionData && <Impactedmasterdata data={impactedMasterDataListForLastRevisionData} masterId={simulationDetail.SimulationTechnologyId} viewCostingAndPartNo={false} lastRevision={true} />}
+                                        {impactedMasterDataListForLastRevisionData?.length === 0 ? <div className='border'><NoContentFound title={EMPTY_DATA} /></div> : ""}
+                                    </div>
+                                    {editWarning && <Row className='w-100'>
+                                        <Col md="12">
+                                            <NoContentFound title={"There is no data for the Last Revision."} />
+                                        </Col>
+                                    </Row>}
+                                </>
                             }
                             {showViewAssemblyDrawer &&
                                 <ViewAssembly

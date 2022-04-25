@@ -2682,18 +2682,19 @@ export const BOP_DOMESTIC_DOWNLOAD_EXCEl = [
 ]
 
 export const BOP_IMPORT_DOWNLOAD_EXCEl = [
-    { label: "Costing Head", value: "IsVendor", },
-    { label: "BoughtOutPartNumber", value: "BoughtOutPartNumber", },
-    { label: "BoughtOutPartName", value: "BoughtOutPartName", },
-    { label: "BoughtOutPartCategory", value: "BoughtOutPartCategory", },
-    { label: "UOM", value: "UOM", },
-    { label: "Specification", value: "Specification", },
-    { label: "Plant(Code)", value: "Plants", },
-    { label: "DestinationPlant(Code)", value: "DestinationPlant", },
-    { label: "Vendor(Code)", value: "Vendor", },
-    { label: "BasicRate", value: "BasicRate", },
-    { label: "NetCost", value: "NetLandedCostConversion", },
-    { label: "EffectiveDate", value: "EffectiveDate", },
+    { label: "Costing Head", value: "IsVendor" },
+    { label: "BoughtOutPartNumber", value: "BoughtOutPartNumber" },
+    { label: "BoughtOutPartName", value: "BoughtOutPartName" },
+    { label: "BoughtOutPartCategory", value: "BoughtOutPartCategory" },
+    { label: "UOM", value: "UOM" },
+    { label: "Currency", value: "Currency" },
+    { label: "Specification", value: "Specification" },
+    { label: "Plant(Code)", value: "Plants" },
+    { label: "Vendor(Code)", value: "Vendor" },
+    { label: "BasicRate", value: "BasicRate" },
+    { label: "NetCost(Currency)", value: "NetLandedCost" },
+    { label: "NetCost(INR)", value: "NetLandedCostConversion" },
+    { label: "EffectiveDate", value: "EffectiveDate" },
 ]
 
 export const BOP_SOBLISTING_DOWNLOAD_EXCEl = [
@@ -2821,12 +2822,14 @@ export const RMIMPORT_DOWNLOAD_EXCEl = [
     { label: "Plant(Code)", value: "Plant", },
     { label: "Vendor(Code)", value: "VendorName", },
     { label: "UOM", value: "UOM", },
+    { label: "Currency", value: "Currency", },
     { label: "BasicRate", value: "BasicRate", },
     { label: "FreightCost", value: "RMFreightCost", },
     { label: "ShearingCost", value: "RMShearingCost", },
     { label: "ScrapRate", value: "ScrapRate", },
     { label: "NetLandedCost", value: "NetLandedCost", },
     { label: "CutOffPrice", value: "CutOffPrice", },
+    { label: "NetCost(INR)", value: "NetLandedCostConversion", },
     { label: "EffectiveDate", value: "EffectiveDate", },
 
 ]
@@ -2842,6 +2845,7 @@ export const SPECIFICATIONLISTING_DOWNLOAD_EXCEl = [
     { label: "RMName", value: "RMName", },
     { label: "RMGrade", value: "RMGrade", },
     { label: "RMSpec", value: "RMSpec", },
+    { label: "RawMaterialCode", value: "RawMaterialCode", },
 ]
 
 export const OPERATION_DOWNLOAD_EXCEl = [
@@ -2892,13 +2896,16 @@ export const INDIVIDUALPART_DOWNLOAD_EXCEl = [
     { label: "DrawingNumber", value: "DrawingNumber", },
     { label: "EffectiveDate", value: "EffectiveDate", },
 ]
+
 export const INDIVIDUAL_PRODUCT_DOWNLOAD_EXCEl = [
-    { label: "ProductNumber", value: "ProductNumber", },
-    { label: "ProductName", value: "ProductName", },
-    { label: "ECNNumber", value: "ECNNumber", },
-    { label: "RevisionNumber", value: "RevisionNumber", },
-    { label: "DrawingNumber", value: "DrawingNumber", },
-    { label: "EffectiveDate", value: "EffectiveDate", },
+    { label: "ProductNumber", value: "ProductNumber" },
+    { label: "ProductName", value: "ProductName" },
+    { label: "ProductGroupCode", value: "ProductGroupCode" },
+    { label: "ECNNumber", value: "ECNNumber" },
+    { label: "RevisionNumber", value: "RevisionNumber" },
+    { label: "DrawingNumber", value: "DrawingNumber" },
+    { label: "IsConsideredForMBOM", value: "IsConsideredForMBOM" },
+    { label: "EffectiveDate", value: "EffectiveDate" },
 ]
 
 export const VBCPLANT_DOWNLOAD_EXCEl = [
@@ -3059,7 +3066,8 @@ export const USER_LISTING_DOWNLOAD_EXCEl = [
     { label: "Mobile No", value: "Mobile", },
     { label: "Phone No", value: "PhoneNumber", },
     { label: "Department", value: "DepartmentName", },
-    { label: "Role", value: "RoleName", }
+    { label: "Role", value: "RoleName", },
+    { label: "IsActive", value: "IsActive", }
 
 ]
 
@@ -3099,8 +3107,9 @@ export const STGridForToken = [
 
 export const BOPGridForToken = [
     { label: "BoughtOutPartQuantity", value: "BoughtOutPartQuantity" },
-    { label: "OldBOPCost", value: "OldBOPCost" },
-    { label: "NewBOPCost", value: "NewBOPCost" },
+    { label: "OldBOPCost", value: "OldNetBoughtOutPartCost" },
+    { label: "NewBOPCost", value: "NewNetBoughtOutPartCost" },
+    { label: "BOP Variance", value: "NetBoughtOutPartCostVariance" },
     { label: "BOP Quantity", value: "BOPVariance" },
 ]
 export const ERGridForToken = [

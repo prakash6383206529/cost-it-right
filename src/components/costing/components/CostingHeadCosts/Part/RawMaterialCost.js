@@ -51,7 +51,6 @@ function RawMaterialCost(props) {
   const [IsApplyMasterBatch, setIsApplyMasterBatch] = useState(item?.CostingPartDetails?.IsApplyMasterBatch ? true : false)
   const [Ids, setIds] = useState([])
   const [editCalculation, setEditCalculation] = useState(true)
-  const [remarkPopUpData, setRemarkPopUpData] = useState("")
   const [confirmPopup, setConfirmPopup] = useState(false)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { CostingEffectiveDate } = useSelector(state => state.costing)
@@ -431,7 +430,6 @@ function RawMaterialCost(props) {
         CutOffRMC: CutOffRMC,
         ScrapWeight: scrapWeight,
         ScrapRecoveryPercentage: 0,
-        Remark: remarkPopUpData ? remarkPopUpData : ""
       }
       tempArr = Object.assign([...gridData], { [index]: tempData })
 
@@ -452,7 +450,6 @@ function RawMaterialCost(props) {
           CutOffRMC: CutOffRMC,
           ScrapWeight: scrapWeight,
           ScrapRecoveryPercentage: 0,
-          Remark: remarkPopUpData ? remarkPopUpData : ""
         }
         tempArr = Object.assign([...gridData], { [index]: tempData })
       }
@@ -491,7 +488,6 @@ function RawMaterialCost(props) {
           IsCalculatedEntry: false,
           CutOffRMC: CutOffRMC,
           ScrapWeight: scrapWeight,
-          Remark: remarkPopUpData ? remarkPopUpData : ""
         }
         tempArr = Object.assign([...gridData], { [index]: tempData })
 
@@ -511,7 +507,6 @@ function RawMaterialCost(props) {
             IsCalculatedEntry: false,
             CutOffRMC: CutOffRMC,
             ScrapWeight: scrapWeight,
-            Remark: remarkPopUpData ? remarkPopUpData : ""
           }
           tempArr = Object.assign([...gridData], { [index]: tempData })
         }
@@ -539,7 +534,6 @@ function RawMaterialCost(props) {
           CutOffRMC: CutOffRMC,
           ScrapWeight: scrapWeight,
           ScrapRecoveryPercentage: 0,
-          Remark: remarkPopUpData ? remarkPopUpData : ""
         }
         tempArr = Object.assign([...gridData], { [index]: tempData })
 
@@ -560,7 +554,6 @@ function RawMaterialCost(props) {
             CutOffRMC: CutOffRMC,
             ScrapWeight: scrapWeight,
             ScrapRecoveryPercentage: 0,
-            Remark: remarkPopUpData ? remarkPopUpData : ""
           }
           tempArr = Object.assign([...gridData], { [index]: tempData })
         }
@@ -776,12 +769,10 @@ function RawMaterialCost(props) {
     let selectedIds = []
     tempArr.map(el => (selectedIds.push(el.RawMaterialId)))
     setIds(selectedIds)
-
     setIsApplyMasterBatch(false)
   }
 
   const onRemarkPopUpClick = (index) => {
-    setRemarkPopUpData(getValues(`${rmGridFields}.${index}.remarkPopUp`))
     let tempArr = []
     let tempData = gridData[index]
     tempData = {
@@ -800,6 +791,7 @@ function RawMaterialCost(props) {
 
   const onRemarkPopUpClose = (index) => {
     var button = document.getElementById(`popUpTrigger${index}`)
+    setValue(`${rmGridFields}.${index}.remarkPopUp`, gridData[index].Remark)
     button.click()
   }
 
@@ -1040,7 +1032,7 @@ function RawMaterialCost(props) {
                       {/* //Add i here for MB+ */}
                       <th style={{ width: "190px" }}>{`Net RM Cost ${isRMDivisorApplicable(costData.TechnologyName) ? '/(' + RMDivisor + ')' : ''}`}</th>
 
-                      <th style={{ width: "145px" }}>{`Action`}</th>
+                      <th style={{ width: "145px", textAlign: "right" }}>{`Action`}</th>
                     </tr>
                   </thead>
                   <tbody className='rm-table-body'>
@@ -1159,44 +1151,45 @@ function RawMaterialCost(props) {
                               {item?.NetLandedCost !== undefined ? checkForDecimalAndNull(item.NetLandedCost, initialConfiguration.NoOfDecimalForPrice) : ''}
                             </td>
                             <td>
-                              {!CostingViewMode && !IsLocked && <button
-                                className="Delete "
-                                type={'button'}
-                                onClick={() => deleteItem(index)}
-                              />}
-                              <Popup trigger={<button id={`popUpTrigger${index}`} className="Comment-box ml-2" type={'button'} />}
-                                position="top center">
-                                <TextAreaHookForm
-                                  label="Remark:"
-                                  name={`${rmGridFields}.${index}.remarkPopUp`}
-                                  Controller={Controller}
-                                  control={control}
-                                  register={register}
-                                  mandatory={false}
-                                  rules={{
-                                    maxLength: {
-                                      value: 75,
-                                      message: "Remark should be less than 75 word"
-                                    },
-                                  }}
-                                  handleChange={(e) => { }}
-                                  defaultValue={item.Remark ?? item.Remark}
-                                  className=""
-                                  customClassName={"withBorder"}
-                                  errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].remarkPopUp : ''}
-                                  //errors={errors && errors.remarkPopUp && errors.remarkPopUp[index] !== undefined ? errors.remarkPopUp[index] : ''}                        
-                                  disabled={(CostingViewMode || IsLocked) ? true : false}
-                                  hidden={false}
-                                />
-                                <Row>
-                                  <Col md="12" className='remark-btn-container'>
-                                    <button className='submit-button mr-2' disabled={(CostingViewMode || IsLocked) ? true : false} onClick={() => onRemarkPopUpClick(index)} > <div className='save-icon'></div> </button>
-                                    <button className='reset' onClick={() => onRemarkPopUpClose(index)} > <div className='cancel-icon'></div></button>
-                                  </Col>
-                                </Row>
+                              <div className='action-btn-wrapper'>
+                                {!CostingViewMode && !IsLocked && <button
+                                  className="Delete "
+                                  type={'button'}
+                                  onClick={() => deleteItem(index)}
+                                />}
+                                <Popup trigger={<button id={`popUpTrigger${index}`} className="Comment-box" type={'button'} />}
+                                  position="top center">
+                                  <TextAreaHookForm
+                                    label="Remark:"
+                                    name={`${rmGridFields}.${index}.remarkPopUp`}
+                                    Controller={Controller}
+                                    control={control}
+                                    register={register}
+                                    mandatory={false}
+                                    rules={{
+                                      maxLength: {
+                                        value: 75,
+                                        message: "Remark should be less than 75 word"
+                                      },
+                                    }}
+                                    handleChange={(e) => { }}
+                                    defaultValue={item.Remark ?? item.Remark}
+                                    className=""
+                                    customClassName={"withBorder"}
+                                    errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].remarkPopUp : ''}
+                                    //errors={errors && errors.remarkPopUp && errors.remarkPopUp[index] !== undefined ? errors.remarkPopUp[index] : ''}                        
+                                    disabled={(CostingViewMode || IsLocked) ? true : false}
+                                    hidden={false}
+                                  />
+                                  <Row>
+                                    <Col md="12" className='remark-btn-container'>
+                                      <button className='submit-button' disabled={(CostingViewMode || IsLocked) ? true : false} onClick={() => onRemarkPopUpClick(index)} > <div className='save-icon'></div> </button>
+                                      <button className='reset' onClick={() => onRemarkPopUpClose(index)} > <div className='cancel-icon'></div></button>
+                                    </Col>
+                                  </Row>
 
-                              </Popup>
-
+                                </Popup>
+                              </div>
                             </td>
                           </tr>
                         )

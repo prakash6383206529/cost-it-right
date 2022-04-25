@@ -13,7 +13,7 @@ import { getVendorListByVendorType } from '../actions/Material'
 import { VOLUME_DOWNLOAD_EXCEl } from '../../../config/masterData'
 import AddVolume from './AddVolume'
 import BulkUpload from '../../massUpload/BulkUpload'
-import { ADDITIONAL_MASTERS, VOLUME, VolumeMaster, ZBC } from '../../../config/constants'
+import { ADDITIONAL_MASTERS, VOLUME, VolumeMaster } from '../../../config/constants'
 import { checkPermission } from '../../../helper/util'
 import { GridTotalFormate } from '../../common/TableGridFunctions'
 import LoaderCustom from '../../common/LoaderCustom'
@@ -25,7 +25,6 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper'
 import ScrollToTop from '../../common/ScrollToTop'
 import AddLimit from './AddLimit'
 
-const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
@@ -282,6 +281,22 @@ class VolumeListing extends Component {
     return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
   }
 
+  /**
+  * @method plantFormatter
+  */
+  plantFormatter = (props) => {
+    const rowData = props?.data;
+    let value = '-'
+    if (rowData?.IsVendor === "Vendor Based") {
+      value = rowData?.DestinationPlant
+      return value;
+    } else if (rowData?.IsVendor === "Zero Based") {
+      value = rowData?.Plant
+      return value;
+    }
+    return value;
+  }
+
   onExportToCSV = (row) => {
     return this.state.userData // must return the data which you want to be exported
   }
@@ -290,9 +305,6 @@ class VolumeListing extends Component {
     return <GridTotalFormate start={start} to={to} total={total} />
   }
 
-  plantFormatter = (cell, row, enumObject, rowIndex) => {
-    return row.IsVendor ? row.DestinationPlant : cell
-  }
   /**
    * @method actualBulkToggle
    * @description OPEN ACTUAL BULK UPLOAD DRAWER FOR BULK UPLOAD
@@ -368,7 +380,6 @@ class VolumeListing extends Component {
   };
 
   onBtExport = () => {
-    let tempArr = this.props.volumeDataList && this.props.volumeDataList
     return this.returnExcelColumn(VOLUME_DOWNLOAD_EXCEl, this.props.volumeDataList)
   };
 
@@ -427,7 +438,6 @@ class VolumeListing extends Component {
   render() {
     const { handleSubmit } = this.props
     const {
-      isEditFlag,
       showVolumeForm,
       data,
       isActualBulkUpload,
@@ -453,6 +463,7 @@ class VolumeListing extends Component {
       costingHeadRenderer: this.costingHeadFormatter,
       customNoRowsOverlay: NoContentFound,
       hyphenFormatter: this.hyphenFormatter,
+      plantFormatter: this.plantFormatter
 
     };
 
@@ -582,7 +593,7 @@ class VolumeListing extends Component {
                 <AgGridColumn field="VendorName" headerName="Vendor Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn field="PartNumber" headerName="Part Number"></AgGridColumn>
                 <AgGridColumn field="PartName" headerName="Part Name"></AgGridColumn>
-                <AgGridColumn field="Plant" headerName="Plant" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                <AgGridColumn field="Plant" headerName="Plant" cellRenderer={'plantFormatter'}></AgGridColumn>
                 <AgGridColumn field="BudgetedQuantity" headerName="Budgeted Quantity"></AgGridColumn>
                 <AgGridColumn field="ApprovedQuantity" headerName="Approved Quantity"></AgGridColumn>
                 <AgGridColumn field="VolumeId" width={120} headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
