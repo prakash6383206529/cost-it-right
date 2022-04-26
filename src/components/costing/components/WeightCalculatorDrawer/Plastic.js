@@ -248,7 +248,7 @@ function Plastic(props) {
                     className=""
                     customClassName={'withBorder'}
                     errors={errors.netWeight}
-                    disabled={props.CostingViewMode ? props.CostingViewMode : false}
+                    disabled={props.CostingViewMode ? props.CostingViewMode : (tableVal?.length > 0 ? true : false)}
                   />
                 </Col>
                 <Col md="3">
