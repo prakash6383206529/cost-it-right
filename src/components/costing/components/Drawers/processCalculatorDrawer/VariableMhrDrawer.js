@@ -2,27 +2,17 @@ import React from 'react'
 import { Row, Col } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
 import Facing from './Facing'
-import Drilling from './Drilling'
-import Turning from './Turning'
-import Chamfering from './Chamfering'
-import FaceMilling from './FaceMilling'
-import SideFaceMiling from './SideFaceMiling'
-import SlotCutting from './SlotCutting'
-import ChamferingMiller from './ChamferingMiller'
-import EndMill from './EndMill'
 import UomTimeProcessDefaultCalculator from './UomTimeProcessDefaultCalculator'
 import { useDispatch } from 'react-redux'
 import SheetMetalBaicDrawer from './SheetMetalBaicDrawer'
-import InjectionMoulding from './InjectionMoulding'
-import { SHEETMETAL, RUBBER, PLASTIC, MACHINING, FORGING, DIE_CASTING, Ferrous_Casting, Non_Ferrous_HPDC, FACING, HARDFACING, BROACHING, DRILLING, TURNING, CHAMFERING, SIDEFACEMILING, SLOTCUTTING, CHAMFERINGMILLER, ENDMILL, FACEMILING } from '../../../../../config/masterData'
-import { HOUR, TIME } from '../../../../../config/constants'
+import { SHEETMETAL, RUBBER, PLASTIC, MACHINING, Non_Ferrous_HPDC, BROACHING } from '../../../../../config/masterData'
+import { TIME } from '../../../../../config/constants'
 import Broaching from './Broaching'
-import HardFacing from './HardFacing'
+
 
 function VariableMhrDrawer(props) {
   const { technology, calculatorData, item } = props
   const tonnage = calculatorData.Tonnage ? calculatorData.Tonnage : ''
-  const dispatch = useDispatch()
   const calculateMachineTime = (time, formValue) => {
 
     //   let obj={}
@@ -69,13 +59,10 @@ function VariableMhrDrawer(props) {
   }
 
   const getProcessComponent = (process) => {
-
-    if (technology === MACHINING || technology === FORGING || technology === Ferrous_Casting || technology === DIE_CASTING) {
-
+    if (technology === MACHINING) {
       if (calculatorData.UOMType === TIME) {
         switch (process) {
 
-          // 2 MORE PROCESS WILL BE ADDED HERE
           case BROACHING:
             return (
               <Broaching
@@ -97,10 +84,8 @@ function VariableMhrDrawer(props) {
                 calculatorData={calculatorData}
               />
             )
-
         }
       } else {
-
         return (
           <SheetMetalBaicDrawer
             CostingViewMode={props.CostingViewMode}
@@ -139,10 +124,9 @@ function VariableMhrDrawer(props) {
     } else if (technology === PLASTIC) {
       switch (process) {
         case 'Injection Moulding':
-          // return (
-          //   <InjectionMoulding calculateMachineTime={calculateMachineTime} calculatorData={calculatorData} />
-          // )
-          break;
+        // return (
+        //   <InjectionMoulding calculateMachineTime={calculateMachineTime} calculatorData={calculatorData} />
+        // )
         default:
           return (
             <SheetMetalBaicDrawer
@@ -154,6 +138,7 @@ function VariableMhrDrawer(props) {
               calculatorData={calculatorData}
             />
           )
+          break;
       }
     } else if (technology === Non_Ferrous_HPDC) {
       return (
@@ -179,6 +164,7 @@ function VariableMhrDrawer(props) {
       )
     }
   }
+
 
   return (
     <div>
