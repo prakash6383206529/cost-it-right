@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm } from "redux-form";
+import { reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import ReactExport from 'react-export-excel';
 import { EMPTY_DATA, REJECTED } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
-import { getCostingBulkUploadList, sendForApprovalFromBulkUpload, getErrorFile } from '../actions/CostWorking';
+import { getCostingBulkUploadList, sendForApprovalFromBulkUpload, getErrorFile, generateReport } from '../actions/CostWorking';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import CostingBulkUploadDrawer from './CostingBulkUploadDrawer';
 import Toaster from '../../common/Toaster';
@@ -16,7 +16,6 @@ import { AgGridColumn } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 
-const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
@@ -42,6 +41,8 @@ class CostingSummaryBulkUpload extends Component {
      * @description Refresh the list
     */
     refresh = () => { this.props.getCostingBulkUploadList(() => { }) }
+
+    generateReport = () => { this.props.generateReport(() => { }) }
 
     bulkToggle = () => {
 
@@ -167,22 +168,9 @@ class CostingSummaryBulkUpload extends Component {
 
     render() {
         // const { handleSubmit } = this.props;
-        const { costingBulkUploadList, handleSubmit } = this.props
+        const { handleSubmit } = this.props
         const { showBulkUpload } = this.state
 
-        const options = {
-            clearSearch: true,
-            noDataText: <NoContentFound title={EMPTY_DATA} />,
-            //exportCSVText: 'Download Excel',
-            //onExportToCSV: this.onExportToCSV,
-            //paginationShowsTotal: true,
-            paginationShowsTotal: this.renderPaginationShowsTotal,
-            prePage: <span className="prev-page-pg"></span>, // Previous page button text
-            nextPage: <span className="next-page-pg"></span>, // Next page button text
-            firstPage: <span className="first-page-pg"></span>, // First page button text
-            lastPage: <span className="last-page-pg"></span>,
-
-        };
         const defaultColDef = {
             resizable: true,
             filter: true,
@@ -208,6 +196,13 @@ class CostingSummaryBulkUpload extends Component {
                                         className={'user-btn mr5'}
                                         onClick={this.refresh}>
                                         <div className={'refresh'}></div>Refresh
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        className={'user-btn min-width-btn mr-2'}
+                                        onClick={this.generateReport}>
+                                        <div className={''}></div>Generate Report
                                     </button>
 
                                     <button
@@ -301,7 +296,7 @@ function mapStateToProps(state) {
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
-    getCostingBulkUploadList,
+    getCostingBulkUploadList, generateReport,
     sendForApprovalFromBulkUpload, getErrorFile
 })(reduxForm({
     form: 'CostingSummaryBulkUpload',
