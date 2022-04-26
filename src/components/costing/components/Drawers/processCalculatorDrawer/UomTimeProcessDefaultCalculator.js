@@ -81,9 +81,9 @@ function UomTimeProcessDefaultCalculator(props) {
         const totalLengthDepth = (checkForNull(lengthDepth) * checkForNull(noOfPasses))
         setDataToSend(prevState => ({ ...prevState, totalLengthDepth: totalLengthDepth }))
         setValue('totalLengthDepth', checkForDecimalAndNull(totalLengthDepth, getConfigurationKey().NoOfDecimalForInputOutput))
-        const cuttingTimeMins = totalLengthDepth / checkForNull(dataToSend.Feed);
-        setDataToSend(prevState => ({ ...prevState, cuttingTimeMins: cuttingTimeMins }))
-        setValue('cuttingTimeMins', checkForDecimalAndNull(cuttingTimeMins, getConfigurationKey().NoOfDecimalForInputOutput))
+        const CuttingTimeMins = totalLengthDepth / checkForNull(dataToSend.Feed);
+        setDataToSend(prevState => ({ ...prevState, CuttingTimeMins: CuttingTimeMins }))
+        setValue('cuttingTimeMins', checkForDecimalAndNull(CuttingTimeMins, getConfigurationKey().NoOfDecimalForInputOutput))
     }
 
     const setTotalCycleTimeMins = () => {
@@ -91,7 +91,7 @@ function UomTimeProcessDefaultCalculator(props) {
         const totalNonCuttingTime = Number(getValues('totalNonCuttingTime'))
         const indexingTablePositioningTime = Number(getValues('indexingTablePositioningTime'))
         const loadingAndUnloadingTime = Number(getValues('loadingAndUnloadingTime'))
-        const totalCycleTimeMins = (checkForNull(dataToSend.cuttingTimeMins) + checkForNull(chipToChipTiming) + checkForNull(totalNonCuttingTime) + checkForNull(indexingTablePositioningTime) + checkForNull(loadingAndUnloadingTime))
+        const totalCycleTimeMins = (checkForNull(dataToSend.CuttingTimeMins) + checkForNull(chipToChipTiming) + checkForNull(totalNonCuttingTime) + checkForNull(indexingTablePositioningTime) + checkForNull(loadingAndUnloadingTime))
         setDataToSend(prevState => ({ ...prevState, totalCycleTimeMins: totalCycleTimeMins }))
         setValue('totalCycleTimeMins', checkForDecimalAndNull(totalCycleTimeMins, getConfigurationKey().NoOfDecimalForInputOutput))
         const TotalCycleTimeSec = (checkForNull(totalCycleTimeMins) * 60)
@@ -141,7 +141,7 @@ function UomTimeProcessDefaultCalculator(props) {
         obj.LengthDepth = value.lengthDepth
         obj.NoOfPass = value.noOfPasses
         obj.TotalLengthDepth = dataToSend.totalLengthDepth
-        obj.CuttingTimeMins = dataToSend.cuttingTimeMins
+        obj.CuttingTimeMins = dataToSend.CuttingTimeMins
         obj.ChipToChipTiming = value.chipToChipTiming
         obj.TotalNonCuttingTime = value.totalNonCuttingTime
         obj.IndexingTablePositioningTime = value.indexingTablePositioningTime

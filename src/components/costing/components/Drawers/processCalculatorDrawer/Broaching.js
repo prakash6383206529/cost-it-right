@@ -73,9 +73,9 @@ function Broaching(props) {
         const toolLength = Number(getValues('toolLength'))
         const cuttingSpeedForward = Number(getValues('cuttingSpeedForward'))
         const cuttingSpeedReturn = Number(getValues('cuttingSpeedReturn'))
-        const cuttingTimeMins = (checkForNull(toolLength) / checkForNull(cuttingSpeedForward) / 1000) + (checkForNull(toolLength) / checkForNull(cuttingSpeedReturn) / 1000);
-        setDataToSend(prevState => ({ ...prevState, cuttingTimeMins: cuttingTimeMins }))
-        setValue('cuttingTimeMins', checkForDecimalAndNull(cuttingTimeMins, getConfigurationKey().NoOfDecimalForInputOutput))
+        const CuttingTimeMins = (checkForNull(toolLength) / checkForNull(cuttingSpeedForward) / 1000) + (checkForNull(toolLength) / checkForNull(cuttingSpeedReturn) / 1000);
+        setDataToSend(prevState => ({ ...prevState, CuttingTimeMins: CuttingTimeMins }))
+        setValue('cuttingTimeMins', checkForDecimalAndNull(CuttingTimeMins, getConfigurationKey().NoOfDecimalForInputOutput))
     }
 
     const setTotalCycleTimeMins = () => {
@@ -83,7 +83,7 @@ function Broaching(props) {
         const totalNonCuttingTime = Number(getValues('totalNonCuttingTime'))
         const indexingTablePositioningTime = Number(getValues('indexingTablePositioningTime'))
         const loadingAndUnloadingTime = Number(getValues('loadingAndUnloadingTime'))
-        const totalCycleTimeMins = (checkForNull(dataToSend.cuttingTimeMins) + checkForNull(chipToChipTiming) + checkForNull(totalNonCuttingTime) + checkForNull(indexingTablePositioningTime) + checkForNull(loadingAndUnloadingTime))
+        const totalCycleTimeMins = (checkForNull(dataToSend.CuttingTimeMins) + checkForNull(chipToChipTiming) + checkForNull(totalNonCuttingTime) + checkForNull(indexingTablePositioningTime) + checkForNull(loadingAndUnloadingTime))
         setDataToSend(prevState => ({ ...prevState, totalCycleTimeMins: totalCycleTimeMins }))
         setValue('totalCycleTimeMins', checkForDecimalAndNull(totalCycleTimeMins, getConfigurationKey().NoOfDecimalForInputOutput))
         const TotalCycleTimeSec = (totalCycleTimeMins * 60)
@@ -160,7 +160,7 @@ function Broaching(props) {
         obj.ToolLength = value.toolLength
         obj.CuttingSpeedForward = value.cuttingSpeedForward
         obj.CuttingSpeedReturn = value.cuttingSpeedReturn
-        obj.CuttingTimeMins = dataToSend.cuttingTimeMins
+        obj.CuttingTimeMins = dataToSend.CuttingTimeMins
         obj.ChipToChipTiming = value.chipToChipTiming
         obj.TotalNonCuttingTime = value.totalNonCuttingTime
         obj.IndexingTablePositioningTime = value.indexingTablePositioningTime
