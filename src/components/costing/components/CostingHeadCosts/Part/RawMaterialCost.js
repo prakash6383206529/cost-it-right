@@ -1159,7 +1159,7 @@ function RawMaterialCost(props) {
                                   type={'button'}
                                   onClick={() => deleteItem(index)}
                                 />}
-                                <Popup trigger={<button id={`popUpTrigger${index}`} className="Comment-box" type={'button'} />}
+                                <Popup className='rm-popup' trigger={<button id={`popUpTrigger${index}`} className="Comment-box" type={'button'} />}
                                   position="top center">
                                   <TextAreaHookForm
                                     label="Remark:"
@@ -1185,7 +1185,7 @@ function RawMaterialCost(props) {
                                   />
                                   <Row>
                                     <Col md="12" className='remark-btn-container'>
-                                      <button className='submit-button' disabled={(CostingViewMode || IsLocked) ? true : false} onClick={() => onRemarkPopUpClick(index)} > <div className='save-icon'></div> </button>
+                                      <button className='submit-button mr-2' disabled={(CostingViewMode || IsLocked) ? true : false} onClick={() => onRemarkPopUpClick(index)} > <div className='save-icon'></div> </button>
                                       <button className='reset' onClick={() => onRemarkPopUpClose(index)} > <div className='cancel-icon'></div></button>
                                     </Col>
                                   </Row>

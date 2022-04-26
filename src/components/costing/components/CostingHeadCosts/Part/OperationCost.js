@@ -367,8 +367,10 @@ function OperationCost(props) {
                               </td>}
                             <td>{netCost(item)}</td>
                             <td>
-                              <button className="SaveIcon mb-0 mr-2 align-middle" type={'button'} onClick={() => SaveItem(index)} />
-                              <button className="CancelIcon mb-0 align-middle" type={'button'} onClick={() => CancelItem(index)} />
+                              <div className='action-btn-wrapper'>
+                                <button className="SaveIcon mb-0 align-middle" type={'button'} onClick={() => SaveItem(index)} />
+                                <button className="CancelIcon mb-0 align-middle" type={'button'} onClick={() => CancelItem(index)} />
+                              </div>
                             </td>
                           </tr>
                           :
