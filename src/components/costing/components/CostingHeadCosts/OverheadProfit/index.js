@@ -93,14 +93,6 @@ function OverheadProfit(props) {
 
   }, []);
 
-  /**
-   * @function isViewMode
-   * @description to check whether costing is in view mode
-  */
-
-  const isViewMode = () => {
-    if (CostingViewMode) return false
-  }
 
   useEffect(() => {
     IncludeSurfaceTreatmentCall()
