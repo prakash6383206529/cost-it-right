@@ -52,7 +52,6 @@ function ReportListing(props) {
     const [enableSearchFilterSearchButton, setEnableSearchFilterButton] = useState(true)
     const [reportListingDataStateArray, setReportListingDataStateArray] = useState([])
     const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
-    const { technologyId } = props;
     var filterParams = {
         comparator: function (filterLocalDateAtMidnight, cellValue) {
             var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
