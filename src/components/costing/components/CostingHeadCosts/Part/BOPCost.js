@@ -415,8 +415,10 @@ function BOPCost(props) {
                               </td>
                               <td>{item.NetBoughtOutPartCost !== undefined ? checkForDecimalAndNull(item.NetBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
                               <td>
-                                {!CostingViewMode && !IsLocked && <button className="SaveIcon mr-2" type={'button'} onClick={() => SaveItem(index)} />}
-                                {!CostingViewMode && !IsLocked && <button className="CancelIcon " type={'button'} onClick={() => CancelItem(index)} />}
+                                <div className='action-btn-wrapper'>
+                                  {!CostingViewMode && !IsLocked && <button className="SaveIcon" type={'button'} onClick={() => SaveItem(index)} />}
+                                  {!CostingViewMode && !IsLocked && <button className="CancelIcon" type={'button'} onClick={() => CancelItem(index)} />}
+                                </div>
                               </td>
                             </tr>
                             :

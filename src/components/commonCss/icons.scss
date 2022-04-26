@@ -273,7 +273,10 @@
     margin-bottom: 0;
   }
   .costing-action.text-right {
-      padding-right: 10px !important;
+      padding-right: 15px !important;
+      @media screen and (min-width:$middleDesktop) {
+        padding-right: 30px !important;
+      }
   }
   .action-btn-wrapper {
     display: flex;
@@ -284,3 +287,15 @@
         margin-left: 0;
     }
 }
+
+  .rm-popup-content {
+    @media screen and (max-width:$max1367) {
+      left: 1114px !important;
+        >div {
+             left: 74% !important;
+            }
+            .row {
+                left: unset !important;
+            }
+        }
+    }
