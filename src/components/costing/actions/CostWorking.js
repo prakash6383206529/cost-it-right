@@ -837,7 +837,7 @@ export function getCostingBOP(costingId, callback) {
       }
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
-      //apiErrors(error);
+      apiErrors(error);
     });
   };
 }
@@ -1055,6 +1055,23 @@ export function getCostingBulkUploadList(callback) {
   };
 }
 
+
+export function generateReport(callback) {
+  return (dispatch) => {
+    dispatch({ type: API_REQUEST });
+    const request = axios.get(`${API.generateReport}`, headers);
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
+
 export function getErrorFile(costingId, callback) {
   return (dispatch) => {
     const request = axios.get(`${API.getErrorFile}/${costingId}`, headers);
@@ -1084,7 +1101,7 @@ export function bulkUploadCosting(data, callback) {
       }
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
-      //apiErrors(error);
+      apiErrors(error);
     });
   };
 }
@@ -1105,7 +1122,7 @@ export function sendForApprovalFromBulkUpload(data, callback) {
       }
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
-      //apiErrors(error);
+      apiErrors(error);
     });
   };
 }
@@ -1193,7 +1210,7 @@ export function getProcessCalculation(costingId, processId, processCalculationId
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
       callback(error);
-      // apiErrors(error);
+      apiErrors(error);
     });
   };
 }
@@ -1218,7 +1235,7 @@ export function getProcessMachiningCalculation(costingId, processId, processCalc
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
       callback(error);
-      // apiErrors(error);
+      apiErrors(error);
     });
   };
 }
@@ -1239,7 +1256,7 @@ export function getProcessDefaultCalculation(costingId, processId, processCalcul
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
       callback(error);
-      // apiErrors(error);
+      apiErrors(error);
     });
   };
 }
@@ -1259,7 +1276,7 @@ export function plasticBulkUploadCosting(data, callback) {
       }
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
-      //apiErrors(error);
+      apiErrors(error);
     });
   };
 }
@@ -1274,7 +1291,7 @@ export function machiningBulkUploadCosting(data, callback) {
       }
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
-      //apiErrors(error);
+      apiErrors(error);
     });
   };
 }
