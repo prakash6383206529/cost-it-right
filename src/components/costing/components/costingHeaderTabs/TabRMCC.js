@@ -38,7 +38,8 @@ function TabRMCC(props) {
         CostingId: costData.CostingId,
         PartId: costData.PartId,
         AssemCostingId: costData.CostingId,
-        subAsmCostingId: costData.CostingId
+        subAsmCostingId: costData.CostingId,
+        EffectiveDate: CostingEffectiveDate
       }
       dispatch(getRMCCTabData(data, true, (res) => {
         // dispatch(setAllCostingInArray(res.data.DataList,false))
@@ -277,7 +278,7 @@ function TabRMCC(props) {
         partObj.CostingPartDetails.CostingRawMaterialsCost = gridData;
         partObj.CostingPartDetails.TotalRawMaterialsCost = netRMCost(gridData);
         partObj.CostingPartDetails.TotalRMCWithCutOff = calculateRMCutOff(gridData)
-        console.log('partObj.CostingPartDetails.TotalRMCWithCutOff: ', partObj.CostingPartDetails.TotalRMCWithCutOff);
+
         partObj.CostingPartDetails.MasterBatchRMId = checkboxFields?.MasterBatchRMId;
         partObj.CostingPartDetails.IsApplyMasterBatch = checkboxFields?.IsApplyMasterBatch;
         partObj.CostingPartDetails.MasterBatchRMName = checkboxFields?.MasterBatchRMName;
@@ -479,13 +480,13 @@ function TabRMCC(props) {
 
         // MAIN ASSEMBLY CALCULATION
         let subAssemblyArray = tempArrForCosting && tempArrForCosting.filter(item => item.BOMLevel === 'L1')
-        console.log('subAssemblyArray: ', subAssemblyArray);
+
         let assemblyObj = tempArrForCosting[0]
         // WILL RUN IF IT IS ASSEMBLY COSTING. WILL NOT RUN FOR COMPONENT COSTING
         if (assemblyObj.CostingPartDetails.PartType === 'Assembly') {
           assemblyObj.CostingPartDetails.TotalRawMaterialsCostWithQuantity = setRMCostForAssembly(subAssemblyArray)
           assemblyObj.CostingPartDetails.TotalRMCWithCutOff = setRMCutOffCostForAssembly(subAssemblyArray)
-          console.log('assemblyObj.CostingPartDetails.TotalRMCWithCutOff: ', assemblyObj.CostingPartDetails.TotalRMCWithCutOff);
+
           assemblyObj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = checkForNull(assemblyObj.CostingPartDetails.TotalRawMaterialsCostWithQuantity) + checkForNull(assemblyObj.CostingPartDetails.TotalBoughtOutPartCostWithQuantity) + checkForNull(assemblyObj.CostingPartDetails.TotalConversionCostWithQuantity)
           tempArrForCosting = Object.assign([...tempArrForCosting], { [0]: assemblyObj })
         }
@@ -625,23 +626,23 @@ function TabRMCC(props) {
   }
 
   const setConversionCostInDataList = (conversionGrid, params, arr, item) => {
-    console.log('conversionGrid: ', conversionGrid);
+
 
     //FUNCTION TO CALCULATE THE COSITNG VALUE OF PARTS AND SUBASSEMBLIES
     const calculateValue = (useLevel, item, tempArrForCosting) => {
       let initialPartNo = ''
       let quant = ''
-      console.log("COMING HEEE1");
+
       for (let i = useLevel; i >= 0; i--) {
-        console.log("COMING HEEE2");
+
         // THIS CONDITION IS FOR CALCULATING COSTING OF PART/COMPONENT ON THE LEVEL WE ARE WORKING
         if (item.PartType === "Part" || item.PartType === "Component") {
-          console.log("COMING HEEE3");
+
           // IF LEVEL WE ARE WORKING IS OF PART TYPE UNDER SOME SUBASSMEBLY OR ASSEMBLY
           if (i === useLevel) {
             let partIndex = tempArrForCosting && tempArrForCosting.findIndex((x) => x.PartNumber === item.PartNumber && x.AssemblyPartNumber === item.AssemblyPartNumber)
             let partObj = calculationForPart(conversionGrid, item, 'CC')
-            console.log('partObj: ', partObj);
+
             tempArrForCosting = Object.assign([...tempArrForCosting], { [partIndex]: partObj })
             initialPartNo = item.AssemblyPartNumber
             quant = item.CostingPartDetails.Quantity
