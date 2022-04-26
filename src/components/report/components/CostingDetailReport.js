@@ -18,8 +18,7 @@ import WarningMessage from '../../common/WarningMessage'
 import CostingDetailSimulationDrawer from '../../simulation/components/CostingDetailSimulationDrawer'
 import { formViewData, checkForDecimalAndNull, userDetails } from '../../../helper'
 import { getCostingReport } from '.././actions/ReportListing'
-
-
+import ViewRM from '../../costing/components/Drawers/ViewRM'
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -46,12 +45,17 @@ function ReportListing(props) {
     const [pageSize10, setPageSize10] = useState(true)
     const [pageSize50, setPageSize50] = useState(false)
     const [pageSize100, setPageSize100] = useState(false)
+    const [viewRMData, setViewRMData] = useState([])
+    const [isViewRM, setIsViewRM] = useState(false)
+    const [isAssemblyCosting, setIsAssemblyCosting] = useState(false)
+    const [rmMBDetail, setrmMBDetail] = useState({})
     const [pageNo, setPageNo] = useState(1)
     const [currentRowIndex, setCurrentRowIndex] = useState(0)
     const [floatingFilterData, setFloatingFilterData] = useState({ CostingNumber: "", TechnologyName: "", AmorizationQuantity: "", AnyOtherCost: "", CostingVersion: "", DisplayStatus: "", EffectiveDate: "", Currency: "", DepartmentCode: userDetails().Role === 'SuperAdmin' || userDetails().Role === 'Group Category Head' ? "" : JSON.parse(localStorage.getItem('departmentList')), DepartmentName: "", DiscountCost: "", ECNNumber: "", FinalPOPrice: "", RawMaterialFinishWeight: "", FreightCost: "", FreightPercentage: "", FreightType: "", GrossWeight: "", HundiOrDiscountValue: "", ICCApplicability: "", ICCCost: "", ICCInterestRate: "", ICCOn: "", MasterBatchTotal: "", ModelTypeForOverheadAndProfit: "", ModifiedByName: "", ModifiedByUserName: "", ModifiedDate: "", NetBoughtOutPartCost: "", NetConversionCost: "", NetConvertedPOPrice: "", NetDiscountsCost: "", NetFreightPackaging: "", NetFreightPackagingCost: "", NetICCCost: "", NetOperationCost: "", NetOtherCost: "", NetOverheadAndProfitCost: "", NetPOPrice: "", NetPOPriceINR: "", NetPOPriceInCurrency: "", NetPOPriceOtherCurrency: "", NetProcessCost: "", NetRawMaterialsCost: "", NetSurfaceTreatmentCost: "", NetToolCost: "", NetTotalRMBOPCC: "", OtherCost: "", OtherCostPercentage: "", OverheadApplicability: "", OverheadCombinedCost: "", OverheadCost: "", OverheadOn: "", OverheadPercentage: "", PackagingCost: "", PackagingCostPercentage: "", PartName: "", PartNumber: "", PartType: "", PaymentTermCost: "", PaymentTermsOn: "", PlantCode: "", PlantName: "", ProfitApplicability: "", ProfitCost: "", ProfitOn: "", ProfitPercentage: "", RMGrade: "", RMSpecification: "", RawMaterialCode: "", RawMaterialGrossWeight: "", RawMaterialName: "", RawMaterialRate: "", RawMaterialScrapWeight: "", RawMaterialSpecification: "", RecordInsertedBy: "", RejectOn: "", RejectionApplicability: "", RejectionCost: "", RejectionPercentage: "", Remark: "", Rev: "", RevisionNumber: "", ScrapRate: "", ScrapWeight: "", SurfaceTreatmentCost: "", ToolCost: "", ToolLife: "", ToolMaintenaceCost: "", ToolPrice: "", ToolQuantity: "", TotalCost: "", TotalOtherCost: "", TotalRecordCount: "", TransportationCost: "", VendorCode: "", VendorName: "", Version: "", RawMaterialGrade: "", HundiOrDiscountPercentage: "", FromDate: "", ToDate: "" })
     const [enableSearchFilterSearchButton, setEnableSearchFilterButton] = useState(true)
     const [reportListingDataStateArray, setReportListingDataStateArray] = useState([])
-
+    const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
+    const { technologyId } = props;
     var filterParams = {
         comparator: function (filterLocalDateAtMidnight, cellValue) {
             var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
@@ -141,6 +145,7 @@ function ReportListing(props) {
     }
 
     const closeUserDetails = () => {
+        setIsViewRM(false)
         setIsOpen(false)
         setUserId("")
 
@@ -160,15 +165,48 @@ function ReportListing(props) {
         return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
     }
 
+    const viewMultipleRMDetails = (costingID) => {
+        dispatch(getSingleCostingDetails(costingID, (res) => {
+            if (res.data.Data) {
+                let dataFromAPI = res.data.Data;
+
+                const tempObj = formViewData(dataFromAPI)
+                dispatch(setCostingViewData(tempObj))
+                let data = dataFromAPI && dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost
+                setIsAssemblyCosting(dataFromAPI && dataFromAPI?.IsAssemblyCosting)
+
+                setViewRMData(data)
+                setrmMBDetail({
+                    MasterBatchTotal: dataFromAPI.CostingPartDetails?.masterBatchTotal,
+                    MasterBatchRMPrice: dataFromAPI.CostingPartDetails?.masterBatchRMPrice,
+                    MasterBatchPercentage: dataFromAPI.CostingPartDetails?.masterBatchPercentage,
+                    IsApplyMasterBatch: dataFromAPI.CostingPartDetails?.isApplyMasterBatch
+                })
+                setIsViewRM(true)
+            }
+        },
+        ))
+
+    }
+
     const partTypeAssemblyFormatter = (props) => {
+
         const cellValue = props?.value;
-        if (props.data.PartType === "Assembly") {
-            return "Multiple RM"
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const costingID = row.BaseCostingId;
+        if (props.data.RawMaterialName === "Multiple RM") {
+            return <>
+                <div
+                    onClick={() => viewMultipleRMDetails(costingID)}
+                    className={'link'}
+                >Multiple RM</div>
+            </>
 
         } else {
             return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
         }
     }
+
 
     /**
     * @method decimalPriceFormatter
@@ -201,9 +239,9 @@ function ReportListing(props) {
     }
 
     /**
-   * @method getTableData
-   * @description getting approval list table
-   */
+    * @method getTableData
+    * @description getting approval list table
+    */
 
     const getTableData = (skip, take, isPagination, data, isLastWeek, isCallApi) => {
         let newData = {}
@@ -715,7 +753,17 @@ function ReportListing(props) {
                     isSimulation={true}
                 />
             }
-        </div>
+            {isViewRM && <ViewRM
+                isOpen={isViewRM}
+                viewRMData={viewRMData}
+                closeDrawer={closeUserDetails}
+                isAssemblyCosting={isAssemblyCosting}
+                anchor={'right'}
+                technologyId={viewCostingData[0].EtechnologyType}
+                rmMBDetail={rmMBDetail}
+                index={0}
+            />}
+        </div >
     );
 }
 
