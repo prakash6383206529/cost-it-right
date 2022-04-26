@@ -162,7 +162,7 @@ function AssemblySurfaceTreatment(props) {
         </div>
         <td>
           <div className='d-flex align-items-center justify-content-end'>
-            {!CostingViewMode && (item.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostWithQuantitys !== 0) ?
+            {!CostingViewMode && (item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly !== 0 || item.CostingPartDetails.TotalTransportationCostPerAssembly !== 0) ?
               <button
                 type="button"
                 className={'user-btn surface-treatment-btn'}
@@ -172,8 +172,9 @@ function AssemblySurfaceTreatment(props) {
                   DrawerToggle()
                 }}
               >
-                <div className={'fa fa-eye pr-1'}></div>Surface T</button>
+                <div className={'fa fa-eye pr-1'}></div>Surface Tr.</button>
               :
+
               <button
                 type="button"
                 className={'user-btn surface-treatment-btn'}
