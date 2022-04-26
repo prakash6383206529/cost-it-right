@@ -198,7 +198,7 @@ function BOPApproval(props) {
         statusFormatter: statusFormatter,
         linkableFormatter: linkableFormatter,
         effectiveDateRenderer: effectiveDateFormatter,
-        customNoRowsOverlay:NoContentFound
+        customNoRowsOverlay: NoContentFound
 
     };
 
@@ -219,7 +219,7 @@ function BOPApproval(props) {
                             <button type="button" className="user-btn mr5" title="Reset Grid" onClick={resetState}>
                                 <div className="refresh mr-0"></div>
                             </button>
-                            <button title="send-for-approval" class="user-btn approval-btn" disabled={isFinalApprover} onClick={sendForApproval}>
+                            <button title="Send For Approval" class="user-btn approval-btn" disabled={isFinalApprover} onClick={sendForApproval}>
                                 <div className="send-for-approval mr-0" ></div>
                             </button>
                         </div>
