@@ -15,7 +15,6 @@ function TabOverheadProfit(props) {
   const { handleSubmit, } = useForm();
   const [IsApplicableForChildParts, setIsApplicableForChildParts] = useState(false);
   const [IsIncludeSurfaceTreatment, setIsIncludeSurfaceTreatment] = useState(false);
-  console.log('IsIncludeSurfaceTreatment: ', IsIncludeSurfaceTreatment);
   const dispatch = useDispatch()
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
@@ -164,6 +163,8 @@ function TabOverheadProfit(props) {
   const dispatchOverheadDetail = (data, params, arr) => {
 
     const { overheadObj, profitObj, modelType } = data;
+
+
     let OverheadCost = checkForNull(overheadObj.OverheadRMTotalCost) +
       checkForNull(overheadObj.OverheadBOPTotalCost) +
       checkForNull(overheadObj.OverheadCCTotalCost);
@@ -249,7 +250,6 @@ function TabOverheadProfit(props) {
   const dispatchProfitDetail = (data, params, arr) => {
 
     const { overheadObj, profitObj } = data;
-
     let OverheadCost = checkForNull(overheadObj.OverheadRMTotalCost) +
       checkForNull(overheadObj.OverheadBOPTotalCost) +
       checkForNull(overheadObj.OverheadCCTotalCost);

@@ -42,12 +42,15 @@ function SurfaceTreatmentCost(props) {
       BOMLevel: props.item.BOMLevel,
       PartNumber: props.item.PartNumber,
     }
+
     if (!CostingViewMode && !IsLocked) {
-      if (props.IsAssemblyCalculation) {
-        props.setAssemblySurfaceCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false, props.item)
-      } else {
-        props.setSurfaceCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
-      }
+      const isEqual = JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false
+      props.setSurfaceData({ gridData, Params, isEqual, item })
+      // if (props.IsAssemblyCalculation) {
+      //   props.setAssemblySurfaceCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false, props.item)
+      // } else {
+      //   props.setSurfaceCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
+      // }
     }
     // }, 100)
     selectedIds(gridData)
