@@ -1595,7 +1595,7 @@ class AddMachineRate extends Component {
                             title={'Process Group:'} />
                         </Col>
                         <Col md="12">
-                          <ProcessGroup isViewFlag={isViewFlag} />
+                          {/* <ProcessGroup isViewFlag={isViewFlag} /> */}
                         </Col>
                       </Row>
 
