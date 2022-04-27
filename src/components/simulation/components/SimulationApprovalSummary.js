@@ -1089,7 +1089,7 @@ function SimulationApprovalSummary(props) {
                                             <Row>
                                                 <Col>
                                                     <div className={`ag-grid-wrapper height-width-wrapper ${costingList && costingList?.length <= 0 ? "overlay-contain" : ""}`}>
-                                                        <div className="ag-grid-header d-flex">
+                                                        <div className="ag-grid-header d-flex align-items-center">
                                                             <input type="text" className="form-control table-search" id="filter-text-box" value={textFilterSearch} placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                                                             <button type="button" className="user-btn float-right mr5" title="Reset Grid" onClick={() => resetState()}>
                                                                 <div className="refresh mr-0"></div>
