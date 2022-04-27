@@ -408,63 +408,60 @@ function RMSimulation(props) {
 
                     (!showverifyPage && !showMainSimulation) &&
                     <Fragment>
-                        {
-                            isbulkUpload &&
-                            <Row className="sm-edit-row justify-content-end">
-                                <Col md="6">
-                                    <div className="d-flex align-items-center">
-                                        <label>No of rows with changes:</label>
-                                        <TextFieldHookForm
-                                            label=""
-                                            name={'NoOfCorrectRow'}
-                                            Controller={Controller}
-                                            control={control}
-                                            register={register}
-                                            rules={{ required: false }}
-                                            mandatory={false}
-                                            handleChange={() => { }}
-                                            defaultValue={''}
-                                            className=""
-                                            customClassName={'withBorder mn-height-auto hide-label mb-0'}
-                                            errors={errors.NoOfCorrectRow}
-                                            disabled={true}
-                                        />
-                                    </div>
-                                </Col>
-                                <Col md="6">
-                                    <div className="d-flex align-items-center">
-                                        <label>No of rows without changes:</label>
-                                        <TextFieldHookForm
-                                            label=""
-                                            name={'NoOfRowsWithoutChange'}
-                                            Controller={Controller}
-                                            control={control}
-                                            register={register}
-                                            rules={{ required: false }}
-                                            mandatory={false}
-                                            handleChange={() => { }}
-                                            defaultValue={''}
-                                            className=""
-                                            customClassName={'withBorder mn-height-auto hide-label mb-0'}
-                                            errors={errors.NoOfRowsWithoutChange}
-                                            disabled={true}
-                                        />
-                                    </div>
-                                </Col>
-                            </Row>
-                        }
+
                         <Row>
                             <Col className="add-min-height mb-3 sm-edit-page">
                                 <div className={`ag-grid-wrapper height-width-wrapper reset-btn-container ${list && list?.length <= 0 ? "overlay-contain" : ""}`}>
-                                    <div className="ag-grid-header d-flex justify-content-between align-items-center">
-                                        <div className='d-flex'>
+                                    <div className="ag-grid-header">
+                                        <div className='d-flex align-items-center'>
                                             <input type="text" className="form-control table-search" id="filter-text-box" value={textFilterSearch} placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                                             <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
                                                 <div className="refresh mr-0"></div>
                                             </button>
                                         </div>
-                                        <>
-                                            {!isImpactedMaster && <div className={`d-flex simulation-label-container ${isbulkUpload ? "mt-5 pt-2" : ''}`}>
+                                        <div className='d-flex justify-content-end mt-2'>
+                                            {
+                                                isbulkUpload &&
+                                                <div className="d-flex justify-content-end bulk-upload-row">
+                                                    <div className="d-flex align-items-center">
+                                                        <label>No of rows with changes:</label>
+                                                        <TextFieldHookForm
+                                                            label=""
+                                                            name={'NoOfCorrectRow'}
+                                                            Controller={Controller}
+                                                            control={control}
+                                                            register={register}
+                                                            rules={{ required: false }}
+                                                            mandatory={false}
+                                                            handleChange={() => { }}
+                                                            defaultValue={''}
+                                                            className=""
+                                                            customClassName={'withBorder mn-height-auto hide-label mb-0'}
+                                                            errors={errors.NoOfCorrectRow}
+                                                            disabled={true}
+                                                        />
+                                                    </div>
+                                                    <div className="d-flex align-items-center">
+                                                        <label>No of rows without changes:</label>
+                                                        <TextFieldHookForm
+                                                            label=""
+                                                            name={'NoOfRowsWithoutChange'}
+                                                            Controller={Controller}
+                                                            control={control}
+                                                            register={register}
+                                                            rules={{ required: false }}
+                                                            mandatory={false}
+                                                            handleChange={() => { }}
+                                                            defaultValue={''}
+                                                            className=""
+                                                            customClassName={'withBorder mn-height-auto hide-label mb-0'}
+                                                            errors={errors.NoOfRowsWithoutChange}
+                                                            disabled={true}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            }
+                                            {!isImpactedMaster && <div className={`d-flex simulation-label-container ${!isbulkUpload ? 'mtn6' : ''}`}>
                                                 <div className='d-flex pl-3'>
                                                     <label>Technology: </label>
                                                     <p className='technology mx-1' title={list[0].TechnologyName}>{list[0].TechnologyName}</p>
@@ -474,7 +471,9 @@ function RMSimulation(props) {
                                                     <p title={list[0].VendorName}>{list[0].VendorName}</p>
                                                 </div>
                                             </div>}
-                                        </>
+
+
+                                        </div>
 
 
 
