@@ -158,7 +158,7 @@ function ViewRM(props) {
                   <td>{item.BurningLossWeight ? checkForDecimalAndNull(item.BurningLossWeight, initialConfiguration.NoOfDecimalForInputOutput) : '-'}</td>
                   <td>{checkForDecimalAndNull(item.NetLandedCost, initialConfiguration.NoOfDecimalForPrice)}</td>
                   <td>
-                    <div className={`${isPDFShow ? '' : 'text-overflow'}`} title={item.Remark}>
+                    <div className={`${isPDFShow ? '' : 'remark-overflow'}`} title={item.Remark}>
                       <span>{item?.Remark ? item.Remark : "-"}</span></div>
                   </td>
 
@@ -222,7 +222,7 @@ function ViewRM(props) {
           <Container className={`${isAssemblyCosting && "drawer-1200"}`}>
             <div className={"drawer-wrapper drawer-1500px"}>
               <Row className="drawer-heading">
-                <Col>
+                <Col className='pl-0'>
                   <div className={"header-wrapper left"}>
                     <h3>{"View RM Cost:"}</h3>
                   </div>
