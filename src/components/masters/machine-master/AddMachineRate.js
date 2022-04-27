@@ -36,6 +36,7 @@ import { debounce } from 'lodash';
 import TooltipCustom from '../../common/Tooltip';
 import { CheckApprovalApplicableMaster } from '../../../helper'
 import AsyncSelect from 'react-select/async';
+import { ProcessGroup } from '../masterUtil';
 
 
 const selector = formValueSelector('AddMachineRate');
@@ -138,6 +139,7 @@ class AddMachineRate extends Component {
         this.props.change('MachineNumber', Data.MachineNumber)
       })
     }
+
 
 
     // For reseting form  if cancel the add more detail form
@@ -1509,7 +1511,7 @@ class AddMachineRate extends Component {
                             customClassName=" withBorder"
                           />
                         </Col>
-                        <Col md="3">
+                        <Col md="3" className='mb-2 d-flex align-items-center'>
                           <div>
                             {this.state.isEditIndex ?
                               <>
@@ -1532,14 +1534,14 @@ class AddMachineRate extends Component {
                               <>
                                 <button
                                   type="button"
-                                  className={`${isViewFlag ? 'disabled-button user-btn' : 'user-btn'} mt30 pull-left mr5`}
+                                  className={`${isViewFlag ? 'disabled-button user-btn' : 'user-btn'} pull-left mr5`}
                                   disabled={this.state.isViewFlag ? true : isViewMode}
                                   onClick={this.processTableHandler}>
                                   <div className={'plus'}></div>ADD</button>
                                 <button
                                   type="button"
                                   disabled={isViewMode}
-                                  className={`${isViewFlag ? 'disabled-button reset-btn' : 'reset-btn'}  mt30 pull-left`}
+                                  className={`${isViewFlag ? 'disabled-button reset-btn' : 'reset-btn'} pull-left`}
                                   onClick={this.resetProcessGridData}
                                 >Reset</button>
                               </>
@@ -1547,7 +1549,7 @@ class AddMachineRate extends Component {
                           </div>
                         </Col>
                         <Col md="12">
-                          <Table className="table" size="sm" >
+                          <Table className="table border" size="sm" >
                             <thead>
                               <tr>
                                 <th>{`Process Name`}</th>
@@ -1571,17 +1573,29 @@ class AddMachineRate extends Component {
                                           <button className="Edit mr-2" type={'button'} disabled={isViewFlag === true || this.state.IsDetailedEntry === true || isViewMode === true ? true : false} onClick={() => this.editItemDetails(index)} />
                                           <button className="Delete" type={'button'} disabled={isViewFlag === true || this.state.IsDetailedEntry === true || isViewMode === true ? true : false} onClick={() => this.deleteItem(index)} />
                                         </>
-                                        {/* } */}
                                       </td>
                                     </tr>
                                   )
                                 })
                               }
+                              <tr>
+                                <td colSpan={"6"}>{this.state.processGrid.length === 0 &&
+                                  <NoContentFound title={EMPTY_DATA} />
+                                }</td>
+                              </tr>
                             </tbody>
+
                           </Table>
-                          {this.state.processGrid.length === 0 &&
-                            <NoContentFound title={EMPTY_DATA} />
-                          }
+
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col md="12" className='mt-2'>
+                          <HeaderTitle
+                            title={'Process Group:'} />
+                        </Col>
+                        <Col md="12">
+                          <ProcessGroup isViewFlag={isViewFlag} />
                         </Col>
                       </Row>
 
