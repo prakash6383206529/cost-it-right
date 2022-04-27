@@ -493,7 +493,6 @@ function ProcessCost(props) {
                 <thead>
                   <tr>
                     <th style={{ width: "150px" }}>{`Process Name`}</th>
-                    <th style={{ width: "150px" }}>{`Technology`}</th>
                     <th style={{ width: "170px" }}>{`Machine Tonnage`}</th>
                     <th style={{ width: "220px" }}>{`Machine Rate`}</th>
                     <th style={{ width: "220px" }}>{`UOM`}</th>
@@ -509,7 +508,6 @@ function ProcessCost(props) {
                       return (
                         <tr key={index}>
                           <td className='text-overflow'><span title={item.ProcessName}>{item.ProcessName}</span></td>
-                          <td>{item?.Technologies}</td>
                           <td>{item.Tonnage ? checkForNull(item.Tonnage) : '-'}</td>
                           <td>{item.MHR}</td>
                           <td>{item.UOM}</td>
