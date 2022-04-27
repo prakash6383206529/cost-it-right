@@ -11,7 +11,7 @@ import Toaster from '../../../../common/Toaster';
 import { MESSAGES } from '../../../../../config/message';
 
 function PartOverheadProfit(props) {
-  console.log('props: ', props);
+
   const { item } = props;
   const [Count, setCount] = useState(0);
   const [IsOpen, setIsOpen] = useState(false);
