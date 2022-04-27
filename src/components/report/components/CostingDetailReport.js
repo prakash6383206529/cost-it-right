@@ -241,7 +241,15 @@ function ReportListing(props) {
     * @method getTableData
     * @description getting approval list table
     */
-
+    const rmHyperLinkFormatter = (props) => {
+        const cellValue = props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const costingID = row.BaseCostingId;
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? <div
+            onClick={() => viewMultipleRMDetails(costingID)}
+            className={'link'}
+        > {checkForDecimalAndNull(cellValue, initialConfiguration.NoOfDecimalForPrice)}</div> : '-';
+    }
     const getTableData = (skip, take, isPagination, data, isLastWeek, isCallApi) => {
         let newData = {}
         if (isLastWeek) {
@@ -453,8 +461,8 @@ function ReportListing(props) {
         hyperLinkableFormatter: hyperLinkableFormatter,
         effectiveDateFormatter: effectiveDateFormatter,
         decimalInputOutputFormatter: decimalInputOutputFormatter,
-        decimalPriceFormatter: decimalPriceFormatter
-
+        decimalPriceFormatter: decimalPriceFormatter,
+        rmHyperLinkFormatter: rmHyperLinkFormatter
     };
 
 
@@ -660,7 +668,7 @@ function ReportListing(props) {
                         <AgGridColumn field='RawMaterialGrossWeight' headerName='Gross Weight' cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
                         {/* <AgGridColumn field='GrossWeight' headerName='Gross Weight' cellRenderer='hyphenFormatter'></AgGridColumn> */}
                         <AgGridColumn field='RawMaterialFinishWeight' headerName='Finish Weight' cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
-                        <AgGridColumn field='NetRawMaterialsCost' headerName='Net RM Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
+                        <AgGridColumn field='NetRawMaterialsCost' headerName='Net RM Cost' cellRenderer='rmHyperLinkFormatter'></AgGridColumn>
                         <AgGridColumn field='NetBoughtOutPartCost' headerName='Net BOP Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                         <AgGridColumn field='NetProcessCost' headerName='Net Process Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                         <AgGridColumn field='NetOperationCost' headerName='Net Operation Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>

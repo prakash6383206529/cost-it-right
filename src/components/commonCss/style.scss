@@ -6013,9 +6013,12 @@ left: 17rem;
 .drawer-part-name {
   @include overflow(102px,$whiteSpace:normal)
 }
-  .text-overflow {
-    @include overflow($minWidth:125px,$ResponsiveWith:175px, $whiteSpace:normal, $lineClamp:2)
-  }
+.text-overflow {
+  @include overflow($minWidth:125px,$ResponsiveWith:175px, $whiteSpace:normal, $lineClamp:2)
+}
+.remark-overflow {
+  @include overflow($minWidth:45px,$ResponsiveWith:175px, $whiteSpace:normal, $lineClamp:2 )
+}
   .drawer-wrapper table tr:first-child td{
     border-top: none;
   }
