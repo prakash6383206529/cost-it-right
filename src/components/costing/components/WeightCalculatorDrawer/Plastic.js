@@ -34,6 +34,7 @@ function Plastic(props) {
   const dispatch = useDispatch()
   const { getPlasticData } = useSelector(state => state.costing)
 
+  console.log('WeightCalculatorRequest.NetRMCost: ', WeightCalculatorRequest);
   const defaultValues = {
     netWeight: WeightCalculatorRequest && WeightCalculatorRequest.NetWeight !== undefined ? WeightCalculatorRequest.NetWeight : '',
     runnerWeight: WeightCalculatorRequest && WeightCalculatorRequest.RunnerWeight !== undefined ? WeightCalculatorRequest.RunnerWeight : '',
@@ -42,7 +43,7 @@ function Plastic(props) {
     scrapWeight: WeightCalculatorRequest && WeightCalculatorRequest.ScrapWeight !== undefined ? WeightCalculatorRequest.ScrapWeight : '',
     rmCost: WeightCalculatorRequest && WeightCalculatorRequest.RMCost !== undefined ? WeightCalculatorRequest.RMCost : '',
     scrapCost: WeightCalculatorRequest && WeightCalculatorRequest.ScrapCost !== undefined ? WeightCalculatorRequest.ScrapCost : '',
-    materialCost: WeightCalculatorRequest && WeightCalculatorRequest.NetRMCost !== undefined ? WeightCalculatorRequest.NetRMCost : '',
+    materialCost: WeightCalculatorRequest && WeightCalculatorRequest.RawMaterialCost !== undefined ? WeightCalculatorRequest.RawMaterialCost : '',
     burningAllownace: WeightCalculatorRequest && WeightCalculatorRequest.BurningValue !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.BurningValue * checkForNull(totalRM), getConfigurationKey().NoOfDecimalForInputOutput) : ''
 
   }
@@ -54,7 +55,7 @@ function Plastic(props) {
     scrapWeight: WeightCalculatorRequest && WeightCalculatorRequest.ScrapWeight !== undefined ? WeightCalculatorRequest.ScrapWeight : '',
     rmCost: WeightCalculatorRequest && WeightCalculatorRequest.RMCost !== undefined ? WeightCalculatorRequest.RMCost : '',
     scrapCost: WeightCalculatorRequest && WeightCalculatorRequest.ScrapCost !== undefined ? WeightCalculatorRequest.ScrapCost : '',
-    materialCost: WeightCalculatorRequest && WeightCalculatorRequest.NetRMCost !== undefined ? WeightCalculatorRequest.NetRMCost : '',
+    materialCost: WeightCalculatorRequest && WeightCalculatorRequest.RawMaterialCost !== undefined ? WeightCalculatorRequest.RawMaterialCost : '',
     burningValue: WeightCalculatorRequest && WeightCalculatorRequest.BurningValue !== undefined ? WeightCalculatorRequest.BurningValue : '',
     grossWeight: WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== undefined ? WeightCalculatorRequest.GrossWeight : '',
   })
@@ -91,8 +92,10 @@ function Plastic(props) {
   }, [fieldValues])
 
   useEffect(() => {
-    calculateGrossWeight()
-    calculateRemainingCalculation()
+    if (!CostingViewMode) {
+      calculateGrossWeight()
+      calculateRemainingCalculation()
+    }
   }, [getPlasticData])
 
   useEffect(() => {
