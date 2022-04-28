@@ -25,8 +25,9 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
-import { getFilteredData, CheckApprovalApplicableMaster } from '../../../helper'
+import { getFilteredData, CheckApprovalApplicableMaster, userDetails, loggedInUserId } from '../../../helper'
 import { getListingForSimulationCombined } from '../../simulation/actions/Simulation';
+import { masterFinalLevelUser } from '../../masters/actions/Material'
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -51,7 +52,9 @@ class MachineRateListing extends Component {
             isBulkUpload: false,
             isLoader: false,
             showPopup: false,
-            deletedId: ''
+            deletedId: '',
+            isFinalApprovar: false
+
         }
     }
 
@@ -77,6 +80,18 @@ class MachineRateListing extends Component {
         if (this.props.selectionForListingMasterAPI === 'Master') {
             this.getDataList()
         }
+        let obj = {
+            MasterId: MACHINE_MASTER_ID,
+            DepartmentId: userDetails().DepartmentId,
+            LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
+            LoggedInUserId: loggedInUserId()
+        }
+        this.props.masterFinalLevelUser(obj, (res) => {
+            if (res?.data?.Result) {
+                this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+            }
+        })
+
     }
 
 
@@ -544,6 +559,7 @@ class MachineRateListing extends Component {
                     isMachineMoreTemplate={true}
                     messageLabel={'Machine'}
                     anchor={'right'}
+                    isFinalApprovar={this.state.isFinalApprovar}
                 />}
                 {
                     this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.MACHINE_DELETE_ALERT}`} />
@@ -590,7 +606,8 @@ export default connect(mapStateToProps, {
     getMachineTypeSelectListByTechnology,
     getMachineTypeSelectListByVendor,
     getProcessSelectListByMachineType,
-    getListingForSimulationCombined
+    getListingForSimulationCombined,
+    masterFinalLevelUser
 })(reduxForm({
     form: 'MachineRateListing',
     enableReinitialize: true,
