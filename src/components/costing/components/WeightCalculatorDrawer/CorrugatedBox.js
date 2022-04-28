@@ -14,7 +14,7 @@ function CorrugatedBox(props) {
     const [dataSend, setDataSend] = useState({})
     const localStorage = reactLocalStorage.getObject('InitialConfiguration');
     const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest;
-    const { rmRowData, CostingViewMode, item, DisableMasterBatchCheckbox } = props
+    const { rmRowData, CostingViewMode, item } = props
     const dispatch = useDispatch()
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const defaultValues = {
@@ -161,7 +161,6 @@ function CorrugatedBox(props) {
     }
 
     const onSubmit = (Values) => {
-        DisableMasterBatchCheckbox(true)
         let data = {
             CorrugatedBoxWeightCalculatorId: WeightCalculatorRequest && WeightCalculatorRequest.CorrugatedBoxWeightCalculatorId ? WeightCalculatorRequest.CorrugatedBoxWeightCalculatorId : "0",
             BaseCostingIdRef: item.CostingId,
