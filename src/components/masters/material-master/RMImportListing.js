@@ -4,7 +4,8 @@ import { Row, Col, } from 'reactstrap';
 import {
   deleteRawMaterialAPI, getRMImportDataList, getRawMaterialNameChild, getGradeSelectList,
   getRawMaterialFilterSelectList
-  , getVendorListByVendorType
+  , getVendorListByVendorType,
+  masterFinalLevelUser
 } from '../actions/Material';
 import { checkForDecimalAndNull } from "../../../helper/validation";
 import { EMPTY_DATA, RMIMPORT } from '../../../config/constants';
@@ -22,7 +23,7 @@ import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { CheckApprovalApplicableMaster, getConfigurationKey, getFilteredData, } from '../../../helper';
+import { CheckApprovalApplicableMaster, getConfigurationKey, getFilteredData, loggedInUserId, userDetails, } from '../../../helper';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
@@ -51,6 +52,7 @@ function RMImportListing(props) {
   const [gridColumnApi, setgridColumnApi] = useState(null);   // DONT DELETE THIS STATE , IT IS USED BY AG GRID
 
   const [loader, setloader] = useState(false);
+  const [isFinalLevelUser, setIsFinalLevelUser] = useState(false)
 
   const dispatch = useDispatch();
 
@@ -81,7 +83,19 @@ function RMImportListing(props) {
     callFilterApi()
   }, [shown])
 
-
+  useEffect(() => {
+    let obj = {
+      MasterId: RM_MASTER_ID,
+      DepartmentId: userDetails().DepartmentId,
+      LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
+      LoggedInUserId: loggedInUserId()
+    }
+    dispatch(masterFinalLevelUser(obj, (res) => {
+      if (res?.data?.Result) {
+        setIsFinalLevelUser(res.data.Data.IsFinalApprovar)
+      }
+    }))
+  }, [])
 
   useEffect(() => {
 
@@ -576,6 +590,7 @@ function RMImportListing(props) {
             isZBCVBCTemplate={true}
             messageLabel={"RM Import"}
             anchor={"right"}
+            isFinalLevelUser={isFinalLevelUser}
           />
         )
       }

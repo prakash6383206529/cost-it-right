@@ -15,7 +15,7 @@ import StandardRub from './rubber/StandardRub'
 
 
 function OpenWeightCalculator(props) {
-  const { rmRowData, item, isSummary, rmMBDetail, CostingViewMode, rmData, technology } = props
+  const { rmRowData, item, isSummary, rmMBDetail, CostingViewMode, rmData, technology, DisableMasterBatchCheckbox } = props
   let appyMasterBatch;
   let totalRM;
   if (!isSummary) {
@@ -99,6 +99,7 @@ function OpenWeightCalculator(props) {
             toggleDrawer={toggleDrawer}
             isSummary={isSummary}
             CostingViewMode={CostingViewMode ? CostingViewMode : false}
+            DisableMasterBatchCheckbox={DisableMasterBatchCheckbox}
           />
         )
       case RUBBER:

@@ -171,7 +171,6 @@ function Ferrous(props) {
     }
 
     const onSubmit = () => {
-
         let obj = {}
         obj.FerrousCastingWeightCalculatorId = WeightCalculatorRequest && WeightCalculatorRequest.ForgingWeightCalculatorId ? WeightCalculatorRequest.ForgingWeightCalculatorId : "0"
         obj.CostingRawMaterialDetailsIdRef = rmRowData.RawMaterialDetailId
