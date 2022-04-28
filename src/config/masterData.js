@@ -2996,17 +2996,12 @@ export const ZBCPLANT_DOWNLOAD_EXCEl = [
     { label: "StateName", value: "StateName", },
     { label: "CityName", value: "CityName", },
 ]
+
 export const REPORT_DOWNLOAD_EXCEl = [
     { label: "CostingNumber", value: "CostingNumber", },
     { label: "TechnologyName", value: "TechnologyName" },
-    { label: "Company", value: "DepartmentName" },
-    { label: "Company", value: "DepartmentName" },
     { label: "CreatedDate", value: "CreatedDate", },
-    { label: "Status", value: "Status", },
     { label: "NetPOPrice", value: "NetPOPrice", },
-    { label: "PartNumber", value: "PartNumber", },
-    { label: "PartName", value: "PartName", },
-    { label: "PlantName", value: "PlantName", },
     { label: "VendorName", value: "VendorName", },
     { label: "VendorCode", value: "VendorCode", },
     { label: "PlantName", value: "PlantName", },
@@ -3082,6 +3077,7 @@ export const REPORT_DOWNLOAD_EXCEl = [
     { label: 'LineNumber', value: 'LineNumber' },
     { label: 'Status', value: 'Status' }
 ]
+
 export const REPORT_DOWNLOAD_SAP_EXCEl = [
     { label: "Sr No", value: "SrNo" }, //Serial no
     { label: "evrtn", value: "SANumber" },//SA no
