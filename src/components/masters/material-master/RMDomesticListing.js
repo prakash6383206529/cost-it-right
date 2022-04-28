@@ -5,7 +5,8 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
 import {
     deleteRawMaterialAPI, getRMDomesticDataList, getRawMaterialNameChild, getGradeSelectList, getVendorListByVendorType,
-    getRawMaterialFilterSelectList
+    getRawMaterialFilterSelectList,
+    masterFinalLevelUser,
 } from '../actions/Material';
 import { checkForDecimalAndNull } from "../../../helper/validation";
 import { EMPTY_DATA, RMDOMESTIC } from '../../../config/constants';
@@ -23,7 +24,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
-import { CheckApprovalApplicableMaster, getConfigurationKey, getFilteredData, userDepartmetList } from '../../../helper';
+import { CheckApprovalApplicableMaster, getConfigurationKey, getFilteredData, userDepartmetList, loggedInUserId, userDetails } from '../../../helper';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
 import { getListingForSimulationCombined } from '../../simulation/actions/Simulation';
@@ -53,6 +54,7 @@ function RMDomesticListing(props) {
     const [showPopupBulk, setShowPopupBulk] = useState(false)
     const [editTable, setEditTable] = useState(EditAccessibility)
     const [viewAction, setViewAction] = useState(ViewRMAccessibility)
+    const [isFinalLevelUser, setIsFinalLevelUser] = useState(false)
 
 
     /**
@@ -91,6 +93,19 @@ function RMDomesticListing(props) {
         setvalue({ min: 0, max: 0 });
     }, [])
 
+    useEffect(() => {
+        let obj = {
+            MasterId: RM_MASTER_ID,
+            DepartmentId: userDetails().DepartmentId,
+            LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
+            LoggedInUserId: loggedInUserId()
+        }
+        dispatch(masterFinalLevelUser(obj, (res) => {
+            if (res?.data?.Result) {
+                setIsFinalLevelUser(res.data.Data.IsFinalApprovar)
+            }
+        }))
+    }, [])
 
     const getFilterRMData = () => {
         if (isSimulation) {
@@ -610,6 +625,7 @@ function RMDomesticListing(props) {
                         isZBCVBCTemplate={true}
                         messageLabel={"RM Domestic"}
                         anchor={"right"}
+                        isFinalApprovar={isFinalLevelUser}
                     />
                 )
             }

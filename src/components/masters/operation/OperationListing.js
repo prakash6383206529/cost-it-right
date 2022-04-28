@@ -17,7 +17,7 @@ import AddOperation from './AddOperation';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { ADDITIONAL_MASTERS, OPERATION, OperationMaster, OPERATIONS_ID } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
-import { loggedInUserId } from '../../../helper/auth';
+import { loggedInUserId, userDetails } from '../../../helper/auth';
 import { getFilteredData, CheckApprovalApplicableMaster } from '../../../helper'
 import { costingHeadObjs, OPERATION_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -29,6 +29,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
 import { getListingForSimulationCombined } from '../../simulation/actions/Simulation'
+import { masterFinalLevelUser } from '../../masters/actions/Material'
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -61,6 +62,7 @@ class OperationListing extends Component {
             showPopup: false,
             deletedId: '',
             isLoader: false,
+            isFinalApprovar: false
         }
     }
 
@@ -78,6 +80,17 @@ class OperationListing extends Component {
         } else {
             this.getTableListData(null, null, null, null)
         }
+        let obj = {
+            MasterId: OPERATIONS_ID,
+            DepartmentId: userDetails().DepartmentId,
+            LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
+            LoggedInUserId: loggedInUserId()
+        }
+        this.props.masterFinalLevelUser(obj, (res) => {
+            if (res?.data?.Result) {
+                this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+            }
+        })
 
     }
 
@@ -744,6 +757,7 @@ class OperationListing extends Component {
                         isZBCVBCTemplate={true}
                         messageLabel={'Operation'}
                         anchor={'right'}
+                        isFinalApprovar={this.state.isFinalApprovar}
                     />}
                 </div>
                 {
@@ -783,7 +797,8 @@ export default connect(mapStateToProps, {
     getVendorListByOperation,
     getTechnologyListByVendor,
     getOperationListByVendor,
-    getListingForSimulationCombined
+    getListingForSimulationCombined,
+    masterFinalLevelUser
 })(reduxForm({
     form: 'OperationListing',
     onSubmitFail: errors => {

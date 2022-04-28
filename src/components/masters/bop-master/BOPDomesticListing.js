@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { EMPTY_DATA, BOP_MASTER_ID, BOPDOMESTIC } from '../../../config/constants';
+import { EMPTY_DATA, BOP_MASTER_ID, BOPDOMESTIC, MACHINE_MASTER_ID } from '../../../config/constants';
 import {
     getBOPDomesticDataList, deleteBOP, getBOPCategorySelectList, getAllVendorSelectList,
     getPlantSelectList, getPlantSelectListByVendor,
@@ -15,7 +15,7 @@ import BulkUpload from '../../massUpload/BulkUpload';
 import { BOP_DOMESTIC_DOWNLOAD_EXCEl, } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
 import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
-import { getConfigurationKey, getFilteredData } from '../../../helper';
+import { getConfigurationKey, getFilteredData, loggedInUserId, userDetails } from '../../../helper';
 import { BopDomestic, } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -24,7 +24,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
 import { getListingForSimulationCombined } from '../../simulation/actions/Simulation';
-
+import { masterFinalLevelUser } from '../../masters/actions/Material'
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -51,8 +51,8 @@ class BOPDomesticListing extends Component {
             showData: false,
             showPopup: false,
             deletedId: '',
-            isLoader: false
-
+            isLoader: false,
+            isFinalApprovar: false
         }
     }
 
@@ -67,6 +67,18 @@ class BOPDomesticListing extends Component {
         this.props.getPlantSelectList(() => { })
         this.props.getVendorWithVendorCodeSelectList(() => { })
         this.getDataList()
+        let obj = {
+            MasterId: MACHINE_MASTER_ID,
+            DepartmentId: userDetails().DepartmentId,
+            LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
+            LoggedInUserId: loggedInUserId()
+        }
+        this.props.masterFinalLevelUser(obj, (res) => {
+            if (res?.data?.Result) {
+                this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+            }
+        })
+
     }
 
     /**
@@ -553,6 +565,7 @@ class BOPDomesticListing extends Component {
                         isZBCVBCTemplate={true}
                         messageLabel={'BOP Domestic'}
                         anchor={'right'}
+                        isFinalApprovar={this.state.isFinalApprovar}
                     />
                 }
                 {
@@ -568,8 +581,9 @@ class BOPDomesticListing extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ boughtOutparts, supplier, auth }) {
+function mapStateToProps({ boughtOutparts, supplier, auth, material }) {
     const { bopCategorySelectList, vendorAllSelectList, plantSelectList, bopDomesticList } = boughtOutparts;
+    const { rmSpecificationDetail, filterRMSelectList, rmSpecificationList } = material;
     const { vendorWithVendorCodeSelectList } = supplier;
     const { initialConfiguration } = auth;
     return { bopCategorySelectList, plantSelectList, vendorAllSelectList, bopDomesticList, vendorWithVendorCodeSelectList, initialConfiguration }
@@ -589,7 +603,8 @@ export default connect(mapStateToProps, {
     getAllVendorSelectList,
     getPlantSelectListByVendor,
     getVendorWithVendorCodeSelectList,
-    getListingForSimulationCombined
+    getListingForSimulationCombined,
+    masterFinalLevelUser
 })(reduxForm({
     form: 'BOPDomesticListing',
     enableReinitialize: true,
