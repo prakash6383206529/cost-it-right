@@ -257,51 +257,7 @@ function MRSimulation(props) {
                 {
                     (!showverifyPage && !showMainSimulation) &&
                     <Fragment>
-                        {
-                            isbulkUpload &&
-                            <Row className="sm-edit-row justify-content-end">
-                                <Col md="6">
-                                    <div className="d-flex align-items-center">
-                                        <label>No of rows with changes:</label>
-                                        <TextFieldHookForm
-                                            label=""
-                                            name={'NoOfCorrectRow'}
-                                            Controller={Controller}
-                                            control={control}
-                                            register={register}
-                                            rules={{ required: false }}
-                                            mandatory={false}
-                                            handleChange={() => { }}
-                                            defaultValue={''}
-                                            className=""
-                                            customClassName={'withBorder mn-height-auto hide-label mb-0'}
-                                            errors={errors.NoOfCorrectRow}
-                                            disabled={true}
-                                        />
-                                    </div>
-                                </Col>
-                                <Col md="6">
-                                    <div className="d-flex align-items-center">
-                                        <label>No of rows without changes:</label>
-                                        <TextFieldHookForm
-                                            label=""
-                                            name={'NoOfRowsWithoutChange'}
-                                            Controller={Controller}
-                                            control={control}
-                                            register={register}
-                                            rules={{ required: false }}
-                                            mandatory={false}
-                                            handleChange={() => { }}
-                                            defaultValue={''}
-                                            className=""
-                                            customClassName={'withBorder mn-height-auto hide-label mb-0'}
-                                            errors={errors.NoOfRowsWithoutChange}
-                                            disabled={true}
-                                        />
-                                    </div>
-                                </Col>
-                            </Row>
-                        }
+
                         <form>
 
                             <Row>
@@ -310,6 +266,47 @@ function MRSimulation(props) {
                                         <div className="ag-grid-header">
                                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                                         </div>
+                                        {
+                                            isbulkUpload &&
+                                            <div className='d-flex justify-content-end bulk-upload-row'>
+                                                <div className="d-flex align-items-center">
+                                                    <label>No of rows with changes:</label>
+                                                    <TextFieldHookForm
+                                                        label=""
+                                                        name={'NoOfCorrectRow'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        rules={{ required: false }}
+                                                        mandatory={false}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder mn-height-auto hide-label mb-0'}
+                                                        errors={errors.NoOfCorrectRow}
+                                                        disabled={true}
+                                                    />
+                                                </div>
+                                                <div className="d-flex align-items-center">
+                                                    <label>No of rows without changes:</label>
+                                                    <TextFieldHookForm
+                                                        label=""
+                                                        name={'NoOfRowsWithoutChange'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        rules={{ required: false }}
+                                                        mandatory={false}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder mn-height-auto hide-label mb-0'}
+                                                        errors={errors.NoOfRowsWithoutChange}
+                                                        disabled={true}
+                                                    />
+                                                </div>
+                                            </div>
+                                        }
                                         <div className="ag-theme-material" style={{ width: '100%' }}>
                                             <AgGridReact
                                                 floatingFilter={true}

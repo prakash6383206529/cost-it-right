@@ -422,7 +422,7 @@ function RMSimulation(props) {
                                         <div className='d-flex justify-content-end mt-2'>
                                             {
                                                 isbulkUpload &&
-                                                <div className="d-flex justify-content-end bulk-upload-row">
+                                                <div className="d-flex justify-content-end bulk-upload-row rm-row">
                                                     <div className="d-flex align-items-center">
                                                         <label>No of rows with changes:</label>
                                                         <TextFieldHookForm
