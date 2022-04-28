@@ -19,7 +19,7 @@ import { debounce } from 'lodash'
 const gridOptions = {};
 function StandardRub(props) {
 
-    const { rmRowData, rmData } = props
+    const { rmRowData, rmData, DisableMasterBatchCheckbox } = props
     const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest;
 
     const costData = useContext(costingInfoContext)
@@ -318,6 +318,7 @@ function StandardRub(props) {
     }
 
     const onSubmit = () => {
+        DisableMasterBatchCheckbox(true)
         let obj = {}
         obj.LayoutType = 'Default'
         obj.WeightCalculationId = WeightCalculatorRequest && WeightCalculatorRequest.WeightCalculationId ? WeightCalculatorRequest.WeightCalculationId : "00000000-0000-0000-0000-000000000000"

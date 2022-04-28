@@ -11,7 +11,7 @@ import Toaster from '../../../common/Toaster'
 import { setPlasticArray } from '../../actions/Costing'
 
 function Plastic(props) {
-  const { item, rmRowData, isSummary, CostingViewMode } = props
+  const { item, rmRowData, isSummary, CostingViewMode, DisableMasterBatchCheckbox } = props
   let totalRM
   if (!isSummary) {
     const { CostingPartDetails } = item
@@ -168,6 +168,7 @@ function Plastic(props) {
     props.toggleDrawer('')
   }
   const onSubmit = () => {
+    DisableMasterBatchCheckbox(true)
     let obj = {}
     obj.PlasticWeightCalculatorId = WeightCalculatorRequest && WeightCalculatorRequest.PlasticWeightCalculatorId ? WeightCalculatorRequest.PlasticWeightCalculatorId : "0"
     obj.BaseCostingIdRef = item.CostingId
