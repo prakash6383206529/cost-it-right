@@ -237,7 +237,8 @@ function ProcessCost(props) {
           UOMType: el.UnitType,
           UOMTypeId: el.UnitTypeId,
           ProductionPerHour: '-',
-          ProcessTechnologyId: el.ProcessTechnologyId
+          ProcessTechnologyId: el.ProcessTechnologyId,
+          Technologies: el.Technologies
         }
       })
 
@@ -596,7 +597,7 @@ function ProcessCost(props) {
                                 />
                                 <Row>
                                   <Col md="12" className='remark-btn-container'>
-                                    <button className='submit-button' disabled={(CostingViewMode || IsLocked) ? true : false} onClick={() => onRemarkPopUpClickk(index)} > <div className='save-icon'></div> </button>
+                                    <button className='submit-button mr-2' disabled={(CostingViewMode || IsLocked) ? true : false} onClick={() => onRemarkPopUpClickk(index)} > <div className='save-icon'></div> </button>
                                     <button className='reset' onClick={() => onRemarkPopUpClosee(index)} > <div className='cancel-icon'></div></button>
                                   </Col>
                                 </Row>

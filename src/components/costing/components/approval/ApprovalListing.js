@@ -479,7 +479,7 @@ function ApprovalListing(props) {
                         <div className="filter mr-0"></div>
                       </button>
                     )}
-                    <button title="send-for-approval" class="user-btn approval-btn" onClick={sendForApproval}>
+                    <button title="Send For Approval" class="user-btn approval-btn" onClick={sendForApproval}>
                       <div className="send-for-approval mr-0" ></div>
                     </button>
                   </div>

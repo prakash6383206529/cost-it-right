@@ -168,7 +168,7 @@ class PartMaster extends Component {
                                 <h1>Part Master</h1>
                                 <button
                                     type="button"
-                                    className={'user-btn mr5 mt-1'}
+                                    className={'secondary-btn mr5 mt-1'}
                                     title="Fetch"
                                     onClick={this.openFetchDrawer}>
                                     <div className={'swap mr-0'}></div></button>

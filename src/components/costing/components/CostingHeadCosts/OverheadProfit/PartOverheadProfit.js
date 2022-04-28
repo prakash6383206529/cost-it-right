@@ -11,11 +11,10 @@ import Toaster from '../../../../common/Toaster';
 import { MESSAGES } from '../../../../../config/message';
 
 function PartOverheadProfit(props) {
-  const { item } = props;
 
+  const { item } = props;
   const [Count, setCount] = useState(0);
   const [IsOpen, setIsOpen] = useState(false);
-
   const dispatch = useDispatch()
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
@@ -49,11 +48,7 @@ function PartOverheadProfit(props) {
     }, 500)
   }
 
-  /**
-  * @method onSubmit
-  * @description Used to Submit the form
-  */
-  const onSubmit = (values) => { }
+
 
   /**
   * @method SAVE API CALL WHEN COMPONENT CLOSED

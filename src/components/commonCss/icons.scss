@@ -160,6 +160,7 @@
 }
 .Copy.All { @include icons("../../assests/images/Copy.svg", $shadowColor:#f8a000, $borderColor:#feeccc);
     @include extra-icon-styles;
+    margin: 0;
 }
 .Create { @include icons("../../assests/images/Create.svg");
     @include extra-icon-styles;
@@ -271,6 +272,12 @@
     animation: rightArrow 0.6s infinite alternate ease-in-out;
     margin-bottom: 0;
   }
+  .costing-action.text-right {
+      padding-right: 15px !important;
+      @media screen and (min-width:$middleDesktop) {
+        padding-right: 30px !important;
+      }
+  }
   .action-btn-wrapper {
     display: flex;
     grid-gap: 5px;
@@ -280,3 +287,15 @@
         margin-left: 0;
     }
 }
+
+  .rm-popup-content {
+    @media screen and (max-width:$max1367) {
+      left: 1114px !important;
+        >div {
+             left: 74% !important;
+            }
+            .row {
+                left: unset !important;
+            }
+        }
+    }

@@ -40,7 +40,7 @@ function AssemblySurfaceTreatment(props) {
       dispatch(getSurfaceTreatmentTabData(data, true, (res) => {
         if (res && res.data && res.data.Result) {
           let Data = res.data.DataList[0];
-          props.toggleAssembly(Params, Data)
+          // props.toggleAssembly(Params, Data)
           let array = [];
           array = JSON.parse(localStorage.getItem('surfaceCostingArray'))
           Data.CostingChildPartDetails && Data.CostingChildPartDetails.map(item => {
@@ -48,7 +48,7 @@ function AssemblySurfaceTreatment(props) {
           })
           let uniqueArary = _.uniqBy(array, v => JSON.stringify([v.PartNumber, v.AssemblyPartNumber]))
           localStorage.setItem('surfaceCostingArray', JSON.stringify(uniqueArary));
-          // props.toggleAssembly(BOMLevel, PartNumber, Data)
+          props.toggleAssembly(Params, Data)
 
           if (IsCollapse === false) {
             DrawerToggle()
@@ -162,7 +162,7 @@ function AssemblySurfaceTreatment(props) {
         </div>
         <td>
           <div className='d-flex align-items-center justify-content-end'>
-            {!CostingViewMode && (item.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostWithQuantitys !== 0) ?
+            {!CostingViewMode && (item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly !== 0 || item.CostingPartDetails.TotalTransportationCostPerAssembly !== 0) ?
               <button
                 type="button"
                 className={'user-btn surface-treatment-btn'}
@@ -172,8 +172,9 @@ function AssemblySurfaceTreatment(props) {
                   DrawerToggle()
                 }}
               >
-                <div className={'fa fa-eye pr-1'}></div>Surface T</button>
+                <div className={'fa fa-eye pr-1'}></div>Surface Tr.</button>
               :
+
               <button
                 type="button"
                 className={'user-btn surface-treatment-btn'}
