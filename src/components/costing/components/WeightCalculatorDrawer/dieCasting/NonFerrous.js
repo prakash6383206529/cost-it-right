@@ -11,7 +11,6 @@ import Toaster from '../../../../common/Toaster'
 
 
 function NonFerrous(props) {
-    const { DisableMasterBatchCheckbox } = props
     const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest
     const costData = useContext(costingInfoContext)
     const dispatch = useDispatch()
@@ -165,7 +164,6 @@ function NonFerrous(props) {
     }
 
     const onSubmit = () => {
-        DisableMasterBatchCheckbox(true)
         let obj = {}
         obj.LayoutType = activeTab === '1' ? 'GDC' : activeTab === '2' ? 'LPDC' : 'HPDC'
         obj.DieCastingWeightCalculatorId = WeightCalculatorRequest && WeightCalculatorRequest.DieCastingWeightCalculatorId ? WeightCalculatorRequest.DieCastingWeightCalculatorId : "0"
