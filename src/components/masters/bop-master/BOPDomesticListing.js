@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { EMPTY_DATA, BOP_MASTER_ID, BOPDOMESTIC, MACHINE_MASTER_ID } from '../../../config/constants';
+import { EMPTY_DATA, BOP_MASTER_ID, BOPDOMESTIC } from '../../../config/constants';
 import {
     getBOPDomesticDataList, deleteBOP, getBOPCategorySelectList, getAllVendorSelectList,
     getPlantSelectList, getPlantSelectListByVendor,
@@ -68,7 +68,7 @@ class BOPDomesticListing extends Component {
         this.props.getVendorWithVendorCodeSelectList(() => { })
         this.getDataList()
         let obj = {
-            MasterId: MACHINE_MASTER_ID,
+            MasterId: BOP_MASTER_ID,
             DepartmentId: userDetails().DepartmentId,
             LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
             LoggedInUserId: loggedInUserId()
