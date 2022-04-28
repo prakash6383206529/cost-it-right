@@ -21,7 +21,7 @@ import MachiningStockTable from '../MachiningStockTable'
 import LossStandardTable from '../LossStandardTable'
 
 function HotForging(props) {
-  const { rmRowData, CostingViewMode, item, DisableMasterBatchCheckbox } = props
+  const { rmRowData, CostingViewMode, item } = props
   const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest
   const defaultValues = {
     finishedWeight: WeightCalculatorRequest &&
@@ -280,7 +280,6 @@ function HotForging(props) {
    */
 
   const onSubmit = (values) => {
-    DisableMasterBatchCheckbox(true)
     let obj = {}
     obj.LayoutType = 'Hot'
     obj.ForgingWeightCalculatorId = WeightCalculatorRequest && WeightCalculatorRequest.ForgingWeightCalculatorId ? WeightCalculatorRequest.ForgingWeightCalculatorId : "0"

@@ -88,7 +88,6 @@ function OpenWeightCalculator(props) {
             item={item}
             toggleDrawer={toggleDrawer}
             CostingViewMode={CostingViewMode ? CostingViewMode : false}
-            DisableMasterBatchCheckbox={DisableMasterBatchCheckbox}
           />
         )
       case PLASTIC:
@@ -113,7 +112,6 @@ function OpenWeightCalculator(props) {
           item={item}
           appyMasterBatch={appyMasterBatch}
           CostingViewMode={CostingViewMode ? CostingViewMode : false}
-          DisableMasterBatchCheckbox={DisableMasterBatchCheckbox}
         />)
       case DIE_CASTING:
         return (<NonFerrousCalculator
@@ -123,7 +121,6 @@ function OpenWeightCalculator(props) {
           toggleDrawer={toggleDrawer}
           item={item}
           CostingViewMode={CostingViewMode ? CostingViewMode : false}
-          DisableMasterBatchCheckbox={DisableMasterBatchCheckbox}
         />
         )
 
@@ -135,7 +132,6 @@ function OpenWeightCalculator(props) {
             toggleDrawer={toggleDrawer}
             item={item}
             CostingViewMode={CostingViewMode ? CostingViewMode : false}
-            DisableMasterBatchCheckbox={DisableMasterBatchCheckbox}
           />
         )
       case Ferrous_Casting:
@@ -147,7 +143,6 @@ function OpenWeightCalculator(props) {
             CostingViewMode={CostingViewMode ? CostingViewMode : false}
             item={item}
             rmData={rmData}
-            DisableMasterBatchCheckbox={DisableMasterBatchCheckbox}
           />
         )
 

@@ -17,7 +17,7 @@ import MachiningStockTable from '../MachiningStockTable'
 import LossStandardTable from '../LossStandardTable'
 
 function ColdForging(props) {
-  const { rmRowData, CostingViewMode, item, DisableMasterBatchCheckbox } = props
+  const { rmRowData, CostingViewMode, item } = props
   const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest
   const defaultValues = {
     finishedWeight: WeightCalculatorRequest &&
@@ -271,7 +271,6 @@ function ColdForging(props) {
    * @description Form submission Function
    */
   const onSubmit = (values) => {
-    DisableMasterBatchCheckbox(true)
     let obj = {}
     obj.LayoutType = 'Cold'
     obj.ForgingWeightCalculatorId = WeightCalculatorRequest && WeightCalculatorRequest.ForgingWeightCalculatorId ? WeightCalculatorRequest.ForgingWeightCalculatorId : "0"
