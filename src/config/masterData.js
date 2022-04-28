@@ -2581,6 +2581,8 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADRM = [
     { label: "Costing Id", value: "CostingNumber" },
     { label: "RawMaterial Name", value: "RMName" },
     { label: "RawMaterial Grade", value: "RMGrade" },
+    { label: "RawMaterial Code", value: "RMCode" },
+    { label: "RawMaterial Spec", value: "RMSpecs" },
     { label: "Part No", value: "PartNo" },
     { label: "Part Name", value: "PartName" },
     { label: "ECN Number", value: "ECNNumber" },
@@ -3110,7 +3112,7 @@ export const BOPGridForToken = [
     { label: "OldBOPCost", value: "OldNetBoughtOutPartCost" },
     { label: "NewBOPCost", value: "NewNetBoughtOutPartCost" },
     { label: "BOP Variance", value: "NetBoughtOutPartCostVariance" },
-    { label: "BOP Quantity", value: "BOPVariance" },
+    { label: "BOP Quantity", value: "BoughtOutPartQuantity" },
 ]
 export const ERGridForToken = [
     { label: "Currency", value: "Currency" },
@@ -3168,6 +3170,7 @@ export const InitialGridForTokenSummary = [
     { label: "Revision Number", value: "RevisionNumber" },
     { label: "Vendor Name", value: "VendorName" },
     { label: "Plant", value: "PlantName" },
+    { label: "Plant Code", value: "PlantCode" },
 ]
 
 export const LastGridForTokenSummary = [
@@ -3188,6 +3191,8 @@ export const OperationGridForTokenSummary = [
 export const RMGridForTokenSummary = [
     { label: "RawMaterial Name", value: "RMName" },
     { label: "RawMaterial Grade", value: "RMGrade" },
+    { label: "RawMaterial Code", value: "RMCode" },
+    { label: "RawMaterial Spec", value: "RMSpecs" },
     { label: "Old RM Cost", value: "OldRMPrice" },
     { label: "New RM Cost", value: "NewRMPrice" },
     { label: "RM Variance", value: "RMVariance" },

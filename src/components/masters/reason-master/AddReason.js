@@ -111,7 +111,9 @@ class AddReason extends Component {
       }
       this.props.updateReasonAPI(formData, (res) => {
         this.setState({ setDisable: false })
-        Toaster.success(MESSAGES.UPDATE_REASON_SUCESS);
+        if (res?.Result === true) {
+          Toaster.success(MESSAGES.UPDATE_REASON_SUCESS);
+        }
         this.cancel()
       });
     } else {
