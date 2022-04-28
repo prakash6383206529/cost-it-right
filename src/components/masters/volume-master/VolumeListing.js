@@ -25,6 +25,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper'
 import ScrollToTop from '../../common/ScrollToTop'
 import AddLimit from './AddLimit'
 
+const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
