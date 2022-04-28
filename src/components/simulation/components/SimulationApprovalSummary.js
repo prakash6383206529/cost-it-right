@@ -1152,7 +1152,12 @@ function SimulationApprovalSummary(props) {
                                                                 <AgGridColumn width={160} field="PartName" headerName='Part Name'></AgGridColumn>
                                                                 <AgGridColumn width={150} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>
                                                                 <AgGridColumn width={150} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
-                                                                <AgGridColumn width={150} field="VendorName" headerName="Vendor"></AgGridColumn>
+                                                                <AgGridColumn width={150} field="VendorName" headerName="Vendor(Code)"></AgGridColumn>
+                                                                {String(SimulationTechnologyId) !== EXCHNAGERATE &&
+                                                                    <>
+                                                                        <AgGridColumn width={150} field="PlantName" headerName='Plant(Code)' cellRenderer={'plantFormatter'} ></AgGridColumn>
+                                                                    </>
+                                                                }
                                                                 {
                                                                     (isOperation || isSurfaceTreatment || keysForDownloadSummary.IsSurfaceTreatmentSimulation || keysForDownloadSummary.IsOperationSimulation) &&
                                                                     <>
@@ -1174,11 +1179,6 @@ function SimulationApprovalSummary(props) {
                                                                         <AgGridColumn width={140} field="OldOperationCost" headerName="Old Operation Cost" cellRenderer='oldOperationFormatter'></AgGridColumn>
                                                                         <AgGridColumn width={140} field="NewOperationCost" headerName="New Operation Cost" cellRenderer='newOperationFormatter'></AgGridColumn>
                                                                         <AgGridColumn width={140} field="OperationCostVariance" headerName="Operation Variance" cellRenderer='OPVarianceFormatter'></AgGridColumn>
-                                                                    </>
-                                                                }
-                                                                {String(SimulationTechnologyId) !== EXCHNAGERATE &&
-                                                                    <>
-                                                                        <AgGridColumn width={150} field="PlantName" headerName='Plant(Code)' cellRenderer={'plantFormatter'} ></AgGridColumn>
                                                                     </>
                                                                 }
                                                                 <AgGridColumn width={140} field="OldPOPrice" cellRenderer='oldPOFormatter' headerName={String(SimulationTechnologyId) === EXCHNAGERATE ? 'PO Price' : "Old PO Price"}></AgGridColumn>
