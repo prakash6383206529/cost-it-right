@@ -1876,8 +1876,8 @@ export const BOPDomesticSimulation = [
     { label: "BoughtOutPartNumber", value: "BoughtOutPartNumber" },
     { label: "BoughtOutPartName", value: "BoughtOutPartName" },
     { label: "BoughtOutPartCategory", value: "BoughtOutPartCategory" },
-    { label: "DestinationPlant", value: "DestinationPlant", },
-    { label: "Vendor", value: "Vendor" },
+    { label: "Plant(Code)", value: "Plants", },
+    { label: "Vendor(Code)", value: "Vendor" },
     { label: "BasicRate", value: "BasicRate" },
     { label: "NewBasicRate", value: "NewBasicRate" },
     { label: "NetLandedCost", value: "NetLandedCost" },
@@ -1890,7 +1890,7 @@ export const BOPImportSimulation = [
     { label: "BoughtOutPartNumber", value: "BoughtOutPartNumber" },
     { label: "BoughtOutPartName", value: "BoughtOutPartName" },
     { label: "BoughtOutPartCategory", value: "BoughtOutPartCategory" },
-    { label: "DestinationPlant", value: "DestinationPlant", },
+    { label: "Plants", value: "Plants", },
     { label: "Vendor", value: "Vendor" },
     { label: "BasicRate", value: "BasicRate" },
     { label: "NewBasicRate", value: "NewBasicRate" },
@@ -2659,6 +2659,8 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADST = [
     { label: "Revision Number", value: "RevisionNumber" },
     { label: "Vendor Name", value: "VendorName" },
     { label: "Plant", value: "PlantName" },
+    { label: "Plant Code", value: "PlantCode" },
+
 
     { label: "Operation Name", value: "OperationName" },
     { label: "Operation Code", value: "OperationCode" },
@@ -2699,6 +2701,7 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADOPERATION = [
     { label: "Revision Number", value: "RevisionNumber" },
     { label: "Vendor Name", value: "VendorName" },
     { label: "Plant", value: "PlantName" },
+    { label: "Plant Code", value: "PlantCode" },
 
     { label: "OperationName", value: "OperationName" },
     { label: "OperationCode", value: "OperationCode" },
@@ -2722,6 +2725,7 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADBOP = [
     { label: "Revision Number", value: "RevisionNumber" },
     { label: "Vendor Name", value: "VendorName" },
     { label: "Plant", value: "PlantName" },
+    { label: "Plant Code", value: "PlantCode" },
 
     { label: "BOP Name", value: "BoughtOutPartName" },
     { label: "BOP Number", value: "BoughtOutPartNumber" },
