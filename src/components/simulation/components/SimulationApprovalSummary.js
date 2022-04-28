@@ -1145,7 +1145,7 @@ function SimulationApprovalSummary(props) {
                                                                     <>
                                                                         <AgGridColumn width={192} field="RMName" cellRenderer='rawMaterailFormat' headerName="Raw Material-Grade" ></AgGridColumn>
                                                                         <AgGridColumn width={192} field="RMCode" headerName="Raw Material Code" ></AgGridColumn>
-                                                                        <AgGridColumn width={192} field="RMSpec" headerName="Raw Material Spec" ></AgGridColumn>
+                                                                        <AgGridColumn width={192} field="RMSpecs" headerName="Raw Material Spec" ></AgGridColumn>
                                                                     </>
                                                                 }
                                                                 <AgGridColumn width={136} field="PartNo" headerName="Part No."></AgGridColumn>
@@ -1178,7 +1178,8 @@ function SimulationApprovalSummary(props) {
                                                                 }
                                                                 {String(SimulationTechnologyId) !== EXCHNAGERATE &&
                                                                     <>
-                                                                        <AgGridColumn width={150} field="PlantName" headerName='Plant(Code)' cellRenderer={'plantFormatter'} ></AgGridColumn>                                                                 </>
+                                                                        <AgGridColumn width={150} field="PlantName" headerName='Plant(Code)' cellRenderer={'plantFormatter'} ></AgGridColumn>
+                                                                    </>
                                                                 }
                                                                 <AgGridColumn width={140} field="OldPOPrice" cellRenderer='oldPOFormatter' headerName={String(SimulationTechnologyId) === EXCHNAGERATE ? 'PO Price' : "Old PO Price"}></AgGridColumn>
                                                                 {
