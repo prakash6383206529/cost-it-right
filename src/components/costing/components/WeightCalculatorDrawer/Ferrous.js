@@ -14,6 +14,7 @@ function Ferrous(props) {
     const costData = useContext(costingInfoContext)
     const dispatch = useDispatch()
     const { ferrousCalculatorReset } = useSelector(state => state.costing)
+    const { DisableMasterBatchCheckbox } = props
 
     const defaultValues = {
         castingWeight: WeightCalculatorRequest && WeightCalculatorRequest.CastingWeight !== undefined ? WeightCalculatorRequest.CastingWeight : '',
@@ -171,7 +172,7 @@ function Ferrous(props) {
     }
 
     const onSubmit = () => {
-
+        DisableMasterBatchCheckbox(true)
         let obj = {}
         obj.FerrousCastingWeightCalculatorId = WeightCalculatorRequest && WeightCalculatorRequest.ForgingWeightCalculatorId ? WeightCalculatorRequest.ForgingWeightCalculatorId : "0"
         obj.CostingRawMaterialDetailsIdRef = rmRowData.RawMaterialDetailId
