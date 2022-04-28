@@ -51,36 +51,33 @@ function AssemblyOverheadProfit(props) {
     }
   }
 
-  const nestedAssembly = children && children.map(el => {
-    if (el.PartType !== 'Sub Assembly') return false;
-    return <AssemblyOverheadProfit
-      index={index}
-      item={el}
-      children={el.CostingChildPartDetails}
-      toggleAssembly={props.toggleAssembly}
-      OverheadCost={props.OverheadCost}
-      ProfitCost={props.ProfitCost}
-      setOverheadDetail={props.setOverheadDetail}
-      setProfitDetail={props.setProfitDetail}
-      setRejectionDetail={props.setRejectionDetail}
-      setICCDetail={props.setICCDetail}
-      setPaymentTermsDetail={props.setPaymentTermsDetail}
-      saveCosting={props.saveCosting}
-    />
-  })
+  /*************************DON'T REMOVE FOR NOW MAY BE USE LATER******************************************/
+  // const nestedAssembly = children && children.map(el => {
+  //   if (el.PartType !== 'Sub Assembly') return false;
+  //   return <AssemblyOverheadProfit
+  //     index={index}
+  //     item={el}
+  //     children={el.CostingChildPartDetails}
+  //     toggleAssembly={props.toggleAssembly}
+  //     OverheadCost={props.OverheadCost}
+  //     ProfitCost={props.ProfitCost}
+  //     setOverheadDetail={props.setOverheadDetail}
+  //     setProfitDetail={props.setProfitDetail}
+  //     setRejectionDetail={props.setRejectionDetail}
+  //     setICCDetail={props.setICCDetail}
+  //     setPaymentTermsDetail={props.setPaymentTermsDetail}
+  //     saveCosting={props.saveCosting}
+  //   />
+  // })
 
-  /**
-  * @method onSubmit
-  * @description Used to Submit the form
-  */
-  const onSubmit = (values) => { }
+
 
 
   /**
-  * @method onSubmit
+  * @method saveCosting
   * @description Used to Submit the form
   */
-  const saveCosting = (values) => {
+  const saveCosting = () => {
     const tabData = RMCCTabData[0]
     const surfaceTabData = SurfaceTabData[0]
     const overHeadAndProfitTabData = OverheadProfitTabData[0]

@@ -69,7 +69,6 @@ function RMDomesticListing(props) {
             dispatch(getTechnologySelectList(() => { }))
             dispatch(getPlantSelectListByType(ZBC, () => { }))
         }
-        getDataList()
     }
 
     useEffect(() => {

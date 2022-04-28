@@ -64,7 +64,7 @@ function TransportationCost(props) {
 
   useEffect(() => {
     reCalculation()
-  }, [props.item.CostingPartDetails.SurfaceTreatmentCost])
+  }, [props.surfaceCost])
 
   useEffect(() => {
     let tempObj = {
@@ -84,11 +84,11 @@ function TransportationCost(props) {
     if (!CostingViewMode && !IsLocked) {
 
       if (props.IsAssemblyCalculation) {
-        props.setAssemblyTransportationCost(tempObj, Params, item)
-        props.getTransportationObj(tempObj)
+        // props.setAssemblyTransportationCost(tempObj, Params, item)
+        props.getTransportationObj({ tempObj, Params, item })
       } else {
-        props.setTransportationCost(tempObj, Params)
-        props.getTransportationObj(tempObj)
+        // props.setTransportationCost(tempObj, Params)
+        props.getTransportationObj({ tempObj, Params })
       }
     }
 
@@ -123,8 +123,8 @@ function TransportationCost(props) {
       const Quantity = getValues('Quantity')
 
       if (TransportationType === 'Percentage') {
-        setTransportCost(checkForNull(item.CostingPartDetails.SurfaceTreatmentCost * calculatePercentage(event.target.value)))
-        setValue('TransportationCost', checkForDecimalAndNull(item.CostingPartDetails.SurfaceTreatmentCost * calculatePercentage(event.target.value), initialConfiguration.NoOfDecimalForPrice))
+        setTransportCost(checkForNull(props.surfaceCost * calculatePercentage(event.target.value)))
+        setValue('TransportationCost', checkForDecimalAndNull(props.surfaceCost * calculatePercentage(event.target.value), initialConfiguration.NoOfDecimalForPrice))
         setRate(event.target.value)
         if (event.target.value > 100) {
           setPercentageLimit(true)
@@ -190,8 +190,8 @@ function TransportationCost(props) {
       setTransportCost(data.TransportationCost)
       setValue('TransportationCost', checkForDecimalAndNull(data.TransportationCost, initialConfiguration.NoOfDecimalForPrice));
     } else if (data.UOM === 'Percentage') {
-      setTransportCost(checkForNull(item.CostingPartDetails.SurfaceTreatmentCost * calculatePercentage(checkForNull(data.Rate))))
-      setValue('TransportationCost', checkForDecimalAndNull(item.CostingPartDetails.SurfaceTreatmentCost * calculatePercentage(data.Rate), initialConfiguration.NoOfDecimalForPrice))
+      setTransportCost(checkForNull(props.surfaceCost * calculatePercentage(checkForNull(data.Rate))))
+      setValue('TransportationCost', checkForDecimalAndNull(props.surfaceCost * calculatePercentage(data.Rate), initialConfiguration.NoOfDecimalForPrice))
       setRate(data.Rate)
     }
   }

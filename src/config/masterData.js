@@ -678,7 +678,6 @@ export const BOP_ZBC_DOMESTIC = [
     { label: 'UOM', value: 'UOM', }, //*
     { label: 'PlantCode', value: 'PlantCode', }, //*
     { label: 'VendorName', value: 'VendorName', }, //*
-    { label: 'MinimumOrderQuantity', value: 'MinimumOrderQuantity', }, //*
     { label: 'BasicRate', value: 'BasicRate', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', },
     { label: 'Remark', value: 'Remark' }
@@ -693,7 +692,6 @@ export const BOP_ZBC_DOMESTIC_TempData = [
         'UOM': 'Gallon',
         'PlantCode': 'Plant101',
         'VendorName': 'Systematix',
-        'MinimumOrderQuantity': '10',
         'BasicRate': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -737,7 +735,7 @@ export const BOP_VBC_DOMESTIC_TempData = [
         'SourceVendorName': 'VPlant01',
         'VendorSourceName': 'TATA Steel',
         'SourceVendorLocation': 'Jamshedpur',
-        'MinimumOrderQuantity': '10',
+        'MinimumOrderQuantity': '1',
         'BasicRate(INR)': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -774,7 +772,7 @@ export const BOP_ZBC_IMPORT_TempData = [
         'VendorName': 'Systematix',
         'VendorCode': 'VC1',
         'Currency': 'INR or USD',
-        'MinimumOrderQuantity': '10',
+        'MinimumOrderQuantity': '1',
         'BasicRate': '100',
         'EffectiveDate': DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -821,7 +819,7 @@ export const BOP_VBC_IMPORT_TempData = [
         'VendorSourceName': 'TATA Steel',
         'VendorSourceLocation': 'Jamshedpur',
         'Currency': 'INR or USD',
-        'MinimumOrderQuantity': '10',
+        'MinimumOrderQuantity': '1',
         'BasicRate': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -1909,9 +1907,8 @@ export const BOPDomesticSimulation = [
     { label: "BoughtOutPartNumber", value: "BoughtOutPartNumber" },
     { label: "BoughtOutPartName", value: "BoughtOutPartName" },
     { label: "BoughtOutPartCategory", value: "BoughtOutPartCategory" },
-    { label: "DestinationPlant", value: "DestinationPlant", },
-    { label: "Vendor", value: "Vendor" },
-    { label: "NumberOfPieces", value: "NumberOfPieces" },
+    { label: "Plant(Code)", value: "Plants", },
+    { label: "Vendor(Code)", value: "Vendor" },
     { label: "BasicRate", value: "BasicRate" },
     { label: "NewBasicRate", value: "NewBasicRate" },
     { label: "NetLandedCost", value: "NetLandedCost" },
@@ -1924,9 +1921,8 @@ export const BOPImportSimulation = [
     { label: "BoughtOutPartNumber", value: "BoughtOutPartNumber" },
     { label: "BoughtOutPartName", value: "BoughtOutPartName" },
     { label: "BoughtOutPartCategory", value: "BoughtOutPartCategory" },
-    { label: "DestinationPlant", value: "DestinationPlant", },
+    { label: "Plants", value: "Plants", },
     { label: "Vendor", value: "Vendor" },
-    { label: "NumberOfPieces", value: "NumberOfPieces" },
     { label: "BasicRate", value: "BasicRate" },
     { label: "NewBasicRate", value: "NewBasicRate" },
     { label: "NetLandedCost", value: "NetLandedCost" },
@@ -2611,6 +2607,8 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADRM = [
     { label: "Costing Id", value: "CostingNumber" },
     { label: "RawMaterial Name", value: "RMName" },
     { label: "RawMaterial Grade", value: "RMGrade" },
+    { label: "RawMaterial Code", value: "RMCode" },
+    { label: "RawMaterial Spec", value: "RMSpecs" },
     { label: "Part No", value: "PartNo" },
     { label: "Part Name", value: "PartName" },
     { label: "ECN Number", value: "ECNNumber" },
@@ -2636,6 +2634,8 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADST = [
     { label: "Revision Number", value: "RevisionNumber" },
     { label: "Vendor Name", value: "VendorName" },
     { label: "Plant", value: "PlantName" },
+    { label: "Plant Code", value: "PlantCode" },
+
 
     { label: "Operation Name", value: "OperationName" },
     { label: "Operation Code", value: "OperationCode" },
@@ -2659,6 +2659,7 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADOPERATION = [
     { label: "Revision Number", value: "RevisionNumber" },
     { label: "Vendor Name", value: "VendorName" },
     { label: "Plant", value: "PlantName" },
+    { label: "Plant Code", value: "PlantCode" },
 
     { label: "OperationName", value: "OperationName" },
     { label: "OperationCode", value: "OperationCode" },
@@ -2682,6 +2683,7 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADBOP = [
     { label: "Revision Number", value: "RevisionNumber" },
     { label: "Vendor Name", value: "VendorName" },
     { label: "Plant", value: "PlantName" },
+    { label: "Plant Code", value: "PlantCode" },
 
     { label: "BOP Name", value: "BoughtOutPartName" },
     { label: "BOP Number", value: "BoughtOutPartNumber" },
@@ -2706,7 +2708,6 @@ export const BOP_DOMESTIC_DOWNLOAD_EXCEl = [
     { label: "Plant(Code)", value: "Plants", },
     { label: "DestinationPlant(Code)", value: "DestinationPlant", },
     { label: "Vendor(Code)", value: "Vendor", },
-    { label: "Quantity", value: "NumberOfPieces", },
     { label: "BasicRate", value: "BasicRate", },
     { label: "NetCost", value: "NetLandedCost", },
     { label: "EffectiveDate", value: "EffectiveDate", }
@@ -2722,7 +2723,6 @@ export const BOP_IMPORT_DOWNLOAD_EXCEl = [
     { label: "Specification", value: "Specification" },
     { label: "Plant(Code)", value: "Plants" },
     { label: "Vendor(Code)", value: "Vendor" },
-    { label: "Quantity", value: "NumberOfPieces" },
     { label: "BasicRate", value: "BasicRate" },
     { label: "NetCost(Currency)", value: "NetLandedCost" },
     { label: "NetCost(INR)", value: "NetLandedCostConversion" },
@@ -3003,17 +3003,12 @@ export const ZBCPLANT_DOWNLOAD_EXCEl = [
     { label: "StateName", value: "StateName", },
     { label: "CityName", value: "CityName", },
 ]
+
 export const REPORT_DOWNLOAD_EXCEl = [
     { label: "CostingNumber", value: "CostingNumber", },
     { label: "TechnologyName", value: "TechnologyName" },
-    { label: "Company", value: "DepartmentName" },
-    { label: "Company", value: "DepartmentName" },
     { label: "CreatedDate", value: "CreatedDate", },
-    { label: "Status", value: "Status", },
     { label: "NetPOPrice", value: "NetPOPrice", },
-    { label: "PartNumber", value: "PartNumber", },
-    { label: "PartName", value: "PartName", },
-    { label: "PlantName", value: "PlantName", },
     { label: "VendorName", value: "VendorName", },
     { label: "VendorCode", value: "VendorCode", },
     { label: "PlantName", value: "PlantName", },
@@ -3089,6 +3084,7 @@ export const REPORT_DOWNLOAD_EXCEl = [
     { label: 'LineNumber', value: 'LineNumber' },
     { label: 'Status', value: 'Status' }
 ]
+
 export const REPORT_DOWNLOAD_SAP_EXCEl = [
     { label: "Sr No", value: "SrNo" }, //Serial no
     { label: "evrtn", value: "SANumber" },//SA no
@@ -3247,6 +3243,8 @@ export const OperationGridForTokenSummary = [
 export const RMGridForTokenSummary = [
     { label: "RawMaterial Name", value: "RMName" },
     { label: "RawMaterial Grade", value: "RMGrade" },
+    { label: "RawMaterial Code", value: "RMCode" },
+    { label: "RawMaterial Spec", value: "RMSpecs" },
     { label: "Old RM Cost", value: "OldRMPrice" },
     { label: "New RM Cost", value: "NewRMPrice" },
     { label: "RM Variance", value: "RMVariance" },
@@ -3362,9 +3360,9 @@ export const RawMaterialImportFileHeads = ["CostingHead", "RawMaterial", "RMGrad
 
 export const OperationFileHeads = ['Technology', 'CostingHead', 'OperationName', 'OperationCode', 'DestinationPlant', 'VendorName', 'UnitOfMeasurement', 'Rate', 'NewRate', 'EffectiveDate', 'OperationId']
 
-export const BoughtOutPartDomesticFileHeads = ['CostingHead', 'BoughtOutPartNumber', 'BoughtOutPartName', 'BoughtOutPartCategory', 'DestinationPlant', 'Vendor', 'NumberOfPieces', 'BasicRate', 'NewBasicRate', 'NetLandedCost', 'EffectiveDate', 'BoughtOutPartId']
+export const BoughtOutPartDomesticFileHeads = ['CostingHead', 'BoughtOutPartNumber', 'BoughtOutPartName', 'BoughtOutPartCategory', 'DestinationPlant', 'Vendor', 'BasicRate', 'NewBasicRate', 'NetLandedCost', 'EffectiveDate', 'BoughtOutPartId']
 
-export const BoughtOutPartImportFileHeads = ['CostingHead', 'BoughtOutPartNumber', 'BoughtOutPartName', 'BoughtOutPartCategory', 'DestinationPlant', 'Vendor', 'NumberOfPieces', 'BasicRate', 'NewBasicRate', 'NetLandedCost', 'EffectiveDate', 'BoughtOutPartId']
+export const BoughtOutPartImportFileHeads = ['CostingHead', 'BoughtOutPartNumber', 'BoughtOutPartName', 'BoughtOutPartCategory', 'DestinationPlant', 'Vendor', 'BasicRate', 'NewBasicRate', 'NetLandedCost', 'EffectiveDate', 'BoughtOutPartId']
 
 export const MachineRateFileHeads = ['CostingHead', 'Technologies', 'VendorName', 'DestinationPlant', 'MachineNumber', 'MachineTypeName', 'MachineTonnage', 'ProcessName', 'MachineRate', 'NewMachineRate', 'EffectiveDate']
 

@@ -3441,22 +3441,24 @@ body{
       }
     }
   }
-  .sm-edit-row{
-    margin-bottom: -56px;
-    z-index: 12;
-    position: relative;
-    width: 50%;
-    float: right;
-    label{
-      text-align: right;
-      padding-right: 15px;
-      margin-bottom: 0 !important;
-    }
-    .form-control{
-      max-width: 110px;
-      height: 32px;
-      padding: 6px 10px !important;
-    }
+}
+.bulk-upload-row {
+  label{
+    text-align: right;
+    padding-right: 10px;
+    margin-bottom: 0 !important;
+    white-space: nowrap;
+  }
+  .form-control {
+    max-width: 75px;
+    height: 32px;
+    padding: 6px 10px !important;
+  }
+  margin-top: -40px;
+  margin-bottom: 10px;
+  &.rm-row {
+    margin-top: 0;
+    margin-bottom: 0;
   }
 }
 // simulation page
@@ -3986,23 +3988,6 @@ body{
     .empty-table-paecholder{min-height: 494px;}
     .sf-btn-footer{
       margin: 0 -27px -12px;
-    }
-    .sm-edit-row{
-      margin-bottom: -56px;
-      z-index: 12;
-      position: relative;
-      width: 50%;
-      float: right;
-      label{
-        text-align: right;
-        padding-right: 15px;
-        margin-bottom: 0 !important;
-      }
-      .form-control{
-        max-width: 110px;
-        height: 32px;
-        padding: 6px 10px !important;
-      }
     }
   }
   // simulation page
@@ -5453,7 +5438,7 @@ left: 17rem;
     .share-of-business {min-width: 110px;}
     .costing-status {min-width: 230px;}
     .costing-price {min-width: 115px;}
-    .costing-action {min-width: 240px;}
+    .costing-action {min-width: 160px;}
   }
   @media screen and (max-width:$miniDesktop) {
    td, th {
@@ -5764,9 +5749,6 @@ left: 17rem;
 .loader_container.simulation-history-loader {
   background-color: rgba(255, 255, 255, 0.97);
 }
-.reset-btn-container .user-btn, .add-cancel-btn {
- height: auto;
-}
 .width33 {width: 33.33%;}
 .fs1.font-weight-500.py-3 {font-size: 16px;}git 
 
@@ -6043,9 +6025,12 @@ left: 17rem;
 .drawer-part-name {
   @include overflow(102px,$whiteSpace:normal)
 }
-  .text-overflow {
-    @include overflow($minWidth:125px,$ResponsiveWith:175px, $whiteSpace:normal, $lineClamp:2)
-  }
+.text-overflow {
+  @include overflow($minWidth:125px,$ResponsiveWith:175px, $whiteSpace:normal, $lineClamp:2)
+}
+.remark-overflow {
+  @include overflow($minWidth:45px,$ResponsiveWith:175px, $whiteSpace:normal, $lineClamp:2 )
+}
   .drawer-wrapper table tr:first-child td{
     border-top: none;
   }
@@ -6058,22 +6043,20 @@ left: 17rem;
     align-items: center;
     label {
       margin-bottom: 3px !important;
+      width: fit-content;
     }
     p {
       white-space: nowrap;
-      padding: 5px 10px;
+      padding: 6px 10px 5px 10px;
       background: #e6e6e6;
       border-radius: 4px;
       color: #616366;
       font-size: 15px;
-      min-width: 183px;
-      max-width: 183px;
+      max-width: 300px;
       overflow: hidden;
       text-overflow: ellipsis;
       min-height: 36px;
-      &.technology {
-        min-width: 140px;
-      }
+
     }
   }
 }
@@ -6372,4 +6355,10 @@ left: 17rem;
    box-shadow: none !important;
    border: none  !important;
     }
+}
+.cell-span {
+  background-color: #fff;
+  border-color: #e5eaf9 !important;
+  display: flex !important;
+  align-items: center;
 }

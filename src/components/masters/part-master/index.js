@@ -153,7 +153,7 @@ class PartMaster extends Component {
                         <div>
                             <div className="d-flex justify-content-between">
                                 <h1>Part Master</h1>
-                              
+
                             </div>
 
 
