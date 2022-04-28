@@ -101,7 +101,7 @@ function ColdForging(props) {
   const [forgeWeightValue, setForgeWeightValue] = useState(WeightCalculatorRequest && WeightCalculatorRequest.ForgedWeight ? WeightCalculatorRequest.ForgedWeight : 0)
   const [lostWeight, setLostWeight] = useState(WeightCalculatorRequest && WeightCalculatorRequest.NetLossWeight ? WeightCalculatorRequest.NetLossWeight : 0)
   const [tableVal, setTableVal] = useState(WeightCalculatorRequest && WeightCalculatorRequest.LossOfTypeDetails !== null ? WeightCalculatorRequest.LossOfTypeDetails : [])
-  const [tableV, setTableV] = useState(WeightCalculatorRequest && WeightCalculatorRequest.CostingRawMaterialForgingWeightCalculators !== null ? WeightCalculatorRequest.CostingRawMaterialForgingWeightCalculators : [])
+  const [tableV, setTableV] = useState(WeightCalculatorRequest && WeightCalculatorRequest.ForgingStockDetails !== null ? WeightCalculatorRequest.ForgingStockDetails : [])
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
   const [dataSend, setDataSend] = useState({})
   const [totalMachiningStock, setTotalMachiningStock] = useState(WeightCalculatorRequest && WeightCalculatorRequest.TotalMachiningStock ? WeightCalculatorRequest.TotalMachiningStock : 0)
@@ -442,7 +442,7 @@ function ColdForging(props) {
                       dropDownMenu={machineDropDown}
                       CostingViewMode={props.CostingViewMode ? props.CostingViewMode : false}
                       netWeight={WeightCalculatorRequest && WeightCalculatorRequest.TotalMachiningStock !== null ? WeightCalculatorRequest.TotalMachiningStock : ''}
-                      sendTable={WeightCalculatorRequest ? (WeightCalculatorRequest.CostingRawMaterialForgingWeightCalculators?.length > 0 ? WeightCalculatorRequest.CostingRawMaterialForgingWeightCalculators : []) : []}
+                      sendTable={WeightCalculatorRequest ? (WeightCalculatorRequest.ForgingStockDetails?.length > 0 ? WeightCalculatorRequest.ForgingStockDetails : []) : []}
                       tableValue={tableData1}
                       rmRowData={props.rmRowData}
                       calculation={TotalMachiningStock}
