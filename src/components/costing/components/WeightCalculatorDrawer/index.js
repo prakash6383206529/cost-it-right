@@ -15,7 +15,7 @@ import StandardRub from './rubber/StandardRub'
 
 
 function OpenWeightCalculator(props) {
-  const { rmRowData, item, isSummary, rmMBDetail, CostingViewMode, rmData, technology } = props
+  const { rmRowData, item, isSummary, rmMBDetail, CostingViewMode, rmData, technology, DisableMasterBatchCheckbox } = props
   let appyMasterBatch;
   let totalRM;
   if (!isSummary) {
@@ -88,6 +88,7 @@ function OpenWeightCalculator(props) {
             item={item}
             toggleDrawer={toggleDrawer}
             CostingViewMode={CostingViewMode ? CostingViewMode : false}
+            DisableMasterBatchCheckbox={DisableMasterBatchCheckbox}
           />
         )
       case PLASTIC:
@@ -99,6 +100,7 @@ function OpenWeightCalculator(props) {
             toggleDrawer={toggleDrawer}
             isSummary={isSummary}
             CostingViewMode={CostingViewMode ? CostingViewMode : false}
+            DisableMasterBatchCheckbox={DisableMasterBatchCheckbox}
           />
         )
       case RUBBER:
@@ -111,6 +113,7 @@ function OpenWeightCalculator(props) {
           item={item}
           appyMasterBatch={appyMasterBatch}
           CostingViewMode={CostingViewMode ? CostingViewMode : false}
+          DisableMasterBatchCheckbox={DisableMasterBatchCheckbox}
         />)
       case DIE_CASTING:
         return (<NonFerrousCalculator
@@ -120,6 +123,7 @@ function OpenWeightCalculator(props) {
           toggleDrawer={toggleDrawer}
           item={item}
           CostingViewMode={CostingViewMode ? CostingViewMode : false}
+          DisableMasterBatchCheckbox={DisableMasterBatchCheckbox}
         />
         )
 
@@ -131,6 +135,7 @@ function OpenWeightCalculator(props) {
             toggleDrawer={toggleDrawer}
             item={item}
             CostingViewMode={CostingViewMode ? CostingViewMode : false}
+            DisableMasterBatchCheckbox={DisableMasterBatchCheckbox}
           />
         )
       case Ferrous_Casting:
@@ -142,6 +147,7 @@ function OpenWeightCalculator(props) {
             CostingViewMode={CostingViewMode ? CostingViewMode : false}
             item={item}
             rmData={rmData}
+            DisableMasterBatchCheckbox={DisableMasterBatchCheckbox}
           />
         )
 
