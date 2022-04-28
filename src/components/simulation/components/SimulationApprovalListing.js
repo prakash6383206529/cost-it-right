@@ -289,6 +289,7 @@ function SimulationApprovalListing(props) {
         var selectedRows = gridApi.getSelectedRows();
         let tempArrReason = []
         let tempArrTechnology = []
+        let tempArrSimulationTechnologyHead = []
 
         selectedRows.map(item => {
             arr.push(item?.DisplayStatus)
@@ -297,6 +298,7 @@ function SimulationApprovalListing(props) {
             tempArrIsPushedButtonShow.push(item.IsPushedButtonShow)
             tempArrReason.push(item.ReasonId)
             tempArrTechnology.push(item.TechnologyName)
+            tempArrSimulationTechnologyHead.push(item.SimulationTechnologyHead)
         })
 
         if (!allEqual(arr)) {
@@ -319,7 +321,10 @@ function SimulationApprovalListing(props) {
         //     Toaster.warning('Please choose costing which have same reason')
         //     gridApi.deselectAll()
         // }
-        else if (!allEqual(tempArrTechnology)) {
+        else if (!allEqual(tempArrSimulationTechnologyHead)) {
+            Toaster.warning('Master should be same for sending multiple costing for approval')
+            gridApi.deselectAll()
+        } else if (!allEqual(tempArrTechnology)) {
             Toaster.warning('Technology should be same for sending multiple costing for approval')
             gridApi.deselectAll()
         }
