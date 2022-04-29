@@ -17,6 +17,7 @@ import {
     GET_TOKEN_SELECT_LIST,
     GET_VALUE_TO_SHOW_COSTING_SIMULATION,
     GET_KEYS_FOR_DOWNLOAD_SUMMARY,
+    SET_TOKEN_CHECK_BOX,
 } from '../../../config/constants';
 
 const initialState = {
@@ -142,6 +143,12 @@ export default function SimulationReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 keysForDownloadSummary: action.payload
+            }
+        case SET_TOKEN_CHECK_BOX:
+            return {
+                ...state,
+                loading: false,
+                tokenCheckBoxValue: action.payload
             }
 
         default:

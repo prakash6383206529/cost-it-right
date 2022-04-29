@@ -390,7 +390,6 @@ class AddProfit extends Component {
   */
   handleChangeProfitPercentageBOP = (newValue) => {
     if (this.state.isEditFlag) {
-      console.log('this.state.DataToChange: ', this.state.DataToChange);
       if (String(newValue) === String(this.state.DataToChange.ProfitBOPPercentage) &&
         String(this.state.profitAppli.label) === String(this.state.DataToChange.ProfitApplicabilityType) &&
         String(this.state.ModelType.label) === String(this.state.DataToChange.ModelType)) {
