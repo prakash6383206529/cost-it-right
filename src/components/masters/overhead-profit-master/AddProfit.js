@@ -19,7 +19,6 @@ import LoaderCustom from '../../common/LoaderCustom';
 import attachClose from '../../../assests/images/red-cross.png'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { debounce } from 'lodash';
-import TooltipCustom from '../../common/Tooltip';
 import AsyncSelect from 'react-select/async';
 
 const selector = formValueSelector('AddProfit');
@@ -66,6 +65,8 @@ class AddProfit extends Component {
       setDisable: false,
       disablePopup: false,
       inputLoader: false,
+      minEffectiveDate: '',
+      isDataChanged: this.props.data.isEditFlag
     }
   }
 
@@ -107,7 +108,7 @@ class AddProfit extends Component {
     } else {
       this.setState({ ModelType: [], })
     }
-    this.setState({ DropdownChanged: false })
+    this.setState({ DropdownChanged: false, isDataChanged: false })
   };
 
   /**
@@ -138,6 +139,7 @@ class AddProfit extends Component {
           const Data = res.data.Data;
           this.setState({ DataToChange: Data })
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
+          this.setState({ minEffectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '' })
           setTimeout(() => {
             const { modelTypes, costingHead, vendorWithVendorCodeSelectList, clientSelectList, plantSelectList } = this.props;
 
@@ -344,7 +346,80 @@ class AddProfit extends Component {
         isHideRM: false,
       })
     }
-    this.setState({ DropdownChanged: false })
+    this.setState({ DropdownChanged: false, isDataChanged: false })
+  };
+
+  /**
+  * @method handleChangeProfitPercentage
+  * @description called
+  */
+  handleChangeProfitPercentage = (newValue) => {
+    if (this.state.isEditFlag) {
+      if (String(newValue) === String(this.state.DataToChange.ProfitPercentage) &&
+        String(this.state.overheadAppli.label) === String(this.state.DataToChange.ProfitApplicabilityType) &&
+        String(this.state.ModelType.label) === String(this.state.DataToChange.ModelType)) {
+        this.setState({ isDataChanged: true })
+      } else {
+        this.setState({ isDataChanged: false })
+
+      }
+
+    }
+  };
+
+  /**
+  * @method handleChangeProfitPercentageRM
+  * @description called
+  */
+  handleChangeProfitPercentageRM = (newValue) => {
+    if (this.state.isEditFlag) {
+      if (String(newValue) === String(this.state.DataToChange.ProfitRMPercentage) &&
+        String(this.state.overheadAppli.label) === String(this.state.DataToChange.ProfitApplicabilityType) &&
+        String(this.state.ModelType.label) === String(this.state.DataToChange.ModelType)) {
+        this.setState({ isDataChanged: true })
+      } else {
+        this.setState({ isDataChanged: false })
+
+      }
+
+    }
+  };
+
+  /**
+  * @method handleChangeProfitPercentageCC
+  * @description called
+  */
+  handleChangeProfitPercentageCC = (newValue) => {
+    if (this.state.isEditFlag) {
+      if (String(newValue) === String(this.state.DataToChange.ProfitMachiningCCPercentage) &&
+        String(this.state.overheadAppli.label) === String(this.state.DataToChange.ProfitApplicabilityType) &&
+        String(this.state.ModelType.label) === String(this.state.DataToChange.ModelType)) {
+        this.setState({ isDataChanged: true })
+      } else {
+        this.setState({ isDataChanged: false })
+
+      }
+
+    }
+  };
+
+  /**
+  * @method handleChangeProfitPercentageBOP
+  * @description called
+  */
+  handleChangeProfitPercentageBOP = (newValue) => {
+    if (this.state.isEditFlag) {
+      console.log('this.state.DataToChange: ', this.state.DataToChange);
+      if (String(newValue) === String(this.state.DataToChange.ProfitBOPPercentage) &&
+        String(this.state.overheadAppli.label) === String(this.state.DataToChange.ProfitApplicabilityType) &&
+        String(this.state.ModelType.label) === String(this.state.DataToChange.ModelType)) {
+        this.setState({ isDataChanged: true })
+      } else {
+        this.setState({ isDataChanged: false })
+
+      }
+
+    }
   };
 
   handlePercent = (e) => {
@@ -723,7 +798,7 @@ class AddProfit extends Component {
   render() {
     const { handleSubmit, } = this.props;
     const { isRM, isCC, isBOP, isOverheadPercent, isEditFlag, costingHead,
-      isHideOverhead, isHideBOP, isHideRM, isHideCC, isViewMode, setDisable, disablePopup } = this.state;
+      isHideOverhead, isHideBOP, isHideRM, isHideCC, isViewMode, setDisable, disablePopup, isDataChanged } = this.state;
     const filterList = (inputValue) => {
       let tempArr = []
 
@@ -941,6 +1016,7 @@ class AddProfit extends Component {
                               component={renderText}
                               onBlur={this.handlePercent}
                               required={!isOverheadPercent ? true : false}
+                              onChange={(event) => this.handleChangeProfitPercentage(event.target.value)}
                               className=""
                               customClassName=" withBorder"
                               max={100}
@@ -956,6 +1032,7 @@ class AddProfit extends Component {
                               type="text"
                               placeholder={!isRM ? "Enter" : ""}
                               validate={!isRM ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []}
+                              onChange={(event) => this.handleChangeProfitPercentageRM(event.target.value)}
                               component={renderText}
                               required={!isRM ? true : false}
                               className=""
@@ -972,6 +1049,7 @@ class AddProfit extends Component {
                               type="text"
                               placeholder={!isCC ? "Enter" : ""}
                               validate={!isCC ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []}
+                              onChange={(event) => this.handleChangeProfitPercentageCC(event.target.value)}
                               component={renderText}
                               //onChange={this.handleCalculation}
                               required={!isCC ? true : false}
@@ -989,6 +1067,7 @@ class AddProfit extends Component {
                               type="text"
                               placeholder={!isBOP ? "Enter" : ""}
                               validate={!isBOP ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []}
+                              onChange={(event) => this.handleChangeProfitPercentageBOP(event.target.value)}
                               component={renderText}
                               //onChange={this.handleCalculation}
                               required={!isBOP ? true : false}
@@ -1006,6 +1085,7 @@ class AddProfit extends Component {
                               selected={this.state.effectiveDate}
                               onChange={this.handleEffectiveDateChange}
                               type="text"
+                              minDate={this.state.minEffectiveDate}
                               validate={[required]}
                               autoComplete={'off'}
                               required={true}
@@ -1014,8 +1094,7 @@ class AddProfit extends Component {
                               }}
                               component={renderDatePicker}
                               className="form-control"
-                              disabled={isViewMode}
-
+                              disabled={isViewMode || isDataChanged}
                             />
                           </div>
                         </Col>
