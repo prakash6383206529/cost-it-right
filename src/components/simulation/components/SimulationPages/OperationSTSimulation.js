@@ -60,7 +60,11 @@ function OperationSTSimulation(props) {
             setValue('NoOfRowsWithoutChange', rowCount.NoOfRowsWithoutChange)
         }
     }, [])
-
+    useEffect(() => {
+        if (list.length >= 0) {
+            gridRef.current.api.sizeColumnsToFit();
+        }
+    }, [list])
     const oldCPFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -175,7 +179,6 @@ function OperationSTSimulation(props) {
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
-        gridRef.current.api.sizeColumnsToFit();
 
     };
 
