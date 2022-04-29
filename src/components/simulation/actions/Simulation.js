@@ -43,6 +43,7 @@ import {
     GET_RM_DOMESTIC_LIST,
     GET_VALUE_TO_SHOW_COSTING_SIMULATION,
     GET_KEYS_FOR_DOWNLOAD_SUMMARY,
+    SET_TOKEN_CHECK_BOX,
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
@@ -1239,6 +1240,15 @@ export function getListingForSimulationCombined(requestData, master, callback) {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
         })
+    }
+}
+
+export function setTokenCheckBoxValue(value) {
+    return (dispatch) => {
+        dispatch({
+            type: SET_TOKEN_CHECK_BOX,
+            payload: value,
+        });
     }
 }
 
