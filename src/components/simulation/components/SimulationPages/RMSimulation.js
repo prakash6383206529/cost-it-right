@@ -57,6 +57,15 @@ function RMSimulation(props) {
         }
 
     }, [])
+    useEffect(() => {
+        if (list.length > 0) {
+            if (isImpactedMaster) {
+                window.screen.width >= 1600 && gridRef.current.api.sizeColumnsToFit();
+            }
+            window.screen.width >= 1921 && gridRef.current.api.sizeColumnsToFit();
+        }
+
+    }, [list])
 
     const verifySimulation = debounce(() => {
         let basicRateCount = 0
@@ -355,10 +364,6 @@ function RMSimulation(props) {
 
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
-        if (isImpactedMaster) {
-            window.screen.width >= 1600 && gridRef.current.api.sizeColumnsToFit();
-        }
-        window.screen.width >= 1921 && gridRef.current.api.sizeColumnsToFit();
         params.api.paginationGoToPage(0);
     };
 
