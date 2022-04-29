@@ -9,7 +9,7 @@ import { EMPTY_DATA } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
 import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected } from '../../../../../helper';
 import { ViewCostingContext } from '../../CostingDetails';
-import { gridDataAdded, isDataChange, setRMCCErrors, setSelectedIds } from '../../../actions/Costing';
+import { gridDataAdded, isDataChange, setRMCCErrors, setSelectedIdsOperation } from '../../../actions/Costing';
 import Popup from 'reactjs-popup';
 
 let counter = 0;
@@ -105,15 +105,19 @@ function OperationCost(props) {
   * @description SELECTED IDS
   */
   const selectedIds = (tempArr) => {
-    tempArr && tempArr.map(el => {
-      if (Ids.includes(el.OperationId) === false) {
-        let selectedIds = Ids;
-        selectedIds.push(el.OperationId)
-        setIds(selectedIds)
-      }
-      return null;
-    })
-    dispatch(setSelectedIds(Ids))
+    let selectedId = Ids;
+    if (tempArr && tempArr.length > 0) {
+      tempArr && tempArr.map(el => {
+        if (Ids.includes(el.OperationId) === false) {
+          selectedId.push(el.OperationId)
+          setIds(selectedId)
+        }
+        return null;
+      })
+      dispatch(setSelectedIdsOperation(selectedId))
+    } else {
+      dispatch(setSelectedIdsOperation([]))
+    }
   }
 
   const onRemarkPopUpClick = (index) => {
@@ -148,7 +152,7 @@ function OperationCost(props) {
     })
     setIds(Ids && Ids.filter(item => item !== OperationId))
     setGridData(tempArr)
-    dispatch(setSelectedIds(Ids && Ids.filter(item => item !== OperationId)))
+    dispatch(setSelectedIdsOperation(Ids && Ids.filter(item => item !== OperationId)))
   }
 
   const editItem = (index) => {
