@@ -657,7 +657,7 @@ class AddProfit extends Component {
         Attachements: updatedFiles,
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD'),
         IsForcefulUpdated: true,
-        PlantId: plant.value
+        PlantId: plant?.value
       }
       if (isEditFlag) {
         this.setState({ showPopup: true, updatedObj: requestData })
