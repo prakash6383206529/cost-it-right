@@ -55,6 +55,7 @@ function RawMaterialCost(props) {
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { CostingEffectiveDate } = useSelector(state => state.costing)
   const [showPopup, setShowPopup] = useState(false)
+  const [masterBatch, setMasterBatch] = useState(false)
   const { ferrousCalculatorReset } = useSelector(state => state.costWorking)
   const RMDivisor = (item?.CostingPartDetails?.RMDivisor !== null) ? item?.CostingPartDetails?.RMDivisor : 0;
   const isScrapRecoveryPercentageApplied = item?.IsScrapRecoveryPercentageApplied
@@ -751,6 +752,7 @@ function RawMaterialCost(props) {
   }
 
   const deleteItem = (index) => {
+    setMasterBatch(false)
     let tempArr = gridData && gridData.filter((el, i) => {
       if (i === index) return false;
       return true;
@@ -985,6 +987,9 @@ function RawMaterialCost(props) {
 
   // const rmGridFields = 'rmGridFields'
 
+  const DisableMasterBatchCheckbox = (value) => {
+    setMasterBatch(value)
+  }
 
   /**
    * @method render
@@ -1218,7 +1223,7 @@ function RawMaterialCost(props) {
                     <input
                       type="checkbox"
                       checked={IsApplyMasterBatch}
-                      disabled={(CostingViewMode || IsLocked || gridData.length !== 1) ? true : false}
+                      disabled={(CostingViewMode || IsLocked || gridData.length !== 1 || masterBatch) ? true : false}
                     />
                     <span
                       className=" before-box"
@@ -1372,6 +1377,7 @@ function RawMaterialCost(props) {
             rmRowData={gridData[editIndex]}
             rmData={gridData}
             isSummary={false}
+            DisableMasterBatchCheckbox={DisableMasterBatchCheckbox}
           />
         )
       }

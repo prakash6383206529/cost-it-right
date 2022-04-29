@@ -25,6 +25,7 @@ import {
   SET_MASTER_BATCH_OBJ,
   SET_NEW_ARRAY_FOR_COSTING,
   SET_ARRAY_FOR_COSTING,
+  SELECTED_IDS_OF_OPERATION,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -2371,6 +2372,15 @@ export function setMasterBatchObj(data) {
     dispatch({
       type: SET_MASTER_BATCH_OBJ,
       payload: data
+    })
+  }
+}
+
+export function setSelectedIdsOperation(data) {                  //THIS METHOD WILL SAVE OPERATION ID'S OF SELECTED OPERATION 
+  return (dispatch) => {
+    dispatch({
+      type: SELECTED_IDS_OF_OPERATION,
+      payload: data,
     })
   }
 }

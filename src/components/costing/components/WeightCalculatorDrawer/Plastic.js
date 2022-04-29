@@ -11,7 +11,7 @@ import Toaster from '../../../common/Toaster'
 import { setPlasticArray } from '../../actions/Costing'
 
 function Plastic(props) {
-  const { item, rmRowData, isSummary, CostingViewMode } = props
+  const { item, rmRowData, isSummary, CostingViewMode, DisableMasterBatchCheckbox } = props
   let totalRM
   if (!isSummary) {
     const { CostingPartDetails } = item
@@ -53,7 +53,7 @@ function Plastic(props) {
     scrapWeight: WeightCalculatorRequest && WeightCalculatorRequest.ScrapWeight !== undefined ? WeightCalculatorRequest.ScrapWeight : '',
     rmCost: WeightCalculatorRequest && WeightCalculatorRequest.RMCost !== undefined ? WeightCalculatorRequest.RMCost : '',
     scrapCost: WeightCalculatorRequest && WeightCalculatorRequest.ScrapCost !== undefined ? WeightCalculatorRequest.ScrapCost : '',
-    materialCost: WeightCalculatorRequest && WeightCalculatorRequest.NetRMCost !== undefined ? WeightCalculatorRequest.NetRMCost : '',
+    materialCost: WeightCalculatorRequest && WeightCalculatorRequest.RawMaterialCost !== undefined ? WeightCalculatorRequest.RawMaterialCost : '',
     burningValue: WeightCalculatorRequest && WeightCalculatorRequest.BurningValue !== undefined ? WeightCalculatorRequest.BurningValue : '',
     grossWeight: WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== undefined ? WeightCalculatorRequest.GrossWeight : '',
   })
@@ -168,6 +168,7 @@ function Plastic(props) {
     props.toggleDrawer('')
   }
   const onSubmit = () => {
+    DisableMasterBatchCheckbox(true)
     let obj = {}
     obj.PlasticWeightCalculatorId = WeightCalculatorRequest && WeightCalculatorRequest.PlasticWeightCalculatorId ? WeightCalculatorRequest.PlasticWeightCalculatorId : "0"
     obj.BaseCostingIdRef = item.CostingId
