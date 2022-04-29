@@ -1,12 +1,12 @@
 import React, { Fragment, useState, useEffect, useContext } from 'react';
 // import React, { Fragment, useState, useEffect, } from 'react'
-import { Row, Col, Container } from 'reactstrap'
+import { Row, Col } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { costingInfoContext } from '../../CostingDetailStepTwo';
 import { TextFieldHookForm, } from '../../../../layout/HookFormInputs'
 import { checkForDecimalAndNull, checkForNull, checkPercentageValue, getConfigurationKey, loggedInUserId } from '../../../../../helper'
-import { DIMENSIONLESS, HOUR, KG, MASS, NO, SHOTS, STROKE, TIME, VOLUMETYPE } from '../../../../../config/constants';
+import { AREA, DIMENSIONLESS, MASS, TIME, VOLUMETYPE } from '../../../../../config/constants';
 import { saveDefaultProcessCostCalculationData } from '../../../actions/CostWorking';
 import Toaster from '../../../../common/Toaster';
 import { reactLocalStorage } from 'reactjs-localstorage';
@@ -35,12 +35,9 @@ function SheetMetalBaicDrawer(props) {
     defaultValues: defaultValues,
   })
 
-  const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-
   const dispatch = useDispatch()
 
-  const { technology, process, MachineTonnage, calculateMachineTime } = props
-  const isEditFlag = WeightCalculatorRequest ? true : false
+  const { MachineTonnage, calculateMachineTime } = props
   const [processCost, setProcessCost] = useState(Object.keys(WeightCalculatorRequest).length > 0 ? WeightCalculatorRequest.ProcessCost ? WeightCalculatorRequest.ProcessCost : '' : '')
   const [disable, setDisabled] = useState(false)
   const [hide, setHide] = useState(false)
@@ -172,6 +169,12 @@ function SheetMetalBaicDrawer(props) {
           setProcessCost(cost)
           setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
           return true
+        case AREA:
+          setDisabled(true)
+          cost = ((100 / efficiency) * (quantity === 0 ? 1 : quantity) * rate) / cavity
+          setProcessCost(cost)
+          setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
+          return true
         case TIME:
 
           //This need to be done later
@@ -209,10 +212,6 @@ function SheetMetalBaicDrawer(props) {
 
   }
 
-  const getCavity = (e) => {
-    setCavity(e.target.value)
-    calculateProcessCost()
-  }
   const onCancel = () => {
 
     calculateMachineTime('0.00')
