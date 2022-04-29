@@ -640,9 +640,7 @@ class AddOverhead extends Component {
     }
     this.setState({ isVendorNameNotSelected: false })
 
-    console.log('isEditFlag: ', isEditFlag);
     if (isEditFlag) {
-      console.log('if');
 
 
       if (values.OverheadPercentage === '') {
@@ -703,9 +701,7 @@ class AddOverhead extends Component {
 
 
     } else {
-      console.log('else');
       this.setState({ setDisable: true })
-      console.log('plant: ', plant);
       const formData = {
         EAttachementEntityName: 0,
         IsVendor: IsVendor,
