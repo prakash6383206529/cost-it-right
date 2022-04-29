@@ -36,7 +36,9 @@ const initialState = {
   checkIsOverheadProfitChange: false,
   checkIsFreightPackageChange: false,
   checkIsToolTabChange: false,
-  masterBatchObj: {}
+  masterBatchObj: {},
+  selectedIdsOfOperationAndOtherOperation: [],
+  selectedIdsOfOperation: []
 
 }
 
