@@ -26,8 +26,9 @@ function AddOperation(props) {
   const costData = useContext(costingInfoContext)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { CostingEffectiveDate } = useSelector(state => state.costing)
-  const { selectedIdsOfOperationAndOtherOperation } = useSelector(state => state.costing)
-  let selectedIds = [...props?.Ids, ...selectedIdsOfOperationAndOtherOperation]
+  const { selectedIdsOfOperationAndOtherOperation, selectedIdsOfOperation } = useSelector(state => state.costing)
+  let selectedIds = [...selectedIdsOfOperation, ...selectedIdsOfOperationAndOtherOperation]
+
 
   /**
   * @method toggleDrawer
