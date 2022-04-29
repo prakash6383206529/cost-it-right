@@ -590,7 +590,7 @@ function RMImportListing(props) {
             isZBCVBCTemplate={true}
             messageLabel={"RM Import"}
             anchor={"right"}
-            isFinalLevelUser={isFinalLevelUser}
+            isFinalApprovar={isFinalLevelUser}
           />
         )
       }
