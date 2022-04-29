@@ -44,6 +44,9 @@ class AddInterestRate extends Component {
       setDisable: false,
       disablePopup: false,
       inputLoader: false,
+      isDataChanged: this.props.data.isEditFlag,
+      minEffectiveDate: '',
+
     }
   }
   /**
@@ -142,6 +145,7 @@ class AddInterestRate extends Component {
     } else {
       this.setState({ ICCApplicability: [], })
     }
+    this.setState({ isDataChanged: false })
   };
 
   /**
@@ -154,8 +158,51 @@ class AddInterestRate extends Component {
     } else {
       this.setState({ PaymentTermsApplicability: [], })
     }
+    this.setState({ isDataChanged: true })
   };
 
+  /**
+  * @method handleChangeAnnualIccPercentage
+  * @description called
+  */
+  handleChangeAnnualIccPercentage = (newValue) => {
+    if (this.state.isEditFlag) {
+      if (String(newValue) === String(this.state.Data.ICCPercent) &&
+        String(this.state.ICCApplicability.label) === String(this.state.Data.ICCApplicability)) {
+        this.setState({ isDataChanged: true })
+      } else {
+        this.setState({ isDataChanged: false })
+      }
+    }
+  };
+
+  /**
+  * @method handleChangeRepaymentPeriod
+  * @description called
+  */
+  handleChangeRepaymentPeriod = (newValue) => {
+    if (this.state.isEditFlag) {
+      if (String(newValue) === String(this.state.Data.RepaymentPeriod) && String(this.state.PaymentTermsApplicability.label) === String(this.state.Data.PaymentTermApplicability)) {
+        this.setState({ isDataChanged: true })
+      } else {
+        this.setState({ isDataChanged: false })
+      }
+    }
+  };
+
+  /**
+  * @method handleChangePaymentTermPercentage
+  * @description called
+  */
+  handleChangePaymentTermPercentage = (newValue) => {
+    if (this.state.isEditFlag) {
+      if (String(newValue) === String(this.state.Data.PaymentTermPercent) && String(this.state.PaymentTermsApplicability.label) === String(this.state.Data.PaymentTermApplicability)) {
+        this.setState({ isDataChanged: true })
+      } else {
+        this.setState({ isDataChanged: false })
+      }
+    }
+  };
 
   /**
   * @method handleChange
@@ -183,6 +230,7 @@ class AddInterestRate extends Component {
           let Data = res.data.Data;
           this.setState({ Data: Data })
           this.props.change("EffectiveDate", DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
+          this.setState({ minEffectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '' })
           setTimeout(() => {
             const { vendorWithVendorCodeSelectList, paymentTermsSelectList, iccApplicabilitySelectList, } = this.props;
 
@@ -352,7 +400,7 @@ class AddInterestRate extends Component {
       pos_drop_down = "top";
     }
     const { handleSubmit, } = this.props;
-    const { isEditFlag, isViewMode, setDisable, disablePopup } = this.state;
+    const { isEditFlag, isViewMode, setDisable, disablePopup, isDataChanged } = this.state;
 
     const filterList = (inputValue) => {
       let tempArr = []
@@ -480,6 +528,7 @@ class AddInterestRate extends Component {
                             max={100}
                             component={renderText}
                             required={true}
+                            onChange={(event) => this.handleChangeAnnualIccPercentage(event.target.value)}
                             disabled={isViewMode}
                             className=" "
                             customClassName=" withBorder"
@@ -530,6 +579,7 @@ class AddInterestRate extends Component {
                               validate={[postiveNumber, maxLength10]}
                               component={renderText}
                               required={false}
+                              onChange={(event) => this.handleChangeRepaymentPeriod(event.target.value)}
                               disabled={isViewMode}
                               className=" "
                               customClassName=" withBorder"
@@ -545,6 +595,7 @@ class AddInterestRate extends Component {
                               component={renderText}
                               max={100}
                               required={false}
+                              onChange={(event) => this.handleChangePaymentTermPercentage(event.target.value)}
                               disabled={isViewMode}
                               className=" "
                               customClassName=" withBorder"
@@ -564,6 +615,7 @@ class AddInterestRate extends Component {
                               selected={this.state.effectiveDate}
                               onChange={this.handleEffectiveDateChange}
                               type="text"
+                              minDate={this.state.minEffectiveDate}
                               validate={[required]}
                               autoComplete={'off'}
                               required={true}
@@ -571,7 +623,7 @@ class AddInterestRate extends Component {
 
                               }}
                               component={renderDatePicker}
-                              disabled={isEditFlag || isViewMode}
+                              disabled={isViewMode || isDataChanged}
                               className="form-control"
                             />
                           </div>
