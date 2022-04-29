@@ -52,6 +52,7 @@ function OperationCostExcludedOverhead(props) {
       }
     }
 
+
     selectedIds(gridData)
   }, [gridData]);
 
@@ -128,15 +129,19 @@ function OperationCostExcludedOverhead(props) {
   * @description SELECTED IDS
   */
   const selectedIds = (tempArr) => {
-    tempArr && tempArr.map(el => {
-      if (Ids.includes(el.OtherOperationId) === false) {
-        let selectedIds = Ids;
-        selectedIds.push(el.OtherOperationId)
-        setIds(selectedIds)
-      }
-      return null;
-    })
-    dispatch(setSelectedIds(Ids))
+    let selectedId = Ids;
+    if (tempArr && tempArr.length > 0) {
+      tempArr && tempArr.map(el => {
+        if (Ids.includes(el.OtherOperationId) === false) {
+          selectedId.push(el.OtherOperationId)
+          setIds(selectedId)
+          dispatch(setSelectedIds(selectedId))
+        }
+        return null;
+      })
+    } else {
+      dispatch(setSelectedIds([]))
+    }
   }
 
   const deleteItem = (index, OperationId) => {

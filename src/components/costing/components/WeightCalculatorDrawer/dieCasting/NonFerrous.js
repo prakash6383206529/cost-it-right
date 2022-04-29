@@ -10,9 +10,7 @@ import { saveRawMaterialCalculationForDieCasting } from '../../../actions/CostWo
 import Toaster from '../../../../common/Toaster'
 
 
-function
-    NonFerrous(props) {
-
+function NonFerrous(props) {
     const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest
     const costData = useContext(costingInfoContext)
     const dispatch = useDispatch()
