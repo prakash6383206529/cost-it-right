@@ -19,7 +19,6 @@ import LoaderCustom from '../../common/LoaderCustom';
 import attachClose from '../../../assests/images/red-cross.png'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { debounce } from 'lodash';
-import TooltipCustom from '../../common/Tooltip';
 import AsyncSelect from 'react-select/async';
 
 const selector = formValueSelector('AddProfit');
@@ -43,7 +42,7 @@ class AddProfit extends Component {
       vendorName: [],
       client: [],
 
-      overheadAppli: [],
+      profitAppli: [],
 
       remarks: '',
       files: [],
@@ -51,9 +50,9 @@ class AddProfit extends Component {
       isRM: false,
       isCC: false,
       isBOP: false,
-      isOverheadPercent: false,
+      isProfitPercent: false,
 
-      isHideOverhead: false,
+      isHideProfit: false,
       isHideRM: false,
       isHideCC: false,
       isHideBOP: false,
@@ -66,6 +65,8 @@ class AddProfit extends Component {
       setDisable: false,
       disablePopup: false,
       inputLoader: false,
+      minEffectiveDate: '',
+      isDataChanged: this.props.data.isEditFlag
     }
   }
 
@@ -107,7 +108,7 @@ class AddProfit extends Component {
     } else {
       this.setState({ ModelType: [], })
     }
-    this.setState({ DropdownChanged: false })
+    this.setState({ DropdownChanged: false, isDataChanged: false })
   };
 
   /**
@@ -138,6 +139,7 @@ class AddProfit extends Component {
           const Data = res.data.Data;
           this.setState({ DataToChange: Data })
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
+          this.setState({ minEffectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '' })
           setTimeout(() => {
             const { modelTypes, costingHead, vendorWithVendorCodeSelectList, clientSelectList, plantSelectList } = this.props;
 
@@ -164,12 +166,12 @@ class AddProfit extends Component {
               vendorName: Data.VendorName && Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.VendorId } : [],
               client: clientObj && clientObj !== undefined ? { label: clientObj.Text, value: clientObj.Value } : [],
               plant: plantObj && plantObj !== undefined ? { label: plantObj.Text, value: plantObj.Value } : [],
-              overheadAppli: AppliObj && AppliObj !== undefined ? { label: AppliObj.Text, value: AppliObj.Value } : [],
+              profitAppli: AppliObj && AppliObj !== undefined ? { label: AppliObj.Text, value: AppliObj.Value } : [],
               remarks: Data.Remark,
               files: Data.Attachements,
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
             }, () => {
-              this.checkOverheadFields()
+              this.checkProfitFields()
               this.setState({ isLoader: false })
             })
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
@@ -304,9 +306,9 @@ class AddProfit extends Component {
       if (ProfitPercentage) {
         this.setState({ isRM: true, isCC: true, isBOP: true, })
       } else if (ProfitRMPercentage || ProfitMachiningCCPercentage || ProfitBOPPercentage) {
-        this.setState({ isOverheadPercent: true })
+        this.setState({ isProfitPercent: true })
       } else {
-        this.checkOverheadFields()
+        this.checkProfitFields()
       }
 
     }
@@ -322,29 +324,101 @@ class AddProfit extends Component {
     })
   }
   /**
-  * @method handleOverheadChange
+  * @method handleProfitChange
   * @description called
   */
-  handleOverheadChange = (newValue, actionMeta) => {
+  handleProfitChange = (newValue, actionMeta) => {
     this.resetFields();
     if (newValue && newValue !== '') {
-      this.setState({ overheadAppli: newValue, isRM: false, isCC: false, isBOP: false, isOverheadPercent: false }, () => {
-        this.checkOverheadFields()
+      this.setState({ profitAppli: newValue, isRM: false, isCC: false, isBOP: false, isProfitPercent: false }, () => {
+        this.checkProfitFields()
       });
     } else {
       this.setState({
-        overheadAppli: [],
+        profitAppli: [],
         isRM: false,
         isCC: false,
         isBOP: false,
-        isOverheadPercent: false,
-        sHideOverhead: false,
+        isProfitPercent: false,
         isHideBOP: false,
         isHideCC: false,
         isHideRM: false,
       })
     }
-    this.setState({ DropdownChanged: false })
+    this.setState({ DropdownChanged: false, isDataChanged: false })
+  };
+
+  /**
+  * @method handleChangeProfitPercentage
+  * @description called
+  */
+  handleChangeProfitPercentage = (newValue) => {
+    if (this.state.isEditFlag) {
+      if (String(newValue) === String(this.state.DataToChange.ProfitPercentage) &&
+        String(this.state.profitAppli.label) === String(this.state.DataToChange.ProfitApplicabilityType) &&
+        String(this.state.ModelType.label) === String(this.state.DataToChange.ModelType)) {
+        this.setState({ isDataChanged: true })
+      } else {
+        this.setState({ isDataChanged: false })
+
+      }
+
+    }
+  };
+
+  /**
+  * @method handleChangeProfitPercentageRM
+  * @description called
+  */
+  handleChangeProfitPercentageRM = (newValue) => {
+    if (this.state.isEditFlag) {
+      if (String(newValue) === String(this.state.DataToChange.ProfitRMPercentage) &&
+        String(this.state.profitAppli.label) === String(this.state.DataToChange.ProfitApplicabilityType) &&
+        String(this.state.ModelType.label) === String(this.state.DataToChange.ModelType)) {
+        this.setState({ isDataChanged: true })
+      } else {
+        this.setState({ isDataChanged: false })
+
+      }
+
+    }
+  };
+
+  /**
+  * @method handleChangeProfitPercentageCC
+  * @description called
+  */
+  handleChangeProfitPercentageCC = (newValue) => {
+    if (this.state.isEditFlag) {
+      if (String(newValue) === String(this.state.DataToChange.ProfitMachiningCCPercentage) &&
+        String(this.state.profitAppli.label) === String(this.state.DataToChange.ProfitApplicabilityType) &&
+        String(this.state.ModelType.label) === String(this.state.DataToChange.ModelType)) {
+        this.setState({ isDataChanged: true })
+      } else {
+        this.setState({ isDataChanged: false })
+
+      }
+
+    }
+  };
+
+  /**
+  * @method handleChangeProfitPercentageBOP
+  * @description called
+  */
+  handleChangeProfitPercentageBOP = (newValue) => {
+    if (this.state.isEditFlag) {
+      console.log('this.state.DataToChange: ', this.state.DataToChange);
+      if (String(newValue) === String(this.state.DataToChange.ProfitBOPPercentage) &&
+        String(this.state.profitAppli.label) === String(this.state.DataToChange.ProfitApplicabilityType) &&
+        String(this.state.ModelType.label) === String(this.state.DataToChange.ModelType)) {
+        this.setState({ isDataChanged: true })
+      } else {
+        this.setState({ isDataChanged: false })
+
+      }
+
+    }
   };
 
   handlePercent = (e) => {
@@ -360,17 +434,17 @@ class AddProfit extends Component {
     this.props.change('ProfitRMPercentage', '')
   }
 
-  checkOverheadFields = () => {
-    const { overheadAppli } = this.state;
+  checkProfitFields = () => {
+    const { profitAppli } = this.state;
 
-    switch (overheadAppli.label) {
+    switch (profitAppli.label) {
       case 'RM':
         return this.setState({
           isRM: false,
           isCC: true,
           isBOP: true,
-          isOverheadPercent: true,
-          isHideOverhead: true,
+          isProfitPercent: true,
+          isHideProfit: true,
           isHideRM: false,
           isHideCC: true,
           isHideBOP: true,
@@ -380,8 +454,8 @@ class AddProfit extends Component {
           isRM: true,
           isCC: false,
           isBOP: true,
-          isOverheadPercent: true,
-          isHideOverhead: true,
+          isProfitPercent: true,
+          isHideProfit: true,
           isHideRM: true,
           isHideCC: false,
           isHideBOP: true,
@@ -391,8 +465,8 @@ class AddProfit extends Component {
           isRM: true,
           isBOP: false,
           isCC: true,
-          isOverheadPercent: true,
-          isHideOverhead: true,
+          isProfitPercent: true,
+          isHideProfit: true,
           isHideRM: true,
           isHideCC: true,
           isHideBOP: false,
@@ -402,8 +476,8 @@ class AddProfit extends Component {
           isRM: true,
           isCC: true,
           isBOP: true,
-          isOverheadPercent: true,
-          isHideOverhead: true,
+          isProfitPercent: true,
+          isHideProfit: true,
           isHideRM: true,
           isHideCC: true,
           isHideBOP: true,
@@ -413,8 +487,8 @@ class AddProfit extends Component {
           isRM: false,
           isCC: false,
           isBOP: true,
-          isOverheadPercent: false,
-          isHideOverhead: false,
+          isProfitPercent: false,
+          isHideProfit: false,
           isHideBOP: true,
           isHideRM: false,
           isHideCC: false,
@@ -424,8 +498,8 @@ class AddProfit extends Component {
           isRM: false,
           isCC: true,
           isBOP: false,
-          isOverheadPercent: false,
-          isHideOverhead: false,
+          isProfitPercent: false,
+          isHideProfit: false,
           isHideCC: true,
           isHideRM: false,
           isHideBOP: false,
@@ -435,8 +509,8 @@ class AddProfit extends Component {
           isRM: true,
           isBOP: false,
           isCC: false,
-          isOverheadPercent: false,
-          isHideOverhead: false,
+          isProfitPercent: false,
+          isHideProfit: false,
           isHideRM: true,
           isHideBOP: false,
           isHideCC: false,
@@ -446,8 +520,8 @@ class AddProfit extends Component {
           isRM: false,
           isCC: false,
           isBOP: false,
-          isOverheadPercent: false,
-          isHideOverhead: false,
+          isProfitPercent: false,
+          isHideProfit: false,
           isHideBOP: false,
           isHideCC: false,
           isHideRM: false,
@@ -579,7 +653,7 @@ class AddProfit extends Component {
       IsVendor: false,
       ModelType: [],
       vendorName: [],
-      overheadAppli: [],
+      profitAppli: [],
     })
     this.props.getProfitData('', res => { })
     this.props.hideForm()
@@ -590,8 +664,8 @@ class AddProfit extends Component {
   * @description Used to Submit the form
   */
   onSubmit = debounce((values) => {
-    const { costingHead, IsVendor, ModelType, vendorName, client, overheadAppli, remarks, ProfitID,
-      isRM, isCC, isBOP, isOverheadPercent, isEditFlag, files, effectiveDate, DataToChange, DropdownChanged, plant, uploadAttachements } = this.state;
+    const { costingHead, IsVendor, ModelType, vendorName, client, profitAppli, remarks, ProfitID,
+      isRM, isCC, isBOP, isProfitPercent, isEditFlag, files, effectiveDate, DataToChange, DropdownChanged, plant, uploadAttachements } = this.state;
     const userDetail = userDetails()
 
     if (vendorName.length <= 0) {
@@ -637,10 +711,10 @@ class AddProfit extends Component {
         VendorName: IsVendor ? (costingHead === 'vendor' ? vendorName.label : '') : userDetail.ZBCSupplierInfo.VendorName,
         IsClient: costingHead === 'client' ? true : false,
         ClientName: costingHead === 'client' ? client.label : '',
-        ProfitApplicabilityType: overheadAppli.label,
+        ProfitApplicabilityType: profitAppli.label,
         ModelType: ModelType.label,
         IsVendor: IsVendor,
-        IsCombinedEntry: !isOverheadPercent ? true : false,
+        IsCombinedEntry: !isProfitPercent ? true : false,
         ProfitPercentage: values.ProfitPercentage,
         ProfitMachiningCCPercentage: values.ProfitMachiningCCPercentage,
         ProfitBOPPercentage: values.ProfitBOPPercentage,
@@ -649,7 +723,7 @@ class AddProfit extends Component {
         VendorId: IsVendor ? (costingHead === 'vendor' ? vendorName.value : '') : userDetail.ZBCSupplierInfo.VendorId,
         VendorCode: IsVendor ? (costingHead === 'vendor' ? getVendorCode(vendorName.label) : '') : userDetail.ZBCSupplierInfo.VendorNameWithCode,
         ClientId: costingHead === 'client' ? client.value : '',
-        ProfitApplicabilityId: overheadAppli.value,
+        ProfitApplicabilityId: profitAppli.value,
         ModelTypeId: ModelType.value,
         IsActive: true,
         CreatedDate: '',
@@ -669,8 +743,8 @@ class AddProfit extends Component {
       this.setState({ setDisable: true })
       const formData = {
         IsVendor: IsVendor,
-        IsCombinedEntry: !isOverheadPercent ? true : false,
-        ProfitPercentage: !isOverheadPercent ? values.ProfitPercentage : '',
+        IsCombinedEntry: !isProfitPercent ? true : false,
+        ProfitPercentage: !isProfitPercent ? values.ProfitPercentage : '',
         ProfitMachiningCCPercentage: !isCC ? values.ProfitMachiningCCPercentage : '',
         ProfitBOPPercentage: !isBOP ? values.ProfitBOPPercentage : '',
         ProfitRMPercentage: !isRM ? values.ProfitRMPercentage : '',
@@ -678,7 +752,7 @@ class AddProfit extends Component {
         VendorId: IsVendor ? (costingHead === 'vendor' ? vendorName.value : '') : userDetail.ZBCSupplierInfo.VendorId,
         VendorCode: IsVendor ? (costingHead === 'vendor' ? getVendorCode(vendorName.label) : '') : userDetail.ZBCSupplierInfo.VendorNameWithCode,
         ClientId: costingHead === 'client' ? client.value : '',
-        ProfitApplicabilityId: overheadAppli.value,
+        ProfitApplicabilityId: profitAppli.value,
         ModelTypeId: ModelType.value,
         IsActive: true,
         CreatedDate: '',
@@ -722,8 +796,8 @@ class AddProfit extends Component {
   */
   render() {
     const { handleSubmit, } = this.props;
-    const { isRM, isCC, isBOP, isOverheadPercent, isEditFlag, costingHead,
-      isHideOverhead, isHideBOP, isHideRM, isHideCC, isViewMode, setDisable, disablePopup } = this.state;
+    const { isRM, isCC, isBOP, isProfitPercent, isEditFlag, costingHead,
+      isHideProfit, isHideBOP, isHideRM, isHideCC, isViewMode, setDisable, disablePopup, isDataChanged } = this.state;
     const filterList = (inputValue) => {
       let tempArr = []
 
@@ -913,38 +987,39 @@ class AddProfit extends Component {
                             )}
                             //onKeyUp={(e) => this.changeItemDesc(e)}
                             validate={
-                              this.state.overheadAppli == null ||
-                                this.state.overheadAppli.length === 0
+                              this.state.profitAppli == null ||
+                                this.state.profitAppli.length === 0
                                 ? [required]
                                 : []
                             }
                             required={true}
                             handleChangeDescription={
-                              this.handleOverheadChange
+                              this.handleProfitChange
                             }
-                            valueDescription={this.state.overheadAppli}
+                            valueDescription={this.state.profitAppli}
                             disabled={isViewMode}
                           />
                         </Col>
-                        {!isHideOverhead && (
+                        {!isHideProfit && (
                           <Col md="3">
                             <Field
                               label={`Profit (%)`}
                               name={"ProfitPercentage"}
                               type="text"
                               placeholder={
-                                !isOverheadPercent ? "Enter" : ""
+                                !isProfitPercent ? "Enter" : ""
                               }
                               validate={
-                                !isOverheadPercent ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []
+                                !isProfitPercent ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []
                               }
                               component={renderText}
                               onBlur={this.handlePercent}
-                              required={!isOverheadPercent ? true : false}
+                              required={!isProfitPercent ? true : false}
+                              onChange={(event) => this.handleChangeProfitPercentage(event.target.value)}
                               className=""
                               customClassName=" withBorder"
                               max={100}
-                              disabled={isOverheadPercent || isViewMode ? true : false}
+                              disabled={isProfitPercent || isViewMode ? true : false}
                             />
                           </Col>
                         )}
@@ -956,6 +1031,7 @@ class AddProfit extends Component {
                               type="text"
                               placeholder={!isRM ? "Enter" : ""}
                               validate={!isRM ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []}
+                              onChange={(event) => this.handleChangeProfitPercentageRM(event.target.value)}
                               component={renderText}
                               required={!isRM ? true : false}
                               className=""
@@ -972,6 +1048,7 @@ class AddProfit extends Component {
                               type="text"
                               placeholder={!isCC ? "Enter" : ""}
                               validate={!isCC ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []}
+                              onChange={(event) => this.handleChangeProfitPercentageCC(event.target.value)}
                               component={renderText}
                               //onChange={this.handleCalculation}
                               required={!isCC ? true : false}
@@ -989,6 +1066,7 @@ class AddProfit extends Component {
                               type="text"
                               placeholder={!isBOP ? "Enter" : ""}
                               validate={!isBOP ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []}
+                              onChange={(event) => this.handleChangeProfitPercentageBOP(event.target.value)}
                               component={renderText}
                               //onChange={this.handleCalculation}
                               required={!isBOP ? true : false}
@@ -1006,6 +1084,7 @@ class AddProfit extends Component {
                               selected={this.state.effectiveDate}
                               onChange={this.handleEffectiveDateChange}
                               type="text"
+                              minDate={this.state.minEffectiveDate}
                               validate={[required]}
                               autoComplete={'off'}
                               required={true}
@@ -1014,8 +1093,7 @@ class AddProfit extends Component {
                               }}
                               component={renderDatePicker}
                               className="form-control"
-                              disabled={isViewMode}
-
+                              disabled={isViewMode || isDataChanged}
                             />
                           </div>
                         </Col>
