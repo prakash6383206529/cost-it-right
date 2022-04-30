@@ -98,18 +98,21 @@ function SurfaceTreatment(props) {
     if (transportationObject.UOM === "Percentage" && transportationObject.Rate !== null && transportationObject.Rate > 100) {
       return false
     }
-    if (props.IsAssemblyCalculation) {
-      props.setAssemblySurfaceCost(surfaceTreatmentData.gridData, surfaceTreatmentData.Params, JSON.stringify(surfaceTreatmentData.gridData) !== JSON.stringify(surfaceTreatmentData.OldGridData) ? true : false, props.item)
-      props.setAssemblyTransportationCost(transportationObject.tempObj, transportationObject.Params, item)
-      setTimeout(() => {
-        callApi()
-      }, (500));
-    } else {
-      props.setSurfaceCost(surfaceTreatmentData.gridData, surfaceTreatmentData.Params, JSON.stringify(surfaceTreatmentData.gridData) !== JSON.stringify(surfaceTreatmentData.OldGridData) ? true : false)
-      props.setTransportationCost(transportationObject.tempObj, transportationObject.Params)
-      setTimeout(() => {
-        callApi()
-      }, (500));
+    if (!IsLocked) {
+
+      if (props.IsAssemblyCalculation) {
+        props.setAssemblySurfaceCost(surfaceTreatmentData.gridData, surfaceTreatmentData.Params, JSON.stringify(surfaceTreatmentData.gridData) !== JSON.stringify(surfaceTreatmentData.OldGridData) ? true : false, props.item)
+        props.setAssemblyTransportationCost(transportationObject.tempObj, transportationObject.Params, item)
+        setTimeout(() => {
+          callApi()
+        }, (500));
+      } else {
+        props.setSurfaceCost(surfaceTreatmentData.gridData, surfaceTreatmentData.Params, JSON.stringify(surfaceTreatmentData.gridData) !== JSON.stringify(surfaceTreatmentData.OldGridData) ? true : false)
+        props.setTransportationCost(transportationObject.tempObj, transportationObject.Params)
+        setTimeout(() => {
+          callApi()
+        }, (500));
+      }
     }
 
     const callApi = () => {
@@ -240,17 +243,17 @@ function SurfaceTreatment(props) {
                         {
                           (item.PartType !== 'Part' && item.PartType !== 'Component') ?
                             <>
-                              <Col md="4" className="cr-costlabel">{`Operation Cost: ${checkForDecimalAndNull(CostingViewMode ? item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly : surfaceCost(surfaceTreatmentData?.gridData), initialConfiguration.NoOfDecimalForPrice)}`}</Col>
-                              <Col md="4" className="cr-costlabel">{`Transportation Cost: ${checkForDecimalAndNull(CostingViewMode ? item.CostingPartDetails.TotalTransportationCostPerAssembly : checkForNull(transportObj?.TransportationCost), initialConfiguration.NoOfDecimalForPrice)}`}</Col>
-                              <Col md="4" className="cr-costlabel">{`Net Operation Cost:  ${CostingViewMode ? (item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly) + (item.CostingPartDetails && item.CostingPartDetails.TotalTransportationCostPerAssembly !== null ? item.CostingPartDetails.TotalTransportationCostPerAssembly : 0) : (checkForNull(surfaceCost(surfaceTreatmentData.gridData)) + checkForNull(transportObj?.TransportationCost))}`}</Col>
+                              <Col md="4" className="cr-costlabel">{`Operation Cost: ${checkForDecimalAndNull((CostingViewMode || IsLocked) ? item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly : surfaceCost(surfaceTreatmentData?.gridData), initialConfiguration.NoOfDecimalForPrice)}`}</Col>
+                              <Col md="4" className="cr-costlabel">{`Transportation Cost: ${checkForDecimalAndNull((CostingViewMode || IsLocked) ? item.CostingPartDetails.TotalTransportationCostPerAssembly : checkForNull(transportObj?.TransportationCost), initialConfiguration.NoOfDecimalForPrice)}`}</Col>
+                              <Col md="4" className="cr-costlabel">{`Net Operation Cost:  ${(CostingViewMode || IsLocked) ? (item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly) + (item.CostingPartDetails && item.CostingPartDetails.TotalTransportationCostPerAssembly !== null ? item.CostingPartDetails.TotalTransportationCostPerAssembly : 0) : (checkForNull(surfaceCost(surfaceTreatmentData.gridData)) + checkForNull(transportObj?.TransportationCost))}`}</Col>
                               {/* <Col md="4" className="cr-costlabel">{`Operation Cost: ${item.CostingPartDetails && item.CostingPartDetails.SurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.SurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : 0}`}</Col>
                               <Col md="4" className="cr-costlabel">{`Extra Cost: ${item.CostingPartDetails && item.CostingPartDetails.TransportationCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TransportationCost, initialConfiguration.NoOfDecimalForPrice) : 0}`}</Col>
                               <Col md="4" className="cr-costlabel">{`Net Operation Cost: ${item.CostingPartDetails && item.CostingPartDetails.NetSurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.NetSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : 0}`}</Col> */}
                             </>
                             :
                             <>
-                              <Col md="4" className="cr-costlabel">{`Operation Cost: ${checkForDecimalAndNull(CostingViewMode ? checkForNull(item?.CostingPartDetails?.SurfaceTreatmentCost) : surfaceCost(surfaceTreatmentData?.gridData), initialConfiguration.NoOfDecimalForPrice)}`}</Col>
-                              <Col md="4" className="cr-costlabel">{`Extra Cost: ${checkForDecimalAndNull(CostingViewMode ? checkForNull(item.CostingPartDetails.TransportationCost) : checkForNull(transportObj?.TransportationCost), initialConfiguration.NoOfDecimalForPrice)}`}</Col>
+                              <Col md="4" className="cr-costlabel">{`Operation Cost: ${checkForDecimalAndNull((CostingViewMode || IsLocked) ? checkForNull(item?.CostingPartDetails?.SurfaceTreatmentCost) : surfaceCost(surfaceTreatmentData?.gridData), initialConfiguration.NoOfDecimalForPrice)}`}</Col>
+                              <Col md="4" className="cr-costlabel">{`Extra Cost: ${checkForDecimalAndNull((CostingViewMode || IsLocked) ? checkForNull(item.CostingPartDetails.TransportationCost) : checkForNull(transportObj?.TransportationCost), initialConfiguration.NoOfDecimalForPrice)}`}</Col>
                               <Col md="4" className="cr-costlabel">{`Net Operation Cost: ${checkForNull(surfaceCost(surfaceTreatmentData?.gridData)) + checkForNull(transportObj?.TransportationCost)}`} </Col>
                             </>
                         }

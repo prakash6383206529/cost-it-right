@@ -41,7 +41,7 @@ function PartSurfaceTreatment(props) {
           if (res && res.data && res.data.Result) {
             let Data = res.data.DataList[0].CostingPartDetails;
             DrawerToggle()
-            props.setPartDetails(Params, Data)
+            props.setPartDetails(Params, Data, item)
           }
         }))
       }

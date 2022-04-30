@@ -1234,6 +1234,19 @@ function TabRMCC(props) {
   }
 
 
+  const setBOPCostForhandling = (tempArr) => {
+    const total = tempArr && tempArr.reduce((accummlator, item) => {
+      if (item.PartType === 'Part') {
+        return accummlator + checkForNull(item.CostingPartDetails.TotalBoughtOutPartCost)
+      } else {
+
+        return accummlator + checkForNull(item.CostingPartDetails.TotalBoughtOutPartCostWithQuantity)
+      }
+    }, 0)
+    return total
+  }
+
+
   /**
    * @function setBOPCostWithAsssembly
    * @description FOR APPLYING BOP HANDLING CHARGE TO ASSEMBLY (ONLY FOR ASSEMBLY)
@@ -1250,11 +1263,14 @@ function TabRMCC(props) {
           if (i === useLevel) { // SUB ASSEMBLY LEVEL HERE
             let subAssemblyIndex = tempArrForCosting && tempArrForCosting.findIndex((x) => x.PartNumber === item.PartNumber && x.AssemblyPartNumber === item.AssemblyPartNumber)
             let subAssembObj = tempArrForCosting[subAssemblyIndex]
+            let tempArr = tempArrForCosting && tempArrForCosting.filter((x) => x.AssemblyPartNumber === subAssembObj.PartNumber)
+            console.log('tempArr: ', tempArr);
             subAssembObj.CostingPartDetails.IsApplyBOPHandlingCharges = obj.IsApplyBOPHandlingCharges;
             subAssembObj.CostingPartDetails.BOPHandlingChargeApplicability = obj.BOPHandlingChargeApplicability;
             subAssembObj.CostingPartDetails.BOPHandlingPercentage = obj.BOPHandlingPercentage;
             subAssembObj.CostingPartDetails.BOPHandlingCharges = obj.BOPHandlingCharges;
-            subAssembObj.CostingPartDetails.TotalBoughtOutPartCostWithQuantity = checkForNull(subAssembObj.CostingPartDetails.TotalBoughtOutPartCostWithQuantity) + checkForNull(subAssembObj.CostingPartDetails.BOPHandlingCharges)
+            console.log(setBOPCostForhandling(tempArr), "setBOPCostForSubAssembly(tempArr)");
+            subAssembObj.CostingPartDetails.TotalBoughtOutPartCostWithQuantity = setBOPCostForhandling(tempArr) + checkForNull(subAssembObj.CostingPartDetails.BOPHandlingCharges)
             let GrandTotalCost = checkForNull(subAssembObj.CostingPartDetails.TotalRawMaterialsCost) + checkForNull(subAssembObj.CostingPartDetails.TotalBoughtOutPartCost) + checkForNull(subAssembObj.CostingPartDetails.TotalConversionCost)
             subAssembObj.CostingPartDetails.TotalCalculatedRMBOPCCCost = GrandTotalCost;
             subAssembObj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = subAssembObj.CostingPartDetails.TotalCalculatedRMBOPCCCost * subAssembObj.CostingPartDetails.Quantity
