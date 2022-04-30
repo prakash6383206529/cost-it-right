@@ -61,7 +61,7 @@ function OperationSTSimulation(props) {
         }
     }, [])
     useEffect(() => {
-        if (list.length >= 0) {
+        if (list && list.length >= 0) {
             gridRef.current.api.sizeColumnsToFit();
         }
     }, [list])
