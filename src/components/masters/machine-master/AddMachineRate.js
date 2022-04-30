@@ -1614,15 +1614,15 @@ class AddMachineRate extends Component {
 
                         </Col>
                       </Row>
-                      <Row>
+                      {/* <Row>
                         <Col md="12" className='mt-2'>
                           <HeaderTitle
                             title={'Process Group:'} />
                         </Col>
                         <Col md="12">
-                          {/* <ProcessGroup isViewFlag={isViewFlag} /> */}
+                          <ProcessGroup isViewFlag={isViewFlag} />
                         </Col>
-                      </Row>
+                      </Row> */}
 
                       <Row>
                         <Col md="12" >
