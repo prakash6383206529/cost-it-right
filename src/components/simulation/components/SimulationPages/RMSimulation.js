@@ -57,7 +57,7 @@ function RMSimulation(props) {
 
     }, [])
     useEffect(() => {
-        if (list.length > 0) {
+        if (list && list.length > 0) {
             if (isImpactedMaster) {
                 window.screen.width >= 1600 && gridRef.current.api.sizeColumnsToFit();
             }
