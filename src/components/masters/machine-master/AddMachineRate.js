@@ -33,7 +33,6 @@ import attachClose from '../../../assests/images/red-cross.png'
 import MasterSendForApproval from '../MasterSendForApproval'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { debounce } from 'lodash';
-import TooltipCustom from '../../common/Tooltip';
 import { CheckApprovalApplicableMaster } from '../../../helper'
 import AsyncSelect from 'react-select/async';
 import { ProcessGroup } from '../masterUtil';
@@ -1595,7 +1594,7 @@ class AddMachineRate extends Component {
                             title={'Process Group:'} />
                         </Col>
                         <Col md="12">
-                          {/* <ProcessGroup isViewFlag={isViewFlag} /> */}
+                          <ProcessGroup isViewFlag={isViewFlag} processListing={this.state.processGrid} isViewMode={isViewMode} />
                         </Col>
                       </Row>
 

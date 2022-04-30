@@ -138,8 +138,6 @@ export const NumberFieldHookForm = (field) => {
 export const SearchableSelectHookForm = (field) => {
   const { name, label, Controller, mandatory, disabled, options, handleChange, rules, placeholder, defaultValue,
     isClearable, control, errors, register, isLoading, customClassName, isMulti } = field;
-
-
   let isDisable = (disabled && disabled === true) ? true : false;
   let isLoader = (isLoading && isLoading === true) ? true : false;
   let isMultiple = (isMulti === true) ? true : false;
@@ -151,7 +149,6 @@ export const SearchableSelectHookForm = (field) => {
         {mandatory && mandatory === true ? <span className="asterisk-required">*</span> : ''}
       </label>
       <Controller
-
         name={name}
         control={control}
         rules={rules}
@@ -165,9 +162,10 @@ export const SearchableSelectHookForm = (field) => {
               name={name}
               placeholder={placeholder}
               isDisabled={isDisable}
-              onChange={(e) => {
-                handleChange(e);
+              onChange={(e, action) => {
+                handleChange(e, action);
                 onChange(e)
+
               }}
               menuPlacement="auto"
               options={options}
