@@ -6356,3 +6356,21 @@ left: 17rem;
   display: flex !important;
   align-items: center;
 }
+.process-group-wrapper {
+   margin: auto;
+   margin-left: 0;
+  .process-group {
+    min-height: 40px;
+    max-height: 60px;
+    max-width: 100%;
+    overflow: auto;
+    border-radius: 4px;
+    padding: 5px;
+    .process-name {
+      background-color: rgb(224, 224, 224);
+      border-radius: 3px;
+      padding: 2px;
+      color: #333;
+    }
+  }
+}
