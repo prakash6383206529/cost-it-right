@@ -717,7 +717,6 @@ class AddOverhead extends Component {
     if (isEditFlag) {
 
 
-
       if (values.OverheadPercentage === '') {
         values.OverheadPercentage = null
       }
@@ -776,7 +775,6 @@ class AddOverhead extends Component {
 
 
     } else {
-
       this.setState({ setDisable: true })
       const formData = {
         EAttachementEntityName: 0,
@@ -797,7 +795,7 @@ class AddOverhead extends Component {
         CreatedBy: loggedInUserId(),
         Attachements: files,
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD'),
-        PlantId: plant.value
+        PlantId: plant?.value
       }
 
       this.props.createOverhead(formData, (res) => {
