@@ -44,7 +44,7 @@ class OverheadListing extends Component {
             showPopup: false,
             deletedId: '',
             selectedRowData: [],
-            isLoader:false
+            isLoader: false
         }
     }
 
@@ -72,9 +72,9 @@ class OverheadListing extends Component {
             overhead_applicability_type_id: overhead,
             model_type_id: modelType,
         }
-        this.setState({isLoader:true})
+        this.setState({ isLoader: true })
         this.props.getOverheadDataList(filterData, (res) => {
-            this.setState({isLoader:false})
+            this.setState({ isLoader: false })
         })
     }
 
@@ -370,7 +370,7 @@ class OverheadListing extends Component {
 
         return (
             <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-               {this.state.isLoader && <LoaderCustom />}
+                {this.state.isLoader && <LoaderCustom />}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-4 ">
 
@@ -446,7 +446,7 @@ class OverheadListing extends Component {
                                 >
                                     <AgGridColumn field="TypeOfHead" headerName="Costing Head"></AgGridColumn>
                                     <AgGridColumn field="VendorName" headerName="Vendor(Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="PlantName" headerName="Plant(Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="PlantName" headerName="Plant(Code)" cellRenderer={'plantFormatter'}></AgGridColumn>
                                     <AgGridColumn field="ClientName" headerName="Client Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="ModelType" headerName="Model Type"></AgGridColumn>
                                     <AgGridColumn field="OverheadApplicabilityType" headerName="Overhead Applicability"></AgGridColumn>
