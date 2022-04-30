@@ -2,12 +2,13 @@
 import { EMPTY_DATA } from '../../config/constants';
 import { Field } from "redux-form";
 import NoContentFound from '../common/NoContentFound';
-import { TextFieldHookForm } from '../layout/HookFormInputs';
+import { SearchableSelectHookForm, TextFieldHookForm } from '../layout/HookFormInputs';
 import { Col, Row } from 'reactstrap';
 import { useForm, Controller } from "react-hook-form";
 import { AgGridReact } from 'ag-grid-react';
 import React, { useMemo, useState } from 'react';
-import { renderMultiSelectField } from "../../components/layout/FormInputs";
+import { renderMultiSelectField, renderText } from "../../components/layout/FormInputs";
+import { checkWhiteSpaces, maxLength80 } from '../../helper';
 
 const gridOptions = {};
 
@@ -22,23 +23,25 @@ const rowSpan = (params) => {
 
 export const ProcessGroup = (props) => {
 
-    const { register, control, formState: { errors }, } = useForm({
+    const { register, control, formState: { errors }, getValues } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
     })
     const [rowData, setRowData] = useState([]);
     const [columnDefs, setColumnDefs] = useState([
         {
-            field: 'ProcessGroup',
+            field: 'GroupName',
             rowSpan: rowSpan,
             cellClassRules: {
-                'cell-span': " value==='ABC'",
+                'cell-span': `"value === ${getValues('groupName')}"`,
             },
             width: 200,
         },
-        { field: 'Process' },
+        { field: 'ProcessName' },
 
     ]);
+
+    const [selectedProcess, setSelectedProcess] = useState([])
     const defaultColDef = useMemo(() => {
         return {
             width: 170,
@@ -49,104 +52,97 @@ export const ProcessGroup = (props) => {
 
     const onGridReady = (params) => {
         params.api.sizeColumnsToFit();
-        setRowData([
-            {
-                ProcessGroup: "ABC",
-                Process: 'DEF'
-            },
-            {
-                ProcessGroup: "DEFE",
-                Process: 'FRG'
-            },
-            {
-                ProcessGroup: "ABC",
-                Process: 'LMO'
-            },
-            {
-                ProcessGroup: "DEFE",
-                Process: 'SDE'
-            },
-            {
-                ProcessGroup: "MHR",
-                Process: 'ABCRT'
-            }
-        ])
+        // slected row 1 time
 
     };
-    const handleTechnology = () => { }
-    const renderListing = (label) => { }
+    const handleProcess = () => {
+        const processName = getValues('process')
+        console.log('processName: ', processName);
+        setSelectedProcess([...selectedProcess, { ProcessName: processName.label, ProcessId: processName.value }])
+
+    }
+
+    const processTableHandler = () => {
+
+        let temp = selectedProcess && selectedProcess.map((item, index) => {
+            if (index === 0) {
+                return { GroupName: getValues('groupName'), ProcessName: item.ProcessName, ProcessId: item.ProcessId }
+            } else {
+                return { GroupName: '', ProcessName: item.ProcessName, ProcessId: item.ProcessId }
+            }
+        })
+        setRowData([...rowData, temp])
+    }
+
+    const renderListing = (label) => {
+        let temp = []
+        if (label === 'process') {
+            temp = props.processListing && props.processListing.map(item => {
+                return { label: item.processName, value: item.ProcessId }
+            })
+        }
+        console.log(temp, "temp");
+        return temp
+    }
     return (
         <>
             <Row>
-                <Col md="3">
-                    <div className="">
-                        <TextFieldHookForm
-                            //   title={titleObj.partNameTitle}
-                            label="Group Name"
-                            name={'groupName'}
-                            Controller={Controller}
-                            control={control}
-                            register={register}
-                            mandatory={false}
-                            rules={{ required: false, }}
-                            handleChange={() => { }}
-                            defaultValue={''}
-                            customClassName={'withBorder'}
-                            errors={errors.PartName}
-                        // disabled={true}
-                        />
-                    </div>
-                    {/* {(!props.isEditFlag || isViewFlag) && <div
-                        // onClick={this.processToggler}
-                        className={'plus-icon-square mr5 right'}>
-                    </div>} */}
-                </Col>
-                <Col md="3">
-                    <Field
-                        label="Technology"
-                        name="technology"
-                        placeholder="Select"
-                        selection={
-                            []
-                        }
-                        options={renderListing("process")}
-                        selectionChanged={handleTechnology}
-                        optionValue={(option) => option.Value}
-                        optionLabel={(option) => option.Text}
-                        component={renderMultiSelectField}
-                        mendatory={true}
-                        //   validate={selectedTechnology == null || selectedTechnology.length === 0 ? [required] : []}
-                        className="multiselect-with-border"
-                    //   disabled={isEditFlag ? true : false}
+                <Col className="col-md-3">
+                    <TextFieldHookForm
+                        label="Group Name"
+                        name={"groupName"}
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        rules={{ required: false }}
+                        mandatory={false}
+                        handleChange={() => { }}
+                        defaultValue={""}
+                        className=""
+                        customClassName={"withBorder"}
+                        errors={errors.groupName}
+                        disabled={false}
                     />
+                </Col>
+                <Col className="col-md-3">
+                    <SearchableSelectHookForm
+                        label={"Process"}
+                        name={"process"}
+                        placeholder={"Select"}
+                        Controller={Controller}
+                        control={control}
+                        rules={{ required: false }}
+                        register={register}
+                        options={renderListing("process")}
+                        mandatory={false}
+                        handleChange={() => { }}
+                        errors={errors.process}
+                    />
+                </Col>
+                {
+                    <Col className="col-md-1 d-flex align-items-center">
+                        <div onClick={handleProcess} className={'plus-icon-square mr5 right'}> </div>
+                    </Col>
+
+                }
+                <Col md="3" className='process-group-wrapper'>
+                    <div className='border process-group'>
+                        {
+                            selectedProcess && selectedProcess.map(item =>
+                                <span className='process-name'>{item.Text}</span>
+                            )
+                        }
+                    </div>
                 </Col>
                 <Col md="3" className='mb-2 d-flex align-items-center'>
                     <div>
-                        {props.isEditIndex ?
-                            <>
-                                <button
-                                    //   disabled={isViewMode}
-                                    type="button"
-                                    className={'btn btn-primary mt30 pull-left mr5'}
-                                // onClick={this.updateProcessGrid}
-                                >Update</button>
-
-                                <button
-                                    type={'button'}
-                                    //   disabled={isViewMode}
-                                    className="reset-btn mt30 "
-                                // onClick={this.resetProcessGridData}
-                                >{'Cancel'}
-                                </button>
-                            </>
-                            :
-                            // !IsDetailedEntry &&
+                        {
                             <>
                                 <button
                                     type="button"
                                     className={`${props.isViewFlag ? 'disabled-button user-btn' : 'user-btn'} pull-left mr5`}
-                                //   disabled={isViewFlag ? true : isViewMode}
-                                // onClick={this.processTableHandler}
+                                    //   disabled={isViewFlag ? true : isViewMode}
+                                    onClick={processTableHandler}
                                 >
                                     <div className={'plus'}></div>ADD</button>
                                 <button
@@ -159,6 +155,7 @@ export const ProcessGroup = (props) => {
                         }
                     </div>
                 </Col>
+
             </Row>
             <div className={`ag-grid-wrapper  border mb-4`}>
                 <div className={`ag-theme-material`}>
