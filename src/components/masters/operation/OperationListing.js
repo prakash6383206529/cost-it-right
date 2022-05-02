@@ -71,7 +71,7 @@ class OperationListing extends Component {
         this.props.getTechnologySelectList(() => { })
         this.props.getOperationSelectList(() => { })
         this.props.getVendorWithVendorCodeSelectList()
-        if (this.props.isSimulation && this.props.selectionForListingMasterAPI === 'Combined') {
+        if (this.props.isSimulation && this.props?.selectionForListingMasterAPI === 'Combined') {
             this.props?.changeSetLoader(true)
             this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, OPERATIONS, (res) => {
                 this.props?.changeSetLoader(false)
