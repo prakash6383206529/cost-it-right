@@ -58,7 +58,6 @@ function Simulation(props) {
     const [editWarning, setEditWarning] = useState(true)
     const [vendor, setVendor] = useState({})
     const [vendorDropdown, setVendorDropdown] = useState([])
-    const [onLoad, setOnLoad] = useState(false)
     const [filterStatus, setFilterStatus] = useState('')
     const [token, setToken] = useState([])
     const [showTokenDropdown, setShowTokenDropdown] = useState(false)
@@ -87,7 +86,6 @@ function Simulation(props) {
             setEditWarning(applyEditCondSimulation(getValues('Masters').value))
             setShowMasterList(true)
         }
-        setOnLoad(true)
     }, [])
 
     const masterList = useSelector(state => state.simulation.masterSelectList)
