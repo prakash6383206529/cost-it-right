@@ -13,7 +13,8 @@ import {
     GET_PROCESSES_LIST_SUCCESS,
     GET_MACHINE_LIST_SUCCESS,
     GET_MACHINE_APPROVAL_LIST,
-    config
+    config,
+    SET_PROCESS_GROUP_FOR_API
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
@@ -627,4 +628,14 @@ export function getMachineApprovalList(callback) {
             apiErrors(error)
         });
     };
+}
+
+
+export function setGroupProcessList(data) {
+    return (dispatch) => {
+        dispatch({
+            type: SET_PROCESS_GROUP_FOR_API,
+            payload: data
+        })
+    }
 }

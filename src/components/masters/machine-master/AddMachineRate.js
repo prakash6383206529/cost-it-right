@@ -15,7 +15,7 @@ import {
 } from '../actions/MachineMaster';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { EMPTY_DATA, EMPTY_GUID } from '../../../config/constants'
+import { EMPTY_DATA, EMPTY_GUID, UOM } from '../../../config/constants'
 import { checkVendorPlantConfigurable, getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
 import Switch from "react-switch";
 import Dropzone from 'react-dropzone-uploader';
@@ -92,7 +92,9 @@ class AddMachineRate extends Component {
       setDisable: false,
       disablePopup: false,
       inputLoader: false,
-
+      lockUOMAndRate: false,
+      // isProcessGroup: getConfigurationKey().isProcessGroupConfigurable // UNCOMMENT IT AFTER DONE FROM BACKEND AND REMOVE BELOW CODE
+      isProcessGroup: false
     }
   }
 
@@ -582,7 +584,7 @@ class AddMachineRate extends Component {
    * @description ADDIN PROCESS ROW IN TABLE GRID
   */
   processTableHandler = () => {
-    const { processName, UOM, processGrid, } = this.state;
+    const { processName, UOM, processGrid, isProcessGroup } = this.state;
 
 
 
@@ -623,8 +625,9 @@ class AddMachineRate extends Component {
     this.setState({
       processGrid: tempArray,
       processName: [],
-      UOM: [],
-    }, () => this.props.change('MachineRate', 0));
+      UOM: isProcessGroup ? UOM : [],
+      lockUOMAndRate: isProcessGroup
+    }, () => this.props.change('MachineRate', isProcessGroup ? MachineRate : 0));
     this.setState({ DropdownChange: false })
   }
 
@@ -687,12 +690,15 @@ class AddMachineRate extends Component {
 * @description Used to handle setTechnologyLevel
 */
   resetProcessGridData = () => {
+    const { isProcessGroup, UOM } = this.state
+    const { fieldsObj } = this.props;
+    const MachineRate = fieldsObj.MachineRate
     this.setState({
       processName: [],
-      UOM: [],
+      UOM: isProcessGroup ? UOM : [],
       processGridEditIndex: '',
       isEditIndex: false,
-    }, () => () => this.props.change('MachineRate', 0));
+    }, () => () => this.props.change('MachineRate', isProcessGroup ? MachineRate : 0));
   };
 
   /**
@@ -717,7 +723,7 @@ class AddMachineRate extends Component {
   * @description DELETE ROW ENTRY FROM TABLE 
   */
   deleteItem = (index) => {
-    const { processGrid } = this.state;
+    const { processGrid, UOM } = this.state;
 
     let tempData = processGrid.filter((item, i) => {
       if (i === index) {
@@ -726,7 +732,11 @@ class AddMachineRate extends Component {
       return true;
     });
 
-    this.setState({ processGrid: tempData })
+    this.setState({
+      processGrid: tempData,
+      lockUOMAndRate: tempData.length === 0 ? false : true,
+      UOM: tempData.length === 0 ? [] : UOM
+    }, () => this.props.change('MachineRate', tempData.length === 0 ? 0 : this.props.fieldsObj.MachineRate))
     this.setState({ DropdownChange: false })
   }
 
@@ -959,6 +969,7 @@ class AddMachineRate extends Component {
           Attachements: updatedFiles,
           IsForcefulUpdated: true,
           EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD'),
+          MachineProcessGroup: this.props.processGroupApiData
         }
 
 
@@ -1037,6 +1048,7 @@ class AddMachineRate extends Component {
         Remark: remarks,
         Attachements: files,
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
+        MachineProcessGroup: this.props.processGroupApiData
       }
 
 
@@ -1195,7 +1207,7 @@ class AddMachineRate extends Component {
   */
   render() {
     const { handleSubmit, AddAccessibility, EditAccessibility, initialConfiguration, } = this.props;
-    const { isEditFlag, isOpenMachineType, isOpenProcessDrawer, IsCopied, isViewFlag, isViewMode, setDisable, disablePopup } = this.state;
+    const { isEditFlag, isOpenMachineType, isOpenProcessDrawer, IsCopied, isViewFlag, isViewMode, setDisable, disablePopup, lockUOMAndRate } = this.state;
     const filterList = (inputValue) => {
       let tempArr = []
 
@@ -1518,7 +1530,7 @@ class AddMachineRate extends Component {
                             //required={true}
                             handleChangeDescription={this.handleUOM}
                             valueDescription={this.state.UOM}
-                            disabled={isViewMode}
+                            disabled={(isViewMode || lockUOMAndRate)}
                           />
                         </Col>
                         <Col md="3">
@@ -1531,7 +1543,7 @@ class AddMachineRate extends Component {
                             component={renderText}
                             onChange={this.handleMachineRate}
                             //required={true}
-                            disabled={isViewMode}
+                            disabled={(isViewMode || lockUOMAndRate)}
                             className=" "
                             customClassName=" withBorder"
                           />
@@ -1614,15 +1626,18 @@ class AddMachineRate extends Component {
 
                         </Col>
                       </Row>
-                      <Row>
-                        <Col md="12" className='mt-2'>
-                          <HeaderTitle
-                            title={'Process Group:'} />
-                        </Col>
-                        <Col md="12">
-                          <ProcessGroup isViewFlag={isViewFlag} processListing={this.state.processGrid} isViewMode={isViewMode} />
-                        </Col>
-                      </Row>
+                      {
+                        this.state.isProcessGroup &&
+                        <Row>
+                          <Col md="12" className='mt-2'>
+                            <HeaderTitle
+                              title={'Process Group:'} />
+                          </Col>
+                          <Col md="12">
+                            <ProcessGroup isViewFlag={isViewFlag} processListing={this.state.processGrid} isViewMode={isViewMode} />
+                          </Col>
+                        </Row>
+                      }
 
                       <Row>
                         <Col md="12" >
@@ -1816,7 +1831,7 @@ function mapStateToProps(state) {
   const fieldsObj = selector(state, 'MachineNumber', 'MachineName', 'TonnageCapacity', 'MachineRate', 'Description');
 
   const { plantList, technologySelectList, plantSelectList, filterPlantList, UOMSelectList, } = comman;
-  const { machineTypeSelectList, processSelectList, machineData, loading } = machine;
+  const { machineTypeSelectList, processSelectList, machineData, loading, processGroupApiData } = machine;
   const { vendorListByVendorType } = material;
   const { initialConfiguration, } = auth;
 
@@ -1836,7 +1851,7 @@ function mapStateToProps(state) {
 
   return {
     vendorListByVendorType, plantList, technologySelectList, plantSelectList, filterPlantList, UOMSelectList,
-    machineTypeSelectList, processSelectList, fieldsObj, machineData, initialValues, loading, initialConfiguration,
+    machineTypeSelectList, processSelectList, fieldsObj, machineData, initialValues, loading, initialConfiguration, processGroupApiData
   }
 
 }

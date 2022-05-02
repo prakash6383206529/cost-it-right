@@ -1,33 +1,33 @@
-// import React, { useEffect, useState } from 'react';
-import { EMPTY_DATA } from '../../config/constants';
-import { Field } from "redux-form";
-import NoContentFound from '../common/NoContentFound';
+import React, { useMemo, useState } from 'react';
 import { SearchableSelectHookForm, TextFieldHookForm } from '../layout/HookFormInputs';
 import { Col, Row } from 'reactstrap';
 import { useForm, Controller } from "react-hook-form";
 import { AgGridReact } from 'ag-grid-react';
-import React, { useMemo, useState } from 'react';
-import { renderMultiSelectField, renderText } from "../../components/layout/FormInputs";
-import { checkWhiteSpaces, maxLength80 } from '../../helper';
-
-const gridOptions = {};
-
-const rowSpan = (params) => {
-    var ProcessGroup = params.data.ProcessGroup;
-    if (ProcessGroup === 'ABC') {
-        return 2;
-    } else {
-        return 1;
-    }
-};
+import _ from 'lodash'
+import Toaster from '../common/Toaster';
+import { useDispatch, useSelector } from 'react-redux';
+import { setGroupProcessList } from './actions/MachineMaster';
 
 export const ProcessGroup = (props) => {
 
-    const { register, control, formState: { errors }, getValues } = useForm({
+    const { register, control, formState: { errors }, getValues, setValue } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
     })
+    const dispatch = useDispatch()
+
     const [rowData, setRowData] = useState([]);
+    const [apiData, setApiData] = useState([])
+    const { processGroupApiData } = useSelector(state => state.machine)
+    const rowSpan = (params) => {
+
+        var ProcessGroup = params.data.ProcessGroup;
+        if (ProcessGroup === getValues('groupName')) {
+            return 2;
+        } else {
+            return 1;
+        }
+    };
     const [columnDefs, setColumnDefs] = useState([
         {
             field: 'GroupName',
@@ -40,7 +40,6 @@ export const ProcessGroup = (props) => {
         { field: 'ProcessName' },
 
     ]);
-
     const [selectedProcess, setSelectedProcess] = useState([])
     const defaultColDef = useMemo(() => {
         return {
@@ -50,6 +49,7 @@ export const ProcessGroup = (props) => {
     }, []);
 
 
+
     const onGridReady = (params) => {
         params.api.sizeColumnsToFit();
         // slected row 1 time
@@ -57,21 +57,37 @@ export const ProcessGroup = (props) => {
     };
     const handleProcess = () => {
         const processName = getValues('process')
-        console.log('processName: ', processName);
         setSelectedProcess([...selectedProcess, { ProcessName: processName.label, ProcessId: processName.value }])
+        setValue('process', {})
+    }
 
+    const resetHandler = () => {
+        setValue('groupName', '')
+        setValue('process', '')
+        setSelectedProcess([])
     }
 
     const processTableHandler = () => {
+        const groupName = getValues('groupName')
+        const data = _.find(rowData, ['GroupName', groupName])
 
+        if (data !== undefined) {
+            return Toaster.warning('This group name is already added')
+        }
+        let processList = []
         let temp = selectedProcess && selectedProcess.map((item, index) => {
+            processList.push(item.ProcessId)
             if (index === 0) {
-                return { GroupName: getValues('groupName'), ProcessName: item.ProcessName, ProcessId: item.ProcessId }
+                return { GroupName: groupName, ProcessName: item.ProcessName, ProcessId: item.ProcessId }
             } else {
                 return { GroupName: '', ProcessName: item.ProcessName, ProcessId: item.ProcessId }
             }
         })
-        setRowData([...rowData, temp])
+        let obj = { ProcessGroupName: groupName, ProcessIdList: processList }
+        dispatch(setGroupProcessList([...processGroupApiData, obj]))
+        setApiData([...apiData, obj])
+        setRowData([...rowData, ...temp])
+        resetHandler()
     }
 
     const renderListing = (label) => {
@@ -81,7 +97,7 @@ export const ProcessGroup = (props) => {
                 return { label: item.processName, value: item.ProcessId }
             })
         }
-        console.log(temp, "temp");
+
         return temp
     }
     return (
@@ -129,7 +145,7 @@ export const ProcessGroup = (props) => {
                     <div className='border process-group'>
                         {
                             selectedProcess && selectedProcess.map(item =>
-                                <span className='process-name'>{item.Text}</span>
+                                <span className='process-name'>{item.ProcessName}</span>
                             )
                         }
                     </div>
@@ -149,7 +165,7 @@ export const ProcessGroup = (props) => {
                                     type="button"
                                     //   disabled={isViewMode}
                                     className={`${props.isViewFlag ? 'disabled-button reset-btn' : 'reset-btn'} pull-left`}
-                                // onClick={this.resetProcessGridData}
+                                    onClick={resetHandler}
                                 >Reset</button>
                             </>
                         }
