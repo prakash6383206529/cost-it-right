@@ -4,7 +4,7 @@ import RMDomesticListing from '../../masters/material-master/RMDomesticListing';
 import RMImportListing from '../../masters/material-master/RMImportListing';
 import { Row, Col } from 'reactstrap'
 import { Controller, useForm } from 'react-hook-form';
-import { getSelectListOfMasters, getTokenSelectListAPI, setKeyForAPICallSimulation, setMasterForSimulation, setTechnologyForSimulation, setTokenCheckBoxValue, setTokenForSimulation } from '../actions/Simulation';
+import { getSelectListOfMasters, getTokenSelectListAPI, setMasterForSimulation, setTechnologyForSimulation, setTokenCheckBoxValue, setTokenForSimulation } from '../actions/Simulation';
 import { useDispatch, useSelector } from 'react-redux';
 import SimulationUploadDrawer from './SimulationUploadDrawer';
 import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, RM_MASTER_ID } from '../../../config/constants';
@@ -103,7 +103,6 @@ function Simulation(props) {
         dispatch(setMasterForSimulation(value))
         if (value !== '' && (Object.keys(getValues('Technology')).length > 0 || !getTechnologyForSimulation.includes(value.value))) {
             setSelectionForListingMasterAPI('Master')
-            dispatch(setKeyForAPICallSimulation('Master'))
             setShowTokenDropdown(true)
             setShowMasterList(true)
             let obj = {
@@ -126,7 +125,6 @@ function Simulation(props) {
         dispatch(setTokenForSimulation([]))
         setValue('token', '')
         setSelectionForListingMasterAPI('Master')
-        dispatch(setKeyForAPICallSimulation('Master'))
         setmasterSummaryDrawerState(false)
         setTimeout(() => {
             dispatch(setTechnologyForSimulation(value))
@@ -332,7 +330,6 @@ function Simulation(props) {
         }, 200);
 
         setSelectionForListingMasterAPI('Master')
-        dispatch(setKeyForAPICallSimulation('Master'))
         setTimeout(() => {
             dispatch(setTechnologyForSimulation(technology))
         }, 200);
@@ -788,7 +785,6 @@ function Simulation(props) {
     const callAPIOnClick = () => {
         setloader(true)
         setSelectionForListingMasterAPI('Combined')
-        dispatch(setKeyForAPICallSimulation('Combined'))
         setShowMasterList(false)
         setEditWarning(true);
         setTimeout(() => {

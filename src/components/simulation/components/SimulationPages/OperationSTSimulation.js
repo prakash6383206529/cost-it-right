@@ -17,7 +17,7 @@ import Simulation from '../Simulation';
 import debounce from 'lodash.debounce';
 import { TextFieldHookForm } from '../../../layout/HookFormInputs';
 import { VBC, ZBC } from '../../../../config/constants';
-import { runVerifySurfaceTreatmentSimulation, setKeyForAPICallSimulation } from '../../actions/Simulation';
+import { runVerifySurfaceTreatmentSimulation } from '../../actions/Simulation';
 import VerifySimulation from '../VerifySimulation';
 
 const gridOptions = {
@@ -158,7 +158,6 @@ function OperationSTSimulation(props) {
 
 
     const cancel = () => {
-        dispatch(setKeyForAPICallSimulation('Master'))
         list && list.map((item) => {
             item.NewRate = undefined
             return null
