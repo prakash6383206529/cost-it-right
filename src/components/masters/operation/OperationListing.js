@@ -5,7 +5,7 @@ import { Row, Col, } from 'reactstrap';
 import { focusOnError } from "../../layout/FormInputs";
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { EMPTY_DATA, OPERATIONS, RMDOMESTIC, SURFACETREATMENT } from '../../../config/constants';
+import { EMPTY_DATA, OPERATIONS, SURFACETREATMENT } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import {
     getOperationsDataList, deleteOperationAPI, getOperationSelectList, getVendorWithVendorCodeSelectList, getTechnologySelectList,
@@ -18,7 +18,7 @@ import BulkUpload from '../../massUpload/BulkUpload';
 import { ADDITIONAL_MASTERS, OPERATION, OperationMaster, OPERATIONS_ID } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
 import { loggedInUserId, userDetails } from '../../../helper/auth';
-import { getFilteredData, CheckApprovalApplicableMaster } from '../../../helper'
+import { getFilteredData } from '../../../helper'
 import { costingHeadObjs, OPERATION_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
 import DayTime from '../../common/DayTimeWrapper'
@@ -71,7 +71,7 @@ class OperationListing extends Component {
         this.props.getTechnologySelectList(() => { })
         this.props.getOperationSelectList(() => { })
         this.props.getVendorWithVendorCodeSelectList()
-        if (this.props.isSimulation && this.props.selectionForListingMasterAPI === 'Combined') {
+        if (this.props.isSimulation && this.props?.selectionForListingMasterAPI === 'Combined') {
             this.props?.changeSetLoader(true)
             this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, OPERATIONS, (res) => {
                 this.props?.changeSetLoader(false)
@@ -706,7 +706,7 @@ class OperationListing extends Component {
                         </Row>
                     </form>
 
-                    <div className={`ag-grid-wrapper ${this.props.isSimulation ? 'simulation-height' : 'height-width-wrapper'} ${this.getFilterOperationData() && this.getFilterOperationData()?.length <= 0 ? "overlay-contain" : ""}`}>
+                    <div className={`ag-grid-wrapper ${this.props.isSimulation ? 'simulation-height' : 'height-width-wrapper'} ${this.getFilterOperationData && this.getFilterOperationData?.length <= 0 ? "overlay-contain" : ""}`}>
                         <div className={`ag-theme-material ${(this.state.isLoader && !this.props.isMasterSummaryDrawer) && "max-loader-height"}`}>
                             <AgGridReact
                                 defaultColDef={defaultColDef}

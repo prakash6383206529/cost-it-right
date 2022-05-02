@@ -166,7 +166,9 @@ class AddInterestRate extends Component {
     } else {
       this.setState({ ICCApplicability: [], })
     }
-    this.setState({ isDataChanged: false })
+    if (this.state.isEditFlag) {
+      this.setState({ isDataChanged: true })
+    }
   };
 
   /**
@@ -179,7 +181,9 @@ class AddInterestRate extends Component {
     } else {
       this.setState({ PaymentTermsApplicability: [], })
     }
-    this.setState({ isDataChanged: true })
+    if (this.state.isEditFlag) {
+      this.setState({ isDataChanged: true })
+    }
   };
 
   /**
