@@ -152,12 +152,6 @@ export default function SimulationReducer(state = initialState, action) {
                 loading: false,
                 tokenCheckBoxValue: action.payload
             }
-        case SET_KEY_FOR_API_CALLS:
-            return {
-                ...state,
-                loading: false,
-                keyForAPICall: action.payload
-            }
         case SET_TOKEN_FOR_SIMULATION:
             return {
                 ...state,
