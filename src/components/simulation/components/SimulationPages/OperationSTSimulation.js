@@ -16,14 +16,14 @@ import Simulation from '../Simulation';
 import debounce from 'lodash.debounce';
 import { TextFieldHookForm } from '../../../layout/HookFormInputs';
 import { VBC, ZBC } from '../../../../config/constants';
-import { runVerifySurfaceTreatmentSimulation } from '../../actions/Simulation';
+import { runVerifySurfaceTreatmentSimulation, setKeyForAPICallSimulation } from '../../actions/Simulation';
 import VerifySimulation from '../VerifySimulation';
 
 const gridOptions = {
 
 };
 function OperationSTSimulation(props) {
-    const { list, isbulkUpload, rowCount, isImpactedMaster, masterId, lastRevision, tokenForMultiSimulation, isOperationMaster } = props
+    const { list, isbulkUpload, rowCount, isImpactedMaster, masterId, lastRevision, tokenForMultiSimulation, setSelectionForListingMaster } = props
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')
@@ -157,6 +157,7 @@ function OperationSTSimulation(props) {
 
 
     const cancel = () => {
+        dispatch(setKeyForAPICallSimulation('Master'))
         list && list.map((item) => {
             item.NewRate = undefined
             return null
