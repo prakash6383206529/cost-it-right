@@ -41,6 +41,7 @@ import imgRedcross from '../../../assests/images/red-cross.png'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { masterFinalLevelUser } from '../actions/Material'
 import MasterSendForApproval from '../MasterSendForApproval'
+import { ProcessGroup } from '../masterUtil';
 
 
 
@@ -113,7 +114,10 @@ class AddMoreDetails extends Component {
       UOM: [],
       effectiveDate: '',
       showPopup: false,
-      updatedObj: {}
+      updatedObj: {},
+      lockUOMAndRate: false,
+      // isProcessGroup: getConfigurationKey().isProcessGroupConfigurable // UNCOMMENT IT AFTER DONE FROM BACKEND AND REMOVE BELOW CODE
+      isProcessGroup: false
     }
   }
 
@@ -3220,6 +3224,18 @@ class AddMoreDetails extends Component {
                         }
                       </Row>
 
+                      {
+                        this.state.isProcessGroup &&
+                        <Row>
+                          <Col md="12" className='mt-2'>
+                            <HeaderTitle
+                              title={'Process Group:'} />
+                          </Col>
+                          <Col md="12">
+                            <ProcessGroup isViewFlag={this.state.isViewFlag} processListing={this.state.processGrid} isViewMode={this.state.isViewMode} />
+                          </Col>
+                        </Row>
+                      }
                       <Row>
                         <Col md="12" className="filter-block">
                           <div className="mb-2">

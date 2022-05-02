@@ -12,10 +12,11 @@ import {
     GET_PROCESSES_LIST_SUCCESS,
     GET_MACHINE_LIST_SUCCESS,
     GET_MACHINE_APPROVAL_LIST,
+    SET_PROCESS_GROUP_FOR_API,
 } from '../../../config/constants';
 
 const initialState = {
-
+    processGroupApiData: []
 };
 
 export default function MachineReducer(state = initialState, action) {
@@ -105,6 +106,11 @@ export default function MachineReducer(state = initialState, action) {
                 error: true,
                 machineApprovalList: action.payload
             };
+        case SET_PROCESS_GROUP_FOR_API:
+            return {
+                ...state,
+                processGroupApiData: action.payload
+            }
         default:
             return state;
     }
