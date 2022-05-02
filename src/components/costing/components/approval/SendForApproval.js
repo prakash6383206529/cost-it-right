@@ -486,10 +486,7 @@ const SendForApproval = (props) => {
 
   const deleteFile = (FileId, OriginalFileName) => {
     if (FileId != null) {
-      let deleteData = {
-        Id: FileId,
-        DeletedBy: loggedInUserId(),
-      };
+
       // dispatch(
       //   fileDeleteCosting(deleteData, (res) => {
       //     Toaster.success("File has been deleted successfully.");
@@ -508,7 +505,6 @@ const SendForApproval = (props) => {
   };
 
   const Preview = ({ meta }) => {
-    const { name, percent, status } = meta;
     return (
       <span
         style={{
@@ -586,7 +582,7 @@ const SendForApproval = (props) => {
                               control={control}
                               rules={{ required: true }}
                               register={register}
-                              defaultValue={data.reason != "" ? { label: data.reason, value: data.reasonId } : ""}
+                              defaultValue={data.reason !== "" ? { label: data.reason, value: data.reasonId } : ""}
                               options={renderDropdownListing("Reason")}
                               mandatory={true}
                               handleChange={(e) => {
