@@ -4,7 +4,7 @@ import RMDomesticListing from '../../masters/material-master/RMDomesticListing';
 import RMImportListing from '../../masters/material-master/RMImportListing';
 import { Row, Col } from 'reactstrap'
 import { Controller, useForm } from 'react-hook-form';
-import { getListingForSimulationCombined, getSelectListOfMasters, getTokenSelectListAPI, setMasterForSimulation, setTechnologyForSimulation } from '../actions/Simulation';
+import { getListingForSimulationCombined, getSelectListOfMasters, getTokenSelectListAPI, setMasterForSimulation, setTechnologyForSimulation, setTokenCheckBoxValue } from '../actions/Simulation';
 import { useDispatch, useSelector } from 'react-redux';
 import SimulationUploadDrawer from './SimulationUploadDrawer';
 import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, RM_MASTER_ID } from '../../../config/constants';
@@ -46,7 +46,7 @@ function Simulation(props) {
         reValidateMode: 'onChange',
     })
 
-    const { selectedMasterForSimulation, selectedTechnologyForSimulation, getTokenSelectList } = useSelector(state => state.simulation)
+    const { selectedMasterForSimulation, selectedTechnologyForSimulation, getTokenSelectList, tokenCheckBoxValue } = useSelector(state => state.simulation)
 
     const [master, setMaster] = useState({})
     const [technology, setTechnology] = useState({})
@@ -57,13 +57,11 @@ function Simulation(props) {
     const [tableData, setTableData] = useState([])
     const [rowCount, setRowCount] = useState({})
     const [editWarning, setEditWarning] = useState(true)
-    const [onLoad, setOnLoad] = useState(false)
     const [filterStatus, setFilterStatus] = useState('')
     const [token, setToken] = useState([])
     const [showTokenDropdown, setShowTokenDropdown] = useState(false)
     const [selectionForListingMasterAPI, setSelectionForListingMasterAPI] = useState('')
     const [loader, setloader] = useState(false)
-    const [tokenCheckBox, setTokenCheckBox] = useState(false)
     const [masterSummaryDrawerState, setmasterSummaryDrawerState] = useState(props.isCancelClicked)
 
     const dispatch = useDispatch()
@@ -212,7 +210,7 @@ function Simulation(props) {
     }
 
     const changeTokenCheckBox = (value) => {
-        setTokenCheckBox(value)
+        dispatch(setTokenCheckBoxValue(value))
     }
 
     const renderModule = (value) => {
@@ -763,9 +761,9 @@ function Simulation(props) {
             case EXCHNAGERATE:
                 return <ERSimulation cancelEditPage={cancelEditPage} list={exchangeRateDataList} technology={technology.label} master={master.label} tokenForMultiSimulation={tempObject} />
             case SURFACETREATMENT:
-                return <OperationSTSimulation cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} tokenForMultiSimulation={tempObject} />
+                return <OperationSTSimulation cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} tokenForMultiSimulation={tempObject} changeTokenCheckBox={changeTokenCheckBox} />
             case OPERATIONS:
-                return <OperationSTSimulation isOperation={true} cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} tokenForMultiSimulation={tempObject} />
+                return <OperationSTSimulation isOperation={true} cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} tokenForMultiSimulation={tempObject} changeTokenCheckBox={changeTokenCheckBox} />
             case MACHINERATE:
                 return <MRSimulation isOperation={true} cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} tokenForMultiSimulation={tempObject} />
             case BOPDOMESTIC:
@@ -880,7 +878,7 @@ function Simulation(props) {
                                 </div>
                             }
 
-                            {(token?.length !== 0 && token !== null && tokenCheckBox) && <button className='user-btn ml-2' onClick={callAPIOnClick}>
+                            {(token?.length !== 0 && token !== null && tokenCheckBoxValue) && <button className='user-btn ml-2' onClick={callAPIOnClick}>
                                 <div className='save-icon'></div>
                             </button>}
                         </Col>

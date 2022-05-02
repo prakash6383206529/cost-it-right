@@ -408,8 +408,8 @@ function ApproveRejectDrawer(props) {
                 if (res && res.status && (res.status === 200 || res.status === 204)) {
                   Toaster.success('Approval pushed successfully.')
                 }
-                props.closeDrawer('', 'Push')
               }))
+              props.closeDrawer('', 'submit')
               // setOpenPushButton(true)
 
             } else {
