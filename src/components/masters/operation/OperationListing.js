@@ -638,7 +638,6 @@ class OperationListing extends Component {
             hyphenFormatter: this.hyphenFormatter
         };
 
-
         return (
             <div className="container-fluid">
                 {(this.state.isLoader && !this.props.isMasterSummaryDrawer) && <LoaderCustom />}
@@ -706,7 +705,7 @@ class OperationListing extends Component {
                         </Row>
                     </form>
 
-                    <div className={`ag-grid-wrapper ${this.props.isSimulation ? 'simulation-height' : 'height-width-wrapper'} ${this.getFilterOperationData() && this.getFilterOperationData()?.length <= 0 ? "overlay-contain" : ""}`}>
+                    <div className={`ag-grid-wrapper ${this.props.isSimulation ? 'simulation-height' : 'height-width-wrapper'} ${this.getFilterOperationData && this.getFilterOperationData?.length <= 0 ? "overlay-contain" : ""}`}>
                         <div className={`ag-theme-material ${(this.state.isLoader && !this.props.isMasterSummaryDrawer) && "max-loader-height"}`}>
                             <AgGridReact
                                 defaultColDef={defaultColDef}
