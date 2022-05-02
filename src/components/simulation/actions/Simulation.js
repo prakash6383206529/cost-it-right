@@ -1480,15 +1480,6 @@ export function setTokenCheckBoxValue(value) {
     }
 }
 
-export function setKeyForAPICallSimulation(value) {
-    return (dispatch) => {
-        dispatch({
-            type: SET_KEY_FOR_API_CALLS,
-            payload: value,
-        });
-    }
-}
-
 export function setTokenForSimulation(value) {
     return (dispatch) => {
         dispatch({
