@@ -36,6 +36,7 @@ function SurfaceTreatment(props) {
   const [surfaceTreatmentData, setSurfacTreatmenteData] = useState({})
   const [surfaceTableData, setSurfacetableData] = useState(item.CostingPartDetails.SurfaceTreatmentDetails)
   const [transportObj, setTrasportObj] = useState(item.CostingPartDetails.TransportationDetails)
+  console.log('transportObj: ', transportObj);
 
   useEffect(() => {
     setTrasportObj(item?.CostingPartDetails?.TransportationDetails)
@@ -102,13 +103,13 @@ function SurfaceTreatment(props) {
 
       if (props.IsAssemblyCalculation) {
         props.setAssemblySurfaceCost(surfaceTreatmentData.gridData, surfaceTreatmentData.Params, JSON.stringify(surfaceTreatmentData.gridData) !== JSON.stringify(surfaceTreatmentData.OldGridData) ? true : false, props.item)
-        props.setAssemblyTransportationCost(transportationObject.tempObj, transportationObject.Params, item)
+        props.setAssemblyTransportationCost(transportObj, transportationObject.Params, item)
         setTimeout(() => {
           callApi()
         }, (500));
       } else {
         props.setSurfaceCost(surfaceTreatmentData.gridData, surfaceTreatmentData.Params, JSON.stringify(surfaceTreatmentData.gridData) !== JSON.stringify(surfaceTreatmentData.OldGridData) ? true : false)
-        props.setTransportationCost(transportationObject.tempObj, transportationObject.Params)
+        props.setTransportationCost(transportObj, transportationObject.Params)
         setTimeout(() => {
           callApi()
         }, (500));
