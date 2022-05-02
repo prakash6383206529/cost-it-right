@@ -46,7 +46,6 @@ function Simulation(props) {
     })
 
     const { selectedMasterForSimulation, selectedTechnologyForSimulation, getTokenSelectList, tokenCheckBoxValue } = useSelector(state => state.simulation)
-    console.log('tokenCheckBoxValue: ', tokenCheckBoxValue);
 
     const [master, setMaster] = useState({})
     const [technology, setTechnology] = useState({})
@@ -57,7 +56,6 @@ function Simulation(props) {
     const [tableData, setTableData] = useState([])
     const [rowCount, setRowCount] = useState({})
     const [editWarning, setEditWarning] = useState(true)
-    const [onLoad, setOnLoad] = useState(false)
     const [filterStatus, setFilterStatus] = useState('')
     const [token, setToken] = useState([])
     const [showTokenDropdown, setShowTokenDropdown] = useState(false)
@@ -80,7 +78,6 @@ function Simulation(props) {
             setEditWarning(applyEditCondSimulation(getValues('Masters').value))
             setShowMasterList(true)
         }
-        setOnLoad(true)
     }, [])
 
     const masterList = useSelector(state => state.simulation.masterSelectList)
