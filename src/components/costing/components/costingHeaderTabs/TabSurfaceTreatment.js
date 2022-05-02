@@ -564,6 +564,7 @@ function TabSurfaceTreatment(props) {
         partObj.CostingPartDetails.SurfaceTreatmentCost = surfaceCost(surfaceGrid);
         partObj.CostingPartDetails.SurfaceTreatmentDetails = surfaceGrid;
         tempArr = Object.assign([...tempArr], { [0]: partObj })
+
         // STORING CALCULATED AND UPDATED COSTING VALUE IN LOCAL STORAGE
         localStorage.setItem('surfaceCostingArray', [])
         localStorage.setItem('surfaceCostingArray', JSON.stringify(tempArr))
