@@ -172,7 +172,7 @@ function AssemblySurfaceTreatment(props) {
                   DrawerToggle()
                 }}
               >
-                <div className={'fa fa-eye pr-1'}></div>Surface Tr.</button>
+                <div className={'fa fa-eye pr-1'}></div>Surface T.</button>
               :
 
               <button
