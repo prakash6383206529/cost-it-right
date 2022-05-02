@@ -103,8 +103,11 @@ function SurfaceTreatmentCost(props) {
       setGridData(tempArr)
       selectedIds(tempArr)
       dispatch(gridDataAdded(true))
+
+
     }
     setDrawerOpen(false)
+
   }
 
   /**
