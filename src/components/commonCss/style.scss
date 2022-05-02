@@ -1047,6 +1047,15 @@ button.user-btn.pull-right {
     @extend .Close;
   }
 }
+.process-name {
+  @extend .part-name;
+  .Open , .Close {
+    right: 8px;
+    top: 46%;
+    left: unset;
+  }
+  
+}
 
 // =================costing summary table page start=========================
 $sans-serif: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto;
@@ -6362,4 +6371,23 @@ left: 17rem;
       color: #333;
     }
   }
+}
+.process-wrapper {
+  li.nav-item {
+    flex: 0 0 50%;
+    max-width: 50%;
+    .nav-link {
+      border-bottom: 1px solid transparent !important;
+      border-left: 1px solid transparent !important;
+      
+    }
+  }
+}
+table.group-process-table {
+   th {
+     width: 25%;
+     &:first-child {
+       width: 32%;
+     }
+   }
 }

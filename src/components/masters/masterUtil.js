@@ -48,6 +48,11 @@ export const ProcessGroup = (props) => {
         };
     }, []);
 
+    // useEffect(() => {
+    //     fetch('https://www.ag-grid.com/example-assets/olympic-winners.json')
+    //         .then((resp) => resp.json())
+    //         .then((data) => setRowData(data));
+    // }, [])
 
 
     const onGridReady = (params) => {

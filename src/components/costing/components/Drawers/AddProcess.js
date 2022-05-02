@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useContext, } from 'react';
 import { useDispatch, useSelector, } from 'react-redux';
-import { Container, Row, Col, } from 'reactstrap';
+import { Container, Row, Col, NavItem, TabContent, TabPane, Nav, NavLink } from 'reactstrap';
 import { getProcessDrawerDataList, getProcessDrawerVBCDataList } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import NoContentFound from '../../../common/NoContentFound';
 import { EMPTY_DATA } from '../../../../config/constants';
 import Toaster from '../../../common/Toaster';
+import classnames from 'classnames';
 import Drawer from '@material-ui/core/Drawer';
 import { EMPTY_GUID, ZBC } from '../../../../config/constants';
 import LoaderCustom from '../../../common/LoaderCustom';
@@ -13,6 +14,9 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { FORGING, Ferrous_Casting, DIE_CASTING } from '../../../../config/masterData'
+import GroupProcess from './GroupProcess';
+import { ProcessGroup } from '../../../masters/masterUtil';
+
 const gridOptions = {};
 
 function AddProcess(props) {
@@ -22,6 +26,7 @@ function AddProcess(props) {
   const [gridApi, setGridApi] = useState(null);
   const [gridColumnApi, setGridColumnApi] = useState(null);
   const dispatch = useDispatch()
+  const [activeTab, setActiveTab] = useState('1');
 
   const costData = useContext(costingInfoContext)
   const { processDrawerList, CostingEffectiveDate } = useSelector(state => state.costing)
@@ -193,7 +198,11 @@ function AddProcess(props) {
     gridOptions.api.setFilterModel(null);
 
   }
-
+  const toggle = (tab) => {
+    if (activeTab !== tab) {
+      setActiveTab(tab)
+    }
+  }
   /**
   * @method render
   * @description Renders the component
@@ -218,65 +227,102 @@ function AddProcess(props) {
                   </div>
                 </Col>
               </Row>
+              <Row>
+                <Col>
+                  <Nav tabs className="subtabs cr-subtabs-head process-wrapper">
+                    <NavItem>
+                      <NavLink
+                        className={classnames({ active: activeTab === '1' })}
+                        onClick={() => {
+                          toggle('1')
+                        }}>
+                        Process
+                      </NavLink>
+                    </NavItem>
+                    <NavItem>
+                      <NavLink
+                        className={classnames({ active: activeTab === '2' })}
+                        onClick={() => {
+                          toggle('2')
+                        }}  >
+                        Group Process
+                      </NavLink>
+                    </NavItem>
 
-              <Row className="mx-0">
-                <Col className="hidepage-size">
+                  </Nav>
+                  <TabContent activeTab={activeTab} className="border">
+                    {activeTab === '1' && (
+                      <TabPane tabId="1">
+                        <Row className="mx-0">
+                          <Col className="hidepage-size mt-2">
 
-                  <div className={`ag-grid-wrapper min-height-auto height-width-wrapper ${processDrawerList && processDrawerList?.length <= 0 ? "overlay-contain" : ""}`}>
-                    <div className="ag-grid-header">
-                      <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
-                      <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
-                        <div className="refresh mr-0"></div>
-                      </button>
-                    </div>
-                    <div
-                      className="ag-theme-material"
-                    >
-                      <AgGridReact
-                        style={{ height: '100%', width: '100%' }}
-                        defaultColDef={defaultColDef}
-                        floatingFilter={true}
-                        domLayout='autoHeight'
-                        // columnDefs={c}
-                        rowData={processDrawerList}
-                        pagination={true}
-                        paginationPageSize={10}
-                        onGridReady={onGridReady}
-                        gridOptions={gridOptions}
-                        loadingOverlayComponent={'customLoadingOverlay'}
-                        noRowsOverlayComponent={'customNoRowsOverlay'}
-                        noRowsOverlayComponentParams={{
-                          title: EMPTY_DATA,
-                          imagClass: 'imagClass'
-                        }}
-                        suppressRowClickSelection={true}
-                        rowSelection={'multiple'}
-                        frameworkComponents={frameworkComponents}
-                        onSelectionChanged={onRowSelect}
-                        isRowSelectable={isRowSelectable}
-                      >
-                        <AgGridColumn field="MachineRateId" hide={true}></AgGridColumn>
-                        <AgGridColumn cellClass="has-checkbox" field="ProcessName" headerName="Process Name"  ></AgGridColumn>
-                        <AgGridColumn field='Technologies' headerName='Technology'></AgGridColumn>
-                        <AgGridColumn field="MachineNumber" headerName="Machine No."></AgGridColumn>
-                        <AgGridColumn field="MachineName" headerName="Machine Name"></AgGridColumn>
-                        <AgGridColumn field="MachineTypeName" headerName="Machine Type"></AgGridColumn>
-                        <AgGridColumn field="MachineTonnage" headerName="Machine Tonnage"></AgGridColumn>
-                        <AgGridColumn field="UnitOfMeasurement" headerName="UOM"></AgGridColumn>
-                        <AgGridColumn field="MachineRate" headerName={'Machine Rate'}></AgGridColumn>
+                            <div className={`ag-grid-wrapper min-height-auto height-width-wrapper ${processDrawerList && processDrawerList?.length <= 0 ? "overlay-contain" : ""}`}>
+                              <div className="ag-grid-header">
+                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                                <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
+                                  <div className="refresh mr-0"></div>
+                                </button>
+                              </div>
+                              <div
+                                className="ag-theme-material"
+                              >
+                                <AgGridReact
+                                  style={{ height: '100%', width: '100%' }}
+                                  defaultColDef={defaultColDef}
+                                  floatingFilter={true}
+                                  domLayout='autoHeight'
+                                  // columnDefs={c}
+                                  rowData={processDrawerList}
+                                  pagination={true}
+                                  paginationPageSize={10}
+                                  onGridReady={onGridReady}
+                                  gridOptions={gridOptions}
+                                  loadingOverlayComponent={'customLoadingOverlay'}
+                                  noRowsOverlayComponent={'customNoRowsOverlay'}
+                                  noRowsOverlayComponentParams={{
+                                    title: EMPTY_DATA,
+                                    imagClass: 'imagClass'
+                                  }}
+                                  suppressRowClickSelection={true}
+                                  rowSelection={'multiple'}
+                                  frameworkComponents={frameworkComponents}
+                                  onSelectionChanged={onRowSelect}
+                                  isRowSelectable={isRowSelectable}
+                                >
+                                  <AgGridColumn field="MachineRateId" hide={true}></AgGridColumn>
+                                  <AgGridColumn cellClass="has-checkbox" field="ProcessName" headerName="Process Name"  ></AgGridColumn>
+                                  <AgGridColumn field='Technologies' headerName='Technology'></AgGridColumn>
+                                  <AgGridColumn field="MachineNumber" headerName="Machine No."></AgGridColumn>
+                                  <AgGridColumn field="MachineName" headerName="Machine Name"></AgGridColumn>
+                                  <AgGridColumn field="MachineTypeName" headerName="Machine Type"></AgGridColumn>
+                                  <AgGridColumn field="MachineTonnage" headerName="Machine Tonnage"></AgGridColumn>
+                                  <AgGridColumn field="UnitOfMeasurement" headerName="UOM"></AgGridColumn>
+                                  <AgGridColumn field="MachineRate" headerName={'Machine Rate'}></AgGridColumn>
 
-                      </AgGridReact>
-                      <div className="paging-container d-inline-block float-right">
-                        <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
-                          <option value="10" selected={true}>10</option>
-                          <option value="50">50</option>
-                          <option value="100">100</option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
+                                </AgGridReact>
+                                <div className="paging-container d-inline-block float-right">
+                                  <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
+                                    <option value="10" selected={true}>10</option>
+                                    <option value="50">50</option>
+                                    <option value="100">100</option>
+                                  </select>
+                                </div>
+                              </div>
+                            </div>
+                          </Col>
+                        </Row>
+                      </TabPane>
+                    )}
+                    {activeTab === '2' && (
+                      <TabPane tabId="2">
+                        <GroupProcess />
+                      </TabPane>
+                    )}
+
+                  </TabContent>
                 </Col>
               </Row>
+
 
               <Row className="sf-btn-footer no-gutters justify-content-between mx-0">
                 <div className="col-sm-12 text-left px-3 d-flex justify-content-end">
