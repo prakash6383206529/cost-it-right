@@ -11,7 +11,7 @@ import { getTechnologySelectList, getPlantSelectListByType, getPlantBySupplier, 
 import { getVendorListByVendorType, masterFinalLevelUser } from '../actions/Material';
 import {
   createMachine, updateMachine, updateMachineDetails, getMachineTypeSelectList, getProcessesSelectList, fileUploadMachine, fileDeleteMachine,
-  checkAndGetMachineNumber, getMachineData,
+  checkAndGetMachineNumber, getMachineData, getProcessGroupByMachineId
 } from '../actions/MachineMaster';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
@@ -94,8 +94,8 @@ class AddMachineRate extends Component {
       disablePopup: false,
       inputLoader: false,
       lockUOMAndRate: false,
-      // isProcessGroup: getConfigurationKey().isProcessGroupConfigurable // UNCOMMENT IT AFTER DONE FROM BACKEND AND REMOVE BELOW CODE
-      isProcessGroup: false
+      // isProcessGroup: getConfigurationKey().IsMachineProcessGroup // UNCOMMENT IT AFTER DONE FROM BACKEND AND REMOVE BELOW CODE
+      isProcessGroup: true
     }
   }
 
@@ -242,6 +242,7 @@ class AddMachineRate extends Component {
         if (res && res.data && res.data.Result) {
 
           const Data = res.data.Data;
+          this.props.getProcessGroupByMachineId(Data.MachineId, res => { })
           this.setState({ DataToChange: Data })
           this.props.getVendorListByVendorType(Data.IsVendor, () => { this.setState({ inputLoader: false }) })
           if (Data.IsVendor) {
@@ -1608,7 +1609,7 @@ class AddMachineRate extends Component {
                               title={'Process Group:'} />
                           </Col>
                           <Col md="12">
-                            <ProcessGroup isViewFlag={isViewFlag} processListing={this.state.processGrid} isViewMode={isViewMode} />
+                            <ProcessGroup isViewFlag={isViewFlag} processListing={this.state.processGrid} isListing={false} isViewMode={isViewMode} />
                           </Col>
                         </Row>
                       }
@@ -1853,6 +1854,7 @@ export default connect(mapStateToProps, {
   updateMachineDetails,
   masterFinalLevelUser,
   getMachineData,
+  getProcessGroupByMachineId
 })(reduxForm({
   form: 'AddMachineRate',
   enableReinitialize: true,

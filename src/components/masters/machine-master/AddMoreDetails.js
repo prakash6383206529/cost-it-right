@@ -12,7 +12,7 @@ import { getTechnologySelectList, getPlantSelectListByType, getPlantBySupplier, 
 import { getVendorListByVendorType, } from '../actions/Material';
 import {
   createMachineDetails, updateMachineDetails, getMachineDetailsData, getMachineTypeSelectList, getProcessesSelectList,
-  getFuelUnitCost, getLabourCost, getPowerCostUnit, fileUploadMachine, fileDeleteMachine,
+  getFuelUnitCost, getLabourCost, getPowerCostUnit, fileUploadMachine, fileDeleteMachine, getProcessGroupByMachineId
 } from '../actions/MachineMaster';
 import { getLabourTypeByMachineTypeSelectList } from '../actions/Labour';
 import { getFuelComboData, } from '../actions/Fuel';
@@ -35,10 +35,7 @@ import EfficiencyDrawer from './EfficiencyDrawer';
 import DayTime from '../../common/DayTimeWrapper'
 import { Loader } from '../../common/Loader';
 import { AcceptableMachineUOM } from '../../../config/masterData'
-import saveImg from '../../../assests/images/check.png'
-import cancelImg from '../../../assests/images/times.png'
 import imgRedcross from '../../../assests/images/red-cross.png'
-import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { masterFinalLevelUser } from '../actions/Material'
 import MasterSendForApproval from '../MasterSendForApproval'
 import { ProcessGroup } from '../masterUtil';
@@ -116,8 +113,8 @@ class AddMoreDetails extends Component {
       showPopup: false,
       updatedObj: {},
       lockUOMAndRate: false,
-      // isProcessGroup: getConfigurationKey().isProcessGroupConfigurable // UNCOMMENT IT AFTER DONE FROM BACKEND AND REMOVE BELOW CODE
-      isProcessGroup: false
+      // isProcessGroup: getConfigurationKey().IsMachineProcessGroup // UNCOMMENT IT AFTER DONE FROM BACKEND AND REMOVE BELOW CODE
+      isProcessGroup: true
     }
   }
 
@@ -238,6 +235,7 @@ class AddMoreDetails extends Component {
 
           const Data = res.data.Data;
 
+          this.props.getProcessGroupByMachineId(Data.MachineId, res => { })
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
 
           this.props.getLabourTypeByMachineTypeSelectList(Data.MachineTypeId ? Data.MachineTypeId : 0, () => { })
@@ -249,7 +247,7 @@ class AddMoreDetails extends Component {
             // let technologyArray = Data && Data.Technology.map((item) => ({ Text: item.Technology, Value: item.TechnologyId }))
             const plantObj = Data.Plant && plantSelectList && plantSelectList.find(item => item.Value === Data.Plant[0].PlantId)
             const machineTypeObj = machineTypeSelectList && machineTypeSelectList.find(item => Number(item.Value) === Data.MachineTypeId)
-            const shiftObj = ShiftTypeSelectList && ShiftTypeSelectList.find(item => item.Value == Data.WorkingShift)
+            const shiftObj = ShiftTypeSelectList && ShiftTypeSelectList.find(item => Number(item.Value) === Number(Data.WorkingShift))
             const depreciationObj = DepreciationTypeSelectList && DepreciationTypeSelectList.find(item => item.Value === Data.DepreciationType)
             const fuelObj = fuelComboSelectList && fuelComboSelectList.Fuels && fuelComboSelectList.Fuels.find(item => item.Value === Data.FuleId)
 
@@ -1191,7 +1189,7 @@ class AddMoreDetails extends Component {
    * @description ADDING PROCESS IN PROCESS TABLE 
   */
   processTableHandler = () => {
-    const { processName, UOM, processGrid, } = this.state;
+    const { processName, UOM, processGrid, isProcessGroup } = this.state;
     const { fieldsObj } = this.props
     const OutputPerHours = this.state.UOM.label === HOUR ? 0 : fieldsObj.OutputPerHours
 
@@ -1242,11 +1240,12 @@ class AddMoreDetails extends Component {
     this.setState({
       processGrid: tempArray,
       processName: [],
-      UOM: [],
+      UOM: isProcessGroup ? UOM : [],
+      lockUOMAndRate: isProcessGroup
     }, () => {
-      this.props.change('OutputPerHours', 0)
-      this.props.change('OutputPerYear', 0)
-      this.props.change('MachineRate', 0)
+      this.props.change('OutputPerHours', isProcessGroup ? OutputPerHours : 0)
+      this.props.change('OutputPerYear', isProcessGroup ? OutputPerYear : 0)
+      this.props.change('MachineRate', isProcessGroup ? MachineRate : 0)
     });
   }
 
@@ -1326,15 +1325,18 @@ class AddMoreDetails extends Component {
   * @description RESET PROCESS TABIE GRID
   */
   resetProcessGridData = () => {
+    const { isProcessGroup, UOM } = this.state
+    const { fieldsObj } = this.props;
+
     this.setState({
       processName: [],
-      UOM: [],
+      UOM: isProcessGroup ? UOM : [],
       processGridEditIndex: '',
       isEditIndex: false,
     }, () => {
-      this.props.change('OutputPerHours', 0)
-      this.props.change('OutputPerYear', 0)
-      this.props.change('MachineRate', 0)
+      this.props.change('OutputPerHours', isProcessGroup ? fieldsObj.OutputPerHours : 0)
+      this.props.change('OutputPerYear', isProcessGroup ? fieldsObj.OutputPerYear : 0)
+      this.props.change('MachineRate', isProcessGroup ? fieldsObj.MachineRate : 0)
     });
   };
 
@@ -1363,7 +1365,8 @@ class AddMoreDetails extends Component {
   * @description used to Reset form
   */
   deleteItem = (index) => {
-    const { processGrid } = this.state;
+    const { processGrid, UOM } = this.state;
+    const { fieldsObj } = this.props;
 
     let tempData = processGrid.filter((item, i) => {
       if (i === index) {
@@ -1373,7 +1376,13 @@ class AddMoreDetails extends Component {
     });
 
     this.setState({
-      processGrid: tempData
+      processGrid: tempData,
+      lockUOMAndRate: tempData.length === 0 ? false : true,
+      UOM: tempData.length === 0 ? [] : UOM
+    }, () => {
+      this.props.change('OutputPerHours', tempData.length > 0 ? fieldsObj.OutputPerHours : 0)
+      this.props.change('OutputPerYear', tempData.length > 0 ? fieldsObj.OutputPerYear : 0)
+      this.props.change('MachineRate', tempData.length > 0 ? fieldsObj.MachineRate : 0)
     })
   }
 
@@ -1585,6 +1594,7 @@ class AddMoreDetails extends Component {
       VendorPlant: [],
       IsForcefulUpdated: true,
       EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
+      MachineProcessGroup: this.props.processGroupApiData
     }
 
     if (isEditFlag && this.state.isFinalApprovar) {               //editDetails.isIncompleteMachine &&
@@ -1682,6 +1692,7 @@ class AddMoreDetails extends Component {
         Attachements: files,
         VendorPlant: [],
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
+        MachineProcessGroup: this.props.processGroupApiData
       }
 
 
@@ -3108,7 +3119,7 @@ class AddMoreDetails extends Component {
                                 //required={true}
                                 handleChangeDescription={this.handleUOM}
                                 valueDescription={this.state.UOM}
-                                disabled={false}
+                                disabled={this.state.lockUOMAndRate}
                               />
                             </Col>
                             {
@@ -3124,7 +3135,7 @@ class AddMoreDetails extends Component {
                                     validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
                                     component={renderText}
                                     //required={true}
-                                    disabled={false}
+                                    disabled={this.state.lockUOMAndRate}
                                     className=" "
                                     customClassName="withBorder"
                                   />
@@ -3232,7 +3243,7 @@ class AddMoreDetails extends Component {
                               title={'Process Group:'} />
                           </Col>
                           <Col md="12">
-                            <ProcessGroup isViewFlag={this.state.isViewFlag} processListing={this.state.processGrid} isViewMode={this.state.isViewMode} />
+                            <ProcessGroup isViewFlag={this.state.isViewFlag} processListing={this.state.processGrid} isViewMode={this.state.isViewMode} isListing={false} />
                           </Col>
                         </Row>
                       }
@@ -3412,7 +3423,7 @@ function mapStateToProps(state) {
 
   const { technologySelectList, plantSelectList, UOMSelectList,
     ShiftTypeSelectList, DepreciationTypeSelectList, } = comman;
-  const { machineTypeSelectList, processSelectList, machineData, loading } = machine;
+  const { machineTypeSelectList, processSelectList, machineData, loading, processGroupApiData } = machine;
   const { labourTypeByMachineTypeSelectList } = labour;
   const { vendorListByVendorType } = material;
   const { fuelComboSelectList } = fuel;
@@ -3470,7 +3481,7 @@ function mapStateToProps(state) {
   return {
     vendorListByVendorType, technologySelectList, plantSelectList, UOMSelectList,
     machineTypeSelectList, processSelectList, ShiftTypeSelectList, DepreciationTypeSelectList,
-    initialConfiguration, labourTypeByMachineTypeSelectList, fuelComboSelectList, fieldsObj, initialValues, loading,
+    initialConfiguration, labourTypeByMachineTypeSelectList, fuelComboSelectList, fieldsObj, initialValues, loading, processGroupApiData
   }
 
 }
@@ -3502,6 +3513,7 @@ export default connect(mapStateToProps, {
   fileUploadMachine,
   fileDeleteMachine,
   masterFinalLevelUser,
+  getProcessGroupByMachineId
 })(reduxForm({
   form: 'AddMoreDetails',
   onSubmitFail: errors => {
