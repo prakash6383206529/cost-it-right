@@ -822,6 +822,7 @@ export const API = {
   getMachineTypeSelectListByTechnology: `${BASE_URL}/masters-machine/get-machine-type-select-list-by-technology`,
   getMachineTypeSelectListByVendor: `${BASE_URL}/masters-machine/get-machine-type-select-list-by-vendor`,
   getProcessSelectListByMachineType: `${BASE_URL}/masters-machine/get-process-select-list-by-machine-type`,
+  getProcessGroupList: `${BASE_URL}/masters-machine/get-process-group/`,
 
   //POWER MASTER
   getPowerTypeSelectList: `${BASE_URL}/configuration/select-list-get-power-type`,
@@ -1462,6 +1463,7 @@ export const GET_MACHINE_LIST_SUCCESS = 'GET_MACHINE_LIST_SUCCESS'
 export const GET_DEPRECIATION_SELECTLIST_SUCCESS = 'GET_DEPRECIATION_SELECTLIST_SUCCESS'
 export const GET_MACHINE_APPROVAL_LIST = 'GET_MACHINE_APPROVAL_LIST'
 export const SET_PROCESS_GROUP_FOR_API = 'SET_PROCESS_GROUP_FOR_API'
+export const SET_PROCESS_GROUP_LIST = 'SET_PROCESS_GROUP_LIST'
 
 //POWER MASTER
 export const GET_POWER_TYPE_SELECTLIST_SUCCESS = 'GET_POWER_TYPE_SELECTLIST_SUCCESS'
@@ -1839,4 +1841,4 @@ export const LEVEL1 = 'L1';
 export const SUB_ASSEMBLY = 'Sub Assembly';
 
 //VERSION 
-export const VERSION = "V1.2.183";
+export const VERSION = "V1.2.184";
