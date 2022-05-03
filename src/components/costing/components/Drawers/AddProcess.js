@@ -15,7 +15,6 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { FORGING, Ferrous_Casting, DIE_CASTING } from '../../../../config/masterData'
 import GroupProcess from './GroupProcess';
-import { ProcessGroup } from '../../../masters/masterUtil';
 
 const gridOptions = {};
 
@@ -271,7 +270,6 @@ function AddProcess(props) {
                                   defaultColDef={defaultColDef}
                                   floatingFilter={true}
                                   domLayout='autoHeight'
-                                  // columnDefs={c}
                                   rowData={processDrawerList}
                                   pagination={true}
                                   paginationPageSize={10}
