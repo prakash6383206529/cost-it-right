@@ -52,7 +52,7 @@ function PaymentTerms(props) {
                 "NetCost": IsPaymentTermsApplicable ? tempPaymentTermObj.NetCost : '',
                 "EffectiveDate": ""
             }
-            setValue('NetCost', IsPaymentTermsApplicable ? tempPaymentTermObj.NetCost : '')
+            setValue('NetCost', IsPaymentTermsApplicable ? checkForDecimalAndNull(tempPaymentTermObj.NetCost, initialConfiguration.NoOfDecimalForPrice) : '')
             if (!CostingViewMode) {
                 props.setPaymentTermsDetail(tempObj, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
                 dispatch(isOverheadProfitDataChange(true))
