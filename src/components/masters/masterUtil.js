@@ -10,6 +10,62 @@ import { setGroupProcessList } from './actions/MachineMaster';
 
 export const ProcessGroup = (props) => {
 
+    const dummyData = [
+        {
+            dGroupName: 'grp1',
+            dProcessList: [
+                {
+                    dProcessId: '1',
+                    dProcessName: 'process 1'
+                },
+                {
+                    dProcessId: '2',
+                    dProcessName: 'process 2'
+                },
+            ]
+        },
+        {
+            dGroupName: 'grp2',
+            dProcessList: [
+                {
+                    dProcessId: '1',
+                    dProcessName: 'process 1'
+                },
+                {
+                    dProcessId: '2',
+                    dProcessName: 'process 2'
+                },
+                {
+                    dProcessId: '3',
+                    dProcessName: 'process 3'
+                },
+            ]
+        },
+        {
+            dGroupName: 'grp3',
+            dProcessList: [
+                {
+                    dProcessId: '1',
+                    dProcessName: 'process 1'
+                },
+                {
+                    dProcessId: '2',
+                    dProcessName: 'process 2'
+                },
+            ]
+        },
+        {
+            dGroupName: 'grp4',
+            dProcessList: [
+                {
+                    dProcessId: '1',
+                    dProcessName: 'process 1'
+                },
+
+            ]
+        },
+    ]
+
     const { register, control, formState: { errors }, getValues, setValue } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
@@ -50,7 +106,7 @@ export const ProcessGroup = (props) => {
 
 
     useEffect(() => {
-        setRowData(processGroupList)
+        // setRowData(processGroupList)
         // if (processGroupList && processGroupList.length > 0) {
         //     let temp = processGroupList && processGroupList.map(item => {
         //         return item.GroupName
@@ -145,7 +201,7 @@ export const ProcessGroup = (props) => {
                             disabled={false}
                         />
                     </Col>
-                    <Col className="col-md-3">
+                    <Col className="col-md-3 process-container">
                         <SearchableSelectHookForm
                             label={"Process"}
                             name={"process"}
@@ -159,14 +215,10 @@ export const ProcessGroup = (props) => {
                             handleChange={() => { }}
                             errors={errors.process}
                         />
+                        <div onClick={handleProcess} className={'plus-icon-square mr5 right'}> </div>
                     </Col>
-                    {
-                        <Col className="col-md-1 d-flex align-items-center">
-                            <div onClick={handleProcess} className={'plus-icon-square mr5 right'}> </div>
-                        </Col>
 
-                    }
-                    <Col md="3" className='process-group-wrapper'>
+                    <Col md="4" className='process-group-wrapper'>
                         <div className='border process-group'>
                             {
                                 selectedProcess && selectedProcess.map(item =>
@@ -175,7 +227,7 @@ export const ProcessGroup = (props) => {
                             }
                         </div>
                     </Col>
-                    <Col md="3" className='mb-2 d-flex align-items-center'>
+                    <Col md="2" className='mb-2 d-flex align-items-center'>
                         <div>
                             {
                                 <>
@@ -199,6 +251,30 @@ export const ProcessGroup = (props) => {
 
                 </Row>
             }
+            <div>
+                <table className='table border group-process-table'>
+                    <thead>
+                        <tr>
+                            <th>Group Name</th>
+                            <th>Process Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {dummyData.map((item) => {
+                            const processName = item.dProcessList;
+                            return <tr>
+                                <td className='group-name'>{item.dGroupName}</td>
+                                <td>{processName && processName.map(processName => {
+                                    return <div className='process-names'>{processName.dProcessName}</div>
+                                })}</td>
+                            </tr>
+                        })}
+
+
+
+                    </tbody>
+                </table>
+            </div>
             <div className={`ag-grid-wrapper  border mb-4`}>
                 <div className={`ag-theme-material`}>
                     <AgGridReact
