@@ -7,7 +7,7 @@ import {
     getInitialPlantSelectList, getInitialMachineTypeSelectList, getInitialProcessesSelectList, getInitialVendorWithVendorCodeSelectList, getMachineTypeSelectListByPlant,
     getVendorSelectListByTechnology, getMachineTypeSelectListByTechnology, getMachineTypeSelectListByVendor, getProcessSelectListByMachineType,
 } from '../actions/Process';
-import { getMachineDataList, deleteMachine, copyMachine, } from '../actions/MachineMaster';
+import { getMachineDataList, deleteMachine, copyMachine, getProcessGroupByMachineId } from '../actions/MachineMaster';
 import { getTechnologySelectList, } from '../../../actions/Common';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
@@ -25,9 +25,10 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
-import { getFilteredData, CheckApprovalApplicableMaster, userDetails, loggedInUserId } from '../../../helper'
+import { getFilteredData, userDetails, loggedInUserId } from '../../../helper'
 import { getListingForSimulationCombined } from '../../simulation/actions/Simulation';
 import { masterFinalLevelUser } from '../../masters/actions/Material'
+import ProcessGroupDrawer from './ProcessGroupDrawer'
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -53,8 +54,10 @@ class MachineRateListing extends Component {
             isLoader: false,
             showPopup: false,
             deletedId: '',
-            isFinalApprovar: false
-
+            isFinalApprovar: false,
+            // isProcessGroup: getConfigurationKey().IsMachineProcessGroup // UNCOMMENT IT AFTER DONE FROM BACKEND AND REMOVE BELOW CODE
+            isProcessGroup: true,
+            isOpenProcessGroupDrawer: false,
         }
     }
 
@@ -135,6 +138,25 @@ class MachineRateListing extends Component {
             isViewMode: isViewMode,
         }
         this.props.getDetails(data);
+    }
+
+    /**
+     * @method viewProcessGroupDetail
+     * @description VIEW PROCESS GROUP LIST 
+    */
+
+    viewProcessGroupDetail = (rowData) => {
+        this.props.getProcessGroupByMachineId(rowData.MachineId, res => {
+            if (res.data.Result) {
+                this.setState({
+                    isOpenProcessGroupDrawer: true
+                })
+            }
+        })
+    }
+
+    closeProcessGroupDrawer = () => {
+        this.setState({ isOpenProcessGroupDrawer: false })
     }
 
 
@@ -226,7 +248,8 @@ class MachineRateListing extends Component {
 
         return (
             <>
-                {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, true)} />}
+                {ViewAccessibility && <button className="View mr-2" type={'button'} title={'View Process Group'} onClick={() => this.viewProcessGroupDetail(rowData)} />}
+                {this.state.isProcessGroup && <button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, true)} />}
                 {isEditable && <button className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, false)} />}
                 <button className="Copy All Costing" title="Copy Machine" type={'button'} onClick={() => this.copyItem(cellValue)} />
                 {isDeleteButton && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
@@ -441,7 +464,7 @@ class MachineRateListing extends Component {
         return (
             <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-                    {/* {(this.state.isLoader && !this.props.isMasterSummaryDrawer) && <LoaderCustom />} */}
+                    {(this.state.isLoader && !this.props.isMasterSummaryDrawer) && <LoaderCustom />}
                     <Row className={`pt-4 filter-row-large ${this.props.isSimulation ? 'simulation-filter zindex-0' : ''}`}>
                         <Col md="6" lg="6">
                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
@@ -565,6 +588,9 @@ class MachineRateListing extends Component {
                 {
                     this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.MACHINE_DELETE_ALERT}`} />
                 }
+                {
+                    this.state.isOpenProcessGroupDrawer && <ProcessGroupDrawer anchor={'right'} isOpen={this.state.isOpenProcessGroupDrawer} toggleDrawer={this.closeProcessGroupDrawer} />
+                }
             </div >
         );
     }
@@ -609,7 +635,8 @@ export default connect(mapStateToProps, {
     getMachineTypeSelectListByVendor,
     getProcessSelectListByMachineType,
     getListingForSimulationCombined,
-    masterFinalLevelUser
+    masterFinalLevelUser,
+    getProcessGroupByMachineId
 })(reduxForm({
     form: 'MachineRateListing',
     enableReinitialize: true,

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { SearchableSelectHookForm, TextFieldHookForm } from '../layout/HookFormInputs';
 import { Col, Row } from 'reactstrap';
 import { useForm, Controller } from "react-hook-form";
@@ -18,7 +18,7 @@ export const ProcessGroup = (props) => {
 
     const [rowData, setRowData] = useState([]);
     const [apiData, setApiData] = useState([])
-    const { processGroupApiData } = useSelector(state => state.machine)
+    const { processGroupApiData, processGroupList } = useSelector(state => state.machine)
     const rowSpan = (params) => {
 
         var ProcessGroup = params.data.ProcessGroup;
@@ -54,6 +54,28 @@ export const ProcessGroup = (props) => {
     //         .then((data) => setRowData(data));
     // }, [])
 
+    useEffect(() => {
+        setRowData(processGroupList)
+        // if (processGroupList && processGroupList.length > 0) {
+        //     let temp = processGroupList && processGroupList.map(item => {
+        //         return item.GroupName
+        //     })
+        //     let temp1 = []
+        //     temp && temp.map((groupItem, index) => {
+        //         let processList = []
+        //         processGroupList && processGroupList.map((item, index) => {
+        //             console.log('processGroupList: ', processGroupList);
+        //             if (temp.includes(item.GroupName)) {
+        //                 temp1.push({ GroupName: item.GroupName, ProcessName: item.ProcessName, ProcessId: item.ProcessId })
+        //             }
+        //         })
+        //     })
+        //     console.log(temp1, "temp1");
+
+        // }
+    }, [processGroupList])
+
+
 
     const onGridReady = (params) => {
         params.api.sizeColumnsToFit();
@@ -82,11 +104,12 @@ export const ProcessGroup = (props) => {
         let processList = []
         let temp = selectedProcess && selectedProcess.map((item, index) => {
             processList.push(item.ProcessId)
-            if (index === 0) {
-                return { GroupName: groupName, ProcessName: item.ProcessName, ProcessId: item.ProcessId }
-            } else {
-                return { GroupName: '', ProcessName: item.ProcessName, ProcessId: item.ProcessId }
-            }
+            return { GroupName: groupName, ProcessName: item.ProcessName, ProcessId: item.ProcessId }
+            // if (index === 0) {
+            //     return { GroupName: groupName, ProcessName: item.ProcessName, ProcessId: item.ProcessId }
+            // } else {
+            //     return { GroupName: '', ProcessName: item.ProcessName, ProcessId: item.ProcessId }
+            // }
         })
         let obj = { ProcessGroupName: groupName, ProcessIdList: processList }
         dispatch(setGroupProcessList([...processGroupApiData, obj]))
@@ -107,77 +130,80 @@ export const ProcessGroup = (props) => {
     }
     return (
         <>
-            <Row>
-                <Col className="col-md-3">
-                    <TextFieldHookForm
-                        label="Group Name"
-                        name={"groupName"}
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        rules={{ required: false }}
-                        mandatory={false}
-                        handleChange={() => { }}
-                        defaultValue={""}
-                        className=""
-                        customClassName={"withBorder"}
-                        errors={errors.groupName}
-                        disabled={false}
-                    />
-                </Col>
-                <Col className="col-md-3">
-                    <SearchableSelectHookForm
-                        label={"Process"}
-                        name={"process"}
-                        placeholder={"Select"}
-                        Controller={Controller}
-                        control={control}
-                        rules={{ required: false }}
-                        register={register}
-                        options={renderListing("process")}
-                        mandatory={false}
-                        handleChange={() => { }}
-                        errors={errors.process}
-                    />
-                </Col>
-                {
-                    <Col className="col-md-1 d-flex align-items-center">
-                        <div onClick={handleProcess} className={'plus-icon-square mr5 right'}> </div>
+            {
+                !props?.isListing &&
+                <Row>
+                    <Col className="col-md-3">
+                        <TextFieldHookForm
+                            label="Group Name"
+                            name={"groupName"}
+                            Controller={Controller}
+                            control={control}
+                            register={register}
+                            rules={{ required: false }}
+                            mandatory={false}
+                            handleChange={() => { }}
+                            defaultValue={""}
+                            className=""
+                            customClassName={"withBorder"}
+                            errors={errors.groupName}
+                            disabled={false}
+                        />
+                    </Col>
+                    <Col className="col-md-3">
+                        <SearchableSelectHookForm
+                            label={"Process"}
+                            name={"process"}
+                            placeholder={"Select"}
+                            Controller={Controller}
+                            control={control}
+                            rules={{ required: false }}
+                            register={register}
+                            options={renderListing("process")}
+                            mandatory={false}
+                            handleChange={() => { }}
+                            errors={errors.process}
+                        />
+                    </Col>
+                    {
+                        <Col className="col-md-1 d-flex align-items-center">
+                            <div onClick={handleProcess} className={'plus-icon-square mr5 right'}> </div>
+                        </Col>
+
+                    }
+                    <Col md="3" className='process-group-wrapper'>
+                        <div className='border process-group'>
+                            {
+                                selectedProcess && selectedProcess.map(item =>
+                                    <span className='process-name'>{item.ProcessName}</span>
+                                )
+                            }
+                        </div>
+                    </Col>
+                    <Col md="3" className='mb-2 d-flex align-items-center'>
+                        <div>
+                            {
+                                <>
+                                    <button
+                                        type="button"
+                                        className={`${props.isViewFlag ? 'disabled-button user-btn' : 'user-btn'} pull-left mr5`}
+                                        //   disabled={isViewFlag ? true : isViewMode}
+                                        onClick={processTableHandler}
+                                    >
+                                        <div className={'plus'}></div>ADD</button>
+                                    <button
+                                        type="button"
+                                        //   disabled={isViewMode}
+                                        className={`${props.isViewFlag ? 'disabled-button reset-btn' : 'reset-btn'} pull-left`}
+                                        onClick={resetHandler}
+                                    >Reset</button>
+                                </>
+                            }
+                        </div>
                     </Col>
 
-                }
-                <Col md="3" className='process-group-wrapper'>
-                    <div className='border process-group'>
-                        {
-                            selectedProcess && selectedProcess.map(item =>
-                                <span className='process-name'>{item.ProcessName}</span>
-                            )
-                        }
-                    </div>
-                </Col>
-                <Col md="3" className='mb-2 d-flex align-items-center'>
-                    <div>
-                        {
-                            <>
-                                <button
-                                    type="button"
-                                    className={`${props.isViewFlag ? 'disabled-button user-btn' : 'user-btn'} pull-left mr5`}
-                                    //   disabled={isViewFlag ? true : isViewMode}
-                                    onClick={processTableHandler}
-                                >
-                                    <div className={'plus'}></div>ADD</button>
-                                <button
-                                    type="button"
-                                    //   disabled={isViewMode}
-                                    className={`${props.isViewFlag ? 'disabled-button reset-btn' : 'reset-btn'} pull-left`}
-                                    onClick={resetHandler}
-                                >Reset</button>
-                            </>
-                        }
-                    </div>
-                </Col>
-
-            </Row>
+                </Row>
+            }
             <div className={`ag-grid-wrapper  border mb-4`}>
                 <div className={`ag-theme-material`}>
                     <AgGridReact
