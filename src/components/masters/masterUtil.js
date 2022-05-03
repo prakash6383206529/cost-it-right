@@ -153,8 +153,10 @@ export const ProcessGroup = (props) => {
             return Toaster.warning('This group name is already added')
         }
         let processList = []
+        let tableList = []
         let temp = selectedProcess && selectedProcess.map((item, index) => {
             processList.push(item.ProcessId)
+            tableList.push({ ProcessName: item.ProcessName, ProcessId: item.ProcessId })
             return { GroupName: groupName, ProcessName: item.ProcessName, ProcessId: item.ProcessId }
             // if (index === 0) {
             //     return { GroupName: groupName, ProcessName: item.ProcessName, ProcessId: item.ProcessId }
@@ -163,9 +165,10 @@ export const ProcessGroup = (props) => {
             // }
         })
         let obj = { ProcessGroupName: groupName, ProcessIdList: processList }
+        let tableObj = { ProcessGroupName: groupName, ProcessList: tableList }
         dispatch(setGroupProcessList([...processGroupApiData, obj]))
         setApiData([...apiData, obj])
-        setRowData([...rowData, ...temp])
+        setRowData([...rowData, tableObj])
         resetHandler()
     }
 
@@ -260,22 +263,20 @@ export const ProcessGroup = (props) => {
                         </tr>
                     </thead>
                     <tbody>
-                        {dummyData.map((item) => {
-                            const processName = item.dProcessList;
+                        {rowData && rowData.map((item) => {
+                            const processNameList = item.ProcessList;
                             return <tr>
-                                <td className='group-name'>{item.dGroupName}</td>
-                                <td>{processName && processName.map(processName => {
-                                    return <div className='process-names'>{processName.dProcessName}</div>
+                                <td className='group-name'>{item.ProcessGroupName}</td>
+                                <td>{processNameList && processNameList.map(processName => {
+                                    return <div className='process-names'>{processName.ProcessName}</div>
                                 })}</td>
                             </tr>
                         })}
 
-
-
                     </tbody>
                 </table>
             </div>
-            <div className={`ag-grid-wrapper  border mb-4`}>
+            {/* <div className={`ag-grid-wrapper  border mb-4`}>
                 <div className={`ag-theme-material`}>
                     <AgGridReact
                         rowData={rowData}
@@ -286,7 +287,7 @@ export const ProcessGroup = (props) => {
                         domLayout='autoHeight'
                     ></AgGridReact>
                 </div>
-            </div>
+            </div> */}
         </>
     );
 };
