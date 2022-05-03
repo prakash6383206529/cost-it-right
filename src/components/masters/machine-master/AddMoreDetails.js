@@ -114,7 +114,7 @@ class AddMoreDetails extends Component {
       updatedObj: {},
       lockUOMAndRate: false,
       // isProcessGroup: getConfigurationKey().IsMachineProcessGroup // UNCOMMENT IT AFTER DONE FROM BACKEND AND REMOVE BELOW CODE
-      isProcessGroup: true
+      isProcessGroup: false
     }
   }
 
