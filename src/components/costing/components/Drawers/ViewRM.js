@@ -218,11 +218,12 @@ function ViewRM(props) {
             <Table className="table cr-brdr-main mb-0" size="sm">
               <thead>
                 <tr>
+                  <th>{`Part Number`}</th>
                   <th>{`MB Name`}</th>
                   <th>{`MB Rate`}</th>
                   <th>{`Percentage`}</th>
                   <th>{`Effective MB Rate`}</th>
-                  <th>{`Part Number`}</th>
+
                 </tr>
               </thead>
               <tbody>
@@ -230,6 +231,7 @@ function ViewRM(props) {
                 {viewCostingData[props.index]?.CostingMasterBatchRawMaterialCostResponse.map((item) => {
                   return (
                     < tr key={index}>
+                      <td>{item.PartNumber}</td>
                       <td>{item.MasterBatchRMName}</td>
                       <td>{checkForDecimalAndNull(item.MasterBatchRMPrice, initialConfiguration.NoOfDecimalForPrice)}</td>
                       <td>{checkForDecimalAndNull(item.MasterBatchPercentage, initialConfiguration.NoOfDecimalForPrice)}</td>
