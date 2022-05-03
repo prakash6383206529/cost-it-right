@@ -235,7 +235,6 @@ function ViewRM(props) {
                       <td>{checkForDecimalAndNull(item.MasterBatchRMPrice, initialConfiguration.NoOfDecimalForPrice)}</td>
                       <td>{checkForDecimalAndNull(item.MasterBatchPercentage, initialConfiguration.NoOfDecimalForPrice)}</td>
                       <td>{checkForDecimalAndNull(item.MasterBatchTotal, initialConfiguration.NoOfDecimalForInputOutput)}</td>
-
                     </tr>
                   )
                 })
