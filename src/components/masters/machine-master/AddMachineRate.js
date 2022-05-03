@@ -95,7 +95,7 @@ class AddMachineRate extends Component {
       inputLoader: false,
       lockUOMAndRate: false,
       // isProcessGroup: getConfigurationKey().IsMachineProcessGroup // UNCOMMENT IT AFTER DONE FROM BACKEND AND REMOVE BELOW CODE
-      isProcessGroup: false
+      isProcessGroup: true
     }
   }
 
