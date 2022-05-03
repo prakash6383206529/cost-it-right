@@ -20,6 +20,7 @@ function AddProcess(props) {
   const [selectedRowData, setSelectedRowData] = useState([]);
   const [gridApi, setGridApi] = useState(null);
   const [gridColumnApi, setGridColumnApi] = useState(null);
+  const [processGroup, setProcessGroup] = useState(false)
   const dispatch = useDispatch()
 
   const costData = useContext(costingInfoContext)
