@@ -15,6 +15,7 @@ function TabOverheadProfit(props) {
   const { handleSubmit, } = useForm();
   const [IsApplicableForChildParts, setIsApplicableForChildParts] = useState(false);
   const [IsIncludeSurfaceTreatment, setIsIncludeSurfaceTreatment] = useState(false);
+  const [isPressedST, setIsPressST] = useState(false)
   const dispatch = useDispatch()
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
@@ -30,6 +31,16 @@ function TabOverheadProfit(props) {
   }, [costData]);
 
   const OverheadProfitTabData = useSelector(state => state.costing.OverheadProfitTabData)
+
+  useEffect(() => {
+    if (OverheadProfitTabData && OverheadProfitTabData.length > 0) {
+      if (OverheadProfitTabData[0].IsIncludeSurfaceTreatmentWithOverheadAndProfit !== null && !isPressedST) {
+
+        setIsIncludeSurfaceTreatment(OverheadProfitTabData[0].IsIncludeSurfaceTreatmentWithOverheadAndProfit)
+      }
+    }
+  }, [OverheadProfitTabData])
+
 
   //BELOW CONDITION IS USED TO DISABLED CHECKBOX WHEN ACCORDION IS CLOSED
   const IsCheckBoxDisabled = OverheadProfitTabData && OverheadProfitTabData.length > 0 && OverheadProfitTabData[0].IsOpen
@@ -494,6 +505,7 @@ function TabOverheadProfit(props) {
   const onPressIncludeSurfaceTreatment = () => {
     dispatch(setSurfaceCostInOverheadProfit(!IsIncludeSurfaceTreatment, () => { }))
     setIsIncludeSurfaceTreatment(!IsIncludeSurfaceTreatment)
+    setIsPressST(true)
   }
 
   /**
