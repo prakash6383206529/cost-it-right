@@ -252,7 +252,7 @@ export const ProcessGroup = (props) => {
                 </Row>
             }
             <div>
-                <table className='table border group-process-table'>
+                <table className='table border machine-group-process-table'>
                     <thead>
                         <tr>
                             <th>Group Name</th>
