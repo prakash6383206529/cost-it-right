@@ -24,6 +24,7 @@ function AddProcess(props) {
   const [selectedRowData, setSelectedRowData] = useState([]);
   const [gridApi, setGridApi] = useState(null);
   const [gridColumnApi, setGridColumnApi] = useState(null);
+  const [processGroup, setProcessGroup] = useState(false)
   const dispatch = useDispatch()
   const [activeTab, setActiveTab] = useState('1');
 
@@ -231,7 +232,7 @@ function AddProcess(props) {
               </Row>
               <Row>
                 <Col>
-                  <Nav tabs className="subtabs cr-subtabs-head process-wrapper">
+                  {processGroup && <Nav tabs className="subtabs cr-subtabs-head process-wrapper">
                     <NavItem>
                       <NavLink
                         className={classnames({ active: activeTab === '1' })}
@@ -251,7 +252,7 @@ function AddProcess(props) {
                       </NavLink>
                     </NavItem>
 
-                  </Nav>
+                  </Nav>}
                   <TabContent activeTab={activeTab} className="border">
                     {activeTab === '1' && (
                       <TabPane tabId="1">
