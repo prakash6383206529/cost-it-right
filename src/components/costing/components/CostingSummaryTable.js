@@ -1613,6 +1613,7 @@ const CostingSummaryTable = (props) => {
             viewRMData={viewRMData}
             closeDrawer={closeViewDrawer}
             isAssemblyCosting={isAssemblyCosting}
+            simulationMode={simulationMode}
             anchor={'right'}
             index={index}
             technologyId={technologyId}
