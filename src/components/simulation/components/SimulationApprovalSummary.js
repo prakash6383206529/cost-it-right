@@ -60,6 +60,7 @@ function SimulationApprovalSummary(props) {
     const [amendment, setAmendment] = useState(true)
     const [token, setToken] = useState('')
     const [showverifyPage, setShowVerifyPage] = useState(false)
+    const [errorStatus, setErrorStatus] = useState('')
 
     const [fgWiseDataAcc, setFgWiseDataAcc] = useState(true)
     const [assemblyWiseAcc, setAssemblyWiseAcc] = useState(true)
@@ -141,7 +142,7 @@ function SimulationApprovalSummary(props) {
 
     const funcForErrorBoxButton = () => {
 
-        const statusWithButton = <><p className={`${toggleSeeData ? 'status-overflow' : ''} `}><span>{status}</span></p>{<button className='see-data-btn' onClick={() => { setToggleSeeData(!toggleSeeData) }}>Show {toggleSeeData ? 'all' : 'less'} data</button>}</>
+        const statusWithButton = <><p className={`${toggleSeeData ? 'status-overflow' : ''} `}><span>{status}</span></p>{<Link to="go-to-top" spy={true} smooth={true} activeClass="active" ><button className='see-data-btn' onClick={() => { setToggleSeeData(!toggleSeeData) }}>Show {toggleSeeData ? 'all' : 'less'} data</button> </Link>}</>
         return statusWithButton
     }
 
@@ -225,9 +226,9 @@ function SimulationApprovalSummary(props) {
             setNoContent(res.status === 204 ? true : false)
 
             if (res.status !== 204) {
-                const { Status, IsSuccessfullyUpdated } = res.data.DataList[0]
-                console.log('Status: ', Status);
+                const { Status, IsSuccessfullyUpdated, ErrorStatus } = res.data.DataList[0]
                 setStatus(Status)
+                setErrorStatus(ErrorStatus);
                 setShowButton(Status.length > 245 ? true : false)
                 setIsSuccessfullyUpdated(IsSuccessfullyUpdated)
             }
@@ -962,7 +963,7 @@ function SimulationApprovalSummary(props) {
 
     const errorBoxClass = () => {
         let temp
-        temp = isSuccessfullyUpdated === false ? '' : 'success'
+        temp = errorStatus !== '' ? '' : 'success'
         if (noContent === true) {
             temp = 'd-none'
         }
