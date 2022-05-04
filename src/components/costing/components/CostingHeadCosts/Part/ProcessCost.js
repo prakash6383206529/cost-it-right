@@ -42,12 +42,16 @@ function ProcessCost(props) {
   const [oldGridData, setOldGridData] = useState(data && data.CostingProcessCostResponse)
   const [isCalculator, setIsCalculator] = useState(false)
   const [remarkPopUpData, setRemarkPopUpData] = useState("")
+  const [processGroup, setProcessCost] = useState(false)
+  const [processAcc, setProcessAcc] = useState(false)
+
   const dispatch = useDispatch()
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { CostingEffectiveDate } = useSelector(state => state.costing)
   const { rmFinishWeight } = props
+
   // const fieldValues = useWatch({
   //   control,
   //   name: ['ProcessGridFields'],
@@ -57,6 +61,35 @@ function ProcessCost(props) {
   // useEffect(() => {
   // }, [gridData])
 
+  const dummydata = [
+    {
+      groupID: '1',
+      processName: 'test-process',
+      machineTannage: '3',
+      machineRate: '6',
+      UOM: 'minute',
+      partHours: '-',
+      netCost: '',
+    },
+    {
+      groupID: '1',
+      processName: 'test-process',
+      machineTannage: '3',
+      machineRate: '6',
+      UOM: 'minute',
+      partHours: '-',
+      netCost: '',
+    },
+    {
+      groupID: '1',
+      processName: 'test-process',
+      machineTannage: '3',
+      machineRate: '6',
+      UOM: 'minute',
+      partHours: '-',
+      netCost: '',
+    },
+  ]
   useEffect(() => {
     const Params = {
       index: props.index,
@@ -454,6 +487,7 @@ function ProcessCost(props) {
    * @method render
    * @description Renders the component
    */
+  console.log(gridData, "gridData");
   return (
     <>
       <div className="user-page p-0">
@@ -492,6 +526,7 @@ function ProcessCost(props) {
               <Table className="table cr-brdr-main costing-process-cost-section" size="sm">
                 <thead>
                   <tr>
+                    {processGroup && <th style={{ width: "150px" }}>{`Group Name`}</th>}
                     <th style={{ width: "150px" }}>{`Process Name`}</th>
                     <th style={{ width: "170px" }}>{`Machine Tonnage`}</th>
                     <th style={{ width: "220px" }}>{`Machine Rate`}</th>
@@ -506,105 +541,214 @@ function ProcessCost(props) {
                   {gridData &&
                     gridData.map((item, index) => {
                       return (
-                        <tr key={index}>
-                          <td className='text-overflow'><span title={item.ProcessName}>{item.ProcessName}</span></td>
-                          <td>{item.Tonnage ? checkForNull(item.Tonnage) : '-'}</td>
-                          <td>{item.MHR}</td>
-                          <td>{item.UOM}</td>
-                          <td>{(item?.ProductionPerHour === '-' || item?.ProductionPerHour === 0 || item?.ProductionPerHour === null || item?.ProductionPerHour === undefined) ? '-' : checkForDecimalAndNull(item.ProductionPerHour, getConfigurationKey().NoOfDecimalForInputOutput)}</td>
-                          <td style={{ width: 150 }}>
-                            <span className="d-inline-block w90px mr-2">
+                        <>
+                          <tr key={index}>
+                            {processGroup && <td className='text-overflow process-name'> <div onClick={() => setProcessAcc(!processAcc)} className={`${processAcc ? 'Open' : 'Close'}`}></div><span title={item.ProcessName}>group1</span></td>}
+                            <td className='text-overflow'><span title={item.ProcessName}>{item.ProcessName}</span></td>
+                            <td>{item.Tonnage ? checkForNull(item.Tonnage) : '-'}</td>
+                            <td>{item.MHR}</td>
+                            <td>{item.UOM}</td>
+                            <td>{(item?.ProductionPerHour === '-' || item?.ProductionPerHour === 0 || item?.ProductionPerHour === null || item?.ProductionPerHour === undefined) ? '-' : checkForDecimalAndNull(item.ProductionPerHour, getConfigurationKey().NoOfDecimalForInputOutput)}</td>
+                            <td style={{ width: 150 }}>
+                              <span className="d-inline-block w90px mr-2">
+                                {
+                                  <NumberFieldHookForm
+                                    label=""
+                                    name={`${ProcessGridFields}.${index}.Quantity`}
+                                    Controller={Controller}
+                                    control={control}
+                                    register={register}
+                                    mandatory={false}
+                                    rules={{
+                                      //required: true,
+                                      pattern: {
+                                        value: /^[0-9]\d*(\.\d+)?$/i,
+                                        message: 'Invalid Number.',
+                                      },
+                                    }}
+                                    defaultValue={item.Quantity ? checkForDecimalAndNull(item.Quantity, trimForMeasurment,) : '1'}
+                                    className=""
+                                    customClassName={'withBorder'}
+                                    handleChange={(e) => {
+                                      e.preventDefault()
+                                      handleQuantityChange(e, index)
+                                    }}
+
+                                    // errors={}
+                                    disabled={(CostingViewMode || IsLocked) ? true : false}
+                                  />
+                                }
+                              </span>
+                              <button
+                                className="CalculatorIcon cr-cl-icon calc-icon-middle"
+                                type={'button'}
+                                onClick={() => toggleWeightCalculator(index)}
+                              />
+                            </td>
+                            <td style={{ width: 100 }}>
                               {
-                                <NumberFieldHookForm
+                                <TextFieldHookForm
                                   label=""
-                                  name={`${ProcessGridFields}.${index}.Quantity`}
+                                  name={`${ProcessGridFields}.${index}.ProcessCost`}
                                   Controller={Controller}
                                   control={control}
                                   register={register}
                                   mandatory={false}
-                                  rules={{
-                                    //required: true,
-                                    pattern: {
-                                      value: /^[0-9]\d*(\.\d+)?$/i,
-                                      message: 'Invalid Number.',
-                                    },
-                                  }}
-                                  defaultValue={item.Quantity ? checkForDecimalAndNull(item.Quantity, trimForMeasurment,) : '1'}
+                                  defaultValue={item.ProcessCost ? checkForDecimalAndNull(item.ProcessCost, trimForCost) : '0.00'}
                                   className=""
                                   customClassName={'withBorder'}
                                   handleChange={(e) => {
                                     e.preventDefault()
-                                    handleQuantityChange(e, index)
                                   }}
-
                                   // errors={}
-                                  disabled={(CostingViewMode || IsLocked) ? true : false}
+                                  disabled={true}
                                 />
                               }
-                            </span>
-                            <button
-                              className="CalculatorIcon cr-cl-icon calc-icon-middle"
-                              type={'button'}
-                              onClick={() => toggleWeightCalculator(index)}
-                            />
-                          </td>
-                          <td style={{ width: 100 }}>
-                            {
-                              <TextFieldHookForm
-                                label=""
-                                name={`${ProcessGridFields}.${index}.ProcessCost`}
-                                Controller={Controller}
-                                control={control}
-                                register={register}
-                                mandatory={false}
-                                defaultValue={item.ProcessCost ? checkForDecimalAndNull(item.ProcessCost, trimForCost) : '0.00'}
-                                className=""
-                                customClassName={'withBorder'}
-                                handleChange={(e) => {
-                                  e.preventDefault()
-                                }}
-                                // errors={}
-                                disabled={true}
-                              />
-                            }
-                          </td>
-                          <td>
-                            <div className='action-btn-wrapper'>
-                              {(!CostingViewMode && !IsLocked) && <button className="Delete" type={'button'} onClick={() => deleteItem(index)} />}
-                              <Popup trigger={<button id={`popUpTriggers${index}`} className="Comment-box" type={'button'} />}
-                                position="top center">
-                                <TextAreaHookForm
-                                  label="Remark:"
-                                  name={`${ProcessGridFields}.${index}.remarkPopUp`}
-                                  Controller={Controller}
-                                  control={control}
-                                  register={register}
-                                  mandatory={false}
-                                  rules={{
-                                    maxLength: {
-                                      value: 75,
-                                      message: "Remark should be less than 75 word"
-                                    },
-                                  }}
-                                  handleChange={(e) => { }}
-                                  defaultValue={item.Remark ?? item.Remark}
-                                  className=""
-                                  customClassName={"withBorder"}
-                                  errors={errors && errors.ProcessGridFields && errors.ProcessGridFields[index] !== undefined ? errors.ProcessGridFields[index].remarkPopUp : ''}
-                                  //errors={errors && errors.remarkPopUp && errors.remarkPopUp[index] !== undefined ? errors.remarkPopUp[index] : ''}                        
-                                  disabled={(CostingViewMode || IsLocked) ? true : false}
-                                  hidden={false}
-                                />
-                                <Row>
-                                  <Col md="12" className='remark-btn-container'>
-                                    <button className='submit-button mr-2' disabled={(CostingViewMode || IsLocked) ? true : false} onClick={() => onRemarkPopUpClickk(index)} > <div className='save-icon'></div> </button>
-                                    <button className='reset' onClick={() => onRemarkPopUpClosee(index)} > <div className='cancel-icon'></div></button>
-                                  </Col>
-                                </Row>
-                              </Popup>
-                            </div>
-                          </td>
-                        </tr>
+                            </td>
+                            <td>
+                              <div className='action-btn-wrapper'>
+                                {(!CostingViewMode && !IsLocked) && <button className="Delete" type={'button'} onClick={() => deleteItem(index)} />}
+                                <Popup trigger={<button id={`popUpTriggers${index}`} className="Comment-box" type={'button'} />}
+                                  position="top center">
+                                  <TextAreaHookForm
+                                    label="Remark:"
+                                    name={`${ProcessGridFields}.${index}.remarkPopUp`}
+                                    Controller={Controller}
+                                    control={control}
+                                    register={register}
+                                    mandatory={false}
+                                    rules={{
+                                      maxLength: {
+                                        value: 75,
+                                        message: "Remark should be less than 75 word"
+                                      },
+                                    }}
+                                    handleChange={(e) => { }}
+                                    defaultValue={item.Remark ?? item.Remark}
+                                    className=""
+                                    customClassName={"withBorder"}
+                                    errors={errors && errors.ProcessGridFields && errors.ProcessGridFields[index] !== undefined ? errors.ProcessGridFields[index].remarkPopUp : ''}
+                                    //errors={errors && errors.remarkPopUp && errors.remarkPopUp[index] !== undefined ? errors.remarkPopUp[index] : ''}                        
+                                    disabled={(CostingViewMode || IsLocked) ? true : false}
+                                    hidden={false}
+                                  />
+                                  <Row>
+                                    <Col md="12" className='remark-btn-container'>
+                                      <button className='submit-button mr-2' disabled={(CostingViewMode || IsLocked) ? true : false} onClick={() => onRemarkPopUpClickk(index)} > <div className='save-icon'></div> </button>
+                                      <button className='reset' onClick={() => onRemarkPopUpClosee(index)} > <div className='cancel-icon'></div></button>
+                                    </Col>
+                                  </Row>
+                                </Popup>
+                              </div>
+                            </td>
+                          </tr>
+                          {processAcc && <>
+                            {dummydata && dummydata.map(item => {
+                              return (
+                                <tr>
+                                  <td>-</td>
+                                  <td>{item.processName}</td>
+                                  <td>{item.machineTannage}</td>
+                                  <td>{item.machineRate}</td>
+                                  <td>{item.UOM}</td>
+                                  <td>{item.partHours}</td>
+                                  <td style={{ width: 150 }}>
+                                    <span className="d-inline-block w90px mr-2">
+                                      {
+                                        <NumberFieldHookForm
+                                          label=""
+                                          name={`${ProcessGridFields}.${index}.Quantity`}
+                                          Controller={Controller}
+                                          control={control}
+                                          register={register}
+                                          mandatory={false}
+                                          rules={{
+                                            //required: true,
+                                            pattern: {
+                                              value: /^[0-9]\d*(\.\d+)?$/i,
+                                              message: 'Invalid Number.',
+                                            },
+                                          }}
+                                          defaultValue={item.Quantity ? checkForDecimalAndNull(item.Quantity, trimForMeasurment,) : '1'}
+                                          className=""
+                                          customClassName={'withBorder'}
+                                          handleChange={(e) => {
+                                            e.preventDefault()
+                                            handleQuantityChange(e, index)
+                                          }}
+
+                                          // errors={}
+                                          disabled={(CostingViewMode || IsLocked) ? true : false}
+                                        />
+                                      }
+                                    </span>
+                                    <button
+                                      className="CalculatorIcon cr-cl-icon calc-icon-middle"
+                                      type={'button'}
+                                      onClick={() => toggleWeightCalculator(index)}
+                                    />
+                                  </td>
+                                  <td style={{ width: 100 }}>
+                                    {
+                                      <TextFieldHookForm
+                                        label=""
+                                        name={`${ProcessGridFields}.${index}.ProcessCost`}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={false}
+                                        defaultValue={item.ProcessCost ? checkForDecimalAndNull(item.ProcessCost, trimForCost) : '0.00'}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        handleChange={(e) => {
+                                          e.preventDefault()
+                                        }}
+                                        // errors={}
+                                        disabled={true}
+                                      />
+                                    }
+                                  </td>
+                                  <td>
+                                    <div className='action-btn-wrapper'>
+
+                                      <Popup trigger={<button id={`popUpTriggers${index}`} className="Comment-box" type={'button'} />}
+                                        position="top center">
+                                        <TextAreaHookForm
+                                          label="Remark:"
+                                          name={`${ProcessGridFields}.${index}.remarkPopUp`}
+                                          Controller={Controller}
+                                          control={control}
+                                          register={register}
+                                          mandatory={false}
+                                          rules={{
+                                            maxLength: {
+                                              value: 75,
+                                              message: "Remark should be less than 75 word"
+                                            },
+                                          }}
+                                          handleChange={(e) => { }}
+                                          defaultValue={item.Remark ?? item.Remark}
+                                          className=""
+                                          customClassName={"withBorder"}
+                                          errors={errors && errors.ProcessGridFields && errors.ProcessGridFields[index] !== undefined ? errors.ProcessGridFields[index].remarkPopUp : ''}
+                                          //errors={errors && errors.remarkPopUp && errors.remarkPopUp[index] !== undefined ? errors.remarkPopUp[index] : ''}                        
+                                          disabled={(CostingViewMode || IsLocked) ? true : false}
+                                          hidden={false}
+                                        />
+                                        <Row>
+                                          <Col md="12" className='remark-btn-container'>
+                                            <button className='submit-button mr-2' disabled={(CostingViewMode || IsLocked) ? true : false} onClick={() => onRemarkPopUpClickk(index)} > <div className='save-icon'></div> </button>
+                                            <button className='reset' onClick={() => onRemarkPopUpClosee(index)} > <div className='cancel-icon'></div></button>
+                                          </Col>
+                                        </Row>
+                                      </Popup>
+                                    </div>
+                                  </td>
+                                </tr>
+                              )
+                            })}
+                          </>}
+                        </>
                       )
                     })}
                   {gridData && gridData.length === 0 && (
