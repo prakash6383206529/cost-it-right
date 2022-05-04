@@ -30,7 +30,7 @@ import ReactToPrint from 'react-to-print';
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
 const CostingSummaryTable = (props) => {
-  const { viewMode, showDetail, technologyId, costingID, showWarningMsg, simulationMode, isApproval, simulationDrawer, customClass, selectedTechnology, master } = props
+  const { viewMode, showDetail, technologyId, costingID, showWarningMsg, simulationMode, isApproval, simulationDrawer, customClass, selectedTechnology, master, isSimulationDone } = props
   let history = useHistory();
 
   const dispatch = useDispatch()
@@ -414,7 +414,7 @@ const CostingSummaryTable = (props) => {
     }
     if (type === VBC) {
       dispatch(getBriefCostingById(tempData.costingId, (res) => {
-        console.log('res: ', res);
+
         if (res?.data?.Result) {
           history.push('/costing')
           showDetail(partInfoStepTwo, { costingId: tempData.costingId, type })
@@ -1615,6 +1615,7 @@ const CostingSummaryTable = (props) => {
             closeDrawer={closeViewDrawer}
             isAssemblyCosting={isAssemblyCosting}
             simulationMode={simulationMode}
+            isSimulationDone={isSimulationDone}
             anchor={'right'}
             index={index}
             technologyId={technologyId}

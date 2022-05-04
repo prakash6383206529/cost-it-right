@@ -14,13 +14,13 @@ import { getRawMaterialCalculationForCorrugatedBox, getRawMaterialCalculationFor
 
 function ViewRM(props) {
 
-  const { viewRMData, rmMBDetail, isAssemblyCosting, isPDFShow, simulationMode } = props
+  const { viewRMData, rmMBDetail, isAssemblyCosting, isPDFShow, simulationMode, isSimulationDone } = props
   /*
   * @method toggleDrawer
   * @description closing drawer
   */
   const [viewRM, setViewRM] = useState(viewRMData)
-  const [isSimulation, setIsSimulation] = useState(simulationMode ? simulationMode : false)
+  const [isSimulation, setIsSimulation] = useState(isSimulationDone === false ? isSimulationDone : (simulationMode ? simulationMode : false))
   const [index, setIndex] = useState('')
   const [weightCalculatorDrawer, setWeightCalculatorDrawer] = useState(false)
   const [calciData, setCalciData] = useState({})
@@ -276,7 +276,7 @@ function ViewRM(props) {
                 </Col>
               </Row>
               <Row>
-                {tableData()}
+                {!weightCalculatorDrawer && tableData()}
                 {weightCalculatorDrawer && (
                   <WeightCalculator
                     rmRowData={viewRM !== undefined ? calciData : {}}
