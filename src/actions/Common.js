@@ -1366,7 +1366,7 @@ export function getPlantSelectListByType(TYPE, callback) {
  * @method getVendorWithVendorCodeSelectList
  * @description GET VBC VENDOR WITH VENDOR CODE SELECTLIST
  */
-export function getVendorWithVendorCodeSelectList() {
+export function getVendorWithVendorCodeSelectList(callback) {
   return (dispatch) => {
     const request = axios.get(API.getVendorWithVendorCodeSelectList, headers);
     request.then((response) => {
@@ -1374,6 +1374,7 @@ export function getVendorWithVendorCodeSelectList() {
         type: GET_VENDOR_WITH_VENDOR_CODE_SELECTLIST,
         payload: response.data.SelectList,
       });
+      callback(response)
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
       apiErrors(error);

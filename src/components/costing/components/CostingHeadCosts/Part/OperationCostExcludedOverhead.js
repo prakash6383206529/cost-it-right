@@ -3,34 +3,35 @@ import { useForm, Controller } from 'react-hook-form';
 import { useSelector, useDispatch } from 'react-redux';
 import AddOperation from '../../Drawers/AddOperation';
 import { Col, Row, Table } from 'reactstrap';
-import { NumberFieldHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
+import { NumberFieldHookForm, TextAreaHookForm } from '../../../../layout/HookFormInputs';
 import NoContentFound from '../../../../common/NoContentFound';
 import { EMPTY_DATA } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
 import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected } from '../../../../../helper';
 import { ViewCostingContext } from '../../CostingDetails';
-import { gridDataAdded, isDataChange, setRMCCErrors } from '../../../actions/Costing';
+import { gridDataAdded, isDataChange, setRMCCErrors, setSelectedIds } from '../../../actions/Costing';
 import WarningMessagge from '../../../../common/WarningMessage'
+import Popup from 'reactjs-popup';
 
 let counter = 0;
 function OperationCostExcludedOverhead(props) {
+  const { item } = props;
+  const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
 
-  const { register, control, formState: { errors }, setValue } = useForm({
+  const { register, control, formState: { errors }, setValue, getValues } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   });
 
   const dispatch = useDispatch()
-
   const [gridData, setGridData] = useState(props.data ? props.data : [])
   const [OldGridData, setOldGridData] = useState(props.data ? props.data : [])
   const [rowObjData, setRowObjData] = useState({})
   const [editIndex, setEditIndex] = useState('')
   const [Ids, setIds] = useState([])
   const [isDrawerOpen, setDrawerOpen] = useState(false)
-
+  const [remarkPopUpData, setRemarkPopUpData] = useState("")
   const CostingViewMode = useContext(ViewCostingContext);
-
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { CostingEffectiveDate } = useSelector(state => state.costing)
 
@@ -40,18 +41,17 @@ function OperationCostExcludedOverhead(props) {
       BOMLevel: props.item.BOMLevel,
       PartNumber: props.item.PartNumber,
     }
-    if (!CostingViewMode) {
+    if (!CostingViewMode && !IsLocked) {
       if (props.IsAssemblyCalculation) {
         props.setAssemblyOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
       } else {
         props.setOtherOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
       }
-
-      
-      if(JSON.stringify(gridData) !== JSON.stringify(OldGridData)){
+      if (JSON.stringify(gridData) !== JSON.stringify(OldGridData)) {
         dispatch(isDataChange(true))
       }
     }
+
 
     selectedIds(gridData)
   }, [gridData]);
@@ -100,19 +100,48 @@ function OperationCostExcludedOverhead(props) {
     setDrawerOpen(false)
   }
 
+  const onRemarkPopUpClick = (index) => {
+    setRemarkPopUpData(getValues(`${OperationGridFields}.${index}.remarkPopUp`))
+    let tempArr = []
+    let tempData = gridData[index]
+    tempData = {
+      ...tempData,
+      Remark: getValues(`${OperationGridFields}.${index}.remarkPopUp`)
+    }
+    tempArr = Object.assign([...gridData], { [index]: tempData })
+    // setGridData(tempArr)
+
+    if (getValues(`${OperationGridFields}.${index}.remarkPopUp`)) {
+      Toaster.success('Remark saved successfully')
+    }
+    setGridData(tempArr)
+    var button = document.getElementById(`popUppTriggerss${index}`)
+    button.click()
+  }
+
+  const onRemarkPopUpClose = (index) => {
+    var button = document.getElementById(`popUppTriggerss${index}`)
+    button.click()
+  }
+
   /**
   * @method selectedIds
   * @description SELECTED IDS
   */
   const selectedIds = (tempArr) => {
-    tempArr && tempArr.map(el => {
-      if (Ids.includes(el.OtherOperationId) === false) {
-        let selectedIds = Ids;
-        selectedIds.push(el.OtherOperationId)
-        setIds(selectedIds)
-      }
-      return null;
-    })
+    let selectedId = Ids;
+    if (tempArr && tempArr.length > 0) {
+      tempArr && tempArr.map(el => {
+        if (Ids.includes(el.OtherOperationId) === false) {
+          selectedId.push(el.OtherOperationId)
+          setIds(selectedId)
+          dispatch(setSelectedIds(selectedId))
+        }
+        return null;
+      })
+    } else {
+      dispatch(setSelectedIds([]))
+    }
   }
 
   const deleteItem = (index, OperationId) => {
@@ -122,6 +151,7 @@ function OperationCostExcludedOverhead(props) {
     })
     setIds(Ids && Ids.filter(item => item !== OperationId))
     setGridData(tempArr)
+    dispatch(setSelectedIds(Ids && Ids.filter(item => item !== OperationId)))
   }
 
   const editItem = (index) => {
@@ -233,7 +263,7 @@ function OperationCostExcludedOverhead(props) {
               </div>
             </Col>
             <Col md={'4'}>
-              {!CostingViewMode && <button
+              {(!CostingViewMode && !IsLocked) && <button
                 type="button"
                 className={'user-btn'}
                 onClick={DrawerToggle}>
@@ -259,7 +289,7 @@ function OperationCostExcludedOverhead(props) {
                       initialConfiguration.IsOperationLabourRateConfigure &&
                       <th style={{ width: "220px" }}>{`Labour Quantity`}</th>}
                     <th style={{ width: "220px" }}>{`Net Cost`}</th>
-                    <th style={{ width: "145px" }}>{`Action`}</th>
+                    <th style={{ width: "145px", textAlign: 'right' }}>{`Action`}</th>
                   </tr>
                 </thead>
                 <tbody >
@@ -269,7 +299,7 @@ function OperationCostExcludedOverhead(props) {
                       return (
                         editIndex === index ?
                           <tr key={index}>
-                            <td>{item.OtherOperationName}</td>
+                            <td className='text-overflow'><span title={item.OtherOperationName}>{item.OtherOperationName}</span> </td>
                             <td>{item.OtherOperationCode}</td>
                             <td>{item.UOM}</td>
                             <td>{item.Rate}</td>
@@ -298,7 +328,7 @@ function OperationCostExcludedOverhead(props) {
                                     handleQuantityChange(e, index)
                                   }}
                                   errors={errors && errors.OperationGridFields && errors.OperationGridFields[index] !== undefined ? errors.OperationGridFields[index].Quantity : ''}
-                                  disabled={CostingViewMode ? true : false}
+                                  disabled={(CostingViewMode || IsLocked) ? true : false}
                                 />
                               }
                             </td>
@@ -333,7 +363,7 @@ function OperationCostExcludedOverhead(props) {
                                         handleLabourQuantityChange(e, index)
                                       }}
                                       errors={errors && errors.OperationGridFields && errors.OperationGridFields[index] !== undefined ? errors.OperationGridFields[index].LabourQuantity : ''}
-                                      disabled={CostingViewMode ? true : false}
+                                      disabled={(CostingViewMode || IsLocked) ? true : false}
                                     />
                                     :
                                     '-'
@@ -341,13 +371,15 @@ function OperationCostExcludedOverhead(props) {
                               </td>}
                             <td>{netCost(item)}</td>
                             <td>
-                              <button className="SaveIcon mb-0 mr-2 align-middle" type={'button'} onClick={() => SaveItem(index)} />
-                              <button className="CancelIcon mb-0 align-middle" type={'button'} onClick={() => CancelItem(index)} />
+                              <div className='action-btn-wrapper'>
+                                <button className="SaveIcon mb-0 align-middle" type={'button'} onClick={() => SaveItem(index)} />
+                                <button className="CancelIcon mb-0 align-middle" type={'button'} onClick={() => CancelItem(index)} />
+                              </div>
                             </td>
                           </tr>
                           :
                           <tr key={index}>
-                            <td>{item.OtherOperationName}</td>
+                            <td className='text-overflow'><span title={item.OtherOperationName}>{item.OtherOperationName}</span> </td>
                             <td>{item.OtherOperationCode}</td>
                             <td>{item.UOM}</td>
                             <td>{item.Rate}</td>
@@ -360,8 +392,41 @@ function OperationCostExcludedOverhead(props) {
                               <td>{item.IsLabourRateExist ? item.LabourQuantity : '-'}</td>}
                             <td>{netCost(item)}</td>
                             <td>
-                              {!CostingViewMode && <button className="Edit  mr-2 mb-0 align-middle" type={'button'} onClick={() => editItem(index)} />}
-                              {!CostingViewMode && <button className="Delete mb-0 align-middle" type={'button'} onClick={() => deleteItem(index, item.OtherOperationId)} />}
+                              <div className='action-btn-wrapper'>
+                                {(!CostingViewMode && !IsLocked) && <button className="Edit mb-0 align-middle" type={'button'} onClick={() => editItem(index)} />}
+                                {(!CostingViewMode && !IsLocked) && <button className="Delete mb-0 align-middle" type={'button'} onClick={() => deleteItem(index, item.OtherOperationId)} />}
+                                <Popup trigger={<button id={`popUppTriggerss${index}`} className="Comment-box align-middle" type={'button'} />}
+                                  position="top center">
+                                  <TextAreaHookForm
+                                    label="Remark:"
+                                    name={`${OperationGridFields}.${index}.remarkPopUp`}
+                                    Controller={Controller}
+                                    control={control}
+                                    register={register}
+                                    mandatory={false}
+                                    rules={{
+                                      maxLength: {
+                                        value: 75,
+                                        message: "Remark should be less than 75 word"
+                                      },
+                                    }}
+                                    handleChange={(e) => { }}
+                                    defaultValue={item.Remark ?? item.Remark}
+                                    className=""
+                                    customClassName={"withBorder"}
+                                    errors={errors && errors.OperationGridFields && errors.OperationGridFields[index] !== undefined ? errors.OperationGridFields[index].remarkPopUp : ''}
+                                    //errors={errors && errors.remarkPopUp && errors.remarkPopUp[index] !== undefined ? errors.remarkPopUp[index] : ''}                        
+                                    disabled={(CostingViewMode || IsLocked) ? true : false}
+                                    hidden={false}
+                                  />
+                                  <Row>
+                                    <Col md="12" className='remark-btn-container'>
+                                      <button className='submit-button mr-2' disabled={(CostingViewMode || IsLocked) ? true : false} onClick={() => onRemarkPopUpClick(index)} > <div className='save-icon'></div> </button>
+                                      <button className='reset' onClick={() => onRemarkPopUpClose(index)} > <div className='cancel-icon'></div></button>
+                                    </Col>
+                                  </Row>
+                                </Popup>
+                              </div>
                             </td>
                           </tr>
                       )
@@ -381,14 +446,16 @@ function OperationCostExcludedOverhead(props) {
 
         </div>
       </div>
-      {isDrawerOpen && <AddOperation
-        isOpen={isDrawerOpen}
-        closeDrawer={closeDrawer}
-        isEditFlag={false}
-        ID={''}
-        anchor={'right'}
-        Ids={Ids}
-      />}
+      {
+        isDrawerOpen && <AddOperation
+          isOpen={isDrawerOpen}
+          closeDrawer={closeDrawer}
+          isEditFlag={false}
+          ID={''}
+          anchor={'right'}
+          Ids={Ids}
+        />
+      }
     </ >
   );
 }

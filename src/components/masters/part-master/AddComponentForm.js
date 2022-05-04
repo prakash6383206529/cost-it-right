@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required, number, maxLength5, postiveNumber, minValue1, acceptAllExceptSingleSpecialCharacter, } from "../../../helper/validation";
-import { renderText, searchableSelect } from "../../layout/FormInputs";
+import { required, maxLength5, postiveNumber, minValue1, acceptAllExceptSingleSpecialCharacter, } from "../../../helper/validation";
+import { renderText } from "../../layout/FormInputs";
 import { getComponentPartSelectList, getDrawerComponentPartData, } from '../actions/Part';
 import { COMPONENT_PART } from '../../../config/constants';
 import AsyncSelect from 'react-select/async';
@@ -19,7 +19,6 @@ class AddComponentForm extends Component {
       selectedParts: [],
       updateAsyncDropdown: false,
       isPartNoNotSelected: false,
-
     }
   }
 
@@ -29,7 +28,7 @@ class AddComponentForm extends Component {
  */
   componentDidMount() {
     const { BOMViewerData } = this.props;
-    this.props.getComponentPartSelectList(() => { })
+    this.props.getComponentPartSelectList(this.props?.TechnologySelected.value, () => { })
 
     let tempArr = [];
     BOMViewerData && BOMViewerData.map(el => {
@@ -84,9 +83,6 @@ class AddComponentForm extends Component {
   */
   renderListing = (label) => {
     const { componentPartSelectList } = this.props;
-    //const { selectedParts } = this.state;
-
-
     const { BOMViewerData } = this.props;
     let tempArr = [];
     BOMViewerData && BOMViewerData.map(el => {
@@ -157,12 +153,10 @@ class AddComponentForm extends Component {
 
     this.myRef.current.select.state.value = []
     if (isAddMore) {
-
       this.props.setChildParts(childData)
       this.setState({ updateAsyncDropdown: !this.state.updateAsyncDropdown })       //UPDATING RANDOM STATE FOR RERENDERING OF COMPONENT AFTER CLICKING ON ADD MORE BUTTON
 
     } else {
-
       this.props.toggleDrawer('', childData)
     }
 
@@ -183,15 +177,12 @@ class AddComponentForm extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, isEditFlag, componentPartSelectList } = this.props;
-
+    const { handleSubmit, isEditFlag } = this.props;
     const filterList = (inputValue) => {
       let tempArr = []
-
       tempArr = this.renderListing("part").filter(i =>
-        i.label.toLowerCase().includes(inputValue.toLowerCase())
+        i.label !== null && i.label.toLowerCase().includes(inputValue.toLowerCase())
       );
-
       if (tempArr.length <= 100) {
         return tempArr
       } else {
@@ -203,8 +194,9 @@ class AddComponentForm extends Component {
       new Promise(resolve => {
         resolve(filterList(inputValue));
 
-
       });
+
+
     return (
       <>
         <form
@@ -213,31 +205,13 @@ class AddComponentForm extends Component {
           onSubmit={handleSubmit(this.onSubmit.bind(this))}
           onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
         >
-
           <Row>
-
             <Col md="6">
               <label>{"Part No."}<span className="asterisk-required">*</span></label>
               <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter first few digits to see the part numbers" />
               <AsyncSelect name="PartNumber" ref={this.myRef} key={this.state.updateAsyncDropdown} cacheOptions defaultOptions loadOptions={promiseOptions} onChange={(e) => this.handlePartChange(e)} />
               {this.state.isPartNoNotSelected && <div className='text-help'>This field is required.</div>}
-              {/* <Field
-                name="PartNumber"
-                type="text"
-                label={"Part No."}
-                component={searchableSelect}
-                placeholder={"--Select Part--"}
-                options={this.renderListing("part")}
-                //onKeyUp={(e) => this.changeItemDesc(e)}
-                validate={
-                  this.state.part == null || this.state.part.length === 0
-                    ? [required]
-                    : []
-                }
-                required={true}
-                handleChangeDescription={this.handlePartChange}
-                valueDescription={this.state.part}
-              /> */}
+
             </Col>
             <Col md="6">
               <Field
@@ -247,7 +221,6 @@ class AddComponentForm extends Component {
                 placeholder={""}
                 validate={[acceptAllExceptSingleSpecialCharacter]}
                 component={renderText}
-                //required={true}
                 className=""
                 customClassName={"withBorder"}
                 disabled={true}
@@ -262,7 +235,6 @@ class AddComponentForm extends Component {
                 placeholder={""}
                 validate={[acceptAllExceptSingleSpecialCharacter]}
                 component={renderText}
-                // required={true}
                 className=""
                 customClassName={"withBorder"}
                 disabled={true}
@@ -276,7 +248,6 @@ class AddComponentForm extends Component {
                 placeholder={""}
                 validate={[]}
                 component={renderText}
-                // required={true}
                 className=""
                 customClassName={"withBorder"}
                 disabled={true}
@@ -291,7 +262,6 @@ class AddComponentForm extends Component {
                 placeholder={""}
                 validate={[]}
                 component={renderText}
-                // required={true}
                 className=""
                 customClassName={"withBorder"}
                 disabled={true}
@@ -305,7 +275,6 @@ class AddComponentForm extends Component {
                 placeholder={""}
                 validate={[]}
                 component={renderText}
-                // required={true}
                 className=""
                 customClassName={"withBorder"}
                 disabled={true}
@@ -320,7 +289,6 @@ class AddComponentForm extends Component {
                 placeholder={""}
                 validate={[]}
                 component={renderText}
-                // required={true}
                 className=""
                 customClassName={"withBorder"}
                 disabled={true}
@@ -392,7 +360,7 @@ function mapStateToProps({ part }) {
       ECNNumber: DrawerPartData.ECNNumber,
       RevisionNumber: DrawerPartData.RevisionNumber,
       DrawingNumber: DrawerPartData.DrawingNumber,
-      GroupCode: DrawerPartData.GroupCode,
+      GroupCode: DrawerPartData.GroupCodeList ? (DrawerPartData.GroupCodeList.length > 0 ? (DrawerPartData.GroupCodeList[0].GroupCode ? DrawerPartData.GroupCodeList[0].GroupCode : "") : "") : "",
       BOMNumber: DrawerPartData.BOMNumber,
     }
 

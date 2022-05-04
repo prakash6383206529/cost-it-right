@@ -33,6 +33,10 @@ function SimulationInsights(props) {
     filter: true,
     sortable: true,
   };
+  const resetState = () => {
+    gridOptions.columnApi.resetColumnState();
+    gridOptions.api.setFilterModel(null);
+}
   const frameworkComponents = {
     customLoadingOverlay: LoaderCustom,
     customNoRowsOverlay: NoContentFound,
@@ -55,6 +59,9 @@ function SimulationInsights(props) {
                     <Col md="6" lg="6" className="search-user-block mb-3">
                         <div className="d-flex justify-content-end bd-highlight excel-btn w100">
                             <div>
+                               <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => resetState()}>
+                                    <div className="refresh mr-0"></div>
+                                </button>
                                 <ExcelFile filename={ReportMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
                                     {/* {renderColumn(ReportMaster)} */}
                                 </ExcelFile>
@@ -63,7 +70,7 @@ function SimulationInsights(props) {
                     </Col>
                 </Row>
             <div className="ag-grid-react">
-        <div className="ag-grid-wrapper height-width-wrapper">
+        <div className={`ag-grid-wrapper height-width-wrapper ${simulationInsights && simulationInsights?.length <=0 ?"overlay-contain": ""}`}>
           <div className="ag-grid-header">
             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => onFilterTextBoxChanged(e)} />
           </div>

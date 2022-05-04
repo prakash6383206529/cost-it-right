@@ -1,21 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import ApprovalWorkFlow from '../costing/components/approval/ApprovalWorkFlow';
 import RMDomesticListing from './material-master/RMDomesticListing';
+import BOPDomesticListing from './bop-master/BOPDomesticListing';
 import Drawer from '@material-ui/core/Drawer';
-import { useForm, Controller } from 'react-hook-form';
 import { useSelector, useDispatch } from 'react-redux';
 import { Container, Row, Col, } from 'reactstrap';
 import { getMasterApprovalSummary } from './actions/Material';
 import { Fragment } from 'react';
 import MasterSendForApproval from './MasterSendForApproval';
 import LoaderCustom from '../common/LoaderCustom';
+import OperationListing from './operation/OperationListing'
+import { BOP_MASTER_ID, RM_MASTER_ID, OPERATIONS_ID, MACHINE_MASTER_ID, FILE_URL } from '../../config/constants';
+import MachineRateListing from './machine-master/MachineRateListing';
 
 function SummaryDrawer(props) {
     const { approvalData } = props
 
     const dispatch = useDispatch()
-
-
     /**
     * @method toggleDrawer
     * @description TOGGLE DRAWER
@@ -33,24 +34,53 @@ function SummaryDrawer(props) {
     }
 
     const [approvalLevelStep, setApprovalLevelStep] = useState([])
+    const [files, setFiles] = useState([])
     const [approvalDetails, setApprovalDetails] = useState({})
     const [approvalDrawer, setApprovalDrawer] = useState(false)
     const [rejectDrawer, setRejectDrawer] = useState(false)
     const [loader, setLoader] = useState(true)
+    const [isRMApproval, setIsRMApproval] = useState(false)
+    const [isBOPApproval, setIsBOPApproval] = useState(false)
+    const [isOperationApproval, setIsOperationApproval] = useState(false)
+    const [isMachineApproval, setIsMachineApproval] = useState(false)
 
 
     useEffect(() => {
-        dispatch(getMasterApprovalSummary(approvalData.approvalNumber, approvalData.approvalProcessId, res => {
-
+        dispatch(getMasterApprovalSummary(approvalData.approvalNumber, approvalData.approvalProcessId, props.masterId, res => {
             const Data = res.data.Data
             setApprovalLevelStep(Data.MasterSteps)
             setApprovalDetails({ IsSent: Data.IsSent, IsFinalLevelButtonShow: Data.IsFinalLevelButtonShow, ApprovalProcessId: Data.ApprovalProcessId, MasterApprovalProcessSummaryId: Data.ApprovalProcessSummaryId, Token: Data.Token, MasterId: Data.MasterId })
             setLoader(false)
+            if (Number(props.masterId) === RM_MASTER_ID) {
+                setFiles(Data.ImpactedMasterDataList[0].Files)
+            }
+            else if (Number(props.masterId) === BOP_MASTER_ID) {
+                setFiles(Data.ImpactedMasterDataListBOP[0].Files)
+            } else if (Number(props.masterId) === OPERATIONS_ID) {
+                setFiles(Data.ImpactedMasterDataListOperation[0].Files)
+            } else if (Number(props.masterId) === MACHINE_MASTER_ID) {
+                setFiles(Data.ImpactedMasterDataListMachine[0].Files)
+            }
         }))
+
+        if (Number(props.masterId) === RM_MASTER_ID) {            // MASTER ID 1 FOR RAW MATERIAL
+            setIsRMApproval(true)
+        }
+        else if (Number(props.masterId) === BOP_MASTER_ID) {     // MASTER ID 2 FOR BOP 
+            setIsBOPApproval(true)
+        } else if (Number(props.masterId) === OPERATIONS_ID) {  // MASTER ID 3 FOR OPERATION
+            setIsOperationApproval(true)
+
+        } else if (Number(props.masterId) === MACHINE_MASTER_ID) {  // MASTER ID 4 FOR MACHINE
+            setIsMachineApproval(true)
+        }
+
+
     }, [])
     // const [approvalData, setApprovalData] = useState('')
 
     const closeApproveRejectDrawer = (e, type) => {
+
         setApprovalDrawer(false)
         setRejectDrawer(false)
         if (type === 'submit') {
@@ -79,10 +109,48 @@ function SummaryDrawer(props) {
                             <Col>
                                 <ApprovalWorkFlow approvalLevelStep={approvalLevelStep} approvalNo={approvalDetails.Token} />
 
-                                <RMDomesticListing isMasterSummaryDrawer={true} />
+
+                                {isRMApproval &&
+                                    <RMDomesticListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' />}
+                                {isBOPApproval &&
+                                    <BOPDomesticListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' />}
+
+                                {isOperationApproval &&
+                                    <OperationListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' />}
+
+                                {isMachineApproval &&
+                                    <MachineRateListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' />}
 
 
+                                <Row>
+                                    <Col md="12">
+                                        <h5 className="left-border">Attachments</h5>
+                                    </Col>
+                                    <Col md="12">
+                                        <div className={"attachment-wrapper mt-0"}>
+
+                                            {files &&
+                                                files.map((f) => {
+                                                    const withOutTild = f.FileURL?.replace(
+                                                        "~",
+                                                        ""
+                                                    );
+                                                    const fileURL = `${FILE_URL}${withOutTild}`;
+                                                    return (
+                                                        <div className={"attachment images"}>
+                                                            <a href={fileURL} target="_blank" rel="noreferrer" title={f.OriginalFileName}>
+                                                                {f.OriginalFileName}
+                                                            </a>
+
+                                                        </div>
+                                                    );
+                                                })}
+                                        </div>
+                                    </Col>
+                                </Row>
                             </Col>
+
+
                         </Row>
                         {
                             !approvalDetails.IsSent &&
@@ -104,7 +172,7 @@ function SummaryDrawer(props) {
                     </div>
                 </div>
 
-            </Drawer>
+            </Drawer >
 
             {
                 (approvalDrawer || rejectDrawer) &&
@@ -118,7 +186,7 @@ function SummaryDrawer(props) {
                     IsFinalLevelButtonShow={approvalDetails.IsFinalLevelButtonShow}
                 />
             }
-        </div>
+        </div >
     );
 }
 

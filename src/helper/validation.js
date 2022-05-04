@@ -1,5 +1,7 @@
 import DayTime from '../components/common/DayTimeWrapper';
 import Toaster from '../components/common/Toaster';
+import { reactLocalStorage } from 'reactjs-localstorage';
+import _ from 'lodash'
 
 export const minLength = min => value =>
     value && value.length < min ? `Min length must be ${min}.` : undefined;
@@ -13,6 +15,7 @@ export const minValue = min => value =>
 
 
 export const minValue1 = minValue(1);
+export const minValueLessThan1 = minValue(0.1);
 
 export const minLength1 = minLength(1);
 export const minLength2 = minLength(2);
@@ -40,7 +43,9 @@ export const maxLength26 = maxLength(25);
 export const maxLength30 = maxLength(30);
 export const maxLength45 = maxLength(45);
 export const maxLength50 = maxLength(50);
-export const maxLength70 = maxLength(71);
+export const maxLength70 = maxLength(70);
+export const maxLength71 = maxLength(71);
+export const maxLength75 = maxLength(75);
 export const maxLength85 = maxLength(85);
 export const maxLength100 = maxLength(100);
 export const maxLength200 = maxLength(200);
@@ -104,6 +109,7 @@ export const selectRequired = value =>
     ? undefined : 'This field is required.');
 
 export const checkWhiteSpaces = value => {
+
     return value && !value.toString().replace(/\s/g, '').length ? 'This field is invalid.' : undefined;
 }
 
@@ -143,8 +149,11 @@ export const specialName = value =>
         ? 'Please enter a valid name.' : undefined;
 
 export const validatePassword = value => {
-    return (value && /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*?[#?!@$%^&*-]).{5,}$/.test(value) === false);
+
+    return (value && /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[#?!@$%^&*-]).{5,}$/.test(value) === false);
+
 }
+
 
 export const alphaNumeric = value =>
     value && /[^a-zA-Z0-9 ]/i.test(value)
@@ -305,7 +314,13 @@ export const trimDecimalPlace = (floatValue, Number) => {
 }
 
 export const checkForDecimalAndNull = (floatValue, Number) => {
-    return checkForNull(trimDecimalPlace(floatValue, Number))
+    const localStorage = reactLocalStorage.getObject('InitialConfiguration');
+    if (localStorage.IsRoundingVisible) {
+        return checkForNull(_.round(floatValue, Number))
+    } else {
+
+        return checkForNull(trimDecimalPlace(floatValue, Number))
+    }
 }
 
 export const Numeric = value => {

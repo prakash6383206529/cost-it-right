@@ -14,6 +14,13 @@ import {
     GET_ASSEMBLY_SIMULATION_LIST,
     SET_DATA_TEMP,
     GET_ASSEMBLY_SIMULATION_LIST_SUMMARY,
+    SET_SHOW_SIMULATION_PAGE,
+    GET_TOKEN_SELECT_LIST,
+    GET_VALUE_TO_SHOW_COSTING_SIMULATION,
+    GET_KEYS_FOR_DOWNLOAD_SUMMARY,
+    SET_TOKEN_CHECK_BOX,
+    SET_KEY_FOR_API_CALLS,
+    SET_TOKEN_FOR_SIMULATION,
 } from '../../../config/constants';
 
 const initialState = {
@@ -121,7 +128,43 @@ export default function SimulationReducer(state = initialState, action) {
                 loading: false,
                 valdataTemp: action.payload
             }
-
+        case SET_SHOW_SIMULATION_PAGE:
+            return {
+                ...state,
+                loading: false,
+                getShowSimulationPage: action.payload
+            };
+        case GET_TOKEN_SELECT_LIST:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                getTokenSelectList: action.payload
+            };
+        case GET_VALUE_TO_SHOW_COSTING_SIMULATION:
+            return {
+                ...state,
+                loading: false,
+                costingSimulationListAllKeys: action.payload
+            }
+        case GET_KEYS_FOR_DOWNLOAD_SUMMARY:
+            return {
+                ...state,
+                loading: false,
+                keysForDownloadSummary: action.payload
+            }
+        case SET_TOKEN_CHECK_BOX:
+            return {
+                ...state,
+                loading: false,
+                tokenCheckBoxValue: action.payload
+            }
+        case SET_TOKEN_FOR_SIMULATION:
+            return {
+                ...state,
+                loading: false,
+                tokenForSimulation: action.payload
+            }
 
         default:
             return state;

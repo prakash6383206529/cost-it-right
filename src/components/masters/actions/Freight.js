@@ -40,6 +40,7 @@ export function createFreight(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            callback(error);
         });
     };
 }
@@ -127,6 +128,7 @@ export function updateFright(requestData, callback) {
             }).catch((error) => {
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
+                callback(error);
             });
     };
 }

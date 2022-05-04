@@ -20,16 +20,15 @@ function AddOperation(props) {
 
   const [tableData, setTableDataList] = useState([]);
   const [selectedRowData, setSelectedRowData] = useState([]);
-  const [selectedIds, setSelectedIds] = useState(props.Ids);
   const [gridApi, setGridApi] = useState(null);
   const [gridColumnApi, setGridColumnApi] = useState(null);
-  const [rowData, setRowData] = useState(null);
-
   const dispatch = useDispatch()
-
   const costData = useContext(costingInfoContext)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { CostingEffectiveDate } = useSelector(state => state.costing)
+  const { selectedIdsOfOperationAndOtherOperation, selectedIdsOfOperation } = useSelector(state => state.costing)
+  let selectedIds = [...selectedIdsOfOperation, ...selectedIdsOfOperationAndOtherOperation]
+
 
   /**
   * @method toggleDrawer
@@ -86,24 +85,6 @@ function AddOperation(props) {
   }, []);
 
 
-  /**
-  * @method renderPaginationShowsTotal
-  * @description Pagination
-  */
-  const renderPaginationShowsTotal = (start, to, total) => {
-    return <GridTotalFormate start={start} to={to} total={total} />
-  }
-
-  const options = {
-    clearSearch: true,
-    noDataText: (tableData === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
-    prePage: <span className="prev-page-pg"></span>, // Previous page button text
-    nextPage: <span className="next-page-pg"></span>, // Next page button text
-    firstPage: <span className="first-page-pg"></span>, // First page button text
-    lastPage: <span className="last-page-pg"></span>,
-
-  };
-
   const onRowSelect = () => {
     var selectedRows = gridApi.getSelectedRows();
     setSelectedRowData(selectedRows)
@@ -117,22 +98,6 @@ function AddOperation(props) {
     // }
 
   }
-
-  const onSelectAll = (isSelected, rows) => {
-    if (isSelected) {
-      setSelectedRowData(rows)
-    } else {
-      setSelectedRowData([])
-    }
-  }
-
-  const selectRowProp = {
-    mode: 'checkbox',
-    clickToSelect: true,
-    unselectable: selectedIds,
-    onSelect: onRowSelect,
-    onSelectAll: onSelectAll
-  };
 
   /**
   * @method addRow
@@ -154,9 +119,6 @@ function AddOperation(props) {
     props.closeDrawer()
   }
 
-  const onSubmit = data => {
-    toggleDrawer('')
-  }
   const isFirstColumn = (params) => {
     var displayedColumns = params.columnApi.getAllDisplayedColumns();
     var thisIsFirstColumn = displayedColumns[0] === params.column;
@@ -213,7 +175,6 @@ function AddOperation(props) {
   const resetState = () => {
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
-
   }
 
 
@@ -233,10 +194,10 @@ function AddOperation(props) {
               <Row className="drawer-heading mb-4">
                 <Col>
                   <div className={'header-wrapper left'}>
-                    <h3>{'Add Operation'}</h3>
+                    <h3>{'Add Operation:'}</h3>
                   </div>
                   <div
-                    onClick={(e) => toggleDrawer(e)}
+                    onClick={cancel}
                     className={'close-button right'}>
                   </div>
                 </Col>
@@ -245,7 +206,7 @@ function AddOperation(props) {
 
               <Row className="mb-3 mx-0">
                 <Col className="hidepage-size">
-                  <div className="ag-grid-wrapper height-width-wrapper">
+                  <div className={`ag-grid-wrapper min-height-auto height-width-wrapper ${tableData && tableData?.length <= 0 ? "overlay-contain" : ""}`}>
                     <div className="ag-grid-header">
                       <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                       <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
@@ -302,20 +263,19 @@ function AddOperation(props) {
               </Row>
 
               <Row className="sf-btn-footer no-gutters justify-content-between mx-0">
-                <div className="col-sm-12 text-left px-3">
+                <div className="col-sm-12 text-left px-3 d-flex justify-content-end">
                   <button
                     type={'button'}
-                    className="submit-button mr5 save-btn"
+                    className="reset mr5 cancel-btn"
+                    onClick={cancel} >
+                    <div className={'cancel-icon'}></div> {'Cancel'}
+                  </button>
+                  <button
+                    type={'button'}
+                    className="submit-button save-btn"
                     onClick={addRow} >
                     <div className={'save-icon'}></div>
                     {'SELECT'}
-                  </button>
-
-                  <button
-                    type={'button'}
-                    className="reset cancel-btn"
-                    onClick={cancel} >
-                    <div className={'cancel-icon'}></div> {'Cancel'}
                   </button>
                 </div>
               </Row>

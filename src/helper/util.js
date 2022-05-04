@@ -1,13 +1,11 @@
-import React from 'react';
-import {  toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import DayTime from '../components/common/DayTimeWrapper';
-import { MESSAGES } from '../config/message'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import { checkForDecimalAndNull, checkForNull } from './validation'
 import {
   G, KG, MG, PLASTIC, SHEET_METAL, WIRING_HARNESS, PLATING, SPRINGS, HARDWARE, NON_FERROUS_LPDDC, MACHINING,
-  ELECTRONICS, RIVET, NON_FERROUS_HPDC, RUBBER, NON_FERROUS_GDC, FORGING, FASTNERS, RIVETS, ELECTRICAL_PROPRIETARY, MECHANICAL_PROPRIETARY, RMDOMESTIC, RMIMPORT, BOPDOMESTIC, BOPIMPORT, PROCESS, OPERATION, OPERATIONS, SURFACETREATMENT, MACHINERATE, OVERHEAD, PROFIT, EXCHNAGERATE,
+  ELECTRONICS, RIVET, NON_FERROUS_HPDC, RUBBER, NON_FERROUS_GDC, FORGING, FASTNERS, RIVETS, RMDOMESTIC, RMIMPORT, BOPDOMESTIC, BOPIMPORT, PROCESS, OPERATIONS, SURFACETREATMENT, MACHINERATE, OVERHEAD, PROFIT, EXCHNAGERATE,
 } from '../config/constants'
 import { getConfigurationKey } from './auth'
 
@@ -39,23 +37,29 @@ export const apiErrors = (res) => {
 const handleHTTPStatus = (response) => {
   switch (response.status) {
     case 202:
-      return toast.error('No Data Available.')
+      const errMsg202 = response?.data?.Message ? response.data.Message : 'No Data Available.'
+      return toast.error(errMsg202)
     case 203:
-      return toast.error('Data is inconsistent. Please refresh your session by re-login')
+      const errMsg203 = response?.data?.Message ? response.data.Message : 'Data is inconsistent. Please refresh your session by re-login.'
+      return toast.error(errMsg203)
     case 204:
-      return toast.error('Intentionally blank for now.')
+      const errMsg204 = response?.data?.Message ? response.data.Message : 'Intentionally blank for now.'
+      return toast.error(errMsg204)
     case 205:
-      return toast.error('Please clear your cache for data to reflect')
+      const errMsg205 = response?.data?.Message ? response.data.Message : 'Please clear your cache for data to reflect.'
+      return toast.error(errMsg205)
     case 206:
-      return toast.error('The data might not have been updated properly. Please try again to ensure')
+      const errMsg206 = response?.data?.Message ? response.data.Message : 'The data might not have been updated properly. Please try again to ensure.'
+      return toast.error(errMsg206)
     case 300:
     case 301:
     case 302:
     case 303:
-
-      return toast.error('Something is not right. Please contact your IT Team.')
+      const errMsg303 = response?.data?.Message ? response.data.Message : 'Something is not right. Please contact your IT Team.'
+      return toast.error(errMsg303)
     case 400:
-      return toast.error('Bad Request. Please contact your IT Team.')
+      const errMsg400 = response?.data?.Message ? response.data.Message : 'Bad Request. Please contact your IT Team.'
+      return toast.error(errMsg400)
     case 401:
       reactLocalStorage.setObject("isUserLoggedIn", false);
       reactLocalStorage.setObject("userDetail", {});
@@ -63,13 +67,15 @@ const handleHTTPStatus = (response) => {
       window.location.assign('/login');
       return toast.error('Authentication error. Please contact your IT Team.')
     case 403:
-      return toast.error('You are not allowed to access this resource. Please contact your IT Team.',)
+      const errMsg403 = response?.data?.Message ? response.data.Message : 'You are not allowed to access this resource. Please contact your IT Team.'
+      return toast.error(errMsg403)
     case 404:
-      return toast.error('Not found')
+      const errMsg404 = response?.data?.Message ? response.data.Message : 'Not found.'
+      return toast.error(errMsg404)
     case 405:
-      return toast.error('You are not allowed to access this resource. Please contact your IT Team',)
+      const errMsg405 = response?.data?.Message ? response.data.Message : 'You are not allowed to access this resource. Please contact your IT Team.'
+      return toast.error(errMsg405)
     case 406:
-
       const errMsg406 = response?.data?.Message ? response.data.Message : 'Something is not right. Please contact your IT Team.'
       return toast.error(errMsg406)
     case 409:
@@ -77,39 +83,46 @@ const handleHTTPStatus = (response) => {
     case 414:
     case 416:
     case 427:
-      return toast.error('Something is not right. Please contact your IT Team')
+      const errMsg427 = response?.data?.Message ? response.data.Message : 'Something is not right. Please contact your IT Team.'
+      return toast.error(errMsg427)
     case 407:
-      return toast.error('Proxy Authentication Error. Please contact your IT Team')
+      const errMsg407 = response?.data?.Message ? response.data.Message : 'Proxy Authentication Error. Please contact your IT Team.'
+      return toast.error(errMsg407)
     case 408:
-      return toast.error('Your request has timed out. Please try again after some time.')
+      const errMsg408 = response?.data?.Message ? response.data.Message : 'Your request has timed out. Please try again after some time.'
+      return toast.error(errMsg408)
     case 410:
-      return toast.error('The resource you requested no longer exists.')
+      const errMsg410 = response?.data?.Message ? response.data.Message : 'The resource you requested no longer exists.'
+      return toast.error(errMsg410)
     case 412:
       const errMsg = response?.data?.Message ? response.data.Message : 'Something is not right. Please contact your IT Team.'
       return toast.error(errMsg)
     case 413:
-      return toast.error("Server can't process such long request. Please contact your IT Team")
+      const errMsg413 = response?.data?.Message ? response.data.Message : "Server can't process such long request. Please contact your IT Team."
+      return toast.error(errMsg413)
     case 415:
-      return toast.error('This request is not supported by the server. Please contact your IT Team')
+      const errMsg415 = response?.data?.Message ? response.data.Message : "This request is not supported by the server. Please contact your IT Team."
+      return toast.error(errMsg415)
     case 417:
-
       const errMsg417 = response?.data?.Message ? response.data.Message : 'Something is not right. Please contact your IT Team.'
       return toast.error(errMsg417)
     case 500:
-      return toast.error('Internal server error. Please contact your IT Team')
-
+      const errMsg500 = response?.data?.Message ? response.data.Message : 'Internal server error. Please contact your IT Team.'
+      return toast.error(errMsg500)
     case 501:
-      return toast.error('Something is not right. Please contact your IT Team')
+      const errMsg501 = response?.data?.Message ? response.data.Message : 'Something is not right. Please contact your IT Team.'
+      return toast.error(errMsg501)
     case 502:
-      return toast.error('Server is unavailable or unreachable. Please contact your IT Team')
+      const errMsg502 = response?.data?.Message ? response.data.Message : 'Server is unavailable or unreachable. Please contact your IT Team.'
+      return toast.error(errMsg502)
     case 503:
-      return toast.error('Server is unavailable due to load or maintenance. Please contact your IT Team')
+      const errMsg503 = response?.data?.Message ? response.data.Message : 'Server is unavailable due to load or maintenance. Please contact your IT Team.'
+      return toast.error(errMsg503)
     case 504:
-      return toast.error('Server is unavailable due to timeout. Please contact your IT Team')
+      const errMsg504 = response?.data?.Message ? response.data.Message : 'Server is unavailable due to timeout. Please contact your IT Team.'
+      return toast.error(errMsg504)
     default:
-
       return toast.error('Something is not right. Please contact your IT Team')
-
   }
 }
 
@@ -257,18 +270,6 @@ export const displayValue = (value) => {
   }
 }
 
-/**
- * @method onLogout
- * @descriptin LOGOUT THEN REDIRECT TO LOGIN PAGE
- **/
-function onLogout() {
-  reactLocalStorage.setObject('isUserLoggedIn', false)
-  reactLocalStorage.setObject('userDetail', {})
-  toast.success(MESSAGES.LOGOUT_SUCCESS)
-  setTimeout(() => {
-    window.location.assign('/login')
-  }, 100)
-}
 
 /**
  * @method convertObjectToArray
@@ -355,6 +356,7 @@ export function renderOptionList(categoriesMaster) {
     obj.label = val
     obj.value = val
     categoryArray.push(obj)
+    return null
   })
   return categoryArray
 }
@@ -547,7 +549,6 @@ export function formViewData(costingSummary) {
   let temp = []
   let dataFromAPI = costingSummary
   let obj = {}
-  let type = dataFromAPI.CostingHeading ? dataFromAPI.CostingHeading : 'other'
 
   obj.zbc = dataFromAPI.TypeOfCosting || dataFromAPI.TypeOfCosting === 0 ? dataFromAPI.TypeOfCosting : '-'
   obj.IsApprovalLocked = dataFromAPI.IsApprovalLocked !== null ? dataFromAPI.IsApprovalLocked : '-'
@@ -563,13 +564,14 @@ export function formViewData(costingSummary) {
   obj.netBOP = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetBoughtOutPartCost ? dataFromAPI.CostingPartDetails.NetBoughtOutPartCost : 0
   obj.pCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetProcessCost ? dataFromAPI.CostingPartDetails.NetProcessCost : 0
   obj.oCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetOperationCost ? dataFromAPI.CostingPartDetails.NetOperationCost : 0
-  obj.sTreatment = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetSurfaceTreatmentCost ? dataFromAPI.CostingPartDetails.NetSurfaceTreatmentCost : 0
- obj.nsTreamnt = dataFromAPI && dataFromAPI.NetSurfaceTreatmentCost !== undefined ? dataFromAPI.NetSurfaceTreatmentCost:0
+  obj.sTreatment = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.SurfaceTreatmentCost ? dataFromAPI.CostingPartDetails.SurfaceTreatmentCost : 0
+  obj.nsTreamnt = dataFromAPI && dataFromAPI.NetSurfaceTreatmentCost !== undefined ? dataFromAPI.NetSurfaceTreatmentCost : 0
   obj.tCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetTransportationCost ? dataFromAPI.CostingPartDetails.NetTransportationCost : 0
   obj.nConvCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetConversionCost ? dataFromAPI.CostingPartDetails.NetConversionCost : 0
   obj.nTotalRMBOPCC = dataFromAPI.CostingPartDetails && dataFromAPI.NetTotalRMBOPCC ? dataFromAPI.NetTotalRMBOPCC : 0
-  
- 
+  obj.netSurfaceTreatmentCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetSurfaceTreatmentCost ? dataFromAPI.CostingPartDetails.NetSurfaceTreatmentCost : 0
+  obj.EtechnologyType = dataFromAPI.ETechnology && dataFromAPI.ETechnology ? dataFromAPI.ETechnology : 0
+  obj.RawMaterialCalculatorId = dataFromAPI.RawMaterialCalculatorId && dataFromAPI.RawMaterialCalculatorId ? dataFromAPI.RawMaterialCalculatorId : 0
   obj.modelType = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.ModelType ? dataFromAPI.CostingPartDetails.ModelType : '-'
   obj.aValue = { applicability: 'Applicability', value: 'Value', }
   obj.overheadOn = {
@@ -593,13 +595,13 @@ export function formViewData(costingSummary) {
     paymentValue: dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingInterestRateDetail.PaymentTermDetail.NetCost ? dataFromAPI.CostingPartDetails.CostingInterestRateDetail.PaymentTermDetail.NetCost : 0,
   }
   obj.nOverheadProfit = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetOverheadAndProfitCost ? dataFromAPI.CostingPartDetails.NetOverheadAndProfitCost : 0
-  
+
   obj.packagingCost = dataFromAPI.CostingPartDetails
     && dataFromAPI.CostingPartDetails.NetPackagingCost !== null ? dataFromAPI.CostingPartDetails.NetPackagingCost
     : 0
   obj.freight = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetFreightCost !== null ? dataFromAPI.CostingPartDetails.NetFreightCost : 0
   obj.nPackagingAndFreight = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetFreightPackagingCost ? dataFromAPI.CostingPartDetails.NetFreightPackagingCost : 0
-  
+
 
   obj.bopPHandlingCharges = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.BOPHandlingCharges !== null ? dataFromAPI.CostingPartDetails.BOPHandlingCharges : 0
   obj.bopHandlingPercentage = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.BOPHandlingPercentage !== null ? dataFromAPI.CostingPartDetails.BOPHandlingPercentage : 0
@@ -608,22 +610,27 @@ export function formViewData(costingSummary) {
   obj.toolPrice = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingToolCostResponse.length > 0 && dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolCost !== null ? dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolCost : 0
   obj.amortizationQty = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingToolCostResponse.length > 0 && dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].Life !== null ? dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].Life : 0
 
-  obj.toolApplicability =  { applicability: 'Applicability', value: 'Value', }
-  obj.toolApplicabilityValue= {
-    toolTitle:dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingToolCostResponse.length>0 && dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolCostType !== null ? dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolCostType : 0,
-    toolValue:dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingToolCostResponse.length>0 && dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolApplicabilityCost !== null ? dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolApplicabilityCost : 0,
+  obj.toolApplicability = { applicability: 'Applicability', value: 'Value', }
+  obj.toolApplicabilityValue = {
+    toolTitle: dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingToolCostResponse.length > 0 && dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolCostType !== null ? dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolCostType : 0,
+    toolValue: dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingToolCostResponse.length > 0 && dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolApplicabilityCost !== null ? dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolApplicabilityCost : 0,
   }
-  obj.toolAmortizationCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingToolCostResponse.length>0 && dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolAmortizationCost !== null ? dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolAmortizationCost : 0
+  obj.toolAmortizationCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingToolCostResponse.length > 0 && dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolAmortizationCost !== null ? dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolAmortizationCost : 0
 
   obj.totalToolCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetToolCost !== null ? dataFromAPI.CostingPartDetails.NetToolCost : 0
-  
+
   obj.totalCost = dataFromAPI.CostingPartDetails && dataFromAPI.TotalCost ? dataFromAPI.TotalCost : '-'
   obj.otherDiscount = { discount: 'Discount %', value: 'Value', }
   obj.otherDiscountValue = {
     discountPercentValue: dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.OtherCostDetails.HundiOrDiscountPercentage !== null ? dataFromAPI.CostingPartDetails.OtherCostDetails.HundiOrDiscountPercentage : 0,
     discountValue: dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.OtherCostDetails.HundiOrDiscountValue !== null ? dataFromAPI.CostingPartDetails.OtherCostDetails.HundiOrDiscountValue : 0,
+    discountApplicablity: dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.OtherCostDetails.HundiOrDiscountValue !== null ? dataFromAPI.CostingPartDetails.OtherCostDetails.DiscountApplicability : 0,
+    dicountType: dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.OtherCostDetails.DiscountCostType !== null ? dataFromAPI.CostingPartDetails.OtherCostDetails.DiscountCostType : '-'
   }
   obj.anyOtherCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.OtherCostDetails.AnyOtherCost !== null ? dataFromAPI.CostingPartDetails.OtherCostDetails.AnyOtherCost : 0
+  obj.anyOtherCostType = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.OtherCostDetails.OtherCostType !== null ? dataFromAPI.CostingPartDetails.OtherCostDetails.OtherCostType : '-'
+  obj.anyOtherCostApplicablity = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.OtherCostDetails.AnyOtherCost !== null ? dataFromAPI.CostingPartDetails.OtherCostDetails.OtherCostApplicability : 0
+  obj.anyOtherCostPercent = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.OtherCostDetails.OtherCostPercentage !== null ? dataFromAPI.CostingPartDetails.OtherCostDetails.OtherCostPercentage : 0
   obj.remark = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.OtherCostDetails.Remark !== null ? dataFromAPI.CostingPartDetails.OtherCostDetails.Remark : '-'
   obj.nPOPriceWithCurrency = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.OtherCostDetails.NetPOPriceOtherCurrency !== null ? dataFromAPI.CostingPartDetails.OtherCostDetails.NetPOPriceOtherCurrency : 0
   obj.currency = {
@@ -632,7 +639,7 @@ export function formViewData(costingSummary) {
   }
   obj.nPOPrice = dataFromAPI.NetPOPrice && dataFromAPI.NetPOPrice !== null ? dataFromAPI.NetPOPrice : 0
   obj.effectiveDate = dataFromAPI.EffectiveDate ? dataFromAPI.EffectiveDate : ''
- 
+
   obj.attachment = dataFromAPI.Attachements ? dataFromAPI.Attachements : []
   obj.approvalButton = ''
   // //RM
@@ -641,7 +648,7 @@ export function formViewData(costingSummary) {
   obj.netBOPCostView = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails.CostingBoughtOutPartCost : []
   // //COnversion Cost
   obj.netConversionCostView = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails.CostingConversionCost : '-'
-  obj.netTransportationCostView = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails.ChildPartTransportationDetails ??[] : []
+  obj.netTransportationCostView = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails.ChildPartTransportationDetails ?? [] : []
   obj.surfaceTreatmentDetails = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails.SurfaceTreatmentDetails : []
   // //OverheadCost and Profit
   obj.netOverheadCostView = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails.CostingOverheadDetail : '-'
@@ -657,8 +664,8 @@ export function formViewData(costingSummary) {
   obj.netFreightCostView = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails.CostingFreightDetail : []
   // //Tool Cost
   obj.netToolCostView = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails.CostingToolCostResponse : []
-  obj.totalTabSum =checkForNull(obj.nTotalRMBOPCC )+ checkForNull(obj.nsTreamnt) +   checkForNull(obj.nOverheadProfit) +checkForNull(obj.nPackagingAndFreight) +   checkForNull(obj.totalToolCost) 
-  
+  obj.totalTabSum = checkForNull(obj.nTotalRMBOPCC) + checkForNull(obj.nsTreamnt) + checkForNull(obj.nOverheadProfit) + checkForNull(obj.nPackagingAndFreight) + checkForNull(obj.totalToolCost)
+
   // //For Drawer Edit
   obj.partId = dataFromAPI.PartNumber ? dataFromAPI.PartNumber : '-'
   obj.plantId = dataFromAPI.PlantId ? dataFromAPI.PlantId : '-'
@@ -684,9 +691,13 @@ export function formViewData(costingSummary) {
   obj.masterBatchTotal = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.MasterBatchTotal ? dataFromAPI.CostingPartDetails.MasterBatchTotal : 0
   obj.masterBatchRMPrice = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.MasterBatchRMPrice ? dataFromAPI.CostingPartDetails.MasterBatchRMPrice : 0
   obj.masterBatchPercentage = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.MasterBatchPercentage ? dataFromAPI.CostingPartDetails.MasterBatchPercentage : 0
-  obj.isApplyMasterBatch = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.IsApplyMasterBatch ? dataFromAPI.CostingPartDetails.IsApplyMasterBatch : 0
+  obj.isApplyMasterBatch = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.IsApplyMasterBatch ? dataFromAPI.CostingPartDetails.IsApplyMasterBatch : false
   obj.IsAssemblyCosting = dataFromAPI.IsAssemblyCosting ? dataFromAPI.IsAssemblyCosting : ""
-  obj.childPartBOPHandlingCharges = dataFromAPI.CostingPartDetails?.ChildPartBOPHandlingCharges ? dataFromAPI.CostingPartDetails.ChildPartBOPHandlingCharges:[]
+  obj.childPartBOPHandlingCharges = dataFromAPI.CostingPartDetails?.ChildPartBOPHandlingCharges ? dataFromAPI.CostingPartDetails.ChildPartBOPHandlingCharges : []
+  obj.masterBatchRMName = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.MasterBatchRMName ? dataFromAPI.CostingPartDetails.MasterBatchRMName : '-'
+
+  //MASTER BATCH OBJECT
+  obj.CostingMasterBatchRawMaterialCostResponse = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingMasterBatchRawMaterialCostResponse ? dataFromAPI.CostingPartDetails.CostingMasterBatchRawMaterialCostResponse : []
 
 
   // temp = [...temp, obj]
@@ -787,6 +798,8 @@ export function isRMDivisorApplicable(technology) {
   return allowedTechnologyForRMDivisor.includes(technology);
 }
 
+
+
 export function findLostWeight(tableVal) {
   let sum = 0
   tableVal && tableVal.map(item => {
@@ -795,11 +808,13 @@ export function findLostWeight(tableVal) {
     } else {
       sum = sum + item.LossWeight
     }
+    return null
   })
+
   return sum
 }
 
-//THIS FUNCTION TO CHECK WHETHER RM APPROVAL IS APPLICALBE AND ON WHICH MASTER IT IS APPLICABLE (ApprovalMasterArrayList COMING FROM PAGE INIT)
+//THIS FUNCTION TO CHECK WHETHER MASTER APPROVAL IS APPLICALBE AND ON WHICH MASTER IT IS APPLICABLE (ApprovalMasterArrayList COMING FROM PAGE INIT)
 export function CheckApprovalApplicableMaster(number) {
   const isApproval = getConfigurationKey().ApprovalMasterArrayList.includes(number) && getConfigurationKey().IsMasterApprovalAppliedConfigure
   return isApproval
@@ -820,9 +835,39 @@ export function getOtherCostingSimulation(master) {
 }
 
 // THIS FUNCTION IS TO GET FILTERED DATA FOR RM WHERE IsRMAssociated IS TRUE (ONLY APPLICABLE IN CASE OF SIMULATION)
-export function getFilteredRMData(arr) {
-  const list = arr && arr.filter((item => item.IsRMAssociated === true))
-  return list
+export function getFilteredData(arr, id) {
+
+  switch (id) {
+
+    case 1:    // CASE 1 FOR RM 
+
+      const list = arr && arr.filter((item => item.IsRMAssociatedForSimulation === true))
+      return list
+
+
+    case 2:   //CASE 2 FOR BOP
+
+      const listBop = arr && arr.filter((item => item.IsBOPAssociatedForSimulation === true))
+      return listBop
+
+
+    case 3:   //CASE 3 FOR OPERATIONS
+
+      const listOperation = arr && arr.filter((item => item.IsOperationAssociatedForSimulation === true))
+      return listOperation
+
+    case 4:   //CASE 4 FOR MACHINE
+
+      const listMachine = arr && arr.filter((item => item.IsMachineAssociated === true))
+      return listMachine
+
+    default:
+      break;
+
+
+  }
+
+
 }
 
 export function calculateScrapWeight(grossWeight, finishWeight) {

@@ -14,8 +14,9 @@ import { checkForDecimalAndNull, checkForNull, checkPermission, checkVendorPlant
 import DayTime from '../../common/DayTimeWrapper'
 import CostingDetailStepTwo from './CostingDetailStepTwo';
 import { APPROVED, DRAFT, EMPTY_GUID, PENDING, REJECTED, VBC, WAITING_FOR_APPROVAL, ZBC, EMPTY_GUID_0, COSTING, APPROVED_BY_SIMULATION } from '../../../config/constants';
-import {   getPartInfo, checkPartWithTechnology, createZBCCosting, createVBCCosting, getZBCExistingCosting, getVBCExistingCosting,
-  updateZBCSOBDetail, updateVBCSOBDetail, storePartNumber, getZBCCostingByCostingId, deleteDraftCosting, getPartSelectListByTechnology,
+import {
+  getPartInfo, checkPartWithTechnology, createZBCCosting, createVBCCosting, getZBCExistingCosting, getVBCExistingCosting,
+  updateZBCSOBDetail, updateVBCSOBDetail, storePartNumber, getBriefCostingById, deleteDraftCosting, getPartSelectListByTechnology,
   setOverheadProfitData, setComponentOverheadItemData, setPackageAndFreightData, setComponentPackageFreightItemData, setToolTabData,
   setComponentToolItemData, setComponentDiscountOtherItemData, gridDataAdded, getCostingSpecificTechnology, setRMCCData, setComponentItemData, getNCCExistingCosting, createNCCCosting, saveAssemblyBOPHandlingCharge,
 } from '../actions/Costing'
@@ -24,12 +25,14 @@ import ConfirmComponent from '../../../helper/ConfirmComponent';
 import { MESSAGES } from '../../../config/message';
 import BOMUpload from '../../massUpload/BOMUpload';
 import Clientbasedcostingdrawer from './ClientBasedCostingDrawer';
-import TooltipCustom from '../../common/Tooltip';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import AddNCCDrawer from './AddNCCDrawer';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import LoaderCustom from '../../common/LoaderCustom';
+import { debounce } from 'lodash';
 
 export const ViewCostingContext = React.createContext()
+export const EditCostingContext = React.createContext()
 
 function IsolateReRender(control) {
   const values = useWatch({
@@ -60,9 +63,9 @@ function CostingDetails(props) {
   const [editRow, setEditRow] = useState({});
 
   const [IsVendorDrawerOpen, setIsVendorDrawerOpen] = useState(false);
-  const [isNCCDrawerOpen,setIsNCCDrawerOpen]= useState(false)
+  const [isNCCDrawerOpen, setIsNCCDrawerOpen] = useState(false)
   const [vbcVendorGrid, setVBCVendorGrid] = useState([]);
-  const [nccGrid,setNccGrid]= useState([])
+  const [nccGrid, setNccGrid] = useState([])
   const [vbcVendorOldArray, setvbcVendorOldArray] = useState([]);
 
   const [stepOne, setStepOne] = useState(Object.keys(props.costingData).length > 0 ? false : true);
@@ -91,6 +94,8 @@ function CostingDetails(props) {
 
   //FOR VIEW MODE COSTING
   const [IsCostingViewMode, setIsCostingViewMode] = useState(false)
+  // FOR EDIT MODE COSTING
+  const [IsCostingEditMode, setIsCostingEditMode] = useState(false)
 
   // client based costing
   const [clientDrawer, setClientDrawer] = useState(false)
@@ -104,6 +109,9 @@ function CostingDetails(props) {
     index: []
   })
   const [titleObj, setTitleObj] = useState({})
+  //dropdown loader 
+  const [inputLoader, setInputLoader] = useState(false)
+
   const dispatch = useDispatch()
 
   const technologySelectList = useSelector((state) => state.costing.costingSpecifiTechnology)
@@ -114,8 +122,9 @@ function CostingDetails(props) {
   const { topAndLeftMenuData } = useSelector(state => state.auth);
 
   useEffect(() => {
-    if( reactLocalStorage.get('location') === '/costing'){
-
+    if (reactLocalStorage.get('location') === '/costing') {
+      localStorage.setItem('costingArray', [])
+      localStorage.setItem('surfaceCostingArray', [])
       setValue('Technology', '')
       setValue('Part', '')
       reset()
@@ -165,7 +174,7 @@ function CostingDetails(props) {
   }, [partNumber.isChanged])
 
   useEffect(() => {
-    if (Object.keys(partNumber).length > 0 && partNumber.technologyName &&  reactLocalStorage.get('location') === '/costing') {
+    if (Object.keys(partNumber).length > 0 && partNumber.technologyName && reactLocalStorage.get('location') === '/costing') {
       applyPermission(topAndLeftMenuData, technology.label)
       setValue('Technology', { label: partNumber.technologyName, value: partNumber.technologyId })
       setPart({ label: partNumber.partNumber, value: partNumber.partId })
@@ -184,7 +193,7 @@ function CostingDetails(props) {
             setValue('ECNNumber', Data.ECNNumber)
             setValue('DrawingNumber', Data.DrawingNumber)
             setValue('RevisionNumber', Data.RevisionNumber)
-            setValue('ShareOfBusiness', Data.Price)
+            setValue('ShareOfBusiness', checkForDecimalAndNull(Data.Price, initialConfiguration.NoOfDecimalForPrice))
             setEffectiveDate(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate).format('MM/DD/YYYY') : '')
 
           }),
@@ -260,7 +269,10 @@ function CostingDetails(props) {
   const handleTechnologyChange = (newValue) => {
     if (newValue && newValue !== '') {
       dispatch(getPartInfo('', () => { }))
-      dispatch(getPartSelectListByTechnology(newValue.value, () => { }))
+      setInputLoader(true)
+      dispatch(getPartSelectListByTechnology(newValue.value, () => {
+        setInputLoader(false)
+      }))
       setTechnology(newValue)
       setPart([])
       setIsTechnologySelected(true)
@@ -273,6 +285,13 @@ function CostingDetails(props) {
       applyPermission(topAndLeftMenuData, technology.label)
       reset({
         Part: '',
+        PartName: '',
+        Description: '',
+        ECNNumber: '',
+        DrawingNumber: '',
+        RevisionNumber: '',
+        ShareOfBusiness: '',
+        EffectiveDate: '',
       })
 
     } else {
@@ -297,17 +316,17 @@ function CostingDetails(props) {
           if (response.data.Result) {
             dispatch(getPartInfo(newValue.value, (res) => {
               let Data = res.data.Data
-              
+
               setValue('PartName', Data?.PartName ? Data.PartName : '')
               setValue('Description', Data?.Description ? Data.Description : '')
               setValue('ECNNumber', Data?.ECNNumber ? Data.ECNNumber : '')
               setValue('DrawingNumber', Data?.DrawingNumber ? Data.DrawingNumber : '')
               setValue('RevisionNumber', Data?.RevisionNumber ? Data.RevisionNumber : '')
-              setValue('ShareOfBusiness', Data?.Price !== null ? Data.Price : '')
+              setValue('ShareOfBusiness', Data?.Price !== null ? checkForDecimalAndNull(Data.Price, initialConfiguration.NoOfDecimalForPrice) : '')
               setEffectiveDate(DayTime(Data.EffectiveDate).isValid ? DayTime(Data.EffectiveDate).format('MM/DD/YYYY') : '')
               //  setEffectiveDate(DayTime(Data.EffectiveDate).format('dd/MM/yyyy'))
               setShowNextBtn(true)
-              setTitleObj(prevState => ({ ...prevState,  descriptionTitle: Data.Description, partNameTitle: Data.PartName}))
+              setTitleObj(prevState => ({ ...prevState, descriptionTitle: Data.Description, partNameTitle: Data.PartName }))
             }),
             )
           } else {
@@ -371,7 +390,7 @@ function CostingDetails(props) {
         }
       }))
 
-      /*********************UNCOMMENT IT WHEN NCC COME IS START****************************************/ 
+      /*********************UNCOMMENT IT WHEN NCC COME IS START****************************************/
       // dispatch(getNCCExistingCosting(part.value,(res=>{
       //   if(res.data.Result){
       //     let Data = res.data.DataList
@@ -520,9 +539,9 @@ function CostingDetails(props) {
    * @description FOR OPENING DRAWER
   */
 
-const nccDrawerToggle=()=>{
-  setIsNCCDrawerOpen(true)
-}
+  const nccDrawerToggle = () => {
+    setIsNCCDrawerOpen(true)
+  }
 
   /**
    * @method closeNCCDrawer
@@ -553,10 +572,11 @@ const nccDrawerToggle=()=>{
   const closeCopyCostingDrawer = (e = '', costingId = '', type = '') => {
     //nextToggle()
     setIsCopyCostingDrawer(false)
-    dispatch(getZBCCostingByCostingId('', (res) => { }))
+    dispatch(getBriefCostingById('', (res) => { }))
+
     if (type === ZBC) {
       setCostingData({ costingId: costingId, type })
-      dispatch(getZBCCostingByCostingId(costingId, (res) => {
+      dispatch(getBriefCostingById(costingId, (res) => {
         setTimeout(() => {
           setStepTwo(true)
           setStepOne(false)
@@ -566,7 +586,8 @@ const nccDrawerToggle=()=>{
 
     if (type === VBC) {
       setCostingData({ costingId: costingId, type })
-      dispatch(getZBCCostingByCostingId(costingId, (res) => {
+      dispatch(getBriefCostingById(costingId, (res) => {
+
         setTimeout(() => {
           setStepTwo(true)
           setStepOne(false)
@@ -693,7 +714,7 @@ const nccDrawerToggle=()=>{
    * @method addDetails
    * @description ADD DETAILS IN COSTING
    */
-  const addDetails = (index, type) => {
+  const addDetails = debounce((index, type) => {
     const userDetail = userDetails()
 
     if (CheckIsSOBChangedSaved()) {
@@ -701,7 +722,7 @@ const nccDrawerToggle=()=>{
       return false;
     }
 
-    dispatch(getZBCCostingByCostingId('', (res) => { }))
+    dispatch(getBriefCostingById('', (res) => { }))
 
     if (checkSOBTotal() && type === ZBC) {
       let tempData = zbcPlantGrid[index]
@@ -734,8 +755,9 @@ const nccDrawerToggle=()=>{
           setPartInfo(res.data.Data)
           setCostingData({ costingId: res.data.Data.CostingId, type })
           /***********ADDED THIS DISPATCH METHOD FOR GETTING ZBC DETAIL************/
-          dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, (res) => {
+          dispatch(getBriefCostingById(res.data.Data.CostingId, (res) => {
             setIsCostingViewMode(false)
+            setIsCostingEditMode(true)
             setStepTwo(true)
             setStepOne(false)
           }))
@@ -775,9 +797,9 @@ const nccDrawerToggle=()=>{
 
       dispatch(createVBCCosting(data, (res) => {
         if (res.data.Result) {
-          dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, () => {
-
+          dispatch(getBriefCostingById(res.data.Data.CostingId, () => {
             setIsCostingViewMode(false)
+            setIsCostingEditMode(false)
             setStepTwo(true)
             setStepOne(false)
           }))
@@ -786,7 +808,7 @@ const nccDrawerToggle=()=>{
         }
       }),
       )
-    } else if(type === NCC){
+    } else if (type === NCC) {
       let tempData = nccGrid[index]
 
       const data = {
@@ -818,8 +840,9 @@ const nccDrawerToggle=()=>{
           setPartInfo(res.data.Data)
           setCostingData({ costingId: res.data.Data.CostingId, type })
           /***********ADDED THIS DISPATCH METHOD FOR GETTING ZBC DETAIL************/
-          dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, (res) => {
+          dispatch(getBriefCostingById(res.data.Data.CostingId, (res) => {
             setIsCostingViewMode(false)
+            setIsCostingEditMode(false)
             setStepTwo(true)
             setStepOne(false)
           }))
@@ -827,24 +850,25 @@ const nccDrawerToggle=()=>{
       }),
       )
 
-      dispatch(createNCCCosting(data,(res)=>{
+      dispatch(createNCCCosting(data, (res) => {
         if (res.data.Result) {
           setPartInfo(res.data.Data)
           setCostingData({ costingId: res.data.Data.CostingId, type })
           /***********ADDED THIS DISPATCH METHOD FOR GETTING ZBC DETAIL************/
-          dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, (res) => {
+          dispatch(getBriefCostingById(res.data.Data.CostingId, (res) => {
             setIsCostingViewMode(false)
+            setIsCostingEditMode(false)
             setStepTwo(true)
             setStepOne(false)
           }))
         }
       }))
     }
-    
+
     else {
       Toaster.warning('SOB Should not be greater than 100.')
     }
-  }
+  }, 500)
 
   /**
    * @method viewDetails
@@ -862,6 +886,7 @@ const nccDrawerToggle=()=>{
       warningMessageHandle('ERROR_WARNING')
     } else {
       setIsCostingViewMode(true)
+      setIsCostingEditMode(false)
       moveToCostingDetail(index, type)
     }
   }
@@ -882,6 +907,7 @@ const nccDrawerToggle=()=>{
       warningMessageHandle('ERROR_WARNING')
     } else {
       setIsCostingViewMode(false)
+      setIsCostingEditMode(true)
       moveToCostingDetail(index, type)
     }
   }
@@ -942,7 +968,7 @@ const nccDrawerToggle=()=>{
         LoggedInUserId: loggedInUserId(),
       }
       dispatch(updateZBCSOBDetail(data, (res) => {
-        dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => {
+        dispatch(getBriefCostingById(tempData.SelectedCostingVersion.value, (res) => {
           resetSOBChanged()
           setStepTwo(true)
           setStepOne(false)
@@ -964,7 +990,7 @@ const nccDrawerToggle=()=>{
         DestinationPlantId: tempData.DestinationPlantId
       }
       dispatch(updateVBCSOBDetail(data, (res) => {
-        dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => {
+        dispatch(getBriefCostingById(tempData.SelectedCostingVersion.value, (res) => {
 
 
           resetSOBChanged()
@@ -981,12 +1007,12 @@ const nccDrawerToggle=()=>{
    * @description MOVE TO COSTING DETAIL
    */
   const moveToCostingDetail = (index, type) => {
-    dispatch(getZBCCostingByCostingId('', (res) => { }))
+    dispatch(getBriefCostingById('', (res) => { }))
 
     if (type === ZBC) {
       let tempData = zbcPlantGrid[index]
       setCostingData({ costingId: tempData.SelectedCostingVersion.value, type })
-      dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => {
+      dispatch(getBriefCostingById(tempData.SelectedCostingVersion.value, (res) => {
         setTimeout(() => {
           setStepTwo(true)
           setStepOne(false)
@@ -997,7 +1023,7 @@ const nccDrawerToggle=()=>{
     if (type === VBC) {
       let tempData = vbcVendorGrid[index]
       setCostingData({ costingId: tempData.SelectedCostingVersion.value, type })
-      dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => {
+      dispatch(getBriefCostingById(tempData.SelectedCostingVersion.value, (res) => {
 
 
         setTimeout(() => {
@@ -1007,10 +1033,10 @@ const nccDrawerToggle=()=>{
       }))
     }
 
-    if(type === NCC){
+    if (type === NCC) {
       let tempData = nccGrid[index]
       setCostingData({ costingId: tempData.SelectedCostingVersion.value, type })
-      dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => {
+      dispatch(getBriefCostingById(tempData.SelectedCostingVersion.value, (res) => {
         setTimeout(() => {
           setStepTwo(true)
           setStepOne(false)
@@ -1041,6 +1067,7 @@ const nccDrawerToggle=()=>{
 
       /*Copy Costing Drawer code here*/
       setIsCostingViewMode(false)
+      setIsCostingEditMode(false)
       setIsCopyCostingDrawer(true)
 
       if (type === ZBC) {
@@ -1050,15 +1077,15 @@ const nccDrawerToggle=()=>{
           zbcCosting: getValues(`${zbcPlantGridFields}[${index}]CostingVersion`),
           vbcCosting: '',
         })
-      } 
-      else if(type === VBC) {
+      }
+      else if (type === VBC) {
         const tempcopyCostingData = vbcVendorGrid[index]
         setCopyCostingData(tempcopyCostingData)
         setCostingIdForCopy({
           zbcCosting: '',
           vbcCosting: getValues(`${vbcGridFields}[${index}]CostingVersion`),
         })
-      }else if(type === NCC){
+      } else if (type === NCC) {
         const tempcopyCostingData = nccGrid[index]
         setCopyCostingData(tempcopyCostingData)
         setCostingIdForCopy({
@@ -1078,7 +1105,7 @@ const nccDrawerToggle=()=>{
   const deleteItem = (Item, index, type) => {
     setShowPopup(true)
     setCostingObj({ item: Item, type: type, index: index })
-   
+
   }
 
   /**
@@ -1089,7 +1116,7 @@ const nccDrawerToggle=()=>{
     let reqData = { Id: Item.CostingId, UserId: loggedInUserId() }
     dispatch(deleteDraftCosting(reqData, () => {
       setIsCostingViewMode(false)
-
+      setIsCostingEditMode(false)
       let tempArray = []
 
       if (type === ZBC) {
@@ -1124,7 +1151,7 @@ const nccDrawerToggle=()=>{
         setVBCVendorGrid(tempArray)
         setValue(`vbcGridFields.${index}.CostingVersion`, '')
       }
-      
+
       if (type === NCC) {
         let tempData = nccGrid[index]
         let selectedOptionObj = tempData.CostingOptions.filter((el) => el.CostingId !== Item.CostingId)
@@ -1167,7 +1194,7 @@ const nccDrawerToggle=()=>{
       setVBCVendorGrid(tempArr)
     }
 
-    if(type === NCC){
+    if (type === NCC) {
       let tempArr = nccGrid && nccGrid.filter((el, i) => {
         if (i === index) return false;
         return true;
@@ -1208,17 +1235,15 @@ const nccDrawerToggle=()=>{
    * @description used to Reset form
    */
   const backToFirstStep = () => {
-    dispatch(getZBCCostingByCostingId('', (res) => {
-
-
-    }))
-
-    dispatch(setRMCCData([],()=>{}))                            //THIS WILL CLEAR RM CC REDUCER
-    dispatch(setComponentItemData({},()=>{}))
+    dispatch(getBriefCostingById('', (res) => { }))
+    localStorage.setItem('costingArray', [])
+    localStorage.setItem('surfaceCostingArray', [])
+    dispatch(setRMCCData([], () => { }))                            //THIS WILL CLEAR RM CC REDUCER
+    dispatch(setComponentItemData({}, () => { }))
 
     dispatch(setOverheadProfitData([], () => { }))              //THIS WILL CLEAR OVERHEAD PROFIT REDUCER
     dispatch(setComponentOverheadItemData({}, () => { }))       //THIS WILL CLEAR OVERHEAD PROFIT ITEM REDUCER
-    
+
 
     dispatch(setPackageAndFreightData([], () => { }))           //THIS WILL CLEAR PACKAGE FREIGHT ITEM DATA
     dispatch(setComponentPackageFreightItemData({}, () => { })) //THIS WILL CLEAR PACKAGE FREIGHT ITEM DATA
@@ -1228,7 +1253,7 @@ const nccDrawerToggle=()=>{
 
     dispatch(setComponentDiscountOtherItemData({}, () => { }))  //THIS WILL CLEAR DISCOUNT ITEM DATA FROM REDUCER
 
-    dispatch(saveAssemblyBOPHandlingCharge({},()=>{}))
+    dispatch(saveAssemblyBOPHandlingCharge({}, () => { }))
 
     dispatch(gridDataAdded(false)) //BASIS OF GRID DATA DISABLED/ENABLED COSTING EFFECTIVE DATE
     setStepOne(true);
@@ -1238,7 +1263,11 @@ const nccDrawerToggle=()=>{
     setZBCPlantGrid([])
     setVBCVendorGrid([])
     setNccGrid([])
-    nextToggle()
+
+    setTimeout(() => {
+
+      nextToggle()
+    }, 700);
 
     dispatch(getPartInfo(part.value !== undefined ? part.value : partNumber.partId, (res) => {
       let Data = res.data.Data;
@@ -1514,7 +1543,7 @@ const nccDrawerToggle=()=>{
 
   const zbcPlantGridFields = 'zbcPlantGridFields'
   const vbcGridFields = 'vbcGridFields'
-  const nccGridFields='nccGridFields'
+  const nccGridFields = 'nccGridFields'
 
   const bulkToggle = () => {
     SetIsBulkOpen(true)
@@ -1645,9 +1674,9 @@ const nccDrawerToggle=()=>{
                         />
                       </Col>
                       <Col className="col-md-15">
-                        <TooltipCustom tooltipText="Please enter first few digits to see the part numbers" />
+                        {inputLoader && <LoaderCustom customClass="part-input-loader" />}
                         <AsyncSearchableSelectHookForm
-                          label={"Assembly No./Part No."}
+                          label={"Assembly/Part No."}
                           name={"Part"}
                           placeholder={"Enter"}
                           Controller={Controller}
@@ -1660,8 +1689,8 @@ const nccDrawerToggle=()=>{
                           isLoading={false}
                           handleChange={handlePartChange}
                           errors={errors.Part}
-                          message={"Enter"}
-                          disabled={technology.length === 0 ? true : false}
+                          disabled={(technology.length === 0 || inputLoader) ? true : false}
+                          NoOptionMessage={"Please enter first few digits to see the part numbers"}
                         />
 
 
@@ -1684,9 +1713,9 @@ const nccDrawerToggle=()=>{
                       </Col>
                       <Col className="col-md-15">
                         <TextFieldHookForm
-                          label="Assembly Name/Part Name"
+                          label="Assembly/Part Name"
                           name={"PartName"}
-                          title ={titleObj.partNameTitle}
+                          title={titleObj.partNameTitle}
                           Controller={Controller}
                           control={control}
                           //register={register({ required: "PartName is required." })} //Working for required and msg
@@ -1794,7 +1823,7 @@ const nccDrawerToggle=()=>{
                         <div className="form-group">
                           <label>Effective Date</label>
                           <div className="inputbox date-section">
-                            {}
+                            { }
                             <DatePicker
                               name="EffectiveDate"
                               selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
@@ -1856,7 +1885,7 @@ const nccDrawerToggle=()=>{
                                   <th className="costing-version" >{`Costing Version`}</th>
                                   <th className="text-center costing-status" >{`Status`}</th>
                                   <th className="costing-price">{`Price`}</th>
-                                  <th className="costing-action">{`Actions`}</th>
+                                  <th className="costing-action text-right pr-2">{`Actions`}</th>
                                 </tr>
                               </thead>
                               <tbody>
@@ -1933,12 +1962,14 @@ const nccDrawerToggle=()=>{
                                         </td>
                                         <td>{item.Price ? checkForDecimalAndNull(item.Price, getConfigurationKey().NoOfDecimalForPrice) : 0}</td>
                                         <td style={{ width: "250px" }}>
-                                          {AddAccessibility && <button className="Add-file mr-2 my-1" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, ZBC)} />}
-                                          {ViewAccessibility && !item.IsNewCosting && item.Status !== '-' && (<button className="View mr-2 my-1" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, ZBC)} />)}
-                                          {EditAccessibility && !item.IsNewCosting && displayEditBtn && (<button className="Edit mr-2 my-1" type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, ZBC)} />)}
-                                          {CopyAccessibility && !item.IsNewCosting && displayCopyBtn && (<button className="Copy All mr-2 my-1" type={"button"} title={"Copy Costing"} onClick={() => copyCosting(index, ZBC)} />)}
-                                          {DeleteAccessibility && !item.IsNewCosting && displayDeleteBtn && (<button className="Delete mr-2 All my-1" type={"button"} title={"Delete Costing"} onClick={() => deleteItem(item, index, ZBC)} />)}
-                                          {item?.CostingOptions?.length === 0 && <button className="CancelIcon" type={'button'} onClick={() => deleteRowItem(index, ZBC)} />}
+                                          <div className='action-btn-wrapper pr-2'>
+                                            {AddAccessibility && <button className="Add-file" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, ZBC)} />}
+                                            {ViewAccessibility && !item.IsNewCosting && item.Status !== '-' && (<button className="View " type={"button"} title={"View Costing"} onClick={() => viewDetails(index, ZBC)} />)}
+                                            {EditAccessibility && !item.IsNewCosting && displayEditBtn && (<button className="Edit " type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, ZBC)} />)}
+                                            {CopyAccessibility && !item.IsNewCosting && displayCopyBtn && (<button className="Copy All " type={"button"} title={"Copy Costing"} onClick={() => copyCosting(index, ZBC)} />)}
+                                            {DeleteAccessibility && !item.IsNewCosting && displayDeleteBtn && (<button className="Delete All" type={"button"} title={"Delete Costing"} onClick={() => deleteItem(item, index, ZBC)} />)}
+                                            {item?.CostingOptions?.length === 0 && <button className="CancelIcon" type={'button'} onClick={() => deleteRowItem(index, ZBC)} />}
+                                          </div>
                                         </td>
                                       </tr>
                                     );
@@ -1960,7 +1991,7 @@ const nccDrawerToggle=()=>{
                     )}
 
                     {/* ****************************************NCC UI HERE************************************************************* */}
-              {IsOpenVendorSOBDetails && (
+                    {IsOpenVendorSOBDetails && (
                       <>
                         <Row className="align-items-center">
                           <Col md={'6'} className={"mb-2 mt-3"}>
@@ -1992,11 +2023,11 @@ const nccDrawerToggle=()=>{
                                 <tr>
                                   <th className="destination-plant">{`Plant`}</th>
                                   <th className='vendor'>{`Vendor`}</th>
-                              
+
                                   <th className="costing-version">{`Costing Version`}</th>
                                   <th className="text-center costing-status">{`Status`}</th>
-                                  <th className= "costing-price">{`Price`}</th>
-                                  <th className="costing-action">{`Actions`}</th>
+                                  <th className="costing-price">{`Price`}</th>
+                                  <th className="costing-action text-right">{`Actions`}</th>
                                 </tr>
                               </thead>
                               <tbody>
@@ -2012,9 +2043,9 @@ const nccDrawerToggle=()=>{
 
                                   return (
                                     <tr key={index}>
-                                      <td>{item.PlantName? `${item.PlantName}(${item.PlantCode})`: ''}</td>
-                                      <td>{item.VendorName ? `${item.VendorName}(${item.VendorCode})`:'-'}</td>
-                                    
+                                      <td>{item.PlantName ? `${item.PlantName}(${item.PlantCode})` : ''}</td>
+                                      <td>{item.VendorName ? `${item.VendorName}(${item.VendorCode})` : '-'}</td>
+
                                       <td className="cr-select-height w-100px">
                                         <SearchableSelectHookForm
                                           label={""}
@@ -2038,12 +2069,14 @@ const nccDrawerToggle=()=>{
                                       </td>
                                       <td>{item.Price ? checkForDecimalAndNull(item.Price, getConfigurationKey().NoOfDecimalForPrice) : 0}</td>
                                       <td>
-                                        {AddAccessibility && <button className="Add-file mr-2 my-1" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, NCC)} />}
-                                        {ViewAccessibility && !item.IsNewCosting && item.Status !== '' && (<button className="View mr-2 my-1" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, NCC)} />)}
-                                        {EditAccessibility && !item.IsNewCosting && displayEditBtn && (<button className="Edit mr-2 my-1" type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, NCC)} />)}
-                                        {CopyAccessibility && !item.IsNewCosting && (<button className="Copy All mr-2 my-1" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(index, NCC)} />)}
-                                        {DeleteAccessibility && !item.IsNewCosting && displayDeleteBtn && (<button className="Delete mr-2 All my-1" title={"Delete Costing"} type={"button"} onClick={() => deleteItem(item, index, NCC)} />)}
-                                        {item?.CostingOptions?.length === 0 && <button className="CancelIcon" type={'button'} onClick={() => deleteRowItem(index, NCC)} />}
+                                        <div className='action-btn-wrapper pr-2'>
+                                          {AddAccessibility && <button className="Add-file" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, NCC)} />}
+                                          {ViewAccessibility && !item.IsNewCosting && item.Status !== '' && (<button className="View" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, NCC)} />)}
+                                          {EditAccessibility && !item.IsNewCosting && displayEditBtn && (<button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, NCC)} />)}
+                                          {CopyAccessibility && !item.IsNewCosting && (<button className="Copy All" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(index, NCC)} />)}
+                                          {DeleteAccessibility && !item.IsNewCosting && displayDeleteBtn && (<button className="Delete All" title={"Delete Costing"} type={"button"} onClick={() => deleteItem(item, index, NCC)} />)}
+                                          {item?.CostingOptions?.length === 0 && <button className="CancelIcon" type={'button'} onClick={() => deleteRowItem(index, NCC)} />}
+                                        </div>
                                       </td>
                                     </tr>
                                   );
@@ -2064,7 +2097,7 @@ const nccDrawerToggle=()=>{
                       </>
                     )}
 
-                  
+
                     {IsOpenVendorSOBDetails && (
                       <>
                         <Row className="align-items-center">
@@ -2100,8 +2133,8 @@ const nccDrawerToggle=()=>{
                                   <th className="share-of-business">{`SOB(%)`}{SOBAccessibility && vbcVendorGrid.length > 0 && <button className="edit-details-btn ml5" type={"button"} onClick={updateVBCState} />}</th>
                                   <th className="costing-version">{`Costing Version`}</th>
                                   <th className="text-center costing-status">{`Status`}</th>
-                                  <th className= "costing-price">{`Price`}</th>
-                                  <th className="costing-action">{`Actions`}</th>
+                                  <th className="costing-price">{`Price`}</th>
+                                  <th className="costing-action text-right">{`Actions`}</th>
                                 </tr>
                               </thead>
                               <tbody>
@@ -2111,7 +2144,7 @@ const nccDrawerToggle=()=>{
                                     item.Status === WAITING_FOR_APPROVAL ||
                                     item.Status === APPROVED || item.Status === REJECTED || item.Status === APPROVED_BY_SIMULATION) ? true : false;
 
-                                    let displayAddButton = userDetails().Role === 'SuperAdmin' ?true:false
+                                  let displayAddButton = userDetails().Role === 'SuperAdmin' ? true : false
                                   let displayEditBtn = (item.Status === DRAFT || item.Status === REJECTED) ? true : false;
 
                                   let displayDeleteBtn = (item.Status === DRAFT) ? true : false;
@@ -2173,12 +2206,14 @@ const nccDrawerToggle=()=>{
                                       </td>
                                       <td>{item.Price ? checkForDecimalAndNull(item.Price, getConfigurationKey().NoOfDecimalForPrice) : 0}</td>
                                       <td>
-                                        {AddAccessibility && displayAddButton && <button className="Add-file mr-2 my-1" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, VBC)} />}
-                                        {ViewAccessibility && !item.IsNewCosting && item.Status !== '' && (<button className="View mr-2 my-1" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, VBC)} />)}
-                                        {EditAccessibility && !item.IsNewCosting && displayEditBtn && (<button className="Edit mr-2 my-1" type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, VBC)} />)}
-                                        {CopyAccessibility && !item.IsNewCosting && (<button className="Copy All mr-2 my-1" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(index, VBC)} />)}
-                                        {DeleteAccessibility && !item.IsNewCosting && displayDeleteBtn && (<button className="Delete mr-2 All my-1" title={"Delete Costing"} type={"button"} onClick={() => deleteItem(item, index, VBC)} />)}
-                                        {item?.CostingOptions?.length === 0 && <button className="CancelIcon" type={'button'} onClick={() => deleteRowItem(index, VBC)} />}
+                                        <div className='action-btn-wrapper pr-2'>
+                                          {AddAccessibility && displayAddButton && <button className="Add-file" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, VBC)} />}
+                                          {ViewAccessibility && !item.IsNewCosting && item.Status !== '' && (<button className="View" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, VBC)} />)}
+                                          {EditAccessibility && !item.IsNewCosting && displayEditBtn && (<button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, VBC)} />)}
+                                          {CopyAccessibility && !item.IsNewCosting && (<button className="Copy All" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(index, VBC)} />)}
+                                          {DeleteAccessibility && !item.IsNewCosting && displayDeleteBtn && (<button className="Delete All" title={"Delete Costing"} type={"button"} onClick={() => deleteItem(item, index, VBC)} />)}
+                                          {item?.CostingOptions?.length === 0 && <button className="CancelIcon" type={'button'} onClick={() => deleteRowItem(index, VBC)} />}
+                                        </div>
                                       </td>
                                     </tr>
                                   );
@@ -2219,13 +2254,15 @@ const nccDrawerToggle=()=>{
                 )}
                 {stepTwo && (
                   <ViewCostingContext.Provider value={IsCostingViewMode} >
-                    <CostingDetailStepTwo
-                      backBtn={backToFirstStep}
-                      partInfo={Object.keys(props.partInfoStepTwo).length > 0 ? props.partInfoStepTwo : partInfoStepTwo}
-                      costingInfo={Object.keys(props.costingData).length > 0 ? props.costingData : costingData}
-                      toggle={props.toggle}
-                      IsCostingViewMode={IsCostingViewMode}
-                    />
+                    <EditCostingContext.Provider value={IsCostingEditMode} >
+                      <CostingDetailStepTwo
+                        backBtn={backToFirstStep}
+                        partInfo={Object.keys(props.partInfoStepTwo).length > 0 ? props.partInfoStepTwo : partInfoStepTwo}
+                        costingInfo={Object.keys(props.costingData).length > 0 ? props.costingData : costingData}
+                        toggle={props.toggle}
+                        IsCostingViewMode={IsCostingViewMode}
+                      />
+                    </EditCostingContext.Provider>
                   </ViewCostingContext.Provider>
                 )}
               </form>

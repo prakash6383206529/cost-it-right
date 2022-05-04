@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useSelector, useDispatch } from 'react-redux';
 import { Col, Row, Table } from 'reactstrap';
@@ -9,10 +9,15 @@ import Toaster from '../../../../common/Toaster';
 import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected } from '../../../../../helper';
 import AddSurfaceTreatment from '../../Drawers/AddSurfaceTreatment';
 import { gridDataAdded } from '../../../actions/Costing';
+import { ViewCostingContext } from '../../CostingDetails'
 
 function SurfaceTreatmentCost(props) {
-  
+  const { item } = props
+  const tempArray = JSON.parse(localStorage.getItem('surfaceCostingArray'))
+  let surfaceData = tempArray && tempArray.find(surfaceItem => surfaceItem.PartNumber === item.PartNumber && surfaceItem.AssemblyPartNumber === item.AssemblyPartNumber)
 
+  const CostingViewMode = useContext(ViewCostingContext);
+  const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
   const { register, control, formState: { errors } } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -20,8 +25,8 @@ function SurfaceTreatmentCost(props) {
 
   const dispatch = useDispatch()
 
-  const [gridData, setGridData] = useState(props.data)
-  const [OldGridData, setOldGridData] = useState(props.data)
+  const [gridData, setGridData] = useState(surfaceData.CostingPartDetails.SurfaceTreatmentDetails)
+  const [OldGridData, setOldGridData] = useState(surfaceData.CostingPartDetails.SurfaceTreatmentDetails)
   const [rowObjData, setRowObjData] = useState({})
   const [editIndex, setEditIndex] = useState('')
   const [Ids, setIds] = useState([])
@@ -37,23 +42,27 @@ function SurfaceTreatmentCost(props) {
       BOMLevel: props.item.BOMLevel,
       PartNumber: props.item.PartNumber,
     }
-    if (props.IsAssemblyCalculation) {
-      props.setAssemblySurfaceCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
-    } else {
-      
-      props.setSurfaceCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
+
+    if (!CostingViewMode && !IsLocked) {
+      const isEqual = JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false
+      props.setSurfaceData({ gridData, Params, isEqual, item })
+      // if (props.IsAssemblyCalculation) {
+      //   props.setAssemblySurfaceCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false, props.item)
+      // } else {
+      //   props.setSurfaceCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
+      // }
     }
     // }, 100)
     selectedIds(gridData)
   }, [gridData]);
 
 
-  useEffect(()=>{
-    if(props?.data && props.data.length >0){
+  // useEffect(() => {
+  //   if (!props.IsAssemblyCalculation && props?.data && props.data.length > 0) {
 
-      setGridData(props.data)
-    }
-  },[props.data])
+  //     setGridData(props.data)
+  //   }
+  // }, [props.data])
 
   /**
   * @method DrawerToggle
@@ -94,8 +103,11 @@ function SurfaceTreatmentCost(props) {
       setGridData(tempArr)
       selectedIds(tempArr)
       dispatch(gridDataAdded(true))
+
+
     }
     setDrawerOpen(false)
+
   }
 
   /**
@@ -194,6 +206,7 @@ function SurfaceTreatmentCost(props) {
               <button
                 type="button"
                 className={'user-btn'}
+                disabled={(CostingViewMode || IsLocked) ? true : false}
                 onClick={DrawerToggle}>
                 <div className={'plus'}></div>SURFACE T.</button>
             </Col>
@@ -214,7 +227,7 @@ function SurfaceTreatmentCost(props) {
                     {initialConfiguration &&
                       initialConfiguration.IsOperationLabourRateConfigure && <th>{`Labour Quantity`}</th>}
                     <th>{`Cost`}</th>
-                    <th>{`Action`}</th>
+                    <th style={{ textAlign: "right" }}>{`Action`}</th>
                   </tr>
                 </thead>
                 <tbody >
@@ -223,7 +236,7 @@ function SurfaceTreatmentCost(props) {
                       return (
                         editIndex === index ?
                           <tr key={index}>
-                            <td>{item.OperationName}</td>
+                            <td className='text-overflow'><span title={item.OperationName}>{item.OperationName}</span> </td>
                             <td style={{ width: 200 }}>
                               {
                                 <TextFieldHookForm
@@ -249,7 +262,7 @@ function SurfaceTreatmentCost(props) {
                                     handleSurfaceAreaChange(e, index)
                                   }}
                                   errors={errors && errors.OperationGridFields && errors.OperationGridFields[index] !== undefined ? errors.OperationGridFields[index].SurfaceArea : ''}
-                                  disabled={false}
+                                  disabled={CostingViewMode ? true : false}
                                 />
                               }
                             </td>
@@ -284,7 +297,7 @@ function SurfaceTreatmentCost(props) {
                                         handleLabourQuantityChange(e, index)
                                       }}
                                       errors={errors && errors.OperationGridFields && errors.OperationGridFields[index] !== undefined ? errors.OperationGridFields[index].LabourQuantity : ''}
-                                      disabled={false}
+                                      disabled={CostingViewMode ? true : false}
                                     />
                                     :
                                     '-'
@@ -292,13 +305,15 @@ function SurfaceTreatmentCost(props) {
                               </td>}
                             <td>{item.SurfaceTreatmentCost ? checkForDecimalAndNull(item.SurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
                             <td>
-                              <button className="SaveIcon mt15 mr-2" type={'button'} onClick={() => SaveItem(index)} />
-                              <button className="CancelIcon mt15" type={'button'} onClick={() => CancelItem(index)} />
+                              <div className='action-btn-wrapper'>
+                                <button className="SaveIcon" type={'button'} disabled={CostingViewMode ? true : false} onClick={() => SaveItem(index)} />
+                                <button className="CancelIcon" type={'button'} onClick={() => CancelItem(index)} />
+                              </div>
                             </td>
                           </tr>
                           :
                           <tr key={index}>
-                            <td>{item.OperationName}</td>
+                            <td className='text-overflow'><span title={item.OperationName}>{item.OperationName}</span></td>
                             <td style={{ width: 200 }}>{item.SurfaceArea}</td>
                             <td>{item.UOM}</td>
                             <td>{item.RatePerUOM}</td>
@@ -308,8 +323,10 @@ function SurfaceTreatmentCost(props) {
                               initialConfiguration.IsOperationLabourRateConfigure && <td>{item.IsLabourRateExist ? item.LabourQuantity : '-'}</td>}
                             <td>{item.SurfaceTreatmentCost ? checkForDecimalAndNull(item.SurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
                             <td>
-                              <button className="Edit mt15 mr-2" type={'button'} onClick={() => editItem(index)} />
-                              <button className="Delete mt15" type={'button'} onClick={() => deleteItem(index, item.OperationId)} />
+                              <div className='action-btn-wrapper'>
+                                <button className="Edit" type={'button'} disabled={(CostingViewMode || IsLocked) ? true : false} onClick={() => editItem(index)} />
+                                <button className="Delete" type={'button'} disabled={(CostingViewMode || IsLocked) ? true : false} onClick={() => deleteItem(index, item.OperationId)} />
+                              </div>
                             </td>
                           </tr>
                       )

@@ -15,13 +15,13 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import Simulation from '../Simulation';
 import OtherVerifySimulation from '../OtherVerifySimulation';
-import debounce from 'lodash'
+import { debounce } from 'lodash'
 
 const gridOptions = {
 
 };
 function ERSimulation(props) {
-    const { isDomestic, list, isbulkUpload, isImpactedMaster, costingAndPartNo } = props
+    const { list, isbulkUpload, isImpactedMaster, costingAndPartNo, tokenForMultiSimulation } = props
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')
@@ -29,12 +29,7 @@ function ERSimulation(props) {
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [showMainSimulation, setShowMainSimulation] = useState(false)
     const [selectedRowData, setSelectedRowData] = useState([]);
-
-    const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
-        mode: 'onChange',
-        reValidateMode: 'onChange',
-    })
-
+    const [isDisable, setIsDisable] = useState(false)
 
     const dispatch = useDispatch()
 
@@ -185,6 +180,7 @@ function ERSimulation(props) {
             Toaster.warning('Please select atleast one costing.')
             return false
         }
+        setIsDisable(true)
         let obj = {}
         obj.SimulationTechnologyId = selectedMasterForSimulation.value
         obj.LoggedInUserId = loggedInUserId()
@@ -200,16 +196,19 @@ function ERSimulation(props) {
 
             return null;
         })
+
+        obj.SimulationIds = tokenForMultiSimulation
         obj.SimulationExchangeRates = tempArr
 
         dispatch(runVerifyExchangeRateSimulation(obj, res => {
+            setIsDisable(false)
             if (res.data.Result) {
                 setToken(res.data.Identity)
                 setShowVerifyPage(true)
             }
         }))
         // setShowVerifyPage(true)
-    })
+    }, 500)
 
 
     return (
@@ -224,13 +223,13 @@ function ERSimulation(props) {
 
                         <Row>
                             <Col className="add-min-height mb-3 sm-edit-page">
-                                <div className="ag-grid-wrapper height-width-wrapper">
-                                    <div className="ag-grid-header d-flex">
+                                <div className={`ag-grid-wrapper height-width-wrapper reset-btn-container ${list && list?.length <= 0 ? "overlay-contain" : ""}`}>
+                                    <div className="ag-grid-header d-flex ">
                                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                                         <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
-                                          <div className="refresh mr-0"></div></button>
+                                            <div className="refresh mr-0"></div></button>
                                     </div>
-                                   
+
                                     <div className="ag-theme-material" style={{ width: '100%' }}>
                                         <AgGridReact
                                             floatingFilter={true}
@@ -260,7 +259,11 @@ function ERSimulation(props) {
                                             <AgGridColumn field="BankRate" editable='false' headerName="Bank Rate(INR)" minWidth={190}></AgGridColumn>
                                             <AgGridColumn suppressSizeToFit="true" editable='false' field="BankCommissionPercentage" headerName="Bank Commission % " minWidth={190}></AgGridColumn>
                                             <AgGridColumn field="CustomRate" editable='false' headerName="Custom Rate(INR)" minWidth={190}></AgGridColumn>
-                                            <AgGridColumn suppressSizeToFit="true" field="CurrencyExchangeRate" headerName="Exchange Rate(INR)" minWidth={190}></AgGridColumn>
+                                            {!isImpactedMaster && <AgGridColumn suppressSizeToFit="true" field="CurrencyExchangeRate" headerName="Exchange Rate(INR)" minWidth={190}></AgGridColumn>}
+                                            {isImpactedMaster && <>
+                                                <AgGridColumn suppressSizeToFit="true" field="NewExchangeRate" headerName="New Exchange Rate(INR)" minWidth={190}></AgGridColumn>
+                                                <AgGridColumn suppressSizeToFit="true" field="OldExchangeRate" headerName="Old Exchange Rate(INR)" minWidth={190}></AgGridColumn>
+                                            </>}
                                             <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn>
                                             <AgGridColumn field="ExchangeRateId" hide={true}></AgGridColumn>
 
@@ -282,11 +285,11 @@ function ERSimulation(props) {
                             !isImpactedMaster &&
                             <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                                 <div className="col-sm-12 text-right bluefooter-butn">
-                                    <button type={"button"} className="mr15 cancel-btn" onClick={cancel}>
+                                    <button type={"button"} className="mr15 cancel-btn" onClick={cancel} disabled={isDisable}>
                                         <div className={"cancel-icon"}></div>
                                         {"CANCEL"}
                                     </button>
-                                    <button onClick={verifySimulation} type="submit" className="user-btn mr5 save-btn">
+                                    <button onClick={verifySimulation} type="submit" className="user-btn mr5 save-btn" disabled={isDisable}>
                                         <div className={"Run-icon"}>
                                         </div>{" "}
                                         {"Verify"}

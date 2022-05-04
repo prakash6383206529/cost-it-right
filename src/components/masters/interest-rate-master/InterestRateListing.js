@@ -59,7 +59,7 @@ class InterestRateListing extends Component {
       rowData: null,
       sideBar: { toolPanels: ['columns'] },
       showData: false,
-      isLoader: true,
+      isLoader: false,
       showPopup: false,
       deletedId: ''
     }
@@ -68,9 +68,9 @@ class InterestRateListing extends Component {
   componentDidMount() {
 
     this.applyPermission(this.props.topAndLeftMenuData)
-
+    this.setState({ isLoader: true })
     setTimeout(() => {
-      this.props.getVendorWithVendorCodeSelectList()
+      this.props.getVendorWithVendorCodeSelectList(() => { })
       this.props.getICCAppliSelectList(() => { })
       this.props.getPaymentTermsAppliSelectList(() => { })
       this.getTableListData()
@@ -137,15 +137,16 @@ class InterestRateListing extends Component {
 
 
   /**
-  * @method editItemDetails
-  * @description confirm edit item
-  */
-  editItemDetails = (Id) => {
+* @method viewOrEditItemDetails
+* @description confirm edit or view item
+*/
+  viewOrEditItemDetails = (Id, isViewMode) => {
     this.setState({
-      data: { isEditFlag: true, ID: Id },
+      data: { isEditFlag: true, ID: Id, isViewMode: isViewMode },
       toggleForm: true,
     })
   }
+
 
   /**
   * @method deleteItem
@@ -198,11 +199,12 @@ class InterestRateListing extends Component {
     const cellValue = props?.value;
     const rowData = props?.data;
 
-    const { EditAccessibility, DeleteAccessibility,ViewAccessibility } = this.state;
+    const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.state;
     return (
       <>
+
         {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
-        {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+        {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
         {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
       </>
     )
@@ -276,8 +278,9 @@ class InterestRateListing extends Component {
   * @description Renders Costing head
   */
   costingHeadFormatter = (props) => {
+
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return cellValue ? 'Vendor Based' : 'Zero Based';
+    return cellValue;
   }
 
   /**
@@ -431,8 +434,8 @@ class InterestRateListing extends Component {
 
     return (
       <>
-        {this.state.isLoader && <LoaderCustom />}
-        <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`} id='go-to-top'>
+
+        <div className={`ag-grid-react p-relative ${DownloadAccessibility ? "show-table-btn" : ""}`} id='go-to-top'>
           <ScrollToTop pointProp='go-to-top' />
           <form
             onSubmit={handleSubmit(this.onSubmit.bind(this))}
@@ -443,6 +446,7 @@ class InterestRateListing extends Component {
                 <h1 className="mb-0">Interest Rate Master</h1>
               </Col>
             </Row>
+            {this.state.isLoader && <LoaderCustom />}
             <Row className="pt-4 filter-row-large blue-before">
 
               <Col md="6" className="search-user-block mb-3">
@@ -503,13 +507,12 @@ class InterestRateListing extends Component {
             </Row>
           </form>
 
-          <div className="ag-grid-wrapper height-width-wrapper">
+
+          <div className={`ag-grid-wrapper height-width-wrapper ${this.props.interestRateDataList && this.props.interestRateDataList?.length <= 0 ? "overlay-contain" : ""}`}>
             <div className="ag-grid-header">
               <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
             </div>
-            <div
-              className="ag-theme-material"
-            >
+            <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
               <AgGridReact
                 defaultColDef={defaultColDef}
                 floatingFilter={true}
@@ -529,7 +532,7 @@ class InterestRateListing extends Component {
                 frameworkComponents={frameworkComponents}
               >
                 <AgGridColumn width={140} field="IsVendor" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
-                  <AgGridColumn field="VendorName" headerName="Vendor Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                <AgGridColumn field="VendorName" headerName="Vendor Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn field="PlantName" headerName="Plant" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn field="ICCApplicability" headerName="ICC Applicability"></AgGridColumn>
                 <AgGridColumn width={140} field="ICCPercent" headerName="Annual ICC(%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
@@ -537,7 +540,7 @@ class InterestRateListing extends Component {
                 <AgGridColumn width={210} field="RepaymentPeriod" headerName="Repayment Period(Days)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn width={245} field="PaymentTermPercent" headerName="Payment Term Interest Rate(%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                <AgGridColumn width={120} field="VendorInterestRateId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                <AgGridColumn width={170} field="VendorInterestRateId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
               </AgGridReact>
               <div className="paging-container d-inline-block float-right">
                 <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

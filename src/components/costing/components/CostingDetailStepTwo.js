@@ -3,19 +3,22 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table } from 'reactstrap';
 import {
   setCostingDataList, setPOPrice, setRMCCBOPCostData, setSurfaceCostData,
-  setOverheadProfitCostData, setDiscountCost, showLoader, hideLoader,
+  setOverheadProfitCostData, setDiscountCost, showLoader, hideLoader, saveAssemblyPartRowCostingCalculation,
 } from '../actions/Costing';
-import { calculatePercentage, calculatePercentageValue, checkForDecimalAndNull, checkForNull } from '../../../helper';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull } from '../../../helper';
 import DayTime from '../../common/DayTimeWrapper'
 import CostingHeadTabs from './CostingHeaderTabs/index';
 import LoaderCustom from '../../common/LoaderCustom';
 import { useContext } from 'react';
 import { ViewCostingContext } from './CostingDetails';
+import { createToprowObjAndSave } from '../CostingUtil';
+import _ from 'lodash'
 
 export const costingInfoContext = React.createContext()
 export const netHeadCostContext = React.createContext()
 export const SurfaceCostContext = React.createContext()
 export const NetPOPriceContext = React.createContext()
+
 
 function CostingDetailStepTwo(props) {
 
@@ -35,7 +38,8 @@ function CostingDetailStepTwo(props) {
 
   const { initialConfiguration } = useSelector(state => state.auth)
   const { costingData, CostingDataList, NetPOPrice, RMCCBOPCost, SurfaceCostData, OverheadProfitCostData,
-    DiscountCostData, partNo, IsToolCostApplicable, showLoading } = useSelector(state => state.costing)
+    DiscountCostData, partNo, IsToolCostApplicable, showLoading, RMCCTabData, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData,
+    PackageAndFreightTabData, ToolTabData, CostingEffectiveDate } = useSelector(state => state.costing)
 
   useEffect(() => {
     if (partNo.isChanged === true) {
@@ -50,12 +54,10 @@ function CostingDetailStepTwo(props) {
   const setHeaderCostRMCCTab = (data) => {
     if (!CostingViewMode) {
       const headerIndex = 0;
-
       if (CostingDataList && CostingDataList.length > 0 && CostingDataList[headerIndex].CostingId === undefined) return false;
 
       let DataList = CostingDataList;
       let tempData = CostingDataList && CostingDataList[headerIndex];
-
       let OverAllCost = 0;
       if (tempData && tempData !== undefined) {
         //CONDITION FOR OVERALL & PROCESS WISE TOOL COST.
@@ -94,12 +96,10 @@ function CostingDetailStepTwo(props) {
   const setHeaderCostSurfaceTab = (data) => {
     if (!CostingViewMode) {
       const headerIndex = 0;
-
       if (CostingDataList && CostingDataList.length > 0 && CostingDataList[headerIndex].CostingId === undefined) return false;
 
       let DataList = CostingDataList;
       let tempData = CostingDataList && CostingDataList[headerIndex];
-
       let OverAllCost = 0;
       if (tempData && tempData !== undefined) {
         OverAllCost =
@@ -131,14 +131,11 @@ function CostingDetailStepTwo(props) {
   const setHeaderOverheadProfitCostTab = (data) => {
     if (!CostingViewMode) {
       const headerIndex = 0;
-
       if (CostingDataList && CostingDataList.length > 0 && CostingDataList[headerIndex].CostingId === undefined) return false;
 
       let DataList = CostingDataList;
       let tempData = CostingDataList && CostingDataList[headerIndex];
-
       let OverAllCost = 0;
-
       if (tempData && tempData !== undefined) {
         OverAllCost =
           tempData.NetTotalRMBOPCC +
@@ -147,7 +144,6 @@ function CostingDetailStepTwo(props) {
           tempData.NetPackagingAndFreight +
           tempData.ToolCost - tempData.NetDiscountsCost
       }
-
       tempData = {
         ...tempData,
         NetOverheadAndProfitCost: data.NetOverheadProfitCost,
@@ -169,12 +165,10 @@ function CostingDetailStepTwo(props) {
   const setHeaderPackageFreightTab = (data) => {
     if (!CostingViewMode) {
       const headerIndex = 0;
-
       if (CostingDataList && CostingDataList.length > 0 && CostingDataList[headerIndex].CostingId === undefined) return false;
 
       let DataList = CostingDataList;
       let tempData = CostingDataList && CostingDataList[headerIndex];
-
       let OverAllCost = 0;
       if (tempData && tempData !== undefined) {
         OverAllCost =
@@ -191,7 +185,6 @@ function CostingDetailStepTwo(props) {
         TotalCost: OverAllCost,
       }
       let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
-
       dispatch(setCostingDataList('setHeaderPackageFreightTab', tempArr, () => {
       }))
       dispatch(setPOPrice(calculateNetPOPrice(tempArr), () => { }))
@@ -205,9 +198,7 @@ function CostingDetailStepTwo(props) {
   const setHeaderCostToolTab = (data) => {
     if (!CostingViewMode) {
       const headerIndex = 0;
-
       if (CostingDataList && CostingDataList.length > 0 && CostingDataList[headerIndex].CostingId === undefined) return false;
-
       setTimeout(() => {
         let DataList = CostingDataList;
         let tempData = CostingDataList && CostingDataList[headerIndex];
@@ -231,7 +222,6 @@ function CostingDetailStepTwo(props) {
           }
         }
         let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
-
         dispatch(setCostingDataList('setHeaderCostToolTab', tempArr, () => {
         }))
         dispatch(setPOPrice(calculateNetPOPrice(tempArr), () => { }))
@@ -241,18 +231,66 @@ function CostingDetailStepTwo(props) {
   }
 
   /**
+   * @method findApplicabilityCost
+   * @description TO FIND APPLICABILITY COST FOR DISCOUNT AND OTHER COST
+   * @param Text APPLICABILITY 
+   * @param headCostData TO FIND HEADER VALUE
+  */
+
+  const findApplicabilityCost = (data, Text, headCostData, costData, percent) => {
+    if (data && Text && Object.keys(headCostData).length > 0) {
+      const ConversionCostForCalculation = costData?.IsAssemblyPart ? checkForNull(headCostData.NetConversionCost) - checkForNull(headCostData.TotalOtherOperationCostPerAssembly) : headCostData.ProcessCostTotal + headCostData.OperationCostTotal
+      const RMBOPCC = checkForNull(headCostData.NetRawMaterialsCost) + checkForNull(headCostData.NetBoughtOutPartCost) + ConversionCostForCalculation
+      const RMBOP = checkForNull(headCostData.NetRawMaterialsCost) + checkForNull(headCostData.NetBoughtOutPartCost);
+      const RMCC = checkForNull(headCostData.NetRawMaterialsCost) + ConversionCostForCalculation;
+      const BOPCC = checkForNull(headCostData.NetBoughtOutPartCost) + ConversionCostForCalculation
+      let dataList = CostingDataList && CostingDataList.length > 0 ? CostingDataList[0] : {}
+      const totalTabCost = checkForNull(dataList.NetTotalRMBOPCC) + checkForNull(dataList.NetSurfaceTreatmentCost) + checkForNull(dataList.NetOverheadAndProfitCost) + checkForNull(data.NetPackagingAndFreight) + checkForNull(data.ToolCost)
+
+      let totalCost = ''
+      switch (Text) {
+        case 'RM':
+          totalCost = headCostData.NetRawMaterialsCost * calculatePercentage(percent)
+          break;
+        case 'BOP':
+          totalCost = headCostData.NetBoughtOutPartCost * calculatePercentage(percent)
+          break;
+        case 'RM + CC':
+          totalCost = (RMCC) * calculatePercentage(percent)
+          break;
+        case 'BOP + CC':
+          totalCost = BOPCC * calculatePercentage(percent)
+          break;
+        case 'CC':
+          totalCost = (RMCC) * calculatePercentage(percent)
+          break;
+        case 'RM + CC + BOP':
+          totalCost = (RMBOPCC) * calculatePercentage(percent)
+          break;
+        case 'RM + BOP':
+          totalCost = (RMBOP) * calculatePercentage(percent)
+          break;
+        case 'Net Cost':
+          totalCost = (totalTabCost) * calculatePercentage(percent)
+          break;
+        default:
+          break;
+      }
+      return totalCost
+    }
+  }
+
+  /**
    * @method setHeaderDiscountTab
    * @description SET COSTS FOR TOP HEADER FROM DISCOUNT AND COST
    */
-  const setHeaderDiscountTab = (data) => {
+  const setHeaderDiscountTab = (data, headerCostData = {}, CostingData = {}) => {
     if (!CostingViewMode) {
       const headerIndex = 0;
-
       if (CostingDataList && CostingDataList.length > 0 && CostingDataList[headerIndex].CostingId === undefined) return false;
 
       let DataList = CostingDataList;
       let tempData = CostingDataList && CostingDataList[headerIndex];
-
       let OverAllCost = 0;
       if (tempData && tempData !== undefined) {
         //SUM OF ALL TAB EXCEPT DISCOUNT TAB
@@ -261,36 +299,34 @@ function CostingDetailStepTwo(props) {
           checkForNull(tempData.NetOverheadAndProfitCost) +
           checkForNull(tempData.NetPackagingAndFreight) +
           checkForNull(tempData.ToolCost)
-
         if (data.OtherCostType === 'Percentage') {
-          data.AnyOtherCost = calculatePercentageValue(SumOfTab, data.PercentageOtherCost)
-        }
+          const cost = checkForNull(findApplicabilityCost(data, data?.OtherCostApplicability, headerCostData, CostingData, data?.PercentageOtherCost))
 
-        const discountedCost =data.DiscountCostType==='Percentage'? checkForDecimalAndNull(SumOfTab * calculatePercentage(data.HundiOrDiscountPercentage), initialConfiguration.NoOfDecimalForPrice):data.DiscountsAndOtherCost;
+          data.AnyOtherCost = cost
+        }
+        const discountedCost = data.DiscountCostType === 'Percentage' ? checkForNull(findApplicabilityCost(data, data?.DiscountApplicability, headerCostData, CostingData, data?.HundiOrDiscountPercentage)) : data.DiscountsAndOtherCost;
+
         const discountValues = {
-          NetPOPriceINR: checkForDecimalAndNull(SumOfTab - discountedCost, initialConfiguration.NoOfDecimalForPrice) + checkForDecimalAndNull(data.AnyOtherCost, initialConfiguration.NoOfDecimalForPrice),
-          HundiOrDiscountValue: checkForDecimalAndNull(discountedCost, initialConfiguration.NoOfDecimalForPrice),
-          AnyOtherCost: checkForDecimalAndNull(data.AnyOtherCost, initialConfiguration.NoOfDecimalForPrice),
-          HundiOrDiscountPercentage: checkForDecimalAndNull(data.HundiOrDiscountPercentage, initialConfiguration.NoOfDecimalForPrice),
+          NetPOPriceINR: checkForNull(SumOfTab - discountedCost) + checkForNull(data.AnyOtherCost),
+          HundiOrDiscountValue: checkForNull(discountedCost),
+          AnyOtherCost: checkForNull(data.AnyOtherCost),
+          HundiOrDiscountPercentage: checkForNull(data.HundiOrDiscountPercentage),
         }
         dispatch(setDiscountCost(discountValues, () => { }))
-
         OverAllCost = checkForNull(tempData.NetTotalRMBOPCC) +
           checkForNull(tempData.NetSurfaceTreatmentCost) +
           checkForNull(tempData.NetOverheadAndProfitCost) +
           checkForNull(tempData.NetPackagingAndFreight) +
-          checkForNull(tempData.ToolCost) - checkForDecimalAndNull(discountedCost, initialConfiguration.NoOfDecimalForPrice)
-
+          checkForNull(tempData.ToolCost) - checkForNull(discountedCost)
         tempData = {
           ...tempData,
-          NetDiscountsCost: checkForDecimalAndNull(discountedCost, initialConfiguration.NoOfDecimalForPrice),
-          NetOtherCost: checkForDecimalAndNull(data.AnyOtherCost, initialConfiguration.NoOfDecimalForPrice),
-          TotalCost: OverAllCost + checkForDecimalAndNull(data.AnyOtherCost, initialConfiguration.NoOfDecimalForPrice),
+          NetDiscountsCost: checkForNull(discountedCost),
+          NetOtherCost: checkForNull(data.AnyOtherCost),
+          TotalCost: OverAllCost + checkForNull(data.AnyOtherCost),
           NetPackagingAndFreight: tempData.NetPackagingAndFreight,
         }
 
         let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
-
         dispatch(setCostingDataList('setHeaderDiscountTab', tempArr, () => {
         }))
         dispatch(setPOPrice(calculateNetPOPrice(tempArr), () => { }))
@@ -311,6 +347,32 @@ function CostingDetailStepTwo(props) {
       }, 0)
       return TotalCost;
     }
+  }
+
+  const handleBackButton = () => {
+    if (RMCCTabData && RMCCTabData.length > 0 && CostingViewMode === false) {
+      let tempArrForCosting = JSON.parse(localStorage.getItem('costingArray'))
+      const data = _.find(tempArrForCosting, ['IsPartLocked', true])
+      const bopData = _.find(tempArrForCosting, ['PartType', 'BOP'])
+      const lockedData = _.find(tempArrForCosting, ['IsLocked', true])
+      const tabData = RMCCTabData[0]
+      const surfaceTabData = SurfaceTabData[0]
+      const overHeadAndProfitTabData = OverheadProfitTabData[0]
+      const discountAndOtherTabData = DiscountCostData
+      if (data !== undefined || bopData !== undefined || lockedData !== undefined) {
+        let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, NetPOPrice, getAssemBOPCharge, 1, CostingEffectiveDate)
+        dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
+      }
+      let surfaceArrForCosting = JSON.parse(localStorage.getItem('surfaceCostingArray'))
+      const surfaceData = _.find(surfaceArrForCosting, ['IsPartLocked', true])
+      const surfaceLockedData = _.find(surfaceArrForCosting, ['IsLocked', true])
+      if (surfaceData !== undefined || surfaceLockedData !== undefined) {
+        let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, NetPOPrice, getAssemBOPCharge, 2, CostingEffectiveDate)
+        dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
+      }
+    }
+
+    props.backBtn()
   }
 
   return (
@@ -336,7 +398,7 @@ function CostingDetailStepTwo(props) {
                     <tbody>
                       <td><div className={'part-info-title'}><p><span className="">Technology:</span><span className="dark-blue pl-1"> {costingData.TechnologyName}</span></p></div></td>
                       <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Part Name:</span><span className="dark-blue pl-1"> {costingData.PartName}</span></p></div></td>
-                      {costingData.IsVendor && <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Vendor:</span><span className="dark-blue pl-1"> {costingData.VendorName}</span></p></div></td>}
+                      {costingData.IsVendor && <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Vendor:</span><span className="dark-blue pl-1"> {costingData.VendorName}({costingData.VendorCode})</span></p></div></td>}
                       {costingData.IsVendor && initialConfiguration?.IsDestinationPlantConfigure && <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Destination Plant:</span><span className="dark-blue pl-1"> {costingData.DestinationPlantName}</span></p></div></td>}
                       {!costingData.IsVendor && <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Plant:</span><span className="dark-blue pl-1"> {`${costingData.IsVendor ? costingData.VendorPlantName : costingData.PlantName}(${costingData.VendorType})`}</span></p></div></td>}
                       <td><div className={'part-info-title'}><p><span className="cr-tbl-label">SOB:</span><span className="dark-blue pl-1"> {costingData.ShareOfBusinessPercent}%</span></p></div></td>
@@ -349,7 +411,7 @@ function CostingDetailStepTwo(props) {
                     <Table className="table cr-brdr-main mb-0" size="sm">
                       <thead>
                         <tr>
-                          <th style={{ width: '220px' }}>{``}</th>
+                          <th style={{ width: '100px' }}>{``}</th>
                           <th style={{ width: '100px' }}><span className="font-weight-500">{`${costingData?.IsAssemblyPart ? 'RM Cost/ Assembly' : 'RM Cost/Pc'}`}</span></th>
                           <th style={{ width: '120px' }}><span className="font-weight-500">{`${costingData?.IsAssemblyPart ? 'BOP Cost/ Assembly' : 'BOP Cost/ Pc'}`}</span></th>
                           <th style={{ width: '120px' }}><span className="font-weight-500">{`${costingData?.IsAssemblyPart ? 'Conversion Cost/Assembly' : 'Conversion Cost/Pc'}`}</span></th>
@@ -369,7 +431,7 @@ function CostingDetailStepTwo(props) {
                             CostingDataList && CostingDataList.map((item, index) => {
                               return (
                                 <>
-                                  <td className="cr-part-name"><span className="cr-prt-nm fs1 font-weight-500">{item.PartNumber}</span></td>
+                                  <td className="part-overflow pr-0 pl-2"><span className="cr-prt-nm fs1 font-weight-500" title={item.PartNumber}>{item.PartNumber}</span></td>
                                   <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.NetRMCost, initialConfiguration.NoOfDecimalForPrice)}</span></td>
                                   <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.NetBOPCost, initialConfiguration.NoOfDecimalForPrice)}</span></td>
                                   <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.NetConversionCost, initialConfiguration.NoOfDecimalForPrice)}</span></td>
@@ -391,13 +453,12 @@ function CostingDetailStepTwo(props) {
                   </div>
                 </Col>
               </Row>
-
               <Row>
                 <Col md="3">
                   <button
                     type="button"
                     className="submit-button mr5 save-btn cr-bk-btn"
-                    onClick={props.backBtn} >
+                    onClick={handleBackButton} >
                     <div className={'back-icon'}></div>
                     {'Back '}
                   </button>
@@ -405,7 +466,6 @@ function CostingDetailStepTwo(props) {
               </Row>
 
               <Row className="sepration-box"></Row>
-
               <Row>
                 <Col md="12">
                   <costingInfoContext.Provider value={costingData} >
@@ -433,15 +493,12 @@ function CostingDetailStepTwo(props) {
                   </costingInfoContext.Provider>
                 </Col>
               </Row>
-
             </div>
           </Col>
         </Row>
       </div>
-
     </>
   );
 };
-
 
 export default CostingDetailStepTwo;

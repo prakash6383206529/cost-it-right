@@ -18,6 +18,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from "../../../assests/images/red-cross.png";
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import _, { debounce } from 'lodash';
 
 class AddIndivisualPart extends Component {
   constructor(props) {
@@ -41,8 +42,11 @@ class AddIndivisualPart extends Component {
       DropdownChanged: true,
       uploadAttachements: true,
       showPopup: false,
-      updatedObj: {}
-
+      updatedObj: {},
+      setDisable: false,
+      disablePopup: false,
+      isBomEditable: false,
+      minEffectiveDate: '',
     }
   }
 
@@ -78,6 +82,7 @@ class AddIndivisualPart extends Component {
           })
           this.setState({ DataToCheck: Data })
           this.props.change("EffectiveDate", DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
+          this.setState({ minEffectiveDate: Data.EffectiveDate })
 
           setTimeout(() => {
             this.setState({
@@ -86,7 +91,8 @@ class AddIndivisualPart extends Component {
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
               files: Data.Attachements,
               ProductGroup: productArray,
-              oldProductGroup: productArray
+              oldProductGroup: productArray,
+              isBomEditable: Data.IsBOMEditable
             }, () => this.setState({ isLoader: false }))
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
             let files = Data.Attachements && Data.Attachements.map((item) => {
@@ -164,9 +170,22 @@ class AddIndivisualPart extends Component {
 
   }
 
+  /**
+  * @method setDisableFalseFunction
+  * @description setDisableFalseFunction
+  */
+  setDisableFalseFunction = () => {
+    const loop = Number(this.dropzone.current.files.length) - Number(this.state.files.length)
+    if (Number(loop) === 1) {
+      this.setState({ setDisable: false })
+    }
+  }
+
   // called every time a file's `status` changes
   handleChangeStatus = ({ meta, file }, status) => {
     const { files, } = this.state;
+
+    this.setState({ uploadAttachements: false, setDisable: true })
 
     if (status === 'removed') {
       const removedFileName = file.name;
@@ -178,6 +197,7 @@ class AddIndivisualPart extends Component {
       let data = new FormData()
       data.append('file', file)
       this.props.fileUploadPart(data, (res) => {
+        this.setDisableFalseFunction()
         let Data = res.data[0]
         const { files } = this.state;
         files.push(Data)
@@ -186,13 +206,16 @@ class AddIndivisualPart extends Component {
     }
 
     if (status === 'rejected_file_type') {
+      this.setDisableFalseFunction()
       Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
     } else if (status === 'error_file_size') {
+      this.setDisableFalseFunction()
       this.dropzone.current.files.pop()
       Toaster.warning("File size greater than 2 mb not allowed")
     } else if (status === 'error_validation'
       || status === 'error_upload_params' || status === 'exception_upload'
       || status === 'aborted' || status === 'error_upload') {
+      this.setDisableFalseFunction()
       this.dropzone.current.files.pop()
       Toaster.warning("Something went wrong")
     }
@@ -262,23 +285,60 @@ class AddIndivisualPart extends Component {
   * @method onSubmit
   * @description Used to Submit the form
   */
-  onSubmit = (values) => {
+  onSubmit = debounce((values) => {
     const { PartId, selectedPlants, effectiveDate, isEditFlag, files, DataToCheck, DropdownChanged, ProductGroup, oldProductGroup, uploadAttachements } = this.state;
     const { initialConfiguration } = this.props;
-
+    let isStructureChanges
     let plantArray = selectedPlants && selectedPlants.map((item) => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
 
     let productArray = (initialConfiguration?.IsProductMasterConfigurable) ? ProductGroup && ProductGroup.map((item) => ({ GroupCode: item.Text })) : [{ GroupCode: values.GroupCode }]
+
     if (isEditFlag) {
-
-
+      let isGroupCodeChange
+      if (!this.state.isBomEditable) {
+        if (this.props.initialConfiguration?.IsProductMasterConfigurable) {
+          let isEqualValue = _.isEqual(this.state.DataToCheck.GroupCodeList, productArray)
+          isGroupCodeChange = isEqualValue ? false : true
+        } else {
+          let isEqualValue = String(this.state.DataToCheck.GroupCode) === String(values.GroupCode)
+          isGroupCodeChange = isEqualValue ? false : true
+        }
+      }
+      //THIS CONDITION TO CHECK IF ALL VALUES ARE SAME (IF YES, THEN NO NEED TO CALL UPDATE API JUST SEND IT TO LISTING PAGE)
       if (DropdownChanged && String(DataToCheck.PartName) === String(values.PartName) && String(DataToCheck.Description) === String(values.Description) &&
         String(DataToCheck.GroupCode) === String(values.GroupCode) && String(DataToCheck.ECNNumber) === String(values.ECNNumber) &&
-        String(DataToCheck.RevisionNumber) === String(values.RevisionNumber) && String(DataToCheck.DrawingNumber) === String(values.DrawingNumber) && String(oldProductGroup) === String(ProductGroup)
-        && uploadAttachements) {
+        String(DataToCheck.RevisionNumber) === String(values.RevisionNumber) && String(DataToCheck.DrawingNumber) === String(values.DrawingNumber)
+        && !isGroupCodeChange && uploadAttachements) {
         this.cancel()
         return false;
       }
+
+      //THIS CONDITION IS TO CHECK IF IsBomEditable KEY FROM API IS FALSE AND THERE IS CHANGE ON ONLY PART DESCRIPTION ,PART NAME AND ATTACHMENT(TO UPDATE EXISTING RECORD)
+      if (this.state.isBomEditable === false && !isGroupCodeChange && String(DataToCheck.ECNNumber) === String(values.ECNNumber) &&
+        String(DataToCheck.RevisionNumber) === String(values.RevisionNumber) && String(DataToCheck.DrawingNumber) === String(values.DrawingNumber) &&
+        String(oldProductGroup) === String(ProductGroup)) {
+        isStructureChanges = false
+      }
+
+      //THIS CONDITION IS TO CHECK IF IsBomEditable KEY FROM API IS FALSE AND TEHRE IS CHANGE IN OTHER FIELD ALSO APART FROM PART DESCRIPTION,NAME AND ATTACHMENT (TO CREATE NEW RECORD)
+      else if (this.state.isBomEditable === false && (isGroupCodeChange || String(DataToCheck.ECNNumber) !== String(values.ECNNumber) ||
+        String(DataToCheck.RevisionNumber) !== String(values.RevisionNumber) || String(DataToCheck.DrawingNumber) !== String(values.DrawingNumber)
+        || String(oldProductGroup) !== String(ProductGroup))) {
+        // IF THERE ARE CHANGES ,THEN REVISION NO SHOULD BE CHANGED
+        if (String(DataToCheck.RevisionNumber) === String(values.RevisionNumber) || DayTime(DataToCheck.EffectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(this.state.effectiveDate).format('YYYY-MM-DD HH:mm:ss')) {
+          Toaster.warning('Please edit Revision no and Effective date')
+          return false
+        } else {
+          isStructureChanges = true
+        }
+      }
+      // THIS CONDITION IS WHEN IsBomEditable KEY FROM API IS TRUE (WHATEVER USER CHANGE OLD RECORD WILL GET UPDATE)
+      else {
+        isStructureChanges = false
+      }
+
+
+      this.setState({ setDisable: true, disablePopup: false })
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: PartId }
       })
@@ -295,18 +355,24 @@ class AddIndivisualPart extends Component {
         Remark: values.Remark,
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
         Attachements: updatedFiles,
-        IsForcefulUpdated: true,
-        GroupCodeList: productArray
+        IsForcefulUpdated: false,
+        GroupCodeList: productArray,
+        IsStructureChanges: isStructureChanges
       }
 
-      if (isEditFlag) {
-        this.setState({ showPopup: true, updatedObj: updateData })
-      }
+      this.props.updatePart(updateData, (res) => {
+        this.setState({ setDisable: false })
+        if (res?.data?.Result) {
+          Toaster.success(MESSAGES.UPDATE_PART_SUCESS);
+          this.cancel()
+        }
+      });
 
 
 
     } else {
 
+      this.setState({ setDisable: true })
       let formData = {
         LoggedInUserId: loggedInUserId(),
         BOMLevel: 0,
@@ -324,26 +390,27 @@ class AddIndivisualPart extends Component {
         GroupCodeList: productArray
       }
 
-      this.props.reset()
       this.props.createPart(formData, (res) => {
-        if (res.data.Result === true) {
+        this.setState({ setDisable: false })
+        if (res?.data?.Result === true) {
           Toaster.success(MESSAGES.PART_ADD_SUCCESS);
           this.cancel()
         }
       });
     }
-  }
-  onPopupConfirm = () => {
-    this.props.reset()
+  }, 500)
+  onPopupConfirm = debounce(() => {
+    this.setState({ disablePopup: true })
     this.props.updatePart(this.state.updatedObj, (res) => {
-      if (res.data.Result) {
+      this.setState({ setDisable: false })
+      if (res?.data?.Result) {
         Toaster.success(MESSAGES.UPDATE_PART_SUCESS);
         this.cancel()
       }
     });
-  }
+  }, 500)
   closePopUp = () => {
-    this.setState({ showPopup: false })
+    this.setState({ showPopup: false, setDisable: false })
   }
   handleKeyDown = function (e) {
     if (e.key === 'Enter' && e.shiftKey === false) {
@@ -357,7 +424,8 @@ class AddIndivisualPart extends Component {
   */
   render() {
     const { handleSubmit, initialConfiguration } = this.props;
-    const { isEditFlag, isViewMode } = this.state;
+    const { isEditFlag, isViewMode, setDisable, disablePopup } = this.state;
+
     return (
       <>
         {this.state.isLoader && <LoaderCustom />}
@@ -416,18 +484,20 @@ class AddIndivisualPart extends Component {
                           </Col>
 
                           <Col md="3">
-                            <Field
-                              label={`Part Description`}
-                              name={"Description"}
-                              type="text"
-                              placeholder={""}
-                              validate={[maxLength80, checkWhiteSpaces]}
-                              component={renderText}
-                              required={false}
-                              className=""
-                              customClassName={"withBorder"}
-                              disabled={isViewMode}
-                            />
+                            <span>
+                              <Field
+                                label={`Part Description`}
+                                name={"Description"}
+                                type="text"
+                                placeholder={""}
+                                validate={[maxLength80, checkWhiteSpaces]}
+                                component={renderText}
+                                required={false}
+                                className=""
+                                customClassName={"withBorder"}
+                                disabled={isViewMode}
+                              />
+                            </span>
                           </Col>
                           {initialConfiguration?.IsProductMasterConfigurable ? (
 
@@ -441,13 +511,9 @@ class AddIndivisualPart extends Component {
                                   this.state.ProductGroup == null || this.state.ProductGroup.length === 0 ? [] : this.state.ProductGroup}
                                 options={this.renderListing("ProductGroup")}
                                 selectionChanged={this.handleProductGroup}
-                                validate={
-                                  this.state.ProductGroup == null || this.state.ProductGroup.length === 0 ? [] : []}
-                                required={true}
                                 optionValue={(option) => option.Value}
                                 optionLabel={(option) => option.Text}
                                 component={renderMultiSelectField}
-                                mendatory={false}
                                 className="multiselect-with-border"
                                 disabled={isViewMode}
                               // disabled={this.state.IsVendor || isEditFlag ? true : false}
@@ -524,6 +590,7 @@ class AddIndivisualPart extends Component {
                                   onChange={this.handleEffectiveDateChange}
                                   type="text"
                                   validate={[required]}
+                                  minDate={this.state.minEffectiveDate}
                                   autoComplete={'off'}
                                   required={true}
                                   changeHandler={(e) => {
@@ -652,14 +719,15 @@ class AddIndivisualPart extends Component {
                             type={"button"}
                             className="mr15 cancel-btn"
                             onClick={this.cancel}
+                            disabled={setDisable}
                           >
                             <div className={"cancel-icon"}></div>
                             {"Cancel"}
                           </button>
                           <button
-                            disabled={isViewMode}
                             type="submit"
                             className="user-btn mr5 save-btn"
+                            disabled={isViewMode || setDisable}
                           >
                             <div className={"save-icon"}></div>
                             {isEditFlag ? "Update" : "Save"}
@@ -673,7 +741,7 @@ class AddIndivisualPart extends Component {
             </div>
           </div>
           {
-            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} />
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} disablePopup={disablePopup} />
           }
         </div>
       </>

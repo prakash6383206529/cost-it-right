@@ -2,8 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Field, reduxForm } from 'redux-form'
 import { Row, Col } from 'reactstrap'
-import { focusOnError, searchableSelect } from '../../layout/FormInputs'
-import { required } from '../../../helper/validation'
+import { focusOnError } from '../../layout/FormInputs'
 import Toaster from '../../common/Toaster'
 import { MESSAGES } from '../../../config/message'
 import { EMPTY_DATA } from '../../../config/constants'
@@ -11,13 +10,12 @@ import NoContentFound from '../../common/NoContentFound'
 import { getVolumeDataList, deleteVolume, getFinancialYearSelectList, } from '../actions/Volume'
 import { getPlantSelectList, getVendorWithVendorCodeSelectList } from '../../../actions/Common'
 import { getVendorListByVendorType } from '../actions/Material'
-import { costingHeadObjs, Months, VOLUME_DOWNLOAD_EXCEl } from '../../../config/masterData'
+import { VOLUME_DOWNLOAD_EXCEl } from '../../../config/masterData'
 import AddVolume from './AddVolume'
 import BulkUpload from '../../massUpload/BulkUpload'
-import { ADDITIONAL_MASTERS, VOLUME, VolumeMaster, ZBC } from '../../../config/constants'
+import { ADDITIONAL_MASTERS, VOLUME, VolumeMaster } from '../../../config/constants'
 import { checkPermission } from '../../../helper/util'
 import { GridTotalFormate } from '../../common/TableGridFunctions'
-import ConfirmComponent from '../../../helper/ConfirmComponent'
 import LoaderCustom from '../../common/LoaderCustom'
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -25,6 +23,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper'
 import ScrollToTop from '../../common/ScrollToTop'
+import AddLimit from './AddLimit'
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -133,8 +132,9 @@ class VolumeListing extends Component {
       sideBar: { toolPanels: ['columns'] },
       showData: false,
       showPopup: false,
-      deletedId: ''
-
+      deletedId: '',
+      isLoader: false,
+      limit: false,
     }
   }
 
@@ -143,7 +143,7 @@ class VolumeListing extends Component {
     this.props.getPlantSelectList(() => { })
     this.props.getFinancialYearSelectList(() => { })
     // this.props.getVendorListByVendorType(true, () => { })
-    this.props.getVendorWithVendorCodeSelectList()
+    this.props.getVendorWithVendorCodeSelectList(() => { })
     this.getTableListData()
   }
 
@@ -182,6 +182,7 @@ class VolumeListing extends Component {
    * @description Get user list data
    */
   getTableListData = (year = '', month = '', vendor_id = '', plant_id = '', costing_head = '') => {
+    this.setState({ isLoader: true })
     let filterData = {
       year: year,
       month: month,
@@ -190,6 +191,7 @@ class VolumeListing extends Component {
       costing_head: costing_head
     }
     this.props.getVolumeDataList(filterData, (res) => {
+      this.setState({ isLoader: false })
       if (res.status === 204 && res.data === '') {
         this.setState({ tableData: [] })
       } else if (res && res.data && res.data.DataList) {
@@ -269,7 +271,7 @@ class VolumeListing extends Component {
    */
   costingHeadFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return cellValue ? 'Vendor Based' : 'Zero Based'
+    return cellValue
   }
 
   /**
@@ -280,6 +282,22 @@ class VolumeListing extends Component {
     return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
   }
 
+  /**
+  * @method plantFormatter
+  */
+  plantFormatter = (props) => {
+    const rowData = props?.data;
+    let value = '-'
+    if (rowData?.IsVendor === "Vendor Based") {
+      value = rowData?.DestinationPlant
+      return value;
+    } else if (rowData?.IsVendor === "Zero Based") {
+      value = rowData?.Plant
+      return value;
+    }
+    return value;
+  }
+
   onExportToCSV = (row) => {
     return this.state.userData // must return the data which you want to be exported
   }
@@ -288,9 +306,6 @@ class VolumeListing extends Component {
     return <GridTotalFormate start={start} to={to} total={total} />
   }
 
-  plantFormatter = (cell, row, enumObject, rowIndex) => {
-    return row.IsVendor ? row.DestinationPlant : cell
-  }
   /**
    * @method actualBulkToggle
    * @description OPEN ACTUAL BULK UPLOAD DRAWER FOR BULK UPLOAD
@@ -366,7 +381,6 @@ class VolumeListing extends Component {
   };
 
   onBtExport = () => {
-    let tempArr = this.props.volumeDataList && this.props.volumeDataList
     return this.returnExcelColumn(VOLUME_DOWNLOAD_EXCEl, this.props.volumeDataList)
   };
 
@@ -401,20 +415,38 @@ class VolumeListing extends Component {
   }
 
   /**
+ * @method LimitHandleChange
+ * @description Open Limit Side Drawer
+ */
+  limitHandler = () => {
+    this.setState({ limit: true });
+  };
+
+
+  /**
+  * @method  closeLimitDrawer
+  * @description CLOSE Limit Side Drawer
+  */
+  closeLimitDrawer = () => {
+    this.setState({ limit: false });
+  };
+
+
+  /**
    * @method render
    * @description Renders the component
    */
   render() {
     const { handleSubmit } = this.props
     const {
-      isEditFlag,
       showVolumeForm,
       data,
       isActualBulkUpload,
       isBudgetedBulkUpload,
       AddAccessibility,
       BulkUploadAccessibility,
-      DownloadAccessibility
+      DownloadAccessibility,
+      limit
     } = this.state
     const options = {
       clearSearch: true,
@@ -440,9 +472,9 @@ class VolumeListing extends Component {
     const frameworkComponents = {
       totalValueRenderer: this.buttonFormatter,
       costingHeadRenderer: this.costingHeadFormatter,
-      customLoadingOverlay: LoaderCustom,
       customNoRowsOverlay: NoContentFound,
       hyphenFormatter: this.hyphenFormatter,
+      plantFormatter: this.plantFormatter
 
     };
 
@@ -458,9 +490,9 @@ class VolumeListing extends Component {
 
     return (
       <>
-        {/* {this.props.loading && <Loader />} */}
         <div className={`ag-grid-react container-fluid blue-before-inside ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
           <ScrollToTop pointProp="go-to-top" />
+          {this.state.isLoader && <LoaderCustom />}
           <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
             <Row>
               <Col md="12"><h1 className="mb-0">Volume Master</h1></Col>
@@ -477,6 +509,13 @@ class VolumeListing extends Component {
                     ) : (
                       ""
                     )}
+                    <button
+                      type="button"
+                      className={"user-btn mr5"}
+                      onClick={this.limitHandler}
+                    >
+                      Add Limit
+                    </button>
                     {AddAccessibility && (
                       <button
                         type="button"
@@ -537,14 +576,11 @@ class VolumeListing extends Component {
             </Row>
           </form>
 
-
-          <div className="ag-grid-wrapper height-width-wrapper">
+          <div className={`ag-grid-wrapper height-width-wrapper  ${this.props.volumeDataList && this.props.volumeDataList?.length <= 0 ? "overlay-contain" : ""}`}>
             <div className="ag-grid-header">
               <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
             </div>
-            <div
-              className="ag-theme-material"
-            >
+            <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
               <AgGridReact
                 defaultColDef={defaultColDef}
                 floatingFilter={true}
@@ -556,7 +592,6 @@ class VolumeListing extends Component {
                 paginationPageSize={10}
                 onGridReady={this.onGridReady}
                 gridOptions={gridOptions}
-                loadingOverlayComponent={'customLoadingOverlay'}
                 noRowsOverlayComponent={'customNoRowsOverlay'}
                 noRowsOverlayComponentParams={{
                   title: EMPTY_DATA,
@@ -570,7 +605,7 @@ class VolumeListing extends Component {
                 <AgGridColumn field="VendorName" headerName="Vendor Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn field="PartNumber" headerName="Part Number"></AgGridColumn>
                 <AgGridColumn field="PartName" headerName="Part Name"></AgGridColumn>
-                <AgGridColumn field="Plant" headerName="Plant" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                <AgGridColumn field="Plant" headerName="Plant" cellRenderer={'plantFormatter'}></AgGridColumn>
                 <AgGridColumn field="BudgetedQuantity" headerName="Budgeted Quantity"></AgGridColumn>
                 <AgGridColumn field="ApprovedQuantity" headerName="Approved Quantity"></AgGridColumn>
                 <AgGridColumn field="VolumeId" width={120} headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
@@ -611,6 +646,16 @@ class VolumeListing extends Component {
           {
             this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.VOLUME_DELETE_ALERT}`} />
           }
+
+          {limit && (
+            <AddLimit
+              isOpen={limit}
+              closeDrawer={this.closeLimitDrawer}
+              isEditFlag={false}
+              ID={""}
+              anchor={"right"}
+            />
+          )}
         </div>
       </>
     )

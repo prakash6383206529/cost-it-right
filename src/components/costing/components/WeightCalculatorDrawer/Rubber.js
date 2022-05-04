@@ -427,8 +427,8 @@ function Rubber(props) {
                                         alt="cancel-icon.jpg"
                                     />
                                 </div>
-                                      CANCEL
-                             </button>
+                                CANCEL
+                            </button>
                             <button
                                 type="submit"
                                 // disabled={isSubmitted ? true : false}

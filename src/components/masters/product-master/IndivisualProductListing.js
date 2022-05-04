@@ -44,7 +44,8 @@ class IndivisualProductListing extends Component {
             isBulkUpload: false,
             ActivateAccessibility: true,
             showPopup: false,
-            deletedId: ''
+            deletedId: '',
+            
         }
     }
 
@@ -419,7 +420,7 @@ class IndivisualProductListing extends Component {
                     </Col>
                 </Row>
 
-                <div className="ag-grid-wrapper height-width-wrapper">
+                <div className={`ag-grid-wrapper height-width-wrapper  ${this.props.newPartsListing && this.props.newPartsListing?.length <=0 ?"overlay-contain": ""}`}>
                     <div className="ag-grid-header">
                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                     </div>

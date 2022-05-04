@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useForm, Controller, dispatch } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { useSelector, useDispatch } from 'react-redux';
 import { Col, Row, Table } from 'reactstrap';
 import AddBOP from '../../Drawers/AddBOP';
@@ -7,7 +7,7 @@ import { NumberFieldHookForm, TextFieldHookForm } from '../../../../layout/HookF
 import NoContentFound from '../../../../common/NoContentFound';
 import { EMPTY_DATA } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
-import { calculatePercentage, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, setValueAccToUOM } from '../../../../../helper';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected } from '../../../../../helper';
 import { ViewCostingContext } from '../../CostingDetails';
 import { gridDataAdded, isDataChange, setRMCCErrors } from '../../../actions/Costing';
 import { INR } from '../../../../../config/constants';
@@ -16,6 +16,7 @@ import _ from 'lodash'
 let counter = 0;
 function BOPCost(props) {
   const { item, data } = props;
+  const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
 
   const { register, handleSubmit, control, formState: { errors }, setValue, getValues } = useForm({
     mode: 'onChange',
@@ -34,7 +35,7 @@ function BOPCost(props) {
   const [Ids, setIds] = useState([])
   const [isDrawerOpen, setDrawerOpen] = useState(false)
   const [IsApplyBOPHandlingCharges, setIsApplyBOPHandlingCharges] = useState(item.CostingPartDetails.IsApplyBOPHandlingCharges)
-  const [oldGridData,setOldGridData] = useState(data)
+  const [oldGridData, setOldGridData] = useState(data)
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { CostingEffectiveDate } = useSelector(state => state.costing)
@@ -48,9 +49,9 @@ function BOPCost(props) {
         BOMLevel: props.item.BOMLevel,
         PartNumber: props.item.PartNumber,
       }
-      if (!CostingViewMode) {
-        props.setBOPCost(gridData, Params,item)
-        if(JSON.stringify(gridData) !== JSON.stringify(oldGridData)){
+      if (!CostingViewMode && !IsLocked) {
+        props.setBOPCost(gridData, Params, item)
+        if (JSON.stringify(gridData) !== JSON.stringify(oldGridData)) {
           dispatch(isDataChange(true))
         }
       }
@@ -86,7 +87,7 @@ function BOPCost(props) {
   * @description HIDE RM DRAWER
   */
   const closeDrawer = (e = '', rowData = {}) => {
-    
+
     if (Object.keys(rowData).length > 0) {
 
       let rowArray = rowData && rowData.map(el => {
@@ -98,7 +99,7 @@ function BOPCost(props) {
           LandedCostINR: el.Currency === '-' ? el.NetLandedCost : el.NetLandedCostConversion,
           Quantity: 1,
           NetBoughtOutPartCost: el.Currency === '-' ? el.NetLandedCost * 1 : el.NetLandedCostConversion * 1,
-          BoughtOutPartUOM:el.UOM
+          BoughtOutPartUOM: el.UOM
         }
       })
 
@@ -133,7 +134,7 @@ function BOPCost(props) {
     setGridData(tempArr)
 
     let selectedIds = []
-    tempArr.map(el => { selectedIds.push(el.BoughtOutPartId) })
+    tempArr.map(el => (selectedIds.push(el.BoughtOutPartId)))
     setIds(selectedIds)
 
   }
@@ -150,10 +151,10 @@ function BOPCost(props) {
 
   const SaveItem = (index) => {
     let bopGridData = gridData[index]
-    if(bopGridData.BoughtOutPartUOM === 'Number'){
-      
-      let isValid =Number.isInteger(bopGridData.Quantity);
-      if(!isValid){
+    if (bopGridData.BoughtOutPartUOM === 'Number') {
+
+      let isValid = Number.isInteger(bopGridData.Quantity);
+      if (!isValid) {
         Toaster.warning('Please enter numeric value')
         setTimeout(() => {
           setValue(`${bopGridFields}.${index}.Quantity`, '')
@@ -199,6 +200,24 @@ function BOPCost(props) {
   */
   const onPressApplyBOPCharges = () => {
     setIsApplyBOPHandlingCharges(!IsApplyBOPHandlingCharges)
+    setValue('BOPHandlingPercentage', 0)
+    setValue('BOPHandlingCharges', 0)
+    setTimeout(() => {
+      const Params = {
+        BOMLevel: item.BOMLevel,
+        PartNumber: item.PartNumber,
+      }
+
+      const BOPHandlingFields = {
+        IsApplyBOPHandlingCharges: !IsApplyBOPHandlingCharges,
+        BOPHandlingPercentage: 0,
+        BOPHandlingCharges: 0,
+      }
+      if (!CostingViewMode) {
+        props.setBOPHandlingCost(gridData, BOPHandlingFields, Params)
+      }
+    }, 200)
+    dispatch(isDataChange(true))
   }
 
   /**
@@ -231,10 +250,10 @@ function BOPCost(props) {
           BOPHandlingPercentage: getValues('BOPHandlingPercentage'),
           BOPHandlingCharges: getValues('BOPHandlingCharges'),
         }
-        if (!CostingViewMode) {
-          props.setBOPHandlingCost(gridData, BOPHandlingFields, Params)
+        if (!CostingViewMode && !IsLocked) {
+          props.setBOPHandlingCost(gridData, BOPHandlingFields, Params, item)
         }
-      }, 200)
+      }, 500)
 
     } else {
       setValue('BOPHandlingCharges', 0)
@@ -262,8 +281,8 @@ function BOPCost(props) {
         BOPHandlingPercentage: 0,
         BOPHandlingCharges: 0,
       }
-      if (!CostingViewMode) {
-        props.setBOPHandlingCost(gridData, BOPHandlingFields, Params)
+      if (!CostingViewMode && !IsLocked) {
+        props.setBOPHandlingCost(gridData, BOPHandlingFields, Params, item)
       }
     }
   }, [IsApplyBOPHandlingCharges]);
@@ -303,11 +322,11 @@ function BOPCost(props) {
               </div>
             </Col>
             <Col md={'2'}>
-              {!CostingViewMode && <button
+              {!CostingViewMode && !IsLocked && <button
                 type="button"
                 className={'user-btn'}
                 onClick={DrawerToggle}>
-                <div className={'plus'}></div>INSERT</button>}
+                <div className={'plus'}></div>Insert</button>}
             </Col>
           </Row>
           <form noValidate className="form" onSubmit={handleSubmit(onSubmit)} >
@@ -324,93 +343,97 @@ function BOPCost(props) {
                       <th style={{ width: "220px" }} >{`Insert Cost (INR)`}</th>
                       <th style={{ width: "220px" }} >{`Quantity`}</th>
                       <th style={{ width: "220px" }} >{`Net Insert Cost`}</th>
-                      <th style={{ width: "145px" }}>{`Action`}</th>
+                      <th style={{ width: "145px", textAlign: "right" }}>{`Action`}</th>
                     </tr>
                   </thead>
-                  <tbody >
+                  <tbody className='rm-table-body'>
                     {
                       gridData &&
                       gridData.map((item, index) => {
                         return (
                           editIndex === index ?
                             <tr key={index}>
-                              <td>{item.BOPPartNumber}</td>
+                              <td className='text-overflow'><span title={item.BOPPartNumber}>{item.BOPPartNumber}</span></td>
                               <td>{item.BOPPartName}</td>
-                               <td>{item.BoughtOutPartUOM}</td>
+                              <td>{item.BoughtOutPartUOM}</td>
                               <td>{checkForDecimalAndNull(item.LandedCostINR, initialConfiguration.NoOfDecimalForPrice)}</td>
                               <td style={{ width: 200 }}>
                                 {
-                                  item.BoughtOutPartUOM === 'Number'?
-                                  <>
-                                  <NumberFieldHookForm
-                                  label=""
-                                  name={`${bopGridFields}.${index}.Quantity`}
-                                  Controller={Controller}
-                                  control={control}
-                                  register={register}
-                                  mandatory={false}
-                                  rules={{
-                                    //required: true,
-                                    pattern: {
-                                      value: /^[1-9]\d*$/,
-                                      message: 'Invalid Number.'
-                                    },
-                                  }}
-                                  defaultValue={item.Quantity}
-                                  className=""
-                                  customClassName={'withBorder'}
-                                  handleChange={(e) => {
-                                    e.preventDefault()
-                                    handleQuantityChange(e, index)
-                                  }}
-                                  errors={errors && errors.bopGridFields && errors.bopGridFields[index] !== undefined ? errors.bopGridFields[index].Quantity : ''}
-                                  disabled={CostingViewMode ? true : false}
-                                />
-                                  </>
-                                  :
-                                  <NumberFieldHookForm
-                                    label=""
-                                    name={`${bopGridFields}.${index}.Quantity`}
-                                    Controller={Controller}
-                                    control={control}
-                                    register={register}
-                                    mandatory={false}
-                                    rules={{
-                                      //required: true,
-                                      pattern: {
-                                        value: /^\d*\.?\d*$/,
-                                        message: 'Invalid Number.'
-                                      },
-                                    }}
-                                    defaultValue={item.Quantity}
-                                    className=""
-                                    customClassName={'withBorder'}
-                                    handleChange={(e) => {
-                                      e.preventDefault()
-                                      handleQuantityChange(e, index)
-                                    }}
-                                    errors={errors && errors.bopGridFields && errors.bopGridFields[index] !== undefined ? errors.bopGridFields[index].Quantity : ''}
-                                    disabled={CostingViewMode ? true : false}
-                                  />
+                                  item.BoughtOutPartUOM === 'Number' ?
+                                    <>
+                                      <NumberFieldHookForm
+                                        label=""
+                                        name={`${bopGridFields}.${index}.Quantity`}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={false}
+                                        rules={{
+                                          //required: true,
+                                          pattern: {
+                                            value: /^[1-9]\d*$/,
+                                            message: 'Invalid Number.'
+                                          },
+                                        }}
+                                        defaultValue={item.Quantity}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        handleChange={(e) => {
+                                          e.preventDefault()
+                                          handleQuantityChange(e, index)
+                                        }}
+                                        errors={errors && errors.bopGridFields && errors.bopGridFields[index] !== undefined ? errors.bopGridFields[index].Quantity : ''}
+                                        disabled={(CostingViewMode || IsLocked) ? true : false}
+                                      />
+                                    </>
+                                    :
+                                    <NumberFieldHookForm
+                                      label=""
+                                      name={`${bopGridFields}.${index}.Quantity`}
+                                      Controller={Controller}
+                                      control={control}
+                                      register={register}
+                                      mandatory={false}
+                                      rules={{
+                                        //required: true,
+                                        pattern: {
+                                          value: /^\d*\.?\d*$/,
+                                          message: 'Invalid Number.'
+                                        },
+                                      }}
+                                      defaultValue={item.Quantity}
+                                      className=""
+                                      customClassName={'withBorder'}
+                                      handleChange={(e) => {
+                                        e.preventDefault()
+                                        handleQuantityChange(e, index)
+                                      }}
+                                      errors={errors && errors.bopGridFields && errors.bopGridFields[index] !== undefined ? errors.bopGridFields[index].Quantity : ''}
+                                      disabled={(CostingViewMode || IsLocked) ? true : false}
+                                    />
                                 }
                               </td>
                               <td>{item.NetBoughtOutPartCost !== undefined ? checkForDecimalAndNull(item.NetBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
                               <td>
-                                {!CostingViewMode && <button className="SaveIcon mr-2" type={'button'} onClick={() => SaveItem(index)} />}
-                                {!CostingViewMode && <button className="CancelIcon " type={'button'} onClick={() => CancelItem(index)} />}
+                                <div className='action-btn-wrapper'>
+                                  {!CostingViewMode && !IsLocked && <button className="SaveIcon" type={'button'} onClick={() => SaveItem(index)} />}
+                                  {!CostingViewMode && !IsLocked && <button className="CancelIcon" type={'button'} onClick={() => CancelItem(index)} />}
+                                </div>
                               </td>
                             </tr>
                             :
                             <tr key={index}>
-                              <td>{item.BOPPartNumber}</td>
+                              <td className='text-overflow'><span title={item.BOPPartNumber}>{item.BOPPartNumber}</span> </td>
                               <td>{item.BOPPartName}</td>
                               <td>{item.BoughtOutPartUOM}</td>
                               <td>{item.LandedCostINR ? checkForDecimalAndNull(item.LandedCostINR, initialConfiguration.NoOfDecimalForPrice) : ''}</td>
-                              <td style={{ width: 200 }}>{item.Quantity}</td>
+                              <td style={{ width: 200 }}>{checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForInputOutput)}</td>
                               <td>{item.NetBoughtOutPartCost ? checkForDecimalAndNull(item.NetBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
                               <td>
-                                {!CostingViewMode && <button className="Edit mr-2" type={'button'} onClick={() => editItem(index)} />}
-                                {!CostingViewMode && <button className="Delete " type={'button'} onClick={() => deleteItem(index)} />}
+                                <div className='action-btn-wrapper'>
+                                  {!CostingViewMode && !IsLocked && <button className="Edit" type={'button'} onClick={() => editItem(index)} />}
+                                  {!CostingViewMode && !IsLocked && <button className="Delete " type={'button'} onClick={() => deleteItem(index)} />}
+                                </div>
                               </td>
                             </tr>
 
@@ -419,7 +442,7 @@ function BOPCost(props) {
                     }
                     {gridData && gridData.length === 0 &&
                       <tr>
-                        <td colSpan={6}>
+                        <td colSpan={12}>
                           <NoContentFound title={EMPTY_DATA} />
                         </td>
                       </tr>
@@ -439,7 +462,7 @@ function BOPCost(props) {
                     <input
                       type="checkbox"
                       checked={IsApplyBOPHandlingCharges}
-                      disabled={CostingViewMode ? true : false}
+                      disabled={(CostingViewMode || IsLocked) ? true : false}
                     />
                     <span
                       className=" before-box"
@@ -478,7 +501,7 @@ function BOPCost(props) {
                     className=""
                     customClassName={"withBorder"}
                     errors={errors.BOPHandlingPercentage}
-                    disabled={CostingViewMode ? true : false}
+                    disabled={(CostingViewMode || IsLocked) ? true : false}
                   />
                 </Col>}
 

@@ -8,6 +8,7 @@ import NoContentFound from '../common/NoContentFound';
 import Drawer from '@material-ui/core/Drawer';
 import HeaderTitle from '../common/HeaderTitle';
 import { loggedInUserId } from '../../helper/auth';
+import LoaderCustom from '../common/LoaderCustom';
 
 class ViewUserDetails extends Component {
   constructor(props) {
@@ -18,12 +19,18 @@ class ViewUserDetails extends Component {
       isTechnologyOpen: false,
       Modules: [],
       TechnologyLevelGrid: [],
+      department: '',
+      loader: false,
     }
   }
 
   UNSAFE_componentWillMount() {
+    this.setState({ loader: true })
     this.props.getUserDataAPI(this.props.UserId, (res) => {
-      if (res && res.data && res.data.Data) { }
+      this.setState({ loader: false })
+      if (res && res.data && res.data.Data) {
+        this.changeDepartment()
+      }
     })
   }
 
@@ -32,6 +39,19 @@ class ViewUserDetails extends Component {
     this.props.getActionHeadsSelectList(() => { })
     this.getUserPermission(this.props.UserId)
     this.getUsersTechnologyLevelData(this.props.UserId)
+  }
+
+  changeDepartment() {
+    const { registerUserData } = this.props;
+    if (registerUserData !== undefined) {
+      let array_Department = []
+      registerUserData && registerUserData?.Departments && registerUserData?.Departments.map((item) => {
+        array_Department.push(item?.DepartmentName)
+        return null
+      })
+      array_Department.toString()
+      this.setState({ department: array_Department })
+    }
   }
 
   getUserPermission = (UserId) => {
@@ -77,6 +97,7 @@ class ViewUserDetails extends Component {
       return actions && actions.map((item, index) => {
         if (el.Text !== item.ActionName || item.IsChecked === false) return false;
         this.renderSecondLevelAction(item.Actions, index)
+        return null
       })
     })
   }
@@ -147,17 +168,18 @@ class ViewUserDetails extends Component {
   */
   render() {
     const { UserId, registerUserData, EditAccessibility, IsLoginEmailConfigure } = this.props;
-    const { isTechnologyOpen } = this.state;
+    const { isTechnologyOpen, department } = this.state;
 
     const address = registerUserData ? `${registerUserData.AddressLine1 ? registerUserData.AddressLine1 : "-"}, ${registerUserData.AddressLine2 ? registerUserData.AddressLine2 : "-"}, 
     ${registerUserData.CityName ? registerUserData.CityName : "-"},  ${registerUserData.ZipCode ? registerUserData.ZipCode : "-"}` : '';
 
     return (
       <>
-        {this.props.loading && <Loader />}
+        {(this.props.loading) && <Loader />}
         <Drawer className="user-detail" anchor={this.props.anchor} open={this.props.isOpen}
         // onClose={(e) => this.toggleDrawer(e)}
         >
+          {(this.state.loader) && <LoaderCustom />}
           <Container>
             <div className={'drawer-wrapper'}>
               <Row className="drawer-heading">
@@ -233,7 +255,7 @@ class ViewUserDetails extends Component {
                         customClass={'role-department-details'} />
                     </div>
                     <div className={'right-details pt-2'}>
-                      {`${registerUserData ? registerUserData.RoleName : ''} (${registerUserData && registerUserData.DepartmentName !==null ? registerUserData.DepartmentName : ' - '})`}
+                      {`${registerUserData ? registerUserData.RoleName : ''} (${department ? department : '-'})`}
                       {/* <div
                         onClick={this.permissionToggle}
                         className={`${isPermissionOpen ? 'minus-icon' : 'plus-icon'} pull-right`}>

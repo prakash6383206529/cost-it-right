@@ -109,7 +109,7 @@ function PushSection(props) {
                 </Col> */}
                 {/* </Row> */}
                 {/* <Row className="pl-3"> */}
-                <Col md="6">
+                {/* <Col md="6">
                     <SearchableSelectHookForm
                         label={"Material Group"}
                         name={"MaterialGroup"}
@@ -125,8 +125,8 @@ function PushSection(props) {
                         errors={props.errors.MaterialGroup}
                     />
 
-                </Col>
-                <Col md="6">
+                </Col> */}
+                {/* <Col md="6">
                     <SearchableSelectHookForm
                         label={"Purchasing Group"}
                         name={"PurchasingGroup"}
@@ -141,7 +141,7 @@ function PushSection(props) {
                         handleChange={handlePurchasingChange}
                         errors={props.errors.PurchasingGroup}
                     />
-                </Col>
+                </Col> */}
                 <Col md="6">
                     <SearchableSelectHookForm
                         label={"Decimal Option"}

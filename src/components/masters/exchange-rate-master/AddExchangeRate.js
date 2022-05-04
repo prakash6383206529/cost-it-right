@@ -14,6 +14,7 @@ import DayTime from '../../common/DayTimeWrapper'
 import { renderDatePicker, renderText, searchableSelect, } from "../../layout/FormInputs";
 import LoaderCustom from '../../common/LoaderCustom';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
+import { debounce } from 'lodash';
 const
   selector = formValueSelector('AddExchangeRate');
 
@@ -29,7 +30,12 @@ class AddExchangeRate extends Component {
       DropdownChanged: true,
       DataToChange: [],
       showPopup: false,
-      updatedObj: {}
+      updatedObj: {},
+      setDisable: false,
+      disablePopup: false,
+      minEffectiveDate: '',
+      isFinancialDataChange: false
+
     }
   }
 
@@ -115,7 +121,7 @@ class AddExchangeRate extends Component {
             const { currencySelectList } = this.props;
 
             const currencyObj = currencySelectList && currencySelectList.find(item => Number(item.Value) === Data.CurrencyId)
-
+            this.setState({ minEffectiveDate: Data.EffectiveDate })
             this.setState({
               isEditFlag: true,
               // isLoader: false,
@@ -157,11 +163,40 @@ class AddExchangeRate extends Component {
     // this.props.getExchangeRateData('', (res) => { })
   }
 
+  onFinancialDataChange = (e) => {
+
+    if (e.target.name === "CurrencyExchangeRate") {
+      if (e.target.value == this.state.DataToChange.CurrencyExchangeRate && this.state.DataToChange.BankRate == this.props.filedObj.BankRate && this.state.DataToChange.BankCommissionPercentage == this.props.filedObj.BankCommissionPercentage && this.state.DataToChange.CustomRate == this.props.filedObj.CustomRate) {
+        this.setState({ isFinancialDataChange: false })
+        return
+      }
+    } else if (e.target.name === "BankRate") {
+      if (e.target.value == this.state.DataToChange.BankRate && this.state.DataToChange.CurrencyExchangeRate == this.props.filedObj.CurrencyExchangeRate && this.state.DataToChange.BankCommissionPercentage == this.props.filedObj.BankCommissionPercentage && this.state.DataToChange.CustomRate == this.props.filedObj.CustomRate) {
+        this.setState({ isFinancialDataChange: false })
+        return
+      }
+    }
+    else if (e.target.name === "BankCommissionPercentage") {
+      if (e.target.value == this.state.DataToChange.BankCommissionPercentage && this.state.DataToChange.BankRate == this.props.filedObj.BankRate && this.state.DataToChange.CurrencyExchangeRate == this.props.filedObj.CurrencyExchangeRate && this.state.DataToChange.CustomRate == this.props.filedObj.CustomRate) {
+        this.setState({ isFinancialDataChange: false })
+        return
+      }
+    }
+    else if (e.target.name === "CustomRate") {
+      if (e.target.value == this.state.DataToChange.CustomRate && this.state.DataToChange.BankRate == this.props.filedObj.BankRate && this.state.DataToChange.BankCommissionPercentage == this.props.filedObj.BankCommissionPercentage && this.state.DataToChange.CurrencyExchangeRate == this.props.filedObj.CurrencyExchangeRate) {
+        this.setState({ isFinancialDataChange: false })
+        return
+      }
+    }
+    this.setState({ isFinancialDataChange: true })
+
+  }
+
   /**
   * @method onSubmit
   * @description Used to Submit the form
   */
-  onSubmit = (values) => {
+  onSubmit = debounce((values) => {
     const { isEditFlag, currency, effectiveDate, ExchangeRateId, DataToChange, DropdownChanged } = this.state;
 
     /** Update existing detail of exchange master **/
@@ -175,6 +210,15 @@ class AddExchangeRate extends Component {
         return false;
       }
 
+      if (this.state.isFinancialDataChange) {
+        if ((DayTime(DataToChange.EffectiveDate).format("DD/MM/YYYY") === DayTime(effectiveDate).format("DD/MM/YYYY"))) {
+          this.setState({ setDisable: false })
+          Toaster.warning('Please update the effective date')
+          return false
+        }
+      }
+
+      this.setState({ setDisable: true, disablePopup: false })
       let updateData = {
         ExchangeRateId: ExchangeRateId,
         CurrencyId: currency.value,
@@ -192,9 +236,10 @@ class AddExchangeRate extends Component {
         this.setState({ showPopup: true, updatedObj: updateData })
         const toastrConfirmOptions = {
           onOk: () => {
-            this.props.reset()
+
             this.props.updateExchangeRate(updateData, (res) => {
-              if (res.data.Result) {
+              this.setState({ setDisable: false })
+              if (res?.data?.Result) {
                 Toaster.success(MESSAGES.EXCHANGE_UPDATE_SUCCESS);
                 this.cancel()
               }
@@ -209,6 +254,7 @@ class AddExchangeRate extends Component {
 
     } else {/** Add new detail for creating exchange master **/
 
+      this.setState({ setDisable: true })
       let formData = {
         CurrencyId: currency.value,
         CurrencyExchangeRate: values.CurrencyExchangeRate,
@@ -219,9 +265,9 @@ class AddExchangeRate extends Component {
         LoggedInUserId: loggedInUserId(),
       }
 
-      this.props.reset()
       this.props.createExchangeRate(formData, (res) => {
-        if (res.data.Result) {
+        this.setState({ setDisable: false })
+        if (res?.data?.Result) {
 
           Toaster.success(MESSAGES.EXCHANGE_ADD_SUCCESS);
           this.cancel();
@@ -229,19 +275,20 @@ class AddExchangeRate extends Component {
       });
     }
 
-  }
+  }, 500)
 
-  onPopupConfirm = () => {
-    this.props.reset()
+  onPopupConfirm = debounce(() => {
+    this.setState({ disablePopup: true })
     this.props.updateExchangeRate(this.state.updatedObj, (res) => {
-      if (res.data.Result) {
+      this.setState({ setDisable: false })
+      if (res?.data?.Result) {
         Toaster.success(MESSAGES.EXCHANGE_UPDATE_SUCCESS);
         this.cancel()
       }
     });
-  }
+  }, 500)
   closePopUp = () => {
-    this.setState({ showPopup: false })
+    this.setState({ showPopup: false, setDisable: false })
   }
   handleKeyDown = function (e) {
     if (e.key === 'Enter' && e.shiftKey === false) {
@@ -255,7 +302,7 @@ class AddExchangeRate extends Component {
   */
   render() {
     const { handleSubmit, } = this.props;
-    const { isEditFlag, } = this.state;
+    const { isEditFlag, isViewMode, setDisable, disablePopup } = this.state;
     return (
       <div className="container-fluid">
         {this.state.isLoader && <LoaderCustom />}
@@ -277,19 +324,19 @@ class AddExchangeRate extends Component {
                 <form
                   noValidate
                   className="form"
-
                   onSubmit={handleSubmit((e) => this.onSubmit(e))}
                   onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
                 >
                   <div className="add-min-height">
                     <Row>
-                      <Col md="4">
+                      <Col md="3">
                         <Field
                           name="Currency"
                           type="text"
                           label="Currency"
                           component={searchableSelect}
                           placeholder={"Select"}
+                          onChange={this.onFinancialDataChange}
                           options={this.renderListing("currency")}
                           //onKeyUp={(e) => this.changeItemDesc(e)}
                           validate={
@@ -304,7 +351,7 @@ class AddExchangeRate extends Component {
                           disabled={isEditFlag ? true : false}
                         />
                       </Col>
-                      <Col md="4">
+                      <Col md="3">
                         <Field
                           label={`Currency Exchange Rate(INR)`}
                           name={"CurrencyExchangeRate"}
@@ -313,12 +360,13 @@ class AddExchangeRate extends Component {
                           validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
                           component={renderText}
                           required={true}
-                          disabled={false}
+                          onChange={this.onFinancialDataChange}
+                          disabled={isViewMode}
                           className=" "
                           customClassName="withBorder"
                         />
                       </Col>
-                      <Col md="4">
+                      <Col md="3">
                         <Field
                           label={`Bank Rate(INR)`}
                           name={"BankRate"}
@@ -326,12 +374,13 @@ class AddExchangeRate extends Component {
                           placeholder={"Enter"}
                           validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
                           component={renderText}
-                          disabled={false}
+                          disabled={isViewMode}
+                          onChange={this.onFinancialDataChange}
                           className=" "
                           customClassName=" withBorder"
                         />
                       </Col>
-                      <Col md="4">
+                      <Col md="3">
                         <Field
                           label={`Bank Commission(%)`}
                           name={"BankCommissionPercentage"}
@@ -340,13 +389,14 @@ class AddExchangeRate extends Component {
                           validate={[positiveAndDecimalNumber, maxLength10, decimalLengthThree]}
                           component={renderText}
                           max={100}
-                          disabled={false}
+                          disabled={isViewMode}
+                          onChange={this.onFinancialDataChange}
                           className=" "
                           customClassName=" withBorder"
                         />
                       </Col>
 
-                      <Col md="4">
+                      <Col md="3">
                         <Field
                           label={`Custom Rate(INR)`}
                           name={"CustomRate"}
@@ -354,12 +404,13 @@ class AddExchangeRate extends Component {
                           placeholder={"Enter"}
                           validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
                           component={renderText}
-                          disabled={false}
+                          disabled={isViewMode}
+                          onChange={this.onFinancialDataChange}
                           className=" "
                           customClassName=" withBorder"
                         />
                       </Col>
-                      <Col md="4">
+                      <Col md="3">
                         <div className="form-group">
                           <label>
                             Effective Date
@@ -380,11 +431,12 @@ class AddExchangeRate extends Component {
                               placeholderText="Select date"
                               className="withBorder"
                               autoComplete={"off"}
+                              minDate={new Date(this.state.minEffectiveDate)}
                               disabledKeyboardNavigation
                               validate={[required]}
                               onChangeRaw={(e) => e.preventDefault()}
                               required
-                              disabled={isEditFlag ? true : false}
+                              disabled={isViewMode || (!this.state.isFinancialDataChange && isEditFlag)}
 
                             />
                             {/* <Field
@@ -414,12 +466,14 @@ class AddExchangeRate extends Component {
                         type={"button"}
                         className="mr15 cancel-btn"
                         onClick={this.cancel}
+                        disabled={setDisable}
                       >
                         <div className={'cancel-icon'}></div>
                         {"Cancel"}
                       </button>
                       <button
                         type="submit"
+                        disabled={isViewMode || setDisable}
                         className="user-btn mr5 save-btn"
                       >
                         <div className={"save-icon"}></div>
@@ -432,7 +486,7 @@ class AddExchangeRate extends Component {
             </div>
           </div>
           {
-            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} />
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} disablePopup={disablePopup} />
           }
         </div>
       </div>
@@ -447,7 +501,7 @@ class AddExchangeRate extends Component {
 */
 function mapStateToProps(state) {
   const { exchangeRate, } = state;  //why not selector jere......from
-  const filedObj = selector(state, 'OperationCode', 'EffectiveDate', 'BankCommissionPercentage');
+  const filedObj = selector(state, 'OperationCode', 'EffectiveDate', 'BankCommissionPercentage', 'BankRate', 'CustomRate', 'CurrencyExchangeRate');
   const { exchangeRateData, currencySelectList } = exchangeRate;
 
   let initialValues = {};

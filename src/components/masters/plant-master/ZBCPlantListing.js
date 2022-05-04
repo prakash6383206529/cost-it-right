@@ -43,11 +43,11 @@ class ZBCPlantListing extends Component {
             state: [],
             showPopup: false,
             deletedId: '',
-
             cellData: {},
             cellValue: '',
             showPopupToggle: false,
-            isViewMode: false
+            isViewMode: false,
+            isLoader:false
         }
     }
 
@@ -66,7 +66,7 @@ class ZBCPlantListing extends Component {
         this.props.getPlantDataAPI(false, (res) => {
             if (res && res.data && res.status === 200) {
                 let Data = res.data.DataList;
-                this.setState({ tableData: Data })
+                this.setState({ tableData: Data, isLoader:false })
             }
         })
     }
@@ -325,7 +325,9 @@ class ZBCPlantListing extends Component {
     * @description FILTER DATALIST
     */
     filterList = () => {
+
         const { country, state, city, } = this.state;
+        this.setState({isLoader:true})
         let filterData = {
             country: country && country.hasOwnProperty('value') ? country.value : '',
             state: state && state.hasOwnProperty('value') ? state.value : '',
@@ -333,6 +335,7 @@ class ZBCPlantListing extends Component {
             is_vendor: false,
         }
         this.props.getFilteredPlantList(filterData, (res) => {
+         this.setState({isLoader:false})
             if (res.status === 204 && res.data === '') {
                 this.setState({ tableData: [], })
             } else if (res && res.data && res.data.DataList) {
@@ -384,7 +387,7 @@ class ZBCPlantListing extends Component {
 
     onGridReady = (params) => {
         this.gridApi = params.api;
-        this.gridApi.sizeColumnsToFit();
+        window.screen.width >= 1600 && params.api.sizeColumnsToFit()
         this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
         params.api.paginationGoToPage(0);
     };
@@ -463,14 +466,13 @@ class ZBCPlantListing extends Component {
 
         const frameworkComponents = {
             totalValueRenderer: this.buttonFormatter,
-            customLoadingOverlay: LoaderCustom,
             customNoRowsOverlay: NoContentFound,
             statusButtonFormatter: this.statusButtonFormatter
         };
 
         return (
             <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-                {/* {this.props.loading && <Loader />} */}
+                {this.state.isLoader && <LoaderCustom />}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-4">
 
@@ -515,13 +517,11 @@ class ZBCPlantListing extends Component {
                 </form>
 
 
-                <div className="ag-grid-wrapper height-width-wrapper">
+                <div className={`ag-grid-wrapper height-width-wrapper ${this.props.plantDataList && this.props.plantDataList?.length <=0 ?"overlay-contain": ""}`}>
                     <div className="ag-grid-header">
                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                     </div>
-                    <div
-                        className="ag-theme-material"
-                    >
+                    <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
                         <AgGridReact
                             defaultColDef={defaultColDef}
                             floatingFilter={true}
@@ -532,7 +532,6 @@ class ZBCPlantListing extends Component {
                             paginationPageSize={10}
                             onGridReady={this.onGridReady}
                             gridOptions={gridOptions}
-                            loadingOverlayComponent={'customLoadingOverlay'}
                             noRowsOverlayComponent={'customNoRowsOverlay'}
                             noRowsOverlayComponentParams={{
                                 title: EMPTY_DATA,
@@ -540,14 +539,14 @@ class ZBCPlantListing extends Component {
                             }}
                             frameworkComponents={frameworkComponents}
                         >
-                            <AgGridColumn field="PlantName" headerName="Plant Name"></AgGridColumn>
+                            <AgGridColumn  field="PlantName" headerName="Plant Name"></AgGridColumn>
                             <AgGridColumn field="PlantCode" headerName="Plant Code"></AgGridColumn>
                             <AgGridColumn field="CompanyName" headerName="Company Name"></AgGridColumn>
                             <AgGridColumn field="CountryName" headerName="Country"></AgGridColumn>
                             <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
                             <AgGridColumn field="CityName" headerName="City"></AgGridColumn>
                             <AgGridColumn width="130" pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
-                            <AgGridColumn field="PlantId" headerName="Action" width={220} type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                            <AgGridColumn field="PlantId" headerName="Action"  type="rightAligned" width={"150px"} floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                         </AgGridReact>
                         <div className="paging-container d-inline-block float-right">
                             <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

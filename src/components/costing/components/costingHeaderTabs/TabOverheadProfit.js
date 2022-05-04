@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
 import { getOverheadProfitTabData, setOverheadProfitData, setSurfaceCostInOverheadProfit } from '../../actions/Costing';
 import { costingInfoContext, } from '../CostingDetailStepTwo';
-import { checkForDecimalAndNull, checkForNull, } from '../../../../helper';
+import { checkForNull, } from '../../../../helper';
 import PartOverheadProfit from '../CostingHeadCosts/OverheadProfit/PartOverheadProfit';
 import AssemblyOverheadProfit from '../CostingHeadCosts/OverheadProfit/AssemblyOverheadProfit';
 import { LEVEL0 } from '../../../../config/constants';
@@ -13,16 +13,12 @@ import { ViewCostingContext } from '../CostingDetails';
 function TabOverheadProfit(props) {
 
   const { handleSubmit, } = useForm();
-
   const [IsApplicableForChildParts, setIsApplicableForChildParts] = useState(false);
   const [IsIncludeSurfaceTreatment, setIsIncludeSurfaceTreatment] = useState(false);
-
+  const [isPressedST, setIsPressST] = useState(false)
   const dispatch = useDispatch()
-
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
-
-  const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
   useEffect(() => {
     if (Object.keys(costData).length > 0) {
@@ -35,6 +31,16 @@ function TabOverheadProfit(props) {
   }, [costData]);
 
   const OverheadProfitTabData = useSelector(state => state.costing.OverheadProfitTabData)
+
+  useEffect(() => {
+    if (OverheadProfitTabData && OverheadProfitTabData.length > 0) {
+      if (OverheadProfitTabData[0].IsIncludeSurfaceTreatmentWithOverheadAndProfit !== null && !isPressedST) {
+
+        setIsIncludeSurfaceTreatment(OverheadProfitTabData[0].IsIncludeSurfaceTreatmentWithOverheadAndProfit)
+      }
+    }
+  }, [OverheadProfitTabData])
+
 
   //BELOW CONDITION IS USED TO DISABLED CHECKBOX WHEN ACCORDION IS CLOSED
   const IsCheckBoxDisabled = OverheadProfitTabData && OverheadProfitTabData.length > 0 && OverheadProfitTabData[0].IsOpen
@@ -54,11 +60,6 @@ function TabOverheadProfit(props) {
       props.setHeaderCost(topHeaderData)
     }
   }, [OverheadProfitTabData]);
-
-  const filteredUsers = React.useMemo(() => {
-    setIsIncludeSurfaceTreatment(OverheadProfitTabData && OverheadProfitTabData.length > 0 && OverheadProfitTabData[0].IsIncludeSurfaceTreatmentWithOverheadAndProfit)
-    dispatch(setSurfaceCostInOverheadProfit(OverheadProfitTabData && OverheadProfitTabData.length > 0 && OverheadProfitTabData[0].IsIncludeSurfaceTreatmentWithOverheadAndProfit, () => { }))
-  }, [OverheadProfitTabData && OverheadProfitTabData.length > 0 && OverheadProfitTabData[0].IsIncludeSurfaceTreatmentWithOverheadAndProfit]);
 
   /**
   * @method setPartDetails
@@ -174,9 +175,10 @@ function TabOverheadProfit(props) {
 
     const { overheadObj, profitObj, modelType } = data;
 
-    let OverheadCost = checkForDecimalAndNull(overheadObj.OverheadRMTotalCost, initialConfiguration.NoOfDecimalForPrice) +
-      checkForDecimalAndNull(overheadObj.OverheadBOPTotalCost, initialConfiguration.NoOfDecimalForPrice) +
-      checkForDecimalAndNull(overheadObj.OverheadCCTotalCost, initialConfiguration.NoOfDecimalForPrice);
+
+    let OverheadCost = checkForNull(overheadObj.OverheadRMTotalCost) +
+      checkForNull(overheadObj.OverheadBOPTotalCost) +
+      checkForNull(overheadObj.OverheadCCTotalCost);
 
     if (overheadObj.IsOverheadFixedApplicable === true) {
       OverheadCost = overheadObj.OverheadFixedTotalCost;
@@ -186,9 +188,9 @@ function TabOverheadProfit(props) {
       OverheadCost = overheadObj.OverheadCombinedTotalCost;
     }
 
-    let ProfitCost = checkForDecimalAndNull(profitObj.ProfitRMTotalCost, initialConfiguration.NoOfDecimalForPrice) +
-      checkForDecimalAndNull(profitObj.ProfitBOPTotalCost, initialConfiguration.NoOfDecimalForPrice) +
-      checkForDecimalAndNull(profitObj.ProfitCCTotalCost, initialConfiguration.NoOfDecimalForPrice);
+    let ProfitCost = checkForNull(profitObj.ProfitRMTotalCost) +
+      checkForNull(profitObj.ProfitBOPTotalCost) +
+      checkForNull(profitObj.ProfitCCTotalCost);
 
     if (profitObj.IsProfitFixedApplicable === true) {
       ProfitCost = profitObj.ProfitFixedTotalCost;
@@ -259,14 +261,13 @@ function TabOverheadProfit(props) {
   const dispatchProfitDetail = (data, params, arr) => {
 
     const { overheadObj, profitObj } = data;
+    let OverheadCost = checkForNull(overheadObj.OverheadRMTotalCost) +
+      checkForNull(overheadObj.OverheadBOPTotalCost) +
+      checkForNull(overheadObj.OverheadCCTotalCost);
 
-    let OverheadCost = checkForDecimalAndNull(overheadObj.OverheadRMTotalCost, initialConfiguration.NoOfDecimalForPrice) +
-      checkForDecimalAndNull(overheadObj.OverheadBOPTotalCost, initialConfiguration.NoOfDecimalForPrice) +
-      checkForDecimalAndNull(overheadObj.OverheadCCTotalCost, initialConfiguration.NoOfDecimalForPrice);
-
-    let ProfitCost = checkForDecimalAndNull(profitObj.ProfitRMTotalCost, initialConfiguration.NoOfDecimalForPrice) +
-      checkForDecimalAndNull(profitObj.ProfitBOPTotalCost, initialConfiguration.NoOfDecimalForPrice) +
-      checkForDecimalAndNull(profitObj.ProfitCCTotalCost, initialConfiguration.NoOfDecimalForPrice);
+    let ProfitCost = checkForNull(profitObj.ProfitRMTotalCost) +
+      checkForNull(profitObj.ProfitBOPTotalCost) +
+      checkForNull(profitObj.ProfitCCTotalCost);
 
     let tempArr = [];
     try {
@@ -449,7 +450,7 @@ function TabOverheadProfit(props) {
           i.CostingPartDetails.CostingInterestRateDetail = {
             ...i.CostingPartDetails.CostingInterestRateDetail,
             PaymentTermDetail: PaymentTermObj,
-          IsPaymentTerms: PaymentTermObj &&PaymentTermObj?.NetCost ? true : false,
+            IsPaymentTerms: PaymentTermObj && PaymentTermObj?.NetCost ? true : false,
             NetPaymentTermCost: PaymentTermObj && PaymentTermObj.NetCost ? checkForNull(PaymentTermObj.NetCost) : 0,
           };
           // i.CostingPartDetails.NetOverheadAndProfitCost = checkForNull(i.CostingPartDetails.OverheadCost) +
@@ -466,7 +467,7 @@ function TabOverheadProfit(props) {
           i.CostingPartDetails.CostingInterestRateDetail = {
             ...i.CostingPartDetails.CostingInterestRateDetail,
             PaymentTermDetail: PaymentTermObj,
-          IsPaymentTerms: PaymentTermObj &&PaymentTermObj?.NetCost ? true : false,
+            IsPaymentTerms: PaymentTermObj && PaymentTermObj?.NetCost ? true : false,
             NetPaymentTermCost: PaymentTermObj && PaymentTermObj.NetCost ? checkForNull(PaymentTermObj.NetCost) : 0,
           };
           // i.CostingPartDetails.NetOverheadAndProfitCost = checkForNull(i.CostingPartDetails.OverheadCost) +
@@ -504,13 +505,8 @@ function TabOverheadProfit(props) {
   const onPressIncludeSurfaceTreatment = () => {
     dispatch(setSurfaceCostInOverheadProfit(!IsIncludeSurfaceTreatment, () => { }))
     setIsIncludeSurfaceTreatment(!IsIncludeSurfaceTreatment)
+    setIsPressST(true)
   }
-
-  /**
-  * @method saveCosting
-  * @description SAVE COSTING
-  */
-  const saveCosting = () => { }
 
   /**
   * @method onSubmit

@@ -6,7 +6,7 @@ import { EMPTY_GUID } from '../../../config/constants';
 import AssemblyWiseImpact from './AssemblyWiseImpact';
 function ViewAssembly(props) {
 
-    const { impactType } = props
+    const { impactType, simulationId } = props
     // const [impactTypeState, setImpactTypeState] = useState('');
 
     // const dataForAssemblyImpact = {
@@ -64,6 +64,8 @@ function ViewAssembly(props) {
                             dataForAssemblyImpact={props.dataForAssemblyImpact}
                             impactType={'Assembly'}
                             isPartImpactAssembly={props.isPartImpactAssembly}
+                            isImpactDrawer={props.isImpactDrawer}
+                            simulationId={simulationId}
                         />
                     </div>
                 </div>

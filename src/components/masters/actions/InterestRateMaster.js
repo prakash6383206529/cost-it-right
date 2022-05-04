@@ -28,6 +28,7 @@ export function createInterestRate(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            callback(error)
         });
     };
 }
@@ -124,6 +125,7 @@ export function updateInterestRate(requestData, callback) {
             }).catch((error) => {
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
+                callback(error)
             });
     };
 }
@@ -208,6 +210,7 @@ export function bulkUploadInterestRateVBC(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            callback(error);
         });
     };
 }

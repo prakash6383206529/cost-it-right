@@ -1,26 +1,29 @@
-import React, { useState, useEffect, Fragment } from 'react'
-import { useDispatch } from 'react-redux'
+import React from 'react'
 import { Row, Col, Container, } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
 import WeightCalculator from './sheetMetal'
 import ForgingCalculator from './forging'
 import Plastic from './Plastic'
-import { SHEETMETAL, RUBBER, PLASTIC, FORGINING, Non_Ferrous_HPDC, CORRUGATEDBOX } from '../../../../config/masterData'
-import HPDC from './HPDC'
+import { SHEETMETAL, RUBBER, PLASTIC, FORGING, DIE_CASTING, CORRUGATEDBOX, Ferrous_Casting } from '../../../../config/masterData'
 import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../helper'
 import RubberCalciTab from './Rubber'
 import CorrugatedBox from './CorrugatedBox';
+import NonFerrousCalculator from './dieCasting'
+import Ferrous from './Ferrous'
+import StandardRub from './rubber/StandardRub'
+
 
 
 function OpenWeightCalculator(props) {
-  const { rmRowData, isEditFlag, item, isSummary, rmMBDetail, CostingViewMode } = props
+  const { rmRowData, item, isSummary, rmMBDetail, CostingViewMode, rmData, technology, DisableMasterBatchCheckbox } = props
   let appyMasterBatch;
   let totalRM;
   if (!isSummary) {
     const { CostingPartDetails } = item
     const { IsApplyMasterBatch, MasterBatchTotal, MasterBatchPercentage } = CostingPartDetails
-    appyMasterBatch = IsApplyMasterBatch
-    if (IsApplyMasterBatch) {
+    appyMasterBatch = (IsApplyMasterBatch === null || IsApplyMasterBatch === false) ? false : true
+
+    if (appyMasterBatch) {
 
       const RMRate = calculatePercentageValue(rmRowData.RMRate, (100 - MasterBatchPercentage));
       const RMRatePlusMasterBatchRate = RMRate + checkForNull(MasterBatchTotal)
@@ -32,8 +35,8 @@ function OpenWeightCalculator(props) {
     }
   } else {
     const { IsApplyMasterBatch, MasterBatchTotal, MasterBatchPercentage } = rmMBDetail
-    appyMasterBatch = IsApplyMasterBatch
-    if (IsApplyMasterBatch) {
+    appyMasterBatch = (IsApplyMasterBatch === null || IsApplyMasterBatch === false) ? false : true
+    if (appyMasterBatch) {
 
       const RMRate = calculatePercentageValue(rmRowData.RMRate, (100 - MasterBatchPercentage));
       const RMRatePlusMasterBatchRate = RMRate + checkForNull(MasterBatchTotal)
@@ -44,9 +47,6 @@ function OpenWeightCalculator(props) {
 
     }
   }
-
-  const technology = props.technology;
-  console.log('technology: ', technology);
 
 
   /**
@@ -59,8 +59,6 @@ function OpenWeightCalculator(props) {
     }
     props.closeDrawer('', weightData, originalWeight)
   }
-
-  const dispatch = useDispatch()
 
   /**
    * @method render
@@ -78,14 +76,16 @@ function OpenWeightCalculator(props) {
             rmRowData={props.rmRowData}
             isEditFlag={props.isEditFlag}
             toggleDrawer={toggleDrawer}
+            item={item}
             CostingViewMode={CostingViewMode ? CostingViewMode : false}
           />
         )
-      case FORGINING:
+      case FORGING:
         return (
           <ForgingCalculator
             rmRowData={props.rmRowData}
             isEditFlag={props.isEditFlag}
+            item={item}
             toggleDrawer={toggleDrawer}
             CostingViewMode={CostingViewMode ? CostingViewMode : false}
           />
@@ -99,21 +99,27 @@ function OpenWeightCalculator(props) {
             toggleDrawer={toggleDrawer}
             isSummary={isSummary}
             CostingViewMode={CostingViewMode ? CostingViewMode : false}
+            DisableMasterBatchCheckbox={DisableMasterBatchCheckbox}
           />
         )
       case RUBBER:
-        return (<RubberCalciTab
+        return (<StandardRub
           rmRowData={props.rmRowData}
           inputDiameter={props.inputDiameter}
           isEditFlag={props.isEditFlag}
           toggleDrawer={toggleDrawer}
+          rmData={rmData}
+          item={item}
+          appyMasterBatch={appyMasterBatch}
           CostingViewMode={CostingViewMode ? CostingViewMode : false}
         />)
-      case Non_Ferrous_HPDC:
-        return (<HPDC
+      case DIE_CASTING:
+        return (<NonFerrousCalculator
+
           rmRowData={props.rmRowData}
           isEditFlag={props.isEditFlag}
           toggleDrawer={toggleDrawer}
+          item={item}
           CostingViewMode={CostingViewMode ? CostingViewMode : false}
         />
         )
@@ -124,9 +130,22 @@ function OpenWeightCalculator(props) {
             rmRowData={props.rmRowData}
             isEditFlag={props.isEditFlag}
             toggleDrawer={toggleDrawer}
+            item={item}
             CostingViewMode={CostingViewMode ? CostingViewMode : false}
           />
         )
+      case Ferrous_Casting:
+        return (
+          <Ferrous
+            rmRowData={props.rmRowData}
+            isEditFlag={props.isEditFlag}
+            toggleDrawer={toggleDrawer}
+            CostingViewMode={CostingViewMode ? CostingViewMode : false}
+            item={item}
+            rmData={rmData}
+          />
+        )
+
       default:
         break;
     }
@@ -135,12 +154,12 @@ function OpenWeightCalculator(props) {
   return (
     <div>
       <Drawer
-        className="weight-drawer-costing"
+        className="weight-drawer-costing calculator-drawer"
         anchor={props.anchor}
         open={props.isOpen}
       // onClose={(e) => toggleDrawer(e)}
       >
-        <Container>
+        <Container className='px-0'>
           <div className={'drawer-wrapper drawer-1500px'}>
             <Row className="drawer-heading">
               <Col>
@@ -153,18 +172,20 @@ function OpenWeightCalculator(props) {
                 ></div>
               </Col>
             </Row>
-            <Row className="mt-4 mb-4 pb-2">
-              <Col md="12 d-flex weight-calculator-headings">
-                <div className="d-inline-block "><span className="grey-text d-block">RM Name:</span><span className="text-dark-blue">{`${rmRowData.RMName !== undefined ? rmRowData.RMName : ''}`}</span></div>
-                <div className="d-inline-block "><span className="grey-text d-block">Material:</span><span className="text-dark-blue">{`${rmRowData.MaterialType !== undefined ? rmRowData.MaterialType : ''}`}</span></div>
-                <div className="d-inline-block "><span className="grey-text d-block">Density(g/cm{<sup>3</sup>}):</span><span className="text-dark-blue">{`${rmRowData.Density !== undefined ? rmRowData.Density : ''}`}</span></div>
-                <div className="d-inline-block "><span className="grey-text d-block">RM Rate:</span><span className="text-dark-blue">{`${rmRowData.RMRate !== undefined ? rmRowData.RMRate : ''}`}</span></div>
-                {appyMasterBatch === 0 ? false : true && < div className="d-inline-block "><span className="grey-text d-block">RM Rate(including Master Batch):</span><span className="text-dark-blue">{`${rmRowData.RMRate !== undefined ? checkForDecimalAndNull(totalRM, getConfigurationKey().NoOfDecimalForInputOutput) : ''}`}</span></div>}
-                <div className="d-inline-block "><span className="grey-text d-block">Scrap Rate:</span><span className="text-dark-blue">{`${rmRowData.ScrapRate !== undefined ? rmRowData.ScrapRate : ''}`}</span></div>
-                <div className="d-inline-block"><span className="grey-text d-block">Category:</span><span className="text-dark-blue">{`${rmRowData.RawMaterialCategory !== undefined ? rmRowData.RawMaterialCategory : ''}`}</span></div>
+            {Number(technology) !== Number(RUBBER) && Number(technology) !== Number(Ferrous_Casting) &&
+              <Row className="mt-4 mb-4 pb-2">
+                <Col md="12 d-flex weight-calculator-headings">
+                  <div className="d-inline-block overflow"><span className="grey-text d-block">RM Name:</span><span className="text-dark-blue one-line-overflow" title={rmRowData.RMName}>{`${rmRowData.RMName !== undefined ? rmRowData.RMName : ''}`}</span></div>
+                  <div className="d-inline-block "><span className="grey-text d-block">Material:</span><span className="text-dark-blue">{`${rmRowData.MaterialType !== undefined ? rmRowData.MaterialType : ''}`}</span></div>
+                  <div className="d-inline-block "><span className="grey-text d-block">Density(g/cm){<sup>3</sup>}):</span><span className="text-dark-blue">{`${rmRowData.Density !== undefined ? rmRowData.Density : ''}`}</span></div>
+                  <div className="d-inline-block "><span className="grey-text d-block">RM Rate(INR):</span><span className="text-dark-blue">{`${rmRowData.RMRate !== undefined ? rmRowData.RMRate : ''}`}</span></div>
+                  {appyMasterBatch && < div className="d-inline-block "><span className="grey-text d-block">RM Rate(including Master Batch):</span><span className="text-dark-blue">{`${rmRowData.RMRate !== undefined ? checkForDecimalAndNull(totalRM, getConfigurationKey().NoOfDecimalForInputOutput) : ''}`}</span></div>}
+                  <div className="d-inline-block "><span className="grey-text d-block">Scrap Rate(INR):</span><span className="text-dark-blue">{`${rmRowData.ScrapRate !== undefined ? rmRowData.ScrapRate : ''}`}</span></div>
+                  <div className="d-inline-block"><span className="grey-text d-block">Category:</span><span className="text-dark-blue">{`${rmRowData.RawMaterialCategory !== undefined ? rmRowData.RawMaterialCategory : ''}`}</span></div>
 
-              </Col>
-            </Row>
+                </Col>
+              </Row>
+            }
             {openConditionalDrawer()}
           </div>
         </Container>

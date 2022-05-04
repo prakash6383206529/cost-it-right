@@ -10,12 +10,11 @@ import { loggedInUserId } from '../../../helper';
 import { ExcelRenderer } from 'react-excel-renderer';
 import { getJsDateFromExcel } from "../../../helper/validation";
 import imgCloud from '../../../assests/images/uploadcloud.png';
+import _ from 'lodash'
 
-
-import TooltipCustom from '../../common/Tooltip';
 import { BOPDOMESTIC, BOPIMPORT, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
+import { BoughtOutPartDomesticFileHeads, BoughtOutPartImportFileHeads, MachineRateFileHeads, OperationFileHeads, RawMaterialDomesticFileHeads, RawMaterialImportFileHeads } from '../../../config/masterData';
 
-const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
@@ -131,22 +130,67 @@ class SimulationUploadDrawer extends Component {
 
                 } else {
                     fileHeads = resp.rows[0];
+                    let checkForFileHead
+                    switch (String(this.props.master.value)) {
+
+                        case String(RMDOMESTIC):
+                            checkForFileHead = _.isEqual(fileHeads, RawMaterialDomesticFileHeads) ? true : false
+                            break;
+
+                        case String(RMIMPORT):
+                            checkForFileHead = _.isEqual(fileHeads, RawMaterialImportFileHeads) ? true : false
+                            break;
+
+                        case String(BOPDOMESTIC):
+                            checkForFileHead = _.isEqual(fileHeads, BoughtOutPartDomesticFileHeads) ? true : false
+                            break;
+
+                        case String(BOPIMPORT):
+                            checkForFileHead = _.isEqual(fileHeads, BoughtOutPartImportFileHeads) ? true : false
+                            break;
+
+                        case String(OPERATIONS):
+                        case String(SURFACETREATMENT):
+                            checkForFileHead = _.isEqual(fileHeads, OperationFileHeads) ? true : false
+                            break;
+
+                        case String(MACHINERATE):
+                            checkForFileHead = _.isEqual(fileHeads, MachineRateFileHeads) ? true : false
+                            break;
+
+                        // CONDITION FOR COMBINED PROCESS;
+
+                        default:
+                            break;
+                    }
+                    if (!checkForFileHead) {
+                        Toaster.warning('Please select file of same Master')
+                        return false
+                    }
                     let fileData = [];
                     let basicRateCount = 0
-                    let scrapRateCount = 0
                     let correctRowCount = 0
+                    let scrapRateLessBasicRate = 0
                     let NoOfRowsWithoutChange = 0
                     switch (Number(this.props.master.value)) {
                         case Number(RMDOMESTIC):
                             resp.rows.map((val, index) => {
+                                const scrapTemp = (val[15] !== val[14]) && val[15] ? val[15] : val[14]
+                                const basicTemp = (val[11] !== val[10]) && val[11] ? val[11] : val[10]
                                 if (val.length !== 0) {
                                     if (index > 0) {
-                                        if ((val[11] !== '' && val[11] !== undefined && val[11] !== null && val[10] !== val[11]) || (val[15] !== '' && val[15] !== undefined && val[15] !== null && val[15] !== null && val[14] !== val[15])) {
+                                        if ((val[11] !== '' && val[11] !== undefined && val[11] !== null && val[10] !== val[11]) ||
+                                            (val[15] !== '' && val[15] !== undefined && val[15] !== null && val[15] !== null && val[14] !== val[15])) {
                                             basicRateCount = 1
                                         }
-                                        if ((val[11] === '' || val[11] === undefined || val[11] === null || val[10] === val[11]) && (val[15] === '' || val[15] === undefined || val[15] === null || val[14] === val[15])) {
+                                        if ((val[11] === '' || val[11] === undefined || val[11] === null || val[10] === val[11]) && (val[15] === '' ||
+                                            val[15] === undefined || val[15] === null || val[14] === val[15])) {
                                             NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
                                             return false
+                                        }
+
+                                        if (basicTemp < scrapTemp) {
+                                            scrapRateLessBasicRate = 1
                                         }
                                         correctRowCount = correctRowCount + 1
                                         let obj = {}
@@ -168,6 +212,8 @@ class SimulationUploadDrawer extends Component {
 
                         case Number(RMIMPORT):
                             resp.rows.map((val, index) => {
+                                const scrapTemp = (val[13] !== val[12]) && val[13] ? val[13] : val[12]
+                                const basicTemp = (val[11] !== val[10]) && val[11] ? val[11] : val[10]
                                 if (val.length !== 0) {
                                     if (index > 0) {
                                         if ((val[11] !== '' && val[11] !== undefined && val[11] !== null && val[10] !== val[11]) || (val[13] !== '' && val[13] !== undefined && val[13] !== null && val[12] !== val[13])) {
@@ -176,6 +222,9 @@ class SimulationUploadDrawer extends Component {
                                         if ((val[11] === '' || val[11] === undefined || val[11] === null || val[10] === val[11]) && (val[13] === '' || val[13] === undefined || val[13] === null || val[12] === val[13])) {
                                             NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
                                             return false
+                                        }
+                                        if (basicTemp < scrapTemp) {
+                                            scrapRateLessBasicRate = 1
                                         }
                                         correctRowCount = correctRowCount + 1
                                         let obj = {}
@@ -199,10 +248,10 @@ class SimulationUploadDrawer extends Component {
                             resp.rows.map((val, index) => {
                                 if (val.length !== 0) {
                                     if (index > 0) {
-                                        if (val[8] !== '' && val[8] !== undefined && val[7] !== val[8]) {
+                                        if (val[8] !== '' && val[8] !== undefined && val[8] !== null && val[7] !== val[8]) {
                                             basicRateCount = 1
                                         }
-                                        if (val[8] === '' || val[8] === undefined || val[7] === val[8]) {
+                                        if (val[8] === '' || val[8] === undefined || val[8] === null || val[7] === val[8]) {
                                             NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
                                             return false
                                         }
@@ -228,10 +277,10 @@ class SimulationUploadDrawer extends Component {
                             resp.rows.map((val, index) => {
                                 if (val.length !== 0) {
                                     if (index > 0) {
-                                        if (val[8] !== '' && val[8] !== undefined && val[7] !== val[8]) {
+                                        if (val[8] !== '' && val[8] !== undefined && val[8] !== null && val[7] !== val[8]) {
                                             basicRateCount = 1
                                         }
-                                        if (val[8] === '' || val[8] === undefined || val[7] === val[8]) {
+                                        if (val[8] === '' || val[8] === undefined || val[8] === null || val[7] === val[8]) {
                                             NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
                                             return false
                                         }
@@ -256,10 +305,10 @@ class SimulationUploadDrawer extends Component {
                             resp.rows.map((val, index) => {
                                 if (val.length !== 0) {
                                     if (index > 0) {
-                                        if (val[9] !== '' && val[9] !== undefined && val[8] !== val[9]) {
+                                        if (val[9] !== '' && val[9] !== undefined && val[9] !== null && val[8] !== val[9]) {
                                             basicRateCount = 1
                                         }
-                                        if (val[9] === '' || val[9] === undefined || val[8] === val[9]) {
+                                        if (val[9] === '' || val[9] === undefined || val[9] === null || val[8] === val[9]) {
                                             NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
                                             return false
                                         }
@@ -284,10 +333,10 @@ class SimulationUploadDrawer extends Component {
                             resp.rows.map((val, index) => {
                                 if (val.length !== 0) {
                                     if (index > 0) {
-                                        if (val[8] !== '' && val[8] !== undefined && val[7] !== val[8]) {
+                                        if (val[8] !== '' && val[8] !== undefined && val[8] !== null && val[7] !== val[8]) {
                                             basicRateCount = 1
                                         }
-                                        if (val[8] === '' || val[8] === undefined || val[7] === val[8]) {
+                                        if (val[8] === '' || val[8] === undefined || val[8] === null || val[7] === val[8]) {
                                             NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
                                             return false
                                         }
@@ -312,10 +361,10 @@ class SimulationUploadDrawer extends Component {
                             resp.rows.map((val, index) => {
                                 if (val.length !== 0) {
                                     if (index > 0) {
-                                        if (val[8] !== '' && val[8] !== undefined && val[7] !== val[8]) {
+                                        if (val[8] !== '' && val[8] !== undefined && val[8] !== null && val[7] !== val[8]) {
                                             basicRateCount = 1
                                         }
-                                        if (val[8] === '' || val[8] === undefined || val[7] === val[8]) {
+                                        if (val[8] === '' || val[8] === undefined || val[8] === null || val[7] === val[8]) {
                                             NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
                                             return false
                                         }
@@ -347,10 +396,19 @@ class SimulationUploadDrawer extends Component {
                                 Toaster.warning('Please change at least one basic rate or scrap rate.')
                                 return false
                             }
+                            if (scrapRateLessBasicRate === 1) {
+                                Toaster.warning('Scrap Rate should be less than Basic Rate.')
+                                return false
+                            }
+
                             break;
                         case Number(RMIMPORT):
                             if (basicRateCount === 0) {
                                 Toaster.warning('Please change at least one basic rate.')
+                                return false
+                            }
+                            if (scrapRateLessBasicRate === 1) {
+                                Toaster.warning('Scrap Rate should be less than Basic Rate.')
                                 return false
                             }
                             break;
@@ -440,11 +498,6 @@ class SimulationUploadDrawer extends Component {
             return false
         }
 
-        let obj = {
-            file: fileData,
-            LoggedInUserId: loggedInUserId(),
-        }
-
         // this.props.bulkUploadCosting(obj, (res) => {
         //     let Data = res.data[0]
         //     const { files } = this.state
@@ -491,7 +544,7 @@ class SimulationUploadDrawer extends Component {
                                     <Col md="12">
                                         <label className="d-inline-block w-auto">Upload</label>
                                         <div class="tooltip-n ml-1 tooltip-left"><i className="fa fa-info-circle text-primary tooltip-icon"></i>
-                                            <span class="tooltiptext">Please upload the file with data. The file can be downloaded from previous screen.</span>
+                                            <span class="tooltiptext text-center">Please upload the file with data. The file can be downloaded from previous screen.</span>
                                         </div>
                                         <div className="input-group mt-1 input-withouticon " >
                                             <div className="file-uploadsection">

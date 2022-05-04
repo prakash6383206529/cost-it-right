@@ -7,7 +7,7 @@ import { checkForDecimalAndNull, getConfigurationKey } from '../../../../../help
 
 function Rubber(props) {
     const trimValue = getConfigurationKey()
-    const trim = trimValue.NumberOfDecimalForWeightCalculation
+    const trim = trimValue.NoOfDecimalForInputOutput
     const density = props.rmRowData.Density
     const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest
     const defaultValues = {

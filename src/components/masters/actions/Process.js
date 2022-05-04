@@ -37,6 +37,7 @@ export function createProcess(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            callback(error)
         });
     };
 }
@@ -143,6 +144,7 @@ export function updateProcess(request, callback) {
             }).catch((error) => {
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
+                callback(error)
             });
     };
 }

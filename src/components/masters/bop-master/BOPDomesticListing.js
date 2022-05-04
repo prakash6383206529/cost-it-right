@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { EMPTY_DATA } from '../../../config/constants';
+import { EMPTY_DATA, BOP_MASTER_ID, BOPDOMESTIC } from '../../../config/constants';
 import {
     getBOPDomesticDataList, deleteBOP, getBOPCategorySelectList, getAllVendorSelectList,
     getPlantSelectList, getPlantSelectListByVendor,
@@ -15,14 +15,16 @@ import BulkUpload from '../../massUpload/BulkUpload';
 import { BOP_DOMESTIC_DOWNLOAD_EXCEl, } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
 import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
-import { getConfigurationKey } from '../../../helper';
+import { getConfigurationKey, getFilteredData, loggedInUserId, userDetails } from '../../../helper';
 import { BopDomestic, } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
-
+import { filterParams } from '../../common/DateFilter'
+import { getListingForSimulationCombined } from '../../simulation/actions/Simulation';
+import { masterFinalLevelUser } from '../../masters/actions/Material'
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -48,8 +50,9 @@ class BOPDomesticListing extends Component {
             sideBar: { toolPanels: ['columns'] },
             showData: false,
             showPopup: false,
-            deletedId: ''
-
+            deletedId: '',
+            isLoader: false,
+            isFinalApprovar: false
         }
     }
 
@@ -58,10 +61,24 @@ class BOPDomesticListing extends Component {
     * @description Called after rendering the component
     */
     componentDidMount() {
+
+
         this.props.getBOPCategorySelectList(() => { })
         this.props.getPlantSelectList(() => { })
         this.props.getVendorWithVendorCodeSelectList(() => { })
         this.getDataList()
+        let obj = {
+            MasterId: BOP_MASTER_ID,
+            DepartmentId: userDetails().DepartmentId,
+            LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
+            LoggedInUserId: loggedInUserId()
+        }
+        this.props.masterFinalLevelUser(obj, (res) => {
+            if (res?.data?.Result) {
+                this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+            }
+        })
+
     }
 
     /**
@@ -75,16 +92,37 @@ class BOPDomesticListing extends Component {
             vendor_id: vendorId,
             plant_id: plantId,
         }
-        this.props.getBOPDomesticDataList(filterData, (res) => {
-            if (res && res.status === 200) {
-                let Data = res.data.DataList;
-                this.setState({ tableData: Data })
-            } else if (res && res.response && res.response.status === 412) {
-                this.setState({ tableData: [] })
-            } else {
-                this.setState({ tableData: [] })
+        const { isMasterSummaryDrawer } = this.props
+
+        if (this.props.isSimulation && this.props.selectionForListingMasterAPI === 'Combined') {
+            this.props?.changeSetLoader(true)
+            this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, BOPDOMESTIC, (res) => {
+                this.props?.changeSetLoader(false)
+
+            })
+        } else {
+
+            this.setState({ isLoader: true })
+            if (isMasterSummaryDrawer !== undefined && !isMasterSummaryDrawer) {
+                if (this.props.isSimulation) {
+                    this.props?.changeTokenCheckBox(false)
+                }
+                this.props.getBOPDomesticDataList(filterData, (res) => {
+                    this.setState({ isLoader: false })
+                    if (this.props.isSimulation) {
+                        this.props?.changeTokenCheckBox(true)
+                    }
+                    if (res && res.status === 200) {
+                        let Data = res.data.DataList;
+                        this.setState({ tableData: Data })
+                    } else if (res && res.response && res.response.status === 412) {
+                        this.setState({ tableData: [] })
+                    } else {
+                        this.setState({ tableData: [] })
+                    }
+                })
             }
-        })
+        }
     }
 
     /**
@@ -109,6 +147,7 @@ class BOPDomesticListing extends Component {
     */
     deleteItem = (Id) => {
         this.setState({ showPopup: true, deletedId: Id })
+
     }
 
     /**
@@ -210,30 +249,46 @@ class BOPDomesticListing extends Component {
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
         const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.props;
+
+        let isEditbale = false
+        let isDeleteButton = false
+        if (EditAccessibility && !rowData.IsBOPAssociated) {
+            isEditbale = true
+        } else {
+            isEditbale = false
+        }
+
+
+        if (DeleteAccessibility && !rowData.IsBOPAssociated) {
+            isDeleteButton = true
+        } else {
+            isDeleteButton = false
+        }
+
+
         return (
             <>
                 {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, true)} />}
-                {EditAccessibility && <button className="Edit" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, false)} />}
-                {DeleteAccessibility && <button className="Delete ml-2" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+                {isEditbale && <button className="Edit" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, false)} />}
+                {isDeleteButton && <button className="Delete ml-2" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
     };
-
-
 
     /**
     * @method costingHeadFormatter
     * @description Renders Costing head
     */
     costingHeadFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue
-    }
 
-    plantFormatter = (props) => {
+        let cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        if (cellValue === true) {
+            cellValue = 'Vendor Based'
+        } else if (cellValue === false) {
+            cellValue = 'Zero Based'
+        }
+        return cellValue          // IN SUMMARY DRAWER COSTING HEAD IS ROWDATA.COSTINGHEAD & IN MAIN DOMESTIC LISTING IT IS CELLVALUE
 
-        const rowData = props.data
-        return rowData.IsVendor === 'Vendor Based' ? rowData.DestinationPlant : rowData.Plants
     }
 
     formToggle = () => {
@@ -254,8 +309,7 @@ class BOPDomesticListing extends Component {
     */
     effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-
-        return cellValue
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
     }
 
     /**
@@ -272,17 +326,16 @@ class BOPDomesticListing extends Component {
     };
 
     onPageSizeChanged = (newPageSize) => {
-        var value = document.getElementById('page-size').value;
-        this.state.gridApi.paginationSetPageSize(Number(value));
+        this.state.gridApi.paginationSetPageSize(Number(newPageSize));
     };
 
     onBtExport = () => {
         let tempArr = []
         if (this.props.isSimulation === true) {
             const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-            data && data.map((item => {
+            data && data.map((item => (
                 tempArr.push(item.data)
-            }))
+            )))
         } else {
             tempArr = this.props.bopDomesticList && this.props.bopDomesticList
         }
@@ -327,7 +380,14 @@ class BOPDomesticListing extends Component {
         gridOptions.api.setFilterModel(null);
     }
 
-
+    getFilterBOPData = () => {
+        if (this.props.isSimulation) {
+            return getFilteredData(this.props.bopDomesticList, BOP_MASTER_ID)
+        }
+        else {
+            return this.props.bopDomesticList
+        }
+    }
     /**
     * @method render
     * @description Renders the component
@@ -353,18 +413,17 @@ class BOPDomesticListing extends Component {
             resizable: true,
             filter: true,
             sortable: true,
+            headerCheckboxSelectionFilteredOnly: true,
             headerCheckboxSelection: isFirstColumn,
             checkboxSelection: isFirstColumn
         };
 
         const frameworkComponents = {
             totalValueRenderer: this.buttonFormatter,
-            customLoadingOverlay: LoaderCustom,
             customNoRowsOverlay: NoContentFound,
             hyphenFormatter: this.hyphenFormatter,
             costingHeadFormatter: this.costingHeadFormatter,
             effectiveDateFormatter: this.effectiveDateFormatter,
-            plantFormatter: this.plantFormatter
         };
 
         const onRowSelect = () => {
@@ -383,11 +442,14 @@ class BOPDomesticListing extends Component {
         return (
 
             <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-
+                {/* {this.state.isLoader && <LoaderCustom />} */}
+                {(this.state.isLoader && !this.props.isMasterSummaryDrawer) && <LoaderCustom />}
                 < form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate >
-                    <Row className={`pt-4 filter-row-large  ${this.props.isSimulation ? 'simulation-filter' : ''}`}>
-                    
-                        <Col md="6" lg="6" className="search-user-block mb-3">
+                    <Row className={`mt-4 filter-row-large  ${this.props.isSimulation ? 'simulation-filter zindex-0 ' : ''}`}>
+                        <Col md="6" lg="6">
+                            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                        </Col>
+                        <Col md="6" lg="6" className="mb-2">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
                                     {this.state.shown ? (
@@ -443,26 +505,21 @@ class BOPDomesticListing extends Component {
                     </Row>
 
                 </form >
+
                 <Row>
                     <Col>
 
-                        <div className="ag-grid-wrapper height-width-wrapper">
-                            <div className="ag-grid-header">
-                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
-                            </div>
-                            <div
-                                className="ag-theme-material"
-                            >
+                        <div className={`ag-grid-wrapper  ${this.props.isSimulation ? 'simulation-height' : 'height-width-wrapper'} ${this.props.bopDomesticList && this.props.bopDomesticList?.length <= 0 ? "overlay-contain" : ""}`}>
+                            <div className={`ag-theme-material ${(this.state.isLoader && !this.props.isMasterSummaryDrawer) && "max-loader-height"}`}>
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
                                     floatingFilter={true}
                                     domLayout='autoHeight'
-                                    rowData={this.props.bopDomesticList}
+                                    rowData={this.getFilterBOPData()}
                                     pagination={true}
                                     paginationPageSize={10}
                                     onGridReady={this.onGridReady}
                                     gridOptions={gridOptions}
-                                    loadingOverlayComponent={'customLoadingOverlay'}
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                     noRowsOverlayComponentParams={{
                                         title: EMPTY_DATA,
@@ -479,14 +536,12 @@ class BOPDomesticListing extends Component {
                                     <AgGridColumn field="BoughtOutPartCategory" headerName="Insert Category"></AgGridColumn>
                                     <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
                                     <AgGridColumn field="Specification" headerName="Specification" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="Plants" hide={getConfigurationKey().IsDestinationPlantConfigure !== false} cellRenderer={'hyphenFormatter'} headerName="Plant"></AgGridColumn>
-                                    <AgGridColumn field="DestinationPlant" hide={getConfigurationKey().IsDestinationPlantConfigure !== true} cellRenderer={'plantFormatter'} headerName="Plant"></AgGridColumn>
-                                    <AgGridColumn field="Vendor" headerName="Vendor" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                    <AgGridColumn width={205} field="NumberOfPieces" headerName="Minimum Order Quantity"></AgGridColumn>
-                                    <AgGridColumn field="BasicRate" headerName="Basic Rate(INR)"></AgGridColumn>
-                                    <AgGridColumn field="NetLandedCost" headerName="Net Cost(INR)"></AgGridColumn>
-                                    <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
-                                    {!this.props.isSimulation && <AgGridColumn field="BoughtOutPartId" width={160} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                    <AgGridColumn field="Plants" cellRenderer={'hyphenFormatter'} headerName="Plant(Code)"></AgGridColumn>
+                                    <AgGridColumn field="Vendor" headerName="Vendor(Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="BasicRate" headerName="Basic Rate"></AgGridColumn>
+                                    <AgGridColumn field="NetLandedCost" headerName="Net Cost"></AgGridColumn>
+                                    <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams} ></AgGridColumn>
+                                    {!this.props?.isSimulation && !this.props?.isMasterSummaryDrawer && <AgGridColumn field="BoughtOutPartId" width={160} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">
                                     <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
@@ -505,10 +560,11 @@ class BOPDomesticListing extends Component {
                         isOpen={isBulkUpload}
                         closeDrawer={this.closeBulkUploadDrawer}
                         isEditFlag={false}
-                        fileName={'BOPDomestic'}
+                        fileName={'InsertDomestic'}
                         isZBCVBCTemplate={true}
                         messageLabel={'BOP Domestic'}
                         anchor={'right'}
+                        isFinalApprovar={this.state.isFinalApprovar}
                     />
                 }
                 {
@@ -524,8 +580,9 @@ class BOPDomesticListing extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ boughtOutparts, supplier, auth }) {
+function mapStateToProps({ boughtOutparts, supplier, auth, material }) {
     const { bopCategorySelectList, vendorAllSelectList, plantSelectList, bopDomesticList } = boughtOutparts;
+    const { rmSpecificationDetail, filterRMSelectList, rmSpecificationList } = material;
     const { vendorWithVendorCodeSelectList } = supplier;
     const { initialConfiguration } = auth;
     return { bopCategorySelectList, plantSelectList, vendorAllSelectList, bopDomesticList, vendorWithVendorCodeSelectList, initialConfiguration }
@@ -545,6 +602,8 @@ export default connect(mapStateToProps, {
     getAllVendorSelectList,
     getPlantSelectListByVendor,
     getVendorWithVendorCodeSelectList,
+    getListingForSimulationCombined,
+    masterFinalLevelUser
 })(reduxForm({
     form: 'BOPDomesticListing',
     enableReinitialize: true,

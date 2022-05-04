@@ -38,7 +38,6 @@ import {
     GET_MASTER_LEVEL_BY_MASTERID,
     COSTINGS_APPROVAL_DASHBOARD,
     AMENDMENTS_APPROVAL_DASHBOARD,
-    RM_APPROVAL_DASHBOARD,
 } from '../../src/config/constants'
 
 // /** Always define initialState in reducer so that we don't get undefined values */
@@ -336,13 +335,6 @@ export default function authReducer(state = initialState, action) {
                 loading: false,
                 error: true,
                 AmendmentsApprovalDashboard: action.payload
-            };
-        case RM_APPROVAL_DASHBOARD:
-            return {
-                ...state,
-                loading: false,
-                error: true,
-                RMApprovalDashboard: action.payload
             };
         default:
             return state;

@@ -1,19 +1,20 @@
 import React, { Fragment, useState, useEffect, useContext } from 'react';
 // import React, { Fragment, useState, useEffect, } from 'react'
-import { Row, Col, Container } from 'reactstrap'
+import { Row, Col } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { costingInfoContext } from '../../CostingDetailStepTwo';
 import { TextFieldHookForm, } from '../../../../layout/HookFormInputs'
 import { checkForDecimalAndNull, checkForNull, checkPercentageValue, getConfigurationKey, loggedInUserId } from '../../../../../helper'
-import { DIMENSIONLESS, HOUR, KG, MASS, NO, SHOTS, STROKE, TIME, VOLUMETYPE } from '../../../../../config/constants';
-import { saveProcessCostCalculationData } from '../../../actions/CostWorking';
+import { AREA, DIMENSIONLESS, MASS, TIME, VOLUMETYPE } from '../../../../../config/constants';
+import { saveDefaultProcessCostCalculationData } from '../../../actions/CostWorking';
 import Toaster from '../../../../common/Toaster';
 import { reactLocalStorage } from 'reactjs-localstorage';
 
 function SheetMetalBaicDrawer(props) {
+  /*******************************************************************************************************************************************************************/
 
-  const { rmFinishWeight } = props
+  const { rmFinishWeight, item } = props
 
   const costData = useContext(costingInfoContext);
   const WeightCalculatorRequest = props.calculatorData.WeightCalculatorRequest
@@ -34,17 +35,15 @@ function SheetMetalBaicDrawer(props) {
     defaultValues: defaultValues,
   })
 
-  const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-
   const dispatch = useDispatch()
 
-  const { technology, process, MachineTonnage, calculateMachineTime } = props
-  const isEditFlag = WeightCalculatorRequest ? true : false
+  const { MachineTonnage, calculateMachineTime } = props
   const [processCost, setProcessCost] = useState(Object.keys(WeightCalculatorRequest).length > 0 ? WeightCalculatorRequest.ProcessCost ? WeightCalculatorRequest.ProcessCost : '' : '')
   const [disable, setDisabled] = useState(false)
   const [hide, setHide] = useState(false)
   const [cavity, setCavity] = useState(Object.keys(WeightCalculatorRequest).length > 0 ? WeightCalculatorRequest.Cavity !== null ? WeightCalculatorRequest.Cavity : 1 : 1)
   const [prodHr, setProdHr] = useState('')
+  const [quantityState, setQuantityState] = useState(Object.keys(WeightCalculatorRequest).length > 0 || WeightCalculatorRequest.Quantity !== undefined ? checkForNull(WeightCalculatorRequest.Quantity) : 1)
 
   const tempProcessObj = Object.keys(WeightCalculatorRequest).length > 0 ? WeightCalculatorRequest.ProcessCost !== null ? WeightCalculatorRequest.ProcessCost : '' : ''
 
@@ -62,7 +61,7 @@ function SheetMetalBaicDrawer(props) {
   useEffect(() => {
     handleProductionPerHour()
     calculateProcessCost()
-  }, [fieldValues])
+  }, [fieldValues, quantityState])
 
   const quantFieldValue = useWatch({
     control,
@@ -70,24 +69,41 @@ function SheetMetalBaicDrawer(props) {
   })
 
   useEffect(() => {
-    if (props.calculatorData.UOMType !== MASS || props.calculatorData.UOMType !== TIME) {
+    if (props.calculatorData.UOMType !== TIME) {
       calculateProcessCost()
     }
+    setQuantityState(getValues('Quantity'))
   }, [quantFieldValue])
 
 
   useEffect(() => {
     //setValue('ProcessCost', checkForDecimalAndNull(WeightCalculatorRequest && WeightCalculatorRequest.ProcessCost ? WeightCalculatorRequest.ProcessCost : '', getConfigurationKey().NoOfDecimalForPrice))
-    if (props.calculatorData.UOMType === MASS) {
 
-      setValue('Quantity', rmFinishWeight ? rmFinishWeight : 1)
+    if (!props.CostingViewMode && props.calculatorData.UOMType === MASS) {
 
-      // setValue('Cavity', WeightCalculatorRequest && WeightCalculatorRequest.Cavity !== null ? WeightCalculatorRequest.Cavity : 1)
+      let quantityValue = 1
+
+      if ((WeightCalculatorRequest.Quantity === null || WeightCalculatorRequest.Quantity === undefined || WeightCalculatorRequest.Quantity === '')
+        && (rmFinishWeight === undefined || rmFinishWeight === null || rmFinishWeight === '')) {
+        quantityValue = 1
+      } else if ((WeightCalculatorRequest.Quantity !== null && WeightCalculatorRequest.Quantity !== undefined
+        && WeightCalculatorRequest.Quantity !== '') && (rmFinishWeight === undefined || rmFinishWeight === null || rmFinishWeight === '')) {
+        quantityValue = WeightCalculatorRequest.Quantity
+      } else {
+        quantityValue = rmFinishWeight
+      }
+      setQuantityState(quantityValue)
+      setValue('Quantity', (checkForDecimalAndNull(quantityValue, getConfigurationKey().NoOfDecimalForInputOutput)))
+
     } else if (props.calculatorData.UOMType === TIME) {
-      setValue('Quantity', Object.keys(WeightCalculatorRequest).length > 0 || WeightCalculatorRequest.Quantity !== undefined ? checkForNull(WeightCalculatorRequest.Quantity) : 1)
+
+      setQuantityState(Object.keys(WeightCalculatorRequest).length > 0 || WeightCalculatorRequest.PartPerHour !== undefined ? WeightCalculatorRequest.PartPerHour : 1)
+      setValue('Quantity', Object.keys(WeightCalculatorRequest).length > 0 || WeightCalculatorRequest.PartPerHour !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.PartPerHour, getConfigurationKey().NoOfDecimalForInputOutput) : 1)
       setHide(true)
     } else {
-      setValue('Quantity', Object.keys(WeightCalculatorRequest).length > 0 || WeightCalculatorRequest.Quantity !== undefined ? checkForNull(WeightCalculatorRequest.Quantity) : 1)
+      setQuantityState(Object.keys(WeightCalculatorRequest).length > 0 || WeightCalculatorRequest.Quantity !== undefined ? WeightCalculatorRequest.Quantity : 1)
+      setValue('Quantity', Object.keys(WeightCalculatorRequest).length > 0 || WeightCalculatorRequest.Quantity !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.Quantity, getConfigurationKey().NoOfDecimalForInputOutput) : 1)
+
     }
     // if (props.calculatorData.UOMType === DIMENSIONLESS) {
     //   setValue('Cavity', props.WeightCalculatorRequest.Cavity ? props.WeightCalculatorRequest.Cavity : 1)
@@ -101,33 +117,26 @@ function SheetMetalBaicDrawer(props) {
 
   const onSubmit = (value) => {
     let obj = {}
-    obj.ProcessCalculationId = props.calculatorData.ProcessCalculationId ? props.calculatorData.ProcessCalculationId : "00000000-0000-0000-0000-000000000000"
-    obj.CostingProcessDetailId = WeightCalculatorRequest && WeightCalculatorRequest.CostingProcessDetailId ? WeightCalculatorRequest.CostingProcessDetailId : "00000000-0000-0000-0000-000000000000"
+    obj.ProcessDefaultCalculatorId = props.calculatorData.ProcessDefaultCalculatorId ? props.calculatorData.ProcessDefaultCalculatorId : "00000000-0000-0000-0000-000000000000"
+    obj.CostingProcessDetailsIdRef = WeightCalculatorRequest && WeightCalculatorRequest.CostingProcessDetailsIdRef ? WeightCalculatorRequest.CostingProcessDetailsIdRef : "00000000-0000-0000-0000-000000000000"
+    obj.BaseCostingIdRef = props?.item?.CostingId
+    obj.ProcessIdRef = props.calculatorData.ProcessId
     obj.IsChangeApplied = tempProcessObj === value.ProcessCost ? false : true
     obj.TechnologyId = costData.TechnologyId
-    obj.CostingId = costData.CostingId
-    obj.TechnologyName = costData.TechnologyName
-    obj.PartId = costData.PartId
     obj.UnitOfMeasurementId = props.calculatorData.UnitOfMeasurementId
-    obj.MachineRateId = props.calculatorData.MachineRateId
-    obj.PartNumber = costData.PartNumber
-    obj.ProcessId = props.calculatorData.ProcessId
-    obj.ProcessName = props.calculatorData.ProcessName
-    obj.ProcessDescription = props.calculatorData.ProcessDescription
-    obj.MachineName = costData.MachineName
-    obj.MachineRate = props.calculatorData.MHR
     obj.UOM = props.calculatorData.UOM
-    obj.Tonnage = value.MachineTonnage
+    obj.Tonnage = value.MachineTonnage ? value.MachineTonnage : ""
     obj.CycleTime = value.CycleTime
     obj.Efficiency = value.Efficiency
     obj.Cavity = value.Cavity
-    obj.Quantity = value.Quantity
+    obj.Quantity = props.calculatorData.UOMType === TIME ? Number(checkForNull(processCost) / checkForNull(props.calculatorData.MHR)) : Number(quantityState)
     obj.ProcessCost = processCost
+    obj.MachineRate = props?.calculatorData?.MHR
     obj.LoggedInUserId = loggedInUserId()
     obj.UnitTypeId = props.calculatorData.UOMTypeId
     obj.UnitType = props.calculatorData.UOMType
-
-    dispatch(saveProcessCostCalculationData(obj, res => {
+    obj.PartPerHour = props.calculatorData.UOMType === TIME ? checkForNull(quantityState) : '-'
+    dispatch(saveDefaultProcessCostCalculationData(obj, res => {
       if (res.data.Result) {
         obj.ProcessCalculationId = res.data.Identity
         Toaster.success('Calculation saved sucessfully.')
@@ -141,7 +150,9 @@ function SheetMetalBaicDrawer(props) {
   */
   const calculateProcessCost = () => {
     const efficiency = checkForNull(getValues('Efficiency'))
-    const quantity = checkForNull(getValues('Quantity'))
+    const quantityValues = checkForNull(getValues('Quantity'))
+
+    const quantity = props.calculatorData.UOMType === TIME ? Number(checkForNull(quantityState)) : Number(checkForNull(quantityValues))
     const cavity = checkForNull(getValues('Cavity'))
     let cost
 
@@ -149,64 +160,73 @@ function SheetMetalBaicDrawer(props) {
     // const cavity = getValues('Cavity')
     // 
     const rate = props.calculatorData.MHR
+    if (!props.CostingViewMode) {
 
-    switch (props.calculatorData.UOMType) {
-      case MASS:
-        setDisabled(true)
-        cost = ((100 / efficiency) * (quantity === 0 ? 1 : quantity) * rate) / cavity
-        setProcessCost(cost)
-        setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
-        return true
-      case TIME:
-        //This need to be done later
-        cost = rate / (quantity === 0 ? 1 : quantity);
+      switch (props.calculatorData.UOMType) {
+        case MASS:
+          setDisabled(true)
+          cost = ((100 / efficiency) * (quantity === 0 ? 1 : quantity) * rate) / cavity
+          setProcessCost(cost)
+          setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
+          return true
+        case AREA:
+          setDisabled(true)
+          cost = ((100 / efficiency) * (quantity === 0 ? 1 : quantity) * rate) / cavity
+          setProcessCost(cost)
+          setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
+          return true
+        case TIME:
 
-        setProcessCost(cost)
-        setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
-        return;
-      case DIMENSIONLESS:
-        setDisabled(true)
-        cost = ((100 / efficiency) * (rate / (quantity === 0 ? 1 : quantity))) / cavity
+          //This need to be done later
+          cost = rate / (quantity === 0 ? 1 : quantity);
 
-        setProcessCost(cost)
-        setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
-        return true
-      case VOLUMETYPE:
-        setDisabled(true)
-        cost = ((100 / efficiency) * ((quantity === 0 ? 1 : quantity) * rate)) / cavity
-        setProcessCost(cost)
-        setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
-        return true
-      // case SHOTS:
-      //   setDisabled(true)
-      //   cost = (1 / efficiency) * (rate / quantity)
-      //   setProcessCost(cost)
-      //   setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
-      // return true
-      default:
-        break;
+
+          setProcessCost(cost)
+          setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
+          return;
+        case DIMENSIONLESS:
+          setDisabled(true)
+          cost = ((100 / efficiency) * (rate)) / cavity
+
+          setProcessCost(cost)
+          setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
+          return true
+        case VOLUMETYPE:
+          setDisabled(true)
+          cost = ((100 / efficiency) * ((quantity === 0 ? 1 : quantity) * rate)) / cavity
+          setProcessCost(cost)
+          setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
+          return true
+        // case SHOTS:
+        //   setDisabled(true)
+        //   cost = (1 / efficiency) * (rate / quantity)
+        //   setProcessCost(cost)
+        //   setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
+        // return true
+        default:
+
+          break;
+      }
     }
 
+
   }
 
-  const getCavity = (e) => {
-    setCavity(e.target.value)
-    calculateProcessCost()
-  }
   const onCancel = () => {
 
     calculateMachineTime('0.00')
   }
 
   const handleProductionPerHour = () => {
-    if (props.calculatorData.UOMType === TIME) {
+    if (props.calculatorData.UOMType === TIME && props.CostingViewMode === false) {
       const cavity = checkForNull(getValues('Cavity'))
       const cycleTime = checkForNull(getValues('CycleTime'))
       const efficiency = checkForNull(getValues('Efficiency'))
 
-      const prodPerHrs = checkForDecimalAndNull((cavity * 3600 * efficiency) / (cycleTime * 100), initialConfiguration.NoOfDecimalForPrice)
+      const prodPerHrs = (cavity * 3600 * efficiency) / (cycleTime * 100)
 
-      setValue('Quantity', prodPerHrs)
+      setValue('Quantity', checkForDecimalAndNull(prodPerHrs, getConfigurationKey().NoOfDecimalForInputOutput))
+      setQuantityState(prodPerHrs)
       setProdHr(prodPerHrs)
 
 
@@ -214,14 +234,17 @@ function SheetMetalBaicDrawer(props) {
   }
 
   const checlPercentageForEfficiency = (e) => {
-    if (checkPercentageValue(e.target.value, "Efficiency can not be more than 100%.")) {
-      setValue('Efficiency', e.target.value)
-    } else {
+    if (!props.CostingViewMode) {
 
-      setTimeout(() => {
+      if (checkPercentageValue(e.target.value, "Efficiency can not be more than 100%.")) {
+        setValue('Efficiency', e.target.value)
+      } else {
 
-        setValue('Efficiency', 100)
-      }, 100);
+        setTimeout(() => {
+
+          setValue('Efficiency', 100)
+        }, 100);
+      }
     }
     // setValue('Efficiency', checkPercentageValue(e.target.value, "Efficiency can not be more than 100%.") ? e.target.value : 100)
   }
@@ -229,7 +252,6 @@ function SheetMetalBaicDrawer(props) {
   // const quantity = (e) => {
   //   setQuantity(e.target.value)
   // }
-
   return (
     <Fragment>
       <Row>
@@ -342,7 +364,7 @@ function SheetMetalBaicDrawer(props) {
                   </Col>
                   <Col md="4">
                     <TextFieldHookForm
-                      label={props.calculatorData.UOMType === MASS ? `Finished Weight` : props.calculatorData.UOMType === TIME ? `Production / Hour` : `Quantity`}
+                      label={props.calculatorData.UOMType === MASS ? `Weight` : props.calculatorData.UOMType === TIME ? `Part / Hour` : `Quantity`}
                       name={'Quantity'}
                       Controller={Controller}
                       control={control}
@@ -362,7 +384,7 @@ function SheetMetalBaicDrawer(props) {
                       className=""
                       customClassName={'withBorder'}
                       errors={errors.Quantity}
-                      disabled={(props.calculatorData.UOMType === MASS || props.calculatorData.UOMType === TIME || props.CostingViewMode) ? true : false}
+                      disabled={(props.calculatorData.UOMType === TIME || props.CostingViewMode) ? true : false}
                     />
                   </Col>
                   <Col md="4">

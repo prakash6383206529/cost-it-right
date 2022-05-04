@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, Table } from 'reactstrap'
-import { checkForDecimalAndNull, checkVendorPlantConfigurable, formViewData, loggedInUserId } from '../../../../helper'
-import { getApprovalSummary } from '../../actions/Approval'
+import { checkForDecimalAndNull, checkVendorPlantConfigurable, formViewData, getPOPriceAfterDecimal, loggedInUserId } from '../../../../helper'
+import { approvalPushedOnSap, getApprovalSummary } from '../../actions/Approval'
 import { setCostingViewData, storePartNumber } from '../../actions/Costing'
 import ApprovalWorkFlow from './ApprovalWorkFlow'
 import ApproveRejectDrawer from './ApproveRejectDrawer'
@@ -14,6 +14,11 @@ import ViewDrawer from './ViewDrawer'
 import PushButtonDrawer from './PushButtonDrawer'
 import { Errorbox } from '../../../common/ErrorBox'
 import { Redirect } from 'react-router'
+import LoaderCustom from '../../../common/LoaderCustom';
+import CalculatorWrapper from '../../../common/Calculator/CalculatorWrapper'
+import { debounce } from 'lodash'
+import Toaster from '../../../common/Toaster'
+import { INR } from '../../../../config/constants'
 
 function ApprovalSummary(props) {
   const { approvalNumber, approvalProcessId } = props.location.state
@@ -36,7 +41,7 @@ function ApprovalSummary(props) {
   const [showPushDrawer, setShowPushDrawer] = useState(false)
   const [viewButton, setViewButton] = useState(false)
   const [pushButton, setPushButton] = useState(false)
-
+  const [isLoader, setIsLoader] = useState(false);
 
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
   useEffect(() => {
@@ -44,6 +49,7 @@ function ApprovalSummary(props) {
   }, [])
 
   const approvalSummaryHandler = () => {
+    setIsLoader(true)
     dispatch(getApprovalSummary(approvalNumber, approvalProcessId, loggedInUser, (res) => {
 
       const { PartDetails, ApprovalDetails, ApprovalLevelStep, DepartmentId, Technology, ApprovalProcessId,
@@ -52,7 +58,7 @@ function ApprovalSummary(props) {
 
       const technologyId = res?.data?.Data?.Costings[0].PartDetails.TechnologyId
       const partNumber = PartDetails.PartNumber
-
+      setIsLoader(false)
       dispatch(storePartNumber({ partId: PartId }))
       setPartDetail(PartDetails)
       setApprovalDetails(ApprovalDetails[0])
@@ -74,6 +80,7 @@ function ApprovalSummary(props) {
         DecimalOption: DecimalOption
       })
     }),
+
     )
   }
 
@@ -123,12 +130,58 @@ function ApprovalSummary(props) {
     return <Redirect to="/approval-listing" />
   }
 
+  const callPushAPI = debounce(() => {
+    console.log(dataSend, "dataSend");
+    const { netPo, quantity } = getPOPriceAfterDecimal(approvalData?.DecimalOption, dataSend.NewPOPrice ? dataSend.NewPOPrice : 0)
+    let pushdata = {
+      effectiveDate: dataSend[0].EffectiveDate ? DayTime(dataSend[0].EffectiveDate).format('MM/DD/YYYY') : '',
+      vendorCode: dataSend[0].VendorCode ? dataSend[0].VendorCode : '',
+      materialNumber: dataSend[1].PartNumber,
+      netPrice: dataSend[0].NewPOPrice,
+      plant: dataSend[0].PlantCode ? dataSend[0].PlantCode : dataSend[0].DestinationPlantId ? dataSend[0].DestinationPlantCode : '',
+      currencyKey: dataSend[0].Currency ? dataSend[0].Currency : INR,
+      materialGroup: '',
+      taxCode: 'YW',
+      basicUOM: "NO",
+      purchasingGroup: '',
+      purchasingOrg: dataSend[0].CompanyCode ? dataSend[0].CompanyCode : '',
+      CostingId: approvalData.CostingId,
+      Quantity: quantity,
+      DecimalOption: approvalData.DecimalOption
+      // effectiveDate: '11/30/2021',
+      // vendorCode: '203670',
+      // materialNumber: 'S07004-003A0Y',
+      // materialGroup: 'M089',
+      // taxCode: 'YW',
+      // plant: '1401',
+      // netPrice: '30.00',
+      // currencyKey: 'INR',
+      // basicUOM: 'NO',
+      // purchasingOrg: 'MRPL',
+      // purchasingGroup: 'O02'
+
+    }
+    let obj = {
+      LoggedInUserId: loggedInUserId(),
+      Request: [pushdata]
+    }
+    dispatch(approvalPushedOnSap(obj, res => {
+      if (res && res.status && (res.status === 200 || res.status === 204)) {
+        Toaster.success('Approval pushed successfully.')
+      }
+    }))
+    setShowListing(true)
+
+  }, 500)
+
   return (
 
     <>
+      <CalculatorWrapper />
       {
         showListing === false &&
         <>
+          {isLoader && <LoaderCustom />}
           <div className="container-fluid approval-summary-page">
             {/* <Errorbox customClass="d-none" errorText="There is some error in your page" /> */}
             <h2 className="heading-main">Approval Summary</h2>
@@ -170,21 +223,21 @@ function ApprovalSummary(props) {
                           {partDetail.Technology ? partDetail.Technology : '-'}
                         </span>
                       </th>
-                      <th>
-                        <span className="d-block grey-text">{`Assembly No./Part No.`}</span>
-                        <span className="d-block">
+                      <th className='overflow'>
+                        <span className="d-block grey-text">{`Assembly/Part No.`}</span>
+                        <span className="d-block " title={partDetail.PartNumber}>
                           {partDetail.PartNumber ? partDetail.PartNumber : '-'}
                         </span>
                       </th>
-                      <th>
-                        <span className="d-block grey-text">{`Assembly Name/Part Name`}</span>
-                        <span className="d-block">
+                      <th className='overflow'>
+                        <span className="d-block grey-text">{`Assembly/Part Name`}</span>
+                        <span className="d-block" title={partDetail.PartName}>
                           {partDetail.PartName ? partDetail.PartName : '-'}
                         </span>
                       </th>
-                      <th>
-                        <span className="d-block grey-text">{`Assembly Description/Part Description`}</span>
-                        <span className="d-block">
+                      <th className='overflow-description'>
+                        <span className="d-block grey-text">{`Assembly/Part Description`}</span>
+                        <span className="d-block" title={partDetail.Description}>
                           {partDetail.Description ? partDetail.Description : '-'}
                         </span>
                       </th>
@@ -291,13 +344,13 @@ function ApprovalSummary(props) {
                           {approvalDetails.ECNNumber !== null ? approvalDetails.ECNNumber : '-'}
                         </td> */}
                       <td>
-                        {approvalDetails.OldPOPrice !== null ? checkForDecimalAndNull(approvalDetails.OldPOPrice, initialConfiguration.NoOfDecimalForPrice) : '-'}
+                        {approvalDetails.OldPOPrice !== null ? checkForDecimalAndNull(approvalDetails.OldPOPrice, initialConfiguration?.NoOfDecimalForPrice) : '-'}
                       </td>
                       <td>
-                        {approvalDetails.NewPOPrice !== null ? checkForDecimalAndNull(approvalDetails.NewPOPrice, initialConfiguration.NoOfDecimalForPrice) : '-'}
+                        {approvalDetails.NewPOPrice !== null ? checkForDecimalAndNull(approvalDetails.NewPOPrice, initialConfiguration?.NoOfDecimalForPrice) : '-'}
                       </td>
                       <td>
-                        {approvalDetails.Variance !== null ? checkForDecimalAndNull(approvalDetails.Variance, initialConfiguration.NoOfDecimalForPrice) : '-'}
+                        {approvalDetails.Variance !== null ? checkForDecimalAndNull(approvalDetails.Variance, initialConfiguration?.NoOfDecimalForPrice) : '-'}
                       </td>
                       <td>
                         {approvalDetails.ConsumptionQuantity !== null ? approvalDetails.ConsumptionQuantity : '-'}
@@ -411,7 +464,7 @@ function ApprovalSummary(props) {
             <Row className="sf-btn-footer no-gutters justify-content-between">
               <div className="col-sm-12 text-right bluefooter-butn">
                 <Fragment>
-                  <button type="submit" className="submit-button mr5 save-btn" onClick={() => setPushButton(true)}>
+                  <button type="submit" className="submit-button mr5 save-btn" onClick={() => callPushAPI()}>
                     <div className={"save-icon"}></div>
                     {"Repush"}
                   </button>

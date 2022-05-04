@@ -43,6 +43,7 @@ export function updateClient(requestData, callback) {
             }).catch((error) => {
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
+                callback(error);
             });
     };
 }

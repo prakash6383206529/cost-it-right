@@ -5,7 +5,7 @@ import { useForm, Controller } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { loggedInUserId, userDetails } from '../../../helper/auth'
 import NoContentFound from '../../common/NoContentFound'
-import { EMPTY_DATA } from '../../../config/constants'
+import { EMPTY_DATA, LINKED } from '../../../config/constants'
 import DayTime from '../../common/DayTimeWrapper'
 import { checkForDecimalAndNull } from '../../../helper'
 import { DRAFT, EMPTY_GUID, APPROVED, PUSHED, ERROR, WAITING_FOR_APPROVAL, REJECTED, POUPDATED } from '../../../config/constants'
@@ -24,6 +24,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import WarningMessage from '../../common/WarningMessage'
 import { debounce } from 'lodash'
 import ScrollToTop from '../../common/ScrollToTop'
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 const gridOptions = {};
 
@@ -39,6 +40,7 @@ function SimulationApprovalListing(props) {
     const [reasonId, setReasonId] = useState('')
     const [showApprovalSumary, setShowApprovalSummary] = useState(false)
     const [redirectCostingSimulation, setRedirectCostingSimulation] = useState(false)
+    const [statusForLinkedToken, setStatusForLinkedToken] = useState(false)
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [rowData, setRowData] = useState(null);
@@ -50,13 +52,13 @@ function SimulationApprovalListing(props) {
     const statusSelectList = useSelector((state) => state.approval.costingStatusList)
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const { simualtionApprovalList } = useSelector(state => state.simulation)
-    console.log('simualtionApprovalList: ', simualtionApprovalList);
     const userList = useSelector(state => state.auth.userList)
     const [deletedId, setDeletedId] = useState('')
     const [showPopup, setShowPopup] = useState(false)
     const [simulationDetail, setSimulationDetail] = useState([])
     const [isLoader, setIsLoader] = useState(false)
     const isSmApprovalListing = props.isSmApprovalListing;
+    const colRow = [{ field: 'ApprovalNumber' }]
 
     const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
         mode: 'onBlur',
@@ -92,7 +94,7 @@ function SimulationApprovalListing(props) {
         }
         setIsLoader(true)
         dispatch(getSimulationApprovalList(filterData, (res) => {
-            if(res.data.Result){
+            if (res.data.Result) {
                 setIsLoader(false)
             }
         }))
@@ -135,6 +137,15 @@ function SimulationApprovalListing(props) {
             </Fragment>
         )
     }
+
+    /**
+    * @method hyphenFormatter
+    */
+    const hyphenFormatter = (props) => {
+        const cellValue = props?.value;
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
+    }
+
 
     const createdOnFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -189,7 +200,8 @@ function SimulationApprovalListing(props) {
 
     const viewDetails = (rowObj) => {
         setApprovalData({ approvalProcessId: rowObj.ApprovalProcessId, approvalNumber: rowObj.ApprovalNumber, SimulationTechnologyHead: rowObj.SimulationTechnologyHead, SimulationTechnologyId: rowObj.SimulationTechnologyId })
-        if (rowObj.DisplayStatus === 'Draft' || rowObj.SimulationType === 'Provisional') {
+        if (rowObj?.Status === 'Draft' || rowObj.SimulationType === 'Provisional' || rowObj?.Status === 'Linked') {
+            setStatusForLinkedToken(rowObj?.Status === 'Linked')
             dispatch(setMasterForSimulation({ label: rowObj.SimulationTechnologyHead, value: rowObj.SimulationTechnologyId }))
             setRedirectCostingSimulation(true)
         } else {
@@ -277,6 +289,7 @@ function SimulationApprovalListing(props) {
         var selectedRows = gridApi.getSelectedRows();
         let tempArrReason = []
         let tempArrTechnology = []
+        let tempArrSimulationTechnologyHead = []
 
         selectedRows.map(item => {
             arr.push(item?.DisplayStatus)
@@ -285,6 +298,7 @@ function SimulationApprovalListing(props) {
             tempArrIsPushedButtonShow.push(item.IsPushedButtonShow)
             tempArrReason.push(item.ReasonId)
             tempArrTechnology.push(item.TechnologyName)
+            tempArrSimulationTechnologyHead.push(item.SimulationTechnologyHead)
         })
 
         if (!allEqual(arr)) {
@@ -307,7 +321,10 @@ function SimulationApprovalListing(props) {
             Toaster.warning('Please choose costing which have same reason')
             gridApi.deselectAll()
         }
-        else if (!allEqual(tempArrTechnology)) {
+        else if (!allEqual(tempArrSimulationTechnologyHead)) {
+            Toaster.warning('Master should be same for sending multiple costing for approval')
+            gridApi.deselectAll()
+        } else if (!allEqual(tempArrTechnology)) {
             Toaster.warning('Technology should be same for sending multiple costing for approval')
             gridApi.deselectAll()
         } else {
@@ -329,7 +346,7 @@ function SimulationApprovalListing(props) {
         // }
     }
     const isRowSelectable = (rowNode) => {
-        if (rowNode.data.Status === APPROVED || rowNode.data.Status === REJECTED || rowNode.data.Status === WAITING_FOR_APPROVAL || rowNode.data.Status === PUSHED || rowNode.data.Status === POUPDATED || rowNode.data.Status === ERROR) {
+        if (rowNode.data.Status === APPROVED || rowNode.data.Status === REJECTED || rowNode.data.Status === WAITING_FOR_APPROVAL || rowNode.data.Status === PUSHED || rowNode.data.Status === POUPDATED || rowNode.data.Status === ERROR || rowNode.data.Status === LINKED) {
             return false;
         } else {
             return true
@@ -381,6 +398,7 @@ function SimulationApprovalListing(props) {
         setApproveDrawer(false)
         getTableData()
         //setRejectDrawer(false)
+        setSelectedRowData([])
     }
 
     if (redirectCostingSimulation === true) {
@@ -392,7 +410,8 @@ function SimulationApprovalListing(props) {
                 state: {
                     isFromApprovalListing: true,
                     approvalProcessId: approvalData.approvalProcessId,
-                    master: approvalData.SimulationTechnologyId
+                    master: approvalData.SimulationTechnologyId,
+                    statusForLinkedToken: statusForLinkedToken
                 }
 
             }}
@@ -421,6 +440,7 @@ function SimulationApprovalListing(props) {
         resizable: true,
         filter: true,
         sortable: true,
+        headerCheckboxSelectionFilteredOnly: true,
         headerCheckboxSelection: isFirstColumn,
         checkboxSelection: isFirstColumn
     };
@@ -465,9 +485,9 @@ function SimulationApprovalListing(props) {
         // customLoadingOverlay: LoaderCustom,
         customNoRowsOverlay: NoContentFound,
         reasonFormatter: reasonFormatter,
-        conditionFormatter: conditionFormatter
+        conditionFormatter: conditionFormatter,
+        hyphenFormatter: hyphenFormatter
     };
-
 
     return (
         <Fragment>
@@ -477,11 +497,11 @@ function SimulationApprovalListing(props) {
                     < div className={`ag-grid-react`}>
                         <form onSubmit={handleSubmit(onSubmit)} noValidate>
                             {!isSmApprovalListing && <h1 className="mb-0">Simulation History</h1>}
-                            {isLoader &&<LoaderCustom customClass={"simulation-history-loader"} />}
+                            {isLoader && <LoaderCustom customClass={"simulation-history-loader"} />}
                             <ScrollToTop pointProp={"history-go-to-top"} />
                             <Row className="pt-4 blue-before">
 
-                              
+
                                 <Col md="2" lg="2" className="search-user-block mb-3">
                                     <div className="d-flex justify-content-end bd-highlight w100">
                                         <button
@@ -502,7 +522,7 @@ function SimulationApprovalListing(props) {
                             </Row>
                         </form>
 
-                        <div className="ag-grid-wrapper height-width-wrapper min-height-auto ">
+                        <div className={`ag-grid-wrapper height-width-wrapper min-height-auto ${simualtionApprovalList && simualtionApprovalList?.length <= 0 ? "overlay-contain" : ""}`}>
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                             </div>
@@ -516,10 +536,11 @@ function SimulationApprovalListing(props) {
                                     domLayout='autoHeight'
                                     // columnDefs={c}
                                     rowData={simualtionApprovalList}
+                                    // columnDefs={colRow}
                                     pagination={true}
                                     paginationPageSize={10}
                                     onGridReady={onGridReady}
-                                    gridOptions={gridOptions}                                  
+                                    gridOptions={gridOptions}
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                     noRowsOverlayComponentParams={{
                                         title: EMPTY_DATA,
@@ -532,10 +553,15 @@ function SimulationApprovalListing(props) {
 
 
                                 >
-                                    <AgGridColumn width={120} field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No."></AgGridColumn>
+
+                                    <AgGridColumn width={120} field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No." cellClass="token-no-grid"></AgGridColumn>
                                     {isSmApprovalListing && <AgGridColumn field="Status" headerClass="justify-content-center" cellClass="text-center" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>}
-                                    <AgGridColumn width={141} field="CostingHead" headerName="Costing Head"></AgGridColumn>
-                                    {/* NEED TO REMOVE THIS FIELD AFTER IMPLEMENTATION */}
+                                    <AgGridColumn width={141} field="CostingHead" headerName="Costing Head" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                    {/* THIS FEILD WILL ALWAYS COME BEFORE */}
+                                    {getConfigurationKey().IsProvisionalSimulation && <AgGridColumn width={145} field="SimulationType" headerName='Simulation Type' ></AgGridColumn>}
+                                    {getConfigurationKey().IsProvisionalSimulation && <AgGridColumn width={145} field="ProvisionalStatus" headerName='Amendment Status' ></AgGridColumn>}
+                                    {getConfigurationKey().IsProvisionalSimulation && <AgGridColumn width={145} field="LinkingTokenNumber" headerName='Linking Token No' ></AgGridColumn>}
+
                                     <AgGridColumn width={141} field="SimulationTechnologyHead" headerName="Simulation Head"></AgGridColumn>
                                     <AgGridColumn width={130} field="TechnologyName" headerName="Technology"></AgGridColumn>
                                     <AgGridColumn width={200} field="VendorName" headerName="Vendor" cellRenderer='renderVendor'></AgGridColumn>
@@ -547,14 +573,8 @@ function SimulationApprovalListing(props) {
                                     <AgGridColumn width={142} field="LastApprovedBy" headerName='Last Approval' cellRenderer='requestedByFormatter'></AgGridColumn>
                                     <AgGridColumn width={145} field="RequestedOn" headerName='Requested On' cellRenderer='requestedOnFormatter'></AgGridColumn>
 
-
-                                    {getConfigurationKey().IsProvisionalSimulation && <AgGridColumn width={145} field="SimulationType" headerName='Simulation Type' ></AgGridColumn>}
-                                    {getConfigurationKey().IsProvisionalSimulation && <AgGridColumn width={145} field="ProvisionalStatus" headerName='Amendment Status' ></AgGridColumn>}
-                                    {getConfigurationKey().IsProvisionalSimulation && <AgGridColumn width={145} field="LinkingTokenNumber" headerName='Linking Token No' ></AgGridColumn>}
-
-
                                     {!isSmApprovalListing && <AgGridColumn pinned="right" field="Status" headerClass="justify-content-center" cellClass="text-center" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>}
-                                    <AgGridColumn width={105} field="SimulationId" headerName='Actions' type="rightAligned" floatingFilter={false} cellRenderer='buttonFormatter'></AgGridColumn>
+                                    <AgGridColumn width={115} field="SimulationId" headerName='Actions' type="rightAligned" floatingFilter={false} cellRenderer='buttonFormatter'></AgGridColumn>
 
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">

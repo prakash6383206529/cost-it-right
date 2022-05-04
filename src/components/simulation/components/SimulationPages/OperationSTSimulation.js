@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Row, Col, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
-import { EMPTY_DATA } from '../../../../config/constants';
+import { EMPTY_DATA, OPERATIONS, SURFACETREATMENT } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper';
 import Toaster from '../../../common/Toaster';
@@ -14,7 +14,6 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import Simulation from '../Simulation';
-import OtherVerifySimulation from '../OtherVerifySimulation';
 import debounce from 'lodash.debounce';
 import { TextFieldHookForm } from '../../../layout/HookFormInputs';
 import { VBC, ZBC } from '../../../../config/constants';
@@ -25,7 +24,7 @@ const gridOptions = {
 
 };
 function OperationSTSimulation(props) {
-    const { list, isbulkUpload, rowCount, isImpactedMaster, isOperation } = props
+    const { list, isbulkUpload, rowCount, isImpactedMaster, masterId, lastRevision, tokenForMultiSimulation, setSelectionForListingMaster } = props
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')
@@ -34,7 +33,8 @@ function OperationSTSimulation(props) {
     const [showMainSimulation, setShowMainSimulation] = useState(false)
     const [selectedRowData, setSelectedRowData] = useState([]);
     const [tableData, setTableData] = useState([])
-
+    const [isDisable, setIsDisable] = useState(false)
+    const gridRef = useRef();
 
     const { register, control, setValue, formState: { errors }, } = useForm({
         mode: 'onChange',
@@ -44,7 +44,7 @@ function OperationSTSimulation(props) {
 
     const dispatch = useDispatch()
 
-    const { selectedMasterForSimulation } = useSelector(state => state.simulation)
+    const { selectedMasterForSimulation, selectedTechnologyForSimulation } = useSelector(state => state.simulation)
 
     const cancelVerifyPage = () => {
         setShowVerifyPage(false)
@@ -61,17 +61,33 @@ function OperationSTSimulation(props) {
             setValue('NoOfRowsWithoutChange', rowCount.NoOfRowsWithoutChange)
         }
     }, [])
-
+    useEffect(() => {
+        if (list && list.length >= 0) {
+            gridRef.current.api.sizeColumnsToFit();
+        }
+    }, [list])
     const oldCPFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        let valueShow
+        let master = isImpactedMaster ? masterId : selectedMasterForSimulation?.value
+        if (lastRevision) {
+            if (Number(master) === Number(SURFACETREATMENT) || row.IsSurfaceTreatmenOperation === true) {
+                valueShow = row.OldSurfaceTreatmentRatePerUOM
+            }
+            if (Number(master) === Number(OPERATIONS) || row.IsSurfaceTreatmenOperation === false) {
+                valueShow = row.OldOperationBasicRate
+            }
+        } else {
+            valueShow = row.OldOperationRate
+        }
         const value = beforeSaveCell(cell)
         return (
             <>
                 {
                     isImpactedMaster ?
-                        Number(row.OldNetCC) :
-                        <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.ConversionCost)} </span>
+                        valueShow :
+                        <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.Rate)} </span>
                 }
 
             </>
@@ -82,11 +98,23 @@ function OperationSTSimulation(props) {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const value = beforeSaveCell(cell)
+        let valueShow
+        let master = isImpactedMaster ? masterId : selectedMasterForSimulation?.value
+        if (lastRevision) {
+            if (Number(master) === Number(SURFACETREATMENT) || row.IsSurfaceTreatmenOperation === true) {
+                valueShow = row.NewSurfaceTreatmentRatePerUOM
+            }
+            if (Number(master) === Number(OPERATIONS) || row.IsSurfaceTreatmenOperation === false) {
+                valueShow = row.NewOperationBasicRate
+            }
+        } else {
+            valueShow = row.NewOperationRate
+        }
         return (
             <>
                 {
                     isImpactedMaster ?
-                        row.NewRate :
+                        valueShow ://NewNetOperationCost
                         <span className={`${true ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.Rate)} </span>
                 }
 
@@ -130,6 +158,10 @@ function OperationSTSimulation(props) {
 
 
     const cancel = () => {
+        list && list.map((item) => {
+            item.NewRate = undefined
+            return null
+        })
         setShowMainSimulation(true)
     }
 
@@ -148,14 +180,6 @@ function OperationSTSimulation(props) {
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
-        window.screen.width >= 1600 && params.api.sizeColumnsToFit();
-        if (isImpactedMaster) {
-            window.screen.width >= 1365 && params.api.sizeColumnsToFit();
-        }
-        var allColumnIds = [];
-        params.columnApi.getAllColumns().forEach(function (column) {
-            allColumnIds.push(column.colId);
-        });
 
     };
 
@@ -164,23 +188,24 @@ function OperationSTSimulation(props) {
         gridApi.paginationSetPageSize(Number(value));
     };
 
+
     const onFilterTextBoxChanged = (e) => {
         gridApi.setQuickFilter(e.target.value);
     }
 
     const NewcostFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        if (!row.NewRate || Number(row.ConversionCost) === Number(row.NewRate) || row.NewRate === '') return ''
+        if (!row.NewRate || Number(row.Rate) === Number(row.NewRate) || row.NewRate === '') return ''
         const NewRate = Number(row.NewRate) + checkForNull(row.RemainingTotal)
-        const NetCost = Number(row.ConversionCost) + checkForNull(row.RemainingTotal)
+        const NetCost = Number(row.Rate) + checkForNull(row.RemainingTotal)
         const classGreen = (NewRate > NetCost) ? 'red-value form-control' : (NewRate < NetCost) ? 'green-value form-control' : 'form-class'
         return row.NewRate != null ? <span className={classGreen}>{checkForDecimalAndNull(NewRate, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
     const OldcostFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const ConversionCost = Number(row.ConversionCost) + checkForNull(row.RemainingTotal)
-        return row.ConversionCost != null ? checkForDecimalAndNull(ConversionCost, getConfigurationKey().NoOfDecimalForPrice) : ''
+        const Rate = Number(row.Rate) + checkForNull(row.RemainingTotal)
+        return row.Rate != null ? checkForDecimalAndNull(Rate, getConfigurationKey().NoOfDecimalForPrice) : ''
     }
 
     const frameworkComponents = {
@@ -202,13 +227,13 @@ function OperationSTSimulation(props) {
     const verifySimulation = debounce(() => {
         /**********CONDITION FOR: IS ANY FIELD EDITED****************/
 
-        let ccCount = 0
+        let Count = 0
         let tempData = list
         let arr = []
         tempData && tempData.map((li, index) => {
 
             if (Number(li.Rate) === Number(li.NewRate) || li?.NewRate === undefined) {
-                ccCount = ccCount + 1
+                Count = Count + 1
             } else {
 
                 li.NewTotal = Number(li.NewRate ? li.NewRate : li.Rate) + checkForNull(li.RemainingTotal)
@@ -217,38 +242,48 @@ function OperationSTSimulation(props) {
             }
             return null;
         })
-        if (ccCount === tempData.length) {
-            Toaster.warning('There is no changes in new value.Please correct the data ,then run simulation')
+        if (Count === tempData.length) {
+            Toaster.warning('There is no changes in new value. Please correct the data, then run simulation')
             return false
         }
+        setIsDisable(true)
         /**********POST METHOD TO CALL HERE AND AND SEND TOKEN TO VERIFY PAGE ****************/
         obj.SimulationTechnologyId = selectedMasterForSimulation.value
         obj.LoggedInUserId = loggedInUserId()
-        obj.CostingHead = list[0].CostingHead === 'Vendor Based' ? VBC : ZBC
-        obj.TechnologyId = list[0].TechnologyId
-        obj.TechnologyName = list[0].TechnologyName
+
+        obj.CostingHead = list[0].CostingHead === "Vendor Based" ? VBC : ZBC
+        obj.TechnologyId = selectedTechnologyForSimulation.value
+        obj.TechnologyName = selectedTechnologyForSimulation.label
 
         let tempArr = []
         arr && arr.map(item => {
+
             let tempObj = {}
-            tempObj.CostingId = item.CostingId
-            tempObj.OldNetCC = item.ConversionCost
-            tempObj.NewNetCC = item.NewRate
-            tempObj.RemainingTotal = item.RemainingTotal
-            tempObj.OldTotalCost = item.TotalCost
-            tempObj.NewTotalCost = item.NewTotal
+            tempObj.OperationId = item.OperationId
+            tempObj.OldOperationRate = Number(item.Rate)
+            tempObj.NewOperationRate = Number(item.NewRate)
+
             tempArr.push(tempObj)
             return null
         })
-        obj.SimulationCombinedProcess = tempArr
+
+        obj.SimulationIds = tokenForMultiSimulation
+
+        obj.SimulationSurfaceTreatmentAndOperation = tempArr
         dispatch(runVerifySurfaceTreatmentSimulation(obj, res => {
-            if (res.data.Result) {
+            setIsDisable(false)
+            if (res?.data?.Result) {
                 setToken(res.data.Identity)
                 setShowVerifyPage(true)
             }
         }))
-        setShowVerifyPage(true)
     }, 500);
+    const resetState = () => {
+        gridApi?.setQuickFilter('');
+        gridOptions?.columnApi?.resetColumnState();
+        gridOptions?.api?.setFilterModel(null);
+        gridRef.current.api.sizeColumnsToFit();
+    }
 
     return (
         <div>
@@ -256,61 +291,62 @@ function OperationSTSimulation(props) {
                 {
                     (!showverifyPage && !showMainSimulation) &&
                     <Fragment>
-                        {
-                            isbulkUpload &&
-                            <Row className="sm-edit-row justify-content-end">
-                                <Col md="6">
-                                    <div className="d-flex align-items-center">
-                                        <label>No of rows with changes:</label>
-                                        <TextFieldHookForm
-                                            label=""
-                                            name={'NoOfCorrectRow'}
-                                            Controller={Controller}
-                                            control={control}
-                                            register={register}
-                                            rules={{ required: false }}
-                                            mandatory={false}
-                                            handleChange={() => { }}
-                                            defaultValue={''}
-                                            className=""
-                                            customClassName={'withBorder mn-height-auto hide-label mb-0'}
-                                            errors={errors.NoOfCorrectRow}
-                                            disabled={true}
-                                        />
-                                    </div>
-                                </Col>
-                                <Col md="6">
-                                    <div className="d-flex align-items-center">
-                                        <label>No of rows without changes:</label>
-                                        <TextFieldHookForm
-                                            label=""
-                                            name={'NoOfRowsWithoutChange'}
-                                            Controller={Controller}
-                                            control={control}
-                                            register={register}
-                                            rules={{ required: false }}
-                                            mandatory={false}
-                                            handleChange={() => { }}
-                                            defaultValue={''}
-                                            className=""
-                                            customClassName={'withBorder mn-height-auto hide-label mb-0'}
-                                            errors={errors.NoOfRowsWithoutChange}
-                                            disabled={true}
-                                        />
-                                    </div>
-                                </Col>
-                            </Row>
-                        }
+
                         <form>
 
                             <Row>
                                 <Col className="add-min-height mb-3 sm-edit-page">
-                                    <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
-                                        <div className="ag-grid-header">
+                                    <div className={`ag-grid-wrapper height-width-wrapper ${list && list?.length <= 0 ? "overlay-contain" : ""}`}>
+                                        <div className="ag-grid-header d-flex align-items-center">
                                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                                            <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
+                                                <div className="refresh mr-0"></div>
+                                            </button>
                                         </div>
+                                        {
+                                            isbulkUpload &&
+                                            <div className='d-flex justify-content-end bulk-upload-row'>
+                                                <div className="d-flex align-items-center">
+                                                    <label>No of rows with changes:</label>
+                                                    <TextFieldHookForm
+                                                        label=""
+                                                        name={'NoOfCorrectRow'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        rules={{ required: false }}
+                                                        mandatory={false}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder mn-height-auto hide-label mb-0'}
+                                                        errors={errors.NoOfCorrectRow}
+                                                        disabled={true}
+                                                    />
+                                                </div>
+                                                <div className="d-flex align-items-center">
+                                                    <label>No of rows without changes:</label>
+                                                    <TextFieldHookForm
+                                                        label=""
+                                                        name={'NoOfRowsWithoutChange'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        rules={{ required: false }}
+                                                        mandatory={false}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder mn-height-auto hide-label mb-0'}
+                                                        errors={errors.NoOfRowsWithoutChange}
+                                                        disabled={true}
+                                                    />
+                                                </div>
+                                            </div>
+                                        }
                                         <div className="ag-theme-material" style={{ width: '100%' }}>
                                             <AgGridReact
+                                                ref={gridRef}
                                                 floatingFilter={true}
                                                 style={{ height: '100%', width: '100%' }}
                                                 defaultColDef={defaultColDef}
@@ -332,35 +368,20 @@ function OperationSTSimulation(props) {
                                                 // frameworkComponents={frameworkComponents}
                                                 onSelectionChanged={onRowSelect}
                                             >
-                                                <AgGridColumn field="Technology" editable='false' headerName="Technology" minWidth={190}></AgGridColumn>
-                                                <AgGridColumn field="VendorName" editable='false' headerName="Vendor" minWidth={190}></AgGridColumn>
+                                                {!isImpactedMaster && <>
+                                                    <AgGridColumn field="Technology" editable='false' headerName="Technology" minWidth={190}></AgGridColumn>
+                                                    <AgGridColumn field="VendorName" editable='false' headerName="Vendor" minWidth={190}></AgGridColumn>
+                                                </>}
                                                 <AgGridColumn field="OperationName" editable='false' headerName="Operation Name" minWidth={190}></AgGridColumn>
                                                 <AgGridColumn field="OperationCode" editable='false' headerName="Operation Code" minWidth={190}></AgGridColumn>
-                                                {isImpactedMaster && <AgGridColumn field="PartNo" editable='false' headerName="Part No" minWidth={190}></AgGridColumn>}
-                                                {
-                                                    !isImpactedMaster &&
-                                                    <>
-                                                        <AgGridColumn field="DestinationPlant" editable='false' headerName="Plant" minWidth={190}></AgGridColumn>
-
-                                                    </>
-                                                }
-                                                <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Net Rate" marryChildren={true} >
-                                                    <AgGridColumn width={120} field="Rate" editable='false' headerName="Old" cellRenderer='oldCPFormatter' colId="Rate"></AgGridColumn>
-                                                    <AgGridColumn width={120} cellRenderer='newRateFormatter' editable={true} field="NewRate" headerName="New" colId='NewRate'></AgGridColumn>
+                                                {!isImpactedMaster && <>
+                                                    <AgGridColumn field={`${isbulkUpload ? 'DestinationPlant' : 'Plants'}`} editable='false' headerName="Plant" minWidth={190}></AgGridColumn>
+                                                </>}
+                                                <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={240} headerName="Net Rate" marryChildren={true} >
+                                                    <AgGridColumn minWidth={120} field="Rate" editable='false' headerName="Old" cellRenderer='oldCPFormatter' colId="Rate"></AgGridColumn>
+                                                    <AgGridColumn minWidth={120} cellRenderer='newRateFormatter' editable={!isImpactedMaster} field="NewRate" headerName="New" colId='NewRate'></AgGridColumn>
                                                 </AgGridColumn>
-                                                {/* {!isImpactedMaster && <AgGridColumn field="RemainingTotal" editable='false' headerName="Remaining Fields Total" minWidth={190}></AgGridColumn>} */}
-                                                {/* {
-                                                    !isImpactedMaster &&
-                                                    <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Total" marryChildren={true} >
-                                                        <AgGridColumn width={120} cellRenderer='OldcostFormatter' valueGetter='Number(data.ConversionCost) + Number(data.RemainingTotal)' field="TotalCost" editable='false' headerName="Old" colId="Total"></AgGridColumn>
-                                                        <AgGridColumn width={120} cellRenderer='NewcostFormatter' valueGetter='data.NewRate + Number(data.RemainingTotal)' field="NewTotal" headerName="New" colId='NewTotal'></AgGridColumn>
-                                                    </AgGridColumn>
-                                                } */}
-
                                                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn>
-                                                {/* <AgGridColumn field="DisplayStatus" headerName="Status" floatingFilter={false} cellRenderer='statusFormatter'></AgGridColumn> */}
-
-                                                {/* <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn> */}
                                                 <AgGridColumn field="CostingId" hide={true}></AgGridColumn>
 
                                             </AgGridReact>
@@ -381,11 +402,11 @@ function OperationSTSimulation(props) {
                                 !isImpactedMaster &&
                                 <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                                     <div className="col-sm-12 text-right bluefooter-butn">
-                                        <button type={"button"} className="mr15 cancel-btn" onClick={cancel}>
+                                        <button type={"button"} className="mr15 cancel-btn" onClick={cancel} disabled={isDisable}>
                                             <div className={"cancel-icon"}></div>
                                             {"CANCEL"}
                                         </button>
-                                        <button onClick={verifySimulation} type="button" className="user-btn mr5 save-btn">
+                                        <button onClick={verifySimulation} type="button" className="user-btn mr5 save-btn" disabled={isDisable}>
                                             <div className={"Run-icon"}>
                                             </div>{" "}
                                             {"Verify"}
@@ -408,7 +429,7 @@ function OperationSTSimulation(props) {
                 }
 
                 {
-                    showMainSimulation && <Simulation isRMPage={true} />
+                    showMainSimulation && <Simulation isMasterSummaryDrawer={true} isCancelClicked={true} isRMPage={true} />
                 }
                 {
                     showRunSimulationDrawer &&

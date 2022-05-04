@@ -26,10 +26,11 @@ class User extends Component {
       ViewRoleAccessibility: false,
       ViewDepartmentAccessibility: false,
       ViewLevelAccessibility: false,
+      count: 0
     }
   }
 
-  componentDidMount() {
+  topAndLeftMenuFunction = () => {
     let ModuleId = reactLocalStorage.get('ModuleId');
     let leftMenuFromAPI = []
     const { topAndLeftMenuData } = this.props;
@@ -61,6 +62,18 @@ class User extends Component {
           activeTab: userData && userData.View ? '1' : (roleData && roleData.View ? '2' : (departmentData && departmentData.View ? '3' : '4'))
         })
       }
+    }
+  }
+
+  componentDidMount() {
+    this.topAndLeftMenuFunction()
+  }
+
+
+  componentDidUpdate() {
+    if (this.props.topAndLeftMenuData !== undefined && this.state.count === 0) {
+      this.setState({ count: 1 })
+      this.topAndLeftMenuFunction()
     }
   }
 
@@ -122,7 +135,7 @@ class User extends Component {
       <Container fluid className="user-page">
         {/* {this.props.loading && <Loader/>} */}
         <div>
-          <h1>User Management</h1>
+          {ViewRoleAccessibility && <h1>User Management</h1>}
           <Nav tabs className="subtabs">
             {ViewUserAccessibility && <NavItem>
               <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>

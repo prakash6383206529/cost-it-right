@@ -38,12 +38,12 @@ class App extends Component {
    */
   logUserOut = () => {
     this.setState({ isUserLoggedIn: false });
+    window.location.assign('/login');
     reactLocalStorage.setObject("isUserLoggedIn", false);
     reactLocalStorage.setObject("userDetail", {});
     reactLocalStorage.set('ModuleId', '');
 
     //setTimeout(() => {
-    window.location.assign('/login');
     //}, 100)
   }
 

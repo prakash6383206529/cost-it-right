@@ -3,31 +3,20 @@ import { useForm, Controller, useWatch } from 'react-hook-form'
 import { costingInfoContext } from '../CostingDetailStepTwo'
 import { useDispatch, useSelector } from 'react-redux'
 import { Col, Row } from 'reactstrap'
-import { saveRawMaterialCalciData } from '../../actions/CostWorking'
-
+import { saveRawMaterialCalculationForCorrugatedBox } from '../../actions/CostWorking'
 import { TextFieldHookForm, } from '../../../layout/HookFormInputs'
 import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../helper'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import Toaster from '../../../common/Toaster'
-import { KG, } from '../../../../config/constants'
 import HeaderTitle from '../../../common/HeaderTitle'
 
 function CorrugatedBox(props) {
-
-
-
     const [dataSend, setDataSend] = useState({})
-
     const localStorage = reactLocalStorage.getObject('InitialConfiguration');
     const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest;
-    const { rmRowData, isEditFlag } = props
+    const { rmRowData, CostingViewMode, item } = props
     const dispatch = useDispatch()
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
-
-
-
-
-
     const defaultValues = {
         no_of_ply: WeightCalculatorRequest && WeightCalculatorRequest.NoOfPly !== null ? WeightCalculatorRequest.NoOfPly : '',
         gsm: WeightCalculatorRequest && WeightCalculatorRequest.GSM !== null ? WeightCalculatorRequest.GSM : '',
@@ -36,7 +25,7 @@ function CorrugatedBox(props) {
         length_box: WeightCalculatorRequest && WeightCalculatorRequest.LengthBox !== null ? WeightCalculatorRequest.LengthBox : '',
         width_box: WeightCalculatorRequest && WeightCalculatorRequest.WidthBox !== null ? WeightCalculatorRequest.WidthBox : '',
         height_box: WeightCalculatorRequest && WeightCalculatorRequest.HeightBox !== null ? WeightCalculatorRequest.HeightBox : '',
-        stiching_length: WeightCalculatorRequest && WeightCalculatorRequest.StitchingLengthInchperJoint !== null ? WeightCalculatorRequest.StitchingLengthInchperJoint : '',
+        stiching_length: WeightCalculatorRequest && WeightCalculatorRequest.StitchingLengthInchPerJoint !== null ? WeightCalculatorRequest.StitchingLengthInchPerJoint : '',
         width_sheet: WeightCalculatorRequest && WeightCalculatorRequest.WidthSheet !== null ? checkForDecimalAndNull(WeightCalculatorRequest.WidthSheet, initialConfiguration.NoOfDecimalForInputOutput) : '', // 
         cutting_allowance: WeightCalculatorRequest && WeightCalculatorRequest.CuttingAllowanceWidth !== undefined ? WeightCalculatorRequest.CuttingAllowanceWidth : '',
         width_inc_cutting: WeightCalculatorRequest && WeightCalculatorRequest.WidthSheetIncCuttingAllowance !== null ? WeightCalculatorRequest.WidthSheetIncCuttingAllowance : '',
@@ -44,41 +33,30 @@ function CorrugatedBox(props) {
         cuttingAllowanceForLength: WeightCalculatorRequest && WeightCalculatorRequest.CuttingAllowanceLength !== null ? WeightCalculatorRequest.CuttingAllowanceLength : '',
         length_inc_cutting_allowance: WeightCalculatorRequest && WeightCalculatorRequest.LengthSheetIncCuttingAllowance !== null ? checkForDecimalAndNull(WeightCalculatorRequest.LengthSheetIncCuttingAllowance, initialConfiguration.NoOfDecimalForInputOutput) : '',
         paper_process: WeightCalculatorRequest && WeightCalculatorRequest.PaperWeightAndProcessRejectionSum !== null ? checkForDecimalAndNull(WeightCalculatorRequest.PaperWeightAndProcessRejectionSum, initialConfiguration.NoOfDecimalForInputOutput) : '',
-
     }
-
-
-
-
-
     const {
-        register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
+        register, handleSubmit, control, setValue, getValues, formState: { errors }, } = useForm({
             mode: 'onChange',
             reValidateMode: 'onChange',
             defaultValues: defaultValues,
         })
 
     const costData = useContext(costingInfoContext)
-    const [isChangeApplies, setIsChangeApplied] = useState(true)
-
-
 
     const fieldValues = useWatch({
         control,
         name: ['no_of_ply', 'gsm', 'bursting_factor', 'length_box', 'height_box', 'cutting_allowance', 'width_inc_cutting'],
     })
 
-
-
     useEffect(() => {
-        setBurstingStrength()
-        setWidthCuttingAllowance()
-        setWidthSheet_LengthSheet()
-        setLengthCuttingAllowance()
-        setFinalGrossWeight()
-
+        if (!CostingViewMode) {
+            setBurstingStrength()
+            setWidthCuttingAllowance()
+            setWidthSheet_LengthSheet()
+            setLengthCuttingAllowance()
+            setFinalGrossWeight()
+        }
     }, [fieldValues])
-
 
     const setBurstingStrength = () => {
         let data = {
@@ -93,12 +71,8 @@ function CorrugatedBox(props) {
         }, 200);
     }
 
-
     const setWidthSheet_LengthSheet = () => {
-
-
         let data = {
-
 
             lengthBox: getValues('length_box'),
             widthBox: getValues('width_box'),
@@ -107,15 +81,10 @@ function CorrugatedBox(props) {
 
         }
 
-
         let widthSheet = (Number(data.widthBox) + parseInt(data.heightBox)) / 25.4;
         const lengthSheet = (2 * (parseInt(data.lengthBox) + parseInt(data.widthBox)) + parseInt(data.stichingLength)) / 25.4;
 
-
         setDataSend(prevState => ({ ...prevState, widthSheetWithDecimal: widthSheet, lengthSheetWithDecimal: lengthSheet }))
-
-
-
         setTimeout(() => {
 
             setValue('width_sheet', checkForDecimalAndNull(widthSheet, localStorage.NoOfDecimalForInputOutput))
@@ -127,24 +96,17 @@ function CorrugatedBox(props) {
             setValue('length_sheet', checkForDecimalAndNull(lengthSheet, localStorage.NoOfDecimalForInputOutput))
         }, 200);
 
-
-
-
     }
 
     const setWidthCuttingAllowance = () => {
-
-
         let data1 = {
             cuttingAllowance: getValues('cutting_allowance'),
-            widthSheet: getValues('width_sheet')
+            widthSheet: dataSend.widthSheetWithDecimal
 
         }
         if (data1.cuttingAllowance) {
 
-
             const widthCuttingAllowance = data1.widthSheet + (2 * data1.cuttingAllowance);              //
-
             const widthIncCuttingAllowance = Math.round(widthCuttingAllowance);
             setDataSend(prevState => ({ ...prevState, widthIncCuttingDecimal: widthIncCuttingAllowance }))
 
@@ -152,42 +114,31 @@ function CorrugatedBox(props) {
 
                 setValue('width_inc_cutting', widthIncCuttingAllowance);
             }, 200);
-
         }
-
     }
-
-
 
     const setLengthCuttingAllowance = () => {
 
-
         let data = {
-            widthSheet: getValues('width_sheet'),
+            widthSheet: dataSend.widthSheetWithDecimal,
             cuttingAllowanceForLength: getValues('cuttingAllowanceForLength'),
         }
 
-
         if (data.cuttingAllowanceForLength) {
             const lengthIncCuttingAllowance = ((data.widthSheet) + 2 * (data.cuttingAllowanceForLength));            // Formula to calculate length inc cutting allowance
-
             setDataSend(prevState => ({ ...prevState, LengthCuttingAllowance: lengthIncCuttingAllowance }))
-
-
             setTimeout(() => {
 
                 setValue('length_inc_cutting_allowance', checkForDecimalAndNull(lengthIncCuttingAllowance, localStorage.NoOfDecimalForInputOutput));
             }, 200);
-
         }
     }
-
 
     const setFinalGrossWeight = () => {
 
         let data = {
-            width_inc_cutting: getValues('width_inc_cutting'),
-            length_inc_cutting_allowance: getValues('length_inc_cutting_allowance'),
+            width_inc_cutting: dataSend.widthIncCuttingDecimal,
+            length_inc_cutting_allowance: dataSend.LengthCuttingAllowance,
             no_of_ply: getValues('no_of_ply'),
             gsm: getValues('gsm')
 
@@ -206,42 +157,19 @@ function CorrugatedBox(props) {
             setTimeout(() => {
                 setValue('paper_process', checkForDecimalAndNull(finalGross, localStorage.NoOfDecimalForInputOutput));
             }, 200);
-
-
         }
-
     }
 
-
-
-
     const onSubmit = (Values) => {
-
-
-
         let data = {
-            LayoutType: 'Default',
-            WeightCalculationId: WeightCalculatorRequest && WeightCalculatorRequest.WeightCalculationId ? WeightCalculatorRequest.WeightCalculationId : "00000000-0000-0000-0000-000000000000",
-            IsChangeApplied: isChangeApplies, //NEED TO MAKE IT DYNAMIC how to do,
-            PartId: costData.PartId,
-            RawMaterialId: rmRowData.RawMaterialId,
-            CostingId: costData.CostingId,
-            TechnologyId: costData.TechnologyId,
+            CorrugatedBoxWeightCalculatorId: WeightCalculatorRequest && WeightCalculatorRequest.CorrugatedBoxWeightCalculatorId ? WeightCalculatorRequest.CorrugatedBoxWeightCalculatorId : "0",
+            BaseCostingIdRef: item.CostingId,
             CostingRawMaterialDetailId: rmRowData.RawMaterialDetailId,
-            RawMaterialName: rmRowData.RMName,
-            RawMaterialType: rmRowData.MaterialType,
-            BasicRatePerUOM: rmRowData.RMRate,
-            ScrapRate: rmRowData.ScrapRate,
-            NetLandedCost: dataSend.paperWithDecimal * rmRowData.RMRate,  //(GROSS WEIGHT * RM RATE)
-            PartNumber: costData.PartNumber,
-            TechnologyName: costData.TechnologyName,
-            UOMForDimension: KG,
+            LoggedInUserId: loggedInUserId(),
+            RawMaterialIdRef: rmRowData.RawMaterialId,
+            RawMaterialCost: dataSend.paperWithDecimal * rmRowData.RMRate,  //(GROSS WEIGHT * RM RATE)
             GrossWeight: dataSend.paperWithDecimal,
             FinishWeight: dataSend.paperWithDecimal,
-            LoggedInUserId: loggedInUserId(),
-            UOMId: rmRowData.UOMId,
-            UOM: rmRowData.UOM,
-
             BurstingFactor: Values.bursting_factor,
             BurstingStrength: dataSend.burstingStrengthWithDecimal,
             CuttingAllowanceWidth: Values.cutting_allowance,
@@ -257,36 +185,21 @@ function CorrugatedBox(props) {
             WidthBox: Values.width_box,
             WidthSheetIncCuttingAllowance: dataSend.widthIncCuttingDecimal,
             WidthSheet: dataSend.widthSheetWithDecimal,
-
-
-
         }
 
-
-        dispatch(saveRawMaterialCalciData(data, res => {
+        dispatch(saveRawMaterialCalculationForCorrugatedBox(data, res => {
             if (res.data.Result) {
                 data.WeightCalculationId = res.data.Identity
                 Toaster.success("Calculation saved successfully")
                 props.toggleDrawer('', data)
             }
         }))
-
-
     }
-
     const cancel = () => {
         props.toggleDrawer('')
     }
-
-
-
-
     return (
         <>
-
-
-
-
             <div className="user-page p-0">
                 <div>
                     <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}>
@@ -311,11 +224,9 @@ function CorrugatedBox(props) {
                                         rules={{
                                             required: true,
                                             pattern: {
-
-                                                value: /^[0-9]\d*(\.\d+)?$/i,
-                                                message: 'Invalid Number.',
+                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
+                                                message: 'Maximum length for interger is 4 and for decimal is 6',
                                             },
-
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -336,9 +247,8 @@ function CorrugatedBox(props) {
                                         rules={{
                                             required: true,
                                             pattern: {
-
-                                                value: /^[0-9]\d*(\.\d+)?$/i,
-                                                message: 'Invalid Number.',
+                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
+                                                message: 'Maximum length for interger is 4 and for decimal is 6',
                                             },
 
                                         }}
@@ -362,9 +272,8 @@ function CorrugatedBox(props) {
                                         rules={{
                                             required: true,
                                             pattern: {
-
-                                                value: /^[0-9]\d*(\.\d+)?$/i,
-                                                message: 'Invalid Number.',
+                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
+                                                message: 'Maximum length for interger is 4 and for decimal is 6',
                                             },
 
                                         }}
@@ -416,9 +325,8 @@ function CorrugatedBox(props) {
                                         rules={{
                                             required: true,
                                             pattern: {
-
-                                                value: /^[0-9]\d*(\.\d+)?$/i,
-                                                message: 'Invalid Number.',
+                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
+                                                message: 'Maximum length for interger is 4 and for decimal is 6',
                                             },
 
                                         }}
@@ -441,8 +349,8 @@ function CorrugatedBox(props) {
                                         rules={{
                                             required: true,
                                             pattern: {
-                                                value: /^[0-9]\d*(\.\d+)?$/i,
-                                                message: 'Invalid Number.',
+                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
+                                                message: 'Maximum length for interger is 4 and for decimal is 6',
                                             },
 
                                         }}
@@ -467,8 +375,8 @@ function CorrugatedBox(props) {
                                         rules={{
                                             required: true,
                                             pattern: {
-                                                value: /^[0-9]\d*(\.\d+)?$/i,
-                                                message: 'Invalid Number.',
+                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
+                                                message: 'Maximum length for interger is 4 and for decimal is 6',
                                             },
 
                                         }}
@@ -492,9 +400,9 @@ function CorrugatedBox(props) {
                                         rules={{
                                             required: true,
                                             pattern: {
-                                                value: /^(0|[1-9]\d*)(\.\d+)?$/i,
-                                                message: 'Invalid Number.',
-                                            }
+                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
+                                                message: 'Maximum length for interger is 4 and for decimal is 6',
+                                            },
                                         }}
 
                                         handleChange={() => { }}
@@ -505,11 +413,7 @@ function CorrugatedBox(props) {
                                         disabled={props.CostingViewMode ? props.CostingViewMode : false}
                                     />
                                 </Col>
-
                             </Row>
-
-
-
 
                             <Row>
                                 <Col md="12" className={''}>
@@ -519,12 +423,7 @@ function CorrugatedBox(props) {
                                     />
                                 </Col>
                             </Row>
-
-
-
-
-
-                            <Row className={'mt15'}>
+                            <Row className={'mt15 corrugated-box-label-wrapper'}>
 
                                 <Col md="3">
 
@@ -557,8 +456,8 @@ function CorrugatedBox(props) {
                                         rules={{
                                             required: true,
                                             pattern: {
-                                                value: /^[0-9]\d*(\.\d+)?$/i,
-                                                message: 'Invalid Number.',
+                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
+                                                message: 'Maximum length for interger is 4 and for decimal is 6',
                                             },
 
                                         }}
@@ -583,8 +482,8 @@ function CorrugatedBox(props) {
                                         rules={{
                                             required: false,
                                             pattern: {
-                                                value: /^[0-9]\d*(\.\d+)?$/i,
-                                                message: 'Invalid Number.',
+                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
+                                                message: 'Maximum length for interger is 4 and for decimal is 6',
                                             },
                                         }}
                                         handleChange={() => { }}
@@ -608,8 +507,8 @@ function CorrugatedBox(props) {
                                         rules={{
                                             required: true,
                                             pattern: {
-                                                value: /^[0-9]\d*(\.\d+)?$/i,
-                                                message: 'Invalid Number.',
+                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
+                                                message: 'Maximum length for interger is 4 and for decimal is 6',
                                             },
                                         }}
                                         handleChange={() => { }}
@@ -620,12 +519,7 @@ function CorrugatedBox(props) {
                                         disabled={true}
                                     />
                                 </Col>
-                            </Row>
-
-
-
-                            <Row className={'mt15'}>
-                                <Col md="3">
+                                <Col md="3" className='mt-2'>
                                     <TextFieldHookForm
                                         label={`Cutting Allowance`}
                                         name={'cuttingAllowanceForLength'}
@@ -636,8 +530,8 @@ function CorrugatedBox(props) {
                                         rules={{
                                             required: true,
                                             pattern: {
-                                                value: /^[0-9]\d*(\.\d+)?$/i,
-                                                message: 'Invalid Number.',
+                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
+                                                message: 'Maximum length for interger is 4 and for decimal is 6',
                                             },
 
                                         }}
@@ -650,7 +544,7 @@ function CorrugatedBox(props) {
                                     />
                                 </Col>
 
-                                <Col md="3">
+                                <Col md="3" className='mt-2'>
                                     <TextFieldHookForm
                                         label={`Length(sheet) inc. Cutting allowance`}
                                         name={'length_inc_cutting_allowance'}
@@ -661,8 +555,8 @@ function CorrugatedBox(props) {
                                         rules={{
                                             required: false,
                                             pattern: {
-                                                value: /^[0-9]\d*(\.\d+)?$/i,
-                                                message: 'Invalid Number.',
+                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
+                                                message: 'Maximum length for interger is 4 and for decimal is 6',
                                             },
 
                                         }}
@@ -674,17 +568,8 @@ function CorrugatedBox(props) {
                                         disabled={true}
                                     />
                                 </Col>
-
-
                             </Row>
-
-
-
                             <hr className="mx-n4 w-auto" />
-
-
-
-
                             <Row>
                                 <Col md="12" className={''}>
                                     <HeaderTitle className="border-bottom"
@@ -692,8 +577,6 @@ function CorrugatedBox(props) {
                                         customClass={'underLine-title'}
                                     />
                                 </Col>
-
-
                                 <Col md="3">
                                     <TextFieldHookForm
                                         label={'Paper wt.+ Process Rejection(Kg)'}
@@ -705,8 +588,8 @@ function CorrugatedBox(props) {
                                         rules={{
                                             required: false,
                                             pattern: {
-                                                value: /^[0-9]\d*(\.\d+)?$/i,
-                                                message: 'Invalid Number.'
+                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
+                                                message: 'Maximum length for interger is 4 and for decimal is 6',
                                             },
 
                                         }}
@@ -718,13 +601,10 @@ function CorrugatedBox(props) {
                                         disabled={true}
                                     />
                                 </Col>
-
-
-
                             </Row>
                         </div>
 
-                        {<div className="col-sm-12 text-right px-0 mt-4">
+                        {<div className="col-sm-12 text-right mt-4">
                             <button
                                 type={'button'}
                                 className="reset mr15 cancel-btn"
@@ -745,9 +625,5 @@ function CorrugatedBox(props) {
             </div>
         </>
     )
-
-
-
-
 }
 export default CorrugatedBox

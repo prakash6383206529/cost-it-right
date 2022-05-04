@@ -6,7 +6,7 @@ import { focusOnError } from "../../layout/FormInputs";
 import { checkForDecimalAndNull, required } from "../../../helper/validation";
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { EMPTY_DATA } from '../../../config/constants';
+import { EMPTY_DATA, EXCHNAGERATE, GET_FINANCIAL_YEAR_SELECTLIST } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { getExchangeRateDataList, deleteExchangeRate, getCurrencySelectList, getExchangeRateData } from '../actions/ExchangeRateMaster';
 import AddExchangeRate from './AddExchangeRate';
@@ -23,6 +23,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { filterParams } from '../../common/DateFilter'
 import ScrollToTop from '../../common/ScrollToTop';
+import { getListingForSimulationCombined } from '../../simulation/actions/Simulation';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -49,17 +50,31 @@ class ExchangeRateListing extends Component {
             gridApi: null,
             gridColumnApi: null,
             rowData: null,
-            isLoader: true,
+            isLoader: false,
             showPopup: false,
-            deletedId: ''
+            deletedId: '',
         }
     }
 
     componentDidMount() {
         this.applyPermission(this.props.topAndLeftMenuData)
+        this.setState({ isLoader: true })
         setTimeout(() => {
             this.props.getCurrencySelectList(() => { })
-            this.getTableListData()
+            if (this.props.isSimulation) {
+                if (this.props.selectionForListingMasterAPI === 'Combined') {
+                    this.props?.changeSetLoader(true)
+                    this.props.getListingForSimulationCombined(this.props.tokenArray, EXCHNAGERATE, () => {
+                        this.props?.changeSetLoader(false)
+                    })
+                }
+                if (this.props.selectionForListingMasterAPI === 'Master') {
+                    this.getTableListData()
+                }
+            }
+            else {
+                this.getTableListData()
+            }
         }, 500);
     }
 
@@ -105,11 +120,16 @@ class ExchangeRateListing extends Component {
     * @description Get list data
     */
     getTableListData = (currencyId = 0) => {
-        this.setState({ isLoader: true })
         let filterData = {
             currencyId: currencyId,
         }
+        if (this.props.isSimulation) {
+            this.props?.changeTokenCheckBox(false)
+        }
         this.props.getExchangeRateDataList(true, filterData, res => {
+            if (this.props.isSimulation) {
+                this.props?.changeTokenCheckBox(true)
+            }
             if (res.status === 204 && res.data === '') {
                 this.setState({ tableData: [], })
             } else if (res && res.data && res.data.DataList) {
@@ -296,7 +316,6 @@ class ExchangeRateListing extends Component {
     frameworkComponents = {
         totalValueRenderer: this.buttonFormatter,
         effectiveDateRenderer: this.effectiveDateFormatter,
-        customLoadingOverlay: LoaderCustom,
         customNoRowsOverlay: NoContentFound,
         hyphenFormatter: this.hyphenFormatter
     };
@@ -342,11 +361,10 @@ class ExchangeRateListing extends Component {
 
         return (
             <>
-                {/* {this.state.isLoader && <LoaderCustom />} */}
                 <div className={`ag-grid-react exchange-rate ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
                     <div className="container-fluid">
                         <ScrollToTop pointProp="go-to-top" />
-                        {/* {this.props.loading && <Loader />} */}
+                        {this.state.isLoader && <LoaderCustom />}
                         <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                             {!this.props.isSimulation &&
                                 <Row>
@@ -354,9 +372,11 @@ class ExchangeRateListing extends Component {
                                 </Row>
                             }
 
-                            <Row className="pt-4 blue-before">
-
-                                <Col md="6" className="search-user-block mb-3">
+                            <Row className="pt-4 blue-before zindex-0">
+                                <Col md="6">
+                                    <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                                </Col>
+                                <Col md="6" className=" mb-3">
                                     <div className="d-flex justify-content-end bd-highlight w100">
                                         <div>
                                             {this.state.shown ? (
@@ -392,10 +412,8 @@ class ExchangeRateListing extends Component {
                             </Row>
                         </form>
 
-                        <div className="ag-grid-wrapper height-width-wrapper" >
-                            <div className="ag-grid-header">
-                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
-                            </div>
+                        <div className={`ag-grid-wrapper ${this.props.isSimulation ? 'simulation-height' : 'height-width-wrapper'} ${this.props.exchangeRateDataList && this.props.exchangeRateDataList?.length <= 0 ? "overlay-contain" : ""}`}>
+
                             <div className="ag-theme-material">
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
@@ -407,10 +425,10 @@ class ExchangeRateListing extends Component {
                                     paginationPageSize={10}
                                     onGridReady={this.onGridReady}
                                     gridOptions={gridOptions}
-                                    loadingOverlayComponent={'customLoadingOverlay'}
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                     noRowsOverlayComponentParams={{
                                         title: EMPTY_DATA,
+                                        imagClass: 'imagClass'
                                     }}
                                     frameworkComponents={this.frameworkComponents}
                                 >
@@ -463,7 +481,8 @@ export default connect(mapStateToProps, {
     getExchangeRateDataList,
     deleteExchangeRate,
     getCurrencySelectList,
-    getExchangeRateData
+    getExchangeRateData,
+    getListingForSimulationCombined
 })(reduxForm({
     form: 'ExchangeRateListing',
     onSubmitFail: errors => {

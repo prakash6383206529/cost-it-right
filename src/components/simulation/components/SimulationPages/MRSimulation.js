@@ -4,7 +4,6 @@ import moment from 'moment';
 import { EMPTY_DATA } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper';
-import { toastr } from 'react-redux-toastr';
 // import { runVerifyCombinedProcessSimulation } from '../../actions/Simulation';
 import { Fragment } from 'react';
 import { Controller, useForm } from 'react-hook-form'
@@ -19,12 +18,13 @@ import { TextFieldHookForm } from '../../../layout/HookFormInputs';
 import { VBC, ZBC } from '../../../../config/constants';
 import { runVerifyMachineRateSimulation } from '../../actions/Simulation';
 import VerifySimulation from '../VerifySimulation';
+import Toaster from '../../../common/Toaster';
 
 const gridOptions = {
 
 };
 function MRSimulation(props) {
-    const { list, isbulkUpload, rowCount, isImpactedMaster } = props
+    const { list, isbulkUpload, rowCount, isImpactedMaster, tokenForMultiSimulation } = props
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')
@@ -116,12 +116,12 @@ function MRSimulation(props) {
         const cellValue = props
         if (Number.isInteger(Number(cellValue)) && /^\+?(0|[1-9]\d*)$/.test(cellValue) && cellValue.toString().replace(/\s/g, '').length) {
             if (cellValue.length > 8) {
-                toastr.warning("Value should not be more than 8")
+                Toaster.warning("Value should not be more than 8")
                 return false
             }
             return true
         } else if (cellValue && !/^[+]?([0-9]+(?:[\.][0-9]*)?|\.[0-9]+)$/.test(cellValue)) {
-            toastr.warning('Please enter a valid positive numbers.')
+            Toaster.warning('Please enter a valid positive numbers.')
             return false
         }
         return true
@@ -216,7 +216,7 @@ function MRSimulation(props) {
             return null;
         })
         if (ccCount === tempData.length) {
-            toastr.warning('There is no changes in new value.Please correct the data ,then run simulation')
+            Toaster.warning('There is no changes in new value. Please correct the data, then run simulation')
             return false
         }
         /**********POST METHOD TO CALL HERE AND AND SEND TOKEN TO VERIFY PAGE ****************/
@@ -238,6 +238,9 @@ function MRSimulation(props) {
             tempArr.push(tempObj)
             return null
         })
+
+        obj.SimulationIds = tokenForMultiSimulation
+
         obj.SimulationCombinedProcess = tempArr
         dispatch(runVerifyMachineRateSimulation(obj, res => {
             if (res.data.Result) {
@@ -254,59 +257,56 @@ function MRSimulation(props) {
                 {
                     (!showverifyPage && !showMainSimulation) &&
                     <Fragment>
-                        {
-                            isbulkUpload &&
-                            <Row className="sm-edit-row justify-content-end">
-                                <Col md="6">
-                                    <div className="d-flex align-items-center">
-                                        <label>No of rows with changes:</label>
-                                        <TextFieldHookForm
-                                            label=""
-                                            name={'NoOfCorrectRow'}
-                                            Controller={Controller}
-                                            control={control}
-                                            register={register}
-                                            rules={{ required: false }}
-                                            mandatory={false}
-                                            handleChange={() => { }}
-                                            defaultValue={''}
-                                            className=""
-                                            customClassName={'withBorder mn-height-auto hide-label mb-0'}
-                                            errors={errors.NoOfCorrectRow}
-                                            disabled={true}
-                                        />
-                                    </div>
-                                </Col>
-                                <Col md="6">
-                                    <div className="d-flex align-items-center">
-                                        <label>No of rows without changes:</label>
-                                        <TextFieldHookForm
-                                            label=""
-                                            name={'NoOfRowsWithoutChange'}
-                                            Controller={Controller}
-                                            control={control}
-                                            register={register}
-                                            rules={{ required: false }}
-                                            mandatory={false}
-                                            handleChange={() => { }}
-                                            defaultValue={''}
-                                            className=""
-                                            customClassName={'withBorder mn-height-auto hide-label mb-0'}
-                                            errors={errors.NoOfRowsWithoutChange}
-                                            disabled={true}
-                                        />
-                                    </div>
-                                </Col>
-                            </Row>
-                        }
+
                         <form>
 
                             <Row>
-                                <Col className="add-min-height mb-3 sm-edit-page">
+                                <Col className={`add-min-height mb-3 sm-edit-page  ${list && list?.length <= 0 ? "overlay-contain" : ""}`}>
                                     <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                                         <div className="ag-grid-header">
                                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                                         </div>
+                                        {
+                                            isbulkUpload &&
+                                            <div className='d-flex justify-content-end bulk-upload-row'>
+                                                <div className="d-flex align-items-center">
+                                                    <label>No of rows with changes:</label>
+                                                    <TextFieldHookForm
+                                                        label=""
+                                                        name={'NoOfCorrectRow'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        rules={{ required: false }}
+                                                        mandatory={false}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder mn-height-auto hide-label mb-0'}
+                                                        errors={errors.NoOfCorrectRow}
+                                                        disabled={true}
+                                                    />
+                                                </div>
+                                                <div className="d-flex align-items-center">
+                                                    <label>No of rows without changes:</label>
+                                                    <TextFieldHookForm
+                                                        label=""
+                                                        name={'NoOfRowsWithoutChange'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        rules={{ required: false }}
+                                                        mandatory={false}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder mn-height-auto hide-label mb-0'}
+                                                        errors={errors.NoOfRowsWithoutChange}
+                                                        disabled={true}
+                                                    />
+                                                </div>
+                                            </div>
+                                        }
                                         <div className="ag-theme-material" style={{ width: '100%' }}>
                                             <AgGridReact
                                                 floatingFilter={true}
