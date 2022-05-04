@@ -47,6 +47,7 @@ function RowMaterialMaster(props) {
     const [BulkUploadAccessibility, setBulkUploadAccessibility] = useState(false);
     const [AddAccessibilityRMANDGRADE, setAddAccessibilityRMANDGRADE] = useState(false);
     const [EditAccessibilityRMANDGRADE, setEditAccessibilityRMANDGRADE] = useState(false);
+    const [isRMAssociated, setIsRMAssociated] = useState(false);
     const dispatch = useDispatch()
 
     const topAndLeftMenuData = useSelector((state) => state.auth.topAndLeftMenuData)
@@ -156,10 +157,11 @@ function RowMaterialMaster(props) {
     * @description GET DETAILS FOR DOMESTIC FORM IN EDIT MODE
     * @param DATA CONTAINS ID AND EDIT FLAG
     */
-    const getDetails = (data) => {
+    const getDetails = (data, IsRMAssociated) => {
 
         setisRMDomesticForm(true);
         setdata(data);
+        setIsRMAssociated(IsRMAssociated)
 
     }
 
@@ -170,10 +172,11 @@ function RowMaterialMaster(props) {
     * @description GET DETAILS FOR IMPORT FORM IN EDIT MODE
     * @param DATA CONTAINS ID AND EDIT FLAG
     */
-    const getDetailsImport = (data) => {
+    const getDetailsImport = (data, IsRMAssociated) => {
 
         setisRMImportForm(true);
         setdata(data);
+        setIsRMAssociated(IsRMAssociated)
 
     }
 
@@ -191,6 +194,7 @@ function RowMaterialMaster(props) {
             hideForm={hideForm}
             AddAccessibilityRMANDGRADE={AddAccessibilityRMANDGRADE}
             EditAccessibilityRMANDGRADE={EditAccessibilityRMANDGRADE}
+            isRMAssociated={isRMAssociated}
         />
     }
 
@@ -200,6 +204,7 @@ function RowMaterialMaster(props) {
             hideForm={hideForm}
             AddAccessibilityRMANDGRADE={AddAccessibilityRMANDGRADE}
             EditAccessibilityRMANDGRADE={EditAccessibilityRMANDGRADE}
+            isRMAssociated={isRMAssociated}
         />
     }
 

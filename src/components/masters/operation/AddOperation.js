@@ -761,7 +761,7 @@ class AddOperation extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, initialConfiguration } = this.props;
+    const { handleSubmit, initialConfiguration, isOperationAssociated } = this.props;
     const { isEditFlag, isOpenVendor, isOpenUOM, isDisableCode, isViewMode, setDisable, disablePopup } = this.state;
     const filterList = (inputValue) => {
       let tempArr = []
@@ -890,8 +890,7 @@ class AddOperation extends Component {
                           placeholder={"Enter"}
                           validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                           component={renderText}
-                          //required={true}
-                          disabled={isEditFlag ? true : false}
+                          disabled={isViewMode ? true : false}
                           className=" "
                           customClassName=" withBorder"
                         />
@@ -999,7 +998,7 @@ class AddOperation extends Component {
                           required={true}
                           handleChangeDescription={this.handleUOM}
                           valueDescription={this.state.UOM}
-                          disabled={isViewMode}
+                          disabled={isViewMode || (isEditFlag && isOperationAssociated)}
                         />
                       </Col>
                       <Col md="3">
@@ -1012,7 +1011,7 @@ class AddOperation extends Component {
                           component={renderText}
                           //onChange={this.handleBasicRate}
                           required={true}
-                          disabled={isViewMode}
+                          disabled={isViewMode || (isEditFlag && isOperationAssociated)}
                           onChange={this.handleRateChange}
                           className=" "
                           customClassName=" withBorder"
