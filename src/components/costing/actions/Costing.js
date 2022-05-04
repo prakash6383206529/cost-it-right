@@ -26,6 +26,7 @@ import {
   SET_NEW_ARRAY_FOR_COSTING,
   SET_ARRAY_FOR_COSTING,
   SELECTED_IDS_OF_OPERATION,
+  SELECTED_PROCESS_AND_GROUPCODE,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -2381,6 +2382,16 @@ export function setSelectedIdsOperation(data) {                  //THIS METHOD W
     dispatch({
       type: SELECTED_IDS_OF_OPERATION,
       payload: data,
+    })
+  }
+}
+
+export function setSelectedDataOfCheckBox(data) {
+  console.log('data: ', data);
+  return (dispatch) => {
+    dispatch({
+      type: SELECTED_PROCESS_AND_GROUPCODE,
+      payload: data
     })
   }
 }
