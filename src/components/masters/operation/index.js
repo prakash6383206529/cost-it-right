@@ -19,15 +19,14 @@ class OperationsMaster extends Component {
             Id: '',
             activeTab: '1',
             isOperation: false,
-
             ViewAccessibility: false,
             AddAccessibility: false,
             EditAccessibility: false,
             DeleteAccessibility: false,
             BulkUploadAccessibility: false,
             DownloadAccessibility: false,
-
             data: {},
+            isOperationAssociated: false
         }
     }
 
@@ -39,8 +38,8 @@ class OperationsMaster extends Component {
         this.setState({ isOperation: false, data: {} })
     }
 
-    getDetails = (data) => {
-        this.setState({ isOperation: true, data: data })
+    getDetails = (data, isOperationAssociate) => {
+        this.setState({ isOperation: true, data: data, isOperationAssociated: isOperationAssociate })
     }
 
     /**
@@ -66,6 +65,7 @@ class OperationsMaster extends Component {
             return <AddOperation
                 data={data}
                 hideForm={this.hideForm}
+                isOperationAssociated={this.state.isOperationAssociated}
             />
         }
 
