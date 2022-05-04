@@ -1,69 +1,244 @@
 import React, { useState } from "react";
-
+import _ from 'lodash'
+import { useDispatch, useSelector } from "react-redux";
+import { setSelectedDataOfCheckBox } from "../../actions/Costing";
 function GroupProcess(props) {
+    const { selectedProcessAndGroup } = useSelector(state => state.costing)
     const [processAcc, setProcessAcc] = useState(false);
+    const [selectedData, setSelectedData] = useState([])
+    const dispatch = useDispatch()
+
     const dummyData = [
         {
-            groupID: "1",
-            groupName: "Drilling and Cutting",
-            technology: "Sheet metal",
-            machineName: "T4",
-            tonnage: 3,
-            processList: [
+
+            GroupName: "Drilling and Cutting",
+            Technologies: "Sheet metal",
+            MachineName: "T4",
+            MachineId: "12",
+            MachineTonnage: 3,
+            ProcessList: [
                 {
-                    processID: '11',
-                    processName: '1st forming 150 MT',
-                    machineRate: '4300',
-                    UOM: 'hours'
+                    ProcessId: '11',
+                    ProcessName: '1st forming 150 MT',
+                    UnitOfMeasurement: 'hours',
+                    MachineId: "12",
+                    UnitType: "Time",
+                    ProcessTechnologyId: 1,
+                    MachineRate: 12,
+                    MachineRateId: "9a836a52-2b97-417c-800e-0356ce42469f"
+
                 },
                 {
-                    processID: '12',
-                    processName: '2st forming 150 MT',
-                    machineRate: '4400',
-                    UOM: 'gal'
+                    ProcessId: '12',
+                    ProcessName: '2st forming 150 MT',
+                    UnitOfMeasurement: 'gal',
+                    MachineId: "12",
+                    UnitType: "Time",
+                    ProcessTechnologyId: 1,
+                    MachineRate: 12,
+                    MachineRateId: "9a836a52-2b97-417c-800e-0356ce42469f"
+
                 },
                 {
-                    processID: '13',
-                    processName: '3st forming 150 MT',
-                    machineRate: '5500',
-                    UOM: 'minute'
+                    ProcessId: '13',
+                    ProcessName: '3st forming 150 MT',
+                    UnitOfMeasurement: 'minute',
+                    MachineId: "12",
+                    UnitType: "Time",
+                    ProcessTechnologyId: 1,
+                    MachineRate: 12,
+                    MachineRateId: "9a836a52-2b97-417c-800e-0356ce42469f"
+
                 },
             ]
         },
         {
-            groupID: "2",
-            groupName: "painting and cleaning",
-            technology: "Sheet metal",
-            machineName: "T6",
-            tonnage: 3,
-            processList: [
+
+            GroupName: "Drilling and Cutting & Wiring",
+            Technologies: "Sheet metal",
+            MachineName: "T4",
+            MachineId: "12",
+            MachineTonnage: 3,
+            ProcessList: [
                 {
-                    processID: '21',
-                    processName: '1st forming 150 MT',
-                    machineRate: '4300',
-                    UOM: 'hours'
+                    ProcessId: '11',
+                    ProcessName: '1st forming 150 MT',
+                    UnitOfMeasurement: 'hours',
+                    MachineId: "12",
+                    UnitType: "Time",
+                    ProcessTechnologyId: 1,
+                    MachineRate: 12,
+                    MachineRateId: "9a836a52-2b97-417c-800e-0356ce42469f"
+
                 },
                 {
-                    processID: '22',
-                    processName: '2st forming 150 MT',
-                    machineRate: '4400',
-                    UOM: 'gal'
+                    ProcessId: '12',
+                    ProcessName: '2st forming 150 MT',
+                    UnitOfMeasurement: 'gal',
+                    MachineId: "12",
+                    UnitType: "Time",
+                    ProcessTechnologyId: 1,
+                    MachineRate: 12,
+                    MachineRateId: "9a836a52-2b97-417c-800e-0356ce42469f"
+
                 },
                 {
-                    processID: '23',
-                    processName: '3st forming 150 MT',
-                    machineRate: '5500',
-                    UOM: 'minute'
+                    ProcessId: '13',
+                    ProcessName: '3st forming 150 MT',
+                    UnitOfMeasurement: 'minute',
+                    MachineId: "12",
+                    UnitType: "Time",
+                    ProcessTechnologyId: 1,
+                    MachineRate: 12,
+                    MachineRateId: "9a836a52-2b97-417c-800e-0356ce42469f"
+
+                },
+            ]
+        },
+        {
+
+            GroupName: "painting and cleaning",
+            Technologies: "Sheet metal",
+            MachineName: "T6",
+            MachineTonnage: 3,
+            MachineId: "23",
+            ProcessList: [
+                {
+                    ProcessId: '21',
+                    ProcessName: '1st forming 150 MT',
+                    UnitOfMeasurement: 'hours',
+                    MachineId: "23",
+                    MachineNumber: "MAC-50002815",
+                    UnitType: "Time",
+                    ProcessTechnologyId: 1,
+                    MachineRate: 12,
+                    MachineRateId: "9a836a52-2b97-417c-800e-0356ce42469f"
+
                 },
                 {
-                    processID: '24',
-                    processName: '4st forming 150 MT',
-                    machineRate: '6500',
-                    UOM: 'hours'
+                    ProcessId: '22',
+                    ProcessName: '2st forming 150 MT',
+                    UnitOfMeasurement: 'gal',
+                    MachineId: "23",
+                    MachineNumber: "MAC-50002815",
+                    UnitType: "Time",
+                    ProcessTechnologyId: 1,
+                    MachineRate: 12,
+                    MachineRateId: "9a836a52-2b97-417c-800e-0356ce42469f"
+
+                },
+                {
+                    ProcessId: '23',
+                    ProcessName: '3st forming 150 MT',
+                    UnitOfMeasurement: 'minute',
+                    MachineId: "23",
+                    MachineNumber: "MAC-50002815",
+                    UnitType: "Time",
+                    ProcessTechnologyId: 1
+
+                },
+                {
+                    ProcessId: '24',
+                    ProcessName: '4st forming 150 MT',
+                    UnitOfMeasurement: 'hours',
+                    MachineId: "23",
+                    MachineNumber: "MAC-50002815",
+                    UnitType: "Time",
+                    ProcessTechnologyId: 1,
+                    MachineRate: 12,
+                    MachineRateId: "9a836a52-2b97-417c-800e-0356ce42469f"
+                },
+            ]
+        },
+        {
+
+            GroupName: "painting and cleaning",
+            Technologies: "Sheet metal",
+            MachineName: "T7",
+            MachineTonnage: 3,
+            MachineId: "24",
+            ProcessList: [
+                {
+                    ProcessId: '21',
+                    ProcessName: '1st forming 150 MT',
+                    UnitOfMeasurement: 'hours',
+                    MachineId: "24",
+                    MachineNumber: "MAC-50002816",
+                    UnitType: "Time",
+                    ProcessTechnologyId: 1,
+                    MachineRate: 12,
+                    MachineRateId: "9a836a52-2b97-417c-800e-0356ce42469f"
+                },
+                {
+                    ProcessId: '22',
+                    ProcessName: '2st forming 150 MT',
+                    UnitOfMeasurement: 'gal',
+                    MachineId: "24",
+                    MachineNumber: "MAC-50002816",
+                    UnitType: "Time",
+                    ProcessTechnologyId: 1,
+                    MachineRate: 12,
+                    MachineRateId: "9a836a52-2b97-417c-800e-0356ce42469f"
+                },
+                {
+                    ProcessId: '23',
+                    ProcessName: '3st forming 150 MT',
+                    UnitOfMeasurement: 'minute',
+                    MachineId: "24",
+                    MachineNumber: "MAC-50002816",
+                    UnitType: "Time",
+                    ProcessTechnologyId: 1,
+                    MachineRate: 12,
+                    MachineRateId: "9a836a52-2b97-417c-800e-0356ce42469f"
+                },
+                {
+                    ProcessId: '24',
+                    ProcessName: '4st forming 150 MT',
+                    UnitOfMeasurement: 'hours',
+                    MachineId: "24",
+                    MachineNumber: "MAC-50002816",
+                    UnitType: "Time",
+                    ProcessTechnologyId: 1,
+                    MachineRate: 12,
+                    MachineRateId: "9a836a52-2b97-417c-800e-0356ce42469f"
                 },
             ]
         },
     ]
+
+    const handleCheckBox = (clickedData, index) => {
+        let tempData = selectedData
+        let tempArrForRedux = selectedProcessAndGroup
+
+        const findGroupCode = () => {
+            let isContainGroup = _.find(selectedData, function (obj) {
+                if (obj.GroupName === clickedData.GroupName && obj.MachineId === clickedData.MachineId) {
+                    return true;
+                } else {
+                    return false
+                }
+            });
+            return isContainGroup
+        }
+
+        if (findGroupCode()) {
+            let tempArrAfterDelete = selectedData && selectedData.filter((el, i) => {
+                if (i === index) return false;
+                return true
+            })
+            tempArrForRedux = selectedProcessAndGroup && selectedProcessAndGroup.filter(el => el.MachineRateId !== clickedData.MachineRateId && el.GroupName !== clickedData.ProcessId)
+            console.log('tempArrForRedux: ', tempArrForRedux);
+            dispatch(setSelectedDataOfCheckBox(tempArrForRedux))
+            setSelectedData(tempArrAfterDelete)
+        } else {
+            tempData.push(clickedData)
+            tempArrForRedux.push(clickedData)
+            dispatch(setSelectedDataOfCheckBox(tempArrForRedux))
+            setSelectedData(tempData)
+        }
+
+    }
+
     return (
         <div>
             <div className='py-3'>
@@ -71,20 +246,20 @@ function GroupProcess(props) {
                     <thead>
                         <tr>
                             <th>Process Group</th>
-                            <th>Technology</th>
+                            <th>Technologies</th>
                             <th>Machine Name</th>
-                            <th>Tonnage</th>
+                            <th>MachineTonnage</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {dummyData && dummyData.map(item => {
-                            const processList = item.processList;
+                        {dummyData && dummyData.map((item, index) => {
+                            const ProcessList = item.ProcessList;
                             return <>
                                 <tr>
-                                    <td> <span className='mr-2'><input type="checkbox" /></span>{item.groupName}</td>
-                                    <td>{item.technology}</td>
-                                    <td>{item.machineName}</td>
-                                    <td className='process-name'>{item.tonnage} <div onClick={() => setProcessAcc(!processAcc)} className={`${processAcc ? 'Open' : 'Close'}`}></div></td>
+                                    <td> <span className='mr-2'><input type="checkbox" onClick={() => handleCheckBox(item, index)} /></span>{item.GroupName}</td>
+                                    <td>{item.Technologies}</td>
+                                    <td>{item.MachineName}</td>
+                                    <td className='process-name'>{item.MachineTonnage} <div onClick={() => setProcessAcc(!processAcc)} className={`${processAcc ? 'Open' : 'Close'}`}></div></td>
                                 </tr>
                                 {processAcc && <tr>
                                     <td colSpan={4}>
@@ -93,15 +268,15 @@ function GroupProcess(props) {
                                                 <tr>
                                                     <th>Process Name</th>
                                                     <th>Machine Rate</th>
-                                                    <th>UOM</th>
+                                                    <th>UnitOfMeasurement</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {processList && processList.map(item => {
+                                                {ProcessList && ProcessList.map(item => {
                                                     return <tr>
-                                                        <td>{item.processName}</td>
-                                                        <td>{item.machineRate}</td>
-                                                        <td>{item.UOM}</td>
+                                                        <td>{item.ProcessName}</td>
+                                                        <td>{item.MachineRate}</td>
+                                                        <td>{item.UnitOfMeasurement}</td>
                                                     </tr>
                                                 })}
 
