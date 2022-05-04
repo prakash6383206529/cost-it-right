@@ -754,8 +754,7 @@ function Simulation(props) {
         //     return obj
 
         // })
-        let tempObject = tokenForSimulation.length !== 0 ? [{ SimulationId: tokenForSimulation.value }] : []
-
+        let tempObject = tokenForSimulation?.length !== 0 ? [{ SimulationId: tokenForSimulation?.value }] : []
         switch (page) {
             case RMDOMESTIC:
                 return <RMSimulation isDomestic={true} cancelEditPage={cancelEditPage} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : getFilteredData(rmDomesticListing, RM_MASTER_ID)} technology={technology.label} master={master.label} tokenForMultiSimulation={tempObject} />  //IF WE ARE USING BULK UPLOAD THEN ONLY TABLE DATA WILL BE USED OTHERWISE DIRECT LISTING
@@ -881,8 +880,7 @@ function Simulation(props) {
                                 </div>
                             }
 
-                            {(tokenForSimulation?.length !== 0 && tokenForSimulation !== null && tokenCheckBoxValue) && <button className='user-btn ml-2' onClick={callAPIOnClick}>
-                                <div className='save-icon'></div>
+                            {(tokenForSimulation?.length !== 0 && tokenForSimulation !== null && tokenForSimulation !== undefined && tokenCheckBoxValue) && <button className='user-btn ml-2' onClick={callAPIOnClick}>                                <div className='save-icon'></div>
                             </button>}
                         </Col>
                     </Row>
