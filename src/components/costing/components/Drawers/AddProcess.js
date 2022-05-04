@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext, } from 'react';
 import { useDispatch, useSelector, } from 'react-redux';
 import { Container, Row, Col, NavItem, TabContent, TabPane, Nav, NavLink } from 'reactstrap';
-import { getProcessDrawerDataList, getProcessDrawerVBCDataList } from '../../actions/Costing';
+import { getProcessDrawerDataList, getProcessDrawerVBCDataList, setSelectedDataOfCheckBox } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import NoContentFound from '../../../common/NoContentFound';
 import { EMPTY_DATA } from '../../../../config/constants';
@@ -15,6 +15,7 @@ import { FORGING, Ferrous_Casting, DIE_CASTING } from '../../../../config/master
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import GroupProcess from './GroupProcess';
+import { getConfigurationKey } from '../../../../helper';
 
 const gridOptions = {};
 
@@ -22,15 +23,17 @@ function AddProcess(props) {
 
   const [tableData, setTableDataList] = useState([]);
   const [selectedRowData, setSelectedRowData] = useState([]);
+  const [updatedRowData, setUpdatedRowData] = useState([])
   const [gridApi, setGridApi] = useState(null);
   const [gridColumnApi, setGridColumnApi] = useState(null);
-  const [processGroup, setProcessGroup] = useState(false)
+  // const [processGroup, setProcessGroup] = useState(true)
+  // const processGroup = getConfigurationKey().IsMachineProcessGroup // UNCOMMENT IT AFTER KEY IS ADDED IN WEB CONFIG N BACKEND AND REMOVE BELOW LINE
+  const processGroup = true
   const dispatch = useDispatch()
   const [activeTab, setActiveTab] = useState('1');
 
   const costData = useContext(costingInfoContext)
-
-  const { processDrawerList, CostingEffectiveDate } = useSelector(state => state.costing)
+  const { processDrawerList, CostingEffectiveDate, selectedProcessAndGroup } = useSelector(state => state.costing)
   const { initialConfiguration } = useSelector(state => state.auth)
 
   /**
@@ -109,12 +112,22 @@ function AddProcess(props) {
     }
   }, []);
 
-
-
-  const onRowSelect = (row, isSelected, e) => {
+  const onRowSelect = (event) => {
+    console.log('event: ', event);
+    let rowData = event.data
+    let processData = selectedProcessAndGroup
+    if (event.node.isSelected()) {
+      processData.push(rowData)
+    } else {
+      processData = selectedProcessAndGroup && selectedProcessAndGroup.filter(el => el.MachineRateId !== rowData.MachineRateId && el.ProcessId !== rowData.ProcessId)
+      console.log('processData: ', processData);
+    }
+    dispatch(setSelectedDataOfCheckBox(processData))
     var selectedRows = gridApi.getSelectedRows();
+
     if (JSON.stringify(selectedRows) === JSON.stringify(props.Ids)) return false
     setSelectedRowData(selectedRows)
+    // dispatch()
     // if (isSelected) {
     //   let tempArr = [...selectedRowData, row]
     //   setSelectedRowData(tempArr)
@@ -123,6 +136,12 @@ function AddProcess(props) {
     //   let tempArr = selectedRowData && selectedRowData.filter(el => el.MachineRateId !== MachineRateId)
     //   setSelectedRowData(tempArr)
     // }
+  }
+
+
+  const onCellClicked = (params) => {
+    console.log('params: ', params);
+
   }
 
   /**
@@ -288,7 +307,7 @@ function AddProcess(props) {
                                   suppressRowClickSelection={true}
                                   rowSelection={'multiple'}
                                   frameworkComponents={frameworkComponents}
-                                  onSelectionChanged={onRowSelect}
+                                  onRowSelected={onRowSelect}
                                   isRowSelectable={isRowSelectable}
                                 >
                                   <AgGridColumn field="MachineRateId" hide={true}></AgGridColumn>
