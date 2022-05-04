@@ -66,7 +66,7 @@ function GroupProcess(props) {
     ]
     return (
         <div>
-            <div className='py-2 px-3'>
+            <div className='py-3'>
                 <table className='table cr-brdr-main group-process-table'>
                     <thead>
                         <tr>

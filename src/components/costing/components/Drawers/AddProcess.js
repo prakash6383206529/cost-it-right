@@ -231,7 +231,7 @@ function AddProcess(props) {
                 </Col>
               </Row>
               <Row>
-                <Col>
+                <Col className='px-3'>
                   {processGroup && <Nav tabs className="subtabs cr-subtabs-head process-wrapper">
                     <NavItem>
                       <NavLink
@@ -253,13 +253,13 @@ function AddProcess(props) {
                     </NavItem>
 
                   </Nav>}
-                  <TabContent activeTab={activeTab} className="border">
+                  <TabContent activeTab={activeTab}>
                     {activeTab === '1' && (
                       <TabPane tabId="1">
                         <Row className="mx-0">
-                          <Col className="hidepage-size mt-2">
+                          <Col className="hidepage-size mt-2 px-0">
 
-                            <div className={`ag-grid-wrapper min-height-auto height-width-wrapper ${processDrawerList && processDrawerList?.length <= 0 ? "overlay-contain" : ""}`}>
+                            <div className={`ag-grid-wrapper min-height-auto mt-2 height-width-wrapper ${processDrawerList && processDrawerList?.length <= 0 ? "overlay-contain" : ""}`}>
                               <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                                 <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
@@ -327,7 +327,7 @@ function AddProcess(props) {
 
 
               <Row className="sf-btn-footer no-gutters justify-content-between mx-0">
-                <div className="col-sm-12 text-left px-3 d-flex justify-content-end">
+                <div className="col-sm-12 text-left d-flex justify-content-end">
                   <button
                     type={'button'}
                     className="reset cancel-btn mr5"
