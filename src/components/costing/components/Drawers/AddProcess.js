@@ -40,7 +40,7 @@ function AddProcess(props) {
   * @method toggleDrawer
   * @description TOGGLE DRAWER
   */
-  const toggleDrawer = (event) => {
+  const toggleDrawer = (event, data) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }
@@ -62,7 +62,9 @@ function AddProcess(props) {
 
     dispatch(setIdsOfProcess(tempArr1))
     dispatch(setIdsOfProcessGroup(tempArr))
-    props.closeDrawer('', rowData)
+    if (data) {
+      props.closeDrawer('', rowData)
+    }
   };
 
   useEffect(() => {
@@ -158,7 +160,7 @@ function AddProcess(props) {
       Toaster.warning('Please select row.')
       return false;
     }
-    toggleDrawer('')
+    toggleDrawer('', true)
   }
 
   /**
@@ -280,6 +282,7 @@ function AddProcess(props) {
                       <NavLink
                         className={classnames({ active: activeTab === '2' })}
                         onClick={() => {
+                          toggleDrawer('', false)
                           toggle('2')
                         }}  >
                         Group Process
