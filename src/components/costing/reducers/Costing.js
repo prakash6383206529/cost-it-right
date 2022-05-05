@@ -12,7 +12,7 @@ import {
   SET_TOOL_PROCESS_WISE_DATALIST, SET_IS_TOOLCOST_USED, TOOL_CATEGORY_SELECTLIST, SET_RMCC_ERRORS, CUSTOM_LOADER_SHOW, CUSTOM_LOADER_HIDE, SET_COSTING_EFFECTIVE_DATE,
   IS_COSTING_EFFECTIVE_DATE_DISABLED, CLOSE_OPEN_ACCORDION, BOP_DRAWER_LIST, SET_CUTOFF_RMC, GET_COSTING_SPECIFIC_TECHNOLOGY, SET_PLASTIC_ARR, SET_ASSEM_BOP_CHARGE,
   CHECK_IS_DATA_CHANGE, SET_ARRAY_FOR_COSTING, CHECK_IS_DISCOUNT_DATA_CHANGE, CHECK_IS_TOOL_DATA_CHANGE, CHECK_IS_OVERHEAD_AND_PROFIT_DATA_CHANGE, CHECK_IS_PACKAGE_AND_FREIGHT_DATA_CHANGE,
-  FORGING_CALCULATOR_MACHININGSTOCK_SECTION, SELECTED_IDS_OF_OPERATION_AND_OTHEROPERATION, SET_MASTER_BATCH_OBJ, SELECTED_IDS_OF_OPERATION, SELECTED_PROCESS_AND_GROUPCODE
+  FORGING_CALCULATOR_MACHININGSTOCK_SECTION, SELECTED_IDS_OF_OPERATION_AND_OTHEROPERATION, SET_MASTER_BATCH_OBJ, SELECTED_IDS_OF_OPERATION, SELECTED_PROCESS_AND_GROUPCODE, SET_PROCESS_ID, SET_PROCESSGROUP_ID
 } from '../../../config/constants';
 
 const initialState = {
@@ -39,7 +39,9 @@ const initialState = {
   masterBatchObj: {},
   selectedIdsOfOperationAndOtherOperation: [],
   selectedIdsOfOperation: [],
-  selectedProcessAndGroup: []
+  selectedProcessAndGroup: [],
+  selectedProcessId: [],
+  selectedProcessGroupId: []
 }
 
 export default function costingReducer(state = initialState, action) {
@@ -571,6 +573,16 @@ export default function costingReducer(state = initialState, action) {
       return {
         ...state,
         selectedProcessAndGroup: action.payload
+      }
+    case SET_PROCESS_ID:
+      return {
+        ...state,
+        selectedProcessId: action.payload
+      }
+    case SET_PROCESSGROUP_ID:
+      return {
+        ...state,
+        selectedProcessGroupId: action.payload
       }
     default:
       return state
