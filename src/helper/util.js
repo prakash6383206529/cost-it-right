@@ -18,12 +18,14 @@ import { getConfigurationKey } from './auth'
  */
 export const apiErrors = (res) => {
   const response = res ? res.response : undefined
-
   if (response?.data?.error?.message?.value) {
     toast.warning(response.data.error.message.value)
   } else if (response) {
     response && handleHTTPStatus(response)
   } else {
+    if (navigator.userAgent.indexOf("Firefox") !== -1) {
+      return;
+    }
     toast.error('Something went wrong please try again.')
   }
 }
