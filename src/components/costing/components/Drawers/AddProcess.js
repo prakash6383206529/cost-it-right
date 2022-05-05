@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext, } from 'react';
 import { useDispatch, useSelector, } from 'react-redux';
 import { Container, Row, Col, NavItem, TabContent, TabPane, Nav, NavLink } from 'reactstrap';
-import { getProcessDrawerDataList, getProcessDrawerVBCDataList } from '../../actions/Costing';
+import { getProcessDrawerDataList, getProcessDrawerVBCDataList, setIdsOfProcess, setIdsOfProcessGroup, setSelectedDataOfCheckBox } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import NoContentFound from '../../../common/NoContentFound';
 import { EMPTY_DATA } from '../../../../config/constants';
@@ -15,6 +15,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { FORGING, Ferrous_Casting, DIE_CASTING } from '../../../../config/masterData'
 import GroupProcess from './GroupProcess';
+import _ from 'lodash'
 
 const gridOptions = {};
 
@@ -22,14 +23,17 @@ function AddProcess(props) {
 
   const [tableData, setTableDataList] = useState([]);
   const [selectedRowData, setSelectedRowData] = useState([]);
+  const [updatedRowData, setUpdatedRowData] = useState([])
   const [gridApi, setGridApi] = useState(null);
   const [gridColumnApi, setGridColumnApi] = useState(null);
-  const [processGroup, setProcessGroup] = useState(false)
+  // const [processGroup, setProcessGroup] = useState(true)
+  // const processGroup = getConfigurationKey().IsMachineProcessGroup // UNCOMMENT IT AFTER KEY IS ADDED IN WEB CONFIG N BACKEND AND REMOVE BELOW LINE
+  const processGroup = true
   const dispatch = useDispatch()
   const [activeTab, setActiveTab] = useState('1');
 
   const costData = useContext(costingInfoContext)
-  const { processDrawerList, CostingEffectiveDate } = useSelector(state => state.costing)
+  const { processDrawerList, CostingEffectiveDate, selectedProcessAndGroup, selectedProcessId, selectedProcessGroupId } = useSelector(state => state.costing)
   const { initialConfiguration } = useSelector(state => state.auth)
 
   /**
@@ -40,7 +44,25 @@ function AddProcess(props) {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }
-    props.closeDrawer('', selectedRowData)
+    let tempArr = selectedProcessGroupId
+    let tempArr1 = selectedProcessId
+    let rowData = selectedProcessAndGroup && selectedProcessAndGroup.map((item) => {
+      if (item.GroupName) {
+        tempArr.push({ MachineId: item.MachineId, GroupName: item.GroupName })
+      } else {
+        tempArr1.push({ MachineRateId: item.MachineRateId, ProcessId: item.ProcessId })
+      }
+
+      let obj = item
+      obj.GroupName = item.GroupName ? item.GroupName : ''
+
+      obj.ProcessList = item.ProcessList ? item.ProcessList : []
+      return obj
+    })
+
+    dispatch(setIdsOfProcess(tempArr1))
+    dispatch(setIdsOfProcessGroup(tempArr))
+    props.closeDrawer('', rowData)
   };
 
   useEffect(() => {
@@ -108,26 +130,31 @@ function AddProcess(props) {
     }
   }, []);
 
-  const onRowSelect = (row, isSelected, e) => {
+  const onRowSelect = (event) => {
+
+    let rowData = event.data
+    let processData = selectedProcessAndGroup
+    if (event.node.isSelected()) {
+      processData.push(rowData)
+    } else {
+      processData = selectedProcessAndGroup && selectedProcessAndGroup.filter(el => el.MachineRateId !== rowData.MachineRateId && el.ProcessId !== rowData.ProcessId)
+    }
+    dispatch(setSelectedDataOfCheckBox(processData))
+
     var selectedRows = gridApi.getSelectedRows();
+
     if (JSON.stringify(selectedRows) === JSON.stringify(props.Ids)) return false
     setSelectedRowData(selectedRows)
-    // if (isSelected) {
-    //   let tempArr = [...selectedRowData, row]
-    //   setSelectedRowData(tempArr)
-    // } else {
-    //   const MachineRateId = row.MachineRateId;
-    //   let tempArr = selectedRowData && selectedRowData.filter(el => el.MachineRateId !== MachineRateId)
-    //   setSelectedRowData(tempArr)
-    // }
   }
+
+
 
   /**
   * @method addRow
   * @description ADD ROW IN TO RM COST GRID
   */
   const addRow = () => {
-    if (selectedRowData.length === 0) {
+    if (selectedProcessAndGroup.length === 0) {
       Toaster.warning('Please select row.')
       return false;
     }
@@ -191,7 +218,17 @@ function AddProcess(props) {
 
   }, [tableData])
 
-  const isRowSelectable = rowNode => rowNode.data ? !props.Ids.includes(rowNode.data.ProcessId) || !props.MachineIds.includes(rowNode.data.MachineRateId) : false;
+  const findProcessId = (rowNode) => {
+    let isContainProcess = _.find(selectedProcessId, function (obj) {
+      if (obj.ProcessId === rowNode.ProcessId && obj.MachineRateId === rowNode.MachineRateId) {
+        return true;
+      } else {
+        return false
+      }
+    });
+    return isContainProcess
+  }
+  const isRowSelectable = rowNode => !findProcessId(rowNode.data)
 
   const resetState = () => {
     gridOptions.columnApi.resetColumnState();
@@ -285,7 +322,7 @@ function AddProcess(props) {
                                   suppressRowClickSelection={true}
                                   rowSelection={'multiple'}
                                   frameworkComponents={frameworkComponents}
-                                  onSelectionChanged={onRowSelect}
+                                  onRowSelected={onRowSelect}
                                   isRowSelectable={isRowSelectable}
                                 >
                                   <AgGridColumn field="MachineRateId" hide={true}></AgGridColumn>
