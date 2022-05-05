@@ -42,7 +42,7 @@ function ProcessCost(props) {
   const [oldGridData, setOldGridData] = useState(data && data.CostingProcessCostResponse)
   const [isCalculator, setIsCalculator] = useState(false)
   const [remarkPopUpData, setRemarkPopUpData] = useState("")
-  const [processGroup, setProcessCost] = useState(false)
+  const [processGroup, setProcessGroup] = useState(false)
   const [processAcc, setProcessAcc] = useState(false)
 
   const dispatch = useDispatch()
