@@ -484,6 +484,7 @@ export const API = {
   deleteDraftCosting: `${BASE_URL}/costing/delete-draft-costing`,
   getNCCCExistingCosting: `${BASE_URL}/costing/get-ncc-exist-costings-list`,
   createNCCCosting: `${BASE_URL}/costing/create-ncc-costing`,
+  getMachineProcessGroupDetail: `${BASE_URL}/costing/get-costing-machine-process-group-detail`,
   //getRMCCTabData: `${BASE_URL}/costing/get-zbc-costing-rm-bop-cc-detail-for-tab-grid`,
 
   getRMCCTabData: `${BASE_URL}/costing/get-costing-detail-for-rm-bop-cc`,
@@ -1367,6 +1368,8 @@ export const SELECTED_IDS_OF_OPERATION_AND_OTHEROPERATION = 'SELECTED_IDS_OF_OPE
 export const SET_MASTER_BATCH_OBJ = 'SET_MASTER_BATCH_OBJ'
 export const SELECTED_IDS_OF_OPERATION = 'SELECTED_IDS_OF_OPERATION'
 export const SELECTED_PROCESS_AND_GROUPCODE = 'SELECTED_PROCESS_AND_GROUPCODE'
+export const SET_PROCESS_ID = 'SET_PROCESS_ID'
+export const SET_PROCESSGROUP_ID = 'SET_PROCESSGROUP_ID'
 
 //WEIGHT CALCULATION COSTING RM DRAWER
 export const GET_RAW_MATERIAL_CALCI_INFO = 'GET_RAW_MATERIAL_CALCI_INFO'
