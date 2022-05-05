@@ -264,10 +264,10 @@ function CPSimulation(props) {
                 {
                     (!showverifyPage && !showMainSimulation) &&
                     <Fragment>
-                        {
-                            isbulkUpload &&
-                            <Row className="sm-edit-row justify-content-end">
-                                <Col md="6">
+                        <form>
+                            {
+                                isbulkUpload &&
+                                <div className="d-flex justify-content-end mt-0 mb-n4 bulk-upload-row">
                                     <div className="d-flex align-items-center">
                                         <label>No of rows with changes:</label>
                                         <TextFieldHookForm
@@ -286,8 +286,6 @@ function CPSimulation(props) {
                                             disabled={true}
                                         />
                                     </div>
-                                </Col>
-                                <Col md="6">
                                     <div className="d-flex align-items-center">
                                         <label>No of rows without changes:</label>
                                         <TextFieldHookForm
@@ -306,11 +304,8 @@ function CPSimulation(props) {
                                             disabled={true}
                                         />
                                     </div>
-                                </Col>
-                            </Row>
-                        }
-                        <form>
-
+                                </div>
+                            }
                             <Row className={`${isbulkUpload ? 'pt-5' : 'pt-4'} filter-row-large blue-before zindex-0`}>
                                 <Col md="6" lg="6">
                                     <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => onFilterTextBoxChanged(e)} />
@@ -320,6 +315,7 @@ function CPSimulation(props) {
                                         <div className="refresh mr-0"></div>
                                     </button>
                                 </Col>
+
                             </Row>
                             <Row>
                                 <Col className="add-min-height mb-3 sm-edit-page">
