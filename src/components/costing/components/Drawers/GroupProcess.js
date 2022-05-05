@@ -8,6 +8,7 @@ import { EMPTY_GUID } from "../../../../config/constants";
 function GroupProcess(props) {
     const { selectedProcessAndGroup, selectedProcessGroupId, CostingEffectiveDate } = useSelector(state => state.costing)
     const [processAcc, setProcessAcc] = useState(false);
+    const [processAccObj, setProcessAccObj] = useState({});
     const [selectedData, setSelectedData] = useState([])
     const [tableData, setTableDataList] = useState([])
     const costData = useContext(costingInfoContext)
@@ -286,9 +287,11 @@ function GroupProcess(props) {
                                         {item.GroupName}</td>
                                     <td>{item.Technology}</td>
                                     <td>{item.MachineName}</td>
-                                    <td className='process-name'>{item.Tonnage} <div onClick={() => setProcessAcc(!processAcc)} className={`${processAcc ? 'Open' : 'Close'}`}></div></td>
+                                    <td className='process-name'>{item.Tonnage} <div onClick={() => {
+                                        processAccObj[index] === true ? setProcessAccObj(prevState => ({ ...prevState, [index]: false })) : setProcessAccObj(prevState => ({ ...prevState, [index]: true }))
+                                    }} className={`${processAccObj[index] ? 'Open' : 'Close'}`}></div></td>
                                 </tr>
-                                {processAcc && <tr>
+                                {processAccObj[index] && <tr>
                                     <td colSpan={4}>
                                         <table className='table cr-brdr-main mb-0'>
                                             <thead>
