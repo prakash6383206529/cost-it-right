@@ -137,7 +137,7 @@ class MachineRateListing extends Component {
             IsVendor: rowData.CostingHead,
             isViewMode: isViewMode,
         }
-        this.props.getDetails(data);
+        this.props.getDetails(data, rowData?.IsMachineAssociated);
     }
 
     /**
@@ -233,7 +233,7 @@ class MachineRateListing extends Component {
         let isDeleteButton = false
 
 
-        if (EditAccessibility && !rowData.IsMachineAssociated) {
+        if (EditAccessibility) {
             isEditable = true
         } else {
             isEditable = false
