@@ -1027,13 +1027,15 @@ class AddRMImport extends Component {
       }
       //DONT DELETE COMMENTED CODE BELOW
 
-
-
+      let sourceLocationValue = (!IsVendor && !HasDifferentSource ? '' : sourceLocation.value)
 
       if (uploadAttachements && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === Number(values.BasicRate) &&
         Number(DataToChange.ScrapRate) === Number(values.ScrapRate) && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCost) &&
         String(DataToChange.Remark) === String(values.Remark) && (Number(DataToChange.CutOffPrice) === Number(values.cutOffPrice) ||
-          values.cutOffPrice === undefined) && String(DataToChange.RawMaterialCode) === String(values.Code)) {
+          values.cutOffPrice === undefined) && String(DataToChange.RawMaterialCode) === String(values.Code)
+        && (DataToChange.Source === (!IsVendor && !HasDifferentSource ? '' : values.Source))
+        && ((DataToChange.SourceLocation !== null ? DataToChange.SourceLocation : '-') ===
+          (sourceLocationValue ? sourceLocationValue : '-'))) {
         this.cancel()
         return false
       }
@@ -1213,7 +1215,7 @@ class AddRMImport extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, initialConfiguration } = this.props;
+    const { handleSubmit, initialConfiguration, isRMAssociated } = this.props;
     const { isRMDrawerOpen, isOpenGrade, isOpenSpecification,
       isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isViewFlag, setDisable, disablePopup } = this.state;
 
@@ -1633,7 +1635,7 @@ class AddRMImport extends Component {
                               validate={[positiveAndDecimalNumber]}
                               component={renderText}
                               required={false}
-                              disabled={isViewFlag}
+                              disabled={isViewFlag || (isEditFlag && isRMAssociated)}
                               className=" "
                               customClassName=" withBorder"
                               onChange={this.handleCutOfChange}
@@ -1648,7 +1650,7 @@ class AddRMImport extends Component {
                               validate={[required, positiveAndDecimalNumber, decimalLengthsix]}
                               component={renderText}
                               required={true}
-                              disabled={isViewFlag ? true : false}
+                              disabled={isViewFlag || (isEditFlag && isRMAssociated) ? true : false}
                               maxLength="15"
                               className=" "
                               customClassName=" withBorder"
@@ -1667,7 +1669,7 @@ class AddRMImport extends Component {
                               maxLength="15"
                               customClassName=" withBorder"
                               onChange={this.handleScrapRate}
-                              disabled={isViewFlag}
+                              disabled={isViewFlag || (isEditFlag && isRMAssociated)}
                             />
                           </Col>
                           <Col md="3">
@@ -1682,7 +1684,7 @@ class AddRMImport extends Component {
                               className=""
                               maxLength="15"
                               customClassName=" withBorder"
-                              disabled={isViewFlag}
+                              disabled={isViewFlag || (isEditFlag && isRMAssociated)}
                             />
                           </Col>
                           <Col md="3">
@@ -1697,7 +1699,7 @@ class AddRMImport extends Component {
                               className=""
                               maxLength="15"
                               customClassName=" withBorder"
-                              disabled={isViewFlag}
+                              disabled={isViewFlag || (isEditFlag && isRMAssociated)}
                             />
                           </Col>
                           <Col md="3">
