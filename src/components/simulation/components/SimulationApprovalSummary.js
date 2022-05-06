@@ -227,13 +227,13 @@ function SimulationApprovalSummary(props) {
             approvalTokenNumber: approvalNumber
         }
         dispatch(getAmmendentStatus(obj, res => {
-            setNoContent(res.status === 204 ? true : false)
+            setNoContent(res?.status === 204 ? true : false)
 
-            if (res.status !== 204) {
-                const { RecordInsertStatus, IsSuccessfullyInsert, AmmendentStatus, IsAmmendentDone, AmmendentNumber } = res.data.DataList[0]
+            if (res?.status !== 204) {
+                const { RecordInsertStatus, IsSuccessfullyInsert, AmmendentStatus, IsAmmendentDone, AmmendentNumber } = res?.data?.DataList[0]
                 setStatus(RecordInsertStatus)
                 setIsSuccessfullyInsert(IsSuccessfullyInsert)
-                setShowButton(RecordInsertStatus.length > 245 ? true : false)
+                setShowButton(RecordInsertStatus?.length > 245 ? true : false)
                 if (IsAmmendentDone) {
                     setAmendentstatus(`Amendment Number: ${AmmendentNumber},\u00A0 ${AmmendentStatus}`)
                 } else {
