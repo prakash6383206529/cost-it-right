@@ -22,7 +22,7 @@ let counter = 0;
 function ProcessCost(props) {
   const { data, item } = props
   const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
-  const processGroup = getConfigurationKey().isProcessGroup
+  const processGroup = getConfigurationKey().IsMachineProcessGroup
   const { register, control, formState: { errors }, setValue, getValues } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -44,6 +44,7 @@ function ProcessCost(props) {
   const [isCalculator, setIsCalculator] = useState(false)
   const [remarkPopUpData, setRemarkPopUpData] = useState("")
   const [processAcc, setProcessAcc] = useState(false)
+  const [processAccObj, setProcessAccObj] = useState({});
   const [calculatorTechnology, setCalculatorTechnology] = useState('')
   const [calculatorData, setCalculatorDatas] = useState({})
 
@@ -945,7 +946,10 @@ function ProcessCost(props) {
                             {processGroup && <td className='text-overflow process-name'>
                               {
                                 (item?.GroupName === '' || item?.GroupName === null) ? '' :
-                                  <div onClick={() => setProcessAcc(!processAcc)} className={`${processAcc ? 'Open' : 'Close'}`}></div>
+                                  <div onClick={() => {
+                                    processAccObj[index] === true ? setProcessAccObj(prevState => ({ ...prevState, [index]: false })) : setProcessAccObj(prevState => ({ ...prevState, [index]: true }))
+                                  }}
+                                    className={`${processAccObj[index] ? 'Open' : 'Close'}`}></div>
 
                               }
                               <span title={item.ProcessName}>
@@ -1056,7 +1060,7 @@ function ProcessCost(props) {
                               </div>
                             </td>
                           </tr>
-                          {processAcc && <>
+                          {processAccObj[index] && <>
                             {
                               renderSingleProcess(item, index)
                             }
