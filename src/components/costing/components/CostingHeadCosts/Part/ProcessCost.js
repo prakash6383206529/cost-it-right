@@ -4,26 +4,25 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Col, Row, Table } from 'reactstrap';
 import OperationCost from './OperationCost';
 import { NumberFieldHookForm, TextFieldHookForm, TextAreaHookForm } from '../../../../layout/HookFormInputs';
-import ToolCost from './ToolCost';
 import AddProcess from '../../Drawers/AddProcess';
 import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey } from '../../../../../helper';
 import NoContentFound from '../../../../common/NoContentFound';
-import { EMPTY_DATA, MASS, TIME } from '../../../../../config/constants';
+import { EMPTY_DATA, EMPTY_GUID, MASS, TIME } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
 import { costingInfoContext } from '../../CostingDetailStepTwo';
 import VariableMhrDrawer from '../../Drawers/processCalculatorDrawer/VariableMhrDrawer'
 import { getProcessMachiningCalculation, getProcessDefaultCalculation } from '../../../actions/CostWorking';
-import { gridDataAdded, isDataChange, setIsToolCostUsed, setRMCCErrors } from '../../../actions/Costing';
+import { gridDataAdded, isDataChange, setIsToolCostUsed, setRMCCErrors, setSelectedDataOfCheckBox } from '../../../actions/Costing';
 import { ViewCostingContext } from '../../CostingDetails';
 import Popup from 'reactjs-popup';
 import OperationCostExcludedOverhead from './OperationCostExcludedOverhead';
-import { MACHINING, FORGING, DIE_CASTING, Ferrous_Casting, } from '../../../../../config/masterData'
+import { MACHINING, } from '../../../../../config/masterData'
 
 let counter = 0;
 function ProcessCost(props) {
   const { data, item } = props
   const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
-
+  const processGroup = getConfigurationKey().IsMachineProcessGroup
   const { register, control, formState: { errors }, setValue, getValues } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -33,6 +32,8 @@ function ProcessCost(props) {
   const trimForMeasurment = trimValue.NoOfDecimalForInputOutput
   const trimForCost = trimValue.NoOfDecimalForPrice
   const [calciIndex, setCalciIndex] = useState('')
+  const [parentCalciIndex, setParentCalciIndex] = useState('')
+  const [listData, setListData] = useState([])
   const [isDrawerOpen, setDrawerOpen] = useState(false)
   const [Ids, setIds] = useState([])
   const [MachineIds, setMachineIds] = useState([])
@@ -42,8 +43,11 @@ function ProcessCost(props) {
   const [oldGridData, setOldGridData] = useState(data && data.CostingProcessCostResponse)
   const [isCalculator, setIsCalculator] = useState(false)
   const [remarkPopUpData, setRemarkPopUpData] = useState("")
-  const [processGroup, setProcessCost] = useState(false)
   const [processAcc, setProcessAcc] = useState(false)
+  const [processAccObj, setProcessAccObj] = useState({});
+  const [calculatorTechnology, setCalculatorTechnology] = useState('')
+  const [calculatorData, setCalculatorDatas] = useState({})
+
 
   const dispatch = useDispatch()
   const costData = useContext(costingInfoContext);
@@ -107,41 +111,72 @@ function ProcessCost(props) {
     }
   }, [tabData]);
 
+  const setCalculatorData = (data, list, id, parentId) => {
+    if (parentId === '') {
+      let tempArr = []
+      let tempData = gridData[id]
+      setCalculatorTechnology(tempData.ProcessTechnologyId)
+      tempData = { ...tempData, WeightCalculatorRequest: data, }
+      setCalculatorDatas(tempData)
+      tempArr = Object.assign([...gridData], { [id]: tempData })
+      setTimeout(() => {
+        setGridData(tempArr)
+        setIsCalculator(true)
+      }, 100)
+    } else {
+      let parentTempArr = []
+      let parentTempData = gridData[parentId]
+      let tempArr = []
+      let tempData = list[id]
+
+      setCalculatorTechnology(tempData.ProcessTechnologyId)
+      tempData = { ...tempData, WeightCalculatorRequest: data, }
+      setCalculatorDatas(tempData)
+      tempArr = Object.assign([...list], { [id]: tempData })
+      parentTempData = { ...parentTempData, ProcessList: tempArr }
+      parentTempArr = Object.assign([...gridData, { [parentId]: parentTempData }])
+      setTimeout(() => {
+        setGridData(parentTempArr)
+        setIsCalculator(true)
+      }, 100);
+    }
+  }
+
   /**
    * @method toggleWeightCalculator
    * @description For opening weight calculator
   */
-  const toggleWeightCalculator = (id) => {
+  const toggleWeightCalculator = (id, list = [], parentIndex = '') => {
+
 
     setCalciIndex(id)
+    setParentCalciIndex(parentIndex)
+    setListData(list)
     let tempArr = []
-    let tempData = gridData[id]
-    // const calciData = gridData[id]
+    let tempData
+    if (parentIndex === '') {
+      tempData = gridData[id]
+    } else {
+      tempData = list[id]
+    }
+    // const calciData = list[id]
     /****************************FOR GETING CALCULATED VALUE IN CALCULATOR**************************/
     if (tempData.ProcessTechnologyId === MACHINING && tempData.UOMType === TIME) {
       //getProcessDefaultCalculation
-      dispatch(getProcessMachiningCalculation(item.CostingId, tempData.ProcessId, tempData.ProcessCalculationId, res => {
-        if (res && res.data && res.data.Data) {
-          const data = res.data.Data
-          tempData = { ...tempData, WeightCalculatorRequest: data, }
-          tempArr = Object.assign([...gridData], { [id]: tempData })
-          setTimeout(() => {
-            setGridData(tempArr)
-            setIsCalculator(true)
-          }, 100)
+      dispatch(getProcessMachiningCalculation(tempData.ProcessCalculatorId, res => {
+
+        if ((res && res.data && res.data.Data) || (res && res.status === 204)) {
+          const data = res.status === 204 ? {} : res.data.Data
+          setCalculatorData(data, list, id, parentIndex)
         }
       }))
 
     } else {
-      dispatch(getProcessDefaultCalculation(item.CostingId, tempData.ProcessId, tempData.ProcessCalculationId, res => {
-        if (res && res.data && res.data.Data) {
-          const data = res.data.Data
-          tempData = { ...tempData, WeightCalculatorRequest: data, }
-          tempArr = Object.assign([...gridData], { [id]: tempData })
-          setTimeout(() => {
-            setGridData(tempArr)
-            setIsCalculator(true)
-          }, 100)
+      dispatch(getProcessDefaultCalculation(tempData.ProcessCalculationId, res => {
+
+        if ((res && res.data && res.data.Data) || (res && res.status === 204)) {
+          const data = res.status === 204 ? {} : res.data.Data
+          setCalculatorData(data, list, id, parentIndex)
         }
       }))
     }
@@ -152,55 +187,125 @@ function ProcessCost(props) {
 
     setIsCalculator(false)
     if (Object.keys(weightData).length === 0) return false;
+    if (parentCalciIndex === '') {
 
-    let tempData = gridData[calciIndex]
-    let tempArray
-    let tempArr2 = [];
-    //********************************THIS CALCULATION IS FOR MACHINING TECHNOLOGY ,WIIL BE USED LATER DEPEND ON REQUIREMENT******************************************* */
-    // if (value === '0.00' && tempData.Quantity !== '0.00') {
-    //   tempData = {
-    //     ...tempData,
-    //     WeightCalculatorRequest: weightData
-    //   }
-    // } else {
-    //   if (tempData.UOM === 'Hours') {
-    //     time = value === '0.00' ? '0.00' : checkForDecimalAndNull(value / 60, initialConfiguration.NoOfDecimalForPrice)
-    //     netCost = value === '0.00' ? '0.00' : value * Number(tempData.MHR)
-    //   } else {
-    //     time = value === '0.00' ? '0.00' : value
-    //     netCost = value === '0.00' ? '0.00' : value * Number(tempData.MHR)
-    //   }
-    tempData = {
-      ...tempData,
-      Quantity: tempData.UOMType === TIME ? checkForNull(weightData.ProcessCost / weightData.MachineRate) : weightData.Quantity,
-      ProductionPerHour: tempData.UOMType === TIME ? checkForNull(weightData.PartPerHour) : '-',
-      ProcessCost: weightData.ProcessCost,
-      IsCalculatedEntry: true,
-      ProcessCalculationId: weightData.ProcessCalculationId,
-      WeightCalculatorRequest: weightData
+      let tempData = gridData[calciIndex]
+      let tempArray
+      let tempArr2 = [];
+
+      tempData = {
+        ...tempData,
+        Quantity: tempData.UOMType === TIME ? checkForNull(weightData.ProcessCost / weightData.MachineRate) : weightData.Quantity,
+        ProductionPerHour: tempData.UOMType === TIME ? checkForNull(weightData.PartPerHour) : '-',
+        ProcessCost: weightData.ProcessCost,
+        IsCalculatedEntry: true,
+        ProcessCalculationId: weightData.ProcessCalculationId,
+        WeightCalculatorRequest: weightData
+      }
+
+      tempArray = Object.assign([...gridData], { [calciIndex]: tempData })
+
+
+      let ProcessCostTotal = 0
+      ProcessCostTotal = tempArray && tempArray.reduce((accummlator, el) => {
+        return accummlator + checkForNull(el.ProcessCost)
+      }, 0)
+
+      let apiArr = []
+      tempArray && tempArray.map((item) => {
+        if (item.GroupName === '' || item.GroupName === null) {
+          apiArr.push(item)
+        } else {
+          item.ProcessList && item.ProcessList.map(processItem => {
+            processItem.GroupName = item.GroupName
+            apiArr.push(processItem)
+          })
+        }
+      })
+
+      tempArr2 = {
+        ...tabData,
+        NetConversionCost: ProcessCostTotal + checkForNull(tabData.OperationCostTotal !== null ? tabData.OperationCostTotal : 0,) + checkForNull(tabData.OtherOperationCostTotal !== null ? tabData.OtherOperationCostTotal : 0),
+        ProcessCostTotal: ProcessCostTotal,
+        CostingProcessCostResponse: apiArr,
+      }
+
+      setTimeout(() => {
+        setTabData(tempArr2)
+        setGridData(tempArray)
+        setValue(`${ProcessGridFields}.${calciIndex}.Quantity`, tempData.UOMType === TIME ? checkForDecimalAndNull((weightData.ProcessCost / weightData.MachineRate), getConfigurationKey().NoOfDecimalForInputOutput) : weightData.Quantity)
+        setValue(`${ProcessGridFields}.${calciIndex}.ProcessCost`, checkForDecimalAndNull(weightData.ProcessCost, getConfigurationKey().NoOfDecimalForPrice))
+        // setValue(`${ProcessGridFields}.${calciIndex}.ProductionPerHour`, weightData.UOMType === TIME ? checkForDecimalAndNull(weightData.PartsPerHour, getConfigurationKey().NoOfDecimalForInputOutput) : '-')
+      }, 100)
+    } else {
+
+      // PROCESS UNDER THE GROUP IS UPDATING
+      let tempArr = []
+      let processTempData = gridData[parentCalciIndex]
+      let tempData = listData[calciIndex]
+      tempData = {
+        ...tempData,
+        Quantity: tempData.UOMType === TIME ? checkForNull(weightData.ProcessCost / weightData.MachineRate) : weightData.Quantity,
+        ProductionPerHour: tempData.UOMType === TIME ? checkForNull(weightData.PartPerHour) : '-',
+        ProcessCost: weightData.ProcessCost,
+        IsCalculatedEntry: true,
+        ProcessCalculationId: EMPTY_GUID,
+        ProcessCalculatorId: weightData.ProcessCalculationId,
+        WeightCalculatorRequest: weightData
+      }
+
+      let gridTempArr = Object.assign([...listData], { [calciIndex]: tempData })
+      let ProcessCostTotal = 0
+      ProcessCostTotal = gridTempArr && gridTempArr.reduce((accummlator, el) => {
+        return accummlator + checkForNull(el.ProcessCost)
+      }, 0)
+      let ProductionPerHour = 0
+      ProductionPerHour = gridTempArr && gridTempArr.reduce((accummlator, el) => {
+        return accummlator + checkForNull(el.ProductionPerHour)
+      })
+      setValue(`${SingleProcessGridField}.${calciIndex}.Quantity`, tempData.UOMType === TIME ? checkForDecimalAndNull((weightData.ProcessCost / weightData.MachineRate), getConfigurationKey().NoOfDecimalForInputOutput) : weightData.Quantity)
+      setValue(`${SingleProcessGridField}.${calciIndex}.ProcessCost`, checkForDecimalAndNull(weightData.ProcessCost, initialConfiguration.NoOfDecimalForPrice))
+      //MAIN PROCESS ROW WITH GROUP
+
+
+      processTempData = {
+        ...processTempData,
+        // Quantity: tempData.UOMType === TIME ? checkForNull(weightData.ProcessCost / weightData.MachineRate) : weightData.Quantity,
+        ProductionPerHour: ProductionPerHour,
+        ProcessCost: ProcessCostTotal,
+        ProcessList: gridTempArr
+      }
+
+      let processTemparr = Object.assign([...gridData], { [parentCalciIndex]: processTempData })
+
+      let apiArr = []
+      processTemparr && processTemparr.map((item) => {
+        if (item.GroupName === '' || item.GroupName === null) {
+          apiArr.push(item)
+        } else {
+          item.ProcessList && item.ProcessList.map(processItem => {
+            processItem.GroupName = item.GroupName
+            apiArr.push(processItem)
+          })
+        }
+      })
+
+      let finalProcessCostTotal = processTemparr && processTemparr.reduce((accummlator, el) => {
+        return accummlator + checkForNull(el.ProcessCost)
+      }, 0)
+
+      tempArr = {
+        ...tabData,
+        NetConversionCost: finalProcessCostTotal + checkForNull(tabData.OperationCostTotal !== null ? tabData.OperationCostTotal : 0,) + checkForNull(tabData.OtherOperationCostTotal !== null ? tabData.OtherOperationCostTotal : 0),
+        ProcessCostTotal: finalProcessCostTotal,
+        CostingProcessCostResponse: apiArr,
+      }
+
+      setTabData(tempArr)
+      setGridData(processTemparr)
+      // setValue(`${SingleProcessGridField}.${calciIndex}.Quantity`, tempData.UOMType === TIME ? checkForDecimalAndNull((weightData.ProcessCost / weightData.MachineRate), getConfigurationKey().NoOfDecimalForInputOutput) : weightData.Quantity)
+      setValue(`${ProcessGridFields}.${parentCalciIndex}.ProcessCost`, checkForDecimalAndNull(ProcessCostTotal, initialConfiguration.NoOfDecimalForPrice))
     }
-
-    tempArray = Object.assign([...gridData], { [calciIndex]: tempData })
-
-    let ProcessCostTotal = 0
-    ProcessCostTotal = tempArray && tempArray.reduce((accummlator, el) => {
-      return accummlator + checkForNull(el.ProcessCost)
-    }, 0)
-
-    tempArr2 = {
-      ...tabData,
-      NetConversionCost: ProcessCostTotal + checkForNull(tabData.OperationCostTotal !== null ? tabData.OperationCostTotal : 0,) + checkForNull(tabData.OtherOperationCostTotal !== null ? tabData.OtherOperationCostTotal : 0),
-      ProcessCostTotal: ProcessCostTotal,
-      CostingProcessCostResponse: tempArray,
-    }
-
-    setTimeout(() => {
-      setTabData(tempArr2)
-      setGridData(tempArray)
-      setValue(`${ProcessGridFields}.${calciIndex}.Quantity`, tempData.UOMType === TIME ? checkForDecimalAndNull((weightData.ProcessCost / weightData.MachineRate), getConfigurationKey().NoOfDecimalForInputOutput) : weightData.Quantity)
-      setValue(`${ProcessGridFields}.${calciIndex}.ProcessCost`, checkForDecimalAndNull(weightData.ProcessCost, getConfigurationKey().NoOfDecimalForPrice))
-      // setValue(`${ProcessGridFields}.${calciIndex}.ProductionPerHour`, weightData.UOMType === TIME ? checkForDecimalAndNull(weightData.PartsPerHour, getConfigurationKey().NoOfDecimalForInputOutput) : '-')
-    }, 100)
   }
 
 
@@ -246,37 +351,68 @@ function ProcessCost(props) {
    * @description HIDE RM DRAWER
    */
   const closeDrawer = (e = '', rowData = {}) => {
+
     let tempArr2 = [];
     if (Object.keys(rowData).length > 0) {
-      let rowArray = rowData && rowData.map((el) => {
-        let processQuantity = 1
-        if (el.UnitType === MASS) {
-          processQuantity = rmFinishWeight ? rmFinishWeight : 1
+      let rowArr = rowData && rowData.map((item) => {
+        let processQuantityMain = 1
+        if (item.UnitType === MASS) {
+          processQuantityMain = rmFinishWeight ? rmFinishWeight : 1
         }
+        let rowArray = item.ProcessList && item.ProcessList.map((el) => {
+
+          let processQuantity = 1
+          if (el.UnitType === MASS) {
+            processQuantity = rmFinishWeight ? rmFinishWeight : 1
+          }
+
+          return {
+            ProcessId: el.ProcessId,
+            ProcessDetailId: '',
+            MachineId: el.MachineId,
+            MachineRateId: el.MachineRateId,
+            MHR: el.MachineRate,
+            ProcessName: el.ProcessName,
+            ProcessDescription: el.Description,
+            MachineName: el.MachineName,
+            UOM: el.UnitOfMeasurement,
+            UnitOfMeasurementId: el.UnitOfMeasurementId,
+            Tonnage: el.MachineTonnage,
+            Quantity: processQuantity,
+            ProcessCost: el.MachineRate * processQuantity,
+            UOMType: el.UnitType,
+            UOMTypeId: el.UnitTypeId,
+            ProductionPerHour: '-',
+            ProcessTechnologyId: el.ProcessTechnologyId,
+            Technologies: el.Technologies
+          }
+        })
         return {
-          ProcessId: el.ProcessId,
+          GroupName: item.GroupName,
+          ProcessId: item.ProcessId,
           ProcessDetailId: '',
-          MachineId: el.MachineId,
-          MachineRateId: el.MachineRateId,
-          MHR: el.MachineRate,
-          ProcessName: el.ProcessName,
-          ProcessDescription: el.Description,
-          MachineName: el.MachineName,
-          UOM: el.UnitOfMeasurement,
-          UnitOfMeasurementId: el.UnitOfMeasurementId,
-          Tonnage: el.MachineTonnage,
-          Quantity: processQuantity,
-          ProcessCost: el.MachineRate * processQuantity,
-          UOMType: el.UnitType,
-          UOMTypeId: el.UnitTypeId,
+          MachineId: item.MachineId,
+          MachineRateId: item.MachineRateId,
+          MHR: item.MachineRate,
+          ProcessName: item.ProcessName,
+          ProcessDescription: item.Description,
+          MachineName: item.MachineName,
+          UOM: item.UnitOfMeasurement,
+          UnitOfMeasurementId: item.UnitOfMeasurementId,
+          Tonnage: item.MachineTonnage,
+          Quantity: processQuantityMain,
+          ProcessCost: item.MachineRate * processQuantityMain,
+          UOMType: item.UnitType,
+          UOMTypeId: item.UnitTypeId,
           ProductionPerHour: '-',
-          ProcessTechnologyId: el.ProcessTechnologyId,
-          Technologies: el.Technologies
+          ProcessTechnologyId: item.ProcessTechnologyId,
+          Technologies: item.Technologies,
+          ProcessList: rowArray
         }
       })
 
+      let tempArr = [...gridData, ...rowArr]
 
-      let tempArr = [...gridData, ...rowArray]
 
 
       tempArr && tempArr.map((el, index) => {
@@ -302,6 +438,7 @@ function ProcessCost(props) {
       setTabData(tempArr2)
       selectedIds(tempArr)
       dispatch(gridDataAdded(true))
+      dispatch(setSelectedDataOfCheckBox([]))
     }
     setDrawerOpen(false)
   }
@@ -368,6 +505,7 @@ function ProcessCost(props) {
   }
 
   const handleQuantityChange = (event, index) => {
+
     let tempArr = []
     let tempData = gridData[index]
 
@@ -386,11 +524,23 @@ function ProcessCost(props) {
         return accummlator + checkForNull(el.ProcessCost)
       }, 0)
 
+      let apiArr = []
+      gridTempArr && gridTempArr.map((item) => {
+        if (item.GroupName === '' || item.GroupName === null) {
+          apiArr.push(item)
+        } else {
+          item.ProcessList && item.ProcessList.map(processItem => {
+            processItem.GroupName = item.GroupName
+            apiArr.push(processItem)
+          })
+        }
+      })
+
       tempArr = {
         ...tabData,
         NetConversionCost: ProcessCostTotal + checkForNull(tabData.OperationCostTotal !== null ? tabData.OperationCostTotal : 0,) + checkForNull(tabData.OtherOperationCostTotal !== null ? tabData.OtherOperationCostTotal : 0),
         ProcessCostTotal: ProcessCostTotal,
-        CostingProcessCostResponse: gridTempArr,
+        CostingProcessCostResponse: apiArr,
 
       }
 
@@ -413,11 +563,23 @@ function ProcessCost(props) {
         return accummlator + checkForNull(el.ProcessCost)
       }, 0)
 
+      let apiArr = []
+      gridTempArr && gridTempArr.map((item) => {
+        if (item.GroupName === '' || item.GroupName === null) {
+          apiArr.push(item)
+        } else {
+          item.ProcessList && item.ProcessList.map(processItem => {
+            processItem.GroupName = item.GroupName
+            apiArr.push(processItem)
+          })
+        }
+      })
+
       tempArr = {
         ...tabData,
         NetConversionCost: ProcessCostTotal + checkForNull(tabData.OperationCostTotal !== null ? tabData.OperationCostTotal : 0,) + checkForNull(tabData.OtherOperationCostTotal !== null ? tabData.OtherOperationCostTotal : 0),
         ProcessCostTotal: ProcessCostTotal,
-        CostingProcessCostResponse: gridTempArr,
+        CostingProcessCostResponse: apiArr,
       }
 
       setTabData(tempArr)
@@ -426,6 +588,126 @@ function ProcessCost(props) {
         setValue(`${ProcessGridFields}.${index}.Quantity`, "")
         setValue(`${ProcessGridFields}.${index}.ProcessCost`, "")
       }, 200)
+      //Toaster.warning('Please enter valid number.')
+    }
+  }
+
+  const handleQuantityChangeOfGroupProcess = (event, index, list, parentIndex) => {
+
+    let tempArr = []
+    let processTempData = gridData[parentIndex]
+    let tempData = list[index]
+
+
+    if (!isNaN(event.target.value) && event.target.value !== '') {
+      const ProcessCost = tempData.MHR * event.target.value
+
+      tempData = {
+        ...tempData,
+        Quantity: event.target.value,
+        IsCalculatedEntry: false,
+        ProcessCost: ProcessCost
+      }
+      let gridTempArr = Object.assign([...list], { [index]: tempData })
+
+
+      let ProcessCostTotal = 0
+      ProcessCostTotal = gridTempArr && gridTempArr.reduce((accummlator, el) => {
+
+        return accummlator + checkForNull(el.ProcessCost)
+      }, 0)
+
+      setValue(`${SingleProcessGridField}.${index}.ProcessCost`, checkForDecimalAndNull(ProcessCost, initialConfiguration.NoOfDecimalForPrice))
+      //MAIN PROCESS ROW WITH GROUP
+
+      processTempData = {
+        ...processTempData,
+        // Quantity: event.target.value,
+        IsCalculatedEntry: false,
+        ProcessCost: ProcessCostTotal
+      }
+      let processTemparr = Object.assign([...gridData], { [parentIndex]: processTempData })
+      let apiArr = []
+      processTemparr && processTemparr.map((item) => {
+        if (item.GroupName === '' || item.GroupName === null) {
+          apiArr.push(item)
+        } else {
+          item.ProcessList && item.ProcessList.map(processItem => {
+            processItem.GroupName = item.GroupName
+            apiArr.push(processItem)
+          })
+        }
+      })
+
+      let finalProcessCostTotal = processTemparr && processTemparr.reduce((accummlator, el) => {
+        return accummlator + checkForNull(el.ProcessCost)
+      }, 0)
+
+      tempArr = {
+        ...tabData,
+        NetConversionCost: finalProcessCostTotal + checkForNull(tabData.OperationCostTotal !== null ? tabData.OperationCostTotal : 0,) + checkForNull(tabData.OtherOperationCostTotal !== null ? tabData.OtherOperationCostTotal : 0),
+        ProcessCostTotal: finalProcessCostTotal,
+        CostingProcessCostResponse: apiArr,
+
+      }
+
+      setTabData(tempArr)
+      setGridData(processTemparr)
+      setValue(`${ProcessGridFields}.${parentIndex}.ProcessCost`, checkForDecimalAndNull(ProcessCostTotal, initialConfiguration.NoOfDecimalForPrice))
+    } else {
+
+      const ProcessCost = tempData.MHR * 0
+      tempData = {
+        ...tempData,
+        Quantity: 0,
+        IsCalculatedEntry: false,
+        ProcessCost: ProcessCost,
+      }
+      let gridTempArr = Object.assign([...list], { [index]: tempData })
+
+      let ProcessCostTotal = 0
+      ProcessCostTotal = gridTempArr && gridTempArr.reduce((accummlator, el) => {
+        return accummlator + checkForNull(el.ProcessCost)
+      }, 0)
+      setTimeout(() => {
+        setValue(`${SingleProcessGridField}.${index}.Quantity`, "")
+        setValue(`${SingleProcessGridField}.${index}.ProcessCost`, "")
+      }, 200)
+
+      //MAIN PROCESS ROW WITH GROUP
+      processTempData = {
+        ...processTempData,
+        // Quantity: event.target.value,
+        IsCalculatedEntry: false,
+        ProcessCost: ProcessCostTotal
+      }
+      let processTemparr = Object.assign([...gridData], { [parentIndex]: processTempData })
+
+      let apiArr = []
+      processTemparr && processTemparr.map((item) => {
+        if (item.GroupName === '' || item.GroupName === null) {
+          apiArr.push(item)
+        } else {
+          item.ProcessList && item.ProcessList.map(processItem => {
+            processItem.GroupName = item.GroupName
+            apiArr.push(processItem)
+          })
+        }
+      })
+
+      tempArr = {
+        ...tabData,
+        NetConversionCost: ProcessCostTotal + checkForNull(tabData.OperationCostTotal !== null ? tabData.OperationCostTotal : 0,) + checkForNull(tabData.OtherOperationCostTotal !== null ? tabData.OtherOperationCostTotal : 0),
+        ProcessCostTotal: ProcessCostTotal,
+        CostingProcessCostResponse: apiArr,
+      }
+
+      setTabData(tempArr)
+      setGridData(processTemparr)
+      setValue(`${ProcessGridFields}.${parentIndex}.ProcessCost`, checkForDecimalAndNull(ProcessCostTotal, initialConfiguration.NoOfDecimalForPrice))
+
+
+
       //Toaster.warning('Please enter valid number.')
     }
   }
@@ -482,12 +764,123 @@ function ProcessCost(props) {
     counter = 0
   }
   const ProcessGridFields = 'ProcessGridFields'
+  const SingleProcessGridField = 'SingleProcessGridField'
+
+
+  const renderSingleProcess = (process, parentIndex) => {
+    return (
+      process.ProcessList && process.ProcessList.map((item, index) => {
+        return (
+          <tr>
+            <td>-</td>
+            <td>{item.ProcessName}</td>
+            <td>{item.Tonnage}</td>
+            <td>{item.MHR}</td>
+            <td>{item.UOM}</td>
+            <td>{item.ProductionPerHour}</td>
+            <td style={{ width: 150 }}>
+              <span className="d-inline-block w90px mr-2">
+                {
+                  <NumberFieldHookForm
+                    label=""
+                    name={`${SingleProcessGridField}.${index}.Quantity`}
+                    Controller={Controller}
+                    control={control}
+                    register={register}
+                    mandatory={false}
+                    rules={{
+                      //required: true,
+                      pattern: {
+                        value: /^[0-9]\d*(\.\d+)?$/i,
+                        message: 'Invalid Number.',
+                      },
+                    }}
+                    defaultValue={item.Quantity ? checkForDecimalAndNull(item.Quantity, trimForMeasurment,) : '1'}
+                    className=""
+                    customClassName={'withBorder'}
+                    handleChange={(e) => {
+                      e.preventDefault()
+                      handleQuantityChangeOfGroupProcess(e, index, process.ProcessList, parentIndex)
+                    }}
+
+                    // errors={}
+                    disabled={(CostingViewMode || IsLocked) ? true : false}
+                  />
+                }
+              </span>
+              <button
+                className="CalculatorIcon cr-cl-icon calc-icon-middle"
+                type={'button'}
+                onClick={() => toggleWeightCalculator(index, process.ProcessList, parentIndex)}
+              />
+            </td>
+            <td style={{ width: 100 }}>
+              {
+                <TextFieldHookForm
+                  label=""
+                  name={`${SingleProcessGridField}.${index}.ProcessCost`}
+                  Controller={Controller}
+                  control={control}
+                  register={register}
+                  mandatory={false}
+                  defaultValue={item.ProcessCost ? checkForDecimalAndNull(item.ProcessCost, trimForCost) : '0.00'}
+                  className=""
+                  customClassName={'withBorder'}
+                  handleChange={(e) => {
+                    e.preventDefault()
+                  }}
+                  // errors={}
+                  disabled={true}
+                />
+              }
+            </td>
+            <td>
+              <div className='action-btn-wrapper'>
+                {/* {(!CostingViewMode && !IsLocked) && <button className="Delete" type={'button'} onClick={() => deleteItem(index)} />} */}
+                <Popup trigger={<button id={`popUpTriggers${index}`} className="Comment-box" type={'button'} />}
+                  position="top center">
+                  <TextAreaHookForm
+                    label="Remark:"
+                    name={`${SingleProcessGridField}.${index}.remarkPopUp`}
+                    Controller={Controller}
+                    control={control}
+                    register={register}
+                    mandatory={false}
+                    rules={{
+                      maxLength: {
+                        value: 75,
+                        message: "Remark should be less than 75 word"
+                      },
+                    }}
+                    handleChange={(e) => { }}
+                    defaultValue={item.Remark ?? item.Remark}
+                    className=""
+                    customClassName={"withBorder"}
+                    errors={errors && errors.SingleProcessGridField && errors.SingleProcessGridField[index] !== undefined ? errors.SingleProcessGridField[index].remarkPopUp : ''}
+                    //errors={errors && errors.remarkPopUp && errors.remarkPopUp[index] !== undefined ? errors.remarkPopUp[index] : ''}                        
+                    disabled={(CostingViewMode || IsLocked) ? true : false}
+                    hidden={false}
+                  />
+                  <Row>
+                    <Col md="12" className='remark-btn-container'>
+                      <button className='submit-button mr-2' disabled={(CostingViewMode || IsLocked) ? true : false} onClick={() => onRemarkPopUpClickk(index)} > <div className='save-icon'></div> </button>
+                      <button className='reset' onClick={() => onRemarkPopUpClosee(index)} > <div className='cancel-icon'></div></button>
+                    </Col>
+                  </Row>
+                </Popup>
+              </div>
+            </td>
+          </tr>
+        )
+      })
+    )
+  }
 
   /**
    * @method render
    * @description Renders the component
    */
-  console.log(gridData, "gridData");
+
   return (
     <>
       <div className="user-page p-0">
@@ -540,50 +933,75 @@ function ProcessCost(props) {
                 <tbody>
                   {gridData &&
                     gridData.map((item, index) => {
+                      // if (item?.GroupName === '' || item?.GroupName === null) {
+
+                      //   return (
+
+                      //     renderSingleProcess(item)
+                      //   )
+                      // } else {
                       return (
                         <>
                           <tr key={index}>
-                            {processGroup && <td className='text-overflow process-name'> <div onClick={() => setProcessAcc(!processAcc)} className={`${processAcc ? 'Open' : 'Close'}`}></div><span title={item.ProcessName}>group1</span></td>}
+                            {processGroup && <td className='text-overflow process-name'>
+                              {
+                                (item?.GroupName === '' || item?.GroupName === null) ? '' :
+                                  <div onClick={() => {
+                                    processAccObj[index] === true ? setProcessAccObj(prevState => ({ ...prevState, [index]: false })) : setProcessAccObj(prevState => ({ ...prevState, [index]: true }))
+                                  }}
+                                    className={`${processAccObj[index] ? 'Open' : 'Close'}`}></div>
+
+                              }
+                              <span title={item.ProcessName}>
+                                {item?.GroupName === '' || item?.GroupName === null ? '-' : item.GroupName}</span>
+                            </td>}
                             <td className='text-overflow'><span title={item.ProcessName}>{item.ProcessName}</span></td>
                             <td>{item.Tonnage ? checkForNull(item.Tonnage) : '-'}</td>
                             <td>{item.MHR}</td>
                             <td>{item.UOM}</td>
                             <td>{(item?.ProductionPerHour === '-' || item?.ProductionPerHour === 0 || item?.ProductionPerHour === null || item?.ProductionPerHour === undefined) ? '-' : checkForDecimalAndNull(item.ProductionPerHour, getConfigurationKey().NoOfDecimalForInputOutput)}</td>
                             <td style={{ width: 150 }}>
-                              <span className="d-inline-block w90px mr-2">
-                                {
-                                  <NumberFieldHookForm
-                                    label=""
-                                    name={`${ProcessGridFields}.${index}.Quantity`}
-                                    Controller={Controller}
-                                    control={control}
-                                    register={register}
-                                    mandatory={false}
-                                    rules={{
-                                      //required: true,
-                                      pattern: {
-                                        value: /^[0-9]\d*(\.\d+)?$/i,
-                                        message: 'Invalid Number.',
-                                      },
-                                    }}
-                                    defaultValue={item.Quantity ? checkForDecimalAndNull(item.Quantity, trimForMeasurment,) : '1'}
-                                    className=""
-                                    customClassName={'withBorder'}
-                                    handleChange={(e) => {
-                                      e.preventDefault()
-                                      handleQuantityChange(e, index)
-                                    }}
+                              {
+                                item?.GroupName === '' || item?.GroupName === null ?
+                                  <>
+                                    <span className="d-inline-block w90px mr-2">
+                                      {
+                                        <NumberFieldHookForm
+                                          label=""
+                                          name={`${ProcessGridFields}.${index}.Quantity`}
+                                          Controller={Controller}
+                                          control={control}
+                                          register={register}
+                                          mandatory={false}
+                                          rules={{
+                                            //required: true,
+                                            pattern: {
+                                              value: /^[0-9]\d*(\.\d+)?$/i,
+                                              message: 'Invalid Number.',
+                                            },
+                                          }}
+                                          defaultValue={item.Quantity ? checkForDecimalAndNull(item.Quantity, trimForMeasurment,) : '1'}
+                                          className=""
+                                          customClassName={'withBorder'}
+                                          handleChange={(e) => {
+                                            e.preventDefault()
+                                            handleQuantityChange(e, index)
+                                          }}
 
-                                    // errors={}
-                                    disabled={(CostingViewMode || IsLocked) ? true : false}
-                                  />
-                                }
-                              </span>
-                              <button
-                                className="CalculatorIcon cr-cl-icon calc-icon-middle"
-                                type={'button'}
-                                onClick={() => toggleWeightCalculator(index)}
-                              />
+                                          // errors={}
+                                          disabled={(CostingViewMode || IsLocked) ? true : false}
+                                        />
+                                      }
+                                    </span>
+                                    <button
+                                      className="CalculatorIcon cr-cl-icon calc-icon-middle"
+                                      type={'button'}
+                                      onClick={() => toggleWeightCalculator(index)}
+                                    />
+                                  </>
+                                  : '-'
+
+                              }
                             </td>
                             <td style={{ width: 100 }}>
                               {
@@ -642,114 +1060,14 @@ function ProcessCost(props) {
                               </div>
                             </td>
                           </tr>
-                          {processAcc && <>
-                            {dummydata && dummydata.map(item => {
-                              return (
-                                <tr>
-                                  <td>-</td>
-                                  <td>{item.processName}</td>
-                                  <td>{item.machineTannage}</td>
-                                  <td>{item.machineRate}</td>
-                                  <td>{item.UOM}</td>
-                                  <td>{item.partHours}</td>
-                                  <td style={{ width: 150 }}>
-                                    <span className="d-inline-block w90px mr-2">
-                                      {
-                                        <NumberFieldHookForm
-                                          label=""
-                                          name={`${ProcessGridFields}.${index}.Quantity`}
-                                          Controller={Controller}
-                                          control={control}
-                                          register={register}
-                                          mandatory={false}
-                                          rules={{
-                                            //required: true,
-                                            pattern: {
-                                              value: /^[0-9]\d*(\.\d+)?$/i,
-                                              message: 'Invalid Number.',
-                                            },
-                                          }}
-                                          defaultValue={item.Quantity ? checkForDecimalAndNull(item.Quantity, trimForMeasurment,) : '1'}
-                                          className=""
-                                          customClassName={'withBorder'}
-                                          handleChange={(e) => {
-                                            e.preventDefault()
-                                            handleQuantityChange(e, index)
-                                          }}
-
-                                          // errors={}
-                                          disabled={(CostingViewMode || IsLocked) ? true : false}
-                                        />
-                                      }
-                                    </span>
-                                    <button
-                                      className="CalculatorIcon cr-cl-icon calc-icon-middle"
-                                      type={'button'}
-                                      onClick={() => toggleWeightCalculator(index)}
-                                    />
-                                  </td>
-                                  <td style={{ width: 100 }}>
-                                    {
-                                      <TextFieldHookForm
-                                        label=""
-                                        name={`${ProcessGridFields}.${index}.ProcessCost`}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={false}
-                                        defaultValue={item.ProcessCost ? checkForDecimalAndNull(item.ProcessCost, trimForCost) : '0.00'}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        handleChange={(e) => {
-                                          e.preventDefault()
-                                        }}
-                                        // errors={}
-                                        disabled={true}
-                                      />
-                                    }
-                                  </td>
-                                  <td>
-                                    <div className='action-btn-wrapper'>
-
-                                      <Popup trigger={<button id={`popUpTriggers${index}`} className="Comment-box" type={'button'} />}
-                                        position="top center">
-                                        <TextAreaHookForm
-                                          label="Remark:"
-                                          name={`${ProcessGridFields}.${index}.remarkPopUp`}
-                                          Controller={Controller}
-                                          control={control}
-                                          register={register}
-                                          mandatory={false}
-                                          rules={{
-                                            maxLength: {
-                                              value: 75,
-                                              message: "Remark should be less than 75 word"
-                                            },
-                                          }}
-                                          handleChange={(e) => { }}
-                                          defaultValue={item.Remark ?? item.Remark}
-                                          className=""
-                                          customClassName={"withBorder"}
-                                          errors={errors && errors.ProcessGridFields && errors.ProcessGridFields[index] !== undefined ? errors.ProcessGridFields[index].remarkPopUp : ''}
-                                          //errors={errors && errors.remarkPopUp && errors.remarkPopUp[index] !== undefined ? errors.remarkPopUp[index] : ''}                        
-                                          disabled={(CostingViewMode || IsLocked) ? true : false}
-                                          hidden={false}
-                                        />
-                                        <Row>
-                                          <Col md="12" className='remark-btn-container'>
-                                            <button className='submit-button mr-2' disabled={(CostingViewMode || IsLocked) ? true : false} onClick={() => onRemarkPopUpClickk(index)} > <div className='save-icon'></div> </button>
-                                            <button className='reset' onClick={() => onRemarkPopUpClosee(index)} > <div className='cancel-icon'></div></button>
-                                          </Col>
-                                        </Row>
-                                      </Popup>
-                                    </div>
-                                  </td>
-                                </tr>
-                              )
-                            })}
+                          {processAccObj[index] && <>
+                            {
+                              renderSingleProcess(item, index)
+                            }
                           </>}
                         </>
                       )
+                      // }
                     })}
                   {gridData && gridData.length === 0 && (
                     <tr>
@@ -794,8 +1112,8 @@ function ProcessCost(props) {
       )}
       {isCalculator && (
         <VariableMhrDrawer
-          technology={gridData[calciIndex].ProcessTechnologyId}
-          calculatorData={gridData[calciIndex]}
+          technology={calculatorTechnology}
+          calculatorData={calculatorData}
           isOpen={isCalculator}
           item={item}
           CostingViewMode={CostingViewMode || IsLocked}

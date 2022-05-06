@@ -158,8 +158,8 @@ function AssemblyPart(props) {
   return (
     <>
       <tr className="costing-highlight-row accordian-row" key={item.PartId}>
-        <div style={{ display: 'contents' }} onClick={() => toggle(item.BOMLevel, item.PartNumber)}>
-          <td className='part-overflow'>
+        <div style={{ display: 'contents' }} >
+          <td className='part-overflow' onClick={() => toggle(item.BOMLevel, item.PartNumber)}>
             <span title={item && item.PartNumber} className={`part-name ${item && item.PartType !== "Sub Assembly" && item.PartType !== "Assembly" && "L1"}`}>
               <div className={`${item.CostingPartDetails.IsOpen ? 'Open' : 'Close'}`}></div>{item && item.PartNumber}
             </span>
