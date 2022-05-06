@@ -712,7 +712,7 @@ function Simulation(props) {
         //     return obj
 
         // })
-        let tempObject = tokenForSimulation.length !== 0 ? [{ SimulationId: tokenForSimulation.value }] : []
+        let tempObject = tokenForSimulation?.length !== 0 ? [{ SimulationId: tokenForSimulation?.value }] : []
 
         switch (page) {
             case RMDOMESTIC:
@@ -837,7 +837,7 @@ function Simulation(props) {
                                 </div>
                             }
 
-                            {(tokenForSimulation?.length !== 0 && tokenForSimulation !== null && tokenCheckBoxValue) && <button className='user-btn ml-2' onClick={callAPIOnClick}>
+                            {(tokenForSimulation?.length !== 0 && tokenForSimulation !== null && tokenForSimulation !== undefined && tokenCheckBoxValue) && <button className='user-btn ml-2' onClick={callAPIOnClick}>
                                 <div className='save-icon'></div>
                             </button>}
                         </Col>

@@ -2040,6 +2040,7 @@ export function getPartSelectListByTechnology(technologyId, callback) {
       }).catch(error => {
         dispatch({ type: API_FAILURE })
         callback(error)
+        apiErrors(error)
       })
     } else {
       dispatch({

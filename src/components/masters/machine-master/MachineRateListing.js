@@ -25,7 +25,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
-import { getFilteredData, userDetails, loggedInUserId } from '../../../helper'
+import { getFilteredData, userDetails, loggedInUserId, getConfigurationKey } from '../../../helper'
 import { getListingForSimulationCombined } from '../../simulation/actions/Simulation';
 import { masterFinalLevelUser } from '../../masters/actions/Material'
 import ProcessGroupDrawer from './ProcessGroupDrawer'
@@ -55,8 +55,8 @@ class MachineRateListing extends Component {
             showPopup: false,
             deletedId: '',
             isFinalApprovar: false,
-            // isProcessGroup: getConfigurationKey().IsMachineProcessGroup // UNCOMMENT IT AFTER DONE FROM BACKEND AND REMOVE BELOW CODE
-            isProcessGroup: false,
+            isProcessGroup: getConfigurationKey().IsMachineProcessGroup, // UNCOMMENT IT AFTER DONE FROM BACKEND AND REMOVE BELOW CODE
+            // isProcessGroup: false,
             isOpenProcessGroupDrawer: false,
         }
     }
@@ -137,7 +137,7 @@ class MachineRateListing extends Component {
             IsVendor: rowData.CostingHead,
             isViewMode: isViewMode,
         }
-        this.props.getDetails(data);
+        this.props.getDetails(data, rowData?.IsMachineAssociated);
     }
 
     /**
@@ -233,7 +233,7 @@ class MachineRateListing extends Component {
         let isDeleteButton = false
 
 
-        if (EditAccessibility && !rowData.IsMachineAssociated) {
+        if (EditAccessibility) {
             isEditable = true
         } else {
             isEditable = false

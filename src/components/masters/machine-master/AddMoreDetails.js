@@ -19,7 +19,7 @@ import { getFuelComboData, } from '../actions/Fuel';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { EMPTY_DATA, EMPTY_GUID } from '../../../config/constants'
-import { loggedInUserId, userDetails } from "../../../helper/auth";
+import { loggedInUserId, userDetails, getConfigurationKey } from "../../../helper/auth";
 import Switch from "react-switch";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
@@ -113,8 +113,8 @@ class AddMoreDetails extends Component {
       showPopup: false,
       updatedObj: {},
       lockUOMAndRate: false,
-      // isProcessGroup: getConfigurationKey().IsMachineProcessGroup // UNCOMMENT IT AFTER DONE FROM BACKEND AND REMOVE BELOW CODE
-      isProcessGroup: false
+      isProcessGroup: getConfigurationKey().IsMachineProcessGroup, // UNCOMMENT IT AFTER DONE FROM BACKEND AND REMOVE BELOW CODE
+      // isProcessGroup: true
     }
   }
 
@@ -1824,7 +1824,7 @@ class AddMoreDetails extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, loading, initialConfiguration } = this.props;
+    const { handleSubmit, loading, initialConfiguration, isMachineAssociated } = this.props;
     const { isLoader, isOpenAvailability, isEditFlag, isOpenMachineType, isOpenProcessDrawer, manufactureYear,
       isLoanOpen, isWorkingOpen, isDepreciationOpen, isVariableCostOpen, isPowerOpen, isLabourOpen, isProcessOpen } = this.state;
 
@@ -1895,7 +1895,8 @@ class AddMoreDetails extends Component {
                             handleChangeDescription={this.handlePlants}
                             valueDescription={this.state.selectedPlants}
                             // disabled={isEditFlag ? true : false}
-                            disabled={false}
+                            disabled={this.state.isViewFlag || (isEditFlag && isMachineAssociated)}
+
                           />
                         </Col>
                         <Col md="3">
@@ -1921,7 +1922,7 @@ class AddMoreDetails extends Component {
                             validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                             component={renderText}
                             required={true}
-                            disabled={isEditFlag ? true : false}
+                            disabled={this.state.isViewFlag ? true : false}
                             className=" "
                             customClassName="withBorder"
                           />
@@ -1935,7 +1936,7 @@ class AddMoreDetails extends Component {
                             validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                             component={renderText}
                             // required={true}
-                            disabled={isEditFlag ? true : false}
+                            disabled={this.state.isViewFlag ? true : false}
                             className=" "
                             customClassName="withBorder"
                           />
@@ -1949,7 +1950,7 @@ class AddMoreDetails extends Component {
                             validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                             component={renderText}
                             // required={true}
-                            disabled={isEditFlag ? true : false}
+                            disabled={this.state.isViewFlag ? true : false}
                             className=" "
                             customClassName="withBorder"
                           />
@@ -1970,7 +1971,7 @@ class AddMoreDetails extends Component {
                                 //  required={true}
                                 handleChangeDescription={this.handleMachineType}
                                 valueDescription={this.state.machineType}
-                                disabled={isEditFlag ? true : false}
+                                disabled={this.state.isViewFlag ? true : false}
                               />
                             </div>
                             {!isEditFlag && <div
@@ -1988,7 +1989,7 @@ class AddMoreDetails extends Component {
                             validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                             component={renderText}
                             //required={true}
-                            disabled={isEditFlag ? true : false}
+                            disabled={this.state.isViewFlag ? true : false}
                             className=" "
                             customClassName="withBorder"
                           />
@@ -2016,7 +2017,7 @@ class AddMoreDetails extends Component {
                                 autoComplete={'off'}
                                 disabledKeyboardNavigation
                                 //onChangeRaw={(e) => e.preventDefault()}
-                                disabled={isEditFlag ? true : false}
+                                disabled={this.state.isViewFlag ? true : false}
                               />
                             </div>
                           </div>
@@ -2071,7 +2072,7 @@ class AddMoreDetails extends Component {
                             placeholder={'Enter'}
                             validate={[checkWhiteSpaces, postiveNumber, maxLength10]}
                             component={renderText}
-                            disabled={isEditFlag ? true : false}
+                            disabled={this.state.isViewFlag ? true : false}
                             className=" "
                             customClassName="withBorder"
                           />
@@ -2145,13 +2146,13 @@ class AddMoreDetails extends Component {
                                 validate={[required]}
                                 autoComplete={'off'}
                                 required={true}
-                                disabled={false}
                                 changeHandler={(e) => {
                                   //e.preventDefault()
                                 }}
                                 component={renderDatePicker}
                                 className="form-control"
-                                disabled={isEditFlag ? true : false}
+                                disabled={this.state.isViewFlag || isEditFlag ? true : false}
+
                               />
                             </div>
                           </div>
@@ -3243,7 +3244,7 @@ class AddMoreDetails extends Component {
                               title={'Process Group:'} />
                           </Col>
                           <Col md="12">
-                            <ProcessGroup isViewFlag={this.state.isViewFlag} processListing={this.state.processGrid} isViewMode={this.state.isViewMode} isListing={false} />
+                            <ProcessGroup isViewFlag={this.state.isViewFlag} isEditFlag={isEditFlag} processListing={this.state.processGrid} isViewMode={this.state.isViewMode} isListing={false} />
                           </Col>
                         </Row>
                       }

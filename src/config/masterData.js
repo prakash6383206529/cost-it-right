@@ -3181,6 +3181,7 @@ export const LastGridForTokenSummary = [
     { label: "Old PO Price", value: "OldPOPrice" },
     { label: "New PO Price", value: "NewPOPrice" },
     { label: "PO Variance", value: "POVariance" },
+    { label: "Draft PO Price", value: "DraftPOPrice" },
 ]
 
 export const OperationGridForTokenSummary = [
