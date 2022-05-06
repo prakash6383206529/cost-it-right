@@ -29,7 +29,7 @@ function ViewConversionCost(props) {
     props.closeDrawer('')
   }
   const { isPDFShow, stCostShow } = props
-  const processGroup = getConfigurationKey().isProcessGroup
+  const processGroup = getConfigurationKey().IsMachineProcessGroup
   const { viewConversionCostData } = props
   const { conversionData, netTransportationCostView, surfaceTreatmentDetails, IsAssemblyCosting } = viewConversionCostData
   const { CostingOperationCostResponse, CostingProcessCostResponse, CostingToolsCostResponse, IsShowToolCost, CostingOtherOperationCostResponse } = conversionData
@@ -52,6 +52,7 @@ function ViewConversionCost(props) {
   const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
   const [calciData, setCalciData] = useState({})
   const [processAcc, setProcessAcc] = useState(false)
+  const [processAccObj, setProcessAccObj] = useState({});
   const [calculatorTechnology, setCalculatorTechnology] = useState('')
 
   const dispatch = useDispatch()
@@ -307,8 +308,10 @@ function ViewConversionCost(props) {
                         {processGroup && <td className='text-overflow process-name'>
                           {
                             (item?.GroupName === '' || item?.GroupName === null) ? '' :
-                              <div onClick={() => setProcessAcc(!processAcc)} className={`${processAcc ? 'Open' : 'Close'}`}></div>
-
+                              <div onClick={() =>
+                                processAccObj[index] === true ? setProcessAccObj(prevState => ({ ...prevState, [index]: false })) : setProcessAccObj(prevState => ({ ...prevState, [index]: true }))
+                              }
+                                className={`${processAccObj[index] ? 'Open' : 'Close'}`}></div>
                           }
                           <span title={item.ProcessName}>
                             {item?.GroupName === '' || item?.GroupName === null ? '-' : item.GroupName}</span>
@@ -331,7 +334,7 @@ function ViewConversionCost(props) {
                         </td>
                       </tr>
 
-                      {processAcc && <>
+                      {processAccObj[index] && <>
                         {
                           renderSingleProcess(item, index)
                         }
