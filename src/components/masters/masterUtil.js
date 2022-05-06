@@ -41,7 +41,11 @@ export const ProcessGroup = (props) => {
 
     const handleProcess = () => {
         const processName = getValues('process')
-        setSelectedProcess([...selectedProcess, { ProcessName: processName.label, ProcessId: processName.value }])
+        if (processName && Object.keys(processName).length === 0) {
+            Toaster.warning('Please select at least one process')
+            return false
+        }
+        setSelectedProcess([...selectedProcess, { ProcessName: processName?.label, ProcessId: processName?.value }])
         setValue('process', {})
     }
 
@@ -54,6 +58,10 @@ export const ProcessGroup = (props) => {
     const processTableHandler = () => {
         const groupName = getValues('groupName')
         const data = _.find(rowData, ['GroupName', groupName])
+        if (groupName === '' || selectedProcess?.length === 0) {
+            Toaster.warning('Please enter Group Name and Select Process')
+            return false
+        }
         props.changeDropdownValue()
 
         if (data !== undefined) {

@@ -1209,7 +1209,11 @@ class AddMachineRate extends Component {
   }
 
   showDelete = (uniqueProcessId) => {
-    this.setState({ UniqueProcessId: [...this.state.UniqueProcessId, ...uniqueProcessId] })
+    if (this.state.UniqueProcessId?.length === 0 || this.state.UniqueProcessId === []) {
+      this.setState({ UniqueProcessId: [...this.state.UniqueProcessId, ...uniqueProcessId] })
+    } else {
+      this.setState({ UniqueProcessId: [...uniqueProcessId] })
+    }
   }
 
   /**
