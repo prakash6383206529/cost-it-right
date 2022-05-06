@@ -39,8 +39,7 @@ import imgRedcross from '../../../assests/images/red-cross.png'
 import { masterFinalLevelUser } from '../actions/Material'
 import MasterSendForApproval from '../MasterSendForApproval'
 import { ProcessGroup } from '../masterUtil';
-
-
+import _ from 'lodash'
 
 const selector = formValueSelector('AddMoreDetails');
 
@@ -235,7 +234,30 @@ class AddMoreDetails extends Component {
 
           const Data = res.data.Data;
 
-          this.props.getProcessGroupByMachineId(Data.MachineId, res => { })
+          this.props.getProcessGroupByMachineId(Data.MachineId, res => {
+
+            this.props.setGroupProcessList(res?.data?.DataList)
+
+            // TO DISABLE DELETE BUTTON WHEN GET DATA API CALLED (IN EDIT)
+            let uniqueProcessId = []
+            _.uniqBy(res?.data?.DataList, function (o) {
+              uniqueProcessId.push(o?.ProcessId)
+            });
+            let allProcessId = []
+            res?.data?.DataList && res?.data?.DataList.map((item) => {
+              let ProcessIdListTemp = []
+              item.ProcessList && item.ProcessList.map((item1) => {
+                ProcessIdListTemp.push(item1.ProcessId)
+                return null
+              })
+
+              allProcessId = [...allProcessId, ...ProcessIdListTemp]
+              return null
+            })
+            let uniqueSet = [...new Set(allProcessId)]
+            this.setState({ UniqueProcessId: uniqueSet })
+
+          })
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
 
           this.props.getLabourTypeByMachineTypeSelectList(Data.MachineTypeId ? Data.MachineTypeId : 0, () => { })
@@ -1250,9 +1272,9 @@ class AddMoreDetails extends Component {
   }
 
   /**
-* @method updateProcessGrid
-* @description Used to handle updateProcessGrid
-*/
+  * @method updateProcessGrid
+  * @description Used to handle updateProcessGrid
+  */
   updateProcessGrid = () => {
     const { processName, UOM, processGrid, processGridEditIndex } = this.state;
     const { fieldsObj } = this.props
@@ -1759,7 +1781,7 @@ class AddMoreDetails extends Component {
   /**
   * @method workingHourToggle
   * @description WORKING HOUR ROW OPEN  AND CLOSE
- */
+  */
   workingHourToggle = () => {
     const { isWorkingOpen } = this.state
     this.setState({ isWorkingOpen: !isWorkingOpen })
@@ -1786,7 +1808,7 @@ class AddMoreDetails extends Component {
   /**
   * @method powerToggle
   * @description POWER OPEN  AND CLOSE
- */
+  */
   powerToggle = () => {
     const { isPowerOpen } = this.state
     this.setState({ isPowerOpen: !isPowerOpen })
@@ -1800,7 +1822,7 @@ class AddMoreDetails extends Component {
   /**
   * @method labourToggle
   * @description lABOUR OPEN  AND CLOSE
- */
+  */
   labourToggle = () => {
     const { isLabourOpen } = this.state
     this.setState({ isLabourOpen: !isLabourOpen })
@@ -1819,6 +1841,19 @@ class AddMoreDetails extends Component {
       e.preventDefault();
     }
   };
+
+  changeDropdownValue = () => {
+    this.setState({ DropdownChange: false })
+  }
+
+  showDelete = (uniqueProcessId) => {
+    if (this.state.UniqueProcessId?.length === 0 || this.state.UniqueProcessId === []) {
+      this.setState({ UniqueProcessId: [...this.state.UniqueProcessId, ...uniqueProcessId] })
+    } else {
+      this.setState({ UniqueProcessId: [...uniqueProcessId] })
+    }
+  }
+
   /**
   * @method render
   * @description Renders the component
@@ -1826,7 +1861,7 @@ class AddMoreDetails extends Component {
   render() {
     const { handleSubmit, loading, initialConfiguration, isMachineAssociated } = this.props;
     const { isLoader, isOpenAvailability, isEditFlag, isOpenMachineType, isOpenProcessDrawer, manufactureYear,
-      isLoanOpen, isWorkingOpen, isDepreciationOpen, isVariableCostOpen, isPowerOpen, isLabourOpen, isProcessOpen } = this.state;
+      isLoanOpen, isWorkingOpen, isDepreciationOpen, isVariableCostOpen, isPowerOpen, isLabourOpen, isProcessOpen, UniqueProcessId } = this.state;
 
     return (
       <>
@@ -3222,7 +3257,7 @@ class AddMoreDetails extends Component {
                                           <td>{checkForDecimalAndNull(item.MachineRate, initialConfiguration.NoOfDecimalForPrice)}</td>
                                           <td>
                                             <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(index)} />
-                                            <button className="Delete" type={'button'} onClick={() => this.deleteItem(index)} />
+                                            <button className="Delete" type={'button'} onClick={() => this.deleteItem(index)} disabled={UniqueProcessId?.includes(item.ProcessId)} />
                                           </td>
                                         </tr>
                                       )
@@ -3244,7 +3279,7 @@ class AddMoreDetails extends Component {
                               title={'Process Group:'} />
                           </Col>
                           <Col md="12">
-                            <ProcessGroup isViewFlag={this.state.isViewFlag} isEditFlag={isEditFlag} processListing={this.state.processGrid} isViewMode={this.state.isViewMode} isListing={false} />
+                            <ProcessGroup isViewFlag={this.state.isViewFlag} isEditFlag={isEditFlag} processListing={this.state.processGrid} isListing={false} isViewMode={this.state.isViewMode} changeDropdownValue={this.changeDropdownValue} showDelete={this.showDelete} />
                           </Col>
                         </Row>
                       }
