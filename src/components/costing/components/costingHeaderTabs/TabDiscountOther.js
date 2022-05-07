@@ -1009,7 +1009,7 @@ function TabDiscountOther(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.SANumber}
-                        disabled={CostingViewMode ? true : false}
+                        disabled={true}
                       />
                     </Col>
                     <Col md="2">
