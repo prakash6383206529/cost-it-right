@@ -60,6 +60,7 @@ function VariableMhrDrawer(props) {
   }
 
   const getProcessComponent = (process) => {
+    console.log('process: ', process);
     if (technology === MACHINING) {
       if (calculatorData.UOMType === TIME) {
         switch (process) {
@@ -99,6 +100,7 @@ function VariableMhrDrawer(props) {
         )
       }
     } else if (technology === SHEETMETAL) {
+      console.log("COMING IN SHEET Metal");
       switch (process) {
         case 'Facing':
           return (
