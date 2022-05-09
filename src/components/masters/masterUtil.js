@@ -24,6 +24,8 @@ export const ProcessGroup = (props) => {
 
 
     const [selectedProcess, setSelectedProcess] = useState([])
+    const [editIndex, setEditIndex] = useState('')
+    console.log('editIndex: ', editIndex);
 
     useEffect(() => {
         if (isEditFlag || isViewFlag) {
@@ -77,32 +79,62 @@ export const ProcessGroup = (props) => {
         let obj = { ProcessGroupName: groupName, ProcessIdList: processList }
         let tableObj = { GroupName: groupName, ProcessList: tableList }
         let updateArrayList = processGroupApiData
-        if (isEditFlag) {
-            // TO DISABLE DELETE BUTTON WHEN GET DATA API CALLED
-            updateArrayList = []
-            let tempArray = []
-            let singleRecordObject = {}
-            processGroupApiData && processGroupApiData.map((item) => {
-                singleRecordObject = {}
-                let ProcessIdListTemp = []
-                tempArray = item.GroupName
+        // if (isEditFlag) {
+        //     // TO DISABLE DELETE BUTTON WHEN GET DATA API CALLED
+        //     updateArrayList = []
+        //     let tempArray = []
+        //     let singleRecordObject = {}
+        //     processGroupApiData && processGroupApiData.map((item) => {
+        //         singleRecordObject = {}
+        //         let ProcessIdListTemp = []
+        //         tempArray = item.GroupName
 
-                item.ProcessList && item.ProcessList.map((item1) => {
-                    ProcessIdListTemp.push(item1.ProcessId)
-                    return null
-                })
-                singleRecordObject.ProcessGroupName = tempArray
-                singleRecordObject.ProcessIdList = ProcessIdListTemp
-                updateArrayList.push(singleRecordObject)
-                return null
-            })
+        //         item.ProcessList && item.ProcessList.map((item1) => {
+        //             ProcessIdListTemp.push(item1.ProcessId)
+        //             return null
+        //         })
+        //         singleRecordObject.ProcessGroupName = tempArray
+        //         singleRecordObject.ProcessIdList = ProcessIdListTemp
+        //         updateArrayList.push(singleRecordObject)
+        //         return null
+        //     })
 
-        }
+        // }
         dispatch(setGroupProcessList([...updateArrayList, obj]))
 
         setApiData([...apiData, obj])
         setRowData([...rowData, tableObj])
         resetHandler()
+    }
+
+    const updateProcessTableHandler = () => {
+        const tempData = rowData[editIndex]
+        let groupName = getValues('groupName')
+
+        let processList = []
+        let tableList = []
+        selectedProcess && selectedProcess.map((item, index) => {
+            processList.push(item.ProcessId)
+            tableList.push({ ProcessName: item.ProcessName, ProcessId: item.ProcessId })
+            return { GroupName: groupName, ProcessName: item.ProcessName, ProcessId: item.ProcessId }
+        })
+        let uniqueProcessId = []
+        _.uniqBy(selectedProcess, function (o) {
+            uniqueProcessId.push(o.ProcessId)
+        });
+        props.showDelete(uniqueProcessId)
+        tempData.GroupName = groupName
+        tempData.ProcessList = selectedProcess
+        let tempArr = Object.assign([...rowData], { [editIndex]: tempData })
+        let obj = { ProcessGroupName: groupName, ProcessIdList: processList }
+        let apiTempArr = Object.assign([...apiData], { [editIndex]: obj })
+        let reduxTempArr = Object.assign([...processGroupApiData], { [editIndex]: obj })
+        dispatch(setGroupProcessList(reduxTempArr))
+        setRowData(tempArr)
+        setApiData(apiTempArr)
+        setEditIndex('')
+        resetHandler()
+        props.changeDropdownValue()
     }
 
     const renderListing = (label) => {
@@ -113,6 +145,33 @@ export const ProcessGroup = (props) => {
             })
         }
         return temp
+    }
+
+    const editItemDetails = (index) => {
+        let editTempData = rowData[index]
+        setValue('groupName', editTempData.GroupName)
+        setSelectedProcess(editTempData.ProcessList)
+        setEditIndex(index)
+    }
+
+    const deleteItem = (index) => {
+        let tempArr2 = [];
+        let tempArrAfterDelete = rowData && rowData.filter((el, i) => {
+            if (i === index) return false;
+            return true
+        })
+        let apiTempArrAfterDelete = apiData && apiData.filter((el, i) => {
+            if (i === index) return false;
+            return true
+        })
+        let reduxTempArrAfterDelete = processGroupApiData && processGroupApiData.filter((el, i) => {
+            if (i === index) return false;
+            return true
+        })
+
+        setRowData(tempArrAfterDelete)
+        dispatch(setGroupProcessList(reduxTempArrAfterDelete))
+        setApiData(apiTempArrAfterDelete)
     }
 
     return (
@@ -165,20 +224,35 @@ export const ProcessGroup = (props) => {
                     </Col>
                     <Col md="2" className='mb-2 d-flex align-items-center'>
                         <div>
+
                             {
-                                <>
-                                    <button
-                                        type="button"
-                                        className={`${props.isViewFlag ? 'disabled-button user-btn' : 'user-btn'} pull-left mr5`}
-                                        onClick={processTableHandler}
-                                    >
-                                        <div className={'plus'}></div>ADD</button>
-                                    <button
-                                        type="button"
-                                        className={`${props.isViewFlag ? 'disabled-button reset-btn' : 'reset-btn'} pull-left`}
-                                        onClick={resetHandler}
-                                    >Reset</button>
-                                </>
+                                editIndex === '' ?
+                                    <>
+                                        <button
+                                            type="button"
+                                            className={`${props.isViewFlag ? 'disabled-button user-btn' : 'user-btn'} pull-left mr5`}
+                                            onClick={processTableHandler}
+                                        >
+                                            <div className={'plus'}></div>ADD</button>
+                                        <button
+                                            type="button"
+                                            className={`${props.isViewFlag ? 'disabled-button reset-btn' : 'reset-btn'} pull-left`}
+                                            onClick={resetHandler}
+                                        >Reset</button>
+                                    </> :
+                                    <>
+                                        <button
+                                            type="button"
+                                            className={`${props.isViewFlag ? 'disabled-button user-btn' : 'user-btn'} pull-left mr5`}
+                                            onClick={updateProcessTableHandler}
+                                        >
+                                            <div className={'plus'}></div>Update</button>
+                                        <button
+                                            type="button"
+                                            className={`${props.isViewFlag ? 'disabled-button reset-btn' : 'reset-btn'} pull-left`}
+                                            onClick={resetHandler}
+                                        >Reset</button>
+                                    </>
                             }
                         </div>
                     </Col>
@@ -191,13 +265,20 @@ export const ProcessGroup = (props) => {
                         <tr>
                             <th>Group Name</th>
                             <th>Process Name</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {rowData && rowData.map((item) => {
+                        {rowData && rowData.map((item, index) => {
                             const processNameList = item.ProcessList;
                             return <tr>
                                 <td className='group-name'>{item.GroupName}</td>
+                                <td>
+                                    <>
+                                        <button className="Edit mr-2" type={'button'} disabled={false} onClick={() => editItemDetails(index)} />
+                                        <button className="Delete" type={'button'} disabled={false} onClick={() => deleteItem(index)} />
+                                    </>
+                                </td>
                                 <td>{processNameList && processNameList.map(processName => {
                                     return <div className='process-names'>{processName.ProcessName}</div>
                                 })}</td>
