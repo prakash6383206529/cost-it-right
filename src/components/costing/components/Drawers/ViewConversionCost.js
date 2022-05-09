@@ -130,30 +130,34 @@ function ViewConversionCost(props) {
 
 
   const setCalculatorData = (data, list, id, parentId) => {
+    console.log('parentId: ', parentId);
 
     if (parentId === '') {
       let tempArr = []
-      let tempData = viewCostingData.CostingProcessCostResponse[id]
-      setCalculatorTechnology(viewCostingData.CostingProcessCostResponse[id].ProcessTechnologyId)
+      let tempData = viewCostingData[props.index].netConversionCostView.CostingProcessCostResponse[id]
+      setCalculatorTechnology(viewCostingData[props.index].netConversionCostView.CostingProcessCostResponse[id].ProcessTechnologyId)
       tempData = { ...tempData, WeightCalculatorRequest: data, }
       setCalciData(tempData)
-      tempArr = Object.assign([...viewCostingData.CostingProcessCostResponse], { [id]: tempData })
+      tempArr = Object.assign([...viewCostingData[id].CostingProcessCostResponse], { [id]: tempData })
       setTimeout(() => {
         // setGridData(tempArr)
         setWeightCalculatorDrawer(true)
       }, 100)
     } else {
       let parentTempArr = []
-      let parentTempData = viewCostingData.CostingProcessCostResponse[parentId]
+      let parentTempData = viewCostingData[props.index].netConversionCostView.CostingProcessCostResponse[parentId]
+      console.log('parentTempData: ', parentTempData);
       let tempArr = []
       let tempData = list[id]
+      console.log('tempData: ', tempData);
 
       setCalculatorTechnology(tempData.ProcessTechnologyId)
       tempData = { ...tempData, WeightCalculatorRequest: data, }
+      console.log('tempData withcalci req: ', tempData);
       setCalciData(tempData)
       tempArr = Object.assign([...list], { [id]: tempData })
       parentTempData = { ...parentTempData, ProcessList: tempArr }
-      parentTempArr = Object.assign([...viewCostingData.CostingProcessCostResponse[id], { [parentId]: parentTempData }])
+      // parentTempArr = Object.assign([...viewCostingData[props.index].netConversionCostView.CostingProcessCostResponse[id], { [parentId]: parentTempData }])
       setTimeout(() => {
         // setGridData(parentTempArr)
         setWeightCalculatorDrawer(true)
@@ -165,15 +169,35 @@ function ViewConversionCost(props) {
   const getWeightData = (index, list = [], parentCalciIndex) => {
     // const tempData = viewCostingData[props.index]
     let tempData
+    let processCalciId = ''
+    let technologyId = ''
+    let UOMType = ''
     if (parentIndex === '') {
       tempData = viewCostingData[props.index]
+      if (tempData?.netConversionCostView?.CostingProcessCostResponse[index].ProcessCalculatorId === 0) {
+        Toaster.warning('Data is not avaliabe for calculator')
+        return false
+      }
+      else {
+        processCalciId = tempData?.netConversionCostView?.CostingProcessCostResponse[index].ProcessCalculatorId
+        technologyId = tempData?.netConversionCostView?.CostingProcessCostResponse[index].ProcessTechnologyId
+        UOMType = tempData.netConversionCostView.CostingProcessCostResponse[index].UOMType
+      }
     } else {
       tempData = list[index]
+      console.log('tempData: ', tempData);
+      console.log('tempData: ', tempData.ProcessCalculatorId);
+      if (tempData.ProcessCalculatorId === 0) {
+        console.log("ENTERING?");
+        Toaster.warning('Data is not avaliabe for calculator')
+        return false
+      } else {
+        processCalciId = tempData.ProcessCalculatorId
+        technologyId = tempData?.ProcessTechnologyId
+        UOMType = tempData.UOMType
+      }
     }
-    if (tempData?.netConversionCostView?.CostingProcessCostResponse[index].ProcessCalculatorId === 0) {
-      Toaster.warning('Data is not avaliabe for calculator')
-      return false
-    }
+
 
     setIndexForProcessCalculator(index)
     setParentIndex(parentCalciIndex)
@@ -325,12 +349,17 @@ function ViewConversionCost(props) {
                         <td>{item.UOM ? item.UOM : '-'}</td>
                         <td>{(item?.ProductionPerHour === '-' || item?.ProductionPerHour === 0 || item?.ProductionPerHour === null) ? '-' : checkForDecimalAndNull(item.ProductionPerHour, initialConfiguration.NoOfDecimalForInputOutput)}</td>
                         <td>{item.MHR ? item.MHR : '-'}</td>
-                        {!isPDFShow && <td><button
-                          className="CalculatorIcon cr-cl-icon mr-auto ml-0"
-                          type={"button"}
-                          disabled={item.ProcessCalculationId === EMPTY_GUID}
-                          onClick={() => { getWeightData(index) }}
-                        /></td>}
+                        {(!isPDFShow) && <td>
+                          {
+                            (item?.GroupName === '' || item?.GroupName === null) ?
+                              <button
+                                className="CalculatorIcon cr-cl-icon mr-auto ml-0"
+                                type={"button"}
+                                disabled={item.ProcessCalculationId === EMPTY_GUID}
+                                onClick={() => { getWeightData(index) }}
+                              /> : ''
+                          }
+                        </td>}
                         <td>{item.Quantity ? checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForInputOutput) : '-'}</td>
                         <td>{item.ProcessCost ? checkForDecimalAndNull(item.ProcessCost, initialConfiguration.NoOfDecimalForPrice) : 0}
                         </td>
@@ -729,7 +758,7 @@ function ViewConversionCost(props) {
 
             {weightCalculatorDrawer && (
               <VariableMhrDrawer
-                technology={viewCostingData[props.index].netConversionCostView.CostingProcessCostResponse[indexForProcessCalculator].ProcessTechnologyId}
+                technology={calculatorTechnology}
                 calculatorData={calciData}
                 isOpen={weightCalculatorDrawer}
                 CostingViewMode={true}

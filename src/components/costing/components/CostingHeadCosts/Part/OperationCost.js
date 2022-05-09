@@ -105,7 +105,7 @@ function OperationCost(props) {
   * @description SELECTED IDS
   */
   const selectedIds = (tempArr) => {
-    console.log('tempArr: ', tempArr);
+
     let selectedId = Ids;
     if (tempArr && tempArr.length > 0) {
       tempArr && tempArr.map(el => {
