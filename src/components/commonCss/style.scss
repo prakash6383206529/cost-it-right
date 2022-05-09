@@ -5250,7 +5250,7 @@ body{
 }
 .mh-auto {
   height: auto !important;
-  min-height: calc(100vh - 219px) !important;
+  min-height: calc(100vh - 190px) !important;
   .add-min-height {
     @media (max-width:$belowLaptop) {  
       min-height: calc(100vh - 214px) !important;
@@ -5884,7 +5884,7 @@ left: 17rem;
 }
 .simulation-edit {
   .height-width-wrapper {
-    min-height: calc(100vh - 288px) !important;
+    min-height: calc(100vh - 308px) !important;
   }
 }
 
@@ -5984,7 +5984,7 @@ left: 17rem;
 }
 // <-------END Calculator css--------->
 .simulation-height {
-  min-height: calc(100vh - 440px) !important;
+  min-height: calc(100vh - 411px) !important;
 }
 .other-costing-simulation {
   min-height: calc(100vh - 337px);
