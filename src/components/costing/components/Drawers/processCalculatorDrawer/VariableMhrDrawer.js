@@ -11,6 +11,7 @@ import { TIME } from '../../../../../config/constants'
 
 function VariableMhrDrawer(props) {
   const { technology, calculatorData, item } = props
+  console.log('technology: ', technology);
   const tonnage = calculatorData.Tonnage ? calculatorData.Tonnage : ''
   const calculateMachineTime = (time, formValue) => {
 
