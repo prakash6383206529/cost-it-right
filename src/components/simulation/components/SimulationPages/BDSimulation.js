@@ -53,6 +53,15 @@ function BDSimulation(props) {
         }
     }, [])
 
+    useEffect(() => {
+        if (list && list.length > 0) {
+            window.screen.width >= 1920 && gridRef.current.api.sizeColumnsToFit();
+            if (isImpactedMaster) {
+                gridRef.current.api.sizeColumnsToFit();
+            }
+        }
+    }, [list])
+
     const verifySimulation = debounce(() => {
         let basicRateCount = 0
 
@@ -252,10 +261,6 @@ function BDSimulation(props) {
     const onGridReady = (params) => {
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
-        window.screen.width >= 1920 && gridRef.current.api.sizeColumnsToFit();
-        if (isImpactedMaster) {
-            gridRef.current.api.sizeColumnsToFit();
-        }
         params.api.paginationGoToPage(0);
     };
 

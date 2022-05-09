@@ -12,14 +12,14 @@ import { getTechnologySelectList, getPlantSelectListByType, getPlantBySupplier, 
 import { getVendorListByVendorType, } from '../actions/Material';
 import {
   createMachineDetails, updateMachineDetails, getMachineDetailsData, getMachineTypeSelectList, getProcessesSelectList,
-  getFuelUnitCost, getLabourCost, getPowerCostUnit, fileUploadMachine, fileDeleteMachine,
+  getFuelUnitCost, getLabourCost, getPowerCostUnit, fileUploadMachine, fileDeleteMachine, getProcessGroupByMachineId
 } from '../actions/MachineMaster';
 import { getLabourTypeByMachineTypeSelectList } from '../actions/Labour';
 import { getFuelComboData, } from '../actions/Fuel';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { EMPTY_DATA, EMPTY_GUID } from '../../../config/constants'
-import { loggedInUserId, userDetails } from "../../../helper/auth";
+import { loggedInUserId, userDetails, getConfigurationKey } from "../../../helper/auth";
 import Switch from "react-switch";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
@@ -35,14 +35,11 @@ import EfficiencyDrawer from './EfficiencyDrawer';
 import DayTime from '../../common/DayTimeWrapper'
 import { Loader } from '../../common/Loader';
 import { AcceptableMachineUOM } from '../../../config/masterData'
-import saveImg from '../../../assests/images/check.png'
-import cancelImg from '../../../assests/images/times.png'
 import imgRedcross from '../../../assests/images/red-cross.png'
-import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { masterFinalLevelUser } from '../actions/Material'
 import MasterSendForApproval from '../MasterSendForApproval'
-
-
+import { ProcessGroup } from '../masterUtil';
+import _ from 'lodash'
 
 const selector = formValueSelector('AddMoreDetails');
 
@@ -113,7 +110,10 @@ class AddMoreDetails extends Component {
       UOM: [],
       effectiveDate: '',
       showPopup: false,
-      updatedObj: {}
+      updatedObj: {},
+      lockUOMAndRate: false,
+      isProcessGroup: getConfigurationKey().IsMachineProcessGroup, // UNCOMMENT IT AFTER DONE FROM BACKEND AND REMOVE BELOW CODE
+      // isProcessGroup: true
     }
   }
 
@@ -234,6 +234,30 @@ class AddMoreDetails extends Component {
 
           const Data = res.data.Data;
 
+          this.props.getProcessGroupByMachineId(Data.MachineId, res => {
+
+            this.props.setGroupProcessList(res?.data?.DataList)
+
+            // TO DISABLE DELETE BUTTON WHEN GET DATA API CALLED (IN EDIT)
+            let uniqueProcessId = []
+            _.uniqBy(res?.data?.DataList, function (o) {
+              uniqueProcessId.push(o?.ProcessId)
+            });
+            let allProcessId = []
+            res?.data?.DataList && res?.data?.DataList.map((item) => {
+              let ProcessIdListTemp = []
+              item.ProcessList && item.ProcessList.map((item1) => {
+                ProcessIdListTemp.push(item1.ProcessId)
+                return null
+              })
+
+              allProcessId = [...allProcessId, ...ProcessIdListTemp]
+              return null
+            })
+            let uniqueSet = [...new Set(allProcessId)]
+            this.setState({ UniqueProcessId: uniqueSet })
+
+          })
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
 
           this.props.getLabourTypeByMachineTypeSelectList(Data.MachineTypeId ? Data.MachineTypeId : 0, () => { })
@@ -245,7 +269,7 @@ class AddMoreDetails extends Component {
             // let technologyArray = Data && Data.Technology.map((item) => ({ Text: item.Technology, Value: item.TechnologyId }))
             const plantObj = Data.Plant && plantSelectList && plantSelectList.find(item => item.Value === Data.Plant[0].PlantId)
             const machineTypeObj = machineTypeSelectList && machineTypeSelectList.find(item => Number(item.Value) === Data.MachineTypeId)
-            const shiftObj = ShiftTypeSelectList && ShiftTypeSelectList.find(item => item.Value == Data.WorkingShift)
+            const shiftObj = ShiftTypeSelectList && ShiftTypeSelectList.find(item => Number(item.Value) === Number(Data.WorkingShift))
             const depreciationObj = DepreciationTypeSelectList && DepreciationTypeSelectList.find(item => item.Value === Data.DepreciationType)
             const fuelObj = fuelComboSelectList && fuelComboSelectList.Fuels && fuelComboSelectList.Fuels.find(item => item.Value === Data.FuleId)
 
@@ -1187,7 +1211,7 @@ class AddMoreDetails extends Component {
    * @description ADDING PROCESS IN PROCESS TABLE 
   */
   processTableHandler = () => {
-    const { processName, UOM, processGrid, } = this.state;
+    const { processName, UOM, processGrid, isProcessGroup } = this.state;
     const { fieldsObj } = this.props
     const OutputPerHours = this.state.UOM.label === HOUR ? 0 : fieldsObj.OutputPerHours
 
@@ -1238,18 +1262,19 @@ class AddMoreDetails extends Component {
     this.setState({
       processGrid: tempArray,
       processName: [],
-      UOM: [],
+      UOM: isProcessGroup ? UOM : [],
+      lockUOMAndRate: isProcessGroup
     }, () => {
-      this.props.change('OutputPerHours', 0)
-      this.props.change('OutputPerYear', 0)
-      this.props.change('MachineRate', 0)
+      this.props.change('OutputPerHours', isProcessGroup ? OutputPerHours : 0)
+      this.props.change('OutputPerYear', isProcessGroup ? OutputPerYear : 0)
+      this.props.change('MachineRate', isProcessGroup ? MachineRate : 0)
     });
   }
 
   /**
-* @method updateProcessGrid
-* @description Used to handle updateProcessGrid
-*/
+  * @method updateProcessGrid
+  * @description Used to handle updateProcessGrid
+  */
   updateProcessGrid = () => {
     const { processName, UOM, processGrid, processGridEditIndex } = this.state;
     const { fieldsObj } = this.props
@@ -1322,15 +1347,18 @@ class AddMoreDetails extends Component {
   * @description RESET PROCESS TABIE GRID
   */
   resetProcessGridData = () => {
+    const { isProcessGroup, UOM } = this.state
+    const { fieldsObj } = this.props;
+
     this.setState({
       processName: [],
-      UOM: [],
+      UOM: isProcessGroup ? UOM : [],
       processGridEditIndex: '',
       isEditIndex: false,
     }, () => {
-      this.props.change('OutputPerHours', 0)
-      this.props.change('OutputPerYear', 0)
-      this.props.change('MachineRate', 0)
+      this.props.change('OutputPerHours', isProcessGroup ? fieldsObj.OutputPerHours : 0)
+      this.props.change('OutputPerYear', isProcessGroup ? fieldsObj.OutputPerYear : 0)
+      this.props.change('MachineRate', isProcessGroup ? fieldsObj.MachineRate : 0)
     });
   };
 
@@ -1359,7 +1387,8 @@ class AddMoreDetails extends Component {
   * @description used to Reset form
   */
   deleteItem = (index) => {
-    const { processGrid } = this.state;
+    const { processGrid, UOM } = this.state;
+    const { fieldsObj } = this.props;
 
     let tempData = processGrid.filter((item, i) => {
       if (i === index) {
@@ -1369,7 +1398,13 @@ class AddMoreDetails extends Component {
     });
 
     this.setState({
-      processGrid: tempData
+      processGrid: tempData,
+      lockUOMAndRate: tempData.length === 0 ? false : true,
+      UOM: tempData.length === 0 ? [] : UOM
+    }, () => {
+      this.props.change('OutputPerHours', tempData.length > 0 ? fieldsObj.OutputPerHours : 0)
+      this.props.change('OutputPerYear', tempData.length > 0 ? fieldsObj.OutputPerYear : 0)
+      this.props.change('MachineRate', tempData.length > 0 ? fieldsObj.MachineRate : 0)
     })
   }
 
@@ -1581,6 +1616,7 @@ class AddMoreDetails extends Component {
       VendorPlant: [],
       IsForcefulUpdated: true,
       EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
+      MachineProcessGroup: this.props.processGroupApiData
     }
 
     if (isEditFlag && this.state.isFinalApprovar) {               //editDetails.isIncompleteMachine &&
@@ -1678,6 +1714,7 @@ class AddMoreDetails extends Component {
         Attachements: files,
         VendorPlant: [],
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
+        MachineProcessGroup: this.props.processGroupApiData
       }
 
 
@@ -1744,7 +1781,7 @@ class AddMoreDetails extends Component {
   /**
   * @method workingHourToggle
   * @description WORKING HOUR ROW OPEN  AND CLOSE
- */
+  */
   workingHourToggle = () => {
     const { isWorkingOpen } = this.state
     this.setState({ isWorkingOpen: !isWorkingOpen })
@@ -1771,7 +1808,7 @@ class AddMoreDetails extends Component {
   /**
   * @method powerToggle
   * @description POWER OPEN  AND CLOSE
- */
+  */
   powerToggle = () => {
     const { isPowerOpen } = this.state
     this.setState({ isPowerOpen: !isPowerOpen })
@@ -1785,7 +1822,7 @@ class AddMoreDetails extends Component {
   /**
   * @method labourToggle
   * @description lABOUR OPEN  AND CLOSE
- */
+  */
   labourToggle = () => {
     const { isLabourOpen } = this.state
     this.setState({ isLabourOpen: !isLabourOpen })
@@ -1804,14 +1841,27 @@ class AddMoreDetails extends Component {
       e.preventDefault();
     }
   };
+
+  changeDropdownValue = () => {
+    this.setState({ DropdownChange: false })
+  }
+
+  showDelete = (uniqueProcessId) => {
+    if (this.state.UniqueProcessId?.length === 0 || this.state.UniqueProcessId === []) {
+      this.setState({ UniqueProcessId: [...this.state.UniqueProcessId, ...uniqueProcessId] })
+    } else {
+      this.setState({ UniqueProcessId: [...uniqueProcessId] })
+    }
+  }
+
   /**
   * @method render
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, loading, initialConfiguration } = this.props;
+    const { handleSubmit, loading, initialConfiguration, isMachineAssociated } = this.props;
     const { isLoader, isOpenAvailability, isEditFlag, isOpenMachineType, isOpenProcessDrawer, manufactureYear,
-      isLoanOpen, isWorkingOpen, isDepreciationOpen, isVariableCostOpen, isPowerOpen, isLabourOpen, isProcessOpen } = this.state;
+      isLoanOpen, isWorkingOpen, isDepreciationOpen, isVariableCostOpen, isPowerOpen, isLabourOpen, isProcessOpen, UniqueProcessId } = this.state;
 
     return (
       <>
@@ -1880,7 +1930,8 @@ class AddMoreDetails extends Component {
                             handleChangeDescription={this.handlePlants}
                             valueDescription={this.state.selectedPlants}
                             // disabled={isEditFlag ? true : false}
-                            disabled={false}
+                            disabled={this.state.isViewFlag || (isEditFlag && isMachineAssociated)}
+
                           />
                         </Col>
                         <Col md="3">
@@ -1906,7 +1957,7 @@ class AddMoreDetails extends Component {
                             validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                             component={renderText}
                             required={true}
-                            disabled={isEditFlag ? true : false}
+                            disabled={this.state.isViewFlag ? true : false}
                             className=" "
                             customClassName="withBorder"
                           />
@@ -1920,7 +1971,7 @@ class AddMoreDetails extends Component {
                             validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                             component={renderText}
                             // required={true}
-                            disabled={isEditFlag ? true : false}
+                            disabled={this.state.isViewFlag ? true : false}
                             className=" "
                             customClassName="withBorder"
                           />
@@ -1934,7 +1985,7 @@ class AddMoreDetails extends Component {
                             validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                             component={renderText}
                             // required={true}
-                            disabled={isEditFlag ? true : false}
+                            disabled={this.state.isViewFlag ? true : false}
                             className=" "
                             customClassName="withBorder"
                           />
@@ -1955,7 +2006,7 @@ class AddMoreDetails extends Component {
                                 //  required={true}
                                 handleChangeDescription={this.handleMachineType}
                                 valueDescription={this.state.machineType}
-                                disabled={isEditFlag ? true : false}
+                                disabled={this.state.isViewFlag ? true : false}
                               />
                             </div>
                             {!isEditFlag && <div
@@ -1973,7 +2024,7 @@ class AddMoreDetails extends Component {
                             validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                             component={renderText}
                             //required={true}
-                            disabled={isEditFlag ? true : false}
+                            disabled={this.state.isViewFlag ? true : false}
                             className=" "
                             customClassName="withBorder"
                           />
@@ -2001,7 +2052,7 @@ class AddMoreDetails extends Component {
                                 autoComplete={'off'}
                                 disabledKeyboardNavigation
                                 //onChangeRaw={(e) => e.preventDefault()}
-                                disabled={isEditFlag ? true : false}
+                                disabled={this.state.isViewFlag ? true : false}
                               />
                             </div>
                           </div>
@@ -2056,7 +2107,7 @@ class AddMoreDetails extends Component {
                             placeholder={'Enter'}
                             validate={[checkWhiteSpaces, postiveNumber, maxLength10]}
                             component={renderText}
-                            disabled={isEditFlag ? true : false}
+                            disabled={this.state.isViewFlag ? true : false}
                             className=" "
                             customClassName="withBorder"
                           />
@@ -2130,13 +2181,13 @@ class AddMoreDetails extends Component {
                                 validate={[required]}
                                 autoComplete={'off'}
                                 required={true}
-                                disabled={false}
                                 changeHandler={(e) => {
                                   //e.preventDefault()
                                 }}
                                 component={renderDatePicker}
                                 className="form-control"
-                                disabled={isEditFlag ? true : false}
+                                disabled={this.state.isViewFlag || isEditFlag ? true : false}
+
                               />
                             </div>
                           </div>
@@ -3104,7 +3155,7 @@ class AddMoreDetails extends Component {
                                 //required={true}
                                 handleChangeDescription={this.handleUOM}
                                 valueDescription={this.state.UOM}
-                                disabled={false}
+                                disabled={this.state.lockUOMAndRate}
                               />
                             </Col>
                             {
@@ -3120,7 +3171,7 @@ class AddMoreDetails extends Component {
                                     validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
                                     component={renderText}
                                     //required={true}
-                                    disabled={false}
+                                    disabled={this.state.lockUOMAndRate}
                                     className=" "
                                     customClassName="withBorder"
                                   />
@@ -3206,7 +3257,7 @@ class AddMoreDetails extends Component {
                                           <td>{checkForDecimalAndNull(item.MachineRate, initialConfiguration.NoOfDecimalForPrice)}</td>
                                           <td>
                                             <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(index)} />
-                                            <button className="Delete" type={'button'} onClick={() => this.deleteItem(index)} />
+                                            <button className="Delete" type={'button'} onClick={() => this.deleteItem(index)} disabled={UniqueProcessId?.includes(item.ProcessId)} />
                                           </td>
                                         </tr>
                                       )
@@ -3220,6 +3271,18 @@ class AddMoreDetails extends Component {
                         }
                       </Row>
 
+                      {
+                        this.state.isProcessGroup &&
+                        <Row>
+                          <Col md="12" className='mt-2'>
+                            <HeaderTitle
+                              title={'Process Group:'} />
+                          </Col>
+                          <Col md="12">
+                            <ProcessGroup isViewFlag={this.state.isViewFlag} isEditFlag={isEditFlag} processListing={this.state.processGrid} isListing={false} isViewMode={this.state.isViewMode} changeDropdownValue={this.changeDropdownValue} showDelete={this.showDelete} />
+                          </Col>
+                        </Row>
+                      }
                       <Row>
                         <Col md="12" className="filter-block">
                           <div className="mb-2">
@@ -3396,7 +3459,7 @@ function mapStateToProps(state) {
 
   const { technologySelectList, plantSelectList, UOMSelectList,
     ShiftTypeSelectList, DepreciationTypeSelectList, } = comman;
-  const { machineTypeSelectList, processSelectList, machineData, loading } = machine;
+  const { machineTypeSelectList, processSelectList, machineData, loading, processGroupApiData } = machine;
   const { labourTypeByMachineTypeSelectList } = labour;
   const { vendorListByVendorType } = material;
   const { fuelComboSelectList } = fuel;
@@ -3454,7 +3517,7 @@ function mapStateToProps(state) {
   return {
     vendorListByVendorType, technologySelectList, plantSelectList, UOMSelectList,
     machineTypeSelectList, processSelectList, ShiftTypeSelectList, DepreciationTypeSelectList,
-    initialConfiguration, labourTypeByMachineTypeSelectList, fuelComboSelectList, fieldsObj, initialValues, loading,
+    initialConfiguration, labourTypeByMachineTypeSelectList, fuelComboSelectList, fieldsObj, initialValues, loading, processGroupApiData
   }
 
 }
@@ -3486,6 +3549,7 @@ export default connect(mapStateToProps, {
   fileUploadMachine,
   fileDeleteMachine,
   masterFinalLevelUser,
+  getProcessGroupByMachineId
 })(reduxForm({
   form: 'AddMoreDetails',
   onSubmitFail: errors => {

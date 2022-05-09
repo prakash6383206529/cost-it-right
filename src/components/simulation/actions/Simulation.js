@@ -48,6 +48,9 @@ import {
     GET_KEYS_FOR_DOWNLOAD_SUMMARY,
     COMBINED_PROCESS,
     SET_ATTACHMENT_FILE_DATA,
+    SET_TOKEN_CHECK_BOX,
+    SET_KEY_FOR_API_CALLS,
+    SET_TOKEN_FOR_SIMULATION,
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
@@ -1429,7 +1432,7 @@ export function getListingForSimulationCombined(requestData, master, callback) {
                     case SURFACETREATMENT:
                         dispatch({
                             type: GET_OPERATION_COMBINED_DATA_LIST,
-                            payload: response.data.Data
+                            payload: response.data.DataList
                         })
                         break;
 
@@ -1465,6 +1468,24 @@ export function getListingForSimulationCombined(requestData, master, callback) {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
         })
+    }
+}
+
+export function setTokenCheckBoxValue(value) {
+    return (dispatch) => {
+        dispatch({
+            type: SET_TOKEN_CHECK_BOX,
+            payload: value,
+        });
+    }
+}
+
+export function setTokenForSimulation(value) {
+    return (dispatch) => {
+        dispatch({
+            type: SET_TOKEN_FOR_SIMULATION,
+            payload: value,
+        });
     }
 }
 

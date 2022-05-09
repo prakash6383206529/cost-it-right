@@ -188,7 +188,7 @@ function RMImportListing(props) {
       Id: Id,
       IsVendor: rowData.CostingHead === 'Vendor Based' ? true : rowData.CostingHead === 'Zero Based' ? false : rowData.CostingHead,
     }
-    props.getDetails(data);
+    props.getDetails(data, rowData?.IsRMAssociated);
   }
 
   /**
@@ -238,7 +238,7 @@ function RMImportListing(props) {
     let isDeleteButton = false
 
 
-    if (EditAccessibility && !rowData.IsRMAssociated) {
+    if (EditAccessibility) {
       isEditbale = true
     } else {
       isEditbale = false

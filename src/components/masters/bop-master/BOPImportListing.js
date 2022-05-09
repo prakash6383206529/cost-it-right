@@ -138,7 +138,7 @@ class BOPImportListing extends Component {
             IsVendor: rowData.CostingHead,
             isViewMode: isViewMode,
         }
-        this.props.getDetails(data);
+        this.props.getDetails(data, rowData?.IsBOPAssociated);
     }
 
 
@@ -206,7 +206,7 @@ class BOPImportListing extends Component {
         let isDeleteButton = false
 
 
-        if (EditAccessibility && !rowData.IsBOPAssociated) {
+        if (EditAccessibility) {
             isEditable = true
         } else {
             isEditable = false

@@ -96,8 +96,10 @@ function SimulationApprovalListing(props) {
         }
         setIsLoader(true)
         dispatch(getSimulationApprovalList(filterData, (res) => {
-            if (res.data.Result) {
-                setIsLoader(false)
+            if (res?.data?.Result) {
+                setTimeout(() => {
+                    setIsLoader(false)
+                }, 300);
             }
         }))
     }
