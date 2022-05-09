@@ -6,6 +6,9 @@ import { costingInfoContext } from "../CostingDetailStepTwo";
 import { getConfigurationKey } from "../../../../helper";
 import { EMPTY_GUID } from "../../../../config/constants";
 import LoaderCustom from "../../../common/LoaderCustom";
+import { Checkbox } from "@material-ui/core";
+
+
 function GroupProcess(props) {
     const { selectedProcessAndGroup, selectedProcessGroupId, CostingEffectiveDate } = useSelector(state => state.costing)
     const [isLoader, setIsLoader] = useState(false)
@@ -20,7 +23,7 @@ function GroupProcess(props) {
     useEffect(() => {
         let data = {
             VendorId: costData.VendorId,
-            TechnologyId: String(costData.TechnologyId),
+            TechnologyId: String(`${costData.TechnologyId},14`),
             VendorPlantId: getConfigurationKey()?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
             DestinationPlantId: getConfigurationKey()?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID,
             CostingId: costData.CostingId,
@@ -52,14 +55,22 @@ function GroupProcess(props) {
     }
 
     const handleCheckBox = (clickedData, index) => {
+
+        let removeCondition = false
+        selectedProcessAndGroup && selectedProcessAndGroup.map((el) => {
+            if (el.GroupName === clickedData.GroupName && el.MachineId === clickedData.MachineId) {
+                removeCondition = true
+            }
+        })
+
         let tempData = selectedData
         let tempArrForRedux = selectedProcessAndGroup
-        if (findGroupCode(selectedData)) {
+        if (removeCondition) {
             let tempArrAfterDelete = selectedData && selectedData.filter((el, i) => {
                 if (i === index) return false;
                 return true
             })
-            tempArrForRedux = selectedProcessAndGroup && selectedProcessAndGroup.filter(el => el.MachineId !== clickedData.MachineId && el.GroupName !== clickedData.GroupName)
+            tempArrForRedux = selectedProcessAndGroup && selectedProcessAndGroup.filter((el) => { return el.GroupName !== clickedData.GroupName })
             dispatch(setSelectedDataOfCheckBox(tempArrForRedux))
             setSelectedData(tempArrAfterDelete)
         } else {
@@ -68,6 +79,16 @@ function GroupProcess(props) {
             dispatch(setSelectedDataOfCheckBox(tempArrForRedux))
             setSelectedData(tempData)
         }
+    }
+
+    const isCheckBoxApplicable = (item, index) => {
+        let result = false
+        selectedProcessAndGroup && selectedProcessAndGroup.map((el) => {
+            if (el.GroupName === item.GroupName && el.MachineId === item.MachineId) {
+                result = true
+            }
+        })
+        return result
     }
 
     return (
@@ -92,7 +113,7 @@ function GroupProcess(props) {
                                 <tr>
 
                                     <td> <span className='mr-2'>
-                                        {!findGroupCode(item, selectedProcessGroupId) && <input type="checkbox" onClick={() => handleCheckBox(item, index)} />}
+                                        {!findGroupCode(item, selectedProcessGroupId) && <input type="checkbox" defaultChecked={isCheckBoxApplicable(item, index)} onClick={() => handleCheckBox(item, index)} />}
                                     </span>
                                         {item.GroupName}</td>
                                     <td>{item.Technology}</td>

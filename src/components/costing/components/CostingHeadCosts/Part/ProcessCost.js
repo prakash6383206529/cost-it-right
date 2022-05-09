@@ -54,7 +54,7 @@ function ProcessCost(props) {
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { CostingEffectiveDate } = useSelector(state => state.costing)
+  const { CostingEffectiveDate, selectedProcessId, selectedProcessGroupId, selectedProcessAndGroup } = useSelector(state => state.costing)
   const { rmFinishWeight } = props
 
   // const fieldValues = useWatch({
@@ -159,6 +159,7 @@ function ProcessCost(props) {
    * @description For opening weight calculator
   */
   const toggleWeightCalculator = (id, list = [], parentIndex = '') => {
+    console.log('list: ', list);
 
 
     setCalciIndex(id)
@@ -276,11 +277,12 @@ function ProcessCost(props) {
       }, 0)
       let ProductionPerHour = 0
       ProductionPerHour = gridTempArr && gridTempArr.reduce((accummlator, el) => {
+
         return accummlator + checkForNull((el.ProductionPerHour === null || el.ProductionPerHour === '-') ? 0 : Number(el.ProductionPerHour))
       }, 0)
 
-      setValue(`${SingleProcessGridField}.${calciIndex}.Quantity`, tempData.UOMType === TIME ? checkForDecimalAndNull((weightData.ProcessCost / weightData.MachineRate), getConfigurationKey().NoOfDecimalForInputOutput) : weightData.Quantity)
-      setValue(`${SingleProcessGridField}.${calciIndex}.ProcessCost`, checkForDecimalAndNull(weightData.ProcessCost, initialConfiguration.NoOfDecimalForPrice))
+      setValue(`${SingleProcessGridField}.${calciIndex}.${parentCalciIndex}.Quantity`, tempData.UOMType === TIME ? checkForDecimalAndNull((weightData.ProcessCost / weightData.MachineRate), getConfigurationKey().NoOfDecimalForInputOutput) : weightData.Quantity)
+      setValue(`${SingleProcessGridField}.${calciIndex}.${parentCalciIndex}.ProcessCost`, checkForDecimalAndNull(weightData.ProcessCost, initialConfiguration.NoOfDecimalForPrice))
       //MAIN PROCESS ROW WITH GROUP
 
 
@@ -295,18 +297,18 @@ function ProcessCost(props) {
       let processTemparr = Object.assign([...gridData], { [parentCalciIndex]: processTempData })
 
 
-      let apiArr = formatMainArr(processTemparr)
-      // processTemparr && processTemparr.map((item) => {
-      //   if (item.GroupName === '' || item.GroupName === null) {
-      //     apiArr.push(item)
-      //   } else {
-      //     apiArr.push(item)
-      //     item.ProcessList && item.ProcessList.map(processItem => {
-      //       processItem.GroupName = item.GroupName
-      //       apiArr.push(processItem)
-      //     })
-      //   }
-      // })
+      let apiArr = []
+      processTemparr && processTemparr.map((item) => {
+        if (item.GroupName === '' || item.GroupName === null) {
+          apiArr.push(item)
+        } else {
+          apiArr.push(item)
+          item.ProcessList && item.ProcessList.map(processItem => {
+            processItem.GroupName = item.GroupName
+            apiArr.push(processItem)
+          })
+        }
+      })
 
       let finalProcessCostTotal = processTemparr && processTemparr.reduce((accummlator, el) => {
         return accummlator + checkForNull(el.ProcessCost)
@@ -515,7 +517,6 @@ function ProcessCost(props) {
       if (i === index) return false;
       return true
     })
-
     setTimeout(() => {
       let ProcessCostTotal = 0
       ProcessCostTotal = tempArrAfterDelete && tempArrAfterDelete.reduce((accummlator, el) => {
@@ -547,6 +548,26 @@ function ProcessCost(props) {
         return null
       })
     }, 200)
+
+
+    if (gridData[index]?.ProcessList?.length > 0) {
+      let tempArr = selectedProcessGroupId
+      let newArr = []
+      // tempArr = tempArr.filter((el) => { return (el.GroupName !== gridData[index].GroupName && el.MachineId !== gridData[index].MachineId) })
+      tempArr && tempArr.map((el) => {
+        if (el.GroupName === gridData[index].GroupName && el.MachineId === gridData[index].MachineId) {
+          return false
+        } else {
+          newArr.push(el)
+        }
+      })
+
+      dispatch(setIdsOfProcessGroup(newArr))
+    } else {
+      let tempArr1 = selectedProcessId
+      tempArr1 = tempArr1.filter((el) => el.ProcessId !== gridData[index].ProcessId)
+      dispatch(setIdsOfProcess(tempArr1))
+    }
   }
 
   const handleQuantityChange = (event, index) => {
@@ -851,13 +872,13 @@ function ProcessCost(props) {
             <td>{item.Tonnage}</td>
             <td>{item.MHR}</td>
             <td>{item.UOM}</td>
-            <td>{item.ProductionPerHour}</td>
+            <td>{(item?.ProductionPerHour === '-' || item?.ProductionPerHour === 0 || item?.ProductionPerHour === null || item?.ProductionPerHour === undefined) ? '-' : checkForDecimalAndNull(item.ProductionPerHour, getConfigurationKey().NoOfDecimalForInputOutput)}</td>
             <td style={{ width: 150 }}>
               <span className="d-inline-block w90px mr-2">
                 {
                   <NumberFieldHookForm
                     label=""
-                    name={`${SingleProcessGridField}.${index}.Quantity`}
+                    name={`${SingleProcessGridField}.${index}.${parentIndex}.Quantity`}
                     Controller={Controller}
                     control={control}
                     register={register}
@@ -892,7 +913,7 @@ function ProcessCost(props) {
               {
                 <TextFieldHookForm
                   label=""
-                  name={`${SingleProcessGridField}.${index}.ProcessCost`}
+                  name={`${SingleProcessGridField}.${index}.${parentIndex}.ProcessCost`}
                   Controller={Controller}
                   control={control}
                   register={register}
@@ -915,7 +936,7 @@ function ProcessCost(props) {
                   position="top center">
                   <TextAreaHookForm
                     label="Remark:"
-                    name={`${SingleProcessGridField}.${index}.remarkPopUp`}
+                    name={`${SingleProcessGridField}.${index}.${parentIndex}.remarkPopUp`}
                     Controller={Controller}
                     control={control}
                     register={register}
@@ -930,7 +951,7 @@ function ProcessCost(props) {
                     defaultValue={item.Remark ?? item.Remark}
                     className=""
                     customClassName={"withBorder"}
-                    errors={errors && errors.SingleProcessGridField && errors.SingleProcessGridField[index] !== undefined ? errors.SingleProcessGridField[index].remarkPopUp : ''}
+                    errors={errors && errors.SingleProcessGridField && errors.SingleProcessGridField[index][parentIndex] !== undefined ? errors.SingleProcessGridField[index][parentIndex].remarkPopUp : ''}
                     //errors={errors && errors.remarkPopUp && errors.remarkPopUp[index] !== undefined ? errors.remarkPopUp[index] : ''}                        
                     disabled={(CostingViewMode || IsLocked) ? true : false}
                     hidden={false}
