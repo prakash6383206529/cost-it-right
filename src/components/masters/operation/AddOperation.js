@@ -635,7 +635,8 @@ class AddOperation extends Component {
 
       }
 
-      if (Number(DataToChange.Rate) === Number(values.Rate) && DataToChange.Remark === values.Remark && UOM.value === oldUOM.value && uploadAttachements) {
+      if (Number(DataToChange.Rate) === Number(values.Rate) && DataToChange.Remark === values.Remark && UOM.value === oldUOM.value
+        && DataToChange.Description === values.Description && uploadAttachements) {
         this.cancel()
         return false
       }
@@ -759,7 +760,7 @@ class AddOperation extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, initialConfiguration } = this.props;
+    const { handleSubmit, initialConfiguration, isOperationAssociated } = this.props;
     const { isEditFlag, isOpenVendor, isOpenUOM, isDisableCode, isViewMode, setDisable, disablePopup } = this.state;
     const filterList = (inputValue) => {
       let tempArr = []
@@ -888,7 +889,7 @@ class AddOperation extends Component {
                           placeholder={"Enter"}
                           validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                           component={renderText}
-                          disabled={isEditFlag ? true : false}
+                          disabled={isViewMode ? true : false}
                           className=" "
                           customClassName=" withBorder"
                         />
@@ -917,8 +918,8 @@ class AddOperation extends Component {
                       )}
                       {this.state.IsVendor && (
                         <Col md="3"><label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                          {this.state.inputLoader && <LoaderCustom customClass={`input-loader vendor-input `} />}
-                          <div className="d-flex justify-space-between align-items-center inputwith-icon async-select">
+                          <div className="d-flex justify-space-between align-items-center p-relative async-select">
+                            {this.state.inputLoader && <LoaderCustom customClass={`vendor-input-loader`} />}
                             <div className="fullinput-icon">
                               <AsyncSelect
                                 name="vendorName"
@@ -928,7 +929,7 @@ class AddOperation extends Component {
                                 onChange={(e) => this.handleVendorName(e)}
                                 value={this.state.vendorName}
                                 noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
-                                isDisabled={isEditFlag ? true : false} />
+                                isDisabled={(isEditFlag || this.state.inputLoader) ? true : false} />
                               {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
                             </div>
                             {!isEditFlag && (
@@ -991,7 +992,7 @@ class AddOperation extends Component {
                           required={true}
                           handleChangeDescription={this.handleUOM}
                           valueDescription={this.state.UOM}
-                          disabled={isViewMode}
+                          disabled={isViewMode || (isEditFlag && isOperationAssociated)}
                         />
                       </Col>
                       <Col md="3">
@@ -1003,7 +1004,7 @@ class AddOperation extends Component {
                           validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
                           component={renderText}
                           required={true}
-                          disabled={isViewMode}
+                          disabled={isViewMode || (isEditFlag && isOperationAssociated)}
                           onChange={this.handleRateChange}
                           className=" "
                           customClassName=" withBorder"

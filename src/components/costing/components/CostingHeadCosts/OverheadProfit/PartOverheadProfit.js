@@ -11,15 +11,14 @@ import Toaster from '../../../../common/Toaster';
 import { MESSAGES } from '../../../../../config/message';
 
 function PartOverheadProfit(props) {
-  const { item } = props;
 
+  const { item } = props;
   const [Count, setCount] = useState(0);
   const [IsOpen, setIsOpen] = useState(false);
-
   const dispatch = useDispatch()
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { ComponentItemDiscountData, CostingEffectiveDate,checkIsOverheadProfitChange } = useSelector(state => state.costing)
+  const { ComponentItemDiscountData, CostingEffectiveDate, checkIsOverheadProfitChange } = useSelector(state => state.costing)
 
   const costData = useContext(costingInfoContext);
   const netPOPrice = useContext(NetPOPriceContext);
@@ -49,11 +48,7 @@ function PartOverheadProfit(props) {
     }, 500)
   }
 
-  /**
-  * @method onSubmit
-  * @description Used to Submit the form
-  */
-  const onSubmit = (values) => { }
+
 
   /**
   * @method SAVE API CALL WHEN COMPONENT CLOSED
@@ -68,7 +63,7 @@ function PartOverheadProfit(props) {
   * @description Used to Submit the form
   */
   const saveCosting = (values) => {
-    if(checkIsOverheadProfitChange){
+    if (checkIsOverheadProfitChange) {
       let reqData = {
         "CostingId": item.CostingId,
         "LoggedInUserId": loggedInUserId(),
@@ -106,7 +101,7 @@ function PartOverheadProfit(props) {
   }, [IsOpen])
 
 
- 
+
 
   /**
   * @method render
@@ -115,8 +110,8 @@ function PartOverheadProfit(props) {
   return (
     <>
       <tr id="assembly-costing-header" className="accordian-row" onClick={() => toggle(item.BOMLevel, item.PartNumber)}>
-        <td>
-          <span style={{ position: 'relative' }} className={`cr-prt-nm1 cr-prt-link1 ${item && item.BOMLevel}`}>
+        <td className='part-overflow'>
+          <span className={`part-name ${item && item.BOMLevel}`} title={`${item && item.PartNumber}-${item && item.BOMLevel}`}>
             {item && item.PartNumber}-{item && item.BOMLevel}<div className={`${item.IsOpen ? 'Open' : 'Close'}`}></div>
           </span>
         </td>

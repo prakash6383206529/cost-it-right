@@ -44,6 +44,9 @@ class AddInterestRate extends Component {
       setDisable: false,
       disablePopup: false,
       inputLoader: false,
+      isDataChanged: this.props.data.isEditFlag,
+      minEffectiveDate: '',
+
     }
   }
   /**
@@ -142,6 +145,9 @@ class AddInterestRate extends Component {
     } else {
       this.setState({ ICCApplicability: [], })
     }
+    if (this.state.isEditFlag) {
+      this.setState({ isDataChanged: true })
+    }
   };
 
   /**
@@ -154,8 +160,53 @@ class AddInterestRate extends Component {
     } else {
       this.setState({ PaymentTermsApplicability: [], })
     }
+    if (this.state.isEditFlag) {
+      this.setState({ isDataChanged: true })
+    }
   };
 
+  /**
+  * @method handleChangeAnnualIccPercentage
+  * @description called
+  */
+  handleChangeAnnualIccPercentage = (newValue) => {
+    if (this.state.isEditFlag) {
+      if (String(newValue) === String(this.state.Data.ICCPercent) &&
+        String(this.state.ICCApplicability.label) === String(this.state.Data.ICCApplicability)) {
+        this.setState({ isDataChanged: true })
+      } else {
+        this.setState({ isDataChanged: false })
+      }
+    }
+  };
+
+  /**
+  * @method handleChangeRepaymentPeriod
+  * @description called
+  */
+  handleChangeRepaymentPeriod = (newValue) => {
+    if (this.state.isEditFlag) {
+      if (String(newValue) === String(this.state.Data.RepaymentPeriod) && String(this.state.PaymentTermsApplicability.label) === String(this.state.Data.PaymentTermApplicability)) {
+        this.setState({ isDataChanged: true })
+      } else {
+        this.setState({ isDataChanged: false })
+      }
+    }
+  };
+
+  /**
+  * @method handleChangePaymentTermPercentage
+  * @description called
+  */
+  handleChangePaymentTermPercentage = (newValue) => {
+    if (this.state.isEditFlag) {
+      if (String(newValue) === String(this.state.Data.PaymentTermPercent) && String(this.state.PaymentTermsApplicability.label) === String(this.state.Data.PaymentTermApplicability)) {
+        this.setState({ isDataChanged: true })
+      } else {
+        this.setState({ isDataChanged: false })
+      }
+    }
+  };
 
   /**
   * @method handleChange
@@ -183,6 +234,7 @@ class AddInterestRate extends Component {
           let Data = res.data.Data;
           this.setState({ Data: Data })
           this.props.change("EffectiveDate", DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
+          this.setState({ minEffectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '' })
           setTimeout(() => {
             const { vendorWithVendorCodeSelectList, paymentTermsSelectList, iccApplicabilitySelectList, } = this.props;
 
@@ -352,7 +404,7 @@ class AddInterestRate extends Component {
       pos_drop_down = "top";
     }
     const { handleSubmit, } = this.props;
-    const { isEditFlag, isViewMode, setDisable, disablePopup } = this.state;
+    const { isEditFlag, isViewMode, setDisable, disablePopup, isDataChanged } = this.state;
 
     const filterList = (inputValue) => {
       let tempArr = []
@@ -426,7 +478,7 @@ class AddInterestRate extends Component {
                         <Col md="3" className='mb-4'>
 
                           <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                          {this.state.inputLoader && <LoaderCustom customClass={`input-loader interest-rate-vendor-loader `} />}
+                          {this.state.inputLoader && <LoaderCustom customClass={`vendor-input-loader-col`} />}
                           <AsyncSelect
                             name="vendorName"
                             ref={this.myRef}
@@ -434,7 +486,7 @@ class AddInterestRate extends Component {
                             loadOptions={promiseOptions}
                             onChange={(e) => this.handleVendorName(e)}
                             noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
-                            value={this.state.vendorName} isDisabled={isEditFlag ? true : false} />
+                            value={this.state.vendorName} isDisabled={(isEditFlag || this.state.inputLoader) ? true : false} />
                           {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
 
                         </Col>
@@ -470,21 +522,22 @@ class AddInterestRate extends Component {
                       {
                         this.state.ICCApplicability.label !== 'Fixed' &&
 
-                      <Col md="3">
-                        <Field
-                          label={`Annual ICC (%)`}
-                          name={"ICCPercent"}
-                          type="text"
-                          placeholder={"Enter"}
-                          validate={[required, positiveAndDecimalNumber, decimalLengthThree]}
-                          max={100}
-                          component={renderText}
-                          required={true}
-                          disabled={isViewMode}
-                          className=" "
-                          customClassName=" withBorder"
-                        />
-                      </Col>
+                        <Col md="3">
+                          <Field
+                            label={`Annual ICC (%)`}
+                            name={"ICCPercent"}
+                            type="text"
+                            placeholder={"Enter"}
+                            validate={[required, positiveAndDecimalNumber, decimalLengthThree]}
+                            max={100}
+                            component={renderText}
+                            required={true}
+                            onChange={(event) => this.handleChangeAnnualIccPercentage(event.target.value)}
+                            disabled={isViewMode}
+                            className=" "
+                            customClassName=" withBorder"
+                          />
+                        </Col>
                       }
                     </Row>
 
@@ -518,39 +571,41 @@ class AddInterestRate extends Component {
                         />
                       </Col>
                       {
-                        this.state.PaymentTermsApplicability.label !=='Fixed' &&
-<>
+                        this.state.PaymentTermsApplicability.label !== 'Fixed' &&
+                        <>
 
-                      <Col md="3">
-                        <Field
-                          label={`Repayment Period (Days)`}
-                          name={"RepaymentPeriod"}
-                          type="text"
-                          placeholder={"Enter"}
-                          validate={[postiveNumber, maxLength10]}
-                          component={renderText}
-                          required={false}
-                          disabled={isViewMode}
-                          className=" "
-                          customClassName=" withBorder"
-                        />
-                      </Col>
-                      <Col md="3">
-                        <Field
-                          label={`Payment Term (%)`}
-                          name={"PaymentTermPercent"}
-                          type="text"
-                          placeholder={"Enter"}
-                          validate={[positiveAndDecimalNumber, decimalLengthThree]}
-                          component={renderText}
-                          max={100}
-                          required={false}
-                          disabled={isViewMode}
-                          className=" "
-                          customClassName=" withBorder"
-                        />
-                      </Col>
-</>
+                          <Col md="3">
+                            <Field
+                              label={`Repayment Period (Days)`}
+                              name={"RepaymentPeriod"}
+                              type="text"
+                              placeholder={"Enter"}
+                              validate={[postiveNumber, maxLength10]}
+                              component={renderText}
+                              required={false}
+                              onChange={(event) => this.handleChangeRepaymentPeriod(event.target.value)}
+                              disabled={isViewMode}
+                              className=" "
+                              customClassName=" withBorder"
+                            />
+                          </Col>
+                          <Col md="3">
+                            <Field
+                              label={`Payment Term (%)`}
+                              name={"PaymentTermPercent"}
+                              type="text"
+                              placeholder={"Enter"}
+                              validate={[positiveAndDecimalNumber, decimalLengthThree]}
+                              component={renderText}
+                              max={100}
+                              required={false}
+                              onChange={(event) => this.handleChangePaymentTermPercentage(event.target.value)}
+                              disabled={isViewMode}
+                              className=" "
+                              customClassName=" withBorder"
+                            />
+                          </Col>
+                        </>
                       }
                       <Col md="3">
                         <div className="form-group">
@@ -564,6 +619,7 @@ class AddInterestRate extends Component {
                               selected={this.state.effectiveDate}
                               onChange={this.handleEffectiveDateChange}
                               type="text"
+                              minDate={this.state.minEffectiveDate}
                               validate={[required]}
                               autoComplete={'off'}
                               required={true}
@@ -571,12 +627,9 @@ class AddInterestRate extends Component {
 
                               }}
                               component={renderDatePicker}
-                              disabled={isEditFlag ? true : false
-                              }
+                              disabled={isViewMode || isDataChanged}
                               className="form-control"
-
                             />
-
                           </div>
                         </div>
                       </Col>

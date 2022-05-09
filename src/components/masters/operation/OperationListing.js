@@ -5,7 +5,7 @@ import { Row, Col, } from 'reactstrap';
 import { focusOnError } from "../../layout/FormInputs";
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { EMPTY_DATA, OPERATIONS, RMDOMESTIC, SURFACETREATMENT } from '../../../config/constants';
+import { EMPTY_DATA, OPERATIONS, SURFACETREATMENT } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import {
     getOperationsDataList, deleteOperationAPI, getOperationSelectList, getVendorWithVendorCodeSelectList, getTechnologySelectList,
@@ -17,8 +17,8 @@ import AddOperation from './AddOperation';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { ADDITIONAL_MASTERS, OPERATION, OperationMaster, OPERATIONS_ID } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
-import { loggedInUserId } from '../../../helper/auth';
-import { getFilteredData, CheckApprovalApplicableMaster } from '../../../helper'
+import { loggedInUserId, userDetails } from '../../../helper/auth';
+import { getFilteredData } from '../../../helper'
 import { costingHeadObjs, OPERATION_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
 import DayTime from '../../common/DayTimeWrapper'
@@ -29,6 +29,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
 import { getListingForSimulationCombined } from '../../simulation/actions/Simulation'
+import { masterFinalLevelUser } from '../../masters/actions/Material'
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -60,7 +61,8 @@ class OperationListing extends Component {
             selectedRowData: [],
             showPopup: false,
             deletedId: '',
-            isLoader: false
+            isLoader: false,
+            isFinalApprovar: false
         }
     }
 
@@ -69,18 +71,26 @@ class OperationListing extends Component {
         this.props.getTechnologySelectList(() => { })
         this.props.getOperationSelectList(() => { })
         this.props.getVendorWithVendorCodeSelectList()
-        if (this.props.isSimulation) {
-            if (this.props.selectionForListingMasterAPI === 'Combined') {
-                this.props?.changeSetLoader(true)
-                this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, OPERATIONS, (res) => {
-                    this.props?.changeSetLoader(false)
-                    this.setState({ tableData: res.data.DataList })
-                })
-            }
-        }
-        if (this.props.selectionForListingMasterAPI === 'Master') {
+        if (this.props.isSimulation && this.props?.selectionForListingMasterAPI === 'Combined') {
+            this.props?.changeSetLoader(true)
+            this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, OPERATIONS, (res) => {
+                this.props?.changeSetLoader(false)
+                this.setState({ tableData: res.data.DataList })
+            })
+        } else {
             this.getTableListData(null, null, null, null)
         }
+        let obj = {
+            MasterId: OPERATIONS_ID,
+            DepartmentId: userDetails().DepartmentId,
+            LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
+            LoggedInUserId: loggedInUserId()
+        }
+        this.props.masterFinalLevelUser(obj, (res) => {
+            if (res?.data?.Result) {
+                this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+            }
+        })
 
     }
 
@@ -136,7 +146,7 @@ class OperationListing extends Component {
         }
 
 
-        if (isMasterSummaryDrawer !== undefined && !isMasterSummaryDrawer) {
+        if ((isMasterSummaryDrawer !== undefined && !isMasterSummaryDrawer)) {
             if (this.props.isSimulation) {
                 this.props?.changeTokenCheckBox(false)
             }
@@ -177,9 +187,16 @@ class OperationListing extends Component {
                 }
             });
         } else {
+            if (this.props.isSimulation) {
+                this.props?.changeSetLoader(true)
+            }
 
             setTimeout(() => {
                 this.setState({ tableData: this.props.operationList })
+                if (this.props.isSimulation) {
+                    this.props?.changeSetLoader(false)
+                }
+                this.setState({ isLoader: false })
 
             }, 700);
 
@@ -239,7 +256,7 @@ class OperationListing extends Component {
             toggleForm: true,
             isViewMode: isViewMode
         }
-        this.props.getDetails(data);
+        this.props.getDetails(data, rowData?.IsOperationAssociated);
     }
 
     /**
@@ -283,7 +300,7 @@ class OperationListing extends Component {
         let isDeleteButton = false
 
 
-        if (EditAccessibility && !rowData.IsOperationAssociated) {
+        if (EditAccessibility) {
             isEditable = true
         } else {
             isEditable = false
@@ -511,7 +528,7 @@ class OperationListing extends Component {
 
     onPageSizeChanged = (newPageSize) => {
         var value = document.getElementById('page-size').value;
-        this.state.gridApi.paginationSetPageSize(Number(value));
+        this.state.gridApi.paginationSetPageSize(Number(newPageSize));
     };
 
     onBtExport = () => {
@@ -633,13 +650,15 @@ class OperationListing extends Component {
         return (
             <div className="container-fluid">
                 {(this.state.isLoader && !this.props.isMasterSummaryDrawer) && <LoaderCustom />}
-                <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""} ${isSimulation ? "zindex-0" : ""}`}>
+                <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
                     <form>
 
-                        <Row className="pt-4 filter-row-large blue-before">
-                            {(!isSimulation) &&
-
-                                <Col md="6" lg="6" className="search-user-block mb-3">
+                        <Row className={`pt-4 filter-row-large blue-before ${isSimulation ? "zindex-0" : ""}`}>
+                            <Col md="6" lg="6">
+                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                            </Col>
+                            <Col md="6" lg="6" className=" mb-3 d-flex justify-content-end">
+                                {(!isSimulation) &&
                                     <div className="d-flex justify-content-end bd-highlight w100">
                                         <div>
                                             {this.state.shown ?
@@ -682,26 +701,20 @@ class OperationListing extends Component {
 
                                                         {this.onBtExport()}
                                                     </ExcelFile>
-
                                                 </>
-
-
                                             }
-                                            <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => this.resetState()}>
-                                                <div className="refresh mr-0"></div>
-                                            </button>
-
                                         </div>
                                     </div>
-                                </Col>
-                            }
+                                }
+                                <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => this.resetState()}>
+                                    <div className="refresh mr-0"></div>
+                                </button>
+                            </Col>
+
                         </Row>
                     </form>
 
-                    <div className={`ag-grid-wrapper height-width-wrapper ${this.getFilterOperationData() && this.getFilterOperationData()?.length <= 0 ? "overlay-contain" : ""}`}>
-                        <div className={`ag-grid-header ${isSimulation ? "zindex-0" : ""}`}>
-                            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
-                        </div>
+                    <div className={`ag-grid-wrapper ${this.props.isSimulation ? 'simulation-height' : 'height-width-wrapper'} ${this.getFilterOperationData() && this.getFilterOperationData()?.length <= 0 ? "overlay-contain" : ""}`}>
                         <div className={`ag-theme-material ${(this.state.isLoader && !this.props.isMasterSummaryDrawer) && "max-loader-height"}`}>
                             <AgGridReact
                                 defaultColDef={defaultColDef}
@@ -727,7 +740,7 @@ class OperationListing extends Component {
                                 <AgGridColumn field="Technology" filter={true} floatingFilter={true} headerName="Technology"></AgGridColumn>
                                 <AgGridColumn field="OperationName" headerName="Operation Name"></AgGridColumn>
                                 <AgGridColumn field="OperationCode" headerName="Operation Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                <AgGridColumn field="Plants" headerName="Plant(Code)" cellRenderer={'renderPlantFormatter'} ></AgGridColumn>
+                                <AgGridColumn field="Plants" headerName="Plant(Code)" ></AgGridColumn>
                                 <AgGridColumn field="VendorName" headerName="Vendor(Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 <AgGridColumn field="UnitOfMeasurement" headerName="UOM"></AgGridColumn>
                                 <AgGridColumn field="Rate" headerName="Rate" cellRenderer={'hyphenFormatter'}></AgGridColumn>
@@ -752,6 +765,7 @@ class OperationListing extends Component {
                         isZBCVBCTemplate={true}
                         messageLabel={'Operation'}
                         anchor={'right'}
+                        isFinalApprovar={this.state.isFinalApprovar}
                     />}
                 </div>
                 {
@@ -791,7 +805,8 @@ export default connect(mapStateToProps, {
     getVendorListByOperation,
     getTechnologyListByVendor,
     getOperationListByVendor,
-    getListingForSimulationCombined
+    getListingForSimulationCombined,
+    masterFinalLevelUser
 })(reduxForm({
     form: 'OperationListing',
     onSubmitFail: errors => {

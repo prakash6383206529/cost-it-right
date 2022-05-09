@@ -21,13 +21,15 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
-import { toastr } from 'react-redux-toastr';
+import ReactExport from 'react-export-excel';
+import { USER_LISTING_DOWNLOAD_EXCEl } from '../../config/masterData';
+import { UserListing } from '../../config/constants';
+
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
-
-function enumFormatter(cell, row, enumObject) {
-	return enumObject[cell];
-}
 
 class UsersListing extends Component {
 	constructor(props) {
@@ -55,7 +57,7 @@ class UsersListing extends Component {
 			deletedId: '',
 			cell: [],
 			row: [],
-			isLoader:false
+			isLoader: false
 		}
 	}
 
@@ -86,6 +88,7 @@ class UsersListing extends Component {
 				let obj = {}
 				Data && Data.map((el, i) => {
 					obj[el.DepartmentId] = el.DepartmentName
+					return null
 				})
 				this.setState({
 					departmentType: obj,
@@ -100,6 +103,7 @@ class UsersListing extends Component {
 				let obj = {}
 				Data && Data.map((el, i) => {
 					obj[el.RoleId] = el.RoleName
+					return null
 				})
 				this.setState({
 					roleType: obj,
@@ -109,6 +113,21 @@ class UsersListing extends Component {
 
 	}
 
+
+	onBtExport = () => {
+		let tempArr = []
+
+		tempArr = this.props.userDataList
+		return this.returnExcelColumn(USER_LISTING_DOWNLOAD_EXCEl, tempArr)
+	};
+
+	returnExcelColumn = (data = [], TempData) => {
+
+		return (
+			<ExcelSheet data={TempData} name={UserListing}>
+				{data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+			</ExcelSheet>);
+	}
 
 
 	// Get updated user list after any action performed.
@@ -126,9 +145,9 @@ class UsersListing extends Component {
 			DepartmentId: departmentId,
 			RoleId: roleId,
 		}
-		this.setState({isLoader:true})
+		this.setState({ isLoader: true })
 		this.props.getAllUserDataAPI(data, res => {
-			this.setState({isLoader:false})
+			this.setState({ isLoader: false })
 			if (res.status === 204 && res.data === '') {
 				this.setState({ userData: [], })
 			} else if (res && res.data && res.data.DataList) {
@@ -204,7 +223,7 @@ class UsersListing extends Component {
 		}
 		this.props.activeInactiveUser(data, (res) => {
 			if (res && res.data && res.data.Result) {
-				if (this.state.cell == true) {
+				if (Boolean(this.state.cell) === true) {
 					Toaster.success(MESSAGES.USER_INACTIVE_SUCCESSFULLY)
 				} else {
 					Toaster.success(MESSAGES.USER_ACTIVE_SUCCESSFULLY)
@@ -245,7 +264,7 @@ class UsersListing extends Component {
 				this.setState({ showPopup2: false })
 			}
 		};
-		return toastr.confirm(`${MESSAGES.USER_DELETE_ALERT}`, toastrConfirmOptions);
+		return Toaster.confirm(`${MESSAGES.USER_DELETE_ALERT}`, toastrConfirmOptions);
 	}
 
 	/**
@@ -267,7 +286,6 @@ class UsersListing extends Component {
 	*/
 	buttonFormatter = (props) => {
 		const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-		const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
 		const { EditAccessibility } = this.state;
 		if (cellValue === loggedInUserId()) return null;
@@ -509,17 +527,7 @@ class UsersListing extends Component {
 	*/
 	render() {
 		const { handleSubmit, initialConfiguration, } = this.props;
-		const { EditAccessibility, departmentType, roleType, AddAccessibility } = this.state;
-		const options = {
-			clearSearch: true,
-			noDataText: (this.props.userDataList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
-			paginationShowsTotal: this.renderPaginationShowsTotal,
-			prePage: <span className="prev-page-pg"></span>, // Previous page button text
-			nextPage: <span className="next-page-pg"></span>, // Next page button text
-			firstPage: <span className="first-page-pg"></span>, // First page button text
-			lastPage: <span className="last-page-pg"></span>,
-
-		};
+		const { EditAccessibility, AddAccessibility } = this.state;
 
 		const defaultColDef = {
 			resizable: true,
@@ -603,14 +611,13 @@ class UsersListing extends Component {
 								<div className="d-flex justify-content-end bd-highlight w100">
 									{AddAccessibility && (
 										<div>
-											{this.state.shown ? (
-												<button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
-													<div className="cancel-icon-white"></div></button>
-											) : (
-												<button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
-													<div className="filter mr-0"></div>
-												</button>
-											)}
+											<ExcelFile filename={'User Listing'} fileExtension={'.xls'} element={
+												<button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+													{/* DOWNLOAD */}
+												</button>}>
+
+												{this.onBtExport()}
+											</ExcelFile>
 											<button
 												type="button"
 												className={"user-btn mr5"}
@@ -630,7 +637,7 @@ class UsersListing extends Component {
 							</Col>
 						</Row>
 					</form>
-					<div className={`ag-grid-wrapper height-width-wrapper ${this.props.userDataList && this.props.userDataList?.length <=0 ?"overlay-contain": ""}`}>
+					<div className={`ag-grid-wrapper height-width-wrapper ${this.props.userDataList && this.props.userDataList?.length <= 0 ? "overlay-contain" : ""}`}>
 						<div className="ag-grid-header">
 							<input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
 						</div>

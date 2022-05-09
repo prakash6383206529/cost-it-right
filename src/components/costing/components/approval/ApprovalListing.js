@@ -216,7 +216,7 @@ function ApprovalListing(props) {
   const renderPlant = (props) => {
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
     const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-    return (cell !== null && cell !== '-') ? `${cell}(${row.PlantCode})` : '-'
+    return (cell !== null && cell !== '-') ? `${cell}` : '-'
   }
 
   const renderVendor = (props) => {
@@ -481,7 +481,7 @@ function ApprovalListing(props) {
                         <div className="filter mr-0"></div>
                       </button>
                     )}
-                    <button title="send-for-approval" class="user-btn approval-btn" onClick={sendForApproval}>
+                    <button title="Send For Approval" class="user-btn approval-btn" onClick={sendForApproval}>
                       <div className="send-for-approval mr-0" ></div>
                     </button>
                   </div>
@@ -492,7 +492,7 @@ function ApprovalListing(props) {
           <Row>
             <Col>
               <div className={`ag-grid-react`}>
-                <div className={`ag-grid-wrapper height-width-wrapper min-height-auto ${approvalList && approvalList?.length <=0 ?"overlay-contain": ""}`}>
+                <div className={`ag-grid-wrapper height-width-wrapper min-height-auto ${approvalList && approvalList?.length <= 0 ? "overlay-contain" : ""}`}>
                   <div className="ag-grid-header">
                     <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                   </div>

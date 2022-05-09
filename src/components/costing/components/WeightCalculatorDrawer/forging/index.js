@@ -16,7 +16,7 @@ import ColdForging from './ColdForging'
 import HotForging from './HotForging'
 
 function ForgingCalculator(props) {
-  const { rmRowData } = props
+  const { rmRowData, item } = props
 
   const getTabno = (layout) => {
     switch (layout) {
@@ -27,7 +27,7 @@ function ForgingCalculator(props) {
       default:
         break;
     }
-
+    console.log(layout, 'layout');
   }
   const [activeTab, setActiveTab] = useState(rmRowData && rmRowData.WeightCalculatorRequest && rmRowData.WeightCalculatorRequest.WeightCalculationId === null ? '1' : rmRowData.WeightCalculatorRequest.LayoutType ? getTabno(rmRowData.WeightCalculatorRequest.LayoutType) : '1')
 
@@ -90,6 +90,7 @@ function ForgingCalculator(props) {
                   rmRowData={props.rmRowData}
                   toggleDrawer={props.toggleDrawer}
                   CostingViewMode={props.CostingViewMode}
+                  item={item}
                 />
               </TabPane>
             )}
@@ -99,6 +100,7 @@ function ForgingCalculator(props) {
                   rmRowData={props.rmRowData}
                   toggleDrawer={props.toggleDrawer}
                   CostingViewMode={props.CostingViewMode}
+                  item={props.item}
                 />
               </TabPane>
             )}

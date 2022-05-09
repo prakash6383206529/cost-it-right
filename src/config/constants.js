@@ -478,11 +478,12 @@ export const API = {
   getVBCDetailByVendorId: `${BASE_URL}/costing/get-vbc-vendor-by-id`,
   updateZBCSOBDetail: `${BASE_URL}/costing/bulk-update-zbc-sob-detail`,
   updateVBCSOBDetail: `${BASE_URL}/costing/bulk-update-vbc-sob-detail`,
-  getZBCCostingByCostingId: `${BASE_URL}/costing/get-zbc-costing-detail-by-id`,
+  getBriefCostingById: `${BASE_URL}/costing/get-zbc-costing-detail-by-id`,
   getVBCCostingByCostingId: `${BASE_URL}/costing/get-vbc-costing-detail-by-id`,
   deleteDraftCosting: `${BASE_URL}/costing/delete-draft-costing`,
   getNCCCExistingCosting: `${BASE_URL}/costing/get-ncc-exist-costings-list`,
   createNCCCosting: `${BASE_URL}/costing/create-ncc-costing`,
+  getMachineProcessGroupDetail: `${BASE_URL}/costing/get-costing-machine-process-group-detail`,
   //getRMCCTabData: `${BASE_URL}/costing/get-zbc-costing-rm-bop-cc-detail-for-tab-grid`,
 
   getRMCCTabData: `${BASE_URL}/costing/get-costing-detail-for-rm-bop-cc`,
@@ -501,8 +502,7 @@ export const API = {
   getToolCategoryList: `${BASE_URL}/costing/select-list-tool-category`,
 
   getSurfaceTreatmentTabData: `${BASE_URL}/costing/get-costing-detail-for-surface-treatment`,
-  saveCostingSurfaceTreatmentTab: `${BASE_URL}/costing/save-costing-detail-for-surface-treatment`,
-  saveComponentCostingSurfaceTab: `${BASE_URL}/costing/save-componenet-costing-detail-for-surface-treatment`,
+  saveCostingSurfaceTab: `${BASE_URL}/costing/save-costing-detail-for-surface-treatment`,
   getSurfaceTreatmentDrawerDataList: `${BASE_URL}/costing/get-zbc-costing-surface-treatment-operation-list`,
   getSurfaceTreatmentDrawerVBCDataList: `${BASE_URL}/costing/get-vbc-costing-surface-treatment-operation-list`,
 
@@ -561,11 +561,29 @@ export const API = {
   UpdateCostingWeightCalculation: `${BASE_URL}/costing-sheet-metal/update-costing-weight-calculation`,
   getRawMaterialCalculationByTechnology: `${BASE_URL}/costing/get-raw-material-calculation-by-technology`,
   saveRawMaterialCalciData: `${BASE_URL}/costing/save-raw-material-calculation-by-technology`,
+  getRawMaterialCalculationForSheetMetal: `${BASE_URL}/costing/get-raw-material-sheet-metal-calculation-details`,
+  saveRawMaterialCalculationForSheetMetal: `${BASE_URL}/costing/save-raw-material-sheet-metal-calculation-details`,
+  getRawMaterialCalculationForForging: `${BASE_URL}/costing/get-raw-material-forging-calculation-details`,
+  saveRawMaterialCalculationForForging: `${BASE_URL}/costing/save-raw-material-forging-calculation-details`,
+  getRawMaterialCalculationForFerrous: `${BASE_URL}/costing/get-raw-material-ferrous-casting-calculation-details`,
+  saveRawMaterialCalculationForFerrous: `${BASE_URL}/costing/save-raw-material-ferrous-casting-calculation-details`,
+  getRawMaterialCalculationForPlastic: `${BASE_URL}/costing/get-raw-material-plastic-calculation-details`,
+  saveRawMaterialCalculationForPlastic: `${BASE_URL}/costing/save-raw-material-plastic-calculation-details`,
+  getRawMaterialCalculationForCorrugatedBox: `${BASE_URL}/costing/get-raw-material-corrugated-box-calculation-details`,
+  saveRawMaterialCalculationForCorrugatedBox: `${BASE_URL}/costing/save-raw-material-corrugated-box-calculation-details`,
+  getRawMaterialCalculationForDieCasting: `${BASE_URL}/costing/get-raw-material-die-casting-calculation-details`,
+  saveRawMaterialCalculationForDieCasting: `${BASE_URL}/costing/save-raw-material-die-casting-calculation-details`,
+  getRawMaterialCalculationForRubber: `${BASE_URL}/costing/get-raw-material-rubber-calculation-details`,
+  saveRawMaterialCalculationForRubber: `${BASE_URL}/costing/save-raw-material-rubber-calculation-details`,
 
 
   // PROCESS COST CALCULATION
   getProcessCalculation: `${BASE_URL}/costing/get-process-calculation-by-technology`,
+  getProcessMachiningCalculation: `${BASE_URL}/costing/get-process-machining-calculation-details`,
   saveProcessCostCalculation: `${BASE_URL}/costing/save-process-calculation-by-technology`,
+  saveDefaultProcessCostCalculation: `${BASE_URL}/costing/save-process-default-calculation-details`,
+  saveMachiningProcessCostCalculation: `${BASE_URL}/costing/save-process-machining-calculation-details`,
+  getProcessDefaultCalculation: `${BASE_URL}/costing/get-process-default-calculation-details`,
 
   //COST WORKING API
   getCostingBySupplier: `${BASE_URL}/costing-sheet-metal/get-costings-by-supplier`,
@@ -593,6 +611,7 @@ export const API = {
   saveCosting: `${BASE_URL}/costing-sheet-metal/save-costing`,
   saveBOPCosting: `${BASE_URL}/costing-sheet-metal/save-costing-bought-out-part`,
   getCostingBulkUploadList: `${BASE_URL}/bulk-costing/get-all-bulk-costings-files-info-by-filter`,
+  generateReport: `${BASE_URL}/reports/update-costing-reports`,
   getErrorFile: `${BASE_URL}`,
   uploadCosting: `${BASE_URL}/bulk-costing/save-costing`,
   uploadPlasticCosting: `${BASE_URL}/bulk-costing/save-costing-plastic`,
@@ -804,6 +823,7 @@ export const API = {
   getMachineTypeSelectListByTechnology: `${BASE_URL}/masters-machine/get-machine-type-select-list-by-technology`,
   getMachineTypeSelectListByVendor: `${BASE_URL}/masters-machine/get-machine-type-select-list-by-vendor`,
   getProcessSelectListByMachineType: `${BASE_URL}/masters-machine/get-process-select-list-by-machine-type`,
+  getProcessGroupList: `${BASE_URL}/masters-machine/get-process-group`,
 
   //POWER MASTER
   getPowerTypeSelectList: `${BASE_URL}/configuration/select-list-get-power-type`,
@@ -1175,8 +1195,6 @@ export const CREATE_OTHER_OPERATION_SUCCESS = 'CREATE_OTHER_OPERATION_SUCCESS'
 export const GET_OTHER_OPERATION_FORMDATA_SUCCESS = 'GET_OTHER_OPERATION_FORMDATA_SUCCESS'
 export const GET_OTHER_OPERATION_FORMDATA_FAILURE = 'GET_OTHER_OPERATION_FORMDATA_FAILURE'
 export const GET_OPERATION_COMBINED_DATA_LIST = 'GET_OPERATION_COMBINED_DATA_LIST'
-export const GET_OPERATION_SURFACE_TREATMENT_DATA_LIST = 'GET_OPERATION_SURFACE_TREATMENT_DATA_LIST'
-export const GET_OPERATION_INDIVIDUAL_DATA_LIST = 'GET_OPERATION_INDIVIDUAL_DATA_LIST'
 
 //CED OTHER OPERATION
 export const GET_CED_OTHER_OPERATION_COMBO_DATA_SUCCESS = 'GET_CED_OTHER_OPERATION_COMBO_DATA_SUCCESS'
@@ -1282,6 +1300,8 @@ export const GET_PART_SELECTLIST_BY_TECHNOLOGY = 'GET_PART_SELECTLIST_BY_TECHNOL
 export const BOP_DRAWER_LIST = 'BOP_DRAWER_LIST'
 export const SET_PLASTIC_ARR = 'SET_PLASTIC_ARR'
 export const SET_ASSEM_BOP_CHARGE = 'SET_ASSEM_BOP_CHARGE'
+
+export const SET_ARRAY_FOR_COSTING = 'SET_ARRAY_FOR_COSTING'
 export const CHECK_IS_DATA_CHANGE = 'CHECK_IS_DATA_CHANGE'
 export const CHECK_IS_OVERHEAD_AND_PROFIT_DATA_CHANGE = 'CHECK_IS_OVERHEAD_AND_PROFIT_DATA_CHANGE'
 export const CHECK_IS_PACKAGE_AND_FREIGHT_DATA_CHANGE = 'CHECK_IS_PACKAGE_AND_FREIGHT_DATA_CHANGE'
@@ -1290,6 +1310,7 @@ export const CHECK_IS_DISCOUNT_DATA_CHANGE = 'CHECK_IS_DISCOUNT_DATA_CHANGE'
 
 
 
+export const SET_NEW_ARRAY_FOR_COSTING = 'SET_NEW_ARRAY_FOR_COSTING'
 
 //WEIGHT CALCULATION COSTING
 
@@ -1355,6 +1376,13 @@ export const IS_COSTING_EFFECTIVE_DATE_DISABLED = 'IS_COSTING_EFFECTIVE_DATE_DIS
 export const SET_CUTOFF_RMC = 'SET_CUTOFF_RMC';
 export const GET_COSTING_SPECIFIC_TECHNOLOGY = 'GET_COSTING_SPECIFIC_TECHNOLOGY'
 export const FORGING_CALCULATOR_MACHININGSTOCK_SECTION = 'FORGING_CALCULATOR_MACHININGSTOCK_SECTION';
+export const FERROUS_CALCULATOR_RESET = 'FERROUS_CALCULATOR_RESET';
+export const SELECTED_IDS_OF_OPERATION_AND_OTHEROPERATION = 'SELECTED_IDS_OF_OPERATION_AND_OTHEROPERATION'
+export const SET_MASTER_BATCH_OBJ = 'SET_MASTER_BATCH_OBJ'
+export const SELECTED_IDS_OF_OPERATION = 'SELECTED_IDS_OF_OPERATION'
+export const SELECTED_PROCESS_AND_GROUPCODE = 'SELECTED_PROCESS_AND_GROUPCODE'
+export const SET_PROCESS_ID = 'SET_PROCESS_ID'
+export const SET_PROCESSGROUP_ID = 'SET_PROCESSGROUP_ID'
 
 //WEIGHT CALCULATION COSTING RM DRAWER
 export const GET_RAW_MATERIAL_CALCI_INFO = 'GET_RAW_MATERIAL_CALCI_INFO'
@@ -1453,6 +1481,8 @@ export const GET_MACHINE_DATA_SUCCESS = 'GET_MACHINE_DATA_SUCCESS'
 export const GET_MACHINE_LIST_SUCCESS = 'GET_MACHINE_LIST_SUCCESS'
 export const GET_DEPRECIATION_SELECTLIST_SUCCESS = 'GET_DEPRECIATION_SELECTLIST_SUCCESS'
 export const GET_MACHINE_APPROVAL_LIST = 'GET_MACHINE_APPROVAL_LIST'
+export const SET_PROCESS_GROUP_FOR_API = 'SET_PROCESS_GROUP_FOR_API'
+export const SET_PROCESS_GROUP_LIST = 'SET_PROCESS_GROUP_LIST'
 
 //POWER MASTER
 export const GET_POWER_TYPE_SELECTLIST_SUCCESS = 'GET_POWER_TYPE_SELECTLIST_SUCCESS'
@@ -1498,6 +1528,7 @@ export const GET_SIMULATION_APPROVAL_LIST = 'GET_SIMULATION_APPROVAL_LIST'
 export const SET_SELECTED_MASTER_SIMULATION = 'SET_SELECTED_MASTER_SIMULATION'
 export const GET_SELECTLIST_APPLICABILITY_HEAD = 'GET_SELECTLIST_APPLICABILITY_HEAD'
 export const SET_SELECTED_TECHNOLOGY_SIMULATION = 'SET_SELECTED_TECHNOLOGY_SIMULATION'
+export const SET_TOKEN_CHECK_BOX = 'SET_TOKEN_CHECK_BOX'
 export const GET_APPROVAL_SIMULATION_COSTING_SUMMARY = 'GET_APPROVAL_SIMULATION_COSTING_SUMMARY'
 export const GET_AMMENDENT_STATUS_COSTING = 'GET_AMMENDENT_STATUS_COSTING'
 export const SET_ATTACHMENT_FILE_DATA = 'SET_ATTACHMENT_FILE_DATA'
@@ -1513,6 +1544,9 @@ export const GET_VERIFY_PROFIT_SIMULATION_LIST = 'GET_VERIFY_PROFIT_SIMULATION_L
 export const SET_SHOW_SIMULATION_PAGE = 'SET_SHOW_SIMULATION_PAGE'
 export const GET_TOKEN_SELECT_LIST = 'GET_TOKEN_SELECT_LIST'
 export const GET_VALUE_TO_SHOW_COSTING_SIMULATION = 'GET_VALUE_TO_SHOW_COSTING_SIMULATION'
+export const GET_KEYS_FOR_DOWNLOAD_SUMMARY = 'GET_KEYS_FOR_DOWNLOAD_SUMMARY'
+export const SET_KEY_FOR_API_CALLS = 'SET_KEY_FOR_API_CALLS'
+export const SET_TOKEN_FOR_SIMULATION = 'SET_TOKEN_FOR_SIMULATION'
 
 //SIMULATION APPROVAL
 export const GET_SIMULATION_DEPARTMENT_LIST = 'GET_SIMULATION_DEPARTMENT_LIST'
@@ -1539,6 +1573,7 @@ export const APPROVED_BY_SIMULATION = 'ApprovedBySimulation'
 export const PUSHED = 'Pushed'
 export const ERROR = 'Error'
 export const POUPDATED = 'POUpdated'
+export const LINKED = 'Linked'
 
 //DECIMAL VALUES FOR PRICE
 export const TWO_DECIMAL_PRICE = 2
@@ -1749,7 +1784,12 @@ export const EXCHNAGERATE = '8'
 export const MACHINERATE = '9'
 export const OVERHEAD = 'Overhead'
 export const PROFIT = 'Profits'
-// export constse
+
+// BULK UPLOAD
+export const SHEETMETAL_GROUP_BULKUPLOAD = 1
+export const PLASTIC_GROUP_BULKUPLOAD = 2
+export const MACHINING_GROUP_BULKUPLOAD = 3
+
 
 export const REASON_ID = 2
 export const TOFIXEDVALUE = 10
@@ -1766,6 +1806,11 @@ export const Sob = "SOB"
 export const AssemblyPart = "Assembly-part"
 export const ComponentPart = "Component-part"
 export const AssemblyWiseImpactt = "AssemblyWise-Impact"
+export const RMImpact = "RawMaterial-Impact"
+export const BOPImpact = "BOP-Impact"
+export const OPerationImpact = "Operation-Impact"
+export const ExchangeRateImpact = "ExchangeRate-Impact"
+export const ImpactMaster = "ImpactMaster"
 
 export const MachineRate = "Machine-rate"
 export const ProcessMaster = "Process "
@@ -1788,6 +1833,7 @@ export const ExchangeMaster = "Exchange-rate"
 export const FreightMaster = "Freight"
 export const InterestMaster = "Interest-rate"
 export const ReportMaster = "Report-rate"
+export const UserListing = "User-Listing"
 
 export const simulationMaster = "Simulation"
 export const DashboardMaster = "Analytics and Reports"
@@ -1829,4 +1875,4 @@ export const LEVEL1 = 'L1';
 export const SUB_ASSEMBLY = 'Sub Assembly';
 
 //VERSION 
-export const VERSION = "V1.2.75.3";
+export const VERSION = "V1.2.202";

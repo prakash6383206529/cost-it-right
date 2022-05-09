@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react'
-import { checkForDecimalAndNull } from '../../../../../src/helper'
+import { checkForDecimalAndNull, getConfigurationKey } from '../../../../../src/helper'
 import { Container, Row, Col, Table, Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
 import NoContentFound from '../../../common/NoContentFound'
-import { EMPTY_DATA } from '../../../../config/constants'
+import { EMPTY_DATA, TIME } from '../../../../config/constants'
 import { useSelector, useDispatch } from 'react-redux'
 import classnames from 'classnames';
 import LoaderCustom from '../../../common/LoaderCustom'
 import { EMPTY_GUID } from '../../../../config/constants';
 import Toaster from '../../../common/Toaster';
 import VariableMhrDrawer from '../Drawers/processCalculatorDrawer/VariableMhrDrawer'
-import { getProcessCalculation } from '../../actions/CostWorking'
+import { getProcessDefaultCalculation, getProcessMachiningCalculation } from '../../actions/CostWorking'
+import { MACHINING } from '../../../../config/masterData'
 
 function ViewConversionCost(props) {
 
@@ -28,7 +29,7 @@ function ViewConversionCost(props) {
     props.closeDrawer('')
   }
   const { isPDFShow, stCostShow } = props
-
+  const processGroup = getConfigurationKey().IsMachineProcessGroup
   const { viewConversionCostData } = props
   const { conversionData, netTransportationCostView, surfaceTreatmentDetails, IsAssemblyCosting } = viewConversionCostData
   const { CostingOperationCostResponse, CostingProcessCostResponse, CostingToolsCostResponse, IsShowToolCost, CostingOtherOperationCostResponse } = conversionData
@@ -44,18 +45,23 @@ function ViewConversionCost(props) {
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const [partNumberList, setPartNumberList] = useState([])
   const [index, setIndex] = useState(0)
+  const [indexForProcessCalculator, setIndexForProcessCalculator] = useState(0)
+  const [parentIndex, setParentIndex] = useState('')
   const [loader, setLoader] = useState(false)
   const [weightCalculatorDrawer, setWeightCalculatorDrawer] = useState(false)
   const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
   const [calciData, setCalciData] = useState({})
+  const [processAcc, setProcessAcc] = useState(false)
+  const [processAccObj, setProcessAccObj] = useState({});
+  const [calculatorTechnology, setCalculatorTechnology] = useState('')
+
   const dispatch = useDispatch()
 
   useEffect(() => {
     if (IsShowToolCost) {
       setIsShowToolCost(IsShowToolCost)
     }
-    if (IsAssemblyCosting === true) {
-
+    if (IsAssemblyCosting === true && isPDFShow === false) {
       let temp = []
       let uniqueTemp = []
       CostingProcessCostResponse && CostingProcessCostResponse.map(item => {
@@ -89,7 +95,17 @@ function ViewConversionCost(props) {
       setOtherCostingOperationCostResponse(otherOperationCost)
       setTransportCost(transportCost)
       setSurfaceTreatmentCost(surfaceCost)
-    } else {
+    }
+    else if (IsAssemblyCosting === true && isPDFShow === true) {
+      setCostingProcessCost(CostingProcessCostResponse ? CostingProcessCostResponse : [])
+      setCostingOperationCostResponse(CostingOperationCostResponse ? CostingOperationCostResponse : [])
+      // setcostingToolsCost(CostingToolsCostResponse)
+      setOtherCostingOperationCostResponse(CostingOtherOperationCostResponse ? CostingOtherOperationCostResponse : [])
+      setTransportCost(netTransportationCostView ? netTransportationCostView : [])
+      setSurfaceTreatmentCost(surfaceTreatmentDetails ? surfaceTreatmentDetails : [])
+    }
+
+    else {
       setCostingProcessCost(CostingProcessCostResponse ? CostingProcessCostResponse : [])
       setCostingOperationCostResponse(CostingOperationCostResponse ? CostingOperationCostResponse : [])
       // setcostingToolsCost(CostingToolsCostResponse)
@@ -110,30 +126,105 @@ function ViewConversionCost(props) {
       if (tab === '1') {
         setIsCalledAPI(true)
       }
-
     }
   }
 
-  const getWeightData = (index) => {
 
-    if (costingProcessCost[index].ProcessCalculationId === '00000000-0000-0000-0000-000000000000') {
-      Toaster.warning('Data is not avaliabe for calculator')
-      return false
+  const setCalculatorData = (data, list, id, parentId) => {
+
+
+    if (parentId === '') {
+      let tempArr = []
+      let tempData = viewCostingData[props.index].netConversionCostView.CostingProcessCostResponse[id]
+      // 
+      setCalculatorTechnology(viewCostingData[props.index].netConversionCostView.CostingProcessCostResponse[id].ProcessTechnologyId)
+      tempData = { ...tempData, WeightCalculatorRequest: data, }
+
+      setCalciData(tempData)
+      tempArr = Object.assign([...viewCostingData[props.index].netConversionCostView.CostingProcessCostResponse], { [id]: tempData })
+      setTimeout(() => {
+        // setGridData(tempArr)
+        setWeightCalculatorDrawer(true)
+      }, 100)
+    } else {
+      let parentTempArr = []
+      let parentTempData = viewCostingData[props.index].netConversionCostView.CostingProcessCostResponse[parentId]
+
+      let tempArr = []
+      let tempData = list[id]
+
+
+      setCalculatorTechnology(tempData.ProcessTechnologyId)
+      tempData = { ...tempData, WeightCalculatorRequest: data, }
+
+      setCalciData(tempData)
+      tempArr = Object.assign([...list], { [id]: tempData })
+      parentTempData = { ...parentTempData, ProcessList: tempArr }
+      // parentTempArr = Object.assign([...viewCostingData[props.index].netConversionCostView.CostingProcessCostResponse[id], { [parentId]: parentTempData }])
+      setTimeout(() => {
+        // setGridData(parentTempArr)
+        setWeightCalculatorDrawer(true)
+      }, 100);
     }
+  }
 
-    const tempData = viewCostingData[props.index]
 
+  const getWeightData = (index, list = [], parentCalciIndex = '') => {
+    // const tempData = viewCostingData[props.index]
+    let tempData
+    let processCalciId = ''
+    let technologyId = ''
+    let UOMType = ''
+    if (parentCalciIndex === '') {
+      tempData = viewCostingData[props.index]
+      if (tempData?.netConversionCostView?.CostingProcessCostResponse[index].ProcessCalculatorId === 0) {
+        Toaster.warning('Data is not avaliabe for calculator')
+        return false
+      }
+      else {
+        processCalciId = tempData?.netConversionCostView?.CostingProcessCostResponse[index].ProcessCalculatorId
+        technologyId = tempData?.netConversionCostView?.CostingProcessCostResponse[index].ProcessTechnologyId
+        UOMType = tempData.netConversionCostView.CostingProcessCostResponse[index].UOMType
+      }
+    } else {
+      tempData = list[index]
+      if (tempData.ProcessCalculatorId === 0 || tempData.ProcessCalculatorId === null) {
+        Toaster.warning('Data is not avaliabe for calculator')
+        return false
+      } else {
+        processCalciId = tempData.ProcessCalculatorId
+        technologyId = tempData?.ProcessTechnologyId
+        UOMType = tempData.UOMType
+      }
+    }
+    setIndexForProcessCalculator(index)
+    setParentIndex(parentCalciIndex)
     setTimeout(() => {
-      dispatch(getProcessCalculation(tempData.costingId, costingProcessCost[index].ProcessId, costingProcessCost[index].ProcessCalculationId, tempData.technologyId, 'default', res => {
-        if (res && res.data && res.data.Data) {
-          const data = res.data.Data
-          setCalciData({ ...costingProcessCost[index], WeightCalculatorRequest: data })
-          setWeightCalculatorDrawer(true)
-        }
-      }))
+      if (technologyId === MACHINING && UOMType === TIME) {
+        dispatch(getProcessMachiningCalculation(processCalciId, res => {
+          if (res && res.data && res.data.Data) {
+
+            if ((res && res.data && res.data.Data) || (res && res.status === 204)) {
+              const data = res.status === 204 ? {} : res.data.Data
+              setCalculatorData(data, list, index, parentIndex)
+            }
+          }
+        }))
+
+      } else {
+        dispatch(getProcessDefaultCalculation(processCalciId, res => {
+          if (res && res.data && res.data.Data) {
+
+            if ((res && res.data && res.data.Data) || (res && res.status === 204)) {
+              const data = res.status === 204 ? {} : res.data.Data
+              setCalculatorData(data, list, index, parentIndex)
+            }
+
+          }
+        }))
+      }
+
     }, 300);
-
-
   }
 
   const closeWeightDrawer = (e = "") => {
@@ -161,6 +252,43 @@ function ViewConversionCost(props) {
     setLoader(false)
   }, [costingProcessCost, costingOperationCost, othercostingOperationCost])
 
+  const renderSingleProcess = (process, parentIndex) => {
+    return (
+      process.ProcessList && process.ProcessList.map((item, index) => {
+        return (
+          <tr key={index}>
+            {IsAssemblyCosting && partNumberList.length === 0 && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
+            {processGroup && <td className='text-overflow process-name'>
+              {
+                (item?.GroupName === '' || item?.GroupName === null) ? '' :
+                  <div onClick={() => setProcessAcc(!processAcc)} className={`${processAcc ? 'Open' : 'Close'}`}></div>
+
+              }
+              <span title={item.ProcessName}>
+                {item?.GroupName === '' || item?.GroupName === null ? '-' : item.GroupName}</span>
+            </td>}
+            <td className='text-overflow'><span title={item.ProcessName}>{item.ProcessName ? item.ProcessName : '-'}</span></td>
+            <td className='text-overflow'><span title={item?.Technologies}>{item?.Technologies ? item?.Technologies : '-'}</span></td>
+            <td>{item.MachineName ? item.MachineName : '-'}</td>
+            <td>{item.Tonnage ? item.Tonnage : '-'}</td>
+            <td>{item.UOM ? item.UOM : '-'}</td>
+            <td>{(item?.ProductionPerHour === '-' || item?.ProductionPerHour === 0 || item?.ProductionPerHour === null) ? '-' : checkForDecimalAndNull(item.ProductionPerHour, initialConfiguration.NoOfDecimalForInputOutput)}</td>
+            <td>{item.MHR ? item.MHR : '-'}</td>
+            {!isPDFShow && <td><button
+              className="CalculatorIcon cr-cl-icon mr-auto ml-0"
+              type={"button"}
+              disabled={item.ProcessCalculationId === EMPTY_GUID}
+              onClick={() => { getWeightData(index, process.ProcessList, parentIndex) }}
+            /></td>}
+            <td>{item.Quantity ? checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForInputOutput) : '-'}</td>
+            <td>{item.ProcessCost ? checkForDecimalAndNull(item.ProcessCost, initialConfiguration.NoOfDecimalForPrice) : 0}
+            </td>
+          </tr>
+        )
+      })
+    )
+  }
+
   const processTableData = () => {
     return <>
       <Row>
@@ -174,9 +302,10 @@ function ViewConversionCost(props) {
           <Table className="table cr-brdr-main conversion-cost" size="sm">
             <thead>
               <tr>
-                {partNumberList.length === 0 && IsAssemblyCosting && <th>{`Part No`}</th>}
+                {partNumberList.length === 0 && (IsAssemblyCosting && isPDFShow) && <th>{`Part No`}</th>}
+                {processGroup && <th>{`Group Name`}</th>}
                 <th>{`Process Name`}</th>
-                <th>{`Process Description`}</th>
+                <th>{`Technology`}</th>
                 <th>{`Machine Name`}</th>
                 <th>{`Tonnage`}</th>
                 <th>{`UOM`}</th>
@@ -192,25 +321,49 @@ function ViewConversionCost(props) {
               {costingProcessCost &&
                 costingProcessCost.map((item, index) => {
                   return (
-                    <tr key={index}>
-                      {IsAssemblyCosting && partNumberList.length === 0 && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
-                      <td><div className='text-overflow' title={item.ProcessName}>{item.ProcessName ? item.ProcessName : '-'}</div></td>
-                      <td><div className='text-overflow' title={item.ProcessDescription}>{item.ProcessDescription ? item.ProcessDescription : '-'}</div></td>
-                      <td>{item.MachineName ? item.MachineName : '-'}</td>
-                      <td>{item.Tonnage ? item.Tonnage : '-'}</td>
-                      <td>{item.UOM ? item.UOM : '-'}</td>
-                      <td>{(item?.ProductionPerHour === '-' || item?.ProductionPerHour === 0 || item?.ProductionPerHour === null) ? '-' : checkForDecimalAndNull(item.ProductionPerHour, initialConfiguration.NoOfDecimalForInputOutput)}</td>
-                      <td>{item.MHR ? item.MHR : '-'}</td>
-                      {!isPDFShow && <td><button
-                        className="CalculatorIcon cr-cl-icon mr-auto ml-0"
-                        type={"button"}
-                        disabled={item.ProcessCalculationId === EMPTY_GUID}
-                        onClick={() => { getWeightData(index) }}
-                      /></td>}
-                      <td>{item.Quantity ? checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForInputOutput) : '-'}</td>
-                      <td>{item.ProcessCost ? checkForDecimalAndNull(item.ProcessCost, initialConfiguration.NoOfDecimalForPrice) : 0}
-                      </td>
-                    </tr>
+                    <>
+                      <tr key={index}>
+                        {IsAssemblyCosting && partNumberList.length === 0 && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
+                        {processGroup && <td className='text-overflow process-name'>
+                          {
+                            (item?.GroupName === '' || item?.GroupName === null) ? '' :
+                              <div onClick={() =>
+                                processAccObj[index] === true ? setProcessAccObj(prevState => ({ ...prevState, [index]: false })) : setProcessAccObj(prevState => ({ ...prevState, [index]: true }))
+                              }
+                                className={`${processAccObj[index] ? 'Open' : 'Close'}`}></div>
+                          }
+                          <span title={item.ProcessName}>
+                            {item?.GroupName === '' || item?.GroupName === null ? '-' : item.GroupName}</span>
+                        </td>}
+                        <td className='text-overflow'><span title={item.ProcessName}>{item.ProcessName ? item.ProcessName : '-'}</span></td>
+                        <td className='text-overflow'><span title={item?.Technologies}>{item?.Technologies ? item?.Technologies : '-'}</span></td>
+                        <td>{item.MachineName ? item.MachineName : '-'}</td>
+                        <td>{item.Tonnage ? item.Tonnage : '-'}</td>
+                        <td>{item.UOM ? item.UOM : '-'}</td>
+                        <td>{(item?.ProductionPerHour === '-' || item?.ProductionPerHour === 0 || item?.ProductionPerHour === null) ? '-' : checkForDecimalAndNull(item.ProductionPerHour, initialConfiguration.NoOfDecimalForInputOutput)}</td>
+                        <td>{item.MHR ? item.MHR : '-'}</td>
+                        {(!isPDFShow) && <td>
+                          {
+                            (item?.GroupName === '' || item?.GroupName === null) ?
+                              <button
+                                className="CalculatorIcon cr-cl-icon mr-auto ml-0"
+                                type={"button"}
+                                disabled={item.ProcessCalculationId === EMPTY_GUID}
+                                onClick={() => { getWeightData(index) }}
+                              /> : ''
+                          }
+                        </td>}
+                        <td>{item.Quantity ? checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForInputOutput) : '-'}</td>
+                        <td>{item.ProcessCost ? checkForDecimalAndNull(item.ProcessCost, initialConfiguration.NoOfDecimalForPrice) : 0}
+                        </td>
+                      </tr>
+
+                      {processAccObj[index] && <>
+                        {
+                          renderSingleProcess(item, index)
+                        }
+                      </>}
+                    </>
                   )
                 })}
               {costingProcessCost && costingProcessCost.length === 0 && (
@@ -447,7 +600,7 @@ function ViewConversionCost(props) {
                   return (
                     <tr key={index}>
                       {IsAssemblyCosting && partNumberList.length === 0 && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
-                      <td><div className='text-overflow' title={item.OperationName}>{item.OperationName ? item.OperationName : '-'}</div></td>
+                      <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item.OperationName}>{item.OperationName ? item.OperationName : '-'}</span></td>
                       <td>{item.SurfaceArea ? item.SurfaceArea : '-'}</td>
                       <td>{item.UOM ? item.UOM : '-'}</td>
                       <td>{item.RatePerUOM ? checkForDecimalAndNull(item.RatePerUOM, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
@@ -547,7 +700,7 @@ function ViewConversionCost(props) {
                   return (
                     <NavItem>
                       <NavLink className={classnames({ active: activeTab === index })} onClick={() => setPartDetail(index, item)}>
-                        {item}
+                        <div className='drawer-part-name'><span title={item}> {item}</span></div>
                       </NavLink>
                     </NavItem>
                   )
@@ -580,11 +733,7 @@ function ViewConversionCost(props) {
                   }
 
                   {!props.viewConversionCostData.isSurfaceTreatmentCost && <br />}
-                  {isShowToolCost && (
-                    <div>
-                      {toolCostTableData()}
-                    </div>
-                  )}
+
 
 
                   {props.viewConversionCostData.isSurfaceTreatmentCost &&                   // SHOW ONLY WHEN NETSURFACETREATMENT COST EYE BUTTON IS CLICKED
@@ -602,7 +751,7 @@ function ViewConversionCost(props) {
 
             {weightCalculatorDrawer && (
               <VariableMhrDrawer
-                technology={viewCostingData[props.index].technologyId}
+                technology={calculatorTechnology}
                 calculatorData={calciData}
                 isOpen={weightCalculatorDrawer}
                 CostingViewMode={true}

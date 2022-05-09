@@ -9,6 +9,7 @@ import { ReportMaster, EMPTY_DATA } from '../../../config/constants';
 import LoaderCustom from '../../common/LoaderCustom';
 import { getSimulationInsightReport } from '../actions/SimulationInsight';
 import { useDispatch } from 'react-redux';
+import DayTime from '../../common/DayTimeWrapper'
 
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -19,6 +20,7 @@ function SimulationInsights(props) {
 
   const dispatch = useDispatch()
   const [simulationInsightsReport, setSimulationInsight] = useState([])
+  const [simulationInsightsReportExcelData, setSimulationInsightsReportExcelData] = useState([])
   const [tableHeaderColumnDefs, setTableHeaderColumnDefs] = useState([])
   const [gridApi, setGridApi] = useState(null);
   const [gridColumnApi, setGridColumnApi] = useState(null);
@@ -26,11 +28,43 @@ function SimulationInsights(props) {
   const [simulationInsightDownloadExcel, setSimulationInsightDownloadExcel] = useState([])
 
 
+  var filterParams = {
+    comparator: function (filterLocalDateAtMidnight, cellValue) {
+      // var dateAsString = cellValue != null ? DayTime(cellValue).format('MM/DD/YYYY') : '';
+
+      var dateAsString = cellValue != null ? cellValue.split('-') : '';
+      if (dateAsString) {
+        dateAsString = dateAsString[0] + '/' + dateAsString[1] + '/' + dateAsString[2];
+      }
+      if (dateAsString == null) return -1;
+      var dateParts = dateAsString.split('/');
+      var cellDate = new Date(
+        Number(dateParts[2]),
+        Number(dateParts[1]) - 1,
+        Number(dateParts[0])
+      );
+      if (filterLocalDateAtMidnight.getTime() === cellDate.getTime()) {
+        return 0;
+      }
+      if (cellDate < filterLocalDateAtMidnight) {
+        return -1;
+      }
+      if (cellDate > filterLocalDateAtMidnight) {
+        return 1;
+      }
+
+    },
+    browserDatePicker: true,
+    minValidYear: 2000,
+  };
+
+
   useEffect(() => {
     setLoader(true)
     dispatch(getSimulationInsightReport(res => {
       const data = res.data.DataList
       setSimulationInsight(data[0].Data)
+      setSimulationInsightsReportExcelData(data[0].Data)
 
       let arr = [];
       let simulationInsightExcel = [];
@@ -40,7 +74,7 @@ function SimulationInsights(props) {
           let obj = {
             field: "DisplayStatus",
             headerName: "Display Status",
-            cellRendererFramework: (params) => <div className={params.value}>{params.value}</div>
+            cellRendererFramework: (params) => <div className={params.value}>{params.value}</div>,
             //cellStyle: { background: "green" },    // DO NOT DELETE THIS
             //cellClass: ["Draft"]                       // DO NOT DELETE THIS
           }
@@ -67,6 +101,35 @@ function SimulationInsights(props) {
           }
           arr.push(obj)
           simulationInsightExcel.push(obj1)
+        } else if (ele.field === "CreatedDate") {
+
+          let obj = {
+            field: "CreatedDate",
+            headerName: "Created Date",
+            filter: "agDateColumnFilter",
+            filterParams: filterParams
+          }
+          let obj1 = {
+            label: ele.headerName,
+            value: ele.field
+          }
+          arr.push(obj)
+          simulationInsightExcel.push(obj1)
+        } else if (ele.field === "EffectiveDate") {
+
+          let obj = {
+            field: "EffectiveDate",
+            headerName: "EffectiveDate",
+            filter: "agDateColumnFilter",
+            filterParams: filterParams
+          }
+          let obj1 = {
+            label: ele.headerName,
+            value: ele.field
+          }
+          arr.push(obj)
+          simulationInsightExcel.push(obj1)
+
         }
         else {
           let obj1 = {
@@ -90,8 +153,7 @@ function SimulationInsights(props) {
 
 
   const onBtExport = () => {
-
-    return returnExcelColumn(simulationInsightDownloadExcel, simulationInsightsReport)
+    return returnExcelColumn(simulationInsightDownloadExcel, simulationInsightsReportExcelData)
   };
 
 
@@ -112,12 +174,33 @@ function SimulationInsights(props) {
   }
 
 
+  const onRowSelect = () => {
+    var selectedRows = gridApi.getSelectedRows();
+
+    if (selectedRows.length > 0) {
+      setSimulationInsightsReportExcelData(selectedRows)
+    } else {
+
+      setSimulationInsightsReportExcelData(simulationInsightsReport)
+    }
+
+  }
+
+
   const onGridReady = (params) => {
     setGridApi(params.api)
     setGridColumnApi(params.columnApi)
     params.api.paginationGoToPage(0);
 
   };
+
+
+  const isFirstColumn = (params) => {
+    var displayedColumns = params.columnApi.getAllDisplayedColumns();
+    var thisIsFirstColumn = displayedColumns[0] === params.column;
+    return thisIsFirstColumn;
+  }
+
   const gridOptions = {
     clearSearch: true,
     enableFilter: true,
@@ -130,6 +213,8 @@ function SimulationInsights(props) {
     filter: true,
     sortable: true,
     floatingFilter: true,
+    headerCheckboxSelection: isFirstColumn,
+    checkboxSelection: isFirstColumn
   };
   const frameworkComponents = {
     customLoadingOverlay: LoaderCustom,
@@ -148,7 +233,7 @@ function SimulationInsights(props) {
     // <div>{`hello`}</div>
     <div className="container-fluid report-listing-page ag-grid-react">
       {loader && <LoaderCustom />}
-      <h1 className="mb-0">Report</h1>
+      <h1 className="mb-0">Simulation Insights Report</h1>
       <Row className="pt-4 blue-before ">
         <Col md="6" lg="6" className="search-user-block mb-3">
           <div className="d-flex justify-content-end bd-highlight excel-btn w100">
@@ -188,6 +273,7 @@ function SimulationInsights(props) {
               }}
               frameworkComponents={frameworkComponents}
               suppressRowClickSelection={true}
+              onSelectionChanged={onRowSelect}
               rowSelection={'multiple'}
             >
 

@@ -200,7 +200,7 @@ class Calculator extends React.Component {
   onClearHistory() {
     this.setState({
       history: [],
-      isShowHistory:false
+      isShowHistory: false
     });
 
   }
@@ -222,36 +222,36 @@ class Calculator extends React.Component {
   }
 
   render() {
-    return (
-      <div>
-        <div className="calculator">
-          <DisplayToolbar
-            formula={this.state.formula}
-            input={this.state.input}
-            onBackspace={this.onBackspace}
-            githubURL={this.props.githubURL}
-            onHistory={this.onHistory}
-            isShowHistory={this.state.isShowHistory}
-          />
+    return (<div>
+      <div className="calculator">
+        <DisplayToolbar
+          formula={this.state.formula}
+          input={this.state.input}
+          onBackspace={this.onBackspace}
+          githubURL={this.props.githubURL}
+          onHistory={this.onHistory}
+          isShowHistory={this.state.isShowHistory}
+          showCal={this.props.showCal}
+        />
 
-          <Buttons
-            onClear={this.onClear}
-            onEqual={this.onEqual}
-            onDecimal={this.onDecimal}
-            onDigit={this.onDigit}
-            onOperator={this.onOperator}
-            onParenthesis={this.onParenthesis}
-          />
+        <Buttons
+          onClear={this.onClear}
+          onEqual={this.onEqual}
+          onDecimal={this.onDecimal}
+          onDigit={this.onDigit}
+          onOperator={this.onOperator}
+          onParenthesis={this.onParenthesis}
+        />
 
-          <History
-            isShowHistory={this.state.isShowHistory}
-            history={this.state.history}
-            onHistoryItemClicked={this.onHistoryItemClicked}
-            onEqual={this.onEqual}
-            onClearHistory={this.onClearHistory}
-          />
-        </div>
+        <History
+          isShowHistory={this.state.isShowHistory}
+          history={this.state.history}
+          onHistoryItemClicked={this.onHistoryItemClicked}
+          onEqual={this.onEqual}
+          onClearHistory={this.onClearHistory}
+        />
       </div>
+    </div>
     )
   }
 }

@@ -3,20 +3,15 @@ import { connect } from 'react-redux';
 import ReactExport from 'react-export-excel';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
 import Drawer from '@material-ui/core/Drawer';
 import Dropzone from 'react-dropzone-uploader'
 import { bulkUploadCosting, plasticBulkUploadCosting, machiningBulkUploadCosting } from '../actions/CostWorking'
-import { CostingBulkUpload, CostingBulkUploadTempData, PLASTIC } from '../../../config/masterData'
-import { fileUploadRMDomestic, } from '../../masters/actions/Material'
-import { FILE_URL, SHEET_METAL } from '../../../config/constants';
-import { loggedInUserId } from '../../../helper';
-import { getJsDateFromExcel } from "../../../helper/validation";
+import { TechnologyDropdownBulkUpload } from '../../../config/masterData'
+import { MACHINING_GROUP_BULKUPLOAD, PLASTIC_GROUP_BULKUPLOAD, SHEETMETAL_GROUP_BULKUPLOAD } from '../../../config/constants';
 import { getCostingTechnologySelectList, } from '../actions/Costing'
 import { searchableSelect } from '../../layout/FormInputs';
 
-const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
@@ -45,10 +40,19 @@ class CostingBulkUploadDrawer extends Component {
     renderListing = (label) => {
         const { technologySelectList } = this.props
         let tempArr = []
+        // DON'T REMOVE THIS MIGHT BE USED LATER
         if (label === 'Technology') {
             technologySelectList && technologySelectList.map((item) => {
                 if (item.Value === '0') return false
                 tempArr.push({ label: item.Text, value: item.Value })
+                return null
+            })
+            return tempArr
+        }
+        if (label === 'TechnologyMixed') {
+            TechnologyDropdownBulkUpload && TechnologyDropdownBulkUpload.map((item) => {
+                if (item.Value === '0') return false
+                tempArr.push({ label: item.label, value: item.value })
                 return null
             })
             return tempArr
@@ -68,59 +72,9 @@ class CostingBulkUploadDrawer extends Component {
 
         const { files } = this.state
         let fileObj = files[0];
-        let fileHeads = [];
 
         let data = new FormData()
         data.append('file', fileObj)
-
-        // ExcelRenderer(fileObj, (err, resp) => {
-        //     if (err) {
-
-        //     } else {
-
-        //         fileHeads = resp.rows[0];
-
-        //         const check = fileHeads.includes(CostingBulkUpload)
-
-        //         if (check === false) {
-        //             Toaster.error('Please check your data.')
-        //         }
-        //         else {
-        //             // fileHeads = resp.rows[0];
-        //             // let fileData = [];
-        //             // resp.rows.map((val, index) => {
-        //             //     if (index > 0) {
-
-        //             //         // BELOW CODE FOR HANDLE EMPTY CELL VALUE
-        //             //         const i = val.findIndex(e => e === undefined);
-        //             //         if (i !== -1) {
-        //             //             val[i] = '';
-        //             //         }
-
-        //             //         let obj = {}
-        //             //         val.map((el, i) => {
-        //             //             if (fileHeads[i] === 'EffectiveDate' && typeof el == 'number') {
-        //             //                 el = getJsDateFromExcel(el)
-        //             //             }
-        //             //             if (fileHeads[i] === 'NoOfPcs' && typeof el == 'number') {
-        //             //                 el = parseInt(el)
-        //             //             }
-        //             //             obj[fileHeads[i]] = el;
-        //             //             return null;
-        //             //         })
-        //             //         fileData.push(obj)
-        //             //         obj = {}
-
-        //             //     }
-        //             //     
-        //             //     return null;
-        //             // })
-
-        //         };
-        //     }
-        // });
-
-
 
         if (status === 'removed') {
             const removedFileName = file.name
@@ -162,7 +116,6 @@ class CostingBulkUploadDrawer extends Component {
                     fontFamily: 'Helvetica',
                 }}
             >
-                {/* {Math.round(percent)}% */}
             </span>
         )
     }
@@ -172,6 +125,8 @@ class CostingBulkUploadDrawer extends Component {
     * @description Used to get excel column names
     */
     returnExcelColumn = (data = [], TempData) => {
+
+        // DON'T REMOVE THIS MIGHT BE USED LATER
         // const { fileName, failedData, isFailedFlag } = this.props;
 
         // if (isFailedFlag) {
@@ -192,7 +147,6 @@ class CostingBulkUploadDrawer extends Component {
     fileHandler = event => {
 
         let fileObj = event.target.files[0];
-        let fileHeads = [];
         let uploadfileName = fileObj.name;
         let fileType = uploadfileName.substr(uploadfileName.indexOf('.'));
 
@@ -210,35 +164,40 @@ class CostingBulkUploadDrawer extends Component {
         let data = new FormData()
         data.append('file', fileData)
 
-        if (this.state.Technology.label == SHEET_METAL) {
+        switch (Number(this.state.Technology.value)) {
+            case SHEETMETAL_GROUP_BULKUPLOAD:
+                this.props.bulkUploadCosting(data, (res) => {
+                    let Data = res.data[0]
+                    const { files } = this.state
+                    files.push(Data)
+                })
+                this.cancel()
+                break;
+            case PLASTIC_GROUP_BULKUPLOAD:
+                this.props.plasticBulkUploadCosting(data, (res) => {
+                    let Data = res.data[0]
+                    const { files } = this.state
+                    files.push(Data)
+                })
+                this.cancel()
+                break;
+            case MACHINING_GROUP_BULKUPLOAD:
+                this.props.machiningBulkUploadCosting(data, (res) => {
+                    let Data = res.data[0]
+                    const { files } = this.state
+                    files.push(Data)
+                })
+                this.cancel()
+                break;
 
-            this.props.bulkUploadCosting(data, (res) => {
-                let Data = res.data[0]
-                const { files } = this.state
-                files.push(Data)
-            })
-            this.cancel()
-        } if (this.state.Technology.label == 'Plastic') {
-
-            this.props.plasticBulkUploadCosting(data, (res) => {
-                let Data = res.data[0]
-                const { files } = this.state
-                files.push(Data)
-            })
-            this.cancel()
-        } if (this.state.Technology.label === 'Machining') {
-            this.props.machiningBulkUploadCosting(data, (res) => {
-                let Data = res.data[0]
-                const { files } = this.state
-                files.push(Data)
-            })
-            this.cancel()
+            default:
+                break;
         }
-
     }
+
+
     render() {
         const { handleSubmit } = this.props
-
         return (
             <>
                 <Drawer
@@ -296,13 +255,9 @@ class CostingBulkUploadDrawer extends Component {
                                             label="Technology"
                                             component={searchableSelect}
                                             placeholder={"Select"}
-                                            options={this.renderListing("Technology")}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            //  validate={this.state.RMGrade == null || this.state.RMGrade.length === 0 ? [required] : []}
-                                            //  required={true}
+                                            options={this.renderListing("TechnologyMixed")}
                                             handleChangeDescription={this.handleTechnologyChange}
                                             valueDescription={this.state.Technology}
-                                        // disabled={isEditFlag ? true : false}
                                         />
                                     </Col>
 
@@ -407,5 +362,3 @@ export default connect(mapStateToProps,
         form: 'CostingBulkUploadDrawer',
         enableReinitialize: true,
     })(CostingBulkUploadDrawer));
-
-// export default CostingBulkUploadDrawer;

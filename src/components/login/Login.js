@@ -17,6 +17,7 @@ import secondLogo from '../../assests/images/logo/CIRlogo.svg'
 import errorImg from '../../assests/images/box.png'
 import { VERSION } from '../../config/constants'
 import LoaderCustom from "../common/LoaderCustom";
+var CryptoJS = require('crypto-js')
 
 class Login extends Component {
   constructor(props) {
@@ -26,7 +27,7 @@ class Login extends Component {
       isSubmitted: false,
       isRedirect: false,
       flag: false,
-      inputLoader:false
+      inputLoader: false
     };
   }
 
@@ -52,35 +53,55 @@ class Login extends Component {
    */
   onSubmit(values) {
 
+    var key = CryptoJS.enc.Utf8.parse('gQUJ79YKYm22Cazw');
+    var iv = CryptoJS.enc.Utf8.parse('eTEFSa0PinFKTQNB');
+    var encryptedpassword = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse(values.Password), key,
+      {
+        keySize: 128 / 8,
+        iv: iv,
+        mode: CryptoJS.mode.CBC,
+        padding: CryptoJS.pad.Pkcs7
+      });
+
     let reqParams = {
       username: values.UserName,
-      password: values.Password,
-      grant_type: 'password',
+      password: encryptedpassword.toString(),
+      // grant_type: 'password',
     }
-      this.setState({inputLoader:true})    
-      this.props.loginUserAPI(values, (res) => {
+    this.setState({ inputLoader: true })
+    this.props.loginUserAPI(reqParams, (res) => {
 
       // this.props.TokenAPI(reqParams, (res) => {
       if (res && res.status === 200) {
         this.setState({ isLoader: false, isSubmitted: false });
         let userDetail = formatLoginResult(res.data.Data);
+        let departmentList = ''
+        const dept = userDetail && userDetail.Department.map((item) => {
+          if (item.Role === 'SuperAdmin') {
+            return ''
+          } else {
+            return item.DepartmentCode
+          }
+        })
 
+        departmentList = dept.join(',')
         reactLocalStorage.setObject("userDetail", userDetail);
+        reactLocalStorage.setObject("departmentList", departmentList);
         setTimeout(() => {
-          this.setState({inputLoader:false})
+          this.setState({ inputLoader: false })
         }, 1500)
         this.props.logUserIn();
-       
+
         // this.setState({ isRedirect: true })
         setTimeout(() => {
           window.location.replace("/");
         }, 1000)
       }
       setTimeout(() => {
-        this.setState({inputLoader:false})
+        this.setState({ inputLoader: false })
       }, 1500)
     })
-   
+
     // });
   }
 
@@ -154,9 +175,9 @@ class Login extends Component {
                       maxLength={26}
                     />
                   </div>
-                  
+
                   <div className="text-center p-relative">
-                  {this.state.inputLoader && <LoaderCustom customClass="input-loader login-loader"/>}
+                    {this.state.inputLoader && <LoaderCustom customClass="input-loader login-loader" />}
                     <input
                       type="submit"
                       disabled={isSubmitted ? true : false}

@@ -28,6 +28,7 @@ class BOPMaster extends Component {
       EditAccessibility: false,
       DeleteAccessibility: false,
       BulkUploadAccessibility: false,
+      isBOPAssociated: false
     }
   }
 
@@ -104,16 +105,18 @@ class BOPMaster extends Component {
   * @method getDetails
   * @description GET DETAILS FOR DEOMESTIC FORM
   */
-  getDetails = (data) => {
+  getDetails = (data, isBOPAssociate) => {
     this.setState({ isBOPDomesticForm: true, data: data })
+    this.setState({ isBOPAssociated: isBOPAssociate })
   }
 
   /**
   * @method getImportDetails
   * @description GET DETAILS FOR IMPORT FORM
   */
-  getImportDetails = (data) => {
+  getImportDetails = (data, isBOPAssociate) => {
     this.setState({ isBOPImportForm: true, data: data })
+    this.setState({ isBOPAssociated: isBOPAssociate })
   }
 
   /**
@@ -127,6 +130,7 @@ class BOPMaster extends Component {
       return <AddBOPDomestic
         data={data}
         hideForm={this.hideForm}
+        isBOPAssociated={this.state.isBOPAssociated}
       />
     }
 
@@ -134,6 +138,7 @@ class BOPMaster extends Component {
       return <AddBOPImport
         data={data}
         hideForm={this.hideForm}
+        isBOPAssociated={this.state.isBOPAssociated}
       />
     }
 

@@ -4,7 +4,8 @@ import { Row, Col, } from 'reactstrap';
 import {
   deleteRawMaterialAPI, getRMImportDataList, getRawMaterialNameChild, getGradeSelectList,
   getRawMaterialFilterSelectList
-  , getVendorListByVendorType
+  , getVendorListByVendorType,
+  masterFinalLevelUser
 } from '../actions/Material';
 import { checkForDecimalAndNull } from "../../../helper/validation";
 import { EMPTY_DATA, RMIMPORT } from '../../../config/constants';
@@ -22,7 +23,7 @@ import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { CheckApprovalApplicableMaster, getConfigurationKey, getFilteredData, } from '../../../helper';
+import { CheckApprovalApplicableMaster, getConfigurationKey, getFilteredData, loggedInUserId, userDetails, } from '../../../helper';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
@@ -51,6 +52,7 @@ function RMImportListing(props) {
   const [gridColumnApi, setgridColumnApi] = useState(null);   // DONT DELETE THIS STATE , IT IS USED BY AG GRID
 
   const [loader, setloader] = useState(false);
+  const [isFinalLevelUser, setIsFinalLevelUser] = useState(false)
 
   const dispatch = useDispatch();
 
@@ -81,7 +83,19 @@ function RMImportListing(props) {
     callFilterApi()
   }, [shown])
 
-
+  useEffect(() => {
+    let obj = {
+      MasterId: RM_MASTER_ID,
+      DepartmentId: userDetails().DepartmentId,
+      LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
+      LoggedInUserId: loggedInUserId()
+    }
+    dispatch(masterFinalLevelUser(obj, (res) => {
+      if (res?.data?.Result) {
+        setIsFinalLevelUser(res.data.Data.IsFinalApprovar)
+      }
+    }))
+  }, [])
 
   useEffect(() => {
 
@@ -174,7 +188,7 @@ function RMImportListing(props) {
       Id: Id,
       IsVendor: rowData.CostingHead === 'Vendor Based' ? true : rowData.CostingHead === 'Zero Based' ? false : rowData.CostingHead,
     }
-    props.getDetails(data);
+    props.getDetails(data, rowData?.IsRMAssociated);
   }
 
   /**
@@ -224,7 +238,7 @@ function RMImportListing(props) {
     let isDeleteButton = false
 
 
-    if (EditAccessibility && !rowData.IsRMAssociated) {
+    if (EditAccessibility) {
       isEditbale = true
     } else {
       isEditbale = false
@@ -441,70 +455,71 @@ function RMImportListing(props) {
   return (
     <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
       {(loader && !props.isMasterSummaryDrawer) && <LoaderCustom />}
-      <Row className="filter-row-large pt-4 ">
-        {
-          // SHOW FILTER BUTTON ONLY FOR RM MASTER NOT FOR SIMULATION AMD MASTER APPROVAL SUMMARY
-          (!isSimulation && !props.isMasterSummaryDrawer) &&
-          <Col md="6" lg="6" className="search-user-block mb-3">
-            <div className="d-flex justify-content-end bd-highlight w100">
-              <div>
-                <>
-                  {shown ? (
-                    <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => { setshown(!shown) }}>
-                      <div className="cancel-icon-white"></div>
-                    </button>
-                  ) : (
-                    <>
-                    </>
-                  )}
-                  {AddAccessibility && (
-                    <button
-                      type="button"
-                      className={"user-btn mr5"}
-                      onClick={formToggle}
-                      title="Add"
-                    >
-                      <div className={"plus mr-0"}></div>
-                      {/* ADD */}
-                    </button>
-                  )}
-                  {BulkUploadAccessibility && (
-                    <button
-                      type="button"
-                      className={"user-btn mr5"}
-                      onClick={bulkToggle}
-                      title="Bulk Upload"
-                    >
-                      <div className={"upload mr-0"}></div>
-                      {/* Bulk Upload */}
-                    </button>
-                  )}
-                  {
-                    DownloadAccessibility &&
-                    <>
-                      <ExcelFile filename={'RM Import'} fileExtension={'.xls'} element={
-                        <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-                          {/* DOWNLOAD */}
-                        </button>}>
-                        {onBtExport()}
-                      </ExcelFile>
-                    </>
-                  }
-                  <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
-                    <div className="refresh mr-0"></div>
-                  </button>
-                </>
+      <Row className={`filter-row-large pt-4 ${isSimulation ? "zindex-0" : ""}`}>
+        <Col md="6" lg="6">
+          <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+        </Col>
+        <Col md="6" lg="6" className=" mb-3 d-flex justify-content-end">
+          {/* SHOW FILTER BUTTON ONLY FOR RM MASTER NOT FOR SIMULATION AMD MASTER APPROVAL SUMMARY */}
+          {(!props.isMasterSummaryDrawer) && <>
+            {!isSimulation &&
+              <div className="d-flex justify-content-end bd-highlight w100">
+                <div>
+                  <>
+                    {shown ? (
+                      <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => { setshown(!shown) }}>
+                        <div className="cancel-icon-white"></div>
+                      </button>
+                    ) : (
+                      <>
+                      </>
+                    )}
+                    {AddAccessibility && (
+                      <button
+                        type="button"
+                        className={"user-btn mr5"}
+                        onClick={formToggle}
+                        title="Add"
+                      >
+                        <div className={"plus mr-0"}></div>
+                        {/* ADD */}
+                      </button>
+                    )}
+                    {BulkUploadAccessibility && (
+                      <button
+                        type="button"
+                        className={"user-btn mr5"}
+                        onClick={bulkToggle}
+                        title="Bulk Upload"
+                      >
+                        <div className={"upload mr-0"}></div>
+                        {/* Bulk Upload */}
+                      </button>
+                    )}
+                    {
+                      DownloadAccessibility &&
+                      <>
+                        <ExcelFile filename={'RM Import'} fileExtension={'.xls'} element={
+                          <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                            {/* DOWNLOAD */}
+                          </button>}>
+                          {onBtExport()}
+                        </ExcelFile>
+                      </>
+                    }
+                  </>
+                </div>
               </div>
-            </div>
-          </Col>
-        }
+            }
+            <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
+              <div className="refresh mr-0"></div>
+            </button>
+          </>}
+        </Col>
       </Row>
       <Row>
         <Col>
-          <div className={`ag-grid-wrapper height-width-wrapper ${getFilterRMData() && getFilterRMData()?.length <= 0 ? "overlay-contain" : ""}`}>
-            <div className="ag-grid-header">
-              <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
-            </div>
+          <div className={`ag-grid-wrapper ${props.isSimulation ? 'simulation-height' : 'height-width-wrapper'} ${getFilterRMData() && getFilterRMData()?.length <= 0 ? "overlay-contain" : ""}`}>
             <div className={`ag-theme-material ${loader && "max-loader-height"}`}>
               <AgGridReact
                 style={{ height: '100%', width: '100%' }}
@@ -572,6 +587,7 @@ function RMImportListing(props) {
             isZBCVBCTemplate={true}
             messageLabel={"RM Import"}
             anchor={"right"}
+            isFinalApprovar={isFinalLevelUser}
           />
         )
       }

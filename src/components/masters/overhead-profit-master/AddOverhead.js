@@ -22,7 +22,6 @@ import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from '../../../assests/images/red-cross.png'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { debounce } from 'lodash';
-import TooltipCustom from '../../common/Tooltip';
 import AsyncSelect from 'react-select/async';
 
 const selector = formValueSelector('AddOverhead');
@@ -69,7 +68,8 @@ class AddOverhead extends Component {
       setDisable: false,
       disablePopup: false,
       inputLoader: false,
-
+      minEffectiveDate: '',
+      isDataChanged: this.props.data.isEditFlag
     }
   }
 
@@ -110,7 +110,7 @@ class AddOverhead extends Component {
     } else {
       this.setState({ ModelType: [], })
     }
-    this.setState({ DropdownChanged: false })
+    this.setState({ DropdownChanged: false, isDataChanged: false })
   };
 
   /**
@@ -141,6 +141,7 @@ class AddOverhead extends Component {
           const Data = res.data.Data;
           this.setState({ DataToChange: Data })
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
+          this.setState({ minEffectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '' })
           setTimeout(() => {
             const { modelTypes, costingHead, vendorWithVendorCodeSelectList, clientSelectList } = this.props;
             const modelObj = modelTypes && modelTypes.find(item => Number(item.Value) === Data.ModelTypeId)
@@ -328,7 +329,79 @@ class AddOverhead extends Component {
         isHideRM: false,
       })
     }
-    this.setState({ DropdownChanged: false })
+    this.setState({ DropdownChanged: false, isDataChanged: false })
+  };
+
+  /**
+  * @method handleChangeOverheadPercentage
+  * @description called
+  */
+  handleChangeOverheadPercentage = (newValue) => {
+    if (this.state.isEditFlag) {
+      if (String(newValue) === String(this.state.DataToChange.OverheadPercentage) &&
+        String(this.state.overheadAppli.label) === String(this.state.DataToChange.OverheadApplicabilityType) &&
+        String(this.state.ModelType.label) === String(this.state.DataToChange.ModelType)) {
+        this.setState({ isDataChanged: true })
+      } else {
+        this.setState({ isDataChanged: false })
+
+      }
+
+    }
+  };
+
+  /**
+  * @method handleChangeOverheadPercentageRM
+  * @description called
+  */
+  handleChangeOverheadPercentageRM = (newValue) => {
+    if (this.state.isEditFlag) {
+      if (String(newValue) === String(this.state.DataToChange.OverheadRMPercentage) &&
+        String(this.state.overheadAppli.label) === String(this.state.DataToChange.OverheadApplicabilityType) &&
+        String(this.state.ModelType.label) === String(this.state.DataToChange.ModelType)) {
+        this.setState({ isDataChanged: true })
+      } else {
+        this.setState({ isDataChanged: false })
+
+      }
+
+    }
+  };
+
+  /**
+  * @method handleChangeOverheadPercentageCC
+  * @description called
+  */
+  handleChangeOverheadPercentageCC = (newValue) => {
+    if (this.state.isEditFlag) {
+      if (String(newValue) === String(this.state.DataToChange.OverheadMachiningCCPercentage) &&
+        String(this.state.overheadAppli.label) === String(this.state.DataToChange.OverheadApplicabilityType) &&
+        String(this.state.ModelType.label) === String(this.state.DataToChange.ModelType)) {
+        this.setState({ isDataChanged: true })
+      } else {
+        this.setState({ isDataChanged: false })
+
+      }
+
+    }
+  };
+
+  /**
+  * @method handleChangeOverheadPercentageBOP
+  * @description called
+  */
+  handleChangeOverheadPercentageBOP = (newValue) => {
+    if (this.state.isEditFlag) {
+      if (String(newValue) === String(this.state.DataToChange.OverheadBOPPercentage) &&
+        String(this.state.overheadAppli.label) === String(this.state.DataToChange.OverheadApplicabilityType) &&
+        String(this.state.ModelType.label) === String(this.state.DataToChange.ModelType)) {
+        this.setState({ isDataChanged: true })
+      } else {
+        this.setState({ isDataChanged: false })
+
+      }
+
+    }
   };
 
   handlePercent = (e) => {
@@ -742,7 +815,7 @@ class AddOverhead extends Component {
   render() {
     const { handleSubmit, } = this.props;
     const { isRM, isCC, isBOP, isOverheadPercent, isEditFlag, costingHead,
-      isHideOverhead, isHideBOP, isHideRM, isHideCC, isViewMode, setDisable, disablePopup } = this.state;
+      isHideOverhead, isHideBOP, isHideRM, isHideCC, isViewMode, setDisable, disablePopup, isDataChanged } = this.state;
     const filterList = (inputValue) => {
       let tempArr = []
 
@@ -834,7 +907,7 @@ class AddOverhead extends Component {
                         </Col>
                       </Row>
                       <Row>
-                        <Col md="4" >
+                        <Col md="3" >
                           <Field
                             name="ModelType"
                             type="text"
@@ -857,9 +930,9 @@ class AddOverhead extends Component {
                           />
                         </Col>
                         {this.state.IsVendor && costingHead === "vendor" && (
-                          <Col md="4" >
+                          <Col md="3" >
                             <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                            {this.state.inputLoader && <LoaderCustom customClass={`input-loader masters-vendor-loader`} />}
+                            {this.state.inputLoader && <LoaderCustom customClass={`vendor-input-loader-second-col`} />}
                             <AsyncSelect
                               name="vendorName"
                               ref={this.myRef}
@@ -868,14 +941,14 @@ class AddOverhead extends Component {
                               onChange={(e) => this.handleVendorName(e)}
                               value={this.state.vendorName}
                               noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
-                              isDisabled={isEditFlag ? true : false} />
+                              isDisabled={(isEditFlag || this.state.inputLoader) ? true : false} />
                             {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
 
 
                           </Col>
                         )}
                         {this.state.IsVendor && costingHead === "client" && (
-                          <Col md="4">
+                          <Col md="3">
                             <Field
                               name="clientName"
                               type="text"
@@ -898,7 +971,7 @@ class AddOverhead extends Component {
                           </Col>
                         )}
 
-                        <Col md="4" >
+                        <Col md="3" >
                           <Field
                             name="OverheadApplicability"
                             type="text"
@@ -923,7 +996,7 @@ class AddOverhead extends Component {
                           />
                         </Col>
                         {!isHideOverhead && (
-                          <Col md="4">
+                          <Col md="3">
                             <Field
                               label={`Overhead (%)`}
                               name={"OverheadPercentage"}
@@ -937,6 +1010,7 @@ class AddOverhead extends Component {
                               component={renderText}
                               onBlur={this.handlePercent}
                               required={!isOverheadPercent ? true : false}
+                              onChange={(event) => this.handleChangeOverheadPercentage(event.target.value)}
                               className=""
                               customClassName=" withBorder"
                               maxLength={15}
@@ -945,7 +1019,7 @@ class AddOverhead extends Component {
                           </Col>
                         )}
                         {!isHideRM && (
-                          <Col md="4">
+                          <Col md="3">
                             <Field
                               label={`Overhead on RM (%)`}
                               name={"OverheadRMPercentage"}
@@ -954,6 +1028,7 @@ class AddOverhead extends Component {
                               validate={!isRM ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []}
                               component={renderText}
                               required={!isRM ? true : false}
+                              onChange={(event) => this.handleChangeOverheadPercentageRM(event.target.value)}
                               className=""
                               customClassName=" withBorder"
                               disabled={isRM || isViewMode ? true : false}
@@ -961,7 +1036,7 @@ class AddOverhead extends Component {
                           </Col>
                         )}
                         {!isHideCC && (
-                          <Col md="4">
+                          <Col md="3">
                             <Field
                               label={`Overhead on CC (%)`}
                               name={"OverheadMachiningCCPercentage"}
@@ -970,6 +1045,7 @@ class AddOverhead extends Component {
                               validate={!isCC ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []}
                               component={renderText}
                               required={!isCC ? true : false}
+                              onChange={(event) => this.handleChangeOverheadPercentageCC(event.target.value)}
                               className=""
                               customClassName=" withBorder"
                               disabled={isCC || isViewMode ? true : false}
@@ -977,7 +1053,7 @@ class AddOverhead extends Component {
                           </Col>
                         )}
                         {!isHideBOP && (
-                          <Col md="4">
+                          <Col md="3">
                             <Field
                               label={`Overhead on BOP (%)`}
                               name={"OverheadBOPPercentage"}
@@ -986,13 +1062,14 @@ class AddOverhead extends Component {
                               validate={!isBOP ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []}
                               component={renderText}
                               required={!isBOP ? true : false}
+                              onChange={(event) => this.handleChangeOverheadPercentageBOP(event.target.value)}
                               className=""
                               customClassName=" withBorder"
                               disabled={isBOP || isViewMode ? true : false}
                             />
                           </Col>
                         )}
-                        <Col md="4">
+                        <Col md="3">
 
                           <div className="inputbox date-section form-group">
                             <Field
@@ -1001,6 +1078,7 @@ class AddOverhead extends Component {
                               selected={this.state.effectiveDate}
                               onChange={this.handleEffectiveDateChange}
                               type="text"
+                              minDate={this.state.minEffectiveDate}
                               validate={[required]}
                               autoComplete={'off'}
                               required={true}
@@ -1008,7 +1086,7 @@ class AddOverhead extends Component {
                               }}
                               component={renderDatePicker}
                               className="form-control"
-                              disabled={isEditFlag ? true : false}
+                              disabled={isViewMode || isDataChanged}
 
                             />
                           </div>

@@ -1,55 +1,90 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, } from 'react';
 import { useDispatch, useSelector, } from 'react-redux';
-import { Container, Row, Col, } from 'reactstrap';
-import { getProcessDrawerDataList, getProcessDrawerVBCDataList } from '../../actions/Costing';
+import { Container, Row, Col, NavItem, TabContent, TabPane, Nav, NavLink } from 'reactstrap';
+import { getProcessDrawerDataList, getProcessDrawerVBCDataList, setIdsOfProcess, setIdsOfProcessGroup, setSelectedDataOfCheckBox } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
-import { GridTotalFormate } from '../../../common/TableGridFunctions';
 import NoContentFound from '../../../common/NoContentFound';
 import { EMPTY_DATA } from '../../../../config/constants';
 import Toaster from '../../../common/Toaster';
+import classnames from 'classnames';
 import Drawer from '@material-ui/core/Drawer';
 import { EMPTY_GUID, ZBC } from '../../../../config/constants';
 import LoaderCustom from '../../../common/LoaderCustom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
+import { FORGING, Ferrous_Casting, DIE_CASTING } from '../../../../config/masterData'
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import GroupProcess from './GroupProcess';
+import _ from 'lodash'
+
 const gridOptions = {};
 
 function AddProcess(props) {
 
   const [tableData, setTableDataList] = useState([]);
   const [selectedRowData, setSelectedRowData] = useState([]);
-  const [selectedIds, setSelectedIds] = useState(props.Ids);
-  const [selectedMachineIds,setSelectedMachineIds] = useState(props.MachineIds)
+  const [updatedRowData, setUpdatedRowData] = useState([])
   const [gridApi, setGridApi] = useState(null);
   const [gridColumnApi, setGridColumnApi] = useState(null);
-  const [rowData, setRowData] = useState(null);
+  // const [processGroup, setProcessGroup] = useState(true)
+  // const processGroup = getConfigurationKey().IsMachineProcessGroup // UNCOMMENT IT AFTER KEY IS ADDED IN WEB CONFIG N BACKEND AND REMOVE BELOW LINE
+  const processGroup = true
   const dispatch = useDispatch()
+  const [activeTab, setActiveTab] = useState('1');
 
   const costData = useContext(costingInfoContext)
-
-  const { processDrawerList, CostingEffectiveDate } = useSelector(state => state.costing)
+  const { processDrawerList, CostingEffectiveDate, selectedProcessAndGroup, selectedProcessId, selectedProcessGroupId } = useSelector(state => state.costing)
   const { initialConfiguration } = useSelector(state => state.auth)
 
   /**
   * @method toggleDrawer
   * @description TOGGLE DRAWER
   */
-  const toggleDrawer = (event) => {
+  const toggleDrawer = (event, data) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }
-    props.closeDrawer('', selectedRowData)
+    let tempArr = selectedProcessGroupId
+    let tempArr1 = selectedProcessId
+    let rowData = selectedProcessAndGroup && selectedProcessAndGroup.map((item) => {
+      if (item.GroupName) {
+        tempArr.push({ MachineId: item.MachineId, GroupName: item.GroupName })
+      } else {
+        tempArr1.push({ MachineRateId: item.MachineRateId, ProcessId: item.ProcessId })
+      }
+
+      let obj = item
+      obj.GroupName = item.GroupName ? item.GroupName : ''
+
+      obj.ProcessList = item.ProcessList ? item.ProcessList : []
+      return obj
+    })
+
+    dispatch(setIdsOfProcess(tempArr1))
+    dispatch(setIdsOfProcessGroup(tempArr))
+    if (data) {
+      props.closeDrawer('', rowData)
+    }
   };
 
   useEffect(() => {
     if (costData.VendorType === ZBC) {
+      let data = {}
 
-      const data = {
-        PlantId: costData.PlantId,
-        TechnologyId: costData.TechnologyId,
-        CostingId: costData.CostingId,
-        EffectiveDate: CostingEffectiveDate,
+      if (Number(costData.TechnologyId) === Number(FORGING) || Number(costData.TechnologyId) === Number(DIE_CASTING) || Number(costData.TechnologyId) === Number(Ferrous_Casting)) {
+        data = {
+          PlantId: costData.PlantId,
+          TechnologyId: String(`${costData.TechnologyId},14`),
+          CostingId: costData.CostingId,
+          EffectiveDate: CostingEffectiveDate,
+        }
+      } else {
+        data = {
+          PlantId: costData.PlantId,
+          TechnologyId: String(costData.TechnologyId),
+          CostingId: costData.CostingId,
+          EffectiveDate: CostingEffectiveDate,
+        }
       }
       dispatch(getProcessDrawerDataList(data, (res) => {
         if (res && res.status === 200) {
@@ -63,14 +98,26 @@ function AddProcess(props) {
       }))
 
     } else {
-
-      const data = {
-        VendorId: costData.VendorId,
-        TechnologyId: costData.TechnologyId,
-        VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
-        DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID,
-        CostingId: costData.CostingId,
-        EffectiveDate: CostingEffectiveDate,
+      let data = {}
+      if (Number(costData.TechnologyId) === Number(FORGING) || Number(costData.TechnologyId) === Number(DIE_CASTING) || Number(costData.TechnologyId) === Number(Ferrous_Casting)) {
+        data = {
+          VendorId: costData.VendorId,
+          TechnologyId: String(`${costData.TechnologyId},14`),
+          VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
+          DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID,
+          CostingId: costData.CostingId,
+          EffectiveDate: CostingEffectiveDate,
+        }
+      }
+      else {
+        data = {
+          VendorId: costData.VendorId,
+          TechnologyId: String(costData.TechnologyId),
+          VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
+          DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID,
+          CostingId: costData.CostingId,
+          EffectiveDate: CostingEffectiveDate,
+        }
       }
       dispatch(getProcessDrawerVBCDataList(data, (res) => {
         if (res && res.status === 200) {
@@ -82,71 +129,38 @@ function AddProcess(props) {
           setTableDataList([])
         }
       }))
-
     }
   }, []);
 
+  const onRowSelect = (event) => {
 
-
-  /**
-  * @method renderPaginationShowsTotal
-  * @description Pagination
-  */
-  const renderPaginationShowsTotal = (start, to, total) => {
-    return <GridTotalFormate start={start} to={to} total={total} />
-  }
-
-  const options = {
-    clearSearch: true,
-    noDataText: (processDrawerList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
-    paginationShowsTotal: renderPaginationShowsTotal(),
-    prePage: <span className="prev-page-pg"></span>, // Previous page button text
-    nextPage: <span className="next-page-pg"></span>, // Next page button text
-    firstPage: <span className="first-page-pg"></span>, // First page button text
-    lastPage: <span className="last-page-pg"></span>,
-
-  };
-
-  const onRowSelect = (row, isSelected, e) => {
-    var selectedRows = gridApi.getSelectedRows();
-    if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
-    setSelectedRowData(selectedRows)
-    // if (isSelected) {
-    //   let tempArr = [...selectedRowData, row]
-    //   setSelectedRowData(tempArr)
-    // } else {
-    //   const MachineRateId = row.MachineRateId;
-    //   let tempArr = selectedRowData && selectedRowData.filter(el => el.MachineRateId !== MachineRateId)
-    //   setSelectedRowData(tempArr)
-    // }
-  }
-
-  const onSelectAll = (isSelected, rows) => {
-    if (isSelected) {
-      setSelectedRowData(rows)
+    let rowData = event.data
+    let processData = selectedProcessAndGroup
+    if (event.node.isSelected()) {
+      processData.push(rowData)
     } else {
-      setSelectedRowData([])
+      processData = selectedProcessAndGroup && selectedProcessAndGroup.filter(el => el.MachineRateId !== rowData.MachineRateId && el.ProcessId !== rowData.ProcessId)
     }
+    dispatch(setSelectedDataOfCheckBox(processData))
+
+    var selectedRows = gridApi.getSelectedRows();
+
+    if (JSON.stringify(selectedRows) === JSON.stringify(props.Ids)) return false
+    setSelectedRowData(selectedRows)
   }
 
-  const selectRowProp = {
-    mode: 'checkbox',
-    clickToSelect: true,
-    unselectable: selectedIds,
-    onSelect: onRowSelect,
-    onSelectAll: onSelectAll,
-  };
+
 
   /**
   * @method addRow
   * @description ADD ROW IN TO RM COST GRID
   */
   const addRow = () => {
-    if (selectedRowData.length === 0) {
+    if (selectedProcessAndGroup.length === 0) {
       Toaster.warning('Please select row.')
       return false;
     }
-    toggleDrawer('')
+    toggleDrawer('', true)
   }
 
   /**
@@ -155,10 +169,6 @@ function AddProcess(props) {
   */
   const cancel = () => {
     props.closeDrawer()
-  }
-
-  const onSubmit = data => {
-    toggleDrawer('')
   }
 
   const isFirstColumn = (params) => {
@@ -191,7 +201,7 @@ function AddProcess(props) {
   };
 
   const onFilterTextBoxChanged = (e) => {
-    this.state.gridApi.setQuickFilter(e.target.value);
+    gridApi.setQuickFilter(e.target.value);
   }
 
   const frameworkComponents = {
@@ -210,14 +220,28 @@ function AddProcess(props) {
 
   }, [tableData])
 
-  const isRowSelectable = rowNode => rowNode.data ? !selectedIds.includes(rowNode.data.ProcessId) || !selectedMachineIds.includes(rowNode.data.MachineRateId) : false;
+  const findProcessId = (rowNode) => {
+    let isContainProcess = _.find(selectedProcessId, function (obj) {
+      if (obj.ProcessId === rowNode.ProcessId && obj.MachineRateId === rowNode.MachineRateId) {
+        return true;
+      } else {
+        return false
+      }
+    });
+    return isContainProcess
+  }
+  const isRowSelectable = rowNode => !findProcessId(rowNode.data)
 
   const resetState = () => {
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
 
   }
-
+  const toggle = (tab) => {
+    if (activeTab !== tab) {
+      setActiveTab(tab)
+    }
+  }
   /**
   * @method render
   * @description Renders the component
@@ -237,73 +261,110 @@ function AddProcess(props) {
                     <h3>{'ADD Process:'}</h3>
                   </div>
                   <div
-                    onClick={(e) => toggleDrawer(e)}
+                    onClick={cancel}
                     className={'close-button right'}>
                   </div>
                 </Col>
               </Row>
+              <Row>
+                <Col className='px-3'>
+                  {processGroup && <Nav tabs className="subtabs cr-subtabs-head process-wrapper">
+                    <NavItem>
+                      <NavLink
+                        className={classnames({ active: activeTab === '1' })}
+                        onClick={() => {
+                          toggle('1')
+                        }}>
+                        Process
+                      </NavLink>
+                    </NavItem>
+                    <NavItem>
+                      <NavLink
+                        className={classnames({ active: activeTab === '2' })}
+                        onClick={() => {
+                          toggleDrawer('', false)
+                          toggle('2')
+                        }}  >
+                        Group Process
+                      </NavLink>
+                    </NavItem>
 
-              <Row className="mx-0">
-                <Col className="hidepage-size">
-                
-                  <div className={`ag-grid-wrapper min-height-auto height-width-wrapper ${processDrawerList && processDrawerList?.length <=0 ?"overlay-contain": ""}`}>
-                    <div className="ag-grid-header">
-                      <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
-                      <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
-                        <div className="refresh mr-0"></div>
-                      </button>
-                    </div>
-                    <div
-                      className="ag-theme-material"
-                      style={{ height: '100%', width: '100%' }}
-                    >
-                      <AgGridReact
-                        style={{ height: '100%', width: '100%' }}
-                        defaultColDef={defaultColDef}
-                        floatingFilter={true}
-                        domLayout='autoHeight'
-                        // columnDefs={c}
-                        rowData={processDrawerList}
-                        pagination={true}
-                        paginationPageSize={10}
-                        onGridReady={onGridReady}
-                        gridOptions={gridOptions}
-                        loadingOverlayComponent={'customLoadingOverlay'}
-                        noRowsOverlayComponent={'customNoRowsOverlay'}
-                        noRowsOverlayComponentParams={{
-                          title: EMPTY_DATA,
-                          imagClass: 'imagClass'
-                        }}
-                        suppressRowClickSelection={true}
-                        rowSelection={'multiple'}
-                        frameworkComponents={frameworkComponents}
-                        onSelectionChanged={onRowSelect}
-                        isRowSelectable={isRowSelectable}
-                      >
-                        <AgGridColumn field="MachineRateId" hide={true}></AgGridColumn>
-                        <AgGridColumn cellClass="has-checkbox" field="ProcessName" headerName="Process Name"  ></AgGridColumn>
-                        <AgGridColumn field="MachineNumber" headerName="Machine No."></AgGridColumn>
-                        <AgGridColumn field="MachineName" headerName="Machine Name"></AgGridColumn>
-                        <AgGridColumn field="MachineTypeName" headerName="Machine Type"></AgGridColumn>
-                        <AgGridColumn field="MachineTonnage" headerName="Machine Tonnage"></AgGridColumn>
-                        <AgGridColumn field="UnitOfMeasurement" headerName="UOM"></AgGridColumn>
-                        <AgGridColumn field="MachineRate" headerName={'Machine Rate'}></AgGridColumn>
+                  </Nav>}
+                  <TabContent activeTab={activeTab}>
+                    {activeTab === '1' && (
+                      <TabPane tabId="1">
+                        <Row className="mx-0">
+                          <Col className="hidepage-size mt-2 px-0">
 
-                      </AgGridReact>
-                      <div className="paging-container d-inline-block float-right">
-                        <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
-                          <option value="10" selected={true}>10</option>
-                          <option value="50">50</option>
-                          <option value="100">100</option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
+                            <div className={`ag-grid-wrapper min-height-auto mt-2 height-width-wrapper ${processDrawerList && processDrawerList?.length <= 0 ? "overlay-contain" : ""}`}>
+                              <div className="ag-grid-header">
+                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                                <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
+                                  <div className="refresh mr-0"></div>
+                                </button>
+                              </div>
+                              <div
+                                className="ag-theme-material"
+                              >
+                                <AgGridReact
+                                  style={{ height: '100%', width: '100%' }}
+                                  defaultColDef={defaultColDef}
+                                  floatingFilter={true}
+                                  domLayout='autoHeight'
+                                  rowData={processDrawerList}
+                                  pagination={true}
+                                  paginationPageSize={10}
+                                  onGridReady={onGridReady}
+                                  gridOptions={gridOptions}
+                                  loadingOverlayComponent={'customLoadingOverlay'}
+                                  noRowsOverlayComponent={'customNoRowsOverlay'}
+                                  noRowsOverlayComponentParams={{
+                                    title: EMPTY_DATA,
+                                    imagClass: 'imagClass'
+                                  }}
+                                  suppressRowClickSelection={true}
+                                  rowSelection={'multiple'}
+                                  frameworkComponents={frameworkComponents}
+                                  onRowSelected={onRowSelect}
+                                  isRowSelectable={isRowSelectable}
+                                >
+                                  <AgGridColumn field="MachineRateId" hide={true}></AgGridColumn>
+                                  <AgGridColumn cellClass="has-checkbox" field="ProcessName" headerName="Process Name"  ></AgGridColumn>
+                                  <AgGridColumn field='Technologies' headerName='Technology'></AgGridColumn>
+                                  <AgGridColumn field="MachineNumber" headerName="Machine No."></AgGridColumn>
+                                  <AgGridColumn field="MachineName" headerName="Machine Name"></AgGridColumn>
+                                  <AgGridColumn field="MachineTypeName" headerName="Machine Type"></AgGridColumn>
+                                  <AgGridColumn field="Tonnage" headerName="Machine Tonnage"></AgGridColumn>
+                                  <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
+                                  <AgGridColumn field="MachineRate" headerName={'Machine Rate'}></AgGridColumn>
+
+                                </AgGridReact>
+                                <div className="paging-container d-inline-block float-right">
+                                  <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
+                                    <option value="10" selected={true}>10</option>
+                                    <option value="50">50</option>
+                                    <option value="100">100</option>
+                                  </select>
+                                </div>
+                              </div>
+                            </div>
+                          </Col>
+                        </Row>
+                      </TabPane>
+                    )}
+                    {activeTab === '2' && (
+                      <TabPane tabId="2">
+                        <GroupProcess />
+                      </TabPane>
+                    )}
+
+                  </TabContent>
                 </Col>
               </Row>
 
+
               <Row className="sf-btn-footer no-gutters justify-content-between mx-0">
-                <div className="col-sm-12 text-left px-3 d-flex justify-content-end">
+                <div className="col-sm-12 text-left d-flex justify-content-end">
                   <button
                     type={'button'}
                     className="reset cancel-btn mr5"

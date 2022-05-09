@@ -16,7 +16,7 @@ import { BOP_IMPORT_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
 import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
 import { BopImport, INR, BOP_MASTER_ID } from '../../../config/constants';
-import { getConfigurationKey, CheckApprovalApplicableMaster, getFilteredData } from '../../../helper';
+import { getConfigurationKey, getFilteredData, loggedInUserId, userDetails } from '../../../helper';
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -24,6 +24,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
 import { getListingForSimulationCombined } from '../../simulation/actions/Simulation';
+import { masterFinalLevelUser } from '../../masters/actions/Material'
 
 const ExcelFile = ReactExport.ExcelFile
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -51,7 +52,8 @@ class BOPImportListing extends Component {
             showData: false,
             isLoader: false,
             showPopup: false,
-            deletedId: ''
+            deletedId: '',
+            isFinalApprovar: false
 
         }
     }
@@ -80,6 +82,18 @@ class BOPImportListing extends Component {
         else {
             this.getDataList()
         }
+        let obj = {
+            MasterId: BOP_MASTER_ID,
+            DepartmentId: userDetails().DepartmentId,
+            LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
+            LoggedInUserId: loggedInUserId()
+        }
+        this.props.masterFinalLevelUser(obj, (res) => {
+            if (res?.data?.Result) {
+                this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+            }
+        })
+
     }
 
     /**
@@ -124,7 +138,7 @@ class BOPImportListing extends Component {
             IsVendor: rowData.CostingHead,
             isViewMode: isViewMode,
         }
-        this.props.getDetails(data);
+        this.props.getDetails(data, rowData?.IsBOPAssociated);
     }
 
 
@@ -192,7 +206,7 @@ class BOPImportListing extends Component {
         let isDeleteButton = false
 
 
-        if (EditAccessibility && !rowData.IsBOPAssociated) {
+        if (EditAccessibility) {
             isEditable = true
         } else {
             isEditable = false
@@ -245,13 +259,6 @@ class BOPImportListing extends Component {
 
         return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
     }
-    plantFormatter = (props) => {
-
-        const rowData = props.data
-        return rowData.IsVendor === 'Vendor Based' ? rowData.DestinationPlant : rowData.Plants
-    }
-
-
 
     formToggle = () => {
         this.props.displayForm()
@@ -378,7 +385,6 @@ class BOPImportListing extends Component {
             hyphenFormatter: this.hyphenFormatter,
             costingHeadFormatter: this.costingHeadFormatter,
             effectiveDateFormatter: this.effectiveDateFormatter,
-            plantFormatter: this.plantFormatter
         };
 
         const onRowSelect = () => {
@@ -397,10 +403,12 @@ class BOPImportListing extends Component {
             <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
                 {this.state.isLoader && <LoaderCustom />}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-                    <Row className={`pt-4 filter-row-large  ${this.props.isSimulation ? 'simulation-filter' : ''}`}>
+                    <Row className={`pt-4 filter-row-large  ${this.props.isSimulation ? 'simulation-filter zindex-0' : ''}`}>
 
-
-                        <Col md="6" lg="6" className="search-user-block mb-3">
+                        <Col md="6" lg="6">
+                            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                        </Col>
+                        <Col md="6" lg="6" className=" mb-3">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
                                     {this.state.shown ? (
@@ -460,9 +468,6 @@ class BOPImportListing extends Component {
                     <Col>
 
                         <div className={`ag-grid-wrapper height-width-wrapper ${this.props.bopImportList && this.props.bopImportList?.length <= 0 ? "overlay-contain" : ""}`}>
-                            <div className="ag-grid-header">
-                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
-                            </div>
                             <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`} >
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
@@ -491,10 +496,8 @@ class BOPImportListing extends Component {
                                     <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
                                     <AgGridColumn field="Currency"></AgGridColumn>
                                     <AgGridColumn field="Specification" headerName="Specification" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="Plants" hide={getConfigurationKey().IsDestinationPlantConfigure !== false} cellRenderer={'hyphenFormatter'} headerName="Plant"></AgGridColumn>
-                                    <AgGridColumn field="DestinationPlant" hide={getConfigurationKey().IsDestinationPlantConfigure !== true} cellRenderer={'plantFormatter'} headerName="Plant(Code)"></AgGridColumn>
+                                    <AgGridColumn field="Plants" cellRenderer={'hyphenFormatter'} headerName="Plant(Code)"></AgGridColumn>
                                     <AgGridColumn field="Vendor" headerName="Vendor(Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="NumberOfPieces" headerName="Minimum Order Quantity"></AgGridColumn>
                                     <AgGridColumn field="BasicRate" headerName="Basic Rate"></AgGridColumn>
                                     <AgGridColumn field="NetLandedCost" headerName="Net Cost (Currency)" cellRenderer='costFormatter'></AgGridColumn>
                                     <AgGridColumn field="NetLandedCostConversion" headerName="Net Cost (INR)"></AgGridColumn>
@@ -523,6 +526,7 @@ class BOPImportListing extends Component {
                     isZBCVBCTemplate={true}
                     messageLabel={'BOP Import'}
                     anchor={'right'}
+                    isFinalApprovar={this.state.isFinalApprovar}
                 />}
             </div >
         );
@@ -556,7 +560,8 @@ export default connect(mapStateToProps, {
     getPlantSelectList,
     getAllVendorSelectList,
     getVendorWithVendorCodeSelectList,
-    getListingForSimulationCombined
+    getListingForSimulationCombined,
+    masterFinalLevelUser
 })(reduxForm({
     form: 'BOPImportListing',
     enableReinitialize: true,

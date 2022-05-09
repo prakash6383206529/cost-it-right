@@ -2,19 +2,17 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import NoContentFound from '../../common/NoContentFound';
-import { MESSAGES } from '../../../config/message';
-import { toastr } from 'react-redux-toastr';
-import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom'
 import moment from 'moment'
-import { ProcessMaster, EMPTY_DATA } from '../../../config/constants'
+import { ProcessMaster, EMPTY_DATA, COMBINED_PROCESS } from '../../../config/constants'
 import ReactExport from 'react-export-excel';
 import { PROCESSLISTING_DOWNLOAD_EXCEl } from '../../../config/masterData'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { getCombinedProcessList } from '../../simulation/actions/Simulation'
+import { getCombinedProcessList, getListingForSimulationCombined } from '../../simulation/actions/Simulation'
 import { Row, Col, } from 'reactstrap';
+import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper';
 
 const gridOptions = {};
 
@@ -39,24 +37,36 @@ export function ProcessListingSimulation(props) {
 
     const dispatch = useDispatch()
     const processCostingList = useSelector(state => state.simulation.combinedProcessList)
+    const { isSimulation, selectionForListingMasterAPI, objectForMultipleSimulation, isImpactedMaster, list } = props;
 
     useEffect(() => {
-
-        let obj = {
-            technologyId: props?.technology,
-            vendorId: props?.vendorId
+        if (isSimulation && selectionForListingMasterAPI === 'Combined') {
+            if (!isImpactedMaster) {
+                props?.changeSetLoader(true)
+            }
+            dispatch(getListingForSimulationCombined(objectForMultipleSimulation, COMBINED_PROCESS, (res) => {
+                if (!isImpactedMaster) {
+                    props?.changeSetLoader(false)
+                }
+            }))
         }
-        dispatch(getCombinedProcessList(obj, () => { }))
-
+        if (selectionForListingMasterAPI === 'Master') {
+            if (!isImpactedMaster) {
+                props?.changeSetLoader(true)
+            }
+            let obj = {
+                technologyId: props?.technology,
+                vendorId: props?.vendorId
+            }
+            props?.changeTokenCheckBox(false)
+            dispatch(getCombinedProcessList(obj, () => {
+                if (!isImpactedMaster) {
+                    props?.changeSetLoader(false)
+                }
+                props?.changeTokenCheckBox(true)
+            }))
+        }
     }, [])
-
-    /**
-    * @method costingHeadFormatter
-    * @description Renders Costing head
-    */
-    const costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell ? 'VBC' : 'ZBC';
-    }
 
     /**
     * @method effectiveDateFormatter
@@ -119,7 +129,6 @@ export function ProcessListingSimulation(props) {
             allColumnIds.push(column.colId);
         });
 
-        // window.screen.width <= 1366 ? params.columnApi.autoSizeColumns(allColumnIds) : params.api.sizeColumnsToFit()
     };
 
     const onPageSizeChanged = (newPageSize) => {
@@ -142,12 +151,22 @@ export function ProcessListingSimulation(props) {
         return <div className={row.Status}>{row.DisplayStatus}</div>
     }
 
+
+    const DecimalFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return checkForDecimalAndNull(cellValue, getConfigurationKey().NoOfDecimalForPrice)
+    }
+
     const isFirstColumn = (params) => {
-        var displayedColumns = params.columnApi.getAllDisplayedColumns();
+        if (isSimulation) {
 
-        var thisIsFirstColumn = displayedColumns[0] === params.column;
+            var displayedColumns = params.columnApi.getAllDisplayedColumns();
+            var thisIsFirstColumn = displayedColumns[0] === params.column;
 
-        return thisIsFirstColumn;
+            return thisIsFirstColumn;
+        } else {
+            return false
+        }
 
     }
 
@@ -162,17 +181,15 @@ export function ProcessListingSimulation(props) {
     };
 
     const frameworkComponents = {
-        costingHeadRenderer: costingHeadFormatter,
         customLoadingOverlay: LoaderCustom,
         customNoRowsOverlay: NoContentFound,
         effectiveDateFormatter: effectiveDateFormatter,
-        statusFormatter: statusFormatter
+        statusFormatter: statusFormatter,
+        DecimalFormatter: DecimalFormatter
     };
 
     const onRowSelect = () => {
         var selectedRowsList = gridApi.getSelectedRows();
-        let length = gridApi.getSelectedRows().length
-
         props.apply(selectedRowsList)
         setSelectedRows(selectedRowsList)
     }
@@ -233,12 +250,12 @@ export function ProcessListingSimulation(props) {
                                 defaultColDef={defaultColDef}
                                 domLayout='autoHeight'
                                 floatingFilter={true}
-                                rowData={processCostingList}
+                                rowData={isImpactedMaster ? list : processCostingList}
                                 pagination={true}
                                 paginationPageSize={10}
                                 onGridReady={onGridReady}
                                 gridOptions={gridOptions}
-                                loadingOverlayComponent={'customLoadingOverlay'}
+                                // loadingOverlayComponent={'customLoadingOverlay'}
                                 noRowsOverlayComponent={'customNoRowsOverlay'}
                                 noRowsOverlayComponentParams={{
                                     title: EMPTY_DATA,
@@ -249,12 +266,14 @@ export function ProcessListingSimulation(props) {
                             >
                                 {/* <AgGridColumn field="TechnologyName" editable='false' headerName="Technology" minWidth={190}></AgGridColumn> */}
                                 <AgGridColumn field="CostingNumber" editable='false' headerName="Costing Number" minWidth={190}></AgGridColumn>
-                                <AgGridColumn field="PlantName" editable='false' headerName="Plant" minWidth={190}></AgGridColumn>
-                                <AgGridColumn field="PartName" editable='false' headerName="Part Name" minWidth={190}></AgGridColumn>
+                                {!isImpactedMaster && <AgGridColumn field="PlantName" editable='false' headerName="Plant" minWidth={190}></AgGridColumn>}
+                                {!isImpactedMaster && <AgGridColumn field="PartName" editable='false' headerName="Part Name" minWidth={190}></AgGridColumn>}
                                 <AgGridColumn field="PartNumber" editable='false' headerName="Part Number" minWidth={190}></AgGridColumn>
-                                <AgGridColumn suppressSizeToFit="true" editable='false' field="ConversionCost" headerName="Net CC" minWidth={190}></AgGridColumn>
+                                {!isImpactedMaster && <AgGridColumn suppressSizeToFit="true" editable='false' field="ConversionCost" headerName="Net CC" minWidth={190} cellRenderer='DecimalFormatter'></AgGridColumn>}
+                                {isImpactedMaster && <AgGridColumn field="OldNetCC" editable='false' headerName="Old Net CC" minWidth={190}></AgGridColumn>}
+                                {isImpactedMaster && <AgGridColumn field="NewNetCC" editable='false' headerName="New Net CC" minWidth={190}></AgGridColumn>}
                                 {/* <AgGridColumn field="RemainingTotal" editable='false' headerName="Remaining Fields Total" minWidth={190}></AgGridColumn> */}
-                                <AgGridColumn suppressSizeToFit="true" field="TotalCost" headerName="Total" minWidth={190}></AgGridColumn>
+                                {!isImpactedMaster && <AgGridColumn suppressSizeToFit="true" field="TotalCost" headerName="Total" minWidth={190} cellRenderer='DecimalFormatter'></AgGridColumn>}
                                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={190} cellRenderer='effectiveDateFormatter'></AgGridColumn>
                                 <AgGridColumn field="CostingId" headerName="CostingId" hide></AgGridColumn>
 

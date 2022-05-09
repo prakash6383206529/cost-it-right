@@ -4,7 +4,6 @@ import moment from 'moment';
 import { EMPTY_DATA } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper';
-import { toastr } from 'react-redux-toastr';
 import { runVerifyCombinedProcessSimulation } from '../../actions/Simulation';
 import { Fragment } from 'react';
 import { Controller, useForm } from 'react-hook-form'
@@ -18,12 +17,13 @@ import OtherVerifySimulation from '../OtherVerifySimulation';
 import debounce from 'lodash.debounce';
 import { TextFieldHookForm } from '../../../layout/HookFormInputs';
 import { VBC, ZBC } from '../../../../config/constants';
+import Toaster from '../../../common/Toaster';
 
 const gridOptions = {
 
 };
 function CPSimulation(props) {
-    const { list, isbulkUpload, rowCount, isImpactedMaster } = props
+    const { list, isbulkUpload, rowCount, isImpactedMaster, tokenForMultiSimulation } = props
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')
@@ -68,8 +68,8 @@ function CPSimulation(props) {
             <>
                 {
                     isImpactedMaster ?
-                        Number(row.OldNetCC) :
-                        <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.ConversionCost)} </span>
+                        checkForDecimalAndNull(row.OldNetCC, getConfigurationKey().NoOfDecimalForPrice) :
+                        <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(row.ConversionCost, getConfigurationKey().NoOfDecimalForPrice)} </span>
                 }
 
             </>
@@ -84,8 +84,8 @@ function CPSimulation(props) {
             <>
                 {
                     isImpactedMaster ?
-                        row.NewNetCC :
-                        <span className={`${true ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.ConversionCost)} </span>
+                        checkForDecimalAndNull(row.NewNetCC, getConfigurationKey().NoOfDecimalForPrice) :
+                        <span className={`${true ? 'form-control' : ''}`} >{cell && value ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(row.ConversionCost, getConfigurationKey().NoOfDecimalForPrice)} </span>
                 }
 
             </>
@@ -115,12 +115,12 @@ function CPSimulation(props) {
         const cellValue = props
         if (Number.isInteger(Number(cellValue)) && /^\+?(0|[1-9]\d*)$/.test(cellValue) && cellValue.toString().replace(/\s/g, '').length) {
             if (cellValue.length > 8) {
-                toastr.warning("Value should not be more than 8")
+                Toaster.warning("Value should not be more than 8")
                 return false
             }
             return true
         } else if (cellValue && !/^[+]?([0-9]+(?:[\.][0-9]*)?|\.[0-9]+)$/.test(cellValue)) {
-            toastr.warning('Please enter a valid positive numbers.')
+            Toaster.warning('Please enter a valid positive numbers.')
             return false
         }
         return true
@@ -128,6 +128,11 @@ function CPSimulation(props) {
 
 
     const cancel = () => {
+        list && list.map((item) => {
+            item.NewCC = undefined
+            return null
+        })
+
         setShowMainSimulation(true)
     }
 
@@ -216,7 +221,7 @@ function CPSimulation(props) {
             return null;
         })
         if (ccCount === tempData.length) {
-            toastr.warning('There is no changes in new value.Please correct the data ,then run simulation')
+            Toaster.warning('There is no changes in new value.Please correct the data ,then run simulation')
             return false
         }
         /**********POST METHOD TO CALL HERE AND AND SEND TOKEN TO VERIFY PAGE ****************/
@@ -238,6 +243,7 @@ function CPSimulation(props) {
             tempArr.push(tempObj)
             return null
         })
+        obj.SimulationIds = tokenForMultiSimulation
         obj.SimulationCombinedProcess = tempArr
 
         dispatch(runVerifyCombinedProcessSimulation(obj, res => {
@@ -258,10 +264,10 @@ function CPSimulation(props) {
                 {
                     (!showverifyPage && !showMainSimulation) &&
                     <Fragment>
-                        {
-                            isbulkUpload &&
-                            <Row className="sm-edit-row justify-content-end">
-                                <Col md="6">
+                        <form>
+                            {
+                                isbulkUpload &&
+                                <div className="d-flex justify-content-end mt-0 mb-n4 bulk-upload-row">
                                     <div className="d-flex align-items-center">
                                         <label>No of rows with changes:</label>
                                         <TextFieldHookForm
@@ -280,8 +286,6 @@ function CPSimulation(props) {
                                             disabled={true}
                                         />
                                     </div>
-                                </Col>
-                                <Col md="6">
                                     <div className="d-flex align-items-center">
                                         <label>No of rows without changes:</label>
                                         <TextFieldHookForm
@@ -300,12 +304,9 @@ function CPSimulation(props) {
                                             disabled={true}
                                         />
                                     </div>
-                                </Col>
-                            </Row>
-                        }
-                        <form>
-
-                            <Row className={`pt-4 filter-row-large blue-before zindex-0`}>
+                                </div>
+                            }
+                            <Row className={`${isbulkUpload ? 'pt-5' : 'pt-4'} filter-row-large blue-before zindex-0`}>
                                 <Col md="6" lg="6">
                                     <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => onFilterTextBoxChanged(e)} />
                                 </Col>
@@ -314,6 +315,7 @@ function CPSimulation(props) {
                                         <div className="refresh mr-0"></div>
                                     </button>
                                 </Col>
+
                             </Row>
                             <Row>
                                 <Col className="add-min-height mb-3 sm-edit-page">

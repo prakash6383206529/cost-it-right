@@ -5,7 +5,7 @@ import { useForm, Controller } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { loggedInUserId, userDetails } from '../../../helper/auth'
 import NoContentFound from '../../common/NoContentFound'
-import { EMPTY_DATA } from '../../../config/constants'
+import { EMPTY_DATA, LINKED } from '../../../config/constants'
 import DayTime from '../../common/DayTimeWrapper'
 import { checkForDecimalAndNull } from '../../../helper'
 import { DRAFT, EMPTY_GUID, APPROVED, PUSHED, ERROR, WAITING_FOR_APPROVAL, REJECTED, POUPDATED } from '../../../config/constants'
@@ -40,6 +40,7 @@ function SimulationApprovalListing(props) {
     const [reasonId, setReasonId] = useState('')
     const [showApprovalSumary, setShowApprovalSummary] = useState(false)
     const [redirectCostingSimulation, setRedirectCostingSimulation] = useState(false)
+    const [statusForLinkedToken, setStatusForLinkedToken] = useState(false)
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [rowData, setRowData] = useState(null);
@@ -95,8 +96,10 @@ function SimulationApprovalListing(props) {
         }
         setIsLoader(true)
         dispatch(getSimulationApprovalList(filterData, (res) => {
-            if (res.data.Result) {
-                setIsLoader(false)
+            if (res?.data?.Result) {
+                setTimeout(() => {
+                    setIsLoader(false)
+                }, 300);
             }
         }))
     }
@@ -201,7 +204,8 @@ function SimulationApprovalListing(props) {
 
     const viewDetails = (rowObj) => {
         setApprovalData({ approvalProcessId: rowObj.ApprovalProcessId, approvalNumber: rowObj.ApprovalNumber, SimulationTechnologyHead: rowObj.SimulationTechnologyHead, SimulationTechnologyId: rowObj.SimulationTechnologyId })
-        if (rowObj.Status === 'Draft' || rowObj.SimulationType === 'Provisional') {
+        if (rowObj?.Status === 'Draft' || rowObj.SimulationType === 'Provisional' || rowObj?.Status === 'Linked') {
+            setStatusForLinkedToken(rowObj?.Status === 'Linked')
             dispatch(setMasterForSimulation({ label: rowObj.SimulationTechnologyHead, value: rowObj.SimulationTechnologyId }))
             setRedirectCostingSimulation(true)
         } else {
@@ -289,6 +293,7 @@ function SimulationApprovalListing(props) {
         var selectedRows = gridApi.getSelectedRows();
         let tempArrReason = []
         let tempArrTechnology = []
+        let tempArrSimulationTechnologyHead = []
 
         selectedRows.map(item => {
             arr.push(item?.DisplayStatus)
@@ -297,6 +302,7 @@ function SimulationApprovalListing(props) {
             tempArrIsPushedButtonShow.push(item.IsPushedButtonShow)
             tempArrReason.push(item.ReasonId)
             tempArrTechnology.push(item.TechnologyName)
+            tempArrSimulationTechnologyHead.push(item.SimulationTechnologyHead)
         })
 
         if (!allEqual(arr)) {
@@ -319,10 +325,14 @@ function SimulationApprovalListing(props) {
         //     Toaster.warning('Please choose costing which have same reason')
         //     gridApi.deselectAll()
         // }
-        else if (!allEqual(tempArrTechnology)) {
+        else if (!allEqual(tempArrSimulationTechnologyHead)) {
+            Toaster.warning('Master should be same for sending multiple costing for approval')
+            gridApi.deselectAll()
+        } else if (!allEqual(tempArrTechnology)) {
             Toaster.warning('Technology should be same for sending multiple costing for approval')
             gridApi.deselectAll()
-        } else {
+        }
+        else {
             setReasonId(selectedRows[0]?.ReasonId)
         }
 
@@ -341,7 +351,7 @@ function SimulationApprovalListing(props) {
         // }
     }
     const isRowSelectable = (rowNode) => {
-        if (rowNode.data.Status === APPROVED || rowNode.data.Status === REJECTED || rowNode.data.Status === WAITING_FOR_APPROVAL || rowNode.data.Status === PUSHED || rowNode.data.Status === POUPDATED || rowNode.data.Status === ERROR) {
+        if (rowNode.data.Status === APPROVED || rowNode.data.Status === REJECTED || rowNode.data.Status === WAITING_FOR_APPROVAL || rowNode.data.Status === PUSHED || rowNode.data.Status === POUPDATED || rowNode.data.Status === ERROR || rowNode.data.Status === LINKED) {
             return false;
         } else {
             return true
@@ -407,7 +417,8 @@ function SimulationApprovalListing(props) {
                 state: {
                     isFromApprovalListing: true,
                     approvalProcessId: approvalData.approvalProcessId,
-                    master: approvalData.SimulationTechnologyId
+                    master: approvalData.SimulationTechnologyId,
+                    statusForLinkedToken: statusForLinkedToken
                 }
 
             }}
@@ -436,6 +447,7 @@ function SimulationApprovalListing(props) {
         resizable: true,
         filter: true,
         sortable: true,
+        headerCheckboxSelectionFilteredOnly: true,
         headerCheckboxSelection: isFirstColumn,
         checkboxSelection: isFirstColumn
     };
@@ -502,8 +514,8 @@ function SimulationApprovalListing(props) {
                                         <button
                                             class="user-btn approval-btn mr5"
                                             onClick={sendForApproval}
-                                        // disabled={selectedRowData && selectedRowData.length === 0 ? true : disableApproveButton ? true : false}
-                                        title="Send For Approval"
+                                            // disabled={selectedRowData && selectedRowData.length === 0 ? true : disableApproveButton ? true : false}
+                                            title="Send For Approval"
                                         >
                                             <div className="send-for-approval"></div>
                                             {/* {'Send For Approval'} */}
@@ -558,8 +570,8 @@ function SimulationApprovalListing(props) {
                                     {getConfigurationKey().IsProvisionalSimulation && <AgGridColumn width={145} field="SimulationType" headerName='Simulation Type' ></AgGridColumn>}
                                     {getConfigurationKey().IsProvisionalSimulation && <AgGridColumn width={145} field="ProvisionalStatus" headerName='Amendment Status' ></AgGridColumn>}
                                     {getConfigurationKey().IsProvisionalSimulation && <AgGridColumn width={145} field="LinkingTokenNumber" headerName='Linking Token No' ></AgGridColumn>}
-                                    
-                             
+
+
                                     <AgGridColumn width={130} field="TechnologyName" headerName="Technology"></AgGridColumn>
                                     <AgGridColumn width={200} field="VendorName" headerName="Vendor" cellRenderer='renderVendor'></AgGridColumn>
                                     <AgGridColumn width={170} field="ImpactCosting" headerName="Impacted Costing" ></AgGridColumn>
@@ -571,7 +583,7 @@ function SimulationApprovalListing(props) {
                                     <AgGridColumn width={145} field="RequestedOn" headerName='Requested On' cellRenderer='requestedOnFormatter'></AgGridColumn>
 
                                     {!isSmApprovalListing && <AgGridColumn pinned="right" field="Status" headerClass="justify-content-center" cellClass="text-center" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>}
-                                    <AgGridColumn width={105} field="SimulationId" headerName='Actions' type="rightAligned" floatingFilter={false} cellRenderer='buttonFormatter'></AgGridColumn>
+                                    <AgGridColumn width={115} field="SimulationId" headerName='Actions' type="rightAligned" floatingFilter={false} cellRenderer='buttonFormatter'></AgGridColumn>
 
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">

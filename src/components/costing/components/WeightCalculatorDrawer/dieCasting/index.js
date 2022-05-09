@@ -16,8 +16,8 @@ import NonFerrous from './NonFerrous'
 
 
 function NonFerrousCalculator(props) {
-  const { rmRowData } = props
-  
+  const { rmRowData, item } = props
+
   const getTabno = (layout) => {
     switch (layout) {
       case 'GDC':
@@ -29,7 +29,6 @@ function NonFerrousCalculator(props) {
       default:
         break;
     }
-    
   }
   const [activeTab, setActiveTab] = useState(rmRowData && rmRowData.WeightCalculatorRequest && rmRowData.WeightCalculatorRequest.WeightCalculationId === null ? '1' : rmRowData.WeightCalculatorRequest.LayoutType ? getTabno(rmRowData.WeightCalculatorRequest.LayoutType) : '1')
   /**
@@ -81,7 +80,7 @@ function NonFerrousCalculator(props) {
                 }}
                 disabled={rmRowData && Object.keys(rmRowData.WeightCalculatorRequest).length === 0 ? false : rmRowData.WeightCalculatorRequest.LayoutType !== null && getTabno(rmRowData.WeightCalculatorRequest.LayoutType) !== '2' ? true : false}
               >
-                 LPDC
+                LPDC
               </NavLink>
             </NavItem>
             <NavItem>
@@ -93,7 +92,7 @@ function NonFerrousCalculator(props) {
                 disabled={rmRowData && Object.keys(rmRowData.WeightCalculatorRequest).length === 0 ? false : rmRowData.WeightCalculatorRequest.LayoutType !== null && getTabno(rmRowData.WeightCalculatorRequest.LayoutType) !== '3' ? true : false}
 
               >
-                 HPDC
+                HPDC
               </NavLink>
             </NavItem>
           </Nav>
@@ -106,11 +105,12 @@ function NonFerrousCalculator(props) {
                   CostingViewMode={props.CostingViewMode}
                   activeTab={activeTab}
                   isHpdc={false}
+                  item={item}
                   isEditFlag={props.isEditFlag}
                 />
               </TabPane>
             )}
-             {activeTab === '2' && (
+            {activeTab === '2' && (
               <TabPane tabId="2">
                 <NonFerrous
                   rmRowData={props.rmRowData}
@@ -118,6 +118,7 @@ function NonFerrousCalculator(props) {
                   CostingViewMode={props.CostingViewMode}
                   activeTab={activeTab}
                   isHpdc={false}
+                  item={item}
                   isEditFlag={props.isEditFlag}
                 />
               </TabPane>
@@ -130,6 +131,7 @@ function NonFerrousCalculator(props) {
                   CostingViewMode={props.CostingViewMode}
                   activeTab={activeTab}
                   isHpdc={true}
+                  item={item}
                   isEditFlag={props.isEditFlag}
                 />
               </TabPane>

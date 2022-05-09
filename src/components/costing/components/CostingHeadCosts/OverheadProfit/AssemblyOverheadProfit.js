@@ -7,19 +7,20 @@ import OverheadProfit from '.';
 import Toaster from '../../../../common/Toaster';
 import { MESSAGES } from '../../../../../config/message';
 import { ViewCostingContext } from '../../CostingDetails';
+import { createToprowObjAndSave } from '../../../CostingUtil';
 
 function AssemblyOverheadProfit(props) {
   const { children, item, index } = props;
 
   const [IsOpen, setIsOpen] = useState(false);
-  
+
   const [Count, setCount] = useState(0);
 
   const costData = useContext(costingInfoContext);
   const netPOPrice = useContext(NetPOPriceContext);
   const CostingViewMode = useContext(ViewCostingContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { CostingEffectiveDate, RMCCTabData, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, DiscountCostData,checkIsOverheadProfitChange } = useSelector(state => state.costing)
+  const { CostingEffectiveDate, RMCCTabData, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, DiscountCostData, ToolTabData, checkIsOverheadProfitChange, getAssemBOPCharge } = useSelector(state => state.costing)
 
   const dispatch = useDispatch()
 
@@ -50,36 +51,33 @@ function AssemblyOverheadProfit(props) {
     }
   }
 
-  const nestedAssembly = children && children.map(el => {
-    if (el.PartType !== 'Sub Assembly') return false;
-    return <AssemblyOverheadProfit
-      index={index}
-      item={el}
-      children={el.CostingChildPartDetails}
-      toggleAssembly={props.toggleAssembly}
-      OverheadCost={props.OverheadCost}
-      ProfitCost={props.ProfitCost}
-      setOverheadDetail={props.setOverheadDetail}
-      setProfitDetail={props.setProfitDetail}
-      setRejectionDetail={props.setRejectionDetail}
-      setICCDetail={props.setICCDetail}
-      setPaymentTermsDetail={props.setPaymentTermsDetail}
-      saveCosting={props.saveCosting}
-    />
-  })
+  /*************************DON'T REMOVE FOR NOW MAY BE USE LATER******************************************/
+  // const nestedAssembly = children && children.map(el => {
+  //   if (el.PartType !== 'Sub Assembly') return false;
+  //   return <AssemblyOverheadProfit
+  //     index={index}
+  //     item={el}
+  //     children={el.CostingChildPartDetails}
+  //     toggleAssembly={props.toggleAssembly}
+  //     OverheadCost={props.OverheadCost}
+  //     ProfitCost={props.ProfitCost}
+  //     setOverheadDetail={props.setOverheadDetail}
+  //     setProfitDetail={props.setProfitDetail}
+  //     setRejectionDetail={props.setRejectionDetail}
+  //     setICCDetail={props.setICCDetail}
+  //     setPaymentTermsDetail={props.setPaymentTermsDetail}
+  //     saveCosting={props.saveCosting}
+  //   />
+  // })
 
-  /**
-  * @method onSubmit
-  * @description Used to Submit the form
-  */
-  const onSubmit = (values) => { }
+
 
 
   /**
-  * @method onSubmit
+  * @method saveCosting
   * @description Used to Submit the form
   */
-  const saveCosting = (values) => {
+  const saveCosting = () => {
     const tabData = RMCCTabData[0]
     const surfaceTabData = SurfaceTabData[0]
     const overHeadAndProfitTabData = OverheadProfitTabData[0]
@@ -88,7 +86,7 @@ function AssemblyOverheadProfit(props) {
     let reqData = {
       "CostingId": item.CostingId,
       "LoggedInUserId": loggedInUserId(),
-      "IsSurfaceTreatmentApplicable": true,
+      "IsSurfaceTreatmentApplicable": props?.IsIncludeSurfaceTreatment,
       "IsApplicableForChildParts": false,
       "CostingNumber": costData.CostingNumber,
       "NetOverheadAndProfitCost": checkForNull(item.CostingPartDetails.OverheadCost) +
@@ -104,39 +102,11 @@ function AssemblyOverheadProfit(props) {
       "TotalCost": netPOPrice,
     }
 
-    let assemblyRequestedData = {
-      "TopRow": {
-        "CostingId": tabData.CostingId,
-        "CostingNumber": tabData.CostingNumber,
-        "TotalRawMaterialsCostWithQuantity": tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
-        "TotalBoughtOutPartCostWithQuantity": tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
-        "TotalConversionCostWithQuantity": tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
-        "TotalCalculatedRMBOPCCCostPerPC": tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity + tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity + tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
-        "TotalCalculatedRMBOPCCCostPerAssembly": tabData.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
-        "NetRMCostPerAssembly": tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
-        "NetBOPCostAssembly": tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
-        "NetConversionCostPerAssembly": tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
-        "NetRMBOPCCCost": tabData.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
-        "TotalOperationCostPerAssembly": tabData.CostingPartDetails.TotalOperationCostPerAssembly,
-        "TotalOperationCostSubAssembly": checkForNull(tabData.CostingPartDetails?.TotalOperationCostSubAssembly),
-        "TotalOperationCostComponent": checkForNull(tabData.CostingPartDetails?.TotalOperationCostComponent),
-        "SurfaceTreatmentCostPerAssembly": surfaceTabData.CostingPartDetails?.SurfaceTreatmentCost,
-        "TransportationCostPerAssembly": surfaceTabData.CostingPartDetails?.TransportationCost,
-        "TotalSurfaceTreatmentCostPerAssembly": surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
-        "NetSurfaceTreatmentCost": surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
-        "NetOverheadAndProfits": overHeadAndProfitTabData.CostingPartDetails ? (checkForNull(overHeadAndProfitTabData.CostingPartDetails.OverheadCost) + checkForNull(overHeadAndProfitTabData.CostingPartDetails.ProfitCost) + checkForNull(overHeadAndProfitTabData.CostingPartDetails.RejectionCost) + checkForNull(overHeadAndProfitTabData.CostingPartDetails.ICCCost) + checkForNull(overHeadAndProfitTabData.CostingPartDetails.PaymentTermCost)) : 0,
-        "NetPackagingAndFreightCost": PackageAndFreightTabData && PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost,
-        "NetToolCost": discountAndOtherTabData?.CostingPartDetails?.TotalToolCost,
-        "NetOtherCost": discountAndOtherTabData?.CostingPartDetails?.NetOtherCost,
-        "NetDiscounts": discountAndOtherTabData?.CostingPartDetails?.NetDiscountsCost,
-        "TotalCostINR": netPOPrice,
-        "TabId": 3
-      },
-      "WorkingRows": [],
-      "LoggedInUserId": loggedInUserId()
 
-    }
-    if(!CostingViewMode && checkIsOverheadProfitChange){
+
+    if (!CostingViewMode && checkIsOverheadProfitChange) {
+      let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 3, CostingEffectiveDate)
+
       dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
       dispatch(saveAssemblyOverheadProfitTab(reqData, res => {
         if (res.data.Result) {
@@ -162,8 +132,8 @@ function AssemblyOverheadProfit(props) {
   return (
     <>
       <tr id="assembly-costing-header" className="accordian-row" onClick={() => toggle(item.BOMLevel, item.PartNumber)} >
-        <td>
-          <span style={{ position: 'relative' }} className={`cr-prt-nm1 cr-prt-link1 ${item && item.BOMLevel}`}>
+        <td className='part-overflow'>
+          <span className={`part-name ${item && item.BOMLevel}`} title={`${item && item.PartNumber}-${item && item.BOMLevel}`}>
             {item && item.PartNumber}-{item && item.BOMLevel}<div className={`${item.IsOpen ? 'Open' : 'Close'}`}></div>
           </span>
         </td>

@@ -20,14 +20,11 @@ import {
     config,
     GET_OPERATION_COMBINED_DATA_LIST,
     GET_OPERATION_APPROVAL_LIST,
-    GET_OPERATION_INDIVIDUAL_DATA_LIST,
-    GET_OPERATION_SURFACE_TREATMENT_DATA_LIST
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
 import { loggedInUserId, userDetails } from '../../../helper';
-import { setItemData } from '../../costing/actions/Costing';
 
 const headers = config
 
@@ -270,31 +267,10 @@ export function getOperationsDataList(filterData, temp, callback) {
                 }
                 else {
                     payload = response?.data?.DataList
-
-                    // tempData && tempData.map(item => {
-                    // if (item.IsSurfaceTreatmentOperation === true) {
-                    //     payloadSurfaceTreatment.push(item)
-                    // } else {
-                    //     payloadOperation.push(item)
-                    // }
-                    // return null
-                    // })
-                    if (Number(temp) === 7) {
-                        dispatch({
-                            type: GET_OPERATION_SURFACE_TREATMENT_DATA_LIST,
-                            payload: payload
-                        })
-                    } else if (Number(temp) === 6) {
-                        dispatch({
-                            type: GET_OPERATION_INDIVIDUAL_DATA_LIST,
-                            payload: payload
-                        })
-                    } else {
-                        dispatch({
-                            type: GET_OPERATION_COMBINED_DATA_LIST,
-                            payload: payload
-                        })
-                    }
+                    dispatch({
+                        type: GET_OPERATION_COMBINED_DATA_LIST,
+                        payload: payload
+                    })
                 }
                 callback(response);
             }).catch((error) => {

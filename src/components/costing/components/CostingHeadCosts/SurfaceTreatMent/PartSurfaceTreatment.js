@@ -5,6 +5,7 @@ import { costingInfoContext } from '../../CostingDetailStepTwo';
 import SurfaceTreatment from '.';
 import { checkForDecimalAndNull } from '../../../../../helper';
 import { ViewCostingContext } from '../../CostingDetails';
+import { EMPTY_GUID } from '../../../../../config/constants';
 
 function PartSurfaceTreatment(props) {
 
@@ -33,13 +34,14 @@ function PartSurfaceTreatment(props) {
         const data = {
           CostingId: item.CostingId !== null ? item.CostingId : "00000000-0000-0000-0000-000000000000",
           PartId: item.PartId,
-          AssemCostingId: costData.CostingId
+          AssemCostingId: costData.CostingId,
+          SubAsmCostingId: props.SubAssembId !== null ? props.SubAssembId : EMPTY_GUID,
         }
         dispatch(getSurfaceTreatmentTabData(data, false, (res) => {
           if (res && res.data && res.data.Result) {
             let Data = res.data.DataList[0].CostingPartDetails;
             DrawerToggle()
-            props.setPartDetails(Params, Data)
+            props.setPartDetails(Params, Data, item)
           }
         }))
       }
@@ -63,8 +65,8 @@ function PartSurfaceTreatment(props) {
     item.CostingPartDetails.SurfaceTreatmentDetails = []
     item.CostingPartDetails.TransportationDetails = []
   }
- // 
-  
+  // 
+
 
   /**
    * @method render
@@ -83,28 +85,33 @@ function PartSurfaceTreatment(props) {
           <td>{item && item.PartType}</td>
           <td>{item.CostingPartDetails.SurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.SurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
           <td>{item.CostingPartDetails.TransportationCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TransportationCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+          <td>{item?.Quantity}</td>
           <td>{item.CostingPartDetails.NetSurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.NetSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
         </div>
         <td>
-          {!CostingViewMode && (item.CostingPartDetails.NetSurfaceTreatmentCost !== 0) ?
+          <div className='d-flex justify-content-end align-items-center'>
+            {!CostingViewMode && (item.CostingPartDetails.NetSurfaceTreatmentCost !== 0) ?
 
-            <button
-              type="button"
-              className={'user-btn surface-treatment-btn'}
-              //onClick={DrawerToggle}
-              onClick={() => toggle(item.BOMLevel, item.PartNumber)}
-            >
-              <div className={'fa fa-eye pr-1'}></div> Surface T.</button>
-            :
-            <button
-              type="button"
-              className={'user-btn surface-treatment-btn'}
-              //onClick={DrawerToggle}
-              onClick={() => toggle(item.BOMLevel, item.PartNumber)}
-            >
-              <div className={`${CostingViewMode ? 'fa fa-eye pr-1' : 'plus'}`}></div>Surface T.</button>
-          }
+              <button
+                type="button"
+                className={'user-btn surface-treatment-btn'}
+                //onClick={DrawerToggle}
+                onClick={() => toggle(item.BOMLevel, item.PartNumber)}
+              >
+                <div className={'fa fa-eye pr-1'}></div> Surface T.</button>
+              :
+              <button
+                type="button"
+                className={'user-btn surface-treatment-btn'}
+                //onClick={DrawerToggle}
+                onClick={() => toggle(item.BOMLevel, item.PartNumber)}
+              >
+                <div className={`${CostingViewMode ? 'fa fa-eye pr-1' : 'plus'}`}></div>Surface T.</button>
+            }
+            <div className={`lock-width ${(item.IsLocked || item.IsPartLocked) ? 'lock_icon' : ''}`}>{''}</div>
+          </div>
         </td>
+        {/*WHEN COSTING OF THAT PART IS  APPROVED SO COSTING COMES AUTOMATICALLY FROM BACKEND AND THIS KEY WILL COME TRUE (WORK LIKE VIEW MODE)*/}
       </tr>
 
       {IsDrawerOpen && <SurfaceTreatment

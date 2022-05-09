@@ -12,8 +12,8 @@ import { getConfigurationKey, isUserLoggedIn, loggedInUserId } from '../../../..
 import DatePicker from "react-datepicker";
 import DayTime from '../../../common/DayTimeWrapper'
 import Toaster from '../../../common/Toaster';
-import ConfirmComponent from '../../../../helper/ConfirmComponent';
 import PopupMsgWrapper from '../../../common/PopupMsgWrapper';
+import { debounce } from 'lodash';
 
 function CopyCosting(props) {
   const loggedIn = isUserLoggedIn()
@@ -22,7 +22,7 @@ function CopyCosting(props) {
   const { copyCostingData, partNo, type, zbcPlantGrid, vbcVendorGrid, selectedCostingId, } = props
 
 
-  const { register, control, formState: { errors }, handleSubmit, setValue, getValues } = useForm({
+  const { register, control, formState: { errors }, handleSubmit, setValue } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: {
@@ -58,6 +58,8 @@ function CopyCosting(props) {
   const [isToVbc, setIsToVbc] = useState(type === VBC ? true : false)
   const [toSwitch, setToSwitch] = useState(type === VBC ? true : false)
   const [showPopup, setShowPopup] = useState(false)
+  const [isDisable, setIsDisable] = useState(false)
+  const [disablePopup, setDisablePopup] = useState(false)
   const [updatedObj, setUpdatedObj] = useState({})
   const [msgObj, setMsgObj] = useState({})
 
@@ -67,33 +69,33 @@ function CopyCosting(props) {
 
     /* For ZBC plant drop down*/
     zbcPlantGrid &&
-      zbcPlantGrid.map((item) => {
+      zbcPlantGrid.map((item) => (
         ZbcTemp.push({
           label: `${item.PlantName}(${item.PlantCode})`,
           value: item.PlantId,
         })
-      })
+      ))
     setPlantDropDownList(ZbcTemp)
     /*For vendor dropdown*/
     if (getConfigurationKey().IsDestinationPlantConfigure) {
       vbcVendorGrid &&
-        vbcVendorGrid.map((item) => {
+        vbcVendorGrid.map((item) => (
           VbcTemp.push({
             label: `${item.VendorName}(${item.VendorCode})`,
             value: item.DestinationPlantId,
             vendorId: item.VendorId
           })
-        })
+        ))
     } else {
       vbcVendorGrid &&
-        vbcVendorGrid.map((item) => {
+        vbcVendorGrid.map((item) => (
           VbcTemp.push({
             label: `${item.VendorName}(${item.VendorCode})`,
             value: item.VendorId,
             vendorId: item.VendorId
             // destPlant: item.DestinationPlantId ? item.DestinationPlantId : ''
           })
-        })
+        ))
     }
     setVendorName(VbcTemp)
 
@@ -155,6 +157,7 @@ function CopyCosting(props) {
               value: costing.CostingId,
 
             })
+            return null
           })
 
         if (costingFor === ZBC) {
@@ -185,6 +188,7 @@ function CopyCosting(props) {
           label: costing.DisplayCostingNumber,
           value: costing.CostingId,
         })
+        return null
       })
     setVendorCostingId(temp)
   }
@@ -205,6 +209,7 @@ function CopyCosting(props) {
             )
               return false
             temp.push({ label: plant.Text, value: plant.Value })
+            return null
           })
         if (vendorType === 'from') {
           setVendorFromPlantDropdown(temp)
@@ -253,17 +258,12 @@ function CopyCosting(props) {
 
   const getDestinationPlant = (value, type) => {
     let temp = []
-    let vendor = value.vendorId
 
     vbcVendorGrid && vbcVendorGrid.filter(item => {
-      // if (item.VendorId === vendor) {
-      //   temp.push({ label: item.DestinationPlantName, value: item.DestinationPlantId })
-      //   return temp
-      // }
 
-        temp.push({ label: item.DestinationPlantName, value: item.DestinationPlantId })     // ALL PLANTS LIST SHOULD BE VISIBLE IN THE DROPDOWN IN COPY COSTING DRAWER
-        return temp
-      
+      temp.push({ label: item.DestinationPlantName, value: item.DestinationPlantId })     // ALL PLANTS LIST SHOULD BE VISIBLE IN THE DROPDOWN IN COPY COSTING DRAWER
+      return temp
+
     })
     setDestinationPlant(temp)
 
@@ -284,10 +284,8 @@ function CopyCosting(props) {
    * @method submitForm
    * @description Submitting the form
    */
-  const submitForm = (value) => {
-
-
-
+  const submitForm = debounce(handleSubmit((value) => {
+    setIsDisable(true)
     const destination = value.toDestinationPlant && value.toDestinationPlant.label.split('(')
     const tovendorCode = value.toVendorName && value.toVendorName.label.split('(')
 
@@ -362,14 +360,14 @@ function CopyCosting(props) {
     // obj.
 
     dispatch(checkDataForCopyCosting(obj, (res) => {
-
+      setIsDisable(false)
       const Data = res.data.Data
 
       if (Data.IsRMExist && Data.IsOperationExist && Data.IsProcessExist && Data.IsBOPExist && Data.IsOtherOperationExist) {
 
         dispatch(
           saveCopyCosting(obj, (res) => {
-
+            setIsDisable(false)
             if ((res.status = 200)) {
               Toaster.success("Copy costing done sucessfully!")
               const { CostingId, CostingType } = res.data.Data
@@ -384,12 +382,13 @@ function CopyCosting(props) {
       }
     }))
 
-  }
+  }), 500)
 
   const onPopupConfirm = () => {
+    setDisablePopup(true)
     dispatch(
       saveCopyCosting(updatedObj, (res) => {
-
+        setDisablePopup(false)
         if ((res.status = 200)) {
           Toaster.success("Copy costing done sucessfully!")
           const { CostingId, CostingType } = res.data.Data
@@ -401,6 +400,7 @@ function CopyCosting(props) {
     setShowPopup(false)
   }
   const closePopUp = () => {
+    setIsDisable(false)
     setShowPopup(false)
   }
   /**
@@ -427,7 +427,9 @@ function CopyCosting(props) {
       >
         <Container>
           <div className={"drawer-wrapper"}>
-            <form onSubmit={handleSubmit(submitForm)}>
+            <form
+            //  onSubmit={handleSubmit(submitForm)}
+            >
               <Row className="drawer-heading">
                 <Col>
                   <div className={"header-wrapper left"}>
@@ -449,7 +451,6 @@ function CopyCosting(props) {
                       <label className="switch-level justify-content-end">
                         <div className={"left-title"}>ZBC</div>
                         <Switch
-                          onChange={() => { }}
                           checked={fromtype}
                           id="normal-switch"
                           //disabled={isEditFlag ? true : false}
@@ -782,23 +783,28 @@ function CopyCosting(props) {
               )}
               <Row className="justify-content-between my-3">
                 <div className="col-sm-12 text-right">
+
                   <button
                     type={"button"}
                     className="reset mr15 cancel-btn"
                     onClick={toggleDrawer}
+                    disabled={isDisable}
                   >
                     <div className={'cancel-icon'}></div>
                     {"Cancel"}
                   </button>
 
+
                   <button
-                    type="submit"
+                    type="button"
                     className="submit-button save-btn"
-                  // onClick={addHandler}
+                    onClick={(submitForm)}
+                    disabled={isDisable}
                   >
                     <div className={'save-icon'}></div>
                     {"Copy"}
                   </button>
+
                 </div>
               </Row>
             </form>
@@ -807,7 +813,7 @@ function CopyCosting(props) {
         </Container>
       </Drawer>
       {
-        showPopup && <PopupMsgWrapper className={'main-modal-container'} isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${!msgObj.IsRMExist ? 'Raw Material,' : ''}${!msgObj.IsOperationExist ? 'Operation,' : ''}${!msgObj.IsBOPExist ? 'BOP,' : ''}${!msgObj.IsProcessExist ? 'Process,' : ''}${!msgObj.IsOtherOperationExist ? `Other Operation is not available for the selected vendor. Do you still wish to continue ?` : ` is not available for the selected vendor. Do you still wish to continue ?`}`} />
+        showPopup && <PopupMsgWrapper className={'main-modal-container'} isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} disablePopup={disablePopup} message={`${!msgObj.IsRMExist ? 'Raw Material,' : ''}${!msgObj.IsOperationExist ? 'Operation,' : ''}${!msgObj.IsBOPExist ? 'BOP,' : ''}${!msgObj.IsProcessExist ? 'Process,' : ''}${!msgObj.IsOtherOperationExist ? `Other Operation is not available for the selected vendor. Do you still wish to continue ?` : ` is not available for the selected vendor. Do you still wish to continue ?`}`} />
       }
     </>
   );
