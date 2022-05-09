@@ -334,8 +334,8 @@ function AddProcess(props) {
                                   <AgGridColumn field="MachineNumber" headerName="Machine No."></AgGridColumn>
                                   <AgGridColumn field="MachineName" headerName="Machine Name"></AgGridColumn>
                                   <AgGridColumn field="MachineTypeName" headerName="Machine Type"></AgGridColumn>
-                                  <AgGridColumn field="MachineTonnage" headerName="Machine Tonnage"></AgGridColumn>
-                                  <AgGridColumn field="UnitOfMeasurement" headerName="UOM"></AgGridColumn>
+                                  <AgGridColumn field="Tonnage" headerName="Machine Tonnage"></AgGridColumn>
+                                  <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
                                   <AgGridColumn field="MachineRate" headerName={'Machine Rate'}></AgGridColumn>
 
                                 </AgGridReact>
