@@ -135,10 +135,12 @@ function ViewConversionCost(props) {
     if (parentId === '') {
       let tempArr = []
       let tempData = viewCostingData[props.index].netConversionCostView.CostingProcessCostResponse[id]
+      // console.log('tempData: ', tempData);
       setCalculatorTechnology(viewCostingData[props.index].netConversionCostView.CostingProcessCostResponse[id].ProcessTechnologyId)
       tempData = { ...tempData, WeightCalculatorRequest: data, }
+      console.log('tempData: ', tempData);
       setCalciData(tempData)
-      tempArr = Object.assign([...viewCostingData[id].CostingProcessCostResponse], { [id]: tempData })
+      tempArr = Object.assign([...viewCostingData[props.index].netConversionCostView.CostingProcessCostResponse], { [id]: tempData })
       setTimeout(() => {
         // setGridData(tempArr)
         setWeightCalculatorDrawer(true)
@@ -166,14 +168,16 @@ function ViewConversionCost(props) {
   }
 
 
-  const getWeightData = (index, list = [], parentCalciIndex) => {
+  const getWeightData = (index, list = [], parentCalciIndex = '') => {
     // const tempData = viewCostingData[props.index]
     let tempData
     let processCalciId = ''
     let technologyId = ''
     let UOMType = ''
-    if (parentIndex === '') {
+    if (parentCalciIndex === '') {
       tempData = viewCostingData[props.index]
+      console.log('tempData: ', tempData);
+      console.log(tempData?.netConversionCostView?.CostingProcessCostResponse[index].ProcessCalculatorId, "(tempData?.netConversionCostView?.CostingProcessCostResponse[index].ProcessCalculatorI")
       if (tempData?.netConversionCostView?.CostingProcessCostResponse[index].ProcessCalculatorId === 0) {
         Toaster.warning('Data is not avaliabe for calculator')
         return false
@@ -187,7 +191,7 @@ function ViewConversionCost(props) {
       tempData = list[index]
       console.log('tempData: ', tempData);
       console.log('tempData: ', tempData.ProcessCalculatorId);
-      if (tempData.ProcessCalculatorId === 0) {
+      if (tempData.ProcessCalculatorId === 0 || tempData.ProcessCalculatorId === null) {
         console.log("ENTERING?");
         Toaster.warning('Data is not avaliabe for calculator')
         return false
