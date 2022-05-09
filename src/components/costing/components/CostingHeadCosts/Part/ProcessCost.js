@@ -54,7 +54,7 @@ function ProcessCost(props) {
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { CostingEffectiveDate } = useSelector(state => state.costing)
+  const { CostingEffectiveDate, selectedProcessId, selectedProcessGroupId, selectedProcessAndGroup } = useSelector(state => state.costing)
   const { rmFinishWeight } = props
 
   // const fieldValues = useWatch({
@@ -276,6 +276,7 @@ function ProcessCost(props) {
       }, 0)
       let ProductionPerHour = 0
       ProductionPerHour = gridTempArr && gridTempArr.reduce((accummlator, el) => {
+
         return accummlator + checkForNull((el.ProductionPerHour === null || el.ProductionPerHour === '-') ? 0 : Number(el.ProductionPerHour))
       }, 0)
 
@@ -295,18 +296,18 @@ function ProcessCost(props) {
       let processTemparr = Object.assign([...gridData], { [parentCalciIndex]: processTempData })
 
 
-      let apiArr = formatMainArr(processTemparr)
-      // processTemparr && processTemparr.map((item) => {
-      //   if (item.GroupName === '' || item.GroupName === null) {
-      //     apiArr.push(item)
-      //   } else {
-      //     apiArr.push(item)
-      //     item.ProcessList && item.ProcessList.map(processItem => {
-      //       processItem.GroupName = item.GroupName
-      //       apiArr.push(processItem)
-      //     })
-      //   }
-      // })
+      let apiArr = []
+      processTemparr && processTemparr.map((item) => {
+        if (item.GroupName === '' || item.GroupName === null) {
+          apiArr.push(item)
+        } else {
+          apiArr.push(item)
+          item.ProcessList && item.ProcessList.map(processItem => {
+            processItem.GroupName = item.GroupName
+            apiArr.push(processItem)
+          })
+        }
+      })
 
       let finalProcessCostTotal = processTemparr && processTemparr.reduce((accummlator, el) => {
         return accummlator + checkForNull(el.ProcessCost)
@@ -515,7 +516,6 @@ function ProcessCost(props) {
       if (i === index) return false;
       return true
     })
-
     setTimeout(() => {
       let ProcessCostTotal = 0
       ProcessCostTotal = tempArrAfterDelete && tempArrAfterDelete.reduce((accummlator, el) => {
@@ -547,6 +547,26 @@ function ProcessCost(props) {
         return null
       })
     }, 200)
+
+
+    if (gridData[index]?.ProcessList?.length > 0) {
+      let tempArr = selectedProcessGroupId
+      let newArr = []
+      // tempArr = tempArr.filter((el) => { return (el.GroupName !== gridData[index].GroupName && el.MachineId !== gridData[index].MachineId) })
+      tempArr && tempArr.map((el) => {
+        if (el.GroupName === gridData[index].GroupName && el.MachineId === gridData[index].MachineId) {
+          return false
+        } else {
+          newArr.push(el)
+        }
+      })
+
+      dispatch(setIdsOfProcessGroup(newArr))
+    } else {
+      let tempArr1 = selectedProcessId
+      tempArr1 = tempArr1.filter((el) => el.ProcessId !== gridData[index].ProcessId)
+      dispatch(setIdsOfProcess(tempArr1))
+    }
   }
 
   const handleQuantityChange = (event, index) => {
