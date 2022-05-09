@@ -159,6 +159,7 @@ function ProcessCost(props) {
    * @description For opening weight calculator
   */
   const toggleWeightCalculator = (id, list = [], parentIndex = '') => {
+    console.log('list: ', list);
 
 
     setCalciIndex(id)
@@ -280,8 +281,8 @@ function ProcessCost(props) {
         return accummlator + checkForNull((el.ProductionPerHour === null || el.ProductionPerHour === '-') ? 0 : Number(el.ProductionPerHour))
       }, 0)
 
-      setValue(`${SingleProcessGridField}.${calciIndex}.Quantity`, tempData.UOMType === TIME ? checkForDecimalAndNull((weightData.ProcessCost / weightData.MachineRate), getConfigurationKey().NoOfDecimalForInputOutput) : weightData.Quantity)
-      setValue(`${SingleProcessGridField}.${calciIndex}.ProcessCost`, checkForDecimalAndNull(weightData.ProcessCost, initialConfiguration.NoOfDecimalForPrice))
+      setValue(`${SingleProcessGridField}.${calciIndex}.${parentCalciIndex}.Quantity`, tempData.UOMType === TIME ? checkForDecimalAndNull((weightData.ProcessCost / weightData.MachineRate), getConfigurationKey().NoOfDecimalForInputOutput) : weightData.Quantity)
+      setValue(`${SingleProcessGridField}.${calciIndex}.${parentCalciIndex}.ProcessCost`, checkForDecimalAndNull(weightData.ProcessCost, initialConfiguration.NoOfDecimalForPrice))
       //MAIN PROCESS ROW WITH GROUP
 
 
@@ -871,13 +872,13 @@ function ProcessCost(props) {
             <td>{item.Tonnage}</td>
             <td>{item.MHR}</td>
             <td>{item.UOM}</td>
-            <td>{item.ProductionPerHour}</td>
+            <td>{(item?.ProductionPerHour === '-' || item?.ProductionPerHour === 0 || item?.ProductionPerHour === null || item?.ProductionPerHour === undefined) ? '-' : checkForDecimalAndNull(item.ProductionPerHour, getConfigurationKey().NoOfDecimalForInputOutput)}</td>
             <td style={{ width: 150 }}>
               <span className="d-inline-block w90px mr-2">
                 {
                   <NumberFieldHookForm
                     label=""
-                    name={`${SingleProcessGridField}.${index}.Quantity`}
+                    name={`${SingleProcessGridField}.${index}.${parentIndex}.Quantity`}
                     Controller={Controller}
                     control={control}
                     register={register}
@@ -912,7 +913,7 @@ function ProcessCost(props) {
               {
                 <TextFieldHookForm
                   label=""
-                  name={`${SingleProcessGridField}.${index}.ProcessCost`}
+                  name={`${SingleProcessGridField}.${index}.${parentIndex}.ProcessCost`}
                   Controller={Controller}
                   control={control}
                   register={register}
@@ -935,7 +936,7 @@ function ProcessCost(props) {
                   position="top center">
                   <TextAreaHookForm
                     label="Remark:"
-                    name={`${SingleProcessGridField}.${index}.remarkPopUp`}
+                    name={`${SingleProcessGridField}.${index}.${parentIndex}.remarkPopUp`}
                     Controller={Controller}
                     control={control}
                     register={register}
@@ -950,7 +951,7 @@ function ProcessCost(props) {
                     defaultValue={item.Remark ?? item.Remark}
                     className=""
                     customClassName={"withBorder"}
-                    errors={errors && errors.SingleProcessGridField && errors.SingleProcessGridField[index] !== undefined ? errors.SingleProcessGridField[index].remarkPopUp : ''}
+                    errors={errors && errors.SingleProcessGridField && errors.SingleProcessGridField[index][parentIndex] !== undefined ? errors.SingleProcessGridField[index][parentIndex].remarkPopUp : ''}
                     //errors={errors && errors.remarkPopUp && errors.remarkPopUp[index] !== undefined ? errors.remarkPopUp[index] : ''}                        
                     disabled={(CostingViewMode || IsLocked) ? true : false}
                     hidden={false}
