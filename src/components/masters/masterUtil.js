@@ -240,7 +240,7 @@ export const ProcessGroup = (props) => {
                                             onClick={resetHandler}
                                         >Reset</button>
                                     </> :
-                                    <>
+                                    <div className='d-flex'>
                                         <button
                                             type="button"
                                             className={`${props.isViewFlag ? 'disabled-button user-btn' : 'user-btn'} pull-left mr5`}
@@ -252,7 +252,7 @@ export const ProcessGroup = (props) => {
                                             className={`${props.isViewFlag ? 'disabled-button reset-btn' : 'reset-btn'} pull-left`}
                                             onClick={resetHandler}
                                         >Reset</button>
-                                    </>
+                                    </div>
                             }
                         </div>
                     </Col>
@@ -265,7 +265,7 @@ export const ProcessGroup = (props) => {
                         <tr>
                             <th>Group Name</th>
                             <th>Process Name</th>
-                            <th>Action</th>
+                            <th style={{ textAlign: 'right' }}>Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -273,15 +273,15 @@ export const ProcessGroup = (props) => {
                             const processNameList = item.ProcessList;
                             return <tr>
                                 <td className='group-name'>{item.GroupName}</td>
-                                <td>
-                                    <>
-                                        <button className="Edit mr-2" type={'button'} disabled={false} onClick={() => editItemDetails(index)} />
-                                        <button className="Delete" type={'button'} disabled={false} onClick={() => deleteItem(index)} />
-                                    </>
-                                </td>
                                 <td>{processNameList && processNameList.map(processName => {
                                     return <div className='process-names'>{processName.ProcessName}</div>
                                 })}</td>
+                                <td>
+                                    <div className='group-process-Actions'>
+                                        <button className="Edit" type={'button'} disabled={props.isViewFlag ? true : false} onClick={() => editItemDetails(index)} />
+                                        <button className="Delete" type={'button'} disabled={props.isViewFlag ? true : false} onClick={() => deleteItem(index)} />
+                                    </div>
+                                </td>
                             </tr>
                         })}
                         <tr>

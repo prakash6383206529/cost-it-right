@@ -392,6 +392,17 @@ class AddMachineRate extends Component {
       DropdownChange: false
     })
   }
+  findGroupCode = (clickedData, arr) => {
+    let isContainGroup = _.find(arr, function (obj) {
+      if (obj.ProcessId === clickedData) {
+        return true;
+      } else {
+        return false
+      }
+    });
+    return isContainGroup
+  }
+
 
   /**
   * @method renderListing
@@ -444,6 +455,7 @@ class AddMachineRate extends Component {
     if (label === 'ProcessNameList') {
       processSelectList && processSelectList.map(item => {
         if (item.Value === '0') return false;
+        if (this.findGroupCode(item.Value, this.state.processGrid)) return false;
         temp.push({ label: item.Text, value: item.Value })
         return null;
       });
@@ -936,7 +948,7 @@ class AddMachineRate extends Component {
   onSubmit = debounce((values) => {
     const { IsVendor, MachineID, isEditFlag, IsDetailedEntry, vendorName, selectedTechnology, selectedPlants, selectedVendorPlants,
       remarks, machineType, files, processGrid, isViewFlag, DropdownChange, effectiveDate, oldDate, uploadAttachements, isDateChange, IsFinancialDataChanged, DataToChange } = this.state;
-    console.log("ENTER UPDATE SUBMIT");
+
 
     if (vendorName.length <= 0) {
 
@@ -984,7 +996,7 @@ class AddMachineRate extends Component {
         })
 
       } else {
-        console.log("COMING IN ELSE");
+
         // EXECUTED WHEN:- EDIT MODE OF BASIC MACHINE && MACHINE MORE DETAILED NOT CREATED
         let requestData = {
           MachineId: MachineID,
@@ -1027,7 +1039,7 @@ class AddMachineRate extends Component {
 
 
         if (isEditFlag) {
-          console.log("COMING IN EDIT FLAG");
+
           if (DropdownChange && uploadAttachements &&
             (DataToChange.Description ? DataToChange.Description : '-') === (values.Description ? values.Description : '-') &&
             (DataToChange.MachineName ? DataToChange.MachineName : '-') === (values.MachineName ? values.MachineName : '-') &&
@@ -1037,7 +1049,7 @@ class AddMachineRate extends Component {
             this.cancel();
             return false
           }
-          console.log("COING OUTSIDE ");
+
           this.setState({ setDisable: true })
           this.setState({ showPopup: true, updatedObj: requestData })
         }
@@ -1150,7 +1162,7 @@ class AddMachineRate extends Component {
 
 
   onPopupConfirm = debounce(() => {
-    console.log("POP");
+
     this.setState({ disablePopup: true })
     this.props.updateMachine(this.state.updatedObj, (res) => {
       this.setState({ setDisable: false })
@@ -1594,14 +1606,14 @@ class AddMachineRate extends Component {
                                 <button
                                   disabled={isViewMode || (isEditFlag && isMachineAssociated)}
                                   type="button"
-                                  className={'btn btn-primary mt30 pull-left mr5'}
+                                  className={'btn btn-primary pull-left mr5'}
                                   onClick={this.updateProcessGrid}
                                 >Update</button>
 
                                 <button
                                   type={'button'}
                                   disabled={isViewMode || (isEditFlag && isMachineAssociated)}
-                                  className="reset-btn mt30 "
+                                  className="reset-btn "
                                   onClick={this.resetProcessGridData}>{'Cancel'}
                                 </button>
                               </>
@@ -1655,9 +1667,9 @@ class AddMachineRate extends Component {
                                 })
                               }
                               <tr>
-                                <td colSpan={"6"}>{this.state.processGrid.length === 0 &&
+                                {this.state.processGrid.length === 0 && <td colSpan={"6"}>
                                   <NoContentFound title={EMPTY_DATA} />
-                                }</td>
+                                </td>}
                               </tr>
                             </tbody>
 
