@@ -662,6 +662,12 @@ function SimulationApprovalSummary(props) {
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
+    const plantFormatter = (props) => {
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const temp = `${row.PlantName}(${row.PlantCode})`
+        return temp
+    }
+
     const viewAssembly = (cell, row, rowIndex) => {
         const data = row
         setDataForAssemblyImpact(data)
@@ -758,6 +764,13 @@ function SimulationApprovalSummary(props) {
         return cell != null ? temp : '-';
     }
 
+    const rawMaterailCodeSpecFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const temp = row.IsMultipleRM === true ? 'Multiple RM' : cell
+        return cell != null ? temp : '-';
+    }
+
     const bopMaterailFormat = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -767,11 +780,33 @@ function SimulationApprovalSummary(props) {
         return cell != null ? temp : '-';
     }
 
+    const bopNumberFormat = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        let temp = ''
+        temp = (row.IsMultipleBOP === true) ? 'Multiple BOP' : row.BoughtOutPartNumber
+
+        return cell != null ? temp : '-';
+    }
+
     const operationNameFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let temp = ''
         temp = row.OperationName
+        if (row.IsMultipleSTOperatrion === true) {
+            temp = 'Multiple Surface Treatment'
+        } if (row.IsMultipleOperation === true) {
+            temp = 'Multiple Operation'
+        }
+        return cell != null ? temp : '-';
+    }
+
+    const operationCodeFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        let temp = ''
+        temp = row.OperationCode
         if (row.IsMultipleSTOperatrion === true) {
             temp = 'Multiple Surface Treatment'
         } if (row.IsMultipleOperation === true) {
@@ -856,7 +891,11 @@ function SimulationApprovalSummary(props) {
         newSTFormatter: newSTFormatter,
         oldSTFormatter: oldSTFormatter,
         newOperationFormatter: newOperationFormatter,
-        oldOperationFormatter: oldOperationFormatter
+        oldOperationFormatter: oldOperationFormatter,
+        plantFormatter: plantFormatter,
+        rawMaterailCodeSpecFormatter: rawMaterailCodeSpecFormatter,
+        operationCodeFormatter: operationCodeFormatter,
+        bopNumberFormat: bopNumberFormat
     };
 
     const errorBoxClass = () => {
@@ -1161,9 +1200,9 @@ function SimulationApprovalSummary(props) {
                                                                 {
                                                                     (isRMDomesticOrRMImport || keysForDownloadSummary.IsRawMaterialSimulation) &&
                                                                     <>
-                                                                        <AgGridColumn width={192} field="RMName" cellRenderer='rawMaterailFormat' headerName="Raw Material-Grade" ></AgGridColumn>
-                                                                        <AgGridColumn width={192} field="RMCode" headerName="Raw Material Code" ></AgGridColumn>
-                                                                        <AgGridColumn width={192} field="RMSpecs" headerName="Raw Material Spec" ></AgGridColumn>
+                                                                        <AgGridColumn width={192} field="RMName" headerName="Raw Material-Grade" cellRenderer='rawMaterailFormat' ></AgGridColumn>
+                                                                        <AgGridColumn width={192} field="RMCode" headerName="Raw Material Code" cellRenderer='rawMaterailCodeSpecFormatter'></AgGridColumn>
+                                                                        <AgGridColumn width={192} field="RMSpecs" headerName="Raw Material Spec" cellRenderer='rawMaterailCodeSpecFormatter'></AgGridColumn>
                                                                     </>
                                                                 }
                                                                 <AgGridColumn width={136} field="PartNo" headerName="Part No."></AgGridColumn>
@@ -1179,8 +1218,8 @@ function SimulationApprovalSummary(props) {
                                                                 {
                                                                     (isOperation || isSurfaceTreatment || keysForDownloadSummary.IsSurfaceTreatmentSimulation || keysForDownloadSummary.IsOperationSimulation) &&
                                                                     <>
-                                                                        <AgGridColumn width={140} field="OperationName" cellRenderer='operationNameFormatter' headerName="Operation Name"></AgGridColumn>
-                                                                        <AgGridColumn width={140} field="OperationCode" headerName="Operation Code" ></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="OperationName" headerName="Operation Name" cellRenderer='operationNameFormatter'></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="OperationCode" headerName="Operation Code" cellRenderer='operationCodeFormatter'></AgGridColumn>
                                                                     </>
                                                                 }
                                                                 {
@@ -1242,8 +1281,8 @@ function SimulationApprovalSummary(props) {
                                                                 {
                                                                     (isBOPDomesticOrImport || keysForDownloadSummary.IsBoughtOutPartSimulation) &&
                                                                     <>
-                                                                        <AgGridColumn width={140} field="BoughtOutPartName" headerName="BoughtOutPartName" cellRenderer='bopMaterailFormat'></AgGridColumn>
-                                                                        <AgGridColumn width={140} field="BoughtOutPartNumber" headerName="BoughtOutPartNumber"></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="BoughtOutPartName" headerName="Bought Out Part Name" cellRenderer='bopMaterailFormat'></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="BoughtOutPartNumber" headerName="Bought Out Part Number" cellRenderer='bopNumberFormat'></AgGridColumn>
                                                                         <AgGridColumn width={140} field="OldNetBoughtOutPartCost" headerName="Old BOP Cost" cellRenderer='oldBOPFormatter' ></AgGridColumn>
                                                                         <AgGridColumn width={140} field="NewNetBoughtOutPartCost" headerName="New BOP Cost" cellRenderer='newBOPFormatter'></AgGridColumn>
                                                                         <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" headerName="BOP Variance" cellRenderer='BOPVarianceFormatter' ></AgGridColumn>

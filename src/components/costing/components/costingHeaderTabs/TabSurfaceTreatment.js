@@ -149,6 +149,7 @@ function TabSurfaceTreatment(props) {
   * @description FORMATE DATA FOR SET PART DETAILS
   */
   const formatData = (Params, Data, aar, partItem) => {
+
     let tempArr = [];
     try {
       tempArr = aar && aar.map(i => {
@@ -190,10 +191,10 @@ function TabSurfaceTreatment(props) {
         let partIndex = tempArr && tempArr.findIndex(item => item.PartNumber === Params.PartNumber && partItem.AssemblyPartNumber === item.AssemblyPartNumber)
         let partObj = tempArr && tempArr.find(item => item.PartNumber === Params.PartNumber && partItem.AssemblyPartNumber === item.AssemblyPartNumber)
 
-        partObj.CostingPartDetails.NetSurfaceTreatmentCost = NetSurfaceTreatmentCost
         partObj.CostingPartDetails.SurfaceTreatmentCost = surfaceCost(Data.SurfaceTreatmentDetails);
         partObj.CostingPartDetails.TransportationCost = checkForNull(Data.TransportationCost);
         partObj.CostingPartDetails.SurfaceTreatmentDetails = Data.SurfaceTreatmentDetails;
+        partObj.CostingPartDetails.NetSurfaceTreatmentCost = checkForNull(partObj.CostingPartDetails.SurfaceTreatmentCost) + checkForNull(partObj.CostingPartDetails.TransportationCost)
         partObj.CostingPartDetails.TransportationDetails = Data.TransportationDetails;
         tempArr = Object.assign([...tempArr], { [partIndex]: partObj })
 
@@ -825,6 +826,7 @@ function TabSurfaceTreatment(props) {
       if (obj && Object.keys(obj).length > 0) {
         newItem.CostingPartDetails.TransportationCost = checkForNull(obj?.CostingPartDetails?.TransportationCost)
         newItem.CostingPartDetails.SurfaceTreatmentCost = checkForNull(obj?.CostingPartDetails?.SurfaceTreatmentCost)
+        newItem.CostingPartDetails.NetSurfaceTreatmentCost = checkForNull(obj?.CostingPartDetails?.NetSurfaceTreatmentCost)
         newItem.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly = checkForNull(obj.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly)
         newItem.CostingPartDetails.TotalSurfaceTreatmentCostPerSubAssembly = checkForNull(obj.CostingPartDetails.TotalSurfaceTreatmentCostPerSubAssembly)
         newItem.CostingPartDetails.TotalSurfaceTreatmentCostComponent = checkForNull(obj.CostingPartDetails.TotalSurfaceTreatmentCostComponent)

@@ -18,12 +18,14 @@ import { getConfigurationKey } from './auth'
  */
 export const apiErrors = (res) => {
   const response = res ? res.response : undefined
-
   if (response?.data?.error?.message?.value) {
     toast.warning(response.data.error.message.value)
   } else if (response) {
     response && handleHTTPStatus(response)
   } else {
+    if (navigator.userAgent.indexOf("Firefox") !== -1) {
+      return;
+    }
     toast.error('Something went wrong please try again.')
   }
 }
@@ -698,6 +700,10 @@ export function formViewData(costingSummary) {
   obj.IsAssemblyCosting = dataFromAPI.IsAssemblyCosting ? dataFromAPI.IsAssemblyCosting : ""
   obj.childPartBOPHandlingCharges = dataFromAPI.CostingPartDetails?.ChildPartBOPHandlingCharges ? dataFromAPI.CostingPartDetails.ChildPartBOPHandlingCharges : []
   obj.masterBatchRMName = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.MasterBatchRMName ? dataFromAPI.CostingPartDetails.MasterBatchRMName : '-'
+
+  //MASTER BATCH OBJECT
+  obj.CostingMasterBatchRawMaterialCostResponse = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingMasterBatchRawMaterialCostResponse ? dataFromAPI.CostingPartDetails.CostingMasterBatchRawMaterialCostResponse : []
+
 
   // temp = [...temp, obj]
   temp.push(obj)

@@ -23,7 +23,7 @@ const gridOptions = {
 
 };
 function OperationSTSimulation(props) {
-    const { list, isbulkUpload, rowCount, isImpactedMaster, masterId, lastRevision, tokenForMultiSimulation, isOperationMaster } = props
+    const { list, isbulkUpload, rowCount, isImpactedMaster, masterId, lastRevision, tokenForMultiSimulation, setSelectionForListingMaster } = props
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')
@@ -60,7 +60,11 @@ function OperationSTSimulation(props) {
             setValue('NoOfRowsWithoutChange', rowCount.NoOfRowsWithoutChange)
         }
     }, [])
-
+    useEffect(() => {
+        if (list && list.length >= 0) {
+            gridRef.current.api.sizeColumnsToFit();
+        }
+    }, [list])
     const oldCPFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -175,7 +179,6 @@ function OperationSTSimulation(props) {
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
-        gridRef.current.api.sizeColumnsToFit();
 
     };
 

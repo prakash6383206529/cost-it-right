@@ -13,7 +13,9 @@ import {
     GET_PROCESSES_LIST_SUCCESS,
     GET_MACHINE_LIST_SUCCESS,
     GET_MACHINE_APPROVAL_LIST,
-    config
+    config,
+    SET_PROCESS_GROUP_FOR_API,
+    SET_PROCESS_GROUP_LIST
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
@@ -626,4 +628,33 @@ export function getMachineApprovalList(callback) {
             apiErrors(error)
         });
     };
+}
+
+
+export function setGroupProcessList(data) {
+    return (dispatch) => {
+        dispatch({
+            type: SET_PROCESS_GROUP_FOR_API,
+            payload: data
+        })
+    }
+}
+
+export function getProcessGroupByMachineId(IsCalledAPI, machineId, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getProcessGroupList}/${machineId}`, headers)
+        request.then((response) => {
+            if ((response.data.Result) || response?.status === 204) {
+                dispatch({
+                    type: SET_PROCESS_GROUP_LIST,
+                    payload: response?.status === 204 ? [] : response.data.DataList
+                })
+                callback(response)
+            }
+        }).catch((error) => {
+            callback(error)
+            dispatch({ type: API_FAILURE })
+            apiErrors(error)
+        })
+    }
 }

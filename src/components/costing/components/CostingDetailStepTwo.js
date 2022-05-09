@@ -302,9 +302,11 @@ function CostingDetailStepTwo(props) {
           checkForNull(tempData.ToolCost)
         if (data.OtherCostType === 'Percentage') {
           const cost = checkForNull(findApplicabilityCost(data, data?.OtherCostApplicability, headerCostData, CostingData, data?.PercentageOtherCost))
+
           data.AnyOtherCost = cost
         }
         const discountedCost = data.DiscountCostType === 'Percentage' ? checkForNull(findApplicabilityCost(data, data?.DiscountApplicability, headerCostData, CostingData, data?.HundiOrDiscountPercentage)) : data.DiscountsAndOtherCost;
+
         const discountValues = {
           NetPOPriceINR: checkForNull(SumOfTab - discountedCost) + checkForNull(data.AnyOtherCost),
           HundiOrDiscountValue: checkForNull(discountedCost),
@@ -324,6 +326,7 @@ function CostingDetailStepTwo(props) {
           TotalCost: OverAllCost + checkForNull(data.AnyOtherCost),
           NetPackagingAndFreight: tempData.NetPackagingAndFreight,
         }
+
         let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
         dispatch(setCostingDataList('setHeaderDiscountTab', tempArr, () => {
         }))
