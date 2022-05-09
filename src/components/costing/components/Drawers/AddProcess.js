@@ -16,6 +16,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import GroupProcess from './GroupProcess';
 import _ from 'lodash'
+import { getConfigurationKey } from '../../../../helper';
 
 const gridOptions = {};
 
@@ -27,8 +28,8 @@ function AddProcess(props) {
   const [gridApi, setGridApi] = useState(null);
   const [gridColumnApi, setGridColumnApi] = useState(null);
   // const [processGroup, setProcessGroup] = useState(true)
-  // const processGroup = getConfigurationKey().IsMachineProcessGroup // UNCOMMENT IT AFTER KEY IS ADDED IN WEB CONFIG N BACKEND AND REMOVE BELOW LINE
-  const processGroup = true
+  const processGroup = getConfigurationKey().IsMachineProcessGroup // UNCOMMENT IT AFTER KEY IS ADDED IN WEB CONFIG N BACKEND AND REMOVE BELOW LINE
+  // const processGroup = true
   const dispatch = useDispatch()
   const [activeTab, setActiveTab] = useState('1');
 
