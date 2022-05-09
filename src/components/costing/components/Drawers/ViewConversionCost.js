@@ -130,15 +130,15 @@ function ViewConversionCost(props) {
 
 
   const setCalculatorData = (data, list, id, parentId) => {
-    console.log('parentId: ', parentId);
+
 
     if (parentId === '') {
       let tempArr = []
       let tempData = viewCostingData[props.index].netConversionCostView.CostingProcessCostResponse[id]
-      // console.log('tempData: ', tempData);
+      // 
       setCalculatorTechnology(viewCostingData[props.index].netConversionCostView.CostingProcessCostResponse[id].ProcessTechnologyId)
       tempData = { ...tempData, WeightCalculatorRequest: data, }
-      console.log('tempData: ', tempData);
+
       setCalciData(tempData)
       tempArr = Object.assign([...viewCostingData[props.index].netConversionCostView.CostingProcessCostResponse], { [id]: tempData })
       setTimeout(() => {
@@ -148,14 +148,14 @@ function ViewConversionCost(props) {
     } else {
       let parentTempArr = []
       let parentTempData = viewCostingData[props.index].netConversionCostView.CostingProcessCostResponse[parentId]
-      console.log('parentTempData: ', parentTempData);
+
       let tempArr = []
       let tempData = list[id]
-      console.log('tempData: ', tempData);
+
 
       setCalculatorTechnology(tempData.ProcessTechnologyId)
       tempData = { ...tempData, WeightCalculatorRequest: data, }
-      console.log('tempData withcalci req: ', tempData);
+
       setCalciData(tempData)
       tempArr = Object.assign([...list], { [id]: tempData })
       parentTempData = { ...parentTempData, ProcessList: tempArr }
@@ -176,8 +176,6 @@ function ViewConversionCost(props) {
     let UOMType = ''
     if (parentCalciIndex === '') {
       tempData = viewCostingData[props.index]
-      console.log('tempData: ', tempData);
-      console.log(tempData?.netConversionCostView?.CostingProcessCostResponse[index].ProcessCalculatorId, "(tempData?.netConversionCostView?.CostingProcessCostResponse[index].ProcessCalculatorI")
       if (tempData?.netConversionCostView?.CostingProcessCostResponse[index].ProcessCalculatorId === 0) {
         Toaster.warning('Data is not avaliabe for calculator')
         return false
@@ -189,10 +187,7 @@ function ViewConversionCost(props) {
       }
     } else {
       tempData = list[index]
-      console.log('tempData: ', tempData);
-      console.log('tempData: ', tempData.ProcessCalculatorId);
       if (tempData.ProcessCalculatorId === 0 || tempData.ProcessCalculatorId === null) {
-        console.log("ENTERING?");
         Toaster.warning('Data is not avaliabe for calculator')
         return false
       } else {
@@ -201,12 +196,10 @@ function ViewConversionCost(props) {
         UOMType = tempData.UOMType
       }
     }
-
-
     setIndexForProcessCalculator(index)
     setParentIndex(parentCalciIndex)
     setTimeout(() => {
-      dispatch(getProcessDefaultCalculation(tempData?.netConversionCostView?.CostingProcessCostResponse[index].ProcessCalculatorId, res => {
+      dispatch(getProcessDefaultCalculation(processCalciId, res => {
         if (res && res.data && res.data.Data) {
 
           if ((res && res.data && res.data.Data) || (res && res.status === 204)) {
