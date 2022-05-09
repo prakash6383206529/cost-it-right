@@ -345,6 +345,17 @@ class AddMoreDetails extends Component {
     }
   }
 
+  findGroupCode = (clickedData, arr) => {
+    let isContainGroup = _.find(arr, function (obj) {
+      if (obj.ProcessId === clickedData) {
+        return true;
+      } else {
+        return false
+      }
+    });
+    return isContainGroup
+  }
+
   /**
   * @method renderListing
   * @description Used to show type of listing
@@ -382,6 +393,7 @@ class AddMoreDetails extends Component {
     if (label === 'ProcessNameList') {
       processSelectList && processSelectList.map(item => {
         if (item.Value === '0') return false;
+        if (this.findGroupCode(item.Value, this.state.processGrid)) return false;
         temp.push({ label: item.Text, value: item.Value })
         return null;
       });
