@@ -52,6 +52,7 @@ function ViewConversionCost(props) {
   const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
   const [calciData, setCalciData] = useState({})
   const [processAcc, setProcessAcc] = useState(false)
+  const [processAccObj, setProcessAccObj] = useState({});
   const [calculatorTechnology, setCalculatorTechnology] = useState('')
 
   const dispatch = useDispatch()
@@ -264,17 +265,16 @@ function ViewConversionCost(props) {
         return (
           <tr key={index}>
             {IsAssemblyCosting && partNumberList.length === 0 && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
-            {processGroup && <td className='text-overflow process-name'>
+            {processGroup && <td className={`${isPDFShow ? '' : 'text-overflow'}`}>
               {
                 (item?.GroupName === '' || item?.GroupName === null || item.GroupName === undefined) ? '' :
-                  <div onClick={() => setProcessAcc(!processAcc)} className={`${processAcc ? 'Open' : 'Close'}`}></div>
-
+                  <div onClick={() => setProcessAcc(!processAcc)} className={`${isPDFShow ? '' : processAcc ? 'Open' : 'Close'}`}></div>
               }
               <span title={item.ProcessName}>
                 {item?.GroupName === '' || item?.GroupName === null ? '-' : item.GroupName}</span>
             </td>}
-            <td className='text-overflow'><span title={item.ProcessName}>{item.ProcessName ? item.ProcessName : '-'}</span></td>
-            <td className='text-overflow'><span title={item?.Technologies}>{item?.Technologies ? item?.Technologies : '-'}</span></td>
+            <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item.ProcessName}>{item.ProcessName ? item.ProcessName : '-'}</span></td>
+            <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item?.Technologies}>{item?.Technologies ? item?.Technologies : '-'}</span></td>
             <td>{item.MachineName ? item.MachineName : '-'}</td>
             <td>{item.Tonnage ? item.Tonnage : '-'}</td>
             <td>{item.UOM ? item.UOM : '-'}</td>
@@ -330,17 +330,19 @@ function ViewConversionCost(props) {
                     <>
                       <tr key={index}>
                         {IsAssemblyCosting && partNumberList.length === 0 && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
-                        {processGroup && <td className='text-overflow process-name'>
+                        {processGroup && <td className={`${isPDFShow ? '' : 'text-overflow process-name'}`}>
                           {
                             (item?.GroupName === '' || item?.GroupName === null) ? '' :
-                              <div onClick={() => setProcessAcc(!processAcc)} className={`${processAcc ? 'Open' : 'Close'}`}></div>
-
+                              <div onClick={() =>
+                                processAccObj[index] === true ? setProcessAccObj(prevState => ({ ...prevState, [index]: false })) : setProcessAccObj(prevState => ({ ...prevState, [index]: true }))
+                              }
+                                className={`${isPDFShow ? '' : processAccObj[index] ? 'Open' : 'Close'}`}></div>
                           }
                           <span title={item.ProcessName}>
                             {item?.GroupName === '' || item?.GroupName === null ? '-' : item.GroupName}</span>
                         </td>}
-                        <td className='text-overflow'><span title={item.ProcessName}>{item.ProcessName ? item.ProcessName : '-'}</span></td>
-                        <td className='text-overflow'><span title={item?.Technologies}>{item?.Technologies ? item?.Technologies : '-'}</span></td>
+                        <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item.ProcessName}>{item.ProcessName ? item.ProcessName : '-'}</span></td>
+                        <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item?.Technologies}>{item?.Technologies ? item?.Technologies : '-'}</span></td>
                         <td>{item.MachineName ? item.MachineName : '-'}</td>
                         <td>{item.Tonnage ? item.Tonnage : '-'}</td>
                         <td>{item.UOM ? item.UOM : '-'}</td>
@@ -361,8 +363,8 @@ function ViewConversionCost(props) {
                         <td>{item.ProcessCost ? checkForDecimalAndNull(item.ProcessCost, initialConfiguration.NoOfDecimalForPrice) : 0}
                         </td>
                       </tr>
-
-                      {processAcc && <>
+                      {isPDFShow && renderSingleProcess(item, index)}
+                      {processAccObj[index] && <>
                         {
                           renderSingleProcess(item, index)
                         }
@@ -370,17 +372,19 @@ function ViewConversionCost(props) {
                     </>
                   )
                 })}
-              {costingProcessCost && costingProcessCost.length === 0 && (
-                <tr>
-                  <td colSpan={12}>
-                    <NoContentFound title={EMPTY_DATA} />
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </Table>
-        </Col>
-      </Row>
+              {
+                costingProcessCost && costingProcessCost.length === 0 && (
+                  <tr>
+                    <td colSpan={12}>
+                      <NoContentFound title={EMPTY_DATA} />
+                    </td>
+                  </tr>
+                )
+              }
+            </tbody >
+          </Table >
+        </Col >
+      </Row >
     </>
   }
   const operationTableData = () => {

@@ -1054,7 +1054,7 @@ function ProcessCost(props) {
                               <span title={item.ProcessName}>
                                 {item?.GroupName === '' || item?.GroupName === null ? '-' : item.GroupName}</span>
                             </td>}
-                            <td className='text-overflow'><span title={item.ProcessName}>{item.ProcessName}</span></td>
+                            <td className='text-overflow'><span title={item.ProcessName}>{item?.ProcessName === '' || item?.ProcessName == null ? '-' : item.ProcessName}</span></td>
                             <td>{item.Tonnage ? checkForNull(item.Tonnage) : '-'}</td>
                             <td>{item.MHR}</td>
                             <td>{item.UOM}</td>
