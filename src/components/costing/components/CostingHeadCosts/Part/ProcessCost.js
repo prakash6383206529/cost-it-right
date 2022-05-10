@@ -5,14 +5,14 @@ import { Col, Row, Table } from 'reactstrap';
 import OperationCost from './OperationCost';
 import { NumberFieldHookForm, TextFieldHookForm, TextAreaHookForm } from '../../../../layout/HookFormInputs';
 import AddProcess from '../../Drawers/AddProcess';
-import { apiErrors, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey } from '../../../../../helper';
+import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey } from '../../../../../helper';
 import NoContentFound from '../../../../common/NoContentFound';
 import { EMPTY_DATA, EMPTY_GUID, MASS, TIME } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
 import { costingInfoContext } from '../../CostingDetailStepTwo';
 import VariableMhrDrawer from '../../Drawers/processCalculatorDrawer/VariableMhrDrawer'
 import { getProcessMachiningCalculation, getProcessDefaultCalculation } from '../../../actions/CostWorking';
-import { gridDataAdded, isDataChange, setIsToolCostUsed, setRMCCErrors, setSelectedDataOfCheckBox } from '../../../actions/Costing';
+import { gridDataAdded, isDataChange, setIdsOfProcess, setIdsOfProcessGroup, setIsToolCostUsed, setRMCCErrors, setSelectedDataOfCheckBox } from '../../../actions/Costing';
 import { ViewCostingContext } from '../../CostingDetails';
 import Popup from 'reactjs-popup';
 import OperationCostExcludedOverhead from './OperationCostExcludedOverhead';
@@ -47,13 +47,14 @@ function ProcessCost(props) {
   const [processAccObj, setProcessAccObj] = useState({});
   const [calculatorTechnology, setCalculatorTechnology] = useState('')
   const [calculatorData, setCalculatorDatas] = useState({})
+  const [isFromApi, setIsFromApi] = useState(true)
 
 
   const dispatch = useDispatch()
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { CostingEffectiveDate } = useSelector(state => state.costing)
+  const { CostingEffectiveDate, selectedProcessId, selectedProcessGroupId, selectedProcessAndGroup } = useSelector(state => state.costing)
   const { rmFinishWeight } = props
 
   // const fieldValues = useWatch({
@@ -65,35 +66,23 @@ function ProcessCost(props) {
   // useEffect(() => {
   // }, [gridData])
 
-  const dummydata = [
-    {
-      groupID: '1',
-      processName: 'test-process',
-      machineTannage: '3',
-      machineRate: '6',
-      UOM: 'minute',
-      partHours: '-',
-      netCost: '',
-    },
-    {
-      groupID: '1',
-      processName: 'test-process',
-      machineTannage: '3',
-      machineRate: '6',
-      UOM: 'minute',
-      partHours: '-',
-      netCost: '',
-    },
-    {
-      groupID: '1',
-      processName: 'test-process',
-      machineTannage: '3',
-      machineRate: '6',
-      UOM: 'minute',
-      partHours: '-',
-      netCost: '',
-    },
-  ]
+  const formatMainArr = (arr) => {
+    let apiArr = []
+    arr && arr.map((item) => {
+      if (item.GroupName === '' || item.GroupName === null) {
+        apiArr.push(item)
+      } else {
+        apiArr.push(item)
+        item.ProcessList && item.ProcessList.map(processItem => {
+          processItem.GroupName = item.GroupName
+          apiArr.push(processItem)
+        })
+      }
+    })
+    return apiArr
+  }
+
+
   useEffect(() => {
     const Params = {
       index: props.index,
@@ -105,11 +94,33 @@ function ProcessCost(props) {
       if (JSON.stringify(gridData) !== JSON.stringify(oldGridData)) {
         dispatch(isDataChange(true))
       }
+      if (isFromApi) {
+        let apiArr = formatMainArr(tabData.CostingProcessCostResponse)
+
+        // tabData.CostingProcessCostResponse && tabData.CostingProcessCostResponse.map((item) => {
+
+        //   if (item.GroupName === '' || item.GroupName === null) {
+        //     apiArr.push(item)
+        //   } else {
+        //     apiArr.push(item)
+        //     item.ProcessList && item.ProcessList.map(processItem => {
+        //       processItem.GroupName = item.GroupName
+        //       apiArr.push(processItem)
+        //     })
+        //   }
+        // })
+
+        tabData.CostingProcessCostResponse = apiArr
+      }
+
+
       if (JSON.stringify(tabData) !== JSON.stringify(oldTabData)) {
         props.setConversionCost(tabData, Params, item)
       }
     }
   }, [tabData]);
+
+
 
   const setCalculatorData = (data, list, id, parentId) => {
     if (parentId === '') {
@@ -135,7 +146,7 @@ function ProcessCost(props) {
       tempArr = Object.assign([...list], { [id]: tempData })
       parentTempData = { ...parentTempData, ProcessList: tempArr }
       parentTempArr = Object.assign([...gridData], { [parentId]: parentTempData })
-      console.log('parentTempArr: ', parentTempArr);
+
       setTimeout(() => {
         setGridData(parentTempArr)
         setIsCalculator(true)
@@ -148,6 +159,7 @@ function ProcessCost(props) {
    * @description For opening weight calculator
   */
   const toggleWeightCalculator = (id, list = [], parentIndex = '') => {
+    console.log('list: ', list);
 
 
     setCalciIndex(id)
@@ -173,7 +185,7 @@ function ProcessCost(props) {
       }))
 
     } else {
-      dispatch(getProcessDefaultCalculation(tempData.ProcessCalculationId, res => {
+      dispatch(getProcessDefaultCalculation(tempData.ProcessCalculatorId, res => {
 
         if ((res && res.data && res.data.Data) || (res && res.status === 204)) {
           const data = res.status === 204 ? {} : res.data.Data
@@ -200,7 +212,8 @@ function ProcessCost(props) {
         ProductionPerHour: tempData.UOMType === TIME ? checkForNull(weightData.PartPerHour) : '-',
         ProcessCost: weightData.ProcessCost,
         IsCalculatedEntry: true,
-        ProcessCalculationId: weightData.ProcessCalculationId,
+        ProcessCalculationId: EMPTY_GUID,
+        ProcessCalculatorId: weightData.ProcessCalculationId,
         WeightCalculatorRequest: weightData
       }
 
@@ -212,18 +225,18 @@ function ProcessCost(props) {
         return accummlator + checkForNull(el.ProcessCost)
       }, 0)
 
-      let apiArr = []
-      tempArray && tempArray.map((item) => {
-        if (item.GroupName === '' || item.GroupName === null) {
-          apiArr.push(item)
-        } else {
-          apiArr.push(item)
-          item.ProcessList && item.ProcessList.map(processItem => {
-            processItem.GroupName = item.GroupName
-            apiArr.push(processItem)
-          })
-        }
-      })
+      let apiArr = formatMainArr(tempArray)
+      // tempArray && tempArray.map((item) => {
+      //   if (item.GroupName === '' || item.GroupName === null) {
+      //     apiArr.push(item)
+      //   } else {
+      //     apiArr.push(item)
+      //     item.ProcessList && item.ProcessList.map(processItem => {
+      //       processItem.GroupName = item.GroupName
+      //       apiArr.push(processItem)
+      //     })
+      //   }
+      // })
 
       tempArr2 = {
         ...tabData,
@@ -233,6 +246,7 @@ function ProcessCost(props) {
       }
 
       setTimeout(() => {
+        setIsFromApi(false)
         setTabData(tempArr2)
         setGridData(tempArray)
         setValue(`${ProcessGridFields}.${calciIndex}.Quantity`, tempData.UOMType === TIME ? checkForDecimalAndNull((weightData.ProcessCost / weightData.MachineRate), getConfigurationKey().NoOfDecimalForInputOutput) : weightData.Quantity)
@@ -263,12 +277,12 @@ function ProcessCost(props) {
       }, 0)
       let ProductionPerHour = 0
       ProductionPerHour = gridTempArr && gridTempArr.reduce((accummlator, el) => {
-        console.log('el: ', el);
+
         return accummlator + checkForNull((el.ProductionPerHour === null || el.ProductionPerHour === '-') ? 0 : Number(el.ProductionPerHour))
       }, 0)
-      console.log(ProductionPerHour, "ProductionPerHour");
-      setValue(`${SingleProcessGridField}.${calciIndex}.Quantity`, tempData.UOMType === TIME ? checkForDecimalAndNull((weightData.ProcessCost / weightData.MachineRate), getConfigurationKey().NoOfDecimalForInputOutput) : weightData.Quantity)
-      setValue(`${SingleProcessGridField}.${calciIndex}.ProcessCost`, checkForDecimalAndNull(weightData.ProcessCost, initialConfiguration.NoOfDecimalForPrice))
+
+      setValue(`${SingleProcessGridField}.${calciIndex}.${parentCalciIndex}.Quantity`, tempData.UOMType === TIME ? checkForDecimalAndNull((weightData.ProcessCost / weightData.MachineRate), getConfigurationKey().NoOfDecimalForInputOutput) : weightData.Quantity)
+      setValue(`${SingleProcessGridField}.${calciIndex}.${parentCalciIndex}.ProcessCost`, checkForDecimalAndNull(weightData.ProcessCost, initialConfiguration.NoOfDecimalForPrice))
       //MAIN PROCESS ROW WITH GROUP
 
 
@@ -281,7 +295,7 @@ function ProcessCost(props) {
       }
 
       let processTemparr = Object.assign([...gridData], { [parentCalciIndex]: processTempData })
-      console.log('processTemparr: ', processTemparr);
+
 
       let apiArr = []
       processTemparr && processTemparr.map((item) => {
@@ -306,7 +320,7 @@ function ProcessCost(props) {
         ProcessCostTotal: finalProcessCostTotal,
         CostingProcessCostResponse: apiArr,
       }
-
+      setIsFromApi(false)
       setTabData(tempArr)
       setGridData(processTemparr)
       // setValue(`${SingleProcessGridField}.${calciIndex}.Quantity`, tempData.UOMType === TIME ? checkForDecimalAndNull((weightData.ProcessCost / weightData.MachineRate), getConfigurationKey().NoOfDecimalForInputOutput) : weightData.Quantity)
@@ -368,14 +382,14 @@ function ProcessCost(props) {
     if (Object.keys(rowData).length > 0) {
       let rowArr = rowData && rowData.map((item) => {
         let processQuantityMain = 1
-        if (item.UnitType === MASS) {
+        if (item.UOMType === MASS) {
           processQuantityMain = rmFinishWeight ? rmFinishWeight : 1
         }
         // THIS IS FOR GROUP PROCESS
         let rowArray = item.ProcessList && item.ProcessList.map((el) => {
 
           let processQuantity = 1
-          if (el.UnitType === MASS) {
+          if (el.UOMType === MASS) {
             processQuantity = rmFinishWeight ? rmFinishWeight : 1
           }
           return {
@@ -387,12 +401,12 @@ function ProcessCost(props) {
             ProcessName: el.ProcessName,
             ProcessDescription: el.Description,
             MachineName: el.MachineName,
-            UOM: el.UnitOfMeasurement,
+            UOM: el.UOM,
             UnitOfMeasurementId: el.UnitOfMeasurementId,
-            Tonnage: el.MachineTonnage,
+            Tonnage: el.Tonnage,
             Quantity: processQuantity,
             ProcessCost: el.MachineRate * processQuantity,
-            UOMType: el.UnitType,
+            UOMType: el.UOMType,
             UOMTypeId: el.UnitTypeId,
             ProductionPerHour: '-',
             ProcessTechnologyId: el.ProcessTechnologyId,
@@ -409,12 +423,12 @@ function ProcessCost(props) {
           ProcessName: item.ProcessName,
           ProcessDescription: item.Description,
           MachineName: item.MachineName,
-          UOM: item.UnitOfMeasurement,
+          UOM: item.UOM,
           UnitOfMeasurementId: item.UnitOfMeasurementId,
-          Tonnage: item.MachineTonnage,
+          Tonnage: item.Tonnage,
           Quantity: processQuantityMain,
           ProcessCost: rowArray.length > 0 ? calculateRowProcessCost(rowArray) : item.MachineRate * processQuantityMain,
-          UOMType: item.UnitType,
+          UOMType: item.UOMType,
           UOMTypeId: item.UnitTypeId,
           ProductionPerHour: '-',
           ProcessTechnologyId: item.ProcessTechnologyId,
@@ -429,24 +443,24 @@ function ProcessCost(props) {
         setValue(`${ProcessGridFields}.${index}.Quantity`, el.Quantity)
         return null
       })
-      console.log(tempArr);
+
       let ProcessCostTotal = 0
       ProcessCostTotal = tempArr && tempArr.reduce((accummlator, el) => {
         return accummlator + checkForNull(el.ProcessCost)
       }, 0)
 
-      let apiArr = []
-      tempArr && tempArr.map((item) => {
-        if (item.GroupName === '' || item.GroupName === null) {
-          apiArr.push(item)
-        } else {
-          apiArr.push(item)
-          item.ProcessList && item.ProcessList.map(processItem => {
-            processItem.GroupName = item.GroupName
-            apiArr.push(processItem)
-          })
-        }
-      })
+      let apiArr = formatMainArr(tempArr)
+      // tempArr && tempArr.map((item) => {
+      //   if (item.GroupName === '' || item.GroupName === null) {
+      //     apiArr.push(item)
+      //   } else {
+      //     apiArr.push(item)
+      //     item.ProcessList && item.ProcessList.map(processItem => {
+      //       processItem.GroupName = item.GroupName
+      //       apiArr.push(processItem)
+      //     })
+      //   }
+      // })
 
       tempArr2 = {
         ...tabData,
@@ -454,6 +468,7 @@ function ProcessCost(props) {
         ProcessCostTotal: ProcessCostTotal,
         CostingProcessCostResponse: apiArr,
       }
+      setIsFromApi(false)
       setGridData(tempArr)
       setTabData(tempArr2)
       selectedIds(tempArr)
@@ -468,6 +483,8 @@ function ProcessCost(props) {
    * @description SELECTED IDS
    */
   const selectedIds = (tempArr) => {
+    let procssArr = []
+    let processGroupArr = []
     tempArr && tempArr.map((el) => {
 
       if (Ids.includes(el.ProcessId) === false) {
@@ -476,12 +493,22 @@ function ProcessCost(props) {
         setIds(selectedIds)
       }
       if (MachineIds.includes(el.MachineRateId) === false) {
-        let selectedIds = MachineIds
-        selectedIds.push(el.MachineRateId)
-        setMachineIds(selectedIds)
+        let MachineRateselectedIds = MachineIds
+        MachineRateselectedIds.push(el.MachineRateId)
+        setMachineIds(MachineRateselectedIds)
+      }
+
+      if (el.GroupName === '' || el.GroupName === null || el.GroupName === undefined) {
+        procssArr.push({ MachineRateId: el.MachineRateId, ProcessId: el.ProcessId })
+      } else {
+        processGroupArr.push({ MachineId: el.MachineId, GroupName: el.GroupName })
       }
       return null
     })
+
+
+    dispatch(setIdsOfProcess(procssArr))
+    dispatch(setIdsOfProcessGroup(processGroupArr))
   }
 
   const deleteItem = (index) => {
@@ -490,7 +517,6 @@ function ProcessCost(props) {
       if (i === index) return false;
       return true
     })
-
     setTimeout(() => {
       let ProcessCostTotal = 0
       ProcessCostTotal = tempArrAfterDelete && tempArrAfterDelete.reduce((accummlator, el) => {
@@ -522,6 +548,26 @@ function ProcessCost(props) {
         return null
       })
     }, 200)
+
+
+    if (gridData[index]?.ProcessList?.length > 0) {
+      let tempArr = selectedProcessGroupId
+      let newArr = []
+      // tempArr = tempArr.filter((el) => { return (el.GroupName !== gridData[index].GroupName && el.MachineId !== gridData[index].MachineId) })
+      tempArr && tempArr.map((el) => {
+        if (el.GroupName === gridData[index].GroupName && el.MachineId === gridData[index].MachineId) {
+          return false
+        } else {
+          newArr.push(el)
+        }
+      })
+
+      dispatch(setIdsOfProcessGroup(newArr))
+    } else {
+      let tempArr1 = selectedProcessId
+      tempArr1 = tempArr1.filter((el) => el.ProcessId !== gridData[index].ProcessId)
+      dispatch(setIdsOfProcess(tempArr1))
+    }
   }
 
   const handleQuantityChange = (event, index) => {
@@ -544,18 +590,18 @@ function ProcessCost(props) {
         return accummlator + checkForNull(el.ProcessCost)
       }, 0)
 
-      let apiArr = []
-      gridTempArr && gridTempArr.map((item) => {
-        if (item.GroupName === '' || item.GroupName === null) {
-          apiArr.push(item)
-        } else {
-          apiArr.push(item)
-          item.ProcessList && item.ProcessList.map(processItem => {
-            processItem.GroupName = item.GroupName
-            apiArr.push(processItem)
-          })
-        }
-      })
+      let apiArr = formatMainArr(gridTempArr)
+      // gridTempArr && gridTempArr.map((item) => {
+      //   if (item.GroupName === '' || item.GroupName === null) {
+      //     apiArr.push(item)
+      //   } else {
+      //     apiArr.push(item)
+      //     item.ProcessList && item.ProcessList.map(processItem => {
+      //       processItem.GroupName = item.GroupName
+      //       apiArr.push(processItem)
+      //     })
+      //   }
+      // })
 
       tempArr = {
         ...tabData,
@@ -564,7 +610,7 @@ function ProcessCost(props) {
         CostingProcessCostResponse: apiArr,
 
       }
-
+      setIsFromApi(false)
       setTabData(tempArr)
       setGridData(gridTempArr)
       setValue(`${ProcessGridFields}.${index}.ProcessCost`, checkForDecimalAndNull(ProcessCost, initialConfiguration.NoOfDecimalForPrice))
@@ -584,18 +630,18 @@ function ProcessCost(props) {
         return accummlator + checkForNull(el.ProcessCost)
       }, 0)
 
-      let apiArr = []
-      gridTempArr && gridTempArr.map((item) => {
-        if (item.GroupName === '' || item.GroupName === null) {
-          apiArr.push(item)
-        } else {
-          apiArr.push(item)
-          item.ProcessList && item.ProcessList.map(processItem => {
-            processItem.GroupName = item.GroupName
-            apiArr.push(processItem)
-          })
-        }
-      })
+      let apiArr = formatMainArr(gridTempArr)
+      // gridTempArr && gridTempArr.map((item) => {
+      //   if (item.GroupName === '' || item.GroupName === null) {
+      //     apiArr.push(item)
+      //   } else {
+      //     apiArr.push(item)
+      //     item.ProcessList && item.ProcessList.map(processItem => {
+      //       processItem.GroupName = item.GroupName
+      //       apiArr.push(processItem)
+      //     })
+      //   }
+      // })
 
       tempArr = {
         ...tabData,
@@ -603,7 +649,7 @@ function ProcessCost(props) {
         ProcessCostTotal: ProcessCostTotal,
         CostingProcessCostResponse: apiArr,
       }
-
+      setIsFromApi(false)
       setTabData(tempArr)
       setGridData(gridTempArr)
       setTimeout(() => {
@@ -649,18 +695,18 @@ function ProcessCost(props) {
         ProcessCost: ProcessCostTotal
       }
       let processTemparr = Object.assign([...gridData], { [parentIndex]: processTempData })
-      let apiArr = []
-      processTemparr && processTemparr.map((item) => {
-        if (item.GroupName === '' || item.GroupName === null) {
-          apiArr.push(item)
-        } else {
-          apiArr.push(item)
-          item.ProcessList && item.ProcessList.map(processItem => {
-            processItem.GroupName = item.GroupName
-            apiArr.push(processItem)
-          })
-        }
-      })
+      let apiArr = formatMainArr(processTemparr)
+      // processTemparr && processTemparr.map((item) => {
+      //   if (item.GroupName === '' || item.GroupName === null) {
+      //     apiArr.push(item)
+      //   } else {
+      //     apiArr.push(item)
+      //     item.ProcessList && item.ProcessList.map(processItem => {
+      //       processItem.GroupName = item.GroupName
+      //       apiArr.push(processItem)
+      //     })
+      //   }
+      // })
 
       let finalProcessCostTotal = processTemparr && processTemparr.reduce((accummlator, el) => {
         return accummlator + checkForNull(el.ProcessCost)
@@ -673,7 +719,7 @@ function ProcessCost(props) {
         CostingProcessCostResponse: apiArr,
 
       }
-
+      setIsFromApi(false)
       setTabData(tempArr)
       setGridData(processTemparr)
       setValue(`${ProcessGridFields}.${parentIndex}.ProcessCost`, checkForDecimalAndNull(ProcessCostTotal, initialConfiguration.NoOfDecimalForPrice))
@@ -706,18 +752,18 @@ function ProcessCost(props) {
       }
       let processTemparr = Object.assign([...gridData], { [parentIndex]: processTempData })
 
-      let apiArr = []
-      processTemparr && processTemparr.map((item) => {
-        if (item.GroupName === '' || item.GroupName === null) {
-          apiArr.push(item)
-        } else {
-          apiArr.push(item)
-          item.ProcessList && item.ProcessList.map(processItem => {
-            processItem.GroupName = item.GroupName
-            apiArr.push(processItem)
-          })
-        }
-      })
+      let apiArr = formatMainArr(processTemparr)
+      // processTemparr && processTemparr.map((item) => {
+      //   if (item.GroupName === '' || item.GroupName === null) {
+      //     apiArr.push(item)
+      //   } else {
+      //     apiArr.push(item)
+      //     item.ProcessList && item.ProcessList.map(processItem => {
+      //       processItem.GroupName = item.GroupName
+      //       apiArr.push(processItem)
+      //     })
+      //   }
+      // })
 
       tempArr = {
         ...tabData,
@@ -725,7 +771,7 @@ function ProcessCost(props) {
         ProcessCostTotal: ProcessCostTotal,
         CostingProcessCostResponse: apiArr,
       }
-
+      setIsFromApi(false)
       setTabData(tempArr)
       setGridData(processTemparr)
       setValue(`${ProcessGridFields}.${parentIndex}.ProcessCost`, checkForDecimalAndNull(ProcessCostTotal, initialConfiguration.NoOfDecimalForPrice))
@@ -745,14 +791,27 @@ function ProcessCost(props) {
     OperationCostTotal = operationGrid && operationGrid.reduce((accummlator, el) => {
       return accummlator + checkForNull(el.OperationCost)
     }, 0)
-
+    let apiArr = formatMainArr(gridData)
+    // gridData && gridData.map((item) => {
+    //   if (item.GroupName === '' || item.GroupName === null) {
+    //     apiArr.push(item)
+    //   } else {
+    //     apiArr.push(item)
+    //     item.ProcessList && item.ProcessList.map(processItem => {
+    //       processItem.GroupName = item.GroupName
+    //       apiArr.push(processItem)
+    //     })
+    //   }
+    // })
     let tempArr = {
       ...tabData,
       NetConversionCost: OperationCostTotal + checkForNull(tabData && tabData.ProcessCostTotal !== null ? tabData.ProcessCostTotal : 0,) + checkForNull(tabData && tabData.OtherOperationCostTotal !== null ? tabData.OtherOperationCostTotal : 0,),
       OperationCostTotal: OperationCostTotal,
       CostingOperationCostResponse: operationGrid,
+      CostingProcessCostResponse: apiArr
     }
 
+    setIsFromApi(false)
     setTabData(tempArr)
     // props.setOperationCost(tempArr, params, item)
   }
@@ -762,14 +821,26 @@ function ProcessCost(props) {
     OtherOperationCostTotal = otherOperationGrid && otherOperationGrid.reduce((accummlator, el) => {
       return accummlator + checkForNull(el.OperationCost)
     }, 0)
-
+    let apiArr = formatMainArr(gridData)
+    // gridData && gridData.map((item) => {
+    //   if (item.GroupName === '' || item.GroupName === null) {
+    //     apiArr.push(item)
+    //   } else {
+    //     apiArr.push(item)
+    //     item.ProcessList && item.ProcessList.map(processItem => {
+    //       processItem.GroupName = item.GroupName
+    //       apiArr.push(processItem)
+    //     })
+    //   }
+    // })
     let tempArr = {
       ...tabData,
       NetConversionCost: (OtherOperationCostTotal + checkForNull(tabData && tabData.ProcessCostTotal !== null ? tabData.ProcessCostTotal : 0,) + checkForNull(tabData && tabData.OperationCostTotal !== null ? tabData.OperationCostTotal : 0,)).toFixed(10),
       OtherOperationCostTotal: OtherOperationCostTotal,
       CostingOtherOperationCostResponse: otherOperationGrid,
+      CostingProcessCostResponse: apiArr
     }
-
+    setIsFromApi(false)
     setTabData(tempArr)
     // props.setOtherOperationCost(tempArr, props.index, item)
   }
@@ -801,13 +872,13 @@ function ProcessCost(props) {
             <td>{item.Tonnage}</td>
             <td>{item.MHR}</td>
             <td>{item.UOM}</td>
-            <td>{item.ProductionPerHour}</td>
+            <td>{(item?.ProductionPerHour === '-' || item?.ProductionPerHour === 0 || item?.ProductionPerHour === null || item?.ProductionPerHour === undefined) ? '-' : checkForDecimalAndNull(item.ProductionPerHour, getConfigurationKey().NoOfDecimalForInputOutput)}</td>
             <td style={{ width: 150 }}>
               <span className="d-inline-block w90px mr-2">
                 {
                   <NumberFieldHookForm
                     label=""
-                    name={`${SingleProcessGridField}.${index}.Quantity`}
+                    name={`${SingleProcessGridField}.${index}.${parentIndex}.Quantity`}
                     Controller={Controller}
                     control={control}
                     register={register}
@@ -842,7 +913,7 @@ function ProcessCost(props) {
               {
                 <TextFieldHookForm
                   label=""
-                  name={`${SingleProcessGridField}.${index}.ProcessCost`}
+                  name={`${SingleProcessGridField}.${index}.${parentIndex}.ProcessCost`}
                   Controller={Controller}
                   control={control}
                   register={register}
@@ -865,7 +936,7 @@ function ProcessCost(props) {
                   position="top center">
                   <TextAreaHookForm
                     label="Remark:"
-                    name={`${SingleProcessGridField}.${index}.remarkPopUp`}
+                    name={`${SingleProcessGridField}.${index}.${parentIndex}.remarkPopUp`}
                     Controller={Controller}
                     control={control}
                     register={register}
@@ -880,7 +951,7 @@ function ProcessCost(props) {
                     defaultValue={item.Remark ?? item.Remark}
                     className=""
                     customClassName={"withBorder"}
-                    errors={errors && errors.SingleProcessGridField && errors.SingleProcessGridField[index] !== undefined ? errors.SingleProcessGridField[index].remarkPopUp : ''}
+                    errors={errors && errors.SingleProcessGridField && errors.SingleProcessGridField[index][parentIndex] !== undefined ? errors.SingleProcessGridField[index][parentIndex].remarkPopUp : ''}
                     //errors={errors && errors.remarkPopUp && errors.remarkPopUp[index] !== undefined ? errors.remarkPopUp[index] : ''}                        
                     disabled={(CostingViewMode || IsLocked) ? true : false}
                     hidden={false}

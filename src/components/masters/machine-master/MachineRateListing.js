@@ -2,10 +2,11 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { EMPTY_DATA, MACHINERATE, MACHINE_MASTER_ID, RMDOMESTIC } from '../../../config/constants';
+import { EMPTY_DATA, MACHINERATE, MACHINE_MASTER_ID } from '../../../config/constants';
 import {
     getInitialPlantSelectList, getInitialMachineTypeSelectList, getInitialProcessesSelectList, getInitialVendorWithVendorCodeSelectList, getMachineTypeSelectListByPlant,
     getVendorSelectListByTechnology, getMachineTypeSelectListByTechnology, getMachineTypeSelectListByVendor, getProcessSelectListByMachineType,
+
 } from '../actions/Process';
 import { getMachineDataList, deleteMachine, copyMachine, getProcessGroupByMachineId } from '../actions/MachineMaster';
 import { getTechnologySelectList, } from '../../../actions/Common';
@@ -589,7 +590,7 @@ class MachineRateListing extends Component {
                     this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.MACHINE_DELETE_ALERT}`} />
                 }
                 {
-                    this.state.isOpenProcessGroupDrawer && <ProcessGroupDrawer anchor={'right'} isOpen={this.state.isOpenProcessGroupDrawer} toggleDrawer={this.closeProcessGroupDrawer} />
+                    this.state.isOpenProcessGroupDrawer && <ProcessGroupDrawer anchor={'right'} isOpen={this.state.isOpenProcessGroupDrawer} toggleDrawer={this.closeProcessGroupDrawer} isViewFlag={true} />
                 }
             </div >
         );

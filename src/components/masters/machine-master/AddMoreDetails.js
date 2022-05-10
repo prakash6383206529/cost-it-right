@@ -12,7 +12,7 @@ import { getTechnologySelectList, getPlantSelectListByType, getPlantBySupplier, 
 import { getVendorListByVendorType, } from '../actions/Material';
 import {
   createMachineDetails, updateMachineDetails, getMachineDetailsData, getMachineTypeSelectList, getProcessesSelectList,
-  getFuelUnitCost, getLabourCost, getPowerCostUnit, fileUploadMachine, fileDeleteMachine, getProcessGroupByMachineId
+  getFuelUnitCost, getLabourCost, getPowerCostUnit, fileUploadMachine, fileDeleteMachine, getProcessGroupByMachineId, setGroupProcessList
 } from '../actions/MachineMaster';
 import { getLabourTypeByMachineTypeSelectList } from '../actions/Labour';
 import { getFuelComboData, } from '../actions/Fuel';
@@ -235,8 +235,25 @@ class AddMoreDetails extends Component {
           const Data = res.data.Data;
 
           this.props.getProcessGroupByMachineId(Data.MachineId, res => {
+            // SET GET API STRUCTURE IN THE FORM OF SAVE API STRUCTURE BY DEFAULT
+            let updateArrayList = []
+            let tempArray = []
+            let singleRecordObject = {}
+            res?.data?.DataList && res?.data?.DataList.map((item) => {
+              singleRecordObject = {}
+              let ProcessIdListTemp = []
+              tempArray = item.GroupName
 
-            this.props.setGroupProcessList(res?.data?.DataList)
+              item.ProcessList && item.ProcessList.map((item1) => {
+                ProcessIdListTemp.push(item1.ProcessId)
+                return null
+              })
+              singleRecordObject.ProcessGroupName = tempArray
+              singleRecordObject.ProcessIdList = ProcessIdListTemp
+              updateArrayList.push(singleRecordObject)
+              return null
+            })
+            this.props.setGroupProcessList(updateArrayList)
 
             // TO DISABLE DELETE BUTTON WHEN GET DATA API CALLED (IN EDIT)
             let uniqueProcessId = []
@@ -316,14 +333,27 @@ class AddMoreDetails extends Component {
               processGrid: MachineProcessArray,
               remarks: Data.Remark,
               files: Data.Attachements,
-              effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : ''
-            })
+              effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
+              UOM: this.state.isProcessGroup ? { label: Data.MachineProcessRates[0].UnitOfMeasurement, value: Data.MachineProcessRates.UnitOfMeasurementId } : [],
+              lockUOMAndRate: this.state.isProcessGroup
+            }, () => this.props.change('MachineRate', Data.MachineProcessRates[0].MachineRate))
           }, 500)
         }
       })
     } else {
       this.props.getMachineDetailsData('', res => { })
     }
+  }
+
+  findGroupCode = (clickedData, arr) => {
+    let isContainGroup = _.find(arr, function (obj) {
+      if (obj.ProcessId === clickedData) {
+        return true;
+      } else {
+        return false
+      }
+    });
+    return isContainGroup
   }
 
   /**
@@ -363,6 +393,7 @@ class AddMoreDetails extends Component {
     if (label === 'ProcessNameList') {
       processSelectList && processSelectList.map(item => {
         if (item.Value === '0') return false;
+        if (this.findGroupCode(item.Value, this.state.processGrid)) return false;
         temp.push({ label: item.Text, value: item.Value })
         return null;
       });
@@ -3545,7 +3576,8 @@ export default connect(mapStateToProps, {
   fileUploadMachine,
   fileDeleteMachine,
   masterFinalLevelUser,
-  getProcessGroupByMachineId
+  getProcessGroupByMachineId,
+  setGroupProcessList
 })(reduxForm({
   form: 'AddMoreDetails',
   onSubmitFail: errors => {
