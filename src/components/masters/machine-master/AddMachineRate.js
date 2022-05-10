@@ -1428,7 +1428,7 @@ class AddMachineRate extends Component {
                             validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                             component={renderText}
                             // required={true}
-                            disabled={this.state.isViewFlag ? true : false}
+                            disabled={isViewMode ? true : false}
                             className=" "
                             customClassName="withBorder"
                           />
@@ -1443,7 +1443,7 @@ class AddMachineRate extends Component {
                             validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                             component={renderText}
                             required={false}
-                            disabled={this.state.isViewFlag ? true : false}
+                            disabled={isViewMode ? true : false}
                             className=" "
                             customClassName="withBorder"
                           />
@@ -1463,7 +1463,7 @@ class AddMachineRate extends Component {
                                 required={false}
                                 handleChangeDescription={this.handleMachineType}
                                 valueDescription={this.state.machineType}
-                                disabled={this.state.isViewFlag ? true : false}
+                                disabled={isViewMode ? true : false}
                               />
                             </div>
                             {!isEditFlag && <div
@@ -1482,7 +1482,7 @@ class AddMachineRate extends Component {
                             validate={[checkWhiteSpaces, postiveNumber, maxLength10]}
                             component={renderText}
                             required={false}
-                            disabled={this.state.isViewFlag ? true : false}
+                            disabled={isViewMode ? true : false}
                             className=" "
                             customClassName="withBorder"
                           />
@@ -1685,7 +1685,7 @@ class AddMachineRate extends Component {
                               title={'Process Group:'} />
                           </Col>
                           <Col md="12">
-                            <ProcessGroup isViewFlag={isViewFlag} isEditFlag={isEditFlag} processListing={this.state.processGrid} isListing={false} isViewMode={isViewMode} changeDropdownValue={this.changeDropdownValue} showDelete={this.showDelete} />
+                            <ProcessGroup isEditFlag={isEditFlag} processListing={this.state.processGrid} isListing={false} isViewFlag={isViewMode} changeDropdownValue={this.changeDropdownValue} showDelete={this.showDelete} />
                           </Col>
                         </Row>
                       }
