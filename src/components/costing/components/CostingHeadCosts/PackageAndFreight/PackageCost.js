@@ -120,6 +120,7 @@ function PackageCost(props) {
                   <thead>
                     <tr>
                       <th>{`Packaging Description`}</th>
+                      <th>{`Criteria/Applicability`}</th>
                       <th>{`Packaging Type/Percentage`}</th>
                       <th>{`Cost`}</th>
                       <th style={{ width: "130px", textAlign: "right" }} className="costing-border-right"  >{`Action`}</th>
@@ -131,6 +132,7 @@ function PackageCost(props) {
                         return (
                           <tr key={index}>
                             <td>{item.PackagingDescription}</td>
+                            <td>{item.Applicability ? item.Applicability : '-'}</td>
                             <td>{item.IsPackagingCostFixed === false ? 'Fixed' : item.PackagingCostPercentage}</td>
                             <td>{checkForDecimalAndNull(item.PackagingCost, initialConfiguration.NoOfDecimalForPrice)}</td>
                             <td style={{ textAlign: "right" }}>

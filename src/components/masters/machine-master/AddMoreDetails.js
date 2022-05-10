@@ -3264,7 +3264,7 @@ class AddMoreDetails extends Component {
                               </div>
                             </Col>
                             <Col md="12">
-                              <Table className="table" size="sm" >
+                              <Table className="table border" size="sm" >
                                 <thead>
                                   <tr>
                                     <th>{`Process Name`}</th>

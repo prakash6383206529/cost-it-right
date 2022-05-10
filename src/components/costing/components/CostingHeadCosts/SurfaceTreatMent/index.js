@@ -122,14 +122,16 @@ function SurfaceTreatment(props) {
       let surfacTreatmentCost = (item.PartType === 'Component' || item.PartType === 'Part') ? checkForNull(item.CostingPartDetails.NetSurfaceTreatmentCost) : checkForNull(item.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostWithQuantitys)
       let rmCCCost = rmCcData !== undefined && (rmCcData.PartType === 'Part') ? checkForNull(rmCcData?.CostingPartDetails?.TotalCalculatedRMBOPCCCost) : checkForNull(rmCcData?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity)
       const tabData = RMCCTabData[0]
+      console.log('tabData: ', tabData);
       const surfaceTabData = SurfaceTabData[0]
       const overHeadAndProfitTabData = OverheadProfitTabData[0]
       const discountAndOtherTabData = DiscountCostData[0]
 
-      const totalCost = ((checkForNull(tabData.CostingPartDetails.TotalCalculatedRMBOPCCCost) + checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
+      const totalCost = ((checkForNull(tabData.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity) + checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
         checkForNull(PackageAndFreightTabData?.CostingPartDetails?.NetFreightPackagingCost) + checkForNull(ToolTabData?.CostingPartDetails?.TotalToolCost)
         + checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.NetOverheadAndProfitCost)) - checkForNull(DiscountCostData?.HundiOrDiscountValue))
         + checkForNull(DiscountCostData?.AnyOtherCost)
+      console.log(totalCost, "totalCosttotalCost");
       if (props.IsAssemblyCalculation) {
 
         let requestData = {
@@ -157,7 +159,7 @@ function SurfaceTreatment(props) {
           },
         }
         if (!CostingViewMode) {
-          let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 2, CostingEffectiveDate)
+          let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, totalCost, getAssemBOPCharge, 2, CostingEffectiveDate)
           dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
 
           dispatch(saveCostingSurfaceTab(requestData, res => {
