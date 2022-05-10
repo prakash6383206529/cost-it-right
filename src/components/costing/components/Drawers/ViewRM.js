@@ -13,13 +13,13 @@ import { getRawMaterialCalculationForCorrugatedBox, getRawMaterialCalculationFor
 
 function ViewRM(props) {
 
-  const { viewRMData, rmMBDetail, isAssemblyCosting, isPDFShow, simulationMode } = props
+  const { viewRMData, rmMBDetail, isAssemblyCosting, isPDFShow, simulationMode, isSimulationDone } = props
   /*
   * @method toggleDrawer
   * @description closing drawer
   */
   const [viewRM, setViewRM] = useState(viewRMData)
-  const [isSimulation, setIsSimulation] = useState(simulationMode ? simulationMode : false)
+  const [isSimulation, setIsSimulation] = useState(isSimulationDone === false ? isSimulationDone : (simulationMode ? simulationMode : false))
   const [index, setIndex] = useState('')
   const [weightCalculatorDrawer, setWeightCalculatorDrawer] = useState(false)
   const [calciData, setCalciData] = useState({})
@@ -51,37 +51,37 @@ function ViewRM(props) {
     switch ((Number(tempData.EtechnologyType))) {
 
       case SHEETMETAL:
-        dispatch(getRawMaterialCalculationForSheetMetal(tempData.netRMCostView[index].costingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
+        dispatch(getRawMaterialCalculationForSheetMetal(tempData.netRMCostView[index].CostingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
           setCalculatorData(res, index)
         }))
         break;
       case FORGING:
-        dispatch(getRawMaterialCalculationForForging(tempData.netRMCostView[index].costingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
+        dispatch(getRawMaterialCalculationForForging(tempData.netRMCostView[index].CostingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
           setCalculatorData(res, index)
         }))
         break;
       case Ferrous_Casting:
-        dispatch(getRawMaterialCalculationForFerrous(tempData.netRMCostView[index].costingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
+        dispatch(getRawMaterialCalculationForFerrous(tempData.netRMCostView[index].CostingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
           setCalculatorData(res, index)
         }))
         break;
       case PLASTIC:
-        dispatch(getRawMaterialCalculationForPlastic(tempData.netRMCostView[index].costingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
+        dispatch(getRawMaterialCalculationForPlastic(tempData.netRMCostView[index].CostingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
           setCalculatorData(res, index)
         }))
         break;
       case CORRUGATEDBOX:
-        dispatch(getRawMaterialCalculationForCorrugatedBox(tempData.netRMCostView[index].costingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
+        dispatch(getRawMaterialCalculationForCorrugatedBox(tempData.netRMCostView[index].CostingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
           setCalculatorData(res, index)
         }))
         break;
       case DIE_CASTING:
-        dispatch(getRawMaterialCalculationForDieCasting(tempData.netRMCostView[index].costingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
+        dispatch(getRawMaterialCalculationForDieCasting(tempData.netRMCostView[index].CostingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
           setCalculatorData(res, index)
         }))
         break;
       case RUBBER:
-        dispatch(getRawMaterialCalculationForRubber(tempData.netRMCostView[index].costingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
+        dispatch(getRawMaterialCalculationForRubber(tempData.netRMCostView[index].CostingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
           setCalculatorData(res, index)
         }))
         break;
@@ -275,7 +275,7 @@ function ViewRM(props) {
                 </Col>
               </Row>
               <Row>
-                {tableData()}
+                {!weightCalculatorDrawer && tableData()}
                 {weightCalculatorDrawer && (
                   <WeightCalculator
                     rmRowData={viewRM !== undefined ? calciData : {}}

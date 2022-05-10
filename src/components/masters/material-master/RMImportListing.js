@@ -597,8 +597,6 @@ function RMImportListing(props) {
 
                 <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
 
-                {CheckApprovalApplicableMaster(RM_MASTER_ID) && <AgGridColumn field="DisplayStatus" headerName="Status" cellRenderer='statusFormatter'></AgGridColumn>}
-
                 {!isSimulation && <AgGridColumn width={150} field="RawMaterialId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer='totalValueRenderer'></AgGridColumn>}
 
                 <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
