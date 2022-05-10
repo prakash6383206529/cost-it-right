@@ -3117,7 +3117,7 @@ export const REPORT_DOWNLOAD_EXCEl = [
     { label: "NetPOPriceOtherCurrency", value: "NetPOPriceOtherCurrency", },
     { label: "NetPOPrice(INR)", value: "NetPOPriceINR", },
     { label: "Remark", value: "Remark", },
-    { label: "CreatedBy", value: "CreatedBy", }
+    { label: "Status", value: "Status", }
 ]
 
 export const CombinedProcessSimulation = [

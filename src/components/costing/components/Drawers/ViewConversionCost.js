@@ -260,7 +260,7 @@ function ViewConversionCost(props) {
             {IsAssemblyCosting && partNumberList.length === 0 && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
             {processGroup && <td className='text-overflow process-name'>
               {
-                (item?.GroupName === '' || item?.GroupName === null) ? '' :
+                (item?.GroupName === '' || item?.GroupName === null || item.GroupName === undefined) ? '' :
                   <div onClick={() => setProcessAcc(!processAcc)} className={`${processAcc ? 'Open' : 'Close'}`}></div>
 
               }
