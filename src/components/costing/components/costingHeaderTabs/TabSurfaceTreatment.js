@@ -758,12 +758,12 @@ function TabSurfaceTreatment(props) {
       case 'Operation':
         obj.CostingPartDetails.SurfaceTreatmentCost = checkForNull(surfaceCost(surfaceGrid));
         obj.CostingPartDetails.SurfaceTreatmentDetails = surfaceGrid;
-        obj.CostingPartDetails.NetSurfaceTreatmentCost = (checkForNull(surfaceCost(surfaceGrid)) + obj.CostingPartDetails.TransportationCost) * (obj.Quantity ? obj.Quantity : 2)
+        obj.CostingPartDetails.NetSurfaceTreatmentCost = (checkForNull(surfaceCost(surfaceGrid)) + obj.CostingPartDetails.TransportationCost)
         break;
       case 'Transport':
         obj.CostingPartDetails.TransportationCost = checkForNull(TransportationObj?.TransportationCost)
         obj.CostingPartDetails.TransportationDetails = TransportationObj
-        obj.CostingPartDetails.NetSurfaceTreatmentCost = (checkForNull(obj.CostingPartDetails.SurfaceTreatmentCost) + checkForNull(TransportationObj.TransportationCost)) * (obj.Quantity ? obj.Quantity : 2)
+        obj.CostingPartDetails.NetSurfaceTreatmentCost = (checkForNull(obj.CostingPartDetails.SurfaceTreatmentCost) + checkForNull(TransportationObj.TransportationCost))
         break;
       default:
         break;
