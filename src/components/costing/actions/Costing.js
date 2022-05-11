@@ -1907,6 +1907,7 @@ export function saveCopyCosting(data, callback) {
       .catch((error) => {
         dispatch({ type: API_FAILURE })
         apiErrors(error)
+        callback(error)
       })
   }
 }
@@ -2187,6 +2188,7 @@ export function checkDataForCopyCosting(data, callback) {
     }).catch(error => {
       dispatch({ type: API_FAILURE })
       apiErrors(error)
+      callback(error)
     })
   }
 }
