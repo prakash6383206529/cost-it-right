@@ -42,6 +42,7 @@ function TabRMCC(props) {
         EffectiveDate: CostingEffectiveDate
       }
       dispatch(getRMCCTabData(data, true, (res) => {
+
         // dispatch(setAllCostingInArray(res.data.DataList,false))
         let tempArr = [];
         tempArr.push(res?.data?.DataList[0]);
