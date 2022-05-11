@@ -60,7 +60,7 @@ function ApproveRejectDrawer(props) {
     if (!isSimulation) {
       dispatch(getAllApprovalDepartment((res) => {
         const Data = res.data.SelectList
-        const departObj = Data && Data.filter(item => item.Value === userData.DepartmentId)
+        const departObj = Data && Data.filter(item => item.Value === (type === 'Sender' ? userData.DepartmentId : approvalData[0].DepartmentId))
 
         setValue('dept', { label: departObj[0].Text, value: departObj[0].Value })
 

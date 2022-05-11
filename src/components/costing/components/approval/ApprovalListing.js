@@ -289,7 +289,7 @@ function ApprovalListing(props) {
       return Toaster.warning("Technology should be same for sending multiple costing for approval")
     }
     if (count > 0) {
-      return Toaster.warning("Reason should be same for sending multiple costing for approval")
+      // return Toaster.warning("Reason should be same for sending multiple costing for approval")
     } else {
       setReasonId(selectedRowData[0].ReasonId)
     }
