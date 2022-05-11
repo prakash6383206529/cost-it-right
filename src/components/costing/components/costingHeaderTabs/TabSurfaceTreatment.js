@@ -29,7 +29,7 @@ function TabSurfaceTreatment(props) {
       }
       dispatch(getSurfaceTreatmentTabData(data, true, res => {
         let tempArr = [];
-        tempArr.push(res.data.DataList[0]);
+        tempArr.push(res?.data?.DataList[0]);
         localStorage.setItem('surfaceCostingArray', JSON.stringify(tempArr));
       }))
     }
