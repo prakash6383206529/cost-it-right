@@ -336,7 +336,7 @@ class AddMoreDetails extends Component {
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
               UOM: this.state.isProcessGroup ? { label: Data.MachineProcessRates[0].UnitOfMeasurement, value: Data.MachineProcessRates.UnitOfMeasurementId } : [],
               lockUOMAndRate: this.state.isProcessGroup
-            }, () => this.props.change('MachineRate', Data.MachineProcessRates[0].MachineRate))
+            }, () => this.props.change('MachineRate', this.state.isProcessGroup ? Data.MachineProcessRates[0].MachineRate : ''))
           }, 500)
         }
       })
