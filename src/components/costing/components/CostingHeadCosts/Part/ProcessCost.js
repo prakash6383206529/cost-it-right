@@ -112,7 +112,6 @@ function ProcessCost(props) {
         tabData.CostingProcessCostResponse = apiArr
       }
 
-
       if (JSON.stringify(tabData) !== JSON.stringify(oldTabData)) {
         props.setConversionCost(tabData, Params, item)
       }
@@ -158,9 +157,6 @@ function ProcessCost(props) {
    * @description For opening weight calculator
   */
   const toggleWeightCalculator = (id, list = [], parentIndex = '') => {
-
-
-
     setCalciIndex(id)
     setParentCalciIndex(parentIndex)
     setListData(list)
@@ -338,19 +334,28 @@ function ProcessCost(props) {
 
   const onRemarkPopUpClickk = (index) => {
     setRemarkPopUpData(getValues(`${ProcessGridFields}.${index}.remarkPopUp`))
+
     let tempArr = []
     let tempData = gridData[index]
     tempData = {
       ...tempData,
-      Remark: getValues(`${ProcessGridFields}.${index}.remarkPopUp`)
+      Remark: getValues(`${ProcessGridFields}.${index}.remarkPopUp`),
     }
-    tempArr = Object.assign([...gridData], { [index]: tempData })
-    // setGridData(tempArr)
+    let gridTempArr = Object.assign([...gridData], { [index]: tempData })
+    let apiArr = formatMainArr(gridTempArr)
+
+    tempArr = {
+      ...tabData,
+      CostingProcessCostResponse: apiArr,
+    }
+    setIsFromApi(false)
+    setTabData(tempArr)
+    setGridData(gridTempArr)
 
     if (getValues(`${ProcessGridFields}.${index}.remarkPopUp`)) {
       Toaster.success('Remark saved successfully')
     }
-    setTabData(tempArr)
+    // setTabData(tempArr)
     var button = document.getElementById(`popUpTriggers${index}`)
     button.click()
   }
@@ -358,6 +363,62 @@ function ProcessCost(props) {
   const onRemarkPopUpClosee = (index) => {
     var button = document.getElementById(`popUpTriggers${index}`)
     button.click()
+  }
+
+  const onRemarkPopUpClickGroup = (index, parentIndex, list) => {
+
+
+    let tempArr = []
+    let processTempData = gridData[parentIndex]
+    let tempData = list[index]
+
+    tempData = {
+      ...tempData,
+      Remark: getValues(`${SingleProcessGridField}.${index}.${parentIndex}.remarkPopUp`),
+    }
+    let gridTempArr = Object.assign([...list], { [index]: tempData })
+
+
+    processTempData = {
+      ...processTempData,
+      ProcessList: gridTempArr,
+    }
+    let processTemparr = Object.assign([...gridData], { [parentIndex]: processTempData })
+    let apiArr = formatMainArr(processTemparr)
+    // processTemparr && processTemparr.map((item) => {
+    //   if (item.GroupName === '' || item.GroupName === null) {
+    //     apiArr.push(item)
+    //   } else {
+    //     apiArr.push(item)
+    //     item.ProcessList && item.ProcessList.map(processItem => {
+    //       processItem.GroupName = item.GroupName
+    //       apiArr.push(processItem)
+    //     })
+    //   }
+    // })
+
+    tempArr = {
+      ...tabData,
+      CostingProcessCostResponse: apiArr,
+
+    }
+    setIsFromApi(false)
+    setTabData(tempArr)
+    setGridData(processTemparr)
+    ///////////////////
+
+    if (getValues(`${SingleProcessGridField}.${index}.${parentIndex}.ProcessCost`)) {
+      Toaster.success('Remark saved successfully')
+    }
+    let button = document.getElementById(`popUpTriggers${index}.${parentIndex}`)
+    button.click()
+
+  }
+
+  const onRemarkPopUpCloseGroup = (index, parentIndex) => {
+    let button = document.getElementById(`popUpTriggers${index}.${parentIndex}`)
+    button.click()
+
   }
 
   useEffect(() => {
@@ -673,7 +734,6 @@ function ProcessCost(props) {
     let processTempData = gridData[parentIndex]
     let tempData = list[index]
 
-
     if (!isNaN(event.target.value) && event.target.value !== '') {
       const ProcessCost = tempData.MHR * event.target.value
 
@@ -699,6 +759,7 @@ function ProcessCost(props) {
         ...processTempData,
         // Quantity: event.target.value,
         IsCalculatedEntry: false,
+        ProcessList: gridTempArr,
         ProcessCost: ProcessCostTotal
       }
       let processTemparr = Object.assign([...gridData], { [parentIndex]: processTempData })
@@ -852,8 +913,6 @@ function ProcessCost(props) {
     // props.setOtherOperationCost(tempArr, props.index, item)
   }
 
-
-
   /**
    * @method setRMCCErrors
    * @description CALLING TO SET BOP COST FORM'S ERROR THAT WILL USE WHEN HITTING SAVE RMCC TAB API.
@@ -939,7 +998,7 @@ function ProcessCost(props) {
             <td>
               <div className='action-btn-wrapper'>
                 {/* {(!CostingViewMode && !IsLocked) && <button className="Delete" type={'button'} onClick={() => deleteItem(index)} />} */}
-                <Popup trigger={<button id={`popUpTriggers${index}`} className="Comment-box" type={'button'} />}
+                <Popup trigger={<button id={`popUpTriggers${index}.${parentIndex}`} className="Comment-box" type={'button'} />}
                   position="top center">
                   <TextAreaHookForm
                     label="Remark:"
@@ -965,8 +1024,8 @@ function ProcessCost(props) {
                   />
                   <Row>
                     <Col md="12" className='remark-btn-container'>
-                      <button className='submit-button mr-2' disabled={(CostingViewMode || IsLocked) ? true : false} onClick={() => onRemarkPopUpClickk(index)} > <div className='save-icon'></div> </button>
-                      <button className='reset' onClick={() => onRemarkPopUpClosee(index)} > <div className='cancel-icon'></div></button>
+                      <button className='submit-button mr-2' disabled={(CostingViewMode || IsLocked) ? true : false} onClick={() => onRemarkPopUpClickGroup(index, parentIndex, process.ProcessList)} > <div className='save-icon'></div> </button>
+                      <button className='reset' onClick={() => onRemarkPopUpCloseGroup(index, parentIndex)} > <div className='cancel-icon'></div></button>
                     </Col>
                   </Row>
                 </Popup>
@@ -1125,7 +1184,7 @@ function ProcessCost(props) {
                             <td>
                               <div className='action-btn-wrapper'>
                                 {(!CostingViewMode && !IsLocked) && <button className="Delete" type={'button'} onClick={() => deleteItem(index)} />}
-                                <Popup trigger={<button id={`popUpTriggers${index}`} className="Comment-box" type={'button'} />}
+                                {(item?.GroupName === '' || item?.GroupName === null) && <Popup trigger={<button id={`popUpTriggers${index}`} className="Comment-box" type={'button'} />}
                                   position="top center">
                                   <TextAreaHookForm
                                     label="Remark:"
@@ -1155,7 +1214,7 @@ function ProcessCost(props) {
                                       <button className='reset' onClick={() => onRemarkPopUpClosee(index)} > <div className='cancel-icon'></div></button>
                                     </Col>
                                   </Row>
-                                </Popup>
+                                </Popup>}
                               </div>
                             </td>
                           </tr>
@@ -1193,8 +1252,6 @@ function ProcessCost(props) {
             item={props.item}
             IsAssemblyCalculation={false}
           />
-
-
 
         </div>
       </div>
