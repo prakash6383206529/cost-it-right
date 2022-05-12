@@ -672,7 +672,8 @@ function ProcessCost(props) {
         ...processTempData,
         // Quantity: event.target.value,
         IsCalculatedEntry: false,
-        ProcessCost: ProcessCostTotal
+        ProcessCost: ProcessCostTotal,
+        ProcessList: gridTempArr
       }
       let processTemparr = Object.assign([...gridData], { [parentIndex]: processTempData })
       let apiArr = formatMainArr(processTemparr)
