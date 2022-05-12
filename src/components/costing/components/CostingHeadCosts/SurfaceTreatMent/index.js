@@ -15,7 +15,7 @@ import { ViewCostingContext } from '../../CostingDetails';
 import { useState } from 'react';
 
 function SurfaceTreatment(props) {
-  const { surfaceData, transportationData, item } = props;
+  const { surfaceData, transportationData, item, isAssemblyTechnology } = props;
 
   const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
 
@@ -96,6 +96,9 @@ function SurfaceTreatment(props) {
   * @description SAVE DATA ASSEMBLY
   */
   const saveData = () => {
+    if (isAssemblyTechnology) {
+      props.setSurfaceTreatmentCostAT(item.CostingPartDetails.SurfaceTreatmentCost, item.CostingPartDetails.TransportationCost, item.CostingPartDetails.NetSurfaceTreatmentCost)
+    }
     if (transportationObject.UOM === "Percentage" && transportationObject.Rate !== null && transportationObject.Rate > 100) {
       return false
     }

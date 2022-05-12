@@ -25,6 +25,7 @@ import DayTime from '../../../common/DayTimeWrapper'
 import TabAssemblyTechnology from './TabAssemblyTechnology';
 import { createToprowObjAndSave, findSurfaceTreatmentData } from '../../CostingUtil';
 import _ from 'lodash'
+import { ASSEMBLY } from '../../../../config/masterData';
 
 function CostingHeaderTabs(props) {
   const dispatch = useDispatch()
@@ -211,7 +212,10 @@ function CostingHeaderTabs(props) {
       const surfaceTabData = SurfaceTabData[0]
       const overHeadAndProfitTabData = OverheadProfitTabData[0]
       const discountAndOtherTabData = DiscountCostData
-      let tempArrForCosting = JSON.parse(localStorage.getItem('costingArray'))
+      // let tempArrForCosting = JSON.parse(localStorage.getItem('costingArray'))   //HELP
+
+
+      let tempArrForCosting = []
       const data = _.find(tempArrForCosting, ['IsPartLocked', true])
       const lockedData = _.find(tempArrForCosting, ['IsLocked', true])
       const bopData = _.find(tempArrForCosting, ['PartType', 'BOP'])
@@ -346,7 +350,7 @@ function CostingHeaderTabs(props) {
           <Nav tabs className="subtabs cr-subtabs-head">
             <NavItem>
               <NavLink className={classnames({ active: activeTab === '1' })} onClick={() => { toggle('1'); }}>
-                RM + CC
+                {costingData.TechnologyId === ASSEMBLY ? 'Part Cost' : 'RM + CC'}
               </NavLink>
             </NavItem>
             <NavItem>
@@ -377,7 +381,7 @@ function CostingHeaderTabs(props) {
           </Nav>
           <TabContent activeTab={activeTab}>
             <TabPane tabId="1">
-              {costingData.TechnologyName === 'Assembly' ? <TabAssemblyTechnology
+              {costingData.TechnologyId === ASSEMBLY ? <TabAssemblyTechnology
                 setHeaderCost={props.setHeaderCost}
                 backBtn={props.backBtn}
                 activeTab={activeTab}

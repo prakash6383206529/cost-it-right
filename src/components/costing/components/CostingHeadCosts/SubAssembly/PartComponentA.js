@@ -80,9 +80,12 @@ function PartCompomentA(props) {
         <>
 
             <tr className="accordian-row">
-                <div style={{ display: 'contents' }} onClick={() => toggle(item.BOMLevel, item.PartNumber)} id={`${item && item.PartNumber}`}>
+                <div style={{ display: 'contents' }}
+                    // onClick={() => toggle(item.BOMLevel, item.PartNumber)} 
+                    id={`${item && item.PartNumber}`}
+                >
                     <td>
-                        <span style={{ position: 'relative' }} className={`cr-prt-nm1 cr-prt-link1 ${item && item.BOMLevel}`}>
+                        <span style={{ position: 'relative' }} className={`cr-prt-link1 ${item && item.BOMLevel}`}>
                             {item && item.PartNumber}<div className={`${item.IsOpen ? 'Open' : 'Close'}`}></div>
                         </span>
                     </td>
@@ -96,6 +99,8 @@ function PartCompomentA(props) {
 
                     <td>{item?.CostingPartDetails?.CostPerPiece ? '-' : '-'}</td>
                     <td>{item?.CostingPartDetails?.CostPerPiece ? '-' : '-'}</td>
+
+                    <td>{item?.PartType === 'Assembly' && item?.CostingPartDetails?.CostPerAssemblyBOP ? item?.CostingPartDetails?.CostPerAssemblyBOP : '-'}</td>
 
                     <td>{item?.CostingPartDetails?.CostPerAssembly ? checkForDecimalAndNull(item.CostingPartDetails.CostPerAssembly, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
                 </div>
