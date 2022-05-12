@@ -3725,7 +3725,22 @@ export const tempObject = [
             "TempRMBOPCC": null,
             "IsLocked": null,
             "IsPartLocked": false,
-
+            "CostingConversionCost": {
+                "IsShowToolCost": false,
+                "ProcessCostTotal": 0,
+                "OperationCostTotal": 0,
+                "OtherOperationCostTotal": null,
+                "ToolsCostTotal": 0,
+                "NetConversionCost": 0,
+                "IsProcessCostChanged": null,
+                "CostingProcessCostResponse": [],
+                "CostingGroupWiseProcessCostResponse": null,
+                "IsOperationCostChanged": null,
+                "CostingOperationCostResponse": [],
+                "CostingOtherOperationCostResponse": [],
+                "IsToolCostChanged": null,
+                "CostingToolsCostResponse": []
+            }
         },
         "CostingChildPartDetails": [
             // Bop11    

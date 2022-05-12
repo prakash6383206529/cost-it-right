@@ -11,15 +11,19 @@ import { createToprowObjAndSave } from '../../CostingUtil';
 import ProcessCost from '../CostingHeadCosts/Part/ProcessCost';
 
 function AddAssemblyProcess(props) {
-  const { item, CostingViewMode } = props;
+  const { item, CostingViewMode, ccData } = props;
+  console.log('ccData: ', ccData);
   const [IsOpenTool, setIsOpenTool] = useState(false);
   const dispatch = useDispatch()
+  const { subAssemblyTechnologyArray } = useSelector(state => state.SubAssembly)
+  console.log('subAssemblyTechnologyArray: ccData: ', subAssemblyTechnologyArray);
 
   const { RMCCTabData, CostingEffectiveDate, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData } = useSelector(state => state.costing)
 
   const costData = useContext(costingInfoContext)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const netPOPrice = useContext(NetPOPriceContext);
+  console.log('item: ddd', item);
 
   /**
   * @method toggleDrawer
@@ -178,7 +182,7 @@ function AddAssemblyProcess(props) {
 
                     <ProcessCost
                       index={props.index}
-                      // data={ccData}
+                      data={ccData}
                       // rmFinishWeight={rmData.length > 0 && rmData[0].FinishWeight !== undefined ? rmData[0].FinishWeight : 0}
                       setProcessCost={props.setProcessCost}
                       setOperationCost={props.setOperationCost}

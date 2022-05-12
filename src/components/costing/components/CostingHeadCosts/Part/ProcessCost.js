@@ -39,6 +39,8 @@ function ProcessCost(props) {
   const [Ids, setIds] = useState([])
   const [MachineIds, setMachineIds] = useState([])
   const [tabData, setTabData] = useState(props.data)
+  const [oldTabData, setOldTabData] = useState(props.data)
+  const [oldGridData, setOldGridData] = useState(data && data.CostingProcessCostResponse)
   const [isCalculator, setIsCalculator] = useState(false)
   const [processAccObj, setProcessAccObj] = useState({});
   const [calculatorTechnology, setCalculatorTechnology] = useState('')
@@ -124,12 +126,14 @@ function ProcessCost(props) {
       }
 
       if (JSON.stringify(tabData) !== JSON.stringify(props.data)) {
-        props.setConversionCost(tabData, Params, item)
+        if (isAssemblyTechnology) {
+          props.getValuesOfProcess(tabData, tabData?.ProcessCostTotal)
+        } else {
+          props.setConversionCost(tabData, Params, item)
+        }
       }
     }
   }, [tabData]);
-
-
 
   const setCalculatorData = (data, list, id, parentId) => {
     if (parentId === '') {
