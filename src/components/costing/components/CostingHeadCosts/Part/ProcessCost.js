@@ -158,7 +158,7 @@ function ProcessCost(props) {
    * @description For opening weight calculator
   */
   const toggleWeightCalculator = (id, list = [], parentIndex = '') => {
-    console.log('list: ', list);
+
 
 
     setCalciIndex(id)
