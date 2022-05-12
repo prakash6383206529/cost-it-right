@@ -112,7 +112,6 @@ class AddBOPDomestic extends Component {
       this.props.getCityByCountry(cityId, 0, () => { })
     })
 
-
     let obj = {
       MasterId: BOP_MASTER_ID,
       DepartmentId: userDetails().DepartmentId,
@@ -125,8 +124,6 @@ class AddBOPDomestic extends Component {
       }
 
     })
-
-
   }
 
   componentDidUpdate(prevProps) {
@@ -215,21 +212,16 @@ class AddBOPDomestic extends Component {
             let categoryObj = bopCategorySelectList && bopCategorySelectList.find(item => Number(item.Value) === Data.CategoryId)
             if (getConfigurationKey().IsDestinationPlantConfigure) {
               let obj = plantSelectList && plantSelectList.find(item => item.Value === Data.DestinationPlantId)
-              plantObj = { label: obj.Text, value: obj.Value }
+              plantObj = { label: obj?.Text, value: obj?.Value }
             } else {
               plantObj = Data && Data.Plant.length > 0 ? { label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId } : []
             }
-
             let vendorPlantArray = Data && Data.VendorPlant.map((item) => ({ Text: item.PlantName, Value: item.PlantId }))
             let sourceLocationObj = cityList && cityList.find(item => Number(item.Value) === Data.SourceLocation)
             let uomObject = UOMSelectList && UOMSelectList.find(item => item.Value === Data.UnitOfMeasurementId)
-
-
-
             this.setState({
               IsFinancialDataChanged: false,
               isEditFlag: true,
-              // isLoader: false,
               IsVendor: Data.IsVendor,
               BOPCategory: categoryObj && categoryObj !== undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
               // selectedPartAssembly: partArray,
@@ -241,6 +233,7 @@ class AddBOPDomestic extends Component {
               oldDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
               files: Data.Attachements,
               UOM: uomObject && uomObject !== undefined ? { label: uomObject.Display, value: uomObject.Value } : [],
+              isLoader: false,
             }, () => this.setState({ isLoader: false }))
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
             let files = Data.Attachements && Data.Attachements.map((item) => {
@@ -454,9 +447,9 @@ class AddBOPDomestic extends Component {
 
   handleCalculation = () => {
     const { fieldsObj, initialConfiguration } = this.props
-    const NoOfPieces = fieldsObj && fieldsObj.NumberOfPieces !== undefined ? fieldsObj.NumberOfPieces : 1; // MAY BE USED LATER IF USED IN CALCULATION
+    console.log('fieldsObj: ', fieldsObj);
     const BasicRate = fieldsObj && fieldsObj.BasicRate !== undefined ? fieldsObj.BasicRate : 0;
-    const NetLandedCost = checkForNull((BasicRate / NoOfPieces)) // THIS CALCULATION IS FOR BASE
+    const NetLandedCost = checkForNull(BasicRate)
 
     if (this.state.isEditFlag && Number(NetLandedCost) === Number(this.state.DataToCheck?.NetLandedCost)) {
 
@@ -668,30 +661,22 @@ class AddBOPDomestic extends Component {
         Attachements: updatedFiles,
         UnitOfMeasurementId: UOM.value,
         IsForcefulUpdated: true,
-        NumberOfPieces: values.NumberOfPieces,
+        NumberOfPieces: 1,
         IsFinancialDataChanged: isDateChange ? true : false
       }
-
-
-
       if (IsFinancialDataChanged) {
-
         if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
           this.setState({ showPopup: true, updatedObj: requestData })
           return false
-
         } else {
-
           this.setState({ setDisable: false })
           Toaster.warning('Please update the effective date')
           return false
         }
-
       }
-
-
-
-      if ((DataToCheck.Remark) === (values.Remark) && uploadAttachements) {
+      if ((DataToCheck.Remark) === (values.Remark) && uploadAttachements &&
+        ((DataToCheck.Source ? DataToCheck.Source : '-') === (values.Source ? values.Source : '-')) &&
+        ((DataToCheck.SourceLocation ? DataToCheck.SourceLocation : '-') === (sourceLocation.value ? sourceLocation.value : '-'))) {
         this.cancel()
         return false;
       } else {
@@ -725,7 +710,7 @@ class AddBOPDomestic extends Component {
         SourceLocation: sourceLocation.value,
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
         BasicRate: values.BasicRate,
-        NumberOfPieces: values.NumberOfPieces,
+        NumberOfPieces: 1,
         NetLandedCost: this.state.NetLandedCost,
         Remark: values.Remark,
         IsActive: true,
@@ -818,7 +803,7 @@ class AddBOPDomestic extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit } = this.props;
+    const { handleSubmit, isBOPAssociated } = this.props;
     const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, isViewMode, setDisable, disablePopup } = this.state;
     const filterList = (inputValue) => {
       let tempArr = []
@@ -1144,20 +1129,7 @@ class AddBOPDomestic extends Component {
                               />
                             </div>
                           </Col>
-                          <Col md="3">
-                            <Field
-                              label={`Minimum Order Quantity`}
-                              name={"NumberOfPieces"}
-                              type="text"
-                              placeholder={"Enter"}
-                              validate={[postiveNumber, maxLength10]}
-                              component={renderText}
-                              required={false}
-                              className=""
-                              customClassName=" withBorder"
-                              disabled={isViewMode}
-                            />
-                          </Col>
+
                           <Col md="3">
                             <Field
                               label={`Basic Rate/${this.state.UOM.label ? this.state.UOM.label : 'UOM'} (INR)`}
@@ -1167,7 +1139,7 @@ class AddBOPDomestic extends Component {
                               validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
                               component={renderText}
                               required={true}
-                              disabled={isViewMode}
+                              disabled={isViewMode || (isEditFlag && isBOPAssociated)}
                               className=" "
                               customClassName=" withBorder"
                             />
@@ -1397,7 +1369,7 @@ class AddBOPDomestic extends Component {
 */
 function mapStateToProps(state) {
   const { comman, supplier, boughtOutparts, part, auth } = state;
-  const fieldsObj = selector(state, 'NumberOfPieces', 'BasicRate',);
+  const fieldsObj = selector(state, 'BasicRate', 'NoOfPieces');
 
   const { bopCategorySelectList, bopData, } = boughtOutparts;
   const { plantList, filterPlantList, filterCityListBySupplier, cityList, UOMSelectList, plantSelectList, } = comman;
@@ -1413,7 +1385,6 @@ function mapStateToProps(state) {
       Specification: bopData.Specification,
       Source: bopData.Source,
       BasicRate: bopData.BasicRate,
-      NumberOfPieces: bopData.NumberOfPieces,
       NetLandedCost: bopData.NetLandedCost,
       Remark: bopData.Remark,
     }

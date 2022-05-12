@@ -131,7 +131,7 @@ class AddChildDrawer extends Component {
                                 {childType === ASSEMBLY &&
                                     <AddAssemblyForm
                                         toggleDrawer={this.toggleDrawer}
-                                        //TechnologySelected={this.props.TechnologySelected} DONT DELETE
+                                        TechnologySelected={this.props.TechnologySelected}
                                         selectedPartType={this.state.selectedPartType}
                                         setChildParts={this.setChildParts}
                                         BOMViewerData={this.props.BOMViewerData}
@@ -142,7 +142,7 @@ class AddChildDrawer extends Component {
                                     <AddComponentForm
                                         toggleDrawer={this.toggleDrawer}
                                         selectedPartType={this.state.selectedPartType}
-                                        //TechnologySelected={this.props.TechnologySelected}   DONT DELETE
+                                        TechnologySelected={this.props.TechnologySelected}
                                         setChildParts={this.setChildParts}
                                         BOMViewerData={this.props.BOMViewerData}
                                     />
@@ -152,7 +152,7 @@ class AddChildDrawer extends Component {
                                     <AddBOPForm
                                         toggleDrawer={this.toggleDrawer}
                                         selectedPartType={this.state.selectedPartType}
-                                        //TechnologySelected={this.props.TechnologySelected}  DONT DELETE
+                                        TechnologySelected={this.props.TechnologySelected}
                                         setChildParts={this.setChildParts}
                                         BOMViewerData={this.props.BOMViewerData}
                                     />

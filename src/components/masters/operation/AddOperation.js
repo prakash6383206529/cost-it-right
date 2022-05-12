@@ -607,6 +607,7 @@ class AddOperation extends Component {
         UnitOfMeasurementId: UOM.value,
         Rate: values.Rate,
         Technology: technologyArray,
+        Description: values.Description,
         Remark: remarks,
         Attachements: updatedFiles,
         LoggedInUserId: loggedInUserId(),
@@ -635,7 +636,8 @@ class AddOperation extends Component {
 
       }
 
-      if (Number(DataToChange.Rate) === Number(values.Rate) && DataToChange.Remark === values.Remark && UOM.value === oldUOM.value && uploadAttachements) {
+      if (Number(DataToChange.Rate) === Number(values.Rate) && DataToChange.Remark === values.Remark && UOM.value === oldUOM.value
+        && DataToChange.Description === values.Description && uploadAttachements) {
         this.cancel()
         return false
       }
@@ -759,7 +761,7 @@ class AddOperation extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, initialConfiguration } = this.props;
+    const { handleSubmit, initialConfiguration, isOperationAssociated } = this.props;
     const { isEditFlag, isOpenVendor, isOpenUOM, isDisableCode, isViewMode, setDisable, disablePopup } = this.state;
     const filterList = (inputValue) => {
       let tempArr = []
@@ -888,7 +890,7 @@ class AddOperation extends Component {
                           placeholder={"Enter"}
                           validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                           component={renderText}
-                          disabled={isEditFlag ? true : false}
+                          disabled={isViewMode ? true : false}
                           className=" "
                           customClassName=" withBorder"
                         />
@@ -991,7 +993,7 @@ class AddOperation extends Component {
                           required={true}
                           handleChangeDescription={this.handleUOM}
                           valueDescription={this.state.UOM}
-                          disabled={isViewMode}
+                          disabled={isViewMode || (isEditFlag && isOperationAssociated)}
                         />
                       </Col>
                       <Col md="3">
@@ -1003,7 +1005,7 @@ class AddOperation extends Component {
                           validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
                           component={renderText}
                           required={true}
-                          disabled={isViewMode}
+                          disabled={isViewMode || (isEditFlag && isOperationAssociated)}
                           onChange={this.handleRateChange}
                           className=" "
                           customClassName=" withBorder"

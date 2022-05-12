@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm, } from 'react-hook-form';
 import { saveAssemblyPartRowCostingCalculation, saveCostingSurfaceTab, saveDiscountOtherCostTab, setComponentDiscountOtherItemData } from '../../../actions/Costing';
@@ -10,12 +10,14 @@ import Toaster from '../../../../common/Toaster';
 import { MESSAGES } from '../../../../../config/message';
 import { costingInfoContext, NetPOPriceContext } from '../../CostingDetailStepTwo';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../../helper';
-import { createToprowObjAndSave } from '../../../CostingUtil';
+import { createToprowObjAndSave, findrmCctData } from '../../../CostingUtil';
 import { ViewCostingContext } from '../../CostingDetails';
 import { useState } from 'react';
 
 function SurfaceTreatment(props) {
   const { surfaceData, transportationData, item } = props;
+
+  const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
 
   const { handleSubmit } = useForm({
     mode: 'onChange',
@@ -28,8 +30,17 @@ function SurfaceTreatment(props) {
   const { ComponentItemDiscountData, CostingEffectiveDate, RMCCTabData, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, DiscountCostData, ToolTabData, getAssemBOPCharge } = useSelector(state => state.costing)
   const costData = useContext(costingInfoContext);
   const netPOPrice = useContext(NetPOPriceContext);
+
   const CostingViewMode = useContext(ViewCostingContext);
   const [transportationObject, setTransportationObject] = useState({})
+  const [surfaceTreatmentData, setSurfacTreatmenteData] = useState({})
+  const [surfaceTableData, setSurfacetableData] = useState(item.CostingPartDetails.SurfaceTreatmentDetails)
+  const [transportObj, setTrasportObj] = useState(item.CostingPartDetails.TransportationDetails)
+  console.log('transportObj: ', transportObj);
+
+  useEffect(() => {
+    setTrasportObj(item?.CostingPartDetails?.TransportationDetails)
+  }, [item?.CostingPartDetails?.TransportationDetails])
 
   /**
   * @method toggleDrawer
@@ -57,9 +68,27 @@ function SurfaceTreatment(props) {
   const setTransportationObj = (obj) => {
 
     setTransportationObject(obj)
+    setTrasportObj(obj.tempObj)
 
   }
 
+  const setSurfaceData = (obj) => {
+    setSurfacTreatmenteData(obj)
+    setSurfacetableData(obj.gridData)
+  }
+
+
+  /**
+  * @method surfaceCost
+  * @description GET SURFACE TREATMENT COST
+  */
+  const surfaceCost = (item) => {
+    let cost = 0;
+    cost = item && item.reduce((accummlator, el) => {
+      return accummlator + checkForNull(el.SurfaceTreatmentCost);
+    }, 0)
+    return cost;
+  }
 
 
   /**
@@ -67,44 +96,103 @@ function SurfaceTreatment(props) {
   * @description SAVE DATA ASSEMBLY
   */
   const saveData = () => {
-
     if (transportationObject.UOM === "Percentage" && transportationObject.Rate !== null && transportationObject.Rate > 100) {
       return false
     }
+    if (!IsLocked) {
 
-    if (props.IsAssemblyCalculation) {
+      if (props.IsAssemblyCalculation) {
+        props.setAssemblySurfaceCost(surfaceTreatmentData.gridData, surfaceTreatmentData.Params, JSON.stringify(surfaceTreatmentData.gridData) !== JSON.stringify(surfaceTreatmentData.OldGridData) ? true : false, props.item)
+        props.setAssemblyTransportationCost(transportObj, transportationObject.Params, item)
+        setTimeout(() => {
+          callApi()
+        }, (500));
+      } else {
+        props.setSurfaceCost(surfaceTreatmentData.gridData, surfaceTreatmentData.Params, JSON.stringify(surfaceTreatmentData.gridData) !== JSON.stringify(surfaceTreatmentData.OldGridData) ? true : false)
+        props.setTransportationCost(transportObj, transportationObject.Params)
+        setTimeout(() => {
+          callApi()
+        }, (500));
+      }
+    }
+
+    const callApi = () => {
+      let rmCcData = findrmCctData(item)
+      // THIS CONDITION IS USED FOR ASSEMBLY COSTING ,IN ASSEMBLY COSTING TOTAL COST IS SUM OF RMCCTAB DATA + SURFACE TREATEMNT TAB DATA OF THAT PART NUMBER (FOR PART/COMPONENT &ASSEMBLY KEY IS DIFFERENT)
+      let surfacTreatmentCost = (item.PartType === 'Component' || item.PartType === 'Part') ? checkForNull(item.CostingPartDetails.NetSurfaceTreatmentCost) : checkForNull(item.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostWithQuantitys)
+      let rmCCCost = rmCcData !== undefined && (rmCcData.PartType === 'Part') ? checkForNull(rmCcData?.CostingPartDetails?.TotalCalculatedRMBOPCCCost) : checkForNull(rmCcData?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity)
       const tabData = RMCCTabData[0]
+      console.log('tabData: ', tabData);
       const surfaceTabData = SurfaceTabData[0]
       const overHeadAndProfitTabData = OverheadProfitTabData[0]
       const discountAndOtherTabData = DiscountCostData[0]
 
-      let requestData = {
-        "CostingId": item.CostingId,
-        "PartId": item.PartId,
-        "PartNumber": item.PartNumber,
-        "BOMLevel": item.BOMLevel,
-        "CostingNumber": costData.CostingNumber,
-        "NetSurfaceTreatmentCost": item.CostingPartDetails.NetSurfaceTreatmentCost,
-        "EffectiveDate": CostingEffectiveDate,
-        "LoggedInUserId": loggedInUserId(),
-        "TotalCost": netPOPrice,
-        "CostingPartDetails": {
-          "CostingDetailId": "00000000-0000-0000-0000-000000000000",
-          "IsAssemblyPart": true,
-          //"Type": "Assembly",
-          "NetSurfaceTreatmentCost": item.CostingPartDetails.NetSurfaceTreatmentCost,
-          "SurfaceTreatmentCost": item.CostingPartDetails.SurfaceTreatmentCost,
-          "TransportationCost": item.CostingPartDetails.TransportationCost,
-          "TotalSurfaceTreatmentCostPerAssembly": item.CostingPartDetails.NetSurfaceTreatmentCost,
-          "TotalTransportationCostPerAssembly": item.CostingPartDetails.TransportationCost,
-          "SurfaceTreatmentDetails": item.CostingPartDetails.SurfaceTreatmentDetails,
-          "TransportationDetails": item.CostingPartDetails.TransportationDetails,
-        },
-      }
-      if (!CostingViewMode) {
-        let assemblyRequestedData = createToprowObjAndSave(surfaceTabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 2, CostingEffectiveDate)
-        dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
+      const totalCost = ((checkForNull(tabData.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity) + checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
+        checkForNull(PackageAndFreightTabData?.CostingPartDetails?.NetFreightPackagingCost) + checkForNull(ToolTabData?.CostingPartDetails?.TotalToolCost)
+        + checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.NetOverheadAndProfitCost)) - checkForNull(DiscountCostData?.HundiOrDiscountValue))
+        + checkForNull(DiscountCostData?.AnyOtherCost)
+      console.log(totalCost, "totalCosttotalCost");
+      if (props.IsAssemblyCalculation) {
 
+        let requestData = {
+          "CostingId": item.CostingId,
+          "PartId": item.PartId,
+          "PartNumber": item.PartNumber,
+          "BOMLevel": item.BOMLevel,
+          "CostingNumber": item.CostingNumber,
+          "NetSurfaceTreatmentCost": item.CostingPartDetails.NetSurfaceTreatmentCost,
+          "EffectiveDate": CostingEffectiveDate,
+          "LoggedInUserId": loggedInUserId(),
+          // THIS CONDITION IS USED FOR ASSEMBLY COSTING ,IN ASSEMBLY COSTING TOTAL COST IS SUM OF RMCCTAB DATA + SURFACE TREATEMNT TAB DATA OF THAT PART NUMBER (FOR PART/COMPONENT &ASSEMBLY KEY IS DIFFERENT)
+          "TotalCost": costData.IsAssemblyPart ? rmCcData && Object.keys(rmCcData).length > 0 ? checkForNull(surfacTreatmentCost) + checkForNull(rmCCCost) : checkForNull(surfacTreatmentCost) : checkForNull(totalCost),
+          "CostingPartDetails": {
+            "CostingDetailId": "00000000-0000-0000-0000-000000000000",
+            "IsAssemblyPart": true,
+            //"Type": "Assembly",
+            "NetSurfaceTreatmentCost": item.CostingPartDetails.NetSurfaceTreatmentCost,
+            "SurfaceTreatmentCost": item.CostingPartDetails.SurfaceTreatmentCost,
+            "TransportationCost": item.CostingPartDetails.TransportationCost,
+            "TotalSurfaceTreatmentCostPerAssembly": item.CostingPartDetails.NetSurfaceTreatmentCost,
+            "TotalTransportationCostPerAssembly": item.CostingPartDetails.TransportationCost,
+            "SurfaceTreatmentDetails": item.CostingPartDetails.SurfaceTreatmentDetails,
+            "TransportationDetails": item.CostingPartDetails.TransportationDetails,
+          },
+        }
+        if (!CostingViewMode) {
+          let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, totalCost, getAssemBOPCharge, 2, CostingEffectiveDate)
+          dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
+
+          dispatch(saveCostingSurfaceTab(requestData, res => {
+            if (res.data.Result) {
+              Toaster.success(MESSAGES.SURFACE_TREATMENT_COSTING_SAVE_SUCCESS);
+              InjectDiscountAPICall()
+            }
+            props.closeDrawer('')
+          }))
+        }
+
+      } else {
+
+        let requestData = {
+          "CostingId": item.CostingId,
+          "PartId": item.PartId,
+          "PartNumber": item.PartNumber,
+          "BOMLevel": item.BOMLevel,
+          "CostingNumber": item.CostingNumber,
+          "NetSurfaceTreatmentCost": item.CostingPartDetails.NetSurfaceTreatmentCost,
+          "EffectiveDate": CostingEffectiveDate,
+          "LoggedInUserId": loggedInUserId(),
+          // THIS CONDITION IS USED FOR ASSEMBLY COSTING ,IN ASSEMBLY COSTING TOTAL COST IS SUM OF RMCCTAB DATA + SURFACE TREATEMNT TAB DATA OF THAT PART NUMBER (FOR PART/COMPONENT &ASSEMBLY KEY IS DIFFERENT)
+          "TotalCost": costData.IsAssemblyPart ? rmCcData && Object.keys(rmCcData).length > 0 ? checkForNull(surfacTreatmentCost) + checkForNull(rmCCCost) : checkForNull(surfacTreatmentCost) : checkForNull(totalCost),
+          "CostingPartDetails": {
+            "CostingDetailId": "00000000-0000-0000-0000-000000000000",
+            "NetSurfaceTreatmentCost": item.CostingPartDetails.NetSurfaceTreatmentCost,
+            "SurfaceTreatmentCost": item.CostingPartDetails.SurfaceTreatmentCost,
+            "TransportationCost": item.CostingPartDetails.TransportationCost,
+            "SurfaceTreatmentDetails": item.CostingPartDetails.SurfaceTreatmentDetails,
+            "TransportationDetails": item.CostingPartDetails.TransportationDetails,
+          },
+        }
         dispatch(saveCostingSurfaceTab(requestData, res => {
           if (res.data.Result) {
             Toaster.success(MESSAGES.SURFACE_TREATMENT_COSTING_SAVE_SUCCESS);
@@ -113,35 +201,6 @@ function SurfaceTreatment(props) {
           props.closeDrawer('')
         }))
       }
-
-    } else {
-
-      let requestData = {
-        "CostingId": item.CostingId,
-        "PartId": item.PartId,
-        "PartNumber": item.PartNumber,
-        "BOMLevel": item.BOMLevel,
-        "CostingNumber": costData.CostingNumber,
-        "NetSurfaceTreatmentCost": item.CostingPartDetails.NetSurfaceTreatmentCost,
-        "EffectiveDate": CostingEffectiveDate,
-        "LoggedInUserId": loggedInUserId(),
-        "TotalCost": netPOPrice,
-        "CostingPartDetails": {
-          "CostingDetailId": "00000000-0000-0000-0000-000000000000",
-          "NetSurfaceTreatmentCost": item.CostingPartDetails.NetSurfaceTreatmentCost,
-          "SurfaceTreatmentCost": item.CostingPartDetails.SurfaceTreatmentCost,
-          "TransportationCost": item.CostingPartDetails.TransportationCost,
-          "SurfaceTreatmentDetails": item.CostingPartDetails.SurfaceTreatmentDetails,
-          "TransportationDetails": item.CostingPartDetails.TransportationDetails,
-        },
-      }
-      dispatch(saveCostingSurfaceTab(requestData, res => {
-        if (res.data.Result) {
-          Toaster.success(MESSAGES.SURFACE_TREATMENT_COSTING_SAVE_SUCCESS);
-          InjectDiscountAPICall()
-        }
-        props.closeDrawer('')
-      }))
     }
   }
 
@@ -185,20 +244,20 @@ function SurfaceTreatment(props) {
                     <div className="cr-process-costwrap">
                       <Row className="cr-innertool-cost">
                         {
-                          props.IsAssemblyCalculation ?
+                          (item.PartType !== 'Part' && item.PartType !== 'Component') ?
                             <>
-                              {/* <Col md="4" className="cr-costlabel">{`Operation Cost: ${item.CostingPartDetails && item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly, initialConfiguration.NoOfDecimalForPrice) : 0}`}</Col>
-                              <Col md="4" className="cr-costlabel">{`Transportation Cost: ${item.CostingPartDetails && item.CostingPartDetails.TotalTransportationCostPerAssembly !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalTransportationCostPerAssembly, initialConfiguration.NoOfDecimalForPrice) : 0}`}</Col>
-                              <Col md="4" className="cr-costlabel">{`Net Operation Cost: ${(item.CostingPartDetails && item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly !== null ? item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly : 0) + (item.CostingPartDetails && item.CostingPartDetails.TotalTransportationCostPerAssembly !== null ? item.CostingPartDetails.TotalTransportationCostPerAssembly : 0)}`}</Col> */}
-                              <Col md="4" className="cr-costlabel">{`Operation Cost: ${item.CostingPartDetails && item.CostingPartDetails.SurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.SurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : 0}`}</Col>
+                              <Col md="4" className="cr-costlabel">{`Operation Cost: ${checkForDecimalAndNull((CostingViewMode || IsLocked) ? item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly : surfaceCost(surfaceTreatmentData?.gridData), initialConfiguration.NoOfDecimalForPrice)}`}</Col>
+                              <Col md="4" className="cr-costlabel">{`Transportation Cost: ${checkForDecimalAndNull((CostingViewMode || IsLocked) ? item.CostingPartDetails.TotalTransportationCostPerAssembly : checkForNull(transportObj?.TransportationCost), initialConfiguration.NoOfDecimalForPrice)}`}</Col>
+                              <Col md="4" className="cr-costlabel">{`Net Operation Cost:  ${(CostingViewMode || IsLocked) ? checkForDecimalAndNull((item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly) + (item.CostingPartDetails && item.CostingPartDetails.TotalTransportationCostPerAssembly !== null ? item.CostingPartDetails.TotalTransportationCostPerAssembly : 0), initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(checkForNull(surfaceCost(surfaceTreatmentData.gridData)) + checkForNull(transportObj?.TransportationCost), initialConfiguration.NoOfDecimalForPrice)}`}</Col>
+                              {/* <Col md="4" className="cr-costlabel">{`Operation Cost: ${item.CostingPartDetails && item.CostingPartDetails.SurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.SurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : 0}`}</Col>
                               <Col md="4" className="cr-costlabel">{`Extra Cost: ${item.CostingPartDetails && item.CostingPartDetails.TransportationCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TransportationCost, initialConfiguration.NoOfDecimalForPrice) : 0}`}</Col>
-                              <Col md="4" className="cr-costlabel">{`Net Operation Cost: ${item.CostingPartDetails && item.CostingPartDetails.NetSurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.NetSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : 0}`}</Col>
+                              <Col md="4" className="cr-costlabel">{`Net Operation Cost: ${item.CostingPartDetails && item.CostingPartDetails.NetSurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.NetSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : 0}`}</Col> */}
                             </>
                             :
                             <>
-                              <Col md="4" className="cr-costlabel">{`Operation Cost: ${item.CostingPartDetails && item.CostingPartDetails.SurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.SurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : 0}`}</Col>
-                              <Col md="4" className="cr-costlabel">{`Extra Cost: ${item.CostingPartDetails && item.CostingPartDetails.TransportationCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TransportationCost, initialConfiguration.NoOfDecimalForPrice) : 0}`}</Col>
-                              <Col md="4" className="cr-costlabel">{`Net Operation Cost: ${item.CostingPartDetails && item.CostingPartDetails.NetSurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.NetSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : 0}`}</Col>
+                              <Col md="4" className="cr-costlabel">{`Operation Cost: ${checkForDecimalAndNull((CostingViewMode || IsLocked) ? checkForNull(item?.CostingPartDetails?.SurfaceTreatmentCost) : surfaceCost(surfaceTreatmentData?.gridData), initialConfiguration.NoOfDecimalForPrice)}`}</Col>
+                              <Col md="4" className="cr-costlabel">{`Extra Cost: ${checkForDecimalAndNull((CostingViewMode || IsLocked) ? checkForNull(item.CostingPartDetails.TransportationCost) : checkForNull(transportObj?.TransportationCost), initialConfiguration.NoOfDecimalForPrice)}`}</Col>
+                              <Col md="4" className="cr-costlabel">{`Net Operation Cost: ${checkForDecimalAndNull(checkForNull(surfaceCost(surfaceTreatmentData?.gridData)) + checkForNull(transportObj?.TransportationCost), initialConfiguration.NoOfDecimalForPrice)}`} </Col>
                             </>
                         }
                       </Row>
@@ -213,6 +272,8 @@ function SurfaceTreatment(props) {
                             setSurfaceCost={props.setSurfaceCost}
                             IsAssemblyCalculation={props.IsAssemblyCalculation}
                             setAssemblySurfaceCost={props.setAssemblySurfaceCost}
+                            setAssemblyTransportationCost={props.setAssemblyTransportationCost}
+                            setSurfaceData={setSurfaceData}
                           />
                           {/* <hr /> */}
 
@@ -224,6 +285,7 @@ function SurfaceTreatment(props) {
                             setTransportationCost={props.setTransportationCost}
                             IsAssemblyCalculation={props.IsAssemblyCalculation}
                             setAssemblyTransportationCost={props.setAssemblyTransportationCost}
+                            surfaceCost={surfaceCost(surfaceTableData)}
                           />
                         </div>
                       </div >
@@ -244,7 +306,7 @@ function SurfaceTreatment(props) {
                   <button
                     type={'button'}
                     className="submit-button mr15 save-btn"
-                    disabled={CostingViewMode ? true : false}
+                    disabled={(CostingViewMode || IsLocked) ? true : false}
                     onClick={saveData} >
                     <div className={'save-icon'}></div>
                     {'SAVE'}

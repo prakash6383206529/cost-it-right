@@ -63,10 +63,10 @@ function TabToolCost(props) {
       let ProcessCostArray = []
       let OperationCostArray = []
 
-      ProcessCostArray = RMCCTabData && RMCCTabData[0]?.CostingPartDetails?.CostingConversionCost?.CostingProcessCostResponse.map(el => {
+      ProcessCostArray = RMCCTabData && RMCCTabData[0]?.CostingPartDetails?.CostingConversionCost?.CostingProcessCostResponse && RMCCTabData[0]?.CostingPartDetails?.CostingConversionCost?.CostingProcessCostResponse.map(el => {
         return { label: el.ProcessName, value: el.ProcessId };
       })
-      OperationCostArray = RMCCTabData && RMCCTabData[0]?.CostingPartDetails?.CostingConversionCost?.CostingOperationCostResponse.map(el => {
+      OperationCostArray = RMCCTabData && RMCCTabData[0]?.CostingPartDetails?.CostingConversionCost?.CostingOperationCostResponse && RMCCTabData[0]?.CostingPartDetails?.CostingConversionCost?.CostingOperationCostResponse.map(el => {
         return { label: el.OperationName, value: el.OperationId };
       });
 
@@ -248,7 +248,7 @@ function TabToolCost(props) {
   * @description SAVE COSTING
   */
   const saveCosting = (formData) => {
-    if (checkIsToolTabChange) {
+    if (checkIsToolTabChange || gridData) {
 
       const tabData = RMCCTabData[0]
       const surfaceTabData = SurfaceTabData[0]
@@ -340,9 +340,17 @@ function TabToolCost(props) {
     )
   }
 
+  const decimalFormatter = (props) => {
+
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    return checkForDecimalAndNull(cellValue, initialConfiguration.NoOfDecimalForPrice)
+
+  }
+
   const frameworkComponents = {
     customNoRowsOverlay: NoContentFound,
     totalValueRenderer: buttonFormatter,
+    decimalFormatter: decimalFormatter,
   };
   const onPageSizeChanged = (newPageSize) => {
     var value = document.getElementById('page-size').value;
@@ -527,11 +535,11 @@ function TabToolCost(props) {
                               <AgGridColumn field="ProcessOrOperation" headerName="Process/Operation"></AgGridColumn>
                               <AgGridColumn field="ToolCategory" headerName="Tool Category" ></AgGridColumn>
                               <AgGridColumn field="ToolName" headerName="Tool Name"></AgGridColumn>
-                              <AgGridColumn field="ToolCost" headerName="ToolCost"></AgGridColumn>
+                              <AgGridColumn field="ToolCost" headerName="ToolCost" cellRenderer={'decimalFormatter'}></AgGridColumn>
                               <AgGridColumn field="Quantity" headerName="Quantity"></AgGridColumn>
                               <AgGridColumn field="Life" headerName="Life"></AgGridColumn>
                               {/* NET TOOL COST */}
-                              <AgGridColumn field="NetToolCost" headerName="Net Tool Cost"></AgGridColumn>
+                              <AgGridColumn field="NetToolCost" headerName="Net Tool Cost" cellRenderer={'decimalFormatter'}></AgGridColumn>
                               <AgGridColumn width={160} field="Life" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                             </AgGridReact>
                             <div className="paging-container d-inline-block float-right">

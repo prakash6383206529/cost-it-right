@@ -52,6 +52,7 @@ function OperationCostExcludedOverhead(props) {
       }
     }
 
+
     selectedIds(gridData)
   }, [gridData]);
 
@@ -128,15 +129,19 @@ function OperationCostExcludedOverhead(props) {
   * @description SELECTED IDS
   */
   const selectedIds = (tempArr) => {
-    tempArr && tempArr.map(el => {
-      if (Ids.includes(el.OtherOperationId) === false) {
-        let selectedIds = Ids;
-        selectedIds.push(el.OtherOperationId)
-        setIds(selectedIds)
-      }
-      return null;
-    })
-    dispatch(setSelectedIds(Ids))
+    let selectedId = Ids;
+    if (tempArr && tempArr.length > 0) {
+      tempArr && tempArr.map(el => {
+        if (Ids.includes(el.OtherOperationId) === false) {
+          selectedId.push(el.OtherOperationId)
+          setIds(selectedId)
+          dispatch(setSelectedIds(selectedId))
+        }
+        return null;
+      })
+    } else {
+      dispatch(setSelectedIds([]))
+    }
   }
 
   const deleteItem = (index, OperationId) => {
@@ -284,7 +289,7 @@ function OperationCostExcludedOverhead(props) {
                       initialConfiguration.IsOperationLabourRateConfigure &&
                       <th style={{ width: "220px" }}>{`Labour Quantity`}</th>}
                     <th style={{ width: "220px" }}>{`Net Cost`}</th>
-                    <th style={{ width: "145px" }}>{`Action`}</th>
+                    <th style={{ width: "145px", textAlign: 'right' }}>{`Action`}</th>
                   </tr>
                 </thead>
                 <tbody >
@@ -366,8 +371,10 @@ function OperationCostExcludedOverhead(props) {
                               </td>}
                             <td>{netCost(item)}</td>
                             <td>
-                              <button className="SaveIcon mb-0 mr-2 align-middle" type={'button'} onClick={() => SaveItem(index)} />
-                              <button className="CancelIcon mb-0 align-middle" type={'button'} onClick={() => CancelItem(index)} />
+                              <div className='action-btn-wrapper'>
+                                <button className="SaveIcon mb-0 align-middle" type={'button'} onClick={() => SaveItem(index)} />
+                                <button className="CancelIcon mb-0 align-middle" type={'button'} onClick={() => CancelItem(index)} />
+                              </div>
                             </td>
                           </tr>
                           :
@@ -385,39 +392,41 @@ function OperationCostExcludedOverhead(props) {
                               <td>{item.IsLabourRateExist ? item.LabourQuantity : '-'}</td>}
                             <td>{netCost(item)}</td>
                             <td>
-                              {(!CostingViewMode && !IsLocked) && <button className="Edit  mr-2 mb-0 align-middle" type={'button'} onClick={() => editItem(index)} />}
-                              {(!CostingViewMode && !IsLocked) && <button className="Delete mb-0 align-middle" type={'button'} onClick={() => deleteItem(index, item.OtherOperationId)} />}
-                              <Popup trigger={<button id={`popUppTriggerss${index}`} className="Comment-box ml-2 align-middle" type={'button'} />}
-                                position="top center">
-                                <TextAreaHookForm
-                                  label="Remark:"
-                                  name={`${OperationGridFields}.${index}.remarkPopUp`}
-                                  Controller={Controller}
-                                  control={control}
-                                  register={register}
-                                  mandatory={false}
-                                  rules={{
-                                    maxLength: {
-                                      value: 75,
-                                      message: "Remark should be less than 75 word"
-                                    },
-                                  }}
-                                  handleChange={(e) => { }}
-                                  defaultValue={item.Remark ?? item.Remark}
-                                  className=""
-                                  customClassName={"withBorder"}
-                                  errors={errors && errors.OperationGridFields && errors.OperationGridFields[index] !== undefined ? errors.OperationGridFields[index].remarkPopUp : ''}
-                                  //errors={errors && errors.remarkPopUp && errors.remarkPopUp[index] !== undefined ? errors.remarkPopUp[index] : ''}                        
-                                  disabled={(CostingViewMode || IsLocked) ? true : false}
-                                  hidden={false}
-                                />
-                                <Row>
-                                  <Col md="12" className='remark-btn-container'>
-                                    <button className='submit-button mr-2' disabled={(CostingViewMode || IsLocked) ? true : false} onClick={() => onRemarkPopUpClick(index)} > <div className='save-icon'></div> </button>
-                                    <button className='reset' onClick={() => onRemarkPopUpClose(index)} > <div className='cancel-icon'></div></button>
-                                  </Col>
-                                </Row>
-                              </Popup>
+                              <div className='action-btn-wrapper'>
+                                {(!CostingViewMode && !IsLocked) && <button className="Edit mb-0 align-middle" type={'button'} onClick={() => editItem(index)} />}
+                                {(!CostingViewMode && !IsLocked) && <button className="Delete mb-0 align-middle" type={'button'} onClick={() => deleteItem(index, item.OtherOperationId)} />}
+                                <Popup trigger={<button id={`popUppTriggerss${index}`} className="Comment-box align-middle" type={'button'} />}
+                                  position="top center">
+                                  <TextAreaHookForm
+                                    label="Remark:"
+                                    name={`${OperationGridFields}.${index}.remarkPopUp`}
+                                    Controller={Controller}
+                                    control={control}
+                                    register={register}
+                                    mandatory={false}
+                                    rules={{
+                                      maxLength: {
+                                        value: 75,
+                                        message: "Remark should be less than 75 word"
+                                      },
+                                    }}
+                                    handleChange={(e) => { }}
+                                    defaultValue={item.Remark ?? item.Remark}
+                                    className=""
+                                    customClassName={"withBorder"}
+                                    errors={errors && errors.OperationGridFields && errors.OperationGridFields[index] !== undefined ? errors.OperationGridFields[index].remarkPopUp : ''}
+                                    //errors={errors && errors.remarkPopUp && errors.remarkPopUp[index] !== undefined ? errors.remarkPopUp[index] : ''}                        
+                                    disabled={(CostingViewMode || IsLocked) ? true : false}
+                                    hidden={false}
+                                  />
+                                  <Row>
+                                    <Col md="12" className='remark-btn-container'>
+                                      <button className='submit-button mr-2' disabled={(CostingViewMode || IsLocked) ? true : false} onClick={() => onRemarkPopUpClick(index)} > <div className='save-icon'></div> </button>
+                                      <button className='reset' onClick={() => onRemarkPopUpClose(index)} > <div className='cancel-icon'></div></button>
+                                    </Col>
+                                  </Row>
+                                </Popup>
+                              </div>
                             </td>
                           </tr>
                       )

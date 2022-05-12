@@ -20,8 +20,6 @@ import {
     config,
     GET_OPERATION_COMBINED_DATA_LIST,
     GET_OPERATION_APPROVAL_LIST,
-    GET_OPERATION_INDIVIDUAL_DATA_LIST,
-    GET_OPERATION_SURFACE_TREATMENT_DATA_LIST
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';

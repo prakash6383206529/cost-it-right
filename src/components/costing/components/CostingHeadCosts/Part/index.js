@@ -219,10 +219,10 @@ function PartCompoment(props) {
   return (
     <>
 
-      <tr className="accordian-row" onClick={() => toggle(item.BOMLevel, item.PartNumber)} id={`${item && item.PartNumber}`}>
+      <tr className="accordian-row" id={`${item && item.PartNumber}`}>
 
-        <td>
-          <span style={{ position: 'relative' }} className={`cr-prt-nm1 cr-prt-link1 ${item && item.BOMLevel}`}>
+        <td className='part-overflow' onClick={() => toggle(item.BOMLevel, item.PartNumber)}>
+          <span className={`part-name ${item && item.BOMLevel}`} title={item && item.PartNumber}>
             {item && item.PartNumber}<div className={`${item.IsOpen ? 'Open' : 'Close'}`}></div>
           </span>
         </td>
@@ -262,7 +262,6 @@ function PartCompoment(props) {
                 data={ccData}
                 rmFinishWeight={rmData && rmData.length > 0 && rmData[0].FinishWeight !== undefined ? rmData[0].FinishWeight : 0}
                 setConversionCost={props.setConversionCost}
-                setToolCost={props.setToolCost}
                 item={item}
                 isAssemblyTechnology={false}
               />

@@ -128,11 +128,7 @@ class AddBOPImport extends Component {
       if (res.data.Result) {
         this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
       }
-
     })
-
-
-
   }
 
   componentDidUpdate(prevProps) {
@@ -174,7 +170,6 @@ class AddBOPImport extends Component {
     }
   }
 
-
   closeApprovalDrawer = (e = '', type) => {
     this.setState({ approveDrawer: false, setDisable: false })
     if (type === 'submit') {
@@ -182,7 +177,6 @@ class AddBOPImport extends Component {
       this.cancel()
     }
   }
-
 
   /**
   * @method getDetails
@@ -227,16 +221,13 @@ class AddBOPImport extends Component {
 
             if (getConfigurationKey().IsDestinationPlantConfigure) {
               let obj = plantSelectList && plantSelectList.find(item => item.Value === Data.DestinationPlantId)
-              plantObj = { label: obj.Text, value: obj.Value }
+              plantObj = { label: obj?.Text, value: obj?.Value }
             } else {
               plantObj = Data && Data.Plant.length > 0 ? { label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId } : []
             }
-
-
             this.setState({
               isEditFlag: true,
               IsFinancialDataChanged: false,
-              // isLoader: false,
               IsVendor: Data.IsVendor,
               BOPCategory: categoryObj && categoryObj !== undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
               selectedPlants: plantObj,
@@ -248,6 +239,7 @@ class AddBOPImport extends Component {
               oldDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
               files: Data.Attachements,
               UOM: uomObject && uomObject !== undefined ? { label: uomObject.Display, value: uomObject.Value } : [],
+              isLoader: false,
             }, () => this.setState({ isLoader: false }))
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
             let files = Data.Attachements && Data.Attachements.map((item) => {
@@ -488,10 +480,8 @@ class AddBOPImport extends Component {
 
   handleCalculation = () => {
     const { fieldsObj, initialConfiguration } = this.props
-    // THIS CALCULATION IS FOR BASE
-    const NoOfPieces = fieldsObj && fieldsObj.NumberOfPieces !== undefined ? fieldsObj.NumberOfPieces : 1;
     const BasicRate = fieldsObj && fieldsObj.BasicRate !== undefined ? fieldsObj.BasicRate : 0;
-    const NetLandedCost = checkForNull((BasicRate / NoOfPieces) * this.state.currencyValue)
+    const NetLandedCost = checkForNull((BasicRate) * this.state.currencyValue)
 
 
     if (this.state.isEditFlag && Number(checkForDecimalAndNull(NetLandedCost, initialConfiguration.NoOfDecimalForPrice)) === Number(checkForDecimalAndNull(this.state.DataToChange?.NetLandedCostConversion, initialConfiguration.NoOfDecimalForPrice))) {
@@ -501,8 +491,8 @@ class AddBOPImport extends Component {
 
     }
 
-    this.setState({ netLandedcost: (BasicRate / NoOfPieces), netLandedConverionCost: NetLandedCost })
-    this.props.change('NetLandedCost', checkForDecimalAndNull((BasicRate / NoOfPieces), initialConfiguration.NoOfDecimalForPrice))
+    this.setState({ netLandedcost: (BasicRate), netLandedConverionCost: NetLandedCost })
+    this.props.change('NetLandedCost', checkForDecimalAndNull((BasicRate), initialConfiguration.NoOfDecimalForPrice))
     this.props.change('NetLandedCostCurrency', checkForDecimalAndNull(NetLandedCost, initialConfiguration.NoOfDecimalForPrice))
 
     // THIS CALCULATION IS FOR MINDA
@@ -706,14 +696,16 @@ class AddBOPImport extends Component {
     if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(BOP_MASTER_ID) !== true)) {
 
       if (DataToChange.IsVendor) {
-        if (DropdownChange && String(DataToChange.Source) === String(values.Source) && Number(DataToChange.NumberOfPieces) === Number(values.NumberOfPieces) &&
-          Number(DataToChange.BasicRate) === Number(values.BasicRate) && DataToChange.Remark === values.Remark && uploadAttachements) {
+        if (DropdownChange && String(DataToChange.Source) === String(values.Source) &&
+          Number(DataToChange.BasicRate) === Number(values.BasicRate) && DataToChange.Remark === values.Remark && uploadAttachements &&
+          ((DataToChange.Source ? DataToChange.Source : '-') === (values.Source ? values.Source : '-')) &&
+          ((DataToChange.SourceLocation ? DataToChange.SourceLocation : '-') === (sourceLocation.value ? sourceLocation.value : '-'))) {
           this.cancel()
           return false;
         }
       }
       if (Boolean(DataToChange.IsVendor) === false) {
-        if (Number(DataToChange.NumberOfPieces) === Number(values.NumberOfPieces) && Number(DataToChange.BasicRate) === Number(values.BasicRate) && DataToChange.Remark === values.Remark && uploadAttachements) {
+        if (Number(DataToChange.BasicRate) === Number(values.BasicRate) && DataToChange.Remark === values.Remark && uploadAttachements) {
           this.cancel()
           return false;
         }
@@ -737,7 +729,7 @@ class AddBOPImport extends Component {
         UnitOfMeasurementId: UOM.value,
         NetLandedCostConversion: netLandedConverionCost,
         IsForcefulUpdated: true,
-        NumberOfPieces: values.NumberOfPieces,
+        NumberOfPieces: 1,
         IsFinancialDataChanged: isDateChange ? true : false
       }
 
@@ -789,7 +781,7 @@ class AddBOPImport extends Component {
         SourceLocation: sourceLocation.value,
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
         BasicRate: values.BasicRate,
-        NumberOfPieces: values.NumberOfPieces,
+        NumberOfPieces: 1,
         NetLandedCost: this.state.netLandedcost,
         Remark: values.Remark,
         IsActive: true,
@@ -824,14 +816,16 @@ class AddBOPImport extends Component {
 
 
         if (DataToChange.IsVendor) {
-          if (DropdownChange && String(DataToChange.Source) === String(values.Source) && Number(DataToChange.NumberOfPieces) === Number(values.NumberOfPieces) &&
-            Number(DataToChange.BasicRate) === Number(values.BasicRate) && DataToChange.Remark === values.Remark && uploadAttachements) {
+          if (DropdownChange &&
+            Number(DataToChange.BasicRate) === Number(values.BasicRate) && DataToChange.Remark === values.Remark && uploadAttachements &&
+            ((DataToChange.Source ? DataToChange.Source : '-') === (values.Source ? values.Source : '-')) &&
+            ((DataToChange.SourceLocation ? DataToChange.SourceLocation : '-') === (sourceLocation.value ? sourceLocation.value : '-'))) {
             this.cancel()
             return false;
           }
         }
         if (Boolean(DataToChange.IsVendor) === false) {
-          if (Number(DataToChange.NumberOfPieces) === Number(values.NumberOfPieces) && Number(DataToChange.BasicRate) === Number(values.BasicRate) && DataToChange.Remark === values.Remark && uploadAttachements) {
+          if (Number(DataToChange.BasicRate) === Number(values.BasicRate) && DataToChange.Remark === values.Remark && uploadAttachements) {
             this.cancel()
             return false;
           }
@@ -894,7 +888,7 @@ class AddBOPImport extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit } = this.props;
+    const { handleSubmit, isBOPAssociated } = this.props;
     const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, isViewMode, setDisable, disablePopup } = this.state;
     const filterList = (inputValue) => {
       let tempArr = []
@@ -1212,25 +1206,11 @@ class AddBOPImport extends Component {
                                 }}
                                 component={renderDatePicker}
                                 className="form-control"
-                                disabled={isViewMode || !this.state.IsFinancialDataChanged}
+                                disabled={isViewMode || !this.state.IsFinancialDataChanged || (isEditFlag && isBOPAssociated)}
                               //minDate={moment()}
                               />
                             </div>
 
-                          </Col>
-                          <Col md="3">
-                            <Field
-                              label={`Minimum Order Quantity`}
-                              name={"NumberOfPieces"}
-                              type="text"
-                              placeholder={"Enter"}
-                              validate={[postiveNumber, maxLength10]}
-                              component={renderText}
-                              required={false}
-                              className=""
-                              disabled={isViewMode}
-                              customClassName=" withBorder"
-                            />
                           </Col>
                           <Col md="3">
                             <Field
@@ -1241,7 +1221,7 @@ class AddBOPImport extends Component {
                               validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
                               component={renderText}
                               required={true}
-                              disabled={isViewMode}
+                              disabled={isViewMode || (isEditFlag && isBOPAssociated)}
                               className=" "
                               customClassName=" withBorder"
                             />
@@ -1497,7 +1477,6 @@ function mapStateToProps(state) {
       Specification: bopData.Specification,
       Source: bopData.Source,
       BasicRate: bopData.BasicRate,
-      NumberOfPieces: bopData.NumberOfPieces,
       NetLandedCost: bopData.NetLandedCost,
       Remark: bopData.Remark,
     }

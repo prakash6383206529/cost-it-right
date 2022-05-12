@@ -8,54 +8,88 @@ import { checkForDecimalAndNull } from '../../../../helper';
 import { Container, Row, Col, Table } from 'reactstrap'
 import NoContentFound from '../../../common/NoContentFound';
 import { EMPTY_DATA } from '../../../../config/constants';
-import { EMPTY_GUID } from '../../../../config/constants';
+import { SHEETMETAL, RUBBER, FORGING, DIE_CASTING, PLASTIC, CORRUGATEDBOX, Ferrous_Casting } from '../../../../config/masterData'
 import 'reactjs-popup/dist/index.css'
+import { getRawMaterialCalculationForCorrugatedBox, getRawMaterialCalculationForDieCasting, getRawMaterialCalculationForFerrous, getRawMaterialCalculationForForging, getRawMaterialCalculationForPlastic, getRawMaterialCalculationForRubber, getRawMaterialCalculationForSheetMetal, } from '../../actions/CostWorking'
 
 function ViewRM(props) {
 
-  const { viewRMData, rmMBDetail, isAssemblyCosting, isPDFShow } = props
-
-
+  const { viewRMData, rmMBDetail, isAssemblyCosting, isPDFShow, simulationMode, isSimulationDone } = props
   /*
   * @method toggleDrawer
   * @description closing drawer
   */
-
   const [viewRM, setViewRM] = useState(viewRMData)
+  const [isSimulation, setIsSimulation] = useState(isSimulationDone === false ? isSimulationDone : (simulationMode ? simulationMode : false))
   const [index, setIndex] = useState('')
   const [weightCalculatorDrawer, setWeightCalculatorDrawer] = useState(false)
   const [calciData, setCalciData] = useState({})
 
   useEffect(() => {
-
     setViewRM(viewRMData)
-
-
   }, [])
 
   const dispatch = useDispatch()
-
   const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
+  const setCalculatorData = (res, index) => {
+    if (res && res.data && res.data.Data) {
+      const data = res.data.Data
+      setCalciData({ ...viewRM[index], WeightCalculatorRequest: data })
+      setWeightCalculatorDrawer(true)
+    }
+  }
+
   const getWeightData = (index) => {
     setIndex(index)
-    if (viewRM[index].WeightCalculationId === '00000000-0000-0000-0000-000000000000') {
+    if (viewRM[index].RawMaterialCalculatorId === 0 || viewRM[index].RawMaterialCalculatorId === null) {
       Toaster.warning('Data is not avaliabe for calculator')
       return false
     }
+
     const tempData = viewCostingData[props.index]
+    switch ((Number(tempData.EtechnologyType))) {
 
-    dispatch(getRawMaterialCalculationByTechnology(tempData.costingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].WeightCalculationId, tempData.technologyId, res => {
-      if (res && res.data && res.data.Data) {
-        const data = res.data.Data
-        setCalciData({ ...viewRM[index], WeightCalculatorRequest: data })
-        setWeightCalculatorDrawer(true)
-      }
-    }))
-
+      case SHEETMETAL:
+        dispatch(getRawMaterialCalculationForSheetMetal(tempData.netRMCostView[index].CostingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
+          setCalculatorData(res, index)
+        }))
+        break;
+      case FORGING:
+        dispatch(getRawMaterialCalculationForForging(tempData.netRMCostView[index].CostingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
+          setCalculatorData(res, index)
+        }))
+        break;
+      case Ferrous_Casting:
+        dispatch(getRawMaterialCalculationForFerrous(tempData.netRMCostView[index].CostingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
+          setCalculatorData(res, index)
+        }))
+        break;
+      case PLASTIC:
+        dispatch(getRawMaterialCalculationForPlastic(tempData.netRMCostView[index].CostingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
+          setCalculatorData(res, index)
+        }))
+        break;
+      case CORRUGATEDBOX:
+        dispatch(getRawMaterialCalculationForCorrugatedBox(tempData.netRMCostView[index].CostingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
+          setCalculatorData(res, index)
+        }))
+        break;
+      case DIE_CASTING:
+        dispatch(getRawMaterialCalculationForDieCasting(tempData.netRMCostView[index].CostingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
+          setCalculatorData(res, index)
+        }))
+        break;
+      case RUBBER:
+        dispatch(getRawMaterialCalculationForRubber(tempData.netRMCostView[index].CostingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
+          setCalculatorData(res, index)
+        }))
+        break;
+      default:
+        return "none";
+    }
   }
-
 
   const toggleDrawer = (event) => {
     if (
@@ -105,7 +139,7 @@ function ViewRM(props) {
               return (
                 <tr key={index}>
                   {isAssemblyCosting && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
-                  <td className='text-overflow'><span title={item.RMName}>{item.RMName}</span></td>
+                  <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item.RMName}>{item.RMName}</span></td>
                   <td>{checkForDecimalAndNull(item.RMRate, initialConfiguration.NoOfDecimalForPrice)}</td>
                   <td>{checkForDecimalAndNull(item.ScrapRate, initialConfiguration.NoOfDecimalForPrice)}</td>
                   <td>{checkForDecimalAndNull(item.ScrapRecoveryPercentage, initialConfiguration.NoOfDecimalForPrice)}</td>
@@ -115,7 +149,7 @@ function ViewRM(props) {
                   {!isPDFShow && <td><button
                     className="CalculatorIcon cr-cl-icon mr-auto ml-0"
                     type={"button"}
-                    disabled={item.WeightCalculationId === EMPTY_GUID}
+                    disabled={(item.RawMaterialCalculatorId === 0 || item.RawMaterialCalculatorId === null) ? true : false}
                     onClick={() => { getWeightData(index) }}
                   /></td>}
                   <td>{item.FreightCost ? checkForDecimalAndNull(item.FreightCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
@@ -123,10 +157,9 @@ function ViewRM(props) {
                   <td>{item.BurningLossWeight ? checkForDecimalAndNull(item.BurningLossWeight, initialConfiguration.NoOfDecimalForInputOutput) : '-'}</td>
                   <td>{checkForDecimalAndNull(item.NetLandedCost, initialConfiguration.NoOfDecimalForPrice)}</td>
                   <td>
-                    <div className='text-overflow' title={item.Remark}>
+                    <div className={`${isPDFShow ? '' : 'remark-overflow'}`} title={item.Remark}>
                       <span>{item?.Remark ? item.Remark : "-"}</span></div>
                   </td>
-
                 </tr>
               )
             })}
@@ -141,7 +174,7 @@ function ViewRM(props) {
         </Table>
       </Col>
 
-      {viewCostingData[props.index].isApplyMasterBatch &&
+      {viewCostingData[props.index].isApplyMasterBatch && !isAssemblyCosting &&
         <>
           < Col md="12">
             <div className="left-border mt-4 mb-3">Master Batch</div>
@@ -174,6 +207,51 @@ function ViewRM(props) {
             </Table>
           </Col>
         </>}
+
+      {
+        isAssemblyCosting && viewCostingData[props.index]?.CostingMasterBatchRawMaterialCostResponse.length > 0 && !isSimulation &&
+        <>
+          < Col md="12">
+            <div className="left-border mt-4 mb-3">Master Batch</div>
+          </Col>
+          <Col>
+            <Table className="table cr-brdr-main mb-0" size="sm">
+              <thead>
+                <tr>
+                  <th>{`Part Number`}</th>
+                  <th>{`MB Name`}</th>
+                  <th>{`MB Rate`}</th>
+                  <th>{`Percentage`}</th>
+                  <th>{`Effective MB Rate`}</th>
+
+                </tr>
+              </thead>
+              <tbody>
+
+                {viewCostingData[props.index]?.CostingMasterBatchRawMaterialCostResponse.map((item) => {
+                  return (
+                    < tr key={index}>
+                      <td>{item.PartNumber}</td>
+                      <td>{item.MasterBatchRMName}</td>
+                      <td>{checkForDecimalAndNull(item.MasterBatchRMPrice, initialConfiguration.NoOfDecimalForPrice)}</td>
+                      <td>{checkForDecimalAndNull(item.MasterBatchPercentage, initialConfiguration.NoOfDecimalForPrice)}</td>
+                      <td>{checkForDecimalAndNull(item.MasterBatchTotal, initialConfiguration.NoOfDecimalForInputOutput)}</td>
+                    </tr>
+                  )
+                })
+                }
+                {viewRM.length === 0 && (
+                  <tr>
+                    <td colSpan={13}>
+                      <NoContentFound title={EMPTY_DATA} />
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </Table>
+          </Col>
+        </>
+      }
     </>
   }
   return (
@@ -187,7 +265,7 @@ function ViewRM(props) {
           <Container className={`${isAssemblyCosting && "drawer-1200"}`}>
             <div className={"drawer-wrapper drawer-1500px"}>
               <Row className="drawer-heading">
-                <Col>
+                <Col className='pl-0'>
                   <div className={"header-wrapper left"}>
                     <h3>{"View RM Cost:"}</h3>
                   </div>
@@ -198,7 +276,7 @@ function ViewRM(props) {
                 </Col>
               </Row>
               <Row>
-                {tableData()}
+                {!weightCalculatorDrawer && tableData()}
                 {weightCalculatorDrawer && (
                   <WeightCalculator
                     rmRowData={viewRM !== undefined ? calciData : {}}
@@ -206,7 +284,7 @@ function ViewRM(props) {
                     isEditFlag={false}
                     isOpen={weightCalculatorDrawer}
                     closeDrawer={closeWeightDrawer}
-                    technology={viewCostingData[props.index].technologyId}
+                    technology={viewCostingData[props.index].EtechnologyType}
                     isSummary={true}
                     rmMBDetail={rmMBDetail} // MASTER BATCH DETAIL
                     CostingViewMode={true}   // THIS KEY WILL BE USE TO OPEN CALCI IN VIEW MODE

@@ -21,7 +21,7 @@ function CostingDetailSimulationDrawer(props) {
     };
 
     // table code starts here
-    const { simulationDetail, pricesDetail, selectedRowData, costingArr, master, isReport } = props
+    const { simulationDetail, pricesDetail, selectedRowData, costingArr, master, isReport, isSimulation } = props
 
     const dispatch = useDispatch()
 
@@ -73,7 +73,7 @@ function CostingDetailSimulationDrawer(props) {
                                     <Col>
                                         <div className={"header-wrapper left"}>
                                             <h3>
-                                                {" Old Costing Details"}
+                                                {!isReport ? "Old " : ''}Costing Details
                                             </h3>
                                         </div>
                                         <div
@@ -185,7 +185,7 @@ function CostingDetailSimulationDrawer(props) {
                                         }
                                     </Row>
                                 }
-                                <CostingSummaryTable customClass="ml-0" simulationDrawer={true} simulationMode={true} viewMode={true} master={master} />
+                                <CostingSummaryTable customClass="ml-0" simulationDrawer={true} simulationMode={true} viewMode={true} master={master} isSimulationDone={isSimulation} />
                             </form>
                             <Row className="sf-btn-footer no-gutters justify-content-between">
                                 <div className="col-md-12 px-3">

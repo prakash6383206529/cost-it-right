@@ -5,11 +5,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import Toaster from '../../../../common/Toaster'
 import { saveRawMaterialCalculationForForging } from '../../../actions/CostWorking'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
-
-import {
-
-  NumberFieldHookForm,
-} from '../../../../layout/HookFormInputs'
+import { NumberFieldHookForm, } from '../../../../layout/HookFormInputs'
 import {
   checkForDecimalAndNull,
   checkForNull,
@@ -21,7 +17,7 @@ import MachiningStockTable from '../MachiningStockTable'
 import LossStandardTable from '../LossStandardTable'
 
 function ColdForging(props) {
-  const { rmRowData, CostingViewMode } = props
+  const { rmRowData, CostingViewMode, item } = props
   const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest
   const defaultValues = {
     finishedWeight: WeightCalculatorRequest &&
@@ -105,7 +101,7 @@ function ColdForging(props) {
   const [forgeWeightValue, setForgeWeightValue] = useState(WeightCalculatorRequest && WeightCalculatorRequest.ForgedWeight ? WeightCalculatorRequest.ForgedWeight : 0)
   const [lostWeight, setLostWeight] = useState(WeightCalculatorRequest && WeightCalculatorRequest.NetLossWeight ? WeightCalculatorRequest.NetLossWeight : 0)
   const [tableVal, setTableVal] = useState(WeightCalculatorRequest && WeightCalculatorRequest.LossOfTypeDetails !== null ? WeightCalculatorRequest.LossOfTypeDetails : [])
-  const [tableV, setTableV] = useState(WeightCalculatorRequest && WeightCalculatorRequest.CostingRawMaterialForgingWeightCalculators !== null ? WeightCalculatorRequest.CostingRawMaterialForgingWeightCalculators : [])
+  const [tableV, setTableV] = useState(WeightCalculatorRequest && WeightCalculatorRequest.ForgingStockDetails !== null ? WeightCalculatorRequest.ForgingStockDetails : [])
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
   const [dataSend, setDataSend] = useState({})
   const [totalMachiningStock, setTotalMachiningStock] = useState(WeightCalculatorRequest && WeightCalculatorRequest.TotalMachiningStock ? WeightCalculatorRequest.TotalMachiningStock : 0)
@@ -113,7 +109,7 @@ function ColdForging(props) {
 
   const costData = useContext(costingInfoContext)
   useEffect(() => {
-    if (CostingViewMode !== true) {
+    if (!CostingViewMode) {
       calculateForgeWeight()
       calculateInputLength()
       calculateNoOfPartsPerLength()
@@ -280,7 +276,7 @@ function ColdForging(props) {
     obj.ForgingWeightCalculatorId = WeightCalculatorRequest && WeightCalculatorRequest.ForgingWeightCalculatorId ? WeightCalculatorRequest.ForgingWeightCalculatorId : "0"
     obj.CostingRawMaterialDetailsIdRef = rmRowData.RawMaterialDetailId
     obj.RawMaterialIdRef = rmRowData.RawMaterialId
-    obj.BaseCostingIdRef = costData.CostingId
+    obj.BaseCostingIdRef = item.CostingId
     obj.FinishWeight = getValues('finishedWeight')
     obj.ForgedWeight = dataSend.forgedWeight
     obj.GrossWeight = dataSend.TotalInputWeight
@@ -311,7 +307,7 @@ function ColdForging(props) {
     tableV && tableV.map(item => (
       tempArray.push({ TypesOfMachiningStock: item.TypesOfMachiningStock, TypesOfMachiningStockId: item.TypesOfMachiningStockId, Description: item.Description, MajorDiameter: item.MajorDiameter, MinorDiameter: item.MinorDiameter, Length: item.Length, Breadth: item.Breadth, Height: item.Height, No: item.No, GrossWeight: item.GrossWeight, Volume: item.Volume, ForgingWeighCalculatorId: "00000000-0000-0000-0000-000000000000" })
     ))
-    obj.CostingForgingRawMaterialDetails = tempArray
+    obj.ForgingStockDetails = tempArray
     obj.TotalMachiningStock = totalMachiningStock
 
 
@@ -328,7 +324,7 @@ function ColdForging(props) {
   }
 
   useEffect(() => {
-    if (CostingViewMode === true) {
+    if (!CostingViewMode) {
       calculateForgeWeight()
     }
   }, [totalMachiningStock])
@@ -418,7 +414,7 @@ function ColdForging(props) {
                     <Row>
                       <Col md="3">
                         <NumberFieldHookForm
-                          label={`Finished Weight(kg)`}
+                          label={`Finished Weight (kg)`}
                           name={'finishedWeight'}
                           Controller={Controller}
                           control={control}
@@ -446,7 +442,7 @@ function ColdForging(props) {
                       dropDownMenu={machineDropDown}
                       CostingViewMode={props.CostingViewMode ? props.CostingViewMode : false}
                       netWeight={WeightCalculatorRequest && WeightCalculatorRequest.TotalMachiningStock !== null ? WeightCalculatorRequest.TotalMachiningStock : ''}
-                      sendTable={WeightCalculatorRequest ? (WeightCalculatorRequest.CostingRawMaterialForgingWeightCalculators?.length > 0 ? WeightCalculatorRequest.CostingRawMaterialForgingWeightCalculators : []) : []}
+                      sendTable={WeightCalculatorRequest ? (WeightCalculatorRequest.ForgingStockDetails?.length > 0 ? WeightCalculatorRequest.ForgingStockDetails : []) : []}
                       tableValue={tableData1}
                       rmRowData={props.rmRowData}
                       calculation={TotalMachiningStock}
@@ -494,7 +490,7 @@ function ColdForging(props) {
             <Row className='mt20'>
               <Col md="3">
                 <NumberFieldHookForm
-                  label={`Billet Diameter(mm)`}
+                  label={`Billet Diameter (mm)`}
                   name={'BilletDiameter'}
                   Controller={Controller}
                   control={control}
@@ -503,8 +499,8 @@ function ColdForging(props) {
                   rules={{
                     required: true,
                     pattern: {
-                      value: /^\d{0,3}(\.\d{0,5})?$/i,
-                      message: 'Maximum length for interger is 3 and for decimal is 5',
+                      value: /^\d{0,6}(\.\d{0,4})?$/i,
+                      message: 'Maximum length for interger is 6 and for decimal is 4',
                     },
                   }}
                   handleChange={() => { }}
@@ -518,7 +514,7 @@ function ColdForging(props) {
               </Col>
               <Col md="3">
                 <NumberFieldHookForm
-                  label={`Billet Length(mm)`}
+                  label={`Billet Length (mm)`}
                   name={'BilletLength'}
                   Controller={Controller}
                   control={control}
@@ -527,8 +523,8 @@ function ColdForging(props) {
                   rules={{
                     required: true,
                     pattern: {
-                      value: /^\d{0,3}(\.\d{0,5})?$/i,
-                      message: 'Maximum length for interger is 3 and for decimal is 5',
+                      value: /^\d{0,6}(\.\d{0,4})?$/i,
+                      message: 'Maximum length for interger is 6 and for decimal is 4',
                     },
                   }}
                   handleChange={() => { }}
@@ -542,7 +538,7 @@ function ColdForging(props) {
               </Col>
               <Col md="3">
                 <NumberFieldHookForm
-                  label={`Input Length(mm)`}
+                  label={`Input Length (mm)`}
                   name={'InputLength'}
                   Controller={Controller}
                   control={control}

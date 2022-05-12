@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Row, Col, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
 import { EMPTY_DATA, OPERATIONS, SURFACETREATMENT } from '../../../../config/constants';
@@ -14,7 +14,6 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import Simulation from '../Simulation';
-import OtherVerifySimulation from '../OtherVerifySimulation';
 import debounce from 'lodash.debounce';
 import { TextFieldHookForm } from '../../../layout/HookFormInputs';
 import { VBC, ZBC } from '../../../../config/constants';
@@ -25,7 +24,7 @@ const gridOptions = {
 
 };
 function OperationSTSimulation(props) {
-    const { list, isbulkUpload, rowCount, isImpactedMaster, masterId, lastRevision, tokenForMultiSimulation, isOperationMaster } = props
+    const { list, isbulkUpload, rowCount, isImpactedMaster, masterId, lastRevision, tokenForMultiSimulation, setSelectionForListingMaster } = props
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')
@@ -35,7 +34,7 @@ function OperationSTSimulation(props) {
     const [selectedRowData, setSelectedRowData] = useState([]);
     const [tableData, setTableData] = useState([])
     const [isDisable, setIsDisable] = useState(false)
-
+    const gridRef = useRef();
 
     const { register, control, setValue, formState: { errors }, } = useForm({
         mode: 'onChange',
@@ -62,7 +61,11 @@ function OperationSTSimulation(props) {
             setValue('NoOfRowsWithoutChange', rowCount.NoOfRowsWithoutChange)
         }
     }, [])
-
+    useEffect(() => {
+        if (list && list.length >= 0) {
+            gridRef.current.api.sizeColumnsToFit();
+        }
+    }, [list])
     const oldCPFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -177,14 +180,6 @@ function OperationSTSimulation(props) {
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
-        window.screen.width >= 1600 && params.api.sizeColumnsToFit();
-        if (isImpactedMaster) {
-            window.screen.width >= 1365 && params.api.sizeColumnsToFit();
-        }
-        var allColumnIds = [];
-        params.columnApi.getAllColumns().forEach(function (column) {
-            allColumnIds.push(column.colId);
-        });
 
     };
 
@@ -192,6 +187,7 @@ function OperationSTSimulation(props) {
         var value = document.getElementById('page-size').value;
         gridApi.paginationSetPageSize(Number(value));
     };
+
 
     const onFilterTextBoxChanged = (e) => {
         gridApi.setQuickFilter(e.target.value);
@@ -282,6 +278,12 @@ function OperationSTSimulation(props) {
             }
         }))
     }, 500);
+    const resetState = () => {
+        gridApi?.setQuickFilter('');
+        gridOptions?.columnApi?.resetColumnState();
+        gridOptions?.api?.setFilterModel(null);
+        gridRef.current.api.sizeColumnsToFit();
+    }
 
     return (
         <div>
@@ -289,61 +291,62 @@ function OperationSTSimulation(props) {
                 {
                     (!showverifyPage && !showMainSimulation) &&
                     <Fragment>
-                        {
-                            isbulkUpload &&
-                            <Row className="sm-edit-row justify-content-end">
-                                <Col md="6">
-                                    <div className="d-flex align-items-center">
-                                        <label>No of rows with changes:</label>
-                                        <TextFieldHookForm
-                                            label=""
-                                            name={'NoOfCorrectRow'}
-                                            Controller={Controller}
-                                            control={control}
-                                            register={register}
-                                            rules={{ required: false }}
-                                            mandatory={false}
-                                            handleChange={() => { }}
-                                            defaultValue={''}
-                                            className=""
-                                            customClassName={'withBorder mn-height-auto hide-label mb-0'}
-                                            errors={errors.NoOfCorrectRow}
-                                            disabled={true}
-                                        />
-                                    </div>
-                                </Col>
-                                <Col md="6">
-                                    <div className="d-flex align-items-center">
-                                        <label>No of rows without changes:</label>
-                                        <TextFieldHookForm
-                                            label=""
-                                            name={'NoOfRowsWithoutChange'}
-                                            Controller={Controller}
-                                            control={control}
-                                            register={register}
-                                            rules={{ required: false }}
-                                            mandatory={false}
-                                            handleChange={() => { }}
-                                            defaultValue={''}
-                                            className=""
-                                            customClassName={'withBorder mn-height-auto hide-label mb-0'}
-                                            errors={errors.NoOfRowsWithoutChange}
-                                            disabled={true}
-                                        />
-                                    </div>
-                                </Col>
-                            </Row>
-                        }
+
                         <form>
 
                             <Row>
                                 <Col className="add-min-height mb-3 sm-edit-page">
                                     <div className={`ag-grid-wrapper height-width-wrapper ${list && list?.length <= 0 ? "overlay-contain" : ""}`}>
-                                        <div className="ag-grid-header">
+                                        <div className="ag-grid-header d-flex align-items-center">
                                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                                            <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
+                                                <div className="refresh mr-0"></div>
+                                            </button>
                                         </div>
+                                        {
+                                            isbulkUpload &&
+                                            <div className='d-flex justify-content-end bulk-upload-row'>
+                                                <div className="d-flex align-items-center">
+                                                    <label>No of rows with changes:</label>
+                                                    <TextFieldHookForm
+                                                        label=""
+                                                        name={'NoOfCorrectRow'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        rules={{ required: false }}
+                                                        mandatory={false}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder mn-height-auto hide-label mb-0'}
+                                                        errors={errors.NoOfCorrectRow}
+                                                        disabled={true}
+                                                    />
+                                                </div>
+                                                <div className="d-flex align-items-center">
+                                                    <label>No of rows without changes:</label>
+                                                    <TextFieldHookForm
+                                                        label=""
+                                                        name={'NoOfRowsWithoutChange'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        rules={{ required: false }}
+                                                        mandatory={false}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder mn-height-auto hide-label mb-0'}
+                                                        errors={errors.NoOfRowsWithoutChange}
+                                                        disabled={true}
+                                                    />
+                                                </div>
+                                            </div>
+                                        }
                                         <div className="ag-theme-material" style={{ width: '100%' }}>
                                             <AgGridReact
+                                                ref={gridRef}
                                                 floatingFilter={true}
                                                 style={{ height: '100%', width: '100%' }}
                                                 defaultColDef={defaultColDef}
@@ -374,9 +377,9 @@ function OperationSTSimulation(props) {
                                                 {!isImpactedMaster && <>
                                                     <AgGridColumn field={`${isbulkUpload ? 'DestinationPlant' : 'Plants'}`} editable='false' headerName="Plant" minWidth={190}></AgGridColumn>
                                                 </>}
-                                                <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Net Rate" marryChildren={true} >
-                                                    <AgGridColumn width={120} field="Rate" editable='false' headerName="Old" cellRenderer='oldCPFormatter' colId="Rate"></AgGridColumn>
-                                                    <AgGridColumn width={120} cellRenderer='newRateFormatter' editable={!isImpactedMaster} field="NewRate" headerName="New" colId='NewRate'></AgGridColumn>
+                                                <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={240} headerName="Net Rate" marryChildren={true} >
+                                                    <AgGridColumn minWidth={120} field="Rate" editable='false' headerName="Old" cellRenderer='oldCPFormatter' colId="Rate"></AgGridColumn>
+                                                    <AgGridColumn minWidth={120} cellRenderer='newRateFormatter' editable={!isImpactedMaster} field="NewRate" headerName="New" colId='NewRate'></AgGridColumn>
                                                 </AgGridColumn>
                                                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn>
                                                 <AgGridColumn field="CostingId" hide={true}></AgGridColumn>

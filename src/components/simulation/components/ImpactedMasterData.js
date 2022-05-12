@@ -8,7 +8,6 @@ import BDSimulation from './SimulationPages/BDSimulation';
 
 export function Impactedmasterdata(props) {
     const { data, masterId, viewCostingAndPartNo, customClass, lastRevision } = props;
-
     const renderMaster = () => {
         let rmListing = data?.RawMaterialImpactedMasterDataList?.length === 0 ? false : true
         let operationListing = data?.OperationImpactedMasterDataList?.length === 0 ? false : true

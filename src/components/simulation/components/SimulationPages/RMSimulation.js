@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Row, Col, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
 import { EMPTY_DATA } from '../../../../config/constants';
@@ -36,6 +36,7 @@ function RMSimulation(props) {
     const [showMainSimulation, setShowMainSimulation] = useState(false)
     const [textFilterSearch, setTextFilterSearch] = useState('')
     const [isDisable, setIsDisable] = useState(false)
+    const gridRef = useRef();
 
     const { register, control, setValue, formState: { errors }, } = useForm({
         mode: 'onChange',
@@ -56,6 +57,15 @@ function RMSimulation(props) {
         }
 
     }, [])
+    useEffect(() => {
+        if (list && list.length > 0) {
+            if (isImpactedMaster) {
+                window.screen.width >= 1600 && gridRef.current.api.sizeColumnsToFit();
+            }
+            window.screen.width >= 1921 && gridRef.current.api.sizeColumnsToFit();
+        }
+
+    }, [list])
 
     const verifySimulation = debounce(() => {
         let basicRateCount = 0
@@ -73,16 +83,19 @@ function RMSimulation(props) {
             if ((li?.NewBasicRate === undefined ? Number(li?.BasicRate) : Number(li?.NewBasicRate)) < (li?.NewScrapRate === undefined ? Number(li?.ScrapRate) : Number(li?.NewScrapRate))) {
                 isScrapRateGreaterThanBasiRate = true
             }
+            if (isScrapRateGreaterThanBasiRate) {
+                li.NewBasicRate = li?.BasicRate
+                li.NewScrapRate = li?.ScrapRate
+                Toaster.warning('Scrap Rate should be less than Basic Rate')
+                return false
+            }
             return null;
         })
         if (basicRateCount === list.length && basicScrapCount === list.length) {
             Toaster.warning('There is no changes in new value. Please correct the data, then run simulation')
             return false
         }
-        if (isScrapRateGreaterThanBasiRate) {
-            Toaster.warning('Scrap Rate should be less than Basic Rate')
-            return false
-        }
+
         setIsDisable(true)
 
         basicRateCount = 0
@@ -153,6 +166,10 @@ function RMSimulation(props) {
         setTextFilterSearch('')
         gridOptions?.columnApi?.resetColumnState();
         gridOptions?.api?.setFilterModel(null);
+        if (isImpactedMaster) {
+            window.screen.width >= 1600 && gridRef.current.api.sizeColumnsToFit();
+        }
+        window.screen.width >= 1921 && gridRef.current.api.sizeColumnsToFit();
     }
 
     /**
@@ -255,15 +272,7 @@ function RMSimulation(props) {
     const costFormatter = (props) => {
 
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        if (!row.NewBasicRate || row.BasicRate === row.NewBasicRate || row.NewBasicRate === '') return checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)
-        const tempA = Number(row.NewBasicRate) + checkForNull(row.RMFreightCost) + checkForNull(row.RMShearingCost);
-        const classGreen = (tempA > row.NetLandedCost) ? 'red-value form-control' : (tempA < row.NetLandedCost) ? 'green-value form-control' : 'form-class'
-        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
-    }
-
-    const renderPaginationShowsTotal = (start, to, total) => {
-        return <GridTotalFormate start={start} to={to} total={total} />
+        return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : ''
     }
 
     /**
@@ -275,6 +284,9 @@ function RMSimulation(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         if ((row?.NewBasicRate === undefined ? Number(row?.BasicRate) : Number(row?.NewBasicRate)) <
             (row?.NewScrapRate === undefined ? Number(row?.ScrapRate) : Number(row?.NewScrapRate))) {
+            row.NewBasicRate = row?.BasicRate
+            row.NewScrapRate = row?.ScrapRate
+
             Toaster.warning('Scrap Rate should be less than Basic Rate')
             return false
         }
@@ -288,20 +300,8 @@ function RMSimulation(props) {
             Toaster.warning('Please enter a valid positive numbers.')
             return false
         }
+
         return true
-    }
-
-    const afterSaveCell = (row, cellName, cellValue, index) => {
-
-        if ((Number(row.NewBasicRate) + checkForNull(row.RMFreightCost) + checkForNull(row.RMShearingCost)) > row.NetLandedCost) {
-            setColorClass('red-value form-control')
-        } else if ((Number(row.NewBasicRate) + checkForNull(row.RMFreightCost) + checkForNull(row.RMShearingCost)) < row.NetLandedCost) {
-            setColorClass('green-value form-control')
-        } else {
-            setColorClass('form-class')
-        }
-        return false
-
     }
 
     const NewcostFormatter = (props) => {
@@ -360,10 +360,6 @@ function RMSimulation(props) {
 
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
-        window.screen.width >= 1600 && params.api.sizeColumnsToFit();
-        if (isImpactedMaster) {
-            window.screen.width >= 1365 && params.api.sizeColumnsToFit();
-        }
         params.api.paginationGoToPage(0);
     };
 
@@ -381,6 +377,8 @@ function RMSimulation(props) {
     }
 
     const onCellValueChanged = (props) => {
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        console.log('row: ', row);
 
     }
 
@@ -411,63 +409,60 @@ function RMSimulation(props) {
 
                     (!showverifyPage && !showMainSimulation) &&
                     <Fragment>
-                        {
-                            isbulkUpload &&
-                            <Row className="sm-edit-row justify-content-end">
-                                <Col md="6">
-                                    <div className="d-flex align-items-center">
-                                        <label>No of rows with changes:</label>
-                                        <TextFieldHookForm
-                                            label=""
-                                            name={'NoOfCorrectRow'}
-                                            Controller={Controller}
-                                            control={control}
-                                            register={register}
-                                            rules={{ required: false }}
-                                            mandatory={false}
-                                            handleChange={() => { }}
-                                            defaultValue={''}
-                                            className=""
-                                            customClassName={'withBorder mn-height-auto hide-label mb-0'}
-                                            errors={errors.NoOfCorrectRow}
-                                            disabled={true}
-                                        />
-                                    </div>
-                                </Col>
-                                <Col md="6">
-                                    <div className="d-flex align-items-center">
-                                        <label>No of rows without changes:</label>
-                                        <TextFieldHookForm
-                                            label=""
-                                            name={'NoOfRowsWithoutChange'}
-                                            Controller={Controller}
-                                            control={control}
-                                            register={register}
-                                            rules={{ required: false }}
-                                            mandatory={false}
-                                            handleChange={() => { }}
-                                            defaultValue={''}
-                                            className=""
-                                            customClassName={'withBorder mn-height-auto hide-label mb-0'}
-                                            errors={errors.NoOfRowsWithoutChange}
-                                            disabled={true}
-                                        />
-                                    </div>
-                                </Col>
-                            </Row>
-                        }
+
                         <Row>
                             <Col className="add-min-height mb-3 sm-edit-page">
                                 <div className={`ag-grid-wrapper height-width-wrapper reset-btn-container ${list && list?.length <= 0 ? "overlay-contain" : ""}`}>
-                                    <div className="ag-grid-header d-flex justify-content-between align-items-center">
-                                        <div className='d-flex'>
+                                    <div className="ag-grid-header">
+                                        <div className='d-flex align-items-center'>
                                             <input type="text" className="form-control table-search" id="filter-text-box" value={textFilterSearch} placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                                             <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
                                                 <div className="refresh mr-0"></div>
                                             </button>
                                         </div>
-                                        <>
-                                            {!isImpactedMaster && <div className={`d-flex simulation-label-container ${isbulkUpload ? "mt-5 pt-2" : ''}`}>
+                                        <div className='d-flex justify-content-end mt-2'>
+                                            {
+                                                isbulkUpload &&
+                                                <div className="d-flex justify-content-end bulk-upload-row rm-row">
+                                                    <div className="d-flex align-items-center">
+                                                        <label>No of rows with changes:</label>
+                                                        <TextFieldHookForm
+                                                            label=""
+                                                            name={'NoOfCorrectRow'}
+                                                            Controller={Controller}
+                                                            control={control}
+                                                            register={register}
+                                                            rules={{ required: false }}
+                                                            mandatory={false}
+                                                            handleChange={() => { }}
+                                                            defaultValue={''}
+                                                            className=""
+                                                            customClassName={'withBorder mn-height-auto hide-label mb-0'}
+                                                            errors={errors.NoOfCorrectRow}
+                                                            disabled={true}
+                                                        />
+                                                    </div>
+                                                    <div className="d-flex align-items-center">
+                                                        <label>No of rows without changes:</label>
+                                                        <TextFieldHookForm
+                                                            label=""
+                                                            name={'NoOfRowsWithoutChange'}
+                                                            Controller={Controller}
+                                                            control={control}
+                                                            register={register}
+                                                            rules={{ required: false }}
+                                                            mandatory={false}
+                                                            handleChange={() => { }}
+                                                            defaultValue={''}
+                                                            className=""
+                                                            customClassName={'withBorder mn-height-auto hide-label mb-0'}
+                                                            errors={errors.NoOfRowsWithoutChange}
+                                                            disabled={true}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            }
+                                            {!isImpactedMaster && <div className={`d-flex simulation-label-container ${!isbulkUpload ? 'mtn6' : ''}`}>
                                                 <div className='d-flex pl-3'>
                                                     <label>Technology: </label>
                                                     <p className='technology mx-1' title={list[0].TechnologyName}>{list[0].TechnologyName}</p>
@@ -477,13 +472,16 @@ function RMSimulation(props) {
                                                     <p title={list[0].VendorName}>{list[0].VendorName}</p>
                                                 </div>
                                             </div>}
-                                        </>
+
+
+                                        </div>
 
 
 
                                     </div>
                                     <div className="ag-theme-material" style={{ width: '100%' }}>
                                         <AgGridReact
+                                            ref={gridRef}
                                             floatingFilter={true}
                                             style={{ height: '100%', width: '100%' }}
                                             defaultColDef={defaultColDef}
@@ -510,14 +508,14 @@ function RMSimulation(props) {
                                             <AgGridColumn width={140} field="RawMaterial" editable='false' headerName="Raw Material"></AgGridColumn>
                                             <AgGridColumn width={115} field="RMGrade" editable='false' headerName="RM Grade" ></AgGridColumn>
                                             <AgGridColumn width={115} field="RMSpec" editable='false' headerName="RM Spec"></AgGridColumn>
-                                            {!isImpactedMaster && <AgGridColumn width={115} field="RawMaterialCode" headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>}
+                                            <AgGridColumn width={115} field="RawMaterialCode" editable='false' headerName='RM Code' cellRenderer='hyphenFormatter'></AgGridColumn>
                                             {!isImpactedMaster && <AgGridColumn width={110} field="Category" editable='false' headerName="Category"></AgGridColumn>}
                                             {!isImpactedMaster && <AgGridColumn width={125} field="TechnologyName" editable='false' headerName="Technology" ></AgGridColumn>}
                                             {!isImpactedMaster && <AgGridColumn width={100} field="VendorName" editable='false' headerName="Vendor"></AgGridColumn>}
                                             <AgGridColumn width={100} field="UOM" editable='false' headerName="UOM"></AgGridColumn>
 
-                                            {costingAndPartNo && <AgGridColumn field="CostingNumber" headerName="Costing No" minWidth={190}></AgGridColumn>}
-                                            {costingAndPartNo && <AgGridColumn field="PartNumber" headerName="Part No" minWidth={190}></AgGridColumn>}
+                                            {costingAndPartNo && <AgGridColumn field="CostingNumber" editable='false' headerName="Costing No" minWidth={190}></AgGridColumn>}
+                                            {costingAndPartNo && <AgGridColumn field="PartNumber" editable='false' headerName="Part No" minWidth={190}></AgGridColumn>}
 
 
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Basic Rate (INR)" marryChildren={true} >
@@ -556,7 +554,7 @@ function RMSimulation(props) {
                             !isImpactedMaster &&
                             <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                                 <div className="col-sm-12 text-right bluefooter-butn">
-                                    <button type={"button"} className="mr15 cancel-btn" onClick={cancel}>
+                                    <button type={"button"} className="mr15 cancel-btn" onClick={cancel} disabled={isDisable}>
                                         <div className={"cancel-icon"}></div>
                                         {"CANCEL"}
                                     </button>

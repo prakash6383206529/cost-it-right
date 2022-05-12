@@ -1065,13 +1065,17 @@ class AddRMDomestic extends Component {
     }
     if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(RM_MASTER_ID) !== true)) {
       //this.setState({ updatedObj: requestData })
-
+      let sourceLocationValue = (!IsVendor && !HasDifferentSource ? '' : sourceLocation.value)
       //DONT DELETE COMMENTED CODE BELOW
 
       if (uploadAttachements && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === values.BasicRate && Number(DataToChange.ScrapRate) === values.ScrapRate
         && Number(DataToChange.NetLandedCost) === values.NetLandedCost && DataToChange.Remark === values.Remark
         && (Number(DataToChange.CutOffPrice) === values.cutOffPrice || values.cutOffPrice === undefined)
-        && DataToChange.RawMaterialCode === values.Code) {
+        && DataToChange.RawMaterialCode === values.Code
+
+        && (DataToChange.Source === (!IsVendor && !HasDifferentSource ? '' : values.Source))
+        && ((DataToChange.SourceLocation !== null ? DataToChange.SourceLocation : '-') ===
+          (sourceLocationValue ? sourceLocationValue : '-'))) {
 
         this.cancel()
         return false
@@ -1248,7 +1252,7 @@ class AddRMDomestic extends Component {
    */
   render() {
 
-    const { handleSubmit, initialConfiguration, data } = this.props
+    const { handleSubmit, initialConfiguration, data, isRMAssociated } = this.props
     const { isRMDrawerOpen, isOpenGrade, isOpenSpecification, isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isViewFlag, setDisable, disablePopup } = this.state
 
 
@@ -1633,10 +1637,10 @@ class AddRMDomestic extends Component {
                               name={"cutOffPrice"}
                               type="text"
                               placeholder={""}
-                              validate={[]}
+                              validate={[positiveAndDecimalNumber]}
                               component={renderText}
                               required={false}
-                              disabled={isViewFlag}
+                              disabled={isViewFlag || (isEditFlag && isRMAssociated)}
                               onChange={this.handleCutOffPrice}
                               className=" "
                               customClassName=" withBorder"
@@ -1652,7 +1656,7 @@ class AddRMDomestic extends Component {
                               component={renderText}
                               onChange={this.handleBasicRate}
                               required={true}
-                              disabled={isViewFlag}
+                              disabled={isViewFlag || (isEditFlag && isRMAssociated)}
                               className=" "
                               customClassName=" withBorder"
                               maxLength={'15'}
@@ -1671,7 +1675,7 @@ class AddRMDomestic extends Component {
                               customClassName=" withBorder"
                               maxLength="15"
                               onChange={this.handleScrapRate}
-                              disabled={isViewFlag}
+                              disabled={isViewFlag || (isEditFlag && isRMAssociated)}
                             />
                           </Col>
                           <Col md="3">
@@ -1687,7 +1691,7 @@ class AddRMDomestic extends Component {
                               className=""
                               customClassName=" withBorder"
                               maxLength="15"
-                              disabled={isViewFlag}
+                              disabled={isViewFlag || (isEditFlag && isRMAssociated)}
                             />
                           </Col>
                           <Col md="3">
@@ -1702,7 +1706,7 @@ class AddRMDomestic extends Component {
                               className=""
                               customClassName=" withBorder"
                               maxLength="15"
-                              disabled={isViewFlag}
+                              disabled={isViewFlag || (isEditFlag && isRMAssociated)}
 
 
                             />
@@ -1740,7 +1744,7 @@ class AddRMDomestic extends Component {
                                 className="form-control"
 
 
-                                disabled={isViewFlag || !this.state.IsFinancialDataChanged}
+                                disabled={isViewFlag || !this.state.IsFinancialDataChanged || (isEditFlag && isRMAssociated)}
 
                               />
                             </div>

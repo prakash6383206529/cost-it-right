@@ -94,8 +94,10 @@ function SimulationApprovalListing(props) {
         }
         setIsLoader(true)
         dispatch(getSimulationApprovalList(filterData, (res) => {
-            if (res.data.Result) {
-                setIsLoader(false)
+            if (res?.data?.Result) {
+                setTimeout(() => {
+                    setIsLoader(false)
+                }, 300);
             }
         }))
     }
@@ -289,6 +291,7 @@ function SimulationApprovalListing(props) {
         var selectedRows = gridApi.getSelectedRows();
         let tempArrReason = []
         let tempArrTechnology = []
+        let tempArrSimulationTechnologyHead = []
 
         selectedRows.map(item => {
             arr.push(item?.DisplayStatus)
@@ -297,6 +300,7 @@ function SimulationApprovalListing(props) {
             tempArrIsPushedButtonShow.push(item.IsPushedButtonShow)
             tempArrReason.push(item.ReasonId)
             tempArrTechnology.push(item.TechnologyName)
+            tempArrSimulationTechnologyHead.push(item.SimulationTechnologyHead)
         })
 
         if (!allEqual(arr)) {
@@ -319,7 +323,10 @@ function SimulationApprovalListing(props) {
         //     Toaster.warning('Please choose costing which have same reason')
         //     gridApi.deselectAll()
         // }
-        else if (!allEqual(tempArrTechnology)) {
+        else if (!allEqual(tempArrSimulationTechnologyHead)) {
+            Toaster.warning('Master should be same for sending multiple costing for approval')
+            gridApi.deselectAll()
+        } else if (!allEqual(tempArrTechnology)) {
             Toaster.warning('Technology should be same for sending multiple costing for approval')
             gridApi.deselectAll()
         }
@@ -437,6 +444,7 @@ function SimulationApprovalListing(props) {
         resizable: true,
         filter: true,
         sortable: true,
+        headerCheckboxSelectionFilteredOnly: true,
         headerCheckboxSelection: isFirstColumn,
         checkboxSelection: isFirstColumn
     };
@@ -571,7 +579,7 @@ function SimulationApprovalListing(props) {
                                     <AgGridColumn width={145} field="RequestedOn" headerName='Requested On' cellRenderer='requestedOnFormatter'></AgGridColumn>
 
                                     {!isSmApprovalListing && <AgGridColumn pinned="right" field="Status" headerClass="justify-content-center" cellClass="text-center" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>}
-                                    <AgGridColumn width={105} field="SimulationId" headerName='Actions' type="rightAligned" floatingFilter={false} cellRenderer='buttonFormatter'></AgGridColumn>
+                                    <AgGridColumn width={115} field="SimulationId" headerName='Actions' type="rightAligned" floatingFilter={false} cellRenderer='buttonFormatter'></AgGridColumn>
 
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">

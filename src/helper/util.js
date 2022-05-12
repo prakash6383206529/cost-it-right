@@ -18,13 +18,14 @@ import { getConfigurationKey } from './auth'
  */
 export const apiErrors = (res) => {
   const response = res ? res.response : undefined
-
-
   if (response?.data?.error?.message?.value) {
     toast.warning(response.data.error.message.value)
   } else if (response) {
     response && handleHTTPStatus(response)
   } else {
+    if (navigator.userAgent.indexOf("Firefox") !== -1) {
+      return;
+    }
     toast.error('Something went wrong please try again.')
   }
 }
@@ -37,23 +38,29 @@ export const apiErrors = (res) => {
 const handleHTTPStatus = (response) => {
   switch (response.status) {
     case 202:
-      return toast.error('No Data Available.')
+      const errMsg202 = response?.data?.Message ? response.data.Message : 'No Data Available.'
+      return toast.error(errMsg202)
     case 203:
-      return toast.error('Data is inconsistent. Please refresh your session by re-login')
+      const errMsg203 = response?.data?.Message ? response.data.Message : 'Data is inconsistent. Please refresh your session by re-login.'
+      return toast.error(errMsg203)
     case 204:
-      return toast.error('Intentionally blank for now.')
+      const errMsg204 = response?.data?.Message ? response.data.Message : 'Intentionally blank for now.'
+      return toast.error(errMsg204)
     case 205:
-      return toast.error('Please clear your cache for data to reflect')
+      const errMsg205 = response?.data?.Message ? response.data.Message : 'Please clear your cache for data to reflect.'
+      return toast.error(errMsg205)
     case 206:
-      return toast.error('The data might not have been updated properly. Please try again to ensure')
+      const errMsg206 = response?.data?.Message ? response.data.Message : 'The data might not have been updated properly. Please try again to ensure.'
+      return toast.error(errMsg206)
     case 300:
     case 301:
     case 302:
     case 303:
-
-      return toast.error('Something is not right. Please contact your IT Team.')
+      const errMsg303 = response?.data?.Message ? response.data.Message : 'Something is not right. Please contact your IT Team.'
+      return toast.error(errMsg303)
     case 400:
-      return toast.error('Bad Request. Please contact your IT Team.')
+      const errMsg400 = response?.data?.Message ? response.data.Message : 'Bad Request. Please contact your IT Team.'
+      return toast.error(errMsg400)
     case 401:
       reactLocalStorage.setObject("isUserLoggedIn", false);
       reactLocalStorage.setObject("userDetail", {});
@@ -61,13 +68,15 @@ const handleHTTPStatus = (response) => {
       window.location.assign('/login');
       return toast.error('Authentication error. Please contact your IT Team.')
     case 403:
-      return toast.error('You are not allowed to access this resource. Please contact your IT Team.',)
+      const errMsg403 = response?.data?.Message ? response.data.Message : 'You are not allowed to access this resource. Please contact your IT Team.'
+      return toast.error(errMsg403)
     case 404:
-      return toast.error('Not found')
+      const errMsg404 = response?.data?.Message ? response.data.Message : 'Not found.'
+      return toast.error(errMsg404)
     case 405:
-      return toast.error('You are not allowed to access this resource. Please contact your IT Team',)
+      const errMsg405 = response?.data?.Message ? response.data.Message : 'You are not allowed to access this resource. Please contact your IT Team.'
+      return toast.error(errMsg405)
     case 406:
-
       const errMsg406 = response?.data?.Message ? response.data.Message : 'Something is not right. Please contact your IT Team.'
       return toast.error(errMsg406)
     case 409:
@@ -75,39 +84,46 @@ const handleHTTPStatus = (response) => {
     case 414:
     case 416:
     case 427:
-      return toast.error('Something is not right. Please contact your IT Team')
+      const errMsg427 = response?.data?.Message ? response.data.Message : 'Something is not right. Please contact your IT Team.'
+      return toast.error(errMsg427)
     case 407:
-      return toast.error('Proxy Authentication Error. Please contact your IT Team')
+      const errMsg407 = response?.data?.Message ? response.data.Message : 'Proxy Authentication Error. Please contact your IT Team.'
+      return toast.error(errMsg407)
     case 408:
-      return toast.error('Your request has timed out. Please try again after some time.')
+      const errMsg408 = response?.data?.Message ? response.data.Message : 'Your request has timed out. Please try again after some time.'
+      return toast.error(errMsg408)
     case 410:
-      return toast.error('The resource you requested no longer exists.')
+      const errMsg410 = response?.data?.Message ? response.data.Message : 'The resource you requested no longer exists.'
+      return toast.error(errMsg410)
     case 412:
       const errMsg = response?.data?.Message ? response.data.Message : 'Something is not right. Please contact your IT Team.'
       return toast.error(errMsg)
     case 413:
-      return toast.error("Server can't process such long request. Please contact your IT Team")
+      const errMsg413 = response?.data?.Message ? response.data.Message : "Server can't process such long request. Please contact your IT Team."
+      return toast.error(errMsg413)
     case 415:
-      return toast.error('This request is not supported by the server. Please contact your IT Team')
+      const errMsg415 = response?.data?.Message ? response.data.Message : "This request is not supported by the server. Please contact your IT Team."
+      return toast.error(errMsg415)
     case 417:
-
       const errMsg417 = response?.data?.Message ? response.data.Message : 'Something is not right. Please contact your IT Team.'
       return toast.error(errMsg417)
     case 500:
-      return toast.error('Internal server error. Please contact your IT Team')
-
+      const errMsg500 = response?.data?.Message ? response.data.Message : 'Internal server error. Please contact your IT Team.'
+      return toast.error(errMsg500)
     case 501:
-      return toast.error('Something is not right. Please contact your IT Team')
+      const errMsg501 = response?.data?.Message ? response.data.Message : 'Something is not right. Please contact your IT Team.'
+      return toast.error(errMsg501)
     case 502:
-      return toast.error('Server is unavailable or unreachable. Please contact your IT Team')
+      const errMsg502 = response?.data?.Message ? response.data.Message : 'Server is unavailable or unreachable. Please contact your IT Team.'
+      return toast.error(errMsg502)
     case 503:
-      return toast.error('Server is unavailable due to load or maintenance. Please contact your IT Team')
+      const errMsg503 = response?.data?.Message ? response.data.Message : 'Server is unavailable due to load or maintenance. Please contact your IT Team.'
+      return toast.error(errMsg503)
     case 504:
-      return toast.error('Server is unavailable due to timeout. Please contact your IT Team')
+      const errMsg504 = response?.data?.Message ? response.data.Message : 'Server is unavailable due to timeout. Please contact your IT Team.'
+      return toast.error(errMsg504)
     default:
-
       return toast.error('Something is not right. Please contact your IT Team')
-
   }
 }
 
@@ -555,8 +571,8 @@ export function formViewData(costingSummary) {
   obj.nConvCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetConversionCost ? dataFromAPI.CostingPartDetails.NetConversionCost : 0
   obj.nTotalRMBOPCC = dataFromAPI.CostingPartDetails && dataFromAPI.NetTotalRMBOPCC ? dataFromAPI.NetTotalRMBOPCC : 0
   obj.netSurfaceTreatmentCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetSurfaceTreatmentCost ? dataFromAPI.CostingPartDetails.NetSurfaceTreatmentCost : 0
-
-
+  obj.EtechnologyType = dataFromAPI.ETechnology && dataFromAPI.ETechnology ? dataFromAPI.ETechnology : 0
+  obj.RawMaterialCalculatorId = dataFromAPI.RawMaterialCalculatorId && dataFromAPI.RawMaterialCalculatorId ? dataFromAPI.RawMaterialCalculatorId : 0
   obj.modelType = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.ModelType ? dataFromAPI.CostingPartDetails.ModelType : '-'
   obj.aValue = { applicability: 'Applicability', value: 'Value', }
   obj.overheadOn = {
@@ -680,6 +696,10 @@ export function formViewData(costingSummary) {
   obj.IsAssemblyCosting = dataFromAPI.IsAssemblyCosting ? dataFromAPI.IsAssemblyCosting : ""
   obj.childPartBOPHandlingCharges = dataFromAPI.CostingPartDetails?.ChildPartBOPHandlingCharges ? dataFromAPI.CostingPartDetails.ChildPartBOPHandlingCharges : []
   obj.masterBatchRMName = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.MasterBatchRMName ? dataFromAPI.CostingPartDetails.MasterBatchRMName : '-'
+
+  //MASTER BATCH OBJECT
+  obj.CostingMasterBatchRawMaterialCostResponse = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingMasterBatchRawMaterialCostResponse ? dataFromAPI.CostingPartDetails.CostingMasterBatchRawMaterialCostResponse : []
+
 
   // temp = [...temp, obj]
   temp.push(obj)
@@ -822,19 +842,19 @@ export function getFilteredData(arr, id) {
 
     case 1:    // CASE 1 FOR RM 
 
-      const list = arr && arr.filter((item => item.IsRMAssociated === true))
+      const list = arr && arr.filter((item => item.IsRMAssociatedForSimulation === true))
       return list
 
 
     case 2:   //CASE 2 FOR BOP
 
-      const listBop = arr && arr.filter((item => item.IsBOPAssociated === true))
+      const listBop = arr && arr.filter((item => item.IsBOPAssociatedForSimulation === true))
       return listBop
 
 
     case 3:   //CASE 3 FOR OPERATIONS
 
-      const listOperation = arr && arr.filter((item => item.IsOperationAssociated === true))
+      const listOperation = arr && arr.filter((item => item.IsOperationAssociatedForSimulation === true))
       return listOperation
 
     case 4:   //CASE 4 FOR MACHINE

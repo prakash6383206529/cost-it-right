@@ -482,7 +482,7 @@ function Tool(props) {
 
   const calculateNetToolCost = () => {
 
-    const ToolMaintenanceCost = checkForNull(toolObj.ToolMaintenanceCost)
+    const ToolMaintenanceCost = checkForNull(toolObj?.ToolMaintenanceCost)
 
     const ToolCost = checkForNull(getValues('ToolCost'));
     const Life = checkForNull(getValues('Life'))
@@ -490,7 +490,7 @@ function Tool(props) {
 
     const maintanencePercentage = getValues('maintanencePercentage')
     //  const applicabilityCost =  getValues('MaintananceCostApplicability')
-    const applicabilityCost = toolObj.ToolApplicabilityCost
+    const applicabilityCost = toolObj?.ToolApplicabilityCost
 
     setValue('ToolAmortizationCost', checkForDecimalAndNull(ToolAmortizationCost, initialConfiguration.NoOfDecimalForPrice))
     setValue('NetToolCost', checkForDecimalAndNull((ToolMaintenanceCost + checkForNull(ToolAmortizationCost)), initialConfiguration.NoOfDecimalForPrice))

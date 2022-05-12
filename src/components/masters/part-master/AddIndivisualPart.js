@@ -44,7 +44,8 @@ class AddIndivisualPart extends Component {
       updatedObj: {},
       setDisable: false,
       disablePopup: false,
-      isBomEditable: false
+      isBomEditable: false,
+      minEffectiveDate: '',
     }
   }
 
@@ -81,6 +82,7 @@ class AddIndivisualPart extends Component {
           })
           this.setState({ DataToCheck: Data })
           this.props.change("EffectiveDate", DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
+          this.setState({ minEffectiveDate: Data.EffectiveDate })
 
           setTimeout(() => {
             this.setState({
@@ -588,6 +590,7 @@ class AddIndivisualPart extends Component {
                                   onChange={this.handleEffectiveDateChange}
                                   type="text"
                                   validate={[required]}
+                                  minDate={this.state.minEffectiveDate}
                                   autoComplete={'off'}
                                   required={true}
                                   changeHandler={(e) => {

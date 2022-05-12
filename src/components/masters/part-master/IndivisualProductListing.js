@@ -42,7 +42,7 @@ class IndivisualProductListing extends Component {
             ActivateAccessibility: true,
             showPopup: false,
             deletedId: '',
-            isLoader:false
+            isLoader: false
         }
     }
 
@@ -61,9 +61,9 @@ class IndivisualProductListing extends Component {
     * @description Get DATA LIST
     */
     getTableListData = () => {
-        this.setState({isLoader:true})
+        this.setState({ isLoader: true })
         this.props.getProductDataList((res) => {
-            this.setState({isLoader:false})
+            this.setState({ isLoader: false })
             if (res.status === 204 && res.data === '') {
                 this.setState({ tableData: [], })
             } else if (res && res.data && res.data.DataList) {
@@ -235,20 +235,6 @@ class IndivisualProductListing extends Component {
         }
     }
 
-    /**
-    * @method impactCalculationFormatter
-    * @description Renders buttons
-    */
-    impactCalculationFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        let val = ''
-        if (cellValue === true) {
-            val = 'Yes'
-        } else if (cellValue === false) {
-            val = 'No'
-        }
-        return val
-    }
 
     renderEffectiveDate = () => {
         return <> Effective <br /> Date </>
@@ -300,26 +286,24 @@ class IndivisualProductListing extends Component {
     };
 
     onBtExport = () => {
-        let tempArr = this.props.productDataList && this.props.productDataList
-        return this.returnExcelColumn(INDIVIDUAL_PRODUCT_DOWNLOAD_EXCEl, tempArr)
+        return this.returnExcelColumn(INDIVIDUAL_PRODUCT_DOWNLOAD_EXCEl)
     };
 
-    returnExcelColumn = (data = [], TempData) => {
-        let temp = []
-        temp = TempData && TempData.map((item) => {
+    returnExcelColumn = (data = []) => {
+        let temp = this.props.productDataList
+        temp && temp.map((item) => {
             if (item.ECNNumber === null) {
                 item.ECNNumber = ' '
             } else if (item.RevisionNumber === null) {
                 item.RevisionNumber = ' '
             } else if (item.DrawingNumber === null) {
                 item.DrawingNumber = ' '
-            } else if (item.Technology === '-') {
-                item.Technology = ' '
-            } else {
-                return false
-            }
-            if (item.EffectiveDate.includes('T')) {
+            } else if (item.EffectiveDate?.includes('T')) {
                 item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
+            } else if (item.IsConsideredForMBOM === true) {
+                item.IsConsideredForMBOM = 'Yes'
+            } else if (item.IsConsideredForMBOM === false) {
+                item.IsConsideredForMBOM = 'No'
             }
             return item
         })
@@ -360,12 +344,11 @@ class IndivisualProductListing extends Component {
             customNoRowsOverlay: NoContentFound,
             hyphenFormatter: this.hyphenFormatter,
             effectiveDateFormatter: this.effectiveDateFormatter,
-            impactCalculationFormatter: this.impactCalculationFormatter
         };
 
         return (
             <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-             {this.state.isLoader && <LoaderCustom />}
+                {this.state.isLoader && <LoaderCustom />}
                 <Row className="pt-4 no-filter-row">
                     <Col md="8" className="filter-block">
 
@@ -448,7 +431,7 @@ class IndivisualProductListing extends Component {
                             <AgGridColumn field="ECNNumber" headerName="ECN No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                            <AgGridColumn field="IsConsideredForMBOM" headerName="Preferred for Impact Calculation" cellRenderer={'impactCalculationFormatter'}></AgGridColumn>
+                            <AgGridColumn field="IsConsideredForMBOM" headerName="Preferred for Impact Calculation" ></AgGridColumn>
                             <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                             <AgGridColumn field="ProductId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                         </AgGridReact>

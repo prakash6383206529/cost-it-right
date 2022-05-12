@@ -23,7 +23,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import DayTime from '../../../common/DayTimeWrapper'
 import TabAssemblyTechnology from './TabAssemblyTechnology';
-import { createToprowObjAndSave } from '../../CostingUtil';
+import { createToprowObjAndSave, findSurfaceTreatmentData } from '../../CostingUtil';
 import _ from 'lodash'
 
 function CostingHeaderTabs(props) {
@@ -49,7 +49,7 @@ function CostingHeaderTabs(props) {
 
     // CALLED WHEN OTHER TAB CLICKED WITHOUT SAVING TO RMCC CURRENT TAB.
     if (!CostingViewMode && Object.keys(ComponentItemData).length > 0 && ComponentItemData.IsOpen !== false && activeTab !== '1' && IsCalledAPI && checkIsDataChange) {
-
+      let stCostingData = findSurfaceTreatmentData(ComponentItemData)
       let requestData = {
         "NetRawMaterialsCost": ComponentItemData.CostingPartDetails.TotalRawMaterialsCost,
         "NetBoughtOutPartCost": ComponentItemData.CostingPartDetails.TotalBoughtOutPartCost,
@@ -59,7 +59,7 @@ function CostingHeaderTabs(props) {
         "NetToolsCost": ComponentItemData.CostingPartDetails.CostingConversionCost && ComponentItemData.CostingPartDetails.CostingConversionCost.ToolsCostTotal !== undefined ? ComponentItemData.CostingPartDetails.CostingConversionCost.ToolsCostTotal : 0,
         "NetOtherOperationCost": ComponentItemData.CostingPartDetails.CostingConversionCost && ComponentItemData.CostingPartDetails.CostingConversionCost.OtherOperationCostTotal !== undefined ? ComponentItemData.CostingPartDetails.CostingConversionCost.OtherOperationCostTotal : 0,
         "NetTotalRMBOPCC": ComponentItemData.CostingPartDetails.TotalCalculatedRMBOPCCCost,
-        "TotalCost": costData.IsAssemblyPart ? ComponentItemData.CostingPartDetails.TotalCalculatedRMBOPCCCost : netPOPrice,
+        "TotalCost": costData.IsAssemblyPart ? (stCostingData && Object.keys(stCostingData).length > 0) ? (checkForNull(stCostingData?.CostingPartDetails?.NetSurfaceTreatmentCost) + checkForNull(ComponentItemData.CostingPartDetails.TotalCalculatedRMBOPCCCost)) : ComponentItemData.CostingPartDetails.TotalCalculatedRMBOPCCCost : netPOPrice,
         "LoggedInUserId": loggedInUserId(),
         "EffectiveDate": CostingEffectiveDate,
 
@@ -207,27 +207,27 @@ function CostingHeaderTabs(props) {
 
 
     if (RMCCTabData && RMCCTabData.length > 0 && activeTab !== '1' && CostingViewMode === false) {
-
-
+      const tabData = RMCCTabData[0]
+      const surfaceTabData = SurfaceTabData[0]
+      const overHeadAndProfitTabData = OverheadProfitTabData[0]
+      const discountAndOtherTabData = DiscountCostData
       let tempArrForCosting = JSON.parse(localStorage.getItem('costingArray'))
       const data = _.find(tempArrForCosting, ['IsPartLocked', true])
-
       const lockedData = _.find(tempArrForCosting, ['IsLocked', true])
-
       const bopData = _.find(tempArrForCosting, ['PartType', 'BOP'])
-
       if (data !== undefined || bopData !== undefined || lockedData !== undefined) {
-
-        const tabData = RMCCTabData[0]
-        const surfaceTabData = SurfaceTabData[0]
-        const overHeadAndProfitTabData = OverheadProfitTabData[0]
-        const discountAndOtherTabData = DiscountCostData
 
         let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 1, CostingEffectiveDate)
 
         dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
       }
-
+      let surfaceArrForCosting = JSON.parse(localStorage.getItem('surfaceCostingArray'))
+      const surfaceData = _.find(surfaceArrForCosting, ['IsPartLocked', true])
+      const surfaceLockedData = _.find(surfaceArrForCosting, ['IsLocked', true])
+      if (surfaceData !== undefined || surfaceLockedData !== undefined) {
+        let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 2, CostingEffectiveDate)
+        dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
+      }
     }
 
   }, [activeTab])
@@ -342,7 +342,7 @@ function CostingHeaderTabs(props) {
             </Col>}
         </Row>
 
-        <div>
+        <div className='costing-tabs-container'>
           <Nav tabs className="subtabs cr-subtabs-head">
             <NavItem>
               <NavLink className={classnames({ active: activeTab === '1' })} onClick={() => { toggle('1'); }}>

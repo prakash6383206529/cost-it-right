@@ -30,7 +30,7 @@ function Ferrous(props) {
     const [tableVal, setTableVal] = useState(WeightCalculatorRequest && WeightCalculatorRequest.LossOfTypeDetails !== null ? WeightCalculatorRequest.LossOfTypeDetails : [])
     const [lostWeight, setLostWeight] = useState(WeightCalculatorRequest && WeightCalculatorRequest.NetLossWeight ? WeightCalculatorRequest.NetLossWeight : 0)
     const [dataToSend, setDataToSend] = useState(WeightCalculatorRequest)
-    const { rmRowData, rmData, CostingViewMode } = props
+    const { rmRowData, rmData, CostingViewMode, item } = props
 
     const rmGridFields = 'rmGridFields';
 
@@ -99,7 +99,7 @@ function Ferrous(props) {
     }, [WeightCalculatorRequest])
 
     useEffect(() => {
-        if (CostingViewMode !== true) {
+        if (!CostingViewMode) {
             calculateRemainingCalculation(lostWeight)
         }
     }, [fieldValues])
@@ -171,12 +171,11 @@ function Ferrous(props) {
     }
 
     const onSubmit = () => {
-
         let obj = {}
         obj.FerrousCastingWeightCalculatorId = WeightCalculatorRequest && WeightCalculatorRequest.ForgingWeightCalculatorId ? WeightCalculatorRequest.ForgingWeightCalculatorId : "0"
         obj.CostingRawMaterialDetailsIdRef = rmRowData.RawMaterialDetailId
         obj.RawMaterialIdRef = ""
-        obj.BaseCostingIdRef = costData.CostingId
+        obj.BaseCostingIdRef = item.CostingId
         obj.LoggedInUserId = loggedInUserId()
         obj.RawMaterialCost = dataToSend.NetRMCost
         obj.NetRMRate = dataToSend.NetRMRate
@@ -311,7 +310,7 @@ function Ferrous(props) {
                                 </Col>
                                 <Col md="3">
                                     <NumberFieldHookForm
-                                        label={`Casting Weight(kg)`}
+                                        label={`Casting Weight (kg)`}
                                         name={'castingWeight'}
                                         Controller={Controller}
                                         control={control}
@@ -377,7 +376,7 @@ function Ferrous(props) {
                                 </Col>
                                 <Col md="3" >
                                     <NumberFieldHookForm
-                                        label={`Finished Weight(Kg)`}
+                                        label={`Finished Weight (Kg)`}
                                         name={'finishedWeight'}
                                         Controller={Controller}
                                         control={control}
@@ -402,7 +401,7 @@ function Ferrous(props) {
 
                                 <Col md="3">
                                     <NumberFieldHookForm
-                                        label={`Scrap Weight(Kg)`}
+                                        label={`Scrap Weight (Kg)`}
                                         name={'scrapWeight'}
                                         Controller={Controller}
                                         control={control}
@@ -421,7 +420,7 @@ function Ferrous(props) {
                                 </Col>
                                 <Col md="3">
                                     <NumberFieldHookForm
-                                        label={`Recovery %`}
+                                        label={`Recovery (%)`}
                                         name={'recovery'}
                                         Controller={Controller}
                                         control={control}

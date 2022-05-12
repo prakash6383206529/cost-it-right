@@ -3,7 +3,7 @@ import { Row, Col } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { costingInfoContext } from '../CostingDetailStepTwo'
 import { useDispatch, useSelector } from 'react-redux'
-import { TextFieldHookForm, } from '../../../layout/HookFormInputs'
+import { NumberFieldHookForm } from '../../../layout/HookFormInputs'
 import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, findLostWeight, getConfigurationKey, loggedInUserId } from '../../../../helper'
 import LossStandardTable from './LossStandardTable'
 import { saveRawMaterialCalculationForPlastic } from '../../actions/CostWorking'
@@ -11,7 +11,7 @@ import Toaster from '../../../common/Toaster'
 import { setPlasticArray } from '../../actions/Costing'
 
 function Plastic(props) {
-  const { item, rmRowData, isSummary, CostingViewMode } = props
+  const { item, rmRowData, isSummary, CostingViewMode, DisableMasterBatchCheckbox } = props
   let totalRM
   if (!isSummary) {
     const { CostingPartDetails } = item
@@ -42,7 +42,7 @@ function Plastic(props) {
     scrapWeight: WeightCalculatorRequest && WeightCalculatorRequest.ScrapWeight !== undefined ? WeightCalculatorRequest.ScrapWeight : '',
     rmCost: WeightCalculatorRequest && WeightCalculatorRequest.RMCost !== undefined ? WeightCalculatorRequest.RMCost : '',
     scrapCost: WeightCalculatorRequest && WeightCalculatorRequest.ScrapCost !== undefined ? WeightCalculatorRequest.ScrapCost : '',
-    materialCost: WeightCalculatorRequest && WeightCalculatorRequest.NetRMCost !== undefined ? WeightCalculatorRequest.NetRMCost : '',
+    materialCost: WeightCalculatorRequest && WeightCalculatorRequest.RawMaterialCost !== undefined ? WeightCalculatorRequest.RawMaterialCost : '',
     burningAllownace: WeightCalculatorRequest && WeightCalculatorRequest.BurningValue !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.BurningValue * checkForNull(totalRM), getConfigurationKey().NoOfDecimalForInputOutput) : ''
 
   }
@@ -54,14 +54,14 @@ function Plastic(props) {
     scrapWeight: WeightCalculatorRequest && WeightCalculatorRequest.ScrapWeight !== undefined ? WeightCalculatorRequest.ScrapWeight : '',
     rmCost: WeightCalculatorRequest && WeightCalculatorRequest.RMCost !== undefined ? WeightCalculatorRequest.RMCost : '',
     scrapCost: WeightCalculatorRequest && WeightCalculatorRequest.ScrapCost !== undefined ? WeightCalculatorRequest.ScrapCost : '',
-    materialCost: WeightCalculatorRequest && WeightCalculatorRequest.NetRMCost !== undefined ? WeightCalculatorRequest.NetRMCost : '',
+    materialCost: WeightCalculatorRequest && WeightCalculatorRequest.RawMaterialCost !== undefined ? WeightCalculatorRequest.RawMaterialCost : '',
     burningValue: WeightCalculatorRequest && WeightCalculatorRequest.BurningValue !== undefined ? WeightCalculatorRequest.BurningValue : '',
     grossWeight: WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== undefined ? WeightCalculatorRequest.GrossWeight : '',
   })
 
 
 
-  const { register, control, setValue, getValues, formState: { errors }, } = useForm({
+  const { register, control, setValue, getValues, handleSubmit, formState: { errors }, } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: defaultValues,
@@ -84,15 +84,17 @@ function Plastic(props) {
   ]
 
   useEffect(() => {
-    if (CostingViewMode !== true) {
+    if (!CostingViewMode) {
       calculateGrossWeight()
       calculateRemainingCalculation(lostWeight)
     }
   }, [fieldValues])
 
   useEffect(() => {
-    calculateGrossWeight()
-    calculateRemainingCalculation()
+    if (!CostingViewMode) {
+      calculateGrossWeight()
+      calculateRemainingCalculation()
+    }
   }, [getPlasticData])
 
   useEffect(() => {
@@ -124,14 +126,13 @@ function Plastic(props) {
    */
   const calculateRemainingCalculation = (lostSum = 0) => {
     let scrapWeight = 0
-    const netWeight = Number(getValues('netWeight')) // THIS IS FIRST GROSS WEIGHT
-    const runnerWeight = Number(getValues('runnerWeight'))
-    const finishedWeight = Number(getValues('finishedWeight'))
-
+    const netWeight = checkForNull(getValues('netWeight')) // THIS IS FIRST GROSS WEIGHT
+    const runnerWeight = checkForNull(getValues('runnerWeight'))
+    const finishedWeight = checkForNull(getValues('finishedWeight'))
     const grossWeight = checkForNull(netWeight) + checkForNull(runnerWeight) + Number(findLostWeight(getPlasticData && getPlasticData.length > 0 ? getPlasticData : WeightCalculatorRequest.LossOfTypeDetails ? WeightCalculatorRequest.LossOfTypeDetails : [])) //THIS IS FINAL GROSS WEIGHT -> FIRST GROSS WEIGHT + RUNNER WEIGHT +NET LOSS WEIGHT
 
-    // const finishedWeight = checkForNull(grossWeight) + checkForNull(lostSum)
     if (finishedWeight > grossWeight) {
+      setValue('finishedWeight', 0)
       Toaster.warning('Finish Weight should not be greater than gross weight')
       return false
     }
@@ -160,10 +161,18 @@ function Plastic(props) {
     setLostWeight(lostSum)
 
   }
+  /**
+     * @method cancel
+     * @description used to Reset form
+     */
+  const cancel = () => {
+    props.toggleDrawer('')
+  }
   const onSubmit = () => {
+    DisableMasterBatchCheckbox(true)
     let obj = {}
     obj.PlasticWeightCalculatorId = WeightCalculatorRequest && WeightCalculatorRequest.PlasticWeightCalculatorId ? WeightCalculatorRequest.PlasticWeightCalculatorId : "0"
-    obj.BaseCostingIdRef = costData.CostingId
+    obj.BaseCostingIdRef = item.CostingId
     obj.TechnologyId = costData.TechnologyId
     obj.RawMaterialIdRef = rmRowData.RawMaterialId
     obj.CostingRawMaterialDetailsIdRef = rmRowData.RawMaterialDetailId
@@ -193,15 +202,6 @@ function Plastic(props) {
         props.toggleDrawer('', obj)
       }
     }))
-    // props.toggleDrawer('', obj)
-  }
-  /**
-   * @method onCancel
-   * @description on cancel close the drawer
-   */
-  const onCancel = () => {
-    dispatch(setPlasticArray([]))
-    props.toggleDrawer('')
   }
 
   const tableData = (value = []) => {
@@ -218,10 +218,7 @@ function Plastic(props) {
   return (
     <Fragment>
       <Row>
-
-        <form noValidate className="form"
-        // onSubmit={handleSubmit(onSubmit)}
-        >
+        <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}>
           <Col md="12">
             <div className="costing-border px-4">
               <Row>
@@ -234,7 +231,7 @@ function Plastic(props) {
 
               <Row className={''}>
                 <Col md="3" >
-                  <TextFieldHookForm
+                  <NumberFieldHookForm
                     label={`Gross Weight (Kg)`}
                     name={'netWeight'}
                     Controller={Controller}
@@ -244,9 +241,8 @@ function Plastic(props) {
                     rules={{
                       required: true,
                       pattern: {
-                        //value: /^[0-9]*$/i,
-                        value: /^[0-9]\d*(\.\d+)?$/i,
-                        message: 'Invalid Number.',
+                        value: /^\d{0,4}(\.\d{0,6})?$/i,
+                        message: 'Maximum length for interger is 4 and for decimal is 6',
                       },
                       // maxLength: 4,
                     }}
@@ -255,11 +251,11 @@ function Plastic(props) {
                     className=""
                     customClassName={'withBorder'}
                     errors={errors.netWeight}
-                    disabled={props.CostingViewMode ? props.CostingViewMode : false}
+                    disabled={props.CostingViewMode ? props.CostingViewMode : (tableVal?.length > 0 ? true : false)}
                   />
                 </Col>
                 <Col md="3">
-                  <TextFieldHookForm
+                  <NumberFieldHookForm
                     label={`Runner Weight`}
                     name={'runnerWeight'}
                     Controller={Controller}
@@ -269,11 +265,9 @@ function Plastic(props) {
                     rules={{
                       required: false,
                       pattern: {
-                        //value: /^[0-9]*$/i,
-                        value: /^[0-9]\d*(\.\d+)?$/i,
-                        message: 'Invalid Number.',
+                        value: /^\d{0,4}(\.\d{0,6})?$/i,
+                        message: 'Maximum length for interger is 4 and for decimal is 6',
                       },
-                      // maxLength: 4,
                     }}
                     handleChange={() => { }}
                     defaultValue={''}
@@ -303,7 +297,7 @@ function Plastic(props) {
 
               <Row className={'mt25'}>
                 <Col md="3" >
-                  <TextFieldHookForm
+                  <NumberFieldHookForm
                     label={`Total Gross Weight (Kg)`}
                     name={'grossWeight'}
                     Controller={Controller}
@@ -319,13 +313,21 @@ function Plastic(props) {
                   />
                 </Col>
                 <Col md="3" >
-                  <TextFieldHookForm
+                  <NumberFieldHookForm
                     label={`Finished Weight(Kg)`}
                     name={'finishedWeight'}
                     Controller={Controller}
                     control={control}
                     register={register}
                     mandatory={false}
+                    rules={{
+                      required: true,
+                      pattern: {
+                        value: /^\d{0,4}(\.\d{0,7})?$/i,
+                        message: 'Maximum length for interger is 4 and for decimal is 7',
+                      },
+
+                    }}
                     handleChange={() => { }}
                     defaultValue={''}
                     className=""
@@ -335,7 +337,7 @@ function Plastic(props) {
                   />
                 </Col>
                 <Col md="3">
-                  <TextFieldHookForm
+                  <NumberFieldHookForm
                     label={`Scrap Weight(Kg)`}
                     name={'scrapWeight'}
                     Controller={Controller}
@@ -354,7 +356,7 @@ function Plastic(props) {
                   />
                 </Col>
                 <Col md="3">
-                  <TextFieldHookForm
+                  <NumberFieldHookForm
                     label={`Burning Allowance`}
                     name={'burningAllownace'}
                     Controller={Controller}
@@ -370,7 +372,7 @@ function Plastic(props) {
                   />
                 </Col>
                 <Col md="3">
-                  <TextFieldHookForm
+                  <NumberFieldHookForm
                     label={`RM Cost`}
                     name={'rmCost'}
                     Controller={Controller}
@@ -386,7 +388,7 @@ function Plastic(props) {
                   />
                 </Col>
                 <Col md="3">
-                  <TextFieldHookForm
+                  <NumberFieldHookForm
                     label={`Scrap Cost`}
                     name={'scrapCost'}
                     Controller={Controller}
@@ -403,7 +405,7 @@ function Plastic(props) {
                 </Col>
 
                 <Col md="3">
-                  <TextFieldHookForm
+                  <NumberFieldHookForm
                     // Confirm this name from tanmay sir
                     label={`Net RM Cost`}
                     name={'materialCost'}
@@ -423,24 +425,21 @@ function Plastic(props) {
 
             </div>
           </Col>
-          <div className="mt25 col-md-12 text-right">
+
+          {!CostingViewMode && <div className="col-sm-12 text-right px-0 mt-4">
             <button
-              onClick={onCancel} // Need to change this cancel functionality
-              type="submit"
-              value="CANCEL"
+              type={'button'}
               className="reset mr15 cancel-btn"
-            >
-              <div className={'cancel-icon'}></div>
-              CANCEL
+              onClick={cancel} >
+              <div className={'cancel-icon'}></div> {'Cancel'}
             </button>
             <button
-              type="submit"
-              disabled={props.CostingViewMode}
-              onClick={onSubmit} className="submit-button save-btn">
+              type={'submit'}
+              className="submit-button save-btn">
               <div className={'save-icon'}></div>
-              {'SAVE'}
+              {'Save'}
             </button>
-          </div>
+          </div>}
         </form>
 
       </Row>

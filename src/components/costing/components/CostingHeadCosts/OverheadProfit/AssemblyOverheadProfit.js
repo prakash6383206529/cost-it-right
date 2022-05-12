@@ -51,36 +51,33 @@ function AssemblyOverheadProfit(props) {
     }
   }
 
-  const nestedAssembly = children && children.map(el => {
-    if (el.PartType !== 'Sub Assembly') return false;
-    return <AssemblyOverheadProfit
-      index={index}
-      item={el}
-      children={el.CostingChildPartDetails}
-      toggleAssembly={props.toggleAssembly}
-      OverheadCost={props.OverheadCost}
-      ProfitCost={props.ProfitCost}
-      setOverheadDetail={props.setOverheadDetail}
-      setProfitDetail={props.setProfitDetail}
-      setRejectionDetail={props.setRejectionDetail}
-      setICCDetail={props.setICCDetail}
-      setPaymentTermsDetail={props.setPaymentTermsDetail}
-      saveCosting={props.saveCosting}
-    />
-  })
+  /*************************DON'T REMOVE FOR NOW MAY BE USE LATER******************************************/
+  // const nestedAssembly = children && children.map(el => {
+  //   if (el.PartType !== 'Sub Assembly') return false;
+  //   return <AssemblyOverheadProfit
+  //     index={index}
+  //     item={el}
+  //     children={el.CostingChildPartDetails}
+  //     toggleAssembly={props.toggleAssembly}
+  //     OverheadCost={props.OverheadCost}
+  //     ProfitCost={props.ProfitCost}
+  //     setOverheadDetail={props.setOverheadDetail}
+  //     setProfitDetail={props.setProfitDetail}
+  //     setRejectionDetail={props.setRejectionDetail}
+  //     setICCDetail={props.setICCDetail}
+  //     setPaymentTermsDetail={props.setPaymentTermsDetail}
+  //     saveCosting={props.saveCosting}
+  //   />
+  // })
 
-  /**
-  * @method onSubmit
-  * @description Used to Submit the form
-  */
-  const onSubmit = (values) => { }
+
 
 
   /**
-  * @method onSubmit
+  * @method saveCosting
   * @description Used to Submit the form
   */
-  const saveCosting = (values) => {
+  const saveCosting = () => {
     const tabData = RMCCTabData[0]
     const surfaceTabData = SurfaceTabData[0]
     const overHeadAndProfitTabData = OverheadProfitTabData[0]
@@ -89,7 +86,7 @@ function AssemblyOverheadProfit(props) {
     let reqData = {
       "CostingId": item.CostingId,
       "LoggedInUserId": loggedInUserId(),
-      "IsSurfaceTreatmentApplicable": true,
+      "IsIncludeSurfaceTreatmentWithOverheadAndProfit": props.IsIncludeSurfaceTreatment,
       "IsApplicableForChildParts": false,
       "CostingNumber": costData.CostingNumber,
       "NetOverheadAndProfitCost": checkForNull(item.CostingPartDetails.OverheadCost) +
@@ -134,8 +131,8 @@ function AssemblyOverheadProfit(props) {
   return (
     <>
       <tr id="assembly-costing-header" className="accordian-row" onClick={() => toggle(item.BOMLevel, item.PartNumber)} >
-        <td>
-          <span style={{ position: 'relative' }} className={`cr-prt-nm1 cr-prt-link1 ${item && item.BOMLevel}`}>
+        <td className='part-overflow'>
+          <span className={`part-name ${item && item.BOMLevel}`} title={`${item && item.PartNumber}-${item && item.BOMLevel}`}>
             {item && item.PartNumber}-{item && item.BOMLevel}<div className={`${item.IsOpen ? 'Open' : 'Close'}`}></div>
           </span>
         </td>

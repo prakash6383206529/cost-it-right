@@ -50,7 +50,12 @@ function BOPCost(props) {
         PartNumber: props.item.PartNumber,
       }
       if (!CostingViewMode && !IsLocked) {
-        props.setBOPCost(gridData, Params, item)
+        const BOPHandlingFields = {
+          IsApplyBOPHandlingCharges: IsApplyBOPHandlingCharges,
+          BOPHandlingPercentage: getValues('BOPHandlingPercentage'),
+          BOPHandlingCharges: getValues('BOPHandlingCharges'),
+        }
+        props.setBOPCost(gridData, Params, item, BOPHandlingFields)
         if (JSON.stringify(gridData) !== JSON.stringify(oldGridData)) {
           dispatch(isDataChange(true))
         }
@@ -343,7 +348,7 @@ function BOPCost(props) {
                       <th style={{ width: "220px" }} >{`BOP Cost (INR)`}</th>
                       <th style={{ width: "220px" }} >{`Quantity`}</th>
                       <th style={{ width: "220px" }} >{`Net BOP Cost`}</th>
-                      <th style={{ width: "145px" }}>{`Action`}</th>
+                      <th style={{ width: "145px", textAlign: "right" }}>{`Action`}</th>
                     </tr>
                   </thead>
                   <tbody className='rm-table-body'>
@@ -415,8 +420,10 @@ function BOPCost(props) {
                               </td>
                               <td>{item.NetBoughtOutPartCost !== undefined ? checkForDecimalAndNull(item.NetBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
                               <td>
-                                {!CostingViewMode && !IsLocked && <button className="SaveIcon mr-2" type={'button'} onClick={() => SaveItem(index)} />}
-                                {!CostingViewMode && !IsLocked && <button className="CancelIcon " type={'button'} onClick={() => CancelItem(index)} />}
+                                <div className='action-btn-wrapper'>
+                                  {!CostingViewMode && !IsLocked && <button className="SaveIcon" type={'button'} onClick={() => SaveItem(index)} />}
+                                  {!CostingViewMode && !IsLocked && <button className="CancelIcon" type={'button'} onClick={() => CancelItem(index)} />}
+                                </div>
                               </td>
                             </tr>
                             :
@@ -428,8 +435,10 @@ function BOPCost(props) {
                               <td style={{ width: 200 }}>{checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForInputOutput)}</td>
                               <td>{item.NetBoughtOutPartCost ? checkForDecimalAndNull(item.NetBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
                               <td>
-                                {!CostingViewMode && !IsLocked && <button className="Edit mr-2" type={'button'} onClick={() => editItem(index)} />}
-                                {!CostingViewMode && !IsLocked && <button className="Delete " type={'button'} onClick={() => deleteItem(index)} />}
+                                <div className='action-btn-wrapper'>
+                                  {!CostingViewMode && !IsLocked && <button className="Edit" type={'button'} onClick={() => editItem(index)} />}
+                                  {!CostingViewMode && !IsLocked && <button className="Delete " type={'button'} onClick={() => deleteItem(index)} />}
+                                </div>
                               </td>
                             </tr>
 

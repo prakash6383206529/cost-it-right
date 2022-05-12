@@ -8,7 +8,7 @@ import { saveAssemblyCostingRMCCTab, saveAssemblyPartRowCostingCalculation } fro
 import OperationCost from '../CostingHeadCosts/Part/OperationCost';
 import ToolCost from '../CostingHeadCosts/Part/ToolCost';
 import { loggedInUserId, checkForDecimalAndNull, checkForNull } from '../../../../helper';
-import { createToprowObjAndSave } from '../../CostingUtil';
+import { createToprowObjAndSave, findSurfaceTreatmentData } from '../../CostingUtil';
 
 function AddAssemblyOperation(props) {
   const { item, CostingViewMode, isAssemblyTechnology } = props;
@@ -61,6 +61,8 @@ function AddAssemblyOperation(props) {
     if (isAssemblyTechnology) {
       props.setOperationCostFunction(item?.CostingPartDetails?.TotalOperationCostPerAssembly)
     }
+    let stCostingData = findSurfaceTreatmentData(item)
+    console.log('stCostingData: ', stCostingData);
     let requestData = {
       "CostingId": item.CostingId,
       "CostingNumber": item.CostingNumber,
@@ -89,7 +91,7 @@ function AddAssemblyOperation(props) {
       "TotalProcessCost": item.CostingPartDetails.TotalProcessCost,
       "TotalOperationCost": item.CostingPartDetails.TotalOperationCost,
       "NetTotalRMBOPCC": item.CostingPartDetails.TotalCalculatedRMBOPCCCost,
-      "TotalCost": item.CostingPartDetails.TotalCalculatedRMBOPCCCost,
+      "TotalCost": stCostingData && Object.keys.length > 0 ? checkForNull(item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity) + checkForNull(stCostingData.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostWithQuantitys) : item.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity,
       "LoggedInUserId": loggedInUserId(),
       "EffectiveDate": CostingEffectiveDate,
 
@@ -110,12 +112,10 @@ function AddAssemblyOperation(props) {
         "TotalBoughtOutPartCost": item.CostingPartDetails.TotalBoughtOutPartCost,
         "TotalConversionCost": item.CostingPartDetails.TotalConversionCost,
         "TotalCalculatedRMBOPCCCost": item.CostingPartDetails.TotalCalculatedRMBOPCCCost,
-
         "TotalRawMaterialsCostWithQuantity": item.CostingPartDetails.TotalRawMaterialsCostWithQuantity,
         "TotalBoughtOutPartCostWithQuantity": item.CostingPartDetails.TotalBoughtOutPartCostWithQuantity,
         "TotalConversionCostWithQuantity": item.CostingPartDetails.TotalConversionCostWithQuantity,
         "TotalCalculatedRMBOPCCCostWithQuantity": item.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity,
-
         "Quantity": item.CostingPartDetails.Quantity,
         "IsOpen": true,
         "IsShowToolCost": item.CostingPartDetails.IsShowToolCost === null ? true : true,

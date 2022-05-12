@@ -13,6 +13,7 @@ function UomTimeProcessDefaultCalculator(props) {
     const costData = useContext(costingInfoContext);
     const dispatch = useDispatch()
     const [dataToSend, setDataToSend] = useState({ ...WeightCalculatorRequest })
+    let TotalCycleTimeSecGlobal = 0
 
     const defaultValues = {
         cuttingDiameter: WeightCalculatorRequest && WeightCalculatorRequest.CuttingDiameter !== undefined ? WeightCalculatorRequest.CuttingDiameter : '',
@@ -81,20 +82,23 @@ function UomTimeProcessDefaultCalculator(props) {
         const totalLengthDepth = (checkForNull(lengthDepth) * checkForNull(noOfPasses))
         setDataToSend(prevState => ({ ...prevState, totalLengthDepth: totalLengthDepth }))
         setValue('totalLengthDepth', checkForDecimalAndNull(totalLengthDepth, getConfigurationKey().NoOfDecimalForInputOutput))
-        const cuttingTimeMins = totalLengthDepth / checkForNull(dataToSend.Feed);
-        setDataToSend(prevState => ({ ...prevState, cuttingTimeMins: cuttingTimeMins }))
-        setValue('cuttingTimeMins', checkForDecimalAndNull(cuttingTimeMins, getConfigurationKey().NoOfDecimalForInputOutput))
+        const CuttingTimeMins = totalLengthDepth / checkForNull(dataToSend.Feed);
+        setDataToSend(prevState => ({ ...prevState, CuttingTimeMins: CuttingTimeMins }))
+        setValue('cuttingTimeMins', checkForDecimalAndNull(CuttingTimeMins, getConfigurationKey().NoOfDecimalForInputOutput))
     }
+
+
 
     const setTotalCycleTimeMins = () => {
         const chipToChipTiming = Number(getValues('chipToChipTiming'))
         const totalNonCuttingTime = Number(getValues('totalNonCuttingTime'))
         const indexingTablePositioningTime = Number(getValues('indexingTablePositioningTime'))
         const loadingAndUnloadingTime = Number(getValues('loadingAndUnloadingTime'))
-        const totalCycleTimeMins = (checkForNull(dataToSend.cuttingTimeMins) + checkForNull(chipToChipTiming) + checkForNull(totalNonCuttingTime) + checkForNull(indexingTablePositioningTime) + checkForNull(loadingAndUnloadingTime))
+        const totalCycleTimeMins = (checkForNull(dataToSend.CuttingTimeMins) + checkForNull(chipToChipTiming) + checkForNull(totalNonCuttingTime) + checkForNull(indexingTablePositioningTime) + checkForNull(loadingAndUnloadingTime))
         setDataToSend(prevState => ({ ...prevState, totalCycleTimeMins: totalCycleTimeMins }))
         setValue('totalCycleTimeMins', checkForDecimalAndNull(totalCycleTimeMins, getConfigurationKey().NoOfDecimalForInputOutput))
         const TotalCycleTimeSec = (checkForNull(totalCycleTimeMins) * 60)
+        TotalCycleTimeSecGlobal = TotalCycleTimeSec
         setDataToSend(prevState => ({ ...prevState, TotalCycleTimeSec: TotalCycleTimeSec }))
         setValue('TotalCycleTimeSec', checkForDecimalAndNull(TotalCycleTimeSec, getConfigurationKey().NoOfDecimalForInputOutput))
     }
@@ -102,7 +106,7 @@ function UomTimeProcessDefaultCalculator(props) {
 
     const setPartsPerHour = () => {
         const efficiencyPercentage = Number(getValues('efficiencyPercentage'))
-        const partsPerHour = (3600 / checkForNull(dataToSend.TotalCycleTimeSec)) * (checkForNull(efficiencyPercentage / 100))
+        const partsPerHour = (3600 / checkForNull(TotalCycleTimeSecGlobal)) * (checkForNull(efficiencyPercentage / 100))
         setDataToSend(prevState => ({ ...prevState, partsPerHour: partsPerHour }))
         setValue('partsPerHour', checkForDecimalAndNull(partsPerHour, getConfigurationKey().NoOfDecimalForInputOutput))
         const processCost = (props?.calculatorData?.MHR) / partsPerHour
@@ -117,7 +121,7 @@ function UomTimeProcessDefaultCalculator(props) {
         obj.CostingProcessDetailsId = WeightCalculatorRequest && WeightCalculatorRequest.CostingProcessDetailId ? WeightCalculatorRequest.CostingProcessDetailId : "00000000-0000-0000-0000-000000000000"
         obj.IsChangeApplied = true
         obj.TechnologyId = costData.TechnologyId
-        obj.BaseCostingId = costData.CostingId
+        obj.BaseCostingId = props?.item?.CostingId
         obj.TechnologyName = costData.TechnologyName
         obj.PartId = costData.PartId
         obj.UnitOfMeasurementId = props.calculatorData.UnitOfMeasurementId
@@ -141,7 +145,7 @@ function UomTimeProcessDefaultCalculator(props) {
         obj.LengthDepth = value.lengthDepth
         obj.NoOfPass = value.noOfPasses
         obj.TotalLengthDepth = dataToSend.totalLengthDepth
-        obj.CuttingTimeMins = dataToSend.cuttingTimeMins
+        obj.CuttingTimeMins = dataToSend.CuttingTimeMins
         obj.ChipToChipTiming = value.chipToChipTiming
         obj.TotalNonCuttingTime = value.totalNonCuttingTime
         obj.IndexingTablePositioningTime = value.indexingTablePositioningTime
@@ -334,7 +338,7 @@ function UomTimeProcessDefaultCalculator(props) {
                                                 register={register}
                                                 mandatory={false}
                                                 rules={{
-                                                    required: true,
+                                                    required: false,
                                                     pattern: {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                         message: 'Maximum length for interger is 4 and for decimal is 7',
@@ -369,7 +373,7 @@ function UomTimeProcessDefaultCalculator(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.lengthDepth}
-                                                disabled={false}
+                                                disabled={props.CostingViewMode ? props.CostingViewMode : false}
                                             />
                                         </Col>
                                         <Col md="4">
@@ -392,7 +396,7 @@ function UomTimeProcessDefaultCalculator(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.noOfPasses}
-                                                disabled={false}
+                                                disabled={props.CostingViewMode ? props.CostingViewMode : false}
                                             />
                                         </Col>
 
@@ -452,7 +456,7 @@ function UomTimeProcessDefaultCalculator(props) {
                                                 control={control}
                                                 register={register}
                                                 rules={{
-                                                    required: true,
+                                                    required: false,
                                                     pattern: {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                         message: 'Maximum length for interger is 4 and for decimal is 7',
@@ -464,7 +468,7 @@ function UomTimeProcessDefaultCalculator(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.chipToChipTiming}
-                                                disabled={false}
+                                                disabled={props.CostingViewMode ? props.CostingViewMode : false}
                                             />
                                         </Col>
 
@@ -477,7 +481,7 @@ function UomTimeProcessDefaultCalculator(props) {
                                                 register={register}
                                                 mandatory={false}
                                                 rules={{
-                                                    required: true,
+                                                    required: false,
                                                     pattern: {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                         message: 'Maximum length for interger is 4 and for decimal is 7',
@@ -501,7 +505,7 @@ function UomTimeProcessDefaultCalculator(props) {
                                                 register={register}
                                                 mandatory={false}
                                                 rules={{
-                                                    required: true,
+                                                    required: false,
                                                     pattern: {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                         message: 'Maximum length for interger is 4 and for decimal is 7',
@@ -512,7 +516,7 @@ function UomTimeProcessDefaultCalculator(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.indexingTablePositioningTime}
-                                                disabled={false}
+                                                disabled={props.CostingViewMode ? props.CostingViewMode : false}
                                             />
                                         </Col>
 
@@ -525,7 +529,7 @@ function UomTimeProcessDefaultCalculator(props) {
                                                 register={register}
                                                 mandatory={false}
                                                 rules={{
-                                                    required: true,
+                                                    required: false,
                                                     pattern: {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                         message: 'Maximum length for interger is 4 and for decimal is 7',
@@ -536,7 +540,7 @@ function UomTimeProcessDefaultCalculator(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.loadingAndUnloadingTime}
-                                                disabled={false}
+                                                disabled={props.CostingViewMode ? props.CostingViewMode : false}
                                             />
                                         </Col>
 
@@ -592,13 +596,13 @@ function UomTimeProcessDefaultCalculator(props) {
                                                         message: "Should not be greater than 100"
                                                     }
                                                 }}
-                                                mandatory={false}
+                                                mandatory={true}
                                                 handleChange={() => { }}
                                                 defaultValue={''}
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.efficiencyPercentage}
-                                                disabled={false}
+                                                disabled={props.CostingViewMode ? props.CostingViewMode : false}
                                             />
                                         </Col>
 

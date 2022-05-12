@@ -9,7 +9,7 @@ import { EMPTY_DATA } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
 import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected } from '../../../../../helper';
 import { ViewCostingContext } from '../../CostingDetails';
-import { gridDataAdded, isDataChange, setRMCCErrors, setSelectedIds } from '../../../actions/Costing';
+import { gridDataAdded, isDataChange, setRMCCErrors, setSelectedIdsOperation } from '../../../actions/Costing';
 import Popup from 'reactjs-popup';
 
 let counter = 0;
@@ -105,15 +105,20 @@ function OperationCost(props) {
   * @description SELECTED IDS
   */
   const selectedIds = (tempArr) => {
-    tempArr && tempArr.map(el => {
-      if (Ids.includes(el.OperationId) === false) {
-        let selectedIds = Ids;
-        selectedIds.push(el.OperationId)
-        setIds(selectedIds)
-      }
-      return null;
-    })
-    dispatch(setSelectedIds(Ids))
+
+    let selectedId = Ids;
+    if (tempArr && tempArr.length > 0) {
+      tempArr && tempArr.map(el => {
+        if (Ids.includes(el.OperationId) === false) {
+          selectedId.push(el.OperationId)
+          setIds(selectedId)
+        }
+        return null;
+      })
+      dispatch(setSelectedIdsOperation(selectedId))
+    } else {
+      dispatch(setSelectedIdsOperation([]))
+    }
   }
 
   const onRemarkPopUpClick = (index) => {
@@ -148,7 +153,7 @@ function OperationCost(props) {
     })
     setIds(Ids && Ids.filter(item => item !== OperationId))
     setGridData(tempArr)
-    dispatch(setSelectedIds(Ids && Ids.filter(item => item !== OperationId)))
+    dispatch(setSelectedIdsOperation(Ids && Ids.filter(item => item !== OperationId)))
   }
 
   const editItem = (index) => {
@@ -162,6 +167,18 @@ function OperationCost(props) {
   }
 
   const SaveItem = (index) => {
+
+    let operationGridData = gridData[index]
+    if (operationGridData.UOM === 'Number') {
+      let isValid = Number.isInteger(Number(operationGridData.Quantity));
+      if (!isValid) {
+        Toaster.warning('Please enter numeric value')
+        setTimeout(() => {
+          setValue(`${OperationGridFields}.${index}.Quantity`, '')
+        }, 200)
+        return false
+      }
+    }
     setEditIndex('')
   }
 
@@ -285,7 +302,7 @@ function OperationCost(props) {
                       initialConfiguration.IsOperationLabourRateConfigure &&
                       <th style={{ width: "220px" }}>{`Labour Quantity`}</th>}
                     <th style={{ width: "220px" }}>{`Net Cost`}</th>
-                    <th style={{ width: "145px" }}>{`Action`}</th>
+                    <th style={{ width: "145px", textAlign: "right" }}>{`Action`}</th>
                   </tr>
                 </thead>
                 <tbody >
@@ -312,7 +329,7 @@ function OperationCost(props) {
                                     //required: true,
                                     pattern: {
                                       //value: /^[0-9]*$/i,
-                                      value: /^\d*\.?\d*$/,
+                                      value: item.UOM === "Number" ? /^[1-9]\d*$/ : /^\d*\.?\d*$/,
                                       message: 'Invalid Number.'
                                     },
                                   }}
@@ -367,8 +384,10 @@ function OperationCost(props) {
                               </td>}
                             <td>{netCost(item)}</td>
                             <td>
-                              <button className="SaveIcon mb-0 mr-2 align-middle" type={'button'} onClick={() => SaveItem(index)} />
-                              <button className="CancelIcon mb-0 align-middle" type={'button'} onClick={() => CancelItem(index)} />
+                              <div className='action-btn-wrapper'>
+                                <button className="SaveIcon mb-0 align-middle" type={'button'} onClick={() => SaveItem(index)} />
+                                <button className="CancelIcon mb-0 align-middle" type={'button'} onClick={() => CancelItem(index)} />
+                              </div>
                             </td>
                           </tr>
                           :
@@ -386,39 +405,41 @@ function OperationCost(props) {
                               <td>{item.IsLabourRateExist ? item.LabourQuantity : '-'}</td>}
                             <td>{netCost(item)}</td>
                             <td>
-                              {(!CostingViewMode && !IsLocked) && <button className="Edit  mr-2 mb-0 align-middle" type={'button'} onClick={() => editItem(index)} />}
-                              {(!CostingViewMode && !IsLocked) && <button className="Delete mb-0 align-middle" type={'button'} onClick={() => deleteItem(index, item.OperationId)} />}
-                              <Popup trigger={<button id={`popUpTriggerss${index}`} className="Comment-box ml-2 align-middle" type={'button'} />}
-                                position="top center">
-                                <TextAreaHookForm
-                                  label="Remark:"
-                                  name={`${OperationGridFields}.${index}.remarkPopUp`}
-                                  Controller={Controller}
-                                  control={control}
-                                  register={register}
-                                  mandatory={false}
-                                  rules={{
-                                    maxLength: {
-                                      value: 75,
-                                      message: "Remark should be less than 75 word"
-                                    },
-                                  }}
-                                  handleChange={(e) => { }}
-                                  defaultValue={item.Remark ?? item.Remark}
-                                  className=""
-                                  customClassName={"withBorder"}
-                                  errors={errors && errors.OperationGridFields && errors.OperationGridFields[index] !== undefined ? errors.OperationGridFields[index].remarkPopUp : ''}
-                                  //errors={errors && errors.remarkPopUp && errors.remarkPopUp[index] !== undefined ? errors.remarkPopUp[index] : ''}                        
-                                  disabled={(CostingViewMode || IsLocked) ? true : false}
-                                  hidden={false}
-                                />
-                                <Row>
-                                  <Col md="12" className='remark-btn-container'>
-                                    <button className='submit-button mr-2' disabled={(CostingViewMode || IsLocked) ? true : false} onClick={() => onRemarkPopUpClick(index)} > <div className='save-icon'></div> </button>
-                                    <button className='reset' onClick={() => onRemarkPopUpClose(index)} > <div className='cancel-icon'></div></button>
-                                  </Col>
-                                </Row>
-                              </Popup>
+                              <div className='action-btn-wrapper'>
+                                {(!CostingViewMode && !IsLocked) && <button className="Edit mb-0 align-middle" type={'button'} onClick={() => editItem(index)} />}
+                                {(!CostingViewMode && !IsLocked) && <button className="Delete mb-0 align-middle" type={'button'} onClick={() => deleteItem(index, item.OperationId)} />}
+                                <Popup trigger={<button id={`popUpTriggerss${index}`} className="Comment-box align-middle" type={'button'} />}
+                                  position="top center">
+                                  <TextAreaHookForm
+                                    label="Remark:"
+                                    name={`${OperationGridFields}.${index}.remarkPopUp`}
+                                    Controller={Controller}
+                                    control={control}
+                                    register={register}
+                                    mandatory={false}
+                                    rules={{
+                                      maxLength: {
+                                        value: 75,
+                                        message: "Remark should be less than 75 word"
+                                      },
+                                    }}
+                                    handleChange={(e) => { }}
+                                    defaultValue={item.Remark ?? item.Remark}
+                                    className=""
+                                    customClassName={"withBorder"}
+                                    errors={errors && errors.OperationGridFields && errors.OperationGridFields[index] !== undefined ? errors.OperationGridFields[index].remarkPopUp : ''}
+                                    //errors={errors && errors.remarkPopUp && errors.remarkPopUp[index] !== undefined ? errors.remarkPopUp[index] : ''}                        
+                                    disabled={(CostingViewMode || IsLocked) ? true : false}
+                                    hidden={false}
+                                  />
+                                  <Row>
+                                    <Col md="12" className='remark-btn-container'>
+                                      <button className='submit-button mr-2' disabled={(CostingViewMode || IsLocked) ? true : false} onClick={() => onRemarkPopUpClick(index)} > <div className='save-icon'></div> </button>
+                                      <button className='reset' onClick={() => onRemarkPopUpClose(index)} > <div className='cancel-icon'></div></button>
+                                    </Col>
+                                  </Row>
+                                </Popup>
+                              </div>
                             </td>
                           </tr>
                       )

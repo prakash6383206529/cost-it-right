@@ -837,7 +837,7 @@ export function getCostingBOP(costingId, callback) {
       }
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
-      //apiErrors(error);
+      apiErrors(error);
     });
   };
 }
@@ -1055,6 +1055,23 @@ export function getCostingBulkUploadList(callback) {
   };
 }
 
+
+export function generateReport(callback) {
+  return (dispatch) => {
+    dispatch({ type: API_REQUEST });
+    const request = axios.get(`${API.generateReport}`, headers);
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
+
 export function getErrorFile(costingId, callback) {
   return (dispatch) => {
     const request = axios.get(`${API.getErrorFile}/${costingId}`, headers);
@@ -1084,7 +1101,7 @@ export function bulkUploadCosting(data, callback) {
       }
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
-      //apiErrors(error);
+      apiErrors(error);
     });
   };
 }
@@ -1105,7 +1122,7 @@ export function sendForApprovalFromBulkUpload(data, callback) {
       }
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
-      //apiErrors(error);
+      apiErrors(error);
     });
   };
 }
@@ -1193,20 +1210,20 @@ export function getProcessCalculation(costingId, processId, processCalculationId
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
       callback(error);
-      // apiErrors(error);
+      apiErrors(error);
     });
   };
 }
 
 
 
-export function getProcessMachiningCalculation(costingId, processId, processCalculationId, callback) {
+export function getProcessMachiningCalculation(processCalculationId, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const queryParams = `costingId=${costingId}&processId=${processId}&weightCalculationId=${processCalculationId ? processCalculationId : 0}`
+    const queryParams = `&weightCalculationId=${processCalculationId ? processCalculationId : 0}`
     const request = axios.get(`${API.getProcessMachiningCalculation}?${queryParams}`, headers);
     request.then((response) => {
-      if (response.data.Result) {
+      if (response.data.Result || response.status === 204) {
         // dispatch({
         //   type: GET_RAW_MATERIAL_CALCI_INFO,
         //   payload: response.data.Data,
@@ -1218,20 +1235,19 @@ export function getProcessMachiningCalculation(costingId, processId, processCalc
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
       callback(error);
-      // apiErrors(error);
+      apiErrors(error);
     });
   };
 }
 
 
-export function getProcessDefaultCalculation(costingId, processId, processCalculationId, callback) {
+export function getProcessDefaultCalculation(processCalculationId, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const queryParams = `costingId=${costingId}&processId=${processId}&weightCalculationId=${processCalculationId ? processCalculationId : 0}`
+    const queryParams = `weightCalculationId=${processCalculationId ? processCalculationId : 0}`
     const request = axios.get(`${API.getProcessDefaultCalculation}?${queryParams}`, headers);
     request.then((response) => {
-      if (response.data.Result) {
-
+      if (response.data.Result || response.status === 204) {
         callback(response);
       } else {
         Toaster.error(MESSAGES.SOME_ERROR);
@@ -1239,7 +1255,7 @@ export function getProcessDefaultCalculation(costingId, processId, processCalcul
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
       callback(error);
-      // apiErrors(error);
+      apiErrors(error);
     });
   };
 }
@@ -1259,7 +1275,7 @@ export function plasticBulkUploadCosting(data, callback) {
       }
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
-      //apiErrors(error);
+      apiErrors(error);
     });
   };
 }
@@ -1274,7 +1290,7 @@ export function machiningBulkUploadCosting(data, callback) {
       }
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
-      //apiErrors(error);
+      apiErrors(error);
     });
   };
 }
