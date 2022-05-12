@@ -498,9 +498,15 @@ function ReportListing(props) {
 
     const renderColumn = (fileName) => {
 
-        let tempData
+        let tempData = []
         if (selectedRowData.length === 0) {
-            tempData = reportListingData
+            reportListingData && reportListingData.map((item) => {
+                if (item.Status === "ApprovedByASMSimulation" || item.Status === "CreatedByAssembly") {
+                    return false
+                } else {
+                    tempData.push(item)
+                }
+            })
         }
         else {
             tempData = selectedRowData
@@ -578,6 +584,15 @@ function ReportListing(props) {
         setCurrentRowIndex(0)
         getTableData(0, 100, true, floatingFilterData, true, true);
     }
+
+    const isRowSelectable = (rowNode) => {
+        if (rowNode.data.Status === "ApprovedByASMSimulation" || rowNode.data.Status === "CreatedByAssembly") {
+            return false
+        } else {
+            return true
+        }
+    }
+
     return (
         <div className="container-fluid report-listing-page ag-grid-react">
             {isLoader && <LoaderCustom />}
@@ -644,6 +659,7 @@ function ReportListing(props) {
                         suppressPaginationPanel={true}
                         rowSelection={'multiple'}
                         frameworkComponents={frameworkComponents}
+                        isRowSelectable={isRowSelectable}
                         onSelectionChanged={onRowSelect}
                     >
 
