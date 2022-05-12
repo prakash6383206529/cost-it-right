@@ -21,7 +21,8 @@ import { MACHINING, } from '../../../../../config/masterData'
 let counter = 0;
 function ProcessCost(props) {
   const { data, item, isAssemblyTechnology } = props
-  const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
+  console.log('isAssemblyTechnology: ', isAssemblyTechnology);
+  const IsLocked = (item?.IsLocked ? item?.IsLocked : false) || (item?.IsPartLocked ? item?.IsPartLocked : false)
   const processGroup = getConfigurationKey().IsMachineProcessGroup
   const { register, control, formState: { errors }, setValue, getValues } = useForm({
     mode: 'onChange',
@@ -39,6 +40,7 @@ function ProcessCost(props) {
   const [MachineIds, setMachineIds] = useState([])
   const [isOpen, setIsOpen] = useState(data && data.IsShowToolCost)
   const [tabData, setTabData] = useState(props.data)
+  console.log('tabData: ', tabData);
   const [oldTabData, setOldTabData] = useState(props.data)
   const [oldGridData, setOldGridData] = useState(data && data.CostingProcessCostResponse)
   const [isCalculator, setIsCalculator] = useState(false)
@@ -98,7 +100,7 @@ function ProcessCost(props) {
         props?.setConversionCost(tabData, Params, item)
       }
       if (isFromApi) {
-        let apiArr = formatMainArr(tabData.CostingProcessCostResponse)
+        let apiArr = formatMainArr(tabData?.CostingProcessCostResponse)
 
         // tabData.CostingProcessCostResponse && tabData.CostingProcessCostResponse.map((item) => {
 
@@ -117,8 +119,10 @@ function ProcessCost(props) {
       }
 
 
-      if (JSON.stringify(tabData) !== JSON.stringify(oldTabData)) {
-        props.setConversionCost(tabData, Params, item)
+      if (!isAssemblyTechnology) {
+        if (JSON.stringify(tabData) !== JSON.stringify(oldTabData)) {
+          props.setConversionCost(tabData, Params, item)
+        }
       }
     }
   }, [tabData]);

@@ -157,6 +157,8 @@ function AssemblyTechnology(props) {
                 setToolCost={props.setToolCost}
                 subAssembId={item.CostingId}
                 getCostPerPiece={getCostPerPiece}
+                setConversionCost={props.setConversionCost}
+
             />
         }
     })
@@ -318,7 +320,7 @@ function AssemblyTechnology(props) {
                     isEditFlag={false}
                     ID={''}
                     anchor={'right'}
-                    ccData={subAssemblyTechnologyArray[0].CostingPartDetails !== null && subAssemblyTechnologyArray[0].CostingPartDetails.CostingConversionCost}
+                    ccData={subAssemblyTechnologyArray[0].CostingPartDetails !== null && subAssemblyTechnologyArray[0]?.CostingPartDetails?.CostingConversionCost}
                     setProcessCostFunction={props.setProcessCostFunction}
 
                 // Ids={Ids}
