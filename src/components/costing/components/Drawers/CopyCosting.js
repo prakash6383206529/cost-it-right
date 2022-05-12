@@ -4,7 +4,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import Drawer from '@material-ui/core/Drawer';
 import Switch from 'react-switch';
-import { SearchableSelectHookForm, } from '../../../layout/HookFormInputs';
+import { DatePickerHookForm, SearchableSelectHookForm, } from '../../../layout/HookFormInputs';
 import { getPlantBySupplier, } from '../../../../actions/Common';
 import { getCostingSummaryByplantIdPartNo, saveCopyCosting, checkDataForCopyCosting } from '../../actions/Costing';
 import { VBC, ZBC } from '../../../../config/constants';
@@ -359,10 +359,17 @@ function CopyCosting(props) {
     // obj.
 
     dispatch(checkDataForCopyCosting(obj, (res) => {
-      setIsDisable(false)
-      const Data = res.data.Data
 
-      if (Data.IsRMExist && Data.IsOperationExist && Data.IsProcessExist && Data.IsBOPExist && Data.IsOtherOperationExist) {
+      setIsDisable(false)
+      if ('response' in res) {
+        if (res && res?.response?.data?.Result === false) {
+          return false
+        }
+
+      }
+      const Data = res?.data?.Data
+
+      if (Data?.IsRMExist && Data?.IsOperationExist && Data?.IsProcessExist && Data?.IsBOPExist && Data?.IsOtherOperationExist) {
 
         dispatch(
           saveCopyCosting(obj, (res) => {
@@ -738,7 +745,7 @@ function CopyCosting(props) {
                     </div>
                   )}
                   {/* <Col md="auto"> */}
-                  <div className="form-group mb-0 col-md-12">
+                  {/* <div className="form-group mb-0 col-md-12">
                     <label>Costing Effective Date<span className="asterisk-required">*</span></label>
                     <div className="inputbox date-section">
                       <DatePicker
@@ -759,6 +766,38 @@ function CopyCosting(props) {
                         disabledKeyboardNavigation
                         onChangeRaw={(e) => e.preventDefault()}
 
+                      />
+                    </div>
+                  </div> */}
+                  <div className="form-group mb-0 col-md-12">
+                    <div className="inputbox date-section">
+                      <DatePickerHookForm
+                        name={`EffectiveDate`}
+                        label={'Effective Date'}
+                        selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
+                        handleChange={(date) => {
+                          handleEffectiveDateChange(date)
+                        }}
+                        //defaultValue={data.effectiveDate != "" ? moment(data.effectiveDate).format('DD/MM/YYYY') : ""}
+                        rules={{ required: true }}
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        showMonthDropdown
+                        showYearDropdown
+                        dateFormat="DD/MM/YYYY"
+                        minDate={new Date(minDate)}
+                        //maxDate={new Date()}
+                        dropdownMode="select"
+                        placeholderText="Select date"
+                        customClassName="withBorder"
+                        className="withBorder"
+                        autoComplete={"off"}
+                        disabledKeyboardNavigation
+                        onChangeRaw={(e) => e.preventDefault()}
+                        disabled={false}
+                        mandatory={true}
+                        errors={errors.EffectiveDate}
                       />
                     </div>
                   </div>

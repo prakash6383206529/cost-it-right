@@ -98,11 +98,12 @@ class MachineMaster extends Component {
     * @method getDetails
     * @description DISPLAY MACHINE FORM
     */
-    getDetails = (data) => {
+    getDetails = (data, isMachineAssociate) => {
         this.setState({
             isMachineRateForm: true,
             isAddMoreDetails: false,
             editDetails: data,
+            isMachineAssociated: isMachineAssociate,
         })
     }
 
@@ -168,6 +169,7 @@ class MachineMaster extends Component {
                 displayMoreDetailsForm={this.displayMoreDetailsForm}
                 AddAccessibility={this.state.AddAccessibility}
                 EditAccessibility={this.state.EditAccessibility}
+                isMachineAssociated={this.state.isMachineAssociated}
             />
         }
 
@@ -176,6 +178,7 @@ class MachineMaster extends Component {
                 editDetails={this.state.editDetails}
                 data={this.state.data}
                 hideMoreDetailsForm={this.hideMoreDetailsForm}
+                isMachineAssociated={this.state.isMachineAssociated}
             />
         }
 

@@ -645,10 +645,10 @@ export function getProcessGroupByMachineId(machineId, callback) {
     return (dispatch) => {
         const request = axios.get(`${API.getProcessGroupList}/${machineId}`, headers)
         request.then((response) => {
-            if (response.data.Result) {
+            if ((response.data.Result) || response?.status === 204) {
                 dispatch({
                     type: SET_PROCESS_GROUP_LIST,
-                    payload: response.data.DataList
+                    payload: response?.status === 204 ? [] : response.data.DataList
                 })
                 callback(response)
             }
