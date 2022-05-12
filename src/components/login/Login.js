@@ -53,8 +53,8 @@ class Login extends Component {
    */
   onSubmit(values) {
 
-    var key = CryptoJS.enc.Utf8.parse('gQUJ79YKYm22Cazw');
-    var iv = CryptoJS.enc.Utf8.parse('eTEFSa0PinFKTQNB');
+    var key = CryptoJS.enc.Utf8.parse('awvmhujtecmcecmj');
+    var iv = CryptoJS.enc.Utf8.parse('vuqqsafvwouoqtgh');
     var encryptedpassword = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse(values.Password), key,
       {
         keySize: 128 / 8,
