@@ -21,7 +21,7 @@ import { getConfigurationKey } from '../../../../helper';
 const gridOptions = {};
 
 function AddProcess(props) {
-
+  const { groupMachineId } = props
   const [tableData, setTableDataList] = useState([]);
   const [selectedRowData, setSelectedRowData] = useState([]);
   const [updatedRowData, setUpdatedRowData] = useState([])
@@ -67,6 +67,15 @@ function AddProcess(props) {
       props.closeDrawer('', rowData)
     }
   };
+
+  useEffect(() => {
+    if (groupMachineId === '') {
+      setTableDataList(processDrawerList)
+    } else {
+      let filteredData = processDrawerList && processDrawerList.filter(item => item.MachineId === groupMachineId)
+      setTableDataList(filteredData)
+    }
+  }, [processDrawerList])
 
   useEffect(() => {
     if (costData.VendorType === ZBC) {
@@ -272,7 +281,7 @@ function AddProcess(props) {
               </Row>
               <Row>
                 <Col className='px-3'>
-                  {processGroup && <Nav tabs className="subtabs cr-subtabs-head process-wrapper">
+                  {processGroup && groupMachineId === '' && <Nav tabs className="subtabs cr-subtabs-head process-wrapper">
                     <NavItem>
                       <NavLink
                         className={classnames({ active: activeTab === '1' })}
@@ -300,7 +309,7 @@ function AddProcess(props) {
                         <Row className="mx-0">
                           <Col className="hidepage-size mt-2 px-0">
 
-                            <div className={`ag-grid-wrapper min-height-auto mt-2 height-width-wrapper ${processDrawerList && processDrawerList?.length <= 0 ? "overlay-contain" : ""}`}>
+                            <div className={`ag-grid-wrapper min-height-auto mt-2 height-width-wrapper ${tableData && tableData?.length <= 0 ? "overlay-contain" : ""}`}>
                               <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                                 <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
@@ -315,7 +324,7 @@ function AddProcess(props) {
                                   defaultColDef={defaultColDef}
                                   floatingFilter={true}
                                   domLayout='autoHeight'
-                                  rowData={processDrawerList}
+                                  rowData={tableData}
                                   pagination={true}
                                   paginationPageSize={10}
                                   onGridReady={onGridReady}
