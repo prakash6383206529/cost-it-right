@@ -9,6 +9,7 @@ import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepT
 import { EMPTY_GUID } from '../../../../../config/constants';
 import Switch from "react-switch";
 import DayTime from '../../../../common/DayTimeWrapper';
+import { ASSEMBLY } from '../../../../../config/masterData';
 
 function Icc(props) {
 
@@ -264,7 +265,7 @@ function Icc(props) {
                             onChange={onPressInventory}
                             checked={IsInventoryApplicable}
                             id="normal-switch"
-                            disabled={CostingViewMode ? true : false}
+                            disabled={CostingViewMode || (costData.TechnologyId === ASSEMBLY) ? true : false}
                             background="#4DC771"
                             onColor="#4DC771"
                             onHandleColor="#ffffff"

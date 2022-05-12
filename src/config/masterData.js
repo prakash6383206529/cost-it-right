@@ -3728,6 +3728,7 @@ export const tempObject = [
 
         },
         "CostingChildPartDetails": [
+            // Bop11    
             {
                 "JsonStage": "_apart",
                 "IsLocked": null,
@@ -3786,9 +3787,10 @@ export const tempObject = [
                     "TotalCalculatedRMBOPCCCostWithQuantity": null,
                     "TotalCalculatedRMBOPCCCostPerAssembly": null,
                     "TotalConversionCostWithQuantity": null,
-                    "CostPerPiece": undefined,
-                    "CostPerAssembly": undefined,
-                    "QuantityForSubAssembly": 68,
+                    "CostPerPiece": 50,
+                    // "CostPerAssembly": 1000,
+                    "CostPerAssemblyBOP": 1000,
+                    "QuantityForSubAssembly": 20,
                     "Quantity": 1,
                     "GrandTotalCost": null,
                     "IsOpen": false,
@@ -3814,6 +3816,7 @@ export const tempObject = [
                 },
                 "CostingChildPartDetails": []
             },
+            // LOWER CROSS BEAM FABRICATED 
             {
                 "JsonStage": "_apart",
                 "IsLocked": false,
@@ -3900,6 +3903,7 @@ export const tempObject = [
                 },
                 "CostingChildPartDetails": []
             },
+            // Test 07 
             {
                 "JsonStage": "_apart",
                 "IsLocked": false,
@@ -3986,6 +3990,7 @@ export const tempObject = [
                 },
                 "CostingChildPartDetails": []
             },
+            // demo part1   
             {
                 "JsonStage": "_apart",
                 "IsLocked": false,
@@ -4071,7 +4076,95 @@ export const tempObject = [
 
                 },
                 "CostingChildPartDetails": []
-            }
+            },
+            // Bop12     
+            {
+                "JsonStage": "_apart",
+                "IsLocked": null,
+                "IsPartLocked": false,
+                "IsCostingLocked": false,
+                "AssemblyPartId": "cfec4c09-84c8-4558-84a5-a9471c467aa6",
+                "AssemblyCostingId": "62b5325b-5f93-4848-a699-2020cd95038d",
+                "AssemblyPartNumber": "03022022",
+                "AssemblyPartName": "03022022",
+                "SubAssemblyCostingId": "62b5325b-5f93-4848-a699-2020cd95038d",
+                "CostingId": null,
+                "PartId": "21444211-078c-4f77-876b-45369efb6528",
+                "PartNumber": "011",
+                "PartName": "Bop12",
+                "BOMNumber": null,
+                "BOMLevel": "L1",
+                "ParentCostingDetailId": null,
+                "CostingDetailId": null,
+                "PartTypeId": 3,
+                "PartType": "BOP",
+                "IsScrapRecoveryPercentageApplied": null,
+                "Quantity": 1,
+                "IsOpen": false,
+                "IsShowToolCost": null,
+                "IsAssemblyPart": false,
+                "Sequence": 0,
+
+                "CostingPartDetails": {
+                    "JsonStage": "_innerPartDetail",
+                    "AssemblyPartId": null,
+                    "AssemblyPartNumber": null,
+                    "AssemblyPartName": null,
+                    "PartId": null,
+                    "PartNumber": null,
+                    "PartName": null,
+                    "BOMNumber": null,
+                    "BOMLevel": null,
+                    "CostingDetailId": null,
+                    "PartTypeId": null,
+                    "PartType": null,
+                    "IsApplyBOPHandlingCharges": null,
+                    "BOPHandlingPercentage": null,
+                    "BOPHandlingCharges": null,
+                    "TotalRawMaterialsCost": 0,
+                    "TotalBoughtOutPartCost": 0,
+                    "TotalConversionCost": 0,
+                    "TotalProcessCost": null,
+                    "TotalOperationCost": null,
+                    "TotalOtherOperationCost": null,
+                    "TotalToolCost": null,
+                    "BoughtOutPartUOM": null,
+                    "BoughtOutPartRate": 0,
+                    "TotalCalculatedRMBOPCCCost": 0,
+                    "TotalRawMaterialsCostWithQuantity": null,
+                    "TotalBoughtOutPartCostWithQuantity": null,
+                    "TotalCalculatedRMBOPCCCostWithQuantity": null,
+                    "TotalCalculatedRMBOPCCCostPerAssembly": null,
+                    "TotalConversionCostWithQuantity": null,
+                    "CostPerPiece": 50,
+                    // "CostPerAssembly": 1000,
+                    "CostPerAssemblyBOP": 1000,
+                    "QuantityForSubAssembly": 20,
+                    "Quantity": 1,
+                    "GrandTotalCost": null,
+                    "IsOpen": false,
+                    "IsShowToolCost": null,
+                    "IsToolCostProcessWise": null,
+                    "IsAssemblyPart": null,
+                    "Sequence": null,
+                    "TotalOperationCostSubAssembly": null,
+                    "TotalOperationCostComponent": null,
+                    "TotalOperationCostPerAssembly": null,
+                    "TotalOtherOperationCostPerAssembly": null,
+                    "TotalOtherOperationCostPerSubAssembly": null,
+                    "TotalToolCostPerAssembly": null,
+                    "CostingOperationCostResponse": null,
+                    "CostingToolCostResponse": null,
+                    "TempRM": null,
+                    "TempBOP": null,
+                    "TempCC": null,
+                    "TempRMBOPCC": null,
+                    "IsLocked": null,
+                    "IsPartLocked": false,
+
+                },
+                "CostingChildPartDetails": []
+            },
         ]
     }
 ]

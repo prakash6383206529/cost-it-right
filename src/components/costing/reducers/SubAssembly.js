@@ -5,6 +5,7 @@ import {
   CUSTOM_LOADER_SHOW,
   CUSTOM_LOADER_HIDE,
   SUB_ASSEMBLY_TECHNOLOGY_ARRAY,
+  SET_ASSEMBLY_TECHNOLOGY_TAB_DATA,
 } from '../../../config/constants';
 import { tempObject } from '../../../config/masterData';
 
@@ -67,6 +68,11 @@ export default function costingReducer(state = initialState, action) {
       return {
         ...state,
         subAssemblyTechnologyArray: action.payload,
+      }
+    case SET_ASSEMBLY_TECHNOLOGY_TAB_DATA:
+      return {
+        ...state,
+        setAssemblyTechnologyTabData: action.payload,
       }
 
 

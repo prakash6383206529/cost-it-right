@@ -127,9 +127,9 @@ function PartSurfaceTreatment(props) {
         transportationData={item.CostingPartDetails.TransportationDetails}
         setSurfaceCost={props.setSurfaceCost}
         setTransportationCost={props.setTransportationCost}
-        IsAssemblyCalculation={props.IsAssemblyCalculation}
-        setAssemblySurfaceCost={props.setAssemblySurfaceCost}
-        setAssemblyTransportationCost={props.setAssemblyTransportationCost}
+        IsAssemblyCalculation={false}
+        isAssemblyTechnology={props.isAssemblyTechnology}
+        setSurfaceTreatmentCostAT={props.setSurfaceTreatmentCostAT}
       />}
 
     </ >
