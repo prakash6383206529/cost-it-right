@@ -146,7 +146,7 @@ function AddProcess(props) {
 
     var selectedRows = gridApi.getSelectedRows();
 
-    if (JSON.stringify(selectedRows) === JSON.stringify(props.Ids)) return false
+    // if (JSON.stringify(selectedRows) === JSON.stringify(props.Ids)) return false
     setSelectedRowData(selectedRows)
   }
 
@@ -169,6 +169,9 @@ function AddProcess(props) {
   * @description used to Reset form
   */
   const cancel = () => {
+
+    setSelectedRowData([])
+    dispatch(setSelectedDataOfCheckBox([]))
     props.closeDrawer()
   }
 

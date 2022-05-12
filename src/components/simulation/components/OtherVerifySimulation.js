@@ -333,119 +333,119 @@ function OtherVerifySimulation(props) {
             {
                 !costingPage &&
                 <>
-                    {loader ? <LoaderCustom /> :
-                        <>
-                            <Row>
-                                <Col sm="12">
-                                    <h1 class="mb-0">Token No:{tokenNo}</h1>
-                                </Col>
-                            </Row>
-                            <Row className="filter-row-large pt-4 blue-before">
+                    {loader ? <LoaderCustom /> : ''}
+                    <>
+                        <Row>
+                            <Col sm="12">
+                                <h1 class="mb-0">Token No:{tokenNo}</h1>
+                            </Col>
+                        </Row>
+                        <Row className="filter-row-large pt-4 blue-before">
 
-                                <Col md="2" lg="2" className="search-user-block mb-3">
-                                    <div className="d-flex justify-content-end bd-highlight w100">
-                                        <div>
+                            <Col md="2" lg="2" className="search-user-block mb-3">
+                                <div className="d-flex justify-content-end bd-highlight w100">
+                                    <div>
 
-                                        </div>
                                     </div>
-                                </Col>
-                            </Row>
-                            <Row>
+                                </div>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col>
                                 <Col>
-                                    <Col>
-                                        <div className={`ag-grid-react`}>
-                                            <div className={`ag-grid-wrapper height-width-wrapper ${verifyList && verifyList?.length <= 0 ? "overlay-contain" : ""}`}>
-                                                <div className="ag-grid-header">
-                                                    <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
-                                                    <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
-                                                        <div className="refresh mr-0"></div>
-                                                    </button>
-                                                </div>
-                                                <div
-                                                    className="ag-theme-material"
+                                    <div className={`ag-grid-react`}>
+                                        <div className={`ag-grid-wrapper height-width-wrapper ${verifyList && verifyList?.length <= 0 ? "overlay-contain" : ""}`}>
+                                            <div className="ag-grid-header">
+                                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                                                <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
+                                                    <div className="refresh mr-0"></div>
+                                                </button>
+                                            </div>
+                                            <div
+                                                className="ag-theme-material"
+
+                                            >
+                                                <AgGridReact
+                                                    defaultColDef={defaultColDef}
+                                                    floatingFilter={true}
+                                                    domLayout='autoHeight'
+                                                    // columnDefs={c}
+                                                    rowData={verifyList}
+                                                    pagination={true}
+                                                    paginationPageSize={10}
+                                                    onGridReady={onGridReady}
+                                                    gridOptions={gridOptions}
+                                                    // loadingOverlayComponent={'customLoadingOverlay'}
+                                                    // noRowsOverlayComponent={'customNoRowsOverlay'}
+                                                    noRowsOverlayComponentParams={{
+                                                        title: EMPTY_DATA,
+                                                        customClassName: 'nodata-found-container'
+                                                    }}
+                                                    frameworkComponents={frameworkComponents}
+                                                    rowSelection={'multiple'}
+                                                    onRowSelected={onRowSelected}
 
                                                 >
-                                                    <AgGridReact
-                                                        defaultColDef={defaultColDef}
-                                                        floatingFilter={true}
-                                                        domLayout='autoHeight'
-                                                        // columnDefs={c}
-                                                        rowData={verifyList}
-                                                        pagination={true}
-                                                        paginationPageSize={10}
-                                                        onGridReady={onGridReady}
-                                                        gridOptions={gridOptions}
-                                                        // loadingOverlayComponent={'customLoadingOverlay'}
-                                                        // noRowsOverlayComponent={'customNoRowsOverlay'}
-                                                        noRowsOverlayComponentParams={{
-                                                            title: EMPTY_DATA,
-                                                            customClassName: 'nodata-found-container'
-                                                        }}
-                                                        frameworkComponents={frameworkComponents}
-                                                        rowSelection={'multiple'}
-                                                        onRowSelected={onRowSelected}
+                                                    <AgGridColumn field="CostingId" hide ></AgGridColumn>
+                                                    <AgGridColumn width={185} field="CostingNumber" headerName="Costing Number"></AgGridColumn>
+                                                    <AgGridColumn width={110} field="PartNo" headerName="Part No."></AgGridColumn>
+                                                    <AgGridColumn width={120} field="PartName" cellRenderer='descriptionFormatter' headerName="Part Name"></AgGridColumn>
+                                                    <AgGridColumn width={110} field="ECNNumber" cellRenderer='ecnFormatter' headerName="ECN No."></AgGridColumn>
+                                                    <AgGridColumn width={130} field="RevisionNumber" cellRenderer='revisionFormatter' headerName="Revision No."></AgGridColumn>
+                                                    {isExchangeRate && <AgGridColumn width={130} field="Currency" headerName="Currency"></AgGridColumn>}
+                                                    {/* {isCombinedProcess !== true && <AgGridColumn width={130} field="Currency" headerName="Currency"></AgGridColumn>} */}
+                                                    {isExchangeRate &&
+                                                        <>
+                                                            <AgGridColumn width={130} field="POPrice" headerName="PO Price Old"></AgGridColumn>
+                                                            <AgGridColumn width={145} field="OldExchangeRate" headerName="Old Exchange Rate"></AgGridColumn>
+                                                            <AgGridColumn width={150} field="NewExchangeRate" cellRenderer='newExchangeRateFormatter' headerName="New Exchange Rate"></AgGridColumn>
+                                                        </>
+                                                    }
+                                                    {isCombinedProcess &&
+                                                        <>
+                                                            <AgGridColumn width={130} field="OldPOPrice" headerName="PO Price Old" cellRenderer='decimalFormatter'></AgGridColumn>
+                                                            <AgGridColumn width={130} field="NewPOPrice" headerName="PO Price New" cellRenderer='decimalFormatter'></AgGridColumn>
+                                                            <AgGridColumn width={145} field="OldNetCC" headerName="Old CC" cellRenderer='decimalFormatter'></AgGridColumn>
+                                                            <AgGridColumn width={150} field="NewNetCC" cellRenderer='newExchangeRateFormatter' headerName="New CC"></AgGridColumn>
+                                                        </>
+                                                    }
+                                                </AgGridReact>
 
-                                                    >
-                                                        <AgGridColumn field="CostingId" hide ></AgGridColumn>
-                                                        <AgGridColumn width={185} field="CostingNumber" headerName="Costing Number"></AgGridColumn>
-                                                        <AgGridColumn width={110} field="PartNo" headerName="Part No."></AgGridColumn>
-                                                        <AgGridColumn width={120} field="PartName" cellRenderer='descriptionFormatter' headerName="Part Name"></AgGridColumn>
-                                                        <AgGridColumn width={110} field="ECNNumber" cellRenderer='ecnFormatter' headerName="ECN No."></AgGridColumn>
-                                                        <AgGridColumn width={130} field="RevisionNumber" cellRenderer='revisionFormatter' headerName="Revision No."></AgGridColumn>
-                                                        {isExchangeRate && <AgGridColumn width={130} field="Currency" headerName="Currency"></AgGridColumn>}
-                                                        {/* {isCombinedProcess !== true && <AgGridColumn width={130} field="Currency" headerName="Currency"></AgGridColumn>} */}
-                                                        {isExchangeRate &&
-                                                            <>
-                                                                <AgGridColumn width={130} field="POPrice" headerName="PO Price Old"></AgGridColumn>
-                                                                <AgGridColumn width={145} field="OldExchangeRate" headerName="Old Exchange Rate"></AgGridColumn>
-                                                                <AgGridColumn width={150} field="NewExchangeRate" cellRenderer='newExchangeRateFormatter' headerName="New Exchange Rate"></AgGridColumn>
-                                                            </>
-                                                        }
-                                                        {isCombinedProcess &&
-                                                            <>
-                                                                <AgGridColumn width={130} field="OldPOPrice" headerName="PO Price Old" cellRenderer='decimalFormatter'></AgGridColumn>
-                                                                <AgGridColumn width={130} field="NewPOPrice" headerName="PO Price New" cellRenderer='decimalFormatter'></AgGridColumn>
-                                                                <AgGridColumn width={145} field="OldNetCC" headerName="Old CC" cellRenderer='decimalFormatter'></AgGridColumn>
-                                                                <AgGridColumn width={150} field="NewNetCC" cellRenderer='newExchangeRateFormatter' headerName="New CC"></AgGridColumn>
-                                                            </>
-                                                        }
-                                                    </AgGridReact>
-
-                                                    <div className="paging-container d-inline-block float-right">
-                                                        <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
-                                                            <option value="10" selected={true}>10</option>
-                                                            <option value="50">50</option>
-                                                            <option value="100">100</option>
-                                                        </select>
-                                                    </div>
+                                                <div className="paging-container d-inline-block float-right">
+                                                    <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
+                                                        <option value="10" selected={true}>10</option>
+                                                        <option value="50">50</option>
+                                                        <option value="100">100</option>
+                                                    </select>
                                                 </div>
                                             </div>
                                         </div>
-                                    </Col>
-
-
+                                    </div>
                                 </Col>
-                            </Row>
-                            <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer">
-                                <div className="col-sm-12 text-right bluefooter-butn">
-                                    <button type={"button"} className="mr15 cancel-btn" onClick={() => {
-                                        cancelVerifyPage()
-                                        setVerifyList([])
-                                    }}>
-                                        <div className={"cancel-icon"}></div>
-                                        {"CANCEL"}
-                                    </button>
-                                    <button onClick={runSimulation} type="submit"
-                                        //  disabled={hideRunButton}
-                                        className="user-btn mr5 save-btn">
-                                        <div className={"Run-icon"}>
-                                        </div>{" "}
-                                        {"RUN SIMULATION"}
-                                    </button>
-                                </div>
-                            </Row>
-                        </>
-                    }
+
+
+                            </Col>
+                        </Row>
+                        <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer">
+                            <div className="col-sm-12 text-right bluefooter-butn">
+                                <button type={"button"} className="mr15 cancel-btn" onClick={() => {
+                                    cancelVerifyPage()
+                                    setVerifyList([])
+                                }}>
+                                    <div className={"cancel-icon"}></div>
+                                    {"CANCEL"}
+                                </button>
+                                <button onClick={runSimulation} type="submit"
+                                    //  disabled={hideRunButton}
+                                    className="user-btn mr5 save-btn">
+                                    <div className={"Run-icon"}>
+                                    </div>{" "}
+                                    {"RUN SIMULATION"}
+                                </button>
+                            </div>
+                        </Row>
+                    </>
+
                 </>
             }
             {

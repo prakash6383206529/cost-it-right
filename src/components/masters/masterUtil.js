@@ -193,7 +193,7 @@ export const ProcessGroup = (props) => {
                             className=""
                             customClassName={"withBorder"}
                             errors={errors.groupName}
-                            disabled={false}
+                            disabled={props.isViewFlag}
                         />
                     </Col>
                     <Col className="col-md-3 process-container">
@@ -208,9 +208,10 @@ export const ProcessGroup = (props) => {
                             options={renderListing("process")}
                             mandatory={false}
                             handleChange={() => { }}
+                            disabled={props.isViewFlag}
                             errors={errors.process}
                         />
-                        <div onClick={handleProcess} className={'plus-icon-square mr5 right'}> </div>
+                        <div onClick={props.isViewFlag ? '' : handleProcess} disabled={true} className={`plus-icon-square mr5 right ${props.isViewFlag ? 'disabled' : ''}`}> </div>
                     </Col>
 
                     <Col md="4" className='process-group-wrapper'>
