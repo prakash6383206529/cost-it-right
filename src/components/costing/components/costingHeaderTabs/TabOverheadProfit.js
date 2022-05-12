@@ -21,6 +21,9 @@ function TabOverheadProfit(props) {
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
 
+  const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
+  const { setAssemblyTechnologyTabData } = useSelector(state => state.SubAssembly)
+
   useEffect(() => {
     if (Object.keys(costData).length > 0) {
       const data = {
@@ -178,8 +181,6 @@ function TabOverheadProfit(props) {
   const dispatchOverheadDetail = (data, params, arr) => {
 
     const { overheadObj, profitObj, modelType } = data;
-
-
     let OverheadCost = checkForNull(overheadObj.OverheadRMTotalCost) +
       checkForNull(overheadObj.OverheadBOPTotalCost) +
       checkForNull(overheadObj.OverheadCCTotalCost);

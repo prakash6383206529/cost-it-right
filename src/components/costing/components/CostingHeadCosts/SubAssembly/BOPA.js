@@ -54,7 +54,9 @@ function BOPA(props) {
         <td>{item?.CostingPartDetails?.CostPerPiece ? '-' : '-'}</td>
         <td>{item?.CostingPartDetails?.CostPerPiece ? '-' : '-'}</td>
 
-        <td>{item?.CostingPartDetails?.CostPerAssembly ? checkForDecimalAndNull(item.CostingPartDetails.CostPerAssembly, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+        <td>{item?.CostingPartDetails?.CostPerAssemblyBOP ? checkForDecimalAndNull(item.CostingPartDetails.CostPerAssemblyBOP, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+
+        <td>{'-'}</td>
         <td></td>
         <td></td>
 

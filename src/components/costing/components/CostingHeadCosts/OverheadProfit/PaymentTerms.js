@@ -10,6 +10,7 @@ import { EMPTY_GUID } from '../../../../../config/constants';
 import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepTwo';
 import { ViewCostingContext } from '../../CostingDetails';
 import DayTime from '../../../../common/DayTimeWrapper';
+import { ASSEMBLY } from '../../../../../config/masterData';
 
 function PaymentTerms(props) {
     const { Controller, control, register, data, setValue, getValues, errors, useWatch, CostingInterestRateDetail, PaymentTermDetail } = props
@@ -254,7 +255,7 @@ function PaymentTerms(props) {
                             onChange={onPressPaymentTerms}
                             checked={IsPaymentTermsApplicable}
                             id="normal-switch"
-                            disabled={CostingViewMode ? true : false}
+                            disabled={CostingViewMode || (costData.TechnologyId === ASSEMBLY) ? true : false}
                             background="#4DC771"
                             onColor="#4DC771"
                             onHandleColor="#ffffff"

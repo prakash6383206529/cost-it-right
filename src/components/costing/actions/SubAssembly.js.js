@@ -1,4 +1,4 @@
-import { config, SUB_ASSEMBLY_TECHNOLOGY_ARRAY, } from '../../../config/constants'
+import { config, SET_ASSEMBLY_TECHNOLOGY_TAB_DATA, SUB_ASSEMBLY_TECHNOLOGY_ARRAY, } from '../../../config/constants'
 
 let headers = config
 
@@ -8,6 +8,7 @@ let headers = config
  * @param {*} data
  */
 export function setSubAssemblyTechnologyArray(data) {
+  console.log('CostingViewMode:  data: ', data);
   return (dispatch) => {
     dispatch({
       type: SUB_ASSEMBLY_TECHNOLOGY_ARRAY,
@@ -15,5 +16,16 @@ export function setSubAssemblyTechnologyArray(data) {
     })
   }
 }
+
+export function setAssemblyTechnologyTabData(data) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_ASSEMBLY_TECHNOLOGY_TAB_DATA,
+      payload: data
+    })
+  }
+}
+
+
 
 

@@ -27,6 +27,7 @@ import _ from 'lodash'
 import WarningMessage from '../../../common/WarningMessage';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import TabAssemblyTechnology from './TabAssemblyTechnology';
+import { ASSEMBLY } from '../../../../config/masterData';
 
 function CostingHeaderTabs(props) {
   const dispatch = useDispatch()
@@ -396,7 +397,7 @@ function CostingHeaderTabs(props) {
           <Nav tabs className="subtabs cr-subtabs-head">
             <NavItem>
               <NavLink className={classnames({ active: activeTab === '1' })} onClick={() => { toggle('1'); }}>
-                RM + CC
+                {costingData.TechnologyId === ASSEMBLY ? 'Part Cost' : 'RM + CC'}
               </NavLink>
             </NavItem>
             <NavItem>
@@ -427,7 +428,7 @@ function CostingHeaderTabs(props) {
           </Nav>
           <TabContent activeTab={activeTab}>
             <TabPane tabId="1">
-              {costingData.TechnologyName === 'Assembly' ? <TabAssemblyTechnology
+              {costingData.TechnologyId === ASSEMBLY ? <TabAssemblyTechnology
                 setHeaderCost={props.setHeaderCost}
                 backBtn={props.backBtn}
                 activeTab={activeTab}
