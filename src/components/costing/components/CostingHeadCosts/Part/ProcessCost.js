@@ -1283,7 +1283,10 @@ function ProcessCost(props) {
                                     </Col>
                                   </Row>
                                 </Popup>}
-                                {item?.GroupName === '' || item?.GroupName === null ? '' : <button className="Add-file" type={"button"} title={"Add Process"} onClick={() => openProcessDrawer(index, item)} />}
+                                {
+
+                                  (item?.GroupName === '' || item?.GroupName === null) || (CostingViewMode || IsLocked) ? '' : <button className="Add-file" type={"button"} title={"Add Process"} onClick={() => openProcessDrawer(index, item)} />
+                                }
                               </div>
                             </td>
                           </tr>
