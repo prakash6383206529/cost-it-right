@@ -2037,7 +2037,7 @@ function CostingDetails(props) {
                                     item.Status === WAITING_FOR_APPROVAL ||
                                     item.Status === APPROVED || item.Status === REJECTED || item.Status === APPROVED_BY_SIMULATION) ? true : false;
 
-                                  let displayEditBtn = (item.Status === DRAFT) ? true : false;
+                                  let displayEditBtn = (item.Status === DRAFT || item.Status === REJECTED) ? true : false;
 
                                   let displayDeleteBtn = (item.Status === DRAFT) ? true : false;
 
@@ -2145,7 +2145,7 @@ function CostingDetails(props) {
                                     item.Status === APPROVED || item.Status === REJECTED || item.Status === APPROVED_BY_SIMULATION) ? true : false;
 
                                   let displayAddButton = userDetails().Role === 'SuperAdmin' ? true : false
-                                  let displayEditBtn = (item.Status === DRAFT) ? true : false;
+                                  let displayEditBtn = (item.Status === DRAFT || item.Status === REJECTED) ? true : false;
 
                                   let displayDeleteBtn = (item.Status === DRAFT) ? true : false;
 
