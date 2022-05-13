@@ -15,7 +15,8 @@ import {
     GET_MACHINE_APPROVAL_LIST,
     config,
     SET_PROCESS_GROUP_FOR_API,
-    SET_PROCESS_GROUP_LIST
+    SET_PROCESS_GROUP_LIST,
+    STORE_PROCESS_LIST
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
@@ -655,6 +656,15 @@ export function getProcessGroupByMachineId(machineId, callback) {
             callback(error)
             dispatch({ type: API_FAILURE })
             apiErrors(error)
+        })
+    }
+}
+
+export function setProcessList(data) {
+    return (dispatch) => {
+        dispatch({
+            type: STORE_PROCESS_LIST,
+            payload: data
         })
     }
 }
