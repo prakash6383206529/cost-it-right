@@ -1049,20 +1049,6 @@ button.user-btn.pull-right {
     @extend .Close;
   }
 }
-.process-name {
-  @extend .part-name;
-  .Open , .Close {
-    right: 8px;
-    top: 46%;
-    left: unset;
-  }
-  &.text-overflow {
-    padding-left: 25px !important;
-    .Open, .Close {
-       left: 5px;
-    }
-  }
-}
 
 // =================costing summary table page start=========================
 $sans-serif: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto;
@@ -6364,16 +6350,12 @@ left: 17rem;
    border: none  !important;
     }
 }
-.cell-span {
-  background-color: #fff;
-  border-color: #e5eaf9 !important;
-  display: flex !important;
-  align-items: center;
-}
+
+
 .process-group-wrapper {
-   margin-top: 1.8rem;
+   margin-top: 1.76rem;
    margin-left: 0;
-   padding-left: 1rem;
+   padding-left: 1.5rem;
   .process-group {
     min-height: 40px;
     max-height: 60px;
@@ -6381,10 +6363,12 @@ left: 17rem;
     overflow: auto;
     border-radius: 4px;
     padding: 5px;
+    font-size: 13px;
     .process-name {
       background-color: rgb(224, 224, 224);
       border-radius: 3px;
       padding: 2px;
+      margin-right: 2px;
       color: #333;
     }
   }
@@ -6397,6 +6381,8 @@ left: 17rem;
     .nav-link {
       border-bottom: 1px solid transparent !important;
       border-left: 1px solid transparent !important;
+      display: flex;
+      justify-content: center;
       
     }
   }
@@ -6422,6 +6408,7 @@ table.group-process-table {
   th,td {
     &:first-child {
       border-right: 1px solid $borderColor;
+      width: 45%;
     }
   }
   td {
@@ -6434,7 +6421,8 @@ table.group-process-table {
       }
     }
     &:first-child {
-      padding-left: 5px !important;
+      padding: 10px !important;
+      
     }
   }
 }
