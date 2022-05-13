@@ -637,8 +637,7 @@ class AddOperation extends Component {
 
       }
 
-      if (Number(DataToChange.Rate) === Number(values.Rate) && DataToChange.Remark === values.Remark && UOM.value === oldUOM.value
-        && DataToChange.Description === values.Description && uploadAttachements) {
+      if (Number(DataToChange.Rate) === Number(values.Rate) && DataToChange.Remark === values.Remark && UOM.value === oldUOM.value && uploadAttachements) {
         this.cancel()
         return false
       }
