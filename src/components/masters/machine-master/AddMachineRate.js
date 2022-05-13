@@ -96,6 +96,7 @@ class AddMachineRate extends Component {
       inputLoader: false,
       lockUOMAndRate: false,
       isProcessGroup: getConfigurationKey().IsMachineProcessGroup,// UNCOMMENT IT AFTER DONE FROM BACKEND AND REMOVE BELOW CODE
+      // isProcessGroup: false,// UNCOMMENT IT AFTER DONE FROM BACKEND AND REMOVE BELOW CODE
       UniqueProcessId: []
     }
   }
@@ -336,7 +337,7 @@ class AddMachineRate extends Component {
               lockUOMAndRate: this.state.isProcessGroup
             }, () => {
               this.setState({ isLoader: false })
-              this.props.change('MachineRate', Data.MachineProcessRates[0].MachineRate)
+              this.props.change('MachineRate', this.state.isProcessGroup ? Data.MachineProcessRates[0].MachineRate : '')
             })
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
             let files = Data.Attachements && Data.Attachements.map((item) => {
@@ -740,14 +741,18 @@ class AddMachineRate extends Component {
 */
   resetProcessGridData = () => {
     const { isProcessGroup, UOM } = this.state
+    console.log('isProcessGroup: ', isProcessGroup);
     const { fieldsObj } = this.props;
     const MachineRate = fieldsObj.MachineRate
+    console.log('MachineRate: ', MachineRate);
+    let machineRate =
+      console.log(isProcessGroup ? MachineRate : '', "isProcessGroup ? MachineRate : ''");
     this.setState({
       processName: [],
       UOM: isProcessGroup ? UOM : [],
       processGridEditIndex: '',
       isEditIndex: false,
-    }, () => () => this.props.change('MachineRate', isProcessGroup ? MachineRate : 0));
+    }, () => this.props.change('MachineRate', isProcessGroup ? MachineRate : ''));
   };
 
   /**
@@ -1428,7 +1433,7 @@ class AddMachineRate extends Component {
                             validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                             component={renderText}
                             // required={true}
-                            disabled={this.state.isViewFlag ? true : false}
+                            disabled={isViewMode ? true : false}
                             className=" "
                             customClassName="withBorder"
                           />
@@ -1443,7 +1448,7 @@ class AddMachineRate extends Component {
                             validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                             component={renderText}
                             required={false}
-                            disabled={this.state.isViewFlag ? true : false}
+                            disabled={isViewMode ? true : false}
                             className=" "
                             customClassName="withBorder"
                           />
@@ -1463,7 +1468,7 @@ class AddMachineRate extends Component {
                                 required={false}
                                 handleChangeDescription={this.handleMachineType}
                                 valueDescription={this.state.machineType}
-                                disabled={this.state.isViewFlag ? true : false}
+                                disabled={isViewMode ? true : false}
                               />
                             </div>
                             {!isEditFlag && <div
@@ -1482,7 +1487,7 @@ class AddMachineRate extends Component {
                             validate={[checkWhiteSpaces, postiveNumber, maxLength10]}
                             component={renderText}
                             required={false}
-                            disabled={this.state.isViewFlag ? true : false}
+                            disabled={isViewMode ? true : false}
                             className=" "
                             customClassName="withBorder"
                           />
@@ -1685,7 +1690,7 @@ class AddMachineRate extends Component {
                               title={'Process Group:'} />
                           </Col>
                           <Col md="12">
-                            <ProcessGroup isViewFlag={isViewFlag} isEditFlag={isEditFlag} processListing={this.state.processGrid} isListing={false} isViewMode={isViewMode} changeDropdownValue={this.changeDropdownValue} showDelete={this.showDelete} />
+                            <ProcessGroup isEditFlag={isEditFlag} processListing={this.state.processGrid} isListing={false} isViewFlag={isViewMode} changeDropdownValue={this.changeDropdownValue} showDelete={this.showDelete} />
                           </Col>
                         </Row>
                       }

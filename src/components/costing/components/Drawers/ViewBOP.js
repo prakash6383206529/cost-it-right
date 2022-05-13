@@ -60,7 +60,7 @@ function ViewBOP(props) {
                       <td>
                         {checkForDecimalAndNull(item.LandedCostINR, initialConfiguration.NoOfDecimalForPrice)}
                       </td>
-                      <td> {item.Quantity}</td>
+                      <td> {checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForInputOutput)}</td>
                       <td>
                         {checkForDecimalAndNull(item.NetBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice)}
                       </td>

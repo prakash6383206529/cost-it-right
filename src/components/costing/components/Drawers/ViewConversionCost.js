@@ -276,7 +276,7 @@ function ViewConversionCost(props) {
             {!isPDFShow && <td><button
               className="CalculatorIcon cr-cl-icon mr-auto ml-0"
               type={"button"}
-              disabled={item.ProcessCalculationId === EMPTY_GUID}
+              disabled={item.ProcessCalculatorId === 0}
               onClick={() => { getWeightData(index, process.ProcessList, parentIndex) }}
             /></td>}
             <td>{item.Quantity ? checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForInputOutput) : '-'}</td>
@@ -302,8 +302,8 @@ function ViewConversionCost(props) {
             <thead>
               <tr>
                 {partNumberList.length === 0 && (IsAssemblyCosting && isPDFShow) && <th>{`Part No`}</th>}
-                {processGroup && <th>{`Group Name`}</th>}
-                <th>{`Process Name`}</th>
+                <th style={{ width: "150px" }}>{`Process`}</th>
+                {processGroup && <th>{`Sub Process`}</th>}
                 <th>{`Technology`}</th>
                 <th>{`Machine Name`}</th>
                 <th>{`Tonnage`}</th>
@@ -332,9 +332,9 @@ function ViewConversionCost(props) {
                                 className={`${isPDFShow ? '' : processAccObj[index] ? 'Open' : 'Close'}`}></div>
                           }
                           <span title={item.ProcessName}>
-                            {item?.GroupName === '' || item?.GroupName === null ? '-' : item.GroupName}</span>
+                            {item?.GroupName === '' || item?.GroupName === null ? item.ProcessName : item.GroupName}</span>
                         </td>}
-                        <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item.ProcessName}>{item.ProcessName ? item.ProcessName : '-'}</span></td>
+                        {processGroup && <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item.ProcessName}>{'-'}</span></td>}
                         <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item?.Technologies}>{item?.Technologies ? item?.Technologies : '-'}</span></td>
                         <td>{item.MachineName ? item.MachineName : '-'}</td>
                         <td>{item.Tonnage ? item.Tonnage : '-'}</td>
@@ -347,7 +347,7 @@ function ViewConversionCost(props) {
                               <button
                                 className="CalculatorIcon cr-cl-icon mr-auto ml-0"
                                 type={"button"}
-                                disabled={item.ProcessCalculationId === EMPTY_GUID}
+                                disabled={item.ProcessCalculatorId === 0}
                                 onClick={() => { getWeightData(index) }}
                               /> : ''
                           }
