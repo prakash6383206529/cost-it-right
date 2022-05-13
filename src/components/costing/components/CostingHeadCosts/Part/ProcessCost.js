@@ -258,7 +258,7 @@ function ProcessCost(props) {
    * @description HIDE RM DRAWER
    */
   const closeDrawer = (e = '', rowData = {}) => {
-
+    console.log('rowData: ', rowData);
     let tempArr2 = [];
     if (Object.keys(rowData).length > 0) {
       let rowArr = rowData && rowData.map((item) => {
@@ -413,7 +413,7 @@ function ProcessCost(props) {
   }
 
   const handleQuantityChange = (event, index) => {
-
+    console.log('gridData: ', gridData);
     let tempArr = []
     let tempData = gridData[index]
 
@@ -432,23 +432,11 @@ function ProcessCost(props) {
         return accummlator + checkForNull(el.ProcessCost)
       }, 0)
 
-      let apiArr = []
-      gridTempArr && gridTempArr.map((item) => {
-        if (item.GroupName === '' || item.GroupName === null) {
-          apiArr.push(item)
-        } else {
-          item.ProcessList && item.ProcessList.map(processItem => {
-            processItem.GroupName = item.GroupName
-            apiArr.push(processItem)
-          })
-        }
-      })
-      console.log(apiArr, "apiArr");
       tempArr = {
         ...tabData,
         NetConversionCost: ProcessCostTotal + checkForNull(tabData.OperationCostTotal !== null ? tabData.OperationCostTotal : 0,) + checkForNull(tabData.OtherOperationCostTotal !== null ? tabData.OtherOperationCostTotal : 0),
         ProcessCostTotal: ProcessCostTotal,
-        CostingProcessCostResponse: apiArr,
+        CostingProcessCostResponse: gridTempArr,
 
       }
 
@@ -471,23 +459,11 @@ function ProcessCost(props) {
         return accummlator + checkForNull(el.ProcessCost)
       }, 0)
 
-      let apiArr = []
-      gridTempArr && gridTempArr.map((item) => {
-        if (item.GroupName === '' || item.GroupName === null) {
-          apiArr.push(item)
-        } else {
-          item.ProcessList && item.ProcessList.map(processItem => {
-            processItem.GroupName = item.GroupName
-            apiArr.push(processItem)
-          })
-        }
-      })
-      console.log(apiArr, 'apiArrapiArr');
       tempArr = {
         ...tabData,
         NetConversionCost: ProcessCostTotal + checkForNull(tabData.OperationCostTotal !== null ? tabData.OperationCostTotal : 0,) + checkForNull(tabData.OtherOperationCostTotal !== null ? tabData.OtherOperationCostTotal : 0),
         ProcessCostTotal: ProcessCostTotal,
-        CostingProcessCostResponse: apiArr,
+        CostingProcessCostResponse: gridTempArr,
       }
 
       setTabData(tempArr)
@@ -501,15 +477,13 @@ function ProcessCost(props) {
   }
 
   const handleQuantityChangeOfGroupProcess = (event, index, list, parentIndex) => {
-
+    console.log('list: ', list);
     let tempArr = []
     let processTempData = gridData[parentIndex]
     let tempData = list[index]
 
-
     if (!isNaN(event.target.value) && event.target.value !== '') {
       const ProcessCost = tempData.MHR * event.target.value
-
       tempData = {
         ...tempData,
         Quantity: event.target.value,
@@ -518,16 +492,14 @@ function ProcessCost(props) {
       }
       let gridTempArr = Object.assign([...list], { [index]: tempData })
 
-
       let ProcessCostTotal = 0
       ProcessCostTotal = gridTempArr && gridTempArr.reduce((accummlator, el) => {
-
         return accummlator + checkForNull(el.ProcessCost)
       }, 0)
 
-      setValue(`${SingleProcessGridField}.${index}.ProcessCost`, checkForDecimalAndNull(ProcessCost, initialConfiguration.NoOfDecimalForPrice))
+      setValue(`${ProcessGridFields}.${index}.ProcessCost`, checkForDecimalAndNull(ProcessCost, initialConfiguration.NoOfDecimalForPrice))
       //MAIN PROCESS ROW WITH GROUP
-
+      console.log(ProcessCostTotal, "ProcessCostTotalProcessCostTotal");
       processTempData = {
         ...processTempData,
         // Quantity: event.target.value,
@@ -535,27 +507,12 @@ function ProcessCost(props) {
         ProcessCost: ProcessCostTotal
       }
       let processTemparr = Object.assign([...gridData], { [parentIndex]: processTempData })
-      let apiArr = []
-      processTemparr && processTemparr.map((item) => {
-        if (item.GroupName === '' || item.GroupName === null) {
-          apiArr.push(item)
-        } else {
-          item.ProcessList && item.ProcessList.map(processItem => {
-            processItem.GroupName = item.GroupName
-            apiArr.push(processItem)
-          })
-        }
-      })
-
-      let finalProcessCostTotal = processTemparr && processTemparr.reduce((accummlator, el) => {
-        return accummlator + checkForNull(el.ProcessCost)
-      }, 0)
 
       tempArr = {
         ...tabData,
-        NetConversionCost: finalProcessCostTotal + checkForNull(tabData.OperationCostTotal !== null ? tabData.OperationCostTotal : 0,) + checkForNull(tabData.OtherOperationCostTotal !== null ? tabData.OtherOperationCostTotal : 0),
-        ProcessCostTotal: finalProcessCostTotal,
-        CostingProcessCostResponse: apiArr,
+        NetConversionCost: ProcessCostTotal + checkForNull(tabData.OperationCostTotal !== null ? tabData.OperationCostTotal : 0,) + checkForNull(tabData.OtherOperationCostTotal !== null ? tabData.OtherOperationCostTotal : 0),
+        ProcessCostTotal: ProcessCostTotal,
+        CostingProcessCostResponse: processTemparr,
 
       }
 
@@ -578,8 +535,8 @@ function ProcessCost(props) {
         return accummlator + checkForNull(el.ProcessCost)
       }, 0)
       setTimeout(() => {
-        setValue(`${SingleProcessGridField}.${index}.Quantity`, "")
-        setValue(`${SingleProcessGridField}.${index}.ProcessCost`, "")
+        setValue(`${ProcessGridFields}.${index}.Quantity`, "")
+        setValue(`${ProcessGridFields}.${index}.ProcessCost`, "")
       }, 200)
 
       //MAIN PROCESS ROW WITH GROUP
@@ -591,23 +548,12 @@ function ProcessCost(props) {
       }
       let processTemparr = Object.assign([...gridData], { [parentIndex]: processTempData })
 
-      let apiArr = []
-      processTemparr && processTemparr.map((item) => {
-        if (item.GroupName === '' || item.GroupName === null) {
-          apiArr.push(item)
-        } else {
-          item.ProcessList && item.ProcessList.map(processItem => {
-            processItem.GroupName = item.GroupName
-            apiArr.push(processItem)
-          })
-        }
-      })
-
       tempArr = {
         ...tabData,
         NetConversionCost: ProcessCostTotal + checkForNull(tabData.OperationCostTotal !== null ? tabData.OperationCostTotal : 0,) + checkForNull(tabData.OtherOperationCostTotal !== null ? tabData.OtherOperationCostTotal : 0),
         ProcessCostTotal: ProcessCostTotal,
-        CostingProcessCostResponse: apiArr,
+        CostingProcessCostResponse: processTemparr,
+
       }
 
       setTabData(tempArr)
@@ -672,7 +618,7 @@ function ProcessCost(props) {
     counter = 0
   }
   const ProcessGridFields = 'ProcessGridFields'
-  const SingleProcessGridField = 'SingleProcessGridField'
+
 
 
   const renderSingleProcess = (process, parentIndex) => {
@@ -682,8 +628,8 @@ function ProcessCost(props) {
           <tr>
             <td>-</td>
             <td>{item.ProcessName}</td>
-            <td>{item.Tonnage}</td>
-            <td>{item.MHR}</td>
+            <td>{item.MachineTannage}</td>
+            <td>{item.MachineRate}</td>
             <td>{item.UOM}</td>
             <td>{item.PartHours}</td>
             <td style={{ width: 150 }}>
@@ -691,7 +637,7 @@ function ProcessCost(props) {
                 {
                   <NumberFieldHookForm
                     label=""
-                    name={`${SingleProcessGridField}.${index}.Quantity`}
+                    name={`${ProcessGridFields}.${index}.Quantity`}
                     Controller={Controller}
                     control={control}
                     register={register}
@@ -726,7 +672,7 @@ function ProcessCost(props) {
               {
                 <TextFieldHookForm
                   label=""
-                  name={`${SingleProcessGridField}.${index}.ProcessCost`}
+                  name={`${ProcessGridFields}.${index}.ProcessCost`}
                   Controller={Controller}
                   control={control}
                   register={register}
@@ -744,12 +690,12 @@ function ProcessCost(props) {
             </td>
             <td>
               <div className='action-btn-wrapper'>
-                {/* {(!CostingViewMode && !IsLocked) && <button className="Delete" type={'button'} onClick={() => deleteItem(index)} />} */}
+                {(!CostingViewMode && !IsLocked) && <button className="Delete" type={'button'} onClick={() => deleteItem(index)} />}
                 <Popup trigger={<button id={`popUpTriggers${index}`} className="Comment-box" type={'button'} />}
                   position="top center">
                   <TextAreaHookForm
                     label="Remark:"
-                    name={`${SingleProcessGridField}.${index}.remarkPopUp`}
+                    name={`${ProcessGridFields}.${index}.remarkPopUp`}
                     Controller={Controller}
                     control={control}
                     register={register}
@@ -764,7 +710,7 @@ function ProcessCost(props) {
                     defaultValue={item.Remark ?? item.Remark}
                     className=""
                     customClassName={"withBorder"}
-                    errors={errors && errors.SingleProcessGridField && errors.SingleProcessGridField[index] !== undefined ? errors.SingleProcessGridField[index].remarkPopUp : ''}
+                    errors={errors && errors.ProcessGridFields && errors.ProcessGridFields[index] !== undefined ? errors.ProcessGridFields[index].remarkPopUp : ''}
                     //errors={errors && errors.remarkPopUp && errors.remarkPopUp[index] !== undefined ? errors.remarkPopUp[index] : ''}                        
                     disabled={(CostingViewMode || IsLocked) ? true : false}
                     hidden={false}
@@ -851,15 +797,7 @@ function ProcessCost(props) {
                       return (
                         <>
                           <tr key={index}>
-                            {processGroup && <td className='text-overflow process-name'>
-                              {
-                                (item?.GroupName === '' || item?.GroupName === null) ? '' :
-                                  <div onClick={() => setProcessAcc(!processAcc)} className={`${processAcc ? 'Open' : 'Close'}`}></div>
-
-                              }
-                              <span title={item.ProcessName}>
-                                {item?.GroupName === '' || item?.GroupName === null ? '-' : item.GroupName}</span>
-                            </td>}
+                            {processGroup && <td className='text-overflow process-name'> <div onClick={() => setProcessAcc(!processAcc)} className={`${processAcc ? 'Open' : 'Close'}`}></div><span title={item.ProcessName}>{item?.GroupName === '' || item?.GroupName === null ? '-' : item.GroupName}</span></td>}
                             <td className='text-overflow'><span title={item.ProcessName}>{item.ProcessName}</span></td>
                             <td>{item.Tonnage ? checkForNull(item.Tonnage) : '-'}</td>
                             <td>{item.MHR}</td>
@@ -869,6 +807,7 @@ function ProcessCost(props) {
                               {
                                 item?.GroupName === '' || item?.GroupName === null ?
                                   <>
+
                                     <span className="d-inline-block w90px mr-2">
                                       {
                                         <NumberFieldHookForm
@@ -930,7 +869,7 @@ function ProcessCost(props) {
                             </td>
                             <td>
                               <div className='action-btn-wrapper'>
-                                {(!CostingViewMode && !IsLocked) && <button className="Delete" type={'button'} onClick={() => deleteItem(index)} />}
+                                {/* {(!CostingViewMode && !IsLocked) && <button className="Delete" type={'button'} onClick={() => deleteItem(index)} />} */}
                                 <Popup trigger={<button id={`popUpTriggers${index}`} className="Comment-box" type={'button'} />}
                                   position="top center">
                                   <TextAreaHookForm
