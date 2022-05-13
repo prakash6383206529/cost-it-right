@@ -189,7 +189,7 @@ function RMImportListing(props) {
       Id: Id,
       IsVendor: rowData.CostingHead === 'Vendor Based' ? true : rowData.CostingHead === 'Zero Based' ? false : rowData.CostingHead,
     }
-    props.getDetails(data);
+    props.getDetails(data, rowData?.IsRMAssociated);
   }
 
   /**
@@ -239,7 +239,7 @@ function RMImportListing(props) {
     let isDeleteButton = false
 
 
-    if (EditAccessibility && !rowData.IsRMAssociated) {
+    if (EditAccessibility) {
       isEditbale = true
     } else {
       isEditbale = false
@@ -596,8 +596,6 @@ function RMImportListing(props) {
                 <AgGridColumn field="NetLandedCostConversion" headerName="Net Cost(INR)" cellRenderer='costFormatter'></AgGridColumn>
 
                 <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-
-                {CheckApprovalApplicableMaster(RM_MASTER_ID) && <AgGridColumn field="DisplayStatus" headerName="Status" cellRenderer='statusFormatter'></AgGridColumn>}
 
                 {!isSimulation && <AgGridColumn width={150} field="RawMaterialId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer='totalValueRenderer'></AgGridColumn>}
 

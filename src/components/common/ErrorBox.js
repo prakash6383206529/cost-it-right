@@ -1,10 +1,10 @@
 import React from 'react'
 
 export function Errorbox(props) {
-    const {customClass,errorText} = props;    
+    const { customClass, errorText, goToTopID } = props;
     return (
         <>
-            <div className={`error_box ${customClass}`}>{errorText}</div>
+            <div id={goToTopID} className={`error_box ${customClass}`}>{errorText}</div>
         </>
     )
 }

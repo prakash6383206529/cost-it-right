@@ -95,9 +95,9 @@ function VariableMhrDrawer(props) {
     } else if (technology === PLASTIC) {
       switch (process) {
         // case 'Injection Moulding':
-        // // return (
-        // //   <InjectionMoulding calculateMachineTime={calculateMachineTime} calculatorData={calculatorData} />
-        // // )
+        // return (
+        //   <InjectionMoulding calculateMachineTime={calculateMachineTime} calculatorData={calculatorData} />
+        // )
         // break;
         default:
           return (

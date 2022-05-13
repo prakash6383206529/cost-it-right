@@ -677,7 +677,9 @@ class AddBOPDomestic extends Component {
           return false
         }
       }
-      if ((DataToCheck.Remark) === (values.Remark) && uploadAttachements) {
+      if ((DataToCheck.Remark) === (values.Remark) && uploadAttachements &&
+        ((DataToCheck.Source ? DataToCheck.Source : '-') === (values.Source ? values.Source : '-')) &&
+        ((DataToCheck.SourceLocation ? DataToCheck.SourceLocation : '-') === (sourceLocation.value ? sourceLocation.value : '-'))) {
         this.cancel()
         return false;
       } else {
@@ -805,7 +807,7 @@ class AddBOPDomestic extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit } = this.props;
+    const { handleSubmit, isBOPAssociated } = this.props;
     const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, isViewMode, setDisable, disablePopup } = this.state;
     const filterList = (inputValue) => {
       let tempArr = []
@@ -1141,7 +1143,7 @@ class AddBOPDomestic extends Component {
                               validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
                               component={renderText}
                               required={true}
-                              disabled={isViewMode}
+                              disabled={isViewMode || (isEditFlag && isBOPAssociated)}
                               className=" "
                               customClassName=" withBorder"
                             />

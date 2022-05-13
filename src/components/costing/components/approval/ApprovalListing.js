@@ -250,9 +250,6 @@ function ApprovalListing(props) {
     getTableData()
   }
 
-
-
-
   const onRowSelect = () => {
     var selectedRows = gridApi.getSelectedRows();
     setSelectedRowData(selectedRows)
@@ -265,6 +262,7 @@ function ApprovalListing(props) {
     }
     let count = 0
     let technologyCount = 0
+    let departmentCount = 0
     selectedRowData.forEach((element, index, arr) => {
       if (index > 0) {
         if (element.ReasonId !== arr[index - 1].ReasonId) {
@@ -287,6 +285,22 @@ function ApprovalListing(props) {
         return false
       }
     })
+
+    selectedRowData.forEach((element, index, arr) => {
+      if (index > 0) {
+        if (element.DepartmentId !== arr[index - 1].DepartmentId) {
+          departmentCount = departmentCount + 1
+        } else {
+          return false
+        }
+      } else {
+        return false
+      }
+    })
+
+    if (departmentCount > 0) {
+      return Toaster.warning("Department should be same for sending multiple costing for approval")
+    }
     if (technologyCount > 0) {
       return Toaster.warning("Technology should be same for sending multiple costing for approval")
     }
@@ -310,7 +324,6 @@ function ApprovalListing(props) {
 
     return thisIsFirstColumn;
   }
-
 
   const defaultColDef = {
     resizable: true,
