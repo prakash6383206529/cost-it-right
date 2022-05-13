@@ -50,12 +50,7 @@ function BOPCost(props) {
         PartNumber: props.item.PartNumber,
       }
       if (!CostingViewMode && !IsLocked) {
-        const BOPHandlingFields = {
-          IsApplyBOPHandlingCharges: IsApplyBOPHandlingCharges,
-          BOPHandlingPercentage: getValues('BOPHandlingPercentage'),
-          BOPHandlingCharges: getValues('BOPHandlingCharges'),
-        }
-        props.setBOPCost(gridData, Params, item, BOPHandlingFields)
+        props.setBOPCost(gridData, Params, item)
         if (JSON.stringify(gridData) !== JSON.stringify(oldGridData)) {
           dispatch(isDataChange(true))
         }

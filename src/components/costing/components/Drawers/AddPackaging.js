@@ -69,7 +69,6 @@ function AddPackaging(props) {
       return;
     }
     props.closeDrawer('', formData)
-    setApplicability([])
   };
 
   /**
@@ -133,7 +132,6 @@ function AddPackaging(props) {
           setPackagingCost('')
         } else {
           totalPackagingCost = NetRawMaterialsCost * calculatePercentage(PackagingCostPercentage)
-          console.log("COMING HERE", totalPackagingCost);
           setValue('PackagingCost', checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice))
           setPackagingCost(totalPackagingCost)
         }
@@ -144,7 +142,6 @@ function AddPackaging(props) {
           setPackagingCost('')
         } else {
           totalPackagingCost = NetBoughtOutPartCost * calculatePercentage(PackagingCostPercentage)
-          console.log("COMING HERE", totalPackagingCost);
           setValue('PackagingCost', checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice))
           setPackagingCost(totalPackagingCost)
         }
