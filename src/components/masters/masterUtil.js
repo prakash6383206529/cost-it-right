@@ -6,8 +6,6 @@ import _ from 'lodash'
 import Toaster from '../common/Toaster';
 import { useDispatch, useSelector } from 'react-redux';
 import { setGroupProcessList } from './actions/MachineMaster';
-import NoContentFound from '../common/NoContentFound';
-import { EMPTY_DATA } from '../../config/constants';
 
 export const ProcessGroup = (props) => {
     const { isEditFlag, isViewFlag } = props
@@ -21,7 +19,15 @@ export const ProcessGroup = (props) => {
     const [rowData, setRowData] = useState([]);
     const [apiData, setApiData] = useState([])
     const { processGroupApiData, processGroupList } = useSelector(state => state.machine)
+    const rowSpan = (params) => {
 
+        var ProcessGroup = params.data.ProcessGroup;
+        if (ProcessGroup === getValues('groupName')) {
+            return 2;
+        } else {
+            return 1;
+        }
+    };
 
     const [selectedProcess, setSelectedProcess] = useState([])
 
@@ -69,7 +75,8 @@ export const ProcessGroup = (props) => {
             uniqueProcessId.push(o.ProcessId)
         });
         props.showDelete(uniqueProcessId)
-        selectedProcess && selectedProcess.map((item, index) => {
+
+        let temp = selectedProcess && selectedProcess.map((item, index) => {
             processList.push(item.ProcessId)
             tableList.push({ ProcessName: item.ProcessName, ProcessId: item.ProcessId })
             return { GroupName: groupName, ProcessName: item.ProcessName, ProcessId: item.ProcessId }
@@ -91,6 +98,7 @@ export const ProcessGroup = (props) => {
                     ProcessIdListTemp.push(item1.ProcessId)
                     return null
                 })
+
                 singleRecordObject.ProcessGroupName = tempArray
                 singleRecordObject.ProcessIdList = ProcessIdListTemp
                 updateArrayList.push(singleRecordObject)
@@ -203,11 +211,7 @@ export const ProcessGroup = (props) => {
                                 })}</td>
                             </tr>
                         })}
-                        <tr>
-                            <td colSpan={"6"}>{rowData && rowData.length === 0 &&
-                                <NoContentFound title={EMPTY_DATA} />
-                            }</td>
-                        </tr>
+
                     </tbody>
                 </table>
             </div>

@@ -5,17 +5,212 @@ import { getMachineProcessGroupDetail, setIdsOfProcessGroup, setSelectedDataOfCh
 import { costingInfoContext } from "../CostingDetailStepTwo";
 import { getConfigurationKey } from "../../../../helper";
 import { EMPTY_GUID } from "../../../../config/constants";
-import LoaderCustom from "../../../common/LoaderCustom";
 function GroupProcess(props) {
     const { selectedProcessAndGroup, selectedProcessGroupId, CostingEffectiveDate } = useSelector(state => state.costing)
-    const [isLoader, setIsLoader] = useState(false)
+    const [processAcc, setProcessAcc] = useState(false);
     const [processAccObj, setProcessAccObj] = useState({});
     const [selectedData, setSelectedData] = useState([])
     const [tableData, setTableDataList] = useState([])
     const costData = useContext(costingInfoContext)
     const dispatch = useDispatch()
 
+    const dummyData = [
+        {
 
+            GroupName: "Drilling and Cutting",
+            Technologies: "Sheet metal",
+            MachineName: "T4",
+            MachineId: "12",
+            MachineTonnage: 3,
+            ProcessList: [
+                {
+                    ProcessId: '11',
+                    ProcessName: '1st forming 150 MT',
+                    UnitOfMeasurement: 'hours',
+                    MachineId: "12",
+                    UnitType: "Time",
+                    ProcessTechnologyId: 1,
+                    MachineRate: 12,
+                    MachineRateId: "9a836a52-2b97-417c-800e-0356ce42469f"
+
+                },
+                {
+                    ProcessId: '12',
+                    ProcessName: '2st forming 150 MT',
+                    UnitOfMeasurement: 'gal',
+                    MachineId: "12",
+                    UnitType: "Time",
+                    ProcessTechnologyId: 1,
+                    MachineRate: 12,
+                    MachineRateId: "9a836a52-2b97-417c-800e-0356ce42469f"
+
+                },
+                {
+                    ProcessId: '13',
+                    ProcessName: '3st forming 150 MT',
+                    UnitOfMeasurement: 'minute',
+                    MachineId: "12",
+                    UnitType: "Time",
+                    ProcessTechnologyId: 1,
+                    MachineRate: 12,
+                    MachineRateId: "9a836a52-2b97-417c-800e-0356ce42469f"
+
+                },
+            ]
+        },
+        {
+
+            GroupName: "Drilling and Cutting & Wiring",
+            Technologies: "Sheet metal",
+            MachineName: "T4",
+            MachineId: "12",
+            MachineTonnage: 3,
+            ProcessList: [
+                {
+                    ProcessId: '11',
+                    ProcessName: '1st forming 150 MT',
+                    UnitOfMeasurement: 'hours',
+                    MachineId: "12",
+                    UnitType: "Time",
+                    ProcessTechnologyId: 1,
+                    MachineRate: 12,
+                    MachineRateId: "9a836a52-2b97-417c-800e-0356ce42469f"
+
+                },
+                {
+                    ProcessId: '12',
+                    ProcessName: '2st forming 150 MT',
+                    UnitOfMeasurement: 'gal',
+                    MachineId: "12",
+                    UnitType: "Time",
+                    ProcessTechnologyId: 1,
+                    MachineRate: 12,
+                    MachineRateId: "9a836a52-2b97-417c-800e-0356ce42469f"
+
+                },
+                {
+                    ProcessId: '13',
+                    ProcessName: '3st forming 150 MT',
+                    UnitOfMeasurement: 'minute',
+                    MachineId: "12",
+                    UnitType: "Time",
+                    ProcessTechnologyId: 1,
+                    MachineRate: 12,
+                    MachineRateId: "9a836a52-2b97-417c-800e-0356ce42469f"
+
+                },
+            ]
+        },
+        {
+
+            GroupName: "painting and cleaning",
+            Technologies: "Sheet metal",
+            MachineName: "T6",
+            MachineTonnage: 3,
+            MachineId: "23",
+            ProcessList: [
+                {
+                    ProcessId: '21',
+                    ProcessName: '1st forming 150 MT',
+                    UnitOfMeasurement: 'hours',
+                    MachineId: "23",
+                    MachineNumber: "MAC-50002815",
+                    UnitType: "Time",
+                    ProcessTechnologyId: 1,
+                    MachineRate: 12,
+                    MachineRateId: "9a836a52-2b97-417c-800e-0356ce42469f"
+
+                },
+                {
+                    ProcessId: '22',
+                    ProcessName: '2st forming 150 MT',
+                    UnitOfMeasurement: 'gal',
+                    MachineId: "23",
+                    MachineNumber: "MAC-50002815",
+                    UnitType: "Time",
+                    ProcessTechnologyId: 1,
+                    MachineRate: 12,
+                    MachineRateId: "9a836a52-2b97-417c-800e-0356ce42469f"
+
+                },
+                {
+                    ProcessId: '23',
+                    ProcessName: '3st forming 150 MT',
+                    UnitOfMeasurement: 'minute',
+                    MachineId: "23",
+                    MachineNumber: "MAC-50002815",
+                    UnitType: "Time",
+                    ProcessTechnologyId: 1
+
+                },
+                {
+                    ProcessId: '24',
+                    ProcessName: '4st forming 150 MT',
+                    UnitOfMeasurement: 'hours',
+                    MachineId: "23",
+                    MachineNumber: "MAC-50002815",
+                    UnitType: "Time",
+                    ProcessTechnologyId: 1,
+                    MachineRate: 12,
+                    MachineRateId: "9a836a52-2b97-417c-800e-0356ce42469f"
+                },
+            ]
+        },
+        {
+
+            GroupName: "painting and cleaning",
+            Technologies: "Sheet metal",
+            MachineName: "T7",
+            MachineTonnage: 3,
+            MachineId: "24",
+            ProcessList: [
+                {
+                    ProcessId: '21',
+                    ProcessName: '1st forming 150 MT',
+                    UnitOfMeasurement: 'hours',
+                    MachineId: "24",
+                    MachineNumber: "MAC-50002816",
+                    UnitType: "Time",
+                    ProcessTechnologyId: 1,
+                    MachineRate: 12,
+                    MachineRateId: "9a836a52-2b97-417c-800e-0356ce42469f"
+                },
+                {
+                    ProcessId: '22',
+                    ProcessName: '2st forming 150 MT',
+                    UnitOfMeasurement: 'gal',
+                    MachineId: "24",
+                    MachineNumber: "MAC-50002816",
+                    UnitType: "Time",
+                    ProcessTechnologyId: 1,
+                    MachineRate: 12,
+                    MachineRateId: "9a836a52-2b97-417c-800e-0356ce42469f"
+                },
+                {
+                    ProcessId: '23',
+                    ProcessName: '3st forming 150 MT',
+                    UnitOfMeasurement: 'minute',
+                    MachineId: "24",
+                    MachineNumber: "MAC-50002816",
+                    UnitType: "Time",
+                    ProcessTechnologyId: 1,
+                    MachineRate: 12,
+                    MachineRateId: "9a836a52-2b97-417c-800e-0356ce42469f"
+                },
+                {
+                    ProcessId: '24',
+                    ProcessName: '4st forming 150 MT',
+                    UnitOfMeasurement: 'hours',
+                    MachineId: "24",
+                    MachineNumber: "MAC-50002816",
+                    UnitType: "Time",
+                    ProcessTechnologyId: 1,
+                    MachineRate: 12,
+                    MachineRateId: "9a836a52-2b97-417c-800e-0356ce42469f"
+                },
+            ]
+        },
+    ]
 
     useEffect(() => {
         let data = {
@@ -26,7 +221,6 @@ function GroupProcess(props) {
             CostingId: costData.CostingId,
             EffectiveDate: CostingEffectiveDate,
         }
-        setIsLoader(true)
         dispatch(getMachineProcessGroupDetail(data, (res) => {
             if (res && res.status === 200) {
                 let Data = res.data.DataList;
@@ -36,7 +230,6 @@ function GroupProcess(props) {
             } else {
                 setTableDataList([])
             }
-            setIsLoader(false)
         }))
     }, [])
 
@@ -82,9 +275,6 @@ function GroupProcess(props) {
                             <th>MachineTonnage</th>
                         </tr>
                     </thead>
-                    {
-                        isLoader && <LoaderCustom />
-                    }
                     <tbody>
                         {tableData && tableData.map((item, index) => {
                             const ProcessList = item.ProcessList;
@@ -116,7 +306,7 @@ function GroupProcess(props) {
                                                     return <tr>
                                                         <td>{item.ProcessName}</td>
                                                         <td>{item.MachineRate}</td>
-                                                        <td>{item.UOM}</td>
+                                                        <td>{item.UnitOfMeasurement}</td>
                                                     </tr>
                                                 })}
 
