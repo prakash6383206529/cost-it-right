@@ -27,8 +27,6 @@ import {
   SET_ARRAY_FOR_COSTING,
   SELECTED_IDS_OF_OPERATION,
   SELECTED_PROCESS_AND_GROUPCODE,
-  SET_PROCESS_ID,
-  SET_PROCESSGROUP_ID,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -2389,45 +2387,11 @@ export function setSelectedIdsOperation(data) {                  //THIS METHOD W
 }
 
 export function setSelectedDataOfCheckBox(data) {
+  console.log('data: ', data);
   return (dispatch) => {
     dispatch({
       type: SELECTED_PROCESS_AND_GROUPCODE,
       payload: data
-    })
-  }
-}
-
-export function setIdsOfProcess(data) {
-  return (dispatch) => {
-    dispatch({
-      type: SET_PROCESS_ID,
-      payload: data
-    })
-  }
-}
-export function setIdsOfProcessGroup(data) {
-  console.log('data: ', data);
-
-  return (dispatch) => {
-    dispatch({
-      type: SET_PROCESSGROUP_ID,
-      payload: data
-    })
-  }
-}
-
-export function getMachineProcessGroupDetail(data, callback) {
-  return (dispatch) => {
-    dispatch({ type: API_REQUEST })
-    const queryParams = `vendorId=${data.VendorId}&technologyId=${data.TechnologyId}&effectiveDate=${data.EffectiveDate}&vendorPlantId=${data.VendorPlantId}&destinationPlantId=${data.DestinationPlantId}&costingId=${data.CostingId}`;
-    const request = axios.get(`${API.getMachineProcessGroupDetail}?${queryParams}`, headers)
-    request.then((response) => {
-      if (response.data.Result) {
-        callback(response)
-      }
-    }).catch((error) => {
-      dispatch({ type: API_FAILURE })
-      apiErrors(error);
     })
   }
 }

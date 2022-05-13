@@ -1,16 +1,11 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useState } from "react";
 import _ from 'lodash'
 import { useDispatch, useSelector } from "react-redux";
-import { getMachineProcessGroupDetail, setIdsOfProcessGroup, setSelectedDataOfCheckBox } from "../../actions/Costing";
-import { costingInfoContext } from "../CostingDetailStepTwo";
-import { getConfigurationKey } from "../../../../helper";
-import { EMPTY_GUID } from "../../../../config/constants";
+import { setSelectedDataOfCheckBox } from "../../actions/Costing";
 function GroupProcess(props) {
-    const { selectedProcessAndGroup, selectedProcessGroupId, CostingEffectiveDate } = useSelector(state => state.costing)
+    const { selectedProcessAndGroup } = useSelector(state => state.costing)
     const [processAcc, setProcessAcc] = useState(false);
     const [selectedData, setSelectedData] = useState([])
-    const [tableData, setTableDataList] = useState([])
-    const costData = useContext(costingInfoContext)
     const dispatch = useDispatch()
 
     const dummyData = [
@@ -211,47 +206,28 @@ function GroupProcess(props) {
         },
     ]
 
-    useEffect(() => {
-        let data = {
-            VendorId: costData.VendorId,
-            TechnologyId: String(costData.TechnologyId),
-            VendorPlantId: getConfigurationKey()?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
-            DestinationPlantId: getConfigurationKey()?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID,
-            CostingId: costData.CostingId,
-            EffectiveDate: CostingEffectiveDate,
-        }
-        dispatch(getMachineProcessGroupDetail(data, (res) => {
-            if (res && res.status === 200) {
-                let Data = res.data.DataList;
-                setTableDataList(Data)
-            } else if (res && res.response && res.response.status === 412) {
-                setTableDataList([])
-            } else {
-                setTableDataList([])
-            }
-        }))
-    }, [])
-
-    const findGroupCode = (clickedData, arr) => {
-        let isContainGroup = _.find(arr, function (obj) {
-            if (obj.GroupName === clickedData.GroupName && obj.MachineId === clickedData.MachineId) {
-                return true;
-            } else {
-                return false
-            }
-        });
-        return isContainGroup
-    }
-
     const handleCheckBox = (clickedData, index) => {
         let tempData = selectedData
         let tempArrForRedux = selectedProcessAndGroup
-        if (findGroupCode(selectedData)) {
+
+        const findGroupCode = () => {
+            let isContainGroup = _.find(selectedData, function (obj) {
+                if (obj.GroupName === clickedData.GroupName && obj.MachineId === clickedData.MachineId) {
+                    return true;
+                } else {
+                    return false
+                }
+            });
+            return isContainGroup
+        }
+
+        if (findGroupCode()) {
             let tempArrAfterDelete = selectedData && selectedData.filter((el, i) => {
                 if (i === index) return false;
                 return true
             })
-            tempArrForRedux = selectedProcessAndGroup && selectedProcessAndGroup.filter(el => el.MachineId !== clickedData.MachineId && el.GroupName !== clickedData.GroupName)
+            tempArrForRedux = selectedProcessAndGroup && selectedProcessAndGroup.filter(el => el.MachineRateId !== clickedData.MachineRateId && el.GroupName !== clickedData.ProcessId)
+            console.log('tempArrForRedux: ', tempArrForRedux);
             dispatch(setSelectedDataOfCheckBox(tempArrForRedux))
             setSelectedData(tempArrAfterDelete)
         } else {
@@ -260,6 +236,7 @@ function GroupProcess(props) {
             dispatch(setSelectedDataOfCheckBox(tempArrForRedux))
             setSelectedData(tempData)
         }
+
     }
 
     return (
@@ -275,18 +252,14 @@ function GroupProcess(props) {
                         </tr>
                     </thead>
                     <tbody>
-                        {tableData && tableData.map((item, index) => {
+                        {dummyData && dummyData.map((item, index) => {
                             const ProcessList = item.ProcessList;
                             return <>
                                 <tr>
-
-                                    <td> <span className='mr-2'>
-                                        {!findGroupCode(item, selectedProcessGroupId) && <input type="checkbox" onClick={() => handleCheckBox(item, index)} />}
-                                    </span>
-                                        {item.GroupName}</td>
-                                    <td>{item.Technology}</td>
+                                    <td> <span className='mr-2'><input type="checkbox" onClick={() => handleCheckBox(item, index)} /></span>{item.GroupName}</td>
+                                    <td>{item.Technologies}</td>
                                     <td>{item.MachineName}</td>
-                                    <td className='process-name'>{item.Tonnage} <div onClick={() => setProcessAcc(!processAcc)} className={`${processAcc ? 'Open' : 'Close'}`}></div></td>
+                                    <td className='process-name'>{item.MachineTonnage} <div onClick={() => setProcessAcc(!processAcc)} className={`${processAcc ? 'Open' : 'Close'}`}></div></td>
                                 </tr>
                                 {processAcc && <tr>
                                     <td colSpan={4}>
@@ -295,7 +268,7 @@ function GroupProcess(props) {
                                                 <tr>
                                                     <th>Process Name</th>
                                                     <th>Machine Rate</th>
-                                                    <th>UOM</th>
+                                                    <th>UnitOfMeasurement</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
