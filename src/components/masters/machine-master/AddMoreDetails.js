@@ -19,7 +19,7 @@ import { getFuelComboData, } from '../actions/Fuel';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { EMPTY_DATA, EMPTY_GUID } from '../../../config/constants'
-import { loggedInUserId, userDetails, getConfigurationKey } from "../../../helper/auth";
+import { loggedInUserId, userDetails } from "../../../helper/auth";
 import Switch from "react-switch";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
@@ -113,8 +113,8 @@ class AddMoreDetails extends Component {
       showPopup: false,
       updatedObj: {},
       lockUOMAndRate: false,
-      isProcessGroup: getConfigurationKey().IsMachineProcessGroup, // UNCOMMENT IT AFTER DONE FROM BACKEND AND REMOVE BELOW CODE
-      // isProcessGroup: true
+      // isProcessGroup: getConfigurationKey().IsMachineProcessGroup // UNCOMMENT IT AFTER DONE FROM BACKEND AND REMOVE BELOW CODE
+      isProcessGroup: false
     }
   }
 
@@ -3244,7 +3244,7 @@ class AddMoreDetails extends Component {
                               title={'Process Group:'} />
                           </Col>
                           <Col md="12">
-                            <ProcessGroup isViewFlag={this.state.isViewFlag} isEditFlag={isEditFlag} processListing={this.state.processGrid} isViewMode={this.state.isViewMode} isListing={false} />
+                            <ProcessGroup isViewFlag={this.state.isViewFlag} processListing={this.state.processGrid} isViewMode={this.state.isViewMode} isListing={false} />
                           </Col>
                         </Row>
                       }
