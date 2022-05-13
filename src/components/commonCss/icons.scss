@@ -140,10 +140,6 @@
 .hirarchy-icon { @include icons("../../assests/images/hirarchy-icon.svg", 18px , 12px);
     margin-right: 5px;
 }
-.group-process { @include icons("../../assests/images/group-process.svg");
-    margin-right: 5px;
-    border-radius: 4px
-}
 .trashred-icon {  @include icons("../../assests/images/trash-red.svg", 11px, 14px);
     margin-right: 5px;
 }
