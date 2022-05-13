@@ -6429,31 +6429,18 @@ table.group-process-table {
       border-right: 1px solid $borderColor;
       width: 45%;
     }
-    &:last-child {
-      border-left: 1px solid $borderColor;
-    }
   }
   td {
     padding: 0 !important;
     .process-names {
       padding: 0.41rem 10px;
       border-top: 1px solid $borderColor;
-      border-right: 1px solid #c2cbe8;
       &:first-child {
         border-top: none !important;
       }
     }
     &:first-child {
       padding-left: 12px !important;
-    }
-  }
-  .group-process-Actions {
-    display: flex;
-    justify-content: flex-end;
-    grid-gap: 5px;
-    margin-right: 7px;
-    button {
-      margin: 0 !important;
     }
   }
 }

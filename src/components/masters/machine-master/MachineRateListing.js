@@ -590,7 +590,7 @@ class MachineRateListing extends Component {
                     this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.MACHINE_DELETE_ALERT}`} />
                 }
                 {
-                    this.state.isOpenProcessGroupDrawer && <ProcessGroupDrawer anchor={'right'} isOpen={this.state.isOpenProcessGroupDrawer} toggleDrawer={this.closeProcessGroupDrawer} isViewFlag={true} />
+                    this.state.isOpenProcessGroupDrawer && <ProcessGroupDrawer anchor={'right'} isOpen={this.state.isOpenProcessGroupDrawer} toggleDrawer={this.closeProcessGroupDrawer} />
                 }
             </div >
         );
