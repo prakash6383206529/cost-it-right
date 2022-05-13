@@ -641,7 +641,7 @@ export function setGroupProcessList(data) {
     }
 }
 
-export function getProcessGroupByMachineId(machineId, callback) {
+export function getProcessGroupByMachineId(IsCalledAPI, machineId, callback) {
     return (dispatch) => {
         const request = axios.get(`${API.getProcessGroupList}/${machineId}`, headers)
         request.then((response) => {

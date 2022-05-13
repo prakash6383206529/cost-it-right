@@ -11,7 +11,7 @@ import { getTechnologySelectList, getPlantSelectListByType, getPlantBySupplier, 
 import { getVendorListByVendorType, masterFinalLevelUser } from '../actions/Material';
 import {
   createMachine, updateMachine, updateMachineDetails, getMachineTypeSelectList, getProcessesSelectList, fileUploadMachine, fileDeleteMachine,
-  checkAndGetMachineNumber, getMachineData, getProcessGroupByMachineId, setGroupProcessList,
+  checkAndGetMachineNumber, getMachineData, getProcessGroupByMachineId, setGroupProcessList
 } from '../actions/MachineMaster';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
@@ -243,26 +243,8 @@ class AddMachineRate extends Component {
 
           const Data = res.data.Data;
           this.props.getProcessGroupByMachineId(Data.MachineId, res => {
-            // this.props.setGroupProcessList(res?.data?.DataList)
-            // SET GET API STRUCTURE IN THE FORM OF SAVE API STRUCTURE BY DEFAULT
-            let updateArrayList = []
-            let tempArray = []
-            let singleRecordObject = {}
-            res?.data?.DataList && res?.data?.DataList.map((item) => {
-              singleRecordObject = {}
-              let ProcessIdListTemp = []
-              tempArray = item.GroupName
+            this.props.setGroupProcessList(res?.data?.DataList)
 
-              item.ProcessList && item.ProcessList.map((item1) => {
-                ProcessIdListTemp.push(item1.ProcessId)
-                return null
-              })
-              singleRecordObject.ProcessGroupName = tempArray
-              singleRecordObject.ProcessIdList = ProcessIdListTemp
-              updateArrayList.push(singleRecordObject)
-              return null
-            })
-            this.props.setGroupProcessList(updateArrayList)
             // TO DISABLE DELETE BUTTON WHEN GET DATA API CALLED (IN EDIT)
             let uniqueProcessId = []
             _.uniqBy(res?.data?.DataList, function (o) {
@@ -331,12 +313,7 @@ class AddMachineRate extends Component {
               files: Data.Attachements,
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
               oldDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
-              UOM: this.state.isProcessGroup ? { label: Data.MachineProcessRates[0].UnitOfMeasurement, value: Data.MachineProcessRates.UnitOfMeasurementId } : [],
-              lockUOMAndRate: this.state.isProcessGroup
-            }, () => {
-              this.setState({ isLoader: false })
-              this.props.change('MachineRate', Data.MachineProcessRates[0].MachineRate)
-            })
+            }, () => this.setState({ isLoader: false }))
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
             let files = Data.Attachements && Data.Attachements.map((item) => {
               item.meta = {}
@@ -946,7 +923,7 @@ class AddMachineRate extends Component {
   onSubmit = debounce((values) => {
     const { IsVendor, MachineID, isEditFlag, IsDetailedEntry, vendorName, selectedTechnology, selectedPlants, selectedVendorPlants,
       remarks, machineType, files, processGrid, isViewFlag, DropdownChange, effectiveDate, oldDate, uploadAttachements, isDateChange, IsFinancialDataChanged, DataToChange } = this.state;
-    console.log("ENTER UPDATE SUBMIT");
+
 
     if (vendorName.length <= 0) {
 
@@ -994,7 +971,7 @@ class AddMachineRate extends Component {
         })
 
       } else {
-        console.log("COMING IN ELSE");
+
         // EXECUTED WHEN:- EDIT MODE OF BASIC MACHINE && MACHINE MORE DETAILED NOT CREATED
         let requestData = {
           MachineId: MachineID,
@@ -1053,7 +1030,6 @@ class AddMachineRate extends Component {
 
 
         if (isEditFlag) {
-          console.log("COMING IN EDIT FLAG");
           if (DropdownChange && uploadAttachements &&
             (DataToChange.Description ? DataToChange.Description : '-') === (values.Description ? values.Description : '-') &&
             (DataToChange.MachineName ? DataToChange.MachineName : '-') === (values.MachineName ? values.MachineName : '-') &&
@@ -1063,7 +1039,6 @@ class AddMachineRate extends Component {
             this.cancel();
             return false
           }
-          console.log("COING OUTSIDE ");
           this.setState({ setDisable: true })
           this.setState({ showPopup: true, updatedObj: requestData })
         }
@@ -1176,7 +1151,6 @@ class AddMachineRate extends Component {
 
 
   onPopupConfirm = debounce(() => {
-    console.log("POP");
     this.setState({ disablePopup: true })
     this.props.updateMachine(this.state.updatedObj, (res) => {
       this.setState({ setDisable: false })
@@ -1292,6 +1266,8 @@ class AddMachineRate extends Component {
     const promiseOptions = inputValue =>
       new Promise(resolve => {
         resolve(filterList(inputValue));
+
+
       });
 
     return (
@@ -1945,7 +1921,7 @@ export default connect(mapStateToProps, {
   masterFinalLevelUser,
   getMachineData,
   getProcessGroupByMachineId,
-  setGroupProcessList,
+  setGroupProcessList
 })(reduxForm({
   form: 'AddMachineRate',
   enableReinitialize: true,

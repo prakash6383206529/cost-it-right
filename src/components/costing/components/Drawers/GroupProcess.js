@@ -23,7 +23,7 @@ function GroupProcess(props) {
     useEffect(() => {
         let data = {
             VendorId: costData.VendorId,
-            TechnologyId: String(`${costData.TechnologyId},14`),
+            TechnologyId: String(costData.TechnologyId),
             VendorPlantId: getConfigurationKey()?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
             DestinationPlantId: getConfigurationKey()?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID,
             CostingId: costData.CostingId,
