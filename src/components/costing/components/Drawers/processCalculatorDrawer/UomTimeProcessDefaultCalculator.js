@@ -13,7 +13,6 @@ function UomTimeProcessDefaultCalculator(props) {
     const costData = useContext(costingInfoContext);
     const dispatch = useDispatch()
     const [dataToSend, setDataToSend] = useState({ ...WeightCalculatorRequest })
-    let TotalCycleTimeSecGlobal = 0
 
     const defaultValues = {
         cuttingDiameter: WeightCalculatorRequest && WeightCalculatorRequest.CuttingDiameter !== undefined ? WeightCalculatorRequest.CuttingDiameter : '',
@@ -87,8 +86,6 @@ function UomTimeProcessDefaultCalculator(props) {
         setValue('cuttingTimeMins', checkForDecimalAndNull(CuttingTimeMins, getConfigurationKey().NoOfDecimalForInputOutput))
     }
 
-
-
     const setTotalCycleTimeMins = () => {
         const chipToChipTiming = Number(getValues('chipToChipTiming'))
         const totalNonCuttingTime = Number(getValues('totalNonCuttingTime'))
@@ -98,7 +95,6 @@ function UomTimeProcessDefaultCalculator(props) {
         setDataToSend(prevState => ({ ...prevState, totalCycleTimeMins: totalCycleTimeMins }))
         setValue('totalCycleTimeMins', checkForDecimalAndNull(totalCycleTimeMins, getConfigurationKey().NoOfDecimalForInputOutput))
         const TotalCycleTimeSec = (checkForNull(totalCycleTimeMins) * 60)
-        TotalCycleTimeSecGlobal = TotalCycleTimeSec
         setDataToSend(prevState => ({ ...prevState, TotalCycleTimeSec: TotalCycleTimeSec }))
         setValue('TotalCycleTimeSec', checkForDecimalAndNull(TotalCycleTimeSec, getConfigurationKey().NoOfDecimalForInputOutput))
     }
@@ -106,7 +102,7 @@ function UomTimeProcessDefaultCalculator(props) {
 
     const setPartsPerHour = () => {
         const efficiencyPercentage = Number(getValues('efficiencyPercentage'))
-        const partsPerHour = (3600 / checkForNull(TotalCycleTimeSecGlobal)) * (checkForNull(efficiencyPercentage / 100))
+        const partsPerHour = (3600 / checkForNull(dataToSend.TotalCycleTimeSec)) * (checkForNull(efficiencyPercentage / 100))
         setDataToSend(prevState => ({ ...prevState, partsPerHour: partsPerHour }))
         setValue('partsPerHour', checkForDecimalAndNull(partsPerHour, getConfigurationKey().NoOfDecimalForInputOutput))
         const processCost = (props?.calculatorData?.MHR) / partsPerHour

@@ -63,10 +63,10 @@ function TabToolCost(props) {
       let ProcessCostArray = []
       let OperationCostArray = []
 
-      ProcessCostArray = RMCCTabData && RMCCTabData[0]?.CostingPartDetails?.CostingConversionCost?.CostingProcessCostResponse && RMCCTabData[0]?.CostingPartDetails?.CostingConversionCost?.CostingProcessCostResponse.map(el => {
+      ProcessCostArray = RMCCTabData && RMCCTabData[0]?.CostingPartDetails?.CostingConversionCost?.CostingProcessCostResponse.map(el => {
         return { label: el.ProcessName, value: el.ProcessId };
       })
-      OperationCostArray = RMCCTabData && RMCCTabData[0]?.CostingPartDetails?.CostingConversionCost?.CostingOperationCostResponse && RMCCTabData[0]?.CostingPartDetails?.CostingConversionCost?.CostingOperationCostResponse.map(el => {
+      OperationCostArray = RMCCTabData && RMCCTabData[0]?.CostingPartDetails?.CostingConversionCost?.CostingOperationCostResponse.map(el => {
         return { label: el.OperationName, value: el.OperationId };
       });
 

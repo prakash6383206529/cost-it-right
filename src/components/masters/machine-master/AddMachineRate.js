@@ -11,7 +11,7 @@ import { getTechnologySelectList, getPlantSelectListByType, getPlantBySupplier, 
 import { getVendorListByVendorType, masterFinalLevelUser } from '../actions/Material';
 import {
   createMachine, updateMachine, updateMachineDetails, getMachineTypeSelectList, getProcessesSelectList, fileUploadMachine, fileDeleteMachine,
-  checkAndGetMachineNumber, getMachineData, getProcessGroupByMachineId, setGroupProcessList,
+  checkAndGetMachineNumber, getMachineData, getProcessGroupByMachineId
 } from '../actions/MachineMaster';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
@@ -35,7 +35,6 @@ import { debounce } from 'lodash';
 import { CheckApprovalApplicableMaster } from '../../../helper'
 import AsyncSelect from 'react-select/async';
 import { ProcessGroup } from '../masterUtil';
-import _ from 'lodash'
 
 
 const selector = formValueSelector('AddMachineRate');
@@ -94,9 +93,8 @@ class AddMachineRate extends Component {
       disablePopup: false,
       inputLoader: false,
       lockUOMAndRate: false,
-      isProcessGroup: getConfigurationKey().IsMachineProcessGroup,// UNCOMMENT IT AFTER DONE FROM BACKEND AND REMOVE BELOW CODE
-      // isProcessGroup: false,// UNCOMMENT IT AFTER DONE FROM BACKEND AND REMOVE BELOW CODE
-      UniqueProcessId: []
+      // isProcessGroup: getConfigurationKey().IsMachineProcessGroup // UNCOMMENT IT AFTER DONE FROM BACKEND AND REMOVE BELOW CODE
+      isProcessGroup: false
     }
   }
 
@@ -243,47 +241,7 @@ class AddMachineRate extends Component {
         if (res && res.data && res.data.Result) {
 
           const Data = res.data.Data;
-          this.props.getProcessGroupByMachineId(Data.MachineId, res => {
-            // this.props.setGroupProcessList(res?.data?.DataList)
-            // SET GET API STRUCTURE IN THE FORM OF SAVE API STRUCTURE BY DEFAULT
-            let updateArrayList = []
-            let tempArray = []
-            let singleRecordObject = {}
-            res?.data?.DataList && res?.data?.DataList.map((item) => {
-              singleRecordObject = {}
-              let ProcessIdListTemp = []
-              tempArray = item.GroupName
-
-              item.ProcessList && item.ProcessList.map((item1) => {
-                ProcessIdListTemp.push(item1.ProcessId)
-                return null
-              })
-              singleRecordObject.ProcessGroupName = tempArray
-              singleRecordObject.ProcessIdList = ProcessIdListTemp
-              updateArrayList.push(singleRecordObject)
-              return null
-            })
-            this.props.setGroupProcessList(updateArrayList)
-            // TO DISABLE DELETE BUTTON WHEN GET DATA API CALLED (IN EDIT)
-            let uniqueProcessId = []
-            _.uniqBy(res?.data?.DataList, function (o) {
-              uniqueProcessId.push(o?.ProcessId)
-            });
-            let allProcessId = []
-            res?.data?.DataList && res?.data?.DataList.map((item) => {
-              let ProcessIdListTemp = []
-              item.ProcessList && item.ProcessList.map((item1) => {
-                ProcessIdListTemp.push(item1.ProcessId)
-                return null
-              })
-
-              allProcessId = [...allProcessId, ...ProcessIdListTemp]
-              return null
-            })
-            let uniqueSet = [...new Set(allProcessId)]
-            this.setState({ UniqueProcessId: uniqueSet })
-          })
-
+          this.props.getProcessGroupByMachineId(Data.MachineId, res => { })
           this.setState({ DataToChange: Data })
           this.props.getVendorListByVendorType(Data.IsVendor, () => { this.setState({ inputLoader: false }) })
           if (Data.IsVendor) {
@@ -332,12 +290,7 @@ class AddMachineRate extends Component {
               files: Data.Attachements,
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
               oldDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
-              UOM: this.state.isProcessGroup ? { label: Data.MachineProcessRates[0].UnitOfMeasurement, value: Data.MachineProcessRates.UnitOfMeasurementId } : [],
-              lockUOMAndRate: this.state.isProcessGroup
-            }, () => {
-              this.setState({ isLoader: false })
-              this.props.change('MachineRate', this.state.isProcessGroup ? Data.MachineProcessRates[0].MachineRate : '')
-            })
+            }, () => this.setState({ isLoader: false }))
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
             let files = Data.Attachements && Data.Attachements.map((item) => {
               item.meta = {}
@@ -392,17 +345,6 @@ class AddMachineRate extends Component {
       DropdownChange: false
     })
   }
-  findGroupCode = (clickedData, arr) => {
-    let isContainGroup = _.find(arr, function (obj) {
-      if (obj.ProcessId === clickedData) {
-        return true;
-      } else {
-        return false
-      }
-    });
-    return isContainGroup
-  }
-
 
 
   closeApprovalDrawer = (e = '', type) => {
@@ -466,7 +408,6 @@ class AddMachineRate extends Component {
     if (label === 'ProcessNameList') {
       processSelectList && processSelectList.map(item => {
         if (item.Value === '0') return false;
-        if (this.findGroupCode(item.Value, this.state.processGrid)) return false;
         temp.push({ label: item.Text, value: item.Value })
         return null;
       });
@@ -750,18 +691,14 @@ class AddMachineRate extends Component {
 */
   resetProcessGridData = () => {
     const { isProcessGroup, UOM } = this.state
-    console.log('isProcessGroup: ', isProcessGroup);
     const { fieldsObj } = this.props;
     const MachineRate = fieldsObj.MachineRate
-    console.log('MachineRate: ', MachineRate);
-    let machineRate =
-      console.log(isProcessGroup ? MachineRate : '', "isProcessGroup ? MachineRate : ''");
     this.setState({
       processName: [],
       UOM: isProcessGroup ? UOM : [],
       processGridEditIndex: '',
       isEditIndex: false,
-    }, () => this.props.change('MachineRate', isProcessGroup ? MachineRate : ''));
+    }, () => () => this.props.change('MachineRate', isProcessGroup ? MachineRate : 0));
   };
 
   /**
@@ -1069,7 +1006,6 @@ class AddMachineRate extends Component {
 
 
         if (isEditFlag) {
-
           if (DropdownChange && uploadAttachements &&
             (DataToChange.Description ? DataToChange.Description : '-') === (values.Description ? values.Description : '-') &&
             (DataToChange.MachineName ? DataToChange.MachineName : '-') === (values.MachineName ? values.MachineName : '-') &&
@@ -1079,7 +1015,6 @@ class AddMachineRate extends Component {
             this.cancel();
             return false
           }
-
           this.setState({ setDisable: true })
           this.setState({ showPopup: true, updatedObj: requestData })
         }
@@ -1170,7 +1105,7 @@ class AddMachineRate extends Component {
 
         this.props.createMachine(formData, (res) => {
           this.setState({ setDisable: false })
-          if (res?.data?.Result) {
+          if (res.data.Result) {
             Toaster.success(MESSAGES.MACHINE_ADD_SUCCESS)
             //this.clearForm()
             this.cancel()
@@ -1192,7 +1127,6 @@ class AddMachineRate extends Component {
 
 
   onPopupConfirm = debounce(() => {
-
     this.setState({ disablePopup: true })
     this.props.updateMachine(this.state.updatedObj, (res) => {
       this.setState({ setDisable: false })
@@ -1272,25 +1206,13 @@ class AddMachineRate extends Component {
     }
   };
 
-  changeDropdownValue = () => {
-    this.setState({ DropdownChange: false })
-  }
-
-  showDelete = (uniqueProcessId) => {
-    if (this.state.UniqueProcessId?.length === 0 || this.state.UniqueProcessId === []) {
-      this.setState({ UniqueProcessId: [...this.state.UniqueProcessId, ...uniqueProcessId] })
-    } else {
-      this.setState({ UniqueProcessId: [...uniqueProcessId] })
-    }
-  }
-
   /**
   * @method render
   * @description Renders the component
   */
   render() {
     const { handleSubmit, AddAccessibility, EditAccessibility, initialConfiguration, isMachineAssociated } = this.props;
-    const { isEditFlag, isOpenMachineType, isOpenProcessDrawer, IsCopied, isViewFlag, isViewMode, setDisable, disablePopup, lockUOMAndRate, UniqueProcessId } = this.state;
+    const { isEditFlag, isOpenMachineType, isOpenProcessDrawer, IsCopied, isViewFlag, isViewMode, setDisable, disablePopup, lockUOMAndRate } = this.state;
     const filterList = (inputValue) => {
       let tempArr = []
 
@@ -1308,6 +1230,8 @@ class AddMachineRate extends Component {
     const promiseOptions = inputValue =>
       new Promise(resolve => {
         resolve(filterList(inputValue));
+
+
       });
 
     return (
@@ -1458,7 +1382,7 @@ class AddMachineRate extends Component {
                             validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                             component={renderText}
                             // required={true}
-                            disabled={isViewMode ? true : false}
+                            disabled={this.state.isViewFlag ? true : false}
                             className=" "
                             customClassName="withBorder"
                           />
@@ -1473,7 +1397,7 @@ class AddMachineRate extends Component {
                             validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                             component={renderText}
                             required={false}
-                            disabled={isViewMode ? true : false}
+                            disabled={this.state.isViewFlag ? true : false}
                             className=" "
                             customClassName="withBorder"
                           />
@@ -1493,7 +1417,7 @@ class AddMachineRate extends Component {
                                 required={false}
                                 handleChangeDescription={this.handleMachineType}
                                 valueDescription={this.state.machineType}
-                                disabled={isViewMode ? true : false}
+                                disabled={this.state.isViewFlag ? true : false}
                               />
                             </div>
                             {!isEditFlag && <div
@@ -1512,7 +1436,7 @@ class AddMachineRate extends Component {
                             validate={[checkWhiteSpaces, postiveNumber, maxLength10]}
                             component={renderText}
                             required={false}
-                            disabled={isViewMode ? true : false}
+                            disabled={this.state.isViewFlag ? true : false}
                             className=" "
                             customClassName="withBorder"
                           />
@@ -1636,14 +1560,14 @@ class AddMachineRate extends Component {
                                 <button
                                   disabled={isViewMode || (isEditFlag && isMachineAssociated)}
                                   type="button"
-                                  className={'btn btn-primary pull-left mr5'}
+                                  className={'btn btn-primary mt30 pull-left mr5'}
                                   onClick={this.updateProcessGrid}
                                 >Update</button>
 
                                 <button
                                   type={'button'}
                                   disabled={isViewMode || (isEditFlag && isMachineAssociated)}
-                                  className="reset-btn "
+                                  className="reset-btn mt30 "
                                   onClick={this.resetProcessGridData}>{'Cancel'}
                                 </button>
                               </>
@@ -1689,7 +1613,7 @@ class AddMachineRate extends Component {
                                         {/* {!this.state.IsDetailedEntry && */}
                                         <>
                                           <button className="Edit mr-2" type={'button'} disabled={(isViewFlag === true || this.state.IsDetailedEntry === true || isViewMode === true || (isEditFlag && isMachineAssociated)) ? true : false} onClick={() => this.editItemDetails(index)} />
-                                          <button className="Delete" type={'button'} disabled={(isViewFlag === true || this.state.IsDetailedEntry === true || isViewMode === true || (isEditFlag && isMachineAssociated) || (UniqueProcessId.includes(item.ProcessId))) ? true : false} onClick={() => this.deleteItem(index)} />
+                                          <button className="Delete" type={'button'} disabled={(isViewFlag === true || this.state.IsDetailedEntry === true || isViewMode === true || (isEditFlag && isMachineAssociated)) ? true : false} onClick={() => this.deleteItem(index)} />
                                         </>
                                       </td>
                                     </tr>
@@ -1697,9 +1621,9 @@ class AddMachineRate extends Component {
                                 })
                               }
                               <tr>
-                                {this.state.processGrid.length === 0 && <td colSpan={"6"}>
+                                <td colSpan={"6"}>{this.state.processGrid.length === 0 &&
                                   <NoContentFound title={EMPTY_DATA} />
-                                </td>}
+                                }</td>
                               </tr>
                             </tbody>
 
@@ -1715,7 +1639,7 @@ class AddMachineRate extends Component {
                               title={'Process Group:'} />
                           </Col>
                           <Col md="12">
-                            <ProcessGroup isEditFlag={isEditFlag} processListing={this.state.processGrid} isListing={false} isViewFlag={isViewMode} changeDropdownValue={this.changeDropdownValue} showDelete={this.showDelete} />
+                            <ProcessGroup isViewFlag={isViewFlag} processListing={this.state.processGrid} isListing={false} isViewMode={isViewMode} />
                           </Col>
                         </Row>
                       }
@@ -1960,8 +1884,7 @@ export default connect(mapStateToProps, {
   updateMachineDetails,
   masterFinalLevelUser,
   getMachineData,
-  getProcessGroupByMachineId,
-  setGroupProcessList,
+  getProcessGroupByMachineId
 })(reduxForm({
   form: 'AddMachineRate',
   enableReinitialize: true,

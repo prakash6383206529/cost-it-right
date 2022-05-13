@@ -105,7 +105,7 @@ function OperationCost(props) {
   * @description SELECTED IDS
   */
   const selectedIds = (tempArr) => {
-
+    console.log('tempArr: ', tempArr);
     let selectedId = Ids;
     if (tempArr && tempArr.length > 0) {
       tempArr && tempArr.map(el => {
@@ -329,7 +329,7 @@ function OperationCost(props) {
                                     //required: true,
                                     pattern: {
                                       //value: /^[0-9]*$/i,
-                                      value: item.UOM === "Number" ? /^[1-9]\d*$/ : /^\d*\.?\d*$/,
+                                      value: /^\d*\.?\d*$/,
                                       message: 'Invalid Number.'
                                     },
                                   }}
