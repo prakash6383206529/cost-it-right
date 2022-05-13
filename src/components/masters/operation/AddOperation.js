@@ -609,7 +609,6 @@ class AddOperation extends Component {
         UnitOfMeasurementId: UOM.value,
         Rate: values.Rate,
         Technology: technologyArray,
-        Description: values.Description,
         Remark: remarks,
         Attachements: updatedFiles,
         LoggedInUserId: loggedInUserId(),
