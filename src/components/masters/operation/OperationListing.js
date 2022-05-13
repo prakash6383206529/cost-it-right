@@ -249,14 +249,14 @@ class OperationListing extends Component {
  * @description confirm edit or view item
  */
 
-    viewOrEditItemDetails = (Id, isViewMode) => {
+    viewOrEditItemDetails = (Id, rowData, isViewMode) => {
         let data = {
             isEditFlag: true,
             ID: Id,
             toggleForm: true,
             isViewMode: isViewMode
         }
-        this.props.getDetails(data);
+        this.props.getDetails(data, rowData?.IsOperationAssociated);
     }
 
 
@@ -301,7 +301,7 @@ class OperationListing extends Component {
         let isDeleteButton = false
 
 
-        if (EditAccessibility && !rowData.IsOperationAssociated) {
+        if (EditAccessibility) {
             isEditable = true
         } else {
             isEditable = false

@@ -109,6 +109,10 @@ a:hover {
 .mtn6 {
   margin-top: -3rem;
 }
+.disabled {
+  opacity: 0.5;
+    cursor: default;
+}
 
 ::-webkit-input-placeholder {
   /* Chrome/Opera/Safari */
@@ -587,9 +591,9 @@ a:hover {
         .ag-header-cell {
           border-right: 1px solid #e5eaf9;
         }
-        .ag-header-cell:first-child {
-          border-left: 1px solid #e5eaf9;
-        }
+        // .ag-header-cell:first-child {
+        //   border-left: 1px solid #e5eaf9;
+        // }
       }
       .ag-grid-wrapper {
         &.rminsights_table {
@@ -601,9 +605,9 @@ a:hover {
         padding-right: 15px !important;
       }
       .ag-theme-material {
-        .ag-header-cell:first-child {
-          border-left: 1px solid #e5eaf9;
-        }
+        // .ag-header-cell:first-child { comment for future purpose
+        //   border-left: 1px solid #e5eaf9;
+        // }
         .ag-header {
           border-top: 1px solid #e5eaf9;
           font-weight: normal;
@@ -655,9 +659,9 @@ a:hover {
                 justify-content: center;
               }
             }
-            &:first-child {
-              border-left: 1px solid #e5eaf9;
-            }
+            // &:first-child { comment for future purpose
+            //   border-left: 1px solid #e5eaf9;
+            // }
           }
         }
       }
@@ -762,7 +766,9 @@ a:hover {
     }
   }
 }
-
+.ag-body-viewport, .ag-header {
+  border-left: 1px solid #e5eaf9;
+}
 .ag-theme-material {
   .ag-checkbox-input-wrapper {
     height: 14px !important;

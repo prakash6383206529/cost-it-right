@@ -105,7 +105,7 @@ function OperationCost(props) {
   * @description SELECTED IDS
   */
   const selectedIds = (tempArr) => {
-    console.log('tempArr: ', tempArr);
+
     let selectedId = Ids;
     if (tempArr && tempArr.length > 0) {
       tempArr && tempArr.map(el => {
@@ -167,6 +167,18 @@ function OperationCost(props) {
   }
 
   const SaveItem = (index) => {
+
+    let operationGridData = gridData[index]
+    if (operationGridData.UOM === 'Number') {
+      let isValid = Number.isInteger(Number(operationGridData.Quantity));
+      if (!isValid) {
+        Toaster.warning('Please enter numeric value')
+        setTimeout(() => {
+          setValue(`${OperationGridFields}.${index}.Quantity`, '')
+        }, 200)
+        return false
+      }
+    }
     setEditIndex('')
   }
 
@@ -317,7 +329,7 @@ function OperationCost(props) {
                                     //required: true,
                                     pattern: {
                                       //value: /^[0-9]*$/i,
-                                      value: /^\d*\.?\d*$/,
+                                      value: item.UOM === "Number" ? /^[1-9]\d*$/ : /^\d*\.?\d*$/,
                                       message: 'Invalid Number.'
                                     },
                                   }}

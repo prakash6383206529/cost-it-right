@@ -136,7 +136,7 @@ class BOPDomesticListing extends Component {
             IsVendor: rowData.CostingHead,
             isViewMode: isViewMode
         }
-        this.props.getDetails(data);
+        this.props.getDetails(data, rowData?.IsBOPAssociated);
     }
 
 
@@ -253,7 +253,7 @@ class BOPDomesticListing extends Component {
 
         let isEditbale = false
         let isDeleteButton = false
-        if (EditAccessibility && !rowData.IsBOPAssociated) {
+        if (EditAccessibility) {
             isEditbale = true
         } else {
             isEditbale = false
@@ -450,7 +450,7 @@ class BOPDomesticListing extends Component {
                         <Col md="6" lg="6">
                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                         </Col>
-                        <Col md="6" lg="6" className="mb-2">
+                        <Col md="6" lg="6" className="mb-3">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
                                     {this.state.shown ? (
