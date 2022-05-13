@@ -11,11 +11,11 @@ import { getTechnologySelectList, getPlantSelectListByType, getPlantBySupplier, 
 import { getVendorListByVendorType, masterFinalLevelUser } from '../actions/Material';
 import {
   createMachine, updateMachine, updateMachineDetails, getMachineTypeSelectList, getProcessesSelectList, fileUploadMachine, fileDeleteMachine,
-  checkAndGetMachineNumber, getMachineData, getProcessGroupByMachineId, setGroupProcessList,
+  checkAndGetMachineNumber, getMachineData, getProcessGroupByMachineId, setGroupProcessList, setProcessList
 } from '../actions/MachineMaster';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { EMPTY_DATA, EMPTY_GUID, UOM } from '../../../config/constants'
+import { EMPTY_DATA, EMPTY_GUID, } from '../../../config/constants'
 import { checkVendorPlantConfigurable, getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
 import Switch from "react-switch";
 import Dropzone from 'react-dropzone-uploader';
@@ -281,6 +281,7 @@ class AddMachineRate extends Component {
               return null
             })
             let uniqueSet = [...new Set(allProcessId)]
+            this.props.setProcessList(uniqueSet)
             this.setState({ UniqueProcessId: uniqueSet })
           })
 
@@ -332,11 +333,11 @@ class AddMachineRate extends Component {
               files: Data.Attachements,
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
               oldDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
-              UOM: this.state.isProcessGroup ? { label: Data.MachineProcessRates[0].UnitOfMeasurement, value: Data.MachineProcessRates.UnitOfMeasurementId } : [],
-              lockUOMAndRate: this.state.isProcessGroup
+              UOM: (this.state.isProcessGroup && !this.state.isViewMode) ? { label: Data.MachineProcessRates[0].UnitOfMeasurement, value: Data.MachineProcessRates.UnitOfMeasurementId } : [],
+              lockUOMAndRate: (this.state.isProcessGroup && !this.state.isViewMode)
             }, () => {
               this.setState({ isLoader: false })
-              this.props.change('MachineRate', this.state.isProcessGroup ? Data.MachineProcessRates[0].MachineRate : '')
+              this.props.change('MachineRate', (this.state.isProcessGroup && !this.state.isViewMode) ? Data.MachineProcessRates[0].MachineRate : '')
             })
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
             let files = Data.Attachements && Data.Attachements.map((item) => {
@@ -696,7 +697,7 @@ class AddMachineRate extends Component {
 * @description Used to handle updateProcessGrid
 */
   updateProcessGrid = () => {
-    const { processName, UOM, processGrid, processGridEditIndex } = this.state;
+    const { processName, UOM, processGrid, processGridEditIndex, isProcessGroup } = this.state;
     const { fieldsObj } = this.props;
     let tempArray = [];
 
@@ -738,11 +739,12 @@ class AddMachineRate extends Component {
     this.setState({
       processGrid: tempArray,
       processName: [],
-      UOM: [],
+      UOM: isProcessGroup ? UOM : [],
+      lockUOMAndRate: isProcessGroup,
       processGridEditIndex: '',
       isEditIndex: false,
 
-    }, () => this.props.change('MachineRate', 0));
+    }, () => this.props.change('MachineRate', isProcessGroup ? MachineRate : 0));
   };
 
   /**
@@ -1963,6 +1965,7 @@ export default connect(mapStateToProps, {
   getMachineData,
   getProcessGroupByMachineId,
   setGroupProcessList,
+  setProcessList
 })(reduxForm({
   form: 'AddMachineRate',
   enableReinitialize: true,

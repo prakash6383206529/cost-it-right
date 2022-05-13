@@ -12,7 +12,7 @@ import { getTechnologySelectList, getPlantSelectListByType, getPlantBySupplier, 
 import { getVendorListByVendorType, } from '../actions/Material';
 import {
   createMachineDetails, updateMachineDetails, getMachineDetailsData, getMachineTypeSelectList, getProcessesSelectList,
-  getFuelUnitCost, getLabourCost, getPowerCostUnit, fileUploadMachine, fileDeleteMachine, getProcessGroupByMachineId, setGroupProcessList
+  getFuelUnitCost, getLabourCost, getPowerCostUnit, fileUploadMachine, fileDeleteMachine, getProcessGroupByMachineId, setGroupProcessList, setProcessList
 } from '../actions/MachineMaster';
 import { getLabourTypeByMachineTypeSelectList } from '../actions/Labour';
 import { getFuelComboData, } from '../actions/Fuel';
@@ -272,6 +272,7 @@ class AddMoreDetails extends Component {
               return null
             })
             let uniqueSet = [...new Set(allProcessId)]
+            this.props.setProcessList(uniqueSet)
             this.setState({ UniqueProcessId: uniqueSet })
 
           })
@@ -334,9 +335,9 @@ class AddMoreDetails extends Component {
               remarks: Data.Remark,
               files: Data.Attachements,
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
-              UOM: this.state.isProcessGroup ? { label: Data.MachineProcessRates[0].UnitOfMeasurement, value: Data.MachineProcessRates.UnitOfMeasurementId } : [],
-              lockUOMAndRate: this.state.isProcessGroup
-            }, () => this.props.change('MachineRate', this.state.isProcessGroup ? Data.MachineProcessRates[0].MachineRate : ''))
+              UOM: (this.state.isProcessGroup && !this.state.isViewMode) ? { label: Data.MachineProcessRates[0].UnitOfMeasurement, value: Data.MachineProcessRates.UnitOfMeasurementId } : [],
+              lockUOMAndRate: (this.state.isProcessGroup && !this.state.isViewMode)
+            }, () => this.props.change('MachineRate', (this.state.isProcessGroup && !this.state.isViewMode) ? Data.MachineProcessRates[0].MachineRate : ''))
           }, 500)
         }
       })
@@ -3581,7 +3582,8 @@ export default connect(mapStateToProps, {
   fileDeleteMachine,
   masterFinalLevelUser,
   getProcessGroupByMachineId,
-  setGroupProcessList
+  setGroupProcessList,
+  setProcessList
 })(reduxForm({
   form: 'AddMoreDetails',
   onSubmitFail: errors => {
