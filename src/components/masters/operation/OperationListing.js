@@ -249,7 +249,7 @@ class OperationListing extends Component {
  * @description confirm edit or view item
  */
 
-    viewOrEditItemDetails = (Id, rowData, isViewMode) => {
+    viewOrEditItemDetails = (Id, isViewMode) => {
         let data = {
             isEditFlag: true,
             ID: Id,
