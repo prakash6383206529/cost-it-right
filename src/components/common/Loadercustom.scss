@@ -367,6 +367,7 @@
      left: $left;
      border-radius: 4px;
      align-items: flex-end;
+     z-index: 9;
      @-moz-document url-prefix() {
         top: $mozilaTop;
         bottom: $mozilaBottom;
