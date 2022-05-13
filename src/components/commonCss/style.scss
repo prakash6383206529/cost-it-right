@@ -6373,7 +6373,8 @@ left: 17rem;
 }
 .process-group-wrapper {
    margin-top: 1.8rem;
-   padding-left: 2rem;
+   margin-left: 0;
+   padding-left: 1rem;
   .process-group {
     min-height: 40px;
     max-height: 60px;
@@ -6381,15 +6382,10 @@ left: 17rem;
     overflow: auto;
     border-radius: 4px;
     padding: 5px;
-    font-size: 13px;
-    display: flex;
-    flex-wrap: wrap;
-    grid-gap: 3px;
     .process-name {
       background-color: rgb(224, 224, 224);
       border-radius: 3px;
-      padding: 3px;
-      padding-top: 4px;
+      padding: 2px;
       color: #333;
     }
   }
@@ -6427,20 +6423,19 @@ table.group-process-table {
   th,td {
     &:first-child {
       border-right: 1px solid $borderColor;
-      width: 45%;
     }
   }
   td {
     padding: 0 !important;
     .process-names {
-      padding: 0.41rem 10px;
+      padding: 0.21rem 10px;
       border-top: 1px solid $borderColor;
       &:first-child {
         border-top: none !important;
       }
     }
     &:first-child {
-      padding-left: 12px !important;
+      padding-left: 5px !important;
     }
   }
 }
