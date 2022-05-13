@@ -167,18 +167,6 @@ function OperationCost(props) {
   }
 
   const SaveItem = (index) => {
-
-    let operationGridData = gridData[index]
-    if (operationGridData.UOM === 'Number') {
-      let isValid = Number.isInteger(Number(operationGridData.Quantity));
-      if (!isValid) {
-        Toaster.warning('Please enter numeric value')
-        setTimeout(() => {
-          setValue(`${OperationGridFields}.${index}.Quantity`, '')
-        }, 200)
-        return false
-      }
-    }
     setEditIndex('')
   }
 
