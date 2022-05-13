@@ -317,7 +317,7 @@ function OperationCost(props) {
                                     //required: true,
                                     pattern: {
                                       //value: /^[0-9]*$/i,
-                                      value: item.UOM === "Number" ? /^[1-9]\d*$/ : /^\d*\.?\d*$/,
+                                      value: /^\d*\.?\d*$/,
                                       message: 'Invalid Number.'
                                     },
                                   }}
