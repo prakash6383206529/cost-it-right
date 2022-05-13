@@ -497,15 +497,9 @@ function ReportListing(props) {
 
     const renderColumn = (fileName) => {
 
-        let tempData = []
+        let tempData
         if (selectedRowData.length === 0) {
-            reportListingData && reportListingData.map((item) => {
-                if (item.Status === "ApprovedByASMSimulation" || item.Status === "CreatedByAssembly") {
-                    return false
-                } else {
-                    tempData.push(item)
-                }
-            })
+            tempData = reportListingData
         }
         else {
             tempData = selectedRowData
@@ -536,14 +530,6 @@ function ReportListing(props) {
         setPageNo(1)
         setCurrentRowIndex(0)
         getTableData(0, 100, true, floatingFilterData, true, true);
-    }
-
-    const isRowSelectable = (rowNode) => {
-        if (rowNode.data.Status === "ApprovedByASMSimulation" || rowNode.data.Status === "CreatedByAssembly") {
-            return false
-        } else {
-            return true
-        }
     }
 
     return (
@@ -599,7 +585,6 @@ function ReportListing(props) {
                         suppressRowClickSelection={true}
                         rowSelection={'multiple'}
                         frameworkComponents={frameworkComponents}
-                        isRowSelectable={isRowSelectable}
                         onSelectionChanged={onRowSelect}
                     >
 
