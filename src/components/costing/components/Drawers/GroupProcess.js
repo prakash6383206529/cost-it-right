@@ -1,128 +1,92 @@
-import React, { useContext, useEffect, useState } from "react";
-import _ from 'lodash'
-import { useDispatch, useSelector } from "react-redux";
-import { getMachineProcessGroupDetail, setIdsOfProcessGroup, setSelectedDataOfCheckBox } from "../../actions/Costing";
-import { costingInfoContext } from "../CostingDetailStepTwo";
-import { getConfigurationKey } from "../../../../helper";
-import { EMPTY_GUID } from "../../../../config/constants";
-import LoaderCustom from "../../../common/LoaderCustom";
-import { Checkbox } from "@material-ui/core";
-
+import React, { useState } from "react";
 
 function GroupProcess(props) {
-    const { selectedProcessAndGroup, selectedProcessGroupId, CostingEffectiveDate } = useSelector(state => state.costing)
-    const [isLoader, setIsLoader] = useState(false)
-    const [processAccObj, setProcessAccObj] = useState({});
-    const [selectedData, setSelectedData] = useState([])
-    const [tableData, setTableDataList] = useState([])
-    const costData = useContext(costingInfoContext)
-    const dispatch = useDispatch()
-
-
-
-    useEffect(() => {
-        let data = {
-            VendorId: costData.VendorId,
-            TechnologyId: String(`${costData.TechnologyId},14`),
-            VendorPlantId: getConfigurationKey()?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
-            DestinationPlantId: getConfigurationKey()?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID,
-            CostingId: costData.CostingId,
-            EffectiveDate: CostingEffectiveDate,
-        }
-        setIsLoader(true)
-        dispatch(getMachineProcessGroupDetail(data, (res) => {
-            if (res && res.status === 200) {
-                let Data = res.data.DataList;
-                setTableDataList(Data)
-            } else if (res && res.response && res.response.status === 412) {
-                setTableDataList([])
-            } else {
-                setTableDataList([])
-            }
-            setIsLoader(false)
-        }))
-    }, [])
-
-    const findGroupCode = (clickedData, arr) => {
-        let isContainGroup = _.find(arr, function (obj) {
-            if (obj.GroupName === clickedData.GroupName && obj.MachineId === clickedData.MachineId) {
-                return true;
-            } else {
-                return false
-            }
-        });
-        return isContainGroup
-    }
-
-    const handleCheckBox = (clickedData, index) => {
-
-        let removeCondition = false
-        selectedProcessAndGroup && selectedProcessAndGroup.map((el) => {
-            if (el.GroupName === clickedData.GroupName && el.MachineId === clickedData.MachineId) {
-                removeCondition = true
-            }
-        })
-
-        let tempData = selectedData
-        let tempArrForRedux = selectedProcessAndGroup
-        if (removeCondition) {
-            let tempArrAfterDelete = selectedData && selectedData.filter((el, i) => {
-                if (i === index) return false;
-                return true
-            })
-            tempArrForRedux = selectedProcessAndGroup && selectedProcessAndGroup.filter((el) => { return el.GroupName !== clickedData.GroupName })
-            dispatch(setSelectedDataOfCheckBox(tempArrForRedux))
-            setSelectedData(tempArrAfterDelete)
-        } else {
-            tempData.push(clickedData)
-            tempArrForRedux.push(clickedData)
-            dispatch(setSelectedDataOfCheckBox(tempArrForRedux))
-            setSelectedData(tempData)
-        }
-    }
-
-    const isCheckBoxApplicable = (item, index) => {
-        let result = false
-        selectedProcessAndGroup && selectedProcessAndGroup.map((el) => {
-            if (el.GroupName === item.GroupName && el.MachineId === item.MachineId) {
-                result = true
-            }
-        })
-        return result
-    }
-
+    const [processAcc, setProcessAcc] = useState(false);
+    const dummyData = [
+        {
+            groupID: "1",
+            groupName: "Drilling and Cutting",
+            technology: "Sheet metal",
+            machineName: "T4",
+            tonnage: 3,
+            processList: [
+                {
+                    processID: '11',
+                    processName: '1st forming 150 MT',
+                    machineRate: '4300',
+                    UOM: 'hours'
+                },
+                {
+                    processID: '12',
+                    processName: '2st forming 150 MT',
+                    machineRate: '4400',
+                    UOM: 'gal'
+                },
+                {
+                    processID: '13',
+                    processName: '3st forming 150 MT',
+                    machineRate: '5500',
+                    UOM: 'minute'
+                },
+            ]
+        },
+        {
+            groupID: "2",
+            groupName: "painting and cleaning",
+            technology: "Sheet metal",
+            machineName: "T6",
+            tonnage: 3,
+            processList: [
+                {
+                    processID: '21',
+                    processName: '1st forming 150 MT',
+                    machineRate: '4300',
+                    UOM: 'hours'
+                },
+                {
+                    processID: '22',
+                    processName: '2st forming 150 MT',
+                    machineRate: '4400',
+                    UOM: 'gal'
+                },
+                {
+                    processID: '23',
+                    processName: '3st forming 150 MT',
+                    machineRate: '5500',
+                    UOM: 'minute'
+                },
+                {
+                    processID: '24',
+                    processName: '4st forming 150 MT',
+                    machineRate: '6500',
+                    UOM: 'hours'
+                },
+            ]
+        },
+    ]
     return (
         <div>
-            <div className='py-3'>
+            <div className='py-2 px-3'>
                 <table className='table cr-brdr-main group-process-table'>
                     <thead>
                         <tr>
                             <th>Process Group</th>
-                            <th>Technologies</th>
+                            <th>Technology</th>
                             <th>Machine Name</th>
-                            <th>MachineTonnage</th>
+                            <th>Tonnage</th>
                         </tr>
                     </thead>
-                    {
-                        isLoader && <LoaderCustom />
-                    }
                     <tbody>
-                        {tableData && tableData.map((item, index) => {
-                            const ProcessList = item.ProcessList;
+                        {dummyData && dummyData.map(item => {
+                            const processList = item.processList;
                             return <>
                                 <tr>
-
-                                    <td> <span className='mr-2'>
-                                        {!findGroupCode(item, selectedProcessGroupId) && <input type="checkbox" defaultChecked={isCheckBoxApplicable(item, index)} onClick={() => handleCheckBox(item, index)} />}
-                                    </span>
-                                        {item.GroupName}</td>
-                                    <td>{item.Technology}</td>
-                                    <td>{item.MachineName}</td>
-                                    <td className='process-name'>{item.Tonnage} <div onClick={() => {
-                                        processAccObj[index] === true ? setProcessAccObj(prevState => ({ ...prevState, [index]: false })) : setProcessAccObj(prevState => ({ ...prevState, [index]: true }))
-                                    }} className={`${processAccObj[index] ? 'Open' : 'Close'}`}></div></td>
+                                    <td> <span className='mr-2'><input type="checkbox" /></span>{item.groupName}</td>
+                                    <td>{item.technology}</td>
+                                    <td>{item.machineName}</td>
+                                    <td className='process-name'>{item.tonnage} <div onClick={() => setProcessAcc(!processAcc)} className={`${processAcc ? 'Open' : 'Close'}`}></div></td>
                                 </tr>
-                                {processAccObj[index] && <tr>
+                                {processAcc && <tr>
                                     <td colSpan={4}>
                                         <table className='table cr-brdr-main mb-0'>
                                             <thead>
@@ -133,10 +97,10 @@ function GroupProcess(props) {
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {ProcessList && ProcessList.map(item => {
+                                                {processList && processList.map(item => {
                                                     return <tr>
-                                                        <td>{item.ProcessName}</td>
-                                                        <td>{item.MachineRate}</td>
+                                                        <td>{item.processName}</td>
+                                                        <td>{item.machineRate}</td>
                                                         <td>{item.UOM}</td>
                                                     </tr>
                                                 })}

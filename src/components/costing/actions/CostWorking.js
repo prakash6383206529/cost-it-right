@@ -1217,13 +1217,13 @@ export function getProcessCalculation(costingId, processId, processCalculationId
 
 
 
-export function getProcessMachiningCalculation(processCalculationId, callback) {
+export function getProcessMachiningCalculation(costingId, processId, processCalculationId, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const queryParams = `&weightCalculationId=${processCalculationId ? processCalculationId : 0}`
+    const queryParams = `costingId=${costingId}&processId=${processId}&weightCalculationId=${processCalculationId ? processCalculationId : 0}`
     const request = axios.get(`${API.getProcessMachiningCalculation}?${queryParams}`, headers);
     request.then((response) => {
-      if (response.data.Result || response.status === 204) {
+      if (response.data.Result) {
         // dispatch({
         //   type: GET_RAW_MATERIAL_CALCI_INFO,
         //   payload: response.data.Data,
@@ -1241,13 +1241,14 @@ export function getProcessMachiningCalculation(processCalculationId, callback) {
 }
 
 
-export function getProcessDefaultCalculation(processCalculationId, callback) {
+export function getProcessDefaultCalculation(costingId, processId, processCalculationId, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const queryParams = `weightCalculationId=${processCalculationId ? processCalculationId : 0}`
+    const queryParams = `costingId=${costingId}&processId=${processId}&weightCalculationId=${processCalculationId ? processCalculationId : 0}`
     const request = axios.get(`${API.getProcessDefaultCalculation}?${queryParams}`, headers);
     request.then((response) => {
-      if (response.data.Result || response.status === 204) {
+      if (response.data.Result) {
+
         callback(response);
       } else {
         Toaster.error(MESSAGES.SOME_ERROR);
