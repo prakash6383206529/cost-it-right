@@ -283,7 +283,7 @@ function ViewConversionCost(props) {
             {!isPDFShow && <td><button
               className="CalculatorIcon cr-cl-icon mr-auto ml-0"
               type={"button"}
-              disabled={item.ProcessCalculatorId === 0}
+              disabled={item.ProcessCalculationId === EMPTY_GUID}
               onClick={() => { getWeightData(index, process.ProcessList, parentIndex) }}
             /></td>}
             <td>{item.Quantity ? checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForInputOutput) : '-'}</td>
@@ -354,7 +354,7 @@ function ViewConversionCost(props) {
                               <button
                                 className="CalculatorIcon cr-cl-icon mr-auto ml-0"
                                 type={"button"}
-                                disabled={item.ProcessCalculatorId === 0}
+                                disabled={item.ProcessCalculationId === EMPTY_GUID}
                                 onClick={() => { getWeightData(index) }}
                               /> : ''
                           }
