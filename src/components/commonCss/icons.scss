@@ -45,6 +45,10 @@
 .View { @include icons("../../assests/images/Group-8858.svg", $shadowColor:#0cbeeb, $borderColor:#bbe8f9);
  @include extra-icon-styles;
 }
+.add-process { @include icons("../../assests/images/process-add.svg", $shadowColor:#0cbeeb, $borderColor:#bbe8f9);
+    border-radius: 4px;
+ @include extra-icon-styles;
+}
 .hirarchy-btn { @include icons("../../assests/images/hirarchy-btn.svg", $background-size:none, $shadowColor:#0cbeeb, $borderColor:#bbe8f9);
     background-color: #cef2fb;
     margin-left: 5px;
