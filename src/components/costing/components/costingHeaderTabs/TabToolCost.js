@@ -47,6 +47,7 @@ function TabToolCost(props) {
   const [operationArray, setOperationArray] = useState([])
   const [gridData, setGridData] = useState([])
   const [disableSwitch, setDisableSwitch] = useState(false)
+  const [partType, setpartType] = useState(costData?.TechnologyName === 'Assembly')   //HELP
 
   const dispense = () => {
     setIsApplicableProcessWise(IsToolCostApplicable)
@@ -269,7 +270,7 @@ function TabToolCost(props) {
         "CostingPartDetails": ToolTabData && ToolTabData[0].CostingPartDetails,
         "TotalCost": netPOPrice,
       }
-      if (costData.IsAssemblyPart === true) {
+      if (costData.IsAssemblyPart === true && !partType) {
 
         if (!CostingViewMode) {
           let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 5, CostingEffectiveDate)

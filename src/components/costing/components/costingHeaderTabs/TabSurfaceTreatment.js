@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from 'react';
+import React, { useEffect, useContext, useState } from 'react';
 import { useForm, } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
@@ -12,6 +12,8 @@ import { VbcExistingCosting, ViewCostingContext } from '../CostingDetails';
 import _ from 'lodash'
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { ASSEMBLY } from '../../../../config/masterData';
+import { netHeadCostContext, SurfaceCostContext } from '../CostingDetailStepTwo';
+import { setSubAssemblyTechnologyArray } from '../../actions/SubAssembly.js';
 
 function TabSurfaceTreatment(props) {
 
@@ -21,6 +23,9 @@ function TabSurfaceTreatment(props) {
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
   const vbcExistingCosting = useContext(VbcExistingCosting);
+  const headerCosts = useContext(netHeadCostContext);
+  const { subAssemblyTechnologyArray } = useSelector(state => state.SubAssembly)
+  const [partType, setpartType] = useState(costData?.TechnologyName === 'Assembly')   //HELP
 
   useEffect(() => {
     if (Object.keys(costData).length > 0) {
@@ -44,9 +49,12 @@ function TabSurfaceTreatment(props) {
     if (CostingViewMode === false) {
       let TopHeaderValues = SurfaceTabData && SurfaceTabData.length > 0 && SurfaceTabData[0].CostingPartDetails !== undefined ? SurfaceTabData[0].CostingPartDetails : null;
       let topHeaderData = {}
+      let surfaceTreatment = partType ?
+        (TopHeaderValues?.NetSurfaceTreatmentCost ? TopHeaderValues?.NetSurfaceTreatmentCost : 0)
+        : (TopHeaderValues && TopHeaderValues.TotalCalculatedSurfaceTreatmentCostWithQuantitys !== null ? TopHeaderValues.TotalCalculatedSurfaceTreatmentCostWithQuantitys : 0)
       if (costData.IsAssemblyPart) {
         topHeaderData = {
-          NetSurfaceTreatmentCost: TopHeaderValues && TopHeaderValues.TotalCalculatedSurfaceTreatmentCostWithQuantitys !== null ? TopHeaderValues.TotalCalculatedSurfaceTreatmentCostWithQuantitys : 0,
+          NetSurfaceTreatmentCost: surfaceTreatment,
         }
       } else {
         topHeaderData = {
@@ -1172,6 +1180,18 @@ function TabSurfaceTreatment(props) {
   */
   const onSubmit = (values) => { }
 
+  const setSurfaceTreatmentCostAT = (SurfaceTreatmentCost, TransportationCost, NetSurfaceTreatmentCost) => {
+    let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray
+
+    tempsubAssemblyTechnologyArray[0].CostingPartDetails.SurfaceTreatmentCost = SurfaceTreatmentCost
+    tempsubAssemblyTechnologyArray[0].CostingPartDetails.TransportationCost = TransportationCost
+    tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetSurfaceTreatmentCost = NetSurfaceTreatmentCost
+    dispatch(setSubAssemblyTechnologyArray(tempsubAssemblyTechnologyArray, res => { }))
+
+
+    // setSurfaceTreatmentCost(NetSurfaceTreatmentCost)
+  }
+
   return (
     <>
       {/* {filteredUsers} */}
@@ -1216,6 +1236,7 @@ function TabSurfaceTreatment(props) {
                                     setTransportationCost={setTransportationCost}
                                     IsAssemblyCalculation={false}
                                     subAssembId={vbcExistingCosting.SubAssemblyCostingId ? vbcExistingCosting.SubAssemblyCostingId : costData.CostingId}
+                                    isAssemblyTechnology={true}
                                   />
                                 </>
                               )

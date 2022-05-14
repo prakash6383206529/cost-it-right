@@ -2416,7 +2416,7 @@ export const getTechnology = [1, 8, 7, 2, 4, 20, 23]
 export const technologyForDensity = [1, 2, 7]
 export const getTechnologyForRecoveryPercent = [4, 6, 3, 5, 2]
 export const getTechnologyForSimulation = ['1', '2', '3', '4', '5', '6', '7', '9', '10', '11']
-
+export const IdForMultiTechnology = ['13', '10', '9']   //Assembly, Electrical Proprietary, Mechanical Proprietary
 
 export const CostingSimulationDownloadRM = [
     { label: "Costing Head", value: "CostingHead" },

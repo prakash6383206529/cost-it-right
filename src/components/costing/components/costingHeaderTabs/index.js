@@ -51,6 +51,10 @@ function CostingHeaderTabs(props) {
   const netPOPrice = useContext(NetPOPriceContext);
   const CostingEditMode = useContext(EditCostingContext);
   const costingApprovalStatus = useContext(CostingStatusContext);
+  const [partType, setpartType] = useState(costData?.TechnologyName === 'Assembly')   //HELP
+
+  const ActualTotalCost = ActualCostingDataList && ActualCostingDataList.length > 0 && ActualCostingDataList[0].TotalCost !== undefined ? ActualCostingDataList[0].TotalCost : 0;
+
   useEffect(() => {
 
     // CALLED WHEN OTHER TAB CLICKED WITHOUT SAVING TO RMCC CURRENT TAB.
@@ -212,8 +216,8 @@ function CostingHeaderTabs(props) {
       dispatch(isDataChange(false))
     }
 
-
-    if (RMCCTabData && RMCCTabData.length > 0 && activeTab !== '1' && CostingViewMode === false) {
+    // APPLY CHECKS HERE FOR ASSEMBLY TECHNOLOGY COSTING
+    if (RMCCTabData && RMCCTabData.length > 0 && activeTab !== '1' && CostingViewMode === false && !partType) {
       const tabData = RMCCTabData[0]
       const surfaceTabData = SurfaceTabData[0]
       const overHeadAndProfitTabData = OverheadProfitTabData[0]

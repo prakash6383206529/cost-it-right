@@ -9,7 +9,7 @@ import { EMPTY_GUID } from '../../../../../config/constants';
 
 function PartSurfaceTreatment(props) {
 
-  const { item } = props;
+  const { item, isAssemblyTechnology } = props;
 
   const [IsOpen, setIsOpen] = useState(false);
   const [Count, setCount] = useState(0);
@@ -128,7 +128,7 @@ function PartSurfaceTreatment(props) {
         setSurfaceCost={props.setSurfaceCost}
         setTransportationCost={props.setTransportationCost}
         IsAssemblyCalculation={false}
-        isAssemblyTechnology={props.isAssemblyTechnology}
+        isAssemblyTechnology={isAssemblyTechnology}
         setSurfaceTreatmentCostAT={props.setSurfaceTreatmentCostAT}
       />}
 

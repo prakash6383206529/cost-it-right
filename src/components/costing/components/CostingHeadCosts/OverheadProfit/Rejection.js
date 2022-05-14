@@ -19,7 +19,7 @@ function Rejection(props) {
     const CostingViewMode = useContext(ViewCostingContext);
     const costData = useContext(costingInfoContext);
 
-    // const { CostingRejectionDetail } = props.data.CostingPartDetails;
+    const { subAssemblyTechnologyTabData } = useSelector(state => state.SubAssembly)
 
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
     const costingHead = useSelector(state => state.comman.costingHead)
@@ -29,6 +29,7 @@ function Rejection(props) {
     const [percentageLimit, setPercentageLimit] = useState(false)
     const { IsIncludedSurfaceInRejection } = useSelector(state => state.costing)
     const { SurfaceTabData } = useSelector(state => state.costing)
+    const [partType, setpartType] = useState(costData?.TechnologyName === 'Assembly')   //HELP
 
 
     const dispatch = useDispatch()
@@ -114,96 +115,108 @@ function Rejection(props) {
             const BOPCC = headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation + checkForNull(NetSurfaceTreatmentCost);
             const RejectionPercentage = getValues('RejectionPercentage')
 
+            const assemblyLevelOperations = checkForNull(subAssemblyTechnologyTabData && subAssemblyTechnologyTabData[0]?.processCostValue) + checkForNull(subAssemblyTechnologyTabData && subAssemblyTechnologyTabData[0]?.operationCostValue)                                                           //LATER headerCosts.ProcessCostTotal
+            const BOPTotalCost = subAssemblyTechnologyTabData && subAssemblyTechnologyTabData[0]?.CostingPartDetails?.CostPerAssemblyBOP                                                           //LATER headerCosts.ProcessCostTotal
+            const EditPartCost = subAssemblyTechnologyTabData && subAssemblyTechnologyTabData[0]?.CostingPartDetails?.EditPartCost                                                           //LATER headerCosts.ProcessCostTotal
+
+            const RM = partType ? checkForNull(EditPartCost) : headerCosts.NetRawMaterialsCost
+            const BOP = partType ? checkForNull(BOPTotalCost) : headerCosts.NetBoughtOutPartCost
+            const CC = partType ? checkForNull(assemblyLevelOperations) : ConversionCostForCalculation
+            let RM_CC_BOP = partType ? (checkForNull(EditPartCost) + checkForNull(assemblyLevelOperations) + checkForNull(BOPTotalCost)) : RMBOPCC
+            let RM_CC = partType ? (checkForNull(EditPartCost) + checkForNull(assemblyLevelOperations)) : RMCC
+            let BOP_CC = partType ? (checkForNull(assemblyLevelOperations) + checkForNull(BOPTotalCost)) : BOPCC
+            let RM_BOP = partType ? (checkForNull(EditPartCost) + checkForNull(BOPTotalCost)) : RMBOP
+
+
             switch (Text) {
                 case 'RM':
-                    setValue('RejectionCost', checkForDecimalAndNull(headerCosts.NetRawMaterialsCost, initialConfiguration.NoOfDecimalForPrice))
-                    setValue('RejectionTotalCost', checkForDecimalAndNull((headerCosts.NetRawMaterialsCost * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice))
+                    setValue('RejectionCost', checkForDecimalAndNull(RM, initialConfiguration.NoOfDecimalForPrice))
+                    setValue('RejectionTotalCost', checkForDecimalAndNull((RM * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice))
                     setRejectionObj({
                         ...rejectionObj,
                         RejectionApplicabilityId: applicability.value,
                         RejectionApplicability: applicability.label,
                         RejectionPercentage: RejectionPercentage,
-                        RejectionCost: checkForNull(headerCosts.NetRawMaterialsCost),
-                        RejectionTotalCost: checkForNull((headerCosts.NetRawMaterialsCost * calculatePercentage(RejectionPercentage)))
+                        RejectionCost: checkForNull(RM),
+                        RejectionTotalCost: checkForNull((RM * calculatePercentage(RejectionPercentage)))
                     })
                     break;
 
                 case 'BOP':
-                    setValue('RejectionCost', checkForDecimalAndNull(headerCosts.NetBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice))
-                    setValue('RejectionTotalCost', checkForDecimalAndNull((headerCosts.NetBoughtOutPartCost * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice))
+                    setValue('RejectionCost', checkForDecimalAndNull(BOP, initialConfiguration.NoOfDecimalForPrice))
+                    setValue('RejectionTotalCost', checkForDecimalAndNull((BOP * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice))
                     setRejectionObj({
                         ...rejectionObj,
                         RejectionApplicabilityId: applicability.value,
                         RejectionApplicability: applicability.label,
                         RejectionPercentage: RejectionPercentage,
-                        RejectionCost: headerCosts.NetBoughtOutPartCost,
-                        RejectionTotalCost: checkForNull((headerCosts.NetBoughtOutPartCost * calculatePercentage(RejectionPercentage)))
+                        RejectionCost: BOP,
+                        RejectionTotalCost: checkForNull((BOP * calculatePercentage(RejectionPercentage)))
                     })
                     break;
 
                 case 'CC':
-                    let totalRejectionCost = ConversionCostForCalculation + checkForNull(NetSurfaceTreatmentCost)
-                    setValue('RejectionCost', checkForDecimalAndNull(totalRejectionCost, initialConfiguration.NoOfDecimalForPrice))
-                    setValue('RejectionTotalCost', checkForDecimalAndNull((totalRejectionCost * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice))
+                    setValue('RejectionCost', checkForDecimalAndNull(CC, initialConfiguration.NoOfDecimalForPrice))
+                    setValue('RejectionTotalCost', checkForDecimalAndNull(((CC) * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice))
                     setRejectionObj({
                         ...rejectionObj,
                         RejectionApplicabilityId: applicability.value,
                         RejectionApplicability: applicability.label,
                         RejectionPercentage: RejectionPercentage,
-                        RejectionCost: totalRejectionCost,
-                        RejectionTotalCost: checkForNull((totalRejectionCost * calculatePercentage(RejectionPercentage)))
+                        RejectionCost: CC,
+                        RejectionTotalCost: checkForNull(((CC) * calculatePercentage(RejectionPercentage)))
                     })
                     break;
 
                 case 'RM + CC + BOP':
-                    setValue('RejectionCost', checkForDecimalAndNull(RMBOPCC, initialConfiguration.NoOfDecimalForPrice))
-                    setValue('RejectionTotalCost', checkForDecimalAndNull((RMBOPCC * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice))
+                    setValue('RejectionCost', checkForDecimalAndNull(RM_CC_BOP, initialConfiguration.NoOfDecimalForPrice))
+                    setValue('RejectionTotalCost', checkForDecimalAndNull((RM_CC_BOP * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice))
                     setRejectionObj({
                         ...rejectionObj,
                         RejectionApplicabilityId: applicability.value,
                         RejectionApplicability: applicability.label,
                         RejectionPercentage: RejectionPercentage,
-                        RejectionCost: RMBOPCC,
-                        RejectionTotalCost: checkForNull((RMBOPCC * calculatePercentage(RejectionPercentage)))
+                        RejectionCost: RM_CC_BOP,
+                        RejectionTotalCost: checkForNull((RM_CC_BOP * calculatePercentage(RejectionPercentage)))
                     })
                     break;
 
                 case 'RM + BOP':
-                    setValue('RejectionCost', checkForDecimalAndNull(RMBOP, initialConfiguration.NoOfDecimalForPrice))
-                    setValue('RejectionTotalCost', checkForDecimalAndNull((RMBOP * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice))
+                    setValue('RejectionCost', checkForDecimalAndNull(RM_BOP, initialConfiguration.NoOfDecimalForPrice))
+                    setValue('RejectionTotalCost', checkForDecimalAndNull((RM_BOP * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice))
                     setRejectionObj({
                         ...rejectionObj,
                         RejectionApplicabilityId: applicability.value,
                         RejectionApplicability: applicability.label,
                         RejectionPercentage: RejectionPercentage,
-                        RejectionCost: RMBOP,
-                        RejectionTotalCost: checkForNull((RMBOP * calculatePercentage(RejectionPercentage)))
+                        RejectionCost: RM_BOP,
+                        RejectionTotalCost: checkForNull((RM_BOP * calculatePercentage(RejectionPercentage)))
                     })
                     break;
 
                 case 'RM + CC':
-                    setValue('RejectionCost', checkForDecimalAndNull(RMCC, initialConfiguration.NoOfDecimalForPrice))
-                    setValue('RejectionTotalCost', checkForDecimalAndNull((RMCC * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice))
+                    setValue('RejectionCost', checkForDecimalAndNull(RM_CC, initialConfiguration.NoOfDecimalForPrice))
+                    setValue('RejectionTotalCost', checkForDecimalAndNull((RM_CC * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice))
                     setRejectionObj({
                         ...rejectionObj,
                         RejectionApplicabilityId: applicability.value,
                         RejectionApplicability: applicability.label,
                         RejectionPercentage: RejectionPercentage,
-                        RejectionCost: RMCC,
-                        RejectionTotalCost: checkForNull((RMCC * calculatePercentage(RejectionPercentage)))
+                        RejectionCost: RM_CC,
+                        RejectionTotalCost: checkForNull((RM_CC * calculatePercentage(RejectionPercentage)))
                     })
                     break;
 
                 case 'BOP + CC':
-                    setValue('RejectionCost', checkForDecimalAndNull(BOPCC, initialConfiguration.NoOfDecimalForPrice))
-                    setValue('RejectionTotalCost', checkForDecimalAndNull((BOPCC * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice))
+                    setValue('RejectionCost', checkForDecimalAndNull(BOP_CC, initialConfiguration.NoOfDecimalForPrice))
+                    setValue('RejectionTotalCost', checkForDecimalAndNull((BOP_CC * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice))
                     setRejectionObj({
                         ...rejectionObj,
                         RejectionApplicabilityId: applicability.value,
                         RejectionApplicability: applicability.label,
                         RejectionPercentage: RejectionPercentage,
-                        RejectionCost: BOPCC,
-                        RejectionTotalCost: checkForNull((BOPCC * calculatePercentage(RejectionPercentage)))
+                        RejectionCost: BOP_CC,
+                        RejectionTotalCost: checkForNull((BOP_CC * calculatePercentage(RejectionPercentage)))
                     })
                     break;
 
@@ -224,7 +237,7 @@ function Rejection(props) {
                     break;
             }
         }
-
+        dispatch(isOverheadProfitDataChange(true))
     }
 
     const handleChangeRejectionPercentage = (event) => {

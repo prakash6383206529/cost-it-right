@@ -43,7 +43,7 @@ function OverheadProfit(props) {
     RepaymentPeriodPercentage: PaymentTermDetail !== null ? checkForDecimalAndNull(PaymentTermDetail.InterestRate, initialConfiguration.NoOfDecimalForPrice) : '',
     RepaymentPeriodCost: PaymentTermDetail !== null ? checkForDecimalAndNull(PaymentTermDetail.NetCost, initialConfiguration.NoOfDecimalForPrice) : '',
   }
-  const { setAssemblyTechnologyTabData } = useSelector(state => state.SubAssembly)
+  const { subAssemblyTechnologyTabData } = useSelector(state => state.SubAssembly)
 
   const { register, handleSubmit, control, setValue, getValues, formState: { errors } } = useForm({
     mode: 'onChange',
@@ -65,7 +65,7 @@ function OverheadProfit(props) {
   const [profitObj, setProfitObj] = useState(CostingProfitDetail)
   const [tempOverheadObj, setTempOverheadObj] = useState(CostingOverheadDetail)
   const [tempProfitObj, setTempProfitObj] = useState(CostingProfitDetail)
-  const [partType, setpartType] = useState(costData?.TechnologyName === 'Assembly')
+  const [partType, setpartType] = useState(costData?.TechnologyName === 'Assembly')   //HELP
 
 
 
@@ -361,15 +361,15 @@ function OverheadProfit(props) {
   }
 
   const subAssemblyOverheadCalc = (dataObj) => {
-    if (setAssemblyTechnologyTabData) {
+    if (subAssemblyTechnologyTabData) {
 
-      const assemblyLevelOperations = checkForNull(setAssemblyTechnologyTabData && setAssemblyTechnologyTabData[0]?.processCostValue) + checkForNull(setAssemblyTechnologyTabData && setAssemblyTechnologyTabData[0]?.operationCostValue)
-      const BOPTotalCost = setAssemblyTechnologyTabData[0]?.CostingPartDetails?.CostPerAssemblyBOP
-      const totalAssemblyCost = setAssemblyTechnologyTabData[0]?.CostingPartDetails?.CostPerAssembly
-      const EditPartCost = setAssemblyTechnologyTabData[0]?.CostingPartDetails?.EditPartCost
+      const assemblyLevelOperations = checkForNull(subAssemblyTechnologyTabData && subAssemblyTechnologyTabData[0]?.processCostValue) + checkForNull(subAssemblyTechnologyTabData && subAssemblyTechnologyTabData[0]?.operationCostValue)
+      const BOPTotalCost = subAssemblyTechnologyTabData && subAssemblyTechnologyTabData[0]?.CostingPartDetails?.CostPerAssemblyBOP
+      const totalAssemblyCost = subAssemblyTechnologyTabData && subAssemblyTechnologyTabData[0]?.CostingPartDetails?.CostPerAssembly
+      const EditPartCost = subAssemblyTechnologyTabData && subAssemblyTechnologyTabData[0]?.CostingPartDetails?.EditPartCost
 
-      const totalCCCost = checkForNull(setAssemblyTechnologyTabData[0]?.processCostValue) + checkForNull(setAssemblyTechnologyTabData[0]?.operationCostValue)
-      const RM_BOPCost = setAssemblyTechnologyTabData[0]?.CostingPartDetails?.CostPerAssembly * calculatePercentage(dataObj.OverheadPercentage)
+      const totalCCCost = checkForNull(subAssemblyTechnologyTabData && subAssemblyTechnologyTabData[0]?.processCostValue) + checkForNull(subAssemblyTechnologyTabData && subAssemblyTechnologyTabData[0]?.operationCostValue)
+      const RM_BOPCost = subAssemblyTechnologyTabData && subAssemblyTechnologyTabData[0]?.CostingPartDetails?.CostPerAssembly * calculatePercentage(dataObj.OverheadPercentage)
       const CCCost = totalCCCost * calculatePercentage((dataObj.OverheadPercentage && dataObj.OverheadPercentage !== '') ? dataObj.OverheadPercentage : 3)
 
       let OverheadPercentage = 0
@@ -549,15 +549,15 @@ function OverheadProfit(props) {
   }
 
   const subAssemblyProfitCalc = (dataObj) => {
-    if (setAssemblyTechnologyTabData) {
+    if (subAssemblyTechnologyTabData) {
 
-      const assemblyLevelOperations = checkForNull(setAssemblyTechnologyTabData[0]?.processCostValue) + checkForNull(setAssemblyTechnologyTabData[0]?.operationCostValue)
-      const BOPTotalCost = setAssemblyTechnologyTabData[0]?.CostingPartDetails?.CostPerAssemblyBOP
-      const totalAssemblyCost = setAssemblyTechnologyTabData[0]?.CostingPartDetails?.CostPerAssembly
-      const EditPartCost = setAssemblyTechnologyTabData[0]?.CostingPartDetails?.EditPartCost
+      const assemblyLevelOperations = checkForNull(subAssemblyTechnologyTabData && subAssemblyTechnologyTabData[0]?.processCostValue) + checkForNull(subAssemblyTechnologyTabData && subAssemblyTechnologyTabData[0]?.operationCostValue)
+      const BOPTotalCost = subAssemblyTechnologyTabData && subAssemblyTechnologyTabData[0]?.CostingPartDetails?.CostPerAssemblyBOP
+      const totalAssemblyCost = subAssemblyTechnologyTabData && subAssemblyTechnologyTabData[0]?.CostingPartDetails?.CostPerAssembly
+      const EditPartCost = subAssemblyTechnologyTabData && subAssemblyTechnologyTabData[0]?.CostingPartDetails?.EditPartCost
 
-      const totalCCCost = checkForNull(setAssemblyTechnologyTabData[0]?.processCostValue) + checkForNull(setAssemblyTechnologyTabData[0]?.operationCostValue)
-      const RM_BOPCost = setAssemblyTechnologyTabData[0]?.CostingPartDetails?.CostPerAssembly * calculatePercentage(dataObj.ProfitPercentage)
+      const totalCCCost = checkForNull(subAssemblyTechnologyTabData && subAssemblyTechnologyTabData[0]?.processCostValue) + checkForNull(subAssemblyTechnologyTabData && subAssemblyTechnologyTabData[0]?.operationCostValue)
+      const RM_BOPCost = subAssemblyTechnologyTabData && subAssemblyTechnologyTabData[0]?.CostingPartDetails?.CostPerAssembly * calculatePercentage(dataObj.ProfitPercentage)
       const CCCost = totalCCCost * calculatePercentage((dataObj.ProfitPercentage && dataObj.ProfitPercentage !== '') ? dataObj.ProfitPercentage : 3)
 
       let ProfitPercentage = 0
@@ -745,13 +745,13 @@ function OverheadProfit(props) {
   const setOverheadValues = (dataObj, IsAPIResponse) => {
     if (partType) {
       if (!CostingViewMode) {
-        const assemblyLevelOperations = checkForNull(setAssemblyTechnologyTabData && setAssemblyTechnologyTabData[0]?.processCostValue) + checkForNull(setAssemblyTechnologyTabData && setAssemblyTechnologyTabData[0]?.operationCostValue)
-        const BOPTotalCost = setAssemblyTechnologyTabData[0]?.CostingPartDetails?.CostPerAssemblyBOP
-        const totalAssemblyCost = setAssemblyTechnologyTabData[0]?.CostingPartDetails?.CostPerAssembly
-        const EditPartCost = setAssemblyTechnologyTabData[0]?.CostingPartDetails?.EditPartCost
+        const assemblyLevelOperations = checkForNull(subAssemblyTechnologyTabData && subAssemblyTechnologyTabData[0]?.processCostValue) + checkForNull(subAssemblyTechnologyTabData && subAssemblyTechnologyTabData[0]?.operationCostValue)
+        const BOPTotalCost = subAssemblyTechnologyTabData && subAssemblyTechnologyTabData[0]?.CostingPartDetails?.CostPerAssemblyBOP
+        const totalAssemblyCost = subAssemblyTechnologyTabData && subAssemblyTechnologyTabData[0]?.CostingPartDetails?.CostPerAssembly
+        const EditPartCost = subAssemblyTechnologyTabData && subAssemblyTechnologyTabData[0]?.CostingPartDetails?.EditPartCost
 
-        const totalCCCost = checkForNull(setAssemblyTechnologyTabData[0]?.processCostValue) + checkForNull(setAssemblyTechnologyTabData[0]?.operationCostValue)
-        const RM_BOPCost = setAssemblyTechnologyTabData[0]?.CostingPartDetails?.CostPerAssembly * calculatePercentage(dataObj.OverheadPercentage)
+        const totalCCCost = checkForNull(subAssemblyTechnologyTabData && subAssemblyTechnologyTabData[0]?.processCostValue) + checkForNull(subAssemblyTechnologyTabData && subAssemblyTechnologyTabData[0]?.operationCostValue)
+        const RM_BOPCost = subAssemblyTechnologyTabData && subAssemblyTechnologyTabData[0]?.CostingPartDetails?.CostPerAssembly * calculatePercentage(dataObj.OverheadPercentage)
         const CCCost = totalCCCost * calculatePercentage((dataObj.OverheadPercentage && dataObj.OverheadPercentage !== '') ? dataObj.OverheadPercentage : 3)
 
         let OverheadRMCost = EditPartCost              //LATER headerCosts.NetRawMaterialsCost
@@ -1104,13 +1104,13 @@ function OverheadProfit(props) {
   const setProfitValues = (dataObj, IsAPIResponse) => {
     if (partType) {
       if (!CostingViewMode) {
-        const assemblyLevelOperations = checkForNull(setAssemblyTechnologyTabData && setAssemblyTechnologyTabData[0]?.processCostValue) + checkForNull(setAssemblyTechnologyTabData && setAssemblyTechnologyTabData[0]?.operationCostValue)
-        const BOPTotalCost = setAssemblyTechnologyTabData[0]?.CostingPartDetails?.CostPerAssemblyBOP
-        const totalAssemblyCost = setAssemblyTechnologyTabData[0]?.CostingPartDetails?.CostPerAssembly
-        const EditPartCost = setAssemblyTechnologyTabData[0]?.CostingPartDetails?.EditPartCost
+        const assemblyLevelOperations = checkForNull(subAssemblyTechnologyTabData && subAssemblyTechnologyTabData[0]?.processCostValue) + checkForNull(subAssemblyTechnologyTabData && subAssemblyTechnologyTabData[0]?.operationCostValue)
+        const BOPTotalCost = subAssemblyTechnologyTabData && subAssemblyTechnologyTabData[0]?.CostingPartDetails?.CostPerAssemblyBOP
+        const totalAssemblyCost = subAssemblyTechnologyTabData && subAssemblyTechnologyTabData[0]?.CostingPartDetails?.CostPerAssembly
+        const EditPartCost = subAssemblyTechnologyTabData && subAssemblyTechnologyTabData[0]?.CostingPartDetails?.EditPartCost
 
-        const totalCCCost = checkForNull(setAssemblyTechnologyTabData[0]?.processCostValue) + checkForNull(setAssemblyTechnologyTabData[0]?.operationCostValue)
-        const RM_BOPCost = setAssemblyTechnologyTabData[0]?.CostingPartDetails?.CostPerAssembly * calculatePercentage(dataObj.ProfitPercentage)
+        const totalCCCost = checkForNull(subAssemblyTechnologyTabData && subAssemblyTechnologyTabData[0]?.processCostValue) + checkForNull(subAssemblyTechnologyTabData && subAssemblyTechnologyTabData[0]?.operationCostValue)
+        const RM_BOPCost = subAssemblyTechnologyTabData && subAssemblyTechnologyTabData[0]?.CostingPartDetails?.CostPerAssembly * calculatePercentage(dataObj.ProfitPercentage)
         const CCCost = totalCCCost * calculatePercentage((dataObj.ProfitPercentage && dataObj.ProfitPercentage !== '') ? dataObj.ProfitPercentage : 3)
 
         let ProfitRMCost = EditPartCost              //LATER headerCosts.NetRawMaterialsCost
@@ -1467,45 +1467,26 @@ function OverheadProfit(props) {
     if (partType) {
 
       if (!CostingViewMode) {
-        const { IsCutOffApplicable, CutOffRMC } = RMCCutOffObj;
-        const ConversionCostForCalculation = costData.IsAssemblyPart ? checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly) : headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal
-        const RMBOPCC = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation
-        const CutOffRMBOPCCTotal = IsCutOffApplicable && headerCosts ? CutOffRMC + headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation : RMBOPCC;
-        const NetSurfaceTreatmentCost = SurfaceTreatmentCost && SurfaceTreatmentCost.NetSurfaceTreatmentCost !== undefined ? checkForNull(SurfaceTreatmentCost?.NetSurfaceTreatmentCost) : checkForNull(CostingDataList[0]?.NetSurfaceTreatmentCost);
-        const NetConversionCost = ConversionCostForCalculation
-        // _______________  MY 
-        const assemblyLevelOperations = checkForNull(setAssemblyTechnologyTabData && setAssemblyTechnologyTabData[0]?.processCostValue) + checkForNull(setAssemblyTechnologyTabData && setAssemblyTechnologyTabData[0]?.operationCostValue)
-        const BOPTotalCost = setAssemblyTechnologyTabData[0]?.CostingPartDetails?.CostPerAssemblyBOP
-        const totalAssemblyCost = setAssemblyTechnologyTabData[0]?.CostingPartDetails?.CostPerAssembly
-        const EditPartCost = setAssemblyTechnologyTabData[0]?.CostingPartDetails?.EditPartCost
 
-        const totalCCCost = checkForNull(setAssemblyTechnologyTabData[0]?.processCostValue) + checkForNull(setAssemblyTechnologyTabData[0]?.operationCostValue)
-        const RM_BOPCost = setAssemblyTechnologyTabData[0]?.CostingPartDetails?.CostPerAssembly * calculatePercentage(overheadObj.OverheadPercentage)
-        const CCCost = totalCCCost * calculatePercentage((overheadObj?.OverheadPercentage && overheadObj?.OverheadPercentage !== '') ? overheadObj?.OverheadPercentage : 3)
+        const NetSurfaceTreatmentCost = subAssemblyTechnologyTabData && subAssemblyTechnologyTabData[0]?.CostingPartDetails?.NetSurfaceTreatmentCost;                                                           //LATER headerCosts.ProcessCostTotal
+        const assemblyLevelOperations = checkForNull(subAssemblyTechnologyTabData && subAssemblyTechnologyTabData[0]?.processCostValue) + checkForNull(subAssemblyTechnologyTabData && subAssemblyTechnologyTabData[0]?.operationCostValue)                                                           //LATER headerCosts.ProcessCostTotal
+        const BOPTotalCost = subAssemblyTechnologyTabData && subAssemblyTechnologyTabData[0]?.CostingPartDetails?.CostPerAssemblyBOP                                                           //LATER headerCosts.ProcessCostTotal
+        const EditPartCost = subAssemblyTechnologyTabData && subAssemblyTechnologyTabData[0]?.CostingPartDetails?.EditPartCost                                                           //LATER headerCosts.ProcessCostTotal
 
-        let OverheadRMCost = EditPartCost              //LATER headerCosts.NetRawMaterialsCost
-        let OverheadCCCost = assemblyLevelOperations              //LATER headerCosts.ProcessCostTotal
-        console.log('assemblyLevelOperations: ', assemblyLevelOperations);
-        let OverheadBOPCost = BOPTotalCost              //LATER headerCosts.ProcessCostTotal
+        let CCCost = assemblyLevelOperations
+        let RM_CC_BOP = checkForNull(EditPartCost) + checkForNull(assemblyLevelOperations) + checkForNull(BOPTotalCost)
+        let RM_CC = checkForNull(EditPartCost) + checkForNull(assemblyLevelOperations)
+        let BOP_CC = checkForNull(assemblyLevelOperations) + checkForNull(BOPTotalCost)
+        let RM_BOP = checkForNull(EditPartCost) + checkForNull(BOPTotalCost)
 
-        let OverheadRMPercentage = overheadObj.IsOverheadRMApplicable ? overheadObj.OverheadRMPercentage : ''
-        let OverheadRMTotalCost = OverheadRMCost * calculatePercentage(OverheadRMPercentage)
-
-        let OverheadBOPPercentage = overheadObj.IsOverheadBOPApplicable ? overheadObj.OverheadBOPPercentage : ''
-        let OverheadBOPTotalCost = OverheadBOPCost * calculatePercentage(OverheadBOPPercentage)
+        let OverheadCCPercentage = overheadObj?.OverheadCCPercentage ? overheadObj?.OverheadCCPercentage : ''
+        let ProfiCCPercentage = profitObj?.ProfitCCPercentage ? profitObj?.ProfitCCPercentage : ''
 
 
-        // _______________
-
-
-
-
-        // START HERE ADD CC IN OVERHEAD
+        // START HERE ADD CC IN OVERHEAD                     //DONE
         if (IsIncludedSurfaceInOverheadProfit && IsSurfaceTreatmentAdded === false && overheadObj && overheadObj.IsOverheadCCApplicable) {
-          OverheadCCCost = checkForNull(OverheadCCCost) + checkForNull(NetSurfaceTreatmentCost)
-
-          let OverheadCCPercentage = overheadObj.IsOverheadCCApplicable ? overheadObj.OverheadCCPercentage : ''
-          let OverheadCCTotalCost = checkForNull(OverheadCCCost) * calculatePercentage(OverheadCCPercentage)
+          const OverheadCCCost = checkForNull(CCCost) + checkForNull(NetSurfaceTreatmentCost)
+          const OverheadCCTotalCost = checkForNull(OverheadCCCost) * calculatePercentage(OverheadCCPercentage)
 
           setValue('OverheadCCCost', checkForDecimalAndNull(OverheadCCCost, initialConfiguration.NoOfDecimalForPrice))
           setValue('OverheadCCTotalCost', checkForDecimalAndNull(OverheadCCTotalCost, initialConfiguration.NoOfDecimalForPrice))
@@ -1522,27 +1503,11 @@ function OverheadProfit(props) {
             OverheadCCTotalCost: OverheadCCTotalCost
           })
 
-          // const overheadCCCost = checkForNull(NetConversionCost) + checkForNull(NetSurfaceTreatmentCost)
-
-          // setValue('OverheadCCCost', checkForDecimalAndNull(OverheadCCCost, initialConfiguration.NoOfDecimalForPrice))
-          // setValue('OverheadCCTotalCost', checkForDecimalAndNull(OverheadCCTotalCost, initialConfiguration.NoOfDecimalForPrice))
-          // setIsSurfaceTreatmentAdded(true)
-          // setOverheadObj({
-          //   ...overheadObj,
-          //   OverheadCCCost: checkForNull(OverheadCCCost),
-          //   OverheadCCTotalCost: OverheadCCTotalCost
-          // })
-          // setTempOverheadObj({
-          //   ...tempOverheadObj,
-          //   OverheadCCPercentage: OverheadCCPercentage,
-          //   OverheadCCCost: checkForNull(OverheadCCCost),
-          //   OverheadCCTotalCost: OverheadCCTotalCost
-          // })
-
         } else if (!IsIncludedSurfaceInOverheadProfit && overheadObj && overheadObj.IsOverheadCCApplicable) {
 
-          let OverheadCCPercentage = overheadObj.IsOverheadCCApplicable ? overheadObj.OverheadCCPercentage : ''
-          let OverheadCCTotalCost = checkForNull(OverheadCCCost) * calculatePercentage(OverheadCCPercentage)
+          const OverheadCCCost = checkForNull(CCCost)
+          const OverheadCCPercentage = overheadObj.IsOverheadCCApplicable ? overheadObj.OverheadCCPercentage : ''
+          const OverheadCCTotalCost = checkForNull(OverheadCCCost) * calculatePercentage(OverheadCCPercentage)
 
           setValue('OverheadCCCost', checkForDecimalAndNull(OverheadCCCost, initialConfiguration.NoOfDecimalForPrice))
           setValue('OverheadCCTotalCost', checkForDecimalAndNull(OverheadCCTotalCost, initialConfiguration.NoOfDecimalForPrice))
@@ -1562,31 +1527,33 @@ function OverheadProfit(props) {
           // END HERE ADD CC IN OVERHEAD
         }
 
-        // START ADD CC IN PROFIT
+        // START ADD CC IN PROFIT                            //DONE
         if (IsIncludedSurfaceInOverheadProfit && IsSurfaceTreatmentAdded === false && profitObj && profitObj.IsProfitCCApplicable) {
 
-          const { ProfitCCPercentage } = profitObj;
-          const profitCCCost = checkForNull(NetConversionCost) + checkForNull(NetSurfaceTreatmentCost)
-          const profitTotalCost = profitCCCost * calculatePercentage(ProfitCCPercentage)
+          const profitCCCost = checkForNull(CCCost) + checkForNull(NetSurfaceTreatmentCost)
+          const profitTotalCost = checkForNull(profitCCCost) * calculatePercentage(checkForNull(ProfiCCPercentage))
+
           setValue('ProfitCCCost', checkForDecimalAndNull(profitCCCost, initialConfiguration.NoOfDecimalForPrice))
           setValue('ProfitCCTotalCost', checkForDecimalAndNull(profitTotalCost, initialConfiguration.NoOfDecimalForPrice))
           setIsSurfaceTreatmentAdded(true)
+
           setProfitObj({
             ...profitObj,
             ProfitCCCost: profitCCCost,
             ProfitCCTotalCost: profitTotalCost
           })
+
           setTempProfitObj({
             ...tempProfitObj,
-            ProfitCCPercentage: ProfitCCPercentage,
+            ProfitCCPercentage: ProfiCCPercentage,
             ProfitCCCost: profitCCCost,
             ProfitCCTotalCost: profitTotalCost
           })
+
         } else if (!IsIncludedSurfaceInOverheadProfit && profitObj && profitObj.IsProfitCCApplicable) {
 
-          const { ProfitCCPercentage } = profitObj;
-          const profitCCCost = checkForNull(NetConversionCost)
-          const profitTotalCost = profitCCCost * calculatePercentage(ProfitCCPercentage)
+          const profitCCCost = checkForNull(CCCost)
+          const profitTotalCost = profitCCCost * calculatePercentage(ProfiCCPercentage)
           setValue('ProfitCCCost', checkForDecimalAndNull(profitCCCost, initialConfiguration.NoOfDecimalForPrice))
           setValue('ProfitCCTotalCost', checkForDecimalAndNull(profitTotalCost, initialConfiguration.NoOfDecimalForPrice))
           setIsSurfaceTreatmentAdded(false)
@@ -1597,14 +1564,14 @@ function OverheadProfit(props) {
           })
           setTempProfitObj({
             ...tempProfitObj,
-            ProfitCCPercentage: ProfitCCPercentage,
+            ProfitCCPercentage: ProfiCCPercentage,
             ProfitCCCost: profitCCCost,
             ProfitCCTotalCost: profitTotalCost
           })
           // END HERE ADD CC IN PROFIT
         }
 
-        // START ADD CC IN OVERHEAD COMBINED
+        // START ADD CC IN OVERHEAD COMBINED                 //DONE  
         if (IsIncludedSurfaceInOverheadProfit && IsSurfaceTreatmentAdded === false && overheadObj && overheadObj.IsOverheadCombined) {
           const { OverheadApplicability, OverheadPercentage } = overheadObj;
 
@@ -1613,11 +1580,13 @@ function OverheadProfit(props) {
           switch (OverheadApplicability) {
             case 'RM + CC + BOP':
 
-              setValue('OverheadPercentage', OverheadPercentage)
-              overheadCombinedCost = CutOffRMBOPCCTotal + NetSurfaceTreatmentCost
+              overheadCombinedCost = checkForNull(RM_CC_BOP) + checkForNull(NetSurfaceTreatmentCost)
               overheadTotalCost = overheadCombinedCost * calculatePercentage(OverheadPercentage)
+
+              setValue('OverheadPercentage', OverheadPercentage)
               setValue('OverheadCombinedCost', checkForDecimalAndNull(overheadCombinedCost, initialConfiguration.NoOfDecimalForPrice))
               setValue('OverheadCombinedTotalCost', checkForDecimalAndNull(overheadTotalCost, initialConfiguration.NoOfDecimalForPrice))
+
               setIsSurfaceTreatmentAdded(true)
               setOverheadObj({
                 ...overheadObj,
@@ -1628,9 +1597,8 @@ function OverheadProfit(props) {
 
             case 'RM + CC':
 
-              const RMCC = (IsCutOffApplicable ? CutOffRMC : headerCosts.NetRawMaterialsCost) + NetConversionCost;
-              overheadCombinedCost = RMCC + NetSurfaceTreatmentCost
-              overheadTotalCost = overheadCombinedCost * calculatePercentage(OverheadPercentage)
+              overheadCombinedCost = checkForNull(RM_CC) + checkForNull(NetSurfaceTreatmentCost)
+              overheadTotalCost = checkForNull(overheadCombinedCost) * calculatePercentage(checkForNull(OverheadPercentage))
               setValue('OverheadPercentage', OverheadPercentage)
               setValue('OverheadCombinedCost', checkForDecimalAndNull(overheadCombinedCost, initialConfiguration.NoOfDecimalForPrice))
               setValue('OverheadCombinedTotalCost', checkForDecimalAndNull(overheadTotalCost, initialConfiguration.NoOfDecimalForPrice))
@@ -1642,9 +1610,10 @@ function OverheadProfit(props) {
               break;
 
             case 'BOP + CC':
-              const BOPCC = headerCosts.NetBoughtOutPartCost + NetConversionCost;
-              overheadCombinedCost = BOPCC + NetSurfaceTreatmentCost
-              overheadTotalCost = overheadCombinedCost * calculatePercentage(OverheadPercentage)
+
+              overheadCombinedCost = checkForNull(BOP_CC) + checkForNull(NetSurfaceTreatmentCost)
+              overheadTotalCost = checkForNull(overheadCombinedCost) * calculatePercentage(checkForNull(OverheadPercentage))
+
               setValue('OverheadPercentage', OverheadPercentage)
               setValue('OverheadCombinedCost', checkForDecimalAndNull(overheadCombinedCost, initialConfiguration.NoOfDecimalForPrice))
               setValue('OverheadCombinedTotalCost', checkForDecimalAndNull(overheadTotalCost, initialConfiguration.NoOfDecimalForPrice))
@@ -1654,10 +1623,11 @@ function OverheadProfit(props) {
                 OverheadCombinedTotalCost: overheadTotalCost,
               })
               break;
+
             case 'RM + BOP':
-              const RMBOP = (IsCutOffApplicable ? CutOffRMC : headerCosts.NetRawMaterialsCost) + headerCosts.NetBoughtOutPartCost;
-              overheadCombinedCost = RMBOP
-              overheadTotalCost = overheadCombinedCost * calculatePercentage(OverheadPercentage)
+
+              overheadCombinedCost = checkForNull(RM_BOP)
+              overheadTotalCost = checkForNull(overheadCombinedCost) * calculatePercentage(checkForNull(OverheadPercentage))
               setValue('OverheadPercentage', OverheadPercentage)
               setValue('OverheadCombinedCost', checkForDecimalAndNull(overheadCombinedCost, initialConfiguration.NoOfDecimalForPrice))
               setValue('OverheadCombinedTotalCost', checkForDecimalAndNull(overheadTotalCost, initialConfiguration.NoOfDecimalForPrice))
@@ -1676,9 +1646,11 @@ function OverheadProfit(props) {
           const { OverheadApplicability, OverheadPercentage } = overheadObj;
           let overheadTotalCost = 0
           let overheadCombinedCost = 0
+
           switch (OverheadApplicability) {
             case 'RM + CC + BOP':
-              overheadCombinedCost = CutOffRMBOPCCTotal
+
+              overheadCombinedCost = checkForNull(RM_CC_BOP)
               overheadTotalCost = overheadCombinedCost * calculatePercentage(OverheadPercentage)
               setValue('OverheadPercentage', OverheadPercentage)
               setValue('OverheadCombinedCost', checkForDecimalAndNull(overheadCombinedCost, initialConfiguration.NoOfDecimalForPrice))
@@ -1692,9 +1664,9 @@ function OverheadProfit(props) {
               break;
 
             case 'RM + CC':
-              const RMCC = (IsCutOffApplicable ? CutOffRMC : headerCosts.NetRawMaterialsCost) + NetConversionCost;
-              overheadCombinedCost = RMCC
-              overheadTotalCost = overheadCombinedCost * calculatePercentage(OverheadPercentage)
+
+              overheadCombinedCost = checkForNull(RM_CC)
+              overheadTotalCost = checkForNull(overheadCombinedCost) * calculatePercentage(checkForNull(OverheadPercentage))
 
               setValue('OverheadPercentage', OverheadPercentage)
               setValue('OverheadCombinedCost', checkForDecimalAndNull(overheadCombinedCost, initialConfiguration.NoOfDecimalForPrice))
@@ -1708,9 +1680,8 @@ function OverheadProfit(props) {
               break;
 
             case 'BOP + CC':
-              const BOPCC = headerCosts.NetBoughtOutPartCost + NetConversionCost;
-              overheadCombinedCost = BOPCC
-              overheadTotalCost = overheadCombinedCost * calculatePercentage(OverheadPercentage)
+              overheadCombinedCost = checkForNull(BOP_CC)
+              overheadTotalCost = checkForNull(overheadCombinedCost) * calculatePercentage(checkForNull(OverheadPercentage))
               setValue('OverheadPercentage', OverheadPercentage)
               setValue('OverheadCombinedCost', checkForDecimalAndNull(overheadCombinedCost, initialConfiguration.NoOfDecimalForPrice))
               setValue('OverheadCombinedTotalCost', checkForDecimalAndNull(overheadTotalCost, initialConfiguration.NoOfDecimalForPrice))
@@ -1721,10 +1692,11 @@ function OverheadProfit(props) {
                 OverheadCombinedTotalCost: overheadTotalCost,
               })
               break;
+
             case 'RM + BOP':
-              const RMBOP = (IsCutOffApplicable ? CutOffRMC : headerCosts.NetRawMaterialsCost) + headerCosts.NetBoughtOutPartCost;
-              overheadCombinedCost = RMBOP
-              overheadTotalCost = overheadCombinedCost * calculatePercentage(OverheadPercentage)
+
+              overheadCombinedCost = checkForNull(RM_BOP)
+              overheadTotalCost = checkForNull(overheadCombinedCost) * calculatePercentage(checkForNull(OverheadPercentage))
               setValue('OverheadPercentage', OverheadPercentage)
               setValue('OverheadCombinedCost', checkForDecimalAndNull(overheadCombinedCost, initialConfiguration.NoOfDecimalForPrice))
               setValue('OverheadCombinedTotalCost', checkForDecimalAndNull(overheadTotalCost, initialConfiguration.NoOfDecimalForPrice))
@@ -1741,18 +1713,22 @@ function OverheadProfit(props) {
           // END HERE ADD CC IN OVERHEAD COMBINED
         }
 
-        // START ADD CC IN PROFIT COMBINED
+        // START ADD CC IN PROFIT COMBINED                   //DONE
         if (IsIncludedSurfaceInOverheadProfit && IsSurfaceTreatmentAdded === false && profitObj && profitObj.IsProfitCombined) {
           const { ProfitApplicability, ProfitPercentage } = profitObj;
           let profitCombinedCost = 0
           let profitTotalCost = 0
           switch (ProfitApplicability) {
+
             case 'RM + CC + BOP':
-              profitCombinedCost = CutOffRMBOPCCTotal + NetSurfaceTreatmentCost
-              profitTotalCost = profitCombinedCost * calculatePercentage(ProfitPercentage)
+
+              profitCombinedCost = checkForNull(RM_CC_BOP) + checkForNull(NetSurfaceTreatmentCost)
+              profitTotalCost = checkForNull(profitCombinedCost) * calculatePercentage(checkForNull(ProfitPercentage))
+
               setValue('ProfitPercentage', ProfitPercentage)
               setValue('ProfitCombinedCost', checkForDecimalAndNull(profitCombinedCost, initialConfiguration.NoOfDecimalForPrice))
               setValue('ProfitCombinedTotalCost', checkForDecimalAndNull(profitTotalCost, initialConfiguration.NoOfDecimalForPrice))
+
               setIsSurfaceTreatmentAdded(true)
               setProfitObj({
                 ...profitObj,
@@ -1762,8 +1738,8 @@ function OverheadProfit(props) {
               break;
 
             case 'RM + CC':
-              const RMCC = (IsCutOffApplicable ? CutOffRMC : headerCosts.NetRawMaterialsCost) + NetConversionCost;
-              profitCombinedCost = RMCC + NetSurfaceTreatmentCost
+
+              profitCombinedCost = checkForNull(RM_CC) + checkForNull(NetSurfaceTreatmentCost)
               profitTotalCost = profitCombinedCost * calculatePercentage(ProfitPercentage)
               setValue('ProfitPercentage', ProfitPercentage)
               setValue('ProfitCombinedCost', checkForDecimalAndNull(profitCombinedCost, initialConfiguration.NoOfDecimalForPrice))
@@ -1777,8 +1753,8 @@ function OverheadProfit(props) {
               break;
 
             case 'BOP + CC':
-              const BOPCC = headerCosts.NetBoughtOutPartCost + NetConversionCost;
-              profitCombinedCost = BOPCC + NetSurfaceTreatmentCost
+
+              profitCombinedCost = checkForNull(BOP_CC) + checkForNull(NetSurfaceTreatmentCost)
               profitTotalCost = profitCombinedCost * calculatePercentage(ProfitPercentage)
               setValue('ProfitPercentage', ProfitPercentage)
               setValue('ProfitCombinedCost', checkForDecimalAndNull(profitCombinedCost, initialConfiguration.NoOfDecimalForPrice))
@@ -1790,10 +1766,11 @@ function OverheadProfit(props) {
                 ProfitCombinedTotalCost: profitTotalCost,
               })
               break;
+
             case 'RM + BOP':
-              const RMBOP = (IsCutOffApplicable ? CutOffRMC : headerCosts.NetRawMaterialsCost) + headerCosts.NetBoughtOutPartCost;
-              profitCombinedCost = RMBOP
-              profitTotalCost = profitCombinedCost * calculatePercentage(ProfitPercentage)
+
+              profitCombinedCost = checkForNull(RM_BOP)
+              profitTotalCost = checkForNull(profitCombinedCost) * calculatePercentage(checkForNull(ProfitPercentage))
               setValue('ProfitPercentage', ProfitPercentage)
               setValue('ProfitCombinedCost', checkForDecimalAndNull(profitCombinedCost, initialConfiguration.NoOfDecimalForPrice))
               setValue('ProfitCombinedTotalCost', checkForDecimalAndNull(profitTotalCost, initialConfiguration.NoOfDecimalForPrice))
@@ -1815,8 +1792,9 @@ function OverheadProfit(props) {
           let profitTotalCost = 0
           switch (ProfitApplicability) {
             case 'RM + CC + BOP':
-              profitCombinedCost = CutOffRMBOPCCTotal
-              profitTotalCost = profitCombinedCost * calculatePercentage(ProfitPercentage)
+
+              profitCombinedCost = checkForNull(RM_CC_BOP)
+              profitTotalCost = checkForNull(profitCombinedCost) * calculatePercentage(checkForNull(ProfitPercentage))
               setValue('ProfitPercentage', ProfitPercentage)
               setValue('ProfitCombinedCost', checkForDecimalAndNull(profitCombinedCost, initialConfiguration.NoOfDecimalForPrice))
               setValue('ProfitCombinedTotalCost', checkForDecimalAndNull(profitTotalCost, initialConfiguration.NoOfDecimalForPrice))
@@ -1830,9 +1808,9 @@ function OverheadProfit(props) {
               break;
 
             case 'RM + CC':
-              const RMCC = (IsCutOffApplicable ? CutOffRMC : headerCosts.NetRawMaterialsCost) + NetConversionCost;
-              profitCombinedCost = RMCC
-              profitTotalCost = profitCombinedCost * calculatePercentage(ProfitPercentage)
+
+              profitCombinedCost = checkForNull(RM_CC)
+              profitTotalCost = checkForNull(profitCombinedCost) * calculatePercentage(checkForNull(ProfitPercentage))
               setValue('ProfitPercentage', ProfitPercentage)
               setValue('ProfitCombinedCost', checkForDecimalAndNull(profitCombinedCost, initialConfiguration.NoOfDecimalForPrice))
               setValue('ProfitCombinedTotalCost', checkForDecimalAndNull(profitTotalCost, initialConfiguration.NoOfDecimalForPrice))
@@ -1846,9 +1824,9 @@ function OverheadProfit(props) {
               break;
 
             case 'BOP + CC':
-              const BOPCC = headerCosts.NetBoughtOutPartCost + NetConversionCost;
-              profitCombinedCost = BOPCC
-              profitTotalCost = profitCombinedCost * calculatePercentage(ProfitPercentage)
+
+              profitCombinedCost = checkForNull(BOP_CC)
+              profitTotalCost = checkForNull(profitCombinedCost) * calculatePercentage(checkForNull(ProfitPercentage))
               setValue('ProfitPercentage', ProfitPercentage)
               setValue('ProfitCombinedCost', checkForDecimalAndNull(profitCombinedCost, initialConfiguration.NoOfDecimalForPrice))
               setValue('ProfitCombinedTotalCost', checkForDecimalAndNull(profitTotalCost, initialConfiguration.NoOfDecimalForPrice))
@@ -1860,9 +1838,10 @@ function OverheadProfit(props) {
                 ProfitCombinedTotalCost: profitTotalCost,
               })
               break;
+
             case 'RM + BOP':
-              const RMBOP = (IsCutOffApplicable ? CutOffRMC : headerCosts.NetRawMaterialsCost) + headerCosts.NetBoughtOutPartCost;
-              profitCombinedCost = RMBOP
+
+              profitCombinedCost = checkForNull(RM_BOP)
               profitTotalCost = profitCombinedCost * calculatePercentage(ProfitPercentage)
               setValue('ProfitPercentage', ProfitPercentage)
               setValue('ProfitCombinedCost', checkForDecimalAndNull(profitCombinedCost, initialConfiguration.NoOfDecimalForPrice))

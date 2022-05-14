@@ -20,7 +20,8 @@ function AssemblyOverheadProfit(props) {
   const netPOPrice = useContext(NetPOPriceContext);
   const CostingViewMode = useContext(ViewCostingContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { CostingEffectiveDate, RMCCTabData, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, DiscountCostData, ToolTabData, checkIsOverheadProfitChange, getAssemBOPCharge } = useSelector(state => state.costing)
+  const { CostingEffectiveDate, RMCCTabData, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, DiscountCostData, ToolTabData, getAssemBOPCharge, checkIsOverheadProfitChange } = useSelector(state => state.costing)
+  const [partType, setpartType] = useState(costData?.TechnologyName === 'Assembly')   //HELP
 
   const dispatch = useDispatch()
 
@@ -78,11 +79,11 @@ function AssemblyOverheadProfit(props) {
   * @description Used to Submit the form
   */
   const saveCosting = () => {
-    const tabData = RMCCTabData[0]
-    const surfaceTabData = SurfaceTabData[0]
-    const overHeadAndProfitTabData = OverheadProfitTabData[0]
+    const tabData = RMCCTabData && RMCCTabData[0]
+    const surfaceTabData = SurfaceTabData && SurfaceTabData[0]
+    const overHeadAndProfitTabData = OverheadProfitTabData && OverheadProfitTabData[0]
 
-    const discountAndOtherTabData = DiscountCostData[0]
+    const discountAndOtherTabData = DiscountCostData && DiscountCostData[0]
     let reqData = {
       "CostingId": item.CostingId,
       "LoggedInUserId": loggedInUserId(),
@@ -103,12 +104,12 @@ function AssemblyOverheadProfit(props) {
       "TotalCost": netPOPrice,
     }
 
-
-
     if (!CostingViewMode && checkIsOverheadProfitChange) {
-      let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 3, CostingEffectiveDate)
+      if (!partType) {
+        let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 3, CostingEffectiveDate)
 
-      dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
+        dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
+      }
       dispatch(saveAssemblyOverheadProfitTab(reqData, res => {
         if (res.data.Result) {
           Toaster.success(MESSAGES.OVERHEAD_PROFIT_COSTING_SAVE_SUCCESS);

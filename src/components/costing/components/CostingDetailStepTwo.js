@@ -1,4 +1,4 @@
-import React, { useEffect, } from 'react';
+import React, { useEffect, useState, } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table } from 'reactstrap';
 import {
@@ -45,6 +45,7 @@ function CostingDetailStepTwo(props) {
   const { costingData, CostingDataList, NetPOPrice, RMCCBOPCost, SurfaceCostData, OverheadProfitCostData,
     DiscountCostData, partNo, IsToolCostApplicable, showLoading, RMCCTabData, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData,
     PackageAndFreightTabData, ToolTabData, CostingEffectiveDate } = useSelector(state => state.costing)
+  const [partType, setpartType] = useState(costingData?.TechnologyName === 'Assembly')   //HELP
 
   let data = useSelector(state => state.costing)
 
@@ -368,7 +369,7 @@ function CostingDetailStepTwo(props) {
   }
 
   const handleBackButton = () => {
-    if (RMCCTabData && RMCCTabData.length > 0 && CostingViewMode === false) {
+    if (RMCCTabData && RMCCTabData.length > 0 && CostingViewMode === false && !partType) {
       let tempArrForCosting = reactLocalStorage.getObject('costingArray')
       const data = _.find(tempArrForCosting, ['IsPartLocked', true])
       const bopData = _.find(tempArrForCosting, ['PartType', 'BOP'])
