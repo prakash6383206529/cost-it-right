@@ -4,9 +4,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { getMachineProcessGroupDetail, setIdsOfProcessGroup, setSelectedDataOfCheckBox } from "../../actions/Costing";
 import { costingInfoContext } from "../CostingDetailStepTwo";
 import { getConfigurationKey } from "../../../../helper";
-import { EMPTY_GUID } from "../../../../config/constants";
+import { EMPTY_DATA, EMPTY_GUID } from "../../../../config/constants";
 import LoaderCustom from "../../../common/LoaderCustom";
 import { Checkbox } from "@material-ui/core";
+import NoContentFound from "../../../common/NoContentFound";
 
 
 function GroupProcess(props) {
@@ -91,11 +92,10 @@ function GroupProcess(props) {
         })
         return result
     }
-
     return (
         <div>
             <div className='py-3'>
-                <table className='table cr-brdr-main group-process-table'>
+                <table className='table cr-brdr-main group-process-table p-relative'>
                     <thead>
                         <tr>
                             <th>Process Group</th>
@@ -148,6 +148,11 @@ function GroupProcess(props) {
                                 </tr>}
                             </>
                         })}
+                        {tableData && tableData.length === 0 && <tr>
+                            <td colSpan={"4"}>
+                                <NoContentFound title={EMPTY_DATA} />
+                            </td>
+                        </tr>}
 
                     </tbody>
                 </table>
