@@ -1000,7 +1000,7 @@ function ProcessCost(props) {
         return (
           <tr>
             <td>-</td>
-            <td>{item.ProcessName}</td>
+            <td className='text-overflow'><span title={item.ProcessName}>{item.ProcessName}</span></td>
             <td>{item.Tonnage}</td>
             <td>{item.MHR}</td>
             <td>{item.UOM}</td>
