@@ -620,7 +620,7 @@ class AddAssemblyPart extends Component {
       });
 
     } else {
-      this.setState({ setDisable: true })
+      this.setState({ setDisable: true, isLoader: true })
       let formData = {
         AssemblyPartNumber: values.AssemblyPartNumber,
         AssemblyPartName: values.AssemblyPartName,
@@ -643,7 +643,7 @@ class AddAssemblyPart extends Component {
         GroupCodeList: productArray
       }
       this.props.createAssemblyPart(formData, (res) => {
-        this.setState({ setDisable: false })
+        this.setState({ setDisable: false, isLoader: false })
         if (res?.data?.Result === true) {
           Toaster.success(MESSAGES.ASSEMBLY_PART_ADD_SUCCESS);
           this.cancel()
@@ -733,8 +733,8 @@ class AddAssemblyPart extends Component {
     const { isEditFlag, isOpenChildDrawer, isOpenBOMViewerDrawer, isViewMode, setDisable, disablePopup } = this.state;
     return (
       <>
-        {this.state.isLoader && <LoaderCustom />}
         <div className="container-fluid">
+          {this.state.isLoader && <LoaderCustom />}
           <div className="login-container signup-form">
             <Row>
               <Col md="12">
