@@ -1896,7 +1896,7 @@ function CostingDetails(props) {
                                 </tr>
                               </thead>
                               <tbody>
-                                {isZBCLoader ? <LoaderCustom /> : ''}
+                                {isZBCLoader ? <LoaderCustom customClass={'costing-table'} /> : ''}
                                 {zbcPlantGrid &&
                                   zbcPlantGrid.map((item, index) => {
 
@@ -2039,7 +2039,7 @@ function CostingDetails(props) {
                                 </tr>
                               </thead>
                               <tbody>
-                                {isNCCLoader ? <LoaderCustom /> : ''}
+                                {isNCCLoader ? <LoaderCustom customClass={'costing-table'} /> : ''}
                                 {nccGrid && nccGrid.map((item, index) => {
                                   let displayCopyBtn = (item.Status === DRAFT ||
                                     item.Status === PENDING ||
@@ -2147,7 +2147,7 @@ function CostingDetails(props) {
                                 </tr>
                               </thead>
                               <tbody>
-                                {isVBCLoader ? <LoaderCustom /> : ''}
+                                {isVBCLoader ? <LoaderCustom customClass={'costing-table'} /> : ''}
                                 {vbcVendorGrid && vbcVendorGrid.map((item, index) => {
                                   let displayCopyBtn = (item.Status === DRAFT ||
                                     item.Status === PENDING ||
