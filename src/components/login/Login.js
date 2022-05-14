@@ -15,7 +15,7 @@ import { formatLoginResult } from '../../helper/ApiResponse';
 import logo from '../../assests/images/logo/company-logo.svg'
 import secondLogo from '../../assests/images/logo/CIRlogo.svg'
 import errorImg from '../../assests/images/box.png'
-import { VERSION } from '../../config/constants'
+import { IV, KEY, VERSION } from '../../config/constants'
 import LoaderCustom from "../common/LoaderCustom";
 var CryptoJS = require('crypto-js')
 
@@ -53,8 +53,8 @@ class Login extends Component {
    */
   onSubmit(values) {
 
-    var key = CryptoJS.enc.Utf8.parse('gQUJ79YKYm22Cazw');
-    var iv = CryptoJS.enc.Utf8.parse('eTEFSa0PinFKTQNB');
+    var key = CryptoJS.enc.Utf8.parse(KEY);
+    var iv = CryptoJS.enc.Utf8.parse(IV);
     var encryptedpassword = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse(values.Password), key,
       {
         keySize: 128 / 8,
