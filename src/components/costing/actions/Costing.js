@@ -2423,7 +2423,8 @@ export function getMachineProcessGroupDetail(data, callback) {
     const queryParams = `vendorId=${data.VendorId}&technologyId=${data.TechnologyId}&effectiveDate=${data.EffectiveDate}&vendorPlantId=${data.VendorPlantId}&destinationPlantId=${data.DestinationPlantId}&costingId=${data.CostingId}`;
     const request = axios.get(`${API.getMachineProcessGroupDetail}?${queryParams}`, headers)
     request.then((response) => {
-      if (response.data.Result) {
+      console.log('response: ', response);
+      if (response.data.Result || response.status === 204) {
         callback(response)
       }
     }).catch((error) => {

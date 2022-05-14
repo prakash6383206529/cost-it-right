@@ -11,9 +11,9 @@ import Drawer from '@material-ui/core/Drawer';
 import { EMPTY_GUID, ZBC } from '../../../../config/constants';
 import LoaderCustom from '../../../common/LoaderCustom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
-import { FORGING, Ferrous_Casting, DIE_CASTING } from '../../../../config/masterData'
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import { FORGING, Ferrous_Casting, DIE_CASTING } from '../../../../config/masterData'
 import GroupProcess from './GroupProcess';
 import _ from 'lodash'
 import { getConfigurationKey } from '../../../../helper';
@@ -21,15 +21,15 @@ import { getConfigurationKey } from '../../../../helper';
 const gridOptions = {};
 
 function AddProcess(props) {
-
+  const { groupMachineId } = props
   const [tableData, setTableDataList] = useState([]);
   const [selectedRowData, setSelectedRowData] = useState([]);
-  const [updatedRowData, setUpdatedRowData] = useState([])
+  const [isTabSwitch, setIsTabSwitch] = useState(false)
   const [gridApi, setGridApi] = useState(null);
   const [gridColumnApi, setGridColumnApi] = useState(null);
   // const [processGroup, setProcessGroup] = useState(true)
-  const processGroup = getConfigurationKey().IsMachineProcessGroup // UNCOMMENT IT AFTER KEY IS ADDED IN WEB CONFIG N BACKEND AND REMOVE BELOW LINE
-  // const processGroup = true
+  // const processGroup = getConfigurationKey().IsMachineProcessGroup // UNCOMMENT IT AFTER KEY IS ADDED IN WEB CONFIG N BACKEND AND REMOVE BELOW LINE
+  const processGroup = getConfigurationKey().IsMachineProcessGroup
   const dispatch = useDispatch()
   const [activeTab, setActiveTab] = useState('1');
 
@@ -67,6 +67,15 @@ function AddProcess(props) {
       props.closeDrawer('', rowData)
     }
   };
+
+  useEffect(() => {
+    if (groupMachineId === '') {
+      setTableDataList(processDrawerList)
+    } else {
+      let filteredData = processDrawerList && processDrawerList.filter(item => item.MachineId === groupMachineId)
+      setTableDataList(filteredData)
+    }
+  }, [processDrawerList])
 
   useEffect(() => {
     if (costData.VendorType === ZBC) {
@@ -134,14 +143,28 @@ function AddProcess(props) {
   }, []);
 
   const onRowSelect = (event) => {
-
+    let Execute = true
     let rowData = event.data
+
+    if (isTabSwitch) {
+      selectedProcessAndGroup && selectedProcessAndGroup.map((item) => {
+        if (item.ProcessId == rowData.ProcessId && item.MachineRateId == rowData.MachineRateId) {
+          Execute = false
+        }
+      })
+    }
+
     let processData = selectedProcessAndGroup
     if (event.node.isSelected()) {
-      processData.push(rowData)
+
+      if (Execute) {
+        processData.push(rowData)
+      }
+
     } else {
       processData = selectedProcessAndGroup && selectedProcessAndGroup.filter(el => el.MachineRateId !== rowData.MachineRateId && el.ProcessId !== rowData.ProcessId)
     }
+
     dispatch(setSelectedDataOfCheckBox(processData))
 
     var selectedRows = gridApi.getSelectedRows();
@@ -149,8 +172,6 @@ function AddProcess(props) {
     // if (JSON.stringify(selectedRows) === JSON.stringify(props.Ids)) return false
     setSelectedRowData(selectedRows)
   }
-
-
 
   /**
   * @method addRow
@@ -208,6 +229,23 @@ function AddProcess(props) {
     gridApi.setQuickFilter(e.target.value);
   }
 
+
+  const checkBoxRenderer = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+
+    if (selectedRowData?.length > 0) {
+      selectedRowData.map((item) => {
+        if (item.ProcessId == props.node.data.ProcessId && item.MachineRateId == props.node.data.MachineRateId) {
+          props.node.setSelected(true)
+        }
+      })
+      return cellValue
+    } else {
+      return cellValue
+    }
+
+  }
+
   const frameworkComponents = {
     // totalValueRenderer: this.buttonFormatter,
     // effectiveDateRenderer: this.effectiveDateFormatter,
@@ -218,11 +256,17 @@ function AddProcess(props) {
     //  specificationFormat: specificationFormat,
     customLoadingOverlay: LoaderCustom,
     customNoRowsOverlay: NoContentFound,
+    checkBoxRenderer: checkBoxRenderer
   };
 
   useEffect(() => {
 
-  }, [tableData])
+    var selectedRows = gridApi?.getSelectedRows();
+    if (selectedRowData === undefined) {
+      setSelectedRowData([...selectedRows])
+    }
+
+  }, [selectedRowData])
 
   const findProcessId = (rowNode) => {
     let isContainProcess = _.find(selectedProcessId, function (obj) {
@@ -272,7 +316,7 @@ function AddProcess(props) {
               </Row>
               <Row>
                 <Col className='px-3'>
-                  {processGroup && <Nav tabs className="subtabs cr-subtabs-head process-wrapper">
+                  {processGroup && groupMachineId === '' && <Nav tabs className="subtabs cr-subtabs-head process-wrapper">
                     <NavItem>
                       <NavLink
                         className={classnames({ active: activeTab === '1' })}
@@ -286,7 +330,8 @@ function AddProcess(props) {
                       <NavLink
                         className={classnames({ active: activeTab === '2' })}
                         onClick={() => {
-                          toggleDrawer('', false)
+                          setIsTabSwitch(true)
+                          // toggleDrawer('', false)
                           toggle('2')
                         }}  >
                         Group Process
@@ -300,7 +345,7 @@ function AddProcess(props) {
                         <Row className="mx-0">
                           <Col className="hidepage-size mt-2 px-0">
 
-                            <div className={`ag-grid-wrapper min-height-auto mt-2 height-width-wrapper ${processDrawerList && processDrawerList?.length <= 0 ? "overlay-contain" : ""}`}>
+                            <div className={`ag-grid-wrapper min-height-auto mt-2 height-width-wrapper ${tableData && tableData?.length <= 0 ? "overlay-contain" : ""}`}>
                               <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                                 <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
@@ -315,7 +360,7 @@ function AddProcess(props) {
                                   defaultColDef={defaultColDef}
                                   floatingFilter={true}
                                   domLayout='autoHeight'
-                                  rowData={processDrawerList}
+                                  rowData={tableData}
                                   pagination={true}
                                   paginationPageSize={10}
                                   onGridReady={onGridReady}
@@ -333,7 +378,7 @@ function AddProcess(props) {
                                   isRowSelectable={isRowSelectable}
                                 >
                                   <AgGridColumn field="MachineRateId" hide={true}></AgGridColumn>
-                                  <AgGridColumn cellClass="has-checkbox" field="ProcessName" headerName="Process Name"  ></AgGridColumn>
+                                  <AgGridColumn cellClass="has-checkbox" field="ProcessName" headerName="Process Name" cellRenderer={checkBoxRenderer}  ></AgGridColumn>
                                   <AgGridColumn field='Technologies' headerName='Technology'></AgGridColumn>
                                   <AgGridColumn field="MachineNumber" headerName="Machine No."></AgGridColumn>
                                   <AgGridColumn field="MachineName" headerName="Machine Name"></AgGridColumn>

@@ -1,5 +1,4 @@
 import React, { Fragment, useState } from 'react'
-import { useDispatch } from 'react-redux'
 import {
   Row,
   Col,
@@ -8,10 +7,8 @@ import {
   Nav,
   NavItem,
   NavLink,
-  Container,
 } from 'reactstrap'
 import classnames from 'classnames'
-import Drawer from '@material-ui/core/Drawer'
 import ColdForging from './ColdForging'
 import HotForging from './HotForging'
 
