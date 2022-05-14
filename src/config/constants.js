@@ -1875,5 +1875,10 @@ export const LEVEL0 = 'L0';
 export const LEVEL1 = 'L1';
 export const SUB_ASSEMBLY = 'Sub Assembly';
 
+// KEY AND IV
+export const KEY = 'ewswymuinfzfskjz';
+export const IV = 'ozzzguugcusjqmbj'
+
+
 //VERSION 
 export const VERSION = "V1.2.221";
