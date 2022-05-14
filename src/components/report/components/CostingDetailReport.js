@@ -539,11 +539,11 @@ function ReportListing(props) {
 
                 <h1 className="mb-0">Costing Details Report</h1>
 
-                <Row className="pt-3 blue-before ">
+                <Row className="pt-4 mt-1 blue-before">
                     {/* <Col md="3">
                         <button title="Last Week" type="button" class="user-btn mr5" onClick={() => lastWeekFilter()}><div class="swap rotate90 mr-2"></div>Last Week</button>
                     </Col> */}
-                    <Col md="9" lg="9" className="search-user-block mb-3">
+                    <Col md="12" lg="12" className="search-user-block mb-3">
                         <div className="d-flex justify-content-end bd-highlight excel-btn w100 mb-4 pb-2">
                             <div className="warning-message d-flex align-items-center">
                                 {warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
