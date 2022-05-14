@@ -20,7 +20,7 @@ import { reactLocalStorage } from "reactjs-localstorage";
 import { getConfigurationKey, loggedInUserId } from "../../helper/auth";
 import { Table, Button, Row, Col } from 'reactstrap';
 import "./UserRegistration.scss";
-import { EMPTY_DATA } from "../../config/constants";
+import { EMPTY_DATA, IV, KEY } from "../../config/constants";
 import NoContentFound from "../common/NoContentFound";
 import HeaderTitle from "../common/HeaderTitle";
 import PermissionsTabIndex from "./RolePermissions/PermissionsTabIndex";
@@ -1006,8 +1006,8 @@ class UserRegistration extends Component {
       oldTechnologyLevelGrid, UserId, HeadLevelGrid, masterLevelGrid } = this.state;
     const userDetails = reactLocalStorage.getObject("userDetail")
 
-    var key = CryptoJS.enc.Utf8.parse('gQUJ79YKYm22Cazw');
-    var iv = CryptoJS.enc.Utf8.parse('eTEFSa0PinFKTQNB');
+    var key = CryptoJS.enc.Utf8.parse(KEY);
+    var iv = CryptoJS.enc.Utf8.parse(IV);
 
     var encryptedpassword = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse(values.Password), key,
       {
