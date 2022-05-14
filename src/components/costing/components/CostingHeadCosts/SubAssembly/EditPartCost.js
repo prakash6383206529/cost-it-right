@@ -7,6 +7,7 @@ import { ListForPartCost, optionsForDelta, tempObject } from '../../../../../con
 import { NumberFieldHookForm, SearchableSelectHookForm } from '../../../../layout/HookFormInputs';
 import { Controller, useForm } from 'react-hook-form';
 import { setSubAssemblyTechnologyArray } from '../../../actions/SubAssembly.js';
+import Toaster from '../../../../common/Toaster';
 
 function EditPartCost(props) {
 
@@ -50,6 +51,17 @@ function EditPartCost(props) {
     }, [gridData])
 
     const onSubmit = (values) => {
+
+        let sum = 0
+        ListForPartCost && ListForPartCost.map((item, index) => {                                           //API
+            sum = checkForNull(sum) + checkForNull(getValues(`${PartCostFields}.${index}.SOBPercentage`))
+            return null
+        })
+        if (sum !== 100) {
+            Toaster.warning('Total SOB Percent should be 100');
+            return false
+        }
+
         let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray
         let changeTempObject = tempsubAssemblyTechnologyArray[0].CostingChildPartDetails
         let targetBOMLevel = props.tabAssemblyIndividualPartDetail.BOMLevel
@@ -75,7 +87,7 @@ function EditPartCost(props) {
         tempsubAssemblyTechnologyArray[0].CostingPartDetails.EditPartCost = costPerAssemblyTotal
         tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerAssembly = checkForNull(costPerAssemblyTotal) + checkForNull(CostPerAssemblyBOPTotal) + (checkForNull(tempsubAssemblyTechnologyArray[0].processCostValue) + checkForNull(tempsubAssemblyTechnologyArray[0].operationCostValue))
         tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerAssemblyBOP = checkForNull(CostPerAssemblyBOPTotal)
-        dispatch(setSubAssemblyTechnologyArray(tempsubAssemblyTechnologyArray))
+        dispatch(setSubAssemblyTechnologyArray(tempsubAssemblyTechnologyArray, res => { }))
 
         props.getCostPerPiece(weightedCost)
         props.closeDrawer('')
@@ -83,14 +95,23 @@ function EditPartCost(props) {
 
     const netCostCalculator = (gridIndex) => {
 
-        let WeightedCost = 0
+        let sum = 0
+        ListForPartCost && ListForPartCost.map((item, index) => {                                           //API
+            sum = checkForNull(sum) + checkForNull(getValues(`${PartCostFields}.${index}.SOBPercentage`))
+            return null
+        })
+        if (sum > 100) {
+            Toaster.warning('Total SOB Percent should not be greater than 100');
+            setValue(`${PartCostFields}.${gridIndex}.SOBPercentage`, 0)
+            return false
+        }
 
+        let WeightedCost = 0
         ListForPartCost && ListForPartCost.map((item, index) => {
 
             let tempDeltaValue = getValues(`${PartCostFields}.${index}.DeltaValue`)
             let tempSOBPercentage = getValues(`${PartCostFields}.${index}.SOBPercentage`)
             let tempDeltaSign = getValues(`${PartCostFields}.${index}.DeltaSign`)
-
             if (Number(gridIndex) === Number(index)) {
 
                 item.SOBPercentage = tempSOBPercentage
@@ -125,11 +146,11 @@ function EditPartCost(props) {
         }, 300);
     }
 
-    const handleSOBPercentage = (value, index) => {
+    const handleSOBPercentage = (value, index1) => {
         setSOBPercentage(value)
         setTimeout(() => {
 
-            netCostCalculator(index)
+            netCostCalculator(index1)
         }, 300);
 
     }

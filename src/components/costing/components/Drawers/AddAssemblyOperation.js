@@ -21,6 +21,7 @@ function AddAssemblyOperation(props) {
   const costData = useContext(costingInfoContext)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const netPOPrice = useContext(NetPOPriceContext);
+  const [partType, setpartType] = useState(costData?.TechnologyName === 'Assembly')   //HELP
 
   /**
   * @method toggleDrawer
@@ -47,7 +48,6 @@ function AddAssemblyOperation(props) {
   */
   const saveData = () => {
     let stCostingData = findSurfaceTreatmentData(item)
-
     let requestData = {
       "CostingId": item.CostingId,
       "CostingNumber": item.CostingNumber,
@@ -117,7 +117,7 @@ function AddAssemblyOperation(props) {
       const discountAndOtherTabData = DiscountCostData
 
 
-      if (!CostingViewMode) {
+      if (!CostingViewMode && !partType) {
         let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 1, CostingEffectiveDate)
 
         dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))

@@ -27,6 +27,7 @@ function TabPackagingFreight(props) {
 
   const { PackageAndFreightTabData, CostingEffectiveDate, ComponentItemDiscountData, RMCCTabData, SurfaceTabData, OverheadProfitTabData, DiscountCostData, ToolTabData, getAssemBOPCharge, checkIsFreightPackageChange } = useSelector(state => state.costing)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
+  const [partType, setpartType] = useState(costData?.TechnologyName === 'Assembly')   //HELP
 
   useEffect(() => {
     if (Object.keys(costData).length > 0) {
@@ -168,9 +169,7 @@ function TabPackagingFreight(props) {
         // "NetPackagingAndFreight": PackageAndFreightTabData && PackageAndFreightTabData[0].NetPackagingAndFreight,
         "CostingPartDetails": PackageAndFreightTabData && PackageAndFreightTabData[0].CostingPartDetails
       }
-
-      if (costData.IsAssemblyPart === true) {
-
+      if (costData.IsAssemblyPart === true && !partType) {
         if (!CostingViewMode) {
           let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 4, CostingEffectiveDate)
           dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
