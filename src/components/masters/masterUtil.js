@@ -5,7 +5,7 @@ import { useForm, Controller } from "react-hook-form";
 import _ from 'lodash'
 import Toaster from '../common/Toaster';
 import { useDispatch, useSelector } from 'react-redux';
-import { setGroupProcessList } from './actions/MachineMaster';
+import { setGroupProcessList, setProcessList } from './actions/MachineMaster';
 import NoContentFound from '../common/NoContentFound';
 import { EMPTY_DATA } from '../../config/constants';
 
@@ -20,12 +20,12 @@ export const ProcessGroup = (props) => {
 
     const [rowData, setRowData] = useState([]);
     const [apiData, setApiData] = useState([])
-    const { processGroupApiData, processGroupList } = useSelector(state => state.machine)
+    const { processGroupApiData, processGroupList, processIdList } = useSelector(state => state.machine)
 
 
     const [selectedProcess, setSelectedProcess] = useState([])
     const [editIndex, setEditIndex] = useState('')
-    console.log('editIndex: ', editIndex);
+
 
     useEffect(() => {
         if (isEditFlag || isViewFlag) {
@@ -51,6 +51,19 @@ export const ProcessGroup = (props) => {
         setSelectedProcess([])
     }
 
+
+    const updateProcessidList = () => {
+        let uniqueProcessId = []
+        _.uniqBy(selectedProcess, function (o) {
+            uniqueProcessId.push(o.ProcessId)
+        });
+        let storeProcessList = [...processIdList, ...uniqueProcessId]
+        let uniqueStoreProcessList = [...new Set(storeProcessList)]
+
+        props.showDelete(uniqueStoreProcessList)
+        dispatch(setProcessList(uniqueStoreProcessList))
+    }
+
     const processTableHandler = () => {
         const groupName = getValues('groupName')
         const data = _.find(rowData, ['GroupName', groupName])
@@ -66,40 +79,18 @@ export const ProcessGroup = (props) => {
         let processList = []
         let tableList = []
 
-        let uniqueProcessId = []
-        _.uniqBy(selectedProcess, function (o) {
-            uniqueProcessId.push(o.ProcessId)
-        });
-        props.showDelete(uniqueProcessId)
+        updateProcessidList()
         selectedProcess && selectedProcess.map((item, index) => {
             processList.push(item.ProcessId)
             tableList.push({ ProcessName: item.ProcessName, ProcessId: item.ProcessId })
             return { GroupName: groupName, ProcessName: item.ProcessName, ProcessId: item.ProcessId }
         })
+        // FOR SETTING OBJ IN THE POST API FORMAT
         let obj = { ProcessGroupName: groupName, ProcessIdList: processList }
+        // FOR SHOWING IN TABLE
         let tableObj = { GroupName: groupName, ProcessList: tableList }
         let updateArrayList = processGroupApiData
-        // if (isEditFlag) {
-        //     // TO DISABLE DELETE BUTTON WHEN GET DATA API CALLED
-        //     updateArrayList = []
-        //     let tempArray = []
-        //     let singleRecordObject = {}
-        //     processGroupApiData && processGroupApiData.map((item) => {
-        //         singleRecordObject = {}
-        //         let ProcessIdListTemp = []
-        //         tempArray = item.GroupName
 
-        //         item.ProcessList && item.ProcessList.map((item1) => {
-        //             ProcessIdListTemp.push(item1.ProcessId)
-        //             return null
-        //         })
-        //         singleRecordObject.ProcessGroupName = tempArray
-        //         singleRecordObject.ProcessIdList = ProcessIdListTemp
-        //         updateArrayList.push(singleRecordObject)
-        //         return null
-        //     })
-
-        // }
         dispatch(setGroupProcessList([...updateArrayList, obj]))
 
         setApiData([...apiData, obj])
@@ -118,15 +109,13 @@ export const ProcessGroup = (props) => {
             tableList.push({ ProcessName: item.ProcessName, ProcessId: item.ProcessId })
             return { GroupName: groupName, ProcessName: item.ProcessName, ProcessId: item.ProcessId }
         })
-        let uniqueProcessId = []
-        _.uniqBy(selectedProcess, function (o) {
-            uniqueProcessId.push(o.ProcessId)
-        });
-        props.showDelete(uniqueProcessId)
+        updateProcessidList()
         tempData.GroupName = groupName
         tempData.ProcessList = selectedProcess
         let tempArr = Object.assign([...rowData], { [editIndex]: tempData })
+        // FOR SHOWING IN TABLE
         let obj = { ProcessGroupName: groupName, ProcessIdList: processList }
+        // FOR SETTING OBJ IN THE POST API FORMAT
         let apiTempArr = Object.assign([...apiData], { [editIndex]: obj })
         let reduxTempArr = Object.assign([...processGroupApiData], { [editIndex]: obj })
         dispatch(setGroupProcessList(reduxTempArr))
@@ -155,6 +144,7 @@ export const ProcessGroup = (props) => {
     }
 
     const deleteItem = (index) => {
+
         let tempArr2 = [];
         let tempArrAfterDelete = rowData && rowData.filter((el, i) => {
             if (i === index) return false;
@@ -168,7 +158,14 @@ export const ProcessGroup = (props) => {
             if (i === index) return false;
             return true
         })
+        let processIdList = []
+        tempArrAfterDelete && tempArrAfterDelete.map(item => {
+            item.ProcessList.map(process => processIdList.push(process.ProcessId))
+        })
 
+        let uniqueStoreProcessList = [...new Set(processIdList)]
+        props.showDelete(uniqueStoreProcessList)
+        dispatch(setProcessList(uniqueStoreProcessList))
         setRowData(tempArrAfterDelete)
         dispatch(setGroupProcessList(reduxTempArrAfterDelete))
         setApiData(apiTempArrAfterDelete)
@@ -296,3 +293,8 @@ export const ProcessGroup = (props) => {
         </>
     );
 };
+
+
+// export const findProcessId = (processId,arr)=>{
+
+// }

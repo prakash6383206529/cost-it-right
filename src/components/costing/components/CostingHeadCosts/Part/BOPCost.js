@@ -109,6 +109,10 @@ function BOPCost(props) {
       })
 
       let tempArr = [...gridData, ...rowArray]
+      tempArr && tempArr.map((el, index) => {
+        setValue(`${bopGridFields}.${index}.Quantity`, el.Quantity)
+        return null
+      })
       setGridData(tempArr)
       selectedIds(tempArr)
       dispatch(gridDataAdded(true))
