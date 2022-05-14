@@ -8,6 +8,7 @@ import { checkForNull, } from '../../../../helper';
 import PartSurfaceTreatment from '../CostingHeadCosts/SurfaceTreatMent/PartSurfaceTreatment';
 import { LEVEL0 } from '../../../../config/constants';
 import { ViewCostingContext } from '../CostingDetails';
+import { setSubAssemblyTechnologyArray } from '../../actions/SubAssembly.js';
 
 function TabSTAssemblyTechnology(props) {
 
@@ -20,6 +21,7 @@ function TabSTAssemblyTechnology(props) {
 
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
+  const { subAssemblyTechnologyArray } = useSelector(state => state.SubAssembly)
 
   useEffect(() => {
     if (Object.keys(costData).length > 0) {
@@ -346,6 +348,14 @@ function TabSTAssemblyTechnology(props) {
   const onSubmit = (values) => { }
 
   const setSurfaceTreatmentCostAT = (SurfaceTreatmentCost, TransportationCost, NetSurfaceTreatmentCost) => {
+    let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray
+
+    tempsubAssemblyTechnologyArray[0].CostingPartDetails.SurfaceTreatmentCost = SurfaceTreatmentCost
+    tempsubAssemblyTechnologyArray[0].CostingPartDetails.TransportationCost = TransportationCost
+    tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetSurfaceTreatmentCost = NetSurfaceTreatmentCost
+    dispatch(setSubAssemblyTechnologyArray(tempsubAssemblyTechnologyArray, res => { }))
+
+
     setSurfaceTreatmentCost(NetSurfaceTreatmentCost)
   }
 

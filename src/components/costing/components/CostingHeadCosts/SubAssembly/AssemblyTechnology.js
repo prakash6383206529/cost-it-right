@@ -58,7 +58,7 @@ function AssemblyTechnology(props) {
         tempsubAssemblyTechnologyArray[0].CostingPartDetails.EditPartCost = costPerAssemblyTotal
         tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerAssembly = checkForNull(costPerAssemblyTotal) + checkForNull(CostPerAssemblyBOPTotal) + (checkForNull(tempsubAssemblyTechnologyArray[0].processCostValue) + checkForNull(tempsubAssemblyTechnologyArray[0].operationCostValue))
         tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerAssemblyBOP = checkForNull(CostPerAssemblyBOPTotal)
-        dispatch(setSubAssemblyTechnologyArray(tempsubAssemblyTechnologyArray))
+        dispatch(setSubAssemblyTechnologyArray(tempsubAssemblyTechnologyArray, res => { }))
 
         // props.getCostPerPiece(weightedCost)
     }, [])
@@ -81,12 +81,10 @@ function AssemblyTechnology(props) {
                 }
 
                 else {
-                    console.log('subAssemblyTechnologyArray && subAssemblyTechnologyArray[0]?.CostingPartDetails?.IsApplyBOPHandlingCharges: ', subAssemblyTechnologyArray && subAssemblyTechnologyArray[0]?.CostingPartDetails?.IsApplyBOPHandlingCharges);
-                    console.log('subAssemblyTechnologyArray &&: ', subAssemblyTechnologyArray);
                     if (subAssemblyTechnologyArray && subAssemblyTechnologyArray[0]?.CostingPartDetails?.IsApplyBOPHandlingCharges) {
-                        dispatch(setSubAssemblyTechnologyArray(subAssemblyTechnologyArray))
+                        dispatch(setSubAssemblyTechnologyArray(subAssemblyTechnologyArray, res => { }))
                     } else {
-                        dispatch(setSubAssemblyTechnologyArray(tempObject))
+                        dispatch(setSubAssemblyTechnologyArray(tempObject, res => { }))
                     }
                     // props.toggleAssembly(BOMLevel, PartNumber, tempObject)
 

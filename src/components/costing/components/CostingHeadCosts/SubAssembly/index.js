@@ -55,7 +55,7 @@ function AssemblyPart(props) {
           }
           // let tempArr = setArrayForCosting
           let array = [];
-          array = JSON.parse(localStorage.getItem('costingArray'))
+          array = JSON.parse(localStorage.getItem('costingArray'))     ///HELP
           Data.CostingChildPartDetails && Data.CostingChildPartDetails.map(item => {
             array.push(item)
           })

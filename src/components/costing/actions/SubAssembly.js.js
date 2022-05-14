@@ -7,13 +7,14 @@ let headers = config
  * @description: Used for storing part no from costing summary
  * @param {*} data
  */
-export function setSubAssemblyTechnologyArray(data) {
+export function setSubAssemblyTechnologyArray(data, callback) {
   console.log('CostingViewMode:  data: ', data);
   return (dispatch) => {
     dispatch({
       type: SUB_ASSEMBLY_TECHNOLOGY_ARRAY,
       payload: data,
     })
+    callback()
   }
 }
 

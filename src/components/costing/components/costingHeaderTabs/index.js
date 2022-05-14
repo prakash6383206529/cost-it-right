@@ -42,6 +42,7 @@ function CostingHeaderTabs(props) {
   const CostingViewMode = useContext(ViewCostingContext);
   const netPOPrice = useContext(NetPOPriceContext);
   const CostingEditMode = useContext(EditCostingContext);
+  const [partType, setpartType] = useState(costData?.TechnologyName === 'Assembly')   //HELP
 
   const ActualTotalCost = ActualCostingDataList && ActualCostingDataList.length > 0 && ActualCostingDataList[0].TotalCost !== undefined ? ActualCostingDataList[0].TotalCost : 0;
 
@@ -206,16 +207,15 @@ function CostingHeaderTabs(props) {
       dispatch(isDataChange(false))
     }
 
-
-    if (RMCCTabData && RMCCTabData.length > 0 && activeTab !== '1' && CostingViewMode === false) {
+    // APPLY CHECKS HERE FOR ASSEMBLY TECHNOLOGY COSTING
+    if (RMCCTabData && RMCCTabData.length > 0 && activeTab !== '1' && CostingViewMode === false && !partType) {
       const tabData = RMCCTabData[0]
       const surfaceTabData = SurfaceTabData[0]
       const overHeadAndProfitTabData = OverheadProfitTabData[0]
       const discountAndOtherTabData = DiscountCostData
-      // let tempArrForCosting = JSON.parse(localStorage.getItem('costingArray'))   //HELP
+      let tempArrForCosting = JSON.parse(localStorage.getItem('costingArray'))   //HELP
 
 
-      let tempArrForCosting = []
       const data = _.find(tempArrForCosting, ['IsPartLocked', true])
       const lockedData = _.find(tempArrForCosting, ['IsLocked', true])
       const bopData = _.find(tempArrForCosting, ['PartType', 'BOP'])
@@ -239,7 +239,7 @@ function CostingHeaderTabs(props) {
 
 
   const callAssemblyAPi = (tabId) => {
-    if (costData.IsAssemblyPart && IsCalledAPI && !CostingViewMode) {
+    if (costData.IsAssemblyPart && IsCalledAPI && !CostingViewMode && !partType) {
       let assemblyWorkingRow = []
       const tabData = RMCCTabData && RMCCTabData[0]
       const surfaceTabData = SurfaceTabData && SurfaceTabData[0]

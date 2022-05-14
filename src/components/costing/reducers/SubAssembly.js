@@ -29,7 +29,7 @@ const initialState = {
   checkIsOverheadProfitChange: false,
   checkIsFreightPackageChange: false,
   checkIsToolTabChange: false,
-  subAssemblyTechnologyArray: tempObject,
+  subAssemblyTechnologyArray: [],
 
 
 }
@@ -65,14 +65,15 @@ export default function costingReducer(state = initialState, action) {
         error: true,
       }
     case SUB_ASSEMBLY_TECHNOLOGY_ARRAY:
+      const tempRMData = [...action.payload]
       return {
         ...state,
-        subAssemblyTechnologyArray: action.payload,
+        subAssemblyTechnologyArray: tempRMData,
       }
     case SET_ASSEMBLY_TECHNOLOGY_TAB_DATA:
       return {
         ...state,
-        setAssemblyTechnologyTabData: action.payload,
+        subAssemblyTechnologyTabData: action.payload,
       }
 
 

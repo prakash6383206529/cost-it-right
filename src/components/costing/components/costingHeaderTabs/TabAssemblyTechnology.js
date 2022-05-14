@@ -16,6 +16,7 @@ import DayTime from '../../../common/DayTimeWrapper'
 import AddBOPHandling from '../Drawers/AddBOPHandling';
 import AssemblyTechnology from '../CostingHeadCosts/SubAssembly/AssemblyTechnology';
 import { setAssemblyTechnologyTabData, setSubAssemblyTechnologyArray } from '../../actions/SubAssembly.js';
+import { tempObject } from '../../../../config/masterData';
 
 function TabAssemblyTechnology(props) {
 
@@ -36,65 +37,25 @@ function TabAssemblyTechnology(props) {
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
   const netPOPrice = useContext(NetPOPriceContext);
-  const { subAssemblyTechnologyArray } = useSelector(state => state.SubAssembly)
+  const { subAssemblyTechnologyArray, subAssemblyTechnologyTabData } = useSelector(state => state.SubAssembly)
+
+
 
   useEffect(() => {
+    dispatch(setSubAssemblyTechnologyArray(tempObject, res => { }))
 
-    console.log('subAssemblyTechnologyArray:temp ', subAssemblyTechnologyArray);
-  }, [subAssemblyTechnologyArray])
+  }, [])
 
-  const getCostPerPiece = (value) => {
-    setcostPerPiece(value)
-  }
-
-  const setOperationCostFunction = (value) => {
-    setOperationCostValue(value)
-    let temp = subAssemblyTechnologyArray
-    temp[0].CostingPartDetails.CostPerAssembly = checkForNull(temp[0].CostingPartDetails.CostPerAssembly) - checkForNull(temp[0].operationCostValue)
-    temp[0].operationCostValue = value
-    temp[0].CostingPartDetails.operationCostValue = value
-    temp[0].CostingPartDetails.CostPerAssembly = checkForNull(temp[0].CostingPartDetails.CostPerAssembly) + checkForNull(value)
-    dispatch(setSubAssemblyTechnologyArray(temp))
-
-  }
-
-  const setProcessCostFunction = (value) => {
-    setprocessCostValue(value)
-    let temp = subAssemblyTechnologyArray
-
-    temp[0].CostingPartDetails.CostPerAssembly = checkForNull(temp[0].CostingPartDetails.CostPerAssembly) - checkForNull(temp[0].processCostValue)
-    temp[0].processCostValue = value
-    temp[0].CostingPartDetails.processCostValue = value
-    temp[0].CostingPartDetails.CostPerAssembly = checkForNull(temp[0].CostingPartDetails.CostPerAssembly) + checkForNull(value)
-    dispatch(setSubAssemblyTechnologyArray(temp))
-
-  }
-
-  useEffect(() => {
-    if (Object.keys(costData).length > 0) {
-      const data = {
-        CostingId: costData.CostingId,
-        PartId: costData.PartId,
-        AssemCostingId: costData.CostingId,
-        subAsmCostingId: costData.CostingId
-      }
-      // dispatch(getRMCCTabData(data, true, (res) => { }))
-    }
-  }, [costData])
 
   //MANIPULATE TOP HEADER COSTS
   useEffect(() => {
     // CostingViewMode CONDITION IS USED TO AVOID CALCULATION IN VIEWMODE
-    console.log('CostingViewMode: aaaaaaa', CostingViewMode);
-    console.log('CostingViewMode: bbbbbbb', subAssemblyTechnologyArray);
     if (CostingViewMode === false) {
-      // console.log('subAssemblyTechnologyArray: ddddsds', subAssemblyTechnologyArray);
       let TopHeaderValues = subAssemblyTechnologyArray && subAssemblyTechnologyArray.length > 0 && subAssemblyTechnologyArray[0].CostingPartDetails !== undefined ? subAssemblyTechnologyArray[0].CostingPartDetails : null;
-      // console.log('TopHeaderValues: ', TopHeaderValues);
 
       let topHeaderData = {};
 
-      // console.log('costData: c', costData);
+
       if (costData.IsAssemblyPart) {
         topHeaderData = {
           NetRawMaterialsCost: TopHeaderValues?.CostPerAssembly ? TopHeaderValues.CostPerAssembly : 0,
@@ -124,6 +85,38 @@ function TabAssemblyTechnology(props) {
       props.setHeaderCost(topHeaderData)
     }
   }, [subAssemblyTechnologyArray]);
+
+
+
+  const getCostPerPiece = (value) => {
+    setcostPerPiece(value)
+  }
+
+  const setOperationCostFunction = (value) => {
+    setOperationCostValue(value)
+    let temp = subAssemblyTechnologyArray
+
+    temp[0].CostingPartDetails.CostPerAssembly = checkForNull(temp[0].CostingPartDetails.CostPerAssembly) - checkForNull(temp[0].operationCostValue)
+    temp[0].operationCostValue = value
+    temp[0].CostingPartDetails.operationCostValue = value
+    temp[0].CostingPartDetails.CostPerAssembly = checkForNull(temp[0].CostingPartDetails.CostPerAssembly) + checkForNull(value)
+    dispatch(setSubAssemblyTechnologyArray(temp, res => { }))
+
+  }
+
+  const setProcessCostFunction = (value) => {
+    setprocessCostValue(value)
+    let temp = subAssemblyTechnologyArray
+
+    temp[0].CostingPartDetails.CostPerAssembly = checkForNull(temp[0].CostingPartDetails.CostPerAssembly) - checkForNull(temp[0].processCostValue)
+    temp[0].processCostValue = value
+    temp[0].CostingPartDetails.processCostValue = value
+    temp[0].CostingPartDetails.CostPerAssembly = checkForNull(temp[0].CostingPartDetails.CostPerAssembly) + checkForNull(value)
+    dispatch(setSubAssemblyTechnologyArray(temp, res => { }))
+
+  }
+
+
 
   /**
   * @method getRMTotalCostForAssembly
@@ -1638,7 +1631,7 @@ function TabAssemblyTechnology(props) {
     tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerAssemblyBOP = checkForNull(totalBOPCost)
     tempsubAssemblyTechnologyArray[0].CostingPartDetails.BOPHandlingCharges = checkForNull(obj?.BOPHandlingCharges)
     tempsubAssemblyTechnologyArray[0].CostingPartDetails.IsApplyBOPHandlingCharges = obj.IsApplyBOPHandlingCharges
-    dispatch(setSubAssemblyTechnologyArray(tempsubAssemblyTechnologyArray))
+    dispatch(setSubAssemblyTechnologyArray(tempsubAssemblyTechnologyArray, res => { }))
 
 
     // __________________________________________ ASSEMBLY DOWN    ||     SUBASSEMBLY UP
