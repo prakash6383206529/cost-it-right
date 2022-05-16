@@ -722,8 +722,7 @@ function HotForging(props) {
                 disabled={props.CostingViewMode ? props.CostingViewMode : false}
                 className="btn-primary save-btn"
               >
-                <div className={'check-icon'}>
-                  <i class="fa fa-check" aria-hidden="true"></i>
+                <div className={'save-icon'}>
                 </div>
                 {'SAVE'}
               </button>
