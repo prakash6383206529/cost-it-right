@@ -307,3 +307,17 @@
             }
         }
     }
+    .actions-wrapper {
+        .ag-react-container {
+            display: flex;
+            justify-content: end;
+            grid-gap: 5px;
+            align-items: center;
+            button {
+                margin: 0;
+            }
+        }
+        .ag-cell-wrapper {
+            @extend .ag-react-container;
+        }
+    }

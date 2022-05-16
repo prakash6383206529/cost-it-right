@@ -313,7 +313,7 @@ function ViewConversionCost(props) {
                 <th>{`MHR`}</th>
                 {!isPDFShow && <th>{`Calculator`}</th>}
                 <th>{`Quantity`}</th>
-                <th className="costing-border-right">{`Net Cost`}</th>
+                <th>{`Net Cost`}</th>
                 <th className="costing-border-right">{`Remark`}</th>
               </tr>
             </thead>
@@ -357,7 +357,7 @@ function ViewConversionCost(props) {
                         <td>{item.Quantity ? checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForInputOutput) : '-'}</td>
                         <td>{item.ProcessCost ? checkForDecimalAndNull(item.ProcessCost, initialConfiguration.NoOfDecimalForPrice) : 0}
                         </td>
-                        <td>{item.Remark ?? item.Remark}</td>
+                        <td className='remark-overflow'><span title={item.Remark ?? item.Remark}>{item.Remark ?? item.Remark}</span></td>
                       </tr>
                       {isPDFShow && renderSingleProcess(item, index)}
                       {processAccObj[index] && <>
