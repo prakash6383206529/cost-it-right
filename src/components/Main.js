@@ -50,7 +50,8 @@ import SimulationHistory from './simulation/components/SimulationHistory'
 import Simulation from './simulation/components/Simulation'
 import CostingSummary from './costing/components/CostingSummary'
 import SimulationUpload from './simulation/components/SimulationUpload'
-import { formatLoginResult, getAuthToken, userDetails } from '../helper'
+import { userDetails } from '../helper/auth'
+import { formatLoginResult } from '../helper/ApiResponse'
 import axios from 'axios';
 import CostingDetailReport from './report/components/CostingDetailReport'
 import SimulationApprovalListing from './simulation/components/SimulationApprovalListing'
@@ -71,29 +72,28 @@ const CustomHeader = {
 
 const Detail = userDetails()
 
-if (Object.keys(Detail).length > 0) {
-  // window.setInterval(() => {
+if (Detail && Object.keys(Detail).length > 0) {
+  window.setInterval(() => {
+    let reqParams = {
+      IsRefreshToken: true,
+      refresh_token: JSON.parse(localStorage.getItem("userDetail")).RefreshToken,
+      ClientId: 'self',
+      grant_type: 'refresh_token',
+    }
 
-  //   const NewDetail = userDetails()
+    let queryParams = `refresh_token=${reqParams.refresh_token}&ClientId=${reqParams.ClientId}&grant_type=${reqParams.grant_type}`;
 
-  //   let reqParams = {
-  //     IsRefreshToken: true,
-  //     refresh_token: NewDetail.RefreshToken,
-  //     ClientId: 'self',
-  //     grant_type: 'refresh_token',
-  //   }
+    axios.post(API.tokenAPI, queryParams, CustomHeader)
+      .then((response) => {
+        if (response && response.status === 200) {
+          let userDetail = formatLoginResult(response.data);
 
-  //   let queryParams = `refresh_token=${reqParams.refresh_token}&ClientId=${reqParams.ClientId}&grant_type=${reqParams.grant_type}`;
-  //   axios.post(API.tokenAPI, queryParams, CustomHeader)
-  //     .then((response) => {
-  //       if (response && response.status === 200) {
-  //         let userDetail = formatLoginResult(response.data);
-  //         reactLocalStorage.setObject("userDetail", userDetail);
-  //       }
-  //     }).catch((error) => {
+          localStorage.setItem("userDetail", JSON.stringify(userDetail))
+        }
+      }).catch((error) => {
 
-  //     });
-  // }, (Detail.expires_in - 60) * 1000);
+      });
+  }, (Detail.expires_in - 60) * 1000);
 }
 
 class Main extends Component {
@@ -124,7 +124,7 @@ class Main extends Component {
       this.props.AutoSignin(reqParams, (res) => {
         if (res && res.status === 200) {
           let userDetail = formatLoginResult(res.data.Data);
-          reactLocalStorage.setObject("userDetail", userDetail);
+          localStorage.setItem("userDetail", JSON.stringify(userDetail))
           let departmentList = ''
           const dept = userDetail && userDetail.Department.map((item) => {
             if (item.DepartmentName === 'Corporate' || item.DepartmentName === 'Administration') {
@@ -132,10 +132,10 @@ class Main extends Component {
             } else {
               return item.DepartmentCode
             }
-  
+
           })
           departmentList = dept.join(',')
-          reactLocalStorage.setObject("userDetail", userDetail);
+          localStorage.setItem("userDetail", JSON.stringify(userDetail))
           reactLocalStorage.setObject("departmentList", departmentList);
           this.props.logUserIn();
           setTimeout(() => {
@@ -148,45 +148,7 @@ class Main extends Component {
     }
   }
 
-  componentDidMount() {
-    //this.refreshToken()
-  }
 
-  /**
-   * @method REFRESH TOKEN
-   * @description REFRESH TOKEN CALL AFTER A CERTAIN TIME
-   */
-  refreshToken = () => {
-    const Detail = userDetails()
-    if (Object.keys(Detail).length > 0) {
-
-      const token_expires_at = new Date(Detail.expires);
-      // const token_expires_at = new Date('Tue, 18 May 2021 17:57:23');
-      const current_time = new Date();
-      const totalSeconds = Math.floor((token_expires_at - (current_time)) / 1000);
-      const callBeforeSeconds = 15 * 1000; //Refresh token API will call before 15 seconds 
-
-      if ((totalSeconds * 1000 - callBeforeSeconds) > 0) {
-
-        setInterval(() => {
-          let reqParams = {
-            IsRefreshToken: true,
-            refresh_token: Detail.RefreshToken,
-            ClientId: 'self',
-            grant_type: 'refresh_token',
-          }
-
-          this.props.TokenAPI(reqParams, (res) => {
-            if (res && res.status === 200) {
-              let userDetail = formatLoginResult(res.data);
-              reactLocalStorage.setObject("userDetail", userDetail);
-            }
-          })
-        }, totalSeconds * 1000 - callBeforeSeconds)
-
-      }
-    }
-  }
 
   /**
    * @method handlePageNotFound
@@ -213,7 +175,8 @@ class Main extends Component {
    * @description Method used when refreshing browser then consistency of logged in user.
    */
   handleUserData = () => {
-    let userData = reactLocalStorage.getObject('userDetail')
+
+    let userData = JSON.parse(localStorage.getItem('userDetail'))
     this.props.showUserData(userData)
   }
 
@@ -392,6 +355,8 @@ class Main extends Component {
 
                     <Route path="/costing-detail-report" component={AuthMiddleware(CostingDetailReport, COSTING_DETAILS_REPORT)} />
                     <Route path="/cost-benchmarking-report" component={CostingBenchmarkReport} />
+                    {/*  NEED TO ADD PATH FROM BACKEND */}
+                    {/* <Route path="/simulation-insights" component={SimulationInsights} /> */}
 
                     {/* <Route path='/simulation-approval-listing' component={SimulationApprovalListing} /> */}
 

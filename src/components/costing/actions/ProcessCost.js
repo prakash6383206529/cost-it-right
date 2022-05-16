@@ -4,6 +4,7 @@ import {
   API_REQUEST,
   API_FAILURE,
   API_SUCCESS,
+  config,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -18,7 +19,7 @@ const headers = {
  */
 export function saveProcessCostCalculationData(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.saveProcessCostCalculation, data, headers)
+    const request = axios.post(API.saveProcessCostCalculation, data, config())
     request
       .then((response) => {
         if (response.data.Result) {

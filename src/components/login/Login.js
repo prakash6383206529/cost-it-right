@@ -75,6 +75,7 @@ class Login extends Component {
         this.setState({ isLoader: false, isSubmitted: false });
 
         let userDetail = formatLoginResult(res.data);
+        console.log('userDetail: ', userDetail);
         let departmentList = ''
         const dept = userDetail && userDetail.Department.map((item) => {
           if (item.Role === 'Group Category Head' || item.Role === 'SuperAdmin') {
@@ -85,7 +86,7 @@ class Login extends Component {
 
         })
         departmentList = dept.join(',')
-        reactLocalStorage.setObject("userDetail", userDetail);
+        localStorage.setItem("userDetail", JSON.stringify(userDetail))
         reactLocalStorage.setObject("departmentList", departmentList);
         setTimeout(() => {
           this.setState({ inputLoader: false })

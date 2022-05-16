@@ -7,8 +7,8 @@ import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
 import Toaster from '../../common/Toaster'
 
-const headers = config
-// const headers = {
+// const config() = config
+// const config() = {
 //   'Content-Type': 'application/json',
 //   //Authorization:'Bearer 4lEZa54IiLSaAmloKW8YyBFpB5pX6dAqkKw3szUT8O8HaEgKB7G4LgbvYl9eBOu1e3tgvYOligAncfRb_4PUNwSrygdtmTvLdwMoJi5yQu9iIJAOu6J1U5iIKou92e9XLNAq953S1-R985Yc-BvLt9X9HJKYpgo4mu2DelbnHauQUdk-H-Rgv1umz56UhtnGcsPyzlHriGvJKhJjQtdPCA'
 // };
@@ -20,7 +20,7 @@ const headers = config
 export function getSendForApprovalByCostingId(CostingId, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getSendForApproval}/${CostingId}`, headers)
+    const request = axios.get(`${API.getSendForApproval}/${CostingId}`, config())
     request
       .then((response) => {
         if (response.data.Result) {
@@ -48,7 +48,7 @@ export function getSendForApprovalByCostingId(CostingId, callback) {
 export function getAllApprovalDepartment(callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getAllApprovalDepartment}`, headers)
+    const request = axios.get(`${API.getAllApprovalDepartment}`, config())
     request
       .then((response) => {
         if (response.data.Result) {
@@ -75,7 +75,7 @@ export function getAllApprovalDepartment(callback) {
  */
 export function getAllApprovalUserByDepartment(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.getAllApprovalUserByDepartment, data, headers,)
+    const request = axios.post(API.getAllApprovalUserByDepartment, data, config(),)
     request
       .then((response) => {
         if (response.data.Result) {
@@ -106,7 +106,7 @@ export function getAllApprovalUserByDepartment(data, callback) {
  */
 export function getAllApprovalUserFilterByDepartment(data, callback) {
   return (dispatch) => {
-    const request = axios.post(`${API.getAllApprovalUserFilterByDepartment}`, data, headers,)
+    const request = axios.post(`${API.getAllApprovalUserFilterByDepartment}`, data, config(),)
 
     request
       .then((response) => {
@@ -139,7 +139,7 @@ export function getAllApprovalUserFilterByDepartment(data, callback) {
  */
 export function sendForApproval(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.sendForApproval, data, headers)
+    const request = axios.post(API.sendForApproval, data, config())
     request
       .then((response) => {
         if (response.data.Result) {
@@ -164,7 +164,7 @@ export function sendForApproval(data, callback) {
  */
 export function approvalProcess(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.approvalProcess, data, headers)
+    const request = axios.post(API.approvalProcess, data, config())
     request
       .then((response) => {
         if (response.data.Result) {
@@ -189,7 +189,7 @@ export function approvalProcess(data, callback) {
  */
 export function finalApprovalProcess(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.finalApprovalProcess, data, headers)
+    const request = axios.post(API.finalApprovalProcess, data, config())
     request
       .then((response) => {
         if (response.data.Result) {
@@ -215,7 +215,7 @@ export function finalApprovalProcess(data, callback) {
 export function getReasonSelectList(callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getReasonSelectList}`, headers)
+    const request = axios.get(`${API.getReasonSelectList}`, config())
     request
       .then((response) => {
         if (response.data.Result) {
@@ -242,7 +242,7 @@ export function getReasonSelectList(callback) {
  */
 export function sendForApprovalBySender(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.sendForApprovalBySender, data, headers)
+    const request = axios.post(API.sendForApprovalBySender, data, config())
     request
       .then((response) => {
         if (response.data.Result) {
@@ -271,7 +271,7 @@ export function getApprovalList(filterData, callback) {
 
   return (dispatch) => {
     const queryParameter = `isDashboard=${filterData.isDashboard}&logged_in_user_id=${filterData.loggedUser}&logged_in_user_level_id=${filterData.logged_in_user_level_id}&part_number=${filterData.partNo}&created_by=${filterData.createdBy}&requested_by=${filterData.requestedBy}&status=${filterData.status}&type_of_costing=''`
-    const request = axios.get(`${API.getApprovalList}?${queryParameter}`, headers)
+    const request = axios.get(`${API.getApprovalList}?${queryParameter}`, config())
     request
       .then((response) => {
         if (response.data.Result) {
@@ -297,7 +297,7 @@ export function getApprovalList(filterData, callback) {
  */
 export function approvalRequestByApprove(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.approveCostingByApprover, data, headers)
+    const request = axios.post(API.approveCostingByApprover, data, config())
     request
       .then((response) => {
         if (response.data.Result) {
@@ -322,7 +322,7 @@ export function approvalRequestByApprove(data, callback) {
  */
 export function rejectRequestByApprove(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.rejectCostingByApprover, data, headers)
+    const request = axios.post(API.rejectCostingByApprover, data, config())
     request
       .then((response) => {
         if (response.data.Result) {
@@ -354,7 +354,7 @@ export function getApprovalSummary(
 ) {
   return (dispatch) => {
     const request = axios.get(
-      `${API.getApprovalSummaryByApprovalNo}/${approvalNumber}/${approvalProcessId}/${loggedInUserId}`, headers)
+      `${API.getApprovalSummaryByApprovalNo}/${approvalNumber}/${approvalProcessId}/${loggedInUserId}`, config())
     request
       .then((response) => {
         if (response.data.Result) {
@@ -382,7 +382,7 @@ export function getApprovalSummary(
  */
 export function isFinalApprover(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.isFinalApprover, data, headers)
+    const request = axios.post(API.isFinalApprover, data, config())
     request
       .then((response) => {
         if (response.data.Result) {
@@ -402,7 +402,7 @@ export function isFinalApprover(data, callback) {
  */
 export function pushedApprovedCosting(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.approvalPushed, data, headers)
+    const request = axios.post(API.approvalPushed, data, config())
     request
       .then((response) => {
         if (response.data.Result) {
@@ -418,7 +418,7 @@ export function pushedApprovedCosting(data, callback) {
 
 export function getSelectedCostingList(callback) {
   return (dispatch) => {
-    const request = axios.get(API.getSelectedCostingStatusList, headers)
+    const request = axios.get(API.getSelectedCostingStatusList, config())
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -443,7 +443,7 @@ export function getSelectedCostingList(callback) {
  */
 export function createRawMaterialSAP(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.createRawMaterialSAP, data, headers)
+    const request = axios.post(API.createRawMaterialSAP, data, config())
     request
       .then((response) => {
         if (response.data.Result) {
@@ -463,7 +463,7 @@ export function createRawMaterialSAP(data, callback) {
  */
 export function approvalPushedOnSap(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.approvalPushedOnSap, data, headers)
+    const request = axios.post(API.approvalPushedOnSap, data, config())
     request
       .then((response) => {
         if (response.data.Result) {
