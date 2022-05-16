@@ -655,14 +655,14 @@ function ProcessCost(props) {
       if (i === index) return false;
       return true
     })
-    console.log(tempArrAfterDelete, "tempArrAfterDelete");
+
     let ProcessCostTotal = 0
     ProcessCostTotal = tempArrAfterDelete && tempArrAfterDelete.reduce((accummlator, el) => {
       return accummlator + checkForNull(el.ProcessCost)
     }, 0)
 
     let ProductionPerHourTotal = tempArrAfterDelete && tempArrAfterDelete.reduce((accummlator, el) => {
-      console.log('el: ', el.ProductionPerHour, "ProductionPerHour");
+
 
       return accummlator + checkForNull((el.ProductionPerHour === null || el.ProductionPerHour === '-') ? 0 : Number(el.ProductionPerHour))
     }, 0)

@@ -11,7 +11,7 @@ import {
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 
-const headers = config
+// const config() = config
 
 /**
  * @method createInterestRate
@@ -20,7 +20,7 @@ const headers = config
 export function createInterestRate(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.post(API.createInterestRate, data, headers);
+        const request = axios.post(API.createInterestRate, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -42,7 +42,7 @@ export function getInterestRateDataList(isAPICall, data, callback) {
         if (isAPICall) {
             dispatch({ type: API_REQUEST });
             let queryParams = `vendor=${data.vendor}&icc_applicability=${data.icc_applicability}&payment_term_applicability=${data.payment_term_applicability}`
-            axios.get(`${API.getInterestRateDataList}?${queryParams}`, headers)
+            axios.get(`${API.getInterestRateDataList}?${queryParams}`, config())
                 .then((response) => {
                     if (response.data.Result || response.status === 204)
                         dispatch({
@@ -72,7 +72,7 @@ export function getInterestRateData(ID, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         if (ID !== '') {
-            axios.get(`${API.getInterestRateData}/${ID}`, headers)
+            axios.get(`${API.getInterestRateData}/${ID}`, config())
                 .then((response) => {
                     if (response.data.Result) {
                         dispatch({
@@ -102,7 +102,7 @@ export function getInterestRateData(ID, callback) {
 export function deleteInterestRate(Id, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteInterestRate}/${Id}`, headers)
+        axios.delete(`${API.deleteInterestRate}/${Id}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -119,7 +119,7 @@ export function deleteInterestRate(Id, callback) {
 export function updateInterestRate(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateInterestRate}`, requestData, headers)
+        axios.put(`${API.updateInterestRate}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -137,7 +137,7 @@ export function updateInterestRate(requestData, callback) {
 export function getPaymentTermsAppliSelectList(callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getPaymentTermsAppliSelectList}`, headers);
+        const request = axios.get(`${API.getPaymentTermsAppliSelectList}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -161,7 +161,7 @@ export function getPaymentTermsAppliSelectList(callback) {
 export function getICCAppliSelectList(callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getICCAppliSelectList}`, headers);
+        const request = axios.get(`${API.getICCAppliSelectList}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -184,7 +184,7 @@ export function getICCAppliSelectList(callback) {
  */
 export function bulkUploadInterestRateZBC(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.bulkUploadInterestRateZBC, data, headers);
+        const request = axios.post(API.bulkUploadInterestRateZBC, data, config());
         request.then((response) => {
             if (response.status === 200) {
                 callback(response);
@@ -202,7 +202,7 @@ export function bulkUploadInterestRateZBC(data, callback) {
  */
 export function bulkUploadInterestRateVBC(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.bulkUploadInterestRateVBC, data, headers);
+        const request = axios.post(API.bulkUploadInterestRateVBC, data, config());
         request.then((response) => {
             if (response.status === 200) {
                 callback(response);
