@@ -350,9 +350,9 @@ function CostingHeaderTabs(props) {
                 <span>View BOM</span>
               </button>
               {/* THIS WARNING MESSAGE WILL COME WHEN CHILD PART COSTING IS UNDER APPROVAL  */}
-              <div className='mb-n2'>
+              {/* <div className='mb-n2'>
                 <WarningMessage message={warningMessage} />
-              </div>
+              </div> */}
             </Col>}
         </Row>
 

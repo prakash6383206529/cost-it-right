@@ -1241,7 +1241,7 @@ class UserRegistration extends Component {
                           name={"FirstName"}
                           type="text"
                           placeholder={'Enter'}
-                          validate={[required, minLength3, maxLength15]}
+                          validate={[required, minLength3, maxLength15, checkWhiteSpaces]}
                           component={renderText}
                           required={true}
                           // maxLength={26}
