@@ -588,7 +588,6 @@ function ProcessCost(props) {
       ProcessCostTotal = tempArrAfterDelete && tempArrAfterDelete.reduce((accummlator, el) => {
         return accummlator + checkForNull(el.ProcessCost)
       }, 0)
-
       let apiArr = formatMainArr(tempArrAfterDelete)
       tempArr2 = {
         ...tabData,
