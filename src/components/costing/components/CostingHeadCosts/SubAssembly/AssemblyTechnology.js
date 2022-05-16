@@ -8,9 +8,9 @@ import EditPartCost from './EditPartCost';
 import PartCompomentA from './PartComponentA';
 import BOPA from './BOPA';
 import { subAssembly010101, subAssemblyAssemPart, tempObject } from '../../../../../config/masterData';
-import { setSubAssemblyTechnologyArray } from '../../../actions/SubAssembly.js';
 import AddProcess from '../../Drawers/AddProcess';
 import AddAssemblyProcess from '../../Drawers/AddAssemblyProcess';
+import { setSubAssemblyTechnologyArray } from '../../../actions/SubAssembly';
 
 function AssemblyTechnology(props) {
     const { children, item, index, getCostPerPiece } = props;
@@ -177,7 +177,7 @@ function AssemblyTechnology(props) {
             setOperationCost={props.setOperationCost}
             setOtherOperationCost={props.setOtherOperationCost}
             setToolCost={props.setToolCost}
-            setAssemblyOperationCost={props.setAssemblyOperationCost}
+            // setAssemblyOperationCost={props.setAssemblyOperationCost}
             setAssemblyToolCost={props.setAssemblyToolCost}
             subAssembId={item.CostingId}
 
@@ -304,11 +304,8 @@ function AssemblyTechnology(props) {
                     anchor={'right'}
                     item={item}
                     CostingViewMode={CostingViewMode}
-                    setAssemblyOperationCost={props.setAssemblyOperationCost}
-                    setAssemblyToolCost={props.setAssemblyToolCost}
                     setOperationCostFunction={props.setOperationCostFunction}
                     isAssemblyTechnology={true}
-                // setProcessCostFunction={props.setProcessCostFunction}
                 />
             }
             {isProcessDrawerOpen && (
@@ -319,21 +316,15 @@ function AssemblyTechnology(props) {
                     ID={''}
                     anchor={'right'}
                     ccData={subAssemblyTechnologyArray[0].CostingPartDetails !== null && subAssemblyTechnologyArray[0]?.CostingPartDetails?.CostingConversionCost}
-                    setProcessCostFunction={props.setProcessCostFunction}
-
-                // Ids={Ids}
-                // MachineIds={MachineIds}
+                // setProcessCostFunction={props.setProcessCostFunction}
                 />
             )}
             {
                 partCostDrawer && <EditPartCost
                     isOpen={partCostDrawer}
                     closeDrawer={closeDrawerPartCost}
-                    // approvalData={approvalData}
                     anchor={'bottom'}
-                    // masterId={OPERATIONS_ID}
                     tabAssemblyIndividualPartDetail={tabAssemblyIndividualPartDetail}
-
                     getCostPerPiece={getCostPerPiece}
                 />
             }

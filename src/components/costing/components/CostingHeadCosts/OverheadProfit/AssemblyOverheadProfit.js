@@ -21,7 +21,6 @@ function AssemblyOverheadProfit(props) {
   const CostingViewMode = useContext(ViewCostingContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { CostingEffectiveDate, RMCCTabData, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, DiscountCostData, ToolTabData, getAssemBOPCharge, checkIsOverheadProfitChange } = useSelector(state => state.costing)
-  const [partType, setpartType] = useState(costData?.TechnologyName === 'Assembly')   //HELP
 
   const dispatch = useDispatch()
 
@@ -105,7 +104,7 @@ function AssemblyOverheadProfit(props) {
     }
 
     if (!CostingViewMode && checkIsOverheadProfitChange) {
-      if (!partType) {
+      if (!(costData?.TechnologyName === 'Assembly')) {
         let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 3, CostingEffectiveDate)
 
         dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))

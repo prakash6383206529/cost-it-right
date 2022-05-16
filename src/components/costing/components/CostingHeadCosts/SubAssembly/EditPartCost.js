@@ -6,8 +6,8 @@ import { checkForDecimalAndNull, checkForNull, percentageOfNumber } from '../../
 import { ListForPartCost, optionsForDelta, tempObject } from '../../../../../config/masterData';
 import { NumberFieldHookForm, SearchableSelectHookForm } from '../../../../layout/HookFormInputs';
 import { Controller, useForm } from 'react-hook-form';
-import { setSubAssemblyTechnologyArray } from '../../../actions/SubAssembly.js';
 import Toaster from '../../../../common/Toaster';
+import { setSubAssemblyTechnologyArray } from '../../../actions/SubAssembly';
 
 function EditPartCost(props) {
 

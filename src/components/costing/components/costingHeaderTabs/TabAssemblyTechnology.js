@@ -15,8 +15,8 @@ import { ViewCostingContext } from '../CostingDetails';
 import DayTime from '../../../common/DayTimeWrapper'
 import AddBOPHandling from '../Drawers/AddBOPHandling';
 import AssemblyTechnology from '../CostingHeadCosts/SubAssembly/AssemblyTechnology';
-import { setAssemblyTechnologyTabData, setSubAssemblyTechnologyArray } from '../../actions/SubAssembly.js';
 import { tempObject } from '../../../../config/masterData';
+import { setAssemblyTechnologyTabData, setSubAssemblyTechnologyArray } from '../../actions/SubAssembly';
 
 function TabAssemblyTechnology(props) {
 
@@ -37,13 +37,15 @@ function TabAssemblyTechnology(props) {
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
   const netPOPrice = useContext(NetPOPriceContext);
-  const { subAssemblyTechnologyArray, subAssemblyTechnologyTabData } = useSelector(state => state.SubAssembly)
+  const { subAssemblyTechnologyArray } = useSelector(state => state.SubAssembly)
 
 
 
   useEffect(() => {
     dispatch(setSubAssemblyTechnologyArray(tempObject, res => { }))
 
+    // API FOR FIRST TIME DATA LOAD
+    // dispatch(setSubAssemblyAPI(tempObject, res => { }))         //WIP
   }, [])
 
 
@@ -58,7 +60,7 @@ function TabAssemblyTechnology(props) {
 
       if (costData.IsAssemblyPart) {
         topHeaderData = {
-          NetRawMaterialsCost: TopHeaderValues?.CostPerAssembly ? TopHeaderValues.CostPerAssembly : 0,
+          NetRawMaterialsCost: TopHeaderValues?.EditPartCost ? TopHeaderValues.EditPartCost : 0,
           NetBoughtOutPartCost: TopHeaderValues?.CostPerAssemblyBOP ? TopHeaderValues.CostPerAssemblyBOP : 0,
           NetConversionCost: (TopHeaderValues?.operationCostValue || TopHeaderValues?.processCostValue) ? (checkForNull(TopHeaderValues?.processCostValue) + checkForNull(TopHeaderValues?.operationCostValue)) : 0,
           NetToolsCost: TopHeaderValues?.TotalToolCost ? TopHeaderValues.TotalToolCost : 0,
@@ -1796,7 +1798,7 @@ function TabAssemblyTechnology(props) {
 
                                   getCostPerPiece={getCostPerPiece}
                                   setOperationCostFunction={setOperationCostFunction}
-                                  setProcessCostFunction={setProcessCostFunction}
+                                // setProcessCostFunction={setProcessCostFunction}
                                 />
                               </>
                             )

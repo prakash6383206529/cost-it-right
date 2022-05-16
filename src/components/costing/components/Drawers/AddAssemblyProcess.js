@@ -9,21 +9,21 @@ import ToolCost from '../CostingHeadCosts/Part/ToolCost';
 import { loggedInUserId, checkForDecimalAndNull, checkForNull } from '../../../../helper';
 import { createToprowObjAndSave } from '../../CostingUtil';
 import ProcessCost from '../CostingHeadCosts/Part/ProcessCost';
+import { setSubAssemblyTechnologyArray } from '../../actions/SubAssembly';
 
 function AddAssemblyProcess(props) {
   const { item, CostingViewMode, ccData } = props;
-  console.log('ccData: ', ccData);
   const [IsOpenTool, setIsOpenTool] = useState(false);
+  const [processGrid, setProcessGrid] = useState([]);
+  const [totalProcessCost, setTotalProcessCost] = useState(0);
   const dispatch = useDispatch()
   const { subAssemblyTechnologyArray } = useSelector(state => state.SubAssembly)
-  console.log('subAssemblyTechnologyArray: ccData: ', subAssemblyTechnologyArray);
 
   const { RMCCTabData, CostingEffectiveDate, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData } = useSelector(state => state.costing)
 
   const costData = useContext(costingInfoContext)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const netPOPrice = useContext(NetPOPriceContext);
-  console.log('item: ddd', item);
 
   /**
   * @method toggleDrawer
@@ -56,12 +56,30 @@ function AddAssemblyProcess(props) {
     toggleDrawer('')
   }
 
+  const getValuesOfProcess = (gridData, ProcessCostTotal) => {
+    setProcessGrid(gridData)
+    setTotalProcessCost(ProcessCostTotal)
+
+  }
 
   /**
   * @method saveData
   * @description SAVE DATA ASSEMBLY
   */
   const saveData = () => {
+
+    // const setProcessCostFunction = (value) => {
+    // setprocessCostValue(value)
+    let temp = subAssemblyTechnologyArray
+
+    // temp[0].CostingPartDetails.CostPerAssembly = checkForNull(temp[0].CostingPartDetails.CostPerAssembly) - checkForNull(temp[0].processCostValue)
+    temp[0].processCostValue = totalProcessCost
+    temp[0].CostingPartDetails.processCostValue = totalProcessCost
+    temp[0].CostingPartDetails.CostPerAssembly = checkForNull(temp[0].CostingPartDetails.CostPerAssembly) + checkForNull(totalProcessCost)
+    dispatch(setSubAssemblyTechnologyArray(temp, res => { }))
+
+    // }
+
     // props.setOperationCostFunction(item?.CostingPartDetails?.TotalOperationCostPerAssembly)
     // props.setProcessCostFunction(item?.CostingPartDetails?.TotalProcessCostPerAssembly)
     // let requestData = {
@@ -183,7 +201,6 @@ function AddAssemblyProcess(props) {
                     <ProcessCost
                       index={props.index}
                       data={ccData}
-                      // rmFinishWeight={rmData.length > 0 && rmData[0].FinishWeight !== undefined ? rmData[0].FinishWeight : 0}
                       setProcessCost={props.setProcessCost}
                       setOperationCost={props.setOperationCost}
                       setOtherOperationCost={props.setOtherOperationCost}
@@ -191,6 +208,7 @@ function AddAssemblyProcess(props) {
                       item={item}
                       isAssemblyTechnology={true}
                       setProcessCostFunction={props.setProcessCostFunction}
+                      getValuesOfProcess={getValuesOfProcess}
                     />
                   </div>
                 </div>
