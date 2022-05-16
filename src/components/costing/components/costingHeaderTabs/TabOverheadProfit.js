@@ -21,7 +21,6 @@ function TabOverheadProfit(props) {
   const CostingViewMode = useContext(ViewCostingContext);
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { subAssemblyTechnologyTabData } = useSelector(state => state.SubAssembly)
 
   useEffect(() => {
     if (Object.keys(costData).length > 0) {

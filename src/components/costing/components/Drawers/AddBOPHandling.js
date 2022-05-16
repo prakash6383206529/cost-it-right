@@ -10,7 +10,7 @@ import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigura
 import Toaster from '../../../common/Toaster';
 import { useDispatch, useSelector } from 'react-redux';
 import { isDataChange } from '../../actions/Costing';
-import { setSubAssemblyTechnologyArray } from '../../actions/SubAssembly.js';
+import { setSubAssemblyTechnologyArray } from '../../actions/SubAssembly';
 
 function AddBOPHandling(props) {
   const { item, isAssemblyTechnology } = props
