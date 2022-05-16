@@ -24,6 +24,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import DayTime from '../../../common/DayTimeWrapper'
 import { createToprowObjAndSave, findSurfaceTreatmentData } from '../../CostingUtil';
 import _ from 'lodash'
+import WarningMessage from '../../../common/WarningMessage';
 
 function CostingHeaderTabs(props) {
   const dispatch = useDispatch()
@@ -297,6 +298,15 @@ function CostingHeaderTabs(props) {
   * @method render
   * @description Renders the component
   */
+  //  THIS CODE WILL USE FOR WARNING MESSAGE FOR CHILD PART COSTING IS UNDER APPROVAL
+  const parts = ['SIPL-part5', 'SIPL-part4', 'SIPL-part1', 'SIPL-part3']
+
+  const allPart = parts.map(item => {
+    let part = item + ', ';
+    return part
+  })
+
+  const warningMessage = <span className='part-flow'>Child Parts (<span title={allPart}>{allPart}</span>) costing is under approval flow</span>
   return (
     <>
       <div className="user-page p-0">
@@ -335,10 +345,14 @@ function CostingHeaderTabs(props) {
               <button
                 type="button"
                 onClick={() => setIsOpenViewHirarchy(true)}
-                class="btn-primary btn btn-lg mt-2">
+                class="btn-primary btn btn-lg mt-2 float-right">
                 <div className="hirarchy-icon"></div>
                 <span>View BOM</span>
               </button>
+              {/* THIS WARNING MESSAGE WILL COME WHEN CHILD PART COSTING IS UNDER APPROVAL  */}
+              <div className='mb-n2'>
+                <WarningMessage message={warningMessage} />
+              </div>
             </Col>}
         </Row>
 

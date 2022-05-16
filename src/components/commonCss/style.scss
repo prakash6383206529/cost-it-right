@@ -6043,7 +6043,15 @@ left: 17rem;
   .drawer-wrapper table tr:first-child td{
     border-top: none;
   }
-
+ .part-flow {
+   display: flex;
+  span{
+   max-width: 150px;
+   white-space: nowrap;
+   overflow: hidden;
+   text-overflow: ellipsis;
+ }
+}
 // <-------------END Hover text overflow and show on hover  css----------->
 
 // <-------START simulation-label-container css-------->
