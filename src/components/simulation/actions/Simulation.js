@@ -55,7 +55,7 @@ import {
 import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
 
-const headers = config
+// const config() = config
 
 export function getSelectListOfMasters(callback) {
     // let JSON = {
@@ -152,7 +152,7 @@ export function getSelectListOfMasters(callback) {
     // }
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getSelectListOfSimulationMaster}`, headers);
+        const request = axios.get(`${API.getSelectListOfSimulationMaster}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -171,7 +171,7 @@ export function getSelectListOfMasters(callback) {
 
 export function runVerifySimulation(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.runSimulation, data, headers);
+        const request = axios.post(API.runSimulation, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -186,7 +186,7 @@ export function runVerifySimulation(data, callback) {
 export function getVerifySimulationList(token, plantId, rawMatrialId, callback) {
 
     return (dispatch) => {
-        const request = axios.get(`${API.getVerifySimulationList}?simulationId=${token}&plantId=${plantId}&rawMaterilId=${rawMatrialId}`, headers);
+        const request = axios.get(`${API.getVerifySimulationList}?simulationId=${token}&plantId=${plantId}&rawMaterilId=${rawMatrialId}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -204,7 +204,7 @@ export function getVerifySimulationList(token, plantId, rawMatrialId, callback) 
 
 export function getCostingSimulationList(token, plantId, rawMatrialId, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getCostingSimulationList}?simulationId=${token}&plantId=${plantId}&rawMaterilId=${rawMatrialId}`, headers);
+        const request = axios.get(`${API.getCostingSimulationList}?simulationId=${token}&plantId=${plantId}&rawMaterilId=${rawMatrialId}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 let tempData = {
@@ -236,7 +236,7 @@ export function getCostingSimulationList(token, plantId, rawMatrialId, callback)
 
 export function runSimulationOnSelectedCosting(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.runSimulationOnSelectedCosting, data, headers);
+        const request = axios.post(API.runSimulationOnSelectedCosting, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -256,7 +256,7 @@ export function getSimulationApprovalList(filterData, callback) {
             payload: [],
         })
         const queryParameter = `isDashboard=${filterData.isDashboard}&logged_in_user_id=${filterData.logged_in_user_id}&logged_in_user_level_id=${filterData.logged_in_user_level_id}&token_number=${filterData.token_number}&simulated_by=${filterData.simulated_by}&requested_by=${filterData.requestedBy}&status=${filterData.status}`
-        const request = axios.get(`${API.getSimulationApprovalList}?${queryParameter}`, headers)
+        const request = axios.get(`${API.getSimulationApprovalList}?${queryParameter}`, config())
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -293,7 +293,7 @@ export function setTechnologyForSimulation(selectedTechnology) {
 export function getSelectListOfSimulationApplicability(callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getSelectListOfSimulationApplicability}`, headers);
+        const request = axios.get(`${API.getSelectListOfSimulationApplicability}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -319,7 +319,7 @@ export function getSelectListOfSimulationLinkingTokens(vendorId, simulationTechn
         dispatch({ type: API_REQUEST });
         const queryParameter = `vendorId=${vendorId}`
         const queryParameter1 = `simulationtechnologyId=${simulationTechnologyId}`
-        const request = axios.get(`${API.getSelectListOfSimulationLinkingTokens}?${queryParameter}&${queryParameter1}`, headers);
+        const request = axios.get(`${API.getSelectListOfSimulationLinkingTokens}?${queryParameter}&${queryParameter1}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -343,7 +343,7 @@ export function getSelectListOfSimulationLinkingTokens(vendorId, simulationTechn
 
 export function saveSimulationForRawMaterial(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.saveSimulationForRawMaterial, data, headers);
+        const request = axios.post(API.saveSimulationForRawMaterial, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -358,7 +358,7 @@ export function saveSimulationForRawMaterial(data, callback) {
 export function getApprovalSimulatedCostingSummary(params, callback) {
     return (dispatch) => {
         const queryParameter = `${params.approvalTokenNumber}/${params.approvalId}/${params.loggedInUserId}`;
-        const request = axios.get(`${API.getApprovalSimulatedCostingSummary}/${queryParameter}`, headers)
+        const request = axios.get(`${API.getApprovalSimulatedCostingSummary}/${queryParameter}`, config())
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 let tempData = {
@@ -389,7 +389,7 @@ export function getApprovalSimulatedCostingSummary(params, callback) {
 export function getAllSimulationApprovalList(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.post(`${API.getSimulationApprovalListByDepartment}`, data, headers);
+        const request = axios.post(`${API.getSimulationApprovalListByDepartment}`, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -405,7 +405,7 @@ export function getAllSimulationApprovalList(data, callback) {
 export function getSimulationApprovalByDepartment(callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getAllSimulationApprovalDepartment}`, headers);
+        const request = axios.get(`${API.getAllSimulationApprovalDepartment}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -428,7 +428,7 @@ export function getSimulationApprovalByDepartment(callback) {
  */
 export function simulationApprovalRequestByApprove(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.simulationApprove, data, headers)
+        const request = axios.post(API.simulationApprove, data, config())
         request
             .then((response) => {
                 if (response.data.Result) {
@@ -454,7 +454,7 @@ export function simulationApprovalRequestByApprove(data, callback) {
 */
 export function simulationRejectRequestByApprove(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.simulationReject, data, headers)
+        const request = axios.post(API.simulationReject, data, config())
         request.then((response) => {
             if (response.data.Result) {
                 callback(response)
@@ -478,7 +478,7 @@ export function simulationRejectRequestByApprove(data, callback) {
  */
 export function simulationApprovalRequestBySender(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.simulationSendToApprover, data, headers)
+        const request = axios.post(API.simulationSendToApprover, data, config())
         request.then((response) => {
             if (response.data.Result) {
                 callback(response)
@@ -500,7 +500,7 @@ export function getComparisionSimulationData(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         const queryParams = `simulationApprovalProcessSummaryId=${data.simulationApprovalProcessSummaryId}&simulationid=${data.simulationId}&costingId=${data.costingId}`
-        const request = axios.get(`${API.simulationComparisionData}?${queryParams}`, headers);
+        const request = axios.get(`${API.simulationComparisionData}?${queryParams}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 // dispatch({
@@ -519,7 +519,7 @@ export function getComparisionSimulationData(data, callback) {
 
 export function pushAPI(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.simualtionPush, data, headers)
+        const request = axios.post(API.simualtionPush, data, config())
         request.then((response) => {
             if (response.data.Result) {
                 callback(response)
@@ -540,7 +540,7 @@ export function pushAPI(data, callback) {
 export function getSimulationStatus(callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getallSimualtionStatus}`, headers);
+        const request = axios.get(`${API.getallSimualtionStatus}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -561,7 +561,7 @@ export function getSimulationStatus(callback) {
 export function deleteDraftSimulation(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteDraftSimulation}/${data.simulationId}/${data.loggedInUser}`, headers)
+        axios.delete(`${API.deleteDraftSimulation}/${data.simulationId}/${data.loggedInUser}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -575,7 +575,7 @@ export function deleteDraftSimulation(data, callback) {
 export function uploadSimulationAttachmentByCategory(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.post(`${API.simulationUploadFileByCategory}`, data, headers)
+        axios.post(`${API.simulationUploadFileByCategory}`, data, config())
             .then((response) => {
                 callback(response)
             }).catch(error => {
@@ -588,7 +588,7 @@ export function uploadSimulationAttachmentByCategory(data, callback) {
 export function uploadSimulationAttachmentonFTP(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.post(`${API.simulationUploadFtp}`, data, headers)
+        axios.post(`${API.simulationUploadFtp}`, data, config())
             .then((response) => {
                 callback(response)
             }).catch(error => {
@@ -602,7 +602,7 @@ export function getAmmendentStatus(params, callback) {
     return (dispatch) => {
         // const queryParameter = `${params.approvalTokenNumber}/${params.approvalId}/${params.loggedInUserId}`;
         const queryParameter = `${params.approvalTokenNumber}`;
-        const request = axios.get(`${API.getAmmendentStatus}?tokenNumber=${queryParameter}`, headers)
+        const request = axios.get(`${API.getAmmendentStatus}?tokenNumber=${queryParameter}`, config())
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 dispatch({
@@ -623,7 +623,7 @@ export function getAmmendentStatus(params, callback) {
 export function runVerifyExchangeRateSimulation(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST })
-        const request = axios.post(API.draftExchangeRateSimulation, data, headers);
+        const request = axios.post(API.draftExchangeRateSimulation, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -638,7 +638,7 @@ export function runVerifyExchangeRateSimulation(data, callback) {
 export function getVerifyExchangeSimulationList(token, callback) {
 
     return (dispatch) => {
-        const request = axios.get(`${API.getverifyExchangeSimulationList}?simulationId=${token}`, headers);
+        const request = axios.get(`${API.getverifyExchangeSimulationList}?simulationId=${token}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -656,7 +656,7 @@ export function getVerifyExchangeSimulationList(token, callback) {
 
 export function runSimulationOnSelectedExchangeCosting(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.runSimulationOnSelectedExchangeCosting, data, headers);
+        const request = axios.post(API.runSimulationOnSelectedExchangeCosting, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -671,7 +671,7 @@ export function runSimulationOnSelectedExchangeCosting(data, callback) {
 
 export function getExchangeCostingSimulationList(token, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getExchangeCostingSimulationList}?simulationId=${token}&plantId=''`, headers);
+        const request = axios.get(`${API.getExchangeCostingSimulationList}?simulationId=${token}&plantId=''`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 let tempData = {
@@ -717,7 +717,7 @@ export function getCombinedProcessList(data, callback) {
     return (dispatch) => {
 
         dispatch({ type: API_REQUEST });
-        axios.get(`${API.getCombinedProcessList}?technologyId=${data.technologyId}&vendorId=${data.vendorId}`, headers)
+        axios.get(`${API.getCombinedProcessList}?technologyId=${data.technologyId}&vendorId=${data.vendorId}`, config())
             .then((response) => {
 
                 if (response.data.Result === true || response.status === 204) {
@@ -745,7 +745,7 @@ export function getCombinedProcessList(data, callback) {
 export function runVerifyCombinedProcessSimulation(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST })
-        const request = axios.post(API.draftCombinedProcessSimulation, data, headers);
+        const request = axios.post(API.draftCombinedProcessSimulation, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -759,7 +759,7 @@ export function runVerifyCombinedProcessSimulation(data, callback) {
 
 export function getverifyCombinedProcessSimulationList(token, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getverifyCombinedProcessSimulationList}?simulationId=${token}`, headers);
+        const request = axios.get(`${API.getverifyCombinedProcessSimulationList}?simulationId=${token}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -778,7 +778,7 @@ export function getverifyCombinedProcessSimulationList(token, callback) {
 export function getFgWiseImpactData(data, callback) {
     return (dispatch) => {
 
-        const request = axios.get(`${API.getFgWiseImpactData}?simulationId=${data}`, headers);
+        const request = axios.get(`${API.getFgWiseImpactData}?simulationId=${data}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -804,7 +804,7 @@ export function getFgWiseImpactData(data, callback) {
 
 export function runSimulationOnSelectedCombinedProcessCosting(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.runSimulationOnSelectedCombinedProcessCosting, data, headers);
+        const request = axios.post(API.runSimulationOnSelectedCombinedProcessCosting, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -828,7 +828,7 @@ export function getLastSimulationData(vendorId, effectiveDate, callback) {
         }
         const queryParams = `vendorId=${vendorId}&effectiveDate=${effectiveDate}`
 
-        const request = axios.get(`${API.getLastSimulationData}?${queryParams}`, headers);
+        const request = axios.get(`${API.getLastSimulationData}?${queryParams}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 dispatch({
@@ -847,7 +847,7 @@ export function getLastSimulationData(vendorId, effectiveDate, callback) {
 
 export function getCombinedProcessCostingSimulationList(token, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getCombinedProcessCostingSimulationList}?simulationId=${token}&plantId=''`, headers);
+        const request = axios.get(`${API.getCombinedProcessCostingSimulationList}?simulationId=${token}&plantId=''`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -873,7 +873,7 @@ export function setVendorForSimulation(selectedVendorForSimulation) {
 
 export function sapPushedInitialMoment(simulationId, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.sapPushedInitialMoment}?simulationId=${simulationId}`, headers);
+        const request = axios.get(`${API.sapPushedInitialMoment}?simulationId=${simulationId}`, config());
         request.then((response) => {
             // if (response.data.Result) {
             //     dispatch({
@@ -901,7 +901,7 @@ export function getImpactedMasterData(simulationId, callback) {
             CombinedProcessImpactedMasterDataList: [],
         }
         const queryParams = `simulationId=${simulationId}`
-        const request = axios.get(`${API.getImpactedMasterData}?${queryParams}`, headers);
+        const request = axios.get(`${API.getImpactedMasterData}?${queryParams}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 dispatch({
@@ -922,7 +922,7 @@ export function getImpactedMasterData(simulationId, callback) {
 export function getVerifySurfaceTreatmentSimulationList(token, callback) {
     return (dispatch) => {
 
-        const request = axios.get(`${API.getverifySurfaceTreatmentSimulationList}?simulationId=${token}`, headers);
+        const request = axios.get(`${API.getverifySurfaceTreatmentSimulationList}?simulationId=${token}`, config());
 
         request.then((response) => {
 
@@ -945,7 +945,7 @@ export function getVerifySurfaceTreatmentSimulationList(token, callback) {
 export function runVerifySurfaceTreatmentSimulation(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST })
-        const request = axios.post(API.draftSurfaceTreatmentSimulation, data, headers);
+        const request = axios.post(API.draftSurfaceTreatmentSimulation, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -964,7 +964,7 @@ export function runVerifySurfaceTreatmentSimulation(data, callback) {
 
 export function runSimulationOnSelectedSurfaceTreatmentCosting(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.runSimulationOnSelectedSurfaceTreatmentCosting, data, headers);
+        const request = axios.post(API.runSimulationOnSelectedSurfaceTreatmentCosting, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -979,7 +979,7 @@ export function runSimulationOnSelectedSurfaceTreatmentCosting(data, callback) {
 
 export function getCostingSurfaceTreatmentSimulationList(token, plantId, rawMatrialId, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getCostingSurfaceTreatmentSimulationList}?simulationId=${token}`, headers);
+        const request = axios.get(`${API.getCostingSurfaceTreatmentSimulationList}?simulationId=${token}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 let tempData = {
@@ -1010,7 +1010,7 @@ export function getCostingSurfaceTreatmentSimulationList(token, plantId, rawMatr
 export function runVerifyMachineRateSimulation(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST })
-        const request = axios.post(API.draftMachineRateSimulation, data, headers);
+        const request = axios.post(API.draftMachineRateSimulation, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -1024,7 +1024,7 @@ export function runVerifyMachineRateSimulation(data, callback) {
 
 export function runSimulationOnSelectedMachineRateCosting(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.runSimulationOnSelectedMachineRateCosting, data, headers);
+        const request = axios.post(API.runSimulationOnSelectedMachineRateCosting, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -1039,7 +1039,7 @@ export function runSimulationOnSelectedMachineRateCosting(data, callback) {
 
 export function runVerifyBoughtOutPartSimulation(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.draftBoughtOutpartSimulation, data, headers);
+        const request = axios.post(API.draftBoughtOutpartSimulation, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -1055,7 +1055,7 @@ export function runVerifyBoughtOutPartSimulation(data, callback) {
 
 export function runSimulationOnSelectedBoughtOutPartCosting(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.runSimulationOnSelectedBoughtOutPartCosting, data, headers);
+        const request = axios.post(API.runSimulationOnSelectedBoughtOutPartCosting, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -1072,7 +1072,7 @@ export function runSimulationOnSelectedBoughtOutPartCosting(data, callback) {
 export function getVerifyMachineRateSimulationList(token, callback) {
 
     return (dispatch) => {
-        const request = axios.get(`${API.getverifyMachineRateSimulationList}?simulationId=${token}`, headers);
+        const request = axios.get(`${API.getverifyMachineRateSimulationList}?simulationId=${token}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -1091,7 +1091,7 @@ export function getVerifyMachineRateSimulationList(token, callback) {
 export function getVerifyBoughtOutPartSimulationList(token, callback) {
 
     return (dispatch) => {
-        const request = axios.get(`${API.getverifyBoughtOutPartSimulationList}?simulationId=${token}`, headers);
+        const request = axios.get(`${API.getverifyBoughtOutPartSimulationList}?simulationId=${token}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -1109,7 +1109,7 @@ export function getVerifyBoughtOutPartSimulationList(token, callback) {
 
 export function getCostingBoughtOutPartSimulationList(token, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getCostingBoughtOutPartSimulationList}?simulationId=${token}`, headers);
+        const request = axios.get(`${API.getCostingBoughtOutPartSimulationList}?simulationId=${token}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 let tempData = {
@@ -1143,7 +1143,7 @@ export function getSimulatedAssemblyWiseImpactDate(requestData, isAssemblyInDraf
             type: GET_ASSEMBLY_SIMULATION_LIST,
             payload: [],
         })
-        const request = axios.post(`${API.getSimulatedAssemblyWiseImpactDate}`, requestData, headers);
+        const request = axios.post(`${API.getSimulatedAssemblyWiseImpactDate}`, requestData, config());
         request.then((response) => {
             // THIS BLOCK WORKS WHEN THERE IS DATA IN API
             if (response.data.Result) {
@@ -1204,7 +1204,7 @@ export function setData(valdataTemp) {
 export function getVerifyOverheadSimulationList(token, callback) {
 
     return (dispatch) => {
-        const request = axios.get(`${API.getVerifyOverheadProfitSimulationList}?simulationId=${token}`, headers);
+        const request = axios.get(`${API.getVerifyOverheadProfitSimulationList}?simulationId=${token}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -1222,7 +1222,7 @@ export function getVerifyOverheadSimulationList(token, callback) {
 
 export function runSimulationOnSelectedOverheadCosting(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.runSimulationOnSelectedOverheadCosting, data, headers);
+        const request = axios.post(API.runSimulationOnSelectedOverheadCosting, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -1236,7 +1236,7 @@ export function runSimulationOnSelectedOverheadCosting(data, callback) {
 
 export function runVerifyOverheadSimulation(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.draftOverheadSimulation, data, headers);
+        const request = axios.post(API.draftOverheadSimulation, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -1249,7 +1249,7 @@ export function runVerifyOverheadSimulation(data, callback) {
 }
 export function runVerifyProfitSimulation(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.draftProfitSimulation, data, headers);
+        const request = axios.post(API.draftProfitSimulation, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -1264,7 +1264,7 @@ export function runVerifyProfitSimulation(data, callback) {
 export function getVerifyProfitSimulationList(token, callback) {
 
     return (dispatch) => {
-        const request = axios.get(`${API.getVerifyProfitSimulationList}?simulationId=${token}`, headers);
+        const request = axios.get(`${API.getVerifyProfitSimulationList}?simulationId=${token}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -1282,7 +1282,7 @@ export function getVerifyProfitSimulationList(token, callback) {
 
 export function runSimulationOnSelectedProfitCosting(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.runSimulationOnSelectedProfitCosting, data, headers);
+        const request = axios.post(API.runSimulationOnSelectedProfitCosting, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -1316,7 +1316,7 @@ export function getTokenSelectListAPI(obj, callback) {
 
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getTokenSelectListAPI}?technologyId=${obj.technologyId}&loggedInUserId=${obj.loggedInUserId}&simulationTechnologyId=${obj.simulationTechnologyId}`, headers);
+        const request = axios.get(`${API.getTokenSelectListAPI}?technologyId=${obj.technologyId}&loggedInUserId=${obj.loggedInUserId}&simulationTechnologyId=${obj.simulationTechnologyId}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -1396,7 +1396,7 @@ export function getListingForSimulationCombined(requestData, master, callback) {
             default:
                 break;
         }
-        const request = axios.post(`${API.getListingForSimulationCombined}`, requestData, headers);
+        const request = axios.post(`${API.getListingForSimulationCombined}`, requestData, config());
         request.then((response) => {
             if (response.data.Result) {
                 switch (master) {
