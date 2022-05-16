@@ -40,7 +40,7 @@ function OperationCost(props) {
       PartType: props.item.PartType
     }
     if (!CostingViewMode && !IsLocked) {
-      if (props.IsAssemblyCalculation) {
+      if (props.IsAssemblyCalculation && CostingViewMode?.TechnologyName === 'Assembly') {
         props.setAssemblyOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(props?.data ? props?.data : []) ? true : false, props.item)
       } else {
         props.setOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(props?.data ? props?.data : []) ? true : false)

@@ -103,7 +103,7 @@ function AssemblyOverheadProfit(props) {
     }
 
     if (!CostingViewMode && checkIsOverheadProfitChange) {
-      if (!partType) {
+      if (!(costData?.TechnologyName === 'Assembly')) {
         let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 3, CostingEffectiveDate)
 
         dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))

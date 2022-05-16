@@ -8,7 +8,7 @@ import { checkForNull, } from '../../../../helper';
 import PartSurfaceTreatment from '../CostingHeadCosts/SurfaceTreatMent/PartSurfaceTreatment';
 import { LEVEL0 } from '../../../../config/constants';
 import { ViewCostingContext } from '../CostingDetails';
-import { setSubAssemblyTechnologyArray } from '../../actions/SubAssembly.js';
+import { setSubAssemblyTechnologyArray } from '../../actions/SubAssembly';
 
 function TabSTAssemblyTechnology(props) {
 

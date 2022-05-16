@@ -13,7 +13,7 @@ import _ from 'lodash'
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { ASSEMBLY } from '../../../../config/masterData';
 import { netHeadCostContext, SurfaceCostContext } from '../CostingDetailStepTwo';
-import { setSubAssemblyTechnologyArray } from '../../actions/SubAssembly.js';
+import { setSubAssemblyTechnologyArray } from '../../actions/SubAssembly';
 
 function TabSurfaceTreatment(props) {
 

@@ -19,8 +19,7 @@ function Rejection(props) {
     const CostingViewMode = useContext(ViewCostingContext);
     const costData = useContext(costingInfoContext);
 
-    const { subAssemblyTechnologyTabData } = useSelector(state => state.SubAssembly)
-
+    const { subAssemblyTechnologyArray } = useSelector(state => state.SubAssembly)
 
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
     const costingHead = useSelector(state => state.comman.costingHead)
@@ -99,25 +98,24 @@ function Rejection(props) {
       */
     const checkRejectionApplicability = (Text) => {
         if (headerCosts && Text !== '') {
-            const ConversionCostForCalculation = costData.IsAssemblyPart ? checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly) : headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal
+            const ConversionCostForCalculation = costData?.IsAssemblyPart ? checkForNull(headerCosts?.NetConversionCost) - checkForNull(headerCosts?.TotalOtherOperationCostPerAssembly) : headerCosts?.ProcessCostTotal + headerCosts?.OperationCostTotal
 
-            const RMBOPCC = headerCosts.NetBoughtOutPartCost + headerCosts.NetRawMaterialsCost + ConversionCostForCalculation
-
-            const RMBOP = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost;
-            const RMCC = headerCosts.NetRawMaterialsCost + ConversionCostForCalculation;
-            const BOPCC = headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation;
+            const RMBOPCC = headerCosts?.NetBoughtOutPartCost + headerCosts?.NetRawMaterialsCost + ConversionCostForCalculation
+            const RMBOP = headerCosts?.NetRawMaterialsCost + headerCosts?.NetBoughtOutPartCost;
+            const RMCC = headerCosts?.NetRawMaterialsCost + ConversionCostForCalculation;
+            const BOPCC = headerCosts?.NetBoughtOutPartCost + ConversionCostForCalculation;
             const RejectionPercentage = getValues('RejectionPercentage')
 
-            const assemblyLevelOperations = checkForNull(subAssemblyTechnologyTabData && subAssemblyTechnologyTabData[0]?.processCostValue) + checkForNull(subAssemblyTechnologyTabData && subAssemblyTechnologyTabData[0]?.operationCostValue)                                                           //LATER headerCosts.ProcessCostTotal
-            const BOPTotalCost = subAssemblyTechnologyTabData && subAssemblyTechnologyTabData[0]?.CostingPartDetails?.CostPerAssemblyBOP                                                           //LATER headerCosts.ProcessCostTotal
-            const EditPartCost = subAssemblyTechnologyTabData && subAssemblyTechnologyTabData[0]?.CostingPartDetails?.EditPartCost                                                           //LATER headerCosts.ProcessCostTotal
+            const assemblyLevelCC = checkForNull(headerCosts?.ProcessCostTotal) + checkForNull(headerCosts?.TotalOperationCostPerAssembly)                                                           //LATER headerCosts.ProcessCostTotal
+            const BOPTotalCost = checkForNull(headerCosts?.NetBoughtOutPartCost)
+            const EditPartCost = checkForNull(headerCosts?.NetRawMaterialsCost)
 
-            const RM = partType ? checkForNull(EditPartCost) : headerCosts.NetRawMaterialsCost
-            const BOP = partType ? checkForNull(BOPTotalCost) : headerCosts.NetBoughtOutPartCost
-            const CC = partType ? checkForNull(assemblyLevelOperations) : ConversionCostForCalculation
-            let RM_CC_BOP = partType ? (checkForNull(EditPartCost) + checkForNull(assemblyLevelOperations) + checkForNull(BOPTotalCost)) : RMBOPCC
-            let RM_CC = partType ? (checkForNull(EditPartCost) + checkForNull(assemblyLevelOperations)) : RMCC
-            let BOP_CC = partType ? (checkForNull(assemblyLevelOperations) + checkForNull(BOPTotalCost)) : BOPCC
+            const RM = partType ? checkForNull(EditPartCost) : headerCosts?.NetRawMaterialsCost
+            const BOP = partType ? checkForNull(BOPTotalCost) : headerCosts?.NetBoughtOutPartCost
+            const CC = partType ? checkForNull(assemblyLevelCC) : ConversionCostForCalculation
+            let RM_CC_BOP = partType ? (checkForNull(EditPartCost) + checkForNull(assemblyLevelCC) + checkForNull(BOPTotalCost)) : RMBOPCC
+            let RM_CC = partType ? (checkForNull(EditPartCost) + checkForNull(assemblyLevelCC)) : RMCC
+            let BOP_CC = partType ? (checkForNull(assemblyLevelCC) + checkForNull(BOPTotalCost)) : BOPCC
             let RM_BOP = partType ? (checkForNull(EditPartCost) + checkForNull(BOPTotalCost)) : RMBOP
 
 
