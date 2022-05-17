@@ -192,7 +192,8 @@ function TabRMCC(props) {
 
   const setBOPCostForSubAssembly = (arr) => {
     const total = arr && arr.reduce((accummlator, item) => {
-      if (item.PartType === 'Part') {
+      console.log('item: ', item);
+      if (item.PartType === 'Part' || item.PartType === 'BOP') {
         return accummlator + checkForNull(item.CostingPartDetails.TotalBoughtOutPartCost) * checkForNull(item?.CostingPartDetails?.Quantity)
       } else {
 
@@ -298,6 +299,7 @@ function TabRMCC(props) {
         GrandTotalCost = checkForNull(partObj.CostingPartDetails.TotalRawMaterialsCost) + checkForNull(partObj.CostingPartDetails.TotalBoughtOutPartCost) + checkForNull(partObj.CostingPartDetails.TotalConversionCost)
         partObj.CostingPartDetails.TotalCalculatedRMBOPCCCost = GrandTotalCost;
         partObj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = GrandTotalCost * partObj.Quantity;
+        console.log('partObj: ', partObj);
         break;
       case 'CC':
         partObj.CostingPartDetails.TotalConversionCost = gridData.NetConversionCost
@@ -347,6 +349,7 @@ function TabRMCC(props) {
         break;
       case 'BOP':
         subAssemObj.CostingPartDetails.TotalBoughtOutPartCost = setBOPCostForSubAssembly(tempArr)
+        console.log('subAssemObj.CostingPartDetails.TotalBoughtOutPartCost: ', subAssemObj.CostingPartDetails.TotalBoughtOutPartCost);
         subAssemObj.CostingPartDetails.TotalBoughtOutPartCostWithQuantity = checkForNull(subAssemObj.CostingPartDetails.TotalBoughtOutPartCost) + checkForNull(subAssemObj.CostingPartDetails.BOPHandlingCharges);
         subAssemObj.CostingPartDetails.TotalCalculatedRMBOPCCCost = checkForNull(subAssemObj.CostingPartDetails.TotalRawMaterialsCostWithQuantity) + checkForNull(subAssemObj.CostingPartDetails.TotalBoughtOutPartCostWithQuantity) + checkForNull(subAssemObj.CostingPartDetails.TotalConversionCostWithQuantity);
         subAssemObj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = checkForNull(subAssemObj.CostingPartDetails.TotalCalculatedRMBOPCCCost) * subAssemObj.CostingPartDetails.Quantity;
