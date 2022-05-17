@@ -4,19 +4,22 @@
 
 import { getAuthToken } from '../helper/auth';
 
-export const config = {
-  headers: {
+export const config = () => {
+
+  let headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Credentials': 'true',
-    'Authorization': `Bearer ${getAuthToken()}`,
+    'Authorization': `Bearer ${JSON.parse(localStorage.getItem('userDetail'))?.Token}`,
     'Access-From': 'WEB',
     'Api-Key': `${process.env.REACT_APP_API_KEY}`,
-  },
+  }
+  return { headers }
 }
 
 
 // DEVELOPMENT
 const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
+// const BASE_URL = `http://10.10.0.43/RohitCIR/api/v1`;
 
 //FILE URL
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
@@ -1850,4 +1853,4 @@ export const KEY = 'gQUJ79YKYm22Cazw';
 export const IV = 'eTEFSa0PinFKTQNB'
 
 //VERSION 
-export const VERSION = "V1.2.224";
+export const VERSION = "V1.2.225";
