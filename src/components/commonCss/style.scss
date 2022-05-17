@@ -6165,6 +6165,18 @@ left: 17rem;
 }
 
 @media print { 
+    .simple-pdf {
+      .table-responsive {
+        min-width: 100% !important;
+        overflow: unset !important;
+        .table-responsive {
+          overflow: unset !important;
+        }
+        table {
+          min-width: 100%;
+        }
+      }
+    }
   .remove-space-border {
     .table-responsive {
       .header-name-left {
