@@ -5,7 +5,7 @@
 import { getAuthToken } from '../helper/auth';
 
 export const config = () => {
-  console.log("CALL FUNCTION");
+
   let headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Credentials': 'true',
