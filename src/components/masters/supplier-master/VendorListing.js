@@ -334,8 +334,8 @@ class VendorListing extends Component {
         const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.state;
         return (
             <>
-                {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
-                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
+                {ViewAccessibility && <button className="View" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
+                {EditAccessibility && <button className="Edit" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
                 {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
@@ -786,7 +786,7 @@ class VendorListing extends Component {
                             <AgGridColumn field="State" headerName="State" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="City" headerName="City" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn width="130" pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
-                            <AgGridColumn field="VendorId" width={"230px"} headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                            <AgGridColumn field="VendorId" width={"230px"} cellClass="actions-wrapper" headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                         </AgGridReact>
                         <div className="button-wrapper">
                             <div className="paging-container d-inline-block float-right">

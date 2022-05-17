@@ -642,11 +642,12 @@ function ProcessCost(props) {
         return accummlator + checkForNull(el.ProcessCost)
       }, 0)
 
+      let apiArr = formatMainArr(tempArrAfterDelete)
       tempArr2 = {
         ...tabData,
         NetConversionCost: ProcessCostTotal + checkForNull(tabData.OperationCostTotal !== null ? tabData.OperationCostTotal : 0,) + checkForNull(tabData.OtherOperationCostTotal !== null ? tabData.OtherOperationCostTotal : 0),
         ProcessCostTotal: ProcessCostTotal,
-        CostingProcessCostResponse: tempArrAfterDelete,
+        CostingProcessCostResponse: apiArr,
       }
 
       let selectedIds = []

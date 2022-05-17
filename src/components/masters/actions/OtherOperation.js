@@ -27,7 +27,7 @@ import Toaster from '../../common/Toaster';
 import { loggedInUserId, userDetails } from '../../../helper';
 import { setItemData } from '../../costing/actions/Costing';
 
-const headers = config
+// const config() = config
 
 /**
  * @method getUnitOfMeasurementAPI
@@ -36,7 +36,7 @@ const headers = config
 export function getOperationsAPI(callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.get(API.getOtherOperationsAPI, headers)
+        axios.get(API.getOtherOperationsAPI, config())
             .then((response) => {
                 dispatch({
                     type: GET_OTHER_OPERATION_SUCCESS,
@@ -58,7 +58,7 @@ export function getOperationsAPI(callback) {
 export function createOtherOperationsAPI(data, callback) {
     return (dispatch) => {
         dispatch({ type: CREATE_OTHER_OPERATION_REQUEST });
-        const request = axios.post(API.createOtherOperationAPI, data, headers);
+        const request = axios.post(API.createOtherOperationAPI, data, config());
         request.then((response) => {
             if (response.data.Result === true) {
                 dispatch({
@@ -81,7 +81,7 @@ export function createOtherOperationsAPI(data, callback) {
 export function deleteOtherOperationAPI(OperationId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteOtherOperationAPI}/${OperationId}`, headers)
+        axios.delete(`${API.deleteOtherOperationAPI}/${OperationId}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -98,7 +98,7 @@ export function deleteOtherOperationAPI(OperationId, callback) {
 export function getOtherOperationDataAPI(OtherOperationId, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.get(`${API.getOtherOperationDataAPI}/${OtherOperationId}`, headers)
+        axios.get(`${API.getOtherOperationDataAPI}/${OtherOperationId}`, config())
             .then((response) => {
                 if (response.data.Result === true) {
                     dispatch({
@@ -121,7 +121,7 @@ export function getOtherOperationDataAPI(OtherOperationId, callback) {
 export function updateOtherOperationAPI(requestData, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateOtherOperationAPI}`, requestData, headers)
+        axios.put(`${API.updateOtherOperationAPI}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -138,7 +138,7 @@ export function updateOtherOperationAPI(requestData, callback) {
 export function createCEDOtherOperationsAPI(data, callback) {
     return (dispatch) => {
         dispatch({ type: CREATE_OTHER_OPERATION_REQUEST });
-        const request = axios.post(API.createCEDOtherOperationAPI, data, headers);
+        const request = axios.post(API.createCEDOtherOperationAPI, data, config());
         request.then((response) => {
             if (response.data.Result === true) {
                 dispatch({
@@ -160,7 +160,7 @@ export function createCEDOtherOperationsAPI(data, callback) {
 export function getCEDOtherOperationsAPI(callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.get(API.getCEDOtherOperationsAPI, headers)
+        axios.get(API.getCEDOtherOperationsAPI, config())
             .then((response) => {
                 if (response.data.Result === true) {
                     dispatch({
@@ -188,7 +188,7 @@ export function getCEDoperationDataAPI(ID, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
         if (ID !== '') {
-            axios.get(`${API.getCEDoperationDataAPI}/${ID}`, headers)
+            axios.get(`${API.getCEDoperationDataAPI}/${ID}`, config())
                 .then((response) => {
                     if (response.data.Result === true) {
                         dispatch({
@@ -219,7 +219,7 @@ export function getCEDoperationDataAPI(ID, callback) {
 export function updateCEDoperationAPI(requestData, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateCEDoperationAPI}`, requestData, headers)
+        axios.put(`${API.updateCEDoperationAPI}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -236,7 +236,7 @@ export function updateCEDoperationAPI(requestData, callback) {
 export function deleteCEDotherOperationAPI(Id, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteCEDotherOperationAPI}/${Id}`, headers)
+        axios.delete(`${API.deleteCEDotherOperationAPI}/${Id}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -257,7 +257,7 @@ export function getOperationsDataList(filterData, temp, callback) {
         let payload
         //dispatch({ type: API_REQUEST });
         const QueryParams = `operation_for=${filterData.operation_for}&operation_Name_id=${filterData.operation_Name_id}&technology_id=${filterData.technology_id}&vendor_id=${filterData.vendor_id}`
-        axios.get(`${API.getOperationsDataList}?${QueryParams}`, headers)
+        axios.get(`${API.getOperationsDataList}?${QueryParams}`, config())
 
             .then((response) => {
 
@@ -289,7 +289,7 @@ export function getOperationsDataList(filterData, temp, callback) {
 export function createOperationsAPI(data, callback) {
     return (dispatch) => {
         dispatch({ type: CREATE_OTHER_OPERATION_REQUEST });
-        const request = axios.post(API.createOperationAPI, data, headers);
+        const request = axios.post(API.createOperationAPI, data, config());
         request.then((response) => {
             if (response.data.Result === true) {
                 callback(response);
@@ -310,7 +310,7 @@ export function getOperationDataAPI(OperationId, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
         if (OperationId !== '') {
-            axios.get(`${API.getOperationDataAPI}/${OperationId}`, headers)
+            axios.get(`${API.getOperationDataAPI}/${OperationId}`, config())
                 .then((response) => {
                     if (response.data.Result === true) {
                         dispatch({
@@ -339,7 +339,7 @@ export function getOperationDataAPI(OperationId, callback) {
 export function updateOperationAPI(requestData, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateOperationAPI}`, requestData, headers)
+        axios.put(`${API.updateOperationAPI}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -357,7 +357,7 @@ export function updateOperationAPI(requestData, callback) {
 export function deleteOperationAPI(OperationId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteOperationAPI}/${OperationId}`, headers)
+        axios.delete(`${API.deleteOperationAPI}/${OperationId}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -376,7 +376,7 @@ export function fileUploadOperation(data, callback) {
         let multipartHeaders = {
             'Content-Type': 'multipart/form-data;'
         };
-        const request = axios.post(API.fileUploadOperation, data, headers);
+        const request = axios.post(API.fileUploadOperation, data, config());
         request.then((response) => {
             if (response && response.status === 200) {
                 callback(response);
@@ -394,7 +394,7 @@ export function fileUploadOperation(data, callback) {
  */
 export function checkAndGetOperationCode(code, name, callback) {
     return (dispatch) => {
-        const request = axios.post(`${API.checkAndGetOperationCode}?operationCode=${code}&operationName=${name}`, '', headers);
+        const request = axios.post(`${API.checkAndGetOperationCode}?operationCode=${code}&operationName=${name}`, '', config());
         request.then((response) => {
             if (response && response.status === 200) {
                 callback(response);
@@ -413,7 +413,7 @@ export function checkAndGetOperationCode(code, name, callback) {
 export function fileDeleteOperation(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.fileDeleteOperation}/${data.Id}/${data.DeletedBy}`, headers)
+        axios.delete(`${API.fileDeleteOperation}/${data.Id}/${data.DeletedBy}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -430,7 +430,7 @@ export function fileDeleteOperation(data, callback) {
 export function getCEDOtherOperationBySupplierID(supplierId, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getCEDOtherOperationBySupplierID}/${supplierId}`, headers);
+        const request = axios.get(`${API.getCEDOtherOperationBySupplierID}/${supplierId}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -455,7 +455,7 @@ export function getCEDOtherOperationBySupplierID(supplierId, callback) {
 export function getOperationSelectList(callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.get(API.getOperationSelectList, headers)
+        axios.get(API.getOperationSelectList, config())
             .then((response) => {
                 if (response.data.Result === true) {
                     dispatch({
@@ -478,7 +478,7 @@ export function getOperationSelectList(callback) {
  */
 export function getVendorWithVendorCodeSelectList() {
     return (dispatch) => {
-        const request = axios.get(API.getVendorWithVendorCodeSelectList, headers);
+        const request = axios.get(API.getVendorWithVendorCodeSelectList, config());
         request.then((response) => {
             dispatch({
                 type: GET_INITIAL_VENDOR_WITH_VENDOR_CODE_SELECTLIST,
@@ -498,7 +498,7 @@ export function getVendorWithVendorCodeSelectList() {
 export function getTechnologySelectList(callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getTechnologySelectList}`, headers);
+        const request = axios.get(`${API.getTechnologySelectList}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -520,7 +520,7 @@ export function getTechnologySelectList(callback) {
  */
 export function getVendorListByTechnology(ID, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getVendorListByTechnology}/${ID}`, headers);
+        const request = axios.get(`${API.getVendorListByTechnology}/${ID}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -543,7 +543,7 @@ export function getVendorListByTechnology(ID, callback) {
  */
 export function getOperationListByTechnology(ID, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getOperationListByTechnology}/${ID}`, headers);
+        const request = axios.get(`${API.getOperationListByTechnology}/${ID}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -566,7 +566,7 @@ export function getOperationListByTechnology(ID, callback) {
  */
 export function getTechnologyListByOperation(ID, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getTechnologyListByOperation}/${ID}`, headers);
+        const request = axios.get(`${API.getTechnologyListByOperation}/${ID}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -589,7 +589,7 @@ export function getTechnologyListByOperation(ID, callback) {
  */
 export function getVendorListByOperation(ID, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getVendorListByOperation}/${ID}`, headers);
+        const request = axios.get(`${API.getVendorListByOperation}/${ID}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -612,7 +612,7 @@ export function getVendorListByOperation(ID, callback) {
  */
 export function getTechnologyListByVendor(ID, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getTechnologyListByVendor}/${ID}`, headers);
+        const request = axios.get(`${API.getTechnologyListByVendor}/${ID}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -635,7 +635,7 @@ export function getTechnologyListByVendor(ID, callback) {
  */
 export function getOperationListByVendor(ID, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getOperationListByVendor}/${ID}`, headers);
+        const request = axios.get(`${API.getOperationListByVendor}/${ID}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -658,7 +658,7 @@ export function getOperationListByVendor(ID, callback) {
  */
 export function operationZBCBulkUpload(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.operationZBCBulkUpload, data, headers);
+        const request = axios.post(API.operationZBCBulkUpload, data, config());
         request.then((response) => {
             if (response.status === 200) {
                 callback(response);
@@ -677,7 +677,7 @@ export function operationZBCBulkUpload(data, callback) {
  */
 export function operationVBCBulkUpload(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.operationVBCBulkUpload, data, headers);
+        const request = axios.post(API.operationVBCBulkUpload, data, config());
         request.then((response) => {
             if (response.status === 200) {
                 callback(response);
@@ -699,7 +699,7 @@ export function operationVBCBulkUpload(data, callback) {
  */
 export function masterApprovalRequestBySenderOperation(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.masterSendToApproverOperation, data, headers)
+        const request = axios.post(API.masterSendToApproverOperation, data, config())
         request.then((response) => {
             if (response.data.Result) {
                 callback(response)
@@ -727,7 +727,7 @@ export function getOperationApprovalList(callback) {
     return (dispatch) => {
 
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getOperationApprovalList}?logged_in_user_id=${loggedInUserId()}&logged_in_user_level_id=${userDetails().LoggedInMasterLevelId}&masterId=3`, headers);
+        const request = axios.get(`${API.getOperationApprovalList}?logged_in_user_id=${loggedInUserId()}&logged_in_user_level_id=${userDetails().LoggedInMasterLevelId}&masterId=3`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 //

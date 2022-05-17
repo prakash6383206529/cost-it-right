@@ -8,11 +8,11 @@ import {
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 
-// const headers = {
+// const config() = {
 //     'Content-Type': 'application/json',
 //     //Authorization:'Bearer 4lEZa54IiLSaAmloKW8YyBFpB5pX6dAqkKw3szUT8O8HaEgKB7G4LgbvYl9eBOu1e3tgvYOligAncfRb_4PUNwSrygdtmTvLdwMoJi5yQu9iIJAOu6J1U5iIKou92e9XLNAq953S1-R985Yc-BvLt9X9HJKYpgo4mu2DelbnHauQUdk-H-Rgv1umz56UhtnGcsPyzlHriGvJKhJjQtdPCA'
 // };
-const headers = config;
+// const config() = config;
 
 /**
  * @method createTaxDetails
@@ -21,7 +21,7 @@ const headers = config;
 export function createTaxDetails(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.post(API.createTaxDetails, data, headers);
+        const request = axios.post(API.createTaxDetails, data, config());
         request.then((response) => {
             if (response.data.Result === true) {
                 callback(response);
@@ -40,7 +40,7 @@ export function createTaxDetails(data, callback) {
 export function getTaxDetailsDataList(callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.get(API.getTaxDetailsDataList, headers)
+        axios.get(API.getTaxDetailsDataList, config())
             .then((response) => {
                 dispatch({
                     type: GET_TAX_DETAILS_DATALIST,
@@ -63,7 +63,7 @@ export function getTaxDetailsData(taxID, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         if (taxID !== '') {
-            axios.get(`${API.getTaxDetailsData}/${taxID}`, headers)
+            axios.get(`${API.getTaxDetailsData}/${taxID}`, config())
                 .then((response) => {
                     if (response.data.Result === true) {
                         dispatch({
@@ -93,7 +93,7 @@ export function getTaxDetailsData(taxID, callback) {
 export function deleteTaxDetails(Id, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteTaxDetails}/${Id}`, headers)
+        axios.delete(`${API.deleteTaxDetails}/${Id}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -110,7 +110,7 @@ export function deleteTaxDetails(Id, callback) {
 export function updateTaxDetails(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateTaxDetails}`, requestData, headers)
+        axios.put(`${API.updateTaxDetails}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {

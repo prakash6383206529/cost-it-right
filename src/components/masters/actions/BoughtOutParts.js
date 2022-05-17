@@ -21,7 +21,7 @@ import { apiErrors } from '../../../helper/util';
 import { loggedInUserId, userDetails } from '../../../helper';
 import Toaster from '../../common/Toaster';
 
-const headers = config
+// const config() = config
 
 /**
  * @method createBOPAPI
@@ -29,7 +29,7 @@ const headers = config
  */
 export function createBOPDomestic(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createBOPDomestic, data, headers);
+        const request = axios.post(API.createBOPDomestic, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -48,7 +48,7 @@ export function createBOPDomestic(data, callback) {
  */
 export function createBOPImport(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createBOPImport, data, headers);
+        const request = axios.post(API.createBOPImport, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -73,7 +73,7 @@ export function getBOPDomesticDataList(data, callback) {
             payload: undefined
         })
         const queryParams = `bop_for=${data.bop_for}&category_id=${data.category_id}&vendor_id=${data.vendor_id}&plant_id=${data.plant_id}`
-        const request = axios.get(`${API.getBOPDomesticDataList}?${queryParams}`, headers);
+        const request = axios.get(`${API.getBOPDomesticDataList}?${queryParams}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
 
@@ -99,7 +99,7 @@ export function getBOPImportDataList(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         const queryParams = `bop_for=${data.bop_for}&category_id=${data.category_id}&vendor_id=${data.vendor_id}&plant_id=${data.plant_id}`
-        const request = axios.get(`${API.getBOPImportDataList}?${queryParams}`, headers);
+        const request = axios.get(`${API.getBOPImportDataList}?${queryParams}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 dispatch({
@@ -124,7 +124,7 @@ export function getBOPDomesticById(bopId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         if (bopId !== '') {
-            axios.get(`${API.getBOPDomesticById}/${bopId}`, headers)
+            axios.get(`${API.getBOPDomesticById}/${bopId}`, config())
                 .then((response) => {
                     if (response.data.Result) {
                         dispatch({
@@ -155,7 +155,7 @@ export function getBOPImportById(bopId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         if (bopId !== '') {
-            axios.get(`${API.getBOPImportById}/${bopId}`, headers)
+            axios.get(`${API.getBOPImportById}/${bopId}`, config())
                 .then((response) => {
                     if (response.data.Result) {
                         dispatch({
@@ -185,7 +185,7 @@ export function getBOPImportById(bopId, callback) {
 export function deleteBOP(Id, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteBOP}/${Id}`, headers)
+        axios.delete(`${API.deleteBOP}/${Id}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -202,7 +202,7 @@ export function deleteBOP(Id, callback) {
 export function updateBOPDomestic(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateBOPDomestic}`, requestData, headers)
+        axios.put(`${API.updateBOPDomestic}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -220,7 +220,7 @@ export function updateBOPDomestic(requestData, callback) {
 export function updateBOPImport(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateBOPImport}`, requestData, headers)
+        axios.put(`${API.updateBOPImport}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -238,7 +238,7 @@ export function updateBOPImport(requestData, callback) {
  */
 export function createBOPCategory(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createBOPCategory, data, headers);
+        const request = axios.post(API.createBOPCategory, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -258,7 +258,7 @@ export function createBOPCategory(data, callback) {
 export function getBOPCategorySelectList(callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getBOPCategorySelectList}`, headers);
+        const request = axios.get(`${API.getBOPCategorySelectList}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -280,7 +280,7 @@ export function getBOPCategorySelectList(callback) {
  */
 export function getAllVendorSelectList() {
     return (dispatch) => {
-        const request = axios.get(API.getAllVendorSelectList, headers);
+        const request = axios.get(API.getAllVendorSelectList, config());
         request.then((response) => {
             dispatch({
                 type: GET_ALL_VENDOR_SELECTLIST_SUCCESS,
@@ -300,7 +300,7 @@ export function getAllVendorSelectList() {
 export function getPlantSelectList(callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getPlantSelectList}`, headers);
+        const request = axios.get(`${API.getPlantSelectList}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -323,7 +323,7 @@ export function getPlantSelectList(callback) {
 export function getPlantSelectListByVendor(VendorId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getPlantSelectListByVendor}/${VendorId}`, headers);
+        const request = axios.get(`${API.getPlantSelectListByVendor}/${VendorId}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -349,7 +349,7 @@ export function fileUploadBOPDomestic(data, callback) {
         let multipartHeaders = {
             'Content-Type': 'multipart/form-data;'
         };
-        const request = axios.post(API.fileUploadBOPDomestic, data, headers);
+        const request = axios.post(API.fileUploadBOPDomestic, data, config());
         request.then((response) => {
             if (response && response.status === 200) {
                 callback(response);
@@ -368,7 +368,7 @@ export function fileUploadBOPDomestic(data, callback) {
 export function fileDeleteBOPDomestic(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.fileDeleteBOPDomestic}/${data.Id}/${data.DeletedBy}`, headers)
+        axios.delete(`${API.fileDeleteBOPDomestic}/${data.Id}/${data.DeletedBy}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -384,7 +384,7 @@ export function fileDeleteBOPDomestic(data, callback) {
  */
 export function bulkUploadBOPDomesticZBC(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.bulkUploadBOPDomesticZBC, data, headers);
+        const request = axios.post(API.bulkUploadBOPDomesticZBC, data, config());
         request.then((response) => {
             if (response.status === 200) {
                 callback(response);
@@ -403,7 +403,7 @@ export function bulkUploadBOPDomesticZBC(data, callback) {
  */
 export function bulkUploadBOPDomesticVBC(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.bulkUploadBOPDomesticVBC, data, headers);
+        const request = axios.post(API.bulkUploadBOPDomesticVBC, data, config());
         request.then((response) => {
             if (response.status === 200) {
                 callback(response);
@@ -422,7 +422,7 @@ export function bulkUploadBOPDomesticVBC(data, callback) {
  */
 export function bulkUploadBOPImportZBC(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.bulkUploadBOPImportZBC, data, headers);
+        const request = axios.post(API.bulkUploadBOPImportZBC, data, config());
         request.then((response) => {
             if (response.status === 200) {
                 callback(response);
@@ -441,7 +441,7 @@ export function bulkUploadBOPImportZBC(data, callback) {
  */
 export function bulkUploadBOPImportVBC(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.bulkUploadBOPImportVBC, data, headers);
+        const request = axios.post(API.bulkUploadBOPImportVBC, data, config());
         request.then((response) => {
             if (response.status === 200) {
                 callback(response);
@@ -462,7 +462,7 @@ export function getInitialFilterData(boughtOutPartNumber, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         const queryParams = `boughtOutPartNumber=${boughtOutPartNumber}`
-        const request = axios.get(`${API.getManageBOPSOBDataList}?${queryParams}`, headers);
+        const request = axios.get(`${API.getManageBOPSOBDataList}?${queryParams}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -487,7 +487,7 @@ export function getManageBOPSOBDataList(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         const queryParams = `bought_out_part_id=${data.bought_out_part_id}&plant_id=${data.plant_id}`
-        const request = axios.get(`${API.getManageBOPSOBDataList}?${queryParams}`, headers);
+        const request = axios.get(`${API.getManageBOPSOBDataList}?${queryParams}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 dispatch({
@@ -512,7 +512,7 @@ export function getManageBOPSOBById(bopId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         if (bopId !== '') {
-            axios.get(`${API.getManageBOPSOBById}/${bopId}`, headers)
+            axios.get(`${API.getManageBOPSOBById}/${bopId}`, config())
                 .then((response) => {
                     if (response.data.Result) {
                         dispatch({
@@ -542,7 +542,7 @@ export function getManageBOPSOBById(bopId, callback) {
 export function updateBOPSOBVendors(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateBOPSOBVendors}`, requestData, headers)
+        axios.put(`${API.updateBOPSOBVendors}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -563,7 +563,7 @@ export function getBOPApprovalList(callback) {
     return (dispatch) => {
 
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getBOPApprovalList}?logged_in_user_id=${loggedInUserId()}&logged_in_user_level_id=${userDetails().LoggedInMasterLevelId}&masterId=2`, headers);
+        const request = axios.get(`${API.getBOPApprovalList}?logged_in_user_id=${loggedInUserId()}&logged_in_user_level_id=${userDetails().LoggedInMasterLevelId}&masterId=2`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 //
@@ -591,7 +591,7 @@ export function getBOPApprovalList(callback) {
  */
 export function masterApprovalRequestBySenderBop(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.masterSendToApproverBop, data, headers)
+        const request = axios.post(API.masterSendToApproverBop, data, config())
         request.then((response) => {
             if (response.data.Result) {
                 callback(response)
