@@ -333,10 +333,10 @@ class SimulationUploadDrawer extends Component {
                             resp.rows.map((val, index) => {
                                 if (val.length !== 0) {
                                     if (index > 0) {
-                                        if (val[8] !== '' && val[8] !== undefined && val[8] !== null && val[7] !== val[8]) {
+                                        if (val[7] !== '' && val[7] !== undefined && val[7] !== null && val[6] !== val[7]) {
                                             basicRateCount = 1
                                         }
-                                        if (val[8] === '' || val[8] === undefined || val[8] === null || val[7] === val[8]) {
+                                        if (val[7] === '' || val[7] === undefined || val[7] === null || val[6] === val[7]) {
                                             NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
                                             return false
                                         }
@@ -361,10 +361,10 @@ class SimulationUploadDrawer extends Component {
                             resp.rows.map((val, index) => {
                                 if (val.length !== 0) {
                                     if (index > 0) {
-                                        if (val[8] !== '' && val[8] !== undefined && val[8] !== null && val[7] !== val[8]) {
+                                        if (val[7] !== '' && val[7] !== undefined && val[7] !== null && val[6] !== val[7]) {
                                             basicRateCount = 1
                                         }
-                                        if (val[8] === '' || val[8] === undefined || val[8] === null || val[7] === val[8]) {
+                                        if (val[7] === '' || val[7] === undefined || val[7] === null || val[6] === val[7]) {
                                             NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
                                             return false
                                         }
