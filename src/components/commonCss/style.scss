@@ -2363,6 +2363,10 @@ button:disabled{pointer-events: none;}
   color: #256bd1;
   opacity: 1;
   cursor: pointer;
+  &.process {
+    float: unset;
+    margin-top: 2px;
+  }
 }
 .tooltip-inner{
   background-color: #D0D8E5;
@@ -6463,5 +6467,11 @@ table.group-process-table {
 .process-group-drawer {
   .drawer-wrapper {
     width: 675px ;
+  }
+}
+.process-tooltip {
+  .tooltip-inner {
+    max-width: 350px;
+    text-align: left;
   }
 }
