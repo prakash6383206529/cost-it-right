@@ -601,11 +601,12 @@ function ProcessCost(props) {
         return accummlator + checkForNull(el.ProcessCost)
       }, 0)
 
+      let apiArr = formatMainArr(tempArrAfterDelete)
       tempArr2 = {
         ...tabData,
         NetConversionCost: ProcessCostTotal + checkForNull(tabData.OperationCostTotal !== null ? tabData.OperationCostTotal : 0,) + checkForNull(tabData.OtherOperationCostTotal !== null ? tabData.OtherOperationCostTotal : 0),
         ProcessCostTotal: ProcessCostTotal,
-        CostingProcessCostResponse: tempArrAfterDelete,
+        CostingProcessCostResponse: apiArr,
       }
 
       let selectedIds = []
@@ -655,14 +656,14 @@ function ProcessCost(props) {
       if (i === index) return false;
       return true
     })
-    console.log(tempArrAfterDelete, "tempArrAfterDelete");
+
     let ProcessCostTotal = 0
     ProcessCostTotal = tempArrAfterDelete && tempArrAfterDelete.reduce((accummlator, el) => {
       return accummlator + checkForNull(el.ProcessCost)
     }, 0)
 
     let ProductionPerHourTotal = tempArrAfterDelete && tempArrAfterDelete.reduce((accummlator, el) => {
-      console.log('el: ', el.ProductionPerHour, "ProductionPerHour");
+
 
       return accummlator + checkForNull((el.ProductionPerHour === null || el.ProductionPerHour === '-') ? 0 : Number(el.ProductionPerHour))
     }, 0)
@@ -1000,7 +1001,7 @@ function ProcessCost(props) {
         return (
           <tr>
             <td>-</td>
-            <td>{item.ProcessName}</td>
+            <td className='text-overflow'><span title={item.ProcessName}>{item.ProcessName}</span></td>
             <td>{item.Tonnage}</td>
             <td>{item.MHR}</td>
             <td>{item.UOM}</td>
@@ -1278,7 +1279,10 @@ function ProcessCost(props) {
                                     </Col>
                                   </Row>
                                 </Popup>}
-                                {item?.GroupName === '' || item?.GroupName === null ? '' : <button className="Add-file" type={"button"} title={"Add Process"} onClick={() => openProcessDrawer(index, item)} />}
+                                {
+
+                                  (item?.GroupName === '' || item?.GroupName === null) || (CostingViewMode || IsLocked) ? '' : <button className="add-process" type={"button"} title={"Add Process"} onClick={() => openProcessDrawer(index, item)} />
+                                }
                               </div>
                             </td>
                           </tr>

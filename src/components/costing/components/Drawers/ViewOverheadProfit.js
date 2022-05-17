@@ -387,7 +387,7 @@ function ViewOverheadProfit(props) {
               <tr>
 
                 <th>{`Applicability`}</th>
-                <th>{`Repayment Period (No of days)`}</th>
+                <th>{`Repayment Period (No. of days)`}</th>
                 <th>{`Interest Rate (%)`}</th>
                 <th>{`Cost`}</th>
               </tr>

@@ -20,7 +20,7 @@ import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 
-const headers = config;
+// const config() = config;
 
 /**
  * @method createFreight
@@ -28,7 +28,7 @@ const headers = config;
  */
 export function createFreight(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createFreight, data, headers);
+        const request = axios.post(API.createFreight, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -52,7 +52,7 @@ export function createFreight(data, callback) {
 export function getFreightDataList(filterData, callback) {
     return (dispatch) => {
         const queryParams = `freight_for=${filterData.freight_for}&vendor_id=${filterData.vendor_id}&source_city_id=${filterData.source_city_id}&destination_city_id=${filterData.destination_city_id}`
-        const request = axios.get(`${API.getFreightDataList}?${queryParams}`, headers);
+        const request = axios.get(`${API.getFreightDataList}?${queryParams}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204)
                 dispatch({
@@ -75,7 +75,7 @@ export function getFreightData(freightId, callback) {
     return (dispatch) => {
         if (freightId !== '') {
             dispatch({ type: API_REQUEST });
-            axios.get(`${API.getFreightData}/${freightId}`, headers)
+            axios.get(`${API.getFreightData}/${freightId}`, config())
                 .then((response) => {
                     if (response.data.Result) {
                         dispatch({
@@ -105,7 +105,7 @@ export function getFreightData(freightId, callback) {
 export function deleteFright(Id, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteFright}/${Id}`, headers)
+        axios.delete(`${API.deleteFright}/${Id}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -122,7 +122,7 @@ export function deleteFright(Id, callback) {
 export function updateFright(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateFright}`, requestData, headers)
+        axios.put(`${API.updateFright}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -139,7 +139,7 @@ export function updateFright(requestData, callback) {
  */
 export function getFreightModeSelectList() {
     return (dispatch) => {
-        const request = axios.get(API.getFreightModeSelectList, headers);
+        const request = axios.get(API.getFreightModeSelectList, config());
         request.then((response) => {
             dispatch({
                 type: GET_FREIGHT_MODE_SELECTLIST,
@@ -158,7 +158,7 @@ export function getFreightModeSelectList() {
  */
 export function getFreigtFullTruckCapacitySelectList() {
     return (dispatch) => {
-        const request = axios.get(API.getFreigtFullTruckCapacitySelectList, headers);
+        const request = axios.get(API.getFreigtFullTruckCapacitySelectList, config());
         request.then((response) => {
             dispatch({
                 type: GET_FREIGHT_FULL_TRUCK_CAPACITY_SELECTLIST,
@@ -177,7 +177,7 @@ export function getFreigtFullTruckCapacitySelectList() {
  */
 export function getFreigtRateCriteriaSelectList() {
     return (dispatch) => {
-        const request = axios.get(API.getFreigtRateCriteriaSelectList, headers);
+        const request = axios.get(API.getFreigtRateCriteriaSelectList, config());
         request.then((response) => {
             dispatch({
                 type: GET_FREIGHT_RATE_CRITERIA_SELECTLIST,
@@ -199,7 +199,7 @@ export function getFreigtRateCriteriaSelectList() {
  */
 export function createAdditionalFreightAPI(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createAdditionalFreightAPI, data, headers);
+        const request = axios.post(API.createAdditionalFreightAPI, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -217,7 +217,7 @@ export function createAdditionalFreightAPI(data, callback) {
  */
 export function getAllAdditionalFreightAPI(callback) {
     return (dispatch) => {
-        const request = axios.get(API.getAllAdditionalFreightAPI, headers);
+        const request = axios.get(API.getAllAdditionalFreightAPI, config());
         request.then((response) => {
             dispatch({
                 type: GET_ALL_ADDITIONAL_FREIGHT_SUCCESS,
@@ -240,7 +240,7 @@ export function getAllAdditionalFreightAPI(callback) {
 export function getAdditionalFreightByIdAPI(Id, isEditFlag, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.get(`${API.getAdditionalFreightByIdAPI}/${Id}`, headers)
+        axios.get(`${API.getAdditionalFreightByIdAPI}/${Id}`, config())
             .then((response) => {
                 if (response.data.Result) {
                     dispatch({
@@ -267,7 +267,7 @@ export function getAdditionalFreightByIdAPI(Id, isEditFlag, callback) {
 export function deleteAdditionalFreightAPI(Id, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteAdditionalFreightAPI}/${Id}`, headers)
+        axios.delete(`${API.deleteAdditionalFreightAPI}/${Id}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -284,7 +284,7 @@ export function deleteAdditionalFreightAPI(Id, callback) {
 export function updateAdditionalFreightByIdAPI(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateAdditionalFreightByIdAPI}`, requestData, headers)
+        axios.put(`${API.updateAdditionalFreightByIdAPI}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -300,7 +300,7 @@ export function updateAdditionalFreightByIdAPI(requestData, callback) {
  */
 export function getAdditionalFreightBySupplier(sourceSupplierId, callback) {
     return (dispatch) => {
-        const request = axios.post(`${API.getAdditionalFreightBySupplier}?sourceSupplierId=${sourceSupplierId}`, headers);
+        const request = axios.post(`${API.getAdditionalFreightBySupplier}?sourceSupplierId=${sourceSupplierId}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({

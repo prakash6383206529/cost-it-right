@@ -76,6 +76,9 @@ function CostingDetails(props) {
   const [costingData, setCostingData] = useState({});
 
   const [IsBulkOpen, SetIsBulkOpen] = useState(false)
+  const [isZBCLoader, setIsZBCLoader] = useState(false)
+  const [isNCCLoader, setIsNCCLoader] = useState(false)
+  const [isVBCLoader, setIsVBCLoader] = useState(false)
 
   // FOR COPY COSTING
   const [copyCostingData, setCopyCostingData] = useState({})
@@ -371,28 +374,32 @@ function CostingDetails(props) {
    * @description DISPLAY FORM ONCLICK NEXT BUTTON
    */
   const nextToggle = () => {
+    setIsZBCLoader(true)
     if (Object.keys(technology).length > 0 && Object.keys(part).length > 0) {
       dispatch(getZBCExistingCosting(part.value, (res) => {
         if (res.data.Result) {
           let Data = res.data.DataList
           setZBCPlantGrid(Data)
           setzbcPlantOldArray(Data)
+          setIsZBCLoader(false)
         }
       }))
-
+      setIsVBCLoader(true)
       dispatch(getVBCExistingCosting(part.value, (res) => {
         if (res.data.Result) {
           let Data = res.data.DataList
           setVBCVendorGrid(Data)
           setvbcVendorOldArray(Data)
+          setIsVBCLoader(false)
         }
       }))
-
       /*********************UNCOMMENT IT WHEN NCC COME IS START****************************************/
+      // setIsNCCLoader(true)
       // dispatch(getNCCExistingCosting(part.value,(res=>{
       //   if(res.data.Result){
       //     let Data = res.data.DataList
       //     setNccGrid(Data)
+      //     setIsNCCLoader(false)
       //   }
       // })))
 
@@ -1870,6 +1877,7 @@ function CostingDetails(props) {
                                 </tr>
                               </thead>
                               <tbody>
+                                {isZBCLoader ? <LoaderCustom customClass={'costing-table'} /> : ''}
                                 {zbcPlantGrid &&
                                   zbcPlantGrid.map((item, index) => {
 
@@ -2012,6 +2020,7 @@ function CostingDetails(props) {
                                 </tr>
                               </thead>
                               <tbody>
+                                {isNCCLoader ? <LoaderCustom customClass={'costing-table'} /> : ''}
                                 {nccGrid && nccGrid.map((item, index) => {
                                   let displayCopyBtn = (item.Status === DRAFT ||
                                     item.Status === PENDING ||
@@ -2119,6 +2128,7 @@ function CostingDetails(props) {
                                 </tr>
                               </thead>
                               <tbody>
+                                {isVBCLoader ? <LoaderCustom customClass={'costing-table'} /> : ''}
                                 {vbcVendorGrid && vbcVendorGrid.map((item, index) => {
                                   let displayCopyBtn = (item.Status === DRAFT ||
                                     item.Status === PENDING ||

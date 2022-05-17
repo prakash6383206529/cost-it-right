@@ -10,14 +10,14 @@ export function isUserLoggedIn() {
 }
 
 export function userDetails() {
-  const userDetail = reactLocalStorage.getObject('userDetail')
+  const userDetail = JSON.parse(localStorage.getItem('userDetail'))
   return userDetail
 }
 
 export function loggedInUserId() {
   const isLoggedIn = reactLocalStorage.getObject('isUserLoggedIn')
   if (isLoggedIn === true) {
-    const userDetail = reactLocalStorage.getObject('userDetail')
+    const userDetail = JSON.parse(localStorage.getItem('userDetail'))
     return userDetail.LoggedInUserId
   } else {
     return null
@@ -36,7 +36,8 @@ export function checkVendorPlantConfigurable() {
 export const getAuthToken = () => {
   let authToken = ''
   if (isUserLoggedIn()) {
-    authToken = reactLocalStorage.getObject('userDetail').Token
+    authToken = JSON.parse(localStorage.getItem('userDetail')).Token
+    console.log('authToken: ', authToken);
   }
   return authToken
 }
