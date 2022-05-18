@@ -721,7 +721,7 @@ const CostingSummaryTable = (props) => {
     })
   }
   const reactToPrintTrigger = useCallback(() => {
-    return (simulationMode ? <button className="user-btn mr-1 mb-2 px-2" title='pdf' disabled={viewCostingData?.length > 3 ? true : false}> <div className='pdf-detail'></div></button> : <button className="user-btn mr-1 mb-2 px-2" title='pdf' disabled={viewCostingData?.length > 2 ? true : false}> <div className='pdf-detail'></div></button>)
+    return (simulationMode ? <button className="user-btn mr-1 mb-2 px-2" title='pdf' disabled={viewCostingData?.length > 3 ? true : false}> <div className='pdf-detail'></div></button> : <button className="user-btn mr-1 mb-2 px-2" title='pdf' disabled={viewCostingData?.length > 3 ? true : false}> <div className='pdf-detail'></div></button>)
   }, [viewCostingData])
 
   const reactToPrintContent = () => {
@@ -763,7 +763,7 @@ const CostingSummaryTable = (props) => {
                 />
               }
               {!simulationDrawer && <ReactToPrint
-                bodyClass={`my-3 ${simulationMode ? 'mx-1 simulation-print' : 'mx-2'}`}
+                bodyClass={`my-3 simple-pdf ${simulationMode ? 'mx-1 simulation-print' : 'mx-2'}`}
                 documentTitle={`${simulationMode ? 'Compare-costing.pdf' : `${pdfName}-costing`}`}
                 content={reactToPrintContent}
                 onAfterPrint={handleAfterPrint}

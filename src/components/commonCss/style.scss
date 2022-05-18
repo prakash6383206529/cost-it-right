@@ -2361,6 +2361,10 @@ button:disabled{pointer-events: none;}
   color: #256bd1;
   opacity: 1;
   cursor: pointer;
+  &.process {
+    float: unset;
+    margin-top: 2px;
+  }
 }
 .tooltip-inner{
   background-color: #D0D8E5;
@@ -5695,7 +5699,7 @@ left: 17rem;
       padding: 2px  !important;
       padding-top: 5px  !important;
       height: 22px  !important;
-      bottom: 4%  !important;
+      // bottom: 31px  !important;
       right: -3px  !important;
       .go-to-top {
         width: 19px !important;
@@ -5904,7 +5908,7 @@ left: 17rem;
 // <----Overhead and profit css----->
 .cal-btn {
   position: fixed;
-  bottom: 60px;
+  bottom: 31px;
   left: 5px;
   margin: 0;
   z-index: 1400;
@@ -5927,7 +5931,7 @@ left: 17rem;
     }
     .calculator-display {
       background: #edf0f5;
-      color: #3d4465;
+      color: #3d4465; 
       font-size: 3em;
       line-height: 90px;
   }
@@ -5965,14 +5969,8 @@ left: 17rem;
       } 
     }
   }
-
 }
-@media screen and (min-width:$middleDesktop) {
-  .calculator {
-    right: -20px;
-  }
 
-}
 @-moz-document url-prefix() { 
   .calculator {
     .display-toolbar {
@@ -6159,6 +6157,18 @@ left: 17rem;
 }
 
 @media print { 
+    .simple-pdf {
+      .table-responsive {
+        min-width: 100% !important;
+        overflow: unset !important;
+        .table-responsive {
+          overflow: unset !important;
+        }
+        table {
+          min-width: 100%;
+        }
+      }
+    }
   .remove-space-border {
     .table-responsive {
       .header-name-left {
@@ -6458,5 +6468,11 @@ table.group-process-table {
 .process-group-drawer {
   .drawer-wrapper {
     width: 675px ;
+  }
+}
+.process-tooltip {
+  .tooltip-inner {
+    max-width: 350px;
+    text-align: left;
   }
 }
