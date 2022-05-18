@@ -7,6 +7,7 @@ import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUser
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 import { saveMachiningProcessCostCalculationData } from '../../../actions/CostWorking'
 import Toaster from '../../../../common/Toaster'
+import { findProcessCost } from '../../../CostingUtil'
 
 function UomTimeProcessDefaultCalculator(props) {
     const WeightCalculatorRequest = props.calculatorData.WeightCalculatorRequest
@@ -109,7 +110,8 @@ function UomTimeProcessDefaultCalculator(props) {
         const partsPerHour = (3600 / checkForNull(TotalCycleTimeSecGlobal)) * (checkForNull(efficiencyPercentage / 100))
         setDataToSend(prevState => ({ ...prevState, partsPerHour: partsPerHour }))
         setValue('partsPerHour', checkForDecimalAndNull(partsPerHour, getConfigurationKey().NoOfDecimalForInputOutput))
-        const processCost = (props?.calculatorData?.MHR) / partsPerHour
+        // const processCost = (props?.calculatorData?.MHR) / partsPerHour
+        const processCost = findProcessCost(props?.calculatorData?.UOM, props?.calculatorData?.MHR, partsPerHour)
         setDataToSend(prevState => ({ ...prevState, processCost: processCost }))
         setValue('processCost', checkForDecimalAndNull(processCost, getConfigurationKey().NoOfDecimalForPrice))
     }
@@ -152,6 +154,7 @@ function UomTimeProcessDefaultCalculator(props) {
         obj.LoadingAndUnloadingTime = value.loadingAndUnloadingTime
         obj.TotalCycleTimeMins = dataToSend.totalCycleTimeMins
         obj.TotalCycleTimeSec = dataToSend.TotalCycleTimeSec
+        obj.CycleTime = dataToSend.TotalCycleTimeSec
         obj.EfficiencyPercentage = value.efficiencyPercentage
         obj.PartPerHour = dataToSend.partsPerHour
         obj.ProcessCost = dataToSend.processCost
@@ -232,7 +235,7 @@ function UomTimeProcessDefaultCalculator(props) {
 
                                         <Col md="4">
                                             <TextFieldHookForm
-                                                label={`Spindle Speed`}
+                                                label={`Spindle Speed(rpm)`}
                                                 name={'spindleSpeed'}
                                                 Controller={Controller}
                                                 control={control}
@@ -259,7 +262,7 @@ function UomTimeProcessDefaultCalculator(props) {
                                     <Row>
                                         <Col md="4">
                                             <TextFieldHookForm
-                                                label={`Feed Per tooth`}
+                                                label={`Feed Per tooth(mm/rev)`}
                                                 name={'feedPerTooth'}
                                                 Controller={Controller}
                                                 control={control}
@@ -307,7 +310,7 @@ function UomTimeProcessDefaultCalculator(props) {
 
                                         <Col md="4">
                                             <TextFieldHookForm
-                                                label="Feed"
+                                                label="Feed(mm/min)"
                                                 name={'feedAutoCalculated'}
                                                 Controller={Controller}
                                                 control={control}
@@ -355,7 +358,7 @@ function UomTimeProcessDefaultCalculator(props) {
 
                                         <Col md="4">
                                             <TextFieldHookForm
-                                                label={`Length/Depth`}
+                                                label={`Length/Depth(mm)`}
                                                 name={'lengthDepth'}
                                                 Controller={Controller}
                                                 control={control}
@@ -402,7 +405,7 @@ function UomTimeProcessDefaultCalculator(props) {
 
                                         <Col md="4">
                                             <TextFieldHookForm
-                                                label={`Total Length/Depth`}
+                                                label={`Total Length/Depth(mm)`}
                                                 name={'totalLengthDepth'}
                                                 Controller={Controller}
                                                 control={control}
@@ -608,7 +611,7 @@ function UomTimeProcessDefaultCalculator(props) {
 
                                         <Col md="4">
                                             <TextFieldHookForm
-                                                label={`Part/Hour`}
+                                                label={`Parts/Hour`}
                                                 name={'partsPerHour'}
                                                 Controller={Controller}
                                                 control={control}
