@@ -145,18 +145,14 @@ function AddBOPHandling(props) {
   };
 
   const saveHandleCharge = () => {
-    let totalBOP = 0
-    subAssemblyTechnologyArray && subAssemblyTechnologyArray[0]?.CostingChildPartDetails.map((item) => {
-      if (item.PartType === 'BOP') {
-        totalBOP = checkForNull(totalBOP) + checkForNull(item?.CostingPartDetails?.CostPerAssemblyBOP)
-      }
-    })
-    let tempSubAssemblyTechnologyArray = subAssemblyTechnologyArray
-    tempSubAssemblyTechnologyArray[0].BOPHandlingPercentage = percentage
-    tempSubAssemblyTechnologyArray[0].BOPHandlingCharges = BOPHandling
-    dispatch(setSubAssemblyTechnologyArray(tempSubAssemblyTechnologyArray, res => { }))
+    // WILL BE EXECUTED WHEN COSTING TECHNOLOGY IS ASSEMBLY FOR OTHER TECHNOLOGIES ELSE WILL GET EXECUTED
+    let percentage = getValues('BOPHandlingPercentage')
     let obj = {
       IsApplyBOPHandlingCharges: true,
+      // BOPHandlingChargeApplicability: BOPCost,  
+      // BOPHandlingPercentage: percentage,  
+      // BOPHandlingCharges: BOPHandling  
+
       BOPHandlingChargeApplicability: getValues('BOPCost'),
       BOPHandlingPercentage: getValues('BOPHandlingPercentage'),
       BOPHandlingCharges: getValues('BOPHandlingCharges'),

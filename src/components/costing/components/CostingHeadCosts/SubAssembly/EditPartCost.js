@@ -7,20 +7,9 @@ import { ListForPartCost, optionsForDelta } from '../../../../../config/masterDa
 import { NumberFieldHookForm, SearchableSelectHookForm } from '../../../../layout/HookFormInputs';
 import { Controller, useForm } from 'react-hook-form';
 import Toaster from '../../../../common/Toaster';
-import { setSubAssemblyTechnologyArray } from '../../../actions/SubAssembly';
+import { getEditPartCostDetails, saveEditPartCostDetails, setSubAssemblyTechnologyArray } from '../../../actions/SubAssembly';
 
 function EditPartCost(props) {
-
-    /**
-    * @method toggleDrawer
-    * @description TOGGLE DRAWER
-    */
-    const toggleDrawer = (event) => {
-        if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
-            return;
-        }
-        props.closeDrawer('')
-    };
 
     const [SOBPercentage, setSOBPercentage] = useState(0)
     const [DeltaSign, setDeltaSign] = useState('')
@@ -51,6 +40,22 @@ function EditPartCost(props) {
         })
 
     }, [gridData])
+
+    useEffect(() => {
+        let obj = {}
+        dispatch(getEditPartCostDetails(obj, res => { }))
+    }, [])
+
+    /**
+      * @method toggleDrawer
+      * @description TOGGLE DRAWER
+      */
+    const toggleDrawer = (event) => {
+        if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+            return;
+        }
+        props.closeDrawer('')
+    };
 
     const netCostCalculator = (gridIndex) => {
 
@@ -204,7 +209,6 @@ function EditPartCost(props) {
             // dispatch(gridDataAdded(true))
         }
         props.closeDrawer('')
-
         // SAVE API FOR PART COST
         // dispatch(saveEditPartCostDetails((res) => { }))
     }

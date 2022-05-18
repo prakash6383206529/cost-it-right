@@ -955,6 +955,11 @@ export const API = {
   getReportListing: `${BASE_URL}/dashboard/get-costings-for-dashboard`,
   getCostingReport: `${BASE_URL}/reports/get-costing-report`,
 
+  //SUB ASSEMBLY
+  getSubAssemblyAPI: `${BASE_URL}/sub-assembly/get-sub-assembly`,
+  getEditPartCostDetails: `${BASE_URL}/sub-assembly/get-edit-part-cost-details`,
+  saveEditPartCostDetails: `${BASE_URL}/sub-assembly/save-edit-part-cost-details`,
+
 }
 
 //Api constants
@@ -1027,6 +1032,7 @@ export const GET_BOUGHTOUT_PART_SELECTLIST = 'GET_BOUGHTOUT_PART_SELECTLIST'
 
 //SUB ASSEMBLY
 export const SUB_ASSEMBLY_TECHNOLOGY_ARRAY = 'SUB_ASSEMBLY_TECHNOLOGY_ARRAY'
+export const GET_EDIT_PART_COST_DETAILS = 'GET_EDIT_PART_COST_DETAILS'
 
 //NEW PART MASTER
 export const GET_ALL_NEW_PARTS_SUCCESS = 'GET_ALL_NEW_PARTS_SUCCESS'
