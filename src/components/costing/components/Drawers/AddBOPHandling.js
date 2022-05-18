@@ -115,6 +115,7 @@ function AddBOPHandling(props) {
         BOPHandlingPercentage: percentage,
         BOPHandlingCharges: BOPHandling
       }
+      dispatch(isDataChange(true))
     } else {
       obj = {
         IsApplyBOPHandlingCharges: true,

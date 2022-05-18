@@ -5,6 +5,7 @@ import {
   CUSTOM_LOADER_SHOW,
   CUSTOM_LOADER_HIDE,
   SUB_ASSEMBLY_TECHNOLOGY_ARRAY,
+  GET_EDIT_PART_COST_DETAILS,
 } from '../../../config/constants';
 import { tempObject } from '../../../config/masterData';
 
@@ -47,6 +48,11 @@ export default function costingReducer(state = initialState, action) {
       return {
         ...state,
         subAssemblyTechnologyArray: tempRMData,
+      }
+    case GET_EDIT_PART_COST_DETAILS:
+      return {
+        ...state,
+        subAssemblyTechnologyArray: action.payload,
       }
 
 

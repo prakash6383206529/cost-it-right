@@ -140,7 +140,7 @@ function AssemblyTechnology(props) {
                 <div style={{ display: 'contents' }} onClick={() => toggle(item.BOMLevel, item.PartNumber, item.PartType)}>
                     <td>
                         <span style={{ position: 'relative' }} className={`${item && item.PartType === "Assembly" && "cr-prt-nm1"} cr-prt-link1 ${item && item.PartType !== "Sub Assembly" && item.PartType !== "Assembly" && "L1"}`}>
-                            <div className={`${item.IsOpen ? 'Open' : 'Close'}`}></div>{item && item.PartNumber}
+                            <div className={`${IsOpen ? 'Open' : 'Close'}`}></div>{item && item.PartNumber}
                         </span>
                     </td>
                     <td>{item && item.PartName}</td>
@@ -204,9 +204,9 @@ function AssemblyTechnology(props) {
 
             </tr >
 
-            {item.IsOpen && nestedBOP}
+            {IsOpen && nestedBOP}
 
-            {item.IsOpen && nestedAssembly}
+            {IsOpen && nestedAssembly}
 
             {
                 isOperationDrawerOpen && <AddAssemblyOperation
