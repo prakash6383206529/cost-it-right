@@ -32,7 +32,6 @@ function GroupProcess(props) {
         }
         setIsLoader(true)
         dispatch(getMachineProcessGroupDetail(data, (res) => {
-            console.log('res: ', res);
             if (res && res.status === 200) {
                 let Data = res.data.DataList;
                 setTableDataList(Data)

@@ -7,5 +7,5 @@ export default {
   approval: Approval,
   costing: Costing,
   costWorking: CostWorking,
-  SubAssembly: SubAssembly,
+  subAssembly: SubAssembly,
 }

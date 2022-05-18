@@ -222,9 +222,6 @@ function ProcessCost(props) {
         ProcessCostTotal: ProcessCostTotal,
         CostingProcessCostResponse: apiArr,
       }
-      if (isAssemblyTechnology) {
-        // props.setProcessCostFunction(tempArr2?.ProcessCostTotal)
-      }
       setTimeout(() => {
         setIsFromApi(false)
         setTabData(tempArr2)
@@ -333,9 +330,6 @@ function ProcessCost(props) {
       Toaster.success('Remark saved successfully')
     }
     // setTabData(tempArr)
-    if (isAssemblyTechnology) {
-      // props.setProcessCostFunction(tempArr?.ProcessCostTotal)
-    }
     var button = document.getElementById(`popUpTriggers${index}`)
     button.click()
   }
@@ -751,9 +745,6 @@ function ProcessCost(props) {
       }
       setIsFromApi(false)
       setTabData(tempArr)
-      if (isAssemblyTechnology) {
-        // props.setProcessCostFunction(tempArr?.ProcessCostTotal)
-      }
       setGridData(gridTempArr)
       setValue(`${ProcessGridFields}.${index}.ProcessCost`, checkForDecimalAndNull(ProcessCost, initialConfiguration.NoOfDecimalForPrice))
     } else {
@@ -793,9 +784,6 @@ function ProcessCost(props) {
       }
       setIsFromApi(false)
       setTabData(tempArr)
-      if (isAssemblyTechnology) {
-        // props.setProcessCostFunction(tempArr?.ProcessCostTotal)
-      }
       setGridData(gridTempArr)
       setTimeout(() => {
         setValue(`${ProcessGridFields}.${index}.Quantity`, "")
@@ -984,9 +972,6 @@ function ProcessCost(props) {
     }
     setIsFromApi(false)
     setTabData(tempArr)
-    if (isAssemblyTechnology) {
-      // props.setProcessCostFunction(tempArr?.ProcessCostTotal)
-    }
   }
 
   /**

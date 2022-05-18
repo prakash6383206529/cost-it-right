@@ -205,7 +205,6 @@ function AddAssemblyOperation(props) {
 
                     <OperationCost
                       data={item.CostingPartDetails !== undefined ? item.CostingPartDetails.CostingOperationCostResponse : []}
-                      setAssemblyOperationCost={props.setAssemblyOperationCost}
                       item={props.item}
                       IsAssemblyCalculation={true}
                       getOperationGrid={getOperationGrid}

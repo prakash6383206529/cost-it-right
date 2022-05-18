@@ -1,17 +1,15 @@
-import React, { useEffect, useContext, useState } from 'react';
+import React, { useEffect, useContext } from 'react';
 import { useForm, } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
 import { getSurfaceTreatmentTabData, setSurfaceData } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
-import { checkForNull, userDetails, } from '../../../../helper';
+import { checkForNull } from '../../../../helper';
 import PartSurfaceTreatment from '../CostingHeadCosts/SurfaceTreatMent/PartSurfaceTreatment';
 import AssemblySurfaceTreatment from '../CostingHeadCosts/SurfaceTreatMent/AssemblySurfaceTreatment';
 import { LEVEL0 } from '../../../../config/constants';
 import { ViewCostingContext } from '../CostingDetails';
-import _ from 'lodash'
 import { ASSEMBLY } from '../../../../config/masterData';
-import { netHeadCostContext, SurfaceCostContext } from '../CostingDetailStepTwo';
 import { setSubAssemblyTechnologyArray } from '../../actions/SubAssembly';
 
 function TabSurfaceTreatment(props) {
@@ -21,8 +19,7 @@ function TabSurfaceTreatment(props) {
   let SurfaceTabData = useSelector(state => state.costing.SurfaceTabData)
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
-  const headerCosts = useContext(netHeadCostContext);
-  const { subAssemblyTechnologyArray } = useSelector(state => state.SubAssembly)
+  const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
   const partType = costData?.TechnologyName === 'Assembly'
 
   useEffect(() => {
@@ -1198,16 +1195,13 @@ function TabSurfaceTreatment(props) {
   */
   const onSubmit = (values) => { }
 
-  const setSurfaceTreatmentCostAT = (SurfaceTreatmentCost, TransportationCost, NetSurfaceTreatmentCost) => {
+  const setSurfaceTreatmentCostAssemblyTechnology = (SurfaceTreatmentCost, TransportationCost, NetSurfaceTreatmentCost) => {
     let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray
 
     tempsubAssemblyTechnologyArray[0].CostingPartDetails.SurfaceTreatmentCost = SurfaceTreatmentCost
     tempsubAssemblyTechnologyArray[0].CostingPartDetails.TransportationCost = TransportationCost
     tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetSurfaceTreatmentCost = NetSurfaceTreatmentCost
     dispatch(setSubAssemblyTechnologyArray(tempsubAssemblyTechnologyArray, res => { }))
-
-
-    // setSurfaceTreatmentCost(NetSurfaceTreatmentCost)
   }
 
   return (
@@ -1255,7 +1249,7 @@ function TabSurfaceTreatment(props) {
                                     IsAssemblyCalculation={false}
                                     SubAssembId={item.CostingId}
                                     isAssemblyTechnology={true}
-                                    setSurfaceTreatmentCostAT={setSurfaceTreatmentCostAT}
+                                    setSurfaceTreatmentCostAssemblyTechnology={setSurfaceTreatmentCostAssemblyTechnology}
                                   />
                                 </>
                               )

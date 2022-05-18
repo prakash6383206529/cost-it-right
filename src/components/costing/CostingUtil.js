@@ -139,7 +139,7 @@ export const findSurfaceTreatmentData = (rmCCData) => {
   return sTSubAssembly
 }
 export const findrmCctData = (surfaceData) => {
-  let costingArr = JSON.parse(localStorage.getItem('costingArray'))    //HELP
+  let costingArr = JSON.parse(localStorage.getItem('costingArray'))
   let rmCcSubAssembly = costingArr && costingArr.find(costingItem => costingItem.PartNumber === surfaceData.PartNumber && costingItem.AssemblyPartNumber === surfaceData.AssemblyPartNumber)
   return rmCcSubAssembly
 }

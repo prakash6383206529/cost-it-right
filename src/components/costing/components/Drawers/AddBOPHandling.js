@@ -15,7 +15,7 @@ import { setSubAssemblyTechnologyArray } from '../../actions/SubAssembly';
 function AddBOPHandling(props) {
   const { item, isAssemblyTechnology } = props
   const CostingViewMode = useContext(ViewCostingContext);
-  const { subAssemblyTechnologyArray } = useSelector(state => state.SubAssembly)
+  const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
   const dispatch = useDispatch()
   const [BOPHandling, setBOPHandling] = useState(subAssemblyTechnologyArray ? subAssemblyTechnologyArray[0]?.BOPHandlingCharges : 0);
   const [percentage, setPercentage] = useState(subAssemblyTechnologyArray ? subAssemblyTechnologyArray[0]?.BOPHandlingPercentage : 0);
@@ -34,11 +34,7 @@ function AddBOPHandling(props) {
           totalBOP = checkForNull(totalBOP) + checkForNull(item?.CostingPartDetails?.CostPerAssemblyBOP)
         }
       })
-      // let BOPSum = subAssemblyTechnologyArray[0]?.CostingPartDetails?.CostPerAssemblyBOP
-
       setValue('BOPCost', totalBOP)
-
-      // setValue('BOPCost', obj[0]?.CostingPartDetails?.IsApplyBOPHandlingCharges ? checkForNull(obj[0]?.CostingPartDetails?.BOPHandlingChargeApplicability) : BOPSum)
       setValue('BOPHandlingPercentage', subAssemblyTechnologyArray && checkForNull(subAssemblyTechnologyArray[0]?.BOPHandlingPercentage))
       setValue('BOPHandlingCharges', subAssemblyTechnologyArray && checkForNull(subAssemblyTechnologyArray[0]?.BOPHandlingCharges))
 
@@ -101,20 +97,31 @@ function AddBOPHandling(props) {
 
   const saveHandleCharge = () => {
     let totalBOP = 0
-    subAssemblyTechnologyArray && subAssemblyTechnologyArray[0]?.CostingChildPartDetails.map((item) => {
-      if (item.PartType === 'BOP') {
-        totalBOP = checkForNull(totalBOP) + checkForNull(item?.CostingPartDetails?.CostPerAssemblyBOP)
+    let obj = {}
+    if (isAssemblyTechnology) {
+      subAssemblyTechnologyArray && subAssemblyTechnologyArray[0]?.CostingChildPartDetails.map((item) => {
+        if (item.PartType === 'BOP') {
+          totalBOP = checkForNull(totalBOP) + checkForNull(item?.CostingPartDetails?.CostPerAssemblyBOP)
+        }
+        return null
+      })
+      let tempSubAssemblyTechnologyArray = subAssemblyTechnologyArray
+      tempSubAssemblyTechnologyArray[0].BOPHandlingPercentage = percentage
+      tempSubAssemblyTechnologyArray[0].BOPHandlingCharges = BOPHandling
+      dispatch(setSubAssemblyTechnologyArray(tempSubAssemblyTechnologyArray, res => { }))
+      obj = {
+        IsApplyBOPHandlingCharges: true,
+        BOPHandlingChargeApplicability: totalBOP,
+        BOPHandlingPercentage: percentage,
+        BOPHandlingCharges: BOPHandling
       }
-    })
-    let tempSubAssemblyTechnologyArray = subAssemblyTechnologyArray
-    tempSubAssemblyTechnologyArray[0].BOPHandlingPercentage = percentage
-    tempSubAssemblyTechnologyArray[0].BOPHandlingCharges = BOPHandling
-    dispatch(setSubAssemblyTechnologyArray(tempSubAssemblyTechnologyArray, res => { }))
-    let obj = {
-      IsApplyBOPHandlingCharges: true,
-      BOPHandlingChargeApplicability: totalBOP,
-      BOPHandlingPercentage: percentage,
-      BOPHandlingCharges: BOPHandling
+    } else {
+      obj = {
+        IsApplyBOPHandlingCharges: true,
+        BOPHandlingChargeApplicability: getValues('BOPCost'),
+        BOPHandlingPercentage: getValues('BOPHandlingPercentage'),
+        BOPHandlingCharges: getValues('BOPHandlingCharges')
+      }
     }
     props.setBOPCostWithAsssembly(obj, item)
     setTimeout(() => {

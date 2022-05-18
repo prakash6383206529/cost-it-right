@@ -11,17 +11,6 @@ import { setSubAssemblyTechnologyArray } from '../../../actions/SubAssembly';
 
 function EditPartCost(props) {
 
-    /**
-    * @method toggleDrawer
-    * @description TOGGLE DRAWER
-    */
-    const toggleDrawer = (event) => {
-        if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
-            return;
-        }
-        props.closeDrawer('')
-    };
-
     const [SOBPercentage, setSOBPercentage] = useState(0)
     const [DeltaSign, setDeltaSign] = useState('')
     const [DeltaValue, setDeltaValue] = useState(0)
@@ -31,7 +20,7 @@ function EditPartCost(props) {
 
     const PartCostFields = 'PartCostFields';
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
-    const { subAssemblyTechnologyArray } = useSelector(state => state.SubAssembly)
+    const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
 
     const { register, handleSubmit, control, setValue, getValues, formState: { errors },
     } = useForm({
@@ -49,30 +38,103 @@ function EditPartCost(props) {
         })
 
     }, [gridData])
+    /**
+      * @method toggleDrawer
+      * @description TOGGLE DRAWER
+      */
+    const toggleDrawer = (event) => {
+        if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+            return;
+        }
+        props.closeDrawer('')
+    };
 
-    const onSubmit = (values) => {
+    const netCostCalculator = (gridIndex) => {
+        let sum = calcTotalSOBPercent()
+        let tempObject = ListForPartCost[gridIndex]
+        let tempDeltaValue = getValues(`${PartCostFields}.${gridIndex}.DeltaValue`)
+        let tempSOBPercentage = getValues(`${PartCostFields}.${gridIndex}.SOBPercentage`)
+        let tempDeltaSign = getValues(`${PartCostFields}.${gridIndex}.DeltaSign`)
+        let weightedCostCalc = 0
 
-        let sum = 0
-        ListForPartCost && ListForPartCost.map((item, index) => {                                           //API
-            sum = checkForNull(sum) + checkForNull(getValues(`${PartCostFields}.${index}.SOBPercentage`))
-            return null
-        })
-        if (sum !== 100) {
-            Toaster.warning('Total SOB Percent should be 100');
+        if (sum > 100) {
+            Toaster.warning('Total SOB Percent should not be greater than 100');
+            setValue(`${PartCostFields}.${gridIndex}.SOBPercentage`, 0)
             return false
         }
 
+        tempObject.SOBPercentage = tempSOBPercentage
+        tempObject.DeltaValue = tempDeltaValue
+        tempObject.DeltaSign = tempDeltaSign
+
+        if (tempDeltaSign?.label === '+') {
+            const temp = percentageOfNumber(Number(tempObject.SettledPrice) + Number(tempDeltaValue), tempSOBPercentage)
+            tempObject.NetCost = temp
+            setValue(`${PartCostFields}.${gridIndex}.NetCost`, checkForDecimalAndNull(temp, initialConfiguration.NoOfDecimalForPrice))
+        } if (tempDeltaSign?.label === '-') {
+            const temp = percentageOfNumber(Number(tempObject.SettledPrice) - Number(tempDeltaValue), tempSOBPercentage)
+            tempObject.NetCost = temp
+            setValue(`${PartCostFields}.${gridIndex}.NetCost`, checkForDecimalAndNull(temp, initialConfiguration.NoOfDecimalForPrice))
+        }
+        let gridTempArr = Object.assign([...ListForPartCost], { [gridIndex]: tempObject })
+        weightedCostCalc = gridTempArr && gridTempArr.reduce((accummlator, el) => {
+            return checkForNull(accummlator) + checkForNull(el.NetCost)
+        }, 0)
+        setWeightedCost(weightedCostCalc)
+        setGridData(gridTempArr)
+    }
+
+    const handleDeltaSignChange = (value, index) => {
+        setDeltaSign(value)
+        setTimeout(() => {
+
+            netCostCalculator(index)
+        }, 300);
+    }
+
+    const handleSOBPercentage = (value, index) => {
+        setSOBPercentage(value)
+        setTimeout(() => {
+
+            netCostCalculator(index)
+        }, 300);
+
+    }
+
+    const handleDeltaValue = (value, index) => {
+        setDeltaValue(value)
+        setTimeout(() => {
+
+            netCostCalculator(index)
+        }, 300);
+
+    }
+
+    const calcTotalSOBPercent = () => {
+        let ProcessCostTotal = 0
+        ProcessCostTotal = ListForPartCost && ListForPartCost.reduce((accummlator, el, index) => {
+            return checkForNull(accummlator) + checkForNull(el.SOBPercentage)
+        }, 0)
+        return ProcessCostTotal
+    }
+
+    const onSubmit = (values) => {
+        let sum = calcTotalSOBPercent()
+        if (sum !== 100) {
+            Toaster.warning('Total SOB percent should be 100');
+            return false
+        }
         let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray
         let changeTempObject = tempsubAssemblyTechnologyArray[0].CostingChildPartDetails
-        let targetBOMLevel = props.tabAssemblyIndividualPartDetail.BOMLevel
-        let targetPartNo = props.tabAssemblyIndividualPartDetail.PartNumber
-        let targetAssemblyPartNumber = props.tabAssemblyIndividualPartDetail.AssemblyPartNumber
+        let tempBOMLevel = props.tabAssemblyIndividualPartDetail.BOMLevel
+        let tempPartNo = props.tabAssemblyIndividualPartDetail.PartNumber
+        let tempAssemblyPartNumber = props.tabAssemblyIndividualPartDetail.AssemblyPartNumber
         let costPerPieceTotal = 0
         let costPerAssemblyTotal = 0
         let CostPerAssemblyBOPTotal = 0
 
         changeTempObject && changeTempObject.map((item) => {
-            if (targetBOMLevel === item.BOMLevel && targetPartNo === item.PartNumber && targetAssemblyPartNumber === item.AssemblyPartNumber) {
+            if (tempBOMLevel === item.BOMLevel && tempPartNo === item.PartNumber && tempAssemblyPartNumber === item.AssemblyPartNumber) {
                 item.CostingPartDetails.CostPerPiece = weightedCost
                 item.CostingPartDetails.CostPerAssembly = checkForNull(weightedCost) * checkForNull(item.CostingPartDetails.QuantityForSubAssembly)
             }
@@ -85,83 +147,12 @@ function EditPartCost(props) {
 
         tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerPiece = costPerPieceTotal
         tempsubAssemblyTechnologyArray[0].CostingPartDetails.EditPartCost = costPerAssemblyTotal
-        tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerAssembly = checkForNull(costPerAssemblyTotal) + checkForNull(CostPerAssemblyBOPTotal) + (checkForNull(tempsubAssemblyTechnologyArray[0].processCostValue) + checkForNull(tempsubAssemblyTechnologyArray[0].operationCostValue))
+        tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerAssembly = checkForNull(costPerAssemblyTotal) + checkForNull(CostPerAssemblyBOPTotal) + (checkForNull(tempsubAssemblyTechnologyArray[0].ProcessCostValue) + checkForNull(tempsubAssemblyTechnologyArray[0].OperationCostValue))
         tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerAssemblyBOP = checkForNull(CostPerAssemblyBOPTotal)
         dispatch(setSubAssemblyTechnologyArray(tempsubAssemblyTechnologyArray, res => { }))
 
         props.getCostPerPiece(weightedCost)
         props.closeDrawer('')
-    }
-
-    const netCostCalculator = (gridIndex) => {
-
-        let sum = 0
-        ListForPartCost && ListForPartCost.map((item, index) => {                                           //API
-            sum = checkForNull(sum) + checkForNull(getValues(`${PartCostFields}.${index}.SOBPercentage`))
-            return null
-        })
-        if (sum > 100) {
-            Toaster.warning('Total SOB Percent should not be greater than 100');
-            setValue(`${PartCostFields}.${gridIndex}.SOBPercentage`, 0)
-            return false
-        }
-
-        let WeightedCost = 0
-        ListForPartCost && ListForPartCost.map((item, index) => {
-
-            let tempDeltaValue = getValues(`${PartCostFields}.${index}.DeltaValue`)
-            let tempSOBPercentage = getValues(`${PartCostFields}.${index}.SOBPercentage`)
-            let tempDeltaSign = getValues(`${PartCostFields}.${index}.DeltaSign`)
-            if (Number(gridIndex) === Number(index)) {
-
-                item.SOBPercentage = tempSOBPercentage
-                item.DeltaValue = tempDeltaValue
-                item.DeltaSign = tempDeltaSign
-                if (tempDeltaSign?.label === '+') {
-
-                    const temp = percentageOfNumber(Number(item.SettledPrice) + Number(tempDeltaValue), tempSOBPercentage)
-                    item.NetCost = temp
-                    setValue(`${PartCostFields}.${index}.NetCost`, checkForDecimalAndNull(temp, initialConfiguration.NoOfDecimalForPrice))
-
-                } if (tempDeltaSign?.label === '-') {
-
-                    const temp = percentageOfNumber(Number(item.SettledPrice) - Number(tempDeltaValue), tempSOBPercentage)
-                    item.NetCost = temp
-                    setValue(`${PartCostFields}.${index}.NetCost`, checkForDecimalAndNull(temp, initialConfiguration.NoOfDecimalForPrice))
-                }
-            }
-            WeightedCost = checkForNull(WeightedCost) + checkForNull(item.NetCost)
-            return null
-        })
-
-        setWeightedCost(WeightedCost)
-        setGridData(ListForPartCost)
-    }
-
-    const handleDeltaSignChange = (value, index) => {
-        setDeltaSign(value)
-        setTimeout(() => {
-
-            netCostCalculator(index)
-        }, 300);
-    }
-
-    const handleSOBPercentage = (value, index1) => {
-        setSOBPercentage(value)
-        setTimeout(() => {
-
-            netCostCalculator(index1)
-        }, 300);
-
-    }
-
-    const handleDeltaValue = (value, index) => {
-        setDeltaValue(value)
-        setTimeout(() => {
-
-            netCostCalculator(index)
-        }, 300);
-
     }
 
     return (
@@ -183,11 +174,8 @@ function EditPartCost(props) {
                             </Col>
                         </Row>
                         <form
-                        // onSubmit={handleSubmit(onSubmit)}
                         >
-
                             <Table className=''>
-
                                 <thead>
                                     <tr className="cr-bg-tbl" width='100%'>
                                         <th>Parent Assembly Number: { }</th>
@@ -207,10 +195,8 @@ function EditPartCost(props) {
                                         <th>Net Cost</th>
                                     </tr>
                                     {gridData && gridData.map((item, index) => {
-
                                         return (
                                             <>
-
                                                 <tr key={index} >
                                                     <td>{item.VendorName}</td>
                                                     <td>{checkForDecimalAndNull(item.SettledPrice, initialConfiguration.NoOfDecimalForPrice)}</td>
@@ -236,7 +222,6 @@ function EditPartCost(props) {
                                                             defaultValue={''}
                                                             className=""
                                                             customClassName={'withBorder'}
-                                                            errors={errors.SOBPercentage}
                                                         />
                                                     </td>
                                                     <td >
@@ -251,7 +236,6 @@ function EditPartCost(props) {
                                                             options={optionsForDelta}
                                                             mandatory={true}
                                                             handleChange={(e) => handleDeltaSignChange(e, index)}
-                                                            errors={errors.DeltaSign}
                                                         />
 
                                                         <NumberFieldHookForm
@@ -266,18 +250,12 @@ function EditPartCost(props) {
                                                                     value: /^\d*\.?\d*$/,
                                                                     message: 'Invalid Number.'
                                                                 },
-                                                                // max: {
-                                                                //     value: 100,
-                                                                //     message: 'Percentage cannot be greater than 100'
-                                                                // },
                                                             }}
                                                             handleChange={(e) => handleDeltaValue(e.target.value, index)}
                                                             defaultValue={''}
                                                             className=""
                                                             customClassName={'withBorder'}
-                                                            errors={errors.DeltaValue}
                                                         />
-                                                        {/* {checkForDecimalAndNull(item.Delta, initialConfiguration.NoOfDecimalForPrice)} */}
                                                     </td>
                                                     <td >
                                                         <NumberFieldHookForm
@@ -292,19 +270,12 @@ function EditPartCost(props) {
                                                                     value: /^\d*\.?\d*$/,
                                                                     message: 'Invalid Number.'
                                                                 },
-                                                                // max: {
-                                                                //     value: 100,
-                                                                //     message: 'Percentage cannot be greater than 100'
-                                                                // },
                                                             }}
-                                                            // handleChange={(e) => handleDeltaValue(e.target.value, index)}
                                                             defaultValue={''}
                                                             className=""
                                                             disabled={true}
                                                             customClassName={'withBorder'}
-                                                            errors={errors.NetCost}
                                                         />
-                                                        {/* {checkForDecimalAndNull(item.Delta, initialConfiguration.NoOfDecimalForPrice)} */}
                                                     </td>
                                                 </tr>
                                             </>
@@ -314,7 +285,6 @@ function EditPartCost(props) {
                                 </tbody>
                             </Table>
                         </form>
-                        {/* {loader && <LoaderCustom />} */}
                         < Row className="mx-0 mb-3" >
                             <Col align="right">
                                 <button
