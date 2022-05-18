@@ -423,7 +423,7 @@ function HotForging(props) {
                     <Row className={'mt15'}>
                       <Col md="3">
                         <NumberFieldHookForm
-                          label={`Finished Weight (kg)`}
+                          label={`Finished Weight(kg)`}
                           name={'finishedWeight'}
                           Controller={Controller}
                           control={control}
@@ -464,7 +464,7 @@ function HotForging(props) {
 
                 <Col md="3" className='mt10 px-0'>
                   <NumberFieldHookForm
-                    label={`Forged Weight (Kg)`}
+                    label={`Forged Weight(Kg)`}
                     name={'forgedWeight'}
                     Controller={Controller}
                     control={control}
@@ -500,7 +500,7 @@ function HotForging(props) {
             <Row className='mt20'>
               <Col md="3">
                 <NumberFieldHookForm
-                  label={`Billet Diameter (mm)`}
+                  label={`Billet Diameter(mm)`}
                   name={'BilletDiameter'}
                   Controller={Controller}
                   control={control}
@@ -524,7 +524,7 @@ function HotForging(props) {
               </Col>
               <Col md="3">
                 <NumberFieldHookForm
-                  label={`Billet Length (mm)`}
+                  label={`Billet Length(mm)`}
                   name={'BilletLength'}
                   Controller={Controller}
                   control={control}
@@ -548,7 +548,7 @@ function HotForging(props) {
               </Col>
               <Col md="3">
                 <NumberFieldHookForm
-                  label={`Input Length (mm)`}
+                  label={`Input Length(mm)`}
                   name={'InputLength'}
                   Controller={Controller}
                   control={control}
@@ -564,7 +564,7 @@ function HotForging(props) {
               </Col>
               <Col md="3">
                 <NumberFieldHookForm
-                  label={`No Of Parts Per Length`}
+                  label={`No. of Parts per Length`}
                   name={'NoOfPartsPerLength'}
                   Controller={Controller}
                   control={control}
@@ -597,7 +597,7 @@ function HotForging(props) {
 
               <Col md="3">
                 <NumberFieldHookForm
-                  label={`End Bit Loss (Kg)`}
+                  label={`End Bit Loss(Kg)`}
                   name={'EndBitLoss'}
                   Controller={Controller}
                   control={control}
@@ -614,7 +614,7 @@ function HotForging(props) {
 
               <Col md="3">
                 <NumberFieldHookForm
-                  label={`Total Input Weight (Kg)`}
+                  label={`Total Input Weight(Kg)`}
                   name={'TotalInputWeight'}
                   Controller={Controller}
                   control={control}
@@ -630,7 +630,7 @@ function HotForging(props) {
               </Col>
               <Col md="3">
                 <NumberFieldHookForm
-                  label={`Scrap Weight (Kg)`}
+                  label={`Scrap Weight(Kg)`}
                   name={'ScrapWeight'}
                   Controller={Controller}
                   control={control}
@@ -646,7 +646,7 @@ function HotForging(props) {
               </Col>
               <Col md="3">
                 <NumberFieldHookForm
-                  label={`Scrap Recovery Percentage`}
+                  label={`Scrap Recovery(%)`}
                   name={'ScrapRecoveryPercentage'}
                   Controller={Controller}
                   control={control}
@@ -690,7 +690,7 @@ function HotForging(props) {
 
               <Col md="3">
                 <NumberFieldHookForm
-                  label={`Net RM Cost/ Component`}
+                  label={`Net RM Cost/Component`}
                   name={'NetRMCostComponent'}
                   Controller={Controller}
                   control={control}
