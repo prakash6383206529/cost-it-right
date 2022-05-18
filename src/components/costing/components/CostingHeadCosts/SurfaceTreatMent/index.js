@@ -37,7 +37,7 @@ function SurfaceTreatment(props) {
   const [surfaceTreatmentData, setSurfacTreatmenteData] = useState({})
   const [surfaceTableData, setSurfacetableData] = useState(item.CostingPartDetails.SurfaceTreatmentDetails)
   const [transportObj, setTrasportObj] = useState(item.CostingPartDetails.TransportationDetails)
-  const [partType, setpartType] = useState(costData?.TechnologyName === 'Assembly')   //HELP
+  const partType = costData?.TechnologyName === 'Assembly'
 
   useEffect(() => {
     setTrasportObj(item?.CostingPartDetails?.TransportationDetails)

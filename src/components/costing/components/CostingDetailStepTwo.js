@@ -40,7 +40,7 @@ function CostingDetailStepTwo(props) {
   const { costingData, CostingDataList, NetPOPrice, RMCCBOPCost, SurfaceCostData, OverheadProfitCostData,
     DiscountCostData, partNo, IsToolCostApplicable, showLoading, RMCCTabData, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData,
     PackageAndFreightTabData, ToolTabData, CostingEffectiveDate } = useSelector(state => state.costing)
-  const [partType, setpartType] = useState(costingData?.TechnologyName === 'Assembly')   //HELP
+  const partType = costingData?.TechnologyName === 'Assembly'
 
   useEffect(() => {
     if (partNo.isChanged === true) {

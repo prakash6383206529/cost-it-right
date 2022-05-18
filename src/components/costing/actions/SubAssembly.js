@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { API, API_FAILURE, API_REQUEST, config, SET_ASSEMBLY_TECHNOLOGY_TAB_DATA, SUB_ASSEMBLY_TECHNOLOGY_ARRAY, } from '../../../config/constants'
+import { API, API_FAILURE, API_REQUEST, config, SUB_ASSEMBLY_TECHNOLOGY_ARRAY, } from '../../../config/constants'
 import { apiErrors } from '../../../helper'
 
 let headers = config
@@ -44,16 +44,4 @@ export function setSubAssemblyAPI(data, callback) {
     });
   }
 }
-
-export function setAssemblyTechnologyTabData(data) {
-  return (dispatch) => {
-    dispatch({
-      type: SET_ASSEMBLY_TECHNOLOGY_TAB_DATA,
-      payload: data
-    })
-  }
-}
-
-
-
 

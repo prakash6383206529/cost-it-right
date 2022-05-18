@@ -46,7 +46,7 @@ function TabToolCost(props) {
   const [processArray, setProcessArray] = useState([])
   const [operationArray, setOperationArray] = useState([])
   const [gridData, setGridData] = useState([])
-  const [partType, setpartType] = useState(costData?.TechnologyName === 'Assembly')   //HELP
+  const partType = costData?.TechnologyName === 'Assembly'
 
   const dispense = () => {
     setIsApplicableProcessWise(IsToolCostApplicable)

@@ -13,6 +13,7 @@ import { createToprowObjAndSave, findSurfaceTreatmentData } from '../../CostingU
 function AddAssemblyOperation(props) {
   const { item, CostingViewMode, isAssemblyTechnology } = props;
   const [IsOpenTool, setIsOpenTool] = useState(false);
+  const [operationGridData, setOperationGridData] = useState([]);
   const dispatch = useDispatch()
 
   const { RMCCTabData, CostingEffectiveDate, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData } = useSelector(state => state.costing)
@@ -20,7 +21,7 @@ function AddAssemblyOperation(props) {
   const costData = useContext(costingInfoContext)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const netPOPrice = useContext(NetPOPriceContext);
-  const [partType, setpartType] = useState(costData?.TechnologyName === 'Assembly')   //HELP
+  const partType = costData?.TechnologyName === 'Assembly'
 
   /**
   * @method toggleDrawer
@@ -53,6 +54,9 @@ function AddAssemblyOperation(props) {
     toggleDrawer('')
   }
 
+  const getOperationGrid = (grid) => {
+    setOperationGridData(grid)
+  }
 
   /**
   * @method saveData
@@ -60,7 +64,7 @@ function AddAssemblyOperation(props) {
   */
   const saveData = () => {
     if (isAssemblyTechnology) {
-      props.setOperationCostFunction(item?.CostingPartDetails?.TotalOperationCostPerAssembly)
+      props?.setOperationCostFunction(item?.CostingPartDetails?.TotalOperationCostPerAssembly, operationGridData)
     }
     let stCostingData = findSurfaceTreatmentData(item)
     let requestData = {
@@ -201,9 +205,10 @@ function AddAssemblyOperation(props) {
 
                     <OperationCost
                       data={item.CostingPartDetails !== undefined ? item.CostingPartDetails.CostingOperationCostResponse : []}
-                      // setAssemblyOperationCost={props.setAssemblyOperationCost}
+                      setAssemblyOperationCost={props.setAssemblyOperationCost}
                       item={props.item}
                       IsAssemblyCalculation={true}
+                      getOperationGrid={getOperationGrid}
                     />
 
 

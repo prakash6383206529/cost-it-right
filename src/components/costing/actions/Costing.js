@@ -820,7 +820,6 @@ export function saveAssemblyCostingRMCCTab(data, callback) {
     request.then((response) => {
       callback(response);
     }).catch((error) => {
-      console.log('error: ds', error);
       dispatch({ type: API_FAILURE });
       apiErrors(error);
     });
@@ -2408,7 +2407,6 @@ export function setIdsOfProcess(data) {
   }
 }
 export function setIdsOfProcessGroup(data) {
-  console.log('data: ', data);
 
   return (dispatch) => {
     dispatch({

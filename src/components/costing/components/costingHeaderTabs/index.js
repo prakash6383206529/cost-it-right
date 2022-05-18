@@ -43,7 +43,7 @@ function CostingHeaderTabs(props) {
   const CostingViewMode = useContext(ViewCostingContext);
   const netPOPrice = useContext(NetPOPriceContext);
   const CostingEditMode = useContext(EditCostingContext);
-  const [partType, setpartType] = useState(costData?.TechnologyName === 'Assembly')   //HELP
+  const partType = costData?.TechnologyName === 'Assembly'
 
   const ActualTotalCost = ActualCostingDataList && ActualCostingDataList.length > 0 && ActualCostingDataList[0].TotalCost !== undefined ? ActualCostingDataList[0].TotalCost : 0;
 

@@ -17,7 +17,6 @@ function Rejection(props) {
     const CostingViewMode = useContext(ViewCostingContext);
     const costData = useContext(costingInfoContext);
 
-    const { subAssemblyTechnologyArray } = useSelector(state => state.SubAssembly)
 
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
     const { RMCCutOffObj } = useSelector(state => state.costing)
@@ -25,7 +24,7 @@ function Rejection(props) {
     const [rejectionObj, setRejectionObj] = useState(CostingRejectionDetail)
     const [applicability, setApplicability] = useState(CostingRejectionDetail && CostingRejectionDetail.RejectionApplicability !== null ? { label: CostingRejectionDetail.RejectionApplicability, value: CostingRejectionDetail.RejectionApplicabilityId } : [])
     const [IsChangedApplicability, setIsChangedApplicability] = useState(false)
-    const [partType, setpartType] = useState(costData?.TechnologyName === 'Assembly')   //HELP
+    const partType = costData?.TechnologyName === 'Assembly'
 
     const defaultValues = {
 
@@ -111,7 +110,7 @@ function Rejection(props) {
             const BOPCC = headerCosts?.NetBoughtOutPartCost + ConversionCostForCalculation;
             const RejectionPercentage = getValues('RejectionPercentage')
 
-            const assemblyLevelCC = checkForNull(headerCosts?.ProcessCostTotal) + checkForNull(headerCosts?.TotalOperationCostPerAssembly)                                                           //LATER headerCosts.ProcessCostTotal
+            const assemblyLevelCC = checkForNull(headerCosts?.ProcessCostTotal) + checkForNull(headerCosts?.TotalOperationCostPerAssembly)
             const BOPTotalCost = checkForNull(headerCosts?.NetBoughtOutPartCost)
             const EditPartCost = checkForNull(headerCosts?.NetRawMaterialsCost)
 

@@ -42,10 +42,14 @@ function OperationCost(props) {
       PartType: props.item.PartType
     }
     if (!CostingViewMode && !IsLocked) {
-      if (props.IsAssemblyCalculation && CostingViewMode?.TechnologyName === 'Assembly') {
-        props.setAssemblyOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false, props.item)
+      if (CostingViewMode?.TechnologyName === 'Assembly') {
+        props.getOperationGrid(gridData)
       } else {
-        props.setOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
+        if (props.IsAssemblyCalculation) {
+          props.setAssemblyOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false, props.item)
+        } else {
+          props.setOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
+        }
       }
 
       if (JSON.stringify(gridData) !== JSON.stringify(OldGridData)) {

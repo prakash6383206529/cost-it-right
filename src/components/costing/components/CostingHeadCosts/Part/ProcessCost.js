@@ -28,7 +28,7 @@ function ProcessCost(props) {
     mode: 'onChange',
     reValidateMode: 'onChange',
   })
-  const [gridData, setGridData] = useState(data && data?.CostingProcessCostResponse)    //  WIP_SM
+  const [gridData, setGridData] = useState(data && data?.CostingProcessCostResponse)
   const trimValue = getConfigurationKey()
   const trimForMeasurment = trimValue.NoOfDecimalForInputOutput
   const trimForCost = trimValue.NoOfDecimalForPrice
@@ -75,12 +75,6 @@ function ProcessCost(props) {
   }
 
   useEffect(() => {
-    // MAKE CHANGES WHEN API CALL IS INTEGRATED
-    // props.getValuesOfProcess(data && data?.CostingProcessCostResponse)       
-
-  }, [])
-
-  useEffect(() => {
     const Params = {
       index: props.index,
       BOMLevel: props?.item?.BOMLevel,
@@ -91,17 +85,16 @@ function ProcessCost(props) {
       if (JSON.stringify(gridData) !== JSON.stringify(oldGridData)) {
         dispatch(isDataChange(true))
       }
-      if (!isAssemblyTechnology) {
-        props?.setConversionCost(tabData, Params, item)
-      }
       if (isFromApi) {
         let apiArr = formatMainArr(tabData?.CostingProcessCostResponse)
         tabData.CostingProcessCostResponse = apiArr
       }
 
 
-      if (!isAssemblyTechnology) {
-        if (JSON.stringify(tabData) !== JSON.stringify(oldTabData)) {
+      if (JSON.stringify(tabData) !== JSON.stringify(oldTabData)) {
+        if (isAssemblyTechnology) {
+          props.getValuesOfProcess(tabData, tabData?.ProcessCostTotal)
+        } else {
           props.setConversionCost(tabData, Params, item)
         }
       }
@@ -121,10 +114,6 @@ function ProcessCost(props) {
       setTimeout(() => {
         setGridData(tempArr)
         setIsCalculator(true)
-        if (isAssemblyTechnology) {
-          props.getValuesOfProcess(tempArr, tempArr?.ProcessCostTotal)
-        }
-
       }, 100)
     } else {
       let parentTempArr = []
@@ -142,10 +131,6 @@ function ProcessCost(props) {
       setTimeout(() => {
         setGridData(parentTempArr)
         setIsCalculator(true)
-        if (isAssemblyTechnology) {
-          props.getValuesOfProcess(parentTempArr, parentTempArr?.ProcessCostTotal)
-        }
-
       }, 100);
     }
   }
@@ -247,10 +232,6 @@ function ProcessCost(props) {
         setValue(`${ProcessGridFields}.${calciIndex}.Quantity`, tempData.UOMType === TIME ? checkForDecimalAndNull((weightData.ProcessCost / weightData.MachineRate), getConfigurationKey().NoOfDecimalForInputOutput) : weightData.Quantity)
         setValue(`${ProcessGridFields}.${calciIndex}.ProcessCost`, checkForDecimalAndNull(weightData.ProcessCost, getConfigurationKey().NoOfDecimalForPrice))
         // setValue(`${ProcessGridFields}.${calciIndex}.ProductionPerHour`, weightData.UOMType === TIME ? checkForDecimalAndNull(weightData.PartsPerHour, getConfigurationKey().NoOfDecimalForInputOutput) : '-')
-        if (isAssemblyTechnology) {
-          props.getValuesOfProcess(tempArray, tempArr2?.ProcessCostTotal)
-        }
-
       }, 100)
     } else {
 
@@ -324,10 +305,6 @@ function ProcessCost(props) {
       setGridData(processTemparr)
       // setValue(`${SingleProcessGridField}.${calciIndex}.Quantity`, tempData.UOMType === TIME ? checkForDecimalAndNull((weightData.ProcessCost / weightData.MachineRate), getConfigurationKey().NoOfDecimalForInputOutput) : weightData.Quantity)
       setValue(`${ProcessGridFields}.${parentCalciIndex}.ProcessCost`, checkForDecimalAndNull(ProcessCostTotal, initialConfiguration.NoOfDecimalForPrice))
-      if (isAssemblyTechnology) {
-        props.getValuesOfProcess(processTemparr, tempArr?.ProcessCostTotal)
-      }
-
     }
   }
 
@@ -351,9 +328,6 @@ function ProcessCost(props) {
     setIsFromApi(false)
     setTabData(tempArr)
     setGridData(gridTempArr)
-    if (isAssemblyTechnology) {
-      props.getValuesOfProcess(gridTempArr, tempArr?.ProcessCostTotal)              //WIP NOT REQUIRED
-    }
 
     if (getValues(`${ProcessGridFields}.${index}.remarkPopUp`)) {
       Toaster.success('Remark saved successfully')
@@ -411,10 +385,6 @@ function ProcessCost(props) {
     setIsFromApi(false)
     setTabData(tempArr)
     setGridData(processTemparr)
-    if (isAssemblyTechnology) {
-      props.getValuesOfProcess(processTemparr, tempArr?.ProcessCostTotal)             //WIP NOT REQUIRED
-    }
-
 
     if (getValues(`${SingleProcessGridField}.${index}.${parentIndex}.ProcessCost`)) {
       Toaster.success('Remark saved successfully')
@@ -478,9 +448,6 @@ function ProcessCost(props) {
       setIsFromApi(false)
       setGridData(tempArr)
       setTabData(tempArr2)
-      if (isAssemblyTechnology) {
-        props.getValuesOfProcess(tempArr, tempArr2?.ProcessCostTotal)
-      }
       selectedIds(tempArr)
       dispatch(gridDataAdded(true))
       dispatch(setSelectedDataOfCheckBox([]))
@@ -662,9 +629,6 @@ function ProcessCost(props) {
       setIds(selectedIds)
       setMachineIds(selectedMachineIds)
       setTabData(tempArr2)
-      if (isAssemblyTechnology) {
-        props.getValuesOfProcess(tempArrAfterDelete, tempArr2?.ProcessCostTotal)
-      }
       tempArrAfterDelete && tempArrAfterDelete.map((el, i) => {
         setValue(`${ProcessGridFields}.${i}.ProcessCost`, checkForDecimalAndNull(el.ProcessCost, initialConfiguration.NoOfDecimalForPrice))
         setValue(`${ProcessGridFields}.${i}.Quantity`, el.Quantity)
@@ -730,9 +694,6 @@ function ProcessCost(props) {
       ProcessCost: ProcessCost
     }
     setGridData(tempArr2)
-    if (isAssemblyTechnology) {
-      props.getValuesOfProcess(tempArr2, tempArr3?.ProcessCostTotal)
-    }
     setTabData(tempArr3)
     tempArrAfterDelete && tempArrAfterDelete.map((el, i) => {
       setValue(`${SingleProcessGridField}.${i}.${parentIndex}.ProcessCost`, checkForDecimalAndNull(el.ProcessCost, initialConfiguration.NoOfDecimalForPrice))
@@ -794,10 +755,6 @@ function ProcessCost(props) {
         // props.setProcessCostFunction(tempArr?.ProcessCostTotal)
       }
       setGridData(gridTempArr)
-      if (isAssemblyTechnology) {
-        props.getValuesOfProcess(gridTempArr, tempArr?.ProcessCostTotal)
-      }
-
       setValue(`${ProcessGridFields}.${index}.ProcessCost`, checkForDecimalAndNull(ProcessCost, initialConfiguration.NoOfDecimalForPrice))
     } else {
 
@@ -840,10 +797,6 @@ function ProcessCost(props) {
         // props.setProcessCostFunction(tempArr?.ProcessCostTotal)
       }
       setGridData(gridTempArr)
-      if (isAssemblyTechnology) {
-        props.getValuesOfProcess(gridTempArr, tempArr?.ProcessCostTotal)
-      }
-
       setTimeout(() => {
         setValue(`${ProcessGridFields}.${index}.Quantity`, "")
         setValue(`${ProcessGridFields}.${index}.ProcessCost`, "")
@@ -916,10 +869,6 @@ function ProcessCost(props) {
       setIsFromApi(false)
       setTabData(tempArr)
       setGridData(processTemparr)
-      if (isAssemblyTechnology) {
-        props.getValuesOfProcess(processTemparr, tempArr?.ProcessCostTotal)
-      }
-
       setValue(`${ProcessGridFields}.${parentIndex}.ProcessCost`, checkForDecimalAndNull(ProcessCostTotal, initialConfiguration.NoOfDecimalForPrice))
     } else {
 
@@ -972,15 +921,7 @@ function ProcessCost(props) {
       setIsFromApi(false)
       setTabData(tempArr)
       setGridData(processTemparr)
-      if (isAssemblyTechnology) {
-        props.getValuesOfProcess(processTemparr, tempArr?.ProcessCostTotal)
-      }
-
       setValue(`${ProcessGridFields}.${parentIndex}.ProcessCost`, checkForDecimalAndNull(ProcessCostTotal, initialConfiguration.NoOfDecimalForPrice))
-
-
-
-      //Toaster.warning('Please enter valid number.')
     }
   }
 
@@ -1015,9 +956,6 @@ function ProcessCost(props) {
 
     setIsFromApi(false)
     setTabData(tempArr)
-    if (isAssemblyTechnology) {
-      // props.getValuesOfProcess(tempArr, tempArr?.ProcessCostTotal)
-    }
   }
 
   const setOtherOperationCost = (otherOperationGrid, params, index) => {

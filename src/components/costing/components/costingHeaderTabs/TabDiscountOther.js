@@ -54,7 +54,7 @@ function TabDiscountOther(props) {
   const [discountCostApplicability, setDiscountCostApplicability] = useState([])
   const [netPoPriceCurrencyState, setNetPoPriceCurrencyState] = useState('')
   const costingHead = useSelector(state => state.comman.costingHead)
-  const [partType, setpartType] = useState(costData?.TechnologyName === 'Assembly')   //HELP
+  const partType = costData?.TechnologyName === 'Assembly'
 
   useEffect(() => {
     // CostingViewMode CONDITION IS USED TO AVOID CALCULATION IN VIEWMODE
