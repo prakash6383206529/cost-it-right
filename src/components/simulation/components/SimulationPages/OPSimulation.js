@@ -931,7 +931,7 @@ function OPSImulation(props) {
                                         isbulkUpload &&
                                         <div className='d-flex justify-content-end bulk-upload-row'>
                                             <div className="d-flex align-items-center">
-                                                <label>No of rows with changes:</label>
+                                                <label>No. of rows with changes:</label>
                                                 <TextFieldHookForm
                                                     label=""
                                                     name={'NoOfCorrectRow'}
@@ -949,7 +949,7 @@ function OPSImulation(props) {
                                                 />
                                             </div>
                                             <div className="d-flex align-items-center">
-                                                <label>No of rows without changes:</label>
+                                                <label>No. of rows without changes:</label>
                                                 <TextFieldHookForm
                                                     label=""
                                                     name={'NoOfRowsWithoutChange'}

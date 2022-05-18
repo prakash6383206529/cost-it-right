@@ -200,7 +200,7 @@ function Broaching(props) {
                                     <Row className={'mt15'}>
                                         <Col md="4">
                                             <TextFieldHookForm
-                                                label={`No of Teeth`}
+                                                label={`No. of Teeth`}
                                                 name={'noOFTeeth'}
                                                 Controller={Controller}
                                                 control={control}
