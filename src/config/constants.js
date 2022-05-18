@@ -1727,6 +1727,8 @@ export const HOUR = "Hours"
 export const NO = "Number"
 export const STROKE = "Stroke"
 export const SHOTS = "SHOT"
+export const MINUTES = 'Minutes'
+export const SECONDS = 'Seconds'
 
 // export const INR = "INR"
 
