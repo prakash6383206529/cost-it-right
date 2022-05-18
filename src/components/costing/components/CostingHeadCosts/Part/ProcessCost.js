@@ -1052,7 +1052,7 @@ function ProcessCost(props) {
    * @method render
    * @description Renders the component
    */
-  const tooltipText = <div><div>If UOM is in hours/minutes/seconds, please enter the quantity in seconds</div> <div>For all others UOMs, please enter the actual quantity</div></div>;
+  const tooltipText = <div><div>If UOM is in hours/minutes/seconds, please enter the quantity in seconds.</div> <div>For all others UOMs, please enter the actual quantity.</div></div>;
 
   return (
     <>
