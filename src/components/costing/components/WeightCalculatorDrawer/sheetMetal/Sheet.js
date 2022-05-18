@@ -458,7 +458,7 @@ function Sheet(props) {
                                 </Col>
                                 <Col md="3">
                                     <TextFieldHookForm
-                                        label={`No of Strips`}
+                                        label={`No. of Strips`}
                                         name={'StripsNumber'}
                                         Controller={Controller}
                                         control={control}
