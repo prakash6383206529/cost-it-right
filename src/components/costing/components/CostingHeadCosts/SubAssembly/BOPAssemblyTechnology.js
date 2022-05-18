@@ -23,7 +23,7 @@ function BOPAssemblyTechnology(props) {
         <td>{item && item.PartName}</td>
         <td>{item && item.BOMLevel}</td>
         <td>{item && item.PartType}</td>
-        <td>{item?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity ? item?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity : 'Sheet Metal'}</td>
+        <td>{item?.CostingPartDetails?.TechnologyName ? item?.CostingPartDetails?.TechnologyName : 'Sheet Metal'}</td>
         <td>{item?.CostingPartDetails?.QuantityForSubAssembly ? checkForDecimalAndNull(item.CostingPartDetails.QuantityForSubAssembly, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
         <td>{item?.CostingPartDetails?.CostPerPiece ? checkForDecimalAndNull(item.CostingPartDetails.CostPerPiece, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
 

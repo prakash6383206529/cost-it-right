@@ -7,6 +7,6 @@ const mainReducer = {
   approval: Approval,
   costing: Costing,
   costWorking: CostWorking,
-  SubAssembly: SubAssembly,
+  subAssembly: SubAssembly,
 }
 export default mainReducer;

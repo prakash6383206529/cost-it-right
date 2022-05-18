@@ -71,7 +71,6 @@ function AddOperation(props) {
         EffectiveDate: CostingEffectiveDate,
         CostingId: costData.CostingId,
       }
-      console.log('data: ', data);
       dispatch(getOperationDrawerVBCDataList(data, (res) => {
         if (res && res.status === 200) {
           let Data = res.data.DataList;

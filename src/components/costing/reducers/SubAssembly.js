@@ -9,28 +9,7 @@ import {
 import { tempObject } from '../../../config/masterData';
 
 const initialState = {
-  ComponentItemData: {},
-  ComponentItemOverheadData: {},
-  ComponentItemPackageFreightData: {},
-  ComponentItemToolData: {},
-  ComponentItemDiscountData: {},
-  costingData: {},
-  singleCostingDetail: {},
-  viewCostingDetailData: [],
-  partNo: '',
-  costingApprovalData: [],
-  IsIncludedSurfaceInOverheadProfit: false,
-  IsCostingDateDisabled: false,
-  IsToolCostApplicable: false,
-  SurfaceCostData: {},
-  RMCCutOffObj: { IsCutOffApplicable: false, CutOffRMC: '' },
-  getAssemBOPCharge: {},
-  checkIsOverheadProfitChange: false,
-  checkIsFreightPackageChange: false,
-  checkIsToolTabChange: false,
-  subAssemblyTechnologyArray: [],
-
-
+  subAssemblyTechnologyArray: []
 }
 
 export default function costingReducer(state = initialState, action) {

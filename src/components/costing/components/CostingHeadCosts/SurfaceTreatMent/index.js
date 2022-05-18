@@ -30,7 +30,7 @@ function SurfaceTreatment(props) {
   const dispatch = useDispatch()
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { subAssemblyTechnologyArray } = useSelector(state => state.SubAssembly)
+  const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
   const { ComponentItemDiscountData, CostingEffectiveDate, RMCCTabData, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, DiscountCostData, ToolTabData, getAssemBOPCharge } = useSelector(state => state.costing)
   const price = useContext(NetPOPriceContext)
   const costData = useContext(costingInfoContext);

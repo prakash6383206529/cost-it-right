@@ -216,7 +216,6 @@ function CostingHeaderTabs(props) {
       dispatch(isDataChange(false))
     }
 
-    // APPLY CHECKS HERE FOR ASSEMBLY TECHNOLOGY COSTING
     if (RMCCTabData && RMCCTabData.length > 0 && activeTab !== '1' && CostingViewMode === false && !partType) {
       const tabData = RMCCTabData[0]
       const surfaceTabData = SurfaceTabData[0]
