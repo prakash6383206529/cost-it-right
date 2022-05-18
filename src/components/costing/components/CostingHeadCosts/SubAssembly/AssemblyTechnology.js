@@ -5,8 +5,7 @@ import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, } fro
 import AddAssemblyOperation from '../../Drawers/AddAssemblyOperation';
 import { ViewCostingContext } from '../../CostingDetails';
 import EditPartCost from './EditPartCost';
-import PartCompomentA from './PartComponentA';
-import BOPA from './BOPA';
+import BOPAssemblyTechnology from './BOPAssemblyTechnology';
 import { subAssembly010101, subAssemblyAssemPart, tempObject } from '../../../../../config/masterData';
 import AddProcess from '../../Drawers/AddProcess';
 import AddAssemblyProcess from '../../Drawers/AddAssemblyProcess';
@@ -31,67 +30,31 @@ function AssemblyTechnology(props) {
     const dispatch = useDispatch()
     const { subAssemblyTechnologyArray } = useSelector(state => state.SubAssembly)
 
-    useEffect(() => {
-        let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray
-        let changeTempObject = tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails
-        let targetBOMLevel = props?.tabAssemblyIndividualPartDetail?.BOMLevel
-        let targetPartNo = props?.tabAssemblyIndividualPartDetail?.PartNumber
-        let targetAssemblyPartNumber = props?.tabAssemblyIndividualPartDetail?.AssemblyPartNumber
-        let costPerPieceTotal = 0
-        let costPerAssemblyTotal = 0
-        let CostPerAssemblyBOPTotal = 0
-
-        changeTempObject && changeTempObject.map((item) => {
-
-            if (targetBOMLevel === item.BOMLevel && targetPartNo === item.PartNumber && targetAssemblyPartNumber === item.AssemblyPartNumber) {
-                // item.CostingPartDetails.CostPerPiece = weightedCost
-                // item.CostingPartDetails.CostPerAssembly = Number(weightedCost) * Number(item.CostingPartDetails.QuantityForSubAssembly)
-            }
-            // if (item?.CostingPartDetails?.CostPerPiece && item?.CostingPartDetails?.CostPerAssembly) {
-            costPerPieceTotal = checkForNull(costPerPieceTotal) + checkForNull(item?.CostingPartDetails?.CostPerPiece)
-            costPerAssemblyTotal = checkForNull(costPerAssemblyTotal) + checkForNull(item?.CostingPartDetails?.CostPerAssembly)
-            CostPerAssemblyBOPTotal = checkForNull(CostPerAssemblyBOPTotal) + checkForNull(item?.CostingPartDetails?.CostPerAssemblyBOP)
-            // }
-            return null
-        })
-        tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerPiece = costPerPieceTotal
-        tempsubAssemblyTechnologyArray[0].CostingPartDetails.EditPartCost = costPerAssemblyTotal
-        tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerAssembly = checkForNull(costPerAssemblyTotal) + checkForNull(CostPerAssemblyBOPTotal) + (checkForNull(tempsubAssemblyTechnologyArray[0].processCostValue) + checkForNull(tempsubAssemblyTechnologyArray[0].operationCostValue))
-        tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerAssemblyBOP = checkForNull(CostPerAssemblyBOPTotal)
-        dispatch(setSubAssemblyTechnologyArray(tempsubAssemblyTechnologyArray, res => { }))
-
-        // props.getCostPerPiece(weightedCost)
-    }, [])
-
     const toggle = (BOMLevel, PartNumber, PartType) => {
         if (PartType === 'Assembly') {
 
             setIsOpen(!IsOpen)
             setCount(Count + 1)
             if (Object.keys(costData).length > 0) {
+                let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray
+                let changeTempObject = tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails
+                let costPerPieceTotal = 0
+                let costPerAssemblyTotal = 0
+                let CostPerAssemblyBOPTotal = 0
 
-                if (PartNumber === '010101') {
-                    // dispatch(setSubAssemblyTechnologyArray(subAssembly010101))
-                    props.toggleAssembly(BOMLevel, PartNumber, subAssembly010101[0])
-                }
+                changeTempObject && changeTempObject.map((item) => {
 
-                else if (PartNumber === 'Assem Part No. 10') {
-                    // dispatch(setSubAssemblyTechnologyArray(subAssemblyAssemPart))
-                    props.toggleAssembly(BOMLevel, PartNumber, subAssemblyAssemPart)
-                }
-
-                else {
-                    if (subAssemblyTechnologyArray && subAssemblyTechnologyArray[0]?.CostingPartDetails?.IsApplyBOPHandlingCharges) {
-                        dispatch(setSubAssemblyTechnologyArray(subAssemblyTechnologyArray, res => { }))
-                    } else {
-                        dispatch(setSubAssemblyTechnologyArray(tempObject, res => { }))
-                    }
-                    // props.toggleAssembly(BOMLevel, PartNumber, tempObject)
-
-                }
-
+                    costPerPieceTotal = checkForNull(costPerPieceTotal) + checkForNull(item?.CostingPartDetails?.CostPerPiece)
+                    costPerAssemblyTotal = checkForNull(costPerAssemblyTotal) + checkForNull(item?.CostingPartDetails?.CostPerAssembly)
+                    CostPerAssemblyBOPTotal = checkForNull(CostPerAssemblyBOPTotal) + checkForNull(item?.CostingPartDetails?.CostPerAssemblyBOP)
+                    return null
+                })
+                tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerPiece = costPerPieceTotal
+                tempsubAssemblyTechnologyArray[0].CostingPartDetails.EditPartCost = costPerAssemblyTotal
+                tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerAssembly = checkForNull(costPerAssemblyTotal) + checkForNull(CostPerAssemblyBOPTotal) + (checkForNull(tempsubAssemblyTechnologyArray[0].processCostValue) + checkForNull(tempsubAssemblyTechnologyArray[0].operationCostValue))
+                tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerAssemblyBOP = checkForNull(CostPerAssemblyBOPTotal)
+                dispatch(setSubAssemblyTechnologyArray(tempsubAssemblyTechnologyArray, res => { }))
                 props.toggleAssembly(BOMLevel, PartNumber, subAssemblyTechnologyArray)
-
             } else {
                 props.toggleAssembly(BOMLevel, PartNumber)
             }
@@ -136,59 +99,24 @@ function AssemblyTechnology(props) {
         setPartCostDrawer(false)
     }
 
-    const nestedPartComponent = children && children.map(el => {
-        if (el.PartType === 'Part') {
-            return <PartCompomentA
+    const nestedAssembly = children && children.map(el => {
+        if (el.PartType === 'Sub Assembly' || el.PartType === 'Part') {
+            return <AssemblyTechnology
                 index={index}
                 item={el}
-                rmData={el?.CostingPartDetails?.CostingRawMaterialsCost}
-                bopData={el.CostingPartDetails !== null && el.CostingPartDetails.CostingBoughtOutPartCost}
-                ccData={el.CostingPartDetails !== null && el.CostingPartDetails}
-                setPartDetails={props.setPartDetails}
-                setRMCost={props.setRMCost}
-                setRMMasterBatchCost={props.setRMMasterBatchCost}
-                setBOPCost={props.setBOPCost}
-                setBOPHandlingCost={props.setBOPHandlingCost}
-                setProcessCost={props.setProcessCost}
-                setOperationCost={props.setOperationCost}
-                setOtherOperationCost={props.setOtherOperationCost}
-                setToolCost={props.setToolCost}
-                subAssembId={item.CostingId}
+                children={el.CostingChildPartDetails}
+                toggleAssembly={props.toggleAssembly}
+                setAssemblyOperationCost={props.setAssemblyOperationCost}
                 getCostPerPiece={getCostPerPiece}
-                setConversionCost={props.setConversionCost}
-
             />
+        } else {
+            return false
         }
-    })
-
-    const nestedAssembly = children && children.map(el => {
-        if (el.PartType !== 'Sub Assembly') return false;
-        return <AssemblyTechnology
-            index={index}
-            item={el}
-            children={el.CostingChildPartDetails}
-            setPartDetails={props.setPartDetails}
-            toggleAssembly={props.toggleAssembly}
-            setRMCost={props.setRMCost}
-            setRMMasterBatchCost={props.setRMMasterBatchCost}
-            setBOPCost={props.setBOPCost}
-            setBOPHandlingCost={props.setBOPHandlingCost}
-            setProcessCost={props.setProcessCost}
-            setOperationCost={props.setOperationCost}
-            setOtherOperationCost={props.setOtherOperationCost}
-            setToolCost={props.setToolCost}
-            // setAssemblyOperationCost={props.setAssemblyOperationCost}
-            setAssemblyToolCost={props.setAssemblyToolCost}
-            subAssembId={item.CostingId}
-
-            getCostPerPiece={getCostPerPiece}
-
-        />
     })
 
     const nestedBOP = children && children.map(el => {
         if (el.PartType !== 'BOP') return false;
-        return <BOPA
+        return <BOPAssemblyTechnology
             index={index}
             item={el}
             children={el.CostingChildPartDetails}
@@ -213,7 +141,7 @@ function AssemblyTechnology(props) {
     */
     return (
         <>
-            <tr className="costing-highlight-row accordian-row">
+            <tr className={`${item.PartType === 'Sub Assembly' ? 'costing-highlight-row' : ''} accordian-row`}>
                 <div style={{ display: 'contents' }} onClick={() => toggle(item.BOMLevel, item.PartNumber, item.PartType)}>
                     <td>
                         <span style={{ position: 'relative' }} className={`${item && item.PartType === "Assembly" && "cr-prt-nm1"} cr-prt-link1 ${item && item.PartType !== "Sub Assembly" && item.PartType !== "Assembly" && "L1"}`}>
@@ -289,8 +217,6 @@ function AssemblyTechnology(props) {
 
             </tr >
 
-            {item.IsOpen && nestedPartComponent}
-
             {item.IsOpen && nestedBOP}
 
             {item.IsOpen && nestedAssembly}
@@ -305,20 +231,23 @@ function AssemblyTechnology(props) {
                     item={item}
                     CostingViewMode={CostingViewMode}
                     setOperationCostFunction={props.setOperationCostFunction}
+                    setAssemblyOperationCost={props.setAssemblyOperationCost}
                     isAssemblyTechnology={true}
                 />
             }
-            {isProcessDrawerOpen && (
-                <AddAssemblyProcess
-                    isOpen={isProcessDrawerOpen}
-                    closeDrawer={closeProcessDrawer}
-                    isEditFlag={false}
-                    ID={''}
-                    anchor={'right'}
-                    ccData={subAssemblyTechnologyArray[0].CostingPartDetails !== null && subAssemblyTechnologyArray[0]?.CostingPartDetails?.CostingConversionCost}
-                // setProcessCostFunction={props.setProcessCostFunction}
-                />
-            )}
+            {
+                isProcessDrawerOpen && (
+                    <AddAssemblyProcess
+                        isOpen={isProcessDrawerOpen}
+                        closeDrawer={closeProcessDrawer}
+                        isEditFlag={false}
+                        ID={''}
+                        anchor={'right'}
+                        ccData={subAssemblyTechnologyArray[0].CostingPartDetails !== null && subAssemblyTechnologyArray[0]?.CostingPartDetails?.CostingConversionCost}
+                    // setProcessCostFunction={props.setProcessCostFunction}
+                    />
+                )
+            }
             {
                 partCostDrawer && <EditPartCost
                     isOpen={partCostDrawer}

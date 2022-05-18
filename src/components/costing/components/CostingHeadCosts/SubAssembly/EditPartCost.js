@@ -3,7 +3,7 @@ import Drawer from '@material-ui/core/Drawer';
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
 import { checkForDecimalAndNull, checkForNull, percentageOfNumber } from '../../../../../helper';
-import { ListForPartCost, optionsForDelta, tempObject } from '../../../../../config/masterData';
+import { ListForPartCost, optionsForDelta } from '../../../../../config/masterData';
 import { NumberFieldHookForm, SearchableSelectHookForm } from '../../../../layout/HookFormInputs';
 import { Controller, useForm } from 'react-hook-form';
 import Toaster from '../../../../common/Toaster';
