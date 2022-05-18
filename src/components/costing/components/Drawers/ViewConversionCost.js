@@ -278,7 +278,7 @@ function ViewConversionCost(props) {
             <td>{item.MachineName ? item.MachineName : '-'}</td>
             <td>{item.Tonnage ? item.Tonnage : '-'}</td>
             <td>{item.UOM ? item.UOM : '-'}</td>
-            <td>{(item?.ProductionPerHour === '-' || item?.ProductionPerHour === 0 || item?.ProductionPerHour === null) ? '-' : checkForDecimalAndNull(item.ProductionPerHour, initialConfiguration.NoOfDecimalForInputOutput)}</td>
+            <td>{(item?.ProductionPerHour === '-' || item?.ProductionPerHour === 0 || item?.ProductionPerHour === null) ? '-' : Math.round(item.ProductionPerHour)}</td>
             <td>{item.MHR ? item.MHR : '-'}</td>
             {!isPDFShow && <td><button
               className="CalculatorIcon cr-cl-icon mr-auto ml-0"
@@ -348,7 +348,7 @@ function ViewConversionCost(props) {
                         <td>{item.MachineName ? item.MachineName : '-'}</td>
                         <td>{item.Tonnage ? item.Tonnage : '-'}</td>
                         <td>{item.UOM ? item.UOM : '-'}</td>
-                        <td>{(item?.ProductionPerHour === '-' || item?.ProductionPerHour === 0 || item?.ProductionPerHour === null) ? '-' : checkForDecimalAndNull(item.ProductionPerHour, initialConfiguration.NoOfDecimalForInputOutput)}</td>
+                        <td>{(item?.ProductionPerHour === '-' || item?.ProductionPerHour === 0 || item?.ProductionPerHour === null) ? '-' : Math.round(item.ProductionPerHour)}</td>
                         <td>{item.MHR ? item.MHR : '-'}</td>
                         {(!isPDFShow) && <td>
                           {

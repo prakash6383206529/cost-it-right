@@ -1,7 +1,10 @@
-import { LEVEL0 } from "../../config/constants";
+
+import { HOUR, MINUTES, SECONDS } from "../../config/constants";
 import { checkForNull, loggedInUserId } from "../../helper"
 import DayTime from "../common/DayTimeWrapper";
 
+
+// TO CREATE OBJECT FOR IN SAVE-ASSEMBLY-PART-ROW-COSTING
 export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, tabId, effectiveDate) => {
 
   let Arr = JSON.parse(localStorage.getItem('costingArray'))
@@ -132,13 +135,34 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
 
 }
 
+//TO FIND SURFACE TREATMENT OBJECT HAVING SAME PART NO AS RMCC TAB PART NO
 export const findSurfaceTreatmentData = (rmCCData) => {
   let surfaceTreatmentArr = JSON.parse(localStorage.getItem('surfaceCostingArray'))
   let sTSubAssembly = surfaceTreatmentArr && surfaceTreatmentArr.find(surfaceItem => surfaceItem.PartNumber === rmCCData.PartNumber && surfaceItem.AssemblyPartNumber === rmCCData.AssemblyPartNumber)
   return sTSubAssembly
 }
+
+// TO FIND RMCC OBJECT HAVING SAME PART NO AS SURFACE TREATMENT PART NO
 export const findrmCctData = (surfaceData) => {
   let costingArr = JSON.parse(localStorage.getItem('costingArray'))
   let rmCcSubAssembly = costingArr && costingArr.find(costingItem => costingItem.PartNumber === surfaceData.PartNumber && costingItem.AssemblyPartNumber === surfaceData.AssemblyPartNumber)
   return rmCcSubAssembly
+}
+
+// TO FIND PARTS/HOUR (PRODUCTION)
+export const findProductionPerHour = (quantity) => {
+  return checkForNull(3600 / quantity)
+}
+
+// TO FIND PROCESS COST IF UOM TYPE IS TIME AND ON THE BASIS OF UOM (HOURS,MINUTES,SECONDS)
+export const findProcessCost = (uom, mhr, productionPerHour) => {
+  let processCost = 0
+  if (uom === HOUR) {
+    processCost = checkForNull((checkForNull(mhr) / checkForNull(productionPerHour)))
+  } else if (uom === MINUTES) {
+    processCost = checkForNull(((checkForNull(mhr) * 60) / checkForNull(productionPerHour)))
+  } else if (uom === SECONDS) {
+    processCost = checkForNull(((checkForNull(mhr) * 3600) / checkForNull(productionPerHour)))
+  }
+  return processCost
 }
