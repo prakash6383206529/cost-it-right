@@ -7,7 +7,7 @@ import { ListForPartCost, optionsForDelta } from '../../../../../config/masterDa
 import { NumberFieldHookForm, SearchableSelectHookForm } from '../../../../layout/HookFormInputs';
 import { Controller, useForm } from 'react-hook-form';
 import Toaster from '../../../../common/Toaster';
-import { setSubAssemblyTechnologyArray } from '../../../actions/SubAssembly';
+import { getEditPartCostDetails, saveEditPartCostDetails, setSubAssemblyTechnologyArray } from '../../../actions/SubAssembly';
 
 function EditPartCost(props) {
 
@@ -38,6 +38,12 @@ function EditPartCost(props) {
         })
 
     }, [gridData])
+
+    useEffect(() => {
+        let obj = {}
+        dispatch(getEditPartCostDetails(obj, res => { }))
+    }, [])
+
     /**
       * @method toggleDrawer
       * @description TOGGLE DRAWER
@@ -153,6 +159,8 @@ function EditPartCost(props) {
 
         props.getCostPerPiece(weightedCost)
         props.closeDrawer('')
+        // SAVE API FOR PART COST
+        // dispatch(saveEditPartCostDetails((res) => { }))
     }
 
     return (
