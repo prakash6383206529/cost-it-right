@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { required, maxLength6, maxLength80, checkWhiteSpaces,minLength10,alphaNumeric,vlidatePhoneNumber,maxLength71,maxLength7 ,maxLength5, acceptAllExceptSingleSpecialCharacter, maxLength4, postiveNumber, maxLength10, maxLength12, } from "../../../helper/validation";
+import { required, maxLength6, maxLength80, checkWhiteSpaces, minLength10, alphaNumeric, vlidatePhoneNumber, maxLength71, maxLength7, maxLength5, acceptAllExceptSingleSpecialCharacter, maxLength4, postiveNumber, maxLength10, maxLength12, } from "../../../helper/validation";
 import { userDetails, loggedInUserId } from "../../../helper/auth";
 import { renderText, searchableSelect } from "../../layout/FormInputs";
 import { createPlantAPI, getPlantUnitAPI, updatePlantAPI, getComapanySelectList } from '../actions/Plant';
@@ -407,7 +407,7 @@ class AddZBCPlant extends Component {
                           name={"PhoneNumber"}
                           type="text"
                           placeholder={""}
-                          validate={[postiveNumber,minLength10, maxLength12, checkWhiteSpaces]}
+                          validate={[postiveNumber, minLength10, maxLength12, checkWhiteSpaces]}
                           component={renderText}
                           maxLength={12}
                           className=""
@@ -421,7 +421,7 @@ class AddZBCPlant extends Component {
                           name={"Extension"}
                           type="text"
                           placeholder={""}
-                          validate={[postiveNumber, maxLength5 , checkWhiteSpaces]}
+                          validate={[postiveNumber, maxLength5, checkWhiteSpaces]}
                           component={renderText}
                           maxLength={5}
                           className=""
@@ -536,7 +536,7 @@ class AddZBCPlant extends Component {
                       name={"ZipCode"}
                       type="text"
                       placeholder={""}
-                      validate={[required, postiveNumber, maxLength6, checkWhiteSpaces]}
+                      validate={[required, postiveNumber, maxLength6]}
                       component={renderText}
                       required={true}
                       maxLength={6}
