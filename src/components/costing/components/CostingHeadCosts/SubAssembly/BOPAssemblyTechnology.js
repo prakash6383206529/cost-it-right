@@ -1,35 +1,11 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { costingInfoContext } from '../../CostingDetailStepTwo';
-import { getBOPData, } from '../../../actions/Costing';
-import { useDispatch, useSelector } from 'react-redux';
+import React from 'react';
+import { useSelector } from 'react-redux';
 import { checkForDecimalAndNull } from '../../../../../helper';
 
-function BOPA(props) {
+function BOPAssemblyTechnology(props) {
   const { item } = props;
 
-  const dispatch = useDispatch()
-  const [IsOpen, setIsOpen] = useState(false);
-
-  const costData = useContext(costingInfoContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-
-  useEffect(() => {
-    if (Object.keys(costData).length > 0) {
-      const data = {
-        CostingId: item.CostingId !== null ? item.CostingId : "00000000-0000-0000-0000-000000000000",
-        PartId: item.PartId,
-        //PlantId: costData.PlantId,
-      }
-      setTimeout(() => {
-        dispatch(getBOPData(data, (res) => {
-          if (res && res.data && res.data.Result) {
-            // let Data = res.data.DataList[0].CostingPartDetails;
-            // props.setPartDetails(BOMLevel, PartNumber, Data)
-          }
-        }))
-      }, 500)
-    }
-  }, [])
 
   /**
   * @method render
@@ -68,4 +44,4 @@ function BOPA(props) {
   );
 }
 
-export default BOPA;
+export default BOPAssemblyTechnology;

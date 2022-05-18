@@ -14,6 +14,7 @@ function AddAssemblyOperation(props) {
   const [IsOpenTool, setIsOpenTool] = useState(false);
   const IsLocked = (item?.IsLocked ? item?.IsLocked : false) || (item?.IsPartLocked ? item?.IsPartLocked : false)
 
+  const [operationGridData, setOperationGridData] = useState([]);
   const dispatch = useDispatch()
 
   const { RMCCTabData, CostingEffectiveDate, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData } = useSelector(state => state.costing)
@@ -21,7 +22,7 @@ function AddAssemblyOperation(props) {
   const costData = useContext(costingInfoContext)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const netPOPrice = useContext(NetPOPriceContext);
-  const [partType, setpartType] = useState(costData?.TechnologyName === 'Assembly')   //HELP
+  const partType = costData?.TechnologyName === 'Assembly'
 
   /**
   * @method toggleDrawer
@@ -42,6 +43,14 @@ function AddAssemblyOperation(props) {
     props.closeDrawer()
   }
 
+  const onSubmit = data => {
+    toggleDrawer('')
+  }
+
+  const getOperationGrid = (grid) => {
+    setOperationGridData(grid)
+  }
+
   /**
   * @method saveData
   * @description SAVE DATA ASSEMBLY
@@ -50,7 +59,7 @@ function AddAssemblyOperation(props) {
     let stCostingData = findSurfaceTreatmentData(item)
 
     if (isAssemblyTechnology) {
-      props.setOperationCostFunction(item?.CostingPartDetails?.TotalOperationCostPerAssembly)
+      props?.setOperationCostFunction(item?.CostingPartDetails?.TotalOperationCostPerAssembly, operationGridData)
     }
     let requestData = {
       "CostingId": item.CostingId,
@@ -192,6 +201,7 @@ function AddAssemblyOperation(props) {
                       setAssemblyOperationCost={props.setAssemblyOperationCost}
                       item={props.item}
                       IsAssemblyCalculation={true}
+                      getOperationGrid={getOperationGrid}
                     />
 
 

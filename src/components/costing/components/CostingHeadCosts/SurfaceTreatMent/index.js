@@ -42,7 +42,7 @@ function SurfaceTreatment(props) {
   const [transportObj, setTrasportObj] = useState(item.CostingPartDetails?.TransportationDetails)
 
   const [callDiscountApi, setCallDiscountApi] = useState(false)
-  const [partType, setpartType] = useState(costData?.TechnologyName === 'Assembly')   //HELP
+  const partType = costData?.TechnologyName === 'Assembly'
 
   useEffect(() => {
     setTrasportObj(item?.CostingPartDetails?.TransportationDetails)
