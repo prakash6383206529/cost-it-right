@@ -131,6 +131,8 @@ function ViewConversionCost(props) {
 
 
   const setCalculatorData = (data, list, id, parentId) => {
+    console.log('parentId: ', parentId);
+    console.log('id: ', id);
 
 
     if (parentId === '') {
@@ -149,13 +151,16 @@ function ViewConversionCost(props) {
     } else {
       let parentTempArr = []
       let parentTempData = viewCostingData[props.index].netConversionCostView.CostingProcessCostResponse[parentId]
+      console.log('parentTempData: ', parentTempData);
 
       let tempArr = []
       let tempData = list[id]
+      console.log('tempData: ', tempData);
 
 
       setCalculatorTechnology(tempData.ProcessTechnologyId)
       tempData = { ...tempData, WeightCalculatorRequest: data, }
+      console.log('tempData: ', tempData);
 
       setCalciData(tempData)
       tempArr = Object.assign([...list], { [id]: tempData })
@@ -188,6 +193,7 @@ function ViewConversionCost(props) {
       }
     } else {
       tempData = list[index]
+      console.log('tempData: ', tempData);
       if (tempData.ProcessCalculatorId === 0 || tempData.ProcessCalculatorId === null) {
         Toaster.warning('Data is not avaliabe for calculator')
         return false
@@ -206,7 +212,7 @@ function ViewConversionCost(props) {
 
             if ((res && res.data && res.data.Data) || (res && res.status === 204)) {
               const data = res.status === 204 ? {} : res.data.Data
-              setCalculatorData(data, list, index, parentIndex)
+              setCalculatorData(data, list, index, parentCalciIndex)
             }
           }
         }))
@@ -217,7 +223,7 @@ function ViewConversionCost(props) {
 
             if ((res && res.data && res.data.Data) || (res && res.status === 204)) {
               const data = res.status === 204 ? {} : res.data.Data
-              setCalculatorData(data, list, index, parentIndex)
+              setCalculatorData(data, list, index, parentCalciIndex)
             }
 
           }
@@ -229,6 +235,10 @@ function ViewConversionCost(props) {
 
   const closeWeightDrawer = (e = "") => {
     setWeightCalculatorDrawer(false)
+    setIndexForProcessCalculator('')
+    setParentIndex('')
+    setCalciData({})
+    setCalculatorTechnology('')
   }
 
 
