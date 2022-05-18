@@ -5875,12 +5875,15 @@ left: 17rem;
 .remark-btn-container {
   display: flex;
   justify-content: flex-end;
-  .submit-button {
-    width: 55px;
-    .save-icon {
+  button {
+    height: 24px;
+    width: 40px;
+    padding: 0;
+    .save-icon, .cancel-icon {
       margin: auto;
-    }
+     
   }
+}
 }
 // <----END Remark popup css->
 
@@ -5890,6 +5893,9 @@ left: 17rem;
 
 .popup-content {
   z-index: 1301 !important;
+  .form-group.inputbox {
+    margin-bottom: 10px;
+  }
 }
 .simulation-edit {
   .height-width-wrapper {
@@ -6038,6 +6044,9 @@ left: 17rem;
 }
 .remark-overflow {
   @include overflow($minWidth:45px,$ResponsiveWith:175px, $whiteSpace:normal, $lineClamp:2 )
+}
+.number-overflow {
+  @include overflow($minWidth:45px,$ResponsiveWith:120px, $whiteSpace:normal, $lineClamp:1 )
 }
   .drawer-wrapper table tr:first-child td{
     border-top: none;

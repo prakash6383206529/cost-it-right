@@ -365,7 +365,7 @@ function SheetMetalBaicDrawer(props) {
                   </Col>
                   <Col md="3">
                     <TextFieldHookForm
-                      label={props.calculatorData.UOMType === MASS ? `Weight` : props.calculatorData.UOMType === TIME ? `Part / Hour` : `Quantity`}
+                      label={props.calculatorData.UOMType === MASS ? `Weight` : props.calculatorData.UOMType === TIME ? `Parts/Hour` : `Quantity`}
                       name={'Quantity'}
                       Controller={Controller}
                       control={control}

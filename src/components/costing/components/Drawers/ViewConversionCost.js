@@ -316,7 +316,7 @@ function ViewConversionCost(props) {
                 <th>{`Machine Name`}</th>
                 <th>{`Tonnage`}</th>
                 <th>{`UOM`}</th>
-                <th>{`Part/Hour`}</th>
+                <th>{`Parts/Hour`}</th>
                 <th>{`MHR`}</th>
                 {!isPDFShow && <th>{`Calculator`}</th>}
                 <th>{`Quantity`}</th>

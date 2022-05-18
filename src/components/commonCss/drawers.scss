@@ -1,3 +1,4 @@
+@import 'cssVariable.scss';
 .calculator {
     &__forging {
        .drawer-1500px {
@@ -5,6 +6,19 @@
        }
        .text-overflow {
            min-width: 70px;
+       }
+       .text-help {
+           line-height: 1.2;
+       }
+       @media screen and (max-width: $max1367)  {
+       table {
+               td {
+                   font-size: 14px;
+               }
+           }
+           .bluefooter-butn.border {
+               font-size: 15px;
+           }
        }
     }
 }

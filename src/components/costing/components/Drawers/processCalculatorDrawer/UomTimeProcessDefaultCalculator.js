@@ -262,7 +262,7 @@ function UomTimeProcessDefaultCalculator(props) {
                                     <Row>
                                         <Col md="4">
                                             <TextFieldHookForm
-                                                label={`Feed Per tooth(mm/rev)`}
+                                                label={`Feed per Tooth(mm/rev)`}
                                                 name={'feedPerTooth'}
                                                 Controller={Controller}
                                                 control={control}
@@ -286,7 +286,7 @@ function UomTimeProcessDefaultCalculator(props) {
 
                                         <Col md="4">
                                             <TextFieldHookForm
-                                                label={`No of Tooth`}
+                                                label={`No. of Tooth`}
                                                 name={'noOfTooth'}
                                                 Controller={Controller}
                                                 control={control}
@@ -381,7 +381,7 @@ function UomTimeProcessDefaultCalculator(props) {
                                         </Col>
                                         <Col md="4">
                                             <TextFieldHookForm
-                                                label={`No of passes/Holes`}
+                                                label={`No. of Passes/Holes`}
                                                 name={'noOfPasses'}
                                                 Controller={Controller}
                                                 control={control}
@@ -477,7 +477,7 @@ function UomTimeProcessDefaultCalculator(props) {
 
                                         <Col md="4">
                                             <TextFieldHookForm
-                                                label={`Tool non cutting time(min)`}
+                                                label={`Tool non Cutting Time(min)`}
                                                 name={'totalNonCuttingTime'}
                                                 Controller={Controller}
                                                 control={control}
@@ -501,7 +501,7 @@ function UomTimeProcessDefaultCalculator(props) {
 
                                         <Col md="4">
                                             <TextFieldHookForm
-                                                label={`Indexing table positioning time(min)`}
+                                                label={`Indexing Table Positioning Time(min)`}
                                                 name={'indexingTablePositioningTime'}
                                                 Controller={Controller}
                                                 control={control}
