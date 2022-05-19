@@ -20,7 +20,7 @@ import { reactLocalStorage } from "reactjs-localstorage";
 import { getConfigurationKey, loggedInUserId } from "../../helper/auth";
 import { Table, Button, Row, Col } from 'reactstrap';
 import "./UserRegistration.scss";
-import { EMPTY_DATA } from "../../config/constants";
+import { EMPTY_DATA, IV, KEY } from "../../config/constants";
 import NoContentFound from "../common/NoContentFound";
 import HeaderTitle from "../common/HeaderTitle";
 import PermissionsTabIndex from "./RolePermissions/PermissionsTabIndex";
@@ -1004,10 +1004,10 @@ class UserRegistration extends Component {
     const { reset, registerUserData, initialConfiguration } = this.props;
     const { department, role, city, isEditFlag, Modules, oldModules, TechnologyLevelGrid,
       oldTechnologyLevelGrid, UserId, HeadLevelGrid, masterLevelGrid } = this.state;
-    const userDetails = reactLocalStorage.getObject("userDetail")
+    const userDetails = JSON.parse(localStorage.getItem('userDetail'))
 
-    var key = CryptoJS.enc.Utf8.parse('gQUJ79YKYm22Cazw');
-    var iv = CryptoJS.enc.Utf8.parse('eTEFSa0PinFKTQNB');
+    var key = CryptoJS.enc.Utf8.parse(KEY);
+    var iv = CryptoJS.enc.Utf8.parse(IV);
 
     var encryptedpassword = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse(values.Password), key,
       {
@@ -1241,7 +1241,7 @@ class UserRegistration extends Component {
                           name={"FirstName"}
                           type="text"
                           placeholder={'Enter'}
-                          validate={[required, minLength3, maxLength15]}
+                          validate={[required, minLength3, maxLength15, checkWhiteSpaces]}
                           component={renderText}
                           required={true}
                           // maxLength={26}
@@ -1519,7 +1519,7 @@ class UserRegistration extends Component {
                           onChange={this.onPressUserPermission}
                         >
                           Grant User Wise Permission
-                        <input type="checkbox" disabled={false} checked={this.state.IsShowAdditionalPermission} />
+                          <input type="checkbox" disabled={false} checked={this.state.IsShowAdditionalPermission} />
                           <span
                             className=" before-box"
                             checked={this.state.IsShowAdditionalPermission}
@@ -1884,7 +1884,7 @@ class UserRegistration extends Component {
                         value="CANCEL"
                         className="mr15 cancel-btn">
                         <div className={"cancel-icon"}></div>
-                      CANCEL
+                        CANCEL
                       </button>
 
                       <button

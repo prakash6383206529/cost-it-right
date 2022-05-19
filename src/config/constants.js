@@ -4,14 +4,16 @@
 
 import { getAuthToken } from '../helper/auth';
 
-export const config = {
-  headers: {
+export const config = () => {
+
+  let headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Credentials': 'true',
-    'Authorization': `Bearer ${getAuthToken()}`,
+    'Authorization': `Bearer ${JSON.parse(localStorage.getItem('userDetail'))?.Token}`,
     'Access-From': 'WEB',
     'Api-Key': `${process.env.REACT_APP_API_KEY}`,
-  },
+  }
+  return { headers }
 }
 
 // DEVELOPMENT
@@ -1483,6 +1485,7 @@ export const GET_DEPRECIATION_SELECTLIST_SUCCESS = 'GET_DEPRECIATION_SELECTLIST_
 export const GET_MACHINE_APPROVAL_LIST = 'GET_MACHINE_APPROVAL_LIST'
 export const SET_PROCESS_GROUP_FOR_API = 'SET_PROCESS_GROUP_FOR_API'
 export const SET_PROCESS_GROUP_LIST = 'SET_PROCESS_GROUP_LIST'
+export const STORE_PROCESS_LIST = 'STORE_PROCESS_LIST'
 
 //POWER MASTER
 export const GET_POWER_TYPE_SELECTLIST_SUCCESS = 'GET_POWER_TYPE_SELECTLIST_SUCCESS'
@@ -1745,6 +1748,8 @@ export const HOUR = "Hours"
 export const NO = "Number"
 export const STROKE = "Stroke"
 export const SHOTS = "SHOT"
+export const MINUTES = 'Minutes'
+export const SECONDS = 'Seconds'
 
 // export const INR = "INR"
 
@@ -1874,5 +1879,10 @@ export const LEVEL0 = 'L0';
 export const LEVEL1 = 'L1';
 export const SUB_ASSEMBLY = 'Sub Assembly';
 
+// KEY AND IV
+export const KEY = 'ewswymuinfzfskjz';
+export const IV = 'ozzzguugcusjqmbj'
+
+
 //VERSION 
-export const VERSION = "V1.2.217";
+export const VERSION = "V1.2.232";

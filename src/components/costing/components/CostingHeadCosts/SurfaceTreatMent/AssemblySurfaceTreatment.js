@@ -186,7 +186,7 @@ function AssemblySurfaceTreatment(props) {
               >
                 <div className={`${CostingViewMode ? 'fa fa-eye pr-1' : 'plus'}`}></div> Surface T.</button>
             }
-            <div className={`lock-width ${(item.IsLocked || item.IsPartLocked) ? 'lock_icon ml-3' : ''}`}>{''}</div>
+            <div className={`lock-width ${(item.IsLocked || item.IsPartLocked) ? 'lock_icon' : ''}`}>{''}</div>
           </div>
         </td>
         {/*WHEN COSTING OF THAT PART IS  APPROVED SO COSTING COMES AUTOMATICALLY FROM BACKEND AND THIS KEY WILL COME TRUE (WORK LIKE VIEW MODE)*/}

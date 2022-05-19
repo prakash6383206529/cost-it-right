@@ -1875,8 +1875,8 @@ export const BOPDomesticSimulation = [
     { label: "BoughtOutPartNumber", value: "BoughtOutPartNumber" },
     { label: "BoughtOutPartName", value: "BoughtOutPartName" },
     { label: "BoughtOutPartCategory", value: "BoughtOutPartCategory" },
-    { label: "Plant(Code)", value: "Plants", },
-    { label: "Vendor(Code)", value: "Vendor" },
+    { label: "Plants", value: "Plants", },
+    { label: "Vendor", value: "Vendor" },
     { label: "BasicRate", value: "BasicRate" },
     { label: "NewBasicRate", value: "NewBasicRate" },
     { label: "NetLandedCost", value: "NetLandedCost" },
@@ -3415,9 +3415,9 @@ export const RawMaterialImportFileHeads = ["CostingHead", "RawMaterial", "RMGrad
 
 export const OperationFileHeads = ['Technology', 'CostingHead', 'OperationName', 'OperationCode', 'DestinationPlant', 'VendorName', 'UnitOfMeasurement', 'Rate', 'NewRate', 'EffectiveDate', 'OperationId']
 
-export const BoughtOutPartDomesticFileHeads = ['CostingHead', 'BoughtOutPartNumber', 'BoughtOutPartName', 'BoughtOutPartCategory', 'DestinationPlant', 'Vendor', 'BasicRate', 'NewBasicRate', 'NetLandedCost', 'EffectiveDate', 'BoughtOutPartId']
+export const BoughtOutPartDomesticFileHeads = ['CostingHead', 'BoughtOutPartNumber', 'BoughtOutPartName', 'BoughtOutPartCategory', 'Plants', 'Vendor', 'BasicRate', 'NewBasicRate', 'NetLandedCost', 'EffectiveDate', 'BoughtOutPartId']
 
-export const BoughtOutPartImportFileHeads = ['CostingHead', 'BoughtOutPartNumber', 'BoughtOutPartName', 'BoughtOutPartCategory', 'DestinationPlant', 'Vendor', 'BasicRate', 'NewBasicRate', 'NetLandedCost', 'EffectiveDate', 'BoughtOutPartId']
+export const BoughtOutPartImportFileHeads = ['CostingHead', 'BoughtOutPartNumber', 'BoughtOutPartName', 'BoughtOutPartCategory', 'Plants', 'Vendor', 'BasicRate', 'NewBasicRate', 'NetLandedCost', 'EffectiveDate', 'BoughtOutPartId']
 
 export const MachineRateFileHeads = ['CostingHead', 'Technologies', 'VendorName', 'DestinationPlant', 'MachineNumber', 'MachineTypeName', 'MachineTonnage', 'ProcessName', 'MachineRate', 'NewMachineRate', 'EffectiveDate']
 

@@ -22,6 +22,7 @@ function AddVendorDrawer(props) {
   const [DestinationPlant, setDestinationPlant] = useState([]);
   //dropdown loader 
   const [inputLoader, setInputLoader] = useState(false)
+  const [VendorInputLoader, setVendorInputLoader] = useState(false)
 
   const dispatch = useDispatch()
 
@@ -31,8 +32,11 @@ function AddVendorDrawer(props) {
   const plantSelectList = useSelector(state => state.comman.plantSelectList);
 
   useEffect(() => {
+    setVendorInputLoader(true)
     const { vbcVendorGrid } = props;
-    dispatch(getVendorWithVendorCodeSelectList(() => { }))
+    dispatch(getVendorWithVendorCodeSelectList(() => {
+      setVendorInputLoader(false)
+    }))
     dispatch(getPlantSelectListByType(ZBC, () => { }))
 
     let tempArr = [];
@@ -206,6 +210,7 @@ function AddVendorDrawer(props) {
             <form onSubmit={handleSubmit(onSubmit)}>
               <Row className="pl-3">
                 <Col md="12">
+                  {VendorInputLoader && <LoaderCustom customClass="vendor-input-loader-first-col" />}
                   <SearchableSelectHookForm
                     label={"Vendor"}
                     name={"Vendor"}

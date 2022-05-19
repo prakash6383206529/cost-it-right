@@ -109,6 +109,7 @@ function SimulationApprovalSummary(props) {
     const [showExchangeRateColumn, setShowExchangeRateColumn] = useState(false);
     const [showMachineRateColumn, setShowMachineRateColumn] = useState(false);
     const [showCombinedProcessColumn, setShowCombinedProcessColumn] = useState(false);
+    const [ammendmentStatus, setAmmendmentStatus] = useState('');
 
     const isSurfaceTreatment = (Number(SimulationTechnologyId) === Number(SURFACETREATMENT));
     const isOperation = (Number(SimulationTechnologyId) === Number(OPERATIONS));
@@ -155,7 +156,7 @@ function SimulationApprovalSummary(props) {
     }
     const funcForErrorBoxButtonForAmmendment = () => {
 
-        const statusWithButton = <><p className={`${toggleAmmendmentData ? 'status-overflow' : ''} `}><span>{status}</span></p>{<button className='see-data-btn' onClick={() => { setToggleAmmendmentStatus(!toggleAmmendmentData) }}>Show {toggleAmmendmentData ? 'all' : 'less'} data</button>}</>
+        const statusWithButton = <><p className={`${toggleAmmendmentData ? 'status-overflow' : ''} `}><span>{amendentStatus}</span></p>{<button className='see-data-btn' onClick={() => { setToggleAmmendmentStatus(!toggleAmmendmentData) }}>Show {toggleAmmendmentData ? 'all' : 'less'} data</button>}</>
         return statusWithButton
     }
 
@@ -233,6 +234,7 @@ function SimulationApprovalSummary(props) {
                 const { RecordInsertStatus, IsSuccessfullyInsert, AmmendentStatus, IsAmmendentDone, AmmendentNumber } = res?.data?.DataList[0]
                 setStatus(RecordInsertStatus)
                 setIsSuccessfullyInsert(IsSuccessfullyInsert)
+                setAmmendmentStatus(AmmendentStatus);
                 setShowButton(RecordInsertStatus?.length > 245 ? true : false)
                 if (IsAmmendentDone) {
                     setAmendentstatus(`Amendment Number: ${AmmendentNumber},\u00A0 ${AmmendentStatus}`)
@@ -898,17 +900,24 @@ function SimulationApprovalSummary(props) {
         bopNumberFormat: bopNumberFormat
     };
 
-    const errorBoxClass = () => {
+    const errorBoxClassForAmmendent = () => {
         let temp
-        if (amendentStatus.startsWith('E')) {
+        if (ammendmentStatus.startsWith('E')) {
             temp = 'error';
         }
-        else if (amendentStatus.startsWith('S')) {
+        else if (ammendmentStatus.startsWith('S')) {
             temp = 'success';
         }
         else {
             temp = 'd-none'
         }
+        return temp
+    }
+    const errorBoxClassForStatus = () => {
+        let temp;
+
+        temp = noContent ? 'd-none' : isSuccessfullyInsert ? 'success' : 'error';
+
         return temp
     }
 
@@ -944,24 +953,24 @@ function SimulationApprovalSummary(props) {
 
                         {recordInsertStatusBox &&
                             <div className="error-box-container">
-                                <Errorbox customClass={errorBoxClass()} errorText={showbutton ? funcForErrorBoxButton() : status} />
+                                <Errorbox customClass={errorBoxClassForStatus()} errorText={showbutton ? funcForErrorBoxButton() : status} />
                                 <img
                                     className="float-right"
                                     alt={""}
                                     onClick={deleteInsertStatusBox}
-                                    src={errorBoxClass() === 'd-none' ? '' : errorBoxClass() === "success" ? imgGreencross : imgRedcross}
+                                    src={errorBoxClassForStatus() === 'd-none' ? '' : errorBoxClassForStatus() === "success" ? imgGreencross : imgRedcross}
                                 ></img>
                             </div>
                         }
 
                         {amendmentStatusBox &&
                             <div className="error-box-container">
-                                <Errorbox customClass={errorBoxClass()} errorText={ammendentButton ? funcForErrorBoxButtonForAmmendment() : amendentStatus} />
+                                <Errorbox customClass={errorBoxClassForAmmendent()} errorText={ammendentButton ? funcForErrorBoxButtonForAmmendment() : amendentStatus} />
                                 <img
                                     className="float-right"
                                     alt={""}
                                     onClick={deleteAmendmentStatusBox}
-                                    src={errorBoxClass() === 'd-none' ? '' : errorBoxClass() === "success" ? imgGreencross : imgRedcross}
+                                    src={errorBoxClassForAmmendent() === 'd-none' ? '' : errorBoxClassForAmmendent() === "success" ? imgGreencross : imgRedcross}
                                 ></img>
                             </div>
 
