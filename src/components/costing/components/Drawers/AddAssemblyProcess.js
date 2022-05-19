@@ -1,29 +1,17 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
-import { costingInfoContext, NetPOPriceContext } from '../CostingDetailStepTwo';
 import Drawer from '@material-ui/core/Drawer';
-import Switch from "react-switch";
-import { saveAssemblyCostingRMCCTab, saveAssemblyPartRowCostingCalculation } from '../../actions/Costing';
-import ToolCost from '../CostingHeadCosts/Part/ToolCost';
-import { loggedInUserId, checkForDecimalAndNull, checkForNull } from '../../../../helper';
-import { createToprowObjAndSave } from '../../CostingUtil';
+import { checkForNull } from '../../../../helper';
 import ProcessCost from '../CostingHeadCosts/Part/ProcessCost';
 import { setSubAssemblyTechnologyArray } from '../../actions/SubAssembly';
 
 function AddAssemblyProcess(props) {
   const { item, CostingViewMode, ccData } = props;
-  const [IsOpenTool, setIsOpenTool] = useState(false);
   const [processGrid, setProcessGrid] = useState([]);
   const [totalProcessCost, setTotalProcessCost] = useState(0);
   const dispatch = useDispatch()
   const { subAssemblyTechnologyArray } = useSelector(state => state.SubAssembly)
-
-  const { RMCCTabData, CostingEffectiveDate, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData } = useSelector(state => state.costing)
-
-  const costData = useContext(costingInfoContext)
-  const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const netPOPrice = useContext(NetPOPriceContext);
 
   /**
   * @method toggleDrawer
@@ -37,14 +25,6 @@ function AddAssemblyProcess(props) {
   };
 
   /**
-* @method onToolToggle
-* @description TOOL COST TOGGLE
-*/
-  const onToolToggle = () => {
-    setIsOpenTool(!IsOpenTool)
-  }
-
-  /**
   * @method cancel
   * @description used to Reset form
   */
@@ -52,14 +32,9 @@ function AddAssemblyProcess(props) {
     props.closeDrawer()
   }
 
-  const onSubmit = data => {
-    toggleDrawer('')
-  }
-
   const getValuesOfProcess = (gridData, ProcessCostTotal) => {
     setProcessGrid(gridData)
     setTotalProcessCost(ProcessCostTotal)
-
   }
 
   /**
@@ -67,100 +42,12 @@ function AddAssemblyProcess(props) {
   * @description SAVE DATA ASSEMBLY
   */
   const saveData = () => {
-
-    // const setProcessCostFunction = (value) => {
-    // setprocessCostValue(value)
-    let temp = subAssemblyTechnologyArray
-
-    // temp[0].CostingPartDetails.CostPerAssembly = checkForNull(temp[0].CostingPartDetails.CostPerAssembly) - checkForNull(temp[0].processCostValue)
-    temp[0].processCostValue = totalProcessCost
-    temp[0].CostingPartDetails.processCostValue = totalProcessCost
-    temp[0].CostingPartDetails.CostPerAssembly = checkForNull(temp[0].CostingPartDetails.CostPerAssembly) + checkForNull(totalProcessCost)
-    dispatch(setSubAssemblyTechnologyArray(temp, res => { }))
-
-    // }
-
-    // props.setOperationCostFunction(item?.CostingPartDetails?.TotalOperationCostPerAssembly)
-    // props.setProcessCostFunction(item?.CostingPartDetails?.TotalProcessCostPerAssembly)
-    // let requestData = {
-    //   "CostingId": item.CostingId,
-    //   "CostingNumber": item.CostingNumber,
-
-    //   "CostingDetailId": "00000000-0000-0000-0000-000000000000",
-    //   "PartId": item.PartId,
-    //   "PartNumber": item.PartNumber,
-    //   "PartTypeId": item.PartTypeId,
-    //   "Type": item.PartType,
-    //   "SubAssemblyCostingId": item.SubAssemblyCostingId,
-    //   "PlantId": costData.PlantId,
-    //   "VendorId": costData.VendorId,
-    //   "VendorCode": costData.VendorCode,
-    //   "VendorPlantId": costData.VendorPlantId,
-    //   "TechnologyName": item.Technology,
-    //   "TechnologyId": item.TechnologyId,
-    //   "TypeOfCosting": costData.VendorType,
-    //   "PlantCode": costData.PlantCode,
-    //   "PlantName": costData.PlantName,
-    //   "Version": item.Version,
-    //   "ShareOfBusinessPercent": item.ShareOfBusinessPercent,
-
-    //   "NetRawMaterialsCost": item.CostingPartDetails.TotalRawMaterialsCost,
-    //   "NetBoughtOutPartCost": item.CostingPartDetails.TotalBoughtOutPartCost,
-    //   "NetConversionCost": item.CostingPartDetails.TotalConversionCost,
-    //   "TotalProcessCost": item.CostingPartDetails.TotalProcessCost,
-    //   "TotalOperationCost": item.CostingPartDetails.TotalOperationCost,
-    //   "NetTotalRMBOPCC": item.CostingPartDetails.TotalCalculatedRMBOPCCCost,
-    //   "TotalCost": item.CostingPartDetails.TotalCalculatedRMBOPCCCost,
-    //   "LoggedInUserId": loggedInUserId(),
-    //   "EffectiveDate": CostingEffectiveDate,
-
-    //   "IsSubAssemblyComponentPart": costData.IsAssemblyPart,
-    //   "NetOperationCostPerAssembly": item.CostingPartDetails.TotalOperationCostPerAssembly,
-    //   "NetToolCostPerAssembly": item.CostingPartDetails.TotalToolCostPerAssembly,
-    //   "CostingPartDetails": {
-    //     "CostingId": item.CostingId,
-    //     "CostingNumber": item.CostingNumber,
-    //     "CostingDetailId": "00000000-0000-0000-0000-000000000000",
-    //     "PartId": item.PartId,
-    //     "PartNumber": item.PartNumber,
-    //     "PartName": item.PartName,
-    //     "PartTypeId": item.PartTypeId,
-    //     "Type": item.PartType,
-
-    //     "TotalRawMaterialsCost": item.CostingPartDetails.TotalRawMaterialsCost,
-    //     "TotalBoughtOutPartCost": item.CostingPartDetails.TotalBoughtOutPartCost,
-    //     "TotalConversionCost": item.CostingPartDetails.TotalConversionCost,
-    //     "TotalCalculatedRMBOPCCCost": item.CostingPartDetails.TotalCalculatedRMBOPCCCost,
-
-    //     "TotalRawMaterialsCostWithQuantity": item.CostingPartDetails.TotalRawMaterialsCostWithQuantity,
-    //     "TotalBoughtOutPartCostWithQuantity": item.CostingPartDetails.TotalBoughtOutPartCostWithQuantity,
-    //     "TotalConversionCostWithQuantity": item.CostingPartDetails.TotalConversionCostWithQuantity,
-    //     "TotalCalculatedRMBOPCCCostWithQuantity": item.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity,
-
-    //     "Quantity": item.CostingPartDetails.Quantity,
-    //     "IsOpen": true,
-    //     "IsShowToolCost": item.CostingPartDetails.IsShowToolCost === null ? true : true,
-    //     "TotalOperationCostPerAssembly": item.CostingPartDetails.TotalOperationCostPerAssembly,
-    //     "TotalToolCostPerAssembly": item.CostingPartDetails.TotalToolCostPerAssembly,
-    //     "AssemblyCostingOperationCostRequest": item.CostingPartDetails.CostingOperationCostResponse,
-    //     "AssemblyCostingToolsCostRequest": item.CostingPartDetails.CostingToolCostResponse,
-    //   }
-    // }
-
-    // dispatch(saveAssemblyCostingRMCCTab(requestData, res => {
-    //   const tabData = RMCCTabData[0]
-    //   const surfaceTabData = SurfaceTabData[0]
-    //   const overHeadAndProfitTabData = OverheadProfitTabData[0]
-    //   const discountAndOtherTabData = DiscountCostData
-
-
-    //   if (!CostingViewMode) {
-    //     let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 1)
-
-    //     dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
-    //   }
-    //   props.closeDrawer('')
-    // }))
+    let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray
+    // UPDATING AT INDEX 0 BECAUSE NEED TO UPDATE THE LEVEL 0 ROW (ASSEMBLY)
+    tempsubAssemblyTechnologyArray[0].ProcessCostValue = totalProcessCost
+    tempsubAssemblyTechnologyArray[0].CostingPartDetails.ProcessCostValue = totalProcessCost
+    tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerAssembly = checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.EditPartCost) + (checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.CostPerAssemblyBOP)) + (checkForNull(tempsubAssemblyTechnologyArray[0].ProcessCostValue) + checkForNull(tempsubAssemblyTechnologyArray[0].OperationCostValue))
+    dispatch(setSubAssemblyTechnologyArray(tempsubAssemblyTechnologyArray, res => { }))
   }
 
   /**
@@ -170,7 +57,6 @@ function AddAssemblyProcess(props) {
   return (
     <div>
       <Drawer className="bottom-drawer" anchor='bottom' open={props.isOpen}
-      // onClose={(e) => toggleDrawer(e)}
       >
         <div className="container-fluid add-operation-drawer">
           <div className={'drawer-wrapper drawer-1500px'}>
@@ -233,7 +119,6 @@ function AddAssemblyProcess(props) {
                 </button>
               </div>
             </Row>
-
           </div>
         </div>
       </Drawer>

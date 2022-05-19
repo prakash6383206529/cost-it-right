@@ -10,6 +10,7 @@ import { getRandomSixDigit, onFocus } from '../../../helper/util';
 import LoaderCustom from '../../common/LoaderCustom';
 import { PartEffectiveDate } from './AddAssemblyPart';
 import AsyncSelect from 'react-select/async';
+import { ASSEMBLYNAME } from '../../../config/constants';
 
 class AddAssemblyForm extends Component {
 
@@ -34,19 +35,20 @@ class AddAssemblyForm extends Component {
    * @description called after render the component
    */
     componentDidMount() {
-        let obj = {
-            technologyId: this.props?.TechnologySelected.value,
-            date: this.context
-        }
-        this.setState({ isLoader: true })
-        this.props.getAssemblyPartSelectList(obj, () => { this.setState({ isLoader: false }) })
-
+        const { BOMViewerData } = this.props;
+        let tempArr = [];
+        BOMViewerData && BOMViewerData.map(el => {
+            if (el.PartType === ASSEMBLYNAME) {
+                tempArr.push(el.PartId)
+            }
+            return null;
+        })
+        this.setState({ selectedParts: tempArr })
     }
 
     componentWillUnmount() {
         this.props.getDrawerAssemblyPartDetail('', res => { })
     }
-
 
     /**
     * @method handleAssemblyPartChange
@@ -87,7 +89,7 @@ class AddAssemblyForm extends Component {
 
         let tempArr = [];
         BOMViewerData && BOMViewerData.map(el => {
-            if (el.PartType === ASSEMBLY) {
+            if (el.PartType === ASSEMBLYNAME) {
                 tempArr.push(el.PartId)
             }
             return null;

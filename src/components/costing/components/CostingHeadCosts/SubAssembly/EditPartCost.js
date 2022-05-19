@@ -1,49 +1,97 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Drawer from '@material-ui/core/Drawer';
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
-import { checkForDecimalAndNull, checkForNull, percentageOfNumber } from '../../../../../helper';
+import { checkForDecimalAndNull, checkForNull, formViewData, percentageOfNumber } from '../../../../../helper';
 import { ListForPartCost, optionsForDelta } from '../../../../../config/masterData';
 import { NumberFieldHookForm, SearchableSelectHookForm } from '../../../../layout/HookFormInputs';
 import { Controller, useForm } from 'react-hook-form';
 import Toaster from '../../../../common/Toaster';
-import { getEditPartCostDetails, saveEditPartCostDetails, setSubAssemblyTechnologyArray } from '../../../actions/SubAssembly';
+import { getEditPartCostDetails, setSubAssemblyTechnologyArray } from '../../../actions/SubAssembly';
+// import { getCostingForMultiTechnology,getSettledCostingDetails,saveSettledCostingDetails, updateMultiTechnologyTopAndWorkingRowCalculation} from '../../../actions/SubAssembly';
+import { costingInfoContext } from '../../CostingDetailStepTwo';
+import { formatMultiTechnologyUpdate } from '../../../CostingUtil';
+import _ from 'lodash';
+import NoContentFound from '../../../../common/NoContentFound';
+import { getSingleCostingDetails, gridDataAdded, setCostingViewData } from '../../../actions/Costing';
+import CostingDetailSimulationDrawer from '../../../../simulation/components/CostingDetailSimulationDrawer';
+import { ViewCostingContext } from '../../CostingDetails';
 
 function EditPartCost(props) {
 
-    const [SOBPercentage, setSOBPercentage] = useState(0)
-    const [DeltaSign, setDeltaSign] = useState('')
-    const [DeltaValue, setDeltaValue] = useState(0)
-    const [gridData, setGridData] = useState(ListForPartCost)
+    const [gridData, setGridData] = useState([])
+    const { settledCostingDetails } = useSelector(state => state.subAssembly)
     const [weightedCost, setWeightedCost] = useState(0)
+    const [costingNumberData, setCostingNumberData] = useState({})
+    const [isOpen, setIsOpen] = useState(false)
+    const CostingViewMode = useContext(ViewCostingContext);
+
     const dispatch = useDispatch()
 
     const PartCostFields = 'PartCostFields';
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
-    const { subAssemblyTechnologyArray } = useSelector(state => state.SubAssembly)
+    const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
+    const { costingForMultiTechnology } = useSelector(state => state.subAssembly)
+    const costData = useContext(costingInfoContext);
     const { ToolTabData, ToolsDataList, ComponentItemDiscountData, OverHeadAndProfitTabData, SurfaceTabData, RMCCTabData, OverheadProfitTabData, DiscountCostData, PackageAndFreightTabData, checkIsToolTabChange, getAssemBOPCharge, CostingEffectiveDate } = useSelector(state => state.costing)
-    const { settledCostingDetails } = useSelector(state => state.subAssembly)
 
-    const { register, handleSubmit, control, setValue, getValues, formState: { errors },
-    } = useForm({
+
+    const { register, handleSubmit, control, setValue, getValues } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
     })
 
     useEffect(() => {
         gridData && gridData.map((item, index) => {
-            setValue(`${PartCostFields}.${index}.DeltaValue`, item.DeltaValue)
-            setValue(`${PartCostFields}.${index}.DeltaSign`, item.DeltaSign)
-            setValue(`${PartCostFields}.${index}.SOBPercentage`, item.SOBPercentage)
-            setValue(`${PartCostFields}.${index}.NetCost`, checkForDecimalAndNull(item.NetCost, initialConfiguration.NoOfDecimalForPrice))
-            setDeltaSign(item.DeltaSign)
+            setValue(`${PartCostFields}.${index}.DeltaValue`, item?.DeltaValue)
+            setValue(`${PartCostFields}.${index}.DeltaSign`, item?.DeltaSign)
+            setValue(`${PartCostFields}.${index}.SOBPercentage`, item?.SOBPercentage)
+            setValue(`${PartCostFields}.${index}.NetCost`, checkForDecimalAndNull(item?.NetCost, initialConfiguration.NoOfDecimalForPrice))
+            return null
         })
 
     }, [gridData])
 
     useEffect(() => {
-        let obj = {}
-        dispatch(getEditPartCostDetails(obj, res => { }))
+        let tempArray = []
+        settledCostingDetails?.CostingWeightedAverageSettledDetails && settledCostingDetails?.CostingWeightedAverageSettledDetails.map((item, index) => {
+            let tempObject = {}
+            tempObject.DeltaValue = item?.Delta
+            tempObject.DeltaSign = { label: item?.DeltaSign, value: item?.DeltaSign }
+            tempObject.NetCost = item?.NetCost
+            tempObject.SOBPercentage = item?.SOBPercentage
+            tempObject.SettledPrice = item?.SettledPrice
+            tempObject.VendorCode = item?.VendorCode
+            tempObject.VendorName = item?.VendorName
+            tempObject.label = item?.CostingNumber
+            tempObject.value = item?.BaseCostingId
+            tempArray.push(tempObject)
+            setValue(`${PartCostFields}.${index}.DeltaSign`, { label: item?.DeltaSign, value: item?.DeltaSign })
+        })
+        setWeightedCost(settledCostingDetails?.NetPOPrice)
+        setGridData(tempArray)
+    }, [settledCostingDetails])
+
+    useEffect(() => {
+        // GET DATA FOR EDIT DRAWER
+        let obj = {
+            partId: props?.tabAssemblyIndividualPartDetail?.PartId,
+            plantId: costData?.DestinationPlantId,
+            costingTypeId: costData?.CostingTypeId
+        }
+
+        // !props.costingSummary && dispatch(getCostingForMultiTechnology(obj, res => { }))
+        // dispatch(getSettledCostingDetails(props?.tabAssemblyIndividualPartDetail?.CostingId, res => { }))
+        // dispatch(getEditPartCostDetails(obj, res => { }))
+        return () => {
+            gridData && gridData.map((item, index) => {
+                setValue(`${PartCostFields}.${index}.DeltaValue`, 0)
+                setValue(`${PartCostFields}.${index}.DeltaSign`, 0)
+                setValue(`${PartCostFields}.${index}.SOBPercentage`, 0)
+                setValue(`${PartCostFields}.${index}.NetCost`, 0)
+                return null
+            })
+        }
     }, [])
 
     /**
@@ -59,81 +107,180 @@ function EditPartCost(props) {
 
     const netCostCalculator = (gridIndex) => {
 
-        let sum = 0
-        ListForPartCost && ListForPartCost.map((item, index) => {                                           //API
-            sum = checkForNull(sum) + checkForNull(getValues(`${PartCostFields}.${index}.SOBPercentage`))
-            return null
-        })
+        // TAKING OBJECT FROM WHOLE ARRAY LIST USING INDEX ON WHICH USER IS EDITING
+        let editedObject = gridData[gridIndex]
+        let weightedCostCalc = 0
+        let netCost = 0
+
+        // GET RUN TIME EDITED VALUES FROM INPUT FIELD
+        editedObject.SOBPercentage = getValues(`${PartCostFields}.${gridIndex}.SOBPercentage`)
+        editedObject.DeltaValue = getValues(`${PartCostFields}.${gridIndex}.DeltaValue`)
+        editedObject.DeltaSign = getValues(`${PartCostFields}.${gridIndex}.DeltaSign`)
+
+        let arr = Object.assign([...gridData], { [gridIndex]: editedObject })
+        let sum = calcTotalSOBPercent(arr)
         if (sum > 100) {
             Toaster.warning('Total SOB Percent should not be greater than 100');
             setValue(`${PartCostFields}.${gridIndex}.SOBPercentage`, 0)
-            return false
+            editedObject.SOBPercentage = 0
         }
 
-        let WeightedCost = 0
-        ListForPartCost && ListForPartCost.map((item, index) => {
+        // RESPECTIVE CALCULATION FOR + and - DELTA SIGN
+        if (editedObject.DeltaSign?.label === '+') {
+            netCost = percentageOfNumber(checkForNull(editedObject.SettledPrice) + checkForNull(editedObject.DeltaValue), checkForNull(editedObject.SOBPercentage))
+            editedObject.NetCost = netCost
+            setValue(`${PartCostFields}.${gridIndex}.NetCost`, checkForDecimalAndNull(netCost, initialConfiguration.NoOfDecimalForPrice))
+        } if (editedObject.DeltaSign?.label === '-') {
+            netCost = percentageOfNumber(checkForNull(editedObject.SettledPrice) - checkForNull(editedObject.DeltaValue), checkForNull(editedObject.SOBPercentage))
+            editedObject.NetCost = netCost
+            setValue(`${PartCostFields}.${gridIndex}.NetCost`, checkForDecimalAndNull(netCost, initialConfiguration.NoOfDecimalForPrice))
+        } if (editedObject.DeltaSign === undefined) {
+            netCost = percentageOfNumber(checkForNull(editedObject.SettledPrice), checkForNull(editedObject.SOBPercentage))
+            editedObject.NetCost = netCost
+        }
 
-            let tempDeltaValue = getValues(`${PartCostFields}.${index}.DeltaValue`)
-            let tempSOBPercentage = getValues(`${PartCostFields}.${index}.SOBPercentage`)
-            let tempDeltaSign = getValues(`${PartCostFields}.${index}.DeltaSign`)
-            if (Number(gridIndex) === Number(index)) {
+        // ASSIGN THE MANIPULAED OBJECT TO THE SAME INDEX IN THE ARRAY LIST
+        let gridTempArr = Object.assign([...gridData], { [gridIndex]: editedObject })
 
-                item.SOBPercentage = tempSOBPercentage
-                item.DeltaValue = tempDeltaValue
-                item.DeltaSign = tempDeltaSign
-                if (tempDeltaSign?.label === '+') {
+        // CALCULATING TOTAL NET COST
+        weightedCostCalc = gridTempArr && gridTempArr.reduce((accummlator, el) => {
+            return checkForNull(accummlator) + checkForNull(el.NetCost)
+        }, 0)
 
-                    const temp = percentageOfNumber(Number(item.SettledPrice) + Number(tempDeltaValue), tempSOBPercentage)
-                    item.NetCost = temp
-                    setValue(`${PartCostFields}.${index}.NetCost`, checkForDecimalAndNull(temp, initialConfiguration.NoOfDecimalForPrice))
-
-                } if (tempDeltaSign?.label === '-') {
-
-                    const temp = percentageOfNumber(Number(item.SettledPrice) - Number(tempDeltaValue), tempSOBPercentage)
-                    item.NetCost = temp
-                    setValue(`${PartCostFields}.${index}.NetCost`, checkForDecimalAndNull(temp, initialConfiguration.NoOfDecimalForPrice))
-                }
-            }
-            WeightedCost = checkForNull(WeightedCost) + checkForNull(item.NetCost)
-            return null
-        })
-
-        setWeightedCost(WeightedCost)
-        setGridData(ListForPartCost)
+        setWeightedCost(weightedCostCalc)
+        setGridData(gridTempArr)
     }
 
     const handleDeltaSignChange = (value, index) => {
-        setDeltaSign(value)
-        setTimeout(() => {
+        if (value?.label === '-') {
+            if (gridData && (checkForNull(gridData[index]?.SettledPrice) < checkForNull(gridData[index]?.DeltaValue))) {
+                Toaster.warning('Delta value should be less than settled price')
 
+                let tempGrid = gridData[index]
+                tempGrid.DeltaSign = value
+                tempGrid.DeltaValue = 0
+                tempGrid.NetCost = 0
+                let arr = Object.assign([...gridData], { [index]: tempGrid })
+                setGridData(arr)
+
+                setTimeout(() => {
+                    setValue(`${PartCostFields}.${index}.DeltaValue`, 0)
+                    setValue(`${PartCostFields}.${index}.NetCost`, 0)
+                    setValue(`${PartCostFields}.${index}.DeltaSign`, value)
+                }, 200);
+                return false
+            }
+        }
+        setTimeout(() => {
             netCostCalculator(index)
         }, 300);
     }
 
-    const handleSOBPercentage = (value, index1) => {
-        setSOBPercentage(value)
+    const handleSOBPercentage = (value, index) => {
         setTimeout(() => {
-
-            netCostCalculator(index1)
+            netCostCalculator(index)
         }, 300);
-
     }
 
     const handleDeltaValue = (value, index) => {
-        setDeltaValue(value)
-        setTimeout(() => {
+        if (gridData && (gridData[index]?.DeltaSign?.label === '-') && gridData[index]?.SettledPrice < value) {
 
+            Toaster.warning('Delta value should be less than settled price')
+            setTimeout(() => {
+                setValue(`${PartCostFields}.${index}.DeltaValue`, 0)
+                setValue(`${PartCostFields}.${index}.NetCost`, 0)
+            }, 200);
+            return false
+        }
+        setTimeout(() => {
             netCostCalculator(index)
         }, 300);
+    }
+
+    const handleChangeCostingNumber = (value) => {
+        setCostingNumberData(value)
+    }
+
+    const closeUserDetails = () => {
+        // setIsViewRM(false)
+        setIsOpen(false)
+        // setUserId("")
 
     }
 
-    const calcTotalSOBPercent = () => {
+    const viewDetails = (item) => {
+        if (item.value && Object.keys(item.value).length > 0) {
+            dispatch(getSingleCostingDetails(item.value, (res) => {
+                if (res.data.Data) {
+                    let dataFromAPI = res.data.Data
+
+                    const tempObj = formViewData(dataFromAPI)
+                    dispatch(setCostingViewData(tempObj))
+                }
+            },
+            ))
+        }
+        setIsOpen(true)
+    }
+
+    const deleteDetails = (item, index) => {
+        let tempArr = gridData.filter(e => e?.value !== item?.value)
+        let weightedCostCalc = 0
+        weightedCostCalc = tempArr && tempArr.reduce((accummlator, el) => {
+            return checkForNull(accummlator) + checkForNull(el.NetCost)
+        }, 0)
+
+        setWeightedCost(weightedCostCalc)
+        setGridData(tempArr)
+        setValue(`${PartCostFields}.${index}.DeltaValue`, 0)
+        setValue(`${PartCostFields}.${index}.DeltaSign`, 0)
+        setValue(`${PartCostFields}.${index}.SOBPercentage`, 0)
+        setValue(`${PartCostFields}.${index}.NetCost`, 0)
+    }
+
+    /**
+      * @method calcTotalSOBPercent
+      * @description TO CALCULATE TOTAL SOB PERCENTAGE 
+      */
+    const calcTotalSOBPercent = (grid) => {
         let ProcessCostTotal = 0
-        ProcessCostTotal = ListForPartCost && ListForPartCost.reduce((accummlator, el, index) => {
+        ProcessCostTotal = grid && grid.reduce((accummlator, el, index) => {
             return checkForNull(accummlator) + checkForNull(el.SOBPercentage)
         }, 0)
         return ProcessCostTotal
+    }
+
+    const addGrid = () => {
+        if (Object.keys(costingNumberData).length > 0) {
+            setGridData([...gridData, costingNumberData])
+            setValue('CostingNumber', {})
+            setCostingNumberData({})
+            let indexForUpdate = _.findIndex([...gridData, costingNumberData], costingNumberData);
+
+            setValue(`${PartCostFields}.${indexForUpdate}.DeltaValue`, 0)
+            setValue(`${PartCostFields}.${indexForUpdate}.DeltaSign`, 0)
+            setValue(`${PartCostFields}.${indexForUpdate}.SOBPercentage`, 0)
+            setValue(`${PartCostFields}.${indexForUpdate}.NetCost`, 0)
+        } else {
+            Toaster.warning('Please select Costing Number')
+            return false
+        }
+    }
+
+    const renderListing = (value) => {
+        let final = _.map(gridData, 'label')
+        if (value === 'CostingNumber') {
+            let temp = []
+            costingForMultiTechnology && costingForMultiTechnology.map(item => {
+                if (item?.Value === '0' || final.includes(item?.CostingNumber)) return false;
+                temp.push({
+                    label: item?.CostingNumber, value: item?.BaseCostingIdRef,
+                    SettledPrice: item?.SettledPrice, VendorCode: item?.VendorCode, VendorName: item?.VendorName
+                })
+                return null;
+            });
+            return temp;
+        }
     }
 
     const onSubmit = (values) => {
@@ -204,26 +351,28 @@ function EditPartCost(props) {
                 checkForNull(DiscountCostData?.AnyOtherCost)) -
                 checkForNull(DiscountCostData?.HundiOrDiscountValue)
 
-            // let request = formatMultiTechnologyUpdate(tempsubAssemblyTechnologyArray[0], totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData, CostingEffectiveDate)
+            let request = formatMultiTechnologyUpdate(tempsubAssemblyTechnologyArray[0], totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData, CostingEffectiveDate)
             // dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => { }))
-            // dispatch(gridDataAdded(true))
+            dispatch(gridDataAdded(true))
         }
         props.closeDrawer('')
+
         // SAVE API FOR PART COST
         // dispatch(saveEditPartCostDetails((res) => { }))
     }
 
     return (
         <div>
-            <Drawer className="bottom-drawer"
+            <Drawer className={`${props.costingSummary ? '' : 'bottom-drawer'}`}
                 anchor={props.anchor}
-                open={props.isOpen}>
+                open={props.isOpen}
+                BackdropProps={props?.costingSummary && { style: { opacity: 0 } }}>
                 <div className="container-fluid">
                     <div className={'drawer-wrapper drawer-1500px master-summary-drawer'}>
                         <Row className="drawer-heading sticky-top-0">
                             <Col>
                                 <div className={'header-wrapper left'}>
-                                    <h3>{`Part Cost`}</h3>
+                                    <h3>{`Part Cost:`}</h3>
                                 </div>
                                 <div
                                     onClick={(e) => toggleDrawer(e)}
@@ -231,155 +380,202 @@ function EditPartCost(props) {
                                 </div>
                             </Col>
                         </Row>
-                        <form
-                        // onSubmit={handleSubmit(onSubmit)}
-                        >
 
-                            <Table className=''>
+                        <form>
+                            <Col md="12">
+                                <Table className='table cr-brdr-main mb-0 rmcc-main-headings'>
+                                    <thead>
+                                        <tr className="cr-bg-tbl" width='100%'>
+                                            <th>Parent Assembly Number: {`${props?.costingSummary ? props?.tabAssemblyIndividualPartDetail?.CostingNumber : props?.tabAssemblyIndividualPartDetail?.AssemblyPartNumber}`}</th>
+                                            <th>Part Number:  {`${props?.tabAssemblyIndividualPartDetail?.PartNumber}`}</th>
+                                            <th>Part Name:  {`${props?.tabAssemblyIndividualPartDetail?.PartName}`}</th>
+                                            <th colSpan={2}>Weighted Cost: {checkForDecimalAndNull(weightedCost, initialConfiguration.NoOfDecimalForPrice)}</th>
+                                        </tr>
+                                    </thead>
+                                </Table>
+                                {!props.costingSummary && <div className='add-container'>
+                                    <SearchableSelectHookForm
+                                        label={`Costing Number`}
+                                        name={`CostingNumber`}
+                                        placeholder={"Select"}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        options={renderListing("CostingNumber")}
+                                        handleChange={(e) => handleChangeCostingNumber(e)}
+                                        disabled={CostingViewMode ? true : false}
+                                    />
 
-                                <thead>
-                                    <tr className="cr-bg-tbl" width='100%'>
-                                        <th>Parent Assembly Number: { }</th>
-                                        <th>Part Number: { }</th>
-                                        <th>Part Name: { }</th>
-                                        <th>Weighted Cost: {checkForDecimalAndNull(weightedCost, initialConfiguration.NoOfDecimalForPrice)}</th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <br />
-                                <tbody>
-                                    <tr >
-                                        <th>Vendor Name</th>
-                                        <th>Settled Price</th>
-                                        <th>SOB%</th>
-                                        <th>Delta</th>
-                                        <th>Net Cost</th>
-                                    </tr>
-                                    {gridData && gridData.map((item, index) => {
+                                    <button
+                                        type="button"
+                                        className={"user-btn "}
+                                        onClick={() => addGrid()}
+                                        title="Add"
+                                        disabled={CostingViewMode ? true : false}
+                                    >
+                                        <div className={"plus "}></div>Add
+                                    </button>
+                                </div>}
+                                <Table className={`table cr-brdr-main mb-0 rmcc-main-headings ${props.costingSummary ? 'mt-2' : ''}`}>
+                                    <thead>
+                                        <tr >
+                                            <th>Vendor Name</th>
+                                            <th>Costing Number</th>
+                                            <th>Settled Price</th>
+                                            <th>SOB%</th>
+                                            <th>Delta</th>
+                                            <th>Net Cost</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="part-cost-table">
+                                        {gridData && gridData.map((item, index) => {
+                                            return (
+                                                <>
+                                                    <tr key={index} >
+                                                        <td>{item?.VendorName}</td>
+                                                        <td>{item?.label}</td>
+                                                        <td>{checkForDecimalAndNull(item?.SettledPrice, initialConfiguration.NoOfDecimalForPrice)}</td>
+                                                        <td>
+                                                            <NumberFieldHookForm
+                                                                name={`${PartCostFields}.${index}.SOBPercentage`}
+                                                                Controller={Controller}
+                                                                control={control}
+                                                                register={register}
+                                                                mandatory={false}
+                                                                rules={{
+                                                                    required: false,
+                                                                    pattern: {
+                                                                        value: /^\d*\.?\d*$/,
+                                                                        message: 'Invalid Number.'
+                                                                    },
+                                                                    max: {
+                                                                        value: 100,
+                                                                        message: 'Percentage cannot be greater than 100'
+                                                                    },
+                                                                }}
+                                                                handleChange={(e) => handleSOBPercentage(e.target.value, index)}
+                                                                defaultValue={''}
+                                                                className=""
+                                                                customClassName={'withBorder'}
+                                                                disabled={CostingViewMode || props.costingSummary ? true : false}
+                                                            />
+                                                        </td>
+                                                        <td >
+                                                            <div className='delta-warpper'>
+                                                                <SearchableSelectHookForm
+                                                                    name={`${PartCostFields}.${index}.DeltaSign`}
+                                                                    placeholder={"Select"}
+                                                                    Controller={Controller}
+                                                                    control={control}
+                                                                    // rules={{ required: true }}
+                                                                    register={register}
+                                                                    customClassName="w-auto"
+                                                                    options={optionsForDelta}
+                                                                    mandatory={true}
+                                                                    handleChange={(e) => handleDeltaSignChange(e, index)}
+                                                                    disabled={CostingViewMode || props.costingSummary ? true : false}
+                                                                />
 
-                                        return (
-                                            <>
-
-                                                <tr key={index} >
-                                                    <td>{item.VendorName}</td>
-                                                    <td>{checkForDecimalAndNull(item.SettledPrice, initialConfiguration.NoOfDecimalForPrice)}</td>
-                                                    <td width={20}>
-                                                        <NumberFieldHookForm
-                                                            name={`${PartCostFields}.${index}.SOBPercentage`}
-                                                            Controller={Controller}
-                                                            control={control}
-                                                            register={register}
-                                                            mandatory={false}
-                                                            rules={{
-                                                                required: false,
-                                                                pattern: {
-                                                                    value: /^\d*\.?\d*$/,
-                                                                    message: 'Invalid Number.'
-                                                                },
-                                                                max: {
-                                                                    value: 100,
-                                                                    message: 'Percentage cannot be greater than 100'
-                                                                },
-                                                            }}
-                                                            handleChange={(e) => handleSOBPercentage(e.target.value, index)}
-                                                            defaultValue={''}
-                                                            className=""
-                                                            customClassName={'withBorder'}
-                                                            errors={errors.SOBPercentage}
-                                                        />
-                                                    </td>
-                                                    <td >
-                                                        <SearchableSelectHookForm
-                                                            name={`${PartCostFields}.${index}.DeltaSign`}
-                                                            placeholder={"Select"}
-                                                            Controller={Controller}
-                                                            control={control}
-                                                            // rules={{ required: true }}
-                                                            register={register}
-                                                            // defaultValue={plant.length !== 0 ? plant : ''}
-                                                            options={optionsForDelta}
-                                                            mandatory={true}
-                                                            handleChange={(e) => handleDeltaSignChange(e, index)}
-                                                            errors={errors.DeltaSign}
-                                                        />
-
-                                                        <NumberFieldHookForm
-                                                            name={`${PartCostFields}.${index}.DeltaValue`}
-                                                            Controller={Controller}
-                                                            control={control}
-                                                            register={register}
-                                                            mandatory={false}
-                                                            rules={{
-                                                                required: false,
-                                                                pattern: {
-                                                                    value: /^\d*\.?\d*$/,
-                                                                    message: 'Invalid Number.'
-                                                                },
-                                                                // max: {
-                                                                //     value: 100,
-                                                                //     message: 'Percentage cannot be greater than 100'
-                                                                // },
-                                                            }}
-                                                            handleChange={(e) => handleDeltaValue(e.target.value, index)}
-                                                            defaultValue={''}
-                                                            className=""
-                                                            customClassName={'withBorder'}
-                                                            errors={errors.DeltaValue}
-                                                        />
-                                                        {/* {checkForDecimalAndNull(item.Delta, initialConfiguration.NoOfDecimalForPrice)} */}
-                                                    </td>
-                                                    <td >
-                                                        <NumberFieldHookForm
-                                                            name={`${PartCostFields}.${index}.NetCost`}
-                                                            Controller={Controller}
-                                                            control={control}
-                                                            register={register}
-                                                            mandatory={false}
-                                                            rules={{
-                                                                required: false,
-                                                                pattern: {
-                                                                    value: /^\d*\.?\d*$/,
-                                                                    message: 'Invalid Number.'
-                                                                },
-                                                                // max: {
-                                                                //     value: 100,
-                                                                //     message: 'Percentage cannot be greater than 100'
-                                                                // },
-                                                            }}
-                                                            // handleChange={(e) => handleDeltaValue(e.target.value, index)}
-                                                            defaultValue={''}
-                                                            className=""
-                                                            disabled={true}
-                                                            customClassName={'withBorder'}
-                                                            errors={errors.NetCost}
-                                                        />
-                                                        {/* {checkForDecimalAndNull(item.Delta, initialConfiguration.NoOfDecimalForPrice)} */}
-                                                    </td>
-                                                </tr>
-                                            </>
-                                        )
-                                    })
-                                    }
-                                </tbody>
-                            </Table>
+                                                                <NumberFieldHookForm
+                                                                    name={`${PartCostFields}.${index}.DeltaValue`}
+                                                                    Controller={Controller}
+                                                                    control={control}
+                                                                    register={register}
+                                                                    mandatory={false}
+                                                                    rules={{
+                                                                        required: false,
+                                                                        pattern: {
+                                                                            value: /^\d*\.?\d*$/,
+                                                                            message: 'Invalid Number.'
+                                                                        },
+                                                                    }}
+                                                                    handleChange={(e) => handleDeltaValue(e.target.value, index)}
+                                                                    defaultValue={''}
+                                                                    className=""
+                                                                    customClassName={'withBorder'}
+                                                                    disabled={CostingViewMode || props.costingSummary ? true : false}
+                                                                />
+                                                            </div>
+                                                        </td>
+                                                        <td >
+                                                            <NumberFieldHookForm
+                                                                name={`${PartCostFields}.${index}.NetCost`}
+                                                                Controller={Controller}
+                                                                control={control}
+                                                                register={register}
+                                                                mandatory={false}
+                                                                rules={{
+                                                                    required: false,
+                                                                    pattern: {
+                                                                        value: /^\d*\.?\d*$/,
+                                                                        message: 'Invalid Number.'
+                                                                    },
+                                                                }}
+                                                                defaultValue={''}
+                                                                className=""
+                                                                disabled={true}
+                                                                customClassName={'withBorder'}
+                                                            />
+                                                        </td>
+                                                        <td >
+                                                            <button
+                                                                type="button"
+                                                                className={'View mr-2 align-middle'}
+                                                                onClick={() => viewDetails(item)}
+                                                            >
+                                                            </button>
+                                                            <button
+                                                                type="button"
+                                                                className={'Delete mr-2 align-middle'}
+                                                                onClick={() => deleteDetails(item, index)}
+                                                                disabled={CostingViewMode || props.costingSummary ? true : false}
+                                                            >
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                </>
+                                            )
+                                        })
+                                        }
+                                        {gridData && gridData.length === 0 && <tr>
+                                            <td colSpan={6}>
+                                                <NoContentFound />
+                                            </td>
+                                        </tr>}
+                                    </tbody>
+                                </Table>
+                            </Col>
                         </form>
-                        {/* {loader && <LoaderCustom />} */}
-                        < Row className="mx-0 mb-3" >
+                        {!props.costingSummary && <Row className="mx-0 mb-3" >
                             <Col align="right">
                                 <button
                                     type={'submit'}
-                                    className="submit-button mr5 save-btn"
+                                    className="submit-button save-btn"
                                     onClick={handleSubmit(onSubmit)}
+                                    disabled={CostingViewMode ? true : false}
                                 >
                                     <div className={"save-icon"}></div>
-                                    {'Save'}
+                                    {'SAVE'}
                                 </button>
                             </Col>
-                        </Row >
+                        </Row >}
                     </div >
                 </div >
-
             </Drawer >
+            {
+                isOpen &&
+                <CostingDetailSimulationDrawer
+                    isOpen={isOpen}
+                    closeDrawer={closeUserDetails}
+                    anchor={"right"}
+                    isReport={isOpen}
+                    //   selectedRowData={selectedRowData}
+                    isSimulation={false}
+                    simulationDrawer={false}
+                    fromCostingSummary={props.costingSummary}
+                />
+            }
         </div >
     );
 }

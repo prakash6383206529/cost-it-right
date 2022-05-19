@@ -16,6 +16,7 @@ import { useState } from 'react';
 import { IdForMultiTechnology } from '../../../../../config/masterData';
 import { debounce } from 'lodash';
 // import { updateMultiTechnologyTopAndWorkingRowCalculation } from '../../../actions/SubAssembly';
+import { ASSEMBLYNAME } from '../../../../../config/constants';
 
 function SurfaceTreatment(props) {
   const { surfaceData, transportationData, item } = props;
@@ -225,7 +226,6 @@ function SurfaceTreatment(props) {
           checkForNull(DiscountCostData?.HundiOrDiscountValue)
 
         mergedAPI(totalCostAPI, false, false)
-
       }
     }
   }), 500);

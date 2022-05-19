@@ -14,6 +14,7 @@ import { MESSAGES } from '../../../../config/message';
 import { ViewCostingContext } from '../CostingDetails';
 import { createToprowObjAndSave } from '../../CostingUtil';
 import { debounce } from 'lodash';
+import { ASSEMBLYNAME } from '../../../../config/constants';
 
 function TabPackagingFreight(props) {
 
@@ -27,7 +28,7 @@ function TabPackagingFreight(props) {
 
   const { PackageAndFreightTabData, CostingEffectiveDate, ComponentItemDiscountData, RMCCTabData, SurfaceTabData, OverheadProfitTabData, DiscountCostData, ToolTabData, getAssemBOPCharge, checkIsFreightPackageChange } = useSelector(state => state.costing)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const partType = costData?.TechnologyName === 'Assembly'
+  const partType = costData?.TechnologyName === ASSEMBLYNAME
 
   useEffect(() => {
     if (Object.keys(costData).length > 0) {

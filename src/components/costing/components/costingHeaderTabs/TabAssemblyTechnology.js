@@ -24,7 +24,7 @@ function TabAssemblyTechnology(props) {
 
   const dispatch = useDispatch()
 
-  const { ComponentItemDiscountData, ErrorObjRMCC, CostingEffectiveDate, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData, checkIsDataChange } = useSelector(state => state.costing)
+  const { ErrorObjRMCC, CostingEffectiveDate, getAssemBOPCharge, checkIsDataChange } = useSelector(state => state.costing)
 
 
 
@@ -105,6 +105,11 @@ function TabAssemblyTechnology(props) {
     temp[0].CostingPartDetails.CostPerAssembly = checkForNull(temp[0].CostingPartDetails.CostPerAssembly) + checkForNull(value)
     dispatch(setSubAssemblyTechnologyArray(temp, res => { }))
 
+    let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray
+    // UPDATING AT INDEX 0 BECAUSE NEED TO UPDATE THE LEVEL 0 ROW (ASSEMBLY)
+    tempsubAssemblyTechnologyArray[0].OperationCostValue = value
+    tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerAssembly = checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.EditPartCost) + (checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.CostPerAssemblyBOP)) + (checkForNull(tempsubAssemblyTechnologyArray[0].ProcessCostValue) + checkForNull(tempsubAssemblyTechnologyArray[0].OperationCostValue))
+    dispatch(setSubAssemblyTechnologyArray(tempsubAssemblyTechnologyArray, res => { }))
   }
 
   /**
@@ -596,6 +601,7 @@ function TabAssemblyTechnology(props) {
 
     if (ErrorObjRMCC && Object.keys(ErrorObjRMCC).length > 0) return false;
 
+    // MAY BE USED LATER
     // if (Object.keys(ComponentItemData).length > 0 && ComponentItemData.IsOpen !== false && checkIsDataChange === true) {
     //   let requestData = {
     //     "NetRawMaterialsCost": ComponentItemData.CostingPartDetails.TotalRawMaterialsCost,
@@ -724,12 +730,6 @@ function TabAssemblyTechnology(props) {
     // }
   }
 
-  const InjectDiscountAPICall = () => {
-    dispatch(saveDiscountOtherCostTab({ ...ComponentItemDiscountData, EffectiveDate: CostingEffectiveDate, CallingFrom: 2 }, res => {
-      dispatch(setComponentDiscountOtherItemData({}, () => { }))
-    }))
-  }
-
   const bopHandlingDrawer = () => {
     if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
     setIsOpenBOPDrawer(true)
@@ -737,7 +737,6 @@ function TabAssemblyTechnology(props) {
 
   const handleBOPCalculationAndClose = (e = '') => {
     setIsOpenBOPDrawer(false)
-    //  setBOPCostWithAsssembly()
   }
 
   useEffect(() => {
@@ -749,21 +748,7 @@ function TabAssemblyTechnology(props) {
   const setBOPCostWithAsssembly = (obj, item) => {
     let totalBOPCost = checkForNull(obj?.BOPHandlingChargeApplicability) + checkForNull(obj?.BOPHandlingCharges)
     let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray
-    let changeTempObject = tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails
-    let costPerPieceTotal = 0
-    let costPerAssemblyTotal = 0
-    let CostPerAssemblyBOPTotal = 0
-
-    changeTempObject && changeTempObject.map((item) => {
-
-      costPerPieceTotal = checkForNull(costPerPieceTotal) + checkForNull(item?.CostingPartDetails?.CostPerPiece)
-      costPerAssemblyTotal = checkForNull(costPerAssemblyTotal) + checkForNull(item?.CostingPartDetails?.CostPerAssembly)
-      CostPerAssemblyBOPTotal = checkForNull(CostPerAssemblyBOPTotal) + checkForNull(item?.CostingPartDetails?.CostPerAssemblyBOP)
-      return null
-    })
-    tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerPiece = costPerPieceTotal
-    tempsubAssemblyTechnologyArray[0].CostingPartDetails.EditPartCost = costPerAssemblyTotal
-    tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerAssembly = checkForNull(costPerAssemblyTotal) + checkForNull(totalBOPCost) + (checkForNull(tempsubAssemblyTechnologyArray[0].processCostValue) + checkForNull(tempsubAssemblyTechnologyArray[0].operationCostValue))
+    tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerAssembly = checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.EditPartCost) + checkForNull(totalBOPCost) + (checkForNull(tempsubAssemblyTechnologyArray[0].ProcessCostValue) + checkForNull(tempsubAssemblyTechnologyArray[0].OperationCostValue))
     tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerAssemblyBOP = checkForNull(totalBOPCost)
     tempsubAssemblyTechnologyArray[0].CostingPartDetails.BOPHandlingCharges = checkForNull(obj?.BOPHandlingCharges)
     tempsubAssemblyTechnologyArray[0].CostingPartDetails.IsApplyBOPHandlingCharges = obj.IsApplyBOPHandlingCharges
@@ -866,7 +851,6 @@ function TabAssemblyTechnology(props) {
   const onSubmit = (values) => { }
 
   return (
-
     <>
       <div className="login-container signup-form" id="rm-cc-costing-header">
         <Row>
@@ -904,9 +888,7 @@ function TabAssemblyTechnology(props) {
                             </th>
                           }
                         </tr>
-
                       </thead>
-
                       <tbody>
                         {
                           subAssemblyTechnologyArray && subAssemblyTechnologyArray.map((item, index) => {
@@ -960,13 +942,11 @@ function TabAssemblyTechnology(props) {
                       {'Save'}
                     </button>
                   </div>}
-
               </form>
             </div>
           </Col>
         </Row>
       </div>
-
     </>
   );
 };
