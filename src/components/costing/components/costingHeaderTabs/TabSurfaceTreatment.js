@@ -7,7 +7,7 @@ import { costingInfoContext } from '../CostingDetailStepTwo';
 import { checkForNull } from '../../../../helper';
 import PartSurfaceTreatment from '../CostingHeadCosts/SurfaceTreatMent/PartSurfaceTreatment';
 import AssemblySurfaceTreatment from '../CostingHeadCosts/SurfaceTreatMent/AssemblySurfaceTreatment';
-import { LEVEL0 } from '../../../../config/constants';
+import { ASSEMBLYNAME, LEVEL0 } from '../../../../config/constants';
 import { ViewCostingContext } from '../CostingDetails';
 import { ASSEMBLY } from '../../../../config/masterData';
 import { setSubAssemblyTechnologyArray } from '../../actions/SubAssembly';
@@ -20,7 +20,7 @@ function TabSurfaceTreatment(props) {
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
   const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
-  const partType = costData?.TechnologyName === 'Assembly'
+  const partType = costData?.TechnologyName === ASSEMBLYNAME
 
   useEffect(() => {
     if (Object.keys(costData).length > 0) {
@@ -303,7 +303,7 @@ function TabSurfaceTreatment(props) {
   //         i.IsOpen = params.IsCollapse ? !i.IsOpen : false;
   //         i.IsOpenAssemblyDrawer = false;
 
-  //         if (i.PartType === 'Assembly') {
+  //         if (i.PartType === ASSEMBLYNAME) {
   //           let tempArrForCosting = JSON.parse(localStorage.getItem('surfaceCostingArray'))
   //           let subAssemblyArray = i.CostingChildPartDetails
 
@@ -979,7 +979,7 @@ function TabSurfaceTreatment(props) {
         let assemblyObj = tempArrForCosting[0]
 
         // WILL RUN IF IT IS ASSEMBLY COSTING. WILL NOT RUN FOR COMPONENT COSTING
-        if (assemblyObj.PartType === 'Assembly') {
+        if (assemblyObj.PartType === ASSEMBLYNAME) {
           assemblyObj.CostingPartDetails.SurfaceTreatmentDetails = params.PartNumber === assemblyObj.PartNumber ? surfaceGrid : assemblyObj.CostingPartDetails.SurfaceTreatmentDetails
           assemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly = params.PartNumber === assemblyObj.PartNumber ? checkForNull(surfaceCost(surfaceGrid)) : checkForNull(assemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly)
           assemblyObj.CostingPartDetails.SurfaceTreatmentCost = checkForNull(assemblyObj?.CostingPartDetails?.TotalSurfaceTreatmentCostPerAssembly)
@@ -1131,7 +1131,7 @@ function TabSurfaceTreatment(props) {
         let subAssemblyArray = tempArrForCosting && tempArrForCosting.filter(item => item.BOMLevel === 'L1')
         let assemblyObj = tempArrForCosting[0]
         // WILL RUN IF IT IS ASSEMBLY COSTING. WILL NOT RUN FOR COMPONENT COSTING
-        if (assemblyObj.PartType === 'Assembly') {
+        if (assemblyObj.PartType === ASSEMBLYNAME) {
           assemblyObj.CostingPartDetails.TransportationDetails = params.PartNumber === assemblyObj.PartNumber ? TransportationObj : assemblyObj.CostingPartDetails.TransportationDetails
           assemblyObj.CostingPartDetails.TotalTransportationCostPerAssembly = params.PartNumber === assemblyObj.PartNumber ? checkForNull(TransportationObj.TransportationCost) : checkForNull(assemblyObj.CostingPartDetails.TotalTransportationCostPerAssembly)
           assemblyObj.CostingPartDetails.TransportationCost = checkForNull(assemblyObj?.CostingPartDetails?.TotalTransportationCostPerAssembly)
@@ -1195,7 +1195,7 @@ function TabSurfaceTreatment(props) {
   */
   const onSubmit = (values) => { }
 
-  const setSurfaceTreatmentCostAssemblyTechnology = (SurfaceTreatmentCost, TransportationCost, NetSurfaceTreatmentCost) => {
+  const setSurfaceTreatmentCostAssemblyTechnology = (SurfaceTreatmentCost, TransportationCost, NetSurfaceTreatmentCost, surfaceTreatmentGrid, transportationGrid) => {
     let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray
 
     tempsubAssemblyTechnologyArray[0].CostingPartDetails.SurfaceTreatmentCost = SurfaceTreatmentCost

@@ -6,7 +6,7 @@ import {
   getToolTabData, saveToolTab, setToolTabData, getToolsProcessWiseDataListByCostingID,
   setComponentToolItemData, saveDiscountOtherCostTab, setComponentDiscountOtherItemData, saveAssemblyPartRowCostingCalculation, isToolDataChange,
 } from '../../actions/Costing';
-import { costingInfoContext, netHeadCostContext, NetPOPriceContext } from '../CostingDetailStepTwo';
+import { costingInfoContext, NetPOPriceContext } from '../CostingDetailStepTwo';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../helper';
 import Switch from "react-switch";
 import Tool from '../CostingHeadCosts/Tool';
@@ -15,7 +15,7 @@ import { MESSAGES } from '../../../../config/message';
 import { ViewCostingContext } from '../CostingDetails';
 import LoaderCustom from '../../../common/LoaderCustom';
 import NoContentFound from '../../../common/NoContentFound';
-import { EMPTY_DATA } from '../../../../config/constants';
+import { ASSEMBLYNAME, EMPTY_DATA } from '../../../../config/constants';
 import { GridTotalFormate } from '../../../common/TableGridFunctions';
 import { AgGridReact } from 'ag-grid-react/lib/agGridReact';
 import { AgGridColumn } from 'ag-grid-react/lib/agGridColumn';
@@ -27,11 +27,10 @@ import { createToprowObjAndSave } from '../../CostingUtil';
 
 function TabToolCost(props) {
 
-  const { handleSubmit, setValue, getValues, formState: { errors } } = useForm();
+  const { handleSubmit } = useForm();
   const dispatch = useDispatch()
   const IsToolCostApplicable = useSelector(state => state.costing.IsToolCostApplicable)
   const [IsApplicableProcessWise, setIsApplicableProcessWise] = useState(false);
-  const [IsApplicablilityDisable, setIsApplicablilityDisable] = useState(true);
   const [isEditFlag, setIsEditFlag] = useState(false)
   const [rowObjData, setRowObjData] = useState([])
   const [editIndex, setEditIndex] = useState('')
@@ -46,7 +45,7 @@ function TabToolCost(props) {
   const [processArray, setProcessArray] = useState([])
   const [operationArray, setOperationArray] = useState([])
   const [gridData, setGridData] = useState([])
-  const partType = costData?.TechnologyName === 'Assembly'
+  const partType = costData?.TechnologyName === ASSEMBLYNAME
 
   const dispense = () => {
     setIsApplicableProcessWise(IsToolCostApplicable)
@@ -130,19 +129,12 @@ function TabToolCost(props) {
   const gridOptions = {
     clearSearch: true,
     noDataText: (ToolsDataList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
-    // // paginationShowsTotal: renderPaginationShowsTotal(),
-    // prePage: <span className="prev-page-pg"></span>, // Previous page button text
-    // nextPage: <span className="next-page-pg"></span>, // Next page button text
-    // firstPage: <span className="first-page-pg"></span>, // First page button text
-    // lastPage: <span className="last-page-pg"></span>,
   };
   const defaultColDef = {
 
     resizable: true,
     filter: true,
     sortable: true,
-    // headerCheckboxSelection: isFirstColumn,
-    // checkboxSelection: isFirstColumn
   };
 
   /**

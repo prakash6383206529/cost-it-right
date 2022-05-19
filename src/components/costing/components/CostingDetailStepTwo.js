@@ -13,6 +13,7 @@ import { useContext } from 'react';
 import { ViewCostingContext } from './CostingDetails';
 import { createToprowObjAndSave } from '../CostingUtil';
 import _ from 'lodash'
+import { ASSEMBLYNAME } from '../../../config/constants';
 
 export const costingInfoContext = React.createContext()
 export const netHeadCostContext = React.createContext()
@@ -40,7 +41,7 @@ function CostingDetailStepTwo(props) {
   const { costingData, CostingDataList, NetPOPrice, RMCCBOPCost, SurfaceCostData, OverheadProfitCostData,
     DiscountCostData, partNo, IsToolCostApplicable, showLoading, RMCCTabData, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData,
     PackageAndFreightTabData, ToolTabData, CostingEffectiveDate } = useSelector(state => state.costing)
-  const partType = costingData?.TechnologyName === 'Assembly'
+  const partType = costingData?.TechnologyName === ASSEMBLYNAME
 
   useEffect(() => {
     if (partNo.isChanged === true) {

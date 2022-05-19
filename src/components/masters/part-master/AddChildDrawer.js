@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Container, Row, Col, Label, } from 'reactstrap';
 import { getSelectListPartType } from '../actions/Part';
-import { ASSEMBLY, COMPONENT_PART, BOUGHTOUTPART } from "../../../config/constants";
+import { ASSEMBLYNAME, COMPONENT_PART, BOUGHTOUTPART } from "../../../config/constants";
 import Drawer from '@material-ui/core/Drawer';
 import HeaderTitle from '../../common/HeaderTitle';
 import AddAssemblyForm from './AddAssemblyForm';
@@ -14,7 +14,7 @@ class AddChildDrawer extends Component {
         super(props);
         this.state = {
             isEditFlag: false,
-            childType: ASSEMBLY,
+            childType: ASSEMBLYNAME,
             partType: [],
             selectedPartType: {},
         }
@@ -30,7 +30,7 @@ class AddChildDrawer extends Component {
                 let Data = res.data.SelectList;
                 this.setState({
                     partType: Data && Data.filter(el => el.Value !== '0'),
-                    selectedPartType: Data && Data.find(el => el.Text === ASSEMBLY)
+                    selectedPartType: Data && Data.find(el => el.Text === ASSEMBLYNAME)
                 })
             }
         })
@@ -101,8 +101,8 @@ class AddChildDrawer extends Component {
                                             <input
                                                 type="radio"
                                                 name="childType"
-                                                checked={childType === ASSEMBLY ? true : false}
-                                                onClick={() => this.checkRadio(ASSEMBLY)}
+                                                checked={childType === ASSEMBLYNAME ? true : false}
+                                                onClick={() => this.checkRadio(ASSEMBLYNAME)}
                                             />{' '}
                                             <span>Sub Assembly</span>
                                         </Label>
@@ -128,7 +128,7 @@ class AddChildDrawer extends Component {
                                 </Row>
 
 
-                                {childType === ASSEMBLY &&
+                                {childType === ASSEMBLYNAME &&
                                     <AddAssemblyForm
                                         toggleDrawer={this.toggleDrawer}
                                         TechnologySelected={this.props.TechnologySelected}

@@ -5,7 +5,7 @@ import { Row, Col, } from 'reactstrap';
 import { required, postiveNumber, maxLength5, minValue1, acceptAllExceptSingleSpecialCharacter } from "../../../helper/validation";
 import { renderText, searchableSelect } from "../../layout/FormInputs";
 import { getAssemblyPartSelectList, getDrawerAssemblyPartDetail, } from '../actions/Part';
-import { ASSEMBLY } from '../../../config/constants';
+import { ASSEMBLYNAME } from '../../../config/constants';
 import { getRandomSixDigit } from '../../../helper/util';
 
 class AddAssemblyForm extends Component {
@@ -16,7 +16,6 @@ class AddAssemblyForm extends Component {
             parentPart: [],
             isAddMore: false,
             childData: [],
-
         }
     }
 
@@ -26,13 +25,11 @@ class AddAssemblyForm extends Component {
    */
     componentDidMount() {
         this.props.getAssemblyPartSelectList(this.props?.TechnologySelected.value, () => { })
-
     }
 
     componentWillUnmount() {
         this.props.getDrawerAssemblyPartDetail('', res => { })
     }
-
 
     /**
     * @method handleAssemblyPartChange
@@ -72,7 +69,7 @@ class AddAssemblyForm extends Component {
 
         let tempArr = [];
         BOMViewerData && BOMViewerData.map(el => {
-            if (el.PartType === ASSEMBLY) {
+            if (el.PartType === ASSEMBLYNAME) {
                 tempArr.push(el.PartId)
             }
             return null;

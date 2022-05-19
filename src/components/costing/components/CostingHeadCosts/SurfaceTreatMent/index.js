@@ -13,9 +13,10 @@ import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../.
 import { createToprowObjAndSave, findrmCctData } from '../../../CostingUtil';
 import { ViewCostingContext } from '../../CostingDetails';
 import { useState } from 'react';
+import { ASSEMBLYNAME } from '../../../../../config/constants';
 
 function SurfaceTreatment(props) {
-  const { surfaceData, transportationData, item, isAssemblyTechnology } = props;
+  const { surfaceData, transportationData, item } = props;
 
   const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
 
@@ -37,7 +38,7 @@ function SurfaceTreatment(props) {
   const [surfaceTreatmentData, setSurfacTreatmenteData] = useState({})
   const [surfaceTableData, setSurfacetableData] = useState(item.CostingPartDetails.SurfaceTreatmentDetails)
   const [transportObj, setTrasportObj] = useState(item.CostingPartDetails.TransportationDetails)
-  const partType = costData?.TechnologyName === 'Assembly'
+  const partType = costData?.TechnologyName === ASSEMBLYNAME
 
   useEffect(() => {
     setTrasportObj(item?.CostingPartDetails?.TransportationDetails)
@@ -97,15 +98,15 @@ function SurfaceTreatment(props) {
   * @description SAVE DATA ASSEMBLY
   */
   const saveData = () => {
-    if (isAssemblyTechnology) {
-      props.setSurfaceTreatmentCostAssemblyTechnology(item.CostingPartDetails.SurfaceTreatmentCost, item.CostingPartDetails.TransportationCost, item.CostingPartDetails.NetSurfaceTreatmentCost)
+    if (partType) {
+      props.setSurfaceTreatmentCostAssemblyTechnology(item.CostingPartDetails.SurfaceTreatmentCost, item.CostingPartDetails.TransportationCost, item.CostingPartDetails.NetSurfaceTreatmentCost, surfaceTreatmentData.gridData, transportationObject)
     }
     if (transportationObject.UOM === "Percentage" && transportationObject.Rate !== null && transportationObject.Rate > 100) {
       return false
     }
     if (!IsLocked) {
 
-      if (props.IsAssemblyCalculation) {
+      if (props.IsAssemblyCalculation && !partType) {
         props.setAssemblySurfaceCost(surfaceTreatmentData.gridData, surfaceTreatmentData.Params, JSON.stringify(surfaceTreatmentData.gridData) !== JSON.stringify(surfaceTreatmentData.OldGridData) ? true : false, props.item)
         props.setAssemblyTransportationCost(transportObj, transportationObject.Params, item)
         setTimeout(() => {
@@ -203,43 +204,6 @@ function SurfaceTreatment(props) {
       if (props.IsAssemblyCalculation && !partType) {
         totalCostAPI = costData.IsAssemblyPart ? rmCcData && Object.keys(rmCcData).length > 0 ? checkForNull(surfacTreatmentCost) + checkForNull(rmCCCost) : checkForNull(surfacTreatmentCost) : checkForNull(totalCost)
         mergedAPI(totalCostAPI, props.IsAssemblyCalculation, true)
-        // let requestData = {
-        //   "CostingId": item.CostingId,
-        //   "PartId": item.PartId,
-        //   "PartNumber": item.PartNumber,
-        //   "BOMLevel": item.BOMLevel,
-        //   "CostingNumber": item.CostingNumber,
-        //   "NetSurfaceTreatmentCost": item.CostingPartDetails.NetSurfaceTreatmentCost,
-        //   "EffectiveDate": CostingEffectiveDate,
-        //   "LoggedInUserId": loggedInUserId(),
-        //   // THIS CONDITION IS USED FOR ASSEMBLY COSTING ,IN ASSEMBLY COSTING TOTAL COST IS SUM OF RMCCTAB DATA + SURFACE TREATEMNT TAB DATA OF THAT PART NUMBER (FOR PART/COMPONENT &ASSEMBLY KEY IS DIFFERENT)
-        //   "TotalCost": costData.IsAssemblyPart ? rmCcData && Object.keys(rmCcData).length > 0 ? checkForNull(surfacTreatmentCost) + checkForNull(rmCCCost) : checkForNull(surfacTreatmentCost) : checkForNull(totalCost),
-        //   "CostingPartDetails": {
-        //     "CostingDetailId": "00000000-0000-0000-0000-000000000000",
-        //     "IsAssemblyPart": true,
-        //     //"Type": "Assembly",
-        //     "NetSurfaceTreatmentCost": item.CostingPartDetails.NetSurfaceTreatmentCost,
-        //     "SurfaceTreatmentCost": item.CostingPartDetails.SurfaceTreatmentCost,
-        //     "TransportationCost": item.CostingPartDetails.TransportationCost,
-        //     "TotalSurfaceTreatmentCostPerAssembly": item.CostingPartDetails.NetSurfaceTreatmentCost,
-        //     "TotalTransportationCostPerAssembly": item.CostingPartDetails.TransportationCost,
-        //     "SurfaceTreatmentDetails": item.CostingPartDetails.SurfaceTreatmentDetails,
-        //     "TransportationDetails": item.CostingPartDetails.TransportationDetails,
-        //   },
-        // }
-        // if (!CostingViewMode) {
-        //   let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, totalCost, getAssemBOPCharge, 2, CostingEffectiveDate)
-        //   dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
-
-        //   dispatch(saveCostingSurfaceTab(requestData, res => {
-        //     if (res.data.Result) {
-        //       Toaster.success(MESSAGES.SURFACE_TREATMENT_COSTING_SAVE_SUCCESS);
-        //       InjectDiscountAPICall()
-        //     }
-        //     props.closeDrawer('')
-        //   }))
-        // }
-
       } else if (partType) {
         totalCostAPI = ((checkForNull(subAssemblyTechnologyArray[0].CostingPartDetails.CostPerAssembly) + checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
           checkForNull(PackageAndFreightTabData?.CostingPartDetails?.NetFreightPackagingCost) + checkForNull(ToolTabData?.CostingPartDetails?.TotalToolCost)
@@ -251,34 +215,6 @@ function SurfaceTreatment(props) {
 
         totalCostAPI = costData.IsAssemblyPart ? rmCcData && Object.keys(rmCcData).length > 0 ? checkForNull(surfacTreatmentCost) + checkForNull(rmCCCost) : checkForNull(surfacTreatmentCost) : checkForNull(totalCost)
         mergedAPI(totalCostAPI, false, false)
-        // let requestData = {
-        //   "CostingId": item.CostingId,
-        //   "PartId": item.PartId,
-        //   "PartNumber": item.PartNumber,
-        //   "BOMLevel": item.BOMLevel,
-        //   "CostingNumber": item.CostingNumber,
-        //   "NetSurfaceTreatmentCost": item.CostingPartDetails.NetSurfaceTreatmentCost,
-        //   "EffectiveDate": CostingEffectiveDate,
-        //   "LoggedInUserId": loggedInUserId(),
-        //   // THIS CONDITION IS USED FOR ASSEMBLY COSTING ,IN ASSEMBLY COSTING TOTAL COST IS SUM OF RMCCTAB DATA + SURFACE TREATEMNT TAB DATA OF THAT PART NUMBER (FOR PART/COMPONENT &ASSEMBLY KEY IS DIFFERENT)
-        //   "TotalCost": costData.IsAssemblyPart ? rmCcData && Object.keys(rmCcData).length > 0 ? checkForNull(surfacTreatmentCost) + checkForNull(rmCCCost) : checkForNull(surfacTreatmentCost) : checkForNull(totalCost),
-        //   "CostingPartDetails": {
-        //     "CostingDetailId": "00000000-0000-0000-0000-000000000000",
-        //     "NetSurfaceTreatmentCost": item.CostingPartDetails.NetSurfaceTreatmentCost,
-        //     "SurfaceTreatmentCost": item.CostingPartDetails.SurfaceTreatmentCost,
-        //     "TransportationCost": item.CostingPartDetails.TransportationCost,
-        //     "SurfaceTreatmentDetails": item.CostingPartDetails.SurfaceTreatmentDetails,
-        //     "TransportationDetails": item.CostingPartDetails.TransportationDetails,
-        //   },
-        // }
-        // dispatch(saveCostingSurfaceTab(requestData, res => {
-        //   if (res.data.Result) {
-        //     Toaster.success(MESSAGES.SURFACE_TREATMENT_COSTING_SAVE_SUCCESS);
-        //     InjectDiscountAPICall()
-        //   }
-        //   props.closeDrawer('')
-        // }))
-
       }
     }
   }

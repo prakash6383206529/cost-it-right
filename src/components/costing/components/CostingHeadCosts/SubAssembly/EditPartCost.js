@@ -7,13 +7,10 @@ import { ListForPartCost, optionsForDelta } from '../../../../../config/masterDa
 import { NumberFieldHookForm, SearchableSelectHookForm } from '../../../../layout/HookFormInputs';
 import { Controller, useForm } from 'react-hook-form';
 import Toaster from '../../../../common/Toaster';
-import { getEditPartCostDetails, saveEditPartCostDetails, setSubAssemblyTechnologyArray } from '../../../actions/SubAssembly';
+import { getEditPartCostDetails, setSubAssemblyTechnologyArray } from '../../../actions/SubAssembly';
 
 function EditPartCost(props) {
 
-    const [SOBPercentage, setSOBPercentage] = useState(0)
-    const [DeltaSign, setDeltaSign] = useState('')
-    const [DeltaValue, setDeltaValue] = useState(0)
     const [gridData, setGridData] = useState(ListForPartCost)
     const [weightedCost, setWeightedCost] = useState(0)
     const dispatch = useDispatch()
@@ -22,8 +19,7 @@ function EditPartCost(props) {
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
 
-    const { register, handleSubmit, control, setValue, getValues, formState: { errors },
-    } = useForm({
+    const { register, handleSubmit, control, setValue, getValues } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
     })
@@ -34,7 +30,7 @@ function EditPartCost(props) {
             setValue(`${PartCostFields}.${index}.DeltaSign`, item.DeltaSign)
             setValue(`${PartCostFields}.${index}.SOBPercentage`, item.SOBPercentage)
             setValue(`${PartCostFields}.${index}.NetCost`, checkForDecimalAndNull(item.NetCost, initialConfiguration.NoOfDecimalForPrice))
-            setDeltaSign(item.DeltaSign)
+            return null
         })
 
     }, [gridData])
@@ -57,60 +53,54 @@ function EditPartCost(props) {
 
     const netCostCalculator = (gridIndex) => {
         let sum = calcTotalSOBPercent()
-        let tempObject = ListForPartCost[gridIndex]
-        let tempDeltaValue = getValues(`${PartCostFields}.${gridIndex}.DeltaValue`)
-        let tempSOBPercentage = getValues(`${PartCostFields}.${gridIndex}.SOBPercentage`)
-        let tempDeltaSign = getValues(`${PartCostFields}.${gridIndex}.DeltaSign`)
-        let weightedCostCalc = 0
-
         if (sum > 100) {
             Toaster.warning('Total SOB Percent should not be greater than 100');
             setValue(`${PartCostFields}.${gridIndex}.SOBPercentage`, 0)
             return false
         }
 
-        tempObject.SOBPercentage = tempSOBPercentage
-        tempObject.DeltaValue = tempDeltaValue
-        tempObject.DeltaSign = tempDeltaSign
+        let tempObject = ListForPartCost[gridIndex]
+        let weightedCostCalc = 0
+        let netCost = 0
 
-        if (tempDeltaSign?.label === '+') {
-            const temp = percentageOfNumber(Number(tempObject.SettledPrice) + Number(tempDeltaValue), tempSOBPercentage)
-            tempObject.NetCost = temp
-            setValue(`${PartCostFields}.${gridIndex}.NetCost`, checkForDecimalAndNull(temp, initialConfiguration.NoOfDecimalForPrice))
-        } if (tempDeltaSign?.label === '-') {
-            const temp = percentageOfNumber(Number(tempObject.SettledPrice) - Number(tempDeltaValue), tempSOBPercentage)
-            tempObject.NetCost = temp
-            setValue(`${PartCostFields}.${gridIndex}.NetCost`, checkForDecimalAndNull(temp, initialConfiguration.NoOfDecimalForPrice))
+        tempObject.SOBPercentage = getValues(`${PartCostFields}.${gridIndex}.SOBPercentage`)
+        tempObject.DeltaValue = getValues(`${PartCostFields}.${gridIndex}.DeltaValue`)
+        tempObject.DeltaSign = getValues(`${PartCostFields}.${gridIndex}.DeltaSign`)
+
+        if (tempObject.DeltaSign?.label === '+') {
+            netCost = percentageOfNumber(Number(tempObject.SettledPrice) + Number(tempObject.DeltaValue), tempObject.SOBPercentage)
+            tempObject.NetCost = netCost
+            setValue(`${PartCostFields}.${gridIndex}.NetCost`, checkForDecimalAndNull(netCost, initialConfiguration.NoOfDecimalForPrice))
+        } if (tempObject.DeltaSign?.label === '-') {
+            netCost = percentageOfNumber(Number(tempObject.SettledPrice) - Number(tempObject.DeltaValue), tempObject.SOBPercentage)
+            tempObject.NetCost = netCost
+            setValue(`${PartCostFields}.${gridIndex}.NetCost`, checkForDecimalAndNull(netCost, initialConfiguration.NoOfDecimalForPrice))
         }
+
         let gridTempArr = Object.assign([...ListForPartCost], { [gridIndex]: tempObject })
         weightedCostCalc = gridTempArr && gridTempArr.reduce((accummlator, el) => {
             return checkForNull(accummlator) + checkForNull(el.NetCost)
         }, 0)
+
         setWeightedCost(weightedCostCalc)
         setGridData(gridTempArr)
     }
 
     const handleDeltaSignChange = (value, index) => {
-        setDeltaSign(value)
         setTimeout(() => {
-
             netCostCalculator(index)
         }, 300);
     }
 
     const handleSOBPercentage = (value, index) => {
-        setSOBPercentage(value)
         setTimeout(() => {
-
             netCostCalculator(index)
         }, 300);
 
     }
 
     const handleDeltaValue = (value, index) => {
-        setDeltaValue(value)
         setTimeout(() => {
-
             netCostCalculator(index)
         }, 300);
 
@@ -131,27 +121,24 @@ function EditPartCost(props) {
             return false
         }
         let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray
-        let changeTempObject = tempsubAssemblyTechnologyArray[0].CostingChildPartDetails
+        let childPartDetails = tempsubAssemblyTechnologyArray[0].CostingChildPartDetails
         let tempBOMLevel = props.tabAssemblyIndividualPartDetail.BOMLevel
         let tempPartNo = props.tabAssemblyIndividualPartDetail.PartNumber
         let tempAssemblyPartNumber = props.tabAssemblyIndividualPartDetail.AssemblyPartNumber
-        let costPerPieceTotal = 0
         let costPerAssemblyTotal = 0
         let costPerAssemblyBOPTotal = 0
 
-        changeTempObject && changeTempObject.map((item) => {
+        childPartDetails && childPartDetails.map((item) => {
             if (tempBOMLevel === item.BOMLevel && tempPartNo === item.PartNumber && tempAssemblyPartNumber === item.AssemblyPartNumber) {
                 item.CostingPartDetails.CostPerPiece = weightedCost
-                item.CostingPartDetails.CostPerAssembly = checkForNull(weightedCost) * checkForNull(item.CostingPartDetails.QuantityForSubAssembly)
+                item.CostingPartDetails.CostPerAssembly = checkForNull(weightedCost) * checkForNull(item.CostingPartDetails.Quantity)
             }
-            costPerPieceTotal = checkForNull(costPerPieceTotal) + checkForNull(item?.CostingPartDetails?.CostPerPiece)
             costPerAssemblyTotal = checkForNull(costPerAssemblyTotal) + checkForNull(item?.CostingPartDetails?.CostPerAssembly)
             costPerAssemblyBOPTotal = checkForNull(costPerAssemblyBOPTotal) + checkForNull(item?.CostingPartDetails?.CostPerAssemblyBOP)
             return null
         })
         costPerAssemblyBOPTotal = checkForNull(costPerAssemblyBOPTotal) + checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.BOPHandlingCharges)
 
-        tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerPiece = costPerPieceTotal
         tempsubAssemblyTechnologyArray[0].CostingPartDetails.EditPartCost = costPerAssemblyTotal
         tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerAssembly = checkForNull(costPerAssemblyTotal) + checkForNull(costPerAssemblyBOPTotal) + (checkForNull(tempsubAssemblyTechnologyArray[0].ProcessCostValue) + checkForNull(tempsubAssemblyTechnologyArray[0].OperationCostValue))
         tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerAssemblyBOP = checkForNull(costPerAssemblyBOPTotal)
@@ -307,7 +294,6 @@ function EditPartCost(props) {
                         </Row >
                     </div >
                 </div >
-
             </Drawer >
         </div >
     );
