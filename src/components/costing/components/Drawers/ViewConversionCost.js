@@ -131,6 +131,8 @@ function ViewConversionCost(props) {
 
 
   const setCalculatorData = (data, list, id, parentId) => {
+    console.log('parentId: ', parentId);
+    console.log('id: ', id);
 
 
     if (parentId === '') {
@@ -149,13 +151,16 @@ function ViewConversionCost(props) {
     } else {
       let parentTempArr = []
       let parentTempData = viewCostingData[props.index].netConversionCostView.CostingProcessCostResponse[parentId]
+      console.log('parentTempData: ', parentTempData);
 
       let tempArr = []
       let tempData = list[id]
+      console.log('tempData: ', tempData);
 
 
       setCalculatorTechnology(tempData.ProcessTechnologyId)
       tempData = { ...tempData, WeightCalculatorRequest: data, }
+      console.log('tempData: ', tempData);
 
       setCalciData(tempData)
       tempArr = Object.assign([...list], { [id]: tempData })
@@ -188,6 +193,7 @@ function ViewConversionCost(props) {
       }
     } else {
       tempData = list[index]
+      console.log('tempData: ', tempData);
       if (tempData.ProcessCalculatorId === 0 || tempData.ProcessCalculatorId === null) {
         Toaster.warning('Data is not avaliabe for calculator')
         return false
@@ -206,7 +212,7 @@ function ViewConversionCost(props) {
 
             if ((res && res.data && res.data.Data) || (res && res.status === 204)) {
               const data = res.status === 204 ? {} : res.data.Data
-              setCalculatorData(data, list, index, parentIndex)
+              setCalculatorData(data, list, index, parentCalciIndex)
             }
           }
         }))
@@ -217,7 +223,7 @@ function ViewConversionCost(props) {
 
             if ((res && res.data && res.data.Data) || (res && res.status === 204)) {
               const data = res.status === 204 ? {} : res.data.Data
-              setCalculatorData(data, list, index, parentIndex)
+              setCalculatorData(data, list, index, parentCalciIndex)
             }
 
           }
@@ -229,6 +235,10 @@ function ViewConversionCost(props) {
 
   const closeWeightDrawer = (e = "") => {
     setWeightCalculatorDrawer(false)
+    setIndexForProcessCalculator('')
+    setParentIndex('')
+    setCalciData({})
+    setCalculatorTechnology('')
   }
 
 
@@ -271,7 +281,7 @@ function ViewConversionCost(props) {
             <td>{item.MachineName ? item.MachineName : '-'}</td>
             <td>{item.Tonnage ? item.Tonnage : '-'}</td>
             <td>{item.UOM ? item.UOM : '-'}</td>
-            <td>{(item?.ProductionPerHour === '-' || item?.ProductionPerHour === 0 || item?.ProductionPerHour === null) ? '-' : checkForDecimalAndNull(item.ProductionPerHour, initialConfiguration.NoOfDecimalForInputOutput)}</td>
+            <td>{(item?.ProductionPerHour === '-' || item?.ProductionPerHour === 0 || item?.ProductionPerHour === null) ? '-' : Math.round(item.ProductionPerHour)}</td>
             <td>{item.MHR ? item.MHR : '-'}</td>
             {!isPDFShow && <td><button
               className="CalculatorIcon cr-cl-icon mr-auto ml-0"
@@ -309,7 +319,7 @@ function ViewConversionCost(props) {
                 <th>{`Machine Name`}</th>
                 <th>{`Tonnage`}</th>
                 <th>{`UOM`}</th>
-                <th>{`Part/Hour`}</th>
+                <th>{`Parts/Hour`}</th>
                 <th>{`MHR`}</th>
                 {!isPDFShow && <th>{`Calculator`}</th>}
                 <th>{`Quantity`}</th>
@@ -341,7 +351,7 @@ function ViewConversionCost(props) {
                         <td>{item.MachineName ? item.MachineName : '-'}</td>
                         <td>{item.Tonnage ? item.Tonnage : '-'}</td>
                         <td>{item.UOM ? item.UOM : '-'}</td>
-                        <td>{(item?.ProductionPerHour === '-' || item?.ProductionPerHour === 0 || item?.ProductionPerHour === null) ? '-' : checkForDecimalAndNull(item.ProductionPerHour, initialConfiguration.NoOfDecimalForInputOutput)}</td>
+                        <td>{(item?.ProductionPerHour === '-' || item?.ProductionPerHour === 0 || item?.ProductionPerHour === null) ? '-' : Math.round(item.ProductionPerHour)}</td>
                         <td>{item.MHR ? item.MHR : '-'}</td>
                         {(!isPDFShow) && <td>
                           {

@@ -480,7 +480,9 @@ function StandardRub(props) {
 
     };
 
-
+    const UnitFormat = () => {
+        return <>Volume(mm<sup>3</sup>)</>
+    }
     return (
         <Fragment>
             <Row>
@@ -531,7 +533,7 @@ function StandardRub(props) {
                                     <Row className={'mt15'}>
                                         <Col md="3">
                                             <TextFieldHookForm
-                                                label={`Inner Diameter (mm)`}
+                                                label={`Inner Diameter(mm)`}
                                                 name={'InnerDiameter'}
                                                 Controller={Controller}
                                                 control={control}
@@ -556,7 +558,7 @@ function StandardRub(props) {
                                         </Col>
                                         <Col md="3">
                                             <TextFieldHookForm
-                                                label={`Outer Diameter (mm)`}
+                                                label={`Outer Diameter(mm)`}
                                                 name={'OuterDiameter'}
                                                 Controller={Controller}
                                                 control={control}
@@ -581,7 +583,7 @@ function StandardRub(props) {
                                         </Col>
                                         <Col md="3">
                                             <TextFieldHookForm
-                                                label={`Length (mm)`}
+                                                label={`Length(mm)`}
                                                 name={'Length'}
                                                 Controller={Controller}
                                                 control={control}
@@ -607,7 +609,7 @@ function StandardRub(props) {
 
                                         <Col md="3">
                                             <TextFieldHookForm
-                                                label={`Cutting Allowance (mm)`}
+                                                label={`Cutting Allowance(mm)`}
                                                 name={'CuttingAllowance'}
                                                 Controller={Controller}
                                                 control={control}
@@ -660,7 +662,7 @@ function StandardRub(props) {
 
                                         <Col md="3">
                                             <TextFieldHookForm
-                                                label={`Volume (mm^3)`}
+                                                label={UnitFormat()}
                                                 name={'Volume'}
                                                 Controller={Controller}
                                                 control={control}
@@ -686,7 +688,7 @@ function StandardRub(props) {
 
                                         <Col md="3">
                                             <TextFieldHookForm
-                                                label={`Gross Weight (Kg)`}
+                                                label={`Gross Weight(Kg)`}
                                                 name={'GrossWeight'}
                                                 Controller={Controller}
                                                 control={control}
@@ -738,7 +740,7 @@ function StandardRub(props) {
 
                                         <Col md="3">
                                             <TextFieldHookForm
-                                                label={`Scrap Weight (Kg)`}
+                                                label={`Scrap Weight(Kg)`}
                                                 name={'ScrapWeight'}
                                                 Controller={Controller}
                                                 control={control}
@@ -764,7 +766,7 @@ function StandardRub(props) {
 
                                         <Col md="3">
                                             <TextFieldHookForm
-                                                label={`Net RM Cost/ Component`}
+                                                label={`Net RM Cost/Component`}
                                                 name={'NetRmCost'}
                                                 Controller={Controller}
                                                 control={control}

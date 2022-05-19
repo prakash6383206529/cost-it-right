@@ -10,6 +10,7 @@ import { AREA, DIMENSIONLESS, MASS, TIME, VOLUMETYPE } from '../../../../../conf
 import { saveDefaultProcessCostCalculationData } from '../../../actions/CostWorking';
 import Toaster from '../../../../common/Toaster';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import { findProcessCost } from '../../../CostingUtil';
 
 function SheetMetalBaicDrawer(props) {
   /*******************************************************************************************************************************************************************/
@@ -178,9 +179,9 @@ function SheetMetalBaicDrawer(props) {
         case TIME:
 
           //This need to be done later
-          cost = rate / (quantity === 0 ? 1 : quantity);
+          // cost = rate / (quantity === 0 ? 1 : quantity);
 
-
+          cost = findProcessCost(props.calculatorData.UOM, rate, quantity === 0 ? 1 : quantity)
           setProcessCost(cost)
           setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
           return;
@@ -364,7 +365,7 @@ function SheetMetalBaicDrawer(props) {
                   </Col>
                   <Col md="4">
                     <TextFieldHookForm
-                      label={props.calculatorData.UOMType === MASS ? `Weight` : props.calculatorData.UOMType === TIME ? `Part / Hour` : `Quantity`}
+                      label={props.calculatorData.UOMType === MASS ? `Weight` : props.calculatorData.UOMType === TIME ? `Parts/Hour` : `Quantity`}
                       name={'Quantity'}
                       Controller={Controller}
                       control={control}

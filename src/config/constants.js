@@ -1727,6 +1727,8 @@ export const HOUR = "Hours"
 export const NO = "Number"
 export const STROKE = "Stroke"
 export const SHOTS = "SHOT"
+export const MINUTES = 'Minutes'
+export const SECONDS = 'Seconds'
 
 // export const INR = "INR"
 
@@ -1853,4 +1855,4 @@ export const KEY = 'gQUJ79YKYm22Cazw';
 export const IV = 'eTEFSa0PinFKTQNB'
 
 //VERSION 
-export const VERSION = "V1.2.225";
+export const VERSION = "V1.2.232";
