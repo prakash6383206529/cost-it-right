@@ -170,27 +170,6 @@ function RMSimulation(props) {
         window.screen.width >= 1921 && gridRef.current.api.sizeColumnsToFit();
     }
 
-    /**
-     * @method shearingCostFormatter
-     * @description Renders buttons
-     */
-    const shearingCostFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-
-        return cell != null ? cell : '-';
-    }
-
-    /**
-    * @method freightCostFormatter
-    * @description Renders buttons
-    */
-    const freightCostFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-
-        return cell != null ? cell : '-';
-    }
-
-
     const effectiveDateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
 
@@ -383,8 +362,6 @@ function RMSimulation(props) {
     const frameworkComponents = {
         effectiveDateFormatter: effectiveDateFormatter,
         costingHeadFormatter: costingHeadFormatter,
-        shearingCostFormatter: shearingCostFormatter,
-        freightCostFormatter: freightCostFormatter,
         newScrapRateFormatter: newScrapRateFormatter,
         NewcostFormatter: NewcostFormatter,
         costFormatter: costFormatter,
@@ -423,7 +400,7 @@ function RMSimulation(props) {
                                                 isbulkUpload &&
                                                 <div className="d-flex justify-content-end bulk-upload-row rm-row">
                                                     <div className="d-flex align-items-center">
-                                                        <label>No of rows with changes:</label>
+                                                        <label>No. of rows with changes:</label>
                                                         <TextFieldHookForm
                                                             label=""
                                                             name={'NoOfCorrectRow'}
@@ -441,7 +418,7 @@ function RMSimulation(props) {
                                                         />
                                                     </div>
                                                     <div className="d-flex align-items-center">
-                                                        <label>No of rows without changes:</label>
+                                                        <label>No. of rows without changes:</label>
                                                         <TextFieldHookForm
                                                             label=""
                                                             name={'NoOfRowsWithoutChange'}
@@ -524,8 +501,6 @@ function RMSimulation(props) {
                                                 <AgGridColumn width={120} field="ScrapRate" editable='false' cellRenderer='oldScrapRateFormatter' headerName="Old" colId="ScrapRate" ></AgGridColumn>
                                                 <AgGridColumn width={120} cellRenderer={'newScrapRateFormatter'} field="NewScrapRate" headerName="New" colId="NewScrapRate" editable={!isImpactedMaster} ></AgGridColumn>
                                             </AgGridColumn>
-                                            <AgGridColumn width={150} field="RMFreightCost" editable='false' cellRenderer={'freightCostFormatter'} headerName="RM Freight Cost"></AgGridColumn>
-                                            <AgGridColumn width={170} field="RMShearingCost" editable='false' cellRenderer={'shearingCostFormatter'} headerName="RM Shearing Cost" ></AgGridColumn>
                                             {!isImpactedMaster && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Net Cost (INR)">
                                                 <AgGridColumn width={120} field="NetLandedCost" editable='false' cellRenderer={'costFormatter'} headerName="Old" colId='NetLandedCost'></AgGridColumn>
                                                 <AgGridColumn width={120} field="NewNetLandedCost" editable='false' valueGetter='data.NewBasicRate + data.RMFreightCost+data.RMShearingCost' cellRenderer={'NewcostFormatter'} headerName="New" colId='NewNetLandedCost'></AgGridColumn>

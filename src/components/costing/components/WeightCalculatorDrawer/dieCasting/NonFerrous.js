@@ -432,7 +432,7 @@ function NonFerrous(props) {
                                 </Col>
                                 <Col md="3">
                                     <NumberFieldHookForm
-                                        label={`Scrap Recovery %`}
+                                        label={`Scrap Recovery(%)`}
                                         name={'recovery'}
                                         Controller={Controller}
                                         control={control}

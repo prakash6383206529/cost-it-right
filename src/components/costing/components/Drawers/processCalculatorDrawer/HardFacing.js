@@ -280,7 +280,7 @@ function HardFacing(props) {
 
                                         <Col md="4">
                                             <TextFieldHookForm
-                                                label="Spindle Speed"
+                                                label="Spindle Speed(rpm)"
                                                 name={'spindleSpeed'}
                                                 Controller={Controller}
                                                 control={control}
@@ -328,7 +328,7 @@ function HardFacing(props) {
 
                                         <Col md="4">
                                             <TextFieldHookForm
-                                                label={`No of Pass`}
+                                                label={`No. of Pass`}
                                                 name={'noOfPass'}
                                                 Controller={Controller}
                                                 control={control}

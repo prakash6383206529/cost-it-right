@@ -1004,7 +1004,7 @@ class UserRegistration extends Component {
     const { reset, registerUserData, initialConfiguration } = this.props;
     const { department, role, city, isEditFlag, Modules, oldModules, TechnologyLevelGrid,
       oldTechnologyLevelGrid, UserId, HeadLevelGrid, masterLevelGrid } = this.state;
-    const userDetails = reactLocalStorage.getObject("userDetail")
+    const userDetails = JSON.parse(localStorage.getItem('userDetail'))
 
     var key = CryptoJS.enc.Utf8.parse(KEY);
     var iv = CryptoJS.enc.Utf8.parse(IV);
@@ -1241,7 +1241,7 @@ class UserRegistration extends Component {
                           name={"FirstName"}
                           type="text"
                           placeholder={'Enter'}
-                          validate={[required, minLength3, maxLength15]}
+                          validate={[required, minLength3, maxLength15, checkWhiteSpaces]}
                           component={renderText}
                           required={true}
                           // maxLength={26}

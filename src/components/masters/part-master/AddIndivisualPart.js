@@ -374,7 +374,7 @@ class AddIndivisualPart extends Component {
 
     } else {
 
-      this.setState({ setDisable: true })
+      this.setState({ setDisable: true, isLoader: true })
       let formData = {
         LoggedInUserId: loggedInUserId(),
         BOMLevel: 0,
@@ -393,7 +393,7 @@ class AddIndivisualPart extends Component {
       }
 
       this.props.createPart(formData, (res) => {
-        this.setState({ setDisable: false })
+        this.setState({ setDisable: false, isLoader: false })
         if (res?.data?.Result === true) {
           Toaster.success(MESSAGES.PART_ADD_SUCCESS);
           this.cancel()
@@ -430,9 +430,10 @@ class AddIndivisualPart extends Component {
 
     return (
       <>
-        {this.state.isLoader && <LoaderCustom />}
+
         <div className="container-fluid">
           <div>
+            {this.state.isLoader && <LoaderCustom />}
             <div className="login-container signup-form">
               <Row>
                 <Col md="12">
