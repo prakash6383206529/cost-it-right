@@ -5,11 +5,13 @@ import { Row, Col, } from 'reactstrap';
 import { required, number, postiveNumber, maxLength5, minValue1, acceptAllExceptSingleSpecialCharacter } from "../../../helper/validation";
 import { renderText, searchableSelect } from "../../layout/FormInputs";
 import { getAssemblyPartSelectList, getDrawerAssemblyPartDetail, } from '../actions/Part';
-import { ASSEMBLY, SPACEBAR } from '../../../config/constants';
+import { SPACEBAR } from '../../../config/constants';
 import { getRandomSixDigit, onFocus } from '../../../helper/util';
 import LoaderCustom from '../../common/LoaderCustom';
 import { PartEffectiveDate } from './AddAssemblyPart';
 import AsyncSelect from 'react-select/async';
+import { ASSEMBLYNAME } from '../../../config/constants';
+import { ASSEMBLY } from '../../../config/masterData';
 
 class AddAssemblyForm extends Component {
 
@@ -59,7 +61,6 @@ class AddAssemblyForm extends Component {
         this.props.getDrawerAssemblyPartDetail('', res => { })
     }
 
-
     /**
     * @method handleAssemblyPartChange
     * @description  used to handle 
@@ -97,6 +98,13 @@ class AddAssemblyForm extends Component {
 
         const { assemblyPartSelectList } = this.props;
         const { selectedParts } = this.state;
+        let tempArr = [];
+        BOMViewerData && BOMViewerData.map(el => {
+            if (el.PartType === ASSEMBLYNAME) {
+                tempArr.push(el.PartId)
+            }
+            return null;
+        })
 
         const temp = [];
         if (label === 'assemblyPart') {

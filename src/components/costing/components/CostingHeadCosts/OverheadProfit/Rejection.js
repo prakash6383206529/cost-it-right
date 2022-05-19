@@ -9,12 +9,11 @@ import { ViewCostingContext } from '../../CostingDetails';
 import { isOverheadProfitDataChange } from '../../../actions/Costing';
 import WarningMessage from '../../../../common/WarningMessage';
 import { MESSAGES } from '../../../../../config/message';
-
-
+import { ASSEMBLYNAME } from '../../../../../config/constants';
 
 function Rejection(props) {
 
-    const { Controller, control, register, defaultValue, data, setValue, getValues, errors, useWatch, CostingRejectionDetail, clearErrors } = props
+    const { Controller, control, register, data, setValue, getValues, errors, useWatch, CostingRejectionDetail, clearErrors } = props
     const headerCosts = useContext(netHeadCostContext);
     const CostingViewMode = useContext(ViewCostingContext);
     const costData = useContext(costingInfoContext);
@@ -27,8 +26,7 @@ function Rejection(props) {
     const [IsChangedApplicability, setIsChangedApplicability] = useState(false)
     const [percentageLimit, setPercentageLimit] = useState(false)
     const { IsIncludedSurfaceInRejection } = useSelector(state => state.costing)
-    const partType = costData?.TechnologyName === 'Assembly'
-
+    const partType = costData?.TechnologyName === ASSEMBLYNAME
 
     const dispatch = useDispatch()
 
@@ -103,26 +101,42 @@ function Rejection(props) {
       */
     const checkRejectionApplicability = (Text) => {
         if (headerCosts && Text !== '') {
-            const ConversionCostForCalculation = costData?.IsAssemblyPart ? checkForNull(headerCosts?.NetConversionCost) - checkForNull(headerCosts?.TotalOtherOperationCostPerAssembly) : headerCosts?.ProcessCostTotal + headerCosts?.OperationCostTotal
-
-            const RMBOPCC = headerCosts?.NetBoughtOutPartCost + headerCosts?.NetRawMaterialsCost + ConversionCostForCalculation
-            const RMBOP = headerCosts?.NetRawMaterialsCost + headerCosts?.NetBoughtOutPartCost;
-            const RMCC = headerCosts?.NetRawMaterialsCost + ConversionCostForCalculation;
-            const BOPCC = headerCosts?.NetBoughtOutPartCost + ConversionCostForCalculation;
+            let RM = 0
+            let BOP = 0
+            let CC = 0
+            let RM_CC_BOP = 0
+            let RM_CC = 0
+            let BOP_CC = 0
+            let RM_BOP = 0
             const RejectionPercentage = getValues('RejectionPercentage')
 
-            const assemblyLevelCC = checkForNull(headerCosts?.ProcessCostTotal) + checkForNull(headerCosts?.TotalOperationCostPerAssembly)
-            const BOPTotalCost = checkForNull(headerCosts?.NetBoughtOutPartCost)
-            const EditPartCost = checkForNull(headerCosts?.NetRawMaterialsCost)
+            if (partType) {
+                const assemblyLevelCC = checkForNull(headerCosts?.ProcessCostTotal) + checkForNull(headerCosts?.TotalOperationCostPerAssembly)
+                const BOPTotalCost = checkForNull(headerCosts?.NetBoughtOutPartCost)
+                const EditPartCost = checkForNull(headerCosts?.NetRawMaterialsCost)
 
-            const RM = partType ? checkForNull(EditPartCost) : headerCosts?.NetRawMaterialsCost
-            const BOP = partType ? checkForNull(BOPTotalCost) : headerCosts?.NetBoughtOutPartCost
-            const CC = partType ? checkForNull(assemblyLevelCC) : ConversionCostForCalculation
-            let RM_CC_BOP = partType ? (checkForNull(EditPartCost) + checkForNull(assemblyLevelCC) + checkForNull(BOPTotalCost)) : RMBOPCC
-            let RM_CC = partType ? (checkForNull(EditPartCost) + checkForNull(assemblyLevelCC)) : RMCC
-            let BOP_CC = partType ? (checkForNull(assemblyLevelCC) + checkForNull(BOPTotalCost)) : BOPCC
-            let RM_BOP = partType ? (checkForNull(EditPartCost) + checkForNull(BOPTotalCost)) : RMBOP
+                RM = checkForNull(EditPartCost)
+                BOP = checkForNull(BOPTotalCost)
+                CC = checkForNull(assemblyLevelCC)
+                RM_CC_BOP = (checkForNull(EditPartCost) + checkForNull(assemblyLevelCC) + checkForNull(BOPTotalCost))
+                RM_CC = (checkForNull(EditPartCost) + checkForNull(assemblyLevelCC))
+                BOP_CC = (checkForNull(assemblyLevelCC) + checkForNull(BOPTotalCost))
+                RM_BOP = (checkForNull(EditPartCost) + checkForNull(BOPTotalCost))
+            } else {
+                const ConversionCostForCalculation = costData?.IsAssemblyPart ? checkForNull(headerCosts?.NetConversionCost) - checkForNull(headerCosts?.TotalOtherOperationCostPerAssembly) : headerCosts?.ProcessCostTotal + headerCosts?.OperationCostTotal
+                const RMBOPCC = headerCosts?.NetBoughtOutPartCost + headerCosts?.NetRawMaterialsCost + ConversionCostForCalculation
+                const RMBOP = headerCosts?.NetRawMaterialsCost + headerCosts?.NetBoughtOutPartCost;
+                const RMCC = headerCosts?.NetRawMaterialsCost + ConversionCostForCalculation;
+                const BOPCC = headerCosts?.NetBoughtOutPartCost + ConversionCostForCalculation;
 
+                RM = headerCosts?.NetRawMaterialsCost
+                BOP = headerCosts?.NetBoughtOutPartCost
+                CC = ConversionCostForCalculation
+                RM_CC_BOP = RMBOPCC
+                RM_CC = RMCC
+                BOP_CC = BOPCC
+                RM_BOP = RMBOP
+            }
 
             switch (Text) {
                 case 'RM':

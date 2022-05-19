@@ -14,9 +14,10 @@ import { createToprowObjAndSave, findrmCctData } from '../../../CostingUtil';
 import { ViewCostingContext } from '../../CostingDetails';
 import { useState } from 'react';
 import { debounce } from 'lodash';
+import { ASSEMBLYNAME } from '../../../../../config/constants';
 
 function SurfaceTreatment(props) {
-  const { surfaceData, transportationData, item, isAssemblyTechnology } = props;
+  const { surfaceData, transportationData, item } = props;
 
 
 
@@ -42,7 +43,7 @@ function SurfaceTreatment(props) {
   const [transportObj, setTrasportObj] = useState(item.CostingPartDetails?.TransportationDetails)
 
   const [callDiscountApi, setCallDiscountApi] = useState(false)
-  const partType = costData?.TechnologyName === 'Assembly'
+  const partType = costData?.TechnologyName === ASSEMBLYNAME
 
   useEffect(() => {
     setTrasportObj(item?.CostingPartDetails?.TransportationDetails)
@@ -224,7 +225,6 @@ function SurfaceTreatment(props) {
           checkForNull(DiscountCostData?.HundiOrDiscountValue)
 
         mergedAPI(totalCostAPI, false, false)
-
       }
     }
   }), 500);

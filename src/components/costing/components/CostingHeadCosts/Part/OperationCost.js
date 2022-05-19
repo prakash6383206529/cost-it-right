@@ -5,12 +5,13 @@ import AddOperation from '../../Drawers/AddOperation';
 import { Col, Row, Table } from 'reactstrap';
 import { NumberFieldHookForm, TextAreaHookForm } from '../../../../layout/HookFormInputs';
 import NoContentFound from '../../../../common/NoContentFound';
-import { EMPTY_DATA, MASS } from '../../../../../config/constants';
+import { EMPTY_DATA, MASS, ASSEMBLYNAME } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
 import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected } from '../../../../../helper';
 import { ViewCostingContext } from '../../CostingDetails';
 import { gridDataAdded, isDataChange, setRMCCErrors, setSelectedIdsOperation } from '../../../actions/Costing';
 import Popup from 'reactjs-popup';
+import { costingInfoContext } from '../../CostingDetailStepTwo';
 
 let counter = 0;
 function OperationCost(props) {
@@ -24,13 +25,17 @@ function OperationCost(props) {
 
   const dispatch = useDispatch()
   const [gridData, setGridData] = useState(props.data ? props.data : [])
+  const OldGridData = props.data
   const [rowObjData, setRowObjData] = useState({})
   const [editIndex, setEditIndex] = useState('')
   const [Ids, setIds] = useState([])
   const [isDrawerOpen, setDrawerOpen] = useState(false)
+  const [remarkPopUpData, setRemarkPopUpData] = useState("")
+  const [operationCostAssemblyTechnology, setOperationCostAssemblyTechnology] = useState(0)
   const CostingViewMode = useContext(ViewCostingContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { CostingEffectiveDate } = useSelector(state => state.costing)
+  const costData = useContext(costingInfoContext);
 
   useEffect(() => {
     const Params = {
@@ -40,8 +45,8 @@ function OperationCost(props) {
       PartType: props.item.PartType
     }
     if (!CostingViewMode && !IsLocked) {
-      if (CostingViewMode?.TechnologyName === 'Assembly') {
-        props.getOperationGrid(gridData)
+      if (costData?.TechnologyName === ASSEMBLYNAME) {
+        props.getOperationGrid(gridData, operationCostAssemblyTechnology)
       } else {
         if (props.IsAssemblyCalculation) {
           props.setAssemblyOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(props?.data ? props?.data : []) ? true : false, props.item)
@@ -100,10 +105,13 @@ function OperationCost(props) {
         }
       })
       let tempArr = [...GridArray, ...rowArray]
+      let netCostTotal = 0
       tempArr && tempArr.map((el, index) => {
+        netCostTotal = checkForNull(netCostTotal) + checkForNull(el.OperationCost)
         setValue(`${OperationGridFields}.${index}.Quantity`, checkForDecimalAndNull(el.Quantity, initialConfiguration.NoOfDecimalForInputOutput))
         return null
       })
+      setOperationCostAssemblyTechnology(netCostTotal)
       setGridData(tempArr)
       selectedIds(tempArr)
       dispatch(gridDataAdded(true))

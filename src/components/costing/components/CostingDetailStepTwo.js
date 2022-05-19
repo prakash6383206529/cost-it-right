@@ -15,6 +15,7 @@ import { createToprowObjAndSave } from '../CostingUtil';
 import _ from 'lodash'
 import { NCC } from '../../../config/constants';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import { ASSEMBLYNAME } from '../../../config/constants';
 
 export const costingInfoContext = React.createContext()
 export const netHeadCostContext = React.createContext()
@@ -45,7 +46,7 @@ function CostingDetailStepTwo(props) {
   const { costingData, CostingDataList, NetPOPrice, RMCCBOPCost, SurfaceCostData, OverheadProfitCostData,
     DiscountCostData, partNo, IsToolCostApplicable, showLoading, RMCCTabData, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData,
     PackageAndFreightTabData, ToolTabData, CostingEffectiveDate } = useSelector(state => state.costing)
-  const partType = costingData?.TechnologyName === 'Assembly'
+  const partType = costingData?.TechnologyName === ASSEMBLYNAME
 
   let data = useSelector(state => state.costing)
 

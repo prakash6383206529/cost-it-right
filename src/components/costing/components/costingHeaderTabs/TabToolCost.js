@@ -15,7 +15,8 @@ import { MESSAGES } from '../../../../config/message';
 import { ViewCostingContext } from '../CostingDetails';
 import LoaderCustom from '../../../common/LoaderCustom';
 import NoContentFound from '../../../common/NoContentFound';
-import { defaultPageSize, EMPTY_DATA } from '../../../../config/constants';
+import { defaultPageSize, EMPTY_DATA, ASSEMBLYNAME } from '../../../../config/constants';
+import { GridTotalFormate } from '../../../common/TableGridFunctions';
 import { AgGridReact } from 'ag-grid-react/lib/agGridReact';
 import { AgGridColumn } from 'ag-grid-react/lib/agGridColumn';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -47,7 +48,7 @@ function TabToolCost(props) {
   const [operationArray, setOperationArray] = useState([])
   const [gridData, setGridData] = useState([])
   const [disableSwitch, setDisableSwitch] = useState(false)
-  const partType = costData?.TechnologyName === 'Assembly'
+  const partType = costData?.TechnologyName === ASSEMBLYNAME
 
   const dispense = () => {
     setIsApplicableProcessWise(IsToolCostApplicable)
@@ -149,19 +150,12 @@ function TabToolCost(props) {
   const gridOptions = {
     clearSearch: true,
     noDataText: (ToolsDataList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
-    // // paginationShowsTotal: renderPaginationShowsTotal(),
-    // prePage: <span className="prev-page-pg"></span>, // Previous page button text
-    // nextPage: <span className="next-page-pg"></span>, // Next page button text
-    // firstPage: <span className="first-page-pg"></span>, // First page button text
-    // lastPage: <span className="last-page-pg"></span>,
   };
   const defaultColDef = {
 
     resizable: true,
     filter: true,
     sortable: true,
-    // headerCheckboxSelection: isFirstColumn,
-    // checkboxSelection: isFirstColumn
   };
   /**
    * @method dispatchOverallApplicabilityCost

@@ -1,29 +1,17 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
-import { costingInfoContext, NetPOPriceContext } from '../CostingDetailStepTwo';
 import Drawer from '@material-ui/core/Drawer';
-import Switch from "react-switch";
-import { saveAssemblyCostingRMCCTab, saveAssemblyPartRowCostingCalculation } from '../../actions/Costing';
-import ToolCost from '../CostingHeadCosts/Part/ToolCost';
-import { loggedInUserId, checkForDecimalAndNull, checkForNull } from '../../../../helper';
-import { createToprowObjAndSave } from '../../CostingUtil';
+import { checkForNull } from '../../../../helper';
 import ProcessCost from '../CostingHeadCosts/Part/ProcessCost';
 import { setSubAssemblyTechnologyArray } from '../../actions/SubAssembly';
 
 function AddAssemblyProcess(props) {
   const { item, CostingViewMode, ccData } = props;
-  const [IsOpenTool, setIsOpenTool] = useState(false);
   const [processGrid, setProcessGrid] = useState([]);
   const [totalProcessCost, setTotalProcessCost] = useState(0);
   const dispatch = useDispatch()
   const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
-
-  const { RMCCTabData, CostingEffectiveDate, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData } = useSelector(state => state.costing)
-
-  const costData = useContext(costingInfoContext)
-  const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const netPOPrice = useContext(NetPOPriceContext);
 
   /**
   * @method toggleDrawer
@@ -37,14 +25,6 @@ function AddAssemblyProcess(props) {
   };
 
   /**
-* @method onToolToggle
-* @description TOOL COST TOGGLE
-*/
-  const onToolToggle = () => {
-    setIsOpenTool(!IsOpenTool)
-  }
-
-  /**
   * @method cancel
   * @description used to Reset form
   */
@@ -52,14 +32,9 @@ function AddAssemblyProcess(props) {
     props.closeDrawer()
   }
 
-  const onSubmit = data => {
-    toggleDrawer('')
-  }
-
   const getValuesOfProcess = (gridData, ProcessCostTotal) => {
     setProcessGrid(gridData)
     setTotalProcessCost(ProcessCostTotal)
-
   }
 
   /**
@@ -67,12 +42,12 @@ function AddAssemblyProcess(props) {
   * @description SAVE DATA ASSEMBLY
   */
   const saveData = () => {
-
-    let temp = subAssemblyTechnologyArray
-    temp[0].ProcessCostValue = totalProcessCost
-    temp[0].CostingPartDetails.ProcessCostValue = totalProcessCost
-    temp[0].CostingPartDetails.CostPerAssembly = checkForNull(temp[0].CostingPartDetails.CostPerAssembly) + checkForNull(totalProcessCost)
-    dispatch(setSubAssemblyTechnologyArray(temp, res => { }))
+    let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray
+    // UPDATING AT INDEX 0 BECAUSE NEED TO UPDATE THE LEVEL 0 ROW (ASSEMBLY)
+    tempsubAssemblyTechnologyArray[0].ProcessCostValue = totalProcessCost
+    tempsubAssemblyTechnologyArray[0].CostingPartDetails.ProcessCostValue = totalProcessCost
+    tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerAssembly = checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.EditPartCost) + (checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.CostPerAssemblyBOP)) + (checkForNull(tempsubAssemblyTechnologyArray[0].ProcessCostValue) + checkForNull(tempsubAssemblyTechnologyArray[0].OperationCostValue))
+    dispatch(setSubAssemblyTechnologyArray(tempsubAssemblyTechnologyArray, res => { }))
   }
 
   /**
@@ -82,7 +57,6 @@ function AddAssemblyProcess(props) {
   return (
     <div>
       <Drawer className="bottom-drawer" anchor='bottom' open={props.isOpen}
-      // onClose={(e) => toggleDrawer(e)}
       >
         <div className="container-fluid add-operation-drawer">
           <div className={'drawer-wrapper drawer-1500px'}>
@@ -138,7 +112,6 @@ function AddAssemblyProcess(props) {
                 </button>
               </div>
             </Row>
-
           </div>
         </div>
       </Drawer>

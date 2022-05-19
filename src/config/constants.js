@@ -1735,7 +1735,7 @@ export const NCC = 'NCC'
 export const WAC = 'WAC'
 
 //PART TYPE'S USED AT ASSEMBLY CHILD DRAWER
-export const ASSEMBLY = 'Assembly'
+export const ASSEMBLYNAME = 'Assembly'
 export const COMPONENT_PART = 'Component'
 export const BOUGHTOUTPART = 'BoughtOutPart'
 

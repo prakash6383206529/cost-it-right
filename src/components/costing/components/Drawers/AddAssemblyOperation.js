@@ -6,7 +6,8 @@ import Drawer from '@material-ui/core/Drawer';
 import { saveAssemblyCostingRMCCTab, saveAssemblyPartRowCostingCalculation } from '../../actions/Costing';
 import OperationCost from '../CostingHeadCosts/Part/OperationCost';
 import ToolCost from '../CostingHeadCosts/Part/ToolCost';
-import { loggedInUserId, checkForDecimalAndNull, checkForNull } from '../../../../helper';
+import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../helper';
+import { ASSEMBLYNAME } from '../../../../config/constants';
 import { createToprowObjAndSave, findSurfaceTreatmentData } from '../../CostingUtil';
 
 function AddAssemblyOperation(props) {
@@ -15,14 +16,15 @@ function AddAssemblyOperation(props) {
   const IsLocked = (item?.IsLocked ? item?.IsLocked : false) || (item?.IsPartLocked ? item?.IsPartLocked : false)
 
   const [operationGridData, setOperationGridData] = useState([]);
+  const [operationCostAssemblyTechnology, setOperationCostAssemblyTechnology] = useState(0);
   const dispatch = useDispatch()
-
-  const { RMCCTabData, CostingEffectiveDate, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData } = useSelector(state => state.costing)
 
   const costData = useContext(costingInfoContext)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
+  const partType = costData?.TechnologyName === ASSEMBLYNAME
+  const operationCost = item?.CostingPartDetails && item?.CostingPartDetails?.TotalOperationCostPerAssembly !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalOperationCostPerAssembly, initialConfiguration.NoOfDecimalForPrice) : 0
+  const { RMCCTabData, CostingEffectiveDate, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData } = useSelector(state => state.costing)
   const netPOPrice = useContext(NetPOPriceContext);
-  const partType = costData?.TechnologyName === 'Assembly'
 
   /**
   * @method toggleDrawer
@@ -43,11 +45,8 @@ function AddAssemblyOperation(props) {
     props.closeDrawer()
   }
 
-  const onSubmit = data => {
-    toggleDrawer('')
-  }
-
-  const getOperationGrid = (grid) => {
+  const getOperationGrid = (grid, operationCostAssemblyTechnology) => {
+    setOperationCostAssemblyTechnology(operationCostAssemblyTechnology)
     setOperationGridData(grid)
   }
 
@@ -59,7 +58,7 @@ function AddAssemblyOperation(props) {
     let stCostingData = findSurfaceTreatmentData(item)
 
     if (isAssemblyTechnology) {
-      props?.setOperationCostFunction(item?.CostingPartDetails?.TotalOperationCostPerAssembly, operationGridData)
+      props?.setOperationCostFunction(operationCostAssemblyTechnology, operationGridData)
     }
     let requestData = {
       "CostingId": item.CostingId,
@@ -146,7 +145,6 @@ function AddAssemblyOperation(props) {
   return (
     <div>
       <Drawer className="bottom-drawer" anchor='bottom' open={props.isOpen}
-      // onClose={(e) => toggleDrawer(e)}
       >
         <div className="container-fluid add-operation-drawer">
           <div className={'drawer-wrapper drawer-1500px'}>
@@ -169,32 +167,9 @@ function AddAssemblyOperation(props) {
                   <div className="cr-process-costwrap">
                     <Row className="cr-innertool-cost">
 
-                      <Col md="3" className="cr-costlabel"><span className="d-inline-block align-middle">{`Operation Cost: ${item.CostingPartDetails && item.CostingPartDetails?.TotalOperationCostPerAssembly !== null ? checkForDecimalAndNull(item.CostingPartDetails?.TotalOperationCostPerAssembly, initialConfiguration.NoOfDecimalForPrice) : 0}`}</span></Col>
-                      {/* <Col md="3" className="cr-costlabel text-center"><span className="d-inline-block align-middle">{`Tool Cost: ${item.CostingPartDetails && item.CostingPartDetails?.TotalToolCostPerAssembly !== null ? item.CostingPartDetails?.TotalToolCostPerAssembly : 0}`}</span></Col> */}
+                      <Col md="3" className="cr-costlabel"><span className="d-inline-block align-middle">{`Operation Cost: ${partType ? operationCostAssemblyTechnology : operationCost}`}</span></Col>
                       <Col md="3" className="cr-costlabel text-center"><span className="d-inline-block align-middle">{``}</span></Col>
-
-                      <Col md="3" className="switch cr-costlabel text-right">
-                        {/* <label className="switch-level d-inline-flex w-auto mb-0">
-                          <div className={'left-title'}>{''}</div>
-                          <Switch
-                            onChange={onToolToggle}
-                            checked={IsOpenTool}
-                            id="normal-switch"
-                            disabled={false}
-                            background="#4DC771"
-                            onColor="#4DC771"
-                            onHandleColor="#ffffff"
-                            offColor="#CCC"
-                            uncheckedIcon={false}
-                            checkedIcon={false}
-                            height={20}
-                            width={46}
-                          />
-                          <div className={'right-title'}>Show Tool Cost</div>
-                        </label> */}
-                      </Col>
                     </Row>
-
 
                     <OperationCost
                       data={item.CostingPartDetails !== undefined ? item.CostingPartDetails?.CostingOperationCostResponse : []}
@@ -204,7 +179,6 @@ function AddAssemblyOperation(props) {
                       getOperationGrid={getOperationGrid}
                     />
 
-
                     {IsOpenTool && <>
                       <div className="pt-2"></div>
                       <ToolCost
@@ -213,7 +187,6 @@ function AddAssemblyOperation(props) {
                         item={props.item}
                         IsAssemblyCalculation={true}
                       /></>}
-
                   </div>
                 </div>
               </Col>
@@ -237,7 +210,6 @@ function AddAssemblyOperation(props) {
                 </button>
               </div>
             </Row>
-
           </div>
         </div>
       </Drawer>
@@ -245,5 +217,4 @@ function AddAssemblyOperation(props) {
   );
 }
 
-//export default React.memo(AddAssemblyOperation);
 export default AddAssemblyOperation;

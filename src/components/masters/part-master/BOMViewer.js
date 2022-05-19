@@ -7,7 +7,7 @@ import { getBOMViewerTree, getBOMViewerTreeDataByPartIdAndLevel, setActualBOMDat
 import { Flowpoint, Flowspace } from 'flowpoints';
 import AddChildDrawer from './AddChildDrawer';
 import Drawer from '@material-ui/core/Drawer';
-import { ASSEMBLY } from '../../../config/constants';
+import { ASSEMBLYNAME } from '../../../config/constants';
 import { getRandomSixDigit } from '../../../helper/util';
 import VisualAdDrawer from './VisualAdDrawer';
 import _ from 'lodash'
@@ -158,7 +158,7 @@ class BOMViewer extends Component {
     let outputArray = [];
     const posX = flowpoints.length > 0 ? 450 * Math.abs(flowpoints.filter(el => el.Level === 'L1').length) : 50;
 
-    if (Object.keys(childData).length > 0 && childData.PartType === ASSEMBLY) {
+    if (Object.keys(childData).length > 0 && childData.PartType === ASSEMBLYNAME) {
 
       this.props.getBOMViewerTreeDataByPartIdAndLevel(childData.PartId, 1, res => {
         let Data = res.data.Data.FlowPoints;
@@ -282,7 +282,7 @@ class BOMViewer extends Component {
     })
 
     let assemblyOutPuts = flowpoints.find((el, i) => {
-      if (i === index && el.PartType === ASSEMBLY) return true;
+      if (i === index && el.PartType === ASSEMBLYNAME) return true;
       return false;
     })
 
