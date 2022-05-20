@@ -50,10 +50,6 @@ import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
 import { loggedInUserId, userDetails } from '../../../helper';
 import { MESSAGES } from '../../../config/message';
-// import { config } from '../masterUtil'
-
-// const config() = config()
-console.log('config(): ', config());
 
 /**
  * @method createMaterialAPI
