@@ -107,6 +107,7 @@ class AddMoreDetails extends Component {
       isPowerOpen: false,
       isLabourOpen: false,
       isProcessOpen: false,
+      isProcessGroupOpen: false,
       UOM: [],
       effectiveDate: '',
       showPopup: false,
@@ -1868,6 +1869,10 @@ class AddMoreDetails extends Component {
     const { isProcessOpen } = this.state
     this.setState({ isProcessOpen: !isProcessOpen })
   }
+  processGroupToggle = () => {
+    const { isProcessGroupOpen } = this.state
+    this.setState({ isProcessGroupOpen: !isProcessGroupOpen })
+  }
   handleKeyDown = function (e) {
     if (e.key === 'Enter' && e.shiftKey === false) {
       e.preventDefault();
@@ -1893,7 +1898,7 @@ class AddMoreDetails extends Component {
   render() {
     const { handleSubmit, loading, initialConfiguration, isMachineAssociated } = this.props;
     const { isLoader, isOpenAvailability, isEditFlag, isOpenMachineType, isOpenProcessDrawer, manufactureYear,
-      isLoanOpen, isWorkingOpen, isDepreciationOpen, isVariableCostOpen, isPowerOpen, isLabourOpen, isProcessOpen, UniqueProcessId } = this.state;
+      isLoanOpen, isWorkingOpen, isDepreciationOpen, isVariableCostOpen, isPowerOpen, isLabourOpen, isProcessOpen, UniqueProcessId, isProcessGroupOpen } = this.state;
 
     return (
       <>
@@ -3305,14 +3310,23 @@ class AddMoreDetails extends Component {
 
                       {
                         this.state.isProcessGroup &&
-                        <Row>
-                          <Col md="12" className='mt-2'>
+                        <Row className='mb-3 accordian-container'>
+                          <Col md="6" className='mt-2'>
                             <HeaderTitle
                               title={'Process Group:'} />
                           </Col>
-                          <Col md="12">
-                            <ProcessGroup isViewFlag={this.state.isViewFlag} isEditFlag={isEditFlag} processListing={this.state.processGrid} isListing={false} isViewMode={this.state.isViewMode} changeDropdownValue={this.changeDropdownValue} showDelete={this.showDelete} />
+                          <Col md="6">
+                            <div className={'right-details'}>
+                              <a
+                                onClick={this.processGroupToggle}
+                                className={`${isProcessGroupOpen ? 'minus-icon' : 'plus-icon'} pull-right`}></a>
+                            </div>
                           </Col>
+                          {isProcessGroupOpen && <div className="accordian-content row mx-0 w-100">
+                            <Col md="12">
+                              <ProcessGroup isViewFlag={this.state.isViewFlag} isEditFlag={isEditFlag} processListing={this.state.processGrid} isListing={false} isViewMode={this.state.isViewMode} changeDropdownValue={this.changeDropdownValue} showDelete={this.showDelete} />
+                            </Col>
+                          </div>}
                         </Row>
                       }
                       <Row>

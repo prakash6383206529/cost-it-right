@@ -2395,9 +2395,8 @@ button:disabled{pointer-events: none;}
     text-align: center;
     border-radius: 6px;
     padding: 5px 10px;
-    /* Position the tooltip */
     position: absolute;
-    z-index: 1;
+    z-index: 12;
     bottom: 100%;
     left: -140px;
     margin-left: -4px;
@@ -2414,6 +2413,11 @@ button:disabled{pointer-events: none;}
       margin: auto;
       bottom: -6px;
       border-top-color:#D0D8E5;
+    }
+    &.process-tooltip {
+      text-align: left;
+      min-width: 350px;
+      left: -165px;
     }
   }
   .tooltip-icon{
@@ -2437,6 +2441,7 @@ button:disabled{pointer-events: none;}
     .tooltiptext {
       min-width: 280px;
       text-align: right;
+      left: -130px;
     }
   }
 }
@@ -5671,7 +5676,7 @@ left: 17rem;
   }
 }
 @media screen and (max-width:$max1367) {
-  .edit-btn,.btn-danger,.btn-primary, .user-btn, .btn-primary-add, .apply, .btn-secondary, .add-cancel-btn, .cr-bk-btn, .save-btn, .cancel-btn,.reset-btn, .pdf-detail {
+  .edit-btn,.btn-danger,.btn-primary, .user-btn, .btn-primary-add, .apply, .btn-secondary, .add-cancel-btn, .cr-bk-btn, .save-btn, .cancel-btn,.reset-btn, .pdf-detail, .reset {
     font-size: calc(14px * 80 / 100) !important;
     padding-left: calc(15px * 80 / 100) !important;
     padding-right: calc(15px * 80 / 100) !important;
@@ -6455,7 +6460,7 @@ table.group-process-table {
   th,td {
     &:first-child {
       border-right: 1px solid $borderColor;
-      width: 45%;
+      width: 40%;
     }
     &:last-child {
       border-left: 1px solid $borderColor;
@@ -6466,7 +6471,6 @@ table.group-process-table {
     .process-names {
       padding: 0.41rem 10px;
       border-top: 1px solid $borderColor;
-      border-right: 1px solid #c2cbe8;
       &:first-child {
         border-top: none !important;
       }
@@ -6474,12 +6478,14 @@ table.group-process-table {
     &:first-child {
       padding-left: 12px !important;
     }
+    &:last-child {
+      padding: 10px !important;
+    }
   }
   .group-process-Actions {
     display: flex;
     justify-content: flex-end;
     grid-gap: 5px;
-    margin-right: 7px;
     button {
       margin: 0 !important;
     }
@@ -6488,11 +6494,5 @@ table.group-process-table {
 .process-group-drawer {
   .drawer-wrapper {
     width: 675px ;
-  }
-}
-.process-tooltip {
-  .tooltip-inner {
-    max-width: 350px;
-    text-align: left;
   }
 }
