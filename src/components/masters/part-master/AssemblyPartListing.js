@@ -45,7 +45,7 @@ class AssemblyPartListing extends Component {
             isBulkUpload: false,
             showPopup: false,
             deletedId: '',
-            isLoader:false
+            isLoader: false
         }
     }
 
@@ -63,9 +63,9 @@ class AssemblyPartListing extends Component {
     * @description Get user list data
     */
     getTableListData = () => {
-        this.setState({isLoader: true})
+        this.setState({ isLoader: true })
         this.props.getAssemblyPartDataList((res) => {
-            this.setState({isLoader:false})
+            this.setState({ isLoader: false })
             if (res.status === 204 && res.data === '') {
                 this.setState({ tableData: [], })
             } else if (res && res.data && res.data.DataList) {
@@ -100,7 +100,6 @@ class AssemblyPartListing extends Component {
     */
     deleteItem = (Id) => {
         this.setState({ showPopup: true, deletedId: Id })
-        
     }
 
     /**
@@ -128,10 +127,7 @@ class AssemblyPartListing extends Component {
     */
     effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        
-    
-            return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
-   
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
     }
 
     renderEffectiveDate = () => {
@@ -145,18 +141,6 @@ class AssemblyPartListing extends Component {
         return <>BOM <br />Level Count</>
     }
 
-    /**
-    * @method visualAdFormatter
-    * @description Renders buttons
-    */
-    visualAdFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return (
-            <>
-                <button className="View mr5" type={'button'} onClick={() => this.visualAdDetails(cellValue)} />
-            </>
-        )
-    }
 
     /**
     * @method visualAdDetails
@@ -186,9 +170,10 @@ class AssemblyPartListing extends Component {
         const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.props;
         return (
             <>
-                {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
-                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
-                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+                {ViewAccessibility && <button title='View BOM' className="hirarchy-btn" type={'button'} onClick={() => this.visualAdDetails(cellValue)} />}
+                {ViewAccessibility && <button title='View' className="View" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
+                {EditAccessibility && <button title='Edit' className="Edit" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
+                {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
     };
@@ -346,7 +331,7 @@ class AssemblyPartListing extends Component {
 
         return (
             <div className={`ag-grid-react p-relative ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-               {this.state.isLoader && <LoaderCustom />}
+                {this.state.isLoader && <LoaderCustom />}
                 <Row className="pt-4 no-filter-row">
                     <Col md="8" className="filter-block">
 
@@ -399,7 +384,7 @@ class AssemblyPartListing extends Component {
                 </Row>
 
 
-                <div className={`ag-grid-wrapper height-width-wrapper ${this.props.partsListing && this.props.partsListing?.length <=0 ?"overlay-contain": ""}`}>
+                <div className={`ag-grid-wrapper height-width-wrapper ${this.props.partsListing && this.props.partsListing?.length <= 0 ? "overlay-contain" : ""}`}>
                     <div className="ag-grid-header">
                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                     </div>
@@ -430,8 +415,7 @@ class AssemblyPartListing extends Component {
                             <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                            <AgGridColumn field="PartId" width={120} headerName="View BOM" cellRenderer={'visualAdFormatter'}></AgGridColumn>
-                            <AgGridColumn field="PartId" width={160} headerName="Action" pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                            <AgGridColumn field="PartId" width={180} headerName="Action" cellClass={"actions-wrapper"} pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                         </AgGridReact>
                         <div className="paging-container d-inline-block float-right">
                             <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
