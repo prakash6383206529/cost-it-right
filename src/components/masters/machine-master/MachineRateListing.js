@@ -4,19 +4,18 @@ import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { EMPTY_DATA, MACHINERATE, MACHINE_MASTER_ID } from '../../../config/constants';
 import {
-    getInitialMachineTypeSelectList, getInitialProcessesSelectList, getInitialVendorWithVendorCodeSelectList, getMachineTypeSelectListByPlant,
+    getInitialMachineTypeSelectList, getInitialPlantSelectList, getInitialProcessesSelectList, getInitialVendorWithVendorCodeSelectList, getMachineTypeSelectListByPlant,
     getVendorSelectListByTechnology, getMachineTypeSelectListByTechnology, getMachineTypeSelectListByVendor, getProcessSelectListByMachineType,
 
 } from '../actions/Process';
 import { getMachineDataList, deleteMachine, copyMachine, getProcessGroupByMachineId } from '../actions/MachineMaster';
-import { getTechnologySelectList, getPlantSelectList } from '../../../actions/Common';
+import { getTechnologySelectList } from '../../../actions/Common';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { MACHINERATE_DOWNLOAD_EXCEl } from '../../../config/masterData';
-import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import DayTime from '../../common/DayTimeWrapper'
 import { MachineRate } from '../../../config/constants';
@@ -68,7 +67,7 @@ class MachineRateListing extends Component {
     */
     componentDidMount() {
         this.props.getTechnologySelectList(() => { })
-        this.props.getPlantSelectList(() => { })
+        this.props.getInitialPlantSelectList(() => { })
         this.props.getInitialVendorWithVendorCodeSelectList(() => { })
         this.props.getInitialMachineTypeSelectList(() => { })
         this.props.getInitialProcessesSelectList(() => { })
@@ -180,14 +179,6 @@ class MachineRateListing extends Component {
     */
     deleteItem = (Id) => {
         this.setState({ showPopup: true, deletedId: Id })
-        const toastrConfirmOptions = {
-            onOk: () => {
-                this.confirmDelete(Id);
-            },
-            onCancel: () => { },
-            component: () => <ConfirmComponent />,
-        };
-
     }
 
     /**
@@ -377,7 +368,6 @@ class MachineRateListing extends Component {
         params.api.paginationGoToPage(0);
     };
     onPageSizeChanged = (newPageSize) => {
-        var value = document.getElementById('page-size').value;
         this.state.gridApi.paginationSetPageSize(Number(newPageSize));
     };
 
@@ -385,9 +375,9 @@ class MachineRateListing extends Component {
         let tempArr = []
         if (this.props.isSimulation === true) {
             const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-            data && data.map((item => {
+            data && data.map((item => (
                 tempArr.push(item.data)
-            }))
+            )))
         } else {
             tempArr = this.props.machineDatalist && this.props.machineDatalist
         }
@@ -420,7 +410,7 @@ class MachineRateListing extends Component {
     */
     render() {
         const { handleSubmit, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility, isSimulation } = this.props;
-        const { isBulkUpload, isLoader } = this.state;
+        const { isBulkUpload } = this.state;
 
         const isFirstColumn = (params) => {
             if (isSimulation) {
@@ -553,7 +543,7 @@ class MachineRateListing extends Component {
                                     <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
                                     {!isSimulation && <AgGridColumn field="Technologies" headerName="Technology"></AgGridColumn>}
                                     <AgGridColumn field="VendorName" headerName="Vendor(Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="Plants" cellRenderer={'hyphenFormatter'} headerName="Plant(Code)"></AgGridColumn>
+                                    <AgGridColumn field="Plants" headerName="Plant(Code)" cellRenderer='hyphenFormatter'></AgGridColumn>
                                     <AgGridColumn field="MachineNumber" headerName="Machine Number" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="MachineTypeName" headerName="Machine Type" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="MachineTonnage" cellRenderer={'hyphenFormatter'} headerName="Machine Tonnage"></AgGridColumn>
@@ -621,7 +611,7 @@ function mapStateToProps(state) {
 */
 export default connect(mapStateToProps, {
     getTechnologySelectList,
-    getPlantSelectList,
+    getInitialPlantSelectList,
     getInitialVendorWithVendorCodeSelectList,
     getInitialMachineTypeSelectList,
     getInitialProcessesSelectList,
