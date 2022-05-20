@@ -60,8 +60,8 @@ function AddBOPHandling(props) {
         if (el.PartType === 'BOP' && el.AssemblyPartNumber === item?.PartNumber) {
           BOPSum = BOPSum + (checkForNull(el?.CostingPartDetails?.TotalBoughtOutPartCost) * checkForNull(el?.CostingPartDetails?.Quantity))
         }
-        return BOPSum
-      })
+      }, 0)
+
       setValue('BOPCost', checkForDecimalAndNull(BOPSum, getConfigurationKey().NoOfDecimalForPrice))
       let obj = childPartDetail && childPartDetail.filter(assyItem => assyItem?.PartNumber === item?.PartNumber && assyItem?.AssemblyPartNumber === item?.AssemblyPartNumber && (assyItem?.PartType === 'Sub Assembly' || assyItem?.PartType === 'Assembly'))
       setValue('BOPCost', obj[0]?.CostingPartDetails?.IsApplyBOPHandlingCharges ? checkForDecimalAndNull(obj[0]?.CostingPartDetails?.BOPHandlingChargeApplicability, getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(BOPSum, getConfigurationKey().NoOfDecimalForPrice))

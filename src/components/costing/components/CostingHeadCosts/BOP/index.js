@@ -3,6 +3,7 @@ import { costingInfoContext } from '../../CostingDetailStepTwo';
 import { getBOPData, } from '../../../actions/Costing';
 import { useDispatch, useSelector } from 'react-redux';
 import { checkForDecimalAndNull } from '../../../../../helper';
+import { ASSEMBLY } from '../../../../../config/masterData';
 
 function BoughtOutPart(props) {
   const { item } = props;
@@ -11,6 +12,7 @@ function BoughtOutPart(props) {
 
   const costData = useContext(costingInfoContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
+  const partType = Number(costData?.ETechnologyType) === ASSEMBLY
 
   useEffect(() => {
     if (Object.keys(costData).length > 0) {
@@ -42,15 +44,48 @@ function BoughtOutPart(props) {
             {item && item.PartNumber}
           </span>
         </td>
+        {partType && <td>{item && item.PartName}</td>}
         <td>{item && item.BOMLevel}</td>
         <td>{item && item.PartType}</td>
+        {partType ? <td>{item?.CostingPartDetails?.TechnologyName ? item?.CostingPartDetails?.TechnologyName : 'Sheet Metal'}</td> : <td>{'-'}</td>}
+        {partType && <td>{item?.CostingPartDetails?.BoughtOutPartRate !== null ? checkForDecimalAndNull(item.CostingPartDetails.BoughtOutPartRate, initialConfiguration.NoOfDecimalForPrice) : 0}</td>}
+        {partType && <td>{'-'}</td>}
+        <td>{item?.CostingPartDetails?.Quantity ? checkForDecimalAndNull(item.CostingPartDetails.Quantity, initialConfiguration.NoOfDecimalForPrice) : 1}</td>
+        {!partType && <td>{item?.CostingPartDetails?.BoughtOutPartRate ? checkForDecimalAndNull(item.CostingPartDetails.BoughtOutPartRate, initialConfiguration.NoOfDecimalForPrice) : 0}</td>}
+        {!partType && costData.IsAssemblyPart && <td>{item?.CostingPartDetails?.BoughtOutPartRate ? checkForDecimalAndNull((item.CostingPartDetails.BoughtOutPartRate * item.CostingPartDetails.Quantity), initialConfiguration.NoOfDecimalForPrice) : 0}</td>}
+        {partType && <td>{item?.CostingPartDetails?.CostPerPiece ? checkForDecimalAndNull(item.CostingPartDetails.CostPerPiece, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>}
+        {partType && <td>{item?.CostingPartDetails?.CostPerPiece ? '-' : '-'}</td>}
+        {partType && <td>{item?.CostingPartDetails?.CostPerPiece ? '-' : '-'}</td>}
+        {partType && <td>{item?.CostingPartDetails?.CostPerAssemblyBOP ? checkForDecimalAndNull(item.CostingPartDetails.CostPerAssemblyBOP, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>}
+        {partType ? <td>{'-'}</td> : <td>{''}</td>}
+        {partType && <td></td>}
+        {partType && <td></td>}
+
+
+      </tr>
+
+
+      <tr>
+        <td>
+          <span style={{ position: 'relative' }} className={`cr-prt-nm1 cr-prt-link1 ${item && item.BOMLevel}`}>
+            {item && item.PartNumber}
+          </span>
+        </td>
+        <td>{item && item.PartName}</td>
+        <td>{item && item.BOMLevel}</td>
+        <td>{item && item.PartType}</td>
+        <td>{item?.CostingPartDetails?.TechnologyName ? item?.CostingPartDetails?.TechnologyName : 'Sheet Metal'}</td>
+
+        <td>{item?.CostingPartDetails?.Quantity ? checkForDecimalAndNull(item.CostingPartDetails.Quantity, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+
+        <td>{item?.CostingPartDetails?.CostPerPiece ? checkForDecimalAndNull(item.CostingPartDetails.CostPerPiece, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+        <td>{item?.CostingPartDetails?.CostPerPiece ? '-' : '-'}</td>
+        <td>{item?.CostingPartDetails?.CostPerPiece ? '-' : '-'}</td>
+        <td>{item?.CostingPartDetails?.CostPerAssemblyBOP ? checkForDecimalAndNull(item.CostingPartDetails.CostPerAssemblyBOP, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
         <td>{'-'}</td>
-        <td>{item?.CostingPartDetails?.BoughtOutPartRate !== null ? checkForDecimalAndNull(item.CostingPartDetails.BoughtOutPartRate, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
-        <td>{'-'}</td>
-        <td>{item?.CostingPartDetails?.Quantity ? item.CostingPartDetails.Quantity : 1}</td>
-        <td>{item?.CostingPartDetails?.BoughtOutPartRate ? checkForDecimalAndNull(item.CostingPartDetails.BoughtOutPartRate, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
-        {costData.IsAssemblyPart && <td>{item?.CostingPartDetails?.BoughtOutPartRate ? checkForDecimalAndNull((item.CostingPartDetails.BoughtOutPartRate * item.CostingPartDetails.Quantity), initialConfiguration.NoOfDecimalForPrice) : 0}</td>}
-        <td>{''}</td>
+        <td></td>
+        <td></td>
+
       </tr>
     </ >
   );
