@@ -10,7 +10,7 @@ import { isOverheadProfitDataChange } from '../../../actions/Costing';
 import WarningMessage from '../../../../common/WarningMessage';
 import { MESSAGES } from '../../../../../config/message';
 import { ASSEMBLYNAME } from '../../../../../config/constants';
-
+import { ASSEMBLY } from '../../../../../config/masterData';
 
 
 function Rejection(props) {
@@ -109,30 +109,24 @@ function Rejection(props) {
 
             if (partType) {
                 const assemblyLevelCC = checkForNull(headerCosts?.ProcessCostTotal) + checkForNull(headerCosts?.TotalOperationCostPerAssembly)
-                const BOPTotalCost = checkForNull(headerCosts?.NetBoughtOutPartCost)
-                const EditPartCost = checkForNull(headerCosts?.NetRawMaterialsCost)
 
-                RM = checkForNull(EditPartCost)
-                BOP = checkForNull(BOPTotalCost)
+                RM = checkForNull(headerCosts?.NetRawMaterialsCost)
+                BOP = checkForNull(headerCosts?.NetBoughtOutPartCost)
                 CC = checkForNull(assemblyLevelCC)
-                RM_CC_BOP = (checkForNull(EditPartCost) + checkForNull(assemblyLevelCC) + checkForNull(BOPTotalCost))
-                RM_CC = (checkForNull(EditPartCost) + checkForNull(assemblyLevelCC))
-                BOP_CC = (checkForNull(assemblyLevelCC) + checkForNull(BOPTotalCost))
-                RM_BOP = (checkForNull(EditPartCost) + checkForNull(BOPTotalCost))
+                RM_CC_BOP = (checkForNull(headerCosts?.NetRawMaterialsCost) + checkForNull(assemblyLevelCC) + checkForNull(headerCosts?.NetBoughtOutPartCost))
+                RM_CC = (checkForNull(headerCosts?.NetRawMaterialsCost) + checkForNull(assemblyLevelCC))
+                BOP_CC = (checkForNull(assemblyLevelCC) + checkForNull(headerCosts?.NetBoughtOutPartCost))
+                RM_BOP = (checkForNull(headerCosts?.NetRawMaterialsCost) + checkForNull(headerCosts?.NetBoughtOutPartCost))
             } else {
                 const ConversionCostForCalculation = costData?.IsAssemblyPart ? checkForNull(headerCosts?.NetConversionCost) - checkForNull(headerCosts?.TotalOtherOperationCostPerAssembly) : headerCosts?.ProcessCostTotal + headerCosts?.OperationCostTotal
-                const RMBOPCC = headerCosts?.NetBoughtOutPartCost + headerCosts?.NetRawMaterialsCost + ConversionCostForCalculation
-                const RMBOP = headerCosts?.NetRawMaterialsCost + headerCosts?.NetBoughtOutPartCost;
-                const RMCC = headerCosts?.NetRawMaterialsCost + ConversionCostForCalculation;
-                const BOPCC = headerCosts?.NetBoughtOutPartCost + ConversionCostForCalculation;
 
                 RM = headerCosts?.NetRawMaterialsCost
                 BOP = headerCosts?.NetBoughtOutPartCost
                 CC = ConversionCostForCalculation
-                RM_CC_BOP = RMBOPCC
-                RM_CC = RMCC
-                BOP_CC = BOPCC
-                RM_BOP = RMBOP
+                RM_CC_BOP = headerCosts?.NetBoughtOutPartCost + headerCosts?.NetRawMaterialsCost + ConversionCostForCalculation
+                RM_CC = headerCosts?.NetRawMaterialsCost + ConversionCostForCalculation;
+                BOP_CC = headerCosts?.NetBoughtOutPartCost + ConversionCostForCalculation;
+                RM_BOP = headerCosts?.NetRawMaterialsCost + headerCosts?.NetBoughtOutPartCost;
             }
 
             switch (Text) {

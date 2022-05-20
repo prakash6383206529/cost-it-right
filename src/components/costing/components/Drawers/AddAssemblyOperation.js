@@ -7,8 +7,8 @@ import { gridDataAdded, saveAssemblyCostingRMCCTab, saveAssemblyPartRowCostingCa
 import OperationCost from '../CostingHeadCosts/Part/OperationCost';
 import ToolCost from '../CostingHeadCosts/Part/ToolCost';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../helper';
-import { ASSEMBLYNAME } from '../../../../config/constants';
 import { createToprowObjAndSave, findSurfaceTreatmentData, formatMultiTechnologyUpdate } from '../../CostingUtil';
+import { ASSEMBLY } from '../../../../config/masterData';
 
 function AddAssemblyOperation(props) {
   const { item, CostingViewMode, isAssemblyTechnology } = props;
@@ -19,7 +19,7 @@ function AddAssemblyOperation(props) {
 
   const costData = useContext(costingInfoContext)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const partType = costData?.TechnologyName === ASSEMBLYNAME
+  const partType = Number(costData?.ETechnologyType) === ASSEMBLY
   const operationCost = item?.CostingPartDetails && item?.CostingPartDetails?.TotalOperationCostPerAssembly !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalOperationCostPerAssembly, initialConfiguration.NoOfDecimalForPrice) : 0
   const { RMCCTabData, CostingEffectiveDate, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData } = useSelector(state => state.costing)
   const dispatch = useDispatch()

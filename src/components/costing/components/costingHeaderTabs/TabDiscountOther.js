@@ -23,6 +23,8 @@ import { debounce } from 'lodash'
 import { createToprowObjAndSave } from '../../CostingUtil';
 import LoaderCustom from '../../../common/LoaderCustom';
 import WarningMessage from '../../../common/WarningMessage';
+import { ASSEMBLY } from '../../../../config/masterData';
+
 function TabDiscountOther(props) {
   // ********* INITIALIZE REF FOR DROPZONE ********
   const dropzone = useRef(null);

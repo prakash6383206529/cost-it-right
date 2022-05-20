@@ -12,6 +12,7 @@ import { ViewCostingContext } from '../../CostingDetails';
 import { gridDataAdded, isDataChange, setRMCCErrors, setSelectedIdsOperation } from '../../../actions/Costing';
 import Popup from 'reactjs-popup';
 import { costingInfoContext } from '../../CostingDetailStepTwo';
+import { ASSEMBLY } from '../../../../../config/masterData';
 
 let counter = 0;
 function OperationCost(props) {
@@ -45,7 +46,7 @@ function OperationCost(props) {
       PartType: props.item.PartType
     }
     if (!CostingViewMode && !IsLocked) {
-      if (costData?.TechnologyName === ASSEMBLYNAME) {
+      if (Number(costData?.ETechnologyType) === ASSEMBLY) {
         props.getOperationGrid(gridData, operationCostAssemblyTechnology)
       } else {
         if (props.IsAssemblyCalculation) {
