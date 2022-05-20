@@ -66,12 +66,8 @@ function OverheadProfit(props) {
   const [tempOverheadObj, setTempOverheadObj] = useState(CostingOverheadDetail)
   const [tempProfitObj, setTempProfitObj] = useState(CostingProfitDetail)
   const partType = Number(costData?.ETechnologyType) === ASSEMBLY
-  console.log('costData: ', costData);
-
-
 
   const [modelType, setModelType] = useState(data.CostingPartDetails && data.CostingPartDetails?.ModelType !== null ? { label: data.CostingPartDetails?.ModelType, value: data.CostingPartDetails.ModelTypeId } : [])
-
 
   const [IsSurfaceTreatmentAdded, setIsSurfaceTreatmentAdded] = useState(false)
 

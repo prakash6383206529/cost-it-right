@@ -47,6 +47,8 @@ function OperationCost(props) {
     }
     if (!CostingViewMode && !IsLocked) {
       if (Number(costData?.ETechnologyType) === ASSEMBLY) {
+        // FUTURE CONDITION FROM API RESPONCE TO CHECK IF DATA IS CHANGED OR NOT
+        // JSON.stringify(gridData) !== JSON.stringify(OldGridData)
         props.getOperationGrid(gridData, operationCostAssemblyTechnology)
       } else {
         if (props.IsAssemblyCalculation) {

@@ -31,7 +31,7 @@ function TabAssemblyTechnology(props) {
     dispatch(setSubAssemblyTechnologyArray(tempObject, res => { }))
 
     // API FOR FIRST TIME DATA LOAD
-    // dispatch(getSubAssemblyAPI(tempObject, res => { }))         //WIP
+    // dispatch(getSubAssemblyAPI(tempObject, res => { }))
   }, [])
 
   //MANIPULATE TOP HEADER COSTS
