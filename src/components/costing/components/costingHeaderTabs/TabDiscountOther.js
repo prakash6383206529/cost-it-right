@@ -12,7 +12,7 @@ import { calculatePercentage, checkForDecimalAndNull, checkForNull, loggedInUser
 import { NumberFieldHookForm, SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../../layout/HookFormInputs';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
-import { ASSEMBLYNAME, FILE_URL } from '../../../../config/constants';
+import { FILE_URL } from '../../../../config/constants';
 import Toaster from '../../../common/Toaster';
 import { MESSAGES } from '../../../../config/message';
 import DayTime from '../../../common/DayTimeWrapper'
@@ -21,6 +21,7 @@ import { useHistory } from "react-router-dom";
 import redcrossImg from '../../../../assests/images/red-cross.png'
 import { debounce } from 'lodash'
 import { createToprowObjAndSave } from '../../CostingUtil';
+import { ASSEMBLY } from '../../../../config/masterData';
 
 function TabDiscountOther(props) {
   // ********* INITIALIZE REF FOR DROPZONE ********
@@ -54,7 +55,7 @@ function TabDiscountOther(props) {
   const [discountCostApplicability, setDiscountCostApplicability] = useState([])
   const [netPoPriceCurrencyState, setNetPoPriceCurrencyState] = useState('')
   const costingHead = useSelector(state => state.comman.costingHead)
-  const partType = costData?.TechnologyName === ASSEMBLYNAME
+  const partType = Number(costData?.ETechnologyType) === ASSEMBLY
 
   useEffect(() => {
     // CostingViewMode CONDITION IS USED TO AVOID CALCULATION IN VIEWMODE

@@ -11,7 +11,6 @@ import Toaster from '../../../common/Toaster';
 import { useDispatch, useSelector } from 'react-redux';
 import { isDataChange } from '../../actions/Costing';
 import { setSubAssemblyTechnologyArray } from '../../actions/SubAssembly';
-import { ASSEMBLYNAME } from '../../../../config/constants';
 
 function AddBOPHandling(props) {
   const { item, isAssemblyTechnology } = props
@@ -51,7 +50,7 @@ function AddBOPHandling(props) {
         return BOPSum
       })
       setValue('BOPCost', checkForDecimalAndNull(BOPSum, getConfigurationKey().NoOfDecimalForPrice))
-      let obj = childPartDetail && childPartDetail.filter(assyItem => assyItem.PartNumber === item.PartNumber && assyItem.AssemblyPartNumber === item.AssemblyPartNumber && (assyItem.PartType === 'Sub Assembly' || assyItem.PartType === ASSEMBLYNAME))
+      let obj = childPartDetail && childPartDetail.filter(assyItem => assyItem.PartNumber === item.PartNumber && assyItem.AssemblyPartNumber === item.AssemblyPartNumber && (assyItem.PartType === 'Sub Assembly' || assyItem.PartType === 'Assembly'))
       setValue('BOPCost', obj[0].CostingPartDetails.IsApplyBOPHandlingCharges ? checkForDecimalAndNull(obj[0].CostingPartDetails.BOPHandlingChargeApplicability, getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(BOPSum, getConfigurationKey().NoOfDecimalForPrice))
       setValue('BOPHandlingPercentage', checkForNull(obj[0]?.CostingPartDetails.BOPHandlingPercentage))
       setValue('BOPHandlingCharges', checkForNull(obj[0]?.CostingPartDetails.BOPHandlingCharges))

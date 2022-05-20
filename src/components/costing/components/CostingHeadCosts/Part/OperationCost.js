@@ -12,6 +12,7 @@ import { ViewCostingContext } from '../../CostingDetails';
 import { gridDataAdded, isDataChange, setRMCCErrors, setSelectedIdsOperation } from '../../../actions/Costing';
 import Popup from 'reactjs-popup';
 import { costingInfoContext } from '../../CostingDetailStepTwo';
+import { ASSEMBLY } from '../../../../../config/masterData';
 
 let counter = 0;
 function OperationCost(props) {
@@ -45,7 +46,7 @@ function OperationCost(props) {
       PartType: props.item.PartType
     }
     if (!CostingViewMode && !IsLocked) {
-      if (costData?.TechnologyName === ASSEMBLYNAME) {
+      if (Number(costData?.ETechnologyType) === ASSEMBLY) {
         props.getOperationGrid(gridData, operationCostAssemblyTechnology)
       } else {
         if (props.IsAssemblyCalculation) {
@@ -249,7 +250,6 @@ function OperationCost(props) {
       tempData = { ...tempData, LabourQuantity: 0, OperationCost: OperationCost }
       tempArr = Object.assign([...gridData], { [index]: tempData })
       setGridData(tempArr)
-      //Toaster.warning('Please enter valid number.')
       setTimeout(() => {
         setValue(`${OperationGridFields}.${index}.LabourQuantity`, 0)
       }, 200)

@@ -5,8 +5,8 @@ import { Row, Col, } from 'reactstrap';
 import { required, postiveNumber, maxLength5, minValue1, acceptAllExceptSingleSpecialCharacter } from "../../../helper/validation";
 import { renderText, searchableSelect } from "../../layout/FormInputs";
 import { getAssemblyPartSelectList, getDrawerAssemblyPartDetail, } from '../actions/Part';
-import { ASSEMBLYNAME } from '../../../config/constants';
 import { getRandomSixDigit } from '../../../helper/util';
+import { ASSEMBLY } from '../../../config/masterData';
 
 class AddAssemblyForm extends Component {
     constructor(props) {
@@ -69,7 +69,7 @@ class AddAssemblyForm extends Component {
 
         let tempArr = [];
         BOMViewerData && BOMViewerData.map(el => {
-            if (el.PartType === ASSEMBLYNAME) {
+            if (el.PartType === ASSEMBLY) {
                 tempArr.push(el.PartId)
             }
             return null;

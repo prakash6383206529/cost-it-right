@@ -13,7 +13,7 @@ import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../.
 import { createToprowObjAndSave, findrmCctData } from '../../../CostingUtil';
 import { ViewCostingContext } from '../../CostingDetails';
 import { useState } from 'react';
-import { ASSEMBLYNAME } from '../../../../../config/constants';
+import { ASSEMBLY } from '../../../../../config/masterData';
 
 function SurfaceTreatment(props) {
   const { surfaceData, transportationData, item } = props;
@@ -38,7 +38,7 @@ function SurfaceTreatment(props) {
   const [surfaceTreatmentData, setSurfacTreatmenteData] = useState({})
   const [surfaceTableData, setSurfacetableData] = useState(item.CostingPartDetails.SurfaceTreatmentDetails)
   const [transportObj, setTrasportObj] = useState(item.CostingPartDetails.TransportationDetails)
-  const partType = costData?.TechnologyName === ASSEMBLYNAME
+  const partType = Number(costData?.ETechnologyType) === ASSEMBLY
 
   useEffect(() => {
     setTrasportObj(item?.CostingPartDetails?.TransportationDetails)

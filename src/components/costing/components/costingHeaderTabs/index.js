@@ -26,14 +26,13 @@ import TabAssemblyTechnology from './TabAssemblyTechnology';
 import { createToprowObjAndSave, findSurfaceTreatmentData } from '../../CostingUtil';
 import _ from 'lodash'
 import { ASSEMBLY } from '../../../../config/masterData';
-import WarningMessage from '../../../common/WarningMessage';
 
 function CostingHeaderTabs(props) {
   const dispatch = useDispatch()
 
   const { ComponentItemData, ComponentItemOverheadData, ComponentItemPackageFreightData, ComponentItemToolData,
     ComponentItemDiscountData, IsIncludedSurfaceInOverheadProfit, costingData, CostingEffectiveDate,
-    IsCostingDateDisabled, ActualCostingDataList, CostingDataList, RMCCTabData, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData, checkIsDataChange, checkIsOverheadProfitChange, checkIsFreightPackageChange, checkIsToolTabChange } = useSelector(state => state.costing)
+    IsCostingDateDisabled, CostingDataList, RMCCTabData, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData, checkIsDataChange, checkIsOverheadProfitChange, checkIsFreightPackageChange, checkIsToolTabChange } = useSelector(state => state.costing)
   const [activeTab, setActiveTab] = useState('1');
   const [IsOpenViewHirarchy, setIsOpenViewHirarchy] = useState(false);
   const [IsCalledAPI, setIsCalledAPI] = useState(true);
@@ -361,7 +360,7 @@ function CostingHeaderTabs(props) {
           <Nav tabs className="subtabs cr-subtabs-head">
             <NavItem>
               <NavLink className={classnames({ active: activeTab === '1' })} onClick={() => { toggle('1'); }}>
-                {costingData.TechnologyId === ASSEMBLY ? 'Part Cost' : 'RM + CC'}
+                {Number(costingData.ETechnologyType) === ASSEMBLY ? 'Part Cost' : 'RM + CC'}
               </NavLink>
             </NavItem>
             <NavItem>
@@ -392,7 +391,7 @@ function CostingHeaderTabs(props) {
           </Nav>
           <TabContent activeTab={activeTab}>
             <TabPane tabId="1">
-              {costingData.TechnologyId === ASSEMBLY ? <TabAssemblyTechnology
+              {Number(costingData?.ETechnologyType) === ASSEMBLY ? <TabAssemblyTechnology
                 setHeaderCost={props.setHeaderCost}
                 backBtn={props.backBtn}
                 activeTab={activeTab}

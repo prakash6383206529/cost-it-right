@@ -7,12 +7,13 @@ import { calculatePercentage, checkForDecimalAndNull, checkForNull, CheckIsCosti
 import { fetchModelTypeAPI, getPaymentTermsAppliSelectListKeyValue } from '../../../../../actions/Common';
 import { getOverheadProfitDataByModelType, gridDataAdded, isOverheadProfitDataChange, } from '../../../actions/Costing';
 import { costingInfoContext, netHeadCostContext, SurfaceCostContext } from '../../CostingDetailStepTwo';
-import { ASSEMBLYNAME, EMPTY_GUID } from '../../../../../config/constants';
+import { EMPTY_GUID } from '../../../../../config/constants';
 import { ViewCostingContext } from '../../CostingDetails';
 import Rejection from './Rejection';
 import Icc from './Icc';
 import PaymentTerms from './PaymentTerms';
 import { Link } from 'react-scroll'
+import { ASSEMBLY } from '../../../../../config/masterData';
 
 function OverheadProfit(props) {
   const { data } = props;
@@ -63,7 +64,8 @@ function OverheadProfit(props) {
   const [profitObj, setProfitObj] = useState(CostingProfitDetail)
   const [tempOverheadObj, setTempOverheadObj] = useState(CostingOverheadDetail)
   const [tempProfitObj, setTempProfitObj] = useState(CostingProfitDetail)
-  const partType = costData?.TechnologyName === ASSEMBLYNAME
+  const partType = Number(costData?.ETechnologyType) === ASSEMBLY
+  console.log('costData: ', costData);
 
 
 

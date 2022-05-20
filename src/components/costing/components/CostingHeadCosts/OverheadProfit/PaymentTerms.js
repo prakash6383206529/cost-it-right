@@ -1,20 +1,18 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useForm, Controller, useWatch, } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, } from 'reactstrap';
-import { NumberFieldHookForm, SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
+import { NumberFieldHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull } from '../../../../../helper';
 // import { fetchModelTypeAPI, fetchCostingHeadsAPI, getICCAppliSelectListKeyValue, getPaymentTermsAppliSelectListKeyValue } from '../../../../../actions/Common';
 import { getPaymentTermsDataByHeads, gridDataAdded, isOverheadProfitDataChange, } from '../../../actions/Costing';
 import Switch from "react-switch";
 import { EMPTY_GUID } from '../../../../../config/constants';
-import TooltipCustom from '../../../../common/Tooltip';
 import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepTwo';
 import { ViewCostingContext } from '../../CostingDetails';
 import { ASSEMBLY } from '../../../../../config/masterData';
 
 function PaymentTerms(props) {
-    const { Controller, control, register, defaultValue, data, setValue, getValues, errors, useWatch, CostingInterestRateDetail, PaymentTermDetail } = props
+    const { Controller, control, register, data, setValue, getValues, errors, useWatch, CostingInterestRateDetail, PaymentTermDetail } = props
     const headerCosts = useContext(netHeadCostContext);
     const CostingViewMode = useContext(ViewCostingContext);
     const costData = useContext(costingInfoContext);
@@ -259,7 +257,7 @@ function PaymentTerms(props) {
                             onChange={onPressPaymentTerms}
                             checked={IsPaymentTermsApplicable}
                             id="normal-switch"
-                            disabled={CostingViewMode || (costData.TechnologyId === ASSEMBLY) ? true : false}
+                            disabled={CostingViewMode || (Number(costData?.ETechnologyType) === ASSEMBLY) ? true : false}
                             background="#4DC771"
                             onColor="#4DC771"
                             onHandleColor="#ffffff"

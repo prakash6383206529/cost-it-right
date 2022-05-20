@@ -15,7 +15,7 @@ import { MESSAGES } from '../../../../config/message';
 import { ViewCostingContext } from '../CostingDetails';
 import LoaderCustom from '../../../common/LoaderCustom';
 import NoContentFound from '../../../common/NoContentFound';
-import { ASSEMBLYNAME, EMPTY_DATA } from '../../../../config/constants';
+import { EMPTY_DATA } from '../../../../config/constants';
 import { GridTotalFormate } from '../../../common/TableGridFunctions';
 import { AgGridReact } from 'ag-grid-react/lib/agGridReact';
 import { AgGridColumn } from 'ag-grid-react/lib/agGridColumn';
@@ -24,6 +24,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import AddTool from '../Drawers/AddTool';
 import { gridDataAdded } from '../../actions/Costing'
 import { createToprowObjAndSave } from '../../CostingUtil';
+import { ASSEMBLY } from '../../../../config/masterData';
 
 function TabToolCost(props) {
 
@@ -45,7 +46,7 @@ function TabToolCost(props) {
   const [processArray, setProcessArray] = useState([])
   const [operationArray, setOperationArray] = useState([])
   const [gridData, setGridData] = useState([])
-  const partType = costData?.TechnologyName === ASSEMBLYNAME
+  const partType = costData?.TechnologyName === ASSEMBLY
 
   const dispense = () => {
     setIsApplicableProcessWise(IsToolCostApplicable)
