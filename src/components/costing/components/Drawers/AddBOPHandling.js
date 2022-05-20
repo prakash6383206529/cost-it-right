@@ -28,38 +28,32 @@ function AddBOPHandling(props) {
   useEffect(() => {
 
     if (isAssemblyTechnology) {
-      let totalBOP = 0
-      subAssemblyTechnologyArray && subAssemblyTechnologyArray[0]?.CostingChildPartDetails.map((item) => {
-        if (item.PartType === 'BOP') {
-          totalBOP = checkForNull(totalBOP) + checkForNull(item?.CostingPartDetails?.CostPerAssemblyBOP)
-        }
-      })
+      let totalBOP = calcTotalBOP()
       setValue('BOPCost', totalBOP)
       setValue('BOPHandlingPercentage', subAssemblyTechnologyArray && checkForNull(subAssemblyTechnologyArray[0]?.BOPHandlingPercentage))
       setValue('BOPHandlingCharges', subAssemblyTechnologyArray && checkForNull(subAssemblyTechnologyArray[0]?.BOPHandlingCharges))
 
     }
     else {
-
       const childPartDetail = JSON.parse(localStorage.getItem('costingArray'))
       let BOPSum = 0
-      childPartDetail && childPartDetail.map((el) => {
-        if (el.PartType === 'BOP' && el.AssemblyPartNumber === item.PartNumber) {
-          BOPSum = BOPSum + (checkForNull(el.CostingPartDetails.TotalBoughtOutPartCost) * checkForNull(el.CostingPartDetails.Quantity))
+      BOPSum = childPartDetail && childPartDetail.reduce((accummlator, el) => {
+        if (el.PartType === 'BOP') {
+          return checkForNull(accummlator) + (checkForNull(el.CostingPartDetails.TotalBoughtOutPartCost) * checkForNull(el.CostingPartDetails.Quantity))
+        } else {
+          return accummlator
         }
-        return BOPSum
-      })
+      }, 0)
+
       setValue('BOPCost', checkForDecimalAndNull(BOPSum, getConfigurationKey().NoOfDecimalForPrice))
       let obj = childPartDetail && childPartDetail.filter(assyItem => assyItem.PartNumber === item.PartNumber && assyItem.AssemblyPartNumber === item.AssemblyPartNumber && (assyItem.PartType === 'Sub Assembly' || assyItem.PartType === 'Assembly'))
       setValue('BOPCost', obj[0].CostingPartDetails.IsApplyBOPHandlingCharges ? checkForDecimalAndNull(obj[0].CostingPartDetails.BOPHandlingChargeApplicability, getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(BOPSum, getConfigurationKey().NoOfDecimalForPrice))
       setValue('BOPHandlingPercentage', checkForNull(obj[0]?.CostingPartDetails.BOPHandlingPercentage))
       setValue('BOPHandlingCharges', checkForNull(obj[0]?.CostingPartDetails.BOPHandlingCharges))
-
     }
-
   }, [])
 
-  const handleBOPPercentageChange = (value) => {
+  const calcTotalBOP = () => {
     let totalBOP = 0
     totalBOP = subAssemblyTechnologyArray && subAssemblyTechnologyArray[0]?.CostingChildPartDetails.reduce((accummlator, el) => {
       if (el.PartType === 'BOP') {
@@ -68,7 +62,11 @@ function AddBOPHandling(props) {
         return accummlator
       }
     }, 0)
+    return totalBOP
+  }
 
+  const handleBOPPercentageChange = (value) => {
+    let totalBOP = calcTotalBOP()
     if (!isNaN(value)) {
       if (value > 100) {
         setValue('BOPHandlingPercentage', 0)
@@ -98,15 +96,9 @@ function AddBOPHandling(props) {
   };
 
   const saveHandleCharge = () => {
-    let totalBOP = 0
     let obj = {}
     if (isAssemblyTechnology) {
-      subAssemblyTechnologyArray && subAssemblyTechnologyArray[0]?.CostingChildPartDetails.map((item) => {
-        if (item.PartType === 'BOP') {
-          totalBOP = checkForNull(totalBOP) + checkForNull(item?.CostingPartDetails?.CostPerAssemblyBOP)
-        }
-        return null
-      })
+      let totalBOP = calcTotalBOP()
       let tempSubAssemblyTechnologyArray = subAssemblyTechnologyArray
       tempSubAssemblyTechnologyArray[0].BOPHandlingPercentage = percentage
       tempSubAssemblyTechnologyArray[0].BOPHandlingCharges = BOPHandling

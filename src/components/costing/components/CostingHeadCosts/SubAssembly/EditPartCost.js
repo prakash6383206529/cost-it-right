@@ -96,14 +96,12 @@ function EditPartCost(props) {
         setTimeout(() => {
             netCostCalculator(index)
         }, 300);
-
     }
 
     const handleDeltaValue = (value, index) => {
         setTimeout(() => {
             netCostCalculator(index)
         }, 300);
-
     }
 
     const calcTotalSOBPercent = () => {
@@ -121,24 +119,19 @@ function EditPartCost(props) {
             return false
         }
         let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray
-        let propsPartNo = props.tabAssemblyIndividualPartDetail.PartNumber
         let costPerAssemblyTotal = 0
-        let costPerAssemblyBOPTotal = 0
 
-        tempsubAssemblyTechnologyArray[0].CostingChildPartDetails && tempsubAssemblyTechnologyArray[0].CostingChildPartDetails.map((item) => {
-            if (propsPartNo === item.PartNumber) {
+        // FILTER AND MAP FOR MAP
+        tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails && tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails.map((item) => {
+            if (props?.tabAssemblyIndividualPartDetail?.PartNumber === item?.PartNumber) {
                 item.CostingPartDetails.CostPerPiece = weightedCost
-                item.CostingPartDetails.CostPerAssembly = checkForNull(weightedCost) * checkForNull(item.CostingPartDetails.Quantity)
+                item.CostingPartDetails.CostPerAssembly = checkForNull(weightedCost) * checkForNull(item?.CostingPartDetails?.Quantity)
             }
             costPerAssemblyTotal = checkForNull(costPerAssemblyTotal) + checkForNull(item?.CostingPartDetails?.CostPerAssembly)
-            costPerAssemblyBOPTotal = checkForNull(costPerAssemblyBOPTotal) + checkForNull(item?.CostingPartDetails?.CostPerAssemblyBOP)
             return null
         })
-        costPerAssemblyBOPTotal = checkForNull(costPerAssemblyBOPTotal) + checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.BOPHandlingCharges)
-
         tempsubAssemblyTechnologyArray[0].CostingPartDetails.EditPartCost = costPerAssemblyTotal
-        tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerAssembly = checkForNull(costPerAssemblyTotal) + checkForNull(costPerAssemblyBOPTotal) + (checkForNull(tempsubAssemblyTechnologyArray[0].ProcessCostValue) + checkForNull(tempsubAssemblyTechnologyArray[0].OperationCostValue))
-        tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerAssemblyBOP = checkForNull(costPerAssemblyBOPTotal)
+        tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerAssembly = checkForNull(costPerAssemblyTotal) + checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails?.CostPerAssemblyBOP) + (checkForNull(tempsubAssemblyTechnologyArray[0]?.ProcessCostValue) + checkForNull(tempsubAssemblyTechnologyArray[0]?.OperationCostValue))
         dispatch(setSubAssemblyTechnologyArray(tempsubAssemblyTechnologyArray, res => { }))
 
         props.getCostPerPiece(weightedCost)

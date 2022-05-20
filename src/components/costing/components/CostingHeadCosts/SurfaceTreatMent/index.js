@@ -147,15 +147,14 @@ function SurfaceTreatment(props) {
           "TransportationDetails": item.CostingPartDetails.TransportationDetails,
         },
       }
-      if (IsAssemblyCalculation && !partType) {
-        requestData.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly = item.CostingPartDetails.NetSurfaceTreatmentCost
-        requestData.CostingPartDetails.TotalTransportationCostPerAssembly = item.CostingPartDetails.TransportationCost
-        requestData.CostingPartDetails.IsAssemblyPart = IsAssemblyPart
-      }
-
+      // IN COSTING VIEW MODE
       if (!CostingViewMode) {
-
+        // WHEN PARTTYPE IS ASSEMBLY AND NOT ASSEMBLY TECHNOLOGY
         if (IsAssemblyCalculation && !partType) {
+
+          requestData.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly = item.CostingPartDetails.NetSurfaceTreatmentCost
+          requestData.CostingPartDetails.TotalTransportationCostPerAssembly = item.CostingPartDetails.TransportationCost
+          requestData.CostingPartDetails.IsAssemblyPart = IsAssemblyPart
 
           const totalCost = ((checkForNull(tabData?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity) + checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
             checkForNull(PackageAndFreightTabData?.CostingPartDetails?.NetFreightPackagingCost) + checkForNull(ToolTabData?.CostingPartDetails?.TotalToolCost)
@@ -199,11 +198,14 @@ function SurfaceTreatment(props) {
           checkForNull(PackageAndFreightTabData?.CostingPartDetails?.NetFreightPackagingCost) + checkForNull(ToolTabData?.CostingPartDetails?.TotalToolCost)
           + checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.NetOverheadAndProfitCost)) - checkForNull(DiscountCostData?.HundiOrDiscountValue))
           + checkForNull(DiscountCostData?.AnyOtherCost)
-      }
 
-      if (props.IsAssemblyCalculation && !partType) {
-        totalCostAPI = costData.IsAssemblyPart ? rmCcData && Object.keys(rmCcData).length > 0 ? checkForNull(surfacTreatmentCost) + checkForNull(rmCCCost) : checkForNull(surfacTreatmentCost) : checkForNull(totalCost)
-        mergedAPI(totalCostAPI, props.IsAssemblyCalculation, true)
+        if (props.IsAssemblyCalculation) {
+          totalCostAPI = costData.IsAssemblyPart ? rmCcData && Object.keys(rmCcData).length > 0 ? checkForNull(surfacTreatmentCost) + checkForNull(rmCCCost) : checkForNull(surfacTreatmentCost) : checkForNull(totalCost)
+          mergedAPI(totalCostAPI, props.IsAssemblyCalculation, true)
+        } else {
+          totalCostAPI = costData.IsAssemblyPart ? rmCcData && Object.keys(rmCcData).length > 0 ? checkForNull(surfacTreatmentCost) + checkForNull(rmCCCost) : checkForNull(surfacTreatmentCost) : checkForNull(totalCost)
+          mergedAPI(totalCostAPI, false, false)
+        }
       } else if (partType) {
         totalCostAPI = ((checkForNull(subAssemblyTechnologyArray[0].CostingPartDetails.CostPerAssembly) + checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
           checkForNull(PackageAndFreightTabData?.CostingPartDetails?.NetFreightPackagingCost) + checkForNull(ToolTabData?.CostingPartDetails?.TotalToolCost)
@@ -211,10 +213,6 @@ function SurfaceTreatment(props) {
           + checkForNull(DiscountCostData?.AnyOtherCost)
         mergedAPI(totalCostAPI, false, false)
 
-      } else {
-
-        totalCostAPI = costData.IsAssemblyPart ? rmCcData && Object.keys(rmCcData).length > 0 ? checkForNull(surfacTreatmentCost) + checkForNull(rmCCCost) : checkForNull(surfacTreatmentCost) : checkForNull(totalCost)
-        mergedAPI(totalCostAPI, false, false)
       }
     }
   }
