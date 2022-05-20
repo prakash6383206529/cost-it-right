@@ -437,6 +437,15 @@ class SideBar extends Component {
         })
     }
 
+    topAndLeftMenuData && topAndLeftMenuData.map((el, i) => {
+      if (el.ModuleName === module) {
+        el && el.Pages && el.Pages.map((item, i) => {
+          if (window.location.href.includes(item.NavigationURL)) {
+            this.setLeftMenu(el.ModuleId)
+          }
+        })
+      }
+    })
 
     return (
       topAndLeftMenuData && topAndLeftMenuData.map((el, i) => {
@@ -448,11 +457,11 @@ class SideBar extends Component {
                 className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
                 onClick={() => this.setLeftMenu(el.ModuleId)}
                 to={{
-                  pathname: "/costing-detail-report",
+                  pathname: el.LandingPageURL,
                   state: {
                     ModuleId: el.ModuleId,
                     PageName: "costing-detail-report",
-                    PageURL: "/costing-detail-report",
+                    PageURL: el.LandingPageURL,
                   },
                 }}
               >
@@ -812,7 +821,7 @@ class SideBar extends Component {
             </div>
           )}
         </div>
-        
+
         {
           this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`Are you sure do you want to logout?`} />
         }
