@@ -53,13 +53,13 @@ class ClientListing extends Component {
             showData: false,
             showPopup: false,
             deletedId: '',
-            isLoader:false
+            isLoader: false
 
         }
     }
 
     componentDidMount() {
-        this.setState({isLoader:true})
+        this.setState({ isLoader: true })
         this.applyPermission(this.props.topAndLeftMenuData)
         setTimeout(() => {
             this.getTableListData(null, null)
@@ -105,7 +105,7 @@ class ClientListing extends Component {
             companyName: companyName,
         }
         this.props.getClientDataList(filterData, res => {
-            this.setState({isLoader:false})
+            this.setState({ isLoader: false })
             if (res.status === 204 && res.data === '') {
                 this.setState({ tableData: [], })
             } else if (res && res.data && res.data.DataList) {
@@ -172,8 +172,8 @@ class ClientListing extends Component {
         const { EditAccessibility, DeleteAccessibility, } = this.state;
         return (
             <>
-                {<button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
-                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
+                {<button className="View" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
+                {EditAccessibility && <button className="Edit" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
                 {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
@@ -383,7 +383,7 @@ class ClientListing extends Component {
 
 
 
-                    <div className={`ag-grid-wrapper height-width-wrapper ${this.props.clientDataList && this.props.clientDataList?.length <=0 ?"overlay-contain": ""}`}>
+                    <div className={`ag-grid-wrapper height-width-wrapper ${this.props.clientDataList && this.props.clientDataList?.length <= 0 ? "overlay-contain" : ""}`}>
                         <div className="ag-grid-header">
                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => this.onFilterTextBoxChanged(e)} />
                         </div>
@@ -413,7 +413,7 @@ class ClientListing extends Component {
                                 <AgGridColumn field="CountryName" headerName="Country"></AgGridColumn>
                                 <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
                                 <AgGridColumn field="CityName" headerName="City"></AgGridColumn>
-                                <AgGridColumn field="ClientId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                <AgGridColumn field="ClientId" headerName="Action" cellClass={"actions-wrapper"} type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                             </AgGridReact>
                             <div className="paging-container d-inline-block float-right">
                                 <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

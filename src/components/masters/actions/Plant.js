@@ -16,7 +16,7 @@ import {
 import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
 
-const headers = config;
+// const config() = config;
 
 /**
  * @method createPlantAPI
@@ -24,7 +24,7 @@ const headers = config;
  */
 export function createPlantAPI(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createPlantAPI, data, headers);
+        const request = axios.post(API.createPlantAPI, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -54,7 +54,7 @@ export function createPlantAPI(data, callback) {
  */
 export function getPlantDataAPI(isVe, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getAllPlantAPI}?isVendor=${isVe}`, headers);
+        const request = axios.get(`${API.getAllPlantAPI}?isVendor=${isVe}`, config());
         request.then((response) => {
             dispatch({
                 type: GET_PLANT_FILTER_LIST,
@@ -77,7 +77,7 @@ export function getPlantDataAPI(isVe, callback) {
 export function deletePlantAPI(Id, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deletePlantAPI}/${Id}`, headers)
+        axios.delete(`${API.deletePlantAPI}/${Id}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -95,7 +95,7 @@ export function getPlantUnitAPI(plantId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         if (plantId !== '') {
-            axios.get(`${API.getPlantAPI}/${plantId}`, headers)
+            axios.get(`${API.getPlantAPI}/${plantId}`, config())
                 .then((response) => {
                     if (response.data.Result === true) {
                         dispatch({
@@ -125,7 +125,7 @@ export function getPlantUnitAPI(plantId, callback) {
 export function updatePlantAPI(plantId, request, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.updatePlantAPI}`, request, headers)
+        axios.put(`${API.updatePlantAPI}`, request, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -143,7 +143,7 @@ export function updatePlantAPI(plantId, request, callback) {
 export function activeInactiveStatus(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.activeInactiveStatus}`, requestData, headers)
+        axios.put(`${API.activeInactiveStatus}`, requestData, config())
             .then((response) => {
                 dispatch({ type: API_SUCCESS });
                 callback(response);
@@ -161,7 +161,7 @@ export function activeInactiveStatus(requestData, callback) {
 export function getFilteredPlantList(filterData, callback) {
     return (dispatch) => {
         const qParams = `country_id=${filterData.country}&state_id=${filterData.state}&city_id=${filterData.city}&is_vendor=${filterData.is_vendor}`
-        const request = axios.get(`${API.getFilteredPlantList}?${qParams}`, headers);
+        const request = axios.get(`${API.getFilteredPlantList}?${qParams}`, config());
         request.then((response) => {
 
             dispatch({
@@ -178,7 +178,7 @@ export function getFilteredPlantList(filterData, callback) {
 
 export function getComapanySelectList(callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getComapanySelectList}`, headers);
+        const request = axios.get(`${API.getComapanySelectList}`, config());
         request.then((response) => {
             dispatch({
                 type: GET_COMPANY_SELECTLIST,
@@ -193,9 +193,9 @@ export function getComapanySelectList(callback) {
 }
 
 
-export function getPlantCodeSelectList(callback){
+export function getPlantCodeSelectList(callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getPlantCodeSelectList}`, headers);
+        const request = axios.get(`${API.getPlantCodeSelectList}`, config());
         request.then((response) => {
             dispatch({
                 type: GET_PLANT_CODE_SELECT_LIST,

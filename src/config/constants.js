@@ -4,14 +4,16 @@
 
 import { getAuthToken } from '../helper/auth';
 
-export const config = {
-  headers: {
+export const config = () => {
+
+  let headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Credentials': 'true',
-    'Authorization': `Bearer ${getAuthToken()}`,
+    'Authorization': `Bearer ${JSON.parse(localStorage.getItem('userDetail'))?.Token}`,
     'Access-From': 'WEB',
     'Api-Key': `${process.env.REACT_APP_API_KEY}`,
-  },
+  }
+  return { headers }
 }
 
 // DEVELOPMENT
@@ -1746,6 +1748,8 @@ export const HOUR = "Hours"
 export const NO = "Number"
 export const STROKE = "Stroke"
 export const SHOTS = "SHOT"
+export const MINUTES = 'Minutes'
+export const SECONDS = 'Seconds'
 
 // export const INR = "INR"
 
@@ -1881,4 +1885,4 @@ export const IV = 'ozzzguugcusjqmbj'
 
 
 //VERSION 
-export const VERSION = "V1.2.221.1";
+export const VERSION = "V1.2.232";

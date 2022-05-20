@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required, getVendorCode, maxLength80, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength10, positiveAndDecimalNumber, maxLength512, decimalLengthsix } from "../../../helper/validation";
+import { required, getVendorCode, maxLength80, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength10, maxLength15, positiveAndDecimalNumber, maxLength512, decimalLengthsix } from "../../../helper/validation";
 import { renderText, renderMultiSelectField, searchableSelect, renderTextAreaField, renderDatePicker } from "../../layout/FormInputs";
 import { getVendorWithVendorCodeSelectList } from '../actions/Supplier';
 import { createOperationsAPI, getOperationDataAPI, updateOperationAPI, fileUploadOperation, fileDeleteOperation, checkAndGetOperationCode } from '../actions/OtherOperation';
@@ -873,7 +873,7 @@ class AddOperation extends Component {
                           name={"OperationCode"}
                           type="text"
                           placeholder={"Enter"}
-                          validate={[acceptAllExceptSingleSpecialCharacter, maxLength10, checkWhiteSpaces, required]}
+                          validate={[acceptAllExceptSingleSpecialCharacter, maxLength15, checkWhiteSpaces, required]}
                           component={renderText}
                           required={true}
                           onBlur={this.checkUniqCode}

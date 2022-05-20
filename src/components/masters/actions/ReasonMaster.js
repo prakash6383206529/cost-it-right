@@ -13,7 +13,7 @@ import {
 import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
 
-const headers = config;
+// const config() = config;
 
 /**
 * @method createReasonAPI
@@ -22,7 +22,7 @@ const headers = config;
 export function createReasonAPI(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.post(API.createReason, data, headers);
+        const request = axios.post(API.createReason, data, config());
         request.then((response) => {
             if (response.data.Result === true) {
                 dispatch({ type: CREATE_SUCCESS, });
@@ -50,7 +50,7 @@ export function getAllReasonAPI(isAPICall, callback) {
         if (isAPICall) {
 
             dispatch({ type: API_REQUEST });
-            axios.get(API.getAllReasonAPI, headers)
+            axios.get(API.getAllReasonAPI, config())
                 .then((response) => {
                     dispatch({
                         type: GET_REASON_DATA_SUCCESS,
@@ -80,7 +80,7 @@ export function getAllReasonAPI(isAPICall, callback) {
 export function getReasonAPI(ReasonId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.get(`${API.getReasonAPI}/${ReasonId}`, headers)
+        axios.get(`${API.getReasonAPI}/${ReasonId}`, config())
             .then((response) => {
                 if (response.data.Result === true) {
                     dispatch({
@@ -118,7 +118,7 @@ export function setEmptyReason() {
 export function updateReasonAPI(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateReasonAPI}`, requestData, headers)
+        axios.put(`${API.updateReasonAPI}`, requestData, config())
             .then((response) => {
                 if (response.data.Result) {
                     callback(response);
@@ -139,7 +139,7 @@ export function updateReasonAPI(requestData, callback) {
 export function deleteReasonAPI(Id, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteReasonAPI}/${Id}`, headers)
+        axios.delete(`${API.deleteReasonAPI}/${Id}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -157,7 +157,7 @@ export function deleteReasonAPI(Id, callback) {
 export function activeInactiveReasonStatus(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.activeInactiveReasonStatus}`, requestData, headers)
+        axios.put(`${API.activeInactiveReasonStatus}`, requestData, config())
             .then((response) => {
                 dispatch({ type: API_SUCCESS });
                 callback(response);

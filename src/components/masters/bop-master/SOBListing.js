@@ -42,7 +42,7 @@ class SOBListing extends Component {
       rowData: null,
       sideBar: { toolPanels: ['columns'] },
       showData: false,
-      isLoader:false
+      isLoader: false
 
     }
   }
@@ -68,9 +68,9 @@ class SOBListing extends Component {
       bought_out_part_id: bought_out_part_id,
       plant_id: plant_id
     }
-    this.setState({isLoader:true})
+    this.setState({ isLoader: true })
     this.props.getManageBOPSOBDataList(filterData, (res) => {
-      this.setState({isLoader:false})
+      this.setState({ isLoader: false })
       if (res && res.status === 200) {
         let Data = res.data.DataList;
         this.setState({ tableData: Data })
@@ -151,7 +151,7 @@ class SOBListing extends Component {
   }
 
   renderNoOfVendor = () => {
-    return <>No of <br />Vendors </>
+    return <>No. of <br />Vendors </>
   }
 
   costRender = (cell, cellValue, row, rowIndex) => {
@@ -366,7 +366,7 @@ class SOBListing extends Component {
         </form>
         <Row>
           <Col>
-            <div className={`ag-grid-wrapper height-width-wrapper ${this.props.bopSobList && this.props.bopSobList?.length <=0 ?"overlay-contain": ""}`}>
+            <div className={`ag-grid-wrapper height-width-wrapper ${this.props.bopSobList && this.props.bopSobList?.length <= 0 ? "overlay-contain" : ""}`}>
               <div className="ag-grid-header">
                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
               </div>
@@ -393,7 +393,7 @@ class SOBListing extends Component {
                   <AgGridColumn field="BoughtOutPartName" headerName="BOP Part Name"></AgGridColumn>
                   <AgGridColumn field="BoughtOutPartCategory" headerName="BOP Category"></AgGridColumn>
                   <AgGridColumn field="Specification" headerName="Specification" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                  <AgGridColumn field="NoOfVendors" headerName="No of Vendors"></AgGridColumn>
+                  <AgGridColumn field="NoOfVendors" headerName="No. of Vendors"></AgGridColumn>
                   <AgGridColumn field="Plant" headerName="Plant(Code)"></AgGridColumn>
                   <AgGridColumn field="ShareOfBusinessPercentage" headerName="Total SOB%"></AgGridColumn>
                   <AgGridColumn width={205} field="WeightedNetLandedCost" headerName="Weighted Net Cost (INR)"></AgGridColumn>

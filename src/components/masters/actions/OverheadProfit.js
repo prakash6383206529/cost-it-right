@@ -15,7 +15,7 @@ import {
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
-const headers = config
+// const config() = config
 
 /**
  * @method fetchRMCategoryAPI
@@ -24,7 +24,7 @@ const headers = config
 export function getOverheadProfitComboData(callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getOverheadProfitComboDataAPI}`, headers);
+        const request = axios.get(`${API.getOverheadProfitComboDataAPI}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -50,7 +50,7 @@ export function getOverheadProfitComboData(callback) {
 export function createOverhead(data, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.post(API.createOverhead, data, headers);
+        const request = axios.post(API.createOverhead, data, config());
         request.then((response) => {
             if (response.data.Result === true) {
                 callback(response);
@@ -70,7 +70,7 @@ export function createOverhead(data, callback) {
 export function createProfit(data, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.post(API.createProfit, data, headers);
+        const request = axios.post(API.createProfit, data, config());
         request.then((response) => {
             if (response.data.Result === true) {
                 callback(response);
@@ -90,7 +90,7 @@ export function createProfit(data, callback) {
 export function updateOverhead(requestData, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateOverhead}`, requestData, headers)
+        axios.put(`${API.updateOverhead}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -108,7 +108,7 @@ export function updateOverhead(requestData, callback) {
 export function updateProfit(requestData, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateProfit}`, requestData, headers)
+        axios.put(`${API.updateProfit}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -127,7 +127,7 @@ export function getOverheadData(ID, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
         if (ID !== '') {
-            axios.get(`${API.getOverheadData}/${ID}`, headers)
+            axios.get(`${API.getOverheadData}/${ID}`, config())
                 .then((response) => {
                     if (response.data.Result === true) {
                         dispatch({
@@ -158,7 +158,7 @@ export function getProfitData(ID, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
         if (ID !== '') {
-            axios.get(`${API.getProfitData}/${ID}`, headers)
+            axios.get(`${API.getProfitData}/${ID}`, config())
                 .then((response) => {
                     if (response.data.Result === true) {
                         dispatch({
@@ -189,7 +189,7 @@ export function getOverheadDataList(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         const queryParams = `costing_head=${data.costing_head}&vendor_id=${data.vendor_id}&overhead_applicability_type_id=${data.overhead_applicability_type_id}&model_type_id=${data.model_type_id}`
-        axios.get(`${API.getOverheadDataList}?${queryParams}`, headers)
+        axios.get(`${API.getOverheadDataList}?${queryParams}`, config())
             .then((response) => {
                 //if (response.data.Result || response.status === 204) {
                 dispatch({
@@ -215,7 +215,7 @@ export function getProfitDataList(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         const queryParams = `costing_head=${data.costing_head}&vendor_id=${data.vendor_id}&profit_applicability_type_id=${data.profit_applicability_type_id}&model_type_id=${data.model_type_id}`
-        axios.get(`${API.getProfitDataList}?${queryParams}`, headers)
+        axios.get(`${API.getProfitDataList}?${queryParams}`, config())
             .then((response) => {
                 if (response.data.Result || response.status === 204) {
                     dispatch({
@@ -239,7 +239,7 @@ export function getProfitDataList(data, callback) {
 export function deleteOverhead(Id, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteOverhead}/${Id}`, headers)
+        axios.delete(`${API.deleteOverhead}/${Id}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -256,7 +256,7 @@ export function deleteOverhead(Id, callback) {
 export function deleteProfit(Id, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteProfit}/${Id}`, headers)
+        axios.delete(`${API.deleteProfit}/${Id}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -273,7 +273,7 @@ export function deleteProfit(Id, callback) {
 export function activeInactiveOverhead(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.activeInactiveOverhead}`, requestData, headers)
+        axios.put(`${API.activeInactiveOverhead}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -290,7 +290,7 @@ export function activeInactiveOverhead(requestData, callback) {
 export function activeInactiveProfit(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.activeInactiveProfit}`, requestData, headers)
+        axios.put(`${API.activeInactiveProfit}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -306,7 +306,7 @@ export function activeInactiveProfit(requestData, callback) {
  */
 export function fileUploadOverHead(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.fileUploadOverHead, data, headers);
+        const request = axios.post(API.fileUploadOverHead, data, config());
         request.then((response) => {
             if (response && response.status === 200) {
                 callback(response);
@@ -324,7 +324,7 @@ export function fileUploadOverHead(data, callback) {
  */
 export function fileUploadProfit(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.fileUploadProfit, data, headers);
+        const request = axios.post(API.fileUploadProfit, data, config());
         request.then((response) => {
             if (response && response.status === 200) {
                 callback(response);
@@ -343,7 +343,7 @@ export function fileUploadProfit(data, callback) {
 export function fileDeleteOverhead(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.fileDeleteOverhead}/${data.Id}/${data.DeletedBy}`, headers)
+        axios.delete(`${API.fileDeleteOverhead}/${data.Id}/${data.DeletedBy}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -360,7 +360,7 @@ export function fileDeleteOverhead(data, callback) {
 export function fileDeleteProfit(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.fileDeleteProfit}/${data.Id}/${data.DeletedBy}`, headers)
+        axios.delete(`${API.fileDeleteProfit}/${data.Id}/${data.DeletedBy}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -376,7 +376,7 @@ export function fileDeleteProfit(data, callback) {
  */
 export function overheadBulkUpload(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.overheadBulkUpload, data, headers);
+        const request = axios.post(API.overheadBulkUpload, data, config());
         request.then((response) => {
             if (response.status === 200) {
                 callback(response);
@@ -395,7 +395,7 @@ export function overheadBulkUpload(data, callback) {
  */
 export function profitBulkUpload(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.profitBulkUpload, data, headers);
+        const request = axios.post(API.profitBulkUpload, data, config());
         request.then((response) => {
             if (response.status === 200) {
                 callback(response);
@@ -415,7 +415,7 @@ export function profitBulkUpload(data, callback) {
 export function fetchModelTypeAPI(modelTypeHeading, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getModelTypes}?text=${modelTypeHeading}`, headers);
+        const request = axios.get(`${API.getModelTypes}?text=${modelTypeHeading}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -438,7 +438,7 @@ export function fetchModelTypeAPI(modelTypeHeading, callback) {
  */
 export function getVendorWithVendorCodeSelectList() {
     return (dispatch) => {
-        const request = axios.get(API.getVendorWithVendorCodeSelectList, headers);
+        const request = axios.get(API.getVendorWithVendorCodeSelectList, config());
         request.then((response) => {
             dispatch({
                 type: GET_VENDOR_FILTER_WITH_VENDOR_CODE_SELECTLIST,
@@ -457,7 +457,7 @@ export function getVendorWithVendorCodeSelectList() {
  */
 export function getVendorFilterByModelTypeSelectList(ID, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getVendorFilterByModelTypeSelectList}/${ID}`, headers);
+        const request = axios.get(`${API.getVendorFilterByModelTypeSelectList}/${ID}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -479,7 +479,7 @@ export function getVendorFilterByModelTypeSelectList(ID, callback) {
  */
 export function getModelTypeFilterByVendorSelectList(ID, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getModelTypeFilterByVendorSelectList}/${ID}`, headers);
+        const request = axios.get(`${API.getModelTypeFilterByVendorSelectList}/${ID}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -501,7 +501,7 @@ export function getModelTypeFilterByVendorSelectList(ID, callback) {
  */
 export function getProfitVendorFilterByModelSelectList(ID, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getProfitVendorFilterByModelSelectList}/${ID}`, headers);
+        const request = axios.get(`${API.getProfitVendorFilterByModelSelectList}/${ID}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -523,7 +523,7 @@ export function getProfitVendorFilterByModelSelectList(ID, callback) {
  */
 export function getProfitModelFilterByVendorSelectList(ID, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getProfitModelFilterByVendorSelectList}/${ID}`, headers);
+        const request = axios.get(`${API.getProfitModelFilterByVendorSelectList}/${ID}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
