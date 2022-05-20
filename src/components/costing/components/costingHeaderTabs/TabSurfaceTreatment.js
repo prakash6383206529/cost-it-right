@@ -23,7 +23,7 @@ function TabSurfaceTreatment(props) {
   const CostingViewMode = useContext(ViewCostingContext);
   const vbcExistingCosting = useContext(VbcExistingCosting);
   const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
-  const partType = costData?.TechnologyName === ASSEMBLYNAME
+  const partType = Number(costData?.ETechnologyType) === ASSEMBLY
 
   useEffect(() => {
     if (Object.keys(costData).length > 0) {
@@ -162,7 +162,7 @@ function TabSurfaceTreatment(props) {
         let NetSurfaceTreatmentCost
         const { CostingChildPartDetails } = i;
 
-        if (i.IsAssemblyPart === true && Number(costData.ETechnologyType) !== ASSEMBLY) {
+        if (i.IsAssemblyPart === true && !partType) {
           NetSurfaceTreatmentCost = getSurfaceTreatmentTotalCost(i.CostingChildPartDetails, checkForNull(surfaceCost(Data.SurfaceTreatmentDetails)), Params) +
             getTransportationTotalCost(i.CostingChildPartDetails, checkForNull(Data.TransportationCost), Params) +
             getSurfaceTreatmentTotalCostForAssembly(i.CostingChildPartDetails, checkForNull(Data.TotalSurfaceTreatmentCostPerAssembly), Params) +
@@ -527,7 +527,7 @@ function TabSurfaceTreatment(props) {
 
       tempArr = arr && arr.map(i => {
         let NetSurfaceTreatmentCost
-        if (i.IsAssemblyPart === true && Number(costData.ETechnologyType) !== ASSEMBLY) {
+        if (i.IsAssemblyPart === true && !partType) {
 
           NetSurfaceTreatmentCost = getSurfaceTreatmentTotalCost(i.CostingChildPartDetails, checkForNull(surfaceCost(surfaceGrid)), params) +
             getTransportationTotalCost(i.CostingChildPartDetails, checkForNull(i.CostingPartDetails?.TransportationCost), params) +
@@ -631,7 +631,7 @@ function TabSurfaceTreatment(props) {
 
       tempArr = arr && arr.map(i => {
 
-        if (i.IsAssemblyPart === true && Number(costData.ETechnologyType) !== ASSEMBLY) {
+        if (i.IsAssemblyPart === true && !partType) {
 
           // let NetSurfaceTreatmentCost = getSurfaceTreatmentTotalCost(i.CostingChildPartDetails, checkForNull(i.CostingPartDetails?.SurfaceTreatmentCost), params) +
           // getSurfaceTreatmentTotalCostForAssembly(i.CostingChildPartDetails, checkForNull(i.CostingPartDetails?.TotalSurfaceTreatmentCostPerAssembly), params) +
@@ -1219,7 +1219,7 @@ function TabSurfaceTreatment(props) {
 
                         {
                           SurfaceTabData && SurfaceTabData.map((item, index) => {
-                            if ((item && item.PartType === 'Component') || Number(costData.ETechnologyType) === ASSEMBLY) {
+                            if ((item && item.PartType === 'Component') || partType) {
 
                               return (
                                 < >

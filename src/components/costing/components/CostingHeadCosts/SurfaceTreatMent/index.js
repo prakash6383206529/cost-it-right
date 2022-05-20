@@ -15,6 +15,7 @@ import { ViewCostingContext } from '../../CostingDetails';
 import { useState } from 'react';
 import { debounce } from 'lodash';
 import { ASSEMBLYNAME } from '../../../../../config/constants';
+import { ASSEMBLY } from '../../../../../config/masterData';
 
 function SurfaceTreatment(props) {
   const { surfaceData, transportationData, item } = props;

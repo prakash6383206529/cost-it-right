@@ -400,7 +400,7 @@ function CostingHeaderTabs(props) {
           <Nav tabs className="subtabs cr-subtabs-head">
             <NavItem>
               <NavLink className={classnames({ active: activeTab === '1' })} onClick={() => { toggle('1'); }}>
-                {costingData.TechnologyId === ASSEMBLY ? 'Part Cost' : 'RM + CC'}
+                {Number(costingData.ETechnologyType) === ASSEMBLY ? 'Part Cost' : 'RM + CC'}
               </NavLink>
             </NavItem>
             <NavItem>
@@ -431,7 +431,7 @@ function CostingHeaderTabs(props) {
           </Nav>
           <TabContent activeTab={activeTab}>
             <TabPane tabId="1">
-              {costingData.TechnologyId === ASSEMBLY ? <TabAssemblyTechnology
+              {Number(costingData?.ETechnologyType) === ASSEMBLY ? <TabAssemblyTechnology
                 setHeaderCost={props.setHeaderCost}
                 backBtn={props.backBtn}
                 activeTab={activeTab}

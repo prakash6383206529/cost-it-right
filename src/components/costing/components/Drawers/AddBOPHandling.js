@@ -13,7 +13,6 @@ import { isDataChange } from '../../actions/Costing';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { IdForMultiTechnology } from '../../../../config/masterData';
 import { setSubAssemblyTechnologyArray } from '../../actions/SubAssembly';
-import { ASSEMBLYNAME } from '../../../../config/constants';
 
 function AddBOPHandling(props) {
   const { item, isAssemblyTechnology } = props

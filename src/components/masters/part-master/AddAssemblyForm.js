@@ -10,7 +10,6 @@ import { getRandomSixDigit, onFocus } from '../../../helper/util';
 import LoaderCustom from '../../common/LoaderCustom';
 import { PartEffectiveDate } from './AddAssemblyPart';
 import AsyncSelect from 'react-select/async';
-import { ASSEMBLYNAME } from '../../../config/constants';
 import { ASSEMBLY } from '../../../config/masterData';
 
 class AddAssemblyForm extends Component {
@@ -100,7 +99,7 @@ class AddAssemblyForm extends Component {
         const { selectedParts } = this.state;
         let tempArr = [];
         BOMViewerData && BOMViewerData.map(el => {
-            if (el.PartType === ASSEMBLYNAME) {
+            if (el.PartType === ASSEMBLY) {
                 tempArr.push(el.PartId)
             }
             return null;

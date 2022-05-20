@@ -121,15 +121,12 @@ function EditPartCost(props) {
             return false
         }
         let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray
-        let childPartDetails = tempsubAssemblyTechnologyArray[0].CostingChildPartDetails
-        let tempBOMLevel = props.tabAssemblyIndividualPartDetail.BOMLevel
-        let tempPartNo = props.tabAssemblyIndividualPartDetail.PartNumber
-        let tempAssemblyPartNumber = props.tabAssemblyIndividualPartDetail.AssemblyPartNumber
+        let propsPartNo = props.tabAssemblyIndividualPartDetail.PartNumber
         let costPerAssemblyTotal = 0
         let costPerAssemblyBOPTotal = 0
 
-        childPartDetails && childPartDetails.map((item) => {
-            if (tempBOMLevel === item.BOMLevel && tempPartNo === item.PartNumber && tempAssemblyPartNumber === item.AssemblyPartNumber) {
+        tempsubAssemblyTechnologyArray[0].CostingChildPartDetails && tempsubAssemblyTechnologyArray[0].CostingChildPartDetails.map((item) => {
+            if (propsPartNo === item.PartNumber) {
                 item.CostingPartDetails.CostPerPiece = weightedCost
                 item.CostingPartDetails.CostPerAssembly = checkForNull(weightedCost) * checkForNull(item.CostingPartDetails.Quantity)
             }

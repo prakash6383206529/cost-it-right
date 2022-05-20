@@ -287,7 +287,7 @@ class AddAssemblyPart extends Component {
 
     const posX = BOMViewerData && BOMViewerData.length > 0 ? 450 * (BOMViewerData.filter(el => el.Level === 'L1').length - 1) : 50;
 
-    if (Object.keys(childData).length > 0 && childData.PartType === ASSEMBLYNAME) {
+    if (Object.keys(childData).length > 0 && childData.PartType === 'Assembly') {
       this.props.getBOMViewerTreeDataByPartIdAndLevel(childData.PartId, 1, res => {
         let Data = res.data.Data.FlowPoints;
 
@@ -457,7 +457,7 @@ class AddAssemblyPart extends Component {
     //BELOW CONDITION WILL PASS WHEN L0 LEVEL IS NOT AVAILABLE
     if (isAvailable === -1) {
       tempArray.push(...BOMViewerData, {
-        PartType: ASSEMBLYNAME,
+        PartType: 'Assembly',
         PartNumber: fieldsObj && fieldsObj.AssemblyPartNumber !== undefined ? fieldsObj.AssemblyPartNumber : '',
         Position: { "x": 750, "y": 50 },
         Outputs: outputArray,
@@ -662,7 +662,7 @@ class AddAssemblyPart extends Component {
       if (item.Level === 'L0') return false;
       if (item.Level === 'L1') {
         childPartArray.push({
-          PartId: item.PartType && (item.PartType === ASSEMBLYNAME || item.PartType === COMPONENT_PART) ? item.PartId : '',
+          PartId: item.PartType && (item.PartType === 'Assembly' || item.PartType === COMPONENT_PART) ? item.PartId : '',
           ParentPartId: isEditFlag ? PartId : '',
           BoughtOutPartId: item.PartType && item.PartType === BOUGHTOUTPART ? ((item.BoughtOutPartId !== undefined && item.BoughtOutPartId !== null) ? item.BoughtOutPartId : item.PartId) : '',
           PartTypeId: item.PartTypeId ? item.PartTypeId : '',

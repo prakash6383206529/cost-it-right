@@ -8,7 +8,7 @@ import Toaster from '../../../../common/Toaster';
 import { MESSAGES } from '../../../../../config/message';
 import { ViewCostingContext } from '../../CostingDetails';
 import { createToprowObjAndSave } from '../../../CostingUtil';
-import { ASSEMBLYNAME } from '../../../../../config/constants';
+import { ASSEMBLY } from '../../../../../config/masterData';
 
 function AssemblyOverheadProfit(props) {
   const { item } = props;
@@ -105,7 +105,7 @@ function AssemblyOverheadProfit(props) {
     }
 
     if (!CostingViewMode && checkIsOverheadProfitChange) {
-      if (!(costData?.TechnologyName === ASSEMBLYNAME)) {
+      if (!(Number(costData?.ETechnologyType) === ASSEMBLY)) {
         let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 3, CostingEffectiveDate)
 
         dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
