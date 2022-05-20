@@ -4,12 +4,12 @@ import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { EMPTY_DATA, MACHINERATE, MACHINE_MASTER_ID } from '../../../config/constants';
 import {
-    getInitialPlantSelectList, getInitialMachineTypeSelectList, getInitialProcessesSelectList, getInitialVendorWithVendorCodeSelectList, getMachineTypeSelectListByPlant,
+    getInitialMachineTypeSelectList, getInitialProcessesSelectList, getInitialVendorWithVendorCodeSelectList, getMachineTypeSelectListByPlant,
     getVendorSelectListByTechnology, getMachineTypeSelectListByTechnology, getMachineTypeSelectListByVendor, getProcessSelectListByMachineType,
 
 } from '../actions/Process';
 import { getMachineDataList, deleteMachine, copyMachine, getProcessGroupByMachineId } from '../actions/MachineMaster';
-import { getTechnologySelectList, } from '../../../actions/Common';
+import { getTechnologySelectList, getPlantSelectList } from '../../../actions/Common';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
@@ -68,7 +68,7 @@ class MachineRateListing extends Component {
     */
     componentDidMount() {
         this.props.getTechnologySelectList(() => { })
-        this.props.getInitialPlantSelectList(() => { })
+        this.props.getPlantSelectList(() => { })
         this.props.getInitialVendorWithVendorCodeSelectList(() => { })
         this.props.getInitialMachineTypeSelectList(() => { })
         this.props.getInitialProcessesSelectList(() => { })
@@ -553,7 +553,7 @@ class MachineRateListing extends Component {
                                     <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
                                     {!isSimulation && <AgGridColumn field="Technologies" headerName="Technology"></AgGridColumn>}
                                     <AgGridColumn field="VendorName" headerName="Vendor(Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="Plants" headerName="Plant(Code)" cellRenderer='renderPlantFormatter'></AgGridColumn>
+                                    <AgGridColumn field="Plants" cellRenderer={'hyphenFormatter'} headerName="Plant(Code)"></AgGridColumn>
                                     <AgGridColumn field="MachineNumber" headerName="Machine Number" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="MachineTypeName" headerName="Machine Type" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="MachineTonnage" cellRenderer={'hyphenFormatter'} headerName="Machine Tonnage"></AgGridColumn>
@@ -621,7 +621,7 @@ function mapStateToProps(state) {
 */
 export default connect(mapStateToProps, {
     getTechnologySelectList,
-    getInitialPlantSelectList,
+    getPlantSelectList,
     getInitialVendorWithVendorCodeSelectList,
     getInitialMachineTypeSelectList,
     getInitialProcessesSelectList,
