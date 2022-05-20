@@ -282,11 +282,11 @@ export const ProcessGroup = (props) => {
                                 </td>
                             </tr>
                         })}
-                        <tr>
-                            <td colSpan={"6"}>{rowData && rowData.length === 0 &&
+                        {rowData && rowData.length === 0 && <tr>
+                            <td colSpan={"6"}>
                                 <NoContentFound title={EMPTY_DATA} />
-                            }</td>
-                        </tr>
+                            </td>
+                        </tr>}
                     </tbody>
                 </table>
             </div>
