@@ -131,43 +131,20 @@ function ViewConversionCost(props) {
 
 
   const setCalculatorData = (data, list, id, parentId) => {
-    console.log('parentId: ', parentId);
-    console.log('id: ', id);
-
-
     if (parentId === '') {
-      let tempArr = []
       let tempData = viewCostingData[props.index].netConversionCostView.CostingProcessCostResponse[id]
-      // 
       setCalculatorTechnology(viewCostingData[props.index].netConversionCostView.CostingProcessCostResponse[id].ProcessTechnologyId)
       tempData = { ...tempData, WeightCalculatorRequest: data, }
-
       setCalciData(tempData)
-      tempArr = Object.assign([...viewCostingData[props.index].netConversionCostView.CostingProcessCostResponse], { [id]: tempData })
       setTimeout(() => {
-        // setGridData(tempArr)
         setWeightCalculatorDrawer(true)
       }, 100)
     } else {
-      let parentTempArr = []
-      let parentTempData = viewCostingData[props.index].netConversionCostView.CostingProcessCostResponse[parentId]
-      console.log('parentTempData: ', parentTempData);
-
-      let tempArr = []
       let tempData = list[id]
-      console.log('tempData: ', tempData);
-
-
       setCalculatorTechnology(tempData.ProcessTechnologyId)
       tempData = { ...tempData, WeightCalculatorRequest: data, }
-      console.log('tempData: ', tempData);
-
       setCalciData(tempData)
-      tempArr = Object.assign([...list], { [id]: tempData })
-      parentTempData = { ...parentTempData, ProcessList: tempArr }
-      // parentTempArr = Object.assign([...viewCostingData[props.index].netConversionCostView.CostingProcessCostResponse[id], { [parentId]: parentTempData }])
       setTimeout(() => {
-        // setGridData(parentTempArr)
         setWeightCalculatorDrawer(true)
       }, 100);
     }
@@ -175,33 +152,22 @@ function ViewConversionCost(props) {
 
 
   const getWeightData = (index, list = [], parentCalciIndex = '') => {
-    // const tempData = viewCostingData[props.index]
     let tempData
     let processCalciId = ''
     let technologyId = ''
     let UOMType = ''
     if (parentCalciIndex === '') {
       tempData = viewCostingData[props.index]
-      if (tempData?.netConversionCostView?.CostingProcessCostResponse[index].ProcessCalculatorId === 0) {
-        Toaster.warning('Data is not avaliabe for calculator')
-        return false
-      }
-      else {
-        processCalciId = tempData?.netConversionCostView?.CostingProcessCostResponse[index].ProcessCalculatorId
-        technologyId = tempData?.netConversionCostView?.CostingProcessCostResponse[index].ProcessTechnologyId
-        UOMType = tempData.netConversionCostView.CostingProcessCostResponse[index].UOMType
-      }
+      processCalciId = tempData?.netConversionCostView?.CostingProcessCostResponse[index]?.ProcessCalculatorId
+      technologyId = tempData?.netConversionCostView?.CostingProcessCostResponse[index]?.ProcessTechnologyId
+      UOMType = tempData?.netConversionCostView?.CostingProcessCostResponse[index]?.UOMType
+
     } else {
       tempData = list[index]
-      console.log('tempData: ', tempData);
-      if (tempData.ProcessCalculatorId === 0 || tempData.ProcessCalculatorId === null) {
-        Toaster.warning('Data is not avaliabe for calculator')
-        return false
-      } else {
-        processCalciId = tempData.ProcessCalculatorId
-        technologyId = tempData?.ProcessTechnologyId
-        UOMType = tempData.UOMType
-      }
+      processCalciId = tempData?.ProcessCalculatorId
+      technologyId = tempData?.ProcessTechnologyId
+      UOMType = tempData?.UOMType
+
     }
     setIndexForProcessCalculator(index)
     setParentIndex(parentCalciIndex)
@@ -211,7 +177,7 @@ function ViewConversionCost(props) {
 
           if ((res && res.data && res.data.Data) || (res && res.status === 204)) {
             const data = res.status === 204 ? {} : res.data.Data
-            setCalculatorData(data, list, index, parentIndex)
+            setCalculatorData(data, list, index, parentCalciIndex)
           }
 
         }
