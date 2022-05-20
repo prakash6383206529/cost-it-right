@@ -787,6 +787,8 @@ function TabRMCC(props) {
           let subbAssemblyIndex = tempArrForCosting && tempArrForCosting.findIndex(item => item.PartNumber === params.PartNumber)
 
           let subAssemblyToUpdate = tempArrForCosting[subbAssemblyIndex]
+          let ccSubAssemblyArray = tempArrForCosting && tempArrForCosting.filter(item => item.AssemblyPartNumber === subAssemblyToUpdate.PartNumber && item.BOMLevel !== LEVEL0 && item.PartType === 'Sub Assembly')
+          let ccPartAssemblyArray = tempArrForCosting && tempArrForCosting.filter(item => item.AssemblyPartNumber === subAssemblyToUpdate.PartNumber && item.BOMLevel !== LEVEL0 && item.PartType === 'Part')
           subAssemblyToUpdate.CostingChildPartDetails = BOMLevel !== LEVEL0 ? ChangeBOMLeveL(childArray, BOMLevel) : childArray
           subAssemblyToUpdate.CostingPartDetails.TotalRawMaterialsCostWithQuantity = 0
           subAssemblyToUpdate.CostingPartDetails.TotalBoughtOutPartCostWithQuantity = 0
@@ -796,6 +798,10 @@ function TabRMCC(props) {
           subAssemblyToUpdate.CostingPartDetails.TotalRawMaterialsCostWithQuantity = setRMCostForAssembly(childArray)
           subAssemblyToUpdate.CostingPartDetails.TotalRMCWithCutOff = setRMCutOffCostForAssembly(childArray)
           subAssemblyToUpdate.CostingPartDetails.TotalBoughtOutPartCostWithQuantity = setBOPCostAssembly(childArray) + checkForNull(subAssemblyToUpdate.CostingPartDetails.BOPHandlingCharges)
+          subAssemblyToUpdate.CostingPartDetails.TotalOperationCostPerAssembly = checkForNull(subAssemblyToUpdate.CostingPartDetails.TotalOperationCostPerAssembly)
+          subAssemblyToUpdate.CostingPartDetails.TotalOperationCostSubAssembly = setOperationCostForAssembly(ccSubAssemblyArray)
+          subAssemblyToUpdate.CostingPartDetails.TotalOperationCostComponent = setOperationCostForAssembly(ccPartAssemblyArray)
+
           subAssemblyToUpdate.CostingPartDetails.TotalConversionCostWithQuantity = setConversionCostAssembly(childArray) + checkForNull(subAssemblyToUpdate.CostingPartDetails.TotalOperationCostPerAssembly)
           subAssemblyToUpdate.CostingPartDetails.IsOpen = subAssemblyToUpdate.PartType !== "Part" ? !subAssemblyToUpdate.CostingPartDetails.IsOpen : false
           subAssemblyToUpdate.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = (checkForNull(subAssemblyToUpdate?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity) + checkForNull(subAssemblyToUpdate?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity) + checkForNull(subAssemblyToUpdate?.CostingPartDetails?.TotalConversionCostWithQuantity)) * checkForNull(subAssemblyToUpdate?.Quantity)
