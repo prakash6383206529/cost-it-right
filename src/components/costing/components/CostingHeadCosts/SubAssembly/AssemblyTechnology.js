@@ -5,9 +5,9 @@ import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, } fro
 import AddAssemblyOperation from '../../Drawers/AddAssemblyOperation';
 import { ViewCostingContext } from '../../CostingDetails';
 import EditPartCost from './EditPartCost';
-import BOPAssemblyTechnology from './BOPAssemblyTechnology';
 import AddAssemblyProcess from '../../Drawers/AddAssemblyProcess';
 import { setSubAssemblyTechnologyArray } from '../../../actions/SubAssembly';
+import BoughtOutPart from '../BOP';
 
 function AssemblyTechnology(props) {
     const { children, item, index, getCostPerPiece } = props;
@@ -110,7 +110,7 @@ function AssemblyTechnology(props) {
 
     const nestedBOP = children && children.map(el => {
         if (el.PartType !== 'BOP') return false;
-        return <BOPAssemblyTechnology
+        return <BoughtOutPart
             index={index}
             item={el}
             children={el.CostingChildPartDetails}
