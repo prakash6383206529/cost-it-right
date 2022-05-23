@@ -83,7 +83,6 @@ class AddComponentForm extends Component {
   */
   renderListing = (label) => {
     const { componentPartSelectList } = this.props;
-    console.log('componentPartSelectList: ', componentPartSelectList);
     const { BOMViewerData } = this.props;
     let tempArr = [];
     BOMViewerData && BOMViewerData.map(el => {
@@ -96,10 +95,9 @@ class AddComponentForm extends Component {
     const temp = [];
     if (label === 'part') {
       componentPartSelectList && componentPartSelectList.map(item => {
-        console.log('item: ', item);
 
         if (item.Value === '0' || tempArr.includes(item.Value)) return false;
-        // console.log("COMING HERE ", item.Text, item.Value);
+        // 
         temp.push({ label: item.Text, value: item.Value })
         return null;
       });
