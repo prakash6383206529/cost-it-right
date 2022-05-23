@@ -44,6 +44,7 @@ function ApproveRejectDrawer(props) {
   const [IsOpen, setIsOpen] = useState(false);
   const [loader, setLoader] = useState(false)
   const [isDisable, setIsDisable] = useState(false)
+  const [isDisableSubmit, setIsDisableSubmit] = useState(false)
 
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
   const { selectedMasterForSimulation, attachmentsData } = useSelector(state => state.simulation)
@@ -265,9 +266,9 @@ function ApproveRejectDrawer(props) {
             }
 
             if (status !== undefined && status === 200) {
-              setIsDisable(false)
+              setIsDisableSubmit(false)
             } else {
-              setIsDisable(true)
+              setIsDisableSubmit(true)
             }
             // if (status !== undefined && (status === 400 || status === 412 || status === 500)) {
             //   setIsDisable(true)
@@ -822,7 +823,7 @@ function ApproveRejectDrawer(props) {
                     type="button"
                     className="submit-button  save-btn"
                     onClick={onSubmit}
-                    disabled={isDisable}
+                    disabled={isDisable || isDisableSubmit}
                   >
                     <div className={'save-icon'}></div>
                     {'Submit'}
