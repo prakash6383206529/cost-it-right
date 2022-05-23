@@ -3,11 +3,6 @@ import { connect } from 'react-redux';
 import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { EMPTY_DATA, MACHINERATE, MACHINE_MASTER_ID } from '../../../config/constants';
-import {
-    getInitialMachineTypeSelectList, getInitialPlantSelectList, getInitialProcessesSelectList, getInitialVendorWithVendorCodeSelectList, getMachineTypeSelectListByPlant,
-    getVendorSelectListByTechnology, getMachineTypeSelectListByTechnology, getMachineTypeSelectListByVendor, getProcessSelectListByMachineType,
-
-} from '../actions/Process';
 import { getMachineDataList, deleteMachine, copyMachine, getProcessGroupByMachineId } from '../actions/MachineMaster';
 import { getTechnologySelectList } from '../../../actions/Common';
 import NoContentFound from '../../common/NoContentFound';
@@ -66,11 +61,7 @@ class MachineRateListing extends Component {
     * @description Called after rendering the component
     */
     componentDidMount() {
-        this.props.getTechnologySelectList(() => { })
-        this.props.getInitialPlantSelectList(() => { })
-        this.props.getInitialVendorWithVendorCodeSelectList(() => { })
-        this.props.getInitialMachineTypeSelectList(() => { })
-        this.props.getInitialProcessesSelectList(() => { })
+
         if (this.props.isSimulation) {
             if (this.props.selectionForListingMasterAPI === 'Combined') {
                 this.props?.changeSetLoader(true)
@@ -302,14 +293,12 @@ class MachineRateListing extends Component {
         return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
     }
 
-
     renderPlantFormatter = (props) => {
         const row = props?.data;
 
         const value = row.CostingHead === 'VBC' ? row.DestinationPlant : row.Plants
         return value
     }
-
 
     bulkToggle = () => {
         this.setState({ isBulkUpload: true })
@@ -320,7 +309,6 @@ class MachineRateListing extends Component {
             this.getDataList()
         })
     }
-
 
     displayForm = () => {
         this.props.displayForm()
@@ -393,8 +381,6 @@ class MachineRateListing extends Component {
         gridOptions.api.setFilterModel(null);
     }
 
-
-
     getFilterMachineData = () => {
         if (this.props.isSimulation) {
             return getFilteredData(this.props.machineDatalist, MACHINE_MASTER_ID)
@@ -402,7 +388,6 @@ class MachineRateListing extends Component {
             return this.props.machineDatalist
         }
     }
-
 
     /**
     * @method render
@@ -422,7 +407,6 @@ class MachineRateListing extends Component {
             } else {
                 return false
             }
-
         }
         const defaultColDef = {
             resizable: true,
@@ -447,9 +431,7 @@ class MachineRateListing extends Component {
                 let length = this.state.gridApi.getSelectedRows().length
                 this.props.apply(selectedRows, length)
             }
-
         }
-
 
         return (
             <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
@@ -611,18 +593,9 @@ function mapStateToProps(state) {
 */
 export default connect(mapStateToProps, {
     getTechnologySelectList,
-    getInitialPlantSelectList,
-    getInitialVendorWithVendorCodeSelectList,
-    getInitialMachineTypeSelectList,
-    getInitialProcessesSelectList,
     getMachineDataList,
     deleteMachine,
     copyMachine,
-    getMachineTypeSelectListByPlant,
-    getVendorSelectListByTechnology,
-    getMachineTypeSelectListByTechnology,
-    getMachineTypeSelectListByVendor,
-    getProcessSelectListByMachineType,
     getListingForSimulationCombined,
     masterFinalLevelUser,
     getProcessGroupByMachineId

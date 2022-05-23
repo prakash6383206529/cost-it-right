@@ -3,7 +3,7 @@ import { Field, reduxForm } from "redux-form";
 import Toaster from "../../common/Toaster";
 import { connect } from "react-redux";
 import { Loader } from "../../common/Loader";
-import { required, alphabetsOnlyForName, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength80, } from "../../../helper/validation";
+import { required, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength26, } from "../../../helper/validation";
 import { renderText } from "../../layout/FormInputs";
 import "../UserRegistration.scss";
 import {
@@ -14,7 +14,6 @@ import { MESSAGES } from "../../../config/message";
 import { } from 'reactstrap';
 import { userDetails, loggedInUserId } from "../../../helper/auth";
 import PermissionsTabIndex from "./PermissionsTabIndex";
-import ConfirmComponent from "../../../helper/ConfirmComponent";
 import PopupMsgWrapper from "../../common/PopupMsgWrapper";
 
 class Role extends Component {
@@ -96,15 +95,7 @@ class Role extends Component {
 
 	moduleDataHandler = (data, ModuleName) => {
 		const { Modules } = this.state;
-		let tempArray = [];
 		let oldData = data;
-		let isAnyChildChecked = data && data.map((item, i) => {
-			let index = item.Actions.findIndex(el => el.IsChecked === true)
-			if (index !== -1) {
-				oldData[i].IsChecked = true;
-				tempArray.push(index)
-			}
-		})
 
 		let isParentChecked = oldData.findIndex(el => el.IsChecked === true)
 		const isAvailable = Modules && Modules.findIndex(a => a.ModuleName === ModuleName)
@@ -249,10 +240,10 @@ class Role extends Component {
 														name={"RoleName"}
 														type="text"
 														placeholder={'Enter'}
-														validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
+														validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength26]}
 														component={renderText}
 														required={true}
-														maxLength={26}
+														//maxLength={26}
 														customClassName={'withBorder mb-0 mn-height-auto hide-text-help-mb-0'}
 													/>
 												</div>
