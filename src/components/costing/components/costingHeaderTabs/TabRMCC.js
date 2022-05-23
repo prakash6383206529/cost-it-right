@@ -845,7 +845,6 @@ function TabRMCC(props) {
         assemblyObj.CostingPartDetails.IsOpen = params.BOMLevel !== LEVEL0 ? true : !assemblyObj.CostingPartDetails.IsOpen
         assemblyObj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = checkForNull(assemblyObj.CostingPartDetails.TotalRawMaterialsCostWithQuantity) + checkForNull(assemblyObj.CostingPartDetails.TotalBoughtOutPartCostWithQuantity) + checkForNull(assemblyObj.CostingPartDetails.TotalConversionCostWithQuantity)
         tempArrForCosting = Object.assign([...tempArrForCosting], { [0]: assemblyObj })
-        console.log('tempArrForCosting: ', tempArrForCosting);
         localStorage.setItem('costingArray', [])
         localStorage.setItem('costingArray', JSON.stringify(tempArrForCosting))
         const mapArray = (data) => data.map(item => {

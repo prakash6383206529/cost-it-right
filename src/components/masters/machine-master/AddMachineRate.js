@@ -759,15 +759,12 @@ class AddMachineRate extends Component {
 
     const { fieldsObj } = this.props;
     const MachineRate = fieldsObj.MachineRate
-
-    let machineRate =
-
-      this.setState({
-        processName: [],
-        UOM: isProcessGroup ? UOM : [],
-        processGridEditIndex: '',
-        isEditIndex: false,
-      }, () => this.props.change('MachineRate', isProcessGroup ? MachineRate : ''));
+    this.setState({
+      processName: [],
+      UOM: isProcessGroup ? UOM : [],
+      processGridEditIndex: '',
+      isEditIndex: false,
+    }, () => this.props.change('MachineRate', isProcessGroup ? MachineRate : ''));
   };
 
   /**

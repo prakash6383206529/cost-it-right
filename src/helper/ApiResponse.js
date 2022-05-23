@@ -116,7 +116,6 @@ export function formatGetPlanResult(result) {
 
 
 export function formatRMSimulationObject(simulationDetail, selectedRowData, costingArr) {
-
     if (simulationDetail && selectedRowData && costingArr) {
         let temp = []
         costingArr && costingArr.map(item => {
@@ -142,6 +141,8 @@ export function formatRMSimulationObject(simulationDetail, selectedRowData, cost
         let uniqueArr = _.uniqBy(temp, function (o) {
             return o.CostingId;
         });
+
+
         const simulationObj = {
             SimulationId: simulationDetail.SimulationId,
             Token: simulationDetail.TokenNo,

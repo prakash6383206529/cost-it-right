@@ -2408,8 +2408,6 @@ export function setIdsOfProcess(data) {
   }
 }
 export function setIdsOfProcessGroup(data) {
-  console.log('data: ', data);
-
   return (dispatch) => {
     dispatch({
       type: SET_PROCESSGROUP_ID,
