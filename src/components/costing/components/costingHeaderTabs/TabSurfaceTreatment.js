@@ -358,7 +358,7 @@ function TabSurfaceTreatment(props) {
 
 
   const setAssembly = (params, Children, arr) => {
-    console.log('params: ', params);
+
 
     let tempArr = [];
     try {
@@ -380,10 +380,10 @@ function TabSurfaceTreatment(props) {
           let subAssemblyToUpdate = tempArrForCosting[subbAssemblyIndex]
           subAssemblyToUpdate.CostingChildPartDetails = params.BOMLevel !== LEVEL0 ? ChangeBOMLeveL(Children.CostingChildPartDetails, params.BOMLevel) : Children.CostingChildPartDetails
           subAssemblyToUpdate.IsOpen = subAssemblyToUpdate.PartType !== "Part" ? !subAssemblyToUpdate.IsOpen : false
-          console.log('subAssemblyToUpdate: ', subAssemblyToUpdate);
+
           let obj = totalSubAssemblyCalcuation(subAssemblyToUpdate, childArray)
           let totalObj = { ...subAssemblyToUpdate, ...obj }
-          console.log('totalObj: ', totalObj);
+
 
           tempArrForCosting = Object.assign([...tempArrForCosting], { [subbAssemblyIndex]: totalObj })
 
@@ -423,7 +423,7 @@ function TabSurfaceTreatment(props) {
         assemblyObj.CostingPartDetails.NetSurfaceTreatmentCost = checkForNull(assemblyObj.CostingPartDetails.TotalSurfaceTreatmentCostWithQuantity) + checkForNull(assemblyObj.CostingPartDetails.TotalTransportationCostWithQuantity)
         assemblyObj.IsOpen = params.BOMLevel !== LEVEL0 ? true : !assemblyObj.IsOpen
         tempArrForCosting = Object.assign([...tempArrForCosting], { [0]: assemblyObj })
-        console.log('tempArrForCosting: ', tempArrForCosting);
+
         localStorage.setItem('surfaceCostingArray', [])
         localStorage.setItem('surfaceCostingArray', JSON.stringify(tempArrForCosting))
 
@@ -431,7 +431,7 @@ function TabSurfaceTreatment(props) {
 
           let newItem = item
           let updatedArr = JSON.parse(localStorage.getItem('surfaceCostingArray'))
-          console.log('updatedArr: ', updatedArr);
+
           let obj = updatedArr && updatedArr.find(updateditem => updateditem.PartNumber === newItem.PartNumber && updateditem.AssemblyPartNumber === newItem.AssemblyPartNumber)
 
           if (obj && Object.keys(obj).length > 0) {
@@ -976,7 +976,7 @@ function TabSurfaceTreatment(props) {
         // MAIN ASSEMBLY CALCULATION
         let assemblyObj = tempArrForCosting[0]
         let subAssemblyArray = tempArrForCosting && tempArrForCosting.filter(item => item.AssemblyPartNumber === assemblyObj.PartNumber && item.BOMLevel === 'L1')
-        console.log('subAssemblyArray: ', subAssemblyArray);
+
 
         // WILL RUN IF IT IS ASSEMBLY COSTING. WILL NOT RUN FOR COMPONENT COSTING
         if (assemblyObj.PartType === 'Assembly') {

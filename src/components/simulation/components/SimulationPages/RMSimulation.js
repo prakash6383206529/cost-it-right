@@ -355,8 +355,6 @@ function RMSimulation(props) {
 
     const onCellValueChanged = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        console.log('row: ', row);
-
     }
 
     const frameworkComponents = {

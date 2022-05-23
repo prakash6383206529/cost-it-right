@@ -129,7 +129,7 @@ export function formatRMSimulationObject(simulationDetail, selectedRowData, cost
             })
             temp.push({ CostingId: item.CostingId, CostingNumber: item.CostingNumber, IsChecked: checked })
         })
-        
+
         // let uniqueArr = [];
         // temp.filter(function(item){
         //     var i = uniqueArr.findIndex(x => (x.CostingId === item.CostingId));
@@ -138,11 +138,11 @@ export function formatRMSimulationObject(simulationDetail, selectedRowData, cost
         //      }
         //     return null;
         // });
-        let uniqueArr = _.uniqBy(temp, function(o){
+        let uniqueArr = _.uniqBy(temp, function (o) {
             return o.CostingId;
         });
-    
-console.log(uniqueArr,"uniqueArr");
+
+
         const simulationObj = {
             SimulationId: simulationDetail.SimulationId,
             Token: simulationDetail.TokenNo,
