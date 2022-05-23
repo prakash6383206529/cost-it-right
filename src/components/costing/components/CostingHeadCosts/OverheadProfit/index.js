@@ -67,6 +67,8 @@ function OverheadProfit(props) {
   const [profitObj, setProfitObj] = useState(CostingProfitDetail)
   const [tempOverheadObj, setTempOverheadObj] = useState(CostingOverheadDetail)
   const [tempProfitObj, setTempProfitObj] = useState(CostingProfitDetail)
+
+  // partType USED FOR MANAGING CONDITION IN CASE OF NORMAL COSTING AND ASSEMBLY TECHNOLOGY COSTING (TRUE FOR ASSEMBLY TECHNOLOGY)
   const partType = Number(costData?.ETechnologyType) === ASSEMBLY
 
   const [modelType, setModelType] = useState(data.CostingPartDetails && data.CostingPartDetails.ModelType !== null ? { label: data.CostingPartDetails.ModelType, value: data.CostingPartDetails.ModelTypeId } : [])
@@ -380,6 +382,7 @@ function OverheadProfit(props) {
 
       const { IsCutOffApplicable, CutOffRMC } = RMCCutOffObj;
 
+      // IF WILL GET EXECUTED WHEN TECHNOLOGY FOR COSTING IS ASSEMBLY FOR OTHER TECHNOLOGIES ELSE WILL EXECUTE
       if (partType) {
         OverheadRMCost = checkForNull(headerCosts?.NetRawMaterialsCost)
         OverheadCCCost = checkForNull(headerCosts?.ProcessCostTotal) + checkForNull(headerCosts?.TotalOperationCostPerAssembly)
@@ -556,6 +559,7 @@ function OverheadProfit(props) {
 
       const { IsCutOffApplicable, CutOffRMC } = RMCCutOffObj;
 
+      // IF WILL GET EXECUTED WHEN TECHNOLOGY FOR COSTING IS ASSEMBLY FOR OTHER TECHNOLOGIES ELSE WILL EXECUTE
       if (partType) {
         ProfitRMCost = checkForNull(headerCosts?.NetRawMaterialsCost)
         ProfitCCCost = checkForNull(headerCosts?.ProcessCostTotal) + checkForNull(headerCosts?.TotalOperationCostPerAssembly)
@@ -735,6 +739,7 @@ function OverheadProfit(props) {
       const { OverheadCCPercentage, OverheadPercentage, OverheadApplicability } = overheadObj;
       const { ProfitCCPercentage, ProfitPercentage, ProfitApplicability } = overheadObj;
 
+      // IF WILL GET EXECUTED WHEN TECHNOLOGY FOR COSTING IS ASSEMBLY FOR OTHER TECHNOLOGIES ELSE WILL EXECUTE
       if (partType) {
         let combinedCost = checkForNull(headerCosts?.ProcessCostTotal) + checkForNull(headerCosts?.TotalOperationCostPerAssembly)
         const BOPTotalCost = checkForNull(headerCosts?.NetBoughtOutPartCost)
