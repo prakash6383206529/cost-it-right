@@ -46,9 +46,12 @@ function OperationCost(props) {
       PartType: props.item.PartType
     }
     if (!CostingViewMode && !IsLocked) {
+      // IF TECHNOLOGY IS ASSEMBLY FOR COSTING THIS ILL BE EXECUTED ELSE FOR PART COSTING AND ASSEMBLY COSTING
       if (Number(costData?.ETechnologyType) === ASSEMBLY) {
         // FUTURE CONDITION FROM API RESPONCE TO CHECK IF DATA IS CHANGED OR NOT
         // JSON.stringify(gridData) !== JSON.stringify(OldGridData)
+
+        // PROP IS USED TO SET OPERATION GRID AND TOTAL OPERATION COST IN ADDASSEMBLYOPERATION
         props.getOperationGrid(gridData, operationCostAssemblyTechnology)
       } else {
         if (props.IsAssemblyCalculation) {

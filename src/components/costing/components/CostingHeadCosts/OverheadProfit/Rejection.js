@@ -51,8 +51,6 @@ function Rejection(props) {
 
     useEffect(() => {
         checkRejectionApplicability(applicability.label)
-
-
     }, [rejectionFieldValues]);
 
     useEffect(() => {
@@ -111,9 +109,11 @@ function Rejection(props) {
             let RM_BOP = 0
             const RejectionPercentage = getValues('RejectionPercentage')
 
+            // IF WILL GET EXECUTED WHEN TECHNOLOGY FOR COSTING IS ASSEMBLY FOR OTHER TECHNOLOGIES ELSE WILL EXECUTE
             if (partType) {
                 const assemblyLevelCC = checkForNull(headerCosts?.ProcessCostTotal) + checkForNull(headerCosts?.TotalOperationCostPerAssembly)
 
+                // RM FOR ASSEMBLY TECHNOLOGY COSTING WILL BE PART COST ONLY (SUM OF ALL COST PER ASSEMBLIES OF CHILD PART)
                 RM = checkForNull(headerCosts?.NetRawMaterialsCost)
                 BOP = checkForNull(headerCosts?.NetBoughtOutPartCost)
                 CC = checkForNull(assemblyLevelCC)

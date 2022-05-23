@@ -36,6 +36,7 @@ function EditPartCost(props) {
     }, [gridData])
 
     useEffect(() => {
+        // GET DATA FOR EDIT DRAWER
         let obj = {}
         dispatch(getEditPartCostDetails(obj, res => { }))
     }, [])
@@ -59,14 +60,17 @@ function EditPartCost(props) {
             return false
         }
 
+        // TAKING OBJECT FROM WHOLE ARRAY LIST USING INDEX ON WHICH USER IS EDITING
         let tempObject = ListForPartCost[gridIndex]
         let weightedCostCalc = 0
         let netCost = 0
 
+        // GET RUN TIME EDITED VALUES FROM INPUT FIELD
         tempObject.SOBPercentage = getValues(`${PartCostFields}.${gridIndex}.SOBPercentage`)
         tempObject.DeltaValue = getValues(`${PartCostFields}.${gridIndex}.DeltaValue`)
         tempObject.DeltaSign = getValues(`${PartCostFields}.${gridIndex}.DeltaSign`)
 
+        // RESPECTIVE CALCULATION FOR + and - DELTA SIGN
         if (tempObject.DeltaSign?.label === '+') {
             netCost = percentageOfNumber(Number(tempObject.SettledPrice) + Number(tempObject.DeltaValue), tempObject.SOBPercentage)
             tempObject.NetCost = netCost
@@ -77,7 +81,10 @@ function EditPartCost(props) {
             setValue(`${PartCostFields}.${gridIndex}.NetCost`, checkForDecimalAndNull(netCost, initialConfiguration.NoOfDecimalForPrice))
         }
 
+        // ASSIGN THE MANIPULAED OBJECT TO THE SAME INDEX IN THE ARRAY LIST
         let gridTempArr = Object.assign([...ListForPartCost], { [gridIndex]: tempObject })
+
+        // CALCULATING TOTAL NET COST
         weightedCostCalc = gridTempArr && gridTempArr.reduce((accummlator, el) => {
             return checkForNull(accummlator) + checkForNull(el.NetCost)
         }, 0)
@@ -104,6 +111,10 @@ function EditPartCost(props) {
         }, 300);
     }
 
+    /**
+      * @method calcTotalSOBPercent
+      * @description TO CALCULATE TOTAL SOB PERCENTAGE 
+      */
     const calcTotalSOBPercent = () => {
         let ProcessCostTotal = 0
         ProcessCostTotal = ListForPartCost && ListForPartCost.reduce((accummlator, el, index) => {
@@ -121,12 +132,14 @@ function EditPartCost(props) {
         let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray
         let costPerAssemblyTotal = 0
 
-        // FILTER AND MAP FOR MAP
+        // MAP IS APPLIED BECAUSE WE DON't HAVE INDEX TO GET THE ROW ON WHICH EDIT IS CLICKED, SO COMPAIRING WITH PART NUMBER
         tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails && tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails.map((item) => {
+            // ASSIGNING WEIGHTED COST TO THE SAME ROW ON WHICH EDIT IS CLICKED
             if (props?.tabAssemblyIndividualPartDetail?.PartNumber === item?.PartNumber) {
                 item.CostingPartDetails.CostPerPiece = weightedCost
                 item.CostingPartDetails.CostPerAssembly = checkForNull(weightedCost) * checkForNull(item?.CostingPartDetails?.Quantity)
             }
+            // CALCULATING TOTAL COST PER ASSEMBLY (PART COST ONLY => RM)
             costPerAssemblyTotal = checkForNull(costPerAssemblyTotal) + checkForNull(item?.CostingPartDetails?.CostPerAssembly)
             return null
         })
@@ -136,6 +149,7 @@ function EditPartCost(props) {
 
         props.getCostPerPiece(weightedCost)
         props.closeDrawer('')
+
         // SAVE API FOR PART COST
         // dispatch(saveEditPartCostDetails((res) => { }))
     }

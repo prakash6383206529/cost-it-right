@@ -245,7 +245,7 @@ function CostingHeaderTabs(props) {
 
 
   const callAssemblyAPi = (tabId) => {
-    if (costData.IsAssemblyPart && IsCalledAPI && !CostingViewMode) {
+    if (costData.IsAssemblyPart && IsCalledAPI && !CostingViewMode && !partType) {
       const tabData = RMCCTabData && RMCCTabData[0]
       const surfaceTabData = SurfaceTabData && SurfaceTabData[0]
       const overHeadAndProfitTabData = OverheadProfitTabData && OverheadProfitTabData[0]
