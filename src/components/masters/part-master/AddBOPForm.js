@@ -5,10 +5,14 @@ import { Row, Col, } from 'reactstrap';
 import { required, maxLength5, minValue1, minValueLessThan1, positiveAndDecimalNumber, } from "../../../helper/validation";
 import { renderText, searchableSelect } from "../../layout/FormInputs";
 import { getBoughtOutPartSelectList, getDrawerBOPData } from '../actions/Part';
-import { } from '../../../actions/Common';
 import { BOUGHTOUTPART } from '../../../config/constants';
+import LoaderCustom from '../../common/LoaderCustom';
+import { PartEffectiveDate } from './AddAssemblyPart';
+
 
 class AddBOPForm extends Component {
+  static contextType = PartEffectiveDate
+
   constructor(props) {
     super(props);
     this.state = {
@@ -16,8 +20,8 @@ class AddBOPForm extends Component {
       parentPart: [],
       BOPPart: [],
       isAddMore: false,
-      selectedParts: [],
-      titleObj: {}
+      titleObj: {},
+      isLoader: false
     }
   }
 
@@ -26,19 +30,10 @@ class AddBOPForm extends Component {
  * @description called after render the component
  */
   componentDidMount() {
-    const { BOMViewerData } = this.props;
-    let tempArr = [];
+    this.setState({ isLoader: true })
+    const date = this.context
+    this.props.getBoughtOutPartSelectList(date, () => { this.setState({ isLoader: false }) })
 
-    this.props.getBoughtOutPartSelectList(() => { })
-
-    BOMViewerData && BOMViewerData.map(el => {
-      if (el.PartType === BOUGHTOUTPART) {
-        tempArr.push(el.PartId)
-      }
-      return null;
-    })
-
-    this.setState({ selectedParts: tempArr })
   }
 
   checkRadio = (radioType) => {
@@ -79,7 +74,6 @@ class AddBOPForm extends Component {
   */
   renderListing = (label) => {
     const { boughtOutPartSelectList } = this.props;
-    const { selectedParts } = this.state;
     const temp = [];
     const { BOMViewerData } = this.props;                    //UPDATING BOMVIEWER DATA ON EVERY RENDERING OF DROPDOWN
     let tempArr = [];
@@ -94,7 +88,7 @@ class AddBOPForm extends Component {
 
     if (label === 'BOPPart') {
       boughtOutPartSelectList && boughtOutPartSelectList.map(item => {
-        if (item.Value === '0' || selectedParts.includes(item.Value)) return false;
+        if (item.Value === '0' || tempArr.includes(item.Value)) return false;
         temp.push({ label: item.Text, value: item.Value })
         return null;
       });
@@ -173,12 +167,13 @@ class AddBOPForm extends Component {
         >
           <Row>
             <Col md="6">
+              {this.state.isLoader && <LoaderCustom customClass="add-child-input" />}
               <Field
                 name="BOPPartNumber"
                 type="text"
-                label={"Insert Part No."}
+                label={"BOP Part No."}
                 component={searchableSelect}
-                placeholder={"Insert Part"}
+                placeholder={"BOP Part"}
                 options={this.renderListing("BOPPart")}
                 //onKeyUp={(e) => this.changeItemDesc(e)}
                 validate={
@@ -190,11 +185,12 @@ class AddBOPForm extends Component {
                 required={true}
                 handleChangeDescription={this.handleBOPPartChange}
                 valueDescription={this.state.BOPPart}
+                disabled={this.state.isLoader ? true : false}
               />
             </Col>
             <Col md="6">
               <Field
-                label={`Insert Part Name`}
+                label={`BOP Part Name`}
                 name={"BOPPartName"}
                 type="text"
                 placeholder={""}
@@ -209,7 +205,7 @@ class AddBOPForm extends Component {
 
             <Col md="6">
               <Field
-                label={`Insert Category`}
+                label={`BOP Category`}
                 name={"BOPCategory"}
                 type="text"
                 placeholder={""}

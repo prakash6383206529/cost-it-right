@@ -47,6 +47,7 @@ function CostingSummary(props) {
   const [titleObj, setTitleObj] = useState({})
   //dropdown loader 
   const [inputLoader, setInputLoader] = useState(false)
+  const [isLoader, setIsLoader] = useState(false);
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
   /******************CALLED WHENEVER SUMARY TAB IS CLICKED AFTER DETAIL TAB(FOR REFRESHING DATA IF THERE IS EDITING IN CURRENT COSTING OPENED IN SUMMARY)***********************/
@@ -219,6 +220,7 @@ function CostingSummary(props) {
                   newValue.partNumber = newValue.label
                   newValue.partId = newValue.value
                   // const prNAme = (newValue.label).replace('/', '%2F')
+                  setIsLoader(true)
                   dispatch(storePartNumber(newValue))
                   dispatch(
                     getCostingSummaryByplantIdPartNo(
@@ -230,6 +232,7 @@ function CostingSummary(props) {
                           if (res.data.Data.CostingId === '00000000-0000-0000-0000-000000000000') {
                             setShowWarningMsg(true)
                             dispatch(setCostingViewData(temp))
+                            setIsLoader(false)
                           } else {
                             dispatch(getSingleCostingDetails(res.data.Data.CostingId, (res) => {
                               // dispatch(getSingleCostingDetails('5cdcad92-277f-48e2-8eb2-7a7c838104e1', res => {
@@ -237,10 +240,12 @@ function CostingSummary(props) {
                                 let dataFromAPI = res.data.Data
                                 const tempObj = formViewData(dataFromAPI)
                                 dispatch(setCostingViewData(tempObj))
+                                setIsLoader(false)
                               }
                             },
                             ))
                           }
+
                         }
                       },
                     ),
@@ -248,7 +253,7 @@ function CostingSummary(props) {
                 }),
               )
             } else {
-              dispatch(getPartInfo('', () => { }))
+              dispatch(getPartInfo('', () => { setIsLoader(false) }))
               setValue('PartName', '')
               setValue('Description', '')
               setValue('ECNNumber', '')
@@ -598,8 +603,8 @@ function CostingSummary(props) {
             </div>
           </Col>
         </Row>
+        {isLoader && <LoaderCustom customClass="costing-summary-loader" />}
       </div>
-
       {partNumber !== "" && <CostingSummaryTable
         resetData={resetData}
         showDetail={props.showDetail}

@@ -2,13 +2,17 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required, number, postiveNumber, maxLength5, minValue1, acceptAllExceptSingleSpecialCharacter } from "../../../helper/validation";
+import { required, postiveNumber, maxLength5, minValue1, acceptAllExceptSingleSpecialCharacter } from "../../../helper/validation";
 import { renderText, searchableSelect } from "../../layout/FormInputs";
 import { getAssemblyPartSelectList, getDrawerAssemblyPartDetail, } from '../actions/Part';
 import { ASSEMBLY } from '../../../config/constants';
 import { getRandomSixDigit } from '../../../helper/util';
+import LoaderCustom from '../../common/LoaderCustom';
+import { PartEffectiveDate } from './AddAssemblyPart';
 
 class AddAssemblyForm extends Component {
+
+    static contextType = PartEffectiveDate
     constructor(props) {
         super(props);
         this.state = {
@@ -16,7 +20,8 @@ class AddAssemblyForm extends Component {
             parentPart: [],
             isAddMore: false,
             childData: [],
-            selectedParts: [],
+            isLoader: false
+
         }
     }
 
@@ -25,18 +30,12 @@ class AddAssemblyForm extends Component {
    * @description called after render the component
    */
     componentDidMount() {
-        const { BOMViewerData } = this.props;
-        this.props.getAssemblyPartSelectList(this.props?.TechnologySelected.value, () => { })
-
-        let tempArr = [];
-        BOMViewerData && BOMViewerData.map(el => {
-            if (el.PartType === ASSEMBLY) {
-                tempArr.push(el.PartId)
-            }
-            return null;
-        })
-
-        this.setState({ selectedParts: tempArr })
+        let obj = {
+            technologyId: this.props?.TechnologySelected.value,
+            date: this.context
+        }
+        this.setState({ isLoader: true })
+        this.props.getAssemblyPartSelectList(obj, () => { this.setState({ isLoader: false }) })
 
     }
 
@@ -78,13 +77,22 @@ class AddAssemblyForm extends Component {
     * @description Used show listing of unit of measurement
     */
     renderListing = (label) => {
+        const { BOMViewerData } = this.props;
+
         const { assemblyPartSelectList } = this.props;
-        const { selectedParts } = this.state;
+
+        let tempArr = [];
+        BOMViewerData && BOMViewerData.map(el => {
+            if (el.PartType === ASSEMBLY) {
+                tempArr.push(el.PartId)
+            }
+            return null;
+        })
 
         const temp = [];
         if (label === 'assemblyPart') {
             assemblyPartSelectList && assemblyPartSelectList.map(item => {
-                if (item.Value === '0' || selectedParts.includes(item.Value)) return false;
+                if (item.Value === '0' || tempArr.includes(item.Value)) return false;
                 temp.push({ label: item.Text, value: item.Value })
                 return null;
             });
@@ -130,10 +138,11 @@ class AddAssemblyForm extends Component {
         this.props.getDrawerAssemblyPartDetail('', res => { })
 
         if (isAddMore) {
+
+            this.props.setChildParts(childData)
             this.setState({
                 assemblyPart: []
             })
-            this.props.setChildParts(childData)
         } else {
             this.props.toggleDrawer('', childData)
         }
@@ -161,6 +170,7 @@ class AddAssemblyForm extends Component {
                 >
                     <Row>
                         <Col md='6'>
+                            {this.state.isLoader && <LoaderCustom customClass="add-child-input" />}
                             <Field
                                 name="AssemblyPart"
                                 type="text"
@@ -173,6 +183,7 @@ class AddAssemblyForm extends Component {
                                 required={true}
                                 handleChangeDescription={this.handleAssemblyPartChange}
                                 valueDescription={this.state.assemblyPart}
+                                disabled={this.state.isLoader ? true : false}
                             />
                         </Col>
                         <Col md="6">
