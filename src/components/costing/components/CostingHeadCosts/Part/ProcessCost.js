@@ -16,7 +16,6 @@ import { ViewCostingContext } from '../../CostingDetails';
 import Popup from 'reactjs-popup';
 import OperationCostExcludedOverhead from './OperationCostExcludedOverhead';
 import { MACHINING, } from '../../../../../config/masterData'
-import TooltipCustom from '../../../../common/Tooltip';
 import { findProcessCost, findProductionPerHour } from '../../../CostingUtil';
 
 let counter = 0;
@@ -1119,7 +1118,7 @@ function ProcessCost(props) {
                     <th style={{ width: "220px" }}>{`Machine Rate`}</th>
                     <th style={{ width: "220px" }}>{`UOM`}</th>
                     <th style={{ width: "220px" }}>{`Parts/Hour`}</th>
-                    <th style={{ width: "220px" }}><span>Quantity <TooltipCustom tooltipClass="process-tooltip" customClass="process" tooltipText={tooltipText} /></span></th>
+                    <th style={{ width: "220px" }}><span>Quantity  <div class="tooltip-n ml-1"><i className="fa fa-info-circle text-primary tooltip-icon"></i><span class="tooltiptext process-tooltip">{tooltipText}</span></div></span></th>
                     <th style={{ width: "220px" }} >{`Net Cost`}</th>
                     <th style={{ width: "145px", textAlign: "right" }}>{`Action`}</th>
                   </tr>

@@ -2,8 +2,6 @@
  * Define all the constants required in application inside this file and export them
  */
 
-import { getAuthToken } from '../helper/auth';
-
 export const config = () => {
 
   let headers = {
@@ -1866,4 +1864,4 @@ export const KEY = 'gQUJ79YKYm22Cazw';
 export const IV = 'eTEFSa0PinFKTQNB'
 
 //VERSION 
-export const VERSION = "V1.2.233";
+export const VERSION = "V1.2.234";
