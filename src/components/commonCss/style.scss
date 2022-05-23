@@ -7294,6 +7294,12 @@ body {
       font-size: 14px;
     }
   }
+  .part-info-title {
+    p {
+      display: flex;
+      flex-direction: column;
+    }
+  }
 }
 
 @media screen and (max-width:$max1367) {
@@ -7682,6 +7688,7 @@ git .sticky-btn-footer {
         }
       }
     }
+
   }
 
   @-moz-document url-prefix() {
@@ -7761,7 +7768,19 @@ git .sticky-btn-footer {
 .number-overflow {
   @include overflow($minWidth:45px, $ResponsiveWith:120px, $whiteSpace:normal, $lineClamp:1)
 }
-
+.costing-head-overflow {
+ 
+  @include overflow(220px, 10px , 340px, $whiteSpace:normal );
+  p {
+    display: flex;
+    span {
+      &:first-child {
+        min-width: fit-content;
+        padding-right: 5px;
+      }
+    }
+  }
+}
 .drawer-wrapper table tr:first-child td {
   border-top: none;
 }
