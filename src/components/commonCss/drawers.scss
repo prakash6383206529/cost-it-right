@@ -22,3 +22,14 @@
        }
     }
 }
+.conversion-cost {
+    .MuiPaper-root {
+        padding-bottom: 0 !important;
+    }
+    .drawer-1500px {
+        padding-bottom: 0;
+    }
+    .view-conversion-header {
+        min-height: calc(100vh - 88px);
+    }
+}

@@ -584,7 +584,7 @@ class AddAssemblyPart extends Component {
         isStructureChanges = false
       }
 
-      this.setState({ setDisable: true, disablePopup: false })
+      this.setState({ setDisable: true, disablePopup: false, isLoader: true })
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: PartId }
       })
@@ -612,7 +612,7 @@ class AddAssemblyPart extends Component {
         IsStructureChanges: isStructureChanges
       }
       this.props.updateAssemblyPart(updateData, (res) => {
-        this.setState({ setDisable: false })
+        this.setState({ setDisable: false, isLoader: false })
         if (res?.data?.Result) {
           Toaster.success(MESSAGES.UPDATE_BOM_SUCCESS);
           this.cancel()
