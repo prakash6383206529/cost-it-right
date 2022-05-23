@@ -13,7 +13,7 @@ import LoaderCustom from '../../../common/LoaderCustom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { FORGING, Ferrous_Casting, DIE_CASTING } from '../../../../config/masterData'
+import { FORGING, Ferrous_Casting, DIE_CASTING, MACHINING } from '../../../../config/masterData'
 import GroupProcess from './GroupProcess';
 import _ from 'lodash'
 import { getConfigurationKey } from '../../../../helper';
@@ -81,17 +81,17 @@ function AddProcess(props) {
     if (costData.VendorType === ZBC) {
       let data = {}
 
-      if (Number(costData.TechnologyId) === Number(FORGING) || Number(costData.TechnologyId) === Number(DIE_CASTING) || Number(costData.TechnologyId) === Number(Ferrous_Casting)) {
+      if (Number(costData.ETechnologyType) === Number(FORGING) || Number(costData.ETechnologyType) === Number(DIE_CASTING) || Number(costData.ETechnologyType) === Number(Ferrous_Casting)) {
         data = {
           PlantId: costData.PlantId,
-          TechnologyId: String(`${costData.TechnologyId},14`),
+          TechnologyId: String(`${costData.ETechnologyType},${MACHINING}`),
           CostingId: costData.CostingId,
           EffectiveDate: CostingEffectiveDate,
         }
       } else {
         data = {
           PlantId: costData.PlantId,
-          TechnologyId: String(costData.TechnologyId),
+          TechnologyId: String(costData.ETechnologyType),
           CostingId: costData.CostingId,
           EffectiveDate: CostingEffectiveDate,
         }
@@ -109,10 +109,10 @@ function AddProcess(props) {
 
     } else {
       let data = {}
-      if (Number(costData.TechnologyId) === Number(FORGING) || Number(costData.TechnologyId) === Number(DIE_CASTING) || Number(costData.TechnologyId) === Number(Ferrous_Casting)) {
+      if (Number(costData.ETechnologyType) === Number(FORGING) || Number(costData.ETechnologyType) === Number(DIE_CASTING) || Number(costData.ETechnologyType) === Number(Ferrous_Casting)) {
         data = {
           VendorId: costData.VendorId,
-          TechnologyId: String(`${costData.TechnologyId},14`),
+          TechnologyId: String(`${costData.ETechnologyType},${MACHINING}`),
           VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
           DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID,
           CostingId: costData.CostingId,
@@ -122,7 +122,7 @@ function AddProcess(props) {
       else {
         data = {
           VendorId: costData.VendorId,
-          TechnologyId: String(costData.TechnologyId),
+          TechnologyId: String(costData.ETechnologyType),
           VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
           DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID,
           CostingId: costData.CostingId,

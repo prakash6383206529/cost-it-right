@@ -5,10 +5,9 @@ import { Row, Col, } from 'reactstrap';
 import { required, maxLength5, postiveNumber, minValue1, acceptAllExceptSingleSpecialCharacter, } from "../../../helper/validation";
 import { renderText } from "../../layout/FormInputs";
 import { getComponentPartSelectList, getDrawerComponentPartData, } from '../actions/Part';
-import { COMPONENT_PART } from '../../../config/constants';
+import { COMPONENT_PART, LEVEL1 } from '../../../config/constants';
 import AsyncSelect from 'react-select/async';
 import TooltipCustom from '../../common/Tooltip';
-
 class AddComponentForm extends Component {
   constructor(props) {
     super(props);
@@ -33,7 +32,7 @@ class AddComponentForm extends Component {
 
     let tempArr = [];
     BOMViewerData && BOMViewerData.map(el => {
-      if (el.PartType === COMPONENT_PART) {
+      if (el.PartType === COMPONENT_PART && el.Level === LEVEL1) {
         tempArr.push(el.PartId)
       }
       return null;
@@ -87,7 +86,7 @@ class AddComponentForm extends Component {
     const { BOMViewerData } = this.props;
     let tempArr = [];
     BOMViewerData && BOMViewerData.map(el => {
-      if (el.PartType === COMPONENT_PART) {
+      if (el.PartType === COMPONENT_PART && el.Level === LEVEL1) {
         tempArr.push(el.PartId)
       }
       return null;
@@ -96,7 +95,9 @@ class AddComponentForm extends Component {
     const temp = [];
     if (label === 'part') {
       componentPartSelectList && componentPartSelectList.map(item => {
+
         if (item.Value === '0' || tempArr.includes(item.Value)) return false;
+        // 
         temp.push({ label: item.Text, value: item.Value })
         return null;
       });

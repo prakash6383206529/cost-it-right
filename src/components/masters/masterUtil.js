@@ -299,14 +299,3 @@ export const ProcessGroup = (props) => {
 
 // }
 
-export const config = () => {
-    console.log("CALL FUNCTION");
-    let headers = {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Credentials': 'true',
-        'Authorization': `Bearer ${JSON.parse(localStorage.getItem('userDetail')).Token}`,
-        'Access-From': 'WEB',
-        'Api-Key': `${process.env.REACT_APP_API_KEY}`,
-    }
-    return { headers }
-}

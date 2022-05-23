@@ -878,13 +878,11 @@ export function calculateScrapWeight(grossWeight, finishWeight) {
 
 export function calculateScrapCost(scrapWeight, scrapRate) {
   const scrapCost = scrapWeight * scrapRate
-  console.log('scrapCost: ', scrapCost);
   return scrapCost
 }
 
 export function calculateNetLandedCost(rmRate, grossWeight, scrapWeight, scrapRate) {
   const netLandedCost = (rmRate * grossWeight) - (scrapWeight * scrapRate)
-  console.log('netLandedCost: ', netLandedCost);
   return netLandedCost
 }
 
