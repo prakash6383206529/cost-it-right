@@ -40,31 +40,18 @@ function TabAssemblyTechnology(props) {
     if (CostingViewMode === false) {
       let TopHeaderValues = subAssemblyTechnologyArray && subAssemblyTechnologyArray.length > 0 && subAssemblyTechnologyArray[0].CostingPartDetails !== undefined ? subAssemblyTechnologyArray[0].CostingPartDetails : null;
       let topHeaderData = {};
-      if (costData.IsAssemblyPart) {
-        topHeaderData = {
-          NetRawMaterialsCost: TopHeaderValues?.EditPartCost ? TopHeaderValues.EditPartCost : 0,
-          NetBoughtOutPartCost: TopHeaderValues?.CostPerAssemblyBOP ? TopHeaderValues.CostPerAssemblyBOP : 0,
-          NetConversionCost: (TopHeaderValues?.OperationCostValue || TopHeaderValues?.ProcessCostValue) ? (checkForNull(TopHeaderValues?.ProcessCostValue) + checkForNull(TopHeaderValues?.OperationCostValue)) : 0,
-          NetToolsCost: TopHeaderValues?.TotalToolCost ? TopHeaderValues.TotalToolCost : 0,
-          NetTotalRMBOPCC: TopHeaderValues?.CostPerAssembly ? TopHeaderValues.CostPerAssembly : 0,
-          OtherOperationCost: TopHeaderValues?.CostingConversionCost?.OtherOperationCostTotal ? TopHeaderValues.CostingConversionCost.OtherOperationCostTotal : 0,   //HELP
-          ProcessCostTotal: TopHeaderValues?.ProcessCostValue ? TopHeaderValues?.ProcessCostValue : 0,
-          OperationCostTotal: TopHeaderValues?.OperationCostValue ? TopHeaderValues?.OperationCostValue : 0,
-          TotalOperationCostPerAssembly: TopHeaderValues?.TotalOperationCostPerAssembly ? TopHeaderValues.TotalOperationCostPerAssembly : 0,
-          TotalOperationCostSubAssembly: TopHeaderValues?.TotalOperationCostSubAssembly ? TopHeaderValues.TotalOperationCostSubAssembly : 0,
-          TotalOtherOperationCostPerAssembly: TopHeaderValues?.TotalOtherOperationCostPerAssembly ? checkForNull(TopHeaderValues.TotalOtherOperationCostPerAssembly) : 0
-        }
-      } else {
-        topHeaderData = {
-          NetRawMaterialsCost: TopHeaderValues?.TotalRawMaterialsCost ? TopHeaderValues.TotalRawMaterialsCost : 0,
-          NetBoughtOutPartCost: TopHeaderValues?.TotalBoughtOutPartCost ? TopHeaderValues.TotalBoughtOutPartCost : 0,
-          NetConversionCost: TopHeaderValues?.TotalConversionCost ? TopHeaderValues.TotalConversionCost : 0,
-          ProcessCostTotal: TopHeaderValues?.CostingConversionCost?.ProcessCostTotal ? TopHeaderValues.CostingConversionCost.ProcessCostTotal : 0,
-          OperationCostTotal: TopHeaderValues?.CostingConversionCost?.OperationCostTotal ? TopHeaderValues.CostingConversionCost.OperationCostTotal : 0,
-          OtherOperationCost: TopHeaderValues?.CostingConversionCost?.OtherOperationCostTotal ? TopHeaderValues.CostingConversionCost.OtherOperationCostTotal : 0,
-          NetToolsCost: TopHeaderValues?.TotalToolCost ? TopHeaderValues.TotalToolCost : 0,
-          NetTotalRMBOPCC: TopHeaderValues?.TotalCalculatedRMBOPCCCost ? TopHeaderValues.TotalCalculatedRMBOPCCCost : 0,
-        }
+      topHeaderData = {
+        NetRawMaterialsCost: TopHeaderValues?.EditPartCost ? TopHeaderValues.EditPartCost : 0,
+        NetBoughtOutPartCost: TopHeaderValues?.CostPerAssemblyBOP ? TopHeaderValues.CostPerAssemblyBOP : 0,
+        NetConversionCost: (TopHeaderValues?.OperationCostValue || TopHeaderValues?.ProcessCostValue) ? (checkForNull(TopHeaderValues?.ProcessCostValue) + checkForNull(TopHeaderValues?.OperationCostValue)) : 0,
+        NetToolsCost: TopHeaderValues?.TotalToolCost ? TopHeaderValues.TotalToolCost : 0,
+        NetTotalRMBOPCC: TopHeaderValues?.CostPerAssembly ? TopHeaderValues.CostPerAssembly : 0,
+        OtherOperationCost: TopHeaderValues?.CostingConversionCost?.OtherOperationCostTotal ? TopHeaderValues.CostingConversionCost.OtherOperationCostTotal : 0,   //HELP
+        ProcessCostTotal: TopHeaderValues?.ProcessCostValue ? TopHeaderValues?.ProcessCostValue : 0,
+        OperationCostTotal: TopHeaderValues?.OperationCostValue ? TopHeaderValues?.OperationCostValue : 0,
+        TotalOperationCostPerAssembly: TopHeaderValues?.TotalOperationCostPerAssembly ? TopHeaderValues.TotalOperationCostPerAssembly : 0,
+        TotalOperationCostSubAssembly: TopHeaderValues?.TotalOperationCostSubAssembly ? TopHeaderValues.TotalOperationCostSubAssembly : 0,
+        TotalOtherOperationCostPerAssembly: TopHeaderValues?.TotalOtherOperationCostPerAssembly ? checkForNull(TopHeaderValues.TotalOtherOperationCostPerAssembly) : 0
       }
       props.setHeaderCost(topHeaderData)
     }

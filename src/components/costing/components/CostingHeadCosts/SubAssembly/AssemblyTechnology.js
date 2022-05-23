@@ -28,7 +28,7 @@ function AssemblyTechnology(props) {
 
     const toggle = (BOMLevel, PartNumber, PartType) => {
         if (PartType === 'Assembly') {
-
+            // WHEN TOGGLE BUTTON IS PRESSED AT THAT TIME VALUES SHOULD BE CALCULATED UNTIL THEN VALUES SHOULD BE 0
             setIsOpen(!IsOpen)
             setCount(Count + 1)
             if (Object.keys(costData).length > 0) {
@@ -91,6 +91,7 @@ function AssemblyTechnology(props) {
     }
 
     const nestedAssembly = children && children.map(el => {
+        // SAME COMPONENT WILL RENDER PART AND ASSEMBLY
         if (el.PartType === 'Sub Assembly' || el.PartType === 'Part') {
             return <AssemblyTechnology
                 index={index}

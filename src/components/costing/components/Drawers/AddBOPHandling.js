@@ -28,6 +28,7 @@ function AddBOPHandling(props) {
   useEffect(() => {
 
     if (isAssemblyTechnology) {
+      // WILL GET EXECUTED WHEN TECHNOLOGY OF COSTING WILL BE ASSEMBLY
       let totalBOP = calcTotalBOP()
       setValue('BOPCost', totalBOP)
       setValue('BOPHandlingPercentage', subAssemblyTechnologyArray && checkForNull(subAssemblyTechnologyArray[0]?.BOPHandlingPercentage))
@@ -55,6 +56,7 @@ function AddBOPHandling(props) {
 
   const calcTotalBOP = () => {
     let totalBOP = 0
+    // CALCULATE TOTAL BOP COST
     totalBOP = subAssemblyTechnologyArray && subAssemblyTechnologyArray[0]?.CostingChildPartDetails.reduce((accummlator, el) => {
       if (el.PartType === 'BOP') {
         return checkForNull(accummlator) + checkForNull(el?.CostingPartDetails?.CostPerAssemblyBOP)
@@ -97,6 +99,7 @@ function AddBOPHandling(props) {
 
   const saveHandleCharge = () => {
     let obj = {}
+    // WILL BE EXECUTED WHEN COSTING TECHNOLOGY IS ASSEMBLY FOR OTHER TECHNOLOGIES ELSE WILL GET EXECUTED
     if (isAssemblyTechnology) {
       let totalBOP = calcTotalBOP()
       let tempSubAssemblyTechnologyArray = subAssemblyTechnologyArray

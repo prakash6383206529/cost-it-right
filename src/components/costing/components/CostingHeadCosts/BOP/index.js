@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { costingInfoContext } from '../../CostingDetailStepTwo';
 import { getBOPData, } from '../../../actions/Costing';
 import { useDispatch, useSelector } from 'react-redux';
@@ -9,10 +9,11 @@ function BoughtOutPart(props) {
   const { item } = props;
 
   const dispatch = useDispatch()
-  const [IsOpen, setIsOpen] = useState(false);
 
   const costData = useContext(costingInfoContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
+
+  // partType USED FOR CONDITIONAL RENDERING OF COLUMNS IN CASE OF NORMAL COSTING AND ASSEMBLY TECHNOLOGY COSTING  (TRUE FOR ASSEMBLY TECHNOLOGY)
   const partType = Number(costData?.ETechnologyType) === ASSEMBLY
 
   useEffect(() => {
@@ -32,10 +33,6 @@ function BoughtOutPart(props) {
       }, 500)
     }
   }, [])
-
-  const toggle = () => {
-    setIsOpen(!IsOpen)
-  }
 
   /**
   * @method render

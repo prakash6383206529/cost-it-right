@@ -212,7 +212,6 @@ function CostingHeaderTabs(props) {
       const discountAndOtherTabData = DiscountCostData
       let tempArrForCosting = JSON.parse(localStorage.getItem('costingArray'))
 
-
       const data = _.find(tempArrForCosting, ['IsPartLocked', true])
       const lockedData = _.find(tempArrForCosting, ['IsLocked', true])
       const bopData = _.find(tempArrForCosting, ['PartType', 'BOP'])
@@ -237,7 +236,6 @@ function CostingHeaderTabs(props) {
 
   const callAssemblyAPi = (tabId) => {
     if (costData.IsAssemblyPart && IsCalledAPI && !CostingViewMode && !partType) {
-      let assemblyWorkingRow = []
       const tabData = RMCCTabData && RMCCTabData[0]
       const surfaceTabData = SurfaceTabData && SurfaceTabData[0]
       const overHeadAndProfitTabData = OverheadProfitTabData && OverheadProfitTabData[0]

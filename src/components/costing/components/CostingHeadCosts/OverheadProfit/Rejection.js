@@ -24,6 +24,8 @@ function Rejection(props) {
     const [rejectionObj, setRejectionObj] = useState(CostingRejectionDetail)
     const [applicability, setApplicability] = useState(CostingRejectionDetail && CostingRejectionDetail.RejectionApplicability !== null ? { label: CostingRejectionDetail.RejectionApplicability, value: CostingRejectionDetail.RejectionApplicabilityId } : [])
     const [IsChangedApplicability, setIsChangedApplicability] = useState(false)
+
+    // partType USED FOR MANAGING CONDITION IN CASE OF NORMAL COSTING AND ASSEMBLY TECHNOLOGY COSTING (TRUE FOR ASSEMBLY TECHNOLOGY)
     const partType = Number(costData?.ETechnologyType) === ASSEMBLY
 
     const dispatch = useDispatch()
@@ -47,8 +49,6 @@ function Rejection(props) {
 
     useEffect(() => {
         checkRejectionApplicability(applicability.label)
-
-
     }, [rejectionFieldValues]);
 
 
@@ -103,9 +103,11 @@ function Rejection(props) {
             let RM_BOP = 0
             const RejectionPercentage = getValues('RejectionPercentage')
 
+            // IF WILL GET EXECUTED WHEN TECHNOLOGY FOR COSTING IS ASSEMBLY FOR OTHER TECHNOLOGIES ELSE WILL EXECUTE
             if (partType) {
                 const assemblyLevelCC = checkForNull(headerCosts?.ProcessCostTotal) + checkForNull(headerCosts?.TotalOperationCostPerAssembly)
 
+                // RM FOR ASSEMBLY TECHNOLOGY COSTING WILL BE PART COST ONLY (SUM OF ALL COST PER ASSEMBLIES OF CHILD PART)
                 RM = checkForNull(headerCosts?.NetRawMaterialsCost)
                 BOP = checkForNull(headerCosts?.NetBoughtOutPartCost)
                 CC = checkForNull(assemblyLevelCC)
