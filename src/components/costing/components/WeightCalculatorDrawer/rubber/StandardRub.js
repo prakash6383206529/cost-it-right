@@ -1,14 +1,13 @@
 import React, { useState, useEffect, Fragment, useContext } from 'react'
-import { Row, Col, Table } from 'reactstrap'
+import { Row, Col } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
 import { TextFieldHookForm, SearchableSelectHookForm } from '../../../../layout/HookFormInputs'
-import { calculateScrapWeight, checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../../helper'
+import { checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../../helper'
 import { saveRawMaterialCalciData } from '../../../actions/CostWorking'
 import Toaster from '../../../../common/Toaster'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 import { KG, EMPTY_DATA } from '../../../../../config/constants'
-import NoContentFound from '../../../../common/NoContentFound'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -395,8 +394,6 @@ function StandardRub(props) {
         setDisableCondition(true)
 
 
-        console.log(tableData, "tabledata");
-
     }
 
     const onCancel = () => {
@@ -436,22 +433,11 @@ function StandardRub(props) {
         obj.CostingId = costData.CostingId
         obj.TechnologyId = costData.TechnologyId
         // obj.CostingRawMaterialDetailId = rmRowData.RawMaterialDetailId
-        // obj.RawMaterialName = rmRowData.RMName
-        // obj.RawMaterialType = rmRowData.MaterialType
-        // obj.BasicRatePerUOM = rmRowData.RMRate
-        // obj.ScrapRate = rmRowData.ScrapRate
         // obj.NetLandedCost = grossWeights * rmRowData.RMRate - (grossWeights - getValues('finishWeight')) * rmRowData.ScrapRate
         // obj.PartNumber = costData.PartNumber
         // obj.TechnologyName = costData.TechnologyName
-        // obj.Density = rmRowData.Density
-        // obj.UOMId = rmRowData.UOMId
-        // obj.UOM = rmRowData.UOM
         obj.UOMForDimension = KG
         obj.RmDropDownData = rmDropDownData
-        // obj.ShotWeight = getValues('shotWeight')
-        // obj.NumberOfCavity = getValues('noOfCavity')
-        // obj.GrossWeight = grossWeights
-        // obj.FinishWeight = getValues('finishWeight')
         obj.CalculatedRmTableData = tableData
 
         dispatch(saveRawMaterialCalciData(obj, res => {
@@ -629,7 +615,7 @@ function StandardRub(props) {
 
                                         <Col md="3">
                                             <TextFieldHookForm
-                                                label={`Total Length (mm)`}
+                                                label={`Total Length(mm)`}
                                                 name={'TotalLength'}
                                                 Controller={Controller}
                                                 control={control}
@@ -707,7 +693,7 @@ function StandardRub(props) {
 
                                         <Col md="3">
                                             <TextFieldHookForm
-                                                label={`Finish Weight (Kg)`}
+                                                label={`Finish Weight(Kg)`}
                                                 name={'FinishWeight'}
                                                 Controller={Controller}
                                                 control={control}
