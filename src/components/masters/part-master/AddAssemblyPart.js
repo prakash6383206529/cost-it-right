@@ -373,6 +373,12 @@ class AddAssemblyPart extends Component {
 
   closeBOMViewerDrawer = (e = '', drawerData, isSaved, isEqual) => {
     this.setState({ isOpenBOMViewerDrawer: false, BOMViewerData: drawerData, avoidAPICall: isSaved, BOMChanged: isEqual ? false : true })
+
+    if (isEqual) {
+      return false
+    } else {
+      this.setState({ isDisableBomNo: true })
+    }
   }
 
   // specify upload params and url for your files

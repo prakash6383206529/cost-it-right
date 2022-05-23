@@ -251,7 +251,7 @@ class BOMViewer extends Component {
     let isEqual = _.isEqual(this.state.bomFromAPI, this.state.flowpoints)
 
     if (this.state.isCancel) {
-      this.props.closeDrawer('', this.state.ActualBOMData, this.state.isSaved, isEqual)
+      this.props.closeDrawer('', this.state.ActualBOMData, this.state.isSaved, true)
     } else {
       // TO CHECK WHETHER THE FLOWPOINTS COMING FROM API AND ON CLOSING DRAWER ARE SAME OR NOT .FOR SAME isEqual WILL BE TRUE ELSE FALSE
 
