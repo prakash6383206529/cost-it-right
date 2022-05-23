@@ -1,13 +1,11 @@
 import React, { useState, useEffect, Fragment } from 'react'
 import { Row, Col } from 'reactstrap'
-import { SearchableSelectHookForm } from '../../layout/HookFormInputs'
-import { useForm, Controller } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { loggedInUserId, userDetails } from '../../../helper/auth'
 import NoContentFound from '../../common/NoContentFound'
 import { EMPTY_DATA, LINKED } from '../../../config/constants'
 import DayTime from '../../common/DayTimeWrapper'
-import { checkForDecimalAndNull } from '../../../helper'
 import { DRAFT, EMPTY_GUID, APPROVED, PUSHED, ERROR, WAITING_FOR_APPROVAL, REJECTED, POUPDATED } from '../../../config/constants'
 import Toaster from '../../common/Toaster'
 import { getSimulationApprovalList, setMasterForSimulation, deleteDraftSimulation } from '../actions/Simulation'
@@ -17,22 +15,17 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../common/LoaderCustom'
 import { MESSAGES } from '../../../config/message'
-import ConfirmComponent from '../../../helper/ConfirmComponent'
 import { getConfigurationKey } from '../../../helper'
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import WarningMessage from '../../common/WarningMessage'
 import { debounce } from 'lodash'
 import ScrollToTop from '../../common/ScrollToTop'
-import { reactLocalStorage } from 'reactjs-localstorage';
 
 const gridOptions = {};
 
 function SimulationApprovalListing(props) {
     const { isDashboard } = props
-    const loggedUser = loggedInUserId()
-    const [shown, setshown] = useState(false)
-
     const [approvalData, setApprovalData] = useState('')
     const [selectedRowData, setSelectedRowData] = useState([]);
     const [approveDrawer, setApproveDrawer] = useState(false)
@@ -43,24 +36,17 @@ function SimulationApprovalListing(props) {
     const [statusForLinkedToken, setStatusForLinkedToken] = useState(false)
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
-    const [rowData, setRowData] = useState(null);
     const [isPendingForApproval, setIsPendingForApproval] = useState(false);
 
     const dispatch = useDispatch()
-
-    const partSelectList = useSelector((state) => state.costing.partSelectList)
-    const statusSelectList = useSelector((state) => state.approval.costingStatusList)
-    const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const { simualtionApprovalList } = useSelector(state => state.simulation)
-    const userList = useSelector(state => state.auth.userList)
     const [deletedId, setDeletedId] = useState('')
     const [showPopup, setShowPopup] = useState(false)
     const [simulationDetail, setSimulationDetail] = useState([])
     const [isLoader, setIsLoader] = useState(false)
     const isSmApprovalListing = props.isSmApprovalListing;
-    const colRow = [{ field: 'ApprovalNumber' }]
 
-    const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
+    const { handleSubmit } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onChange',
     })
@@ -71,8 +57,6 @@ function SimulationApprovalListing(props) {
     useEffect(() => {
 
     }, [selectedIds])
-
-
 
 
     /**
@@ -89,8 +73,6 @@ function SimulationApprovalListing(props) {
             requestedBy: requestedBy,
             status: status,
             isDashboard: isDashboard ?? false
-            // partNo: partNo,
-            // createdBy: createdBy,
         }
         setIsLoader(true)
         dispatch(getSimulationApprovalList(filterData, (res) => {
@@ -100,25 +82,6 @@ function SimulationApprovalListing(props) {
                 }, 300);
             }
         }))
-    }
-
-
-    /**
-     * @method onSubmit
-     * @description filtering data on Apply button
-     */
-    const onSubmit = (values) => {
-        const tempPartNo = getValues('partNo') ? getValues('partNo').value : '00000000-0000-0000-0000-000000000000'
-        const tempcreatedBy = getValues('createdBy') ? getValues('createdBy').value : '00000000-0000-0000-0000-000000000000'
-        const tempRequestedBy = getValues('requestedBy') ? getValues('requestedBy').value : '00000000-0000-0000-0000-000000000000'
-        const tempStatus = getValues('status') ? getValues('status').value : 0
-        // const type_of_costing = 
-
-        setTimeout(() => {
-            if (approveDrawer !== true) {
-                getTableData(tempPartNo, tempcreatedBy, tempRequestedBy, tempStatus)
-            }
-        }, 300);
     }
 
     /**
@@ -146,32 +109,6 @@ function SimulationApprovalListing(props) {
     const hyphenFormatter = (props) => {
         const cellValue = props?.value;
         return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
-    }
-
-
-    const createdOnFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '-';
-    }
-
-    const priceFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return (
-            <>
-                {/* <img className={`${row.OldPOPrice > row.NetPOPrice ? 'arrow-ico mr-1 arrow-green' : 'mr-1 arrow-ico arrow-red'}`} src={row.OldPOPrice > row.NetPOPrice ? require("../../../../assests/images/arrow-down.svg") : require("../../../../assests/images/arrow-up.svg")} alt="arro-up" /> */}
-                {cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : '-'}
-            </>
-        )
-    }
-
-    const oldpriceFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return (
-            <>
-                {/* <img className={`${row.OldPOPrice > row.NetPOPrice ? 'arrow-ico mr-1 arrow-green' : 'mr-1 arrow-ico arrow-red'}`} src={row.OldPOPrice > row.NetPOPrice ? require("../../../../assests/images/arrow-down.svg") : require("../../../../assests/images/arrow-up.svg")} alt="arro-up" /> */}
-                {cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : '-'}
-            </>
-        )
     }
 
     const requestedOnFormatter = (props) => {
@@ -210,7 +147,6 @@ function SimulationApprovalListing(props) {
             setShowApprovalSummary(true)
         }
     }
-
 
     const deleteItem = (rowData) => {
         let data = {
@@ -255,9 +191,6 @@ function SimulationApprovalListing(props) {
             return `U`
         }
 
-
-
-
     }
 
     const renderVendor = (props) => {
@@ -266,20 +199,6 @@ function SimulationApprovalListing(props) {
         return (cell !== null && cell !== '-') ? `${cell}(${row.VendorCode})` : '-'
     }
 
-
-
-
-    /**
-     * @method resetHandler
-     * @description Reseting all filter
-     */
-    const resetHandler = () => {
-        setValue('partNo', '')
-        setValue('createdBy', '')
-        setValue('requestedBy', '')
-        setValue('status', '')
-        getTableData()
-    }
     const allEqual = arr => arr.every(val => val === arr[0]);
 
     const onRowSelect = (row, isSelected, e) => {
@@ -301,6 +220,7 @@ function SimulationApprovalListing(props) {
             tempArrReason.push(item.ReasonId)
             tempArrTechnology.push(item.TechnologyName)
             tempArrSimulationTechnologyHead.push(item.SimulationTechnologyHead)
+            return null
         })
 
         if (!allEqual(arr)) {
@@ -336,7 +256,6 @@ function SimulationApprovalListing(props) {
         setIsPendingForApproval(arr.includes("Pending For Approval") ? true : false)
 
         if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
-        var selected = gridApi.getSelectedNodes()
         setSelectedRowData(selectedRows)
         // if (isSelected) {
         //     let tempArr = [...selectedRowData, row]
@@ -356,35 +275,6 @@ function SimulationApprovalListing(props) {
         // return rowNode.data ? !selectedIds.includes(rowNode.data.OperationId) : false;
     }
 
-    const onSelectAll = (isSelected, rows) => {
-        if (isSelected) {
-            setSelectedRowData(rows)
-        } else {
-            setSelectedRowData([])
-        }
-    }
-
-    const selectRowProp = {
-        mode: 'checkbox',
-        clickToSelect: true,
-        unselectable: selectedIds,
-        onSelect: onRowSelect,
-        onSelectAll: onSelectAll,
-    };
-
-    const options = {
-        clearSearch: true,
-        noDataText: <NoContentFound title={EMPTY_DATA} />,
-        prePage: <span className="prev-page-pg"></span>, // Previous page button text
-        nextPage: <span className="next-page-pg"></span>, // Next page button text
-        firstPage: <span className="first-page-pg"></span>, // First page button text
-        lastPage: <span className="last-page-pg"></span>,
-        //exportCSVText: 'Download Excel',
-        //onExportToCSV: this.onExportToCSV,
-        //paginationShowsTotal: true,
-        //paginationShowsTotal: this.renderPaginationShowsTotal,
-    }
-
     const sendForApproval = () => {
 
         if (selectedRowData.length === 0) {
@@ -393,7 +283,6 @@ function SimulationApprovalListing(props) {
         }
         setSimulationDetail({ DepartmentId: selectedRowData[0].DepartmentId })
         setApproveDrawer(true)
-
     }
 
     const closeDrawer = (e = '') => {
@@ -404,7 +293,6 @@ function SimulationApprovalListing(props) {
     }
 
     if (redirectCostingSimulation === true) {
-
         // HERE FIRST IT WILL GO TO SIMULATION.JS COMPONENT FROM THERE IT WILL GO TO COSTING SIMULATION OR OTHER COSTINGSIMULATION.JS PAGE
         return <Redirect
             to={{
@@ -497,7 +385,7 @@ function SimulationApprovalListing(props) {
                 !showApprovalSumary &&
                 <div className={`${!isSmApprovalListing && 'container-fluid'} approval-listing-page`} id='history-go-to-top'>
                     < div className={`ag-grid-react`}>
-                        <form onSubmit={handleSubmit(onSubmit)} noValidate>
+                        <form onSubmit={handleSubmit(() => { })} noValidate>
                             {!isSmApprovalListing && <h1 className="mb-0">Simulation History</h1>}
                             {isLoader && <LoaderCustom customClass={"simulation-history-loader"} />}
                             <ScrollToTop pointProp={"history-go-to-top"} />
@@ -551,9 +439,6 @@ function SimulationApprovalListing(props) {
                                     rowSelection={'multiple'}
                                     onSelectionChanged={onRowSelect}
                                     isRowSelectable={isRowSelectable}
-
-
-
                                 >
 
                                     <AgGridColumn width={120} field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No." cellClass="token-no-grid"></AgGridColumn>
