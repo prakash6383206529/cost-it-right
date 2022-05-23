@@ -109,6 +109,7 @@ function AssemblySurfaceTreatment(props) {
     />
   })
 
+
   /**
   * @method render
   * @description Renders the component
@@ -155,7 +156,7 @@ function AssemblySurfaceTreatment(props) {
                 </div> : ''
             }
           </td>
-          <td>{checkForNull(item?.Quantity ? item.Quantity : 3)}</td>
+          <td>{checkForNull(item?.Quantity)}</td>
           <td>
             {item.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostWithQuantitys !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostWithQuantitys, initialConfiguration.NoOfDecimalForPrice) : 0}
           </td>
@@ -196,6 +197,7 @@ function AssemblySurfaceTreatment(props) {
       {item.IsOpen && nestedPartComponent}
 
       {item.IsOpen && nestedAssembly}
+
 
 
       {IsDrawerOpen && <SurfaceTreatment

@@ -112,7 +112,7 @@ function AddRM(props) {
     if (costData.VendorType === ZBC) {
 
       const data = {
-        TechnologyId: costData.TechnologyId,
+        TechnologyId: costData.ETechnologyType,
         PlantId: costData.PlantId,
         CostingId: costData.CostingId,
         EffectiveDate: CostingEffectiveDate,
@@ -134,7 +134,7 @@ function AddRM(props) {
 
       const data = {
         VendorId: costData.VendorId,
-        TechnologyId: costData.TechnologyId,
+        TechnologyId: costData.ETechnologyType,
         VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
         DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID,
         EffectiveDate: CostingEffectiveDate,
