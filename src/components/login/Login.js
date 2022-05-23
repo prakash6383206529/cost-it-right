@@ -71,13 +71,10 @@ class Login extends Component {
     this.setState({ inputLoader: true })
     // this.props.loginUserAPI(values, (res) => {
     this.props.TokenAPI(reqParams, (res) => {
-      console.log('res: ', res);
-
       if (res && res.status === 200) {
         this.setState({ isLoader: false, isSubmitted: false });
 
         let userDetail = formatLoginResult(res.data);
-        console.log('userDetail: ', userDetail);
         let departmentList = ''
         const dept = userDetail && userDetail.Department.map((item) => {
           if (item.Role === 'SuperAdmin') {
