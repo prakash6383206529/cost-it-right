@@ -394,6 +394,9 @@ function StandardRub(props) {
         setTotalRMCost(totalRMCost)
         setDisableCondition(true)
 
+
+        console.log(tableData, "tabledata");
+
     }
 
     const onCancel = () => {
@@ -444,9 +447,7 @@ function StandardRub(props) {
         // obj.UOMId = rmRowData.UOMId
         // obj.UOM = rmRowData.UOM
         obj.UOMForDimension = KG
-        obj.TableData = tableData
-
-
+        obj.RmDropDownData = rmDropDownData
         // obj.ShotWeight = getValues('shotWeight')
         // obj.NumberOfCavity = getValues('noOfCavity')
         // obj.GrossWeight = grossWeights
