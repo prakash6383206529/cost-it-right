@@ -384,6 +384,9 @@ class AddMachineRate extends Component {
     this.setState({ DropdownChange: false })
   }
 
+  handleMachineSpecification = () => {
+    this.setState({ DropdownChange: false })
+  }
   /**
   * @method handleMessageChange
   * @description used remarks handler
@@ -743,18 +746,18 @@ class AddMachineRate extends Component {
 */
   resetProcessGridData = () => {
     const { isProcessGroup, UOM } = this.state
-    console.log('isProcessGroup: ', isProcessGroup);
+
     const { fieldsObj } = this.props;
     const MachineRate = fieldsObj.MachineRate
-    console.log('MachineRate: ', MachineRate);
+
     let machineRate =
-      console.log(isProcessGroup ? MachineRate : '', "isProcessGroup ? MachineRate : ''");
-    this.setState({
-      processName: [],
-      UOM: isProcessGroup ? UOM : [],
-      processGridEditIndex: '',
-      isEditIndex: false,
-    }, () => this.props.change('MachineRate', isProcessGroup ? MachineRate : ''));
+
+      this.setState({
+        processName: [],
+        UOM: isProcessGroup ? UOM : [],
+        processGridEditIndex: '',
+        isEditIndex: false,
+      }, () => this.props.change('MachineRate', isProcessGroup ? MachineRate : ''));
   };
 
   /**
@@ -1028,9 +1031,7 @@ class AddMachineRate extends Component {
           MachineProcessGroup: this.props.processGroupApiData
         }
 
-
         if (IsFinancialDataChanged) {
-
           if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
             this.setState({ showPopup: true, updatedObj: requestData })
             return false
@@ -1041,9 +1042,7 @@ class AddMachineRate extends Component {
             Toaster.warning('Please update the effective date')
             return false
           }
-
         }
-
 
         if (isEditFlag) {
 
@@ -1064,7 +1063,6 @@ class AddMachineRate extends Component {
 
       }
     } else {
-
 
       if (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) {
         this.setState({ IsSendForApproval: true })
@@ -1098,8 +1096,6 @@ class AddMachineRate extends Component {
         MachineProcessGroup: this.props.processGroupApiData
       }
 
-
-
       let obj = {}
       let finalObj = {
 
@@ -1112,8 +1108,6 @@ class AddMachineRate extends Component {
 
       }
 
-
-
       if (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) {
 
         if (IsFinancialDataChanged) {
@@ -1121,27 +1115,23 @@ class AddMachineRate extends Component {
           if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
             this.setState({ approveDrawer: true, approvalObj: finalObj })
             return false
-
           } else {
-
             this.setState({ setDisable: false })
             Toaster.warning('Please update the effective date')
             return false
           }
-
         }
-
 
         if (isEditFlag) {
           if (DropdownChange && uploadAttachements) {
             this.cancel();
             return false
+          } else {
+
+            this.setState({ setDisable: true })
+            this.setState({ approveDrawer: true, approvalObj: finalObj })
           }
-          this.setState({ setDisable: true })
-          this.setState({ approveDrawer: true, approvalObj: finalObj })
         }
-
-
 
       } else {
 
@@ -1435,6 +1425,7 @@ class AddMachineRate extends Component {
                             validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                             component={renderText}
                             // required={true}
+                            onChange={this.handleMachineSpecification}
                             disabled={isViewMode ? true : false}
                             className=" "
                             customClassName="withBorder"
