@@ -1,16 +1,26 @@
 import React, { useState, useContext } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
-import { costingInfoContext } from '../CostingDetailStepTwo';
+import { costingInfoContext, NetPOPriceContext } from '../CostingDetailStepTwo';
 import Drawer from '@material-ui/core/Drawer';
 import OperationCost from '../CostingHeadCosts/Part/OperationCost';
 import ToolCost from '../CostingHeadCosts/Part/ToolCost';
-import { checkForDecimalAndNull } from '../../../../helper';
+import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../helper';
 import { ASSEMBLY } from '../../../../config/masterData';
+import { createToprowObjAndSave, findSurfaceTreatmentData } from '../../CostingUtil';
+import { saveAssemblyCostingRMCCTab, saveAssemblyPartRowCostingCalculation } from '../../actions/Costing';
+import { SET_PACKAGE_AND_FREIGHT_TAB_DATA } from '../../../../config/constants';
 
 function AddAssemblyOperation(props) {
   const { item, CostingViewMode, isAssemblyTechnology } = props;
   const [IsOpenTool, setIsOpenTool] = useState(false);
+
+  const dispatch = useDispatch()
+
+  const { RMCCTabData, CostingEffectiveDate, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData } = useSelector(state => state.costing)
+
+  const netPOPrice = useContext(NetPOPriceContext);
+
   const [operationGridData, setOperationGridData] = useState([]);
   const [operationCostAssemblyTechnology, setOperationCostAssemblyTechnology] = useState(0);
 
@@ -50,86 +60,87 @@ function AddAssemblyOperation(props) {
   const saveData = () => {
     if (isAssemblyTechnology) {
       props?.setOperationCostFunction(operationCostAssemblyTechnology, operationGridData)
+    } else {
+      let stCostingData = findSurfaceTreatmentData(item)
+
+      let requestData = {
+        "CostingId": item.CostingId,
+        "CostingNumber": item.CostingNumber,
+        "CostingDetailId": "00000000-0000-0000-0000-000000000000",
+        "PartId": item.PartId,
+        "PartNumber": item.PartNumber,
+        "PartTypeId": item.PartTypeId,
+        "Type": item.PartType,
+        "SubAssemblyCostingId": item.SubAssemblyCostingId,
+        "PlantId": costData.PlantId,
+        "VendorId": costData.VendorId,
+        "VendorCode": costData.VendorCode,
+        "VendorPlantId": costData.VendorPlantId,
+        "TechnologyName": item.Technology,
+        "TechnologyId": item.TechnologyId,
+        "TypeOfCosting": costData.VendorType,
+        "PlantCode": costData.PlantCode,
+        "PlantName": costData.PlantName,
+        "Version": item.Version,
+        "ShareOfBusinessPercent": item.ShareOfBusinessPercent,
+
+        "NetRawMaterialsCost": item.CostingPartDetails.TotalRawMaterialsCost,
+        "NetBoughtOutPartCost": item.CostingPartDetails.TotalBoughtOutPartCost,
+        "NetConversionCost": item.CostingPartDetails.TotalConversionCost,
+        "TotalProcessCost": item.CostingPartDetails.TotalProcessCost,
+        "TotalOperationCost": item.CostingPartDetails.TotalOperationCost,
+        "NetTotalRMBOPCC": item.CostingPartDetails.TotalCalculatedRMBOPCCCost,
+        "TotalCost": stCostingData && Object.keys.length > 0 ? checkForNull(item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity) + checkForNull(stCostingData.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostWithQuantitys) : item.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity,
+        "LoggedInUserId": loggedInUserId(),
+        "EffectiveDate": CostingEffectiveDate,
+
+        "IsSubAssemblyComponentPart": costData.IsAssemblyPart,
+        "NetOperationCostPerAssembly": item.CostingPartDetails.TotalOperationCostPerAssembly,
+        "NetToolCostPerAssembly": item.CostingPartDetails.TotalToolCostPerAssembly,
+        "CostingPartDetails": {
+          "CostingId": item.CostingId,
+          "CostingNumber": item.CostingNumber,
+          "CostingDetailId": "00000000-0000-0000-0000-000000000000",
+          "PartId": item.PartId,
+          "PartNumber": item.PartNumber,
+          "PartName": item.PartName,
+          "PartTypeId": item.PartTypeId,
+          "Type": item.PartType,
+
+          "TotalRawMaterialsCost": item.CostingPartDetails.TotalRawMaterialsCost,
+          "TotalBoughtOutPartCost": item.CostingPartDetails.TotalBoughtOutPartCost,
+          "TotalConversionCost": item.CostingPartDetails.TotalConversionCost,
+          "TotalCalculatedRMBOPCCCost": item.CostingPartDetails.TotalCalculatedRMBOPCCCost,
+          "TotalRawMaterialsCostWithQuantity": item.CostingPartDetails.TotalRawMaterialsCostWithQuantity,
+          "TotalBoughtOutPartCostWithQuantity": item.CostingPartDetails.TotalBoughtOutPartCostWithQuantity,
+          "TotalConversionCostWithQuantity": item.CostingPartDetails.TotalConversionCostWithQuantity,
+          "TotalCalculatedRMBOPCCCostWithQuantity": item.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity,
+          "Quantity": item.CostingPartDetails.Quantity,
+          "IsOpen": true,
+          "IsShowToolCost": item.CostingPartDetails.IsShowToolCost === null ? true : true,
+          "TotalOperationCostPerAssembly": item.CostingPartDetails.TotalOperationCostPerAssembly,
+          "TotalToolCostPerAssembly": item.CostingPartDetails.TotalToolCostPerAssembly,
+          "AssemblyCostingOperationCostRequest": item.CostingPartDetails.CostingOperationCostResponse,
+          "AssemblyCostingToolsCostRequest": item.CostingPartDetails.CostingToolCostResponse,
+        }
+      }
+
+      dispatch(saveAssemblyCostingRMCCTab(requestData, res => {
+        const tabData = RMCCTabData[0]
+        const surfaceTabData = SurfaceTabData[0]
+        const overHeadAndProfitTabData = OverheadProfitTabData[0]
+        const discountAndOtherTabData = DiscountCostData
+
+
+        if (!CostingViewMode) {
+          let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 1, CostingEffectiveDate)
+
+          dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
+        }
+        props.closeDrawer('')
+      }))
     }
-    // MAY BE USED LATER
-    // let stCostingData = findSurfaceTreatmentData(item)
-    // let requestData = {
-    //   "CostingId": item.CostingId,
-    //   "CostingNumber": item.CostingNumber,
 
-    //   "CostingDetailId": "00000000-0000-0000-0000-000000000000",
-    //   "PartId": item.PartId,
-    //   "PartNumber": item.PartNumber,
-    //   "PartTypeId": item.PartTypeId,
-    //   "Type": item.PartType,
-    //   "SubAssemblyCostingId": item.SubAssemblyCostingId,
-    //   "PlantId": costData.PlantId,
-    //   "VendorId": costData.VendorId,
-    //   "VendorCode": costData.VendorCode,
-    //   "VendorPlantId": costData.VendorPlantId,
-    //   "TechnologyName": item.Technology,
-    //   "TechnologyId": item.TechnologyId,
-    //   "TypeOfCosting": costData.VendorType,
-    //   "PlantCode": costData.PlantCode,
-    //   "PlantName": costData.PlantName,
-    //   "Version": item.Version,
-    //   "ShareOfBusinessPercent": item.ShareOfBusinessPercent,
-
-    //   "NetRawMaterialsCost": item.CostingPartDetails.TotalRawMaterialsCost,
-    //   "NetBoughtOutPartCost": item.CostingPartDetails.TotalBoughtOutPartCost,
-    //   "NetConversionCost": item.CostingPartDetails.TotalConversionCost,
-    //   "TotalProcessCost": item.CostingPartDetails.TotalProcessCost,
-    //   "TotalOperationCost": item.CostingPartDetails.TotalOperationCost,
-    //   "NetTotalRMBOPCC": item.CostingPartDetails.TotalCalculatedRMBOPCCCost,
-    //   "TotalCost": stCostingData && Object.keys.length > 0 ? checkForNull(item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity) + checkForNull(stCostingData.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostWithQuantitys) : item.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity,
-    //   "LoggedInUserId": loggedInUserId(),
-    //   "EffectiveDate": CostingEffectiveDate,
-
-    //   "IsSubAssemblyComponentPart": costData.IsAssemblyPart,
-    //   "NetOperationCostPerAssembly": item.CostingPartDetails.TotalOperationCostPerAssembly,
-    //   "NetToolCostPerAssembly": item.CostingPartDetails.TotalToolCostPerAssembly,
-    //   "CostingPartDetails": {
-    //     "CostingId": item.CostingId,
-    //     "CostingNumber": item.CostingNumber,
-    //     "CostingDetailId": "00000000-0000-0000-0000-000000000000",
-    //     "PartId": item.PartId,
-    //     "PartNumber": item.PartNumber,
-    //     "PartName": item.PartName,
-    //     "PartTypeId": item.PartTypeId,
-    //     "Type": item.PartType,
-
-    //     "TotalRawMaterialsCost": item.CostingPartDetails.TotalRawMaterialsCost,
-    //     "TotalBoughtOutPartCost": item.CostingPartDetails.TotalBoughtOutPartCost,
-    //     "TotalConversionCost": item.CostingPartDetails.TotalConversionCost,
-    //     "TotalCalculatedRMBOPCCCost": item.CostingPartDetails.TotalCalculatedRMBOPCCCost,
-    //     "TotalRawMaterialsCostWithQuantity": item.CostingPartDetails.TotalRawMaterialsCostWithQuantity,
-    //     "TotalBoughtOutPartCostWithQuantity": item.CostingPartDetails.TotalBoughtOutPartCostWithQuantity,
-    //     "TotalConversionCostWithQuantity": item.CostingPartDetails.TotalConversionCostWithQuantity,
-    //     "TotalCalculatedRMBOPCCCostWithQuantity": item.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity,
-    //     "Quantity": item.CostingPartDetails.Quantity,
-    //     "IsOpen": true,
-    //     "IsShowToolCost": item.CostingPartDetails.IsShowToolCost === null ? true : true,
-    //     "TotalOperationCostPerAssembly": item.CostingPartDetails.TotalOperationCostPerAssembly,
-    //     "TotalToolCostPerAssembly": item.CostingPartDetails.TotalToolCostPerAssembly,
-    //     "AssemblyCostingOperationCostRequest": item.CostingPartDetails.CostingOperationCostResponse,
-    //     "AssemblyCostingToolsCostRequest": item.CostingPartDetails.CostingToolCostResponse,
-    //   }
-    // }
-
-    // dispatch(saveAssemblyCostingRMCCTab(requestData, res => {
-    //   const tabData = RMCCTabData[0]
-    //   const surfaceTabData = SurfaceTabData[0]
-    //   const overHeadAndProfitTabData = OverheadProfitTabData[0]
-    //   const discountAndOtherTabData = DiscountCostData
-
-
-    //   if (!CostingViewMode && !partType) {
-    //     let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 1, CostingEffectiveDate)
-
-    //     dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
-    //   }
-    //   props.closeDrawer('')
-    // }))
   }
 
   /**

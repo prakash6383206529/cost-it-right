@@ -2407,7 +2407,6 @@ export function setIdsOfProcess(data) {
   }
 }
 export function setIdsOfProcessGroup(data) {
-
   return (dispatch) => {
     dispatch({
       type: SET_PROCESSGROUP_ID,

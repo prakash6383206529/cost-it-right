@@ -156,7 +156,9 @@ function AssemblyPart(props) {
   * @description Renders the component
   */
   return (
+
     <>
+
       <tr className="costing-highlight-row accordian-row" key={item.PartId}>
         <div style={{ display: 'contents' }} >
           <td className='part-overflow' onClick={() => toggle(item.BOMLevel, item.PartNumber)}>
@@ -200,13 +202,15 @@ function AssemblyPart(props) {
           </td>
         } */}
         <td>
+
           <div className='d-flex justify-content-end align-items-center'>
             <div className='d-flex'>
+
               <button
                 type="button"
                 className={'user-btn add-oprn-btn mr-1'}
                 onClick={bopHandlingDrawer}>
-                <div className={`${item?.CostingPartDetails?.IsApplyBOPHandlingCharges !== null && item?.CostingPartDetails?.IsApplyBOPHandlingCharges ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`BOP H`}</button>
+                <div className={`${item?.CostingPartDetails?.IsApplyBOPHandlingCharges ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`BOP H`}</button>
 
               {checkForNull(item?.CostingPartDetails?.TotalOperationCostPerAssembly) !== 0 ?
                 <button
@@ -221,10 +225,11 @@ function AssemblyPart(props) {
                   onClick={DrawerToggle}>
                   <div className={`${CostingViewMode ? 'fa fa-eye pr-1' : 'plus'}`}></div>{'OPER'}</button>}
             </div>
+            {/*WHEN COSTING OF THAT PART IS  APPROVED SO COSTING COMES AUTOMATICALLY FROM BACKEND AND THIS KEY WILL COME TRUE (WORK LIKE VIEW MODE)*/}
             <div className={`${(item.IsLocked || item.IsPartLocked) ? 'lock_icon ml-3' : ''}`}>{''}</div>
           </div>
         </td>
-        {/*WHEN COSTING OF THAT PART IS  APPROVED SO COSTING COMES AUTOMATICALLY FROM BACKEND AND THIS KEY WILL COME TRUE (WORK LIKE VIEW MODE)*/}
+
         {/* <td className="text-right"></td> */}
       </tr>
 

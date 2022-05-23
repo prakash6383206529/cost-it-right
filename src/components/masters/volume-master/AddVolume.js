@@ -354,7 +354,6 @@ class AddVolume extends Component {
       }
       return item
     })
-    console.log(filterData, "filterData");
     this.setState({ tableData: filterData })
     this.setState({ DataToChange: false })
   }

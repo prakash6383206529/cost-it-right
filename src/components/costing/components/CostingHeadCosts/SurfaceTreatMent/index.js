@@ -31,7 +31,6 @@ function SurfaceTreatment(props) {
   const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
   const { ComponentItemDiscountData, CostingEffectiveDate, RMCCTabData, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, DiscountCostData, ToolTabData, getAssemBOPCharge } = useSelector(state => state.costing)
   const costData = useContext(costingInfoContext);
-  const netPOPrice = useContext(NetPOPriceContext);
 
   const CostingViewMode = useContext(ViewCostingContext);
   const [transportationObject, setTransportationObject] = useState({})
@@ -156,12 +155,7 @@ function SurfaceTreatment(props) {
           requestData.CostingPartDetails.TotalTransportationCostPerAssembly = item.CostingPartDetails.TransportationCost
           requestData.CostingPartDetails.IsAssemblyPart = IsAssemblyPart
 
-          const totalCost = ((checkForNull(tabData?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity) + checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
-            checkForNull(PackageAndFreightTabData?.CostingPartDetails?.NetFreightPackagingCost) + checkForNull(ToolTabData?.CostingPartDetails?.TotalToolCost)
-            + checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.NetOverheadAndProfitCost)) - checkForNull(DiscountCostData?.HundiOrDiscountValue))
-            + checkForNull(DiscountCostData?.AnyOtherCost)
-
-          let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, totalCost, getAssemBOPCharge, 2, CostingEffectiveDate)
+          let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, totalCostAPI, getAssemBOPCharge, 2, CostingEffectiveDate)
           dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
         }
 
