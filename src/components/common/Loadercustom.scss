@@ -424,9 +424,20 @@
          margin-bottom: 0;
      }
  }
+ .add-child-input {
+     @include inputLoader(30px, 40px, 17px, 17px, 31px, $responsiveRight:17px)
+ }
 // <------END input field loader----->
 .costing-table {
     .loaderinner {
         max-height: 160px;
+    }
+}
+.costing-summary-loader {
+    top: 257px;
+    justify-content: flex-start;
+    .loaderinner {
+       max-width: 190px;
+       margin-top: -40px;
     }
 }
