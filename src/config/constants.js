@@ -120,6 +120,7 @@ export const API = {
   productAttachment: `${BASE_URL}/masters-product/product-file-upload`,
   bulkUploadProduct: `${BASE_URL}/masters-product/bulk-upload-for-product-json`,
   productGroupSelectList: `${BASE_URL}/masters-product/select-list-get-product-group-code`,
+  getPartDescription: `${BASE_URL}/masters-part/get-info-name-by-part-number-and-type`,
 
   //ASSEMBLY PART
   createAssemblyPart: `${BASE_URL}/masters-part/create-assembly-part`,
