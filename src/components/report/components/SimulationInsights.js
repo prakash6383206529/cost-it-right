@@ -380,21 +380,18 @@ function SimulationInsights(props) {
       {loader && <LoaderCustom />}
       <h1 className="mb-0">Simulation Insights Report</h1>
       <Row className="pt-4 blue-before ">
-        <Col md="6" lg="6" className="search-user-block mb-3">
+        <Col md="10" lg="10" className="search-user-block mb-3">
           <div className="d-flex justify-content-end bd-highlight excel-btn w100">
-            <div>
-              <button disabled={isSearchButtonDisable} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
-              <ExcelFile filename={ReportMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
-                {onBtExport()}
-              </ExcelFile>
-
-              <div className="warning-message d-flex align-items-center">
-                {warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
-              </div>
-              <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => resetState()}>
-                <div className="refresh mr-0"></div>
-              </button>
+            <div className="warning-message d-flex align-items-center">
+              {warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
             </div>
+            <button disabled={isSearchButtonDisable} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
+            <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => resetState()}>
+              <div className="refresh mr-0"></div>
+            </button>
+            <ExcelFile filename={ReportMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn'}><div className="download"></div>DOWNLOAD</button>}>
+              {onBtExport()}
+            </ExcelFile>
           </div>
         </Col>
       </Row>
