@@ -34,6 +34,7 @@ import { debounce } from 'lodash';
 export const ViewCostingContext = React.createContext()
 export const EditCostingContext = React.createContext()
 export const CopyCostingContext = React.createContext()
+export const SelectedCostingDetail = React.createContext()
 export const VbcExistingCosting = React.createContext()
 export const CostingStatusContext = React.createContext()
 export const CostingTypeContext = React.createContext()
@@ -2225,18 +2226,20 @@ function CostingDetails(props) {
                     <ViewCostingContext.Provider value={IsCostingViewMode} >
                       <EditCostingContext.Provider value={IsCostingEditMode} >
                         <CopyCostingContext.Provider value={IsCopyCostingMode} >
-                          <VbcExistingCosting.Provider value={costingOptionsSelectedObject} >
-                            <CostingStatusContext.Provider value={approvalStatus}>
-                              <CostingDetailStepTwo
-                                backBtn={backToFirstStep}
-                                partInfo={Object.keys(props.partInfoStepTwo).length > 0 ? props.partInfoStepTwo : partInfoStepTwo}
-                                costingInfo={Object.keys(props.costingData).length > 0 ? props.costingData : costingData}
-                                toggle={props.toggle}
-                                IsCostingViewMode={IsCostingViewMode}
-                                IsCopyCostingMode={IsCopyCostingMode}
-                              />
-                            </CostingStatusContext.Provider>
-                          </VbcExistingCosting.Provider>
+                          <SelectedCostingDetail.Provider value={costingOptionsSelectedObject} >
+                            <VbcExistingCosting.Provider value={costingOptionsSelectedObject} >
+                              <CostingStatusContext.Provider value={approvalStatus}>
+                                <CostingDetailStepTwo
+                                  backBtn={backToFirstStep}
+                                  partInfo={Object.keys(props.partInfoStepTwo).length > 0 ? props.partInfoStepTwo : partInfoStepTwo}
+                                  costingInfo={Object.keys(props.costingData).length > 0 ? props.costingData : costingData}
+                                  toggle={props.toggle}
+                                  IsCostingViewMode={IsCostingViewMode}
+                                  IsCopyCostingMode={IsCopyCostingMode}
+                                />
+                              </CostingStatusContext.Provider>
+                            </VbcExistingCosting.Provider>
+                          </SelectedCostingDetail.Provider>
                         </CopyCostingContext.Provider>
                       </EditCostingContext.Provider>
                     </ViewCostingContext.Provider>
