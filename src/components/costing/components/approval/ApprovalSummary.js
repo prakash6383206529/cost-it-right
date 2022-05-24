@@ -1,22 +1,22 @@
 import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, Table } from 'reactstrap'
-import { checkForDecimalAndNull, checkVendorPlantConfigurable, formViewData, loggedInUserId } from '../../../../helper'
+import { checkForDecimalAndNull, checkVendorPlantConfigurable, loggedInUserId } from '../../../../helper'
 import { getApprovalSummary } from '../../actions/Approval'
-import { setCostingViewData, storePartNumber } from '../../actions/Costing'
+import { storePartNumber } from '../../actions/Costing'
 import ApprovalWorkFlow from './ApprovalWorkFlow'
 import ApproveRejectDrawer from './ApproveRejectDrawer'
 import CostingSummaryTable from '../CostingSummaryTable'
 import DayTime from '../../../common/DayTimeWrapper'
 import { Fragment } from 'react'
-import ApprovalListing from './ApprovalListing'
 import ViewDrawer from './ViewDrawer'
 import PushButtonDrawer from './PushButtonDrawer'
-import { Errorbox } from '../../../common/ErrorBox'
 import { Redirect } from 'react-router'
 import LoaderCustom from '../../../common/LoaderCustom';
 import CalculatorWrapper from '../../../common/Calculator/CalculatorWrapper';
 import { ErrorMessage } from '../../../simulation/SimulationUtils';
+import { Fgwiseimactdata } from '../../../simulation/components/FgWiseImactData'
+import HeaderTitle from '../../../common/HeaderTitle'
 
 function ApprovalSummary(props) {
   const { approvalNumber, approvalProcessId } = props.location.state
@@ -35,13 +35,16 @@ function ApprovalSummary(props) {
   const [showListing, setShowListing] = useState(false)
   const [showFinalLevelButtons, setShowFinalLevelButton] = useState(false) //This is for showing approve ,reject and approve and push button when costing approval is at final level for aaproval
   const [showPushButton, setShowPushButton] = useState(false) // This is for showing push button when costing is approved and need to push it for scheduling
-  const [hidePushButton, setHideButton] = useState(false) // This is for hiding push button ,when it is send for push for scheduling.
   const [showPushDrawer, setShowPushDrawer] = useState(false)
   const [viewButton, setViewButton] = useState(false)
   const [pushButton, setPushButton] = useState(false)
   const [isLoader, setIsLoader] = useState(false);
-
+  const [fgWiseAcc, setFgWiseAcc] = useState(true)
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
+
+  const headerName = ['Revision No.', 'Name', 'Old Cost/Pc', 'New Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
+  const parentField = ['PartNumber', '-', 'PartName', '-', '-', '-', 'VariancePerPiece', 'VolumePerYear', 'ImpactPerQuarter', 'ImpactPerYear']
+  const childField = ['PartNumber', 'ECNNumber', 'PartName', 'OldCost', 'NewCost', 'Quantity', 'VariancePerPiece', '-', '-', '-']
   useEffect(() => {
 
     approvalSummaryHandler()
@@ -58,7 +61,6 @@ function ApprovalSummary(props) {
         CostingId, PartId } = res?.data?.Data?.Costings[0];
 
       const technologyId = res?.data?.Data?.Costings[0].PartDetails.TechnologyId
-      const partNumber = PartDetails.PartNumber
       setIsLoader(false)
       dispatch(storePartNumber({ partId: PartId }))
       setPartDetail(PartDetails)
@@ -344,7 +346,31 @@ function ApprovalSummary(props) {
                 </Table>
               </Col>
             </Row>
+            <Row className="mb-3">
+              <Col md="6"> <HeaderTitle title={'FG wise Impact:'} /></Col>
+              <Col md="6">
+                <div className={'right-details'}>
+                  <button className="btn btn-small-primary-circle ml-1 float-right" type="button" onClick={() => { setFgWiseAcc(!fgWiseAcc) }}>
+                    {costingSummary ? (
+                      <i className="fa fa-minus"></i>
+                    ) : (
+                      <i className="fa fa-plus"></i>
+                    )}
+                  </button>
+                </div>
+              </Col>
+            </Row>
 
+            {fgWiseAcc && <Row className="mb-3">
+              <Col md="12">
+                <Fgwiseimactdata
+                  headerName={headerName}
+                  parentField={parentField}
+                  childField={childField}
+                  impactType={'FgWise'}
+                />
+              </Col>
+            </Row>}
             <Row>
               <Col md="10">
                 <div className="left-border">{'Costing Summary:'}</div>
@@ -353,19 +379,9 @@ function ApprovalSummary(props) {
                 <div className="right-border">
                   <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setCostingSummary(!costingSummary) }}>
                     {costingSummary ? (
-                      <i
-                        // onClick={() => {
-                        //   setCostingSummary(false)
-                        // }}
-                        className="fa fa-minus"
-                      ></i>
+                      <i className="fa fa-minus"></i>
                     ) : (
-                      <i
-                        // onClick={() => {
-                        //   setCostingSummary(true)
-                        // }}
-                        className="fa fa-plus"
-                      ></i>
+                      <i className="fa fa-plus"></i>
                     )}
                   </button>
                 </div>
@@ -423,8 +439,6 @@ function ApprovalSummary(props) {
             </Row>
           } */}
         </>
-        //  :
-        // <ApprovalListing />
       }
 
       {approveDrawer && (

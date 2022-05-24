@@ -4,30 +4,28 @@ import { useForm, Controller, } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import Toaster from '../../../common/Toaster'
 import Drawer from '@material-ui/core/Drawer'
-import { SearchableSelectHookForm, TextFieldHookForm, TextAreaHookForm, DatePickerHookForm, NumberFieldHookForm, } from '../../../layout/HookFormInputs'
+import { SearchableSelectHookForm, TextAreaHookForm, DatePickerHookForm, NumberFieldHookForm, } from '../../../layout/HookFormInputs'
 import { getReasonSelectList, getAllApprovalDepartment, getAllApprovalUserFilterByDepartment, sendForApprovalBySender, isFinalApprover } from '../../actions/Approval'
 import { getConfigurationKey, userDetails } from '../../../../helper/auth'
 import { setCostingApprovalData, setCostingViewData, fileUploadCosting, checkHistoryCostingAndSAPPoPrice } from '../../actions/Costing'
 import { getVolumeDataByPartAndYear } from '../../../masters/actions/Volume'
 
-import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../helper'
+import { checkForDecimalAndNull, checkForNull } from '../../../../helper'
 import DayTime from '../../../common/DayTimeWrapper'
 import WarningMessage from '../../../common/WarningMessage'
-import { renderDatePicker } from '../../../layout/FormInputs'
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { REASON_ID } from '../../../../config/constants'
-import PushSection from '../../../common/PushSection'
 import _, { debounce } from 'lodash'
 import Dropzone from 'react-dropzone-uploader'
 import { FILE_URL } from "../../../../config/constants";
 import redcrossImg from "../../../../assests/images/red-cross.png";
+import VerifyImpactDrawer from '../../../simulation/components/VerifyImpactDrawer';
 
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 const SendForApproval = (props) => {
   const dispatch = useDispatch()
-  const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, setError } = useForm({
+  const { register, handleSubmit, control, setValue, formState: { errors } } = useForm({
     mode: 'onBlur',
     reValidateMode: 'onChange',
   })
@@ -39,6 +37,7 @@ const SendForApproval = (props) => {
   const partNo = useSelector((state) => state.costing.partNo)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const partInfo = useSelector((state) => state.costing.partInfo)
+  console.log('partInfo: ', partInfo);
 
   const [selectedDepartment, setSelectedDepartment] = useState('')
   const [selectedApprover, setSelectedApprover] = useState('')
@@ -46,17 +45,17 @@ const SendForApproval = (props) => {
   const [financialYear, setFinancialYear] = useState('')
   const [approvalDropDown, setApprovalDropDown] = useState([])
   const [showValidation, setShowValidation] = useState(false)
-  const [showErrorMsg, setShowErrorMsg] = useState(false)
   const [isFinalApproverShow, setIsFinalApproverShow] = useState(false)
   const [approver, setApprover] = useState('')
   const [isDisable, setIsDisable] = useState('')
   const [isRegularize, setIsReggularize] = useState(false);
   const [files, setFiles] = useState([]);
   const [IsOpen, setIsOpen] = useState(false);
-  const [initialFiles, setInitialFiles] = useState([]);
   const [isDisabledSAP, setIsDisabledSAP] = useState(false);
   const [warningMessage, setWarningMessage] = useState('');
   const [showErrorMessage, setShowErrorMessage] = useState(false);
+  const [isVerifyImpactDrawer, setIsVerifyImpactDrawer] = useState(false)
+  const [costingApprovalDrawerData, setCostingApprovalDrawerData] = useState({})
   // const [showDate,setDate] = useState(false)
   // const [showDate,setDate] = useState(false)
   const userData = userDetails()
@@ -123,6 +122,15 @@ const SendForApproval = (props) => {
     obj.DepartmentId = '00000000-0000-0000-0000-000000000000'
     obj.LoggedInUserLevelId = userDetails().LoggedInLevelId
     obj.LoggedInUserId = userDetails().LoggedInUserId
+    console.log(viewApprovalData, "viewApprovalData")
+    let drawerDataObj = {}
+    drawerDataObj.EffectiveDate = viewApprovalData[0].effectiveDate
+    console.log('drawerDataObj.EffectiveDate: ', drawerDataObj.EffectiveDate);
+    drawerDataObj.CostingHead = viewApprovalData[0].typeOfCosting === 0 ? 'ZBC' : 'VBC'
+    drawerDataObj.Technology = partInfo.Technology
+    drawerDataObj.Vendor = `${viewApprovalData[0].vendorName}(${viewApprovalData[0].vendorCode})`;
+    setCostingApprovalDrawerData(drawerDataObj);
+
 
     dispatch(isFinalApprover(obj, res => {
       if (res.data.Result) {
@@ -139,8 +147,6 @@ const SendForApproval = (props) => {
 
           setSelectedDepartment({ label: departObj[0]?.Text, value: departObj[0]?.Value })
           setValue('dept', { label: departObj[0]?.Text, value: departObj[0]?.Value })
-
-          let tempDropdownList = []
 
           dispatch(
             getAllApprovalUserFilterByDepartment({
@@ -253,19 +259,7 @@ const SendForApproval = (props) => {
     dispatch(setCostingApprovalData(viewDataTemp))
   }
 
-  /**
-   * @method handleECNNoChange
-   * @param {*} data
-   * @param {*} index
-   * @description This method is used to handle change in ECN number for every costing
-   */
-  const handleECNNoChange = (data, index) => {
-    let viewDataTemp = viewApprovalData
-    let temp = viewApprovalData[index]
-    temp.ecNo = data
-    viewDataTemp[index] = temp
-    dispatch(setCostingApprovalData(viewDataTemp))
-  }
+
 
   /**
    * @method handleEffectiveDateChange
@@ -296,26 +290,25 @@ const SendForApproval = (props) => {
           let actualQty = 0
           let totalBudgetedQty = 0
           let actualRemQty = 0
-
           approvedQtyArr.map((data) => {
             if (data.Sequence < sequence) {
-              // if(data.Date <= moment(effectiveDate).format('dd/MM/YYYY')){ 
-              //   actualQty += parseInt(data.ApprovedQuantity)
-              // }
+
               actualQty += parseInt(data.ApprovedQuantity)
             } else if (data.Sequence >= sequence) {
               actualRemQty += parseInt(data.ApprovedQuantity)
             }
+            return null
           })
-          budgetedQtyArr.map((data) => {
+          budgetedQtyArr.map((data) => (
+
             // if (data.Sequence >= sequence) {
             totalBudgetedQty += parseInt(data.BudgetedQuantity)
             // }
-          })
+          ))
           temp.consumptionQty = checkForNull(actualQty)
           temp.remainingQty = checkForNull(totalBudgetedQty - actualQty)
-          temp.annualImpact = temp.variance != '' ? totalBudgetedQty * temp.variance : 0
-          temp.yearImpact = temp.variance != '' ? (totalBudgetedQty - actualQty) * temp.variance : 0
+          temp.annualImpact = temp.variance !== '' ? totalBudgetedQty * temp.variance : 0
+          temp.yearImpact = temp.variance !== '' ? (totalBudgetedQty - actualQty) * temp.variance : 0
           viewDataTemp[index] = temp
           dispatch(setCostingApprovalData(viewDataTemp))
         }
@@ -339,9 +332,10 @@ const SendForApproval = (props) => {
   const onSubmit = debounce(handleSubmit((data) => {
     let count = 0
     viewApprovalData.map((item) => {
-      if (item.effectiveDate == '') {
+      if (item.effectiveDate === '') {
         count = count + 1
       }
+      return null
     })
     if (Number(count) !== 0) {
       Toaster.warning('Please select effective date for all the costing')
@@ -364,7 +358,6 @@ const SendForApproval = (props) => {
     }
 
     let temp = []
-    let tempObj = {}
     let plantCount = 0
     let venderCount = 0
 
@@ -413,13 +406,13 @@ const SendForApproval = (props) => {
       tempObj.ApprovalProcessId = "00000000-0000-0000-0000-000000000000"
       tempObj.TypeOfCosting = data.typeOfCosting === 0 ? 'ZBC' : 'VBC'
       tempObj.PlantId =
-        data.typeOfCosting == 0 ? data.plantId : ''
+        data.typeOfCosting === 0 ? data.plantId : ''
       tempObj.PlantNumber =
-        data.typeOfCosting == 0 ? data.plantCode : ''
+        data.typeOfCosting === 0 ? data.plantCode : ''
       tempObj.PlantName =
-        data.typeOfCosting == 0 ? data.plantName : ''
+        data.typeOfCosting === 0 ? data.plantName : ''
       tempObj.PlantCode =
-        data.typeOfCosting == 0 ? data.plantCode : ''
+        data.typeOfCosting === 0 ? data.plantCode : ''
       tempObj.CostingId = data.costingId
       tempObj.CostingNumber = data.costingName
       tempObj.ReasonId = data.reasonId
@@ -444,17 +437,17 @@ const SendForApproval = (props) => {
       tempObj.AnnualImpact = data.annualImpact
       tempObj.ImpactOfTheYear = data.yearImpact
       tempObj.VendorId =
-        data.typeOfCosting == 1 ? data.vendorId : ''
+        data.typeOfCosting === 1 ? data.vendorId : ''
       tempObj.VendorCode =
-        data.typeOfCosting == 1 ? data.vendorCode : ''
+        data.typeOfCosting === 1 ? data.vendorCode : ''
       tempObj.VendorPlantId =
-        data.typeOfCosting == 1 ? data.vendorePlantId : ''
+        data.typeOfCosting === 1 ? data.vendorePlantId : ''
       tempObj.VendorPlantCode =
-        data.typeOfCosting == 1 ? data.vendorPlantCode : ''
+        data.typeOfCosting === 1 ? data.vendorPlantCode : ''
       tempObj.VendorName =
-        data.typeOfCosting == 1 ? data.vendorName : ''
+        data.typeOfCosting === 1 ? data.vendorName : ''
       tempObj.VendorPlantName =
-        data.typeOfCosting == 1 ? data.vendorPlantName : ''
+        data.typeOfCosting === 1 ? data.vendorPlantName : ''
       tempObj.IsFinalApproved = isFinalApproverShow ? true : false
       tempObj.DestinationPlantCode = data.destinationPlantCode
       tempObj.DestinationPlantName = data.destinationPlantName
@@ -486,7 +479,6 @@ const SendForApproval = (props) => {
   }
 
   const handleChangeQuantity = (e) => {
-    let temp = []
   };
 
   useEffect(() => { }, [viewApprovalData])
@@ -534,7 +526,9 @@ const SendForApproval = (props) => {
       Toaster.warning("Allowed only xls, doc, jpeg, pdf files.");
     }
   };
-
+  const viewImactdrawer = () => {
+    setIsVerifyImpactDrawer(true)
+  }
   const deleteFile = (FileId, OriginalFileName) => {
     if (FileId != null) {
 
@@ -576,6 +570,11 @@ const SendForApproval = (props) => {
   const reasonField = 'reasonField'
   const dateField = 'dateField'
 
+  const verifyImpactDrawer = (e = '', type) => {
+    if (type === 'cancel') {
+      setIsVerifyImpactDrawer(false);
+    }
+  }
   return (
     <Fragment>
       <Drawer
@@ -644,27 +643,8 @@ const SendForApproval = (props) => {
 
                             />
                           </Col>
-                          {/* <Col md="4">
-                            <TextFieldHookForm
-                              label="ECN Ref No"
-                              name={"encNumber"}
-                              Controller={Controller}
-                              control={control}
-                              register={register}
-                              rules={{ required: false }}
-                              mandatory={false}
-                              handleChange={(e) => {
-                                handleECNNoChange(e.target.value, index);
-                              }}
-                              defaultValue={data.ecnNo != "" ? data.ecnNo : ""}
-                              className=""
-                              customClassName={"withBorder"}
-                              errors={errors.encNumber}
-                            // disabled={true}
-                            />
-                          </Col> */}
+
                           <Col md="4">
-                            {/* <div className="form-group"> */}
                             <div className="d-flex">
                               <div className="inputbox date-section">
                                 {
@@ -932,7 +912,7 @@ const SendForApproval = (props) => {
                           mandatory={true}
                           //onSubmit={this.handleSubmit}
                           accept="*"
-                          initialFiles={initialFiles}
+                          initialFiles={[]}
                           maxFiles={4}
                           maxSizeBytes={2000000000}
                           inputContent={(files, extra) =>
@@ -971,7 +951,7 @@ const SendForApproval = (props) => {
                             const fileURL = `${FILE_URL}${withOutTild}`;
                             return (
                               <div className={"attachment images"}>
-                                <a href={fileURL} target="_blank">
+                                <a href={fileURL} target="_blank" rel="noreferrer">
                                   {f.OriginalFileName}
                                 </a>
                                 <img
@@ -1004,7 +984,10 @@ const SendForApproval = (props) => {
                       <div className={'cancel-icon'}></div>
                       {"Cancel"}
                     </button>
-
+                    <button type="button" className="user-btn mr5 save-btn" onClick={viewImactdrawer}>
+                      <div className={"save-icon"}></div>
+                      {"Verify Impact"}
+                    </button>
                     <button
                       className="btn btn-primary save-btn"
                       type="button"
@@ -1019,9 +1002,21 @@ const SendForApproval = (props) => {
                 </Row>
               </form>
             </div>
+            {isVerifyImpactDrawer &&
+              <VerifyImpactDrawer
+                isOpen={isVerifyImpactDrawer}
+                approvalData={[]}
+                costingDrawer={true}
+                anchor={'bottom'}
+                closeDrawer={verifyImpactDrawer}
+                isSimulation={false}
+                amendmentDetails={costingApprovalDrawerData}
+              />}
           </div>
         </div>
+
       </Drawer>
+
     </Fragment>
   );
 }

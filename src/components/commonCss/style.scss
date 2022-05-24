@@ -8043,6 +8043,7 @@ git .sticky-btn-footer {
     th {
       word-spacing: 1px;
       border-right: none;
+      print-color-adjust: exact;
       -webkit-print-color-adjust: exact;
     }
 
@@ -8050,6 +8051,7 @@ git .sticky-btn-footer {
       border-left: none !important;
       text-align: right;
       padding-right: 20px;
+      print-color-adjust: exact;
       -webkit-print-color-adjust: exact;
 
       span {
