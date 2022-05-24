@@ -413,11 +413,9 @@ class AddVolume extends Component {
             })
 
           setTimeout(() => {
-            const { vendorWithVendorCodeSelectList, financialYearSelectList, partSelectList, plantSelectList } = this.props
+            const { financialYearSelectList, plantSelectList } = this.props
 
-            const vendorObj = vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.find((item) => item.Value === Data.VendorId,)
             const yearObj = financialYearSelectList && financialYearSelectList.find((item) => item.Text === Data.Year)
-            const partObj = partSelectList && partSelectList.find((item) => item.Value === Data.PartId)
             const destinationPlantObj = plantSelectList && plantSelectList.find((item) => item.Value === Data.DestinationPlantId)
 
             this.setState({
@@ -425,9 +423,9 @@ class AddVolume extends Component {
               // isLoader: false,
               IsVendor: Data.IsVendor,
               selectedPlants: plantArray,
-              vendorName: vendorObj && vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
+              vendorName: Data.VendorId ? { label: Data.VendorName, value: Data.VendorId } : [],
               year: yearObj && yearObj !== undefined ? { label: yearObj.Text, value: yearObj.Value } : [],
-              part: partObj && partObj !== undefined ? { label: partObj.Text, value: partObj.Value } : [],
+              part: Data?.PartId ? { label: Data?.PartNumber, value: Data?.PartId } : [],
               destinationPlant: destinationPlantObj && destinationPlantObj !== undefined ? { label: destinationPlantObj.Text, value: destinationPlantObj.Value } : [],
               tableData: tableArray.sort((a, b) => a.Sequence - b.Sequence),
             }, () => this.setState({ isLoader: false }))

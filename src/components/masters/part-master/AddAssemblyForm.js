@@ -8,8 +8,11 @@ import { getAssemblyPartSelectList, getDrawerAssemblyPartDetail, } from '../acti
 import { ASSEMBLY } from '../../../config/constants';
 import { getRandomSixDigit } from '../../../helper/util';
 import LoaderCustom from '../../common/LoaderCustom';
+import { PartEffectiveDate } from './AddAssemblyPart';
 
 class AddAssemblyForm extends Component {
+
+    static contextType = PartEffectiveDate
     constructor(props) {
         super(props);
         this.state = {
@@ -27,8 +30,12 @@ class AddAssemblyForm extends Component {
    * @description called after render the component
    */
     componentDidMount() {
+        let obj = {
+            technologyId: this.props?.TechnologySelected.value,
+            date: this.context
+        }
         this.setState({ isLoader: true })
-        this.props.getAssemblyPartSelectList(this.props?.TechnologySelected.value, () => { this.setState({ isLoader: false }) })
+        this.props.getAssemblyPartSelectList(obj, () => { this.setState({ isLoader: false }) })
 
     }
 
@@ -71,6 +78,7 @@ class AddAssemblyForm extends Component {
     */
     renderListing = (label) => {
         const { BOMViewerData } = this.props;
+
         const { assemblyPartSelectList } = this.props;
 
         let tempArr = [];

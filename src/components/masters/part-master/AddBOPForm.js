@@ -7,8 +7,12 @@ import { renderText, searchableSelect } from "../../layout/FormInputs";
 import { getBoughtOutPartSelectList, getDrawerBOPData } from '../actions/Part';
 import { BOUGHTOUTPART } from '../../../config/constants';
 import LoaderCustom from '../../common/LoaderCustom';
+import { PartEffectiveDate } from './AddAssemblyPart';
+
 
 class AddBOPForm extends Component {
+  static contextType = PartEffectiveDate
+
   constructor(props) {
     super(props);
     this.state = {
@@ -27,7 +31,8 @@ class AddBOPForm extends Component {
  */
   componentDidMount() {
     this.setState({ isLoader: true })
-    this.props.getBoughtOutPartSelectList(() => { this.setState({ isLoader: false }) })
+    const date = this.context
+    this.props.getBoughtOutPartSelectList(date, () => { this.setState({ isLoader: false }) })
 
   }
 
