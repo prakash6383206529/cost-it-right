@@ -149,7 +149,7 @@ function EditPartCost(props) {
         }, 0)
 
         tempsubAssemblyTechnologyArray[0].CostingPartDetails.EditPartCost = costPerAssemblyTotal
-        tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerAssembly = checkForNull(costPerAssemblyTotal) + checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails?.CostPerAssemblyBOP) + (checkForNull(tempsubAssemblyTechnologyArray[0]?.ProcessCostValue) + checkForNull(tempsubAssemblyTechnologyArray[0]?.OperationCostValue))
+        tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerAssembly = checkForNull(costPerAssemblyTotal) + checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails?.CostPerAssemblyBOP) + (checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.ProcessCostValue) + checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.OperationCostValue))
         dispatch(setSubAssemblyTechnologyArray(tempsubAssemblyTechnologyArray, res => { }))
 
         props.getCostPerPiece(weightedCost)

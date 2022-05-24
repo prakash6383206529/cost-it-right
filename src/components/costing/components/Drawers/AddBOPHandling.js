@@ -61,7 +61,7 @@ function AddBOPHandling(props) {
           BOPSum = BOPSum + (checkForNull(el?.CostingPartDetails?.TotalBoughtOutPartCost) * checkForNull(el?.CostingPartDetails?.Quantity))
         }
       }, 0)
-
+      setBOPCost(BOPSum)
       setValue('BOPCost', checkForDecimalAndNull(BOPSum, getConfigurationKey().NoOfDecimalForPrice))
       let obj = childPartDetail && childPartDetail.filter(assyItem => assyItem?.PartNumber === item?.PartNumber && assyItem?.AssemblyPartNumber === item?.AssemblyPartNumber && (assyItem?.PartType === 'Sub Assembly' || assyItem?.PartType === 'Assembly'))
       setValue('BOPCost', obj[0]?.CostingPartDetails?.IsApplyBOPHandlingCharges ? checkForDecimalAndNull(obj[0]?.CostingPartDetails?.BOPHandlingChargeApplicability, getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(BOPSum, getConfigurationKey().NoOfDecimalForPrice))
@@ -162,6 +162,7 @@ function AddBOPHandling(props) {
       BOPHandlingCharges: getValues('BOPHandlingCharges'),
       BOPHandlingChargeType: BOPHandlingType
     }
+    dispatch(isDataChange(true))
     props.setBOPCostWithAsssembly(obj, item)
     setTimeout(() => {
       props.closeDrawer('')

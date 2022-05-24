@@ -45,7 +45,7 @@ function AssemblyTechnology(props) {
                 })
                 tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerPiece = costPerPieceTotal
                 tempsubAssemblyTechnologyArray[0].CostingPartDetails.EditPartCost = costPerAssemblyTotal
-                tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerAssembly = checkForNull(costPerAssemblyTotal) + checkForNull(CostPerAssemblyBOPTotal) + (checkForNull(tempsubAssemblyTechnologyArray[0].ProcessCostValue) + checkForNull(tempsubAssemblyTechnologyArray[0].OperationCostValue))
+                tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerAssembly = checkForNull(costPerAssemblyTotal) + checkForNull(CostPerAssemblyBOPTotal) + (checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.ProcessCostValue) + checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.OperationCostValue))
                 tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerAssemblyBOP = checkForNull(CostPerAssemblyBOPTotal)
                 dispatch(setSubAssemblyTechnologyArray(tempsubAssemblyTechnologyArray, res => { }))
             }
@@ -143,20 +143,20 @@ function AssemblyTechnology(props) {
                     <td>{item?.CostingPartDetails?.Quantity ? checkForDecimalAndNull(item.CostingPartDetails.Quantity, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                     <td>{item?.CostingPartDetails?.CostPerPiece && item?.PartType === 'Assembly' ? '-' : checkForDecimalAndNull(item.CostingPartDetails.CostPerPiece, initialConfiguration.NoOfDecimalForPrice)}</td>
 
-                    <td>{item?.PartType === 'Assembly' && subAssemblyTechnologyArray[0].OperationCostValue ? subAssemblyTechnologyArray[0].OperationCostValue : '-'}</td>
-                    <td>{item?.PartType === 'Assembly' && subAssemblyTechnologyArray[0].ProcessCostValue ? subAssemblyTechnologyArray[0].ProcessCostValue : '-'}</td>
+                    <td>{item?.PartType === 'Assembly' && subAssemblyTechnologyArray[0].CostingPartDetails.OperationCostValue ? subAssemblyTechnologyArray[0].CostingPartDetails.OperationCostValue : '-'}</td>
+                    <td>{item?.PartType === 'Assembly' && subAssemblyTechnologyArray[0].CostingPartDetails.ProcessCostValue ? subAssemblyTechnologyArray[0].CostingPartDetails.ProcessCostValue : '-'}</td>
                     <td>{item?.PartType === 'Assembly' && subAssemblyTechnologyArray[0]?.CostingPartDetails?.CostPerAssemblyBOP ? subAssemblyTechnologyArray[0]?.CostingPartDetails?.CostPerAssemblyBOP : '-'}</td>
 
                     <td>
                         {item?.CostingPartDetails?.CostPerAssembly ? checkForDecimalAndNull(item.CostingPartDetails.CostPerAssembly, initialConfiguration.NoOfDecimalForPrice) : '-'}
                         {(item?.PartType === 'Assembly' && (item.CostingPartDetails.EditPartCost ||
-                            subAssemblyTechnologyArray[0].ProcessCostValue || subAssemblyTechnologyArray[0].OperationCostValue)) &&
+                            subAssemblyTechnologyArray[0].ProcessCostValue || subAssemblyTechnologyArray[0].CostingPartDetails.OperationCostValue)) &&
                             (item?.CostingPartDetails?.CostPerAssembly || item.CostingPartDetails?.CostPerAssembly) ?
                             <div class="tooltip-n ml-2"><i className="fa fa-info-circle text-primary tooltip-icon"></i>
                                 <span class="tooltiptext">
-                                    {`Total Operation's Cost:  ${subAssemblyTechnologyArray[0].OperationCostValue ? checkForDecimalAndNull(subAssemblyTechnologyArray[0].OperationCostValue, initialConfiguration.NoOfDecimalForPrice) : '-'}`}
+                                    {`Total Operation's Cost:  ${subAssemblyTechnologyArray[0].CostingPartDetails.OperationCostValue ? checkForDecimalAndNull(subAssemblyTechnologyArray[0].CostingPartDetails.OperationCostValue, initialConfiguration.NoOfDecimalForPrice) : '-'}`}
                                     <br></br>
-                                    {`Total Process Cost:  ${subAssemblyTechnologyArray[0].ProcessCostValue ? checkForDecimalAndNull(subAssemblyTechnologyArray[0].ProcessCostValue, initialConfiguration.NoOfDecimalForPrice) : '-'}`}
+                                    {`Total Process Cost:  ${subAssemblyTechnologyArray[0].CostingPartDetails.ProcessCostValue ? checkForDecimalAndNull(subAssemblyTechnologyArray[0].CostingPartDetails.ProcessCostValue, initialConfiguration.NoOfDecimalForPrice) : '-'}`}
                                     <br></br>
                                     {`Total Child's Cost:  ${checkForDecimalAndNull(item.CostingPartDetails.EditPartCost, initialConfiguration.NoOfDecimalForPrice)}`}
                                 </span>
