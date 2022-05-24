@@ -27,6 +27,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import _, { debounce } from 'lodash';
 
 const selector = formValueSelector('AddAssemblyPart')
+export const PartEffectiveDate = React.createContext()
 
 class AddAssemblyPart extends Component {
   constructor(props) {
@@ -373,6 +374,12 @@ class AddAssemblyPart extends Component {
 
   closeBOMViewerDrawer = (e = '', drawerData, isSaved, isEqual) => {
     this.setState({ isOpenBOMViewerDrawer: false, BOMViewerData: drawerData, avoidAPICall: isSaved, BOMChanged: isEqual ? false : true })
+
+    if (isEqual) {
+      return false
+    } else {
+      this.setState({ isDisableBomNo: true })
+    }
   }
 
   // specify upload params and url for your files
@@ -1101,18 +1108,20 @@ class AddAssemblyPart extends Component {
           )}
 
           {isOpenBOMViewerDrawer && (
-            <BOMViewer
-              isOpen={isOpenBOMViewerDrawer}
-              closeDrawer={this.closeBOMViewerDrawer}
-              TechnologySelected={this.state.TechnologySelected}
-              isEditFlag={this.state.isEditFlag}
-              PartId={this.state.PartId}
-              anchor={"right"}
-              BOMViewerData={this.state.BOMViewerData}
-              NewAddedLevelOneChilds={this.state.NewAddedLevelOneChilds}
-              isFromVishualAd={isViewMode}
-              avoidAPICall={this.state.avoidAPICall}
-            />
+            <PartEffectiveDate.Provider value={DayTime(this.state.effectiveDate).format('DD-MM-YYYY')}>
+              <BOMViewer
+                isOpen={isOpenBOMViewerDrawer}
+                closeDrawer={this.closeBOMViewerDrawer}
+                TechnologySelected={this.state.TechnologySelected}
+                isEditFlag={this.state.isEditFlag}
+                PartId={this.state.PartId}
+                anchor={"right"}
+                BOMViewerData={this.state.BOMViewerData}
+                NewAddedLevelOneChilds={this.state.NewAddedLevelOneChilds}
+                isFromVishualAd={isViewMode}
+                avoidAPICall={this.state.avoidAPICall}
+              />
+            </PartEffectiveDate.Provider>
           )}
           {
             this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} disablePopup={disablePopup} />
