@@ -109,7 +109,7 @@ function Rejection(props) {
             let RM_BOP = 0
             const RejectionPercentage = getValues('RejectionPercentage')
 
-            // IF WILL GET EXECUTED WHEN TECHNOLOGY FOR COSTING IS ASSEMBLY FOR OTHER TECHNOLOGIES ELSE WILL EXECUTE
+            // IF BLOCK WILL GET EXECUTED WHEN TECHNOLOGY FOR COSTING IS ASSEMBLY FOR OTHER TECHNOLOGIES ELSE BLOCK WILL EXECUTE
             if (partType) {
                 const assemblyLevelCC = checkForNull(headerCosts?.ProcessCostTotal) + checkForNull(headerCosts?.TotalOperationCostPerAssembly)
 

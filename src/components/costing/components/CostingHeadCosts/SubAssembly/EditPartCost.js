@@ -132,17 +132,22 @@ function EditPartCost(props) {
         let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray
         let costPerAssemblyTotal = 0
 
-        // MAP IS APPLIED BECAUSE WE DON't HAVE INDEX TO GET THE ROW ON WHICH EDIT IS CLICKED, SO COMPAIRING WITH PART NUMBER
-        tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails && tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails.map((item) => {
-            // ASSIGNING WEIGHTED COST TO THE SAME ROW ON WHICH EDIT IS CLICKED
-            if (props?.tabAssemblyIndividualPartDetail?.PartNumber === item?.PartNumber) {
-                item.CostingPartDetails.CostPerPiece = weightedCost
-                item.CostingPartDetails.CostPerAssembly = checkForNull(weightedCost) * checkForNull(item?.CostingPartDetails?.Quantity)
-            }
-            // CALCULATING TOTAL COST PER ASSEMBLY (PART COST ONLY => RM)
-            costPerAssemblyTotal = checkForNull(costPerAssemblyTotal) + checkForNull(item?.CostingPartDetails?.CostPerAssembly)
-            return null
-        })
+        const index = tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails.findIndex(object => {
+            return props?.tabAssemblyIndividualPartDetail?.PartNumber === object?.PartNumber;
+        });
+
+        let editedChildPart = ListForPartCost[index]
+
+        editedChildPart.CostingPartDetails.CostPerPiece = weightedCost
+        editedChildPart.CostingPartDetails.CostPerAssembly = checkForNull(weightedCost) * checkForNull(editedChildPart?.CostingPartDetails?.Quantity)
+
+        Object.assign([...ListForPartCost], { [index]: editedChildPart })
+
+        // CALCULATING TOTAL COST PER ASSEMBLY (PART COST ONLY => RM)
+        costPerAssemblyTotal = tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails && tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails.reduce((accummlator, el) => {
+            return checkForNull(accummlator) + checkForNull(el?.CostingPartDetails?.CostPerAssembly)
+        }, 0)
+
         tempsubAssemblyTechnologyArray[0].CostingPartDetails.EditPartCost = costPerAssemblyTotal
         tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerAssembly = checkForNull(costPerAssemblyTotal) + checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails?.CostPerAssemblyBOP) + (checkForNull(tempsubAssemblyTechnologyArray[0]?.ProcessCostValue) + checkForNull(tempsubAssemblyTechnologyArray[0]?.OperationCostValue))
         dispatch(setSubAssemblyTechnologyArray(tempsubAssemblyTechnologyArray, res => { }))
