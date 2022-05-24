@@ -9,8 +9,10 @@ import { COMPONENT_PART, LEVEL1 } from '../../../config/constants';
 import AsyncSelect from 'react-select/async';
 import TooltipCustom from '../../common/Tooltip';
 import LoaderCustom from '../../common/LoaderCustom';
+import { PartEffectiveDate } from './AddAssemblyPart';
 
 class AddComponentForm extends Component {
+  static contextType = PartEffectiveDate
   constructor(props) {
     super(props);
     this.myRef = React.createRef();
