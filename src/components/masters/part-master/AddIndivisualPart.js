@@ -122,7 +122,7 @@ class AddIndivisualPart extends Component {
   onPartNoChange = debounce((e) => {
 
     if (!this.state.isEditFlag) {
-      this.props.getPartDescription(e?.target?.value, (res) => {
+      this.props.getPartDescription(e?.target?.value, 2, (res) => {
         if (res?.data?.Data) {
           let finalData = res.data.Data
           this.props.change("Description", finalData.Description)
@@ -311,8 +311,6 @@ class AddIndivisualPart extends Component {
     const { PartId, selectedPlants, effectiveDate, isEditFlag, files, DataToCheck, DropdownChanged, ProductGroup, oldProductGroup, uploadAttachements } = this.state;
     const { initialConfiguration } = this.props;
     let isStructureChanges
-    let plantArray = selectedPlants && selectedPlants.map((item) => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
-
     let productArray = (initialConfiguration?.IsProductMasterConfigurable) ? ProductGroup && ProductGroup.map((item) => ({ GroupCode: item.Text })) : [{ GroupCode: values.GroupCode }]
 
     if (isEditFlag) {
