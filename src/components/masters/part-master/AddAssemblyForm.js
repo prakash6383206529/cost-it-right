@@ -6,8 +6,8 @@ import { required, postiveNumber, maxLength5, minValue1, acceptAllExceptSingleSp
 import { renderText, searchableSelect } from "../../layout/FormInputs";
 import { getAssemblyPartSelectList, getDrawerAssemblyPartDetail, } from '../actions/Part';
 import { getRandomSixDigit } from '../../../helper/util';
-import { ASSEMBLY } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
+import { ASSEMBLYNAME } from '../../../config/constants';
 
 class AddAssemblyForm extends Component {
     constructor(props) {
@@ -73,7 +73,7 @@ class AddAssemblyForm extends Component {
 
         let tempArr = [];
         BOMViewerData && BOMViewerData.map(el => {
-            if (el.PartType === ASSEMBLY) {
+            if (el.PartType === ASSEMBLYNAME) {
                 tempArr.push(el.PartId)
             }
             return null;

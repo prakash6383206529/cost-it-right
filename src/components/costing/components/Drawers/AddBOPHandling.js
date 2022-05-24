@@ -28,7 +28,7 @@ function AddBOPHandling(props) {
   useEffect(() => {
 
     if (isAssemblyTechnology) {
-      // WILL GET EXECUTED WHEN TECHNOLOGY OF COSTING WILL BE ASSEMBLY
+      // THIS BLOCK WILL GET EXECUTED WHEN TECHNOLOGY OF COSTING WILL BE ASSEMBLY
       let totalBOP = calcTotalBOP()
       setValue('BOPCost', totalBOP)
       setValue('BOPHandlingPercentage', subAssemblyTechnologyArray && checkForNull(subAssemblyTechnologyArray[0]?.BOPHandlingPercentage))
