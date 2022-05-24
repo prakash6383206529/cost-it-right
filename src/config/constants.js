@@ -1856,4 +1856,4 @@ export const KEY = 'awvmhujtecmcecmj';
 export const IV = 'vuqqsafvwouoqtgh'
 
 //VERSION 
-export const VERSION = "V1.2.236";
+export const VERSION = "V1.2.237";
