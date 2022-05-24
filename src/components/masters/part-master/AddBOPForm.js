@@ -6,8 +6,12 @@ import { required, maxLength5, minValue1, minValueLessThan1, positiveAndDecimalN
 import { renderText, searchableSelect } from "../../layout/FormInputs";
 import { getBoughtOutPartSelectList, getDrawerBOPData } from '../actions/Part';
 import { BOUGHTOUTPART } from '../../../config/constants';
+import { PartEffectiveDate } from './AddAssemblyPart';
+
 
 class AddBOPForm extends Component {
+  static contextType = PartEffectiveDate
+
   constructor(props) {
     super(props);
     this.state = {
@@ -24,8 +28,8 @@ class AddBOPForm extends Component {
  * @description called after render the component
  */
   componentDidMount() {
-
-    this.props.getBoughtOutPartSelectList(() => { })
+    const date = this.context
+    this.props.getBoughtOutPartSelectList(date, () => { })
 
   }
 

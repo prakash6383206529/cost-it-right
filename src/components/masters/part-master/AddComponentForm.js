@@ -8,7 +8,10 @@ import { getComponentPartSelectList, getDrawerComponentPartData, } from '../acti
 import { COMPONENT_PART, LEVEL1 } from '../../../config/constants';
 import AsyncSelect from 'react-select/async';
 import TooltipCustom from '../../common/Tooltip';
+import { PartEffectiveDate } from './AddAssemblyPart';
+
 class AddComponentForm extends Component {
+  static contextType = PartEffectiveDate
   constructor(props) {
     super(props);
     this.myRef = React.createRef();
@@ -28,7 +31,11 @@ class AddComponentForm extends Component {
  */
   componentDidMount() {
     const { BOMViewerData } = this.props;
-    this.props.getComponentPartSelectList(this.props?.TechnologySelected.value, () => { })
+    let obj = {
+      technologyId: this.props?.TechnologySelected.value,
+      date: this.context
+    }
+    this.props.getComponentPartSelectList(obj, () => { })
 
     let tempArr = [];
     BOMViewerData && BOMViewerData.map(el => {
