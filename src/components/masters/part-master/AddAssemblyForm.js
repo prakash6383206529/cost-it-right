@@ -7,9 +7,15 @@ import { renderText, searchableSelect } from "../../layout/FormInputs";
 import { getAssemblyPartSelectList, getDrawerAssemblyPartDetail, } from '../actions/Part';
 import { ASSEMBLY } from '../../../config/constants';
 import { getRandomSixDigit } from '../../../helper/util';
+<<<<<<< HEAD
 import LoaderCustom from '../../common/LoaderCustom';
+=======
+import { PartEffectiveDate } from './AddAssemblyPart';
+>>>>>>> 7f187a11e (Effective date added for Get API of aseembly,component and BOP)
 
 class AddAssemblyForm extends Component {
+
+    static contextType = PartEffectiveDate
     constructor(props) {
         super(props);
         this.state = {
@@ -30,7 +36,11 @@ class AddAssemblyForm extends Component {
     componentDidMount() {
         const { BOMViewerData } = this.props;
         this.setState({ isLoader: true })
-        this.props.getAssemblyPartSelectList(this.props?.TechnologySelected.value, () => { this.setState({ isLoader: false }) })
+        let obj = {
+            technologyId: this.props?.TechnologySelected.value,
+            date: this.context
+        }
+        this.props.getAssemblyPartSelectList(obj, () => { this.setState({ isLoader: false }) })
 
         let tempArr = [];
         BOMViewerData && BOMViewerData.map(el => {
@@ -82,6 +92,11 @@ class AddAssemblyForm extends Component {
     * @description Used show listing of unit of measurement
     */
     renderListing = (label) => {
+<<<<<<< HEAD
+=======
+        const { BOMViewerData } = this.props;
+
+>>>>>>> 7f187a11e (Effective date added for Get API of aseembly,component and BOP)
         const { assemblyPartSelectList } = this.props;
         const { selectedParts } = this.state;
 
