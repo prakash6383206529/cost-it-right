@@ -768,3 +768,23 @@ export function getProductGroupSelectList(callback) {
         })
     }
 }
+
+
+export function getPartDescription(partNumber, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getPartDescription}?PartNumber=${partNumber}&PartTypeId=2`, config())
+        request.then((response) => {
+            if (response && response.status === 200) {
+                callback(response)
+            } else {
+                callback([])
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE })
+            apiErrors(error)
+        })
+    }
+}
+
+
+
