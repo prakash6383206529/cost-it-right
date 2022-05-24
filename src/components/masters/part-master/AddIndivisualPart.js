@@ -5,7 +5,7 @@ import { Row, Col } from 'reactstrap';
 import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength20, maxLength80, maxLength85, maxLength512 } from "../../../helper/validation";
 import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
 import { renderDatePicker, renderMultiSelectField, renderText, renderTextAreaField } from "../../layout/FormInputs";
-import { createPart, updatePart, getPartData, fileUploadPart, fileDeletePart, getProductGroupSelectList } from '../actions/Part';
+import { createPart, updatePart, getPartData, fileUploadPart, fileDeletePart, getProductGroupSelectList, getPartDescription } from '../actions/Part';
 import { getPlantSelectList, } from '../../../actions/Common';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
@@ -48,6 +48,7 @@ class AddIndivisualPart extends Component {
       disablePopup: false,
       isBomEditable: false,
       minEffectiveDate: '',
+      disablePartName: false
     }
   }
 
@@ -116,6 +117,25 @@ class AddIndivisualPart extends Component {
       this.props.getPartData('', res => { })
     }
   }
+
+
+  onPartNoChange = debounce((e) => {
+
+    if (!this.state.isEditFlag) {
+      this.props.getPartDescription(e?.target?.value, (res) => {
+        if (res?.data?.Data) {
+          let finalData = res.data.Data
+          this.props.change("Description", finalData.Description)
+          this.props.change("PartName", finalData.PartName)
+          this.setState({ disablePartName: true })
+        } else {
+          this.props.change("Description", "")
+          this.props.change("PartName", "")
+          this.setState({ disablePartName: false })
+        }
+      })
+    }
+  }, 600)
 
   /**
   * @method handlePlant
@@ -466,6 +486,7 @@ class AddIndivisualPart extends Component {
                               validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20]}
                               component={renderText}
                               required={true}
+                              onChange={this.onPartNoChange}
                               className=""
                               customClassName={"withBorder"}
                               disabled={isEditFlag ? true : false}
@@ -482,7 +503,7 @@ class AddIndivisualPart extends Component {
                               required={true}
                               className=""
                               customClassName={"withBorder"}
-                              disabled={isViewMode}
+                              disabled={isViewMode || (!isEditFlag && this.state.disablePartName)}
                             />
                           </Col>
 
@@ -793,7 +814,8 @@ export default connect(mapStateToProps, {
   getPartData,
   fileUploadPart,
   fileDeletePart,
-  getProductGroupSelectList
+  getProductGroupSelectList,
+  getPartDescription
 })(reduxForm({
   form: 'AddIndivisualPart',
   enableReinitialize: true,
