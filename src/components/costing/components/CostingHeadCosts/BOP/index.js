@@ -56,8 +56,8 @@ function BoughtOutPart(props) {
         {!partType && <td>{item?.CostingPartDetails?.BoughtOutPartRate ? checkForDecimalAndNull(item.CostingPartDetails.BoughtOutPartRate, initialConfiguration.NoOfDecimalForPrice) : 0}</td>}
         {!partType && costData.IsAssemblyPart && <td>{item?.CostingPartDetails?.BoughtOutPartRate ? checkForDecimalAndNull((item.CostingPartDetails.BoughtOutPartRate * item.CostingPartDetails.Quantity), initialConfiguration.NoOfDecimalForPrice) : 0}</td>}
         {partType && <td>{item?.CostingPartDetails?.CostPerPiece ? checkForDecimalAndNull(item.CostingPartDetails.CostPerPiece, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>}
-        {partType && <td>{item?.CostingPartDetails?.CostPerPiece ? '-' : '-'}</td>}
-        {partType && <td>{item?.CostingPartDetails?.CostPerPiece ? '-' : '-'}</td>}
+        {partType && <td>{'-'}</td>}
+        {partType && <td>{'-'}</td>}
         {partType && <td>{item?.CostingPartDetails?.CostPerAssemblyBOP ? checkForDecimalAndNull(item.CostingPartDetails.CostPerAssemblyBOP, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>}
         {partType ? <td>{'-'}</td> : <td>{''}</td>}
         {partType && <td></td>}

@@ -11,7 +11,6 @@ import LoaderCustom from '../../common/LoaderCustom';
 import { PartEffectiveDate } from './AddAssemblyPart';
 import AsyncSelect from 'react-select/async';
 import { ASSEMBLYNAME } from '../../../config/constants';
-import { ASSEMBLY } from '../../../config/masterData';
 
 class AddAssemblyForm extends Component {
 
@@ -90,7 +89,7 @@ class AddAssemblyForm extends Component {
 
         let tempArr = [];
         BOMViewerData && BOMViewerData.map(el => {
-            if (el.PartType === ASSEMBLY) {
+            if (el.PartType === ASSEMBLYNAME) {
                 tempArr.push(el.PartId)
             }
             return null;
