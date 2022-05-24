@@ -780,7 +780,7 @@ const SendForApproval = (props) => {
                           showValidation && <span className="warning-top"><WarningMessage dClass="pl-3" message={'There is no approver added in this department'} /></span>
                         }
 
-                        {false && <><Col md="12">
+                        {false && <><Col md="6">
                           <NumberFieldHookForm
                             label="Quantity"
                             name={"Quantity"}
@@ -796,7 +796,7 @@ const SendForApproval = (props) => {
                             disabled={false}
                           />
                         </Col>
-                          <Col md="12" className="py-3 ">
+                          <Col md="6" className="d-flex align-items-center mb-2">
                             <span className="d-inline-block">
                               <label
                                 className={`custom-checkbox mb-0`}
@@ -853,8 +853,8 @@ const SendForApproval = (props) => {
 
                 }
                 {isRegularize ? (
-                  <Row className="mb-4">
-                    <Col md="3" className="height152-label">
+                  <Row className="mb-4 mx-0">
+                    <Col md="6" className="height152-label">
                       <label>Upload Attachment (upload up to 4 files)</label>
                       {files && files.length >= 4 ? (
                         <div class="alert alert-danger" role="alert">
@@ -899,7 +899,7 @@ const SendForApproval = (props) => {
                         />
                       )}
                     </Col>
-                    <Col md="3">
+                    <Col md="6" className='pr-0'>
                       <div className={"attachment-wrapper"}>
                         {files &&
                           files.map((f) => {
