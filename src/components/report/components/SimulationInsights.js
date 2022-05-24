@@ -10,6 +10,7 @@ import LoaderCustom from '../../common/LoaderCustom';
 import { getSimulationInsightReport } from '../actions/SimulationInsight';
 import { useDispatch } from 'react-redux';
 import DayTime from '../../common/DayTimeWrapper'
+import WarningMessage from '../../common/WarningMessage'
 
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -26,6 +27,16 @@ function SimulationInsights(props) {
   const [gridColumnApi, setGridColumnApi] = useState(null);
   const [loader, setLoader] = useState(true)
   const [simulationInsightDownloadExcel, setSimulationInsightDownloadExcel] = useState([])
+  const [floatingFilterData, setFloatingFilterData] = useState({ ApprovalTokenNumber: "", createdDate: "", SimulatedByName: "", CostingHead: "", TechnologyName: "", masters: "", DepartmentName: "", DepartmentCode: "", initiatedBy: "", SimulationStatus: "", EffectiveDate: "", requestedOn: "", SimulationTechnologyHead: "", SenderUserName: "", SentDate: "" })
+  const [pageSize10, setPageSize10] = useState(true)
+  const [pageSize50, setPageSize50] = useState(false)
+  const [pageSize100, setPageSize100] = useState(false)
+  const [pageNo, setPageNo] = useState(1)
+  const [totalRecordCount, setTotalRecordCount] = useState(0)
+  const [currentRowIndex, setCurrentRowIndex] = useState(0)
+  const [filterModel, setFilterModel] = useState({});
+  const [isSearchButtonDisable, setIsSearchButtonDisable] = useState(true);
+  const [warningMessage, setWarningMessage] = useState(false)
 
 
   var filterParams = {
@@ -33,6 +44,8 @@ function SimulationInsights(props) {
       // var dateAsString = cellValue != null ? DayTime(cellValue).format('MM/DD/YYYY') : '';
 
       var dateAsString = cellValue != null ? cellValue.split('-') : '';
+      var newDate = filterLocalDateAtMidnight != null ? DayTime(filterLocalDateAtMidnight).format('DD/MM/YYYY') : '';
+      setFloatingFilterData({ ...floatingFilterData, EffectiveDate: newDate })
       if (dateAsString) {
         dateAsString = dateAsString[0] + '/' + dateAsString[1] + '/' + dateAsString[2];
       }
@@ -58,10 +71,77 @@ function SimulationInsights(props) {
     minValidYear: 2000,
   };
 
+  var filterParamsSecond = {
+    comparator: function (filterLocalDateAtMidnight, cellValue) {
+      // var dateAsString = cellValue != null ? DayTime(cellValue).format('MM/DD/YYYY') : '';
+
+      var dateAsString = cellValue != null ? cellValue.split('-') : '';
+      var newDate = filterLocalDateAtMidnight != null ? DayTime(filterLocalDateAtMidnight).format('DD/MM/YYYY') : '';
+      setFloatingFilterData({ ...floatingFilterData, createdDate: newDate })
+      if (dateAsString) {
+        dateAsString = dateAsString[0] + '/' + dateAsString[1] + '/' + dateAsString[2];
+      }
+      if (dateAsString == null) return -1;
+      var dateParts = dateAsString.split('/');
+      var cellDate = new Date(
+        Number(dateParts[2]),
+        Number(dateParts[1]) - 1,
+        Number(dateParts[0])
+      );
+      if (filterLocalDateAtMidnight.getTime() === cellDate.getTime()) {
+        return 0;
+      }
+      if (cellDate < filterLocalDateAtMidnight) {
+        return -1;
+      }
+      if (cellDate > filterLocalDateAtMidnight) {
+        return 1;
+      }
+
+    },
+    browserDatePicker: true,
+    minValidYear: 2000,
+  };
 
   useEffect(() => {
+    getTableData(0, 100, true, floatingFilterData)
+  }, [])
+
+
+  useEffect(() => {
+
+    if (simulationInsightsReport.length > 0) {
+
+      setTotalRecordCount(simulationInsightsReport[0].TotalRecordCount)
+
+    }
+
+  }, [simulationInsightsReport])
+
+
+  const onBtPrevious = () => {
+    if (currentRowIndex >= 10) {
+      setPageNo(pageNo - 1)
+      const previousNo = currentRowIndex - 10;
+      getTableData(previousNo, 100, true, floatingFilterData)
+      setCurrentRowIndex(previousNo)
+    }
+  }
+
+
+  const onBtNext = () => {
+    if (currentRowIndex < (totalRecordCount - 10)) {
+      setPageNo(pageNo + 1)
+      const nextNo = currentRowIndex + 10;
+      getTableData(nextNo, 100, true, floatingFilterData)
+      setCurrentRowIndex(nextNo)
+    }
+  };
+
+  const getTableData = (skip, take, isPagination, data) => {
+
     setLoader(true)
-    dispatch(getSimulationInsightReport(res => {
+    dispatch(getSimulationInsightReport(skip, take, isPagination, data, res => {
       const data = res.data.DataList
       setSimulationInsight(data[0].Data)
       setSimulationInsightsReportExcelData(data[0].Data)
@@ -107,7 +187,7 @@ function SimulationInsights(props) {
             field: "CreatedDate",
             headerName: "Created Date",
             filter: "agDateColumnFilter",
-            filterParams: filterParams
+            filterParams: filterParamsSecond
           }
           let obj1 = {
             label: ele.headerName,
@@ -145,11 +225,49 @@ function SimulationInsights(props) {
 
       setTableHeaderColumnDefs(arr)
       setSimulationInsightDownloadExcel(simulationInsightExcel)
-
       setLoader(false)
-
     }))
-  }, [])
+
+  }
+
+
+
+  const onSearch = () => {
+
+
+    setWarningMessage(false)
+    setPageNo(1)
+    setCurrentRowIndex(0)
+    gridOptions?.columnApi?.resetColumnState();
+    getTableData(0, 100, true, floatingFilterData)
+  }
+
+
+
+  const onFloatingFilterChanged = (value) => {
+    //setEnableSearchFilterButton(false)
+
+    // Gets filter model via the grid API
+    const model = gridOptions?.api?.getFilterModel();
+    setFilterModel(model)
+    setWarningMessage(true)
+
+    if (value?.filterInstance?.appliedModel === null || value?.filterInstance?.appliedModel?.filter === "") {
+
+      setWarningMessage(false)
+
+    } else {
+
+      if (value.column.colId === "EffectiveDate" || value.column.colId === "CreatedDate") {
+        setIsSearchButtonDisable(false)
+        return false
+      }
+      setFloatingFilterData({ ...floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter })
+      setIsSearchButtonDisable(false)
+
+    }
+
+  }
 
 
   const onBtExport = () => {
@@ -171,6 +289,16 @@ function SimulationInsights(props) {
   const resetState = () => {
     gridColumnApi.resetColumnState()
     gridApi.setFilterModel(null);
+    for (var prop in floatingFilterData) {
+      floatingFilterData[prop] = ""
+    }
+
+    setFloatingFilterData(floatingFilterData)
+    setWarningMessage(false)
+    setPageNo(1)
+    setCurrentRowIndex(0)
+    getTableData(0, 100, true, floatingFilterData)
+
   }
 
 
@@ -223,6 +351,23 @@ function SimulationInsights(props) {
   const onPageSizeChanged = (newPageSize) => {
     var value = document.getElementById('page-size').value;
     gridApi.paginationSetPageSize(Number(value));
+
+    if (Number(newPageSize) === 10) {
+      setPageSize10(true)
+      setPageSize50(false)
+      setPageSize100(false)
+    }
+    else if (Number(newPageSize) === 50) {
+      setPageSize10(false)
+      setPageSize50(true)
+      setPageSize100(false)
+    }
+    else if (Number(newPageSize) === 100) {
+      setPageSize10(false)
+      setPageSize50(false)
+      setPageSize100(true)
+    }
+
   };
 
   const onFilterTextBoxChanged = (e) => {
@@ -231,16 +376,21 @@ function SimulationInsights(props) {
 
   return (
     // <div>{`hello`}</div>
-    <div className="container-fluid report-listing-page ag-grid-react">
+    <div className="container-fluid report-listing-page ag-grid-react part-manage-component">
       {loader && <LoaderCustom />}
       <h1 className="mb-0">Simulation Insights Report</h1>
       <Row className="pt-4 blue-before ">
         <Col md="6" lg="6" className="search-user-block mb-3">
           <div className="d-flex justify-content-end bd-highlight excel-btn w100">
             <div>
+              <button disabled={isSearchButtonDisable} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
               <ExcelFile filename={ReportMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
                 {onBtExport()}
               </ExcelFile>
+
+              <div className="warning-message d-flex align-items-center">
+                {warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
+              </div>
               <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => resetState()}>
                 <div className="refresh mr-0"></div>
               </button>
@@ -275,17 +425,29 @@ function SimulationInsights(props) {
               suppressRowClickSelection={true}
               onSelectionChanged={onRowSelect}
               rowSelection={'multiple'}
+              onFilterModified={onFloatingFilterChanged}
             >
 
             </AgGridReact>
-            <div className="paging-container d-inline-block float-right">
-              <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
-                <option value="10" selected={true}>10</option>
-                <option value="50">50</option>
-                <option value="100">100</option>
-              </select>
+
+            <div className='button-wrapper'>
+              <div className="paging-container d-inline-block float-right">
+                <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
+                  <option value="10" selected={true}>10</option>
+                  <option value="50">50</option>
+                  <option value="100">100</option>
+                </select>
+              </div>
+              <div className="d-flex pagination-button-container">
+                <p><button className="previous-btn" type="button" disabled={false} onClick={() => onBtPrevious()}> </button></p>
+                {pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 10)}</p>}
+                {pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 50)}</p>}
+                {pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 100)}</p>}
+                <p><button className="next-btn" type="button" onClick={() => onBtNext()}> </button></p>
+              </div>
             </div>
           </div>
+
         </div>
       </div>
     </div>
