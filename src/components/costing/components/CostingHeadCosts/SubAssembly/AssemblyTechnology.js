@@ -10,7 +10,7 @@ import { setSubAssemblyTechnologyArray } from '../../../actions/SubAssembly';
 import BoughtOutPart from '../BOP';
 
 function AssemblyTechnology(props) {
-    const { children, item, index, getCostPerPiece } = props;
+    const { children, item, index } = props;
 
     const [IsOpen, setIsOpen] = useState(false);
     const [Count, setCount] = useState(0);
@@ -101,8 +101,6 @@ function AssemblyTechnology(props) {
                 item={el}
                 children={el.CostingChildPartDetails}
                 toggleAssembly={props.toggleAssembly}
-                setAssemblyOperationCost={props.setAssemblyOperationCost}
-                getCostPerPiece={getCostPerPiece}
             />
         } else {
             return false
@@ -154,7 +152,7 @@ function AssemblyTechnology(props) {
                     <td>
                         {item?.CostingPartDetails?.CostPerAssembly ? checkForDecimalAndNull(item.CostingPartDetails.CostPerAssembly, initialConfiguration.NoOfDecimalForPrice) : '-'}
                         {(item?.PartType === 'Assembly' && (item.CostingPartDetails.EditPartCost ||
-                            subAssemblyTechnologyArray[0].ProcessCostValue || subAssemblyTechnologyArray[0].CostingPartDetails.OperationCostValue)) &&
+                            subAssemblyTechnologyArray[0].CostingPartDetails.ProcessCostValue || subAssemblyTechnologyArray[0].CostingPartDetails.OperationCostValue)) &&
                             (item?.CostingPartDetails?.CostPerAssembly || item.CostingPartDetails?.CostPerAssembly) ?
                             <div class="tooltip-n ml-2"><i className="fa fa-info-circle text-primary tooltip-icon"></i>
                                 <span class="tooltiptext">
@@ -246,7 +244,6 @@ function AssemblyTechnology(props) {
                     closeDrawer={closeDrawerPartCost}
                     anchor={'bottom'}
                     tabAssemblyIndividualPartDetail={tabAssemblyIndividualPartDetail}
-                    getCostPerPiece={getCostPerPiece}
                 />
             }
         </ >

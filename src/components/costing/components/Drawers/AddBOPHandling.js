@@ -162,7 +162,6 @@ function AddBOPHandling(props) {
       BOPHandlingCharges: getValues('BOPHandlingCharges'),
       BOPHandlingChargeType: BOPHandlingType
     }
-    dispatch(isDataChange(true))
     props.setBOPCostWithAsssembly(obj, item)
     setTimeout(() => {
       props.closeDrawer('')

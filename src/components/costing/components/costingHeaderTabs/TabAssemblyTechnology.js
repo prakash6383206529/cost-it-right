@@ -81,6 +81,7 @@ function TabAssemblyTechnology(props) {
   }, [subAssemblyTechnologyArray]);
 
   const setOperationCostFunction = (value, gridData) => {
+    // gridData contains Operaion Grid
 
     // let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray
     // // UPDATING AT INDEX 0 BECAUSE NEED TO UPDATE THE LEVEL 0 ROW (ASSEMBLY)

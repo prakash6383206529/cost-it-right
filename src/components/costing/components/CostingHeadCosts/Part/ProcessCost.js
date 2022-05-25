@@ -39,8 +39,6 @@ function ProcessCost(props) {
   const [Ids, setIds] = useState([])
   const [MachineIds, setMachineIds] = useState([])
   const [tabData, setTabData] = useState(props.data)
-  const [oldTabData, setOldTabData] = useState(props.data)
-  const [oldGridData, setOldGridData] = useState(data && data.CostingProcessCostResponse)
   const [isCalculator, setIsCalculator] = useState(false)
   const [processAccObj, setProcessAccObj] = useState({});
   const [calculatorTechnology, setCalculatorTechnology] = useState('')

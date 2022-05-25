@@ -149,7 +149,6 @@ export const API = {
   checkCostingExistForPart: `${BASE_URL}/masters-part-bill-of-material/check-exist-costing-by-part`,
   deleteExisCostingByPartID: `${BASE_URL}/masters-part-bill-of-material/delete-exist-costing-by-part`,
 
-
   //CATEGORY MASTER
   createcategoryTypeAPI: `${BASE_URL}/masters-category/create-type`,
   createCategoryAPI: `${BASE_URL}/masters-category/create`,

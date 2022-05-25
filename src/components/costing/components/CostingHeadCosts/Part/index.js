@@ -37,7 +37,7 @@ function PartCompoment(props) {
 
   const dispatch = useDispatch()
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { ComponentItemDiscountData, CloseOpenAccordion } = useSelector(state => state.costing)
+  const { CloseOpenAccordion } = useSelector(state => state.costing)
 
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
@@ -193,11 +193,11 @@ function PartCompoment(props) {
 
   }, [IsOpen])
 
-  const InjectDiscountAPICall = () => {
-    dispatch(saveDiscountOtherCostTab(ComponentItemDiscountData, res => {
-      dispatch(setComponentDiscountOtherItemData({}, () => { }))
-    }))
-  }
+  // const InjectDiscountAPICall = () => {                 
+  //   dispatch(saveDiscountOtherCostTab(ComponentItemDiscountData, res => {
+  //     dispatch(setComponentDiscountOtherItemData({}, () => { }))
+  //   }))
+  // }
 
   /**
    * @method render
