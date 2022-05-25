@@ -37,7 +37,6 @@ const SendForApproval = (props) => {
   const partNo = useSelector((state) => state.costing.partNo)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const partInfo = useSelector((state) => state.costing.partInfo)
-  console.log('partInfo: ', partInfo);
 
   const [selectedDepartment, setSelectedDepartment] = useState('')
   const [selectedApprover, setSelectedApprover] = useState('')
@@ -122,10 +121,8 @@ const SendForApproval = (props) => {
     obj.DepartmentId = '00000000-0000-0000-0000-000000000000'
     obj.LoggedInUserLevelId = userDetails().LoggedInLevelId
     obj.LoggedInUserId = userDetails().LoggedInUserId
-    console.log(viewApprovalData, "viewApprovalData")
     let drawerDataObj = {}
     drawerDataObj.EffectiveDate = viewApprovalData[0].effectiveDate
-    console.log('drawerDataObj.EffectiveDate: ', drawerDataObj.EffectiveDate);
     drawerDataObj.CostingHead = viewApprovalData[0].typeOfCosting === 0 ? 'ZBC' : 'VBC'
     drawerDataObj.Technology = partInfo.Technology
     drawerDataObj.Vendor = `${viewApprovalData[0].vendorName}(${viewApprovalData[0].vendorCode})`;
@@ -406,13 +403,13 @@ const SendForApproval = (props) => {
       tempObj.ApprovalProcessId = "00000000-0000-0000-0000-000000000000"
       tempObj.TypeOfCosting = data.typeOfCosting === 0 ? 'ZBC' : 'VBC'
       tempObj.PlantId =
-        data.typeOfCosting === 0 ? data.plantId : ''
+        Number(data.typeOfCosting) === 0 ? data.plantId : ''
       tempObj.PlantNumber =
-        data.typeOfCosting === 0 ? data.plantCode : ''
+        Number(data.typeOfCosting) === 0 ? data.plantCode : ''
       tempObj.PlantName =
-        data.typeOfCosting === 0 ? data.plantName : ''
+        Number(data.typeOfCosting) === 0 ? data.plantName : ''
       tempObj.PlantCode =
-        data.typeOfCosting === 0 ? data.plantCode : ''
+        Number(data.typeOfCosting) === 0 ? data.plantCode : ''
       tempObj.CostingId = data.costingId
       tempObj.CostingNumber = data.costingName
       tempObj.ReasonId = data.reasonId
@@ -437,17 +434,17 @@ const SendForApproval = (props) => {
       tempObj.AnnualImpact = data.annualImpact
       tempObj.ImpactOfTheYear = data.yearImpact
       tempObj.VendorId =
-        data.typeOfCosting === 1 ? data.vendorId : ''
+        Number(data.typeOfCosting) === 1 ? data.vendorId : ''
       tempObj.VendorCode =
-        data.typeOfCosting === 1 ? data.vendorCode : ''
+        Number(data.typeOfCosting) === 1 ? data.vendorCode : ''
       tempObj.VendorPlantId =
-        data.typeOfCosting === 1 ? data.vendorePlantId : ''
+        Number(data.typeOfCosting) === 1 ? data.vendorePlantId : ''
       tempObj.VendorPlantCode =
-        data.typeOfCosting === 1 ? data.vendorPlantCode : ''
+        Number(data.typeOfCosting) === 1 ? data.vendorPlantCode : ''
       tempObj.VendorName =
-        data.typeOfCosting === 1 ? data.vendorName : ''
+        Number(data.typeOfCosting) === 1 ? data.vendorName : ''
       tempObj.VendorPlantName =
-        data.typeOfCosting === 1 ? data.vendorPlantName : ''
+        Number(data.typeOfCosting) === 1 ? data.vendorPlantName : ''
       tempObj.IsFinalApproved = isFinalApproverShow ? true : false
       tempObj.DestinationPlantCode = data.destinationPlantCode
       tempObj.DestinationPlantName = data.destinationPlantName
