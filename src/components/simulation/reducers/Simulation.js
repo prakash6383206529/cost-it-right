@@ -57,7 +57,7 @@ export default function SimulationReducer(state = initialState, action) {
                 if (item.Status === 'Draft' || item.Status === 'Linked') {
                     item.ProvisionalStatus = 'Y' // THIS KEY IS FOR DISLAYING AMMENDEMNT STATUS COLUMN
                 }
-                else if (item.Status === 'Approved' || item.Status === 'POUPDATED' || item.Status === 'Pushed') {
+                else if (item.Status === 'Approved' || item.Status === 'POUpdated' || item.Status === 'Pushed') {
                     item.ProvisionalStatus = 'R'
                 } else {
                     item.ProvisionalStatus = 'U'
