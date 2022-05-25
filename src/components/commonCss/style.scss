@@ -5255,7 +5255,7 @@ body{
 }
 .mh-auto {
   height: auto !important;
-  min-height: calc(100vh - 219px) !important;
+  min-height: calc(100vh - 190px) !important;
   .add-min-height {
     @media (max-width:$belowLaptop) {  
       min-height: calc(100vh - 214px) !important;
