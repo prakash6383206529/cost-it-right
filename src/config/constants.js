@@ -556,6 +556,7 @@ export const API = {
   getCostingSpecificTechnology: `${BASE_URL}/costing/get-technology-select-list-for-costing`,
   checkDataForCopyCosting: `${BASE_URL}/costing/check-data-for-copy-costing`,
   saveAssemblyPartRowCostingCalculation: `${BASE_URL}/costing/save-assembly-part-row-costing-calculation`,
+  checkHistoryCostingAndSAPPoPrice: `${BASE_URL}/sap-integration/check-history-costing-and-sap-po-price`,
 
   //WEIGHT CALCULATION
   getWeightCalculationInfo: `${BASE_URL}/costing-sheet-metal/get-weight-calculation-info-by-costing`,
@@ -1309,7 +1310,7 @@ export const CHECK_IS_OVERHEAD_AND_PROFIT_DATA_CHANGE = 'CHECK_IS_OVERHEAD_AND_P
 export const CHECK_IS_PACKAGE_AND_FREIGHT_DATA_CHANGE = 'CHECK_IS_PACKAGE_AND_FREIGHT_DATA_CHANGE'
 export const CHECK_IS_TOOL_DATA_CHANGE = 'CHECK_IS_TOOL_DATA_CHANGE'
 export const CHECK_IS_DISCOUNT_DATA_CHANGE = 'CHECK_IS_DISCOUNT_DATA_CHANGE'
-
+export const CHECK_HISTORY_COSTING_AND_SPACE_PO_PRICE = 'CHECK_HISTORY_COSTING_AND_SPACE_PO_PRICE'
 
 
 export const SET_NEW_ARRAY_FOR_COSTING = 'SET_NEW_ARRAY_FOR_COSTING'
