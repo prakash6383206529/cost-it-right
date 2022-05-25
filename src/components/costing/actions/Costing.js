@@ -30,6 +30,7 @@ import {
   SELECTED_PROCESS_AND_GROUPCODE,
   SET_PROCESS_ID,
   SET_PROCESSGROUP_ID,
+  CHECK_HISTORY_COSTING_AND_SAP_PO_PRICE,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -2429,6 +2430,26 @@ export function getMachineProcessGroupDetail(data, callback) {
     }).catch((error) => {
       dispatch({ type: API_FAILURE })
       apiErrors(error);
+    })
+  }
+}
+
+export function checkHistoryCostingAndSAPPoPrice(params, callback) {
+  return (dispatch) => {
+    const queryParameter = `${params.costingId}`;
+    const request = axios.get(`${API.checkHistoryCostingAndSAPPoPrice}?costingId=${queryParameter}`, config())
+    request.then((response) => {
+      if (response.data.Result || response.status === 204) {
+        dispatch({
+          type: CHECK_HISTORY_COSTING_AND_SAP_PO_PRICE,
+          payload: response.status === 204 ? [] : response.data.DataList,
+        })
+        callback(response)
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      // apiErrors(error)
+      callback(error)
     })
   }
 }

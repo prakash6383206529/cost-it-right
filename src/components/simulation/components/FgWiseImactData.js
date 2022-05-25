@@ -108,7 +108,7 @@ export function Fgwiseimactdata(props) {
                                             <td><span>{'-'}</span></td>
                                             <td><span>{checkForDecimalAndNull(item.VariancePerPiece, initialConfiguration.NoOfDecimalForPrice)}</span></td>
 
-                                            <td><span>{checkForNull(item?.VendorSOBPercentage)}</span></td>
+                                            <td><span>{'-'}</span></td>
                                             {/* //Impact/Pc(with SOB) */}
                                             <td><span>{checkForDecimalAndNull(item?.VendorSOBImpactPerPiece, initialConfiguration.NoOfDecimalForPrice)}</span></td>
                                             <td><span>{item.VolumePerYear == null ? "" : checkForDecimalAndNull(item.VolumePerYear, initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
