@@ -228,6 +228,7 @@ class Level extends Component {
   */
   onPressRadioLevel = (label) => {
     this.setState({ levelType: label });
+    this.setState({ technology: { label: "", value: "" }, level: { label: "", value: "" } });
   };
 
   /**
