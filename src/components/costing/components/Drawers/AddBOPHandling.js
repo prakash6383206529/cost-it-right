@@ -40,8 +40,8 @@ function AddBOPHandling(props) {
       }, 0)
 
       setValue('BOPCost', checkForDecimalAndNull(totalBOP, getConfigurationKey().NoOfDecimalForPrice))
-      setValue('BOPHandlingPercentage', subAssemblyTechnologyArray && checkForDecimalAndNull(subAssemblyTechnologyArray[0]?.BOPHandlingPercentage, getConfigurationKey().NoOfDecimalForPrice))
-      setValue('BOPHandlingCharges', subAssemblyTechnologyArray && checkForDecimalAndNull(subAssemblyTechnologyArray[0]?.BOPHandlingCharges, getConfigurationKey().NoOfDecimalForPrice))
+      setValue('BOPHandlingPercentage', subAssemblyTechnologyArray && checkForDecimalAndNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.BOPHandlingPercentage, getConfigurationKey().NoOfDecimalForPrice))
+      setValue('BOPHandlingCharges', subAssemblyTechnologyArray && checkForDecimalAndNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.BOPHandlingCharges, getConfigurationKey().NoOfDecimalForPrice))
       setBOPCost(totalBOP)
     }
     else {
