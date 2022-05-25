@@ -9,8 +9,6 @@ import { ViewCostingContext } from '../../CostingDetails';
 import { isOverheadProfitDataChange } from '../../../actions/Costing';
 import { ASSEMBLY } from '../../../../../config/masterData';
 
-
-
 function Rejection(props) {
 
     const { Controller, control, register, data, setValue, getValues, errors, useWatch, CostingRejectionDetail, clearErrors } = props
@@ -137,7 +135,7 @@ function Rejection(props) {
                         RejectionApplicability: applicability.label,
                         RejectionPercentage: RejectionPercentage,
                         RejectionCost: checkForNull(RM),
-                        RejectionTotalCost: checkForNull((RM * calculatePercentage(RejectionPercentage)))
+                        RejectionTotalCost: checkForNull(RM) * calculatePercentage(checkForNull(RejectionPercentage))
                     })
                     break;
 
@@ -150,7 +148,7 @@ function Rejection(props) {
                         RejectionApplicability: applicability.label,
                         RejectionPercentage: RejectionPercentage,
                         RejectionCost: BOP,
-                        RejectionTotalCost: checkForNull((BOP * calculatePercentage(RejectionPercentage)))
+                        RejectionTotalCost: checkForNull(BOP) * calculatePercentage(checkForNull(RejectionPercentage))
                     })
                     break;
 
@@ -163,7 +161,7 @@ function Rejection(props) {
                         RejectionApplicability: applicability.label,
                         RejectionPercentage: RejectionPercentage,
                         RejectionCost: CC,
-                        RejectionTotalCost: checkForNull(((CC) * calculatePercentage(RejectionPercentage)))
+                        RejectionTotalCost: checkForNull(CC) * calculatePercentage(checkForNull(RejectionPercentage))
                     })
                     break;
 
@@ -176,7 +174,7 @@ function Rejection(props) {
                         RejectionApplicability: applicability.label,
                         RejectionPercentage: RejectionPercentage,
                         RejectionCost: RM_CC_BOP,
-                        RejectionTotalCost: checkForNull((RM_CC_BOP * calculatePercentage(RejectionPercentage)))
+                        RejectionTotalCost: checkForNull(RM_CC_BOP) * calculatePercentage(checkForNull(RejectionPercentage))
                     })
                     break;
 
@@ -189,7 +187,7 @@ function Rejection(props) {
                         RejectionApplicability: applicability.label,
                         RejectionPercentage: RejectionPercentage,
                         RejectionCost: RM_BOP,
-                        RejectionTotalCost: checkForNull((RM_BOP * calculatePercentage(RejectionPercentage)))
+                        RejectionTotalCost: checkForNull(RM_BOP) * calculatePercentage(checkForNull(RejectionPercentage))
                     })
                     break;
 
@@ -202,7 +200,7 @@ function Rejection(props) {
                         RejectionApplicability: applicability.label,
                         RejectionPercentage: RejectionPercentage,
                         RejectionCost: RM_CC,
-                        RejectionTotalCost: checkForNull((RM_CC * calculatePercentage(RejectionPercentage)))
+                        RejectionTotalCost: checkForNull(RM_CC) * calculatePercentage(checkForNull(RejectionPercentage))
                     })
                     break;
 
@@ -215,7 +213,7 @@ function Rejection(props) {
                         RejectionApplicability: applicability.label,
                         RejectionPercentage: RejectionPercentage,
                         RejectionCost: BOP_CC,
-                        RejectionTotalCost: checkForNull((BOP_CC * calculatePercentage(RejectionPercentage)))
+                        RejectionTotalCost: checkForNull(BOP_CC) * calculatePercentage(checkForNull(RejectionPercentage))
                     })
                     break;
 

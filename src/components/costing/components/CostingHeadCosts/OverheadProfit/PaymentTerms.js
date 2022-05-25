@@ -23,7 +23,6 @@ function PaymentTerms(props) {
     const [IsPaymentTermsApplicable, setIsPaymentTermsApplicable] = useState(CostingInterestRateDetail && CostingInterestRateDetail.IsPaymentTerms ? true : false)
     const [paymentTermsApplicability, setPaymentTermsApplicability] = useState(PaymentTermDetail !== undefined ? { label: PaymentTermDetail.PaymentTermApplicability, value: PaymentTermDetail.PaymentTermApplicability } : [])
     const [PaymentTermInterestRateId, setPaymentTermInterestRateId] = useState(PaymentTermDetail !== undefined ? PaymentTermDetail.InterestRateId : '')
-    const [PaymentTermObj, setPaymentTermObj] = useState(PaymentTermDetail)
     const [tempPaymentTermObj, setTempPaymentTermObj] = useState(PaymentTermDetail)
 
     const PaymentTermsFieldValues = useWatch({
@@ -95,14 +94,12 @@ function PaymentTerms(props) {
                         setPaymentTermInterestRateId(Data.InterestRateId !== EMPTY_GUID ? Data.InterestRateId : null)
                         checkPaymentTermApplicability(Data.PaymentTermApplicability)
                         setPaymentTermsApplicability({ label: Data.PaymentTermApplicability, value: Data.PaymentTermApplicability })
-                        setPaymentTermObj(Data)
                     } else if (res.status === 204) {
                         setValue('RepaymentPeriodDays', '')
                         setValue('RepaymentPeriodPercentage', '')
                         setValue('RepaymentPeriodCost', '')
                         checkPaymentTermApplicability('')
                         setPaymentTermsApplicability([])
-                        setPaymentTermObj({})
                     }
 
                 }))

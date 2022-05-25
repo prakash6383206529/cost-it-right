@@ -17,11 +17,9 @@ function TabAssemblyTechnology(props) {
 
   const dispatch = useDispatch()
 
-  const { ErrorObjRMCC, CostingEffectiveDate, getAssemBOPCharge, checkIsDataChange } = useSelector(state => state.costing)
+  const { CostingEffectiveDate, checkIsDataChange } = useSelector(state => state.costing)
 
   const [isOpenBOPDrawer, setIsOpenBOPDrawer] = useState(false)
-  const [costPerPiece, setcostPerPiece] = useState('')
-  const [OperationCostValue, setOperationCostValue] = useState('')
 
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
@@ -57,13 +55,8 @@ function TabAssemblyTechnology(props) {
     }
   }, [subAssemblyTechnologyArray]);
 
-  const getCostPerPiece = (value) => {
-    setcostPerPiece(value)
-  }
-
   const setOperationCostFunction = (value, gridData) => {
     // gridData contains Operaion Grid
-    setOperationCostValue(value)
 
     let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray
     // UPDATING AT INDEX 0 BECAUSE NEED TO UPDATE THE LEVEL 0 ROW (ASSEMBLY)
@@ -78,7 +71,7 @@ function TabAssemblyTechnology(props) {
   */
   const saveCosting = () => {
 
-    if (ErrorObjRMCC && Object.keys(ErrorObjRMCC).length > 0) return false;
+    // if (ErrorObjRMCC && Object.keys(ErrorObjRMCC).length > 0) return false;
 
     // MAY BE USED LATER
     // if (Object.keys(ComponentItemData).length > 0 && ComponentItemData.IsOpen !== false && checkIsDataChange === true) {
@@ -283,7 +276,6 @@ function TabAssemblyTechnology(props) {
                                   item={item}
                                   children={item.CostingChildPartDetails}
                                   subAssembId={item.CostingId}
-                                  getCostPerPiece={getCostPerPiece}
                                   setOperationCostFunction={setOperationCostFunction}
                                 />
                               </>

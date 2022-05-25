@@ -61,28 +61,28 @@ function EditPartCost(props) {
         }
 
         // TAKING OBJECT FROM WHOLE ARRAY LIST USING INDEX ON WHICH USER IS EDITING
-        let tempObject = ListForPartCost[gridIndex]
+        let editedObject = ListForPartCost[gridIndex]
         let weightedCostCalc = 0
         let netCost = 0
 
         // GET RUN TIME EDITED VALUES FROM INPUT FIELD
-        tempObject.SOBPercentage = getValues(`${PartCostFields}.${gridIndex}.SOBPercentage`)
-        tempObject.DeltaValue = getValues(`${PartCostFields}.${gridIndex}.DeltaValue`)
-        tempObject.DeltaSign = getValues(`${PartCostFields}.${gridIndex}.DeltaSign`)
+        editedObject.SOBPercentage = getValues(`${PartCostFields}.${gridIndex}.SOBPercentage`)
+        editedObject.DeltaValue = getValues(`${PartCostFields}.${gridIndex}.DeltaValue`)
+        editedObject.DeltaSign = getValues(`${PartCostFields}.${gridIndex}.DeltaSign`)
 
         // RESPECTIVE CALCULATION FOR + and - DELTA SIGN
-        if (tempObject.DeltaSign?.label === '+') {
-            netCost = percentageOfNumber(Number(tempObject.SettledPrice) + Number(tempObject.DeltaValue), tempObject.SOBPercentage)
-            tempObject.NetCost = netCost
+        if (editedObject.DeltaSign?.label === '+') {
+            netCost = percentageOfNumber(Number(editedObject.SettledPrice) + Number(editedObject.DeltaValue), editedObject.SOBPercentage)
+            editedObject.NetCost = netCost
             setValue(`${PartCostFields}.${gridIndex}.NetCost`, checkForDecimalAndNull(netCost, initialConfiguration.NoOfDecimalForPrice))
-        } if (tempObject.DeltaSign?.label === '-') {
-            netCost = percentageOfNumber(Number(tempObject.SettledPrice) - Number(tempObject.DeltaValue), tempObject.SOBPercentage)
-            tempObject.NetCost = netCost
+        } if (editedObject.DeltaSign?.label === '-') {
+            netCost = percentageOfNumber(Number(editedObject.SettledPrice) - Number(editedObject.DeltaValue), editedObject.SOBPercentage)
+            editedObject.NetCost = netCost
             setValue(`${PartCostFields}.${gridIndex}.NetCost`, checkForDecimalAndNull(netCost, initialConfiguration.NoOfDecimalForPrice))
         }
 
         // ASSIGN THE MANIPULAED OBJECT TO THE SAME INDEX IN THE ARRAY LIST
-        let gridTempArr = Object.assign([...ListForPartCost], { [gridIndex]: tempObject })
+        let gridTempArr = Object.assign([...ListForPartCost], { [gridIndex]: editedObject })
 
         // CALCULATING TOTAL NET COST
         weightedCostCalc = gridTempArr && gridTempArr.reduce((accummlator, el) => {
@@ -136,12 +136,12 @@ function EditPartCost(props) {
             return props?.tabAssemblyIndividualPartDetail?.PartNumber === object?.PartNumber;
         });
 
-        let editedChildPart = ListForPartCost[index]
+        let editedChildPart = tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails[index]
 
         editedChildPart.CostingPartDetails.CostPerPiece = weightedCost
         editedChildPart.CostingPartDetails.CostPerAssembly = checkForNull(weightedCost) * checkForNull(editedChildPart?.CostingPartDetails?.Quantity)
 
-        Object.assign([...ListForPartCost], { [index]: editedChildPart })
+        Object.assign([...tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails], { [index]: editedChildPart })
 
         // CALCULATING TOTAL COST PER ASSEMBLY (PART COST ONLY => RM)
         costPerAssemblyTotal = tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails && tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails.reduce((accummlator, el) => {
@@ -149,10 +149,9 @@ function EditPartCost(props) {
         }, 0)
 
         tempsubAssemblyTechnologyArray[0].CostingPartDetails.EditPartCost = costPerAssemblyTotal
-        tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerAssembly = checkForNull(costPerAssemblyTotal) + checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails?.CostPerAssemblyBOP) + (checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.ProcessCostValue) + checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.OperationCostValue))
+        tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerAssembly = checkForNull(costPerAssemblyTotal) + checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.CostPerAssemblyBOP) + (checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.ProcessCostValue) + checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.OperationCostValue))
         dispatch(setSubAssemblyTechnologyArray(tempsubAssemblyTechnologyArray, res => { }))
 
-        props.getCostPerPiece(weightedCost)
         props.closeDrawer('')
 
         // SAVE API FOR PART COST

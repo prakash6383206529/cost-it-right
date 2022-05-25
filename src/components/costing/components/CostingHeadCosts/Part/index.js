@@ -1,25 +1,12 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { costingInfoContext, NetPOPriceContext } from '../../CostingDetailStepTwo';
+import { costingInfoContext } from '../../CostingDetailStepTwo';
 import BOPCost from './BOPCost';
 import ProcessCost from './ProcessCost';
 import RawMaterialCost from './RawMaterialCost';
-import {
-  getRMCCTabData, saveComponentCostingRMCCTab, setComponentItemData, saveDiscountOtherCostTab,
-  setComponentDiscountOtherItemData,
-  saveAssemblyPartRowCostingCalculation,
-  setAllCostingInArray,
-  isDataChange,
-
-} from '../../../actions/Costing';
-import { checkForDecimalAndNull, checkForNull, loggedInUserId, CheckIsCostingDateSelected } from '../../../../../helper';
-import { EMPTY_GUID, LEVEL1 } from '../../../../../config/constants';
-import Toaster from '../../../../common/Toaster';
-import { MESSAGES } from '../../../../../config/message';
-import { ViewCostingContext } from '../../CostingDetails';
-import { createToprowObjAndSave } from '../../../CostingUtil';
-import DayTime from '../../../../common/DayTimeWrapper';
-
+import { getRMCCTabData, setComponentItemData } from '../../../actions/Costing';
+import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected } from '../../../../../helper';
+import { EMPTY_GUID } from '../../../../../config/constants';
 
 function PartCompoment(props) {
 
@@ -31,13 +18,9 @@ function PartCompoment(props) {
 
   const dispatch = useDispatch()
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { ComponentItemDiscountData, CloseOpenAccordion } = useSelector(state => state.costing)
+  const { CloseOpenAccordion } = useSelector(state => state.costing)
 
   const costData = useContext(costingInfoContext);
-  const CostingViewMode = useContext(ViewCostingContext);
-  const netPOPrice = useContext(NetPOPriceContext);
-
-
 
   const toggle = (BOMLevel, PartNumber) => {
     if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
@@ -206,11 +189,11 @@ function PartCompoment(props) {
 
   // }, [IsOpen])
 
-  const InjectDiscountAPICall = () => {
-    dispatch(saveDiscountOtherCostTab(ComponentItemDiscountData, res => {
-      dispatch(setComponentDiscountOtherItemData({}, () => { }))
-    }))
-  }
+  // const InjectDiscountAPICall = () => {                 
+  //   dispatch(saveDiscountOtherCostTab(ComponentItemDiscountData, res => {
+  //     dispatch(setComponentDiscountOtherItemData({}, () => { }))
+  //   }))
+  // }
 
   /**
    * @method render

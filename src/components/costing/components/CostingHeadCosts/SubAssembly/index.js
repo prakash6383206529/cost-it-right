@@ -3,13 +3,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { costingInfoContext } from '../../CostingDetailStepTwo';
 import BoughtOutPart from '../BOP';
 import PartCompoment from '../Part';
-import { getRMCCTabData, saveAssemblyBOPHandlingCharge, setAllCostingInArray, } from '../../../actions/Costing';
+import { getRMCCTabData, saveAssemblyBOPHandlingCharge } from '../../../actions/Costing';
 import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, } from '../../../../../helper';
 import AddAssemblyOperation from '../../Drawers/AddAssemblyOperation';
 import { ViewCostingContext } from '../../CostingDetails';
 import { EMPTY_GUID } from '../../../../../config/constants';
 import _ from 'lodash'
-import DayTime from '../../../../common/DayTimeWrapper';
 import AddBOPHandling from '../../Drawers/AddBOPHandling';
 
 function AssemblyPart(props) {
@@ -23,7 +22,7 @@ function AssemblyPart(props) {
   const CostingViewMode = useContext(ViewCostingContext);
   const costData = useContext(costingInfoContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { CostingEffectiveDate, setArrayForCosting } = useSelector(state => state.costing)
+  const { CostingEffectiveDate } = useSelector(state => state.costing)
   const dispatch = useDispatch()
 
   const toggle = (BOMLevel, PartNumber) => {
@@ -58,6 +57,7 @@ function AssemblyPart(props) {
           array = JSON.parse(localStorage.getItem('costingArray'))
           Data.CostingChildPartDetails && Data.CostingChildPartDetails.map(item => {
             array.push(item)
+            return null
           })
           let uniqueArary = _.uniqBy(array, v => JSON.stringify([v.PartNumber, v.AssemblyPartNumber]))
           localStorage.setItem('costingArray', JSON.stringify(uniqueArary));
@@ -119,6 +119,7 @@ function AssemblyPart(props) {
         subAssembId={item.CostingId}
       />
     }
+    return null
   })
 
   const nestedAssembly = children && children.map(el => {

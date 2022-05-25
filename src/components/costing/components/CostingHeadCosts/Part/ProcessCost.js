@@ -38,12 +38,8 @@ function ProcessCost(props) {
   const [isDrawerOpen, setDrawerOpen] = useState(false)
   const [Ids, setIds] = useState([])
   const [MachineIds, setMachineIds] = useState([])
-  const [isOpen, setIsOpen] = useState(data && data.IsShowToolCost)
   const [tabData, setTabData] = useState(props.data)
-  const [oldTabData, setOldTabData] = useState(props.data)
-  const [oldGridData, setOldGridData] = useState(data && data.CostingProcessCostResponse)
   const [isCalculator, setIsCalculator] = useState(false)
-  const [remarkPopUpData, setRemarkPopUpData] = useState("")
   const [processAccObj, setProcessAccObj] = useState({});
   const [calculatorTechnology, setCalculatorTechnology] = useState('')
   const [calculatorData, setCalculatorDatas] = useState({})
@@ -68,8 +64,10 @@ function ProcessCost(props) {
         item.ProcessList && item.ProcessList.map(processItem => {
           processItem.GroupName = item.GroupName
           apiArr.push(processItem)
+          return null
         })
       }
+      return null
     })
     return apiArr
   }
@@ -82,7 +80,7 @@ function ProcessCost(props) {
     }
     if (!CostingViewMode && !IsLocked) {
       selectedIds(gridData)
-      if (JSON.stringify(gridData) !== JSON.stringify(oldGridData)) {
+      if (JSON.stringify(gridData) !== JSON.stringify(data && data.CostingProcessCostResponse)) {
         dispatch(isDataChange(true))
       }
       if (isFromApi) {
@@ -91,7 +89,7 @@ function ProcessCost(props) {
       }
 
 
-      if (JSON.stringify(tabData) !== JSON.stringify(oldTabData)) {
+      if (JSON.stringify(tabData) !== JSON.stringify(props.data)) {
         if (isAssemblyTechnology) {
           props.getValuesOfProcess(tabData, tabData?.ProcessCostTotal)
         } else {
@@ -143,7 +141,6 @@ function ProcessCost(props) {
     setCalciIndex(id)
     setParentCalciIndex(parentIndex)
     setListData(list)
-    let tempArr = []
     let tempData
     if (parentIndex === '') {
       tempData = gridData[id]
@@ -263,8 +260,10 @@ function ProcessCost(props) {
           item.ProcessList && item.ProcessList.map(processItem => {
             processItem.GroupName = item.GroupName
             apiArr.push(processItem)
+            return null
           })
         }
+        return null
       })
 
       let finalProcessCostTotal = processTemparr && processTemparr.reduce((accummlator, el) => {
@@ -287,7 +286,6 @@ function ProcessCost(props) {
 
 
   const onRemarkPopUpClickk = (index) => {
-    setRemarkPopUpData(getValues(`${ProcessGridFields}.${index}.remarkPopUp`))
 
     let tempArr = []
     let tempData = gridData[index]
@@ -361,10 +359,6 @@ function ProcessCost(props) {
     button.click()
 
   }
-
-  useEffect(() => {
-    dispatch(setIsToolCostUsed(isOpen))
-  }, [isOpen])
 
   /**
    * @method DrawerToggle
@@ -630,6 +624,7 @@ function ProcessCost(props) {
         } else {
           newArr.push(el)
         }
+        return null
       })
 
       dispatch(setIdsOfProcessGroup(newArr))

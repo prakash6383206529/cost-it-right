@@ -9,7 +9,6 @@ import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../.
 import { ASSEMBLY } from '../../../../config/masterData';
 import { createToprowObjAndSave, findSurfaceTreatmentData } from '../../CostingUtil';
 import { saveAssemblyCostingRMCCTab, saveAssemblyPartRowCostingCalculation } from '../../actions/Costing';
-import { SET_PACKAGE_AND_FREIGHT_TAB_DATA } from '../../../../config/constants';
 
 function AddAssemblyOperation(props) {
   const { item, CostingViewMode, isAssemblyTechnology } = props;
