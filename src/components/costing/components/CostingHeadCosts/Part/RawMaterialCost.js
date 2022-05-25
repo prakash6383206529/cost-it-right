@@ -988,6 +988,10 @@ function RawMaterialCost(props) {
   // const rmGridFields = 'rmGridFields'
 
   const DisableMasterBatchCheckbox = (value) => {
+
+    if (value === true) {
+      setIsApplyMasterBatch(false)
+    }
     setMasterBatch(value)
   }
 
