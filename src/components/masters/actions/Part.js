@@ -407,7 +407,7 @@ export function getSelectListPartType(callback) {
 */
 export function getAssemblyPartSelectList(data, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getAssemblyPartSelectList}?technologyId=${data}`, config());
+        const request = axios.get(`${API.getAssemblyPartSelectList}?technologyId=${data.technologyId}&effectiveDate=${data.date}`, config());
         request.then((response) => {
             dispatch({
                 type: GET_ASSEMBLY_PART_SELECTLIST,
@@ -428,7 +428,7 @@ export function getAssemblyPartSelectList(data, callback) {
 */
 export function getComponentPartSelectList(data, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getComponentPartSelectList}?technologyId=${data}`, config());
+        const request = axios.get(`${API.getComponentPartSelectList}?technologyId=${data.technologyId}&effectiveDate=${data.date}`, config());
         request.then((response) => {
             dispatch({
                 type: GET_COMPONENT_PART_SELECTLIST,
@@ -447,9 +447,9 @@ export function getComponentPartSelectList(data, callback) {
 * @method getBoughtOutPartSelectList
 * @description GET COMPONENT PART SELECTLIST
 */
-export function getBoughtOutPartSelectList(callback) {
+export function getBoughtOutPartSelectList(date, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getBoughtOutPartSelectList}`, config());
+        const request = axios.get(`${API.getBoughtOutPartSelectList}?effectiveDate=${date}`, config());
         request.then((response) => {
             dispatch({
                 type: GET_BOUGHTOUT_PART_SELECTLIST,
@@ -769,3 +769,23 @@ export function getProductGroupSelectList(callback) {
         })
     }
 }
+
+
+export function getPartDescription(partNumber, partId, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getPartDescription}?PartNumber=${partNumber}&PartTypeId=${partId}`, config())
+        request.then((response) => {
+            if (response && response.status === 200) {
+                callback(response)
+            } else {
+                callback([])
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE })
+            apiErrors(error)
+        })
+    }
+}
+
+
+

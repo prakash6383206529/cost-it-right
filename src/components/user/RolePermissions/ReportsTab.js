@@ -182,6 +182,7 @@ class ReportsTab extends Component {
       item.Actions && item.Actions.map((item1, index) => {
         item1.IsChecked = isCheckedSelectAll;
       })
+      item.IsChecked = isCheckedSelectAll
       return actionRows;
     })
     this.setState({ Modules: actionArray, })

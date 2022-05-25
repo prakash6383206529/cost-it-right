@@ -8,7 +8,7 @@ import { renderText, renderTextAreaField, focusOnError, renderDatePicker, render
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common';
 import {
   createAssemblyPart, updateAssemblyPart, getAssemblyPartDetail, fileUploadPart, fileDeletePart,
-  getBOMViewerTreeDataByPartIdAndLevel, getProductGroupSelectList
+  getBOMViewerTreeDataByPartIdAndLevel, getProductGroupSelectList, getPartDescription
 } from '../actions/Part';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
@@ -24,8 +24,10 @@ import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from "../../../assests/images/red-cross.png";
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import _, { debounce } from 'lodash';
+import WarningMessage from '../../common/WarningMessage'
 
 const selector = formValueSelector('AddAssemblyPart')
+export const PartEffectiveDate = React.createContext()
 
 class AddAssemblyPart extends Component {
   constructor(props) {
@@ -63,6 +65,7 @@ class AddAssemblyPart extends Component {
       isBomEditable: false,
       isDisableBomNo: false,
       minEffectiveDate: '',
+      warningMessage: false
     }
   }
 
@@ -113,7 +116,8 @@ class AddAssemblyPart extends Component {
               BOMViewerData: Data.ChildParts,
               ProductGroup: productArray,
               oldProductGroup: productArray,
-              isBomEditable: Data.IsBOMEditable
+              isBomEditable: Data.IsBOMEditable,
+              warningMessage: true
             }, () => this.setState({ isLoader: false }))
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
             let files = Data.Attachements && Data.Attachements.map((item) => {
@@ -136,6 +140,26 @@ class AddAssemblyPart extends Component {
       this.props.getAssemblyPartDetail('', res => { })
     }
   }
+
+
+  onPartNoChange = debounce((e) => {
+
+    if (!this.state.isEditFlag) {
+      this.props.getPartDescription(e?.target?.value, 1, (res) => {
+        if (res?.data?.Data) {
+          let finalData = res.data.Data
+          this.props.change("Description", finalData.Description)
+          this.props.change("AssemblyPartName", finalData.PartName)
+          this.setState({ disablePartName: true })
+        } else {
+          this.props.change("Description", "")
+          this.props.change("AssemblyPartName", "")
+          this.setState({ disablePartName: false })
+        }
+      })
+    }
+  }, 600)
+
 
   /**
   * @method handlePlant
@@ -372,6 +396,18 @@ class AddAssemblyPart extends Component {
 
   closeBOMViewerDrawer = (e = '', drawerData, isSaved, isEqual) => {
     this.setState({ isOpenBOMViewerDrawer: false, BOMViewerData: drawerData, avoidAPICall: isSaved, BOMChanged: isEqual ? false : true })
+
+    if (drawerData.length !== 1 && !this.state.isEditFlag) {
+      this.setState({ minEffectiveDate: this.state.effectiveDate, warningMessage: true })
+    } else if (drawerData.length === 1) {
+      this.setState({ minEffectiveDate: "", warningMessage: false })
+    }
+
+    if (isEqual) {
+      return false
+    } else {
+      this.setState({ isDisableBomNo: true })
+    }
   }
 
   // specify upload params and url for your files
@@ -785,6 +821,7 @@ class AddAssemblyPart extends Component {
                             validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20]}
                             component={renderText}
                             required={true}
+                            onChange={this.onPartNoChange}
                             className=""
                             customClassName={"withBorder"}
                             disabled={isEditFlag ? true : false}
@@ -801,7 +838,7 @@ class AddAssemblyPart extends Component {
                             required={true}
                             className=""
                             customClassName={"withBorder"}
-                            disabled={isViewMode}
+                            disabled={isViewMode || (!isEditFlag && this.state.disablePartName)}
                           />
                         </Col>
                         <Col md="3">
@@ -945,6 +982,7 @@ class AddAssemblyPart extends Component {
                               />
                             </div>
                           </div>
+                          {this.state.warningMessage && <WarningMessage dClass="mr-3" message={'Please reset the BOM to select the previous date'} />}
                         </Col>
 
 
@@ -1100,18 +1138,20 @@ class AddAssemblyPart extends Component {
           )}
 
           {isOpenBOMViewerDrawer && (
-            <BOMViewer
-              isOpen={isOpenBOMViewerDrawer}
-              closeDrawer={this.closeBOMViewerDrawer}
-              TechnologySelected={this.state.TechnologySelected}
-              isEditFlag={this.state.isEditFlag}
-              PartId={this.state.PartId}
-              anchor={"right"}
-              BOMViewerData={this.state.BOMViewerData}
-              NewAddedLevelOneChilds={this.state.NewAddedLevelOneChilds}
-              isFromVishualAd={isViewMode}
-              avoidAPICall={this.state.avoidAPICall}
-            />
+            <PartEffectiveDate.Provider value={DayTime(this.state.effectiveDate).format('DD-MM-YYYY')}>
+              <BOMViewer
+                isOpen={isOpenBOMViewerDrawer}
+                closeDrawer={this.closeBOMViewerDrawer}
+                TechnologySelected={this.state.TechnologySelected}
+                isEditFlag={this.state.isEditFlag}
+                PartId={this.state.PartId}
+                anchor={"right"}
+                BOMViewerData={this.state.BOMViewerData}
+                NewAddedLevelOneChilds={this.state.NewAddedLevelOneChilds}
+                isFromVishualAd={isViewMode}
+                avoidAPICall={this.state.avoidAPICall}
+              />
+            </PartEffectiveDate.Provider>
           )}
           {
             this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} disablePopup={disablePopup} />
@@ -1171,7 +1211,8 @@ export default connect(mapStateToProps, {
   updateAssemblyPart,
   getAssemblyPartDetail,
   getBOMViewerTreeDataByPartIdAndLevel,
-  getProductGroupSelectList
+  getProductGroupSelectList,
+  getPartDescription,
 })(reduxForm({
   form: 'AddAssemblyPart',
   onSubmitFail: errors => {
