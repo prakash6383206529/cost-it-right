@@ -7,7 +7,7 @@ import Drawer from '@material-ui/core/Drawer'
 import { SearchableSelectHookForm, TextFieldHookForm, TextAreaHookForm, DatePickerHookForm, NumberFieldHookForm, } from '../../../layout/HookFormInputs'
 import { getReasonSelectList, getAllApprovalDepartment, getAllApprovalUserFilterByDepartment, sendForApprovalBySender, isFinalApprover } from '../../actions/Approval'
 import { getConfigurationKey, userDetails } from '../../../../helper/auth'
-import { setCostingApprovalData, setCostingViewData, fileUploadCosting } from '../../actions/Costing'
+import { setCostingApprovalData, setCostingViewData, fileUploadCosting, checkHistoryCostingAndSAPPoPrice } from '../../actions/Costing'
 import { getVolumeDataByPartAndYear } from '../../../masters/actions/Volume'
 
 import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../helper'
@@ -18,7 +18,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { REASON_ID } from '../../../../config/constants'
 import PushSection from '../../../common/PushSection'
-import { debounce } from 'lodash'
+import _, { debounce } from 'lodash'
 import Dropzone from 'react-dropzone-uploader'
 import { FILE_URL } from "../../../../config/constants";
 import redcrossImg from "../../../../assests/images/red-cross.png";
@@ -54,11 +54,70 @@ const SendForApproval = (props) => {
   const [files, setFiles] = useState([]);
   const [IsOpen, setIsOpen] = useState(false);
   const [initialFiles, setInitialFiles] = useState([]);
+  const [isDisabledSAP, setIsDisabledSAP] = useState(false);
+  const [warningMessage, setWarningMessage] = useState('');
+  const [showErrorMessage, setShowErrorMessage] = useState(false);
   // const [showDate,setDate] = useState(false)
   // const [showDate,setDate] = useState(false)
   const userData = userDetails()
 
   useEffect(() => {
+
+    if (viewApprovalData?.length > 1) {
+      let disable = 0
+      let count = 0
+      let costingName = ''
+      let errorMessage = ''
+      viewApprovalData && viewApprovalData.map((item, index) => {
+        let requestObject = { costingId: item.costingId }
+
+        dispatch(checkHistoryCostingAndSAPPoPrice(requestObject, res => {
+          let status = 200
+          count++
+          if ('response' in res) {
+            status = res && res?.response?.status
+          }
+          if (!(status !== undefined && status === 200)) {
+            disable++
+            errorMessage = <p>{errorMessage} {res?.response?.data?.Message}</p>;
+            costingName = costingName + (costingName === '' ? '' : ', ') + item.costingName
+          }
+          if (disable !== 0) {
+            setIsDisabledSAP(true)
+          } else {
+            setIsDisabledSAP(false)
+          }
+          if (count === viewApprovalData.length) {
+            if (disable !== 0) {
+              setShowErrorMessage(true)
+              Toaster.error(errorMessage)
+            }
+            setWarningMessage(`Costing Number ${costingName} has an error, Please select other costing to send for approval`)
+
+          }
+        }))
+        return null
+      })
+
+    } else {
+
+      let requestObject = { costingId: viewApprovalData[0]?.costingId }
+      dispatch(checkHistoryCostingAndSAPPoPrice(requestObject, res => {
+        let status = 200
+        if ('response' in res) {
+          status = res && res?.response?.status
+        }
+        if (status !== undefined && status === 200) {
+          setIsDisabledSAP(false)
+        } else {
+          setShowErrorMessage(true)
+          setIsDisabledSAP(true)
+          Toaster.error(res?.response?.data?.Message)
+          setWarningMessage(`Costing Number ${viewApprovalData[0]?.costingName} has an error, Please select other costing to send for approval`)
+        }
+      }))
+    }
+
     let obj = {}
     obj.TechnologyId = partInfo.TechnologyId
     obj.DepartmentId = '00000000-0000-0000-0000-000000000000'
@@ -930,6 +989,7 @@ const SendForApproval = (props) => {
                     </Col>
                   </Row>
                 ) : null}
+                {showErrorMessage && <WarningMessage dClass="pl-3" message={warningMessage} />}
                 <Row className="mb-4">
                   <Col
                     md="12"
@@ -949,7 +1009,7 @@ const SendForApproval = (props) => {
                       className="btn btn-primary save-btn"
                       type="button"
                       // className="submit-button save-btn"
-                      disabled={isDisable}
+                      disabled={isDisable || isDisabledSAP}
                       onClick={onSubmit}
                     >
                       <div className={'save-icon'}></div>
