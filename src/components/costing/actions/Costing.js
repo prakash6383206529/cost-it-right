@@ -30,7 +30,7 @@ import {
   SELECTED_PROCESS_AND_GROUPCODE,
   SET_PROCESS_ID,
   SET_PROCESSGROUP_ID,
-  CHECK_HISTORY_COSTING_AND_SPACE_PO_PRICE,
+  CHECK_HISTORY_COSTING_AND_SAP_PO_PRICE,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -2441,7 +2441,7 @@ export function checkHistoryCostingAndSAPPoPrice(params, callback) {
     request.then((response) => {
       if (response.data.Result || response.status === 204) {
         dispatch({
-          type: CHECK_HISTORY_COSTING_AND_SPACE_PO_PRICE,
+          type: CHECK_HISTORY_COSTING_AND_SAP_PO_PRICE,
           payload: response.status === 204 ? [] : response.data.DataList,
         })
         callback(response)
