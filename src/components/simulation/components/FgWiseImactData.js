@@ -120,7 +120,7 @@ export function Fgwiseimactdata(props) {
 
 
                                         {acc1.currentIndex === index && acc1.isClicked && item.childPartsList.map((item, index) => {
-                                            let VendorSOBImpactPerPiece = checkForNull(item.VariancePerPiece) / checkForNull(checkForNull(item.VendorSOBPercentage) / 100)
+                                            let VendorSOBImpactPerPiece = checkForNull(item.VariancePerPiece) * checkForNull(checkForNull(item.VendorSOBPercentage) / 100)
 
                                             return (
                                                 <tr className="accordian-content">
