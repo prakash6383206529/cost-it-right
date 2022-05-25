@@ -6,8 +6,13 @@ import { required, maxLength5, minValue1, minValueLessThan1, positiveAndDecimalN
 import { renderText, searchableSelect } from "../../layout/FormInputs";
 import { getBoughtOutPartSelectList, getDrawerBOPData } from '../actions/Part';
 import { BOUGHTOUTPART } from '../../../config/constants';
+import LoaderCustom from '../../common/LoaderCustom';
+import { PartEffectiveDate } from './AddAssemblyPart';
+
 
 class AddBOPForm extends Component {
+  static contextType = PartEffectiveDate
+
   constructor(props) {
     super(props);
     this.state = {
@@ -15,7 +20,8 @@ class AddBOPForm extends Component {
       parentPart: [],
       BOPPart: [],
       isAddMore: false,
-      titleObj: {}
+      titleObj: {},
+      isLoader: false
     }
   }
 
@@ -24,8 +30,9 @@ class AddBOPForm extends Component {
  * @description called after render the component
  */
   componentDidMount() {
-
-    this.props.getBoughtOutPartSelectList(() => { })
+    this.setState({ isLoader: true })
+    const date = this.context
+    this.props.getBoughtOutPartSelectList(date, () => { this.setState({ isLoader: false }) })
 
   }
 
@@ -160,6 +167,7 @@ class AddBOPForm extends Component {
         >
           <Row>
             <Col md="6">
+              {this.state.isLoader && <LoaderCustom customClass="add-child-input" />}
               <Field
                 name="BOPPartNumber"
                 type="text"
@@ -177,6 +185,7 @@ class AddBOPForm extends Component {
                 required={true}
                 handleChangeDescription={this.handleBOPPartChange}
                 valueDescription={this.state.BOPPart}
+                disabled={this.state.isLoader ? true : false}
               />
             </Col>
             <Col md="6">
