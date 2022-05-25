@@ -383,7 +383,7 @@ function OverheadProfit(props) {
       // IF BLOCK WILL GET EXECUTED WHEN TECHNOLOGY FOR COSTING IS ASSEMBLY FOR OTHER TECHNOLOGIES ELSE WILL EXECUTE
       if (partType) {
         OverheadRMCost = checkForNull(headerCosts?.NetRawMaterialsCost)
-        OverheadCCCost = checkForNull(headerCosts?.ProcessCostTotal) + checkForNull(headerCosts?.TotalOperationCostPerAssembly)
+        OverheadCCCost = checkForNull(headerCosts?.ProcessCostTotal) + checkForNull(headerCosts?.OperationCostTotal)
         OverheadBOPCost = checkForNull(headerCosts?.NetBoughtOutPartCost)
         OverheadRMTotalCost = OverheadRMCost * calculatePercentage(OverheadRMPercentage)
         OverheadCCTotalCost = OverheadCCCost * calculatePercentage(OverheadCCPercentage)
@@ -560,7 +560,7 @@ function OverheadProfit(props) {
       // IF BLOCK WILL GET EXECUTED WHEN TECHNOLOGY FOR COSTING IS ASSEMBLY FOR OTHER TECHNOLOGIES ELSE WILL EXECUTE
       if (partType) {
         ProfitRMCost = checkForNull(headerCosts?.NetRawMaterialsCost)
-        ProfitCCCost = checkForNull(headerCosts?.ProcessCostTotal) + checkForNull(headerCosts?.TotalOperationCostPerAssembly)
+        ProfitCCCost = checkForNull(headerCosts?.ProcessCostTotal) + checkForNull(headerCosts?.OperationCostTotal)
         ProfitBOPCost = checkForNull(headerCosts?.NetBoughtOutPartCost)
         ProfitRMTotalCost = ProfitRMCost * calculatePercentage(ProfitRMPercentage)
         ProfitCCTotalCost = ProfitCCCost * calculatePercentage(ProfitCCPercentage)
@@ -734,16 +734,21 @@ function OverheadProfit(props) {
       let profitCombinedCost = 0
 
       const NetSurfaceTreatmentCost = SurfaceTreatmentCost && SurfaceTreatmentCost?.NetSurfaceTreatmentCost !== undefined ? checkForNull(SurfaceTreatmentCost?.NetSurfaceTreatmentCost) : checkForNull(CostingDataList[0]?.NetSurfaceTreatmentCost);
-      const { OverheadCCPercentage, OverheadPercentage, OverheadApplicability } = overheadObj;
-      const { ProfitCCPercentage, ProfitPercentage, ProfitApplicability } = overheadObj;
+      let OverheadCCPercentage = overheadObj?.OverheadCCPercentage
+      let OverheadPercentage = overheadObj?.OverheadPercentage
+      let OverheadApplicability = overheadObj?.OverheadApplicability
+
+      let ProfitCCPercentage = profitObj?.ProfitCCPercentage
+      let ProfitPercentage = profitObj?.ProfitPercentage
+      let ProfitApplicability = profitObj?.ProfitApplicability
 
       // IF BLOCK WILL GET EXECUTED WHEN TECHNOLOGY FOR COSTING IS ASSEMBLY FOR OTHER TECHNOLOGIES ELSE WILL EXECUTE
       if (partType) {
-        let combinedCost = checkForNull(headerCosts?.ProcessCostTotal) + checkForNull(headerCosts?.TotalOperationCostPerAssembly)
+        let combinedCost = checkForNull(headerCosts?.ProcessCostTotal) + checkForNull(headerCosts?.OperationCostTotal)
         const BOPTotalCost = checkForNull(headerCosts?.NetBoughtOutPartCost)
         const PartCost = checkForNull(headerCosts?.NetRawMaterialsCost)
 
-        CC = checkForNull(headerCosts?.ProcessCostTotal) + checkForNull(headerCosts?.TotalOperationCostPerAssembly)
+        CC = checkForNull(headerCosts?.ProcessCostTotal) + checkForNull(headerCosts?.OperationCostTotal)
         RM_CC_BOP = checkForNull(PartCost) + checkForNull(combinedCost) + checkForNull(BOPTotalCost)
         RM_CC = checkForNull(PartCost) + checkForNull(combinedCost)
         BOP_CC = checkForNull(combinedCost) + checkForNull(BOPTotalCost)
@@ -763,6 +768,7 @@ function OverheadProfit(props) {
 
       // START HERE ADD CC IN OVERHEAD
       if (IsIncludedSurfaceInOverheadProfit && IsSurfaceTreatmentAdded === false && overheadObj && overheadObj?.IsOverheadCCApplicable) {
+
         const overheadCCCost = checkForNull(CC) + checkForNull(NetSurfaceTreatmentCost)
         const totalOverheadCost = checkForNull(overheadCCCost) * calculatePercentage(checkForNull(OverheadCCPercentage))
 
@@ -984,9 +990,11 @@ function OverheadProfit(props) {
       // START ADD CC IN PROFIT COMBINED
       if (IsIncludedSurfaceInOverheadProfit && IsSurfaceTreatmentAdded === false && profitObj && profitObj?.IsProfitCombined) {
 
+        console.log('ProfitApplicability: ', ProfitApplicability);
         switch (ProfitApplicability) {
           case 'RM + CC + BOP':
             profitCombinedCost = checkForNull(RM_CC_BOP) + checkForNull(NetSurfaceTreatmentCost)
+            console.log('RM_CC_BOP: ', RM_CC_BOP);
             profitTotalCost = checkForNull(profitCombinedCost) * calculatePercentage(checkForNull(ProfitPercentage))
 
             setValue('ProfitPercentage', checkForDecimalAndNull(ProfitPercentage, initialConfiguration.NoOfDecimalForPrice))

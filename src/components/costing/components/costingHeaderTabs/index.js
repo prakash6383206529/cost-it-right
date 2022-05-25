@@ -28,7 +28,6 @@ import WarningMessage from '../../../common/WarningMessage';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import TabAssemblyTechnology from './TabAssemblyTechnology';
 import { ASSEMBLY } from '../../../../config/masterData';
-import WarningMessage from '../../../common/WarningMessage';
 
 function CostingHeaderTabs(props) {
   const dispatch = useDispatch()
