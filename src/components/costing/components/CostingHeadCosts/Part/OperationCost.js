@@ -31,7 +31,6 @@ function OperationCost(props) {
   const [editIndex, setEditIndex] = useState('')
   const [Ids, setIds] = useState([])
   const [isDrawerOpen, setDrawerOpen] = useState(false)
-  const [remarkPopUpData, setRemarkPopUpData] = useState("")
   const [operationCostAssemblyTechnology, setOperationCostAssemblyTechnology] = useState(0)
   const CostingViewMode = useContext(ViewCostingContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)

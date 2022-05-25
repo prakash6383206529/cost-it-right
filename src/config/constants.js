@@ -150,7 +150,6 @@ export const API = {
   deleteExisCostingByPartID: `${BASE_URL}/masters-part-bill-of-material/delete-exist-costing-by-part`,
   createMBOMAssemblyApi: `${BASE_URL}/masters-part/create-mbom-assembly`,
 
-
   //CATEGORY MASTER
   createcategoryTypeAPI: `${BASE_URL}/masters-category/create-type`,
   createCategoryAPI: `${BASE_URL}/masters-category/create`,

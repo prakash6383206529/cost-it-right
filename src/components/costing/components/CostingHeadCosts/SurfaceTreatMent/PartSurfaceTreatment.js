@@ -9,7 +9,7 @@ import { EMPTY_GUID } from '../../../../../config/constants';
 
 function PartSurfaceTreatment(props) {
 
-  const { item, isAssemblyTechnology } = props;
+  const { item } = props;
 
   const [IsOpen, setIsOpen] = useState(false);
   const [Count, setCount] = useState(0);

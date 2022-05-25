@@ -311,7 +311,7 @@ function TabSurfaceTreatment(props) {
   //         i.IsOpen = params.IsCollapse ? !i.IsOpen : false;
   //         i.IsOpenAssemblyDrawer = false;
 
-  //         if (i.PartType === ASSEMBLYNAME) {
+  //         if (i.PartType === ASSEMBLY) {
   //           let tempArrForCosting = JSON.parse(localStorage.getItem('surfaceCostingArray'))
   //           let subAssemblyArray = i.CostingChildPartDetails
 
