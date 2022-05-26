@@ -125,7 +125,6 @@ const SendForApproval = (props) => {
     drawerDataObj.EffectiveDate = viewApprovalData[0].effectiveDate
     drawerDataObj.CostingHead = viewApprovalData[0].typeOfCosting === 0 ? 'ZBC' : 'VBC'
     drawerDataObj.Technology = partInfo.Technology
-    drawerDataObj.Vendor = `${viewApprovalData[0].vendorName}(${viewApprovalData[0].vendorCode})`;
     setCostingApprovalDrawerData(drawerDataObj);
 
 
@@ -523,7 +522,7 @@ const SendForApproval = (props) => {
       Toaster.warning("Allowed only xls, doc, jpeg, pdf files.");
     }
   };
-  const viewImactdrawer = () => {
+  const viewImpactDrawer = () => {
     setIsVerifyImpactDrawer(true)
   }
   const deleteFile = (FileId, OriginalFileName) => {
@@ -981,7 +980,7 @@ const SendForApproval = (props) => {
                       <div className={'cancel-icon'}></div>
                       {"Cancel"}
                     </button>
-                    <button type="button" className="user-btn mr5 save-btn" onClick={viewImactdrawer}>
+                    <button type="button" className="user-btn mr5 save-btn" onClick={viewImpactDrawer}>
                       <div className={"save-icon"}></div>
                       {"Verify Impact"}
                     </button>
