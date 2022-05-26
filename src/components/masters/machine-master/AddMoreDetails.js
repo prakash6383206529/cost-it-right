@@ -18,7 +18,7 @@ import { getLabourTypeByMachineTypeSelectList } from '../actions/Labour';
 import { getFuelComboData, } from '../actions/Fuel';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { EMPTY_DATA, EMPTY_GUID } from '../../../config/constants'
+import { EMPTY_DATA, EMPTY_GUID, TIME } from '../../../config/constants'
 import { loggedInUserId, userDetails, getConfigurationKey } from "../../../helper/auth";
 import Switch from "react-switch";
 import Dropzone from 'react-dropzone-uploader';
@@ -244,7 +244,6 @@ class AddMoreDetails extends Component {
               singleRecordObject = {}
               let ProcessIdListTemp = []
               tempArray = item.GroupName
-
               item.ProcessList && item.ProcessList.map((item1) => {
                 ProcessIdListTemp.push(item1.ProcessId)
                 return null
@@ -284,6 +283,7 @@ class AddMoreDetails extends Component {
           setTimeout(() => {
             const { plantSelectList, machineTypeSelectList, ShiftTypeSelectList, DepreciationTypeSelectList,
               fuelComboSelectList, } = this.props;
+            const uomDetail = this.findUOMType(Data.MachineProcessRates.UnitOfMeasurementId)
 
             // let technologyArray = Data && Data.Technology.map((item) => ({ Text: item.Technology, Value: item.TechnologyId }))
             const plantObj = Data.Plant && plantSelectList && plantSelectList.find(item => item.Value === Data.Plant[0].PlantId)
@@ -336,7 +336,7 @@ class AddMoreDetails extends Component {
               remarks: Data.Remark,
               files: Data.Attachements,
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
-              UOM: (this.state.isProcessGroup && !this.state.isViewMode) ? { label: Data.MachineProcessRates[0].UnitOfMeasurement, value: Data.MachineProcessRates.UnitOfMeasurementId } : [],
+              UOM: (this.state.isProcessGroup && !this.state.isViewMode) ? { label: Data.MachineProcessRates[0].UnitOfMeasurement, value: Data.MachineProcessRates.UnitOfMeasurementId, type: uomDetail.Type, uom: uomDetail.Text } : [],
               lockUOMAndRate: (this.state.isProcessGroup && !this.state.isViewMode)
             }, () => this.props.change('MachineRate', (this.state.isProcessGroup && !this.state.isViewMode) ? Data.MachineProcessRates[0].MachineRate : ''))
           }, 500)
@@ -438,7 +438,7 @@ class AddMoreDetails extends Component {
         const accept = AcceptableMachineUOM.includes(item.Type)
         if (accept === false) return false
         if (item.Value === '0') return false;
-        temp.push({ label: item.Display, value: item.Value })
+        temp.push({ label: item.Display, value: item.Value, type: item.Type, uom: item.Text })
         return null;
       });
       return temp;
@@ -655,7 +655,8 @@ class AddMoreDetails extends Component {
   */
   handleUOM = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ UOM: newValue });
+      this.setState({ UOM: newValue }, () => { this.handleProcessCalculation() });
+
     } else {
       this.setState({ UOM: [] })
     }
@@ -803,7 +804,6 @@ class AddMoreDetails extends Component {
       this.totalMachineCost()
       this.powerCost()
       this.handleLabourCalculation()
-      this.handleProcessCalculation()
       if (LoanPercentage) {
         checkPercentageValue(LoanPercentage, "Loan percentage should not be more than 100") ? this.props.change('LoanPercentage', LoanPercentage) : this.props.change('LoanPercentage', 0)
       }
@@ -985,6 +985,7 @@ class AddMoreDetails extends Component {
   */
   totalMachineCost = () => {
     const { fieldsObj, initialConfiguration } = this.props;
+
     const { IsAnnualMaintenanceFixed, IsAnnualConsumableFixed, IsInsuranceFixed, machineFullValue } = this.state;
 
     const BuildingCostPerSquareFeet = fieldsObj && fieldsObj.BuildingCostPerSquareFeet !== undefined ? checkForNull(fieldsObj.BuildingCostPerSquareFeet) : 0;
@@ -1005,7 +1006,7 @@ class AddMoreDetails extends Component {
 
 
     machineFullValue.annualAreaCost = annualAreaCost;
-    const TotalMachineCostPerAnnum = checkForNull(DepreciationAmount + AnnualMaintanceAmount + AnnualConsumableAmount + AnnualInsuranceAmount + annualAreaCost + OtherYearlyCost);
+    const TotalMachineCostPerAnnum = checkForNull(DepreciationAmount) + checkForNull(AnnualMaintanceAmount) + checkForNull(AnnualConsumableAmount) + checkForNull(AnnualInsuranceAmount) + checkForNull(annualAreaCost) + checkForNull(OtherYearlyCost)
     machineFullValue.TotalMachineCostPerAnnum = TotalMachineCostPerAnnum
 
 
@@ -1075,13 +1076,22 @@ class AddMoreDetails extends Component {
   * @description called
   */
   handleProcessCalculation = () => {
-    const { fieldsObj, initialConfiguration } = this.props
+    const { fieldsObj, initialConfiguration, } = this.props
+    const { UOM } = this.state
+
+    let MachineRate
     const OutputPerHours = fieldsObj && fieldsObj.OutputPerHours !== undefined ? checkForNull(fieldsObj.OutputPerHours) : 0;
     const NumberOfWorkingHoursPerYear = fieldsObj && fieldsObj.NumberOfWorkingHoursPerYear !== undefined ? checkForNull(fieldsObj.NumberOfWorkingHoursPerYear) : 0;
     const TotalMachineCostPerAnnum = fieldsObj && fieldsObj.TotalMachineCostPerAnnum !== undefined ? checkForNull(fieldsObj.TotalMachineCostPerAnnum) : 0;
 
+    if (UOM.type === TIME) {
+
+      MachineRate = checkForNull(TotalMachineCostPerAnnum / NumberOfWorkingHoursPerYear) // THIS IS FOR HOUR CALCUALTION
+    } else {
+      MachineRate = fieldsObj.MachineRate // THIS IS FOR ALL UOM EXCEPT HOUR
+    }
     this.props.change('OutputPerYear', checkForDecimalAndNull(OutputPerHours * NumberOfWorkingHoursPerYear))
-    this.props.change('MachineRate', checkForDecimalAndNull(TotalMachineCostPerAnnum / (OutputPerHours * NumberOfWorkingHoursPerYear), initialConfiguration.NoOfDecimalForPrice))
+    this.props.change('MachineRate', checkForDecimalAndNull(MachineRate, initialConfiguration.NoOfDecimalForPrice))
   }
 
   /**
@@ -1245,6 +1255,7 @@ class AddMoreDetails extends Component {
   */
   processTableHandler = () => {
     const { processName, UOM, processGrid, isProcessGroup } = this.state;
+
     const { fieldsObj } = this.props
     const OutputPerHours = this.state.UOM.label === HOUR ? 0 : fieldsObj.OutputPerHours
 
@@ -1267,14 +1278,14 @@ class AddMoreDetails extends Component {
     const TotalMachineCostPerAnnum = fieldsObj && fieldsObj.TotalMachineCostPerAnnum !== undefined ? checkForNull(fieldsObj.TotalMachineCostPerAnnum) : 0;
 
     // CONDITION TO CHECK OUTPUT PER HOUR, NUMBER OF WORKING HOUR AND TOTAL MACHINE MACHINE COST IS NEGATIVE OR NOT A NUMBER
-    if (OutputPerHours < 0 || isNaN(OutputPerHours) || NumberOfWorkingHoursPerYear < 0 || isNaN(NumberOfWorkingHoursPerYear) || TotalMachineCostPerAnnum < 0 || isNaN(TotalMachineCostPerAnnum)) {
+    if (NumberOfWorkingHoursPerYear < 0 || isNaN(NumberOfWorkingHoursPerYear) || TotalMachineCostPerAnnum < 0 || isNaN(TotalMachineCostPerAnnum)) {
       Toaster.warning('Machine Rate can not be negative')
       return false;
     }
 
     let MachineRate
     const OutputPerYear = checkForNull(OutputPerHours * NumberOfWorkingHoursPerYear);
-    if (UOM.label === HOUR) {
+    if (UOM.type === TIME) {
       MachineRate = checkForNull(TotalMachineCostPerAnnum / NumberOfWorkingHoursPerYear) // THIS IS FOR HOUR CALCUALTION
     } else {
       MachineRate = checkForNull(TotalMachineCostPerAnnum / OutputPerYear); // THIS IS FOR ALL UOM EXCEPT HOUR
@@ -1300,7 +1311,7 @@ class AddMoreDetails extends Component {
     }, () => {
       this.props.change('OutputPerHours', isProcessGroup ? OutputPerHours : 0)
       this.props.change('OutputPerYear', isProcessGroup ? OutputPerYear : 0)
-      this.props.change('MachineRate', isProcessGroup ? MachineRate : 0)
+      this.props.change('MachineRate', isProcessGroup ? checkForDecimalAndNull(MachineRate, this.props.initialConfiguration.NoOfDecimalForPrice) : 0)
     });
   }
 
@@ -1334,14 +1345,14 @@ class AddMoreDetails extends Component {
     const TotalMachineCostPerAnnum = fieldsObj.TotalMachineCostPerAnnum
 
     // CONDITION TO CHECK OUTPUT PER HOUR, NUMBER OF WORKING HOUR AND TOTAL MACHINE MACHINE COST IS NEGATIVE OR NOT A NUMBER
-    if (OutputPerHours < 0 || isNaN(OutputPerHours) || NumberOfWorkingHoursPerYear < 0 || isNaN(NumberOfWorkingHoursPerYear) || TotalMachineCostPerAnnum < 0 || isNaN(TotalMachineCostPerAnnum)) {
+    if (NumberOfWorkingHoursPerYear < 0 || isNaN(NumberOfWorkingHoursPerYear) || TotalMachineCostPerAnnum < 0 || isNaN(TotalMachineCostPerAnnum)) {
       Toaster.warning('Machine rate can not be negative.')
       return false;
     }
 
     let MachineRate
     const OutputPerYear = checkForNull(OutputPerHours * NumberOfWorkingHoursPerYear);
-    if (UOM.label === HOUR) {
+    if (UOM.type === TIME) {
       MachineRate = checkForNull(TotalMachineCostPerAnnum / NumberOfWorkingHoursPerYear) // THIS IS FOR HOUR CALCUALTION
     } else {
       MachineRate = checkForNull(TotalMachineCostPerAnnum / OutputPerYear); // THIS IS FOR ALL UOM EXCEPT HOUR
@@ -1391,7 +1402,7 @@ class AddMoreDetails extends Component {
     }, () => {
       this.props.change('OutputPerHours', isProcessGroup ? fieldsObj.OutputPerHours : 0)
       this.props.change('OutputPerYear', isProcessGroup ? fieldsObj.OutputPerYear : 0)
-      this.props.change('MachineRate', isProcessGroup ? fieldsObj.MachineRate : 0)
+      this.props.change('MachineRate', isProcessGroup ? checkForDecimalAndNull(fieldsObj.MachineRate, this.props.initialConfiguration.NoOfDecimalForPrice) : 0)
     });
   };
 
@@ -1402,17 +1413,22 @@ class AddMoreDetails extends Component {
   editItemDetails = (index) => {
     const { processGrid } = this.state;
     const tempData = processGrid[index];
-
+    const uomDetail = this.findUOMType(tempData.UnitOfMeasurementId)
     this.setState({
       processGridEditIndex: index,
       isEditIndex: true,
       processName: { label: tempData.processName, value: tempData.processId },
-      UOM: { label: tempData.UnitOfMeasurement, value: tempData.UnitOfMeasurementId },
+      UOM: { label: tempData.UnitOfMeasurement, value: tempData.UnitOfMeasurementId, type: uomDetail.Type, uom: uomDetail.Text },
     }, () => {
       this.props.change('OutputPerHours', tempData.OutputPerHours)
       this.props.change('OutputPerYear', tempData.OutputPerYear)
       this.props.change('MachineRate', tempData.MachineRate)
     })
+  }
+
+  findUOMType = (uomId) => {
+    const uomObj = this.props.UOMSelectList && this.props.UOMSelectList.find(item => item.Value === uomId)
+    return { type: uomObj.Type, uom: uomObj.Text, }
   }
 
   /**
@@ -3195,7 +3211,8 @@ class AddMoreDetails extends Component {
                                 disabled={this.state.lockUOMAndRate}
                               />
                             </Col>
-                            {
+                            {/* COMMENT FOR NOW MAY BE USED LATER */}
+                            {/* {
                               // (this.state.UOM && (this.state.UOM.label !== HOUR || this.state.UOM.length === 0)) &&.la
                               (this.state.UOM.length === 0 || this.state.UOM.label !== HOUR) &&
                               <>
@@ -3229,7 +3246,8 @@ class AddMoreDetails extends Component {
                                 </Col>
                               </>
 
-                            }
+                            } */}
+
                             <Col className="d-flex col-auto">
                               <div className="machine-rate-filed pr-3">
                                 <Field
@@ -3239,9 +3257,9 @@ class AddMoreDetails extends Component {
                                   placeholder={''}
                                   validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
                                   component={renderText}
-                                  onChange={this.handleMachineRate}
+                                  // onChange={this.handleMachineRate}
                                   //required={true}
-                                  disabled={true}
+                                  disabled={this.state.UOM.type === TIME ? true : this.state.isViewMode || this.state.lockUOMAndRate || (isEditFlag && isMachineAssociated)}
                                   className=" "
                                   customClassName=" withBorder"
                                 />
