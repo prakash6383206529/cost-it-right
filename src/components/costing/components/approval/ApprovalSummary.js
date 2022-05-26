@@ -368,6 +368,7 @@ function ApprovalSummary(props) {
                   parentField={parentField}
                   childField={childField}
                   impactType={'FgWise'}
+                  approvalSummaryTrue={true}
                 />
               </Col>
             </Row>}

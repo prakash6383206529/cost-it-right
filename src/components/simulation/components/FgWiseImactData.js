@@ -16,7 +16,7 @@ export function Fgwiseimactdata(props) {
     const [acc1, setAcc1] = useState({ currentIndex: -1, isClicked: false, })
     const [showTableData, setshowTableData] = useState(false)
     const dispatch = useDispatch()
-    const { SimulationId, headerName, dataForAssemblyImpact, vendorIdState, impactType, costingDrawer } = props
+    const { SimulationId, headerName, dataForAssemblyImpact, vendorIdState, impactType, approvalSummaryTrue } = props
     const [loader, setLoader] = useState(false)
 
     const impactData = useSelector((state) => state.simulation.impactData)
