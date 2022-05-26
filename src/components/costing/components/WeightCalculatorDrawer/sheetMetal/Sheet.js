@@ -318,6 +318,12 @@ function Sheet(props) {
         // return (<sup>2</sup>)
     }
 
+    const handleKeyDown = function (e) {
+        if (e.key === 'Enter' && e.shiftKey === false) {
+            e.preventDefault();
+        }
+    };
+
     /**
      * @method render
      * @description Renders the component
@@ -326,7 +332,8 @@ function Sheet(props) {
         <>
             <div className="user-page p-0">
                 <div>
-                    <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}>
+                    <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}
+                        onKeyDown={(e) => { handleKeyDown(e, onSubmit.bind(this)); }}>
                         <div className="costing-border border-top-0 px-4">
                             <Row>
                                 <Col md="12" className={'mt25'}>

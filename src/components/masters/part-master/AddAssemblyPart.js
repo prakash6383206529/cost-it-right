@@ -324,7 +324,7 @@ class AddAssemblyPart extends Component {
   */
   checkIsFormFilled = () => {
     const { fieldsObj } = this.props;
-    if (fieldsObj.BOMNumber === undefined || fieldsObj.AssemblyPartNumber === undefined || fieldsObj.AssemblyPartName === undefined || Object.keys(this.state.TechnologySelected).length === 0) {
+    if (fieldsObj.BOMNumber === undefined || fieldsObj.AssemblyPartNumber === undefined || fieldsObj.AssemblyPartName === undefined || Object.keys(this.state.TechnologySelected).length === 0 || this.state.effectiveDate === "") {
       return false;
     } else {
       return true;
@@ -575,7 +575,7 @@ class AddAssemblyPart extends Component {
         childPartArray.push({
           PartId: item.PartType && (item.PartType === ASSEMBLY || item.PartType === COMPONENT_PART) ? item.PartId : '',
           ParentPartId: isEditFlag ? PartId : '',
-          BoughtOutPartId: item.PartType && item.PartType === BOUGHTOUTPART ? item.PartId : '',
+          BoughtOutPartId: item.PartType && item.PartType === BOUGHTOUTPART ? ((item.BoughtOutPartId !== undefined && item.BoughtOutPartId !== null) ? item.BoughtOutPartId : item.PartId) : '',
           PartTypeId: item.PartTypeId ? item.PartTypeId : '',
           PartType: item.PartType ? item.PartType : '',
           BOMLevel: 1,
