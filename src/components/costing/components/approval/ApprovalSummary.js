@@ -15,7 +15,8 @@ import PushButtonDrawer from './PushButtonDrawer'
 import { Errorbox } from '../../../common/ErrorBox'
 import { Redirect } from 'react-router'
 import LoaderCustom from '../../../common/LoaderCustom';
-import CalculatorWrapper from '../../../common/Calculator/CalculatorWrapper'
+import CalculatorWrapper from '../../../common/Calculator/CalculatorWrapper';
+import { ErrorMessage } from '../../../simulation/SimulationUtils';
 
 function ApprovalSummary(props) {
   const { approvalNumber, approvalProcessId } = props.location.state
@@ -42,7 +43,7 @@ function ApprovalSummary(props) {
 
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
   useEffect(() => {
-   
+
     approvalSummaryHandler()
 
 
@@ -132,7 +133,7 @@ function ApprovalSummary(props) {
         <>
           {isLoader && <LoaderCustom />}
           <div className="container-fluid approval-summary-page">
-            {/* <Errorbox customClass="d-none" errorText="There is some error in your page" /> */}
+            <ErrorMessage approvalNumber={approvalNumber} />
             <h2 className="heading-main">Approval Summary</h2>
             <Row>
               <Col md="8">
