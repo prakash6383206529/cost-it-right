@@ -82,6 +82,7 @@ const CostingSummaryTable = (props) => {
   const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
   const viewApprovalData = useSelector((state) => state.costing.costingApprovalData)
   const partInfo = useSelector((state) => state.costing.partInfo)
+  console.log('partInfo: ', partInfo);
   const partNumber = useSelector(state => state.costing.partNo);
   const { initialConfiguration, topAndLeftMenuData } = useSelector(state => state.auth)
   const [pdfName, setPdfName] = useState('')
@@ -570,10 +571,7 @@ const CostingSummaryTable = (props) => {
           obj.nPOPriceWithCurrency = viewCostingData[index].nPOPriceWithCurrency
           obj.currencyRate = viewCostingData[index].currency.currencyValue
           obj.variance = Number(viewCostingData[index].poPrice && viewCostingData[index].poPrice !== '-' ? viewCostingData[index].oldPoPrice : 0) - Number(viewCostingData[index].poPrice && viewCostingData[index].poPrice !== '-' ? viewCostingData[index].poPrice : 0)
-          let consumptionQty;
-          let remainingQty;
-          let annualImpact;
-          let yearImpact;
+
           let date = viewCostingData[index].effectiveDate
           if (viewCostingData[index].effectiveDate) {
             let variance = Number(viewCostingData[index].poPrice && viewCostingData[index].poPrice !== '-' ? viewCostingData[index].oldPoPrice : 0) - Number(viewCostingData[index].poPrice && viewCostingData[index].poPrice !== '-' ? viewCostingData[index].poPrice : 0)
@@ -627,7 +625,8 @@ const CostingSummaryTable = (props) => {
           obj.ecnNo = ''
           obj.effectiveDate = viewCostingData[index].effectiveDate
           obj.isDate = viewCostingData[index].effectiveDate ? true : false
-          obj.partNo = viewCostingData[index].partId
+          obj.partNo = viewCostingData[index].partId // Part id id part number here 
+
           obj.destinationPlantCode = viewCostingData[index].destinationPlantCode
           obj.destinationPlantName = viewCostingData[index].destinationPlantName
           obj.destinationPlantId = viewCostingData[index].destinationPlantId
