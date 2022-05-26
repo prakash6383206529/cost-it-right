@@ -21,10 +21,12 @@ import Dropzone from 'react-dropzone-uploader'
 import { FILE_URL } from "../../../../config/constants";
 import redcrossImg from "../../../../assests/images/red-cross.png";
 import VerifyImpactDrawer from '../../../simulation/components/VerifyImpactDrawer';
+import PushSection from '../../../common/PushSection'
 
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 const SendForApproval = (props) => {
+  const { isApprovalisting } = props
   const dispatch = useDispatch()
   const { register, handleSubmit, control, setValue, formState: { errors } } = useForm({
     mode: 'onBlur',
@@ -61,7 +63,7 @@ const SendForApproval = (props) => {
 
   useEffect(() => {
     let obj = {}
-    obj.TechnologyId = partInfo.TechnologyId
+    obj.TechnologyId = props.isApprovalisting ? props.technologyId : partInfo.TechnologyId
     obj.DepartmentId = '00000000-0000-0000-0000-000000000000'
     obj.LoggedInUserLevelId = userDetails().LoggedInLevelId
     obj.LoggedInUserId = userDetails().LoggedInUserId
@@ -344,7 +346,7 @@ const SendForApproval = (props) => {
       // const { netPo, quantity } = getPOPriceAfterDecimal(SAPData.DecimalOption.value, data.revisedPrice)
       let tempObj = {}
       tempObj.ApprovalProcessId = "00000000-0000-0000-0000-000000000000"
-      tempObj.TypeOfCosting = data.typeOfCosting === 0 ? 'ZBC' : 'VBC'
+      tempObj.TypeOfCosting = (data.typeOfCosting === 0 || data.typeOfCosting === 'ZBC') ? 'ZBC' : 'VBC'
       tempObj.PlantId =
         Number(data.typeOfCosting) === 0 ? data.plantId : ''
       tempObj.PlantNumber =
@@ -361,10 +363,10 @@ const SendForApproval = (props) => {
       // tempObj.ECNNumber = 1;
       tempObj.EffectiveDate = DayTime(data.effectiveDate).format('YYYY-MM-DD')
       tempObj.RevisionNumber = partNo.revisionNumber
-      tempObj.PartName = partNo.partName
+      tempObj.PartName = isApprovalisting ? data.partName : partNo.partName
       // tempObj.PartName = "Compressor"; // set data for this is in costing summary,will come here
-      tempObj.PartNumber = partNo.partNumber //label
-      tempObj.PartId = partNo.partId
+      tempObj.PartNumber = isApprovalisting ? data.partNumber : partNo.partNumber //label
+      tempObj.PartId = isApprovalisting ? data.partId : partNo.partId
       // tempObj.PartNumber = "CP021220";// set data for this is in costing summary,will come here
       tempObj.FinancialYear = financialYear
       tempObj.OldPOPrice = data.oldPrice
@@ -548,15 +550,15 @@ const SendForApproval = (props) => {
                     <Row className="px-3">
                       <Col md="12">
                         <h6 className="left-border d-inline-block mr-4">
-                          {data.typeOfCosting === 0 ? 'ZBC' : `${data.vendorName}`}
+                          {(data.typeOfCosting === 0 || data.typeOfCosting === 'ZBC') ? 'ZBC' : `${data.vendorName}`}
                         </h6>
                         <div className=" d-inline-block mr-4">
                           {`Part No.:`}{" "}
-                          <span className="grey-text">{`${partNo.partNumber}`}</span>
+                          <span className="grey-text">{`${isApprovalisting ? data.partNumber : partNo.partNumber}`}</span>
                         </div>
                         <div className=" d-inline-block mr-4">
-                          {data.typeOfCosting === 0 ? `Plant Code:` : `Vendor Code`}{" "}
-                          <span className="grey-text">{data.typeOfCosting === 0 ? `${data.plantCode}` : `${data.vendorCode}`}</span>
+                          {(data.typeOfCosting === 0 || data.typeOfCosting === 'ZBC') ? `Plant Code:` : `Vendor Code`}{" "}
+                          <span className="grey-text">{(data.typeOfCosting === 0 || data.typeOfCosting === 'ZBC') ? `${data.plantCode}` : `${data.vendorCode}`}</span>
                         </div>
                         <div className=" d-inline-block">
                           {`Costing Id:`}{" "}
