@@ -30,7 +30,7 @@ import ReactToPrint from 'react-to-print';
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
 const CostingSummaryTable = (props) => {
-  const { viewMode, showDetail, technologyId, costingID, showWarningMsg, simulationMode, isApproval, simulationDrawer, customClass, selectedTechnology, master, isSimulationDone } = props
+  const { viewMode, showDetail, technologyId, costingID, showWarningMsg, simulationMode, isApproval, simulationDrawer, customClass, selectedTechnology, master, isSimulationDone, approvalMode } = props
   let history = useHistory();
 
   const dispatch = useDispatch()
@@ -656,7 +656,7 @@ const CostingSummaryTable = (props) => {
   }, [viewCostingData])
 
   useEffect(() => {
-    if (costingID && Object.keys(costingID).length > 0 && !simulationMode) {
+    if (costingID && Object.keys(costingID).length > 0 && !simulationMode && !approvalMode) {
       dispatch(getSingleCostingDetails(costingID, (res) => {
         if (res.data.Data) {
           let dataFromAPI = res.data.Data
@@ -821,7 +821,7 @@ const CostingSummaryTable = (props) => {
                               <th scope="col" className='header-name'>
                                 <div class="element w-60 d-inline-flex align-items-center">
                                   {
-                                    (data.status === DRAFT) && <>
+                                    !isApproval && (data.status === DRAFT) && <>
                                       {!pdfHead && !drawerDetailPDF && <div class="custom-check1 d-inline-block">
                                         <label
                                           className="custom-checkbox pl-0 mb-0"
@@ -844,16 +844,16 @@ const CostingSummaryTable = (props) => {
                                     </>
                                   }
                                   {
-                                    isApproval ? <span>{data.CostingHeading}</span> : <span className="checkbox-text">{data.zbc === 0 ? `ZBC(${data.plantName})` : data.zbc === 1 ? `${data.vendorName}(${data.vendorCode}) ${localStorage.IsVendorPlantConfigurable ? `(${data.vendorPlantName})` : ''}` : 'CBC'}{` (SOB: ${data.shareOfBusinessPercent}%)`}</span>
+                                    (isApproval && data.CostingHeading !== '-') ? <span>{data.CostingHeading}</span> : <span className="checkbox-text">{data.zbc === 0 ? `ZBC(${data.plantName})` : data.zbc === 1 ? `${data.vendorName}(${data.vendorCode}) ${localStorage.IsVendorPlantConfigurable ? `(${data.vendorPlantName})` : ''}` : 'CBC'}{` (SOB: ${data.shareOfBusinessPercent}%)`}</span>
                                   }
                                 </div>
-                                {(!viewMode && icons) && (!pdfHead && !drawerDetailPDF) && (
-                                  <div class="action w-40 d-inline-block text-right">
-                                    {EditAccessibility && (data.status === DRAFT) && <button className="Edit mr-1 mb-0 align-middle" type={"button"} title={"Edit Costing"} onClick={() => editCostingDetail(index)} />}
-                                    {AddAccessibility && <button className="Add-file mr-1 mb-0 align-middle" type={"button"} title={"Add Costing"} onClick={() => addNewCosting(index)} />}
-                                    <button type="button" class="CancelIcon mb-0 align-middle" title={"Remove Costing"} onClick={() => deleteCostingFromView(index)}></button>
-                                  </div>
-                                )}
+
+                                <div class="action w-40 d-inline-block text-right">
+                                  {((!viewMode && (!pdfHead && !drawerDetailPDF)) && EditAccessibility) && (data.status === DRAFT) && <button className="Edit mr-1 mb-0 align-middle" type={"button"} title={"Edit Costing"} onClick={() => editCostingDetail(index)} />}
+                                  {((!viewMode && (!pdfHead && !drawerDetailPDF)) && AddAccessibility) && <button className="Add-file mr-1 mb-0 align-middle" type={"button"} title={"Add Costing"} onClick={() => addNewCosting(index)} />}
+                                  {((!viewMode || (approvalMode && data.CostingHeading === '-')) && (!pdfHead && !drawerDetailPDF)) && <button type="button" class="CancelIcon mb-0 align-middle" title={"Remove Costing"} onClick={() => deleteCostingFromView(index)}></button>}
+                                </div>
+
                               </th>
                             )
                           })}
@@ -861,7 +861,7 @@ const CostingSummaryTable = (props) => {
                     </thead>
                     <tbody>
                       {
-                        !isApproval ?
+                        (!isApproval || approvalMode) ?
                           <tr>
                             <td>
                               <span className="d-block">Costing Version</span>
