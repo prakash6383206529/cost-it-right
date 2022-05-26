@@ -18,10 +18,7 @@ import { VBC, ZBC } from '../../../../config/constants';
 import { runVerifyOverheadSimulation } from '../../actions/Simulation';
 import { checkForChangeInOverheadProfit1Values, checkForChangeInOverheadProfit2Values, checkForChangeInOverheadProfit3Values } from '../../SimulationUtils';
 
-const gridOptions = {
-
-};
-
+const gridOptions = {};
 
 function OverheadSimulation(props) {
     const { list, technology, master, isImpactedMaster, tokenForMultiSimulation } = props
@@ -705,6 +702,7 @@ function OverheadSimulation(props) {
                 } else {
                     value = true
                 }
+                value = fieldName === 'BOP' ? false : true
                 return value
 
             case 'RM + BOP':
@@ -713,6 +711,7 @@ function OverheadSimulation(props) {
                 } else {
                     value = true
                 }
+                value = fieldName === 'CC' ? false : true
                 return value
 
             case 'BOP + CC':
@@ -721,6 +720,7 @@ function OverheadSimulation(props) {
                 } else {
                     value = true
                 }
+                value = fieldName === 'RM' ? false : true
                 return value
 
             case 'RM + CC + BOP':
