@@ -117,7 +117,7 @@ class SOBListing extends Component {
     const cellValue = params?.valueFormatted ? params.valueFormatted : params?.value;
     return (
       <>
-        {EditAccessibility && <button className="Edit" type={'button'} onClick={() => this.editItemDetails(cellValue)} />}
+        {EditAccessibility && <button title='Edit' className="Edit" type={'button'} onClick={() => this.editItemDetails(cellValue)} />}
       </>
     )
   }

@@ -244,9 +244,7 @@ export const ProcessGroup = (props) => {
                                         <button
                                             type="button"
                                             className={`${props.isViewFlag ? 'disabled-button user-btn' : 'user-btn'} pull-left mr5`}
-                                            onClick={updateProcessTableHandler}
-                                        >
-                                            <div className={'plus'}></div>Update</button>
+                                            onClick={updateProcessTableHandler}>Update</button>
                                         <button
                                             type="button"
                                             className={`${props.isViewFlag ? 'disabled-button reset-btn' : 'reset-btn'} pull-left`}
