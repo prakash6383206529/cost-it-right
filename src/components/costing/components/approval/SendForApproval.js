@@ -24,6 +24,7 @@ import VerifyImpactDrawer from '../../../simulation/components/VerifyImpactDrawe
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 const SendForApproval = (props) => {
+  console.log('props: ', props);
   const { isApprovalisting } = props
   const dispatch = useDispatch()
   const { register, handleSubmit, control, setValue, formState: { errors } } = useForm({
@@ -126,7 +127,7 @@ const SendForApproval = (props) => {
     let drawerDataObj = {}
     drawerDataObj.EffectiveDate = viewApprovalData[0].effectiveDate
     drawerDataObj.CostingHead = viewApprovalData[0].typeOfCosting === 0 ? 'ZBC' : 'VBC'
-    drawerDataObj.Technology = partInfo.Technology
+    drawerDataObj.Technology = props.isApprovalisting ? props.technologyId : partInfo.TechnologyId
     setCostingApprovalDrawerData(drawerDataObj);
 
 
@@ -150,7 +151,7 @@ const SendForApproval = (props) => {
             getAllApprovalUserFilterByDepartment({
               LoggedInUserId: userData.LoggedInUserId,
               DepartmentId: departObj[0]?.Value,
-              TechnologyId: partNo.technologyId,
+              TechnologyId: props.isApprovalisting ? props.technologyId : partNo.technologyId,
               ReasonId: 0 // key only for minda
             }, (res) => {
               if (res.data.DataList.length === 1) {
@@ -421,7 +422,7 @@ const SendForApproval = (props) => {
       tempObj.RevisionNumber = partNo.revisionNumber
       tempObj.PartName = isApprovalisting ? data.partName : partNo.partName
       // tempObj.PartName = "Compressor"; // set data for this is in costing summary,will come here
-      tempObj.PartNumber = isApprovalisting ? data.partNumber : partNo.partNumber //label
+      tempObj.PartNumber = isApprovalisting ? data.partNo : partNo.partNumber //label
       tempObj.PartId = isApprovalisting ? data.partId : partNo.partId
       // tempObj.PartNumber = "CP021220";// set data for this is in costing summary,will come here
       tempObj.FinancialYear = financialYear
@@ -460,15 +461,15 @@ const SendForApproval = (props) => {
     // debounce_fun()
     // 
     // props.closeDrawer()
-    // dispatch(
-    //   sendForApprovalBySender(obj, (res) => {
-    //     setIsDisable(false)
-    //     Toaster.success(viewApprovalData.length === 1 ? `Costing ID ${viewApprovalData[0].costingName} has been sent for approval to ${approver.split('(')[0]}.` : `Costings has been sent for approval to ${approver.split('(')[0]}.`)
-    //     props.closeDrawer('', 'Submit')
-    //     dispatch(setCostingApprovalData([]))
-    //     dispatch(setCostingViewData([]))
-    //   }),
-    // )
+    dispatch(
+      sendForApprovalBySender(obj, (res) => {
+        setIsDisable(false)
+        Toaster.success(viewApprovalData.length === 1 ? `Costing ID ${viewApprovalData[0].costingName} has been sent for approval to ${approver.split('(')[0]}.` : `Costings has been sent for approval to ${approver.split('(')[0]}.`)
+        props.closeDrawer('', 'Submit')
+        dispatch(setCostingApprovalData([]))
+        dispatch(setCostingViewData([]))
+      }),
+    )
   }), 500)
 
   const handleApproverChange = (data) => {
@@ -605,7 +606,7 @@ const SendForApproval = (props) => {
                         </h6>
                         <div className=" d-inline-block mr-4">
                           {`Part No.:`}{" "}
-                          <span className="grey-text">{`${isApprovalisting ? data.partNumber : partNo.partNumber}`}</span>
+                          <span className="grey-text">{`${isApprovalisting ? data.partNo : partNo.partNumber}`}</span>
                         </div>
                         <div className=" d-inline-block mr-4">
                           {(data.typeOfCosting === 0 || data.typeOfCosting === 'ZBC') ? `Plant Code:` : `Vendor Code`}{" "}

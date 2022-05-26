@@ -208,7 +208,7 @@ function ApprovalListing(props) {
     let departmentCount = 0
     let statusArr = []
 
-    selectedRowData.forEach((element, index, arr) => {
+    selectedRows.forEach((element, index, arr) => {
       if (index > 0) {
         if (element.ReasonId !== arr[index - 1].ReasonId) {
           count = count + 1
@@ -219,7 +219,7 @@ function ApprovalListing(props) {
         return false
       }
     })
-    selectedRowData.forEach((element, index, arr) => {
+    selectedRows.forEach((element, index, arr) => {
       if (index > 0) {
         if (element.TechnologyId !== arr[index - 1].TechnologyId) {
           technologyCount = technologyCount + 1
@@ -231,7 +231,7 @@ function ApprovalListing(props) {
       }
     })
 
-    selectedRowData.forEach((element, index, arr) => {
+    selectedRows.forEach((element, index, arr) => {
       if (index > 0) {
         if (element.DepartmentId !== arr[index - 1].DepartmentId) {
           departmentCount = departmentCount + 1
@@ -264,7 +264,7 @@ function ApprovalListing(props) {
     }
 
     else {
-      setReasonId(selectedRows[0].ReasonId)
+      setReasonId(selectedRows && selectedRows[0]?.ReasonId)
     }
     setSelectedRowData(selectedRows)
   }
@@ -296,12 +296,10 @@ function ApprovalListing(props) {
       costingObj.nPOPriceWithCurrency = item.NetPOPriceOtherCurrency
       costingObj.currencyRate = item.CurrencyExchangeRate
       costingObj.variance = Number(item.NetPOPrice && item.NetPOPrice !== '-' ? item.oldNetPOPrice : 0) - Number(item.NetPOPrice && item.NetPOPrice !== '-' ? item.NetPOPrice : 0)
-
-
       costingObj.reason = ''
       costingObj.ecnNo = ''
-      costingObj.effectiveDate = DayTime(item.CreatedOn).format('YYYY-MM-DD HH:mm:ss')
-      costingObj.isDate = item.effectiveDate ? true : false
+      costingObj.effectiveDate = DayTime(item.EffectiveDate).format('YYYY-MM-DD HH:mm:ss')
+      costingObj.isDate = item.EffectiveDate ? true : false
       costingObj.partNo = item.PartNumber
       costingObj.partId = item.PartId
       costingObj.partName = item.PartName
@@ -320,6 +318,7 @@ function ApprovalListing(props) {
         } else {
           year = `${new Date(date).getFullYear()}-${new Date(date).getFullYear() + 1}`
         }
+        console.log(year, "year");
         dispatch(getVolumeDataByPartAndYear(item.PartId, year, res => {
           if (res.data.Result === true || res.status === 202) {
             let approvedQtyArr = res.data.Data.VolumeApprovedDetails
@@ -352,6 +351,7 @@ function ApprovalListing(props) {
 
         )
       }
+      console.log(costingObj, "costingObj");
       temp.push(costingObj)
       dispatch(setCostingApprovalData(temp))
     })
@@ -443,19 +443,20 @@ function ApprovalListing(props) {
       {
         !showApprovalSumary &&
         <div className={` ${!isApproval && 'container-fluid'} approval-listing-page`}>
-          <form onSubmit={() => { }} noValidate>
+          <form noValidate>
 
             {!isApproval && <h1 className="mb-0">Costing Approval</h1>}
 
             {isLoader && <LoaderCustom />}
             <Row className="pt-4 blue-before">
               <Col md="6" lg="6" className="search-user-block mb-3">
+
                 <div className="d-flex justify-content-end bd-highlight w100">
                   <div>
                     <button type="button" className="user-btn mr-2" title="Reset Grid" onClick={() => resetState()}>
                       <div className="refresh mr-0"></div>
                     </button>
-                    <button title="Send For Approval" class="user-btn approval-btn" onClick={sendForApproval}>
+                    <button title="Send For Approval" class="user-btn approval-btn" type='button' onClick={sendForApproval}>
                       <div className="send-for-approval mr-0" ></div>
                     </button>
                   </div>
