@@ -1525,10 +1525,11 @@ sans-serif;
 
 // drawer-full-top start
 .MuiDrawer-root.drawer-full-top {
-  .MuiDrawer-paper {
-    margin-top: 60px;
-    left: 0;
-
+  .MuiDrawer-paper { 
+      top: unset;
+      max-height: calc(100vh - 100px);
+      height: fit-content;
+      padding-bottom: 10px;
     .container {
       max-width: 100%;
 
@@ -7466,6 +7467,7 @@ git .sticky-btn-footer {
     position: absolute;
     top: 13px;
     right: 13px;
+    cursor: pointer;
   }
 }
 
@@ -7707,7 +7709,7 @@ git .sticky-btn-footer {
 }
 
 .other-costing-simulation {
-  min-height: calc(100vh - 337px);
+  min-height: calc(100vh - 308px);
 }
 
 // <-------------START Hover text overflow and show on hover css----------->
