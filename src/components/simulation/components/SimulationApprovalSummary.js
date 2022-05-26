@@ -32,13 +32,11 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PushButtonDrawer from '../../costing/components/approval/PushButtonDrawer';
 import { Impactedmasterdata } from './ImpactedMasterData';
-import { Errorbox } from '../../common/ErrorBox';
 import ReactExport from 'react-export-excel';
 import redcrossImg from '../../../assests/images/red-cross.png'
-import AssemblyWiseImpact from './AssemblyWiseImpact';
 import { Link } from 'react-scroll';
 import ScrollToTop from '../../common/ScrollToTop';
-import { impactmasterDownload, SimulationUtils } from '../SimulationUtils'
+import { ErrorMessage, impactmasterDownload, SimulationUtils } from '../SimulationUtils'
 import { SIMULATIONAPPROVALSUMMARYDOWNLOADRM } from '../../../config/masterData'
 import ViewAssembly from './ViewAssembly';
 import AssemblyWiseImpactSummary from './AssemblyWiseImpactSummary';
@@ -91,9 +89,7 @@ function SimulationApprovalSummary(props) {
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [id, setId] = useState('')
-    const [status, setStatus] = useState('')
     const [isSuccessfullyUpdated, setIsSuccessfullyUpdated] = useState(false)
-    const [noContent, setNoContent] = useState(false)
     const [initialFiles, setInitialFiles] = useState([]);
     const [files, setFiles] = useState([]);
     const [IsOpen, setIsOpen] = useState(false);
@@ -103,7 +99,6 @@ function SimulationApprovalSummary(props) {
     const [showViewAssemblyDrawer, setShowViewAssemblyDrawer] = useState(false)
     const [dataForAssemblyImpact, setDataForAssemblyImpact] = useState({})
     const [dataForDownload, setDataForDownload] = useState([])
-    const [count, setCount] = useState(0);
     const [assemblyImpactButtonTrue, setAssemblyImpactButtonTrue] = useState(true);
     const [showBOPColumn, setShowBOPColumn] = useState(false);
     const [showRMColumn, setShowRMColumn] = useState(false);
@@ -129,27 +124,12 @@ function SimulationApprovalSummary(props) {
     const { keysForDownloadSummary } = useSelector(state => state.simulation)
     const [lastRevisionDataAccordian, setLastRevisionDataAccordian] = useState(impactedMasterDataListForLastRevisionData?.length >= 0 ? false : true)
     const [editWarning, setEditWarning] = useState(false)
-    const [toggleSeeData1, setToggleSeeData1] = useState(true)
-    const [toggleSeeData2, setToggleSeeData2] = useState(true)
-    const [showSuccessMessage, setShowSuccessMessage] = useState(false)
-    const [showErrorMessage, setShowErrorMessage] = useState(false)
-
-    const headerName = ['Revision No.', 'Name', 'Old Cost/Pc', 'New Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
-    const headerNameAssembly = ['Revision No.', 'Name', 'Old PO Price/Assembly', 'New PO Price/Assembly', 'Level', 'Variance/Assembly', '', '', '', 'Assembly Number']
 
     const { setValue, getValues } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onChange',
     })
 
-    const funcForSuccessBoxButton = () => {
-        const statusWithButton = <><p className={`${toggleSeeData1 ? 'status-overflow' : ''} `}><span>{status}</span></p>{<Link to="success-box" spy={true} smooth={true} activeClass="active" ><button className='see-data-btn' onClick={() => { setToggleSeeData1(!toggleSeeData1) }}>Show {toggleSeeData1 ? 'all' : 'less'} data</button> </Link>}</>
-        return statusWithButton
-    }
-    const funcForErrorBoxButton = () => {
-        const statusWithButton = <><p className={`${toggleSeeData2 ? 'status-overflow' : ''} `}><span>{errorStatus}</span></p>{<Link to="error-box" spy={true} smooth={true} activeClass="active" ><button className='see-data-btn' onClick={() => { setToggleSeeData2(!toggleSeeData2) }}>Show {toggleSeeData2 ? 'all' : 'less'} data</button> </Link>}</>
-        return statusWithButton
-    }
 
     useEffect(() => {
         dispatch(getTechnologySelectList(() => { }))
@@ -224,21 +204,6 @@ function SimulationApprovalSummary(props) {
 
         }))
 
-        const obj = {
-            approvalTokenNumber: approvalNumber
-        }
-        dispatch(getAmmendentStatus(obj, res => {
-            setNoContent(res.status === 204 ? true : false)
-
-            if (res.status !== 204) {
-                const { Status, IsSuccessfullyUpdated, ErrorStatus } = res.data.DataList[0]
-                setStatus(Status)
-                setErrorStatus(ErrorStatus);
-                setShowSuccessMessage(Status.length > 245 ? true : false)
-                setShowErrorMessage(ErrorStatus.length > 245 ? true : false)
-                setIsSuccessfullyUpdated(IsSuccessfullyUpdated)
-            }
-        }))
 
     }
 
@@ -967,20 +932,6 @@ function SimulationApprovalSummary(props) {
         bopNumberFormat: bopNumberFormat
     };
 
-    const errorBoxClass = () => {
-        let temp = ''
-        if (errorStatus === '' || errorStatus === undefined || errorStatus === null) {
-            temp = 'd-none'
-        }
-        return temp
-    }
-    const successBoxClass = () => {
-        let temp = 'success'
-        if (status === '' || status === undefined || status === null) {
-            temp = 'd-none'
-        }
-        return temp
-    }
 
     const deleteFile = (FileId, OriginalFileName) => {
         if (FileId != null) {
@@ -1052,8 +1003,7 @@ function SimulationApprovalSummary(props) {
                     <CalculatorWrapper />
                     {loader && <LoaderCustom />}
                     <div className={`container-fluid  smh-approval-summary-page ${loader === true ? 'loader-wrapper' : ''}`} id="go-to-top">
-                        <Errorbox goToTopID={'success-box'} customClass={successBoxClass()} errorText={showSuccessMessage ? funcForSuccessBoxButton() : status} />
-                        <Errorbox goToTopID={'error-box'} customClass={errorBoxClass()} errorText={showErrorMessage ? funcForErrorBoxButton() : errorStatus} />
+                        <ErrorMessage approvalNumber={approvalNumber} />
                         <h2 className="heading-main">Approval Summary</h2>
                         <ScrollToTop pointProp={"go-to-top"} />
                         <Row>

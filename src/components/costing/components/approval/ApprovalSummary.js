@@ -19,6 +19,7 @@ import CalculatorWrapper from '../../../common/Calculator/CalculatorWrapper'
 import { debounce } from 'lodash'
 import Toaster from '../../../common/Toaster'
 import { INR } from '../../../../config/constants'
+import { ErrorMessage } from '../../../simulation/SimulationUtils' //THIS CODE WILL BE USE FOR SHWOING ERROR AND SUCCESS MESSAGE
 
 function ApprovalSummary(props) {
   const { approvalNumber, approvalProcessId } = props.location.state
@@ -183,7 +184,7 @@ function ApprovalSummary(props) {
         <>
           {isLoader && <LoaderCustom />}
           <div className="container-fluid approval-summary-page">
-            {/* <Errorbox customClass="d-none" errorText="There is some error in your page" /> */}
+            <ErrorMessage approvalNumber={approvalNumber} />
             <h2 className="heading-main">Approval Summary</h2>
             <Row>
               <Col md="8">

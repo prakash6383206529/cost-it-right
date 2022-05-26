@@ -1,4 +1,12 @@
+
+import React, { useEffect, useState } from "react";
 import { BOPImpactDownloadArray, ERImpactDownloadArray, OperationImpactDownloadArray, RMImpactedDownloadArray } from "../../config/masterData";
+import { Errorbox } from "../common/ErrorBox";
+import { useDispatch } from 'react-redux';
+import { getAmmendentStatus } from './actions/Simulation'
+import imgRedcross from '../../assests/images/red-cross.png';
+import imgGreencross from '../../assests/images/greenCross.png';
+import { Link } from 'react-scroll';
 
 
 export const SimulationUtils = (TempData) => {
@@ -188,4 +196,89 @@ export const impactmasterDownload = (impactedMasterData) => {
         }
     ];
     return multiDataSet
+}
+export const ErrorMessage = (props) => {
+    const [recordInsertStatusBox, setRecordInsertStatusBox] = useState(true);
+    const [amendmentStatusBox, setAmendmentStatusBox] = useState(true);
+    const [noContent, setNoContent] = useState(false)
+    const [status, setStatus] = useState('')
+    const [toggleSeeData1, setToggleSeeData1] = useState(true)
+    const [toggleSeeData2, setToggleSeeData2] = useState(true)
+    const [showSuccessMessage, setShowSuccessMessage] = useState(false)
+    const [showErrorMessage, setShowErrorMessage] = useState(false)
+    const [errorStatus, setErrorStatus] = useState('')
+    const { approvalNumber } = props
+    const dispatch = useDispatch()
+
+    const funcForSuccessBoxButton = () => {
+        const statusWithButton = <><p className={`${toggleSeeData1 ? 'status-overflow' : ''} `}><span>{status}</span></p>{<Link to="success-box" spy={true} smooth={true} activeClass="active" ><button className='see-data-btn' onClick={() => { setToggleSeeData1(!toggleSeeData1) }}>Show {toggleSeeData1 ? 'all' : 'less'} data</button> </Link>}</>
+        return statusWithButton
+    }
+    const funcForErrorBoxButton = () => {
+        const statusWithButton = <><p className={`${toggleSeeData2 ? 'status-overflow' : ''} `}><span>{errorStatus}</span></p>{<Link to="error-box" spy={true} smooth={true} activeClass="active" ><button className='see-data-btn' onClick={() => { setToggleSeeData2(!toggleSeeData2) }}>Show {toggleSeeData2 ? 'all' : 'less'} data</button> </Link>}</>
+        return statusWithButton
+    }
+    useEffect(() => {
+        const obj = {
+            approvalTokenNumber: approvalNumber
+        }
+        dispatch(getAmmendentStatus(obj, res => {
+            setNoContent(res.status === 204 ? true : false)
+
+            if (res.status !== 204) {
+                const { Status, ErrorStatus } = res.data.DataList[0]
+                setStatus(Status)
+                setErrorStatus(ErrorStatus);
+                setShowSuccessMessage(Status.length > 245 ? true : false)
+                setShowErrorMessage(ErrorStatus.length > 245 ? true : false)
+            }
+        }))
+    }, [])
+    const deleteInsertStatusBox = () => {
+        setRecordInsertStatusBox(false)
+    }
+    const deleteAmendmentStatusBox = () => {
+        setAmendmentStatusBox(false)
+    }
+
+    const errorBoxClass = () => {
+        let temp = ''
+        if (errorStatus === '' || errorStatus === undefined || errorStatus === null) {
+            temp = 'd-none'
+        }
+        return temp
+    }
+    const successBoxClass = () => {
+        let temp = 'success'
+        if (status === '' || status === undefined || status === null) {
+            temp = 'd-none'
+        }
+        return temp
+    }
+    return (<>
+        {recordInsertStatusBox &&
+            <div className="error-box-container">
+                <Errorbox goToTopID={'success-box'} customClass={successBoxClass()} errorText={showSuccessMessage ? funcForSuccessBoxButton() : status} />
+                <img
+                    className="float-right"
+                    alt={""}
+                    onClick={deleteInsertStatusBox}
+                    src={successBoxClass() === 'd-none' ? '' : successBoxClass() === "success" ? imgGreencross : imgRedcross}
+                ></img>
+            </div>
+        }
+
+        {amendmentStatusBox &&
+            <div className="error-box-container">
+                <Errorbox goToTopID={'error-box'} customClass={errorBoxClass()} errorText={showErrorMessage ? funcForErrorBoxButton() : errorStatus} />
+                <img
+                    className="float-right"
+                    alt={""}
+                    onClick={deleteAmendmentStatusBox}
+                    src={errorBoxClass() === 'd-none' ? '' : errorBoxClass() === "success" ? imgGreencross : imgRedcross}
+                ></img>
+            </div>
+
+        }
+    </>)
 }
