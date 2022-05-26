@@ -14,7 +14,7 @@ import { getFgWiseImpactDataForCosting } from '../../costing/actions/Costing';
 export function Fgwiseimactdata(props) {
     const [acc1, setAcc1] = useState({ currentIndex: -1, isClicked: false, })
     const [showTableData, setshowTableData] = useState(false)
-    const { SimulationId, headerName, dataForAssemblyImpact, vendorIdState, impactType, costingDrawer } = props
+    const { SimulationId, headerName, dataForAssemblyImpact, vendorIdState, impactType, approvalSummaryTrue } = props
     const [loader, setLoader] = useState(false)
     const [count, setCount] = useState(0)
 
@@ -55,7 +55,7 @@ export function Fgwiseimactdata(props) {
                 break;
             case 'FgWise':
                 //  DON'T REMOVE THE CODE IT WILL USE FOR GF WISE DATA IN FUTURE
-                // if (costingDrawer) {
+                // if (approvalSummaryTrue) {
                 //     dispatch(getFgWiseImpactDataForCosting(SimulationId, (res) => {
 
                 //         if (res && res.data && res.data.Result) {
