@@ -3018,6 +3018,18 @@ button:disabled,
       left: -130px;
     }
   }
+  &.lock_icon {
+    .tooltiptext {
+      max-width: 230px;
+      min-width: 230px;
+      margin-bottom: 3px;
+      right: 100px;
+      left: -180px;
+      &::after {
+        left: 155px;
+      }
+    }
+  }
 }
 
 .refresh-icon.tooltip-n {
