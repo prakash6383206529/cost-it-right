@@ -214,10 +214,18 @@ function Plastic(props) {
     updatedValue.burningValue = value
     setDataToSend(updatedValue)
   }
+
+  const handleKeyDown = function (e) {
+    if (e.key === 'Enter' && e.shiftKey === false) {
+      e.preventDefault();
+    }
+  };
+
   return (
     <Fragment>
       <Row>
-        <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}>
+        <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}
+          onKeyDown={(e) => { handleKeyDown(e, onSubmit.bind(this)); }}>
           <Col md="12">
             <div className="costing-border px-4">
               <Row>
