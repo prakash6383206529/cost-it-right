@@ -4247,6 +4247,14 @@ body {
   font-size: 14px;
   color: #a78610f2 !important;
   font-weight: 500;
+  &.assembly-viw-bom-wrapper {
+    transform: translateY(-30px);
+   img {
+     @media screen and (max-width: 1680px) {
+       margin-bottom: 20px;
+      }
+   }
+  }
 }
 
 .warning-row {
