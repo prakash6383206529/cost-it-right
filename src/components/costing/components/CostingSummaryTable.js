@@ -807,7 +807,7 @@ const CostingSummaryTable = (props) => {
 
               <Col md="12">
                 <div class="table-responsive">
-                  <table class="table table-bordered costing-summary-table">
+                  <table class={`table table-bordered costing-summary-table ${approvalMode ? 'costing-approval-summary' : ''}`}>
                     <thead>
                       <tr className="main-row">
                         {
@@ -844,7 +844,7 @@ const CostingSummaryTable = (props) => {
                                     </>
                                   }
                                   {
-                                    (isApproval && data.CostingHeading !== '-') ? <span>{data.CostingHeading}</span> : <span className="checkbox-text">{data.zbc === 0 ? `ZBC(${data.plantName})` : data.zbc === 1 ? `${data.vendorName}(${data.vendorCode}) ${localStorage.IsVendorPlantConfigurable ? `(${data.vendorPlantName})` : ''}` : 'CBC'}{` (SOB: ${data.shareOfBusinessPercent}%)`}</span>
+                                    (isApproval && data.CostingHeading !== '-') ? <span>{data.CostingHeading}</span> : <span className={`checkbox-text`}>{data.zbc === 0 ? `ZBC(${data.plantName})` : data.zbc === 1 ? `${data.vendorName}(${data.vendorCode}) ${localStorage.IsVendorPlantConfigurable ? `(${data.vendorPlantName})` : ''}` : 'CBC'}{` (SOB: ${data.shareOfBusinessPercent}%)`}</span>
                                   }
                                 </div>
 
