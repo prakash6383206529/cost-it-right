@@ -77,7 +77,7 @@ function VerifyImpactDrawer(props) {
       <Drawer
         anchor={props.anchor}
         open={props.isOpen}
-        className="drawer-full-top"
+        className="drawer-full-top "
       //onClose={(e) => toggleDrawer(e)}
       >
         <Container>
@@ -97,10 +97,10 @@ function VerifyImpactDrawer(props) {
               <Row >
                 <Col md="12">
                   <div className="border impact-drawer-header">
-                    <span class=" mr-2">
+                    {!costingDrawer && <span class=" mr-2">
                       <span class="grey-text d-block">Vendor :</span>
                       <span>{amendmentDetails.Vendor}</span>
-                    </span>
+                    </span>}
 
                     <span class=" mr-2 pl-3">
                       <span class="grey-text d-block">Technology:</span>
@@ -224,16 +224,6 @@ function VerifyImpactDrawer(props) {
                   </div>}
                 </div>
               </Row>
-
-
-              <Row className="sf-btn-footer no-gutters justify-content-between">
-                <div className="col-sm-12 text-right bluefooter-butn">
-                  <button type={'button'} className="reset mr15 cancel-btn" onClick={toggleDrawer}>
-                    <div className={"cancel-icon"}></div>{'Cancel'}
-                  </button>
-                </div>
-              </Row>
-
             </form>
           </div>
         </Container>
