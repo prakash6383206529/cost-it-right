@@ -14,6 +14,7 @@ function AddAssemblyOperation(props) {
   const { item, CostingViewMode, isAssemblyTechnology } = props;
   const [IsOpenTool, setIsOpenTool] = useState(false);
   const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
+
   const [operationGridData, setOperationGridData] = useState([]);
   const [operationCostAssemblyTechnology, setOperationCostAssemblyTechnology] = useState(0);
 
@@ -199,15 +200,6 @@ function AddAssemblyOperation(props) {
                       IsAssemblyCalculation={true}
                       getOperationGrid={getOperationGrid}
                     />
-
-                    {IsOpenTool && <>
-                      <div className="pt-2"></div>
-                      <ToolCost
-                        data={item.CostingPartDetails !== undefined ? item.CostingPartDetails.CostingToolCostResponse : []}
-                        setAssemblyToolCost={props.setAssemblyToolCost}
-                        item={props.item}
-                        IsAssemblyCalculation={true}
-                      /></>}
                   </div>
                 </div>
               </Col>

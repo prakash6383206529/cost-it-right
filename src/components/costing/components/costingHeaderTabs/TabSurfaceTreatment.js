@@ -1184,7 +1184,9 @@ function TabSurfaceTreatment(props) {
     let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray
 
     tempsubAssemblyTechnologyArray[0].CostingPartDetails.SurfaceTreatmentCost = SurfaceTreatmentCost
+    tempsubAssemblyTechnologyArray[0].CostingPartDetails.SurfaceTreatmentGrid = surfaceTreatmentGrid
     tempsubAssemblyTechnologyArray[0].CostingPartDetails.TransportationCost = TransportationCost
+    tempsubAssemblyTechnologyArray[0].CostingPartDetails.TransportationGrid = transportationGrid.tempObj
     tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetSurfaceTreatmentCost = NetSurfaceTreatmentCost
     dispatch(setSubAssemblyTechnologyArray(tempsubAssemblyTechnologyArray, res => { }))
 
