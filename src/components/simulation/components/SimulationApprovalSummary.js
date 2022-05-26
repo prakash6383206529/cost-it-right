@@ -412,9 +412,9 @@ function SimulationApprovalSummary(props) {
         }
         dispatch(getComparisionSimulationData(obj, res => {
             const Data = res.data.Data
-            const obj1 = formViewData(Data.OldCosting)
-            const obj2 = formViewData(Data.NewCosting)
-            const obj3 = formViewData(Data.Variance)
+            const obj1 = formViewData(Data.OldCosting, 'Old Costing')
+            const obj2 = formViewData(Data.NewCosting, 'New Costing')
+            const obj3 = formViewData(Data.Variance, 'Variance')
             const objj3 = [obj1[0], obj2[0], obj3[0]]
             setCompareCostingObj(objj3)
             dispatch(setCostingViewData(objj3))

@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, Table } from 'reactstrap'
 import { checkForDecimalAndNull, checkVendorPlantConfigurable, formViewData, loggedInUserId } from '../../../../helper'
 import { getApprovalSummary } from '../../actions/Approval'
-import { setCostingViewData, storePartNumber } from '../../actions/Costing'
+import { getSingleCostingDetails, setCostingViewData, storePartNumber } from '../../actions/Costing'
 import ApprovalWorkFlow from './ApprovalWorkFlow'
 import ApproveRejectDrawer from './ApproveRejectDrawer'
 import CostingSummaryTable from '../CostingSummaryTable'
@@ -16,6 +16,7 @@ import { Errorbox } from '../../../common/ErrorBox'
 import { Redirect } from 'react-router'
 import LoaderCustom from '../../../common/LoaderCustom';
 import CalculatorWrapper from '../../../common/Calculator/CalculatorWrapper'
+import { EMPTY_GUID } from '../../../../config/constants'
 
 function ApprovalSummary(props) {
   const { approvalNumber, approvalProcessId } = props.location.state
@@ -51,10 +52,9 @@ function ApprovalSummary(props) {
 
       const { PartDetails, ApprovalDetails, ApprovalLevelStep, DepartmentId, Technology, ApprovalProcessId,
         ApprovalProcessSummaryId, ApprovalNumber, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow,
-        CostingId, PartId } = res?.data?.Data?.Costings[0];
+        CostingId, PartId, LastCostingId } = res?.data?.Data?.Costings[0];
 
       const technologyId = res?.data?.Data?.Costings[0].PartDetails.TechnologyId
-      const partNumber = PartDetails.PartNumber
       setIsLoader(false)
       dispatch(storePartNumber({ partId: PartId }))
       setPartDetail(PartDetails)
@@ -71,7 +71,8 @@ function ApprovalSummary(props) {
         ApprovalProcessSummaryId: ApprovalProcessSummaryId,
         ApprovalNumber: ApprovalNumber,
         CostingId: CostingId,
-        ReasonId: ApprovalDetails[0].ReasonId
+        ReasonId: ApprovalDetails[0].ReasonId,
+        LastCostingId: LastCostingId
       })
     }),
 
@@ -116,9 +117,34 @@ function ApprovalSummary(props) {
     }
   }
 
+  const displayCompareCosting = () => {
+
+    dispatch(getSingleCostingDetails(approvalData.CostingId, res => {
+      const Data = res.data.Data
+      const newObj = formViewData(Data, 'New Costing')
+      let finalObj = []
+      if (approvalData.LastCostingId !== EMPTY_GUID) {
+        dispatch(getSingleCostingDetails(approvalData.LastCostingId, response => {
+          const oldData = response.data.Data
+          const oldObj = formViewData(oldData, 'Old Costing')
+          finalObj = [oldObj[0], newObj[0]]
+          dispatch(setCostingViewData(finalObj))
+          setCostingSummary(!costingSummary)
+        }))
+      } else {
+
+        dispatch(setCostingViewData(newObj))
+        setCostingSummary(!costingSummary)
+      }
+
+    }))
+
+  }
   if (showListing) {
     return <Redirect to="/approval-listing" />
   }
+
+
 
   return (
 
@@ -254,6 +280,12 @@ function ApprovalSummary(props) {
                           {approvalDetails.TypeOfCosting === 'VBC' ? 'Vendor Plant' : 'Plant'}{` Code`}
                         </th>
                       }
+                      {
+                        (initialConfiguration.IsDestinationPlantConfigure && approvalDetails.TypeOfCosting === 'VBC') &&
+                        <th>
+                          {`Plant(Code)`}
+                        </th>
+                      }
                       <th>{`SOB`}</th>
                       {/* <th>{`ECN Ref No`}</th> */}
                       <th>{`Old/Current Price`}</th>
@@ -281,6 +313,12 @@ function ApprovalSummary(props) {
                           {
                             approvalDetails.TypeOfCosting === 'VBC' ? (approvalDetails.VendorPlantCode ? approvalDetails.VendorPlantCode : '-') : approvalDetails.PlantCode ? approvalDetails.PlantCode : '-'
                           }
+                        </td>
+                      }
+                      {
+                        (initialConfiguration.IsDestinationPlantConfigure && approvalDetails.TypeOfCosting === 'VBC') &&
+                        <td>
+                          {`${approvalDetails.DestinationPlantName}(${approvalDetails.DestinationPlantCode})`}
                         </td>
                       }
                       <td>
@@ -347,7 +385,7 @@ function ApprovalSummary(props) {
               </Col>
               <Col md="2" className="text-right">
                 <div className="right-border">
-                  <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setCostingSummary(!costingSummary) }}>
+                  <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => displayCompareCosting()}>
                     {costingSummary ? (
                       <i
                         // onClick={() => {
@@ -369,7 +407,7 @@ function ApprovalSummary(props) {
             </Row>
             <Row className="mb-4">
               <Col md="12" className="costing-summary-row">
-                {costingSummary && <CostingSummaryTable viewMode={true} costingID={approvalDetails.CostingId} />}
+                {costingSummary && <CostingSummaryTable viewMode={true} costingID={approvalDetails.CostingId} approvalMode={true} isApproval={approvalData.LastCostingId !== EMPTY_GUID ? true : false} simulationMode={false} />}
               </Col>
             </Row>
             {/* Costing Summary page here */}
