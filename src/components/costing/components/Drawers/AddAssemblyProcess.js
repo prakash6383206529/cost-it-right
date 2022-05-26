@@ -45,6 +45,7 @@ function AddAssemblyProcess(props) {
     let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray
     // UPDATING AT INDEX 0 BECAUSE NEED TO UPDATE THE LEVEL 0 ROW (ASSEMBLY)
     tempsubAssemblyTechnologyArray[0].CostingPartDetails.ProcessCostValue = totalProcessCost
+    tempsubAssemblyTechnologyArray[0].CostingPartDetails.ProcessCostGrid = processGrid.CostingProcessCostResponse
     tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerAssembly = checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.EditPartCost) + (checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.CostPerAssemblyBOP)) + (checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.ProcessCostValue) + checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.OperationCostValue))
     dispatch(setSubAssemblyTechnologyArray(tempsubAssemblyTechnologyArray, res => { }))
   }

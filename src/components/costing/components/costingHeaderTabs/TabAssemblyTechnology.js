@@ -56,11 +56,11 @@ function TabAssemblyTechnology(props) {
   }, [subAssemblyTechnologyArray]);
 
   const setOperationCostFunction = (value, gridData) => {
-    // gridData contains Operaion Grid
 
     let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray
     // UPDATING AT INDEX 0 BECAUSE NEED TO UPDATE THE LEVEL 0 ROW (ASSEMBLY)
     tempsubAssemblyTechnologyArray[0].CostingPartDetails.OperationCostValue = value
+    tempsubAssemblyTechnologyArray[0].CostingPartDetails.OperationCostGrid = gridData
     tempsubAssemblyTechnologyArray[0].CostingPartDetails.CostPerAssembly = checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.EditPartCost) + (checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.CostPerAssemblyBOP)) + (checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.ProcessCostValue) + checkForNull(tempsubAssemblyTechnologyArray[0].CostingPartDetails.OperationCostValue))
     dispatch(setSubAssemblyTechnologyArray(tempsubAssemblyTechnologyArray, res => { }))
   }
