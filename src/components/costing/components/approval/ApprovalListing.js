@@ -331,6 +331,7 @@ function ApprovalListing(props) {
         } else {
           year = `${new Date(date).getFullYear()}-${new Date(date).getFullYear() + 1}`
         }
+        console.log(year, "year");
         dispatch(getVolumeDataByPartAndYear(item.PartId, year, res => {
           if (res.data.Result === true || res.status === 202) {
             let approvedQtyArr = res.data.Data.VolumeApprovedDetails
@@ -363,6 +364,7 @@ function ApprovalListing(props) {
 
         )
       }
+      console.log(costingObj, "costingObj");
       temp.push(costingObj)
       dispatch(setCostingApprovalData(temp))
     })
