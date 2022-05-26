@@ -48,6 +48,7 @@ function UomTimeProcessDefaultCalculator(props) {
         name: ['cuttingDiameter', 'cuttingSpeed', 'feedPerTooth', 'noOfTooth', 'lengthDepth', 'noOfPasses', 'chipToChipTiming', 'totalNonCuttingTime', 'indexingTablePositioningTime', 'loadingAndUnloadingTime', 'efficiencyPercentage', 'doc', 'cuttingSpeed', 'toothFeed', 'clampingPercentage', 'toothNo'],
     })
 
+
     useEffect(() => {
 
         setSpindleSpeed()
@@ -56,6 +57,24 @@ function UomTimeProcessDefaultCalculator(props) {
         setTotalCycleTimeMins()   //totalCycleTimeMins
         setPartsPerHour()    //partsPerHour
     }, [fieldValues])
+
+
+    useEffect(() => {
+
+        setFeed()
+    }, [dataToSend.SpindleSpeed])
+
+
+    useEffect(() => {
+
+        setTotalLengthDepth()
+    }, [dataToSend.Feed])
+
+    useEffect(() => {
+
+        setTotalCycleTimeMins()
+        setPartsPerHour()
+    }, [dataToSend.CuttingTimeMins])
 
 
     const { calculateMachineTime } = props
