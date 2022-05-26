@@ -226,7 +226,7 @@ function AssemblyPart(props) {
                   <div className={`${CostingViewMode ? 'fa fa-eye pr-1' : 'plus'}`}></div>{'OPER'}</button>}
             </div>
             {/*WHEN COSTING OF THAT PART IS  APPROVED SO COSTING COMES AUTOMATICALLY FROM BACKEND AND THIS KEY WILL COME TRUE (WORK LIKE VIEW MODE)*/}
-            <div className={`${(item.IsLocked || item.IsPartLocked) ? 'lock_icon ml-3' : ''}`}>{''}</div>
+            <div className={`${(item.IsLocked || item.IsPartLocked) ? 'lock_icon ml-3 tooltip-n' : ''}`}>{false && <span class="tooltiptext">{`This costing already approved via assembly costing`}</span>}</div>
           </div>
         </td>
 

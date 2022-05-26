@@ -373,7 +373,9 @@ function ApprovalListing(props) {
       }}
     />
   }
-
+  const resetState = () => {
+    gridOptions?.columnApi?.resetColumnState();
+  }
   return (
     <Fragment>
       <CalculatorWrapper />
@@ -386,112 +388,12 @@ function ApprovalListing(props) {
 
             {isLoader && <LoaderCustom />}
             <Row className="pt-4 blue-before">
-              {shown &&
-                <Col lg="10" md="12" className="filter-block">
-                  <div className="d-inline-flex justify-content-start align-items-top w100">
-                    <div className="flex-fills">
-                      <h5>{`Filter By:`}</h5>
-                    </div>
-
-                    <div className="flex-fill filled-small hide-label">
-                      <SearchableSelectHookForm
-                        label={''}
-                        name={'partNo'}
-                        placeholder={'Part No.'}
-                        Controller={Controller}
-                        control={control}
-                        rules={{ required: false }}
-                        register={register}
-                        // defaultValue={plant.length !== 0 ? plant : ''}
-                        options={renderDropdownListing('PartList')}
-                        mandatory={false}
-                        handleChange={() => { }}
-                        errors={errors.partNo}
-                      />
-                    </div>
-                    <div className="flex-fill filled-small hide-label">
-                      <SearchableSelectHookForm
-                        label={''}
-                        name={'createdBy'}
-                        placeholder={'Initiated By'}
-                        Controller={Controller}
-                        control={control}
-                        rules={{ required: false }}
-                        register={register}
-                        // defaultValue={plant.length !== 0 ? plant : ''}
-                        options={renderDropdownListing('users')}
-                        mandatory={false}
-                        handleChange={() => { }}
-                        errors={errors.createdBy}
-                      />
-                    </div>
-                    <div className="flex-fill filled-small hide-label">
-                      <SearchableSelectHookForm
-                        label={''}
-                        name={'requestedBy'}
-                        placeholder={'Requested By'}
-                        Controller={Controller}
-                        control={control}
-                        rules={{ required: false }}
-                        register={register}
-                        // defaultValue={plant.length !== 0 ? plant : ''}
-                        options={renderDropdownListing('users')}
-                        mandatory={false}
-                        handleChange={() => { }}
-                        errors={errors.requestedBy}
-                      />
-                    </div>
-                    <div className="flex-fill filled-small hide-label">
-                      <SearchableSelectHookForm
-                        label={''}
-                        name={'status'}
-                        placeholder={'Status'}
-                        Controller={Controller}
-                        control={control}
-                        rules={{ required: false }}
-                        register={register}
-                        // defaultValue={plant.length !== 0 ? plant : ''}
-                        options={renderDropdownListing('Status')}
-                        mandatory={false}
-                        handleChange={() => { }}
-                        errors={errors.status}
-                      />
-                    </div>
-
-
-                    <div className="flex-fill filled-small hide-label">
-                      <button
-                        type="button"
-                        //disabled={pristine || submitting}
-                        onClick={resetHandler}
-                        className="reset mr10"
-                      >
-                        {'Reset'}
-                      </button>
-                      <button
-                        type="button"
-                        //disabled={pristine || submitting}
-                        onClick={onSubmit}
-                        className="apply mr5"
-                      >
-                        {'Apply'}
-                      </button>
-                    </div>
-                  </div>
-                </Col>
-              }
-
               <Col md="6" lg="6" className="search-user-block mb-3">
                 <div className="d-flex justify-content-end bd-highlight w100">
                   <div>
-                    {(shown) ? (
-                      <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => setshown(!shown)}>
-                        <div className="cancel-icon-white"></div></button>
-                    ) : (
-                      <button title="Filter" type="button" className="user-btn mr5" onClick={() => setshown(!shown)}>
-                        <div className="filter mr-0"></div>
-                      </button>
-                    )}
+                    <button type="button" className="user-btn mr-2" title="Reset Grid" onClick={() => resetState()}>
+                      <div className="refresh mr-0"></div>
+                    </button>
                     <button title="Send For Approval" class="user-btn approval-btn" onClick={sendForApproval}>
                       <div className="send-for-approval mr-0" ></div>
                     </button>

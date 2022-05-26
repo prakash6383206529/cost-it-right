@@ -1373,6 +1373,15 @@ sans-serif;
       }
     }
   }
+  &.costing-approval-summary {
+    .background-light-blue {
+      td:nth-child(n+4) {
+        background: #E7F2FC;
+        border-color: #c2cbe8;
+        color: #3D4465;
+      }
+    }
+  }
 }
 
 .custom-check {
@@ -1525,10 +1534,11 @@ sans-serif;
 
 // drawer-full-top start
 .MuiDrawer-root.drawer-full-top {
-  .MuiDrawer-paper {
-    margin-top: 60px;
-    left: 0;
-
+  .MuiDrawer-paper { 
+      top: unset;
+      max-height: calc(100vh - 100px);
+      height: fit-content;
+      padding-bottom: 10px;
     .container {
       max-width: 100%;
 
@@ -3017,6 +3027,18 @@ button:disabled,
       left: -130px;
     }
   }
+  &.lock_icon {
+    .tooltiptext {
+      max-width: 230px;
+      min-width: 230px;
+      margin-bottom: 3px;
+      right: 100px;
+      left: -180px;
+      &::after {
+        left: 155px;
+      }
+    }
+  }
 }
 
 .refresh-icon.tooltip-n {
@@ -4246,6 +4268,14 @@ body {
   font-size: 14px;
   color: #a78610f2 !important;
   font-weight: 500;
+  &.assembly-viw-bom-wrapper {
+    transform: translateY(-30px);
+   img {
+     @media screen and (max-width: 1680px) {
+       margin-bottom: 20px;
+      }
+   }
+  }
 }
 
 .warning-row {
@@ -7293,6 +7323,12 @@ body {
       font-size: 14px;
     }
   }
+  .part-info-title {
+    p {
+      display: flex;
+      flex-direction: column;
+    }
+  }
 }
 
 @media screen and (max-width:$max1367) {
@@ -7447,6 +7483,7 @@ git .sticky-btn-footer {
     position: absolute;
     top: 13px;
     right: 13px;
+    cursor: pointer;
   }
 }
 
@@ -7668,6 +7705,7 @@ git .sticky-btn-footer {
         }
       }
     }
+
   }
 
   @-moz-document url-prefix() {
@@ -7687,7 +7725,7 @@ git .sticky-btn-footer {
 }
 
 .other-costing-simulation {
-  min-height: calc(100vh - 337px);
+  min-height: calc(100vh - 308px);
 }
 
 // <-------------START Hover text overflow and show on hover css----------->
@@ -7747,7 +7785,19 @@ git .sticky-btn-footer {
 .number-overflow {
   @include overflow($minWidth:45px, $ResponsiveWith:120px, $whiteSpace:normal, $lineClamp:1)
 }
-
+.costing-head-overflow {
+ 
+  @include overflow(220px, 10px , 340px, $whiteSpace:normal );
+  p {
+    display: flex;
+    span {
+      &:first-child {
+        min-width: fit-content;
+        padding-right: 5px;
+      }
+    }
+  }
+}
 .drawer-wrapper table tr:first-child td {
   border-top: none;
 }
@@ -8011,6 +8061,7 @@ git .sticky-btn-footer {
     th {
       word-spacing: 1px;
       border-right: none;
+      print-color-adjust: exact;
       -webkit-print-color-adjust: exact;
     }
 
@@ -8018,6 +8069,7 @@ git .sticky-btn-footer {
       border-left: none !important;
       text-align: right;
       padding-right: 20px;
+      print-color-adjust: exact;
       -webkit-print-color-adjust: exact;
 
       span {
@@ -8244,7 +8296,6 @@ table.group-process-table {
     .process-names {
       padding: 0.41rem 10px;
       border-top: 1px solid $borderColor;
-      border-right: 1px solid #c2cbe8;
 
       &:first-child {
         border-top: none !important;
