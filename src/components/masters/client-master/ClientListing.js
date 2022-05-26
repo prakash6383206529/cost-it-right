@@ -174,9 +174,9 @@ class ClientListing extends Component {
         const { EditAccessibility, DeleteAccessibility, } = this.state;
         return (
             <>
-                {<button className="View" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
-                {EditAccessibility && <button className="Edit" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
-                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+                {<button title='View' className="View" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
+                {EditAccessibility && <button title='Edit' className="Edit" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
+                {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
     };

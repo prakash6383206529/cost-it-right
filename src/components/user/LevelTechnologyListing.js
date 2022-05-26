@@ -125,7 +125,7 @@ class LevelTechnologyListing extends Component {
 		const { EditAccessibility } = this.props;
 		return (
 			<>
-				{EditAccessibility && <button type={'button'} className="Edit " onClick={() => this.editItemDetails(cellValue, 'Costing')} />}
+				{EditAccessibility && <button title='Edit' type={'button'} className="Edit " onClick={() => this.editItemDetails(cellValue, 'Costing')} />}
 				{/* {DeleteAccessibility && <button type={'button'} className="Delete" onClick={() => this.deleteItem(cell)} />} */}
 			</>
 		)
@@ -143,7 +143,7 @@ class LevelTechnologyListing extends Component {
 		const { EditAccessibility } = this.props;
 		return (
 			<>
-				{EditAccessibility && <button type={'button'} className="Edit " onClick={() => this.editItemDetails(cellValue, 'Simulation')} />}
+				{EditAccessibility && <button title='Edit' type={'button'} className="Edit " onClick={() => this.editItemDetails(cellValue, 'Simulation')} />}
 				{/* {DeleteAccessibility && <button type={'button'} className="Delete" onClick={() => this.deleteItem(cell)} />} */}
 			</>
 		)
@@ -159,7 +159,7 @@ class LevelTechnologyListing extends Component {
 		const { EditAccessibility } = this.props;
 		return (
 			<>
-				{EditAccessibility && <button type={'button'} className="Edit " onClick={() => this.editItemDetails(cellValue, 'Master')} />}
+				{EditAccessibility && <button title='Edit' type={'button'} className="Edit " onClick={() => this.editItemDetails(cellValue, 'Master')} />}
 				{/* {DeleteAccessibility && <button type={'button'} className="Delete" onClick={() => this.deleteItem(cell)} />} */}
 			</>
 		)

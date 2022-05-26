@@ -147,9 +147,9 @@ class OverheadListing extends Component {
 
         return (
             <>
-                {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, true)} />}
-                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, false)} />}
-                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+                {ViewAccessibility && <button title='View' className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, true)} />}
+                {EditAccessibility && <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, false)} />}
+                {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
     };

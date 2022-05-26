@@ -54,7 +54,7 @@ class FuelListing extends Component {
     * @description Called after rendering the component
     */
     componentDidMount() {
-        this.setState({isLoader:true})
+        this.setState({ isLoader: true })
         setTimeout(() => {
             this.getDataList(0, 0)
             this.props.getFuelComboData(() => { })
@@ -71,7 +71,7 @@ class FuelListing extends Component {
             stateName: stateName,
         }
         this.props.getFuelDetailDataList(true, filterData, (res) => {
-            this.setState({isLoader:false})
+            this.setState({ isLoader: false })
             if (res && res.status === 200) {
                 let Data = res.data.DataList;
                 this.setState({ tableData: Data })
@@ -137,10 +137,11 @@ class FuelListing extends Component {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
-        const { EditAccessibility, DeleteAccessibility } = this.props;
+        const { EditAccessibility, ViewAccessibility } = this.props;
         return (
             <>
-                {EditAccessibility && <button className="Edit" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+                {ViewAccessibility && <button title='View' className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, true)} />}
+                {EditAccessibility && <button title='Edit' className="Edit" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, false)} />}
             </>
         )
     };
@@ -352,7 +353,7 @@ class FuelListing extends Component {
                 </form>
                 <Row>
                     <Col>
-                        <div className={`ag-grid-wrapper height-width-wrapper ${this.props.fuelDataList && this.props.fuelDataList?.length <=0 ?"overlay-contain": ""}`}>
+                        <div className={`ag-grid-wrapper height-width-wrapper ${this.props.fuelDataList && this.props.fuelDataList?.length <= 0 ? "overlay-contain" : ""}`}>
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                             </div>

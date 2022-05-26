@@ -62,7 +62,7 @@ class ReasonListing extends Component {
 
   componentDidMount() {
     this.applyPermission(this.props.topAndLeftMenuData)
-    this.setState({isLoader:true})
+    this.setState({ isLoader: true })
     setTimeout(() => {
       this.getTableListData()
     }, 2000);
@@ -112,7 +112,7 @@ class ReasonListing extends Component {
   getTableListData = () => {
     this.setState({ isLoader: true })
     this.props.getAllReasonAPI(true, (res) => {
-      this.setState({isLoader:false})
+      this.setState({ isLoader: false })
       if (res.status === 204 && res.data === '') {
         this.setState({ tableData: [] })
       } else if (res && res.data && res.data.DataList) {
@@ -171,7 +171,7 @@ class ReasonListing extends Component {
     const { EditAccessibility } = this.state;
     return (
       <>
-        {EditAccessibility && <button className="Edit" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+        {EditAccessibility && <button title='Edit' className="Edit" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
         {/* {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />} */}
       </>
     )
@@ -393,7 +393,7 @@ class ReasonListing extends Component {
               </div>
             </Col>
           </Row>
-          <div className={`ag-grid-wrapper height-width-wrapper  ${this.props.reasonDataList && this.props.reasonDataList?.length <=0 ?"overlay-contain": ""}`}>
+          <div className={`ag-grid-wrapper height-width-wrapper  ${this.props.reasonDataList && this.props.reasonDataList?.length <= 0 ? "overlay-contain" : ""}`}>
             <div className="ag-grid-header">
               <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
             </div>

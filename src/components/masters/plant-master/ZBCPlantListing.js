@@ -47,7 +47,7 @@ class ZBCPlantListing extends Component {
             cellValue: '',
             showPopupToggle: false,
             isViewMode: false,
-            isLoader:false
+            isLoader: false
         }
     }
 
@@ -66,7 +66,7 @@ class ZBCPlantListing extends Component {
         this.props.getPlantDataAPI(false, (res) => {
             if (res && res.data && res.status === 200) {
                 let Data = res.data.DataList;
-                this.setState({ tableData: Data, isLoader:false })
+                this.setState({ tableData: Data, isLoader: false })
             }
         })
     }
@@ -138,9 +138,9 @@ class ZBCPlantListing extends Component {
         const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.props;
         return (
             <>
-                {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
-                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
-                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+                {ViewAccessibility && <button title='View' className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
+                {EditAccessibility && <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
+                {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
     };
@@ -327,7 +327,7 @@ class ZBCPlantListing extends Component {
     filterList = () => {
 
         const { country, state, city, } = this.state;
-        this.setState({isLoader:true})
+        this.setState({ isLoader: true })
         let filterData = {
             country: country && country.hasOwnProperty('value') ? country.value : '',
             state: state && state.hasOwnProperty('value') ? state.value : '',
@@ -335,7 +335,7 @@ class ZBCPlantListing extends Component {
             is_vendor: false,
         }
         this.props.getFilteredPlantList(filterData, (res) => {
-         this.setState({isLoader:false})
+            this.setState({ isLoader: false })
             if (res.status === 204 && res.data === '') {
                 this.setState({ tableData: [], })
             } else if (res && res.data && res.data.DataList) {
@@ -517,7 +517,7 @@ class ZBCPlantListing extends Component {
                 </form>
 
 
-                <div className={`ag-grid-wrapper height-width-wrapper ${this.props.plantDataList && this.props.plantDataList?.length <=0 ?"overlay-contain": ""}`}>
+                <div className={`ag-grid-wrapper height-width-wrapper ${this.props.plantDataList && this.props.plantDataList?.length <= 0 ? "overlay-contain" : ""}`}>
                     <div className="ag-grid-header">
                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                     </div>
@@ -539,14 +539,14 @@ class ZBCPlantListing extends Component {
                             }}
                             frameworkComponents={frameworkComponents}
                         >
-                            <AgGridColumn  field="PlantName" headerName="Plant Name"></AgGridColumn>
+                            <AgGridColumn field="PlantName" headerName="Plant Name"></AgGridColumn>
                             <AgGridColumn field="PlantCode" headerName="Plant Code"></AgGridColumn>
                             <AgGridColumn field="CompanyName" headerName="Company Name"></AgGridColumn>
                             <AgGridColumn field="CountryName" headerName="Country"></AgGridColumn>
                             <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
                             <AgGridColumn field="CityName" headerName="City"></AgGridColumn>
                             <AgGridColumn width="130" pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
-                            <AgGridColumn field="PlantId" headerName="Action"  type="rightAligned" width={"150px"} floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                            <AgGridColumn field="PlantId" headerName="Action" type="rightAligned" width={"150px"} floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                         </AgGridReact>
                         <div className="paging-container d-inline-block float-right">
                             <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
