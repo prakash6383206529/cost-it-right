@@ -1373,6 +1373,15 @@ sans-serif;
       }
     }
   }
+  &.costing-approval-summary {
+    .background-light-blue {
+      td:nth-child(n+4) {
+        background: #E7F2FC;
+        border-color: #c2cbe8;
+        color: #3D4465;
+      }
+    }
+  }
 }
 
 .custom-check {
