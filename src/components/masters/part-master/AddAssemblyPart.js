@@ -982,7 +982,7 @@ class AddAssemblyPart extends Component {
                               />
                             </div>
                           </div>
-                          {this.state.warningMessage && <WarningMessage dClass="mr-3" message={'Please reset the BOM to select the previous date'} />}
+                          {this.state.warningMessage && <WarningMessage dClass="mr-3 assembly-viw-bom-wrapper" message={'Please reset the BOM to select the previous date'} />}
                         </Col>
 
 
