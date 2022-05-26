@@ -15,16 +15,19 @@ function AddAssemblyOperation(props) {
   const [IsOpenTool, setIsOpenTool] = useState(false);
   const IsLocked = (item?.IsLocked ? item?.IsLocked : false) || (item?.IsPartLocked ? item?.IsPartLocked : false)
 
+  const dispatch = useDispatch()
+
+  const { RMCCTabData, CostingEffectiveDate, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData } = useSelector(state => state.costing)
+
+  const netPOPrice = useContext(NetPOPriceContext);
+
   const [operationGridData, setOperationGridData] = useState([]);
   const [operationCostAssemblyTechnology, setOperationCostAssemblyTechnology] = useState(0);
-  const dispatch = useDispatch()
 
   const costData = useContext(costingInfoContext)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const partType = Number(costData?.ETechnologyType) === ASSEMBLY
   const operationCost = item?.CostingPartDetails && item?.CostingPartDetails?.TotalOperationCostPerAssembly !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalOperationCostPerAssembly, initialConfiguration.NoOfDecimalForPrice) : 0
-  const { RMCCTabData, CostingEffectiveDate, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData } = useSelector(state => state.costing)
-  const netPOPrice = useContext(NetPOPriceContext);
 
   /**
   * @method toggleDrawer
@@ -178,19 +181,10 @@ function AddAssemblyOperation(props) {
                       IsAssemblyCalculation={true}
                       getOperationGrid={getOperationGrid}
                     />
-
-                    {IsOpenTool && <>
-                      <div className="pt-2"></div>
-                      <ToolCost
-                        data={item.CostingPartDetails !== undefined ? item.CostingPartDetails?.CostingToolCostResponse : []}
-                        setAssemblyToolCost={props.setAssemblyToolCost}
-                        item={props.item}
-                        IsAssemblyCalculation={true}
-                      /></>}
-                  </div>
-                </div>
-              </Col>
-            </Row>
+                  </div >
+                </div >
+              </Col >
+            </Row >
 
             <Row className="sf-btn-footer no-gutters justify-content-between">
               <div className="col-sm-12 text-right">
@@ -210,10 +204,10 @@ function AddAssemblyOperation(props) {
                 </button>
               </div>
             </Row>
-          </div>
-        </div>
-      </Drawer>
-    </div>
+          </div >
+        </div >
+      </Drawer >
+    </div >
   );
 }
 
