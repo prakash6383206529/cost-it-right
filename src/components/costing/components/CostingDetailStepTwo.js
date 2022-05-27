@@ -263,7 +263,7 @@ function CostingDetailStepTwo(props) {
           totalCost = BOPCC * calculatePercentage(percent)
           break;
         case 'CC':
-          totalCost = (RMCC) * calculatePercentage(percent)
+          totalCost = (ConversionCostForCalculation) * calculatePercentage(percent)
           break;
         case 'RM + CC + BOP':
           totalCost = (RMBOPCC) * calculatePercentage(percent)
