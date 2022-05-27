@@ -1449,7 +1449,9 @@ class AddMoreDetails extends Component {
     this.setState({
       processGrid: tempData,
       lockUOMAndRate: tempData.length === 0 ? false : true,
-      UOM: tempData.length === 0 ? [] : UOM
+      UOM: tempData.length === 0 ? [] : !this.state.lockUOMAndRate ? [] : UOM,
+      isEditIndex: false,
+      processName: [],
     }, () => {
       this.props.change('OutputPerHours', tempData.length > 0 ? fieldsObj.OutputPerHours : 0)
       this.props.change('OutputPerYear', tempData.length > 0 ? fieldsObj.OutputPerYear : 0)
