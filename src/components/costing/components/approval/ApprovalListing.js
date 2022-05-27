@@ -121,7 +121,6 @@ function ApprovalListing(props) {
    */
   const linkableFormatter = (props) => {
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-    console.log('cell: ', cell);
     const row = props?.valueFormatted ? props.valueFormatted : props?.data;
     return (
       <Fragment>
@@ -201,7 +200,6 @@ function ApprovalListing(props) {
 
   const onRowSelect = () => {
     var selectedRows = gridApi.getSelectedRows();
-    console.log('selectedRows: ', selectedRows);
 
     let count = 0
     let technologyCount = 0
@@ -318,7 +316,6 @@ function ApprovalListing(props) {
         } else {
           year = `${new Date(date).getFullYear()}-${new Date(date).getFullYear() + 1}`
         }
-        console.log(year, "year");
         dispatch(getVolumeDataByPartAndYear(item.PartId, year, res => {
           if (res.data.Result === true || res.status === 202) {
             let approvedQtyArr = res.data.Data.VolumeApprovedDetails
@@ -351,7 +348,6 @@ function ApprovalListing(props) {
 
         )
       }
-      console.log(costingObj, "costingObj");
       temp.push(costingObj)
       dispatch(setCostingApprovalData(temp))
     })

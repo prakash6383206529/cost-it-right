@@ -147,11 +147,19 @@ function ApprovalSummary(props) {
     }))
 
   }
+
+  const displayCompareCostingFgWise = (CostingApprovalProcessSummaryId) => {
+    dispatch(getSingleCostingDetails(CostingApprovalProcessSummaryId, res => {
+      const Data = res.data.Data
+      const newObj = formViewData(Data)
+      dispatch(setCostingViewData(newObj))
+      setCostingSummary(!costingSummary)
+    }))
+  }
+
   if (showListing) {
     return <Redirect to="/approval-listing" />
   }
-
-
 
   return (
 
@@ -288,7 +296,7 @@ function ApprovalSummary(props) {
                         </th>
                       }
                       {
-                        (initialConfiguration.IsDestinationPlantConfigure && approvalDetails.TypeOfCosting === 'VBC') &&
+                        (initialConfiguration?.IsDestinationPlantConfigure && approvalDetails.TypeOfCosting === 'VBC') &&
                         <th>
                           {`Plant(Code)`}
                         </th>
@@ -410,6 +418,7 @@ function ApprovalSummary(props) {
                   approvalSummaryTrue={true}
                   costingId={approvalData.CostingId}
                   DisplayCompareCosting={displayCompareCosting}
+                  DisplayCompareCostingFgWise={displayCompareCostingFgWise}
                 />
               </Col>
             </Row>}

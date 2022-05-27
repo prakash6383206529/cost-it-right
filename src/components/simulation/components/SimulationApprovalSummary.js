@@ -540,34 +540,35 @@ function SimulationApprovalSummary(props) {
         roudOffOld = _.round(row.OldNetRawMaterialsCost, COSTINGSIMULATIONROUND)
         rounfOffNew = _.round(row.NewNetRawMaterialsCost, COSTINGSIMULATIONROUND)
         let newRoundOffVariance = checkForNull(roudOffOld - rounfOffNew).toFixed(COSTINGSIMULATIONROUND)
-        newRoundOffVariance = newRoundOffVariance > 0 ? `+${newRoundOffVariance}` : newRoundOffVariance;
-        return checkForDecimalAndNull(newRoundOffVariance, getConfigurationKey().NoOfDecimalForPrice);
+
+        newRoundOffVariance = newRoundOffVariance > 0 ? `-${Math.abs(newRoundOffVariance)}` : `+${Math.abs(newRoundOffVariance)}`;
+        return newRoundOffVariance;
         // return cell != null ? checkForDecimalAndNull(newRoundOffVariance, getConfigurationKey().NoOfDecimalForPrice) : ''
     }
 
     const BOPVarianceFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let variance = checkForDecimalAndNull(row.NetBoughtOutPartCostVariance, getConfigurationKey().NoOfDecimalForPrice)
-        variance = variance > 0 ? `+${variance}` : variance;
+        variance = variance > 0 ? `-${Math.abs(variance)}` : `+${Math.abs(variance)}`;
         return variance;
     }
     const OPVarianceFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let variance = checkForDecimalAndNull(row.OperationCostVariance, getConfigurationKey().NoOfDecimalForPrice)
-        variance = variance > 0 ? `+${variance}` : variance;
+        variance = variance > 0 ? `-${Math.abs(variance)}` : `+${Math.abs(variance)}`;
         return variance;
     }
     const STVarianceFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let variance = checkForDecimalAndNull(row.NetSurfaceTreatmentCostVariance, getConfigurationKey().NoOfDecimalForPrice)
-        variance = variance > 0 ? `+${variance}` : variance;
+        variance = variance > 0 ? `-${Math.abs(variance)}` : `+${Math.abs(variance)}`;
         return variance;
     }
 
     const POVarianceFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let variance = checkForDecimalAndNull(row.POVariance, getConfigurationKey().NoOfDecimalForPrice)
-        variance = variance > 0 ? `+${variance}` : variance;
+        variance = variance > 0 ? `-${Math.abs(variance)}` : `+${Math.abs(variance)}`;
         return variance;
     }
 

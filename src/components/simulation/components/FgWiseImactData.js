@@ -65,14 +65,12 @@ export function Fgwiseimactdata(props) {
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
 
-    const DisplayCompareCostingFgWiseImpact = (SimulationApprovalProcessSummaryId) => {
+    const DisplayCompareCostingFgWiseImpact = (SimulationApprovalProcessSummaryId, CostingApprovalProcessSummaryId) => {
         if (approvalSummaryTrue) {
-            props.DisplayCompareCosting()
+            props.DisplayCompareCostingFgWise(CostingApprovalProcessSummaryId)
         } else {
-
             props.DisplayCompareCosting(SimulationApprovalProcessSummaryId, 0)
         }
-
     }
 
     const toggleAcc = (value) => {
@@ -154,7 +152,7 @@ export function Fgwiseimactdata(props) {
                                                     <td ><span>{checkForDecimalAndNull(item.VariancePerPiece, initialConfiguration.NoOfDecimalForPrice)}</span></td>
                                                     <td ><span>{checkForDecimalAndNull(item.VendorSOBPercentage, initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
                                                     <td ><span>{checkForDecimalAndNull(VendorSOBImpactPerPiece, initialConfiguration.NoOfDecimalForPrice)}</span></td>
-                                                    <td colSpan="4"><span> <Link to="compare-costing" spy={true} smooth={true}><button className="Balance mb-0 float-right" type={'button'} onClick={() => { DisplayCompareCostingFgWiseImpact(item.SimulationApprovalProcessSummaryId) }} /></Link></span></td>
+                                                    <td colSpan="4"><span> <Link to="compare-costing" spy={true} smooth={true}><button className="Balance mb-0 float-right" type={'button'} onClick={() => { DisplayCompareCostingFgWiseImpact(item.SimulationApprovalProcessSummaryId, item.SimulationApprovalProcessSummaryId) }} /></Link></span></td>
 
                                                 </tr>)
                                         })}
