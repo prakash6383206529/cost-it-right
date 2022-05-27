@@ -791,7 +791,9 @@ class AddMachineRate extends Component {
     this.setState({
       processGrid: tempData,
       lockUOMAndRate: tempData.length === 0 ? false : true,
-      UOM: tempData.length === 0 ? [] : UOM
+      UOM: tempData.length === 0 ? [] : !this.state.lockUOMAndRate ? [] : UOM,
+      isEditIndex: false,
+      processName: [],
     }, () => this.props.change('MachineRate', tempData.length === 0 ? 0 : this.props.fieldsObj.MachineRate))
     this.setState({ DropdownChange: false })
   }
