@@ -401,12 +401,18 @@ function ColdForging(props) {
     }
   }
 
+  const handleKeyDown = function (e) {
+    if (e.key === 'Enter' && e.shiftKey === false) {
+      e.preventDefault();
+    }
+  };
 
   return (
     <Fragment>
       <Row>
         <Col>
-          <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}>
+          <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}
+            onKeyDown={(e) => { handleKeyDown(e, onSubmit.bind(this)); }}>
             <Col md="12" className='px-0'>
               <div className="border px-3 pt-3">
                 <Row>

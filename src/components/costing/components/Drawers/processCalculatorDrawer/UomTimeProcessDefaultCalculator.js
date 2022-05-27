@@ -48,6 +48,7 @@ function UomTimeProcessDefaultCalculator(props) {
         name: ['cuttingDiameter', 'cuttingSpeed', 'feedPerTooth', 'noOfTooth', 'lengthDepth', 'noOfPasses', 'chipToChipTiming', 'totalNonCuttingTime', 'indexingTablePositioningTime', 'loadingAndUnloadingTime', 'efficiencyPercentage', 'doc', 'cuttingSpeed', 'toothFeed', 'clampingPercentage', 'toothNo'],
     })
 
+
     useEffect(() => {
 
         setSpindleSpeed()
@@ -56,6 +57,24 @@ function UomTimeProcessDefaultCalculator(props) {
         setTotalCycleTimeMins()   //totalCycleTimeMins
         setPartsPerHour()    //partsPerHour
     }, [fieldValues])
+
+
+    useEffect(() => {
+
+        setFeed()
+    }, [dataToSend.SpindleSpeed])
+
+
+    useEffect(() => {
+
+        setTotalLengthDepth()
+    }, [dataToSend.Feed])
+
+    useEffect(() => {
+
+        setTotalCycleTimeMins()
+        setPartsPerHour()
+    }, [dataToSend.CuttingTimeMins])
 
 
     const { calculateMachineTime } = props
@@ -172,11 +191,20 @@ function UomTimeProcessDefaultCalculator(props) {
     const onCancel = () => {
         calculateMachineTime('0.00')
     }
+
+
+    const handleKeyDown = function (e) {
+        if (e.key === 'Enter' && e.shiftKey === false) {
+            e.preventDefault();
+        }
+    };
+
     return (
         <Fragment>
             <Row>
                 <Col>
-                    <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}>
+                    <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}
+                        onKeyDown={(e) => { handleKeyDown(e, onSubmit.bind(this)); }}>
                         <Col md="12" className={''}>
                             <div className="border pl-3 pr-3 pt-3">
                                 <Col md="12">
