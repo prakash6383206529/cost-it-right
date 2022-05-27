@@ -138,7 +138,7 @@ class MachineRateListing extends Component {
 
     viewProcessGroupDetail = (rowData) => {
         this.props.getProcessGroupByMachineId(rowData.MachineId, res => {
-            if (res.data.Result) {
+            if (res.data.Result || res.status === 204) {
                 this.setState({
                     isOpenProcessGroupDrawer: true
                 })
