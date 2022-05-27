@@ -16,16 +16,14 @@ export function Fgwiseimactdata(props) {
     const [acc1, setAcc1] = useState({ currentIndex: -1, isClicked: false, })
     const [showTableData, setshowTableData] = useState(false)
     const dispatch = useDispatch()
-    const { SimulationId, headerName, dataForAssemblyImpact, vendorIdState, impactType, approvalSummaryTrue } = props
+    const { SimulationId, headerName, dataForAssemblyImpact, vendorIdState, impactType, approvalSummaryTrue, costingId } = props
     const [loader, setLoader] = useState(false)
 
     const impactData = useSelector((state) => state.simulation.impactData)
 
 
     useEffect(() => {
-        setLoader(true)
-
-        if (SimulationId) {
+        if (SimulationId && !approvalSummaryTrue) {
             setLoader(true)
             dispatch(getFgWiseImpactData(SimulationId, (res) => {
                 if (res && res.data && res.data.Result) {
@@ -47,12 +45,33 @@ export function Fgwiseimactdata(props) {
 
     }, [SimulationId])
 
+    useEffect(() => {
+        if (approvalSummaryTrue && costingId) {
+            setLoader(true)
+            dispatch(getFgWiseImpactDataForCosting(costingId, (res) => {
+                if (res && res.data && res.data.Result) {
+                    setshowTableData(true)
+                }
+                else if (res?.response?.status !== "200") {
+                    setshowTableData(false)
+                } else {
+                    setLoader(false)
+                }
+                setLoader(false)
+            }))
+        }
+    }, [costingId])
+
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
 
     const DisplayCompareCostingFgWiseImpact = (SimulationApprovalProcessSummaryId) => {
+        if (approvalSummaryTrue) {
+            props.DisplayCompareCosting()
+        } else {
 
-        props.DisplayCompareCosting(SimulationApprovalProcessSummaryId, 0)
+            props.DisplayCompareCosting(SimulationApprovalProcessSummaryId, 0)
+        }
 
     }
 
