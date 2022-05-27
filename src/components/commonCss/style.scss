@@ -6934,7 +6934,7 @@ body {
   top: 8px;
 }
 
-.part-manage-component {
+.custom-pagination {
   .ag-paging-panel {
     display: none !important;
   }
@@ -6950,7 +6950,10 @@ body {
   display: flex;
   flex-direction: row-reverse;
   justify-content: space-between;
-  align-items: baseline;
+  align-items: center;
+  .paging-container {
+    margin-top: 0 !important;
+  }
 }
 
 .pagination-button-container {
