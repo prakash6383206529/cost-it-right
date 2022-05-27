@@ -487,7 +487,7 @@ export const API = {
   getNCCCExistingCosting: `${BASE_URL}/costing/get-ncc-exist-costings-list`,
   createNCCCosting: `${BASE_URL}/costing/create-ncc-costing`,
   getMachineProcessGroupDetail: `${BASE_URL}/costing/get-costing-machine-process-group-detail`,
-  getFgWiseImpactDataForCosting: `${BASE_URL}/costing/get-fgwise-impact-detail`,
+  getFgWiseImpactDataForCosting: `${BASE_URL}/sap-integration/get-fg-wise-impact-data-for-costing`,
   //getRMCCTabData: `${BASE_URL}/costing/get-zbc-costing-rm-bop-cc-detail-for-tab-grid`,
 
   getRMCCTabData: `${BASE_URL}/costing/get-costing-detail-for-rm-bop-cc`,
@@ -1888,4 +1888,4 @@ export const IV = 'ozzzguugcusjqmbj'
 
 
 //VERSION 
-export const VERSION = "V1.2.240";
+export const VERSION = "V1.2.240.1";

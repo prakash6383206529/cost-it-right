@@ -106,37 +106,40 @@ function VerifyImpactDrawer(props) {
                   ></div>
                 </Col>
               </Row>
+              {
+                !costingDrawer &&
 
-              <Row >
-                <Col md="12">
-                  <div className="border impact-drawer-header">
-                    {!costingDrawer && <span class=" mr-2">
-                      <span class="grey-text d-block">Vendor :</span>
-                      <span>{amendmentDetails.Vendor}</span>
-                    </span>}
+                <Row >
+                  <Col md="12">
+                    <div className="border impact-drawer-header">
+                      {!costingDrawer && <span class=" mr-2">
+                        <span class="grey-text d-block">Vendor :</span>
+                        <span>{amendmentDetails.Vendor}</span>
+                      </span>}
 
-                    <span class=" mr-2 pl-3">
-                      <span class="grey-text d-block">Technology:</span>
-                      <span>{amendmentDetails.Technology}</span>
-                    </span>
+                      <span class=" mr-2 pl-3">
+                        <span class="grey-text d-block">Technology:</span>
+                        <span>{amendmentDetails.Technology}</span>
+                      </span>
 
-                    {!costingDrawer && <span class=" mr-2 pl-3">
-                      <span class="grey-text d-block">Master:</span>
-                      <span>{amendmentDetails.SimulationAppliedOn}</span>
-                    </span>}
+                      {!costingDrawer && <span class=" mr-2 pl-3">
+                        <span class="grey-text d-block">Master:</span>
+                        <span>{amendmentDetails.SimulationAppliedOn}</span>
+                      </span>}
 
-                    <span class=" mr-2 pl-3">
-                      <span class="grey-text d-block">Costing Head:</span>
-                      <span>{amendmentDetails.CostingHead}</span>
-                    </span>
+                      <span class=" mr-2 pl-3">
+                        <span class="grey-text d-block">Costing Head:</span>
+                        <span>{amendmentDetails.CostingHead}</span>
+                      </span>
 
-                    <span class=" mr-2 pl-3">
-                      <span class="grey-text d-block">Effective Date:</span>
-                      <span>{amendmentDetails.EffectiveDate === '' ? '-' : DayTime(amendmentDetails.EffectiveDate).format('DD-MM-YYYY')}</span>
-                    </span>
-                  </div>
-                </Col>
-              </Row>
+                      <span class=" mr-2 pl-3">
+                        <span class="grey-text d-block">Effective Date:</span>
+                        <span>{amendmentDetails.EffectiveDate === '' ? '-' : DayTime(amendmentDetails.EffectiveDate).format('DD-MM-YYYY')}</span>
+                      </span>
+                    </div>
+                  </Col>
+                </Row>
+              }
 
               {!costingDrawer && <Row className="mb-3 pr-0 mx-0">
                 <Col md="6"> <HeaderTitle title={'Impacted Master Data:'} /></Col>

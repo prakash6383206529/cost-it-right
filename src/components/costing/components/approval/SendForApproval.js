@@ -1011,6 +1011,8 @@ const SendForApproval = (props) => {
                 closeDrawer={verifyImpactDrawer}
                 isSimulation={false}
                 amendmentDetails={costingApprovalDrawerData}
+                approvalSummaryTrue={true}
+                costingId={viewApprovalData[0].costingId}
               />}
           </div>
         </div>
