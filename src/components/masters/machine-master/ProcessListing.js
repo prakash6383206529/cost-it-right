@@ -23,6 +23,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper'
 
+
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
@@ -371,6 +372,7 @@ class ProcessListing extends Component {
   render() {
     const { handleSubmit, AddAccessibility, DownloadAccessibility } = this.props;
     const { isOpenProcessDrawer, isEditFlag } = this.state;
+    const ExcelFile = ReactExport.ExcelFile;
 
     const defaultColDef = {
       resizable: true,

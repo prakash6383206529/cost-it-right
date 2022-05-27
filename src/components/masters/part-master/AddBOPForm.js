@@ -7,12 +7,9 @@ import { renderText, searchableSelect } from "../../layout/FormInputs";
 import { getBoughtOutPartSelectList, getDrawerBOPData } from '../actions/Part';
 import { } from '../../../actions/Common';
 import { BOUGHTOUTPART } from '../../../config/constants';
-<<<<<<< HEAD
 import LoaderCustom from '../../common/LoaderCustom';
-=======
 import { PartEffectiveDate } from './AddAssemblyPart';
 
->>>>>>> 7f187a11e (Effective date added for Get API of aseembly,component and BOP)
 
 class AddBOPForm extends Component {
   static contextType = PartEffectiveDate

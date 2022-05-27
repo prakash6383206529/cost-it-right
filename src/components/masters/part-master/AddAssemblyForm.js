@@ -7,11 +7,8 @@ import { renderText, searchableSelect } from "../../layout/FormInputs";
 import { getAssemblyPartSelectList, getDrawerAssemblyPartDetail, } from '../actions/Part';
 import { ASSEMBLY } from '../../../config/constants';
 import { getRandomSixDigit } from '../../../helper/util';
-<<<<<<< HEAD
 import LoaderCustom from '../../common/LoaderCustom';
-=======
 import { PartEffectiveDate } from './AddAssemblyPart';
->>>>>>> 7f187a11e (Effective date added for Get API of aseembly,component and BOP)
 
 class AddAssemblyForm extends Component {
 
@@ -92,11 +89,8 @@ class AddAssemblyForm extends Component {
     * @description Used show listing of unit of measurement
     */
     renderListing = (label) => {
-<<<<<<< HEAD
-=======
         const { BOMViewerData } = this.props;
 
->>>>>>> 7f187a11e (Effective date added for Get API of aseembly,component and BOP)
         const { assemblyPartSelectList } = this.props;
         const { selectedParts } = this.state;
 
