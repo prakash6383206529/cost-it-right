@@ -123,12 +123,7 @@ function ApprovalListing(props) {
     const row = props?.valueFormatted ? props.valueFormatted : props?.data;
     return (
       <Fragment>
-        <div
-          onClick={() => viewDetails(row.ApprovalNumber, row.ApprovalProcessId)}
-          className={'link'}
-        >
-          {(cell === '' || cell === null) ? '-' : cell}
-        </div>
+        {(cell === '' || cell === null) ? <div className='ml-4'>-</div> : <div onClick={() => viewDetails(row.ApprovalNumber, row.ApprovalProcessId)} className={'link'}>{cell}</div>}
       </Fragment>
     )
   }
