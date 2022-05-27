@@ -493,7 +493,7 @@ class IndivisualPartListing extends Component {
         };
         return (
             <>
-                <div className={`ag-grid-react part-manage-component ${DownloadAccessibility ? "show-table-btn" : ""}`}>
+                <div className={`ag-grid-react custom-pagination ${DownloadAccessibility ? "show-table-btn" : ""}`}>
                     {this.state.isLoader && <LoaderCustom />}
                     <Row className="pt-3 no-filter-row">
                         <Col md="12" className="search-user-block pr-0">

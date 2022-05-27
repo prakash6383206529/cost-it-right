@@ -603,13 +603,13 @@ function RMDomesticListing(props) {
     }
 
     return (
-        <div className={`ag-grid-react part-manage-component ${DownloadAccessibility ? "show-table-btn" : ""}`}>
+        <div className={`ag-grid-react custom-pagination ${DownloadAccessibility ? "show-table-btn" : ""}`}>
             {(loader && !props.isMasterSummaryDrawer) && <LoaderCustom />}
             <Row className={`filter-row-large pt-4 ${props?.isSimulation ? 'zindex-0 ' : ''}`}>
-                <Col md="6" lg="6">
+                <Col md="3" lg="3">
                     <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                 </Col>
-                <Col md="6" lg="6" className="mb-3 d-flex justify-content-end">
+                <Col md="9" lg="9" className="mb-3 d-flex justify-content-end">
                     {
                         // SHOW FILTER BUTTON ONLY FOR RM MASTER NOT FOR SIMULATION AMD MASTER APPROVAL SUMMARY
                         (!props.isMasterSummaryDrawer) &&
@@ -624,62 +624,49 @@ function RMDomesticListing(props) {
                             }
                             {!isSimulation &&
                                 <div className="d-flex justify-content-end bd-highlight w100">
-                                    <div>
-                                        <>
-                                            {shown ? (
-                                                <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => { setshown(!shown) }}>
-                                                    <div className="cancel-icon-white"></div>
-                                                </button>
-                                            ) : (<>
+
+                                    <>
+
+                                        <div className="warning-message d-flex align-items-center">
+                                            {warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
+                                        </div>
+                                        <button disabled={isSearchButtonDisable} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
+
+                                        {AddAccessibility && (
+                                            <button
+                                                type="button"
+                                                className={"user-btn mr5"}
+                                                onClick={formToggle}
+                                                title="Add"
+                                            >
+                                                <div className={"plus mr-0"}></div>
+                                                {/* ADD */}
+                                            </button>
+                                        )}
+                                        {BulkUploadAccessibility && (
+                                            <button
+                                                type="button"
+                                                className={"user-btn mr5"}
+                                                onClick={bulkToggle}
+                                                title="Bulk Upload"
+                                            >
+                                                <div className={"upload mr-0"}></div>
+                                                {/* Bulk Upload */}
+                                            </button>
+                                        )}
+                                        {
+                                            DownloadAccessibility &&
+                                            <>
+                                                <ExcelFile filename={'RM Domestic'} fileExtension={'.xls'} element={
+                                                    <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                                        {/* DOWNLOAD */}
+                                                    </button>}>
+                                                    {onBtExport()}
+                                                </ExcelFile>
                                             </>
+                                        }
 
-                                            )}
-                                            {
-                                                <div className="warning-message d-flex align-items-center">
-                                                    {warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
-                                                </div>
-                                            }
-
-                                            {
-                                                <button disabled={isSearchButtonDisable} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
-
-                                            }
-                                            {AddAccessibility && (
-                                                <button
-                                                    type="button"
-                                                    className={"user-btn mr5"}
-                                                    onClick={formToggle}
-                                                    title="Add"
-                                                >
-                                                    <div className={"plus mr-0"}></div>
-                                                    {/* ADD */}
-                                                </button>
-                                            )}
-                                            {BulkUploadAccessibility && (
-                                                <button
-                                                    type="button"
-                                                    className={"user-btn mr5"}
-                                                    onClick={bulkToggle}
-                                                    title="Bulk Upload"
-                                                >
-                                                    <div className={"upload mr-0"}></div>
-                                                    {/* Bulk Upload */}
-                                                </button>
-                                            )}
-                                            {
-                                                DownloadAccessibility &&
-                                                <>
-                                                    <ExcelFile filename={'RM Domestic'} fileExtension={'.xls'} element={
-                                                        <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-                                                            {/* DOWNLOAD */}
-                                                        </button>}>
-                                                        {onBtExport()}
-                                                    </ExcelFile>
-                                                </>
-                                            }
-
-                                        </>
-                                    </div>
+                                    </>
                                 </div>
                             }
                             <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
@@ -735,19 +722,21 @@ function RMDomesticListing(props) {
                                 <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
                                 <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>
                             </AgGridReact>
-                            <div className="paging-container d-inline-block float-right">
-                                <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
-                                    <option value="10" selected={true}>10</option>
-                                    <option value="50">50</option>
-                                    <option value="100">100</option>
-                                </select>
-                            </div>
-                            <div className="d-flex pagination-button-container">
-                                <p><button className="previous-btn" type="button" disabled={false} onClick={() => onBtPrevious()}> </button></p>
-                                {pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 10)}</p>}
-                                {pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 50)}</p>}
-                                {pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 100)}</p>}
-                                <p><button className="next-btn" type="button" onClick={() => onBtNext()}> </button></p>
+                            <div className='button-wrapper'>
+                                <div className="paging-container d-inline-block float-right">
+                                    <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
+                                        <option value="10" selected={true}>10</option>
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                    </select>
+                                </div>
+                                <div className="d-flex pagination-button-container">
+                                    <p><button className="previous-btn" type="button" disabled={false} onClick={() => onBtPrevious()}> </button></p>
+                                    {pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 10)}</p>}
+                                    {pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 50)}</p>}
+                                    {pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 100)}</p>}
+                                    <p><button className="next-btn" type="button" onClick={() => onBtNext()}> </button></p>
+                                </div>
                             </div>
                         </div>
                     </div>
