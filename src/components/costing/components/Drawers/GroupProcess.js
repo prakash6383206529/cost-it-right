@@ -114,9 +114,13 @@ function GroupProcess(props) {
                                 <tr>
 
                                     <td> <span className='mr-2'>
-                                        {!findGroupCode(item, selectedProcessGroupId) && <input type="checkbox" defaultChecked={isCheckBoxApplicable(item, index)} onClick={() => handleCheckBox(item, index)} />}
+                                        {!findGroupCode(item, selectedProcessGroupId) &&
+                                            <label className="custom-checkbox" > {item.GroupName}
+                                                <input type="checkbox" defaultChecked={isCheckBoxApplicable(item, index)} onClick={() => handleCheckBox(item, index)} />
+                                                <span className="before-box" />
+                                            </label>}
                                     </span>
-                                        {item.GroupName}</td>
+                                    </td>
                                     <td>{item.Technology}</td>
                                     <td>{item.MachineName}</td>
                                     <td className='process-name'>{item.Tonnage} <div onClick={() => {
