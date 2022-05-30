@@ -608,62 +608,60 @@ function RMImportListing(props) {
             }
             {!isSimulation &&
               <div className="d-flex justify-content-end bd-highlight w100">
-                <div>
-                  <>
-                    {shown ? (
-                      <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => { setshown(!shown) }}>
-                        <div className="cancel-icon-white"></div>
-                      </button>
-                    ) : (
-                      <>
-                      </>
-                    )}
+                <>
+                  {shown ? (
+                    <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => { setshown(!shown) }}>
+                      <div className="cancel-icon-white"></div>
+                    </button>
+                  ) : (
+                    <>
+                    </>
+                  )}
 
-                    {
-                      <div className="warning-message d-flex align-items-center">
-                        {warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
-                      </div>
-                    }
+                  {
+                    <div className="warning-message d-flex align-items-center">
+                      {warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
+                    </div>
+                  }
 
-                    {
-                      <button disabled={isSearchButtonDisable} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
-                    }
+                  {
+                    <button disabled={isSearchButtonDisable} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
+                  }
 
-                    {AddAccessibility && (
-                      <button
-                        type="button"
-                        className={"user-btn mr5"}
-                        onClick={formToggle}
-                        title="Add"
-                      >
-                        <div className={"plus mr-0"}></div>
-                        {/* ADD */}
-                      </button>
-                    )}
-                    {BulkUploadAccessibility && (
-                      <button
-                        type="button"
-                        className={"user-btn mr5"}
-                        onClick={bulkToggle}
-                        title="Bulk Upload"
-                      >
-                        <div className={"upload mr-0"}></div>
-                        {/* Bulk Upload */}
-                      </button>
-                    )}
-                    {
-                      DownloadAccessibility &&
-                      <>
-                        <ExcelFile filename={'RM Import'} fileExtension={'.xls'} element={
-                          <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-                            {/* DOWNLOAD */}
-                          </button>}>
-                          {onBtExport()}
-                        </ExcelFile>
-                      </>
-                    }
-                  </>
-                </div>
+                  {AddAccessibility && (
+                    <button
+                      type="button"
+                      className={"user-btn mr5"}
+                      onClick={formToggle}
+                      title="Add"
+                    >
+                      <div className={"plus mr-0"}></div>
+                      {/* ADD */}
+                    </button>
+                  )}
+                  {BulkUploadAccessibility && (
+                    <button
+                      type="button"
+                      className={"user-btn mr5"}
+                      onClick={bulkToggle}
+                      title="Bulk Upload"
+                    >
+                      <div className={"upload mr-0"}></div>
+                      {/* Bulk Upload */}
+                    </button>
+                  )}
+                  {
+                    DownloadAccessibility &&
+                    <>
+                      <ExcelFile filename={'RM Import'} fileExtension={'.xls'} element={
+                        <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                          {/* DOWNLOAD */}
+                        </button>}>
+                        {onBtExport()}
+                      </ExcelFile>
+                    </>
+                  }
+                </>
               </div>
             }
             <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
