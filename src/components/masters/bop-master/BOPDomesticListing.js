@@ -165,34 +165,26 @@ class BOPDomesticListing extends Component {
     }
 
 
-
     onFloatingFilterChanged = (value) => {
         onFloatingFilterChanged(value, gridOptions, this)   // COMMON FUNCTION
     }
 
-
     onSearch = () => {
-
         onSearch(gridOptions, this, "BOP")  // COMMON PAGINATION FUNCTION
     }
 
-
     resetState = () => {
-
         resetState(gridOptions, this, "BOP")  //COMMON PAGINATION FUNCTION
     }
-
 
     onBtPrevious = () => {
         onBtPrevious(this, "BOP")       //COMMON PAGINATION FUNCTION
     }
 
-
     onBtNext = () => {
         onBtNext(this, "BOP")   // COMMON PAGINATION FUNCTION
 
     };
-
 
     componentDidUpdate(prevProps, prevState) {
         if (prevState.currentRowIndex !== this.state.currentRowIndex) {
@@ -221,7 +213,6 @@ class BOPDomesticListing extends Component {
         }
         this.props.getDetails(data, rowData?.IsBOPAssociated);
     }
-
 
 
     /**
@@ -662,7 +653,6 @@ class BOPDomesticListing extends Component {
 */
 function mapStateToProps({ boughtOutparts, supplier, auth, material }) {
     const { bopCategorySelectList, vendorAllSelectList, plantSelectList, bopDomesticList } = boughtOutparts;
-    const { rmSpecificationDetail, filterRMSelectList, rmSpecificationList } = material;
     const { vendorWithVendorCodeSelectList } = supplier;
     const { initialConfiguration } = auth;
     return { bopCategorySelectList, plantSelectList, vendorAllSelectList, bopDomesticList, vendorWithVendorCodeSelectList, initialConfiguration }
