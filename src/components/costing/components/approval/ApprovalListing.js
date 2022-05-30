@@ -204,6 +204,7 @@ function ApprovalListing(props) {
     let count = 0
     let technologyCount = 0
     let departmentCount = 0
+    let vendorCount = 0
     let statusArr = []
 
     selectedRows.forEach((element, index, arr) => {
@@ -240,7 +241,17 @@ function ApprovalListing(props) {
         return false
       }
     })
-
+    selectedRows.forEach((element, index, arr) => {
+      if (index > 0) {
+        if (element.VendorId !== arr[index - 1].VendorId) {
+          vendorCount = vendorCount + 1
+        } else {
+          return false
+        }
+      } else {
+        return false
+      }
+    })
     selectedRows.map(item => statusArr.push(item.SimulationTechnologyHead))
 
 
@@ -251,6 +262,10 @@ function ApprovalListing(props) {
     if (technologyCount > 0) {
       gridApi.deselectAll()
       return Toaster.warning("Technology should be same for sending multiple costing for approval")
+    }
+    if (vendorCount > 0) {
+      gridApi.deselectAll()
+      return Toaster.warning("Vendor should be same for sending multiple costing for approval")
     }
     if (count > 0) {
       // gridApi.deselectAll()

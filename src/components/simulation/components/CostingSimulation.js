@@ -1184,6 +1184,7 @@ function CostingSimulation(props) {
                                 amendmentDetails={amendmentDetails}
                                 dataForAssemblyImpactInVerifyImpact={tableData}
                                 assemblyImpactButtonTrue={assemblyImpactButtonTrue}
+                                approvalSummaryTrue={false}
                             />
                         }
                     </div >

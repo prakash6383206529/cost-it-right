@@ -24,7 +24,6 @@ import VerifyImpactDrawer from '../../../simulation/components/VerifyImpactDrawe
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 const SendForApproval = (props) => {
-  console.log('props: ', props);
   const { isApprovalisting } = props
   const dispatch = useDispatch()
   const { register, handleSubmit, control, setValue, formState: { errors } } = useForm({
@@ -35,7 +34,6 @@ const SendForApproval = (props) => {
   const reasonsList = useSelector((state) => state.approval.reasonsList)
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
   const viewApprovalData = useSelector((state) => state.costing.costingApprovalData)
-  console.log('viewApprovalData: ', viewApprovalData);
 
   const partNo = useSelector((state) => state.costing.partNo)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
@@ -58,6 +56,7 @@ const SendForApproval = (props) => {
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [isVerifyImpactDrawer, setIsVerifyImpactDrawer] = useState(false)
   const [costingApprovalDrawerData, setCostingApprovalDrawerData] = useState({})
+  const [costingIdArray, setCostingIdArray] = useState([])
   // const [showDate,setDate] = useState(false)
   // const [showDate,setDate] = useState(false)
   const userData = userDetails()
@@ -172,6 +171,21 @@ const SendForApproval = (props) => {
 
     }))
   }, [])
+
+  useEffect(() => {
+    let requestArray = []
+    let requestObject = {}
+    viewApprovalData && viewApprovalData.map((item) => {
+      let costingObject = {}
+      costingObject.CostingId = item.costingId
+      requestArray.push(costingObject)
+      return null
+    })
+    requestObject.IsCreate = true
+    requestObject.CostingIds = requestArray
+    setCostingIdArray(requestObject)
+  }, [])
+
   /**
    * @method renderDropdownListing
    * @description DROPDOWN
@@ -455,7 +469,6 @@ const SendForApproval = (props) => {
     })
 
     obj.CostingsList = temp
-    console.log('obj: ', obj);
 
 
     // debounce_fun()
@@ -1012,7 +1025,7 @@ const SendForApproval = (props) => {
                 isSimulation={false}
                 amendmentDetails={costingApprovalDrawerData}
                 approvalSummaryTrue={true}
-                costingId={viewApprovalData[0].costingId}
+                costingIdArray={costingIdArray}
               />}
           </div>
         </div>

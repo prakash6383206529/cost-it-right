@@ -40,7 +40,8 @@ function ApprovalSummary(props) {
   const [viewButton, setViewButton] = useState(false)
   const [pushButton, setPushButton] = useState(false)
   const [isLoader, setIsLoader] = useState(false);
-  const [fgWiseAcc, setFgWiseAcc] = useState(true)
+  const [fgWiseAcc, setFgWiseAcc] = useState(false)
+  const [costingIdArray, setCostingIdArray] = useState([])
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
   const headerName = ['Revision No.', 'Name', 'Old Cost/Pc', 'New Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
@@ -81,6 +82,16 @@ function ApprovalSummary(props) {
         ReasonId: ApprovalDetails[0].ReasonId,
         LastCostingId: LastCostingId
       })
+      let requestArray = []
+      let requestObject = {}
+
+      let costingObject = {}
+      costingObject.CostingId = CostingId
+      requestArray.push(costingObject)
+      requestObject.IsCreate = false
+      requestObject.CostingIds = requestArray
+      setCostingIdArray(requestObject)
+
     }),
 
     )
@@ -417,8 +428,8 @@ function ApprovalSummary(props) {
                   impactType={'FgWise'}
                   approvalSummaryTrue={true}
                   costingId={approvalData.CostingId}
-                  DisplayCompareCosting={displayCompareCosting}
                   DisplayCompareCostingFgWise={displayCompareCostingFgWise}
+                  costingIdArray={costingIdArray}
                 />
               </Col>
             </Row>}
