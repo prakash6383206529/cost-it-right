@@ -31,6 +31,8 @@ import {
   SET_PROCESS_ID,
   SET_PROCESSGROUP_ID,
   CHECK_HISTORY_COSTING_AND_SAP_PO_PRICE,
+  GET_FG_WISE_IMPACT_DATA_FOR_COSTING,
+  GET_FG_WISE_IMPACT_DATA,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -2408,8 +2410,6 @@ export function setIdsOfProcess(data) {
   }
 }
 export function setIdsOfProcessGroup(data) {
-  console.log('data: ', data);
-
   return (dispatch) => {
     dispatch({
       type: SET_PROCESSGROUP_ID,
@@ -2449,6 +2449,34 @@ export function checkHistoryCostingAndSAPPoPrice(params, callback) {
     }).catch((error) => {
       dispatch({ type: API_FAILURE })
       // apiErrors(error)
+      callback(error)
+    })
+  }
+}
+
+//FG WISE IMPACT DATA SHOW IN COSTING SUMMARY
+export function getFgWiseImpactDataForCosting(costingId, callback) {
+  return (dispatch) => {
+    const request = axios.post(`${API.getFgWiseImpactDataForCosting}`, costingId, config());
+    // const request = axios.post(API.getFgWiseImpactDataForCosting, costingId, config())
+    request.then((response) => {
+      if (response.data.Result) {
+        dispatch({
+          type: GET_FG_WISE_IMPACT_DATA,
+          payload: response.data.DataList,
+        })
+        callback(response)
+      } else if (response.status === 204) {
+        dispatch({
+          type: GET_FG_WISE_IMPACT_DATA,
+          payload: [],
+        })
+        callback(response)
+      }
+
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      apiErrors(error);
       callback(error)
     })
   }

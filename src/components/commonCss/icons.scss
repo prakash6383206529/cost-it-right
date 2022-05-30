@@ -168,7 +168,7 @@
 }
 .Copy.All { @include icons("../../assests/images/Copy.svg", $shadowColor:#f8a000, $borderColor:#feeccc);
     @include extra-icon-styles;
-    margin: 0;
+    
 }
 .Create { @include icons("../../assests/images/Create.svg");
     @include extra-icon-styles;
@@ -291,8 +291,8 @@
     grid-gap: 5px;
     justify-content: end;
     button {
-        margin-right: 0;
-        margin-left: 0;
+        margin-right: 0 !important;
+        margin-left: 0 !important;
     }
 }
 

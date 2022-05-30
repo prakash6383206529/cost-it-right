@@ -2,8 +2,6 @@
  * Define all the constants required in application inside this file and export them
  */
 
-import { getAuthToken } from '../helper/auth';
-
 export const config = () => {
 
   let headers = {
@@ -18,7 +16,9 @@ export const config = () => {
 
 // DEVELOPMENT
 const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
-// const BASE_URL = 'http://10.148.80.4:10122/api/v1';
+// const BASE_URL = `https://demov3api.costitright.com/api/v1`;
+// const BASE_URL = `http://10.148.80.4:10122/api/v1`;
+
 //FILE URL
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
 
@@ -119,6 +119,7 @@ export const API = {
   productAttachment: `${BASE_URL}/masters-product/product-file-upload`,
   bulkUploadProduct: `${BASE_URL}/masters-product/bulk-upload-for-product-json`,
   productGroupSelectList: `${BASE_URL}/masters-product/select-list-get-product-group-code`,
+  getPartDescription: `${BASE_URL}/masters-part/get-info-name-by-part-number-and-type`,
 
   //ASSEMBLY PART
   createAssemblyPart: `${BASE_URL}/masters-part/create-assembly-part`,
@@ -486,6 +487,7 @@ export const API = {
   getNCCCExistingCosting: `${BASE_URL}/costing/get-ncc-exist-costings-list`,
   createNCCCosting: `${BASE_URL}/costing/create-ncc-costing`,
   getMachineProcessGroupDetail: `${BASE_URL}/costing/get-costing-machine-process-group-detail`,
+  getFgWiseImpactDataForCosting: `${BASE_URL}/sap-integration/get-fg-wise-impact-data-for-costing`,
   //getRMCCTabData: `${BASE_URL}/costing/get-zbc-costing-rm-bop-cc-detail-for-tab-grid`,
 
   getRMCCTabData: `${BASE_URL}/costing/get-costing-detail-for-rm-bop-cc`,
@@ -1312,8 +1314,8 @@ export const CHECK_IS_TOOL_DATA_CHANGE = 'CHECK_IS_TOOL_DATA_CHANGE'
 export const CHECK_IS_DISCOUNT_DATA_CHANGE = 'CHECK_IS_DISCOUNT_DATA_CHANGE'
 export const CHECK_HISTORY_COSTING_AND_SAP_PO_PRICE = 'CHECK_HISTORY_COSTING_AND_SAP_PO_PRICE'
 
-
 export const SET_NEW_ARRAY_FOR_COSTING = 'SET_NEW_ARRAY_FOR_COSTING'
+export const GET_FG_WISE_IMPACT_DATA_FOR_COSTING = 'GET_FG_WISE_IMPACT_DATA_FOR_COSTING'
 
 //WEIGHT CALCULATION COSTING
 
@@ -1886,4 +1888,4 @@ export const IV = 'ozzzguugcusjqmbj'
 
 
 //VERSION 
-export const VERSION = "V1.2.232.4";
+export const VERSION = "V1.2.242";

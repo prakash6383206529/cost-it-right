@@ -253,11 +253,19 @@ function SheetMetalBaicDrawer(props) {
   // const quantity = (e) => {
   //   setQuantity(e.target.value)
   // }
+
+  const handleKeyDown = function (e) {
+    if (e.key === 'Enter' && e.shiftKey === false) {
+      e.preventDefault();
+    }
+  };
+
   return (
     <Fragment>
       <Row>
         <Col>
-          <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}>
+          <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}
+            onKeyDown={(e) => { handleKeyDown(e, onSubmit.bind(this)); }}>
             <Col md="12" className={''}>
               <div className="border pl-3 pr-3 pt-3">
                 {/* <Col md="10">

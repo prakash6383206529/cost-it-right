@@ -188,8 +188,10 @@ class SimulationTab extends Component {
                 } else {
                     item1.IsChecked = isCheckedSelectAll;
                 }
+                // 
 
             })
+            item.IsChecked = isCheckedSelectAll
             return actionRows;
         })
         this.setState({ Modules: actionArray, })

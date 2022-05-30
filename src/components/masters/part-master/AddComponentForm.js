@@ -5,10 +5,14 @@ import { Row, Col, } from 'reactstrap';
 import { required, maxLength5, postiveNumber, minValue1, acceptAllExceptSingleSpecialCharacter, } from "../../../helper/validation";
 import { renderText } from "../../layout/FormInputs";
 import { getComponentPartSelectList, getDrawerComponentPartData, } from '../actions/Part';
-import { COMPONENT_PART } from '../../../config/constants';
+import { COMPONENT_PART, LEVEL1 } from '../../../config/constants';
 import AsyncSelect from 'react-select/async';
 import TooltipCustom from '../../common/Tooltip';
+import LoaderCustom from '../../common/LoaderCustom';
+import { PartEffectiveDate } from './AddAssemblyPart';
+
 class AddComponentForm extends Component {
+  static contextType = PartEffectiveDate
   constructor(props) {
     super(props);
     this.myRef = React.createRef();
@@ -19,6 +23,7 @@ class AddComponentForm extends Component {
       selectedParts: [],
       updateAsyncDropdown: false,
       isPartNoNotSelected: false,
+      isLoader: false
     }
   }
 
@@ -27,12 +32,17 @@ class AddComponentForm extends Component {
  * @description called after render the component
  */
   componentDidMount() {
+    this.setState({ isLoader: true })
     const { BOMViewerData } = this.props;
-    this.props.getComponentPartSelectList(this.props?.TechnologySelected.value, () => { })
+    let obj = {
+      technologyId: this.props?.TechnologySelected.value,
+      date: this.context
+    }
+    this.props.getComponentPartSelectList(obj, () => { this.setState({ isLoader: false }) })
 
     let tempArr = [];
     BOMViewerData && BOMViewerData.map(el => {
-      if (el.PartType === COMPONENT_PART) {
+      if (el.PartType === COMPONENT_PART && el.Level === LEVEL1) {
         tempArr.push(el.PartId)
       }
       return null;
@@ -86,7 +96,7 @@ class AddComponentForm extends Component {
     const { BOMViewerData } = this.props;
     let tempArr = [];
     BOMViewerData && BOMViewerData.map(el => {
-      if (el.PartType === COMPONENT_PART) {
+      if (el.PartType === COMPONENT_PART && el.Level === LEVEL1) {
         tempArr.push(el.PartId)
       }
       return null;
@@ -95,7 +105,9 @@ class AddComponentForm extends Component {
     const temp = [];
     if (label === 'part') {
       componentPartSelectList && componentPartSelectList.map(item => {
+
         if (item.Value === '0' || tempArr.includes(item.Value)) return false;
+        // 
         temp.push({ label: item.Text, value: item.Value })
         return null;
       });
@@ -209,6 +221,7 @@ class AddComponentForm extends Component {
             <Col md="6">
               <label>{"Part No."}<span className="asterisk-required">*</span></label>
               <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter first few digits to see the part numbers" />
+              {this.state.isLoader && <LoaderCustom customClass="add-child-input" />}
               <AsyncSelect name="PartNumber" ref={this.myRef} key={this.state.updateAsyncDropdown} cacheOptions defaultOptions loadOptions={promiseOptions} onChange={(e) => this.handlePartChange(e)} />
               {this.state.isPartNoNotSelected && <div className='text-help'>This field is required.</div>}
 

@@ -8,6 +8,7 @@ import {
   ELECTRONICS, RIVET, NON_FERROUS_HPDC, RUBBER, NON_FERROUS_GDC, FORGING, FASTNERS, RIVETS, RMDOMESTIC, RMIMPORT, BOPDOMESTIC, BOPIMPORT, PROCESS, COMBINED_PROCESS, OPERATIONS, SURFACETREATMENT, MACHINERATE, OVERHEAD, PROFIT, EXCHNAGERATE,
 } from '../config/constants'
 import { getConfigurationKey } from './auth'
+import { data } from 'react-dom-factories';
 
 
 
@@ -550,7 +551,7 @@ export function getNetSurfaceAreaBothSide(data) {
   return checkForNull(value)
 }
 
-export function formViewData(costingSummary) {
+export function formViewData(costingSummary, header = '') {
   let temp = []
   let dataFromAPI = costingSummary
   let obj = {}
@@ -690,7 +691,7 @@ export function formViewData(costingSummary) {
   obj.destinationPlantCode = dataFromAPI.DestinationPlantCode ? dataFromAPI.DestinationPlantCode : '-'
   obj.destinationPlantName = dataFromAPI.DestinationPlantName ? dataFromAPI.DestinationPlantName : '-'
   obj.destinationPlantId = dataFromAPI.DestinationPlantId ? dataFromAPI.DestinationPlantId : '-'
-  obj.CostingHeading = dataFromAPI.CostingHeading ? dataFromAPI.CostingHeading : '-'
+  obj.CostingHeading = header
   obj.partName = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.PartName ? dataFromAPI.CostingPartDetails.PartName : '-'
   obj.netOtherOperationCost = dataFromAPI && dataFromAPI.NetOtherOperationCost ? dataFromAPI.NetOtherOperationCost : 0
   obj.masterBatchTotal = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.MasterBatchTotal ? dataFromAPI.CostingPartDetails.MasterBatchTotal : 0
@@ -707,7 +708,6 @@ export function formViewData(costingSummary) {
 
   // temp = [...temp, obj]
   temp.push(obj)
-  console.log(temp, "TEMP");
   return temp
 }
 
@@ -883,13 +883,11 @@ export function calculateScrapWeight(grossWeight, finishWeight) {
 
 export function calculateScrapCost(scrapWeight, scrapRate) {
   const scrapCost = scrapWeight * scrapRate
-  console.log('scrapCost: ', scrapCost);
   return scrapCost
 }
 
 export function calculateNetLandedCost(rmRate, grossWeight, scrapWeight, scrapRate) {
   const netLandedCost = (rmRate * grossWeight) - (scrapWeight * scrapRate)
-  console.log('netLandedCost: ', netLandedCost);
   return netLandedCost
 }
 
@@ -897,3 +895,5 @@ export function isUploadSimulation(master) {
   const isUploadSimulation = [EXCHNAGERATE]
   return isUploadSimulation.includes(String(master))
 }
+
+export const allEqual = arr => arr.every(val => val === arr[0]);

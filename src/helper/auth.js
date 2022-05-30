@@ -37,7 +37,6 @@ export const getAuthToken = () => {
   let authToken = ''
   if (isUserLoggedIn()) {
     authToken = JSON.parse(localStorage.getItem('userDetail')).Token
-    console.log('authToken: ', authToken);
   }
   return authToken
 }

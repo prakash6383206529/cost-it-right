@@ -8,6 +8,7 @@ import { EMPTY_DATA, EMPTY_GUID } from "../../../../config/constants";
 import LoaderCustom from "../../../common/LoaderCustom";
 import { Checkbox } from "@material-ui/core";
 import NoContentFound from "../../../common/NoContentFound";
+import { DIE_CASTING, Ferrous_Casting, FORGING, MACHINING } from "../../../../config/masterData";
 
 
 function GroupProcess(props) {
@@ -24,7 +25,7 @@ function GroupProcess(props) {
     useEffect(() => {
         let data = {
             VendorId: costData.VendorId,
-            TechnologyId: String(`${costData.TechnologyId},14`),
+            TechnologyId: Number(costData.ETechnologyType) === Number(FORGING) || Number(costData.ETechnologyType) === Number(DIE_CASTING) || Number(costData.ETechnologyType) === Number(Ferrous_Casting) ? String(`${costData.ETechnologyType},${MACHINING}`) : `${costData.ETechnologyType}`,
             VendorPlantId: getConfigurationKey()?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
             DestinationPlantId: getConfigurationKey()?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID,
             CostingId: costData.CostingId,
@@ -98,7 +99,7 @@ function GroupProcess(props) {
                     <thead>
                         <tr>
                             <th>Process Group</th>
-                            <th>Technologies</th>
+                            <th>Technology</th>
                             <th>Machine Name</th>
                             <th>MachineTonnage</th>
                         </tr>
@@ -113,9 +114,13 @@ function GroupProcess(props) {
                                 <tr>
 
                                     <td> <span className='mr-2'>
-                                        {!findGroupCode(item, selectedProcessGroupId) && <input type="checkbox" defaultChecked={isCheckBoxApplicable(item, index)} onClick={() => handleCheckBox(item, index)} />}
+                                        {!findGroupCode(item, selectedProcessGroupId) &&
+                                            <label className="custom-checkbox" > {item.GroupName}
+                                                <input type="checkbox" defaultChecked={isCheckBoxApplicable(item, index)} onClick={() => handleCheckBox(item, index)} />
+                                                <span className="before-box" />
+                                            </label>}
                                     </span>
-                                        {item.GroupName}</td>
+                                    </td>
                                     <td>{item.Technology}</td>
                                     <td>{item.MachineName}</td>
                                     <td className='process-name'>{item.Tonnage} <div onClick={() => {

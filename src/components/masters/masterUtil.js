@@ -37,8 +37,9 @@ export const ProcessGroup = (props) => {
 
     const handleProcess = () => {
         const processName = getValues('process')
-        if (processName && Object.keys(processName).length === 0) {
-            Toaster.warning('Please select at least one process')
+        const groupName = getValues('groupName')
+        if ((processName === undefined || processName === '' || Object.keys(processName).length === 0) || (groupName === undefined | groupName === '')) {
+            Toaster.warning('Please select group name and at least one process')
             return false
         }
         setSelectedProcess([...selectedProcess, { ProcessName: processName?.label, ProcessId: processName?.value }])
@@ -49,6 +50,7 @@ export const ProcessGroup = (props) => {
         setValue('groupName', '')
         setValue('process', '')
         setSelectedProcess([])
+        setEditIndex('')
     }
 
 
@@ -144,8 +146,6 @@ export const ProcessGroup = (props) => {
     }
 
     const deleteItem = (index) => {
-
-        let tempArr2 = [];
         let tempArrAfterDelete = rowData && rowData.filter((el, i) => {
             if (i === index) return false;
             return true
@@ -169,6 +169,8 @@ export const ProcessGroup = (props) => {
         setRowData(tempArrAfterDelete)
         dispatch(setGroupProcessList(reduxTempArrAfterDelete))
         setApiData(apiTempArrAfterDelete)
+        resetHandler()
+        setEditIndex('')
     }
 
     return (
@@ -242,14 +244,12 @@ export const ProcessGroup = (props) => {
                                         <button
                                             type="button"
                                             className={`${props.isViewFlag ? 'disabled-button user-btn' : 'user-btn'} pull-left mr5`}
-                                            onClick={updateProcessTableHandler}
-                                        >
-                                            <div className={'plus'}></div>Update</button>
+                                            onClick={updateProcessTableHandler}>Update</button>
                                         <button
                                             type="button"
                                             className={`${props.isViewFlag ? 'disabled-button reset-btn' : 'reset-btn'} pull-left`}
                                             onClick={resetHandler}
-                                        >Reset</button>
+                                        >Cancel</button>
                                     </div>
                             }
                         </div>
@@ -282,11 +282,11 @@ export const ProcessGroup = (props) => {
                                 </td>
                             </tr>
                         })}
-                        <tr>
-                            <td colSpan={"6"}>{rowData && rowData.length === 0 &&
+                        {rowData && rowData.length === 0 && <tr>
+                            <td colSpan={"6"}>
                                 <NoContentFound title={EMPTY_DATA} />
-                            }</td>
-                        </tr>
+                            </td>
+                        </tr>}
                     </tbody>
                 </table>
             </div>
@@ -299,14 +299,3 @@ export const ProcessGroup = (props) => {
 
 // }
 
-export const config = () => {
-    console.log("CALL FUNCTION");
-    let headers = {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Credentials': 'true',
-        'Authorization': `Bearer ${JSON.parse(localStorage.getItem('userDetail')).Token}`,
-        'Access-From': 'WEB',
-        'Api-Key': `${process.env.REACT_APP_API_KEY}`,
-    }
-    return { headers }
-}

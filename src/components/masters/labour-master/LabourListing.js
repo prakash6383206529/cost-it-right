@@ -66,7 +66,7 @@ class LabourListing extends Component {
 
   componentDidMount() {
     this.applyPermission(this.props.topAndLeftMenuData)
-    this.setState({isLoader:true})
+    this.setState({ isLoader: true })
     setTimeout(() => {
       this.props.getZBCPlantList(() => { })
       this.props.getStateSelectList(() => { })
@@ -124,7 +124,7 @@ class LabourListing extends Component {
     }
 
     this.props.getLabourDataList(true, filterData, (res) => {
-      this.setState({isLoader:false})
+      this.setState({ isLoader: false })
       if (res.status === 204 && res.data === '') {
         this.setState({ tableData: [] })
       } else if (res && res.data && res.data.DataList) {
@@ -164,11 +164,11 @@ class LabourListing extends Component {
     this.props.deleteLabour(ID, (res) => {
       if (res.data.Result === true) {
         Toaster.success(MESSAGES.DELETE_LABOUR_SUCCESS)
+
         //this.getTableListData(null, null, null, null)
         this.filterList()
       }
-      else {
-      }
+
     })
     this.setState({ showPopup: false })
   }
@@ -455,7 +455,7 @@ class LabourListing extends Component {
     return (
       <>
         <div className={`ag-grid-react container-fluid ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
-        {this.state.isLoader && <LoaderCustom />}
+          {this.state.isLoader && <LoaderCustom />}
           <ScrollToTop pointProp="go-to-top" />
           <form
             onSubmit={handleSubmit(this.onSubmit.bind(this))}
@@ -526,7 +526,7 @@ class LabourListing extends Component {
             </Row>
           </form>
 
-          <div className={`ag-grid-wrapper height-width-wrapper ${this.props.labourDataList && this.props.labourDataList?.length <=0 ?"overlay-contain": ""}`}>
+          <div className={`ag-grid-wrapper height-width-wrapper ${this.props.labourDataList && this.props.labourDataList?.length <= 0 ? "overlay-contain" : ""}`}>
             <div className="ag-grid-header">
               <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
             </div>

@@ -254,9 +254,9 @@ function RMImportListing(props) {
 
     return (
       <>
-        {ViewRMAccessibility && <button className="View" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
-        {isEditbale && <button className="Edit align-middle" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
-        {isDeleteButton && <button className="Delete align-middle" type={'button'} onClick={() => deleteItem(cellValue)} />}
+        {ViewRMAccessibility && <button title='View' className="View" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
+        {isEditbale && <button title='Edit' className="Edit align-middle" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
+        {isDeleteButton && <button title='Delete' className="Delete align-middle" type={'button'} onClick={() => deleteItem(cellValue)} />}
       </>
     )
   };

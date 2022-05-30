@@ -7,6 +7,8 @@ import NoContentFound from '../../common/NoContentFound'
 import { EMPTY_DATA } from '../../../config/constants'
 import LoaderCustom from '../../common/LoaderCustom'
 import { Link } from 'react-scroll';
+import { getSimulatedAssemblyWiseImpactDate } from '../actions/Simulation';
+import { getFgWiseImpactDataForCosting } from '../../costing/actions/Costing';
 
 
 
@@ -14,16 +16,14 @@ export function Fgwiseimactdata(props) {
     const [acc1, setAcc1] = useState({ currentIndex: -1, isClicked: false, })
     const [showTableData, setshowTableData] = useState(false)
     const dispatch = useDispatch()
-    const { SimulationId } = props
+    const { SimulationId, headerName, dataForAssemblyImpact, vendorIdState, impactType, approvalSummaryTrue, costingIdArray } = props
     const [loader, setLoader] = useState(false)
 
     const impactData = useSelector((state) => state.simulation.impactData)
 
 
     useEffect(() => {
-        setLoader(true)
-
-        if (SimulationId) {
+        if (SimulationId && !approvalSummaryTrue) {
             setLoader(true)
             dispatch(getFgWiseImpactData(SimulationId, (res) => {
                 if (res && res.data && res.data.Result) {
@@ -45,13 +45,32 @@ export function Fgwiseimactdata(props) {
 
     }, [SimulationId])
 
+    useEffect(() => {
+        if (approvalSummaryTrue && costingIdArray) {
+            setLoader(true)
+            dispatch(getFgWiseImpactDataForCosting(costingIdArray, (res) => {
+                if (res && res.data && res.data.Result) {
+                    setshowTableData(true)
+                }
+                else if (res?.response?.status !== "200") {
+                    setshowTableData(false)
+                } else {
+                    setLoader(false)
+                }
+                setLoader(false)
+            }))
+        }
+    }, [costingIdArray])
+
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
 
-    const DisplayCompareCostingFgWiseImpact = (SimulationApprovalProcessSummaryId) => {
-
-        props.DisplayCompareCosting(SimulationApprovalProcessSummaryId, 0)
-
+    const DisplayCompareCostingFgWiseImpact = (SimulationApprovalProcessSummaryId, CostingApprovalProcessSummaryId) => {
+        if (approvalSummaryTrue) {
+            props.DisplayCompareCostingFgWise(CostingApprovalProcessSummaryId)
+        } else {
+            props.DisplayCompareCosting(SimulationApprovalProcessSummaryId, 0)
+        }
     }
 
     const toggleAcc = (value) => {
@@ -133,7 +152,7 @@ export function Fgwiseimactdata(props) {
                                                     <td ><span>{checkForDecimalAndNull(item.VariancePerPiece, initialConfiguration.NoOfDecimalForPrice)}</span></td>
                                                     <td ><span>{checkForDecimalAndNull(item.VendorSOBPercentage, initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
                                                     <td ><span>{checkForDecimalAndNull(VendorSOBImpactPerPiece, initialConfiguration.NoOfDecimalForPrice)}</span></td>
-                                                    <td colSpan="4"><span> <Link to="compare-costing" spy={true} smooth={true}><button className="Balance mb-0 float-right" type={'button'} onClick={() => { DisplayCompareCostingFgWiseImpact(item.SimulationApprovalProcessSummaryId) }} /></Link></span></td>
+                                                    <td colSpan="4"><span> <Link to="compare-costing" spy={true} smooth={true}><button className="Balance mb-0 float-right" type={'button'} onClick={() => { DisplayCompareCostingFgWiseImpact(item.SimulationApprovalProcessSummaryId, item.SimulationApprovalProcessSummaryId) }} /></Link></span></td>
 
                                                 </tr>)
                                         })}

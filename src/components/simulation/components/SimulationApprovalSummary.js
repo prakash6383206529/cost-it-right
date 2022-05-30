@@ -33,21 +33,18 @@ import { Fgwiseimactdata } from './FgWiseImactData'
 import { pushAPI } from '../../simulation/actions/Simulation'
 import { MESSAGES } from '../../../config/message';
 import AttachmentSec from '../../costing/components/approval/AttachmentSec'
-import { Errorbox } from '../../common/ErrorBox';
 import ReactExport from 'react-export-excel';
-import redcrossImg from '../../../assests/images/red-cross.png'
-import AssemblyWiseImpact from './AssemblyWiseImpact';
 import { Link } from 'react-scroll';
 import ScrollToTop from '../../common/ScrollToTop';
 import _ from 'lodash'
 import { impactmasterDownload, SimulationUtils } from '../SimulationUtils'
 import { SIMULATIONAPPROVALSUMMARYDOWNLOADRM } from '../../../config/masterData'
 import ViewAssembly from './ViewAssembly';
-import imgRedcross from '../../../assests/images/red-cross.png';
-import imgGreencross from '../../../assests/images/greenCross.png';
+
 import AssemblyWiseImpactSummary from './AssemblyWiseImpactSummary';
 import CalculatorWrapper from '../../common/Calculator/CalculatorWrapper';
-import { debounce } from 'lodash'
+import { debounce } from 'lodash';
+import { ErrorMessage } from '../SimulationUtils';
 
 const gridOptions = {};
 const ExcelFile = ReactExport.ExcelFile;
@@ -56,7 +53,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function SimulationApprovalSummary(props) {
     // const { isDomestic, list, isbulkUpload, rowCount, technology, master } = props
-    const { approvalDetails, approvalData, isbulkUpload, list, technology, master, type, isSimulation, simulationCostingIdOfFgwiSeImpact } = props;
+    const { isbulkUpload, type } = props;
     const { approvalNumber, approvalId, SimulationTechnologyId } = props.location.state
     const [showImpactedData, setshowImpactedData] = useState(false)
     const [fgWiseDataAcc, setFgWiseDataAcc] = useState(true)
@@ -72,8 +69,7 @@ function SimulationApprovalSummary(props) {
     const [isApprovalDone, setIsApprovalDone] = useState(false) // this is for hiding approve and  reject button when costing is approved and  send for futher approval
     const [showFinalLevelButtons, setShowFinalLevelButton] = useState(false) //This is for showing approve ,reject and approve and push button when costing approval is at final level for aaproval
     const [showPushButton, setShowPushButton] = useState(false) // This is for showing push button when costing is approved and need to push it for scheduling
-    const [hidePushButton, setHideButton] = useState(false) // This is for hiding push button ,when it is send for push for scheduling.
-    const [pushButton, setPushButton] = useState(false)
+    // const [hidePushButton, setHideButton] = useState(false) // This is for hiding push button ,when it is send for push for scheduling.
     const [loader, setLoader] = useState(true)
     const [effectiveDate, setEffectiveDate] = useState('')
     const [oldCostingList, setOldCostingList] = useState([])
@@ -87,13 +83,6 @@ function SimulationApprovalSummary(props) {
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [id, setId] = useState('')
-    const [status, setStatus] = useState('')
-    const [amendentStatus, setAmendentstatus] = useState('')
-    const [isSuccessfullyInsert, setIsSuccessfullyInsert] = useState(true)
-    const [noContent, setNoContent] = useState(false)
-    const [initialFiles, setInitialFiles] = useState([]);
-    const [files, setFiles] = useState([]);
-    const [IsOpen, setIsOpen] = useState(false);
     const [DataForAssemblyImpactForFg, setdataForAssemblyImpactForFg] = useState([]);
     const [textFilterSearch, setTextFilterSearch] = useState('')
 
@@ -109,7 +98,6 @@ function SimulationApprovalSummary(props) {
     const [showExchangeRateColumn, setShowExchangeRateColumn] = useState(false);
     const [showMachineRateColumn, setShowMachineRateColumn] = useState(false);
     const [showCombinedProcessColumn, setShowCombinedProcessColumn] = useState(false);
-    const [ammendmentStatus, setAmmendmentStatus] = useState('');
 
     const isSurfaceTreatment = (Number(SimulationTechnologyId) === Number(SURFACETREATMENT));
     const isOperation = (Number(SimulationTechnologyId) === Number(OPERATIONS));
@@ -149,16 +137,6 @@ function SimulationApprovalSummary(props) {
     })
     const userLoggedIn = loggedInUserId()
 
-    const funcForErrorBoxButton = () => {
-
-        const statusWithButton = <><p className={`${toggleSeeData ? 'status-overflow' : ''} `}><span>{status}</span></p>{<button className='see-data-btn' onClick={() => { setToggleSeeData(!toggleSeeData) }}>Show {toggleSeeData ? 'all' : 'less'} data</button>}</>
-        return statusWithButton
-    }
-    const funcForErrorBoxButtonForAmmendment = () => {
-
-        const statusWithButton = <><p className={`${toggleAmmendmentData ? 'status-overflow' : ''} `}><span>{amendentStatus}</span></p>{<button className='see-data-btn' onClick={() => { setToggleAmmendmentStatus(!toggleAmmendmentData) }}>Show {toggleAmmendmentData ? 'all' : 'less'} data</button>}</>
-        return statusWithButton
-    }
 
     useEffect(() => {
         dispatch(getTechnologySelectList(() => { }))
@@ -224,34 +202,14 @@ function SimulationApprovalSummary(props) {
             // }
             setdataForAssemblyImpactForFg(SimulatedCostingList)
         }))
-        const obj = {
-            approvalTokenNumber: approvalNumber
-        }
-        dispatch(getAmmendentStatus(obj, res => {
-            setNoContent(res?.status === 204 ? true : false)
-
-            if (res?.status !== 204) {
-                const { RecordInsertStatus, IsSuccessfullyInsert, AmmendentStatus, IsAmmendentDone, AmmendentNumber } = res?.data?.DataList[0]
-                setStatus(RecordInsertStatus)
-                setIsSuccessfullyInsert(IsSuccessfullyInsert)
-                setAmmendmentStatus(AmmendentStatus);
-                setShowButton(RecordInsertStatus?.length > 245 ? true : false)
-                if (IsAmmendentDone) {
-                    setAmendentstatus(`Amendment Number: ${AmmendentNumber},\u00A0 ${AmmendentStatus}`)
-                } else {
-                    setAmendentstatus(`Amendment Status: \u00A0 ${(AmmendentStatus && AmmendentStatus !== null && AmmendentStatus !== "") ? AmmendentStatus : "-"
-                        } `)
-                }
-                setAmmendmentButton(amendentStatus.length > 245 ? true : false)
-            }
-        }))
     }, [])
 
     useEffect(() => {
         let check = impactedMasterDataListForLastRevisionData?.RawMaterialImpactedMasterDataList?.length <= 0 &&
             impactedMasterDataListForLastRevisionData?.OperationImpactedMasterDataList?.length <= 0 &&
             impactedMasterDataListForLastRevisionData?.ExchangeRateImpactedMasterDataList?.length <= 0 &&
-            impactedMasterDataListForLastRevisionData?.BoughtOutPartImpactedMasterDataList?.length <= 0
+            impactedMasterDataListForLastRevisionData?.BoughtOutPartImpactedMasterDataList?.length <= 0 &&
+            impactedMasterDataListForLastRevisionData?.CombinedProcessImpactedMasterDataList?.length <= 0
         if (lastRevisionDataAccordian && check) {
             Toaster.warning('There is no data for the Last Revision.')
             setEditWarning(true)
@@ -381,22 +339,14 @@ function SimulationApprovalSummary(props) {
         }
         dispatch(getComparisionSimulationData(obj, res => {
             const Data = res.data.Data
-            const obj1 = formViewData(Data.OldCosting)
-            const obj2 = formViewData(Data.NewCosting)
-            const obj3 = formViewData(Data.Variance)
+            const obj1 = formViewData(Data.OldCosting, 'Old Costing')
+            const obj2 = formViewData(Data.NewCosting, 'New Costing')
+            const obj3 = formViewData(Data.Variance, 'Variance')
             const objj3 = [obj1[0], obj2[0], obj3[0]]
             setCompareCostingObj(objj3)
             dispatch(setCostingViewData(objj3))
             setCompareCosting(true)
         }))
-    }
-
-    const deleteInsertStatusBox = () => {
-        setRecordInsertStatusBox(false)
-    }
-
-    const deleteAmendmentStatusBox = () => {
-        setAmendmentStatusBox(false)
     }
 
 
@@ -591,34 +541,35 @@ function SimulationApprovalSummary(props) {
         roudOffOld = _.round(row.OldNetRawMaterialsCost, COSTINGSIMULATIONROUND)
         rounfOffNew = _.round(row.NewNetRawMaterialsCost, COSTINGSIMULATIONROUND)
         let newRoundOffVariance = checkForNull(roudOffOld - rounfOffNew).toFixed(COSTINGSIMULATIONROUND)
-        newRoundOffVariance = newRoundOffVariance > 0 ? `+${newRoundOffVariance}` : newRoundOffVariance;
-        return checkForDecimalAndNull(newRoundOffVariance, getConfigurationKey().NoOfDecimalForPrice);
+
+        newRoundOffVariance = newRoundOffVariance > 0 ? `-${Math.abs(newRoundOffVariance)}` : `+${Math.abs(newRoundOffVariance)}`;
+        return newRoundOffVariance;
         // return cell != null ? checkForDecimalAndNull(newRoundOffVariance, getConfigurationKey().NoOfDecimalForPrice) : ''
     }
 
     const BOPVarianceFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let variance = checkForDecimalAndNull(row.NetBoughtOutPartCostVariance, getConfigurationKey().NoOfDecimalForPrice)
-        variance = variance > 0 ? `+${variance}` : variance;
+        variance = variance > 0 ? `-${Math.abs(variance)}` : `+${Math.abs(variance)}`;
         return variance;
     }
     const OPVarianceFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let variance = checkForDecimalAndNull(row.OperationCostVariance, getConfigurationKey().NoOfDecimalForPrice)
-        variance = variance > 0 ? `+${variance}` : variance;
+        variance = variance > 0 ? `-${Math.abs(variance)}` : `+${Math.abs(variance)}`;
         return variance;
     }
     const STVarianceFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let variance = checkForDecimalAndNull(row.NetSurfaceTreatmentCostVariance, getConfigurationKey().NoOfDecimalForPrice)
-        variance = variance > 0 ? `+${variance}` : variance;
+        variance = variance > 0 ? `-${Math.abs(variance)}` : `+${Math.abs(variance)}`;
         return variance;
     }
 
     const POVarianceFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let variance = checkForDecimalAndNull(row.POVariance, getConfigurationKey().NoOfDecimalForPrice)
-        variance = variance > 0 ? `+${variance}` : variance;
+        variance = variance > 0 ? `-${Math.abs(variance)}` : `+${Math.abs(variance)}`;
         return variance;
     }
 
@@ -900,26 +851,6 @@ function SimulationApprovalSummary(props) {
         bopNumberFormat: bopNumberFormat
     };
 
-    const errorBoxClassForAmmendent = () => {
-        let temp
-        if (ammendmentStatus.startsWith('E')) {
-            temp = 'error';
-        }
-        else if (ammendmentStatus.startsWith('S')) {
-            temp = 'success';
-        }
-        else {
-            temp = 'd-none'
-        }
-        return temp
-    }
-    const errorBoxClassForStatus = () => {
-        let temp;
-
-        temp = noContent ? 'd-none' : isSuccessfullyInsert ? 'success' : 'error';
-
-        return temp
-    }
 
     const rePush = debounce(() => {
         setIsDisabled(true)
@@ -950,31 +881,8 @@ function SimulationApprovalSummary(props) {
                     <CalculatorWrapper />
                     {loader && <LoaderCustom />}
                     <div className={`container-fluid  smh-approval-summary-page ${loader === true ? 'loader-wrapper' : ''}`} id="go-to-top">
+                        <ErrorMessage approvalNumber={approvalNumber} />
 
-                        {recordInsertStatusBox &&
-                            <div className="error-box-container">
-                                <Errorbox customClass={errorBoxClassForStatus()} errorText={showbutton ? funcForErrorBoxButton() : status} />
-                                <img
-                                    className="float-right"
-                                    alt={""}
-                                    onClick={deleteInsertStatusBox}
-                                    src={errorBoxClassForStatus() === 'd-none' ? '' : errorBoxClassForStatus() === "success" ? imgGreencross : imgRedcross}
-                                ></img>
-                            </div>
-                        }
-
-                        {amendmentStatusBox &&
-                            <div className="error-box-container">
-                                <Errorbox customClass={errorBoxClassForAmmendent()} errorText={ammendentButton ? funcForErrorBoxButtonForAmmendment() : amendentStatus} />
-                                <img
-                                    className="float-right"
-                                    alt={""}
-                                    onClick={deleteAmendmentStatusBox}
-                                    src={errorBoxClassForAmmendent() === 'd-none' ? '' : errorBoxClassForAmmendent() === "success" ? imgGreencross : imgRedcross}
-                                ></img>
-                            </div>
-
-                        }
                         <h2 className="heading-main">Approval Summary</h2>
                         <ScrollToTop pointProp={"go-to-top"} />
                         <Row>
@@ -1599,6 +1507,7 @@ function SimulationApprovalSummary(props) {
                     type={'Approve'}
                     closeDrawer={verifyImpactDrawer}
                     isSimulation={true}
+                    approvalSummaryTrue={false}
                 />
             }
         </>

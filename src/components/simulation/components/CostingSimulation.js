@@ -1171,7 +1171,7 @@ function CostingSimulation(props) {
                             isVerifyImpactDrawer &&
                             <VerifyImpactDrawer
                                 isOpen={isVerifyImpactDrawer}
-                                anchor={'right'}
+                                anchor={'bottom'}
                                 approvalData={[]}
                                 type={'Approve'}
                                 closeDrawer={verifyImpactDrawer}
@@ -1184,6 +1184,7 @@ function CostingSimulation(props) {
                                 amendmentDetails={amendmentDetails}
                                 dataForAssemblyImpactInVerifyImpact={tableData}
                                 assemblyImpactButtonTrue={assemblyImpactButtonTrue}
+                                approvalSummaryTrue={false}
                             />
                         }
                     </div >

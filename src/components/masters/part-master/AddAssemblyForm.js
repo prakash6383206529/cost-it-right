@@ -7,8 +7,12 @@ import { renderText, searchableSelect } from "../../layout/FormInputs";
 import { getAssemblyPartSelectList, getDrawerAssemblyPartDetail, } from '../actions/Part';
 import { ASSEMBLY } from '../../../config/constants';
 import { getRandomSixDigit } from '../../../helper/util';
+import LoaderCustom from '../../common/LoaderCustom';
+import { PartEffectiveDate } from './AddAssemblyPart';
 
 class AddAssemblyForm extends Component {
+
+    static contextType = PartEffectiveDate
     constructor(props) {
         super(props);
         this.state = {
@@ -17,6 +21,8 @@ class AddAssemblyForm extends Component {
             isAddMore: false,
             childData: [],
             selectedParts: [],
+            isLoader: false
+
         }
     }
 
@@ -26,7 +32,12 @@ class AddAssemblyForm extends Component {
    */
     componentDidMount() {
         const { BOMViewerData } = this.props;
-        this.props.getAssemblyPartSelectList(this.props?.TechnologySelected.value, () => { })
+        this.setState({ isLoader: true })
+        let obj = {
+            technologyId: this.props?.TechnologySelected.value,
+            date: this.context
+        }
+        this.props.getAssemblyPartSelectList(obj, () => { this.setState({ isLoader: false }) })
 
         let tempArr = [];
         BOMViewerData && BOMViewerData.map(el => {
@@ -78,6 +89,8 @@ class AddAssemblyForm extends Component {
     * @description Used show listing of unit of measurement
     */
     renderListing = (label) => {
+        const { BOMViewerData } = this.props;
+
         const { assemblyPartSelectList } = this.props;
         const { selectedParts } = this.state;
 
@@ -161,6 +174,7 @@ class AddAssemblyForm extends Component {
                 >
                     <Row>
                         <Col md='6'>
+                            {this.state.isLoader && <LoaderCustom customClass="add-child-input" />}
                             <Field
                                 name="AssemblyPart"
                                 type="text"
@@ -173,6 +187,7 @@ class AddAssemblyForm extends Component {
                                 required={true}
                                 handleChangeDescription={this.handleAssemblyPartChange}
                                 valueDescription={this.state.assemblyPart}
+                                disabled={this.state.isLoader ? true : false}
                             />
                         </Col>
                         <Col md="6">
