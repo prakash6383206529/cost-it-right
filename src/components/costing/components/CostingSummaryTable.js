@@ -652,12 +652,12 @@ const CostingSummaryTable = (props) => {
       Toaster.warning('Please select at least one costing to send for approval')
       return
     } else if (!allEqual(vendorArray)) {
-      Toaster.warning('Please select costing which have same vendor')
+      Toaster.warning('Vendor should be same for sending multiple costing for approval')
       return
     } else if (!allEqual(effectiveDateArray)) {
-      Toaster.warning('Please select costing which have same effective date')
+      Toaster.warning('Effective Date should be same for sending multiple costing for approval')
     } else if (!allEqual(plantArray)) {
-      Toaster.warning('Please select costing which have same plant')
+      Toaster.warning('Plant should be same for sending multiple costing for approval')
     } else {
       sendForApprovalData(multipleCostings)
       setShowApproval(true)
