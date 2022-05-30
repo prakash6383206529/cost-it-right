@@ -25,6 +25,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
 import { getListingForSimulationCombined } from '../../simulation/actions/Simulation';
 import { masterFinalLevelUser } from '../../masters/actions/Material'
+import WarningMessage from '../../common/WarningMessage';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -52,7 +53,22 @@ class BOPDomesticListing extends Component {
             showPopup: false,
             deletedId: '',
             isLoader: false,
-            isFinalApprovar: false
+            isFinalApprovar: false,
+
+
+            //states for pagination purpose
+            floatingFilterData: { IsVendor: "", BoughtOutPartNumber: "", BoughtOutPartName: "", BoughtOutPartCategory: "", UOM: "", Specification: "", Plants: "", Vendor: "", BasicRate: "", NetLandedCost: "", EffectiveDateNew: "" },
+            warningMessage: false,
+            filterModel: {},
+            isSearchButtonDisable: true,
+            pageNo: 1,
+            totalRecordCount: 0,
+            isFilterButtonClicked: false,
+            currentRowIndex: 0,
+            pageSize10: true,
+            pageSize50: false,
+            pageSize100: false,
+
         }
     }
 
@@ -62,11 +78,10 @@ class BOPDomesticListing extends Component {
     */
     componentDidMount() {
 
-
         this.props.getBOPCategorySelectList(() => { })
         this.props.getPlantSelectList(() => { })
         this.props.getVendorWithVendorCodeSelectList(() => { })
-        this.getDataList()
+        this.getDataList("", 0, "", "", 0, 100, true, this.state.floatingFilterData)
         let obj = {
             MasterId: BOP_MASTER_ID,
             DepartmentId: userDetails().DepartmentId,
@@ -78,14 +93,13 @@ class BOPDomesticListing extends Component {
                 this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
             }
         })
-
     }
 
     /**
     * @method getDataList
     * @description GET DETAILS OF BOP DOMESTIC
     */
-    getDataList = (bopFor = '', CategoryId = 0, vendorId = '', plantId = '',) => {
+    getDataList = (bopFor = '', CategoryId = 0, vendorId = '', plantId = '', skip = 0, take = 100, isPagination = true, dataObj) => {
         const filterData = {
             bop_for: bopFor,
             category_id: CategoryId,
@@ -107,7 +121,9 @@ class BOPDomesticListing extends Component {
                 if (this.props.isSimulation) {
                     this.props?.changeTokenCheckBox(false)
                 }
-                this.props.getBOPDomesticDataList(filterData, (res) => {
+
+                let constantFilterData = this.state.filterModel
+                this.props.getBOPDomesticDataList(filterData, skip, take, isPagination, dataObj, (res) => {
                     this.setState({ isLoader: false })
                     if (this.props.isSimulation) {
                         this.props?.changeTokenCheckBox(true)
@@ -120,10 +136,121 @@ class BOPDomesticListing extends Component {
                     } else {
                         this.setState({ tableData: [] })
                     }
+
+
+                    if (res) {
+                        if (res && res.data && res.data.DataList.length > 0) {
+                            this.setState({ totalRecordCount: res.data.DataList[0].TotalRecordCount })
+                        }
+                        let isReset = true
+                        setTimeout(() => {
+                            let obj = this.state.floatingFilterData
+                            for (var prop in obj) {
+                                if (obj[prop] !== "") {
+                                    isReset = false
+                                }
+                            }
+                            // Sets the filter model via the grid API
+                            isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(constantFilterData))
+
+                        }, 300);
+
+                        setTimeout(() => {
+                            this.setState({ isFilterButtonClicked: false })
+                        }, 600);
+                    }
                 })
             }
         }
     }
+
+
+
+    onFloatingFilterChanged = (value) => {
+
+        const model = gridOptions?.api?.getFilterModel();
+        this.setState({ filterModel: model })
+
+        if (!this.state.isFilterButtonClicked) {
+            this.setState({ warningMessage: true })
+        }
+
+        if (value?.filterInstance?.appliedModel === null || value?.filterInstance?.appliedModel?.filter === "") {
+            this.setState({ warningMessage: false })
+
+        } else {
+
+            if (value.column.colId === "EffectiveDate" || value.column.colId === "CreatedDate") {
+                this.setState({ isSearchButtonDisable: false })
+                return false
+            }
+            this.setState({ floatingFilterData: { ...this.state.floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter } })
+            this.setState({ isSearchButtonDisable: false })
+
+        }
+    }
+
+
+    onSearch = () => {
+
+        this.setState({ warningMessage: false, isFilterButtonClicked: true, pageNo: 1, currentRowIndex: 0 })
+        gridOptions?.columnApi?.resetColumnState();
+        this.getDataList("", 0, "", "", 0, 100, true, this.state.floatingFilterData)
+    }
+
+
+    resetState = () => {
+
+        this.setState({ isFilterButtonClicked: false })
+        gridOptions?.columnApi?.resetColumnState(null);
+        gridOptions?.api?.setFilterModel(null);
+        var obj = this.state.floatingFilterData
+
+        for (var prop in obj) {
+            obj[prop] = ""
+        }
+
+        this.setState({ floatingFilterData: obj, warningMessage: false, pageNo: 1, currentRowIndex: 0 })
+        this.getDataList("", 0, "", "", 0, 100, true, this.state.floatingFilterData)
+    }
+
+
+
+    onBtPrevious = () => {
+        if (this.state.currentRowIndex >= 10) {
+
+            this.setState({ pageNo: this.state.pageNo - 1 })
+            const previousNo = this.state.currentRowIndex - 10;
+            this.getDataList("", 0, "", "", previousNo, 100, true, this.state.floatingFilterData)
+            this.setState({ currentRowIndex: previousNo })
+
+        }
+    }
+
+    onBtNext = () => {
+        if (this.state.currentRowIndex < (this.state.totalRecordCount - 10)) {
+
+            this.setState({ pageNo: this.state.pageNo + 1 })
+            const nextNo = this.state.currentRowIndex + 10;
+            this.getDataList("", 0, "", "", nextNo, 100, true, this.state.floatingFilterData)
+            this.setState({ currentRowIndex: nextNo })
+        }
+    };
+
+
+    componentDidUpdate(prevProps, prevState) {
+        if (prevState.currentRowIndex !== this.state.currentRowIndex) {
+            // Now fetch the new data here.
+
+            if (this.props.bopDomesticList?.length > 0) {
+
+                this.setState({ totalRecordCount: this.props.bopDomesticList[0].TotalRecordCount })
+
+            }
+        }
+
+    }
+
 
     /**
     * @method editItemDetails
@@ -328,6 +455,17 @@ class BOPDomesticListing extends Component {
 
     onPageSizeChanged = (newPageSize) => {
         this.state.gridApi.paginationSetPageSize(Number(newPageSize));
+
+        if (Number(newPageSize) === 10) {
+            this.setState({ pageSize10: true, pageSize50: false, pageSize100: false })
+        }
+        else if (Number(newPageSize) === 50) {
+            this.setState({ pageSize10: false, pageSize50: true, pageSize100: false })
+        }
+        else if (Number(newPageSize) === 100) {
+            this.setState({ pageSize10: false, pageSize50: false, pageSize100: true })
+
+        }
     };
 
     onBtExport = () => {
@@ -373,12 +511,6 @@ class BOPDomesticListing extends Component {
 
     onFilterTextBoxChanged(e) {
         this.state.gridApi.setQuickFilter(e.target.value);
-    }
-
-
-    resetState() {
-        gridOptions.columnApi.resetColumnState();
-        gridOptions.api.setFilterModel(null);
     }
 
     getFilterBOPData = () => {
@@ -442,15 +574,15 @@ class BOPDomesticListing extends Component {
 
         return (
 
-            <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
+            <div className={`ag-grid-react custom-pagination ${DownloadAccessibility ? "show-table-btn" : ""}`}>
                 {/* {this.state.isLoader && <LoaderCustom />} */}
                 {(this.state.isLoader && !this.props.isMasterSummaryDrawer) && <LoaderCustom />}
                 < form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate >
                     <Row className={`mt-4 filter-row-large  ${this.props.isSimulation ? 'simulation-filter zindex-0 ' : ''}`}>
-                        <Col md="6" lg="6">
+                        <Col md="3" lg="3">
                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                         </Col>
-                        <Col md="6" lg="6" className="mb-3">
+                        <Col md="9" lg="9" className="mb-3">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
                                     {this.state.shown ? (
@@ -460,6 +592,18 @@ class BOPDomesticListing extends Component {
                                         <>
                                         </>
                                     )}
+
+                                    {
+                                        <div className="warning-message d-flex align-items-center">
+                                            {this.state.warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
+                                        </div>
+                                    }
+
+                                    {
+                                        <button disabled={this.state.isSearchButtonDisable} title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch()}><div class="filter mr-0"></div></button>
+
+                                    }
+
                                     {AddAccessibility && (
                                         <button
                                             type="button"
@@ -529,8 +673,8 @@ class BOPDomesticListing extends Component {
                                     frameworkComponents={frameworkComponents}
                                     rowSelection={'multiple'}
                                     onSelectionChanged={onRowSelect}
+                                    onFilterModified={this.onFloatingFilterChanged}
                                 >
-
                                     <AgGridColumn field="IsVendor" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                                     <AgGridColumn field="BoughtOutPartNumber" headerName="Insert Part No."></AgGridColumn>
                                     <AgGridColumn field="BoughtOutPartName" headerName="Insert Part Name"></AgGridColumn>
@@ -544,16 +688,24 @@ class BOPDomesticListing extends Component {
                                     <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams} ></AgGridColumn>
                                     {!this.props?.isSimulation && !this.props?.isMasterSummaryDrawer && <AgGridColumn field="BoughtOutPartId" width={160} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                 </AgGridReact>
-                                <div className="paging-container d-inline-block float-right">
-                                    <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
-                                        <option value="10" selected={true}>10</option>
-                                        <option value="50">50</option>
-                                        <option value="100">100</option>
-                                    </select>
+                                <div className='button-wrapper'>
+                                    <div className="paging-container d-inline-block float-right">
+                                        <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
+                                            <option value="10" selected={true}>10</option>
+                                            <option value="50">50</option>
+                                            <option value="100">100</option>
+                                        </select>
+                                    </div>
+                                    <div className="d-flex pagination-button-container">
+                                        <p><button className="previous-btn" type="button" disabled={false} onClick={() => this.onBtPrevious()}> </button></p>
+                                        {this.state.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 10)}</p>}
+                                        {this.state.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 50)}</p>}
+                                        {this.state.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 100)}</p>}
+                                        <p><button className="next-btn" type="button" onClick={() => this.onBtNext()}> </button></p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-
                     </Col>
                 </Row>
                 {

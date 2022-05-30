@@ -65,7 +65,7 @@ export function createBOPImport(data, callback) {
  * @method getBOPDomesticDataList
  * @description get all BOP Domestic Data list.
  */
-export function getBOPDomesticDataList(data, callback) {
+export function getBOPDomesticDataList(data, skip, take, isPagination, obj, callback) {
     return (dispatch) => {
         // dispatch({ type: API_REQUEST});
         dispatch({
@@ -73,7 +73,8 @@ export function getBOPDomesticDataList(data, callback) {
             payload: undefined
         })
         const queryParams = `bop_for=${data.bop_for}&category_id=${data.category_id}&vendor_id=${data.vendor_id}&plant_id=${data.plant_id}`
-        const request = axios.get(`${API.getBOPDomesticDataList}?${queryParams}`, config());
+        const queryParamsSecond = `CostingHead=${obj.IsVendor !== undefined ? obj.IsVendor : ""}&BOPPartNumber	=${obj.BoughtOutPartNumber !== undefined ? obj.BoughtOutPartNumber : ""}&BOPPartName=${obj.BoughtOutPartName !== undefined ? obj.BoughtOutPartName : ""}&BOPCategory=${obj.BoughtOutPartCategory !== undefined ? obj.BoughtOutPartCategory : ""}&UOM=${obj.UOM !== undefined ? obj.UOM : ""}&Specification=${obj.Specification !== undefined ? obj.Specification : ""}&Plant=${obj.Plants !== undefined ? obj.Plants : ""}&Vendor=${obj.Vendor !== undefined ? obj.Vendor : ""}&BasicRate=${obj.BasicRate !== undefined ? obj.BasicRate : ""}&NetCost=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&EffectiveDate=${obj.EffectiveDateNew !== undefined ? obj.EffectiveDateNew : ""}&applyPagination=${isPagination}&skip=${skip}&take=${take}`
+        const request = axios.get(`${API.getBOPDomesticDataList}?${queryParams}&${queryParamsSecond}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
 
@@ -95,11 +96,12 @@ export function getBOPDomesticDataList(data, callback) {
  * @method getBOPImportDataList
  * @description get all BOP Import Data list.
  */
-export function getBOPImportDataList(data, callback) {
+export function getBOPImportDataList(data, skip, take, isPagination, obj, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         const queryParams = `bop_for=${data.bop_for}&category_id=${data.category_id}&vendor_id=${data.vendor_id}&plant_id=${data.plant_id}`
-        const request = axios.get(`${API.getBOPImportDataList}?${queryParams}`, config());
+        const queryParamsSecond = `CostingHead=${obj.IsVendor !== undefined ? obj.IsVendor : ""}&BOPPartNumber	=${obj.BoughtOutPartNumber !== undefined ? obj.BoughtOutPartNumber : ""}&BOPPartName=${obj.BoughtOutPartName !== undefined ? obj.BoughtOutPartName : ""}&BOPCategory=${obj.BoughtOutPartCategory !== undefined ? obj.BoughtOutPartCategory : ""}&UOM=${obj.UOM !== undefined ? obj.UOM : ""}&Specification=${obj.Specification !== undefined ? obj.Specification : ""}&Plant=${obj.Plants !== undefined ? obj.Plants : ""}&Vendor=${obj.Vendor !== undefined ? obj.Vendor : ""}&BasicRate=${obj.BasicRate !== undefined ? obj.BasicRate : ""}&NetCost=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&EffectiveDate=${obj.EffectiveDateNew !== undefined ? obj.EffectiveDateNew : ""}&Currency=${obj.Currency !== undefined ? obj.Currency : ""}&NetCostCurrency=${obj.NetLandedCostConversion !== undefined ? obj.NetLandedCostConversion : ""}&applyPagination=${isPagination}&skip=${skip}&take=${take}`
+        const request = axios.get(`${API.getBOPImportDataList}?${queryParams}&${queryParamsSecond}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 dispatch({
