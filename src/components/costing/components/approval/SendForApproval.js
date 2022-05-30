@@ -421,13 +421,13 @@ const SendForApproval = (props) => {
       tempObj.ApprovalProcessId = "00000000-0000-0000-0000-000000000000"
       tempObj.TypeOfCosting = (data.typeOfCosting === 0 || data.typeOfCosting === 'ZBC') ? 'ZBC' : 'VBC'
       tempObj.PlantId =
-        Number(data.typeOfCosting) === 0 ? data.plantId : ''
+        (Number(data.typeOfCosting) === 0 || data.typeOfCosting === 'ZBC') ? data.plantId : ''
       tempObj.PlantNumber =
-        Number(data.typeOfCosting) === 0 ? data.plantCode : ''
+        (Number(data.typeOfCosting) === 0 || data.typeOfCosting === 'ZBC') ? data.plantCode : ''
       tempObj.PlantName =
-        Number(data.typeOfCosting) === 0 ? data.plantName : ''
+        (Number(data.typeOfCosting) === 0 || data.typeOfCosting === 'ZBC') ? data.plantName : ''
       tempObj.PlantCode =
-        Number(data.typeOfCosting) === 0 ? data.plantCode : ''
+        (Number(data.typeOfCosting) === 0 || data.typeOfCosting === 'ZBC') ? data.plantCode : ''
       tempObj.CostingId = data.costingId
       tempObj.CostingNumber = data.costingName
       tempObj.ReasonId = data.reasonId
@@ -452,17 +452,17 @@ const SendForApproval = (props) => {
       tempObj.AnnualImpact = data.annualImpact
       tempObj.ImpactOfTheYear = data.yearImpact
       tempObj.VendorId =
-        Number(data.typeOfCosting) === 1 ? data.vendorId : ''
+        (Number(data.typeOfCosting) === 1 || data.typeOfCosting === 'VBC') ? data.vendorId : ''
       tempObj.VendorCode =
-        Number(data.typeOfCosting) === 1 ? data.vendorCode : ''
+        (Number(data.typeOfCosting) === 1 || data.typeOfCosting === 'VBC') ? data.vendorCode : ''
       tempObj.VendorPlantId =
-        Number(data.typeOfCosting) === 1 ? data.vendorePlantId : ''
+        (Number(data.typeOfCosting) === 1 || data.typeOfCosting === 'VBC') ? data.vendorePlantId : ''
       tempObj.VendorPlantCode =
-        Number(data.typeOfCosting) === 1 ? data.vendorPlantCode : ''
+        (Number(data.typeOfCosting) === 1 || data.typeOfCosting === 'VBC') ? data.vendorPlantCode : ''
       tempObj.VendorName =
-        Number(data.typeOfCosting) === 1 ? data.vendorName : ''
+        (Number(data.typeOfCosting) === 1 || data.typeOfCosting === 'VBC') ? data.vendorName : ''
       tempObj.VendorPlantName =
-        Number(data.typeOfCosting) === 1 ? data.vendorPlantName : ''
+        (Number(data.typeOfCosting) === 1 || data.typeOfCosting === 'VBC') ? data.vendorPlantName : ''
       tempObj.IsFinalApproved = isFinalApproverShow ? true : false
       tempObj.DestinationPlantCode = data.destinationPlantCode
       tempObj.DestinationPlantName = data.destinationPlantName
