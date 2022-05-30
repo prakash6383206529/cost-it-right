@@ -286,39 +286,6 @@ function AddBOP(props) {
                 </Col>
               </Row>
 
-              < form onSubmit={handleSubmit(onSubmit)} noValidate >
-
-                <div className="filter-row">
-                  <Col md="12" lg="11" className="filter-block zindex-12 pt-2 mb-1">
-                    <div className="d-inline-flex justify-content-start align-items-top w100 rm-domestic-filter">
-                      <div className="flex-fills mb-0">
-                        <h5 className="left-border">{`Filter By:`}</h5>
-                      </div>
-
-                      <div className="flex-fills hide-label mb-0">
-                        <SearchableSelectHookForm
-                          label={''}
-                          name={'Category'}
-                          placeholder={'Category'}
-                          Controller={Controller}
-                          control={control}
-                          register={register}
-                          options={renderListing("category")}
-                          customClassName="mn-height-auto mb-0"
-                          handleChange={() => { }}
-                        />
-                      </div>
-
-
-                      <div className="flex-fills mb-0">
-                        <button type="button" onClick={resetFilter} className="reset mr10" > {"Reset"}</button>
-                        <button type="button" onClick={filterList} className="user-btn" > {"Apply"} </button>
-                      </div>
-                    </div>
-                  </Col>
-                </div>
-
-              </form >
               <Row className="mx-0">
                 <Col className="hidepage-size">
                   <div className={`ag-grid-wrapper min-height-auto height-width-wrapper ${bopDrawerList && bopDrawerList?.length <= 0 ? "overlay-contain" : ""}`}>

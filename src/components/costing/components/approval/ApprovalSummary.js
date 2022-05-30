@@ -381,11 +381,11 @@ function ApprovalSummary(props) {
               </Col>
             </Row>
             <Row className="mb-3">
-              <Col md="6"> <HeaderTitle title={'FG wise Impact:'} /></Col>
+              <Col md="6"> <div className="left-border">{'FG wise Impact:'}</div></Col>
               <Col md="6">
                 <div className={'right-details'}>
                   <button className="btn btn-small-primary-circle ml-1 float-right" type="button" onClick={() => { setFgWiseAcc(!fgWiseAcc) }}>
-                    {costingSummary ? (
+                    {fgWiseAcc ? (
                       <i className="fa fa-minus"></i>
                     ) : (
                       <i className="fa fa-plus"></i>

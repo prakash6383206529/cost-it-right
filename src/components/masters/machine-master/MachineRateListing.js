@@ -138,7 +138,7 @@ class MachineRateListing extends Component {
 
     viewProcessGroupDetail = (rowData) => {
         this.props.getProcessGroupByMachineId(rowData.MachineId, res => {
-            if (res.data.Result) {
+            if (res.data.Result || res.status === 204) {
                 this.setState({
                     isOpenProcessGroupDrawer: true
                 })
@@ -232,10 +232,10 @@ class MachineRateListing extends Component {
         return (
             <>
                 {this.state.isProcessGroup && <button className="group-process" type={'button'} title={'View Process Group'} onClick={() => this.viewProcessGroupDetail(rowData)} />}
-                {ViewAccessibility && <button className="View" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, true)} />}
-                {isEditable && <button className="Edit" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, false)} />}
+                {ViewAccessibility && <button title="View" className="View" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, true)} />}
+                {isEditable && <button title="Edit" className="Edit" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, false)} />}
                 <button className="Copy All Costing" title="Copy Machine" type={'button'} onClick={() => this.copyItem(cellValue)} />
-                {isDeleteButton && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+                {isDeleteButton && <button title="Delete" className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
     };
