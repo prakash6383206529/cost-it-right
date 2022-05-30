@@ -20,6 +20,7 @@ import Dropzone from 'react-dropzone-uploader'
 import { FILE_URL } from "../../../../config/constants";
 import redcrossImg from "../../../../assests/images/red-cross.png";
 import VerifyImpactDrawer from '../../../simulation/components/VerifyImpactDrawer';
+import LoaderCustom from '../../../common/LoaderCustom'
 
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
@@ -57,6 +58,7 @@ const SendForApproval = (props) => {
   const [isVerifyImpactDrawer, setIsVerifyImpactDrawer] = useState(false)
   const [costingApprovalDrawerData, setCostingApprovalDrawerData] = useState({})
   const [costingIdArray, setCostingIdArray] = useState([])
+  const [attachmentLoader, setAttachmentLoader] = useState(false)
   // const [showDate,setDate] = useState(false)
   // const [showDate,setDate] = useState(false)
   const userData = userDetails()
@@ -509,6 +511,7 @@ const SendForApproval = (props) => {
 
   // specify upload params and url for your files
   const getUploadParams = ({ file, meta }) => {
+    setAttachmentLoader(true)
     return { url: "https://httpbin.org/post" };
   };
   // called every time a file's `status` changes
@@ -531,6 +534,7 @@ const SendForApproval = (props) => {
           files.push(Data);
           setFiles(files);
           setIsOpen(!IsOpen);
+          setAttachmentLoader(false)
         })
       );
     }
@@ -558,6 +562,7 @@ const SendForApproval = (props) => {
       let tempArr =
         files && files.filter((item) => item.FileName !== OriginalFileName);
       setFiles(tempArr);
+      setAttachmentLoader(false)
       setIsOpen(!IsOpen);
     }
   };
@@ -958,6 +963,7 @@ const SendForApproval = (props) => {
                     </Col>
                     <Col md="6" className='pr-0'>
                       <div className={"attachment-wrapper"}>
+                        {attachmentLoader && <LoaderCustom customClass="attachment-loader" />}
                         {files &&
                           files.map((f) => {
                             const withOutTild = f.FileURL.replace("~", "");

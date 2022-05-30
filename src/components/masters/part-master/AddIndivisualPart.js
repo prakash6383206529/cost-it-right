@@ -48,7 +48,8 @@ class AddIndivisualPart extends Component {
       disablePopup: false,
       isBomEditable: false,
       minEffectiveDate: '',
-      disablePartName: false
+      disablePartName: false,
+      attachmentLoader: false
     }
   }
 
@@ -188,6 +189,7 @@ class AddIndivisualPart extends Component {
 
   // specify upload params and url for your files
   getUploadParams = ({ file, meta }) => {
+    this.setState({ attachmentLoader: true })
     return { url: 'https://httpbin.org/post', }
 
   }
@@ -199,7 +201,7 @@ class AddIndivisualPart extends Component {
   setDisableFalseFunction = () => {
     const loop = Number(this.dropzone.current.files.length) - Number(this.state.files.length)
     if (Number(loop) === 1) {
-      this.setState({ setDisable: false })
+      this.setState({ setDisable: false, attachmentLoader: false })
     }
   }
 
@@ -702,6 +704,7 @@ class AddIndivisualPart extends Component {
                           </Col>
                           <Col md="3">
                             <div className={"attachment-wrapper"}>
+                              {this.state.attachmentLoader && <LoaderCustom customClass="attachment-loader" />}
                               {this.state.files &&
                                 this.state.files.map((f) => {
                                   const withOutTild = f.FileURL.replace(
