@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { required, getVendorCode, positiveAndDecimalNumber, maxLength15, acceptAllExceptSingleSpecialCharacter, maxLength70, maxLength512, checkForDecimalAndNull, checkForNull, decimalLengthsix } from "../../../helper/validation";
-import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField, focusOnError, renderDatePicker, } from '../../layout/FormInputs'
-import { AcceptableRMUOM } from '../../../config/masterData'
+import { renderText, renderNumberInputField, searchableSelect, renderMultiSelectField, renderTextAreaField, focusOnError, renderDatePicker, } from '../../layout/FormInputs'
+import { AcceptableRMUOM, FASTNERS } from '../../../config/masterData'
 import {
   getTechnologySelectList, getRawMaterialCategory, fetchGradeDataAPI, fetchSpecificationDataAPI, getCityBySupplier, getPlantByCity,
   getPlantByCityAndSupplier, fetchRMGradeAPI, getSupplierList, getPlantBySupplier, getUOMSelectList, fetchSupplierCityDataAPI,
@@ -1652,7 +1652,7 @@ class AddRMDomestic extends Component {
                               type="text"
                               placeholder={""}
                               validate={[positiveAndDecimalNumber]}
-                              component={renderText}
+                              component={renderNumberInputField}
                               required={false}
                               disabled={isViewFlag || (isEditFlag && isRMAssociated)}
                               onChange={this.handleCutOffPrice}
@@ -1667,7 +1667,7 @@ class AddRMDomestic extends Component {
                               type="text"
                               placeholder={"Enter"}
                               validate={[required, positiveAndDecimalNumber, maxLength15, decimalLengthsix]}
-                              component={renderText}
+                              component={renderNumberInputField}
                               onChange={this.handleBasicRate}
                               required={true}
                               disabled={isViewFlag || (isEditFlag && isRMAssociated)}
@@ -1685,7 +1685,7 @@ class AddRMDomestic extends Component {
                                 type="text"
                                 placeholder={"Enter"}
                                 validate={[required, positiveAndDecimalNumber, maxLength15, decimalLengthsix]}
-                                component={renderText}
+                                component={renderNumberInputField}
                                 required={true}
                                 className=""
                                 customClassName=" withBorder"
@@ -1703,7 +1703,7 @@ class AddRMDomestic extends Component {
                               placeholder={"Enter"}
                               // onChange={this.handleFreightCharges}
                               validate={[positiveAndDecimalNumber, maxLength15, decimalLengthsix]}
-                              component={renderText}
+                              component={renderNumberInputField}
                               required={false}
                               className=""
                               customClassName=" withBorder"
@@ -1718,7 +1718,7 @@ class AddRMDomestic extends Component {
                               type="text"
                               placeholder={"Enter"}
                               validate={[positiveAndDecimalNumber, maxLength15, decimalLengthsix]}
-                              component={renderText}
+                              component={renderNumberInputField}
                               required={false}
                               className=""
                               customClassName=" withBorder"
