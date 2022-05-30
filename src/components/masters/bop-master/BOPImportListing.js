@@ -456,9 +456,8 @@ class BOPImportListing extends Component {
 
 
         var setDate = (date) => {
-            this.setState({ floatingFilterData: { ...this.state.floatingFilterData, EffectiveDateNew: date } })
+            this.setState({ floatingFilterData: { ...this.state.floatingFilterData, newDate: date } })
         }
-
 
         const isFirstColumn = (params) => {
             if (this.props.isSimulation) {
