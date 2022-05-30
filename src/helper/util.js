@@ -891,3 +891,5 @@ export function isUploadSimulation(master) {
   const isUploadSimulation = [EXCHNAGERATE]
   return isUploadSimulation.includes(String(master))
 }
+
+export const allEqual = arr => arr.every(val => val === arr[0]);
