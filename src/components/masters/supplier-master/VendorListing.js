@@ -334,9 +334,9 @@ class VendorListing extends Component {
         const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.state;
         return (
             <>
-                {ViewAccessibility && <button className="View" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
-                {EditAccessibility && <button className="Edit" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
-                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+                {ViewAccessibility && <button title='View' className="View" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
+                {EditAccessibility && <button title='Edit' className="Edit" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
+                {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
     };
@@ -623,7 +623,7 @@ class VendorListing extends Component {
         };
 
         return (
-            <div className={`ag-grid-react container-fluid blue-before-inside part-manage-component ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
+            <div className={`ag-grid-react container-fluid blue-before-inside custom-pagination ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
 
                 <ScrollToTop pointProp="go-to-top" />
                 <form
