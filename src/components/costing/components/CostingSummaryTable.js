@@ -14,7 +14,7 @@ import ViewPackagingAndFreight from './Drawers/ViewPackagingAndFreight'
 import ViewToolCost from './Drawers/viewToolCost'
 import SendForApproval from './approval/SendForApproval'
 import Toaster from '../../common/Toaster'
-import { checkForDecimalAndNull, checkForNull, checkPermission, formViewData, getTechnologyPermission, loggedInUserId, userDetails, calculatePercentage } from '../../../helper'
+import { checkForDecimalAndNull, checkForNull, checkPermission, formViewData, getTechnologyPermission, loggedInUserId, userDetails, calculatePercentage, allEqual } from '../../../helper'
 import Attachament from './Drawers/Attachament'
 import { BOPDOMESTIC, BOPIMPORT, COMBINED_PROCESS, COSTING, DRAFT, EMPTY_GUID_0, FILE_URL, OPERATIONS, REJECTED, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC } from '../../../config/constants'
 import { useHistory } from "react-router-dom";
@@ -82,7 +82,6 @@ const CostingSummaryTable = (props) => {
   const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
   const viewApprovalData = useSelector((state) => state.costing.costingApprovalData)
   const partInfo = useSelector((state) => state.costing.partInfo)
-  console.log('partInfo: ', partInfo);
   const partNumber = useSelector(state => state.costing.partNo);
   const { initialConfiguration, topAndLeftMenuData } = useSelector(state => state.auth)
   const [pdfName, setPdfName] = useState('')
@@ -637,9 +636,28 @@ const CostingSummaryTable = (props) => {
   }
 
   const checkCostings = () => {
+    let vendorArray = []
+    let effectiveDateArray = []
+    let plantArray = []
+
+    viewCostingData.map(item => vendorArray.push(item.vendorId))
+    viewCostingData && viewCostingData.map((item) => {
+      vendorArray.push(item.vendorId)
+      effectiveDateArray.push(item.EffectiveDate)
+      plantArray.push(item.PlantCode)
+      return null
+    })
+
     if (multipleCostings.length === 0) {
       Toaster.warning('Please select at least one costing to send for approval')
       return
+    } else if (!allEqual(vendorArray)) {
+      Toaster.warning('Please select costing which have same vendor')
+      return
+    } else if (!allEqual(effectiveDateArray)) {
+      Toaster.warning('Please select costing which have same effective date')
+    } else if (!allEqual(plantArray)) {
+      Toaster.warning('Please select costing which have same plant')
     } else {
       sendForApprovalData(multipleCostings)
       setShowApproval(true)
