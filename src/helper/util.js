@@ -911,3 +911,4 @@ export function getPOPriceAfterDecimal(decimalValue, PoPrice = 0) {
     return { netPo, quantity }
   }
 }
+export const allEqual = arr => arr.every(val => val === arr[0]);
