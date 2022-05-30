@@ -21,7 +21,7 @@ function CostingDetailSimulationDrawer(props) {
     };
 
     // table code starts here
-    const { simulationDetail, pricesDetail, selectedRowData, costingArr, master, isReport, isSimulation } = props
+    const { simulationDetail, pricesDetail, selectedRowData, costingArr, master, isSummaryDrawer, isSimulation, costingID } = props
 
     const dispatch = useDispatch()
 
@@ -81,7 +81,7 @@ function CostingDetailSimulationDrawer(props) {
                                     <Col>
                                         <div className={"header-wrapper left"}>
                                             <h3>
-                                                {!isReport ? "Old " : ''}Costing Details
+                                                {!isSummaryDrawer ? "Old " : ''}Costing Details
                                             </h3>
                                         </div>
                                         <div
@@ -91,7 +91,7 @@ function CostingDetailSimulationDrawer(props) {
                                     </Col>
                                 </Row>
 
-                                {!isReport &&
+                                {!isSummaryDrawer &&
                                     <Row className="ml-0 pb-3">
                                         <Col md="12">
                                             <h6 class="left-border d-inline-block mr-4">{pricesDetail.CostingHead}</h6>
@@ -101,7 +101,7 @@ function CostingDetailSimulationDrawer(props) {
                                     </Row>
                                 }
 
-                                {!isReport &&
+                                {!isSummaryDrawer &&
                                     <Row className="ml-0 pb-3">
                                         {
                                             Number(master) === Number(EXCHNAGERATE) ?
@@ -206,7 +206,7 @@ function CostingDetailSimulationDrawer(props) {
                                         }
                                     </Row>
                                 }
-                                <CostingSummaryTable customClass="ml-0" simulationDrawer={true} simulationMode={true} viewMode={true} master={master} isSimulationDone={isSimulation} />
+                                <CostingSummaryTable customClass="ml-0" simulationDrawer={true} simulationMode={props.simulationMode} viewMode={true} master={master} isSimulationDone={isSimulation} costingID={costingID} isSummaryDrawer={isSummaryDrawer} />
                             </form>
                             <Row className="sf-btn-footer no-gutters justify-content-between">
                                 <div className="col-md-12 px-3">

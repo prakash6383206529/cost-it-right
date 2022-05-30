@@ -13,7 +13,7 @@ import NoContentFound from '../../common/NoContentFound';
 
 
 function VerifyImpactDrawer(props) {
-  const { SimulationTechnologyIdState, simulationId, vendorIdState, EffectiveDate, amendmentDetails, dataForAssemblyImpactInVerifyImpact, assemblyImpactButtonTrue, costingDrawer, costingIdArray, approvalSummaryTrue } = props
+  const { SimulationTechnologyIdState, simulationId, vendorIdState, EffectiveDate, amendmentDetails, dataForAssemblyImpactInVerifyImpact, assemblyImpactButtonTrue, costingDrawer, costingIdArray, approvalSummaryTrue, isSimulation } = props
 
   const [id, setId] = useState('')
   const [compareCostingObj, setCompareCostingObj] = useState([])
@@ -174,7 +174,13 @@ function VerifyImpactDrawer(props) {
 
               {fgWiseAcc && <Row className="mb-3 pr-0 mx-0">
                 <Col md="12">
-                  <Fgwiseimactdata SimulationId={simulationId} costingIdArray={costingIdArray} approvalSummaryTrue={approvalSummaryTrue} />
+                  <Fgwiseimactdata
+                    SimulationId={simulationId}
+                    costingIdArray={costingIdArray}
+                    approvalSummaryTrue={approvalSummaryTrue}
+                    isVerifyImpactDrawer={true}
+                    isSimulation={isSimulation}
+                  />
                 </Col>
               </Row>}
 
@@ -207,7 +213,7 @@ function VerifyImpactDrawer(props) {
                 </>
               }
 
-              <Row className="mb-3 pr-0 mx-0">
+              {!costingDrawer && <Row className="mb-3 pr-0 mx-0">
                 <Col md="6"> <HeaderTitle title={'Last Revision Data:'} /></Col>
                 <Col md="6">
                   <div className={'right-details'}>
@@ -230,6 +236,7 @@ function VerifyImpactDrawer(props) {
                   </div>}
                 </div>
               </Row>
+              }
             </form>
           </div>
         </Container>

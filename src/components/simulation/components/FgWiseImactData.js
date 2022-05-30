@@ -9,14 +9,17 @@ import LoaderCustom from '../../common/LoaderCustom'
 import { Link } from 'react-scroll';
 import { getSimulatedAssemblyWiseImpactDate } from '../actions/Simulation';
 import { getFgWiseImpactDataForCosting } from '../../costing/actions/Costing';
+import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
 
 
 
 export function Fgwiseimactdata(props) {
     const [acc1, setAcc1] = useState({ currentIndex: -1, isClicked: false, })
     const [showTableData, setshowTableData] = useState(false)
+    const [costingId, setCostingId] = useState('')
+    const [openCostingSummaryTable, setOpenCostingSummaryTable] = useState(false)
     const dispatch = useDispatch()
-    const { SimulationId, headerName, dataForAssemblyImpact, vendorIdState, impactType, approvalSummaryTrue, costingIdArray } = props
+    const { SimulationId, headerName, dataForAssemblyImpact, vendorIdState, impactType, approvalSummaryTrue, costingIdArray, isVerifyImpactDrawer, isSimulation } = props
     const [loader, setLoader] = useState(false)
 
     const impactData = useSelector((state) => state.simulation.impactData)
@@ -64,12 +67,19 @@ export function Fgwiseimactdata(props) {
 
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
+    const closeUserDetails = () => {
+        setOpenCostingSummaryTable(false)
+    }
 
     const DisplayCompareCostingFgWiseImpact = (SimulationApprovalProcessSummaryId, CostingApprovalProcessSummaryId) => {
-        if (approvalSummaryTrue) {
-            props.DisplayCompareCostingFgWise(CostingApprovalProcessSummaryId)
-        } else {
-            props.DisplayCompareCosting(SimulationApprovalProcessSummaryId, 0)
+        setCostingId(CostingApprovalProcessSummaryId)
+        setOpenCostingSummaryTable(true)
+        if (!isVerifyImpactDrawer) {
+            if (approvalSummaryTrue) {
+                props.DisplayCompareCostingFgWise(CostingApprovalProcessSummaryId)
+            } else {
+                props.DisplayCompareCosting(SimulationApprovalProcessSummaryId, 0)
+            }
         }
     }
 
@@ -152,7 +162,7 @@ export function Fgwiseimactdata(props) {
                                                     <td ><span>{checkForDecimalAndNull(item.VariancePerPiece, initialConfiguration.NoOfDecimalForPrice)}</span></td>
                                                     <td ><span>{checkForDecimalAndNull(item.VendorSOBPercentage, initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
                                                     <td ><span>{checkForDecimalAndNull(VendorSOBImpactPerPiece, initialConfiguration.NoOfDecimalForPrice)}</span></td>
-                                                    <td colSpan="4"><span> <Link to="compare-costing" spy={true} smooth={true}><button className="Balance mb-0 float-right" type={'button'} onClick={() => { DisplayCompareCostingFgWiseImpact(item.SimulationApprovalProcessSummaryId, item.SimulationApprovalProcessSummaryId) }} /></Link></span></td>
+                                                    {((isSimulation && isVerifyImpactDrawer) ? false : true) && <td colSpan="4"><span> <Link to="compare-costing" spy={true} smooth={true}><button className="Balance mb-0 float-right" type={'button'} onClick={() => { DisplayCompareCostingFgWiseImpact(item.SimulationApprovalProcessSummaryId, item.BaseCostingId) }} /></Link></span></td>}
 
                                                 </tr>)
                                         })}
@@ -167,6 +177,17 @@ export function Fgwiseimactdata(props) {
                             <Col md="12">
                                 <NoContentFound title={EMPTY_DATA} />
                             </Col>
+                        }
+                        {openCostingSummaryTable &&
+                            <CostingDetailSimulationDrawer
+                                isOpen={openCostingSummaryTable}
+                                closeDrawer={closeUserDetails}
+                                anchor={"right"}
+                                isSummaryDrawer={openCostingSummaryTable}
+                                isSimulation={props.isSimulation}
+                                costingID={costingId}
+                                simulationMode={false}
+                            />
                         }
                     </div>
                 </Col>

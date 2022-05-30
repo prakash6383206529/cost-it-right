@@ -542,7 +542,7 @@ function CostingSimulation(props) {
         return cell != null ? <span className={classGreen}>{_.round(cell, COSTINGSIMULATIONROUND)}</span> : ''
 
     }
-    const oldOPERFormatter = (props) => {
+    const oldOperFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const classGreen = (row.NewOperationCost > row.OldOperationCost) ? 'red-value form-control' : (row.NewOperationCost < row.OldOperationCost) ? 'green-value form-control' : 'form-class'
@@ -595,13 +595,20 @@ function CostingSimulation(props) {
         let roudOffOld = 0, rounfOffNew = 0
         roudOffOld = _.round(row.OldNetRawMaterialsCost, COSTINGSIMULATIONROUND)
         rounfOffNew = _.round(row.NewNetRawMaterialsCost, COSTINGSIMULATIONROUND)
-        return cell != null ? (roudOffOld - rounfOffNew).toFixed(COSTINGSIMULATIONROUND) : ''
+        let value = Math.abs(roudOffOld - rounfOffNew)
+        return (<div>
+            {value ? (row.NewNetRawMaterialsCost > row.OldNetRawMaterialsCost ? < span className='positive-sign'>+</span> : < span className='positive-sign'>-</span>) : ''}
+            {cell != null ? (Math.abs(value)).toFixed(COSTINGSIMULATIONROUND) : '-'}
+        </div >)
     }
     const variancePOFormatter = (props) => {
 
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return cell != null ? checkForDecimalAndNull(row.Variance, getConfigurationKey().NoOfDecimalForPrice) : ''
+        return (<div>
+            {row.Variance ? (row.NewPOPrice > row.OldPOPrice ? < span className='positive-sign'>+</span> : < span className='positive-sign'>-</span>) : ''}
+            {cell != null ? checkForDecimalAndNull(Math.abs(row.Variance), getConfigurationKey().NoOfDecimalForPrice) : '-'}
+        </div >)
     }
 
     const decimalFormatter = (props) => {
@@ -620,14 +627,66 @@ function CostingSimulation(props) {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         // const classGreen = (row.NewNetRawMaterialsCost > row.OldNetRawMaterialsCost) ? 'red-value form-control' : (row.NewNetRawMaterialsCost < row.OldNetRawMaterialsCost) ? 'green-value form-control' : 'form-class'
-        return cell != null ? checkForDecimalAndNull(row.NetSurfaceTreatmentCostVariance, getConfigurationKey().NoOfDecimalForPrice) : ''
+        // return cell != null ? checkForDecimalAndNull(row.NetSurfaceTreatmentCostVariance, getConfigurationKey().NoOfDecimalForPrice) : ''
 
+
+        return (<div>
+            {row.NetSurfaceTreatmentCostVariance ? (row.NewNetSurfaceTreatmentCost > row.OldNetSurfaceTreatmentCost ? < span className='positive-sign'>+</span> : < span className='positive-sign'>-</span>) : ''}
+            {cell != null ? checkForDecimalAndNull(Math.abs(row.NetSurfaceTreatmentCostVariance), getConfigurationKey().NoOfDecimalForPrice) : ''}
+        </div >)
+
+    }
+
+    const varianceOperationFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return (<div>
+            {row.OperationCostVariance ? (row.NewOperationCost > row.OldOperationCost ? < span className='positive-sign'>+</span> : < span className='positive-sign'>-</span>) : ''}
+            {cell != null ? checkForDecimalAndNull(Math.abs(row.OperationCostVariance), getConfigurationKey().NoOfDecimalForPrice) : '-'}
+        </div >)
+    }
+
+    const varianceBOPFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return (<div>
+            {row.NetBoughtOutPartCostVariance ? (row.NewNetBoughtOutPartCost > row.OldNetBoughtOutPartCost ? < span className='positive-sign'>+</span> : < span className='positive-sign'>-</span>) : ''}
+            {cell != null ? checkForDecimalAndNull(Math.abs(row.NetBoughtOutPartCostVariance), getConfigurationKey().NoOfDecimalForPrice) : '-'}
+        </div >)
     }
 
     const varianceFormatter = (props) => {
         // ********** THIS IS RE SPECIFIC **********
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return Number(cell)?.toFixed(COSTINGSIMULATIONROUND)
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+
+        return (<div>
+            {cell ? (row.NewExchangeRate > row.OldExchangeRate ? < span className='positive-sign'>+</span> : < span className='positive-sign'>-</span>) : ''}
+            {cell != null ? (Math.abs(cell)).toFixed(COSTINGSIMULATIONROUND) : ''}
+        </div >)
+
+    }
+
+    const exchangeRatePOFormatter = (props) => {
+        // ********** THIS IS RE SPECIFIC **********
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+
+        return (<div>
+            {row.POVariance ? (row.NewNetPOPriceOtherCurrency > row.OldNetPOPriceOtherCurrency ? < span className='positive-sign'>+</span> : < span className='positive-sign'>-</span>) : ''}
+            {cell != null ? checkForDecimalAndNull(Math.abs(row.POVariance), getConfigurationKey().NoOfDecimalForPrice) : ''}
+        </div >)
+    }
+
+    const CPvarianceFormatter = (props) => {
+        // ********** THIS IS RE SPECIFIC **********
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+
+        return (<div>
+            {row.CPVariance ? (row.NewNetCC > row.OldNetCC ? < span className='positive-sign'>+</span> : < span className='positive-sign'>-</span>) : ''}
+            {cell != null ? checkForDecimalAndNull(Math.abs(row.CPVariance), getConfigurationKey().NoOfDecimalForPrice) : '-'}
+        </div >)
     }
 
     const oldExchangeFormatter = (props) => {
@@ -882,7 +941,7 @@ function CostingSimulation(props) {
         buttonFormatter: buttonFormatter,
         newRMFormatter: newRMFormatter,
         newOPERFormatter: newOPERFormatter,
-        oldOPERFormatter: oldOPERFormatter,
+        oldOperFormatter: oldOperFormatter,
         newSTFormatter: newSTFormatter,
         oldSTFormatter: oldSTFormatter,
         newNetSTFormatter: newNetSTFormatter,
@@ -908,6 +967,10 @@ function CostingSimulation(props) {
         newExchangeFormatter: newExchangeFormatter,
         oldPOCurrencyFormatter: oldPOCurrencyFormatter,
         newPOCurrencyFormatter: newPOCurrencyFormatter,
+        varianceOperationFormatter: varianceOperationFormatter,
+        varianceBOPFormatter: varianceBOPFormatter,
+        CPvarianceFormatter: CPvarianceFormatter,
+        exchangeRatePOFormatter: exchangeRatePOFormatter
     };
 
     const isRowSelectable = rowNode => statusForLinkedToken === true ? false : true;
@@ -1041,16 +1104,16 @@ function CostingSimulation(props) {
 
                                                     {(isOperation || showOperationColumn) && <>
                                                         <AgGridColumn width={140} field="Quantity" headerName='Quantity' ></AgGridColumn>
-                                                        <AgGridColumn width={140} field="OldOperationCost" headerName='Old Oper Cost' cellRenderer="oldOPERFormatter" ></AgGridColumn>
+                                                        <AgGridColumn width={140} field="OldOperationCost" headerName='Old Oper Cost' cellRenderer="oldOperFormatter" ></AgGridColumn>
                                                         <AgGridColumn width={140} field="NewOperationCost" headerName='New Oper Cost' cellRenderer="newOPERFormatter"></AgGridColumn>
-                                                        <AgGridColumn width={140} field="OperationCostVariance" headerName='Oper Variance' ></AgGridColumn>
+                                                        <AgGridColumn width={140} field="OperationCostVariance" headerName='Oper Variance' cellRenderer='varianceOperationFormatter'></AgGridColumn>
                                                     </>}
 
                                                     {(isBOPDomesticOrImport || showBOPColumn) && <>
                                                         <AgGridColumn width={140} field="BoughtOutPartQuantity" headerName='BOP Quantity' cellRenderer={decimalFormatter} ></AgGridColumn>
                                                         <AgGridColumn width={140} field="OldNetBoughtOutPartCost" headerName='Old BOP Cost' cellRenderer={decimalFormatter} ></AgGridColumn>
                                                         <AgGridColumn width={140} field="NewNetBoughtOutPartCost" headerName='New BOP Cost' cellRenderer={decimalFormatter}></AgGridColumn>
-                                                        <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" headerName='BOP Variance' cellRenderer={decimalFormatter} ></AgGridColumn>
+                                                        <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" headerName='BOP Variance' cellRenderer='varianceBOPFormatter'></AgGridColumn>
                                                     </>}
 
                                                     {(isMachineRate || showMachineRateColumn) && <>
@@ -1071,7 +1134,7 @@ function CostingSimulation(props) {
                                                         <>
                                                             <AgGridColumn width={220} field="OldNetPOPriceOtherCurrency" headerName='PO Price Old(in Currency)' cellRenderer='oldPOCurrencyFormatter'></AgGridColumn>
                                                             <AgGridColumn width={220} field="NewNetPOPriceOtherCurrency" headerName='PO Price New (in Currency)' cellRenderer='newPOCurrencyFormatter'></AgGridColumn>
-                                                            <AgGridColumn width={170} field="POVariance" headerName='PO Variance' cellRenderer={decimalFormatter}></AgGridColumn>
+                                                            <AgGridColumn width={170} field="POVariance" headerName='PO Variance' cellRenderer='exchangeRatePOFormatter'></AgGridColumn>
                                                             <AgGridColumn width={170} field="OldExchangeRate" headerName='Exchange Rate Old' cellRenderer='oldExchangeFormatter'></AgGridColumn>
                                                             <AgGridColumn width={170} field="NewExchangeRate" headerName='Exchange Rate New' cellRenderer='newExchangeFormatter'></AgGridColumn>
                                                             <AgGridColumn width={140} field="ERVariance" headerName='Variance' cellRenderer='varianceFormatter'></AgGridColumn>
@@ -1081,7 +1144,7 @@ function CostingSimulation(props) {
                                                         <>
                                                             <AgGridColumn width={140} field="OldNetCC" headerName='Old Net CC' cellRenderer={decimalFormatter}></AgGridColumn>
                                                             <AgGridColumn width={140} field="NewNetCC" headerName='New Net CC' cellRenderer={decimalFormatter}></AgGridColumn>
-                                                            <AgGridColumn width={140} field="CPVariance" headerName='Variance' cellRenderer={decimalFormatter}></AgGridColumn>
+                                                            <AgGridColumn width={140} field="CPVariance" headerName='Variance' cellRenderer='CPvarianceFormatter'></AgGridColumn>
                                                         </>
                                                     }
                                                     {!(isExchangeRate) &&
@@ -1207,6 +1270,7 @@ function CostingSimulation(props) {
                     master={selectedMasterForSimulation ? selectedMasterForSimulation.value : master}
                     // closeDrawer={closeDrawer}
                     isSimulation={true}
+                    simulationMode={true}
                 />
             }
             {

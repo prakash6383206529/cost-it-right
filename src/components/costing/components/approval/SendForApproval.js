@@ -24,7 +24,6 @@ import VerifyImpactDrawer from '../../../simulation/components/VerifyImpactDrawe
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 const SendForApproval = (props) => {
-  console.log('props: ', props);
   const { isApprovalisting } = props
   const dispatch = useDispatch()
   const { register, handleSubmit, control, setValue, formState: { errors } } = useForm({
@@ -229,7 +228,7 @@ const SendForApproval = (props) => {
         getAllApprovalUserFilterByDepartment({
           LoggedInUserId: userData.LoggedInUserId,
           DepartmentId: newValue.value,
-          TechnologyId: partNo.technologyId,
+          TechnologyId: props.isApprovalisting ? props.technologyId : partNo.technologyId
         }, (res) => {
           if (res.data.DataList.length <= 1) {
             setShowValidation(true)
