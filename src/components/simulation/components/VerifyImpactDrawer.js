@@ -13,7 +13,7 @@ import NoContentFound from '../../common/NoContentFound';
 
 
 function VerifyImpactDrawer(props) {
-  const { SimulationTechnologyIdState, simulationId, vendorIdState, EffectiveDate, amendmentDetails, dataForAssemblyImpactInVerifyImpact, assemblyImpactButtonTrue, costingDrawer } = props
+  const { SimulationTechnologyIdState, simulationId, vendorIdState, EffectiveDate, amendmentDetails, dataForAssemblyImpactInVerifyImpact, assemblyImpactButtonTrue, costingDrawer, costingIdArray, approvalSummaryTrue } = props
 
   const [id, setId] = useState('')
   const [compareCostingObj, setCompareCostingObj] = useState([])
@@ -177,7 +177,7 @@ function VerifyImpactDrawer(props) {
 
               {fgWiseAcc && <Row className="mb-3 pr-0 mx-0">
                 <Col md="12">
-                  <Fgwiseimactdata SimulationId={simulationId} />
+                  <Fgwiseimactdata SimulationId={simulationId} costingIdArray={costingIdArray} approvalSummaryTrue={approvalSummaryTrue} />
                 </Col>
               </Row>}
 

@@ -708,7 +708,6 @@ export function formViewData(costingSummary, header = '') {
 
   // temp = [...temp, obj]
   temp.push(obj)
-  console.log(temp, "TEMP");
   return temp
 }
 

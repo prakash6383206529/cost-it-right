@@ -2453,11 +2453,12 @@ export function checkHistoryCostingAndSAPPoPrice(params, callback) {
     })
   }
 }
+
 //FG WISE IMPACT DATA SHOW IN COSTING SUMMARY
 export function getFgWiseImpactDataForCosting(costingId, callback) {
   return (dispatch) => {
-
-    const request = axios.get(`${API.getFgWiseImpactDataForCosting}?costingId=${costingId}`, config());
+    const request = axios.post(`${API.getFgWiseImpactDataForCosting}`, costingId, config());
+    // const request = axios.post(API.getFgWiseImpactDataForCosting, costingId, config())
     request.then((response) => {
       if (response.data.Result) {
         dispatch({

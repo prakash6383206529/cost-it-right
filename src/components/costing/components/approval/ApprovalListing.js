@@ -121,7 +121,6 @@ function ApprovalListing(props) {
    */
   const linkableFormatter = (props) => {
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-    console.log('cell: ', cell);
     const row = props?.valueFormatted ? props.valueFormatted : props?.data;
     return (
       <Fragment>
@@ -201,11 +200,11 @@ function ApprovalListing(props) {
 
   const onRowSelect = () => {
     var selectedRows = gridApi.getSelectedRows();
-    console.log('selectedRows: ', selectedRows);
 
     let count = 0
     let technologyCount = 0
     let departmentCount = 0
+    let vendorCount = 0
     let statusArr = []
 
     selectedRows.forEach((element, index, arr) => {
@@ -242,7 +241,17 @@ function ApprovalListing(props) {
         return false
       }
     })
-
+    selectedRows.forEach((element, index, arr) => {
+      if (index > 0) {
+        if (element.VendorId !== arr[index - 1].VendorId) {
+          vendorCount = vendorCount + 1
+        } else {
+          return false
+        }
+      } else {
+        return false
+      }
+    })
     selectedRows.map(item => statusArr.push(item.SimulationTechnologyHead))
 
 
@@ -253,6 +262,10 @@ function ApprovalListing(props) {
     if (technologyCount > 0) {
       gridApi.deselectAll()
       return Toaster.warning("Technology should be same for sending multiple costing for approval")
+    }
+    if (vendorCount > 0) {
+      gridApi.deselectAll()
+      return Toaster.warning("Vendor should be same for sending multiple costing for approval")
     }
     if (count > 0) {
       // gridApi.deselectAll()
@@ -318,7 +331,6 @@ function ApprovalListing(props) {
         } else {
           year = `${new Date(date).getFullYear()}-${new Date(date).getFullYear() + 1}`
         }
-        console.log(year, "year");
         dispatch(getVolumeDataByPartAndYear(item.PartId, year, res => {
           if (res.data.Result === true || res.status === 202) {
             let approvedQtyArr = res.data.Data.VolumeApprovedDetails
@@ -351,7 +363,6 @@ function ApprovalListing(props) {
 
         )
       }
-      console.log(costingObj, "costingObj");
       temp.push(costingObj)
       dispatch(setCostingApprovalData(temp))
     })

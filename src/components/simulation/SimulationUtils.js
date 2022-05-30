@@ -284,7 +284,6 @@ export const ErrorMessage = (props) => {
 
         return temp
     }
-    console.log(status, "status");
     return (<>
         {recordInsertStatusBox &&
             <div className="error-box-container">

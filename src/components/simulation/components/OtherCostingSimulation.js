@@ -1018,6 +1018,7 @@ function OtherCostingSimulation(props) {
                                 EffectiveDate={simulationDetail.EffectiveDate}
                                 amendmentDetails={amendmentDetails}
                                 assemblyImpactButtonTrue={assemblyImpactButtonTrue}
+                                approvalSummaryTrue={false}
                             />
                         }
                     </div >

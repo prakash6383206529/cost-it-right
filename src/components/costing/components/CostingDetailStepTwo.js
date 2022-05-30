@@ -252,7 +252,6 @@ function CostingDetailStepTwo(props) {
       switch (Text) {
         case 'RM':
           totalCost = headCostData.NetRawMaterialsCost * calculatePercentage(percent)
-          console.log('totalCost: ', totalCost);
           break;
         case 'BOP':
           totalCost = headCostData.NetBoughtOutPartCost * calculatePercentage(percent)
