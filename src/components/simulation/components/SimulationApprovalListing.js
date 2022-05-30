@@ -15,7 +15,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../common/LoaderCustom'
 import { MESSAGES } from '../../../config/message'
-import { getConfigurationKey } from '../../../helper'
+import { allEqual, getConfigurationKey } from '../../../helper'
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import WarningMessage from '../../common/WarningMessage'
@@ -198,8 +198,6 @@ function SimulationApprovalListing(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (cell !== null && cell !== '-') ? `${cell}(${row.VendorCode})` : '-'
     }
-
-    const allEqual = arr => arr.every(val => val === arr[0]);
 
     const onRowSelect = (row, isSelected, e) => {
 

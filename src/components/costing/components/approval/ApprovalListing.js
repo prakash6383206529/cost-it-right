@@ -9,7 +9,7 @@ import NoContentFound from '../../../common/NoContentFound'
 import { DRAFT, EMPTY_DATA } from '../../../../config/constants'
 import DayTime from '../../../common/DayTimeWrapper'
 import ApproveRejectDrawer from './ApproveRejectDrawer'
-import { checkForDecimalAndNull, checkForNull } from '../../../../helper'
+import { allEqual, checkForDecimalAndNull, checkForNull, formViewData } from '../../../../helper'
 import { PENDING } from '../../../../config/constants'
 import Toaster from '../../../common/Toaster'
 import imgArrowDown from "../../../../assests/images/arrow-down.svg";
@@ -22,8 +22,9 @@ import { Redirect } from 'react-router'
 import WarningMessage from '../../../common/WarningMessage'
 import CalculatorWrapper from '../../../common/Calculator/CalculatorWrapper'
 import { getVolumeDataByPartAndYear } from '../../../masters/actions/Volume'
-import { setCostingApprovalData } from '../../actions/Costing'
+import { getSingleCostingDetails, setCostingApprovalData, setCostingViewData } from '../../actions/Costing'
 import SendForApproval from './SendForApproval'
+import CostingDetailSimulationDrawer from '../../../simulation/components/CostingDetailSimulationDrawer'
 
 const gridOptions = {};
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
@@ -45,6 +46,7 @@ function ApprovalListing(props) {
   const [gridApi, setGridApi] = useState(null);
   const [gridColumnApi, setGridColumnApi] = useState(null);
   const [isLoader, setIsLoader] = useState(true)
+  const [isOpen, setIsOpen] = useState(false)
   const dispatch = useDispatch()
 
   const partSelectList = useSelector((state) => state.costing.partSelectList)
@@ -119,7 +121,6 @@ function ApprovalListing(props) {
    */
   const linkableFormatter = (props) => {
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-    console.log('cell: ', cell);
     const row = props?.valueFormatted ? props.valueFormatted : props?.data;
     return (
       <Fragment>
@@ -130,6 +131,44 @@ function ApprovalListing(props) {
           {(cell === '' || cell === null) ? '-' : cell}
         </div>
       </Fragment>
+    )
+  }
+
+  const closeUserDetails = () => {
+    // setIsViewRM(false)
+    setIsOpen(false)
+    // setUserId("")
+
+  }
+
+  const viewDetailCostingID = (UserId, cell, row) => {
+
+    if (row.CostingId && Object.keys(row.CostingId).length > 0) {
+      dispatch(getSingleCostingDetails(row.CostingId, (res) => {
+        if (res.data.Data) {
+          let dataFromAPI = res.data.Data
+
+          const tempObj = formViewData(dataFromAPI)
+          dispatch(setCostingViewData(tempObj))
+        }
+      },
+      ))
+    }
+    setIsOpen(true)
+    // setUserId(UserId)
+  }
+
+  const hyperLinkableFormatter = (props) => {
+
+    const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+    const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+    return (
+      <>
+        <div
+          onClick={() => viewDetailCostingID(row.UserId, cell, row)}
+          className={'link'}
+        >{cell}</div>
+      </>
     )
   }
 
@@ -194,69 +233,55 @@ function ApprovalListing(props) {
     )
   }
 
-  const allEqual = arr => arr.every(val => val === arr[0]);
-
   const onRowSelect = () => {
     var selectedRows = gridApi.getSelectedRows();
-    console.log('selectedRows: ', selectedRows);
 
-    let count = 0
-    let technologyCount = 0
-    let departmentCount = 0
-    let statusArr = []
+    let reasonArray = []
+    let technologyArray = []
+    let departmentArray = []
+    let vendorArray = []
+    let statusArray = []
+    let effectiveDateArray = []
+    let plantArray = []
 
-    selectedRows.forEach((element, index, arr) => {
-      if (index > 0) {
-        if (element.ReasonId !== arr[index - 1].ReasonId) {
-          count = count + 1
-        } else {
-          return false
-        }
-      } else {
-        return false
-      }
-    })
-    selectedRows.forEach((element, index, arr) => {
-      if (index > 0) {
-        if (element.TechnologyId !== arr[index - 1].TechnologyId) {
-          technologyCount = technologyCount + 1
-        } else {
-          return false
-        }
-      } else {
-        return false
-      }
+    selectedRows && selectedRows.map((item) => {
+      console.log('item: ', item);
+      reasonArray.push(item.ReasonId)
+      technologyArray.push(item.TechnologyId)
+      departmentArray.push(item.DepartmentId)
+      vendorArray.push(item.VendorId)
+      statusArray.push(item.SimulationTechnologyHead)
+      effectiveDateArray.push(item.EffectiveDate)
+      plantArray.push(item.PlantCode)
+      return null
     })
 
-    selectedRows.forEach((element, index, arr) => {
-      if (index > 0) {
-        if (element.DepartmentId !== arr[index - 1].DepartmentId) {
-          departmentCount = departmentCount + 1
-        } else {
-          return false
-        }
-      } else {
-        return false
-      }
-    })
-
-    selectedRows.map(item => statusArr.push(item.SimulationTechnologyHead))
-
-
-    if (departmentCount > 0) {
+    if (!allEqual(departmentArray)) {
       gridApi.deselectAll()
       return Toaster.warning("Department should be same for sending multiple costing for approval")
     }
-    if (technologyCount > 0) {
+    if (!allEqual(technologyArray)) {
       gridApi.deselectAll()
       return Toaster.warning("Technology should be same for sending multiple costing for approval")
     }
-    if (count > 0) {
+    if (!allEqual(vendorArray)) {
+      gridApi.deselectAll()
+      return Toaster.warning("Vendor should be same for sending multiple costing for approval")
+    }
+    if (!allEqual(reasonArray)) {
       gridApi.deselectAll()
       return Toaster.warning("Reason should be same for sending multiple costing for approval")
     }
-    if (!allEqual(statusArr)) {
+    if (!allEqual(statusArray)) {
       Toaster.warning('Please select costing which have same status')
+      gridApi.deselectAll()
+    }
+    if (!allEqual(effectiveDateArray)) {
+      Toaster.warning('Please select costing which have same effective date')
+      gridApi.deselectAll()
+    }
+    if (!allEqual(plantArray)) {
+      Toaster.warning('Please select costing which have same plant')
       gridApi.deselectAll()
     }
 
@@ -315,7 +340,6 @@ function ApprovalListing(props) {
         } else {
           year = `${new Date(date).getFullYear()}-${new Date(date).getFullYear() + 1}`
         }
-        console.log(year, "year");
         dispatch(getVolumeDataByPartAndYear(item.PartId, year, res => {
           if (res.data.Result === true || res.status === 202) {
             let approvedQtyArr = res.data.Data.VolumeApprovedDetails
@@ -348,7 +372,6 @@ function ApprovalListing(props) {
 
         )
       }
-      console.log(costingObj, "costingObj");
       temp.push(costingObj)
       dispatch(setCostingApprovalData(temp))
     })
@@ -416,6 +439,7 @@ function ApprovalListing(props) {
     customLoadingOverlay: LoaderCustom,
     customNoRowsOverlay: NoContentFound,
     linkableFormatter: linkableFormatter,
+    hyperLinkableFormatter: hyperLinkableFormatter,
   };
 
   const isRowSelectable = rowNode => rowNode.data ? (rowNode.data.Status === PENDING || rowNode.data.Status === DRAFT) : false
@@ -499,7 +523,7 @@ function ApprovalListing(props) {
                       <AgGridColumn field="CostingId" hide dataAlign="center" searchable={false} ></AgGridColumn>
                       <AgGridColumn cellClass="has-checkbox" field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Approval No."></AgGridColumn>
                       {isApproval && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" field="Status" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>}
-                      <AgGridColumn field="CostingNumber" headerName="Costing ID"></AgGridColumn>
+                      <AgGridColumn field="CostingNumber" headerName="Costing ID" cellRenderer='hyperLinkableFormatter' ></AgGridColumn>
                       <AgGridColumn field="PartNumber" headerName='Part No.'></AgGridColumn>
                       <AgGridColumn field="PartName" headerName="Part Name"></AgGridColumn>
                       <AgGridColumn field="VendorName" cellRenderer='renderVendor' headerName="Vendor"></AgGridColumn>
@@ -564,7 +588,17 @@ function ApprovalListing(props) {
           technologyId={selectedRowData[0].TechnologyId}
         />
       }
-
+      {
+        isOpen &&
+        <CostingDetailSimulationDrawer
+          isOpen={isOpen}
+          closeDrawer={closeUserDetails}
+          anchor={"right"}
+          isReport={isOpen}
+          selectedRowData={selectedRowData}
+          isSimulation={false}
+        />
+      }
     </Fragment>
   )
 }
