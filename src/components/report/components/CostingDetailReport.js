@@ -532,7 +532,7 @@ function ReportListing(props) {
     }
 
     return (
-        <div className="container-fluid part-manage-component report-listing-page ag-grid-react">
+        <div className="container-fluid custom-pagination report-listing-page ag-grid-react">
             {isLoader && <LoaderCustom />}
             <form onSubmit={handleSubmit(onSubmit)} noValidate>
 

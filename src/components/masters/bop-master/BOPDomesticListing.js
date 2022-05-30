@@ -10,19 +10,19 @@ import {
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
+import { onFloatingFilterChanged, onSearch, resetState, onBtPrevious, onBtNext } from '../../common/commonPagination'
 import DayTime from '../../common/DayTimeWrapper'
 import BulkUpload from '../../massUpload/BulkUpload';
 import { BOP_DOMESTIC_DOWNLOAD_EXCEl, } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
 import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
-import { getConfigurationKey, getFilteredData, loggedInUserId, userDetails } from '../../../helper';
+import { getFilteredData, loggedInUserId, userDetails } from '../../../helper';
 import { BopDomestic, } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
-import { filterParams } from '../../common/DateFilter'
 import { getListingForSimulationCombined } from '../../simulation/actions/Simulation';
 import { masterFinalLevelUser } from '../../masters/actions/Material'
 import WarningMessage from '../../common/WarningMessage';
@@ -167,74 +167,30 @@ class BOPDomesticListing extends Component {
 
 
     onFloatingFilterChanged = (value) => {
-
-        const model = gridOptions?.api?.getFilterModel();
-        this.setState({ filterModel: model })
-
-        if (!this.state.isFilterButtonClicked) {
-            this.setState({ warningMessage: true })
-        }
-
-        if (value?.filterInstance?.appliedModel === null || value?.filterInstance?.appliedModel?.filter === "") {
-            this.setState({ warningMessage: false })
-
-        } else {
-
-            if (value.column.colId === "EffectiveDate" || value.column.colId === "CreatedDate") {
-                this.setState({ isSearchButtonDisable: false })
-                return false
-            }
-            this.setState({ floatingFilterData: { ...this.state.floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter } })
-            this.setState({ isSearchButtonDisable: false })
-
-        }
+        onFloatingFilterChanged(value, gridOptions, this)   // COMMON FUNCTION
     }
 
 
     onSearch = () => {
 
-        this.setState({ warningMessage: false, isFilterButtonClicked: true, pageNo: 1, currentRowIndex: 0 })
-        gridOptions?.columnApi?.resetColumnState();
-        this.getDataList("", 0, "", "", 0, 100, true, this.state.floatingFilterData)
+        onSearch(gridOptions, this, "BOP")  // COMMON PAGINATION FUNCTION
     }
 
 
     resetState = () => {
 
-        this.setState({ isFilterButtonClicked: false })
-        gridOptions?.columnApi?.resetColumnState(null);
-        gridOptions?.api?.setFilterModel(null);
-        var obj = this.state.floatingFilterData
-
-        for (var prop in obj) {
-            obj[prop] = ""
-        }
-
-        this.setState({ floatingFilterData: obj, warningMessage: false, pageNo: 1, currentRowIndex: 0 })
-        this.getDataList("", 0, "", "", 0, 100, true, this.state.floatingFilterData)
+        resetState(gridOptions, this, "BOP")  //COMMON PAGINATION FUNCTION
     }
-
 
 
     onBtPrevious = () => {
-        if (this.state.currentRowIndex >= 10) {
-
-            this.setState({ pageNo: this.state.pageNo - 1 })
-            const previousNo = this.state.currentRowIndex - 10;
-            this.getDataList("", 0, "", "", previousNo, 100, true, this.state.floatingFilterData)
-            this.setState({ currentRowIndex: previousNo })
-
-        }
+        onBtPrevious(this, "BOP")       //COMMON PAGINATION FUNCTION
     }
 
-    onBtNext = () => {
-        if (this.state.currentRowIndex < (this.state.totalRecordCount - 10)) {
 
-            this.setState({ pageNo: this.state.pageNo + 1 })
-            const nextNo = this.state.currentRowIndex + 10;
-            this.getDataList("", 0, "", "", nextNo, 100, true, this.state.floatingFilterData)
-            this.setState({ currentRowIndex: nextNo })
-        }
+    onBtNext = () => {
+        onBtNext(this, "BOP")   // COMMON PAGINATION FUNCTION
+
     };
 
 
@@ -469,6 +425,39 @@ class BOPDomesticListing extends Component {
         const { handleSubmit, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
         const { isBulkUpload } = this.state;
 
+        var filterParams = {
+            date: "",
+            comparator: function (filterLocalDateAtMidnight, cellValue) {
+                var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+                var newDate = filterLocalDateAtMidnight != null ? DayTime(filterLocalDateAtMidnight).format('DD/MM/YYYY') : '';
+                setDate(newDate)
+                if (dateAsString == null) return -1;
+                var dateParts = dateAsString.split('/');
+                var cellDate = new Date(
+                    Number(dateParts[2]),
+                    Number(dateParts[1]) - 1,
+                    Number(dateParts[0])
+                );
+                if (filterLocalDateAtMidnight.getTime() === cellDate.getTime()) {
+                    return 0;
+                }
+                if (cellDate < filterLocalDateAtMidnight) {
+                    return -1;
+                }
+                if (cellDate > filterLocalDateAtMidnight) {
+                    return 1;
+                }
+            },
+            browserDatePicker: true,
+            minValidYear: 2000,
+        };
+
+
+        var setDate = (date) => {
+            this.setState({ floatingFilterData: { ...this.state.floatingFilterData, newDate: date } })
+
+        }
+
 
         const isFirstColumn = (params) => {
             if (this.props.isSimulation) {
@@ -524,67 +513,65 @@ class BOPDomesticListing extends Component {
                         </Col>
                         <Col md="9" lg="9" className="mb-3">
                             <div className="d-flex justify-content-end bd-highlight w100">
-                                <div>
-                                    {this.state.shown ? (
-                                        <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
-                                            <div className="cancel-icon-white"></div></button>
-                                    ) : (
-                                        <>
-                                        </>
-                                    )}
+                                {this.state.shown ? (
+                                    <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
+                                        <div className="cancel-icon-white"></div></button>
+                                ) : (
+                                    <>
+                                    </>
+                                )}
 
-                                    {
-                                        <div className="warning-message d-flex align-items-center">
-                                            {this.state.warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
-                                        </div>
-                                    }
+                                {
+                                    <div className="warning-message d-flex align-items-center">
+                                        {this.state.warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
+                                    </div>
+                                }
 
-                                    {
-                                        <button disabled={this.state.isSearchButtonDisable} title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch()}><div class="filter mr-0"></div></button>
+                                {
+                                    <button disabled={this.state.isSearchButtonDisable} title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch()}><div class="filter mr-0"></div></button>
 
-                                    }
+                                }
 
-                                    {AddAccessibility && (
-                                        <button
-                                            type="button"
-                                            className={"user-btn mr5"}
-                                            onClick={this.formToggle}
-                                            title="Add"
-                                        >
-                                            <div className={"plus mr-0"}></div>
-                                            {/* ADD */}
-                                        </button>
-                                    )}
-                                    {BulkUploadAccessibility && (
-                                        <button
-                                            type="button"
-                                            className={"user-btn mr5"}
-                                            onClick={this.bulkToggle}
-                                            title="Bulk Upload"
-                                        >
-                                            <div className={"upload mr-0"}></div>
-                                            {/* Bulk Upload */}
-                                        </button>
-                                    )}
-                                    {
-                                        DownloadAccessibility &&
-                                        <>
-
-                                            <ExcelFile filename={'BOP Domestic'} fileExtension={'.xls'} element={
-                                                <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-                                                    {/* DOWNLOAD */}
-                                                </button>}>
-
-                                                {this.onBtExport()}
-                                            </ExcelFile>
-
-                                        </>
-                                    }
-                                    <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
-                                        <div className="refresh mr-0"></div>
+                                {AddAccessibility && (
+                                    <button
+                                        type="button"
+                                        className={"user-btn mr5"}
+                                        onClick={this.formToggle}
+                                        title="Add"
+                                    >
+                                        <div className={"plus mr-0"}></div>
+                                        {/* ADD */}
                                     </button>
+                                )}
+                                {BulkUploadAccessibility && (
+                                    <button
+                                        type="button"
+                                        className={"user-btn mr5"}
+                                        onClick={this.bulkToggle}
+                                        title="Bulk Upload"
+                                    >
+                                        <div className={"upload mr-0"}></div>
+                                        {/* Bulk Upload */}
+                                    </button>
+                                )}
+                                {
+                                    DownloadAccessibility &&
+                                    <>
 
-                                </div>
+                                        <ExcelFile filename={'BOP Domestic'} fileExtension={'.xls'} element={
+                                            <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                                {/* DOWNLOAD */}
+                                            </button>}>
+
+                                            {this.onBtExport()}
+                                        </ExcelFile>
+
+                                    </>
+                                }
+                                <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+                                    <div className="refresh mr-0"></div>
+                                </button>
+
                             </div>
                         </Col>
                     </Row>
