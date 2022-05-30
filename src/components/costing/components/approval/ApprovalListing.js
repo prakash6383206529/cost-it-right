@@ -233,39 +233,6 @@ function ApprovalListing(props) {
 
   const onRowSelect = () => {
     var selectedRows = gridApi.getSelectedRows();
-<<<<<<< HEAD
-
-    let count = 0
-    let technologyCount = 0
-    let departmentCount = 0
-    let vendorCount = 0
-    let statusArr = []
-
-    selectedRows.forEach((element, index, arr) => {
-      if (index > 0) {
-        if (element.ReasonId !== arr[index - 1].ReasonId) {
-          count = count + 1
-        } else {
-          return false
-        }
-      } else {
-        return false
-      }
-    })
-    selectedRows.forEach((element, index, arr) => {
-      if (index > 0) {
-        if (element.TechnologyId !== arr[index - 1].TechnologyId) {
-          technologyCount = technologyCount + 1
-        } else {
-          return false
-        }
-      } else {
-        return false
-      }
-    })
-=======
->>>>>>> 2a26aafff (Check of effective date and plant applied)
-
     let reasonArray = []
     let technologyArray = []
     let departmentArray = []
@@ -275,7 +242,6 @@ function ApprovalListing(props) {
     let plantArray = []
 
     selectedRows && selectedRows.map((item) => {
-      console.log('item: ', item);
       reasonArray.push(item.ReasonId)
       technologyArray.push(item.TechnologyId)
       departmentArray.push(item.DepartmentId)
@@ -285,26 +251,8 @@ function ApprovalListing(props) {
       plantArray.push(item.PlantCode)
       return null
     })
-<<<<<<< HEAD
-    selectedRows.forEach((element, index, arr) => {
-      if (index > 0) {
-        if (element.VendorId !== arr[index - 1].VendorId) {
-          vendorCount = vendorCount + 1
-        } else {
-          return false
-        }
-      } else {
-        return false
-      }
-    })
-    selectedRows.map(item => statusArr.push(item.SimulationTechnologyHead))
-
-
-    if (departmentCount > 0) {
-=======
 
     if (!allEqual(departmentArray)) {
->>>>>>> 2a26aafff (Check of effective date and plant applied)
       gridApi.deselectAll()
       return Toaster.warning("Department should be same for sending multiple costing for approval")
     }
@@ -312,22 +260,15 @@ function ApprovalListing(props) {
       gridApi.deselectAll()
       return Toaster.warning("Technology should be same for sending multiple costing for approval")
     }
-<<<<<<< HEAD
-    if (vendorCount > 0) {
-=======
     if (!allEqual(vendorArray)) {
       gridApi.deselectAll()
       return Toaster.warning("Vendor should be same for sending multiple costing for approval")
     }
-    if (!allEqual(reasonArray)) {
->>>>>>> 2a26aafff (Check of effective date and plant applied)
-      gridApi.deselectAll()
-      return Toaster.warning("Vendor should be same for sending multiple costing for approval")
-    }
-    if (count > 0) {
-      // gridApi.deselectAll()
-      // return Toaster.warning("Reason should be same for sending multiple costing for approval")
-    }
+    // if (!allEqual(reasonArray)) {
+    //   gridApi.deselectAll()
+    //   return Toaster.warning("Vendor should be same for sending multiple costing for approval")
+    // }
+
     if (!allEqual(statusArray)) {
       Toaster.warning('Please select costing which have same status')
       gridApi.deselectAll()
