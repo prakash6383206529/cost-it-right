@@ -68,7 +68,6 @@ class CostingBulkUploadDrawer extends Component {
     // specify upload params and url for your files
     getUploadParams = ({ file, meta }) => {
         this.setState({ attachmentLoader: true })
-        console.log("uploading...");
         return { url: 'https://httpbin.org/post' }
     }
     // called every time a file's `status` changes
@@ -91,7 +90,6 @@ class CostingBulkUploadDrawer extends Component {
         if (status === 'done') {
 
             this.setState({ fileName: file.name, fileData: file, attachmentLoader: false })
-            console.log("done");
 
         }
 
@@ -284,20 +282,17 @@ class CostingBulkUploadDrawer extends Component {
                                                 inputContent={(files, extra) =>
                                                     extra.reject ? (
                                                         "Image, audio and video files only"
-                                                    ) : (<>
-                                                        <div className="text-center">
-                                                            <i className="text-primary fa fa-cloud-upload"></i>
-                                                            <span className="d-block">
-                                                                Drag and Drop or{" "}
-                                                                <span className="text-primary">
-                                                                    Browse
-                                                                </span>
-                                                                <br />
-                                                                file to upload
+                                                    ) : (<div className="text-center">
+                                                        <i className="text-primary fa fa-cloud-upload"></i>
+                                                        <span className="d-block">
+                                                            Drag and Drop or{" "}
+                                                            <span className="text-primary">
+                                                                Browse
                                                             </span>
-                                                        </div>
-                                                    </>
-                                                    )
+                                                            <br />
+                                                            file to upload
+                                                        </span>
+                                                    </div>)
                                                 }
 
                                                 styles={{
