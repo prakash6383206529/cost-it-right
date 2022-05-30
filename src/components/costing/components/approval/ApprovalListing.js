@@ -169,10 +169,9 @@ function ApprovalListing(props) {
     )
   }
 
-  const createdOnFormatter = (props) => {
+  const dateFormatter = (props) => {
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-    const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-    return cell != null ? DayTime(cell).format('DD/MM/YYYY') : '';
+    return cell != null ? DayTime(cell).format('DD/MM/YYYY') : '-';
   }
 
   const priceFormatter = (props) => {
@@ -273,15 +272,15 @@ function ApprovalListing(props) {
       return Toaster.warning("Reason should be same for sending multiple costing for approval")
     }
     if (!allEqual(statusArray)) {
-      Toaster.warning('Please select costing which have same status')
+      Toaster.warning('Status should be same for sending multiple costing for approval')
       gridApi.deselectAll()
     }
     if (!allEqual(effectiveDateArray)) {
-      Toaster.warning('Please select costing which have same effective date')
+      Toaster.warning('Effective Date should be same for sending multiple costing for approval')
       gridApi.deselectAll()
     }
     if (!allEqual(plantArray)) {
-      Toaster.warning('Please select costing which have same plant')
+      Toaster.warning('Plant should be same for sending multiple costing for approval')
       gridApi.deselectAll()
     }
 
@@ -432,7 +431,7 @@ function ApprovalListing(props) {
     renderVendor: renderVendor,
     priceFormatter: priceFormatter,
     oldpriceFormatter: oldpriceFormatter,
-    createdOnFormatter: createdOnFormatter,
+    dateFormatter: dateFormatter,
     requestedOnFormatter: requestedOnFormatter,
     statusFormatter: statusFormatter,
     customLoadingOverlay: LoaderCustom,
@@ -532,8 +531,9 @@ function ApprovalListing(props) {
                       <AgGridColumn field="NetPOPrice" cellRenderer='priceFormatter' headerName="New Price"></AgGridColumn>
                       <AgGridColumn field="OldPOPrice" cellRenderer='oldpriceFormatter' headerName="Old PO Price"></AgGridColumn>
                       <AgGridColumn field='Reason' headerName="Reason"></AgGridColumn>
+                      <AgGridColumn field="EffectiveDate" cellRenderer='dateFormatter' headerName="Effective Date" ></AgGridColumn>
                       <AgGridColumn field="CreatedBy" headerName="Initiated By" ></AgGridColumn>
-                      <AgGridColumn field="CreatedOn" cellRenderer='createdOnFormatter' headerName="Created On" ></AgGridColumn>
+                      <AgGridColumn field="CreatedOn" cellRenderer='dateFormatter' headerName="Created On" ></AgGridColumn>
                       <AgGridColumn field="RequestedBy" headerName="Last Approval"></AgGridColumn>
                       <AgGridColumn field="RequestedOn" cellRenderer='requestedOnFormatter' headerName="Requested On"></AgGridColumn>
                       {!isApproval && <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="Status" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>}
