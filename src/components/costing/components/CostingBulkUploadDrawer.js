@@ -11,6 +11,7 @@ import { TechnologyDropdownBulkUpload } from '../../../config/masterData'
 import { MACHINING_GROUP_BULKUPLOAD, PLASTIC_GROUP_BULKUPLOAD, SHEETMETAL_GROUP_BULKUPLOAD } from '../../../config/constants';
 import { getCostingTechnologySelectList, } from '../actions/Costing'
 import { searchableSelect } from '../../layout/FormInputs';
+import LoaderCustom from '../../common/LoaderCustom';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -22,7 +23,8 @@ class CostingBulkUploadDrawer extends Component {
             files: [],
             fileData: '',
             fileName: '',
-            Technology: []
+            Technology: [],
+            attachmentLoader: false
         }
     }
 
@@ -65,6 +67,8 @@ class CostingBulkUploadDrawer extends Component {
 
     // specify upload params and url for your files
     getUploadParams = ({ file, meta }) => {
+        this.setState({ attachmentLoader: true })
+        console.log("uploading...");
         return { url: 'https://httpbin.org/post' }
     }
     // called every time a file's `status` changes
@@ -86,8 +90,8 @@ class CostingBulkUploadDrawer extends Component {
 
         if (status === 'done') {
 
-            this.setState({ fileName: file.name, fileData: file })
-
+            this.setState({ fileName: file.name, fileData: file, attachmentLoader: false })
+            console.log("done");
 
         }
 
@@ -280,7 +284,7 @@ class CostingBulkUploadDrawer extends Component {
                                                 inputContent={(files, extra) =>
                                                     extra.reject ? (
                                                         "Image, audio and video files only"
-                                                    ) : (
+                                                    ) : (<>
                                                         <div className="text-center">
                                                             <i className="text-primary fa fa-cloud-upload"></i>
                                                             <span className="d-block">
@@ -292,8 +296,10 @@ class CostingBulkUploadDrawer extends Component {
                                                                 file to upload
                                                             </span>
                                                         </div>
+                                                    </>
                                                     )
                                                 }
+
                                                 styles={{
                                                     dropzoneReject: {
                                                         borderColor: "red",
@@ -305,6 +311,7 @@ class CostingBulkUploadDrawer extends Component {
                                                 classNames="draper-drop"
                                             />
                                         )}
+                                        {this.state.attachmentLoader && <LoaderCustom customClass="attachment-loader" />}
                                     </Col>
                                 </Row>
                                 <Row className="sf-btn-footer no-gutters justify-content-between">

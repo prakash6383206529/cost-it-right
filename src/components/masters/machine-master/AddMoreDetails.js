@@ -40,6 +40,7 @@ import { masterFinalLevelUser } from '../actions/Material'
 import MasterSendForApproval from '../MasterSendForApproval'
 import { ProcessGroup } from '../masterUtil';
 import _ from 'lodash'
+import LoaderCustom from '../../common/LoaderCustom';
 
 const selector = formValueSelector('AddMoreDetails');
 
@@ -115,6 +116,7 @@ class AddMoreDetails extends Component {
       lockUOMAndRate: false,
       isProcessGroup: getConfigurationKey().IsMachineProcessGroup, // UNCOMMENT IT AFTER DONE FROM BACKEND AND REMOVE BELOW CODE
       // isProcessGroup: true
+      attachmentLoader: false
     }
   }
 
@@ -1472,6 +1474,7 @@ class AddMoreDetails extends Component {
 
   // specify upload params and url for your files
   getUploadParams = ({ file, meta }) => {
+    this.setState({ attachmentLoader: true })
     return { url: 'https://httpbin.org/post', }
 
   }
@@ -1493,7 +1496,7 @@ class AddMoreDetails extends Component {
         let Data = res.data[0]
         const { files } = this.state;
         files.push(Data)
-        this.setState({ files: files })
+        this.setState({ files: files, attachmentLoader: false })
       })
     }
 
@@ -3398,6 +3401,7 @@ class AddMoreDetails extends Component {
                         </Col>
                         <Col md="3">
                           <div className={'attachment-wrapper'}>
+                            {this.state.attachmentLoader && <LoaderCustom customClass="attachment-loader" />}
                             {
                               this.state.files && this.state.files.map(f => {
                                 const withOutTild = f.FileURL.replace('~', '')
@@ -3437,7 +3441,7 @@ class AddMoreDetails extends Component {
                             <button type="submit"
                               class="user-btn approval-btn save-btn mr5"
 
-                              disabled={this.state.isViewMode}
+                              disabled={this.state.isViewMode || this.state.setDisable}
                             >
                               <div className="send-for-approval"></div>
                               {'Send For Approval'}
@@ -3447,7 +3451,7 @@ class AddMoreDetails extends Component {
                             <button
                               type="submit"
                               className="user-btn mr5 save-btn"
-                              disabled={this.state.isViewMode}
+                              disabled={this.state.isViewMode || this.state.setDisable}
                             >
                               <div className={"save-icon"}></div>
                               {isEditFlag ? "Update" : "Save"}

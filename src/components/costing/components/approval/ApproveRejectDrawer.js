@@ -51,6 +51,7 @@ function ApproveRejectDrawer(props) {
   const [loader, setLoader] = useState(false)
   const [isDisable, setIsDisable] = useState(false)
   const [showListingPage, setShowListingPage] = useState(false)
+  const [attachmentLoader, setAttachmentLoader] = useState(false)
 
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
   const { selectedMasterForSimulation } = useSelector(state => state.simulation)
@@ -700,6 +701,7 @@ function ApproveRejectDrawer(props) {
   }
 
   const getUploadParams = ({ file, meta }) => {
+    setAttachmentLoader(true)
     return { url: 'https://httpbin.org/post', }
   }
 
@@ -711,6 +713,7 @@ function ApproveRejectDrawer(props) {
     const loop = Number(dropzone.current.files.length) - Number(files.length)
     if (Number(loop) === 1) {
       setIsDisable(false)
+      setAttachmentLoader(false)
     }
   }
 
@@ -1102,13 +1105,14 @@ function ApproveRejectDrawer(props) {
                         </Col>
                         <div className="w-100">
                           <div className={"attachment-wrapper mt-0 mb-3"}>
+                            {attachmentLoader && <LoaderCustom customClass="attachment-loader" />}
                             {files &&
                               files.map((f) => {
                                 const withOutTild = f.FileURL.replace("~", "");
                                 const fileURL = `${FILE_URL}${withOutTild}`;
                                 return (
                                   <div className={"attachment images"} >
-                                    <a href={fileURL} target="_blank">
+                                    <a href={fileURL} target="_blank" rel="noreferrer">
                                       {f.OriginalFileName}
                                     </a>
                                     {(type === 'Sender' ? true : false) &&
