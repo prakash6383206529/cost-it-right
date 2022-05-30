@@ -1,5 +1,4 @@
 import React from 'react';
-import { useForm } from 'react-hook-form'
 import { useState, useEffect, } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
@@ -52,6 +51,7 @@ function RMDomesticListing(props) {
     const [showPopupBulk, setShowPopupBulk] = useState(false)
     const [viewAction, setViewAction] = useState(ViewRMAccessibility)
     const [isFinalLevelUser, setIsFinalLevelUser] = useState(false)
+    //STATES BELOW ARE MADE FOR PAGINATION PURPOSE
     const [warningMessage, setWarningMessage] = useState(false)
     const [filterModel, setFilterModel] = useState({});
     const [isSearchButtonDisable, setIsSearchButtonDisable] = useState(true);
@@ -215,17 +215,14 @@ function RMDomesticListing(props) {
                         setIsFilterButtonClicked(false)
                     }, 600);
                 }
-
             }))
         }
     }
 
 
     const onFloatingFilterChanged = (value) => {
-        //setEnableSearchFilterButton(false)
-        // Gets filter model via the grid API
-        const model = gridOptions?.api?.getFilterModel();
 
+        const model = gridOptions?.api?.getFilterModel();
         setFilterModel(model)
         if (!isFilterButtonClicked) {
             setWarningMessage(true)
@@ -233,14 +230,12 @@ function RMDomesticListing(props) {
 
         if (value?.filterInstance?.appliedModel === null || value?.filterInstance?.appliedModel?.filter === "") {
             setWarningMessage(false)
-
         } else {
 
             if (value.column.colId === "EffectiveDate" || value.column.colId === "CreatedDate") {
                 setIsSearchButtonDisable(false)
                 return false
             }
-
             setFloatingFilterData({ ...floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter })
             setIsSearchButtonDisable(false)
         }
@@ -260,7 +255,6 @@ function RMDomesticListing(props) {
 
 
     const resetState = () => {
-
         setIsFilterButtonClicked(false)
         gridOptions?.columnApi?.resetColumnState(null);
         gridOptions?.api?.setFilterModel(null);
@@ -454,10 +448,8 @@ function RMDomesticListing(props) {
     }
 
     const closeBulkUploadDrawer = () => {
-
         setisBulkUpload(false);
         getDataList(null, null, null)
-
     }
 
     /**
@@ -524,14 +516,12 @@ function RMDomesticListing(props) {
             return item
         })
 
-
         return (
 
             <ExcelSheet data={temp} name={'RM Domestic'}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
-
 
 
     const onBtExport = () => {
@@ -578,11 +568,8 @@ function RMDomesticListing(props) {
             let length = gridApi.getSelectedRows().length
 
             apply(selectedRows, length)
-
         }
-
     }
-
 
     const defaultColDef = {
         resizable: true,
@@ -597,7 +584,6 @@ function RMDomesticListing(props) {
         totalValueRenderer: buttonFormatter,
         effectiveDateRenderer: effectiveDateFormatter,
         costingHeadRenderer: costingHeadFormatter,
-        // customLoadingOverlay: LoaderCustom,
         customNoRowsOverlay: NoContentFound,
         costFormatter: costFormatter,
         freightCostFormatter: freightCostFormatter,
