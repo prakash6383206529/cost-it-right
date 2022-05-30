@@ -697,9 +697,10 @@ function ReportListing(props) {
                     isOpen={isOpen}
                     closeDrawer={closeUserDetails}
                     anchor={"right"}
-                    isReport={isOpen}
+                    isSummaryDrawer={isOpen}
                     selectedRowData={selectedRowData}
                     isSimulation={false}
+                    simulationMode={false}
                 />
             }
             {isViewRM && <ViewRM

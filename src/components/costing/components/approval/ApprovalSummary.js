@@ -430,6 +430,8 @@ function ApprovalSummary(props) {
                   costingId={approvalData.CostingId}
                   DisplayCompareCostingFgWise={displayCompareCostingFgWise}
                   costingIdArray={costingIdArray}
+                  isVerifyImpactDrawer={false}
+                  isSimulation={false}
                 />
               </Col>
             </Row>}

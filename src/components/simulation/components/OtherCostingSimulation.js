@@ -4,7 +4,7 @@ import { Row, Col, } from 'reactstrap';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import NoContentFound from '../../common/NoContentFound';
-import { AssemblyWiseImpactt, EMPTY_DATA, ImpactMaster, TOFIXEDVALUE } from '../../../config/constants';
+import { AssemblyWiseImpactt, COSTINGSIMULATIONROUND, EMPTY_DATA, ImpactMaster, TOFIXEDVALUE } from '../../../config/constants';
 import { getCombinedProcessCostingSimulationList, getComparisionSimulationData, getExchangeCostingSimulationList, getImpactedMasterData, getSimulatedAssemblyWiseImpactDate, saveSimulationForRawMaterial } from '../actions/Simulation';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
@@ -358,6 +358,16 @@ function OtherCostingSimulation(props) {
         const classGreen = (row.NewPOPrice > row.OldPOPrice) ? 'red-value form-control' : (row.NewPOPrice < row.OldPOPrice) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
+
+    const ExchangeRatePOVarianceFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return (<div>
+            {cell ? (row.NewPOPrice > row.OldPOPrice ? < span className='positive-sign'>+</span> : < span className='positive-sign'>-</span>) : ''}
+            {cell != null ? checkForDecimalAndNull(Math.abs(cell), getConfigurationKey().NoOfDecimalForPrice) : '-'}
+        </div >)
+    }
+
     const newPOCurrencyFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -473,18 +483,25 @@ function OtherCostingSimulation(props) {
     const VarianceFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let value
+        let isPositive = false
         switch (String(master)) {
             case String(EXCHNAGERATE):
                 value = checkForDecimalAndNull(row.Variance, getConfigurationKey().NoOfDecimalForPrice)
+                isPositive = (row.NewExchangeRate > row.OldExchangeRate) ? true : false
                 break;
             case String(COMBINED_PROCESS):
                 value = checkForDecimalAndNull(row.NetCCVariance, getConfigurationKey().NoOfDecimalForPrice)
+                isPositive = (row.NewNetCC > row.OldNetCC) ? true : false
                 break;
 
             default:
                 break;
         }
-        return value
+
+        return (<div>
+            {value ? (isPositive ? < span className='positive-sign'>+</span> : < span className='positive-sign'>-</span>) : ''}
+            {value != null ? checkForDecimalAndNull(Math.abs(value), getConfigurationKey().NoOfDecimalForPrice) : ''}
+        </div >)
     }
 
     const DecimalFormatter = (props) => {
@@ -539,6 +556,93 @@ function OtherCostingSimulation(props) {
             return accumulator + checkForNull(currentValue.NewNetOverheadAndProfitCost)
         }, 0)
         return arr === 0 ? true : false
+    }
+
+    const oldRMCFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const classGreen = (row.NewNetRawMaterialsCost > row.OldNetRawMaterialsCost) ? 'red-value form-control' : (row.NewNetRawMaterialsCost < row.OldNetRawMaterialsCost) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{_.round(cell, COSTINGSIMULATIONROUND)}</span> : ''
+    }
+
+    const newRMCFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const classGreen = (row.NewNetRawMaterialsCost > row.OldNetRawMaterialsCost) ? 'red-value form-control' : (row.NewNetRawMaterialsCost < row.OldNetRawMaterialsCost) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{_.round(cell, COSTINGSIMULATIONROUND)}</span> : ''
+    }
+
+    const varianceRMCFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        let roudOffOld = 0, rounfOffNew = 0
+        roudOffOld = _.round(row.OldNetRawMaterialsCost, COSTINGSIMULATIONROUND)
+        rounfOffNew = _.round(row.NewNetRawMaterialsCost, COSTINGSIMULATIONROUND)
+        let value = Math.abs(roudOffOld - rounfOffNew)
+        return (<div>
+            {value ? (row.NewNetRawMaterialsCost > row.OldNetRawMaterialsCost ? < span className='positive-sign'>+</span> : < span className='positive-sign'>-</span>) : ''}
+            {cell != null ? checkForDecimalAndNull(Math.abs(value), getConfigurationKey().NoOfDecimalForPrice) : '-'}
+        </div >)
+    }
+
+    const oldSTFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const classGreen = (row.NewSurfaceTreatmentCost > row.OldSurfaceTreatmentCost) ? 'red-value form-control' : (row.NewSurfaceTreatmentCost < row.OldSurfaceTreatmentCost) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+    }
+
+    const newSTFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const classGreen = (row.NewSurfaceTreatmentCost > row.OldSurfaceTreatmentCost) ? 'red-value form-control' : (row.NewSurfaceTreatmentCost < row.OldSurfaceTreatmentCost) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+    }
+
+    const oldNetSTFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const classGreen = (row.NewNetSurfaceTreatmentCost > row.OldNetSurfaceTreatmentCost) ? 'red-value form-control' : (row.NewNetSurfaceTreatmentCost < row.OldNetSurfaceTreatmentCost) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+    }
+
+    const newNetSTFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const classGreen = (row.NewNetSurfaceTreatmentCost > row.OldNetSurfaceTreatmentCost) ? 'red-value form-control' : (row.NewNetSurfaceTreatmentCost < row.OldNetSurfaceTreatmentCost) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+    }
+
+    const varianceSTFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return (<div>
+            {row.NetSurfaceTreatmentCostVariance ? (row.NewNetSurfaceTreatmentCost > row.OldNetSurfaceTreatmentCost ? < span className='positive-sign'>+</span> : < span className='positive-sign'>-</span>) : ''}
+            {cell != null ? checkForDecimalAndNull(Math.abs(row.NetSurfaceTreatmentCostVariance), getConfigurationKey().NoOfDecimalForPrice) : ''}
+        </div >)
+    }
+
+    const oldOperFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const classGreen = (row.NewOperationCost > row.OldOperationCost) ? 'red-value form-control' : (row.NewOperationCost < row.OldOperationCost) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+    }
+
+    const newOperFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const classGreen = (row.NewOperationCost > row.OldOperationCost) ? 'red-value form-control' : (row.NewOperationCost < row.OldOperationCost) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+    }
+
+    const varianceOperationFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return (<div>
+            {row.OperationCostVariance ? (row.NewOperationCost > row.OldOperationCost ? < span className='positive-sign'>+</span> : < span className='positive-sign'>-</span>) : ''}
+            {cell != null ? checkForDecimalAndNull(Math.abs(row.OperationCostVariance), getConfigurationKey().NoOfDecimalForPrice) : '-'}
+        </div >)
     }
 
 
@@ -755,6 +859,20 @@ function OtherCostingSimulation(props) {
         newCCFormatter: newCCFormatter,
         vendorFormatter: vendorFormatter,
         DecimalFormatter: DecimalFormatter,
+        ExchangeRatePOVarianceFormatter: ExchangeRatePOVarianceFormatter,
+        oldRMCFormatter: oldRMCFormatter,
+        newRMCFormatter: newRMCFormatter,
+        varianceRMCFormatter: varianceRMCFormatter,
+        oldSTFormatter: oldSTFormatter,
+        newSTFormatter: newSTFormatter,
+        oldNetSTFormatter: oldNetSTFormatter,
+        newNetSTFormatter: newNetSTFormatter,
+        varianceSTFormatter: varianceSTFormatter,
+        oldOperFormatter: oldOperFormatter,
+        newOperFormatter: newOperFormatter,
+        varianceOperationFormatter: varianceOperationFormatter,
+
+
     };
 
     const VerifyImpact = () => {
@@ -856,7 +974,7 @@ function OtherCostingSimulation(props) {
                                                             <AgGridColumn width={140} field="OldPOPrice" headerName='PO Price' cellRenderer='oldPOFormatter'></AgGridColumn>
                                                             <AgGridColumn width={140} field="OldNetPOPriceOtherCurrency" headerName='Old PO Price(in Currency)' cellRenderer='oldPOCurrencyFormatter'></AgGridColumn>
                                                             <AgGridColumn width={140} field="NewNetPOPriceOtherCurrency" headerName='New PO Price(in Currency)' cellRenderer='newPOCurrencyFormatter'></AgGridColumn>
-                                                            <AgGridColumn width={140} field="POVariance" headerName='PO Variance' cellRenderer='DecimalFormatter'></AgGridColumn>
+                                                            <AgGridColumn width={140} field="POVariance" headerName='PO Variance' cellRenderer='ExchangeRatePOVarianceFormatter'></AgGridColumn>
                                                             <AgGridColumn width={140} field="OldExchangeRate" headerName='Old Exchange Rate' cellRenderer='oldExchangeFormatter'></AgGridColumn>
                                                             <AgGridColumn width={140} field="NewExchangeRate" headerName='New Exchange Rate' cellRenderer='newExchangeFormatter'></AgGridColumn>
                                                         </>
@@ -882,14 +1000,9 @@ function OtherCostingSimulation(props) {
                                                     </>}
 
                                                     {(showRMColumn) && <>
-                                                        {/* <AgGridColumn width={140} field="OldRMCSum" headerName='Old RM Cost/Pc' cellRenderer='oldRMCFormatter'></AgGridColumn>
-                                                        <AgGridColumn width={140} field="NewRMCSum" headerName='New RM Cost/Pc' cellRenderer='newRMCFormatter' ></AgGridColumn>
-                                                        <AgGridColumn width={140} field="RMVarianceSum" headerName='RM Variance' cellRenderer='varianceRMCFormatter' ></AgGridColumn> */}
                                                         <AgGridColumn width={140} field="OldNetRawMaterialsCost" headerName='Old RM Cost/Pc' cellRenderer='oldRMCFormatter'></AgGridColumn>
                                                         <AgGridColumn width={140} field="NewNetRawMaterialsCost" headerName='New RM Cost/Pc' cellRenderer='newRMCFormatter'></AgGridColumn>
                                                         <AgGridColumn width={140} field="RMVariance" headerName='RM Variance' cellRenderer='varianceRMCFormatter' ></AgGridColumn>
-                                                        {/* <AgGridColumn width={140} field="OldRMRate" hide></AgGridColumn> */}
-                                                        {/* <AgGridColumn width={140} field="NewRMRate" hide></AgGridColumn> */}
                                                         <AgGridColumn width={140} field="OldScrapRate" hide></AgGridColumn>
                                                         <AgGridColumn width={140} field="NewScrapRate" hide></AgGridColumn>
                                                     </>}
@@ -905,9 +1018,9 @@ function OtherCostingSimulation(props) {
                                                     </>}
 
                                                     {(showOperationColumn) && <>
-                                                        <AgGridColumn width={140} field="OldOperationCost" headerName='Old Oper Cost' cellRenderer="oldOPERFormatter"></AgGridColumn>
-                                                        <AgGridColumn width={140} field="NewOperationCost" headerName='New Oper Cost' cellRenderer="newOPERFormatter"></AgGridColumn>
-                                                        <AgGridColumn width={140} field="OperationCostVariance" headerName='Oper Variance' ></AgGridColumn>
+                                                        <AgGridColumn width={140} field="OldOperationCost" headerName='Old Oper Cost' cellRenderer="oldOperFormatter"></AgGridColumn>
+                                                        <AgGridColumn width={140} field="NewOperationCost" headerName='New Oper Cost' cellRenderer="newOperFormatter"></AgGridColumn>
+                                                        <AgGridColumn width={140} field="OperationCostVariance" headerName='Oper Variance' cellRenderer='varianceOperationFormatter' ></AgGridColumn>
                                                     </>}
 
                                                     {(showBOPColumn) && <>
@@ -1040,6 +1153,7 @@ function OtherCostingSimulation(props) {
                     costingArr={costingArr}
                     master={selectedMasterForSimulation ? selectedMasterForSimulation.value : master}
                     isSimulation={true}
+                    simulationMode={true}
                 />
             }
         </>

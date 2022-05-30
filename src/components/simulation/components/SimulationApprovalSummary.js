@@ -1038,6 +1038,8 @@ function SimulationApprovalSummary(props) {
                             <Fgwiseimactdata
                                 DisplayCompareCosting={DisplayCompareCosting}
                                 SimulationId={simulationDetail.SimulationId}
+                                isVerifyImpactDrawer={false}
+                                isSimulation={true}
                             />
                         }
 
