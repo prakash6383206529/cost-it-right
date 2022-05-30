@@ -26,7 +26,6 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getListingForSimulationCombined } from '../../simulation/actions/Simulation';
 import { masterFinalLevelUser } from '../../masters/actions/Material'
 import WarningMessage from '../../common/WarningMessage';
-import { filterParams } from '../../common/DateFilter';
 
 const ExcelFile = ReactExport.ExcelFile
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -173,35 +172,25 @@ class BOPImportListing extends Component {
     }
 
 
-
     onFloatingFilterChanged = (value) => {
         onFloatingFilterChanged(value, gridOptions, this)   // COMMON FUNCTION
     }
 
-
     onSearch = () => {
-
         onSearch(gridOptions, this, "BOP")  // COMMON PAGINATION FUNCTION
     }
 
-
     resetState = () => {
-
         resetState(gridOptions, this, "BOP")  //COMMON PAGINATION FUNCTION
     }
-
 
     onBtPrevious = () => {
         onBtPrevious(this, "BOP")       //COMMON PAGINATION FUNCTION
     }
 
-
     onBtNext = () => {
         onBtNext(this, "BOP")   // COMMON PAGINATION FUNCTION
-
     };
-
-
 
     /**
     * @method editItemDetails
