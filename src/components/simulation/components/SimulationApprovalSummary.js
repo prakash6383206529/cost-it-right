@@ -38,7 +38,7 @@ import redcrossImg from '../../../assests/images/red-cross.png'
 import AssemblyWiseImpact from './AssemblyWiseImpact';
 import { Link } from 'react-scroll';
 import ScrollToTop from '../../common/ScrollToTop';
-import { impactmasterDownload, SimulationUtils } from '../SimulationUtils'
+import { ErrorMessage, impactmasterDownload, SimulationUtils } from '../SimulationUtils'              //ERROR MESSAGE WILL USE IN FUTURE
 import { SIMULATIONAPPROVALSUMMARYDOWNLOADRM } from '../../../config/masterData'
 import ViewAssembly from './ViewAssembly';
 import AssemblyWiseImpactSummary from './AssemblyWiseImpactSummary';
