@@ -17,6 +17,7 @@ import CalculatorWrapper from '../../../common/Calculator/CalculatorWrapper'
 import { Fgwiseimactdata } from '../../../simulation/components/FgWiseImactData'
 import HeaderTitle from '../../../common/HeaderTitle'
 import { EMPTY_GUID } from '../../../../config/constants'
+import { ErrorMessage } from '../../../simulation/SimulationUtils'
 
 function ApprovalSummary(props) {
   const { approvalNumber, approvalProcessId } = props.location.state
@@ -157,6 +158,7 @@ function ApprovalSummary(props) {
         showListing === false &&
         <>
           {isLoader && <LoaderCustom />}
+          {/* <ErrorMessage approvalNumber={approvalNumber} /> */}
           <div className="container-fluid approval-summary-page">
             <h2 className="heading-main">Approval Summary</h2>
             <Row>

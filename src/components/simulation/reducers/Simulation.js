@@ -20,6 +20,7 @@ import {
     SET_TOKEN_CHECK_BOX,
     SET_KEY_FOR_API_CALLS,
     SET_TOKEN_FOR_SIMULATION,
+    GET_AMMENDENT_STATUS_COSTING
 } from '../../../config/constants';
 
 const initialState = {
@@ -157,6 +158,12 @@ export default function SimulationReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 tokenForSimulation: action.payload
+            }
+        case GET_AMMENDENT_STATUS_COSTING:                     //THIS CODE NOT WORKING IT WILL USE IN FUTURE *****FOR GETTING AMMENDMENT STATUS AS RE AND MINDA
+            return {
+                ...state,
+                loading: false,
+                ammendentStatus: action.payload
             }
 
         default:

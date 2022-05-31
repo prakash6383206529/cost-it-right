@@ -45,6 +45,7 @@ import {
     SET_TOKEN_CHECK_BOX,
     SET_KEY_FOR_API_CALLS,
     SET_TOKEN_FOR_SIMULATION,
+    GET_AMMENDENT_STATUS_COSTING
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
@@ -1148,4 +1149,24 @@ export function setTokenForSimulation(value) {
         });
     }
 }
-
+// START----> FOR SHOWING ERROR AND SUCCESS MESSAGE WITH BOX IN SIMULATION APPROVAL SUMMARY AND COSTING APPROVAL SUMMARY ****THIS IS THE DUMMY API CALL FOR CONSISTANCY IT WILL USE IN FUTURE
+export function getAmmendentStatus(params, callback) {
+    return (dispatch) => {
+        // const queryParameter = `${params.approvalTokenNumber}/${params.approvalId}/${params.loggedInUserId}`;
+        const queryParameter = `${params.approvalTokenNumber}`;
+        const request = axios.get(`${API.getAmmendentStatus}?tokenNumber=${queryParameter}`, config())
+        request.then((response) => {
+            if (response.data.Result || response.status === 204) {
+                dispatch({
+                    type: GET_AMMENDENT_STATUS_COSTING,
+                    payload: response.status === 204 ? [] : response.data.DataList,
+                })
+                callback(response)
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE })
+            apiErrors(error)
+        })
+    }
+}
+//<----END

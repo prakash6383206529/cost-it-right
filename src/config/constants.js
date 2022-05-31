@@ -935,6 +935,7 @@ export const API = {
   draftProfitSimulation: `${BASE_URL}/simulation/draft-simulation-profit`,
   getTokenSelectListAPI: `${BASE_URL}/simulation/select-list-get-draft-token-number-by-technologyId`,
   getListingForSimulationCombined: `${BASE_URL}/simulation/get-master-details-by-token-number`,
+  getAmmendentStatus: `${BASE_URL}/simulation/get-ammendent-status`,             //THIS IS DUMMY API, IT WILL BE REPLACE FROM REAL API IN FUTURE
 
   //SIMULATION APPROVAL
   getAllSimulationApprovalDepartment: `${BASE_URL}/app-simulation-approval-system/get-all-simulation-approval-department`,
@@ -1532,6 +1533,7 @@ export const GET_VALUE_TO_SHOW_COSTING_SIMULATION = 'GET_VALUE_TO_SHOW_COSTING_S
 export const GET_KEYS_FOR_DOWNLOAD_SUMMARY = 'GET_KEYS_FOR_DOWNLOAD_SUMMARY'
 export const SET_KEY_FOR_API_CALLS = 'SET_KEY_FOR_API_CALLS'
 export const SET_TOKEN_FOR_SIMULATION = 'SET_TOKEN_FOR_SIMULATION'
+export const GET_AMMENDENT_STATUS_COSTING = 'GET_AMMENDENT_STATUS_COSTING'
 
 //SIMULATION APPROVAL
 export const GET_SIMULATION_DEPARTMENT_LIST = 'GET_SIMULATION_DEPARTMENT_LIST'
