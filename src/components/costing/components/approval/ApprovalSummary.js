@@ -165,7 +165,7 @@ function ApprovalSummary(props) {
       const Data = res.data.Data
       const newObj = formViewData(Data)
       dispatch(setCostingViewData(newObj))
-      setCostingSummary(!costingSummary)
+      setCostingSummary(true)
     }))
   }
 
@@ -456,7 +456,7 @@ function ApprovalSummary(props) {
                 </div>
               </Col>
             </Row>
-            <Row className="mb-4">
+            <Row className="mb-4" id='compare-costing'>
               <Col md="12" className="costing-summary-row">
                 {costingSummary && <CostingSummaryTable viewMode={true} costingID={approvalDetails.CostingId} approvalMode={true} isApproval={approvalData.LastCostingId !== EMPTY_GUID ? true : false} simulationMode={false} />}
               </Col>

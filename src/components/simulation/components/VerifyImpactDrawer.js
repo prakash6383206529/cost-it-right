@@ -29,6 +29,7 @@ function VerifyImpactDrawer(props) {
   const [lastRevisionDataAcc, setLastRevisionDataAcc] = useState(false)
   const [masterIdForLastRevision, setMasterIdForLastRevision] = useState('')
   const [editWarning, setEditWarning] = useState(false)
+  const [accDisable, setAccDisable] = useState(false)
   const headerName = ['Revision No.', 'Name', 'Old Cost/Pc', 'New Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
   const parentField = ['PartNumber', '-', 'PartName', '-', '-', '-', 'VariancePerPiece', 'VolumePerYear', 'ImpactPerQuarter', 'ImpactPerYear']
   const childField = ['PartNumber', 'ECNNumber', 'PartName', 'OldCost', 'NewCost', 'Quantity', 'VariancePerPiece', '-', '-', '-']
@@ -85,6 +86,11 @@ function VerifyImpactDrawer(props) {
     }
 
   }, [EffectiveDate, vendorIdState, simulationId])
+
+  // WHEN FGWISE API IS PENDING THEN THIS CODE WILL MOUNT FOR DISABLED FGWISE ACCORDION
+  const fgWiseAccDisable = (data) => {
+    setAccDisable(data)
+  }
   return (
     <>
       <Drawer
@@ -161,7 +167,7 @@ function VerifyImpactDrawer(props) {
                 <Col md="6"> <HeaderTitle title={'FG wise Impact:'} /></Col>
                 <Col md="6">
                   <div className={'right-details'}>
-                    <button className="btn btn-small-primary-circle ml-1 float-right" type="button" onClick={() => { setFgWiseAcc(!fgWiseAcc) }}>
+                    <button className="btn btn-small-primary-circle ml-1 float-right" disabled={accDisable} type="button" onClick={() => { setFgWiseAcc(!fgWiseAcc) }}>
                       {fgWiseAcc ? (
                         <i className="fa fa-minus"></i>
                       ) : (
@@ -179,6 +185,7 @@ function VerifyImpactDrawer(props) {
                     costingIdArray={costingIdArray}
                     approvalSummaryTrue={approvalSummaryTrue}
                     isVerifyImpactDrawer={true}
+                    fgWiseAccDisable={fgWiseAccDisable}
                   />
                 </Col>
               </Row>}
