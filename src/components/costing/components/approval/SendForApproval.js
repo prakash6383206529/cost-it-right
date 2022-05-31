@@ -26,7 +26,6 @@ import LoaderCustom from '../../../common/LoaderCustom'
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 const SendForApproval = (props) => {
-  console.log('props: ', props);
   const { isApprovalisting } = props
   const dispatch = useDispatch()
   const { register, handleSubmit, control, setValue, formState: { errors } } = useForm({
@@ -37,7 +36,6 @@ const SendForApproval = (props) => {
   const reasonsList = useSelector((state) => state.approval.reasonsList)
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
   const viewApprovalData = useSelector((state) => state.costing.costingApprovalData)
-  console.log('viewApprovalData: ', viewApprovalData);
 
   const partNo = useSelector((state) => state.costing.partNo)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
@@ -349,13 +347,13 @@ const SendForApproval = (props) => {
       tempObj.ApprovalProcessId = "00000000-0000-0000-0000-000000000000"
       tempObj.TypeOfCosting = (data.typeOfCosting === 0 || data.typeOfCosting === 'ZBC') ? 'ZBC' : 'VBC'
       tempObj.PlantId =
-        Number(data.typeOfCosting) === 0 ? data.plantId : ''
+        (Number(data.typeOfCosting) === 0 || data.typeOfCosting === 'ZBC') ? data.plantId : ''
       tempObj.PlantNumber =
-        Number(data.typeOfCosting) === 0 ? data.plantCode : ''
+        (Number(data.typeOfCosting) === 0 || data.typeOfCosting === 'ZBC') ? data.plantCode : ''
       tempObj.PlantName =
-        Number(data.typeOfCosting) === 0 ? data.plantName : ''
+        (Number(data.typeOfCosting) === 0 || data.typeOfCosting === 'ZBC') ? data.plantName : ''
       tempObj.PlantCode =
-        Number(data.typeOfCosting) === 0 ? data.plantCode : ''
+        (Number(data.typeOfCosting) === 0 || data.typeOfCosting === 'ZBC') ? data.plantCode : ''
       tempObj.CostingId = data.costingId
       tempObj.CostingNumber = data.costingName
       tempObj.ReasonId = data.reasonId
@@ -380,17 +378,17 @@ const SendForApproval = (props) => {
       tempObj.AnnualImpact = data.annualImpact
       tempObj.ImpactOfTheYear = data.yearImpact
       tempObj.VendorId =
-        Number(data.typeOfCosting) === 1 ? data.vendorId : ''
+        (Number(data.typeOfCosting) === 1 || data.typeOfCosting === 'VBC') ? data.vendorId : ''
       tempObj.VendorCode =
-        Number(data.typeOfCosting) === 1 ? data.vendorCode : ''
+        (Number(data.typeOfCosting) === 1 || data.typeOfCosting === 'VBC') ? data.vendorCode : ''
       tempObj.VendorPlantId =
-        Number(data.typeOfCosting) === 1 ? data.vendorePlantId : ''
+        (Number(data.typeOfCosting) === 1 || data.typeOfCosting === 'VBC') ? data.vendorePlantId : ''
       tempObj.VendorPlantCode =
-        Number(data.typeOfCosting) === 1 ? data.vendorPlantCode : ''
+        (Number(data.typeOfCosting) === 1 || data.typeOfCosting === 'VBC') ? data.vendorPlantCode : ''
       tempObj.VendorName =
-        Number(data.typeOfCosting) === 1 ? data.vendorName : ''
+        (Number(data.typeOfCosting) === 1 || data.typeOfCosting === 'VBC') ? data.vendorName : ''
       tempObj.VendorPlantName =
-        Number(data.typeOfCosting) === 1 ? data.vendorPlantName : ''
+        (Number(data.typeOfCosting) === 1 || data.typeOfCosting === 'VBC') ? data.vendorPlantName : ''
       tempObj.IsFinalApproved = isFinalApproverShow ? true : false
       tempObj.DestinationPlantCode = data.destinationPlantCode
       tempObj.DestinationPlantName = data.destinationPlantName
@@ -399,7 +397,6 @@ const SendForApproval = (props) => {
     })
 
     obj.CostingsList = temp
-    console.log('obj: ', obj);
 
 
     // debounce_fun()
