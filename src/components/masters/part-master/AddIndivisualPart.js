@@ -503,7 +503,7 @@ class AddIndivisualPart extends Component {
                               required={true}
                               className=""
                               customClassName={"withBorder"}
-                              disabled={isViewMode || (!isEditFlag && this.state.disablePartName)}
+                              disabled={isViewMode || (!isEditFlag && this.state.disablePartName) || isEditFlag}
                             />
                           </Col>
 
