@@ -179,7 +179,6 @@ function VerifyImpactDrawer(props) {
                     costingIdArray={costingIdArray}
                     approvalSummaryTrue={approvalSummaryTrue}
                     isVerifyImpactDrawer={true}
-                    isSimulation={isSimulation}
                   />
                 </Col>
               </Row>}
