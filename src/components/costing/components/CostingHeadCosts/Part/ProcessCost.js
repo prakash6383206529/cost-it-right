@@ -148,25 +148,32 @@ function ProcessCost(props) {
     }
     // const calciData = list[id]
     /****************************FOR GETING CALCULATED VALUE IN CALCULATOR**************************/
-    if (tempData.ProcessTechnologyId === MACHINING && tempData.UOMType === TIME) {
-      //getProcessDefaultCalculation
-      dispatch(getProcessMachiningCalculation(tempData.ProcessCalculatorId, res => {
+    /******************************COMMENTED IN MINDA***********************************/
+    // if (tempData.ProcessTechnologyId === MACHINING && tempData.UOMType === TIME) {
+    //   //getProcessDefaultCalculation
+    //   dispatch(getProcessMachiningCalculation(tempData.ProcessCalculatorId, res => {
 
-        if ((res && res.data && res.data.Data) || (res && res.status === 204)) {
-          const data = res.status === 204 ? {} : res.data.Data
-          setCalculatorData(data, list, id, parentIndex)
-        }
-      }))
+    //     if ((res && res.data && res.data.Data) || (res && res.status === 204)) {
+    //       const data = res.status === 204 ? {} : res.data.Data
+    //       setCalculatorData(data, list, id, parentIndex)
+    //     }
+    //   }))
 
-    } else {
-      dispatch(getProcessDefaultCalculation(tempData.ProcessCalculatorId, res => {
+    // } else {
+    //   dispatch(getProcessDefaultCalculation(tempData.ProcessCalculatorId, res => {
 
-        if ((res && res.data && res.data.Data) || (res && res.status === 204)) {
-          const data = res.status === 204 ? {} : res.data.Data
-          setCalculatorData(data, list, id, parentIndex)
-        }
-      }))
-    }
+    //     if ((res && res.data && res.data.Data) || (res && res.status === 204)) {
+    //       const data = res.status === 204 ? {} : res.data.Data
+    //       setCalculatorData(data, list, id, parentIndex)
+    //     }
+    //   }))
+    // }
+    dispatch(getProcessDefaultCalculation(tempData.ProcessCalculatorId, res => {
+      if ((res && res.data && res.data.Data) || (res && res.status === 204)) {
+        const data = res.status === 204 ? {} : res.data.Data
+        setCalculatorData(data, list, id, parentIndex)
+      }
+    }))
     // setCalculatorData(calciData)
   }
 
