@@ -72,7 +72,7 @@ export function getBOPDomesticDataList(data, skip, take, isPagination, obj, call
             type: GET_BOP_DOMESTIC_DATA_LIST,
             payload: undefined
         })
-        const queryParams = `bop_for=${data.bop_for}&category_id=${data.category_id}&vendor_id=${data.vendor_id}&plant_id=${data.plant_id}`
+        const queryParams = `bop_for=${data.bop_for}`
         const queryParamsSecond = `CostingHead=${obj.IsVendor !== undefined ? obj.IsVendor : ""}&BOPPartNumber	=${obj.BoughtOutPartNumber !== undefined ? obj.BoughtOutPartNumber : ""}&BOPPartName=${obj.BoughtOutPartName !== undefined ? obj.BoughtOutPartName : ""}&BOPCategory=${obj.BoughtOutPartCategory !== undefined ? obj.BoughtOutPartCategory : ""}&UOM=${obj.UOM !== undefined ? obj.UOM : ""}&Specification=${obj.Specification !== undefined ? obj.Specification : ""}&Plant=${obj.Plants !== undefined ? obj.Plants : ""}&Vendor=${obj.Vendor !== undefined ? obj.Vendor : ""}&BasicRate=${obj.BasicRate !== undefined ? obj.BasicRate : ""}&NetCost=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&EffectiveDate=${obj.newDate !== undefined ? obj.newDate : ""}&applyPagination=${isPagination}&skip=${skip}&take=${take}`
         const request = axios.get(`${API.getBOPDomesticDataList}?${queryParams}&${queryParamsSecond}`, config());
         request.then((response) => {
@@ -99,7 +99,7 @@ export function getBOPDomesticDataList(data, skip, take, isPagination, obj, call
 export function getBOPImportDataList(data, skip, take, isPagination, obj, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const queryParams = `bop_for=${data.bop_for}&category_id=${data.category_id}&vendor_id=${data.vendor_id}&plant_id=${data.plant_id}`
+        const queryParams = `bop_for=${data.bop_for}`
         const queryParamsSecond = `CostingHead=${obj.IsVendor !== undefined ? obj.IsVendor : ""}&BOPPartNumber	=${obj.BoughtOutPartNumber !== undefined ? obj.BoughtOutPartNumber : ""}&BOPPartName=${obj.BoughtOutPartName !== undefined ? obj.BoughtOutPartName : ""}&BOPCategory=${obj.BoughtOutPartCategory !== undefined ? obj.BoughtOutPartCategory : ""}&UOM=${obj.UOM !== undefined ? obj.UOM : ""}&Specification=${obj.Specification !== undefined ? obj.Specification : ""}&Plant=${obj.Plants !== undefined ? obj.Plants : ""}&Vendor=${obj.Vendor !== undefined ? obj.Vendor : ""}&BasicRate=${obj.BasicRate !== undefined ? obj.BasicRate : ""}&NetCost=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&EffectiveDate=${obj.newDate !== undefined ? obj.newDate : ""}&Currency=${obj.Currency !== undefined ? obj.Currency : ""}&NetCostCurrency=${obj.NetLandedCostConversion !== undefined ? obj.NetLandedCostConversion : ""}&applyPagination=${isPagination}&skip=${skip}&take=${take}`
         const request = axios.get(`${API.getBOPImportDataList}?${queryParams}&${queryParamsSecond}`, config());
         request.then((response) => {
