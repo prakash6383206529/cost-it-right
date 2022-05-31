@@ -416,9 +416,9 @@ function ApprovalListing(props) {
 
   };
 
-  const onPageSizeChanged = (newPageSize) => {
+  const onPageSizeChanged = (targetValue) => {
     var value = document.getElementById('page-size').value;
-    gridApi.paginationSetPageSize(Number(value));
+    gridApi.paginationSetPageSize(Number(targetValue));
   };
 
   const onFilterTextBoxChanged = (e) => {
