@@ -197,7 +197,7 @@ function BOPCost(props) {
       tempArr = Object.assign([...gridData], { [index]: tempData })
       setGridData(tempArr)
       setTimeout(() => {
-        setValue(`${bopGridFields}.${index}.Quantity`, 0)
+        setValue(`${bopGridFields}.${index}.Quantity`, '')
       }, 200)
       //Toaster.warning('Please enter valid number.')
     }
