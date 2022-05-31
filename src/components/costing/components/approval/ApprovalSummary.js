@@ -431,7 +431,6 @@ function ApprovalSummary(props) {
                   DisplayCompareCostingFgWise={displayCompareCostingFgWise}
                   costingIdArray={costingIdArray}
                   isVerifyImpactDrawer={false}
-                  isSimulation={false}
                 />
               </Col>
             </Row>}

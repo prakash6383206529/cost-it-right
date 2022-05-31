@@ -1039,7 +1039,6 @@ function SimulationApprovalSummary(props) {
                                 DisplayCompareCosting={DisplayCompareCosting}
                                 SimulationId={simulationDetail.SimulationId}
                                 isVerifyImpactDrawer={false}
-                                isSimulation={true}
                             />
                         }
 
