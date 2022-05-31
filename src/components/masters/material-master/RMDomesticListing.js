@@ -319,11 +319,11 @@ function RMDomesticListing(props) {
     */
     const confirmDelete = (ID) => {
         dispatch(deleteRawMaterialAPI(ID, (res) => {
-            if (res.status === 417 && res.data.Result === false) {
+            if (res !== undefined && res.status === 417 && res.data.Result === false) {
                 Toaster.warning(res.data.Message)
             } else if (res && res.data && res.data.Result === true) {
                 Toaster.success(MESSAGES.DELETE_RAW_MATERIAL_SUCCESS);
-                getDataList()
+                resetState()
             }
         }));
         setShowPopup(false)
@@ -449,7 +449,7 @@ function RMDomesticListing(props) {
 
     const closeBulkUploadDrawer = () => {
         setisBulkUpload(false);
-        getDataList(null, null, null)
+        resetState()
     }
 
     /**
