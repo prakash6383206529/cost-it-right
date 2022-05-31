@@ -43,6 +43,7 @@ function ApprovalSummary(props) {
   const [fgWiseAcc, setFgWiseAcc] = useState(false)
   const [costingIdArray, setCostingIdArray] = useState([])
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
+  const [accDisable, setAccDisable] = useState(false)
 
   const headerName = ['Revision No.', 'Name', 'Old Cost/Pc', 'New Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
   const parentField = ['PartNumber', '-', 'PartName', '-', '-', '-', 'VariancePerPiece', 'VolumePerYear', 'ImpactPerQuarter', 'ImpactPerYear']
@@ -172,6 +173,10 @@ function ApprovalSummary(props) {
     return <Redirect to="/approval-listing" />
   }
 
+  // WHEN FGWISE API IS PENDING THEN THIS CODE WILL MOUNT FOR DISABLED FGWISE ACCORDION
+  const fgWiseAccDisable = (data) => {
+    setAccDisable(data)
+  }
   return (
 
     <>
@@ -408,7 +413,7 @@ function ApprovalSummary(props) {
               <Col md="6"> <div className="left-border">{'FG wise Impact:'}</div></Col>
               <Col md="6">
                 <div className={'right-details'}>
-                  <button className="btn btn-small-primary-circle ml-1 float-right" type="button" onClick={() => { setFgWiseAcc(!fgWiseAcc) }}>
+                  <button className="btn btn-small-primary-circle ml-1 float-right" type="button" disabled={accDisable} onClick={() => { setFgWiseAcc(!fgWiseAcc) }}>
                     {fgWiseAcc ? (
                       <i className="fa fa-minus"></i>
                     ) : (
@@ -432,6 +437,7 @@ function ApprovalSummary(props) {
                   costingIdArray={costingIdArray}
                   isVerifyImpactDrawer={false}
                   isSimulation={false}
+                  fgWiseAccDisable={fgWiseAccDisable}
                 />
               </Col>
             </Row>}

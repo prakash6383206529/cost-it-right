@@ -19,7 +19,7 @@ export function Fgwiseimactdata(props) {
     const [costingId, setCostingId] = useState('')
     const [openCostingSummaryTable, setOpenCostingSummaryTable] = useState(false)
     const dispatch = useDispatch()
-    const { SimulationId, headerName, dataForAssemblyImpact, vendorIdState, impactType, approvalSummaryTrue, costingIdArray, isVerifyImpactDrawer, isSimulation } = props
+    const { SimulationId, headerName, dataForAssemblyImpact, vendorIdState, impactType, approvalSummaryTrue, costingIdArray, isVerifyImpactDrawer, isSimulation, fgWiseAccDisable } = props
     const [loader, setLoader] = useState(false)
 
     const impactData = useSelector((state) => state.simulation.impactData)
@@ -28,6 +28,7 @@ export function Fgwiseimactdata(props) {
     useEffect(() => {
         if (SimulationId && !approvalSummaryTrue) {
             setLoader(true)
+            fgWiseAccDisable(true)
             dispatch(getFgWiseImpactData(SimulationId, (res) => {
                 if (res && res.data && res.data.Result) {
                     setshowTableData(true)
@@ -36,9 +37,11 @@ export function Fgwiseimactdata(props) {
                     setshowTableData(false)
                 } else {
                     setLoader(false)
+                    fgWiseAccDisable(false)
                 }
 
                 setLoader(false)
+                fgWiseAccDisable(false)
             }))
         }
 
@@ -51,6 +54,7 @@ export function Fgwiseimactdata(props) {
     useEffect(() => {
         if (approvalSummaryTrue && costingIdArray) {
             setLoader(true)
+            fgWiseAccDisable(true)
             dispatch(getFgWiseImpactDataForCosting(costingIdArray, (res) => {
                 if (res && res.data && res.data.Result) {
                     setshowTableData(true)
@@ -59,8 +63,10 @@ export function Fgwiseimactdata(props) {
                     setshowTableData(false)
                 } else {
                     setLoader(false)
+                    fgWiseAccDisable(false)
                 }
                 setLoader(false)
+                fgWiseAccDisable(false)
             }))
         }
     }, [costingIdArray])

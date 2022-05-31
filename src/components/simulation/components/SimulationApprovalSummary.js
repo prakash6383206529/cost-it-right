@@ -98,6 +98,7 @@ function SimulationApprovalSummary(props) {
     const [showExchangeRateColumn, setShowExchangeRateColumn] = useState(false);
     const [showMachineRateColumn, setShowMachineRateColumn] = useState(false);
     const [showCombinedProcessColumn, setShowCombinedProcessColumn] = useState(false);
+    const [accDisable, setAccDisable] = useState(false)
 
     const isSurfaceTreatment = (Number(SimulationTechnologyId) === Number(SURFACETREATMENT));
     const isOperation = (Number(SimulationTechnologyId) === Number(OPERATIONS));
@@ -872,7 +873,10 @@ function SimulationApprovalSummary(props) {
 
     }, 500)
 
-
+    // WHEN FGWISE API IS PENDING THEN THIS CODE WILL MOUNT FOR DISABLED FGWISE ACCORDION
+    const fgWiseAccDisable = (data) => {
+        setAccDisable(data)
+    }
 
     return (
         <>
@@ -1024,7 +1028,7 @@ function SimulationApprovalSummary(props) {
                             </Col>
                             <Col md="2" className="text-right">
                                 <div className="right-border">
-                                    <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setFgWiseDataAcc(!fgWiseDataAcc) }}>
+                                    <button className="btn btn-small-primary-circle ml-1" type="button" disabled={accDisable} onClick={() => { setFgWiseDataAcc(!fgWiseDataAcc) }}>
                                         {fgWiseDataAcc ? (
                                             <i className="fa fa-minus" ></i>
                                         ) : (
@@ -1040,6 +1044,7 @@ function SimulationApprovalSummary(props) {
                                 SimulationId={simulationDetail.SimulationId}
                                 isVerifyImpactDrawer={false}
                                 isSimulation={true}
+                                fgWiseAccDisable={fgWiseAccDisable}
                             />
                         }
 
