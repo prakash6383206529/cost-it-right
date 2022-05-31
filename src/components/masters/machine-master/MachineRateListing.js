@@ -215,7 +215,7 @@ class MachineRateListing extends Component {
         this.props.copyMachine(Id, (res) => {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.COPY_MACHINE_SUCCESS);
-                this.getDataList()
+                this.resetState()
             }
         });
     }
@@ -236,7 +236,7 @@ class MachineRateListing extends Component {
         this.props.deleteMachine(ID, (res) => {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.DELETE_MACHINE_SUCCESS);
-                this.getDataList()
+                this.resetState()
             }
         });
     }
@@ -361,7 +361,7 @@ class MachineRateListing extends Component {
 
     closeBulkUploadDrawer = () => {
         this.setState({ isBulkUpload: false }, () => {
-            this.getDataList()
+            this.resetState()
         })
     }
 
