@@ -335,7 +335,7 @@ class OperationListing extends Component {
         this.props.deleteOperationAPI(ID, (res) => {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.DELETE_OPERATION_SUCCESS);
-                this.getTableListData(null, null, null, null)
+                this.resetState()
             }
         });
         this.setState({ showPopup: false })
@@ -532,20 +532,6 @@ class OperationListing extends Component {
     }
 
 
-    resetFilter = () => {
-        this.setState({
-            costingHead: [],
-            vendorName: [],
-            selectedTechnology: [],
-            operationName: [],
-        }, () => {
-            this.props.getTechnologySelectList(() => { })
-            this.props.getOperationSelectList(() => { })
-            this.props.getVendorWithVendorCodeSelectList()
-            this.getTableListData(null, null, null, null)
-        })
-    }
-
     formToggle = () => {
 
         this.props.formToggle()
@@ -556,7 +542,7 @@ class OperationListing extends Component {
             toggleForm: false,
             data: { isEditFlag: false, ID: '' }
         }, () => {
-            this.getTableListData(null, null, null, null)
+            this.resetState()
         })
     }
 
@@ -566,7 +552,7 @@ class OperationListing extends Component {
 
     closeBulkUploadDrawer = () => {
         this.setState({ isBulkUpload: false }, () => {
-            this.getTableListData(null, null, null, null)
+            this.resetState()
         })
     }
 
@@ -630,12 +616,6 @@ class OperationListing extends Component {
     onFilterTextBoxChanged(e) {
         this.state.gridApi.setQuickFilter(e.target.value);
     }
-
-    resetState() {
-        gridOptions.columnApi.resetColumnState();
-        gridOptions.api.setFilterModel(null);
-    }
-
 
     getFilterOperationData = () => {
         if (this.props.isSimulation) {

@@ -224,7 +224,7 @@ class BOPImportListing extends Component {
         this.props.deleteBOP(ID, (res) => {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.BOP_DELETE_SUCCESS);
-                this.getDataList()
+                this.resetState()
             }
         });
         this.setState({ showPopup: false })
@@ -242,7 +242,7 @@ class BOPImportListing extends Component {
 
     closeBulkUploadDrawer = () => {
         this.setState({ isBulkUpload: false }, () => {
-            this.getDataList()
+            this.resetState()
         })
     }
 
