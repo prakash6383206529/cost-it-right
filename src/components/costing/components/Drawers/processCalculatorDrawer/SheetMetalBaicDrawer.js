@@ -54,10 +54,21 @@ function SheetMetalBaicDrawer(props) {
   })
 
   useEffect(() => {
+
+    //setValue('Quantity', WeightCalculatorRequest?.Quantity !== 1 ? WeightCalculatorRequest.Quantity : "")
     if (props.calculatorData.UOMType === TIME) {
       // setValue('Quantity', props?.calculatorData?.WeightCalculatorRequest?.Quantity !== null ? checkForNull(props?.calculatorData?.WeightCalculatorRequest?.Quantity) : 1)
     }
   }, [defaultValues])
+
+  useEffect(() => {
+
+    setTimeout(() => {
+      setValue('Quantity', WeightCalculatorRequest?.Quantity !== undefined && WeightCalculatorRequest.Quantity !== null ? WeightCalculatorRequest.Quantity : "")
+    }, 200);
+
+  }, [])
+
 
   useEffect(() => {
     handleProductionPerHour()
