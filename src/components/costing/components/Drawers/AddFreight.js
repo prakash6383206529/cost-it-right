@@ -173,7 +173,7 @@ function AddFreight(props) {
   const handleApplicabilityChange = (newValue) => {
     if (newValue && newValue !== '') {
       setApplicability(newValue)
-      calculateCost(newValue.value)
+      calculateCost(newValue.label)
     } else {
       setApplicability([])
     }
