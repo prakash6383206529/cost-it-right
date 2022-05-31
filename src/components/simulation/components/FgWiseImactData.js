@@ -14,9 +14,8 @@ import { getFgWiseImpactDataForCosting } from '../../costing/actions/Costing';
 export function Fgwiseimactdata(props) {
     const [acc1, setAcc1] = useState({ currentIndex: -1, isClicked: false, })
     const [showTableData, setshowTableData] = useState(false)
-    const [costingId, setCostingId] = useState('')
     const dispatch = useDispatch()
-    const { SimulationId, approvalSummaryTrue, costingIdArray, isVerifyImpactDrawer } = props
+    const { SimulationId, approvalSummaryTrue, costingIdArray, isVerifyImpactDrawer, fgWiseAccDisable } = props
     const [loader, setLoader] = useState(false)
 
     const impactData = useSelector((state) => state.simulation.impactData)
@@ -25,6 +24,7 @@ export function Fgwiseimactdata(props) {
     useEffect(() => {
         if (SimulationId && !approvalSummaryTrue) {
             setLoader(true)
+            fgWiseAccDisable(true)
             dispatch(getFgWiseImpactData(SimulationId, (res) => {
                 if (res && res.data && res.data.Result) {
                     setshowTableData(true)
@@ -33,9 +33,11 @@ export function Fgwiseimactdata(props) {
                     setshowTableData(false)
                 } else {
                     setLoader(false)
+                    fgWiseAccDisable(false)
                 }
 
                 setLoader(false)
+                fgWiseAccDisable(false)
             }))
         }
 
@@ -48,6 +50,7 @@ export function Fgwiseimactdata(props) {
     useEffect(() => {
         if (approvalSummaryTrue && costingIdArray) {
             setLoader(true)
+            fgWiseAccDisable(true)
             dispatch(getFgWiseImpactDataForCosting(costingIdArray, (res) => {
                 if (res && res.data && res.data.Result) {
                     setshowTableData(true)
@@ -56,8 +59,10 @@ export function Fgwiseimactdata(props) {
                     setshowTableData(false)
                 } else {
                     setLoader(false)
+                    fgWiseAccDisable(false)
                 }
                 setLoader(false)
+                fgWiseAccDisable(false)
             }))
         }
     }, [costingIdArray])
@@ -65,7 +70,6 @@ export function Fgwiseimactdata(props) {
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
     const DisplayCompareCostingFgWiseImpact = (SimulationApprovalProcessSummaryId, CostingApprovalProcessSummaryId) => {
-        setCostingId(CostingApprovalProcessSummaryId)
         if (approvalSummaryTrue) {
             props.DisplayCompareCostingFgWise(CostingApprovalProcessSummaryId)
         } else {

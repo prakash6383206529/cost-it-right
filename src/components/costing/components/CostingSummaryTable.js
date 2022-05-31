@@ -839,7 +839,7 @@ const CostingSummaryTable = (props) => {
                               <th scope="col" className='header-name'>
                                 <div class="element w-60 d-inline-flex align-items-center">
                                   {
-                                    !isApproval && (data.status === DRAFT) && <>
+                                    !isSummaryDrawer && !isApproval && (data.status === DRAFT) && <>
                                       {!pdfHead && !drawerDetailPDF && <div class="custom-check1 d-inline-block">
                                         <label
                                           className="custom-checkbox pl-0 mb-0"
