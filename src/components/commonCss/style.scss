@@ -6991,6 +6991,16 @@ body {
       }
     }
   }
+  &.dynamic-border {
+    min-height: 225px;
+    position: relative;
+    .loader_container {
+      top: 47px;
+    }
+    .loaderinner {
+      max-height: 160px;
+    }
+   }
 }
 
 // FG-Wise table css End
