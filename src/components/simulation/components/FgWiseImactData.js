@@ -7,9 +7,7 @@ import NoContentFound from '../../common/NoContentFound'
 import { EMPTY_DATA } from '../../../config/constants'
 import LoaderCustom from '../../common/LoaderCustom'
 import { Link } from 'react-scroll';
-import { getSimulatedAssemblyWiseImpactDate } from '../actions/Simulation';
 import { getFgWiseImpactDataForCosting } from '../../costing/actions/Costing';
-import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
 
 
 
@@ -18,7 +16,7 @@ export function Fgwiseimactdata(props) {
     const [showTableData, setshowTableData] = useState(false)
     const [costingId, setCostingId] = useState('')
     const dispatch = useDispatch()
-    const { SimulationId, headerName, dataForAssemblyImpact, vendorIdState, impactType, approvalSummaryTrue, costingIdArray, isVerifyImpactDrawer } = props
+    const { SimulationId, approvalSummaryTrue, costingIdArray, isVerifyImpactDrawer } = props
     const [loader, setLoader] = useState(false)
 
     const impactData = useSelector((state) => state.simulation.impactData)
