@@ -21,7 +21,7 @@ import { useHistory } from "react-router-dom";
 import redcrossImg from '../../../../assests/images/red-cross.png'
 import { debounce } from 'lodash'
 import { createToprowObjAndSave } from '../../CostingUtil';
-
+import LoaderCustom from '../../../common/LoaderCustom';
 function TabDiscountOther(props) {
   // ********* INITIALIZE REF FOR DROPZONE ********
   const dropzone = useRef(null);
@@ -53,6 +53,7 @@ function TabDiscountOther(props) {
   const [otherCostApplicability, setOtherCostApplicability] = useState([])
   const [discountCostApplicability, setDiscountCostApplicability] = useState([])
   const [netPoPriceCurrencyState, setNetPoPriceCurrencyState] = useState('')
+  const [attachmentLoader, setAttachmentLoader] = useState(false)
   const costingHead = useSelector(state => state.comman.costingHead)
 
   useEffect(() => {
@@ -547,6 +548,7 @@ function TabDiscountOther(props) {
 
   // specify upload params and url for your files
   const getUploadParams = ({ file, meta }) => {
+    setAttachmentLoader(true)
     return { url: 'https://httpbin.org/post', }
   }
 
@@ -572,6 +574,7 @@ function TabDiscountOther(props) {
     }
 
     setIsDisable(true)
+    setAttachmentLoader(true)
     if (status === 'done') {
       let data = new FormData()
       data.append('file', file)
@@ -585,6 +588,7 @@ function TabDiscountOther(props) {
           let Data = res.data[0]
           files.push(Data)
           setFiles(files)
+          setAttachmentLoader(false)
           setTimeout(() => {
             setIsOpen(!IsOpen)
           }, 500);
@@ -596,12 +600,14 @@ function TabDiscountOther(props) {
       Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
     } else if (status === 'error_file_size') {
       setDisableFalseFunction()
+      setAttachmentLoader(false)
       dropzone.current.files.pop()
       Toaster.warning("File size greater than 20 mb not allowed")
     } else if (status === 'error_validation'
       || status === 'error_upload_params' || status === 'exception_upload'
       || status === 'aborted' || status === 'error_upload') {
       setDisableFalseFunction()
+      setAttachmentLoader(false)
       dropzone.current.files.pop()
       Toaster.warning("Something went wrong")
     }
@@ -1144,6 +1150,7 @@ function TabDiscountOther(props) {
                     </Col>
                     <Col md="3">
                       <div className={"attachment-wrapper"}>
+                        {attachmentLoader && <LoaderCustom customClass="attachment-loader" />}
                         {files &&
                           files.map((f) => {
                             const withOutTild = f.FileURL.replace("~", "");

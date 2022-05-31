@@ -7,7 +7,6 @@ import NoContentFound from '../../common/NoContentFound'
 import { EMPTY_DATA } from '../../../config/constants'
 import LoaderCustom from '../../common/LoaderCustom'
 import { Link } from 'react-scroll';
-import { getSimulatedAssemblyWiseImpactDate } from '../actions/Simulation';
 import { getFgWiseImpactDataForCosting } from '../../costing/actions/Costing';
 
 
@@ -16,7 +15,7 @@ export function Fgwiseimactdata(props) {
     const [acc1, setAcc1] = useState({ currentIndex: -1, isClicked: false, })
     const [showTableData, setshowTableData] = useState(false)
     const dispatch = useDispatch()
-    const { SimulationId, headerName, dataForAssemblyImpact, vendorIdState, impactType, approvalSummaryTrue, costingIdArray } = props
+    const { SimulationId, approvalSummaryTrue, costingIdArray, isVerifyImpactDrawer, fgWiseAccDisable } = props
     const [loader, setLoader] = useState(false)
 
     const impactData = useSelector((state) => state.simulation.impactData)
@@ -25,6 +24,7 @@ export function Fgwiseimactdata(props) {
     useEffect(() => {
         if (SimulationId && !approvalSummaryTrue) {
             setLoader(true)
+            fgWiseAccDisable(true)
             dispatch(getFgWiseImpactData(SimulationId, (res) => {
                 if (res && res.data && res.data.Result) {
                     setshowTableData(true)
@@ -33,9 +33,11 @@ export function Fgwiseimactdata(props) {
                     setshowTableData(false)
                 } else {
                     setLoader(false)
+                    fgWiseAccDisable(false)
                 }
 
                 setLoader(false)
+                fgWiseAccDisable(false)
             }))
         }
 
@@ -48,6 +50,7 @@ export function Fgwiseimactdata(props) {
     useEffect(() => {
         if (approvalSummaryTrue && costingIdArray) {
             setLoader(true)
+            fgWiseAccDisable(true)
             dispatch(getFgWiseImpactDataForCosting(costingIdArray, (res) => {
                 if (res && res.data && res.data.Result) {
                     setshowTableData(true)
@@ -56,14 +59,15 @@ export function Fgwiseimactdata(props) {
                     setshowTableData(false)
                 } else {
                     setLoader(false)
+                    fgWiseAccDisable(false)
                 }
                 setLoader(false)
+                fgWiseAccDisable(false)
             }))
         }
     }, [costingIdArray])
 
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
-
 
     const DisplayCompareCostingFgWiseImpact = (SimulationApprovalProcessSummaryId, CostingApprovalProcessSummaryId) => {
         if (approvalSummaryTrue) {
@@ -152,7 +156,7 @@ export function Fgwiseimactdata(props) {
                                                     <td ><span>{checkForDecimalAndNull(item.VariancePerPiece, initialConfiguration.NoOfDecimalForPrice)}</span></td>
                                                     <td ><span>{checkForDecimalAndNull(item.VendorSOBPercentage, initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
                                                     <td ><span>{checkForDecimalAndNull(VendorSOBImpactPerPiece, initialConfiguration.NoOfDecimalForPrice)}</span></td>
-                                                    <td colSpan="4"><span> <Link to="compare-costing" spy={true} smooth={true}><button className="Balance mb-0 float-right" type={'button'} onClick={() => { DisplayCompareCostingFgWiseImpact(item.SimulationApprovalProcessSummaryId, item.SimulationApprovalProcessSummaryId) }} /></Link></span></td>
+                                                    {(isVerifyImpactDrawer ? false : true) && <td colSpan="4"><span> <Link to="compare-costing" spy={true} smooth={true}><button className="Balance mb-0 float-right" type={'button'} onClick={() => { DisplayCompareCostingFgWiseImpact(item.SimulationApprovalProcessSummaryId, item.BaseCostingId) }} /></Link></span></td>}
 
                                                 </tr>)
                                         })}

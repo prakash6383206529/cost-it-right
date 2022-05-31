@@ -97,7 +97,8 @@ class AddMachineRate extends Component {
       lockUOMAndRate: false,
       isProcessGroup: getConfigurationKey().IsMachineProcessGroup,// UNCOMMENT IT AFTER DONE FROM BACKEND AND REMOVE BELOW CODE
       // isProcessGroup: false,// UNCOMMENT IT AFTER DONE FROM BACKEND AND REMOVE BELOW CODE
-      UniqueProcessId: []
+      UniqueProcessId: [],
+      attachmentLoader: false
     }
   }
 
@@ -847,6 +848,7 @@ class AddMachineRate extends Component {
 
   // specify upload params and url for your files
   getUploadParams = ({ file, meta }) => {
+    this.setState({ attachmentLoader: true })
     return { url: 'https://httpbin.org/post', }
 
   }
@@ -858,7 +860,7 @@ class AddMachineRate extends Component {
   setDisableFalseFunction = () => {
     const loop = Number(this.dropzone.current.files.length) - Number(this.state.files.length)
     if (Number(loop) === 1) {
-      this.setState({ setDisable: false })
+      this.setState({ setDisable: false, attachmentLoader: false })
     }
   }
 
@@ -1395,7 +1397,7 @@ class AddMachineRate extends Component {
                               required={true}
                               handleChangeDescription={this.handlePlants}
                               valueDescription={this.state.selectedPlants}
-                              disabled={isEditFlag ? (IsCopied ? false : true) : this.state.isViewFlag ? true : false}
+                              disabled={(isEditFlag || isViewMode) ? (IsCopied ? false : true) : this.state.isViewFlag ? true : false}
                             />
                           </Col>)}
 
@@ -1620,7 +1622,7 @@ class AddMachineRate extends Component {
                                 <button
                                   type="button"
                                   className={`${isViewFlag ? 'disabled-button user-btn' : 'user-btn'} pull-left mr5`}
-                                  disabled={(this.state.isViewFlag || (isEditFlag && isMachineAssociated)) ? true : false}
+                                  disabled={(this.state.isViewFlag || (isEditFlag && isMachineAssociated) || isViewMode) ? true : false}
                                   onClick={this.processTableHandler}>
                                   <div className={'plus'}></div>ADD</button>
                                 <button
@@ -1747,6 +1749,7 @@ class AddMachineRate extends Component {
                         </Col>
                         <Col md="3">
                           <div className={'attachment-wrapper'}>
+                            {this.state.attachmentLoader && <LoaderCustom customClass="attachment-loader" />}
                             {
                               this.state.files && this.state.files.map(f => {
                                 const withOutTild = f.FileURL.replace('~', '')
@@ -1790,7 +1793,7 @@ class AddMachineRate extends Component {
                                   <button type="submit"
                                     class="user-btn approval-btn save-btn mr5"
 
-                                    disabled={isViewMode}
+                                    disabled={isViewMode || setDisable}
                                   >
                                     <div className="send-for-approval"></div>
                                     {'Send For Approval'}

@@ -266,7 +266,7 @@ class LevelTechnologyListing extends Component {
 					{this.state.isLoader && <LoaderCustom />}
 					<Row className="levellisting-page">
 						<Col md="12">
-							<h2 className="manage-level-heading">{`Level Mapping`}</h2>
+							<h2 className="manage-level-heading">{`Costing Level Mapping`}</h2>
 						</Col>
 					</Row>
 					<Row className="levellisting-page">

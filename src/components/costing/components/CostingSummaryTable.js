@@ -30,7 +30,8 @@ import ReactToPrint from 'react-to-print';
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
 const CostingSummaryTable = (props) => {
-  const { viewMode, showDetail, technologyId, costingID, showWarningMsg, simulationMode, isApproval, simulationDrawer, customClass, selectedTechnology, master, isSimulationDone, approvalMode } = props
+  const { viewMode, showDetail, technologyId, costingID, showWarningMsg, simulationMode, isApproval, simulationDrawer, customClass, selectedTechnology, master, isSimulationDone, approvalMode, isSummaryDrawer } = props
+
   let history = useHistory();
 
   const dispatch = useDispatch()
@@ -117,7 +118,7 @@ const CostingSummaryTable = (props) => {
   }, [topAndLeftMenuData, selectedTechnology])
 
   useEffect(() => {
-    if (viewCostingData && viewCostingData.length === 1) {
+    if (viewCostingData && viewCostingData?.length === 1) {
       viewBop(0)
       viewRM(0)
       viewConversionCost(0)
@@ -131,7 +132,7 @@ const CostingSummaryTable = (props) => {
       setIsViewRM(false)
       setIsViewConversionCost(false)
       setViewBOP(false)
-      setPdfName(viewCostingData[0].partId)
+      setPdfName(viewCostingData[0]?.partId)
     }
   }, [viewCostingData])
 
@@ -512,7 +513,7 @@ const CostingSummaryTable = (props) => {
           temp.splice(ind, 1)
         }
 
-        const checkInd = viewCostingData.findIndex((data) => data.costingId === id)
+        const checkInd = viewCostingData?.findIndex((data) => data.costingId === id)
         if (checkInd !== -1) {
           if (viewCostingData[checkInd].IsApprovalLocked) {
             setIsWarningFlag(!viewCostingData[checkInd].IsApprovalLocked)   // CONDITION IF ALREADY FOR A PART +PLANT /VENDOR+PLANT ,COSTING IS ALREADY SENT FOR APPROVAL
@@ -523,7 +524,7 @@ const CostingSummaryTable = (props) => {
 
         temp.push(id)
         const ind = multipleCostings.findIndex((data) => data === id)
-        const checkInd = viewCostingData.findIndex((data) => data.costingId === id)
+        const checkInd = viewCostingData?.findIndex((data) => data.costingId === id)
 
         if (temp.length > 1 && isWarningFlag) {
           if (viewCostingData[checkInd].IsApprovalLocked === true) {
@@ -549,7 +550,7 @@ const CostingSummaryTable = (props) => {
     let temp = viewApprovalData
     costingIds &&
       costingIds.map((id) => {
-        let index = viewCostingData.findIndex((data) => data.costingId == id)
+        let index = viewCostingData?.findIndex((data) => data.costingId == id)
         if (index !== -1) {
           let obj = {}
           // add vendor key here
@@ -652,12 +653,12 @@ const CostingSummaryTable = (props) => {
       Toaster.warning('Please select at least one costing to send for approval')
       return
     } else if (!allEqual(vendorArray)) {
-      Toaster.warning('Please select costing which have same vendor')
+      Toaster.warning('Vendor should be same for sending multiple costing for approval')
       return
     } else if (!allEqual(effectiveDateArray)) {
-      Toaster.warning('Please select costing which have same effective date')
+      Toaster.warning('Effective Date should be same for sending multiple costing for approval')
     } else if (!allEqual(plantArray)) {
-      Toaster.warning('Please select costing which have same plant')
+      Toaster.warning('Plant should be same for sending multiple costing for approval')
     } else {
       sendForApprovalData(multipleCostings)
       setShowApproval(true)
@@ -665,9 +666,9 @@ const CostingSummaryTable = (props) => {
   }
 
   useEffect(() => {
-    if (viewCostingData.length === 1) {
+    if (viewCostingData?.length === 1) {
 
-      setIsWarningFlag(viewCostingData && viewCostingData.length === 1 && viewCostingData[0].IsApprovalLocked)
+      setIsWarningFlag(viewCostingData && viewCostingData?.length === 1 && viewCostingData[0]?.IsApprovalLocked)
       // setIsWarningFlag(false)
     }
   }, [viewCostingData])
@@ -769,7 +770,7 @@ const CostingSummaryTable = (props) => {
             )}
 
             <Col md={simulationMode ? "12" : "8"} className="text-right">
-              {!simulationMode &&
+              {!simulationMode && !isSummaryDrawer &&
                 <ReactToPrint
                   bodyClass='mx-2 mt-3 remove-space-border'
                   documentTitle={`${pdfName}-detailed-costing`}
@@ -788,7 +789,7 @@ const CostingSummaryTable = (props) => {
                 trigger={reactToPrintTrigger}
               />}
               {
-                !simulationMode && <>
+                !simulationMode && !isSummaryDrawer && <>
 
                   {(!viewMode && !isFinalApproverShow) && (
                     <button class="user-btn mr-1 mb-2 approval-btn" disabled={isWarningFlag} onClick={() => checkCostings()}>
@@ -832,13 +833,13 @@ const CostingSummaryTable = (props) => {
                         }
 
                         {viewCostingData &&
-                          viewCostingData.map((data, index) => {
+                          viewCostingData?.map((data, index) => {
 
                             return (
                               <th scope="col" className='header-name'>
                                 <div class="element w-60 d-inline-flex align-items-center">
                                   {
-                                    !isApproval && (data.status === DRAFT) && <>
+                                    !isSummaryDrawer && !isApproval && (data.status === DRAFT) && <>
                                       {!pdfHead && !drawerDetailPDF && <div class="custom-check1 d-inline-block">
                                         <label
                                           className="custom-checkbox pl-0 mb-0"
@@ -889,7 +890,7 @@ const CostingSummaryTable = (props) => {
 
                             </td>
                             {viewCostingData &&
-                              viewCostingData.map((data, index) => {
+                              viewCostingData?.map((data, index) => {
                                 return (
                                   <td>
                                     <span class="d-flex justify-content-between bg-grey">
@@ -919,7 +920,7 @@ const CostingSummaryTable = (props) => {
                               <span class="d-block">Part Name</span>
                             </td>
                             {viewCostingData &&
-                              viewCostingData.map((data, index) => {
+                              viewCostingData?.map((data, index) => {
                                 return (
                                   <td>
                                     <span class="d-block">{data.CostingHeading !== VARIANCE ? data.partId : ''}</span>
@@ -942,7 +943,7 @@ const CostingSummaryTable = (props) => {
                           <span class="d-block small-grey-text">Scrap Weight</span>
                         </td>
                         {viewCostingData &&
-                          viewCostingData.map((data) => {
+                          viewCostingData?.map((data) => {
                             return (
 
 
@@ -986,13 +987,13 @@ const CostingSummaryTable = (props) => {
                         />
                       </th></tr>}
 
-                      <tr className={`background-light-blue  ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].netRM > viewCostingData[1].netRM ? 'green-row' : viewCostingData[0].netRM < viewCostingData[1].netRM ? 'red-row' : '' : '-'}`}>
+                      <tr className={`background-light-blue  ${isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.netRM > viewCostingData[1]?.netRM ? 'green-row' : viewCostingData[0]?.netRM < viewCostingData[1]?.netRM ? 'red-row' : '' : '-'}`}>
                         <th>Net RM Cost {simulationDrawer && (Number(master) === Number(RMDOMESTIC) || Number(master) === Number(RMIMPORT)) && '(Old)'}</th>
                         {viewCostingData &&
-                          viewCostingData.map((data, index) => {
+                          viewCostingData?.map((data, index) => {
                             return (
                               <td>
-                                {data.CostingHeading === VARIANCE && (isApproval && Number(data.netRM) !== 0 ? viewCostingData.length > 0 && viewCostingData[0].netRM > viewCostingData[1].netRM ? <span className='positive-sign'>-</span> : <span className='positive-sign'>+</span> : '')}
+                                {data.CostingHeading === VARIANCE && (isApproval && Number(data.netRM) !== 0 ? viewCostingData?.length > 0 && viewCostingData[0]?.netRM > viewCostingData[1]?.netRM ? <span className='positive-sign'>-</span> : <span className='positive-sign'>+</span> : '')}
                                 <span>{checkForDecimalAndNull(Math.abs(data.netRM), initialConfiguration.NoOfDecimalForPrice)}</span>
                                 {
                                   (data.CostingHeading !== VARIANCE && icons) && (!pdfHead && !drawerDetailPDF) &&
@@ -1014,14 +1015,14 @@ const CostingSummaryTable = (props) => {
                         anchor={'right'}
                         isPDFShow={true}
                       /></th></tr>}
-                      <tr className={`background-light-blue  ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].netBOP > viewCostingData[1].netBOP ? 'green-row' : viewCostingData[0].netBOP < viewCostingData[1].netBOP ? 'red-row' : '' : '-'}`}>
+                      <tr className={`background-light-blue  ${isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.netBOP > viewCostingData[1]?.netBOP ? 'green-row' : viewCostingData[0]?.netBOP < viewCostingData[1]?.netBOP ? 'red-row' : '' : '-'}`}>
                         <th>Net BOP Cost {simulationDrawer && (Number(master) === Number(BOPDOMESTIC) || Number(master) === Number(BOPIMPORT)) && '(Old)'}</th>
 
                         {viewCostingData &&
-                          viewCostingData.map((data, index) => {
+                          viewCostingData?.map((data, index) => {
                             return (
                               <td>
-                                {data.CostingHeading === VARIANCE && (isApproval && Number(data.netBOP) !== 0 ? viewCostingData.length > 0 && viewCostingData[0].netBOP > viewCostingData[1].netBOP ? <span className='positive-sign'>-</span> : <span className='positive-sign'>+</span> : '')}
+                                {data.CostingHeading === VARIANCE && (isApproval && Number(data.netBOP) !== 0 ? viewCostingData?.length > 0 && viewCostingData[0]?.netBOP > viewCostingData[1]?.netBOP ? <span className='positive-sign'>-</span> : <span className='positive-sign'>+</span> : '')}
                                 <span>{checkForDecimalAndNull(Math.abs(data.netBOP), initialConfiguration.NoOfDecimalForPrice)}</span>
                                 {
                                   (data.CostingHeading !== VARIANCE && icons) && (!pdfHead && !drawerDetailPDF) &&
@@ -1044,7 +1045,7 @@ const CostingSummaryTable = (props) => {
                           <span class="d-block small-grey-text">Other Operation Cost</span>
                         </td>
                         {viewCostingData &&
-                          viewCostingData.map((data) => {
+                          viewCostingData?.map((data) => {
                             return (
                               <td>
                                 <span class="d-block small-grey-text">
@@ -1072,13 +1073,13 @@ const CostingSummaryTable = (props) => {
                         />
                       </th></tr>}
 
-                      <tr className={`background-light-blue  ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].nConvCost > viewCostingData[1].nConvCost ? 'green-row' : viewCostingData[0].nConvCost < viewCostingData[1].nConvCost ? 'red-row' : '' : '-'}`}>
+                      <tr className={`background-light-blue  ${isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.nConvCost > viewCostingData[1]?.nConvCost ? 'green-row' : viewCostingData[0]?.nConvCost < viewCostingData[1]?.nConvCost ? 'red-row' : '' : '-'}`}>
                         <th>Net Conversion Cost{simulationDrawer && (Number(master) === Number(OPERATIONS) || Number(master) === Number(COMBINED_PROCESS)) && '(Old)'}</th>
                         {viewCostingData &&
-                          viewCostingData.map((data, index) => {
+                          viewCostingData?.map((data, index) => {
                             return (
                               <td>
-                                {data.CostingHeading === VARIANCE && (isApproval && Number(data.nConvCost) !== 0 ? viewCostingData.length > 0 && viewCostingData[0].nConvCost > viewCostingData[1].nConvCost ? <span className='positive-sign'>-</span> : <span className='positive-sign'>+</span> : '')}
+                                {data.CostingHeading === VARIANCE && (isApproval && Number(data.nConvCost) !== 0 ? viewCostingData?.length > 0 && viewCostingData[0]?.nConvCost > viewCostingData[1]?.nConvCost ? <span className='positive-sign'>-</span> : <span className='positive-sign'>+</span> : '')}
                                 <span>{data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.nConvCost, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(Math.abs(data.nConvCost), initialConfiguration.NoOfDecimalForPrice)}</span>
                                 {
                                   (data.CostingHeading !== VARIANCE && icons) && (!pdfHead && !drawerDetailPDF) &&
@@ -1103,7 +1104,7 @@ const CostingSummaryTable = (props) => {
                           </span>
                         </td>
                         {viewCostingData &&
-                          viewCostingData.map((data) => {
+                          viewCostingData?.map((data) => {
                             return (
                               <td>
                                 <span class="d-block small-grey-text">
@@ -1129,14 +1130,14 @@ const CostingSummaryTable = (props) => {
 
 
 
-                      <tr className={`background-light-blue  ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].nsTreamnt > viewCostingData[1].nsTreamnt ? 'green-row' : viewCostingData[0].nsTreamnt < viewCostingData[1].nsTreamnt ? 'red-row' : '' : '-'}`}>
+                      <tr className={`background-light-blue  ${isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.nsTreamnt > viewCostingData[1]?.nsTreamnt ? 'green-row' : viewCostingData[0]?.nsTreamnt < viewCostingData[1]?.nsTreamnt ? 'red-row' : '' : '-'}`}>
                         <th>Net Surface Treatment Cost{simulationDrawer && (Number(master) === Number(SURFACETREATMENT)) && '(Old)'}</th>
 
                         {viewCostingData &&
-                          viewCostingData.map((data, index) => {
+                          viewCostingData?.map((data, index) => {
                             return (
                               < td >
-                                {data.CostingHeading === VARIANCE && (isApproval && Number(data.netSurfaceTreatmentCost) !== 0 ? viewCostingData.length > 0 && viewCostingData[0].nsTreamnt > viewCostingData[1].nsTreamnt ? <span className='positive-sign'>-</span> : <span className='positive-sign'>+</span> : '')}
+                                {data.CostingHeading === VARIANCE && (isApproval && Number(data.netSurfaceTreatmentCost) !== 0 ? viewCostingData?.length > 0 && viewCostingData[0]?.nsTreamnt > viewCostingData[1]?.nsTreamnt ? <span className='positive-sign'>-</span> : <span className='positive-sign'>+</span> : '')}
                                 <span>{data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.netSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(Math.abs(data.netSurfaceTreatmentCost), initialConfiguration.NoOfDecimalForPrice)}</span>
                                 {
                                   (data.CostingHeading !== VARIANCE && icons) && (!pdfHead && !drawerDetailPDF) &&
@@ -1167,7 +1168,7 @@ const CostingSummaryTable = (props) => {
                         </td>
 
                         {viewCostingData &&
-                          viewCostingData.map((data) => {
+                          viewCostingData?.map((data) => {
                             return (
 
                               <td>
@@ -1240,13 +1241,13 @@ const CostingSummaryTable = (props) => {
                         isPDFShow={true}
                       /></td></tr>}
 
-                      <tr class={`background-light-blue ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].nOverheadProfit > viewCostingData[1].nOverheadProfit ? 'green-row' : viewCostingData[0].nOverheadProfit < viewCostingData[1].nOverheadProfit ? 'red-row' : ' ' : '-'}`}>
+                      <tr class={`background-light-blue ${isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.nOverheadProfit > viewCostingData[1]?.nOverheadProfit ? 'green-row' : viewCostingData[0]?.nOverheadProfit < viewCostingData[1]?.nOverheadProfit ? 'red-row' : ' ' : '-'}`}>
                         <th>Net Overheads & Profits</th>
                         {viewCostingData &&
-                          viewCostingData.map((data, index) => {
+                          viewCostingData?.map((data, index) => {
                             return (
                               <td>
-                                {data.CostingHeading === VARIANCE && (isApproval && Number(data.nOverheadProfit) !== 0 ? viewCostingData.length > 0 && viewCostingData[0].nOverheadProfit > viewCostingData[1].nOverheadProfit ? <span className='positive-sign'>-</span> : <span className='positive-sign'>+</span> : '')}
+                                {data.CostingHeading === VARIANCE && (isApproval && Number(data.nOverheadProfit) !== 0 ? viewCostingData?.length > 0 && viewCostingData[0]?.nOverheadProfit > viewCostingData[1]?.nOverheadProfit ? <span className='positive-sign'>-</span> : <span className='positive-sign'>+</span> : '')}
                                 <span>{checkForDecimalAndNull(Math.abs(data.nOverheadProfit), initialConfiguration.NoOfDecimalForPrice)}</span>
                                 {
                                   (data.CostingHeading !== VARIANCE && icons) && (!pdfHead && !drawerDetailPDF) &&
@@ -1269,7 +1270,7 @@ const CostingSummaryTable = (props) => {
                           <span class="d-block small-grey-text">Freight</span>
                         </td>
                         {viewCostingData &&
-                          viewCostingData.map((data) => {
+                          viewCostingData?.map((data) => {
                             return (
                               <td>
                                 <span class="d-block small-grey-text">
@@ -1291,7 +1292,7 @@ const CostingSummaryTable = (props) => {
                       <tr class="background-light-blue">
                         <th>Net Packaging & Freight</th>
                         {viewCostingData &&
-                          viewCostingData.map((data, index) => {
+                          viewCostingData?.map((data, index) => {
                             return (
                               <td>
                                 <span>{data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.nPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice) : ''}</span>
@@ -1321,7 +1322,7 @@ const CostingSummaryTable = (props) => {
                           <span class="d-block small-grey-text">Tool Amortization Cost</span>
                         </td>
                         {viewCostingData &&
-                          viewCostingData.map((data) => {
+                          viewCostingData?.map((data) => {
                             return (
                               <td className={` ${pdfHead || drawerDetailPDF ? '' : ''}`}>
                                 <div class="d-flex mt7">
@@ -1363,7 +1364,7 @@ const CostingSummaryTable = (props) => {
                       <tr class="background-light-blue">
                         <th>Net Tool Cost</th>
                         {viewCostingData &&
-                          viewCostingData.map((data, index) => {
+                          viewCostingData?.map((data, index) => {
                             return (
                               <td>
                                 <span>{data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.totalToolCost, initialConfiguration.NoOfDecimalForPrice) : ''}</span>
@@ -1390,7 +1391,7 @@ const CostingSummaryTable = (props) => {
                         </td>
                         { }
                         {viewCostingData &&
-                          viewCostingData.map((data) => {
+                          viewCostingData?.map((data) => {
                             return (
                               data.CostingHeading !== VARIANCE ?
                                 <td width={"32%"}>
@@ -1424,7 +1425,7 @@ const CostingSummaryTable = (props) => {
                           <span class="d-block small-grey-text"> Any Other Cost</span>
                         </td>
                         {viewCostingData &&
-                          viewCostingData.map((data, index) => {
+                          viewCostingData?.map((data, index) => {
                             return (
 
                               data.CostingHeading !== VARIANCE ?
@@ -1452,12 +1453,12 @@ const CostingSummaryTable = (props) => {
                       </tr>
                       {
 
-                        <tr class={`background-light-blue netPo-row ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].nPOPrice > viewCostingData[1].nPOPrice ? 'green-row' : viewCostingData[0].nPOPrice < viewCostingData[1].nPOPrice ? 'red-row' : '' : '-'}`}>
+                        <tr class={`background-light-blue netPo-row ${isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.nPOPrice > viewCostingData[1]?.nPOPrice ? 'green-row' : viewCostingData[0]?.nPOPrice < viewCostingData[1]?.nPOPrice ? 'red-row' : '' : '-'}`}>
                           <th>Net PO Price (INR){simulationDrawer && '(Old)'}</th>
                           {viewCostingData &&
-                            viewCostingData.map((data, index) => {
+                            viewCostingData?.map((data, index) => {
                               return <td>
-                                {data.CostingHeading === VARIANCE && (isApproval && Number(data.nPOPrice) !== 0 ? viewCostingData.length > 0 && viewCostingData[0].nPOPrice > viewCostingData[1].nPOPrice ? <span className='positive-sign'>-</span> : <span className='positive-sign'>+</span> : '')}
+                                {data.CostingHeading === VARIANCE && (isApproval && Number(data.nPOPrice) !== 0 ? viewCostingData?.length > 0 && viewCostingData[0]?.nPOPrice > viewCostingData[1]?.nPOPrice ? <span className='positive-sign'>-</span> : <span className='positive-sign'>+</span> : '')}
                                 <span>{checkForDecimalAndNull(Math.abs(data.nPOPrice), initialConfiguration.NoOfDecimalForPrice)}</span>
                               </td>
                             })}
@@ -1470,7 +1471,7 @@ const CostingSummaryTable = (props) => {
                           <span class="d-block small-grey-text">Currency</span>
                         </td>
                         {viewCostingData &&
-                          viewCostingData.map((data) => {
+                          viewCostingData?.map((data) => {
                             return (
                               <td>
                                 <div>
@@ -1483,18 +1484,18 @@ const CostingSummaryTable = (props) => {
                       </tr>
                       {
 
-                        <tr class={`background-light-blue netRm-row  ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].nPOPriceWithCurrency > viewCostingData[1].nPOPriceWithCurrency ? 'green-row' : viewCostingData[0].nPOPriceWithCurrency < viewCostingData[1].nPOPriceWithCurrency ? 'red-row' : '' : '-'}`}>
+                        <tr class={`background-light-blue netRm-row  ${isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.nPOPriceWithCurrency > viewCostingData[1]?.nPOPriceWithCurrency ? 'green-row' : viewCostingData[0]?.nPOPriceWithCurrency < viewCostingData[1]?.nPOPriceWithCurrency ? 'red-row' : '' : '-'}`}>
                           <th>Net PO Price ({(viewCostingData[0]?.currency?.currencyTitle) !== "-" ? viewCostingData[0]?.currency?.currencyTitle : 'INR'}){simulationDrawer && '(Old)'}</th>
                           {/* {viewCostingData &&
-                        viewCostingData.map((data, index) => {
+                        viewCostingData?.map((data, index) => {
                           return <td>Net PO Price({(data.currency.currencyTitle !== '-' ? data.currency.currencyTitle : 'INR')})</td>
                         })} */}
 
 
                           {viewCostingData &&
-                            viewCostingData.map((data, index) => {
+                            viewCostingData?.map((data, index) => {
 
-                              return <td> {data.CostingHeading === VARIANCE && (isApproval && (Number(data.nPOPriceWithCurrency) !== 0 || Number(data.nPOPrice) !== 0) ? viewCostingData.length > 0 && viewCostingData[0].nPOPriceWithCurrency > viewCostingData[1].nPOPriceWithCurrency ? <span className='positive-sign'>-</span> : <span className='positive-sign'>+</span> : '')}
+                              return <td> {data.CostingHeading === VARIANCE && (isApproval && (Number(data.nPOPriceWithCurrency) !== 0 || Number(data.nPOPrice) !== 0) ? viewCostingData?.length > 0 && viewCostingData[0]?.nPOPriceWithCurrency > viewCostingData[1]?.nPOPriceWithCurrency ? <span className='positive-sign'>-</span> : <span className='positive-sign'>+</span> : '')}
                                 <span>{data.nPOPriceWithCurrency !== null ? checkForDecimalAndNull((viewCostingData[0]?.currency?.currencyTitle) !== "-" ? Math.abs(data.nPOPriceWithCurrency) : Math.abs(data.nPOPrice), initialConfiguration.NoOfDecimalForPrice) : '-'}</span> </td>
                             })}
                         </tr>
@@ -1503,7 +1504,7 @@ const CostingSummaryTable = (props) => {
                       <tr>
                         <td>Attachments</td>
                         {viewCostingData &&
-                          viewCostingData.map((data, index) => {
+                          viewCostingData?.map((data, index) => {
                             return (
 
                               <td>
@@ -1549,7 +1550,7 @@ const CostingSummaryTable = (props) => {
                       <tr>
                         <th>Remarks</th>
                         {viewCostingData &&
-                          viewCostingData.map((data, index) => {
+                          viewCostingData?.map((data, index) => {
                             return <td><span className="d-block small-grey-text">{data.CostingHeading !== VARIANCE ? data.remark : ''}</span></td>
                           })}
                       </tr>
@@ -1558,7 +1559,7 @@ const CostingSummaryTable = (props) => {
                         <tr class="background-light-blue">
                           <td className="text-center"></td>
 
-                          {viewCostingData.map((data, index) => {
+                          {viewCostingData?.map((data, index) => {
 
                             return (
 
