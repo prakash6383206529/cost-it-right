@@ -863,15 +863,6 @@ const CostingSummaryTable = (props) => {
                                     (isApproval && data.CostingHeading !== '-') ? <span>{data.CostingHeading}</span> : <span className={`checkbox-text`}>{data.zbc === 0 ? `ZBC(${data.plantName})` : data.zbc === 1 ? `${data.vendorName}(${data.vendorCode}) ${localStorage.IsVendorPlantConfigurable ? `(${data.vendorPlantName})` : ''}` : 'CBC'}{` (SOB: ${data.shareOfBusinessPercent}%)`}</span>
                                   }
                                 </div>
-<<<<<<< HEAD
-                                {(!viewMode && icons) && (!pdfHead && !drawerDetailPDF) && (
-                                  <div class="action w-40 d-inline-block text-right">
-                                    {EditAccessibility && (data.status === DRAFT) && <button className="Edit mr-1 mb-0 align-middle" type={"button"} title={"Edit Costing"} onClick={() => editCostingDetail(index)} />}
-                                    {AddAccessibility && (userDetails().Role === 'SuperAdmin') && <button className="Add-file mr-1 mb-0 align-middle" type={"button"} title={"Add Costing"} onClick={() => addNewCosting(index)} />}
-                                    <button type="button" class="CancelIcon mb-0 align-middle" title={"Remove Costing"} onClick={() => deleteCostingFromView(index)}></button>
-                                  </div>
-                                )}
-=======
 
                                 <div class="action w-40 d-inline-block text-right">
                                   {((!viewMode && (!pdfHead && !drawerDetailPDF)) && EditAccessibility) && (data.status === DRAFT) && <button className="Edit mr-1 mb-0 align-middle" type={"button"} title={"Edit Costing"} onClick={() => editCostingDetail(index)} />}
@@ -879,7 +870,6 @@ const CostingSummaryTable = (props) => {
                                   {((!viewMode || (approvalMode && data.CostingHeading === '-')) && (!pdfHead && !drawerDetailPDF)) && <button type="button" class="CancelIcon mb-0 align-middle" title={"Remove Costing"} onClick={() => deleteCostingFromView(index)}></button>}
                                 </div>
 
->>>>>>> 782e922bd (Comparision for costing in Approval summary done)
                               </th>
                             )
                           })}

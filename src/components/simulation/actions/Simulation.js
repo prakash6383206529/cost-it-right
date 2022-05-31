@@ -458,7 +458,7 @@ export function getAmmendentStatus(params, callback) {
     return (dispatch) => {
         // const queryParameter = `${params.approvalTokenNumber}/${params.approvalId}/${params.loggedInUserId}`;
         const queryParameter = `${params.approvalTokenNumber}`;
-        const request = axios.get(`${API.getAmmendentStatus}?TokenNumber=${queryParameter}`, headers)
+        const request = axios.get(`${API.getAmmendentStatus}?TokenNumber=${queryParameter}`, config())
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 dispatch({
