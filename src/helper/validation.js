@@ -195,22 +195,22 @@ export const decimalNumber13 = value =>
 //     : undefined;
 
 export const decimalLength = max => value =>
-    value && !/^[0-9]\d{0,12}(\.\d{1,2})?%?$/i.test(value)
+    value && !/^[0-9]*(?:\.[0-9]{1,2})?$/i.test(value)
         ? `Only ${max} decimal allowed.`
         : undefined;
 
 export const decimalLength3 = max => value =>
-    value && !/^[0-9]\d{0,15}(\.\d{1,3})?%?$/i.test(value)
+    value && !/^[0-9]*(?:\.[0-9]{0,3})?$/i.test(value)
         ? `Only ${max} decimal allowed.`
         : undefined;
 
 export const decimalLength4 = max => value =>
-    value && !/^[0-9]\d{0,15}(\.\d{1,4})?%?$/i.test(value)
+    value && !/^[0-9]*(?:\.[0-9]{0,4})?$/i.test(value)
         ? `Only ${max} decimal allowed.`
         : undefined;
 
 export const decimalLength6 = max => value =>
-    value && !/^[0-9]\d{0,12}(\.\d{1,6})?%?$/i.test(value)
+    value && !/^[0-9]*(?:\.[0-9]{0,6})?$/i.test(value)
         ? `Only ${max} decimal allowed.`
         : undefined;
 export const decimalLength2 = decimalLength(2);
