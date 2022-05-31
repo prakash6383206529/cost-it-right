@@ -309,7 +309,7 @@ function RMImportListing(props) {
         Toaster.warning(res.data.Message)
       } else if (res && res.data && res.data.Result === true) {
         Toaster.success(MESSAGES.DELETE_RAW_MATERIAL_SUCCESS);
-        getDataList()
+        resetState()
       }
     }));
     setShowPopup(false)
@@ -442,7 +442,7 @@ function RMImportListing(props) {
   const closeBulkUploadDrawer = () => {
     setisBulkUpload(false);
 
-    getDataList(null, null, null)
+    resetState()
   }
 
   /**
