@@ -50,6 +50,7 @@ import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
 import { loggedInUserId, userDetails } from '../../../helper';
 import { MESSAGES } from '../../../config/message';
+import { rmQueryParms } from '../masterUtil';
 
 /**
  * @method createMaterialAPI
@@ -1063,8 +1064,8 @@ export function getVendorWithVendorCodeSelectList(callback) {
 export function getRMDomesticDataList(data, skip, take, isPagination, obj, callback) {
     return (dispatch) => {
         dispatch({ type: GET_RM_DOMESTIC_LIST });
-        const queryParams = `CostingHead=${obj.CostingHead !== undefined ? obj.CostingHead : ""}&technology_id=${data.technologyId}&net_landed_min_range=${data.net_landed_min_range}&net_landed_max_range=${data.net_landed_max_range}&departmentCode=${data.departmentCode}&statusId=${data.statusId}`
-        const queryParamsSecond = `Technology=${obj.TechnologyName !== undefined ? obj.TechnologyName : ""}&RMName=${obj.RawMaterial !== undefined ? obj.RawMaterial : ""}&RMGrade=${obj.RMGrade !== undefined ? obj.RMGrade : ""}&RMSpecs=${obj.RMSpec !== undefined ? obj.RMSpec : ""}&RMCode=${obj.RawMaterialCode !== undefined ? obj.RawMaterialCode : ""}&RMCategory=${obj.Category !== undefined ? obj.Category : ""}&Plant=${obj.Plant !== undefined ? obj.Plant : ""}&Vendor=${obj.VendorName !== undefined ? obj.VendorName : ""}&UOM=${obj.UOM !== undefined ? obj.UOM : ""}&BasicRate=${obj.BasicRate !== undefined ? obj.BasicRate : ""}&ScrapRate=${obj.ScrapRate !== undefined ? obj.ScrapRate : ""}&FreightCost=${obj.RMFreightCost !== undefined ? obj.RMFreightCost : ""}&ShearingCost=${obj.RMShearingCost !== undefined ? obj.RMShearingCost : ""}&NetCost=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&EffectiveDate=${obj.EffectiveDate !== undefined ? obj.EffectiveDate : ""}&MaterialType=${obj.MaterialType !== undefined ? obj.MaterialType : ""}&applyPagination=${isPagination}&skip=${skip}&take=${take}`
+        const queryParams = `technology_id=${data.technologyId}&net_landed_min_range=${data.net_landed_min_range}&net_landed_max_range=${data.net_landed_max_range}&departmentCode=${data.departmentCode}&statusId=${data.statusId}&NetCost=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}`
+        const queryParamsSecond = rmQueryParms(isPagination, skip, take, obj)
         const request = axios.get(`${API.getRMDomesticDataList}?${queryParams}&${queryParamsSecond}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
@@ -1176,8 +1177,8 @@ export function getRMImportDataById(data, isValid, callback) {
  */
 export function getRMImportDataList(data, skip, take, isPagination, obj, callback) {
     return (dispatch) => {
-        const queryParams = `CostingHead=${obj.CostingHead !== undefined ? obj.CostingHead : ""}&technology_id=${data.technologyId}&net_landed_min_range=${data.net_landed_min_range}&net_landed_max_range=${data.net_landed_max_range}&departmentCode=${data.departmentCode}&statusId=${data.statusId}`
-        const queryParamsSecond = `Technology=${obj.TechnologyName !== undefined ? obj.TechnologyName : ""}&RMName=${obj.RawMaterial !== undefined ? obj.RawMaterial : ""}&RMGrade=${obj.RMGrade !== undefined ? obj.RMGrade : ""}&RMSpecs=${obj.RMSpec !== undefined ? obj.RMSpec : ""}&RMCode=${obj.RawMaterialCode !== undefined ? obj.RawMaterialCode : ""}&RMCategory=${obj.Category !== undefined ? obj.Category : ""}&Plant=${obj.Plant !== undefined ? obj.Plant : ""}&Vendor=${obj.VendorName !== undefined ? obj.VendorName : ""}&UOM=${obj.UOM !== undefined ? obj.UOM : ""}&BasicRate=${obj.BasicRate !== undefined ? obj.BasicRate : ""}&ScrapRate=${obj.ScrapRate !== undefined ? obj.ScrapRate : ""}&FreightCost=${obj.RMFreightCost !== undefined ? obj.RMFreightCost : ""}&ShearingCost=${obj.RMShearingCost !== undefined ? obj.RMShearingCost : ""}&NetCost=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&EffectiveDate=${obj.EffectiveDate !== undefined ? obj.EffectiveDate : ""}&MaterialType=${obj.MaterialType !== undefined ? obj.MaterialType : ""}&Currency=${obj.Currency !== undefined ? obj.Currency : ""}&NetCostCurrency=${obj.NetLandedCostConversion !== undefined ? obj.NetLandedCostConversion : ""}&applyPagination=${isPagination}&skip=${skip}&take=${take}`
+        const queryParams = `&Currency=${obj.Currency !== undefined ? obj.Currency : ""}&NetCostCurrency=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&NetCost=${obj.NetLandedCostConversion !== undefined ? obj.NetLandedCostConversion : ""}&technology_id=${data.technologyId}&net_landed_min_range=${data.net_landed_min_range}&net_landed_max_range=${data.net_landed_max_range}&departmentCode=${data.departmentCode}&statusId=${data.statusId}`
+        const queryParamsSecond = rmQueryParms(isPagination, skip, take, obj)
         const request = axios.get(`${API.getRMImportDataList}?${queryParams}&${queryParamsSecond}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {

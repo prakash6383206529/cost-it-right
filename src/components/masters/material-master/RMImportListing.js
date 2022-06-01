@@ -239,6 +239,7 @@ function RMImportListing(props) {
         setIsSearchButtonDisable(false)
         return false
       }
+      console.log(value.column.colId, value.filterInstance.appliedModel.filter, "val col");
 
       setFloatingFilterData({ ...floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter })
       setIsSearchButtonDisable(false)
