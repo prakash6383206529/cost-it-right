@@ -258,28 +258,25 @@ function ApprovalListing(props) {
     }
     if (!allEqual(technologyArray)) {
       gridApi.deselectAll()
-      return Toaster.warning("Technology should be same for sending multiple costing for approval")
-    }
-    if (!allEqual(vendorArray)) {
+      Toaster.warning("Technology should be same for sending multiple costing for approval")
+    } else if (!allEqual(vendorArray)) {
       gridApi.deselectAll()
-      return Toaster.warning("Vendor should be same for sending multiple costing for approval")
+      Toaster.warning("Vendor should be same for sending multiple costing for approval")
     }
-    // if (!allEqual(reasonArray)) {
+    //REASON CHECK IS NOT APPLICABLE IN RE
+    // else if (!allEqual(reasonArray)) {
     //   gridApi.deselectAll()
-    //   return Toaster.warning("Vendor should be same for sending multiple costing for approval")
+    //   Toaster.warning("Reason should be same for sending multiple costing for approval")
     // }
-
-    if (!allEqual(statusArray)) {
+    else if (!allEqual(statusArray)) {
       gridApi.deselectAll()
-      return Toaster.warning('Status should be same for sending multiple costing for approval')
-    }
-    if (!allEqual(effectiveDateArray)) {
+      Toaster.warning('Status should be same for sending multiple costing for approval')
+    } else if (!allEqual(effectiveDateArray)) {
       gridApi.deselectAll()
-      return Toaster.warning('Effective Date should be same for sending multiple costing for approval')
-    }
-    if (!allEqual(plantArray)) {
+      Toaster.warning('Effective Date should be same for sending multiple costing for approval')
+    } else if (!allEqual(plantArray)) {
       gridApi.deselectAll()
-      return Toaster.warning('Plant should be same for sending multiple costing for approval')
+      Toaster.warning('Plant should be same for sending multiple costing for approval')
     }
 
     else {
