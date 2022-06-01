@@ -63,9 +63,7 @@ function RMImportListing(props) {
   const [totalRecordCount, setTotalRecordCount] = useState(0)
   const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
   const [currentRowIndex, setCurrentRowIndex] = useState(0)
-  const [pageSize10, setPageSize10] = useState(true)
-  const [pageSize50, setPageSize50] = useState(false)
-  const [pageSize100, setPageSize100] = useState(false)
+  const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
   const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", RawMaterialCode: "", Category: "", MaterialType: "", Plant: "", UOM: "", VendorName: "", BasicRate: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDate: "" })
 
   var filterParams = {
@@ -457,19 +455,13 @@ function RMImportListing(props) {
     gridApi.paginationSetPageSize(Number(value));
 
     if (Number(newPageSize) === 10) {
-      setPageSize10(true)
-      setPageSize50(false)
-      setPageSize100(false)
+      setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
     }
     else if (Number(newPageSize) === 50) {
-      setPageSize10(false)
-      setPageSize50(true)
-      setPageSize100(false)
+      setPageSize(prevState => ({ ...prevState, pageSize50: true, pageSize10: false, pageSize100: false }))
     }
     else if (Number(newPageSize) === 100) {
-      setPageSize10(false)
-      setPageSize50(false)
-      setPageSize100(true)
+      setPageSize(prevState => ({ ...prevState, pageSize100: true, pageSize10: false, pageSize50: false }))
     }
 
   };
@@ -720,9 +712,9 @@ function RMImportListing(props) {
 
                 <div className="d-flex pagination-button-container">
                   <p><button className="previous-btn" type="button" disabled={false} onClick={() => onBtPrevious()}> </button></p>
-                  {pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 10)}</p>}
-                  {pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 50)}</p>}
-                  {pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 100)}</p>}
+                  {pageSize.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 10)}</p>}
+                  {pageSize.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 50)}</p>}
+                  {pageSize.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 100)}</p>}
                   <p><button className="next-btn" type="button" onClick={() => onBtNext()}> </button></p>
                 </div>
               </div>
