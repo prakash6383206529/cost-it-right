@@ -509,6 +509,28 @@ function CostingSimulation(props) {
         const classGreen = (row.NewOperationCost > row.OldOperationCost) ? 'red-value form-control' : (row.NewOperationCost < row.OldOperationCost) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
+
+    const operQuantityFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const temp = row.IsMultiOperation === true ? 'Multiple Operation' : cell
+        return cell != null ? temp : '-';
+    }
+
+    const operSTFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const temp = row.IsMultiOperation === true ? 'Multiple Operation' : cell
+        return cell != null ? temp : '-';
+    }
+
+    const BOPQuantityFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const temp = row.IsMultiBoughtOutPart === true ? 'Multiple BOP' : cell
+        return cell != null ? temp : '-';
+    }
+
     const oldSTFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -900,6 +922,9 @@ function CostingSimulation(props) {
         newExchangeFormatter: newExchangeFormatter,
         oldPOCurrencyFormatter: oldPOCurrencyFormatter,
         newPOCurrencyFormatter: newPOCurrencyFormatter,
+        operQuantityFormatter: operQuantityFormatter,
+        BOPQuantityFormatter: BOPQuantityFormatter,
+        operSTFormatter: operSTFormatter
     };
 
     const isRowSelectable = rowNode => statusForLinkedToken === true ? false : true;
@@ -1030,9 +1055,15 @@ function CostingSimulation(props) {
                                                     </>}
 
                                                     {(isSurfaceTreatment || showSurfaceTreatmentColumn) && <>
-                                                        <AgGridColumn width={140} field="SurfaceArea" headerName='Surface Area' ></AgGridColumn>
-                                                        <AgGridColumn width={140} field="OldSurfaceTreatmentCost" headerName='Old ST Cost' cellRenderer="oldSTFormatter"></AgGridColumn>
-                                                        <AgGridColumn width={140} field="NewSurfaceTreatmentCost" headerName='New ST Cost' cellRenderer="newSTFormatter"></AgGridColumn>
+                                                        <AgGridColumn width={140} field="SurfaceArea" headerName='Surface Area' cellRenderer='operSTFormatter' ></AgGridColumn>
+
+
+                                                        <AgGridColumn width={140} field="OldSTCost" headerName='Old ST Cost' cellRenderer="operSTFormatter"></AgGridColumn>
+                                                        <AgGridColumn width={140} field="NewSTCost" headerName='New ST Cost' cellRenderer="operSTFormatter"></AgGridColumn>
+                                                        <AgGridColumn width={140} field="OldSurfaceTreatmentRate" headerName='Old ST Rate' cellRenderer="operSTFormatter"></AgGridColumn>
+                                                        <AgGridColumn width={140} field="NewSurfaceTreatmentRate" headerName='New ST Rate' cellRenderer="operSTFormatter"></AgGridColumn>
+                                                        <AgGridColumn width={140} field="OldSurfaceTreatmentCost" headerName='Old Surface Treatment Cost' cellRenderer="oldSTFormatter"></AgGridColumn>
+                                                        <AgGridColumn width={140} field="NewSurfaceTreatmentCost" headerName='New Surface Treatment Cost' cellRenderer="newSTFormatter"></AgGridColumn>
                                                         <AgGridColumn width={140} field="OldTranspotationCost" headerName='Old Extra Cost' ></AgGridColumn>
                                                         <AgGridColumn width={140} field="NewTranspotationCost" headerName='New Extra Cost' ></AgGridColumn>
                                                         <AgGridColumn width={140} field="OldNetSurfaceTreatmentCost" headerName='Old Net ST Cost' cellRenderer="oldNetSTFormatter"></AgGridColumn>
@@ -1041,16 +1072,24 @@ function CostingSimulation(props) {
                                                     </>}
 
                                                     {(isOperation || showOperationColumn) && <>
-                                                        <AgGridColumn width={140} field="Quantity" headerName='Quantity' ></AgGridColumn>
-                                                        <AgGridColumn width={140} field="OldOperationCost" headerName='Old Oper Cost' cellRenderer="oldOPERFormatter" ></AgGridColumn>
-                                                        <AgGridColumn width={140} field="NewOperationCost" headerName='New Oper Cost' cellRenderer="newOPERFormatter"></AgGridColumn>
+                                                        <AgGridColumn width={140} field="Quantity" headerName='Quantity' cellRenderer='operQuantityFormatter'  ></AgGridColumn>
+                                                        <AgGridColumn width={140} field="OldOperationCost" headerName='Old Oper Cost' cellRenderer="operQuantityFormatter" ></AgGridColumn>
+                                                        <AgGridColumn width={140} field="NewOperationCost" headerName='New Oper Cost' cellRenderer="operQuantityFormatter"></AgGridColumn>
+                                                        <AgGridColumn width={140} field="OldOperationRate" headerName='Old Oper Rate' cellRenderer="operQuantityFormatter" ></AgGridColumn>
+                                                        <AgGridColumn width={140} field="NewOperationRate" headerName='New Oper Rate' cellRenderer="operQuantityFormatter"></AgGridColumn>
+                                                        <AgGridColumn width={140} field="OldNetOperationCost" headerName='Old Net Oper Cost' cellRenderer="oldOPERFormatter" ></AgGridColumn>
+                                                        <AgGridColumn width={140} field="NewNetOperationCost" headerName='New Net Oper Cost' cellRenderer="newOPERFormatter"></AgGridColumn>
                                                         <AgGridColumn width={140} field="OperationCostVariance" headerName='Oper Variance' ></AgGridColumn>
                                                     </>}
 
                                                     {(isBOPDomesticOrImport || showBOPColumn) && <>
-                                                        <AgGridColumn width={140} field="BoughtOutPartQuantity" headerName='BOP Quantity' cellRenderer={decimalFormatter} ></AgGridColumn>
-                                                        <AgGridColumn width={140} field="OldNetBoughtOutPartCost" headerName='Old BOP Cost' cellRenderer={decimalFormatter} ></AgGridColumn>
-                                                        <AgGridColumn width={140} field="NewNetBoughtOutPartCost" headerName='New BOP Cost' cellRenderer={decimalFormatter}></AgGridColumn>
+                                                        <AgGridColumn width={140} field="BoughtOutPartQuantity" headerName='BOP Quantity' cellRenderer='BOPQuantityFormatter' ></AgGridColumn>
+                                                        <AgGridColumn width={140} field="OldBOPRate" headerName='Old BOP Rate' cellRenderer={BOPQuantityFormatter} ></AgGridColumn>
+                                                        <AgGridColumn width={140} field="NewBOPRate" headerName='Old BOP Rate' cellRenderer={BOPQuantityFormatter} ></AgGridColumn>
+                                                        <AgGridColumn width={140} field="OldBOPCost" headerName='Old BOP Cost' cellRenderer={BOPQuantityFormatter} ></AgGridColumn>
+                                                        <AgGridColumn width={140} field="NewBOPCost" headerName='Old BOP Cost' cellRenderer={BOPQuantityFormatter} ></AgGridColumn>
+                                                        <AgGridColumn width={140} field="OldNetBoughtOutPartCost" headerName='Old Net BOP Cost' cellRenderer={decimalFormatter} ></AgGridColumn>
+                                                        <AgGridColumn width={140} field="NewNetBoughtOutPartCost" headerName='New Net BOP Cost' cellRenderer={decimalFormatter}></AgGridColumn>
                                                         <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" headerName='BOP Variance' cellRenderer={decimalFormatter} ></AgGridColumn>
                                                     </>}
 
