@@ -1397,7 +1397,7 @@ class AddMachineRate extends Component {
                               required={true}
                               handleChangeDescription={this.handlePlants}
                               valueDescription={this.state.selectedPlants}
-                              disabled={isEditFlag ? (IsCopied ? false : true) : this.state.isViewFlag ? true : false}
+                              disabled={(isEditFlag || isViewMode) ? (IsCopied ? false : true) : this.state.isViewFlag ? true : false}
                             />
                           </Col>)}
 
@@ -1622,7 +1622,7 @@ class AddMachineRate extends Component {
                                 <button
                                   type="button"
                                   className={`${isViewFlag ? 'disabled-button user-btn' : 'user-btn'} pull-left mr5`}
-                                  disabled={(this.state.isViewFlag || (isEditFlag && isMachineAssociated)) ? true : false}
+                                  disabled={(this.state.isViewFlag || (isEditFlag && isMachineAssociated) || isViewMode) ? true : false}
                                   onClick={this.processTableHandler}>
                                   <div className={'plus'}></div>ADD</button>
                                 <button
