@@ -1030,8 +1030,6 @@ function CostingSimulation(props) {
 
                                                     {(isSurfaceTreatment || showSurfaceTreatmentColumn) && <>
                                                         <AgGridColumn width={140} field="SurfaceArea" headerName='Surface Area' cellRenderer='operSTFormatter' ></AgGridColumn>
-
-
                                                         <AgGridColumn width={140} field="OldSTCost" headerName='Old ST Cost' cellRenderer="operSTFormatter"></AgGridColumn>
                                                         <AgGridColumn width={140} field="NewSTCost" headerName='New ST Cost' cellRenderer="operSTFormatter"></AgGridColumn>
                                                         <AgGridColumn width={140} field="OldSurfaceTreatmentRate" headerName='Old ST Rate' cellRenderer="operSTFormatter"></AgGridColumn>
