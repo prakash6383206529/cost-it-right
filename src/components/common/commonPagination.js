@@ -125,3 +125,22 @@ export var onBtNext = (thiss, master) => {
         thiss.setState({ currentRowIndex: nextNo })
     }
 };
+
+
+
+export var onPageSizeChanged = (thiss, newPageSize) => {
+
+    thiss.state.gridApi.paginationSetPageSize(Number(newPageSize));
+
+    if (Number(newPageSize) === 10) {
+        thiss.setState({ pageSize: { pageSize10: true, pageSize50: false, pageSize100: false } })
+    }
+    else if (Number(newPageSize) === 50) {
+        thiss.setState({ pageSize: { pageSize10: false, pageSize50: true, pageSize100: false } })
+    }
+    else if (Number(newPageSize) === 100) {
+        thiss.setState({ pageSize: { pageSize10: false, pageSize50: false, pageSize100: true } })
+
+    }
+
+}
