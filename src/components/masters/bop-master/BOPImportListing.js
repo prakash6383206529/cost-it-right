@@ -64,9 +64,7 @@ class BOPImportListing extends Component {
             totalRecordCount: 0,
             isFilterButtonClicked: false,
             currentRowIndex: 0,
-            pageSize10: true,
-            pageSize50: false,
-            pageSize100: false,
+            pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
         }
     }
 
@@ -615,9 +613,9 @@ class BOPImportListing extends Component {
                                     </div>
                                     <div className="d-flex pagination-button-container">
                                         <p><button className="previous-btn" type="button" disabled={false} onClick={() => this.onBtPrevious()}> </button></p>
-                                        {this.state.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 10)}</p>}
-                                        {this.state.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 50)}</p>}
-                                        {this.state.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 100)}</p>}
+                                        {this.state.pageSize.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 10)}</p>}
+                                        {this.state.pageSize.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 50)}</p>}
+                                        {this.state.pageSize.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 100)}</p>}
                                         <p><button className="next-btn" type="button" onClick={() => this.onBtNext()}> </button></p>
                                     </div>
                                 </div>
