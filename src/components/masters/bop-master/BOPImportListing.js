@@ -8,7 +8,7 @@ import { getBOPImportDataList, deleteBOP, getBOPCategorySelectList, getAllVendor
 import { getPlantSelectList, } from '../../../actions/Common';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
-import { onFloatingFilterChanged, onSearch, resetState, onBtPrevious, onBtNext } from '../../common/commonPagination'
+import { onFloatingFilterChanged, onSearch, resetState, onBtPrevious, onBtNext, onPageSizeChanged } from '../../common/commonPagination'
 import Toaster from '../../common/Toaster';
 import DayTime from '../../common/DayTimeWrapper'
 import BulkUpload from '../../massUpload/BulkUpload';
@@ -191,6 +191,10 @@ class BOPImportListing extends Component {
         onBtNext(this, "BOP")   // COMMON PAGINATION FUNCTION
     };
 
+    onPageSizeChanged = (newPageSize) => {
+        onPageSizeChanged(this, newPageSize)    // COMMON PAGINATION FUNCTION
+    };
+
     /**
     * @method editItemDetails
     * @description edit material type
@@ -349,21 +353,6 @@ class BOPImportListing extends Component {
         params.api.paginationGoToPage(0);
     };
 
-    onPageSizeChanged = (newPageSize) => {
-        var value = document.getElementById('page-size').value;
-        this.state.gridApi.paginationSetPageSize(Number(value));
-
-        if (Number(newPageSize) === 10) {
-            this.setState({ pageSize10: true, pageSize50: false, pageSize100: false })
-        }
-        else if (Number(newPageSize) === 50) {
-            this.setState({ pageSize10: false, pageSize50: true, pageSize100: false })
-        }
-        else if (Number(newPageSize) === 100) {
-            this.setState({ pageSize10: false, pageSize50: false, pageSize100: true })
-
-        }
-    };
 
     onBtExport = () => {
         let tempArr = []
