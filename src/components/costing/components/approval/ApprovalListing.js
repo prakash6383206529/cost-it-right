@@ -268,16 +268,16 @@ function ApprovalListing(props) {
       return Toaster.warning("Reason should be same for sending multiple costing for approval")
     }
     if (!allEqual(statusArray)) {
-      Toaster.warning('Status should be same for sending multiple costing for approval')
       gridApi.deselectAll()
+      return Toaster.warning('Status should be same for sending multiple costing for approval')
     }
     if (!allEqual(effectiveDateArray)) {
-      Toaster.warning('Effective Date should be same for sending multiple costing for approval')
       gridApi.deselectAll()
+      return Toaster.warning('Effective Date should be same for sending multiple costing for approval')
     }
     if (!allEqual(plantArray)) {
-      Toaster.warning('Plant should be same for sending multiple costing for approval')
       gridApi.deselectAll()
+      return Toaster.warning('Plant should be same for sending multiple costing for approval')
     }
 
     else {
