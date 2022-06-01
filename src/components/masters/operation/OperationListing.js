@@ -74,9 +74,7 @@ class OperationListing extends Component {
             totalRecordCount: 0,
             isFilterButtonClicked: false,
             currentRowIndex: 0,
-            pageSize10: true,
-            pageSize50: false,
-            pageSize100: false,
+            pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
         }
     }
 
@@ -721,8 +719,20 @@ class OperationListing extends Component {
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                             </Col>
                             <Col md="9" lg="9" className=" mb-3 d-flex justify-content-end">
-                                {(!isSimulation) &&
-                                    <div className="d-flex justify-content-end bd-highlight w100">
+
+
+                                <div className="d-flex justify-content-end bd-highlight w100">
+                                    {
+                                        <div className="warning-message d-flex align-items-center">
+                                            {this.state.warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
+                                        </div>
+                                    }
+
+                                    {
+                                        <button disabled={this.state.isSearchButtonDisable} title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch()}><div class="filter mr-0"></div></button>
+
+                                    }
+                                    {(!isSimulation) && <>
 
                                         {this.state.shown ?
                                             <button type="button" className="user-btn mr5 filter-btn-top mt3px" onClick={() => this.setState({ shown: !this.state.shown })}>
@@ -732,16 +742,6 @@ class OperationListing extends Component {
                                             ""
                                         }
 
-                                        {
-                                            <div className="warning-message d-flex align-items-center">
-                                                {this.state.warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
-                                            </div>
-                                        }
-
-                                        {
-                                            <button disabled={this.state.isSearchButtonDisable} title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch()}><div class="filter mr-0"></div></button>
-
-                                        }
                                         {AddAccessibility && !this.props?.isMasterSummaryDrawer && (
                                             <button
                                                 type="button"
@@ -777,18 +777,10 @@ class OperationListing extends Component {
                                                 </ExcelFile>
                                             </>
                                         }
-                                    </div>
-                                }
-                                {
-                                    <div className="warning-message d-flex align-items-center">
-                                        {this.state.warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
-                                    </div>
-                                }
+                                    </>
+                                    }
+                                </div>
 
-                                {
-                                    <button disabled={this.state.isSearchButtonDisable} title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch()}><div class="filter mr-0"></div></button>
-
-                                }
                                 <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => this.resetState()}>
                                     <div className="refresh mr-0"></div>
                                 </button>
@@ -841,9 +833,9 @@ class OperationListing extends Component {
                                 </div>
                                 <div className="d-flex pagination-button-container">
                                     <p><button className="previous-btn" type="button" disabled={false} onClick={() => this.onBtPrevious()}> </button></p>
-                                    {this.state.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 10)}</p>}
-                                    {this.state.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 50)}</p>}
-                                    {this.state.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 100)}</p>}
+                                    {this.state.pageSize.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 10)}</p>}
+                                    {this.state.pageSize.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 50)}</p>}
+                                    {this.state.pageSize.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 100)}</p>}
                                     <p><button className="next-btn" type="button" onClick={() => this.onBtNext()}> </button></p>
                                 </div>
                             </div>
