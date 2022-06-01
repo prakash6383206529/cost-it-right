@@ -788,6 +788,16 @@ class OperationListing extends Component {
                                         }
                                     </div>
                                 }
+                                {
+                                    <div className="warning-message d-flex align-items-center">
+                                        {this.state.warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
+                                    </div>
+                                }
+
+                                {
+                                    <button disabled={this.state.isSearchButtonDisable} title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch()}><div class="filter mr-0"></div></button>
+
+                                }
                                 <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => this.resetState()}>
                                     <div className="refresh mr-0"></div>
                                 </button>
