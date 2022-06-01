@@ -200,19 +200,19 @@ function ApprovalSummary(props) {
                         </span>
                       </th>
                       <th className='overflow'>
-                        <span className="d-block grey-text">{`Assembly/Part No.`}</span>
+                        <span className="d-block grey-text">{`Assembly/Part No.:`}</span>
                         <span className="d-block " title={partDetail.PartNumber}>
                           {partDetail.PartNumber ? partDetail.PartNumber : '-'}
                         </span>
                       </th>
                       <th className='overflow'>
-                        <span className="d-block grey-text">{`Assembly/Part Name`}</span>
+                        <span className="d-block grey-text">{`Assembly/Part Name:`}</span>
                         <span className="d-block" title={partDetail.PartName}>
                           {partDetail.PartName ? partDetail.PartName : '-'}
                         </span>
                       </th>
                       <th className='overflow-description'>
-                        <span className="d-block grey-text">{`Assembly/Part Description`}</span>
+                        <span className="d-block grey-text">{`Assembly/Part Description:`}</span>
                         <span className="d-block" title={partDetail.Description}>
                           {partDetail.Description ? partDetail.Description : '-'}
                         </span>

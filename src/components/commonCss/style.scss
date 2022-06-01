@@ -1344,15 +1344,8 @@ sans-serif;
           overflow: hidden;
           white-space: nowrap;
           text-overflow: ellipsis;
-          background-color: #fff;
           padding: 9px 5px;
           min-width: 186px;
-
-          &:hover {
-            overflow: visible;
-            min-width: fit-content;
-            z-index: 1;
-          }
         }
       }
     }
@@ -1381,6 +1374,20 @@ sans-serif;
         color: #3D4465;
       }
     }
+  }
+  .header-name {
+    max-width: 384px;
+    .header-name-button-container {
+      display: flex;
+      justify-content: space-between;
+      .action {
+        min-width: fit-content;
+      }
+      .element.d-inline-flex {
+        min-width: 0;
+      }
+    }
+   
   }
 }
 
@@ -1538,6 +1545,7 @@ sans-serif;
       top: unset;
       max-height: calc(100vh - 100px);
       height: fit-content;
+      min-height: 230px;
       padding-bottom: 10px;
     .container {
       max-width: 100%;
