@@ -711,7 +711,7 @@ class OperationListing extends Component {
         return (
             <div className="container-fluid">
                 {(this.state.isLoader && !this.props.isMasterSummaryDrawer) && <LoaderCustom />}
-                <div className={`ag-grid-react custom-pagination ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
+                <div className={`ag-grid-react ${(this.props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
                     <form>
 
                         <Row className={`pt-4 filter-row-large blue-before ${isSimulation ? "zindex-0" : ""}`}>
@@ -722,13 +722,13 @@ class OperationListing extends Component {
 
 
                                 <div className="d-flex justify-content-end bd-highlight w100">
-                                    {
+                                    {(this.props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) &&
                                         <div className="warning-message d-flex align-items-center">
                                             {this.state.warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                                         </div>
                                     }
 
-                                    {
+                                    {(this.props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) &&
                                         <button disabled={this.state.isSearchButtonDisable} title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch()}><div class="filter mr-0"></div></button>
 
                                     }
@@ -831,13 +831,15 @@ class OperationListing extends Component {
                                         <option value="100">100</option>
                                     </select>
                                 </div>
-                                <div className="d-flex pagination-button-container">
-                                    <p><button className="previous-btn" type="button" disabled={false} onClick={() => this.onBtPrevious()}> </button></p>
-                                    {this.state.pageSize.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 10)}</p>}
-                                    {this.state.pageSize.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 50)}</p>}
-                                    {this.state.pageSize.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 100)}</p>}
-                                    <p><button className="next-btn" type="button" onClick={() => this.onBtNext()}> </button></p>
-                                </div>
+                                {(this.props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) &&
+                                    <div className="d-flex pagination-button-container">
+                                        <p><button className="previous-btn" type="button" disabled={false} onClick={() => this.onBtPrevious()}> </button></p>
+                                        {this.state.pageSize.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 10)}</p>}
+                                        {this.state.pageSize.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 50)}</p>}
+                                        {this.state.pageSize.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 100)}</p>}
+                                        <p><button className="next-btn" type="button" onClick={() => this.onBtNext()}> </button></p>
+                                    </div>
+                                }
                             </div>
                         </div>
                     </div>
