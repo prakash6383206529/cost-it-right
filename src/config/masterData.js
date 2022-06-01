@@ -2519,6 +2519,20 @@ export const CostingSimulationDownloadST = [
     { label: "NewNetSurfaceTreatmentCost", value: "NewNetSurfaceTreatmentCost" },
     { label: "STVariance", value: "STVariance" },
 
+
+
+    { label: "OldSurfaceTreatmentRate", value: "OldSurfaceTreatmentRate" },
+    { label: "NewSurfaceTreatmentRate", value: "NewSurfaceTreatmentRate" },
+    { label: "OldSTCost", value: "OldSTCost" },
+    { label: "NewSTCost", value: "NewSTCost" },
+    { label: "OldSurfaceTreatmentCost", value: "OldSurfaceTreatmentCost" },
+    { label: "NewSurfaceTreatmentCost", value: "NewSurfaceTreatmentCost" },
+    { label: "OldTranspotationCost", value: "OldTranspotationCost" },
+    { label: "NewTranspotationCost", value: "NewTranspotationCost" },
+    { label: "OldNetSurfaceTreatmentCost", value: "OldNetSurfaceTreatmentCost" },
+    { label: "NewNetSurfaceTreatmentCost", value: "NewNetSurfaceTreatmentCost" },
+    { label: "STVariance", value: "STVariance" },
+
     { label: "OldOverheadCost", value: "OldOverheadCost" },
     { label: "NewOverheadCost", value: "NewOverheadCost" },
     { label: "OldProfitCost", value: "OldProfitCost" },
@@ -2561,6 +2575,8 @@ export const CostingSimulationDownloadOperation = [
     { label: "Operation Quantity", value: "Quantity" },
     { label: "OldOperationCost", value: "OldOperationCost" },
     { label: "NewOperationCost", value: "NewOperationCost" },
+    { label: "OldNetOperationCost", value: "OldNetOperationCost" },
+    { label: "NewNetOperationCost", value: "NewNetOperationCost" },
     { label: "OperationCostVariance", value: "OperationCostVariance" },
 
     { label: "OldOverheadCost", value: "OldOverheadCost" },
@@ -2603,6 +2619,8 @@ export const CostingSimulationDownloadBOP = [
     { label: "NewNetBoughtOutPartCost", value: "NewNetBoughtOutPartCost" },
     { label: "NetBoughtOutPartCostVariance", value: "NetBoughtOutPartCostVariance" },
     { label: "BOP Quantity", value: "BoughtOutPartQuantity" },
+    { label: "OldBOPRate", value: "OldBOPRate" },
+    { label: "NewBOPRate", value: "NewBOPRate" },
     { label: "OldBOPCost", value: "OldBOPCost" },
     { label: "NewBOPCost", value: "NewBOPCost" },
     { label: "BOPVariance", value: "BOPVariance" },
