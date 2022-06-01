@@ -2760,6 +2760,11 @@ body {
   }
   // ag-grid-react end
 }
+.ag-paging-panel {
+  .ag-paging-row-summary-panel {
+    display: none;
+  }
+}
 .ag-overlay-loading-center {
   display: none;
 }
