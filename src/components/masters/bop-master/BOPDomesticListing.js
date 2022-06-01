@@ -10,7 +10,7 @@ import {
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
-import { onFloatingFilterChanged, onSearch, resetState, onBtPrevious, onBtNext } from '../../common/commonPagination'
+import { onFloatingFilterChanged, onSearch, resetState, onBtPrevious, onBtNext, onPageSizeChanged } from '../../common/commonPagination'
 import DayTime from '../../common/DayTimeWrapper'
 import BulkUpload from '../../massUpload/BulkUpload';
 import { BOP_DOMESTIC_DOWNLOAD_EXCEl, } from '../../../config/masterData';
@@ -186,6 +186,11 @@ class BOPDomesticListing extends Component {
 
     };
 
+    onPageSizeChanged = (newPageSize) => {
+
+        onPageSizeChanged(this, newPageSize)  // COMMON PAGINATION FUNCTION
+    };
+
     componentDidUpdate(prevProps, prevState) {
         if (prevState.currentRowIndex !== this.state.currentRowIndex) {
             // Now fetch the new data here.
@@ -196,9 +201,7 @@ class BOPDomesticListing extends Component {
 
             }
         }
-
     }
-
 
     /**
     * @method editItemDetails
@@ -338,21 +341,6 @@ class BOPDomesticListing extends Component {
     onGridReady = (params) => {
         this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
         params.api.paginationGoToPage(0);
-    };
-
-    onPageSizeChanged = (newPageSize) => {
-        this.state.gridApi.paginationSetPageSize(Number(newPageSize));
-
-        if (Number(newPageSize) === 10) {
-            this.setState({ pageSize10: true, pageSize50: false, pageSize100: false })
-        }
-        else if (Number(newPageSize) === 50) {
-            this.setState({ pageSize10: false, pageSize50: true, pageSize100: false })
-        }
-        else if (Number(newPageSize) === 100) {
-            this.setState({ pageSize10: false, pageSize50: false, pageSize100: true })
-
-        }
     };
 
     onBtExport = () => {
