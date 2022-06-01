@@ -536,7 +536,6 @@ function AddFreight(props) {
                       Controller={Controller}
                       control={control}
                       register={register}
-                      mandatory={true}
                       rules={{
                         pattern: {
                           value: /^[0-9]\d*(\.\d+)?$/i,
