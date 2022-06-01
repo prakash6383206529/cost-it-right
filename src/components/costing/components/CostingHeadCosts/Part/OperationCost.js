@@ -212,9 +212,9 @@ function OperationCost(props) {
       tempData = { ...tempData, Quantity: 0, OperationCost: OperationCost }
       tempArr = Object.assign([...gridData], { [index]: tempData })
       setGridData(tempArr)
-      Toaster.warning('Please enter valid number.')
+      // Toaster.warning('Please enter valid number.')
       setTimeout(() => {
-        setValue(`${OperationGridFields}.${index}.Quantity`, 0)
+        setValue(`${OperationGridFields}.${index}.Quantity`, '')
       }, 200)
     }
   }

@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { required, getVendorCode, positiveAndDecimalNumber, maxLength15, acceptAllExceptSingleSpecialCharacter, maxLength70, maxLength512, checkForDecimalAndNull, checkForNull, decimalLengthsix } from "../../../helper/validation";
-import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField, focusOnError, renderDatePicker, } from '../../layout/FormInputs'
+import { renderText, renderNumberInputField, searchableSelect, renderMultiSelectField, renderTextAreaField, focusOnError, renderDatePicker, } from '../../layout/FormInputs'
 import { AcceptableRMUOM, FASTNERS } from '../../../config/masterData'
 import {
   getTechnologySelectList, getRawMaterialCategory, fetchGradeDataAPI, fetchSpecificationDataAPI, getCityBySupplier, getPlantByCity,
@@ -112,7 +112,8 @@ class AddRMDomestic extends Component {
       updatedObj: {},
       setDisable: false,
       disablePopup: false,
-      inputLoader: false
+      inputLoader: false,
+      attachmentLoader: false
     }
   }
   /**
@@ -889,6 +890,7 @@ class AddRMDomestic extends Component {
 
   // specify upload params and url for your files
   getUploadParams = ({ file, meta }) => {
+    this.setState({ attachmentLoader: true })
     return { url: 'https://httpbin.org/post' }
   }
 
@@ -899,7 +901,7 @@ class AddRMDomestic extends Component {
   setDisableFalseFunction = () => {
     const loop = Number(this.dropzone.current.files.length) - Number(this.state.files.length)
     if (Number(loop) === 1) {
-      this.setState({ setDisable: false })
+      this.setState({ setDisable: false, attachmentLoader: false })
     }
   }
 
@@ -1638,7 +1640,7 @@ class AddRMDomestic extends Component {
                               type="text"
                               placeholder={""}
                               validate={[positiveAndDecimalNumber]}
-                              component={renderText}
+                              component={renderNumberInputField}
                               required={false}
                               disabled={isViewFlag || (isEditFlag && isRMAssociated)}
                               onChange={this.handleCutOffPrice}
@@ -1653,7 +1655,7 @@ class AddRMDomestic extends Component {
                               type="text"
                               placeholder={"Enter"}
                               validate={[required, positiveAndDecimalNumber, maxLength15, decimalLengthsix]}
-                              component={renderText}
+                              component={renderNumberInputField}
                               onChange={this.handleBasicRate}
                               required={true}
                               disabled={isViewFlag || (isEditFlag && isRMAssociated)}
@@ -1669,7 +1671,7 @@ class AddRMDomestic extends Component {
                               type="text"
                               placeholder={"Enter"}
                               validate={[required, positiveAndDecimalNumber, maxLength15, decimalLengthsix]}
-                              component={renderText}
+                              component={renderNumberInputField}
                               required={true}
                               className=""
                               customClassName=" withBorder"
@@ -1686,7 +1688,7 @@ class AddRMDomestic extends Component {
                               placeholder={"Enter"}
                               // onChange={this.handleFreightCharges}
                               validate={[positiveAndDecimalNumber, maxLength15, decimalLengthsix]}
-                              component={renderText}
+                              component={renderNumberInputField}
                               required={false}
                               className=""
                               customClassName=" withBorder"
@@ -1701,7 +1703,7 @@ class AddRMDomestic extends Component {
                               type="text"
                               placeholder={"Enter"}
                               validate={[positiveAndDecimalNumber, maxLength15, decimalLengthsix]}
-                              component={renderText}
+                              component={renderNumberInputField}
                               required={false}
                               className=""
                               customClassName=" withBorder"
@@ -1780,6 +1782,7 @@ class AddRMDomestic extends Component {
                             <div className={`alert alert-danger mt-2 ${this.state.files.length === 3 ? '' : 'd-none'}`} role="alert">
                               Maximum file upload limit has been reached.
                             </div>
+
                             <div className={`${this.state.files.length >= 3 ? 'd-none' : ''}`}>
                               <Dropzone
                                 ref={this.dropzone}
@@ -1822,6 +1825,7 @@ class AddRMDomestic extends Component {
                           </Col>
                           <Col md="3">
                             <div className={"attachment-wrapper"}>
+                              {this.state.attachmentLoader && <LoaderCustom customClass="attachment-loader" />}
                               {this.state.files &&
                                 this.state.files.map((f) => {
                                   const withOutTild = f.FileURL.replace(

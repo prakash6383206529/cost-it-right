@@ -19,11 +19,12 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
-import { filterParams } from '../../common/DateFilter'
+import { onFloatingFilterChanged, onSearch, resetState, onBtPrevious, onBtNext } from '../../common/commonPagination'
 import { getFilteredData, userDetails, loggedInUserId, getConfigurationKey } from '../../../helper'
 import { getListingForSimulationCombined } from '../../simulation/actions/Simulation';
 import { masterFinalLevelUser } from '../../masters/actions/Material'
 import ProcessGroupDrawer from './ProcessGroupDrawer'
+import WarningMessage from '../../common/WarningMessage';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -53,6 +54,19 @@ class MachineRateListing extends Component {
             isProcessGroup: getConfigurationKey().IsMachineProcessGroup, // UNCOMMENT IT AFTER DONE FROM BACKEND AND REMOVE BELOW CODE
             // isProcessGroup: false,
             isOpenProcessGroupDrawer: false,
+
+            //states for pagination purpose
+            floatingFilterData: { CostingHead: "", Technologies: "", VendorName: "", Plants: "", MachineNumber: "", MachineTypeName: "", MachineTonnage: "", ProcessName: "", MachineRate: "", EffectiveDateNew: "" },
+            warningMessage: false,
+            filterModel: {},
+            isSearchButtonDisable: true,
+            pageNo: 1,
+            totalRecordCount: 0,
+            isFilterButtonClicked: false,
+            currentRowIndex: 0,
+            pageSize10: true,
+            pageSize50: false,
+            pageSize100: false,
         }
     }
 
@@ -72,7 +86,7 @@ class MachineRateListing extends Component {
             }
         }
         if (this.props.selectionForListingMasterAPI === 'Master') {
-            this.getDataList()
+            this.getDataList("", 0, "", 0, "", "", 0, 100, true, this.state.floatingFilterData)
         }
         let obj = {
             MasterId: MACHINE_MASTER_ID,
@@ -89,7 +103,7 @@ class MachineRateListing extends Component {
     }
 
 
-    getDataList = (costing_head = '', technology_id = 0, vendor_id = '', machine_type_id = 0, process_id = '', plant_id = '') => {
+    getDataList = (costing_head = '', technology_id = 0, vendor_id = '', machine_type_id = 0, process_id = '', plant_id = '', skip = 0, take = 100, isPagination = true, dataObj) => {
         const filterData = {
             costing_head: costing_head,
             technology_id: this.props.isSimulation ? this.props.technology : technology_id,
@@ -104,19 +118,61 @@ class MachineRateListing extends Component {
                 this.props?.changeTokenCheckBox(false)
             }
             this.setState({ isLoader: true })
-            this.props.getMachineDataList(filterData, (res) => {
+            let FloatingfilterData = this.state.filterModel
+            this.props.getMachineDataList(filterData, skip, take, isPagination, dataObj, (res) => {
                 if (this.props.isSimulation) {
                     this.props?.changeTokenCheckBox(true)
                 }
                 this.setState({ isLoader: false })
 
+                if (res) {
+                    if (res && res.data && res.data.DataList.length > 0) {
+                        this.setState({ totalRecordCount: res.data.DataList[0].TotalRecordCount })
+                    }
+                    let isReset = true
+                    setTimeout(() => {
+                        let obj = this.state.floatingFilterData
+                        for (var prop in obj) {
+                            if (obj[prop] !== "") {
+                                isReset = false
+                            }
+                        }
+                        // Sets the filter model via the grid API
+                        isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(FloatingfilterData))
+
+                    }, 300);
+
+                    setTimeout(() => {
+                        this.setState({ isFilterButtonClicked: false })
+                    }, 600);
+                }
             })
         }
     }
 
 
-    /**
+    onFloatingFilterChanged = (value) => {
+        onFloatingFilterChanged(value, gridOptions, this)   // COMMON FUNCTION
+    }
 
+    onSearch = () => {
+        onSearch(gridOptions, this, "Machine")  // COMMON PAGINATION FUNCTION
+    }
+
+    resetState = () => {
+        resetState(gridOptions, this, "Machine")  //COMMON PAGINATION FUNCTION
+    }
+
+    onBtPrevious = () => {
+        onBtPrevious(this, "Machine")       //COMMON PAGINATION FUNCTION
+    }
+
+    onBtNext = () => {
+        onBtNext(this, "Machine")   // COMMON PAGINATION FUNCTION
+    };
+
+    /**
+    
     /**
     * @method editItemDetails
     * @description edit material type
@@ -159,7 +215,7 @@ class MachineRateListing extends Component {
         this.props.copyMachine(Id, (res) => {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.COPY_MACHINE_SUCCESS);
-                this.getDataList()
+                this.resetState()
             }
         });
     }
@@ -180,7 +236,7 @@ class MachineRateListing extends Component {
         this.props.deleteMachine(ID, (res) => {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.DELETE_MACHINE_SUCCESS);
-                this.getDataList()
+                this.resetState()
             }
         });
     }
@@ -201,9 +257,9 @@ class MachineRateListing extends Component {
     }
 
     /**
-* @method buttonFormatter
-* @description Renders buttons
-*/
+    * @method buttonFormatter
+    * @description Renders buttons
+    */
     buttonFormatter = (props) => {
 
         const cellValue = props?.value;
@@ -283,11 +339,10 @@ class MachineRateListing extends Component {
     }
 
 
-
     /**
-  * @method effectiveDateFormatter
-  * @description Renders buttons
-  */
+    * @method effectiveDateFormatter
+    * @description Renders buttons
+    */
     effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
@@ -306,7 +361,7 @@ class MachineRateListing extends Component {
 
     closeBulkUploadDrawer = () => {
         this.setState({ isBulkUpload: false }, () => {
-            this.getDataList()
+            this.resetState()
         })
     }
 
@@ -355,8 +410,20 @@ class MachineRateListing extends Component {
 
         params.api.paginationGoToPage(0);
     };
+
     onPageSizeChanged = (newPageSize) => {
         this.state.gridApi.paginationSetPageSize(Number(newPageSize));
+
+        if (Number(newPageSize) === 10) {
+            this.setState({ pageSize10: true, pageSize50: false, pageSize100: false })
+        }
+        else if (Number(newPageSize) === 50) {
+            this.setState({ pageSize10: false, pageSize50: true, pageSize100: false })
+        }
+        else if (Number(newPageSize) === 100) {
+            this.setState({ pageSize10: false, pageSize50: false, pageSize100: true })
+
+        }
     };
 
     onBtExport = () => {
@@ -397,6 +464,39 @@ class MachineRateListing extends Component {
         const { handleSubmit, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility, isSimulation } = this.props;
         const { isBulkUpload } = this.state;
 
+        var filterParams = {
+            date: "",
+            comparator: function (filterLocalDateAtMidnight, cellValue) {
+                var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+                var newDate = filterLocalDateAtMidnight != null ? DayTime(filterLocalDateAtMidnight).format('DD/MM/YYYY') : '';
+                setDate(newDate)
+                if (dateAsString == null) return -1;
+                var dateParts = dateAsString.split('/');
+                var cellDate = new Date(
+                    Number(dateParts[2]),
+                    Number(dateParts[1]) - 1,
+                    Number(dateParts[0])
+                );
+                if (filterLocalDateAtMidnight.getTime() === cellDate.getTime()) {
+                    return 0;
+                }
+                if (cellDate < filterLocalDateAtMidnight) {
+                    return -1;
+                }
+                if (cellDate > filterLocalDateAtMidnight) {
+                    return 1;
+                }
+            },
+            browserDatePicker: true,
+            minValidYear: 2000,
+        };
+
+
+        var setDate = (date) => {
+            this.setState({ floatingFilterData: { ...this.state.floatingFilterData, EffectiveDateNew: date, newDate: date } })
+        }
+
+
         const isFirstColumn = (params) => {
             if (isSimulation) {
 
@@ -434,65 +534,75 @@ class MachineRateListing extends Component {
         }
 
         return (
-            <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
+            <div className={`ag-grid-react custom-pagination ${DownloadAccessibility ? "show-table-btn" : ""}`}>
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     {(this.state.isLoader && !this.props.isMasterSummaryDrawer) && <LoaderCustom />}
                     <Row className={`pt-4 filter-row-large ${this.props.isSimulation ? 'simulation-filter zindex-0' : ''}`}>
-                        <Col md="6" lg="6">
+                        <Col md="3" lg="3">
                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                         </Col>
-                        <Col md="6" lg="6" className="pl-0 mb-3">
+                        <Col md="9" lg="9" className="pl-0 mb-3">
                             <div className="d-flex justify-content-end bd-highlight w100">
-                                <div>
-                                    {this.state.shown ? (
-                                        <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
-                                            <div className="cancel-icon-white"></div></button>
-                                    ) : (
-                                        <>
-                                        </>
-                                    )}
-                                    {AddAccessibility && (
-                                        <button
-                                            type="button"
-                                            className={"user-btn mr5"}
-                                            onClick={this.displayForm}
-                                            title="Add"
-                                        >
-                                            <div className={"plus mr-0"}></div>
-                                            {/* ADD */}
-                                        </button>
-                                    )}
-                                    {BulkUploadAccessibility && (
-                                        <button
-                                            type="button"
-                                            className={"user-btn mr5"}
-                                            onClick={this.bulkToggle}
-                                            title="Bulk Upload"
-                                        >
-                                            <div className={"upload mr-0"}></div>
-                                            {/* Bulk Upload */}
-                                        </button>
-                                    )}
-                                    {
-                                        DownloadAccessibility &&
-                                        <>
 
-                                            <ExcelFile filename={'Machine Rate'} fileExtension={'.xls'} element={
-                                                <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-                                                    {/* DOWNLOAD */}
-                                                </button>}>
+                                {this.state.shown ? (
+                                    <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
+                                        <div className="cancel-icon-white"></div></button>
+                                ) : (
+                                    <>
+                                    </>
+                                )}
 
-                                                {this.onBtExport()}
-                                            </ExcelFile>
+                                {
+                                    <div className="warning-message d-flex align-items-center">
+                                        {this.state.warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
+                                    </div>
+                                }
 
-                                        </>
+                                {
+                                    <button disabled={this.state.isSearchButtonDisable} title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch()}><div class="filter mr-0"></div></button>
 
-                                    }
-                                    <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
-                                        <div className="refresh mr-0"></div>
+                                }
+                                {AddAccessibility && (
+                                    <button
+                                        type="button"
+                                        className={"user-btn mr5"}
+                                        onClick={this.displayForm}
+                                        title="Add"
+                                    >
+                                        <div className={"plus mr-0"}></div>
+                                        {/* ADD */}
                                     </button>
+                                )}
+                                {BulkUploadAccessibility && (
+                                    <button
+                                        type="button"
+                                        className={"user-btn mr5"}
+                                        onClick={this.bulkToggle}
+                                        title="Bulk Upload"
+                                    >
+                                        <div className={"upload mr-0"}></div>
+                                        {/* Bulk Upload */}
+                                    </button>
+                                )}
+                                {
+                                    DownloadAccessibility &&
+                                    <>
 
-                                </div>
+                                        <ExcelFile filename={'Machine Rate'} fileExtension={'.xls'} element={
+                                            <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                                {/* DOWNLOAD */}
+                                            </button>}>
+
+                                            {this.onBtExport()}
+                                        </ExcelFile>
+
+                                    </>
+
+                                }
+                                <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+                                    <div className="refresh mr-0"></div>
+                                </button>
+
                             </div>
                         </Col>
                     </Row>
@@ -521,6 +631,7 @@ class MachineRateListing extends Component {
 
                                     rowSelection={'multiple'}
                                     onSelectionChanged={onRowSelect}
+                                    onFilterModified={this.onFloatingFilterChanged}
                                 >
                                     <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
                                     {!isSimulation && <AgGridColumn field="Technologies" headerName="Technology"></AgGridColumn>}
@@ -534,29 +645,40 @@ class MachineRateListing extends Component {
                                     <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                     {!isSimulation && !this.props?.isMasterSummaryDrawer && <AgGridColumn field="MachineId" width={230} cellClass={"actions-wrapper"} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                 </AgGridReact>
-                                <div className="paging-container d-inline-block float-right">
-                                    <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
-                                        <option value="10" selected={true}>10</option>
-                                        <option value="50">50</option>
-                                        <option value="100">100</option>
-                                    </select>
+                                <div className='button-wrapper'>
+                                    <div className="paging-container d-inline-block float-right">
+                                        <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
+                                            <option value="10" selected={true}>10</option>
+                                            <option value="50">50</option>
+                                            <option value="100">100</option>
+                                        </select>
+                                    </div>
+                                    <div className="d-flex pagination-button-container">
+                                        <p><button className="previous-btn" type="button" disabled={false} onClick={() => this.onBtPrevious()}> </button></p>
+                                        {this.state.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 10)}</p>}
+                                        {this.state.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 50)}</p>}
+                                        {this.state.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 100)}</p>}
+                                        <p><button className="next-btn" type="button" onClick={() => this.onBtNext()}> </button></p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
                     </Col>
                 </Row>
-                {isBulkUpload && <BulkUpload
-                    isOpen={isBulkUpload}
-                    closeDrawer={this.closeBulkUploadDrawer}
-                    isEditFlag={false}
-                    fileName={'Machine'}
-                    isZBCVBCTemplate={true}
-                    isMachineMoreTemplate={true}
-                    messageLabel={'Machine'}
-                    anchor={'right'}
-                    isFinalApprovar={this.state.isFinalApprovar}
-                />}
+                {
+                    isBulkUpload && <BulkUpload
+                        isOpen={isBulkUpload}
+                        closeDrawer={this.closeBulkUploadDrawer}
+                        isEditFlag={false}
+                        fileName={'Machine'}
+                        isZBCVBCTemplate={true}
+                        isMachineMoreTemplate={true}
+                        messageLabel={'Machine'}
+                        anchor={'right'}
+                        isFinalApprovar={this.state.isFinalApprovar}
+                    />
+                }
                 {
                     this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.MACHINE_DELETE_ALERT}`} />
                 }
