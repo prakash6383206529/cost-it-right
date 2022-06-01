@@ -546,7 +546,7 @@ function CostingSimulation(props) {
     const operSTFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const temp = row.IsMultiOperation === true ? 'Multiple Operation' : cell
+        const temp = row.IsMultiOperation === true ? 'Multiple Surface Treatment' : cell
         return cell != null ? temp : '-';
     }
 
