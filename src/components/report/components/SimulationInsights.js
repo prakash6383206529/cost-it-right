@@ -376,7 +376,7 @@ function SimulationInsights(props) {
 
   return (
     // <div>{`hello`}</div>
-    <div className="container-fluid report-listing-page ag-grid-react part-manage-component">
+    <div className="container-fluid report-listing-page ag-grid-react custom-pagination">
       {loader && <LoaderCustom />}
       <h1 className="mb-0">Simulation Insights Report</h1>
       <Row className="pt-4 blue-before ">
