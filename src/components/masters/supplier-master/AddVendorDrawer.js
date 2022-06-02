@@ -6,7 +6,7 @@ import {
     required, upper, email, minLength7, maxLength70, maxLength80, minLength10, maxLength71, maxLength5, maxLength12, alphaNumeric, acceptAllExceptSingleSpecialCharacter,
     maxLength15, postiveNumber, maxLength10, maxLength6, checkWhiteSpaces
 } from "../../../helper/validation";
-import { renderText, renderEmailInputField, renderMultiSelectField, searchableSelect } from "../../layout/FormInputs";
+import { renderText, renderEmailInputField, renderMultiSelectField, searchableSelect, renderNumberInputField } from "../../layout/FormInputs";
 import { createSupplierAPI, updateSupplierAPI, getSupplierByIdAPI, getRadioButtonSupplierType, getVendorTypesSelectList, } from '../actions/Supplier';
 import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, getVendorPlantSelectList, getAllCities, getCityByCountry, } from '../../../actions/Common';
 import Toaster from '../../common/Toaster';
@@ -560,8 +560,8 @@ class AddVendorDrawer extends Component {
                                                     name={"PhoneNumber"}
                                                     type="text"
                                                     placeholder={''}
-                                                    validate={[postiveNumber, maxLength12, checkWhiteSpaces]}
-                                                    component={renderText}
+                                                    validate={[postiveNumber, minLength10, maxLength12, checkWhiteSpaces]}
+                                                    component={renderNumberInputField}
                                                     //required={true}
                                                     maxLength={12}
                                                     customClassName={'withBorder'}
@@ -575,7 +575,7 @@ class AddVendorDrawer extends Component {
                                                     type="text"
                                                     placeholder={'Ext'}
                                                     validate={[postiveNumber, maxLength5, checkWhiteSpaces]}
-                                                    component={renderText}
+                                                    component={renderNumberInputField}
                                                     //required={true}
                                                     // maxLength={5}
                                                     customClassName={'withBorder'}
@@ -589,7 +589,7 @@ class AddVendorDrawer extends Component {
                                             label="Mobile Number"
                                             type="text"
                                             placeholder={''}
-                                            component={renderText}
+                                            component={renderNumberInputField}
                                             isDisabled={false}
                                             validate={[postiveNumber, minLength10, maxLength12, checkWhiteSpaces]}
                                             maxLength={12}
@@ -657,7 +657,7 @@ class AddVendorDrawer extends Component {
                                             type="text"
                                             placeholder={''}
                                             validate={[required, postiveNumber, maxLength6]}
-                                            component={renderText}
+                                            component={renderNumberInputField}
                                             required={true}
                                             maxLength={26}
                                             className=" "

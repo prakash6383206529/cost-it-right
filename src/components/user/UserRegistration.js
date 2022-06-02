@@ -8,7 +8,7 @@ import {
   minLength3, minLength6, minLength10, maxLength11, maxLength12, required, email, minLength7, maxLength18,
   maxLength6, checkWhiteSpaces, maxLength15, postiveNumber, maxLength80, maxLength5, acceptAllExceptSingleSpecialCharacter
 } from "../../helper/validation";
-import { renderPasswordInputField, focusOnError, renderEmailInputField, renderText, searchableSelect, renderMultiSelectField, } from "../layout/FormInputs";
+import { renderPasswordInputField, focusOnError, renderEmailInputField, renderText, searchableSelect, renderMultiSelectField, renderNumberInputField, } from "../layout/FormInputs";
 import {
   registerUserAPI, getAllRoleAPI, getAllDepartmentAPI, getUserDataAPI, getAllUserDataAPI, updateUserAPI, setEmptyUserDataAPI, getRoleDataAPI, getAllTechnologyAPI,
   getPermissionByUser, getUsersTechnologyLevelAPI, setUserAdditionalPermission, setUserTechnologyLevelForCosting, updateUserTechnologyLevelForCosting,
@@ -1268,7 +1268,7 @@ class UserRegistration extends Component {
                           label="Mobile"
                           type="text"
                           placeholder={'Enter'}
-                          component={renderText}
+                          component={renderNumberInputField}
                           isDisabled={false}
                           validate={[postiveNumber, minLength10, maxLength12, checkWhiteSpaces]}
                           required={false}
@@ -1285,7 +1285,7 @@ class UserRegistration extends Component {
                               type="text"
                               placeholder={'Enter'}
                               validate={[postiveNumber, minLength10, maxLength12]}
-                              component={renderText}
+                              component={renderNumberInputField}
                               //required={true}
                               maxLength={12}
                               customClassName={'withBorder'}
@@ -1298,7 +1298,7 @@ class UserRegistration extends Component {
                               type="text"
                               placeholder={'Ext'}
                               validate={[postiveNumber, maxLength5]}
-                              component={renderText}
+                              component={renderNumberInputField}
                               //required={true}
                               maxLength={5}
                               customClassName={'withBorder w100'}

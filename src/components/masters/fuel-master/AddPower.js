@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Table } from 'reactstrap';
 import { required, checkForNull, getVendorCode, checkForDecimalAndNull, positiveAndDecimalNumber, maxLength10, maxLength20, checkPercentageValue, decimalLength2, decimalLengthFour, decimalLengthThree } from "../../../helper/validation";
-import { renderNumberInputField, searchableSelect, renderMultiSelectField, focusOnError, renderText, } from "../../layout/FormInputs";
+import { renderNumberInputField, searchableSelect, renderMultiSelectField, focusOnError } from "../../layout/FormInputs";
 import { getPowerTypeSelectList, getUOMSelectList, getPlantBySupplier, } from '../../../actions/Common';
 import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
 import {
@@ -1425,7 +1425,7 @@ class AddPower extends Component {
                                     type="text"
                                     placeholder={'Enter'}
                                     validate={isCostPerUnitConfigurable ? [] : [required, positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
-                                    component={renderText}
+                                    component={renderNumberInputField}
                                     required={!isCostPerUnitConfigurable ? true : false}
                                     className=""
                                     customClassName=" withBorder"
@@ -1551,7 +1551,7 @@ class AddPower extends Component {
                                     type="text"
                                     placeholder={'Enter'}
                                     validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
-                                    component={renderText}
+                                    component={renderNumberInputField}
                                     className=""
                                     customClassName=" withBorder"
                                     disabled={isEditFlagForStateElectricity ? true : false}
@@ -1630,7 +1630,7 @@ class AddPower extends Component {
                                   type="text"
                                   placeholder={'Enter'}
                                   validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthThree]}
-                                  component={renderText}
+                                  component={renderNumberInputField}
                                   required={true}
                                   className=""
                                   customClassName=" withBorder"
@@ -1701,8 +1701,7 @@ class AddPower extends Component {
                                     type="text"
                                     placeholder={'Enter'}
                                     validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
-                                    component={renderText}
-                                    //required={true}
+                                    component={renderNumberInputField}
                                     className=""
                                     customClassName=" withBorder"
                                     disabled={false}
@@ -1719,8 +1718,7 @@ class AddPower extends Component {
                                     type="text"
                                     placeholder={'Enter'}
                                     validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
-                                    component={renderText}
-                                    //required={true}
+                                    component={renderNumberInputField}
                                     className=""
                                     customClassName=" withBorder"
                                     disabled={false}
@@ -1776,7 +1774,7 @@ class AddPower extends Component {
                                         type="text"
                                         placeholder={'Enter'}
                                         validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthThree]}
-                                        component={renderText}
+                                        component={renderNumberInputField}
                                         required={true}
                                         className=""
                                         customClassName=" withBorder"
@@ -1796,7 +1794,7 @@ class AddPower extends Component {
                                     type="text"
                                     placeholder={'Enter'}
                                     validate={[positiveAndDecimalNumber, maxLength10, decimalLengthThree]}
-                                    component={renderText}
+                                    component={renderNumberInputField}
                                     required={true}
                                     className=""
                                     customClassName=" withBorder"
@@ -1830,7 +1828,7 @@ class AddPower extends Component {
                                     type="text"
                                     placeholder={'Enter'}
                                     validate={[positiveAndDecimalNumber, maxLength10, decimalLengthThree]}
-                                    component={renderText}
+                                    component={renderNumberInputField}
                                     required={true}
                                     className=""
                                     customClassName=" withBorder"

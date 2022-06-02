@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector, propTypes } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { required, positiveAndDecimalNumber, postiveNumber, maxLength10, checkPercentageValue, decimalLengthThree, } from "../../../helper/validation";
-import { renderDatePicker, renderText, searchableSelect, } from "../../layout/FormInputs";
+import { renderDatePicker, renderNumberInputField, searchableSelect, } from "../../layout/FormInputs";
 import { updateInterestRate, createInterestRate, getPaymentTermsAppliSelectList, getICCAppliSelectList, getInterestRateData, } from '../actions/InterestRateMaster';
 import { getVendorWithVendorCodeSelectList, getPlantSelectListByType } from '../../../actions/Common';
 import { getVendorListByVendorType, } from '../actions/Material';
@@ -593,7 +593,7 @@ class AddInterestRate extends Component {
                             placeholder={"Enter"}
                             validate={[required, positiveAndDecimalNumber, decimalLengthThree]}
                             max={100}
-                            component={renderText}
+                            component={renderNumberInputField}
                             required={true}
                             onChange={(event) => this.handleChangeAnnualIccPercentage(event.target.value)}
                             disabled={isViewMode}
@@ -644,7 +644,7 @@ class AddInterestRate extends Component {
                               type="text"
                               placeholder={"Enter"}
                               validate={[postiveNumber, maxLength10]}
-                              component={renderText}
+                              component={renderNumberInputField}
                               required={false}
                               onChange={(event) => this.handleChangeRepaymentPeriod(event.target.value)}
                               disabled={isViewMode}
@@ -659,7 +659,7 @@ class AddInterestRate extends Component {
                               type="text"
                               placeholder={"Enter"}
                               validate={[positiveAndDecimalNumber, decimalLengthThree]}
-                              component={renderText}
+                              component={renderNumberInputField}
                               max={100}
                               required={false}
                               onChange={(event) => this.handleChangePaymentTermPercentage(event.target.value)}
