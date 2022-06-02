@@ -676,7 +676,6 @@ class AddFreight extends Component {
                                     value={this.state.vendorName}
                                     noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
                                     isDisabled={(isEditFlag || this.state.inputLoader) ? true : false} />
-                                  {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
                                 </div>
                                 {!isEditFlag && (
                                   <div
@@ -685,6 +684,7 @@ class AddFreight extends Component {
                                   ></div>
                                 )}
                               </div>
+                              {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
                             </Col>
                           )}
                           <Col md="3">
