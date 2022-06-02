@@ -100,6 +100,7 @@ export function saveRawMaterialCalculationForSheetMetal(data, callback) {
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
       apiErrors(error);
+      callback(error);
     });
   };
 }
@@ -139,6 +140,7 @@ export function saveRawMaterialCalculationForForging(data, callback) {
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
       apiErrors(error);
+      callback(error);
     });
   };
 }
@@ -180,6 +182,7 @@ export function saveRawMaterialCalculationForFerrous(data, callback) {
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
       apiErrors(error);
+      callback(error);
     });
   };
 }
@@ -221,6 +224,7 @@ export function saveRawMaterialCalculationForPlastic(data, callback) {
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
       apiErrors(error);
+      callback(error);
     });
   };
 }
@@ -261,6 +265,7 @@ export function saveRawMaterialCalculationForCorrugatedBox(data, callback) {
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
       apiErrors(error);
+      callback(error);
     });
   };
 }
@@ -302,6 +307,7 @@ export function saveRawMaterialCalculationForDieCasting(data, callback) {
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
       apiErrors(error);
+      callback(error);
     });
   };
 }
@@ -340,6 +346,7 @@ export function saveRawMaterialCalculationForRubber(data, callback) {
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
       apiErrors(error);
+      callback(error);
     });
   };
 }

@@ -453,7 +453,7 @@ export function renderNumberInputField(field) {
       <div className="input-group">
         <input
           {...others}
-          type="number"
+          type={'number'}
           className={InputClassName}
           maxLength={field.maxLength}
           value={field.Value}
