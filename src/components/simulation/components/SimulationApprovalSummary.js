@@ -371,7 +371,27 @@ function SimulationApprovalSummary(props) {
 
 
     const renderColumn = () => {
-        let finalGrid = [], isTokenAPI = false
+        let finalGrid = [], isTokenAPI = false, downloadGrid = []
+
+        downloadGrid = dataForDownload && dataForDownload.map((item) => {
+            if (item.IsMultipleRM === true) {
+                item.RMName = 'Multiple RM'
+                item.RMCode = 'Multiple RM'
+                item.RMSpecs = 'Multiple RM'
+                item.RMGrade = 'Multiple RM'
+            } if (item.IsMultipleOperation === true) {
+                item.OperationName = 'Multiple Operation'
+                item.OperationCode = 'Multiple Operation'
+            } if (item.IsMultipleSTOperatrion === true) {
+                item.OperationName = 'Multiple Surface Treatment'
+                item.OperationCode = 'Multiple Surface Treatment'
+            } if (item.IsMultipleBOP === true) {
+                item.BoughtOutPartName = 'Multiple BOP'
+                item.BoughtOutPartNumber = 'Multiple BOP'
+            }
+            return item
+        })
+
         if (showBOPColumn === true || showRMColumn === true || showOperationColumn === true || showSurfaceTreatmentColumn === true ||
             showExchangeRateColumn === true || showMachineRateColumn === true || showCombinedProcessColumn === true) {
             if (showBOPColumn || isBOPDomesticOrImport) {
@@ -410,16 +430,16 @@ function SimulationApprovalSummary(props) {
         switch (String(SimulationTechnologyId)) {
             case RMDOMESTIC:
             case RMIMPORT:
-                return returnExcelColumn(isTokenAPI ? finalGrid : SIMULATIONAPPROVALSUMMARYDOWNLOADRM, dataForDownload.length > 0 ? dataForDownload : [])
+                return returnExcelColumn(isTokenAPI ? finalGrid : SIMULATIONAPPROVALSUMMARYDOWNLOADRM, downloadGrid.length > 0 ? downloadGrid : [])
             case SURFACETREATMENT:
-                return returnExcelColumn(isTokenAPI ? finalGrid : SIMULATIONAPPROVALSUMMARYDOWNLOADST, dataForDownload.length > 0 ? dataForDownload : [])
+                return returnExcelColumn(isTokenAPI ? finalGrid : SIMULATIONAPPROVALSUMMARYDOWNLOADST, downloadGrid.length > 0 ? downloadGrid : [])
             case OPERATIONS:
-                return returnExcelColumn(isTokenAPI ? finalGrid : SIMULATIONAPPROVALSUMMARYDOWNLOADOPERATION, dataForDownload.length > 0 ? dataForDownload : [])
+                return returnExcelColumn(isTokenAPI ? finalGrid : SIMULATIONAPPROVALSUMMARYDOWNLOADOPERATION, downloadGrid.length > 0 ? downloadGrid : [])
             case BOPDOMESTIC:
             case BOPIMPORT:
-                return returnExcelColumn(isTokenAPI ? finalGrid : SIMULATIONAPPROVALSUMMARYDOWNLOADBOP, dataForDownload.length > 0 ? dataForDownload : [])
+                return returnExcelColumn(isTokenAPI ? finalGrid : SIMULATIONAPPROVALSUMMARYDOWNLOADBOP, downloadGrid.length > 0 ? downloadGrid : [])
             case COMBINED_PROCESS:
-                return returnExcelColumn(isTokenAPI ? finalGrid : SIMULATIONAPPROVALSUMMARYDOWNLOADCP, dataForDownload.length > 0 ? dataForDownload : [])
+                return returnExcelColumn(isTokenAPI ? finalGrid : SIMULATIONAPPROVALSUMMARYDOWNLOADCP, downloadGrid.length > 0 ? downloadGrid : [])
             default:
                 break;
         }
