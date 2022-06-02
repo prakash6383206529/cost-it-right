@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Table } from "reactstrap";
 import { required, checkForNull, number, positiveAndDecimalNumber, maxLength10, checkForDecimalAndNull, decimalLengthFour } from "../../../helper/validation";
-import { renderText, searchableSelect } from "../../layout/FormInputs";
+import { renderNumberInputField, searchableSelect } from "../../layout/FormInputs";
 import { fetchSupplierCityDataAPI, getCityByCountry, getAllCity } from "../../../actions/Common";
 import { getVendorWithVendorCodeSelectList } from "../actions/Supplier";
 import { getVendorListByVendorType } from "../actions/Material";
@@ -758,7 +758,7 @@ class AddFreight extends Component {
                               type="text"
                               placeholder={"Enter"}
                               validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
-                              component={renderText}
+                              component={renderNumberInputField}
                               disabled={isViewMode}
                               className=""
                               customClassName=" withBorder mn-height-auto"
@@ -779,7 +779,7 @@ class AddFreight extends Component {
                               type="text"
                               placeholder={"Enter"}
                               validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
-                              component={renderText}
+                              component={renderNumberInputField}
                               disabled={isViewMode}
                               className=" "
                               customClassName=" withBorder"
@@ -792,7 +792,7 @@ class AddFreight extends Component {
                               type="text"
                               placeholder={"Enter"}
                               validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
-                              component={renderText}
+                              component={renderNumberInputField}
                               disabled={isViewMode}
                               className=" "
                               customClassName=" withBorder"
@@ -847,7 +847,7 @@ class AddFreight extends Component {
                               type="text"
                               placeholder={"Enter"}
                               validate={[positiveAndDecimalNumber, maxLength10]}
-                              component={renderText}
+                              component={renderNumberInputField}
                               //required={true}
                               disabled={isViewMode}
                               className=" "

@@ -4,7 +4,7 @@ import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
 import { required, maxLength6, maxLength80, checkWhiteSpaces, minLength10, alphaNumeric, maxLength71, maxLength5, acceptAllExceptSingleSpecialCharacter, maxLength4, postiveNumber, maxLength12, } from "../../../helper/validation";
 import { userDetails, loggedInUserId } from "../../../helper/auth";
-import { renderText, searchableSelect } from "../../layout/FormInputs";
+import { renderNumberInputField, renderText, searchableSelect } from "../../layout/FormInputs";
 import { createPlantAPI, getPlantUnitAPI, updatePlantAPI, getComapanySelectList } from '../actions/Plant';
 import {
   fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, fetchSupplierCityDataAPI,
@@ -402,7 +402,7 @@ class AddZBCPlant extends Component {
                           type="text"
                           placeholder={""}
                           validate={[postiveNumber, minLength10, maxLength12, checkWhiteSpaces]}
-                          component={renderText}
+                          component={renderNumberInputField}
                           maxLength={12}
                           className=""
                           customClassName={"withBorder"}
@@ -416,7 +416,7 @@ class AddZBCPlant extends Component {
                           type="text"
                           placeholder={""}
                           validate={[postiveNumber, maxLength5, checkWhiteSpaces]}
-                          component={renderText}
+                          component={renderNumberInputField}
                           maxLength={5}
                           className=""
                           customClassName={"withBorder"}

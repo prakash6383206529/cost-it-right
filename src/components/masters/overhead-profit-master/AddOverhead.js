@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Label } from 'reactstrap';
 import { required, getVendorCode, positiveAndDecimalNumber, maxLength15, checkPercentageValue, decimalLengthThree } from "../../../helper/validation";
-import { searchableSelect, renderTextAreaField, renderText, renderDatePicker } from "../../layout/FormInputs";
+import { searchableSelect, renderTextAreaField, renderDatePicker, renderNumberInputField } from "../../layout/FormInputs";
 import { fetchModelTypeAPI, fetchCostingHeadsAPI, } from '../../../actions/Common';
 import { getVendorWithVendorCodeSelectList } from '../actions/Supplier';
 import {
@@ -1008,7 +1008,7 @@ class AddOverhead extends Component {
                               validate={
                                 !isOverheadPercent ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []
                               }
-                              component={renderText}
+                              component={renderNumberInputField}
                               onBlur={this.handlePercent}
                               required={!isOverheadPercent ? true : false}
                               onChange={(event) => this.handleChangeOverheadPercentage(event.target.value)}
@@ -1027,7 +1027,7 @@ class AddOverhead extends Component {
                               type="text"
                               placeholder={!isRM ? "Enter" : ""}
                               validate={!isRM ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []}
-                              component={renderText}
+                              component={renderNumberInputField}
                               required={!isRM ? true : false}
                               onChange={(event) => this.handleChangeOverheadPercentageRM(event.target.value)}
                               className=""
@@ -1044,7 +1044,7 @@ class AddOverhead extends Component {
                               type="text"
                               placeholder={!isCC ? "Enter" : ""}
                               validate={!isCC ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []}
-                              component={renderText}
+                              component={renderNumberInputField}
                               required={!isCC ? true : false}
                               onChange={(event) => this.handleChangeOverheadPercentageCC(event.target.value)}
                               className=""
@@ -1061,7 +1061,7 @@ class AddOverhead extends Component {
                               type="text"
                               placeholder={!isBOP ? "Enter" : ""}
                               validate={!isBOP ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []}
-                              component={renderText}
+                              component={renderNumberInputField}
                               required={!isBOP ? true : false}
                               onChange={(event) => this.handleChangeOverheadPercentageBOP(event.target.value)}
                               className=""
