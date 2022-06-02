@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Col, Row } from 'reactstrap'
 import { saveRawMaterialCalculationForSheetMetal } from '../../../actions/CostWorking'
 import HeaderTitle from '../../../../common/HeaderTitle'
-import { SearchableSelectHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
+import { SearchableSelectHookForm, NumberFieldHookForm, } from '../../../../layout/HookFormInputs'
 import Switch from 'react-switch'
 import {
   checkForDecimalAndNull, checkForNull, getNetSurfaceArea, getNetSurfaceAreaBothSide, loggedInUserId, getWeightFromDensity, convertmmTocm, setValueAccToUOM,
@@ -16,6 +16,16 @@ import Toaster from '../../../../common/Toaster'
 import { G, KG, MG, STD, } from '../../../../../config/constants'
 import { AcceptableSheetMetalUOM } from '../../../../../config/masterData'
 import { ViewCostingContext } from '../../CostingDetails'
+import { debounce } from 'lodash'
+
+function IsolateReRender(control) {
+  const values = useWatch({
+    control,
+    name: ['OuterDiameter', 'Thickness', 'SheetLength', 'PartLength'],
+  });
+
+  return values;
+}
 
 function Pipe(props) {
 
@@ -93,13 +103,14 @@ function Pipe(props) {
   const tempOldObj = WeightCalculatorRequest
   const [GrossWeight, setGrossWeights] = useState(WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== null ? WeightCalculatorRequest.GrossWeight : '')
   const [FinishWeightOfSheet, setFinishWeights] = useState(WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? convert(WeightCalculatorRequest.FinishWeight, WeightCalculatorRequest.UOMForDimension) : '')
-
-
-
-  const fieldValues = useWatch({
-    control,
-    name: ['OuterDiameter', 'Thickness', 'SheetLength', 'PartLength'],
-  })
+  const [isDisable, setIsDisable] = useState(false)
+  let fields = IsolateReRender(control)
+  let fieldValues = {
+    OuterDiameter: fields && fields[0],
+    Thickness: fields && fields[1],
+    SheetLength: fields && fields[2],
+    PartLength: fields && fields[3],
+  }
 
   const dispatch = useDispatch()
 
@@ -385,8 +396,8 @@ function Pipe(props) {
    * @method onSubmit
    * @description Used to Submit the form
    */
-  const onSubmit = (values) => {
-
+  const onSubmit = debounce(handleSubmit((values) => {
+    setIsDisable(true)
     if (WeightCalculatorRequest && WeightCalculatorRequest.WeightCalculationId !== "00000000-0000-0000-0000-000000000000") {
       if (tempOldObj.GrossWeight !== dataToSend.GrossWeight || tempOldObj.FinishWeight !== getValues('FinishWeightOfSheet') || tempOldObj.NetSurfaceArea !== dataToSend.NetSurfaceArea || tempOldObj.UOMForDimensionId !== UOMDimension.value) {
         setIsChangeApplied(true)
@@ -426,14 +437,14 @@ function Pipe(props) {
     }
 
     dispatch(saveRawMaterialCalculationForSheetMetal(data, res => {
-
+      setIsDisable(false)
       if (res.data.Result) {
         data.WeightCalculationId = res.data.Identity
         Toaster.success("Calculation saved successfully")
         props.toggleDrawer('', data)
       }
     }))
-  }
+  }), 500)
 
   const handleUnit = (value) => {
     setValue('UOMDimension', { label: value.label, value: value.value })
@@ -465,7 +476,7 @@ function Pipe(props) {
     <>
       <div className="user-page p-0">
         <div>
-          <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}
+          <form noValidate className="form"
             onKeyDown={(e) => { handleKeyDown(e, onSubmit.bind(this)); }}>
             <div className="costing-border border-top-0 px-4">
               <Row>
@@ -478,7 +489,7 @@ function Pipe(props) {
               </Row>
               <Row className={''}>
                 <Col md="3">
-                  <TextFieldHookForm
+                  <NumberFieldHookForm
                     label={`Outer Diameter(cm)`}
                     name={'OuterDiameter'}
                     Controller={Controller}
@@ -501,7 +512,7 @@ function Pipe(props) {
                   />
                 </Col>
                 <Col md="3">
-                  <TextFieldHookForm
+                  <NumberFieldHookForm
                     label={`Thickness(mm)`}
                     name={'Thickness'}
                     Controller={Controller}
@@ -524,7 +535,7 @@ function Pipe(props) {
                   />
                 </Col>
                 <Col md="3">
-                  <TextFieldHookForm
+                  <NumberFieldHookForm
                     label={`Inner Diameter(cm)`}
                     name={'InnerDiameter'}
                     Controller={Controller}
@@ -546,7 +557,7 @@ function Pipe(props) {
 
               <Row>
                 <Col md="3">
-                  <TextFieldHookForm
+                  <NumberFieldHookForm
                     label={`Length of Sheet(cm)`}
                     name={'SheetLength'}
                     Controller={Controller}
@@ -569,7 +580,7 @@ function Pipe(props) {
                   />
                 </Col>
                 <Col md="3">
-                  <TextFieldHookForm
+                  <NumberFieldHookForm
                     label={`Length of Part(cm)`}
                     name={'PartLength'}
                     Controller={Controller}
@@ -592,7 +603,7 @@ function Pipe(props) {
                   />
                 </Col>
                 <Col md="3">
-                  <TextFieldHookForm
+                  <NumberFieldHookForm
                     label="No. of Parts/Sheet"
                     name={'NumberOfPartsPerSheet'}
                     Controller={Controller}
@@ -615,7 +626,7 @@ function Pipe(props) {
                   />
                 </Col>
                 <Col md="3">
-                  <TextFieldHookForm
+                  <NumberFieldHookForm
                     label={`Length of Scrap(cm)`}
                     name={'ScrapLength'}
                     Controller={Controller}
@@ -641,7 +652,7 @@ function Pipe(props) {
 
               <Row className={''}>
                 <Col md="3">
-                  <TextFieldHookForm
+                  <NumberFieldHookForm
                     label={`Weight of Sheet(gm)`}
                     name={'WeightofSheet'}
                     Controller={Controller}
@@ -664,7 +675,7 @@ function Pipe(props) {
                   />
                 </Col>
                 <Col md="3">
-                  <TextFieldHookForm
+                  <NumberFieldHookForm
                     label={`Weight of Part(gm)`}
                     name={'WeightofPart'}
                     Controller={Controller}
@@ -687,7 +698,7 @@ function Pipe(props) {
                   />
                 </Col>
                 <Col md="3">
-                  <TextFieldHookForm
+                  <NumberFieldHookForm
                     label={`Weight of Scrap(gm)`}
                     name={'WeightofScrap'}
                     Controller={Controller}
@@ -747,7 +758,7 @@ function Pipe(props) {
               <hr className="mx-n4 w-auto" />
               <Row>
                 <Col md="3">
-                  <TextFieldHookForm
+                  <NumberFieldHookForm
                     label={UnitFormat()}
                     name={'NetSurfaceArea'}
                     Controller={Controller}
@@ -784,7 +795,7 @@ function Pipe(props) {
 
                 </Col>
                 <Col md="3">
-                  <TextFieldHookForm
+                  <NumberFieldHookForm
                     label={`Gross Weight(${UOMDimension.label})`}
                     name={'GrossWeight'}
                     Controller={Controller}
@@ -803,7 +814,7 @@ function Pipe(props) {
                   />
                 </Col>
                 <Col md="3">
-                  <TextFieldHookForm
+                  <NumberFieldHookForm
                     label={`Finish Weight(${UOMDimension.label})`}
                     name={'FinishWeightOfSheet'}
                     Controller={Controller}
@@ -837,7 +848,9 @@ function Pipe(props) {
                   <div className={'cancel-icon'}></div> {'Cancel'}
                 </button>
                 <button
-                  type={'submit'}
+                  type="button"
+                  onClick={onSubmit}
+                  disabled={props.CostingViewMode || isDisable ? true : false}
                   className="submit-button save-btn">
                   <div className={'save-icon'}></div>
                   {'Save'}

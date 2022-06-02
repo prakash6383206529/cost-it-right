@@ -244,6 +244,7 @@ function AddVendorDrawer(props) {
                       mandatory={true}
                       handleChange={handleDestinationPlantChange}
                       errors={errors.DestinationPlant}
+                      disabled={VendorInputLoader}
                     />
                   </Col>}
 
@@ -262,6 +263,7 @@ function AddVendorDrawer(props) {
                       mandatory={true}
                       handleChange={handleChangeVendorPlant}
                       errors={errors.VendorPlant}
+                      disabled={VendorInputLoader}
                     />
                   </Col>}
               </Row>

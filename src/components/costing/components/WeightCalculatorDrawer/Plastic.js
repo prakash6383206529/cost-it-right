@@ -9,6 +9,7 @@ import LossStandardTable from './LossStandardTable'
 import { saveRawMaterialCalculationForPlastic } from '../../actions/CostWorking'
 import Toaster from '../../../common/Toaster'
 import { setPlasticArray } from '../../actions/Costing'
+import { debounce } from 'lodash'
 
 function Plastic(props) {
   const { item, rmRowData, isSummary, CostingViewMode, DisableMasterBatchCheckbox } = props
@@ -57,7 +58,7 @@ function Plastic(props) {
     burningValue: WeightCalculatorRequest && WeightCalculatorRequest.BurningValue !== undefined ? WeightCalculatorRequest.BurningValue : '',
     grossWeight: WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== undefined ? WeightCalculatorRequest.GrossWeight : '',
   })
-
+  const [isDisable, setIsDisable] = useState(false)
 
 
   const { register, control, setValue, getValues, handleSubmit, formState: { errors }, } = useForm({
@@ -167,7 +168,8 @@ function Plastic(props) {
   const cancel = () => {
     props.toggleDrawer('')
   }
-  const onSubmit = () => {
+  const onSubmit = debounce(handleSubmit((values) => {
+    setIsDisable(true)
     DisableMasterBatchCheckbox(true)
     let obj = {}
     obj.PlasticWeightCalculatorId = WeightCalculatorRequest && WeightCalculatorRequest.PlasticWeightCalculatorId ? WeightCalculatorRequest.PlasticWeightCalculatorId : "0"
@@ -194,6 +196,7 @@ function Plastic(props) {
     obj.NetLossWeight = lostWeight
 
     dispatch(saveRawMaterialCalculationForPlastic(obj, res => {
+      setIsDisable(false)
       if (res.data.Result) {
         obj.WeightCalculationId = res.data.Identity
         Toaster.success("Calculation saved successfully")
@@ -201,7 +204,7 @@ function Plastic(props) {
         props.toggleDrawer('', obj)
       }
     }))
-  }
+  }), 500);
 
   const tableData = (value = []) => {
     setTableVal(value)
@@ -224,7 +227,7 @@ function Plastic(props) {
   return (
     <Fragment>
       <Row>
-        <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}
+        <form noValidate className="form"
           onKeyDown={(e) => { handleKeyDown(e, onSubmit.bind(this)); }}>
           <Col md="12">
             <div className="costing-border px-4">
@@ -442,7 +445,9 @@ function Plastic(props) {
               <div className={'cancel-icon'}></div> {'Cancel'}
             </button>
             <button
-              type={'submit'}
+              type="button"
+              onClick={onSubmit}
+              disabled={props.CostingViewMode || isDisable ? true : false}
               className="submit-button save-btn">
               <div className={'save-icon'}></div>
               {'Save'}

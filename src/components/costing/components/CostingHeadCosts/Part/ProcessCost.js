@@ -17,6 +17,7 @@ import Popup from 'reactjs-popup';
 import OperationCostExcludedOverhead from './OperationCostExcludedOverhead';
 import { MACHINING, } from '../../../../../config/masterData'
 import { findProcessCost, findProductionPerHour } from '../../../CostingUtil';
+import { debounce } from 'lodash';
 
 let counter = 0;
 function ProcessCost(props) {
@@ -135,7 +136,7 @@ function ProcessCost(props) {
    * @method toggleWeightCalculator
    * @description For opening weight calculator
   */
-  const toggleWeightCalculator = (id, list = [], parentIndex = '') => {
+  const toggleWeightCalculator = debounce((id, list = [], parentIndex = '') => {
     setCalciIndex(id)
     setParentCalciIndex(parentIndex)
     setListData(list)
@@ -175,7 +176,7 @@ function ProcessCost(props) {
       }
     }))
     // setCalculatorData(calciData)
-  }
+  }, 500);
 
   const closeCalculatorDrawer = (e, value, weightData = {}) => {
 

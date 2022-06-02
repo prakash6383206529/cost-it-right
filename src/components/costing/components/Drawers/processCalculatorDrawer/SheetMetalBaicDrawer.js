@@ -4,13 +4,14 @@ import { Row, Col } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
 import { costingInfoContext } from '../../CostingDetailStepTwo';
-import { TextFieldHookForm, } from '../../../../layout/HookFormInputs'
+import { NumberFieldHookForm, } from '../../../../layout/HookFormInputs'
 import { checkForDecimalAndNull, checkForNull, checkPercentageValue, getConfigurationKey, loggedInUserId } from '../../../../../helper'
 import { AREA, DIMENSIONLESS, MASS, TIME, VOLUMETYPE } from '../../../../../config/constants';
 import { saveDefaultProcessCostCalculationData } from '../../../actions/CostWorking';
 import Toaster from '../../../../common/Toaster';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { findProcessCost } from '../../../CostingUtil';
+import { debounce } from 'lodash';
 
 function SheetMetalBaicDrawer(props) {
 
@@ -42,6 +43,7 @@ function SheetMetalBaicDrawer(props) {
   const [hide, setHide] = useState(false)
   const [prodHr, setProdHr] = useState('')
   const [quantityState, setQuantityState] = useState(Object.keys(WeightCalculatorRequest).length > 0 || WeightCalculatorRequest.Quantity !== undefined ? checkForNull(WeightCalculatorRequest.Quantity) : 1)
+  const [isDisable, setIsDisable] = useState(false)
 
   const tempProcessObj = Object.keys(WeightCalculatorRequest).length > 0 ? WeightCalculatorRequest.ProcessCost !== null ? WeightCalculatorRequest.ProcessCost : '' : ''
   const fieldValues = useWatch({
@@ -106,7 +108,8 @@ function SheetMetalBaicDrawer(props) {
 
   }, [prodHr])
 
-  const onSubmit = (value) => {
+  const onSubmit = debounce(handleSubmit((value) => {
+    setIsDisable(true)
     let obj = {}
     obj.ProcessDefaultCalculatorId = props.calculatorData.ProcessDefaultCalculatorId ? props.calculatorData.ProcessDefaultCalculatorId : "00000000-0000-0000-0000-000000000000"
     obj.CostingProcessDetailsIdRef = WeightCalculatorRequest && WeightCalculatorRequest.CostingProcessDetailsIdRef ? WeightCalculatorRequest.CostingProcessDetailsIdRef : "00000000-0000-0000-0000-000000000000"
@@ -128,13 +131,14 @@ function SheetMetalBaicDrawer(props) {
     obj.UnitType = props.calculatorData.UOMType
     obj.PartPerHour = props.calculatorData.UOMType === TIME ? checkForNull(quantityState) : '-'
     dispatch(saveDefaultProcessCostCalculationData(obj, res => {
+      setIsDisable(false)
       if (res.data.Result) {
         obj.ProcessCalculationId = res.data.Identity
         Toaster.success('Calculation saved sucessfully.')
         calculateMachineTime('0.00', obj)
       }
     }))
-  }
+  }), 500);
   /**
    * @method calculateProcessCost
    * @description FOR CALCULATING PROCESS COST 
@@ -196,7 +200,6 @@ function SheetMetalBaicDrawer(props) {
           break;
       }
     }
-
   }
 
   const onCancel = () => {
@@ -244,14 +247,14 @@ function SheetMetalBaicDrawer(props) {
     <Fragment>
       <Row>
         <Col>
-          <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}
+          <form noValidate className="form"
             onKeyDown={(e) => { handleKeyDown(e, onSubmit.bind(this)); }}>
             <Col md="12" className={''}>
               <div className="border pl-3 pr-3 pt-3">
 
                 <Row className={'mt15'}>
-                  <Col md="3">
-                    <TextFieldHookForm
+                  <Col md="4">
+                    <NumberFieldHookForm
                       label={`Tonnage(T)`}
                       name={'MachineTonnage'}
                       Controller={Controller}
@@ -268,8 +271,8 @@ function SheetMetalBaicDrawer(props) {
                   </Col>
                   {
                     hide &&
-                    <Col md="3">
-                      <TextFieldHookForm
+                    <Col md="4">
+                      <NumberFieldHookForm
                         label={`Cycle Time(sec)`}
                         name={'CycleTime'}
                         Controller={Controller}
@@ -294,7 +297,7 @@ function SheetMetalBaicDrawer(props) {
                   }
 
                   <Col md="4">
-                    <TextFieldHookForm
+                    <NumberFieldHookForm
                       label={`Cavity`}
                       name={'Cavity'}
                       Controller={Controller}
@@ -317,8 +320,8 @@ function SheetMetalBaicDrawer(props) {
                     />
                   </Col>
 
-                  <Col md="3">
-                    <TextFieldHookForm
+                  <Col md="4">
+                    <NumberFieldHookForm
                       label={`Efficiency(%)`}
                       name={'Efficiency'}
                       Controller={Controller}
@@ -342,8 +345,8 @@ function SheetMetalBaicDrawer(props) {
                       disabled={props.CostingViewMode ? true : false}
                     />
                   </Col>
-                  <Col md="3">
-                    <TextFieldHookForm
+                  <Col md="4">
+                    <NumberFieldHookForm
                       label={props.calculatorData.UOMType === MASS ? `Weight` : props.calculatorData.UOMType === TIME ? `Parts/Hour` : `Quantity`}
                       name={'Quantity'}
                       Controller={Controller}
@@ -361,8 +364,8 @@ function SheetMetalBaicDrawer(props) {
                       disabled={(props.calculatorData.UOMType === TIME || props.CostingViewMode) ? true : false}
                     />
                   </Col>
-                  <Col md="3">
-                    <TextFieldHookForm
+                  <Col md="4">
+                    <NumberFieldHookForm
                       label={`Process Cost`}
                       name={'ProcessCost'}
                       Controller={Controller}
@@ -396,9 +399,9 @@ function SheetMetalBaicDrawer(props) {
                 CANCEL
               </button>
               <button
-                type="submit"
-                // disabled={isSubmitted ? true : false}
-                disabled={props.CostingViewMode ? true : false}
+                type="button"
+                onClick={onSubmit}
+                disabled={props.CostingViewMode || isDisable ? true : false}
                 className="btn-primary save-btn"
               >
                 <div className={"save-icon"}></div>
