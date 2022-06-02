@@ -1499,10 +1499,10 @@ class AddRMImport extends Component {
                                   noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
                                   isDisabled={isEditFlag || isViewFlag || this.state.inputLoader} />
 
-                                {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
                               </div>
                               {!isEditFlag && (<div onClick={this.vendorToggler} className={"plus-icon-square  right"}   ></div>)}
                             </div>
+                            {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
                           </Col>
                           {initialConfiguration && initialConfiguration.IsVendorPlantConfigurable && this.state.IsVendor && (
                             <Col md="3">
