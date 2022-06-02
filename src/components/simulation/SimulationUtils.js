@@ -195,6 +195,8 @@ export const impactmasterDownload = (impactedMasterData) => {
     return multiDataSet
 }
 
+
+// **START** SHOWING STATUS BOX ON THE TOP FOR ERROR AND SUCCESS RESPONSE
 export const ErrorMessage = (props) => {
     const [recordInsertStatusBox, setRecordInsertStatusBox] = useState(true);
     const [amendmentStatusBox, setAmendmentStatusBox] = useState(true);
@@ -297,3 +299,4 @@ export const ErrorMessage = (props) => {
         }
     </>)
 }
+// **END** SHOWING STATUS BOX ON THE TOP FOR ERROR AND SUCCESS RESPONSE
