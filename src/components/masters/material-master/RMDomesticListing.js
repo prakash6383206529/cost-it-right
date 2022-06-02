@@ -56,12 +56,10 @@ function RMDomesticListing(props) {
     const [filterModel, setFilterModel] = useState({});
     const [isSearchButtonDisable, setIsSearchButtonDisable] = useState(true);
     const [pageNo, setPageNo] = useState(1)
-    const [totalRecordCount, setTotalRecordCount] = useState(0)
+    const [totalRecordCount, setTotalRecordCount] = useState(1)
     const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
     const [currentRowIndex, setCurrentRowIndex] = useState(0)
-    const [pageSize10, setPageSize10] = useState(true)
-    const [pageSize50, setPageSize50] = useState(false)
-    const [pageSize100, setPageSize100] = useState(false)
+    const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
     const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", RawMaterialCode: "", Category: "", MaterialType: "", Plant: "", UOM: "", VendorName: "", BasicRate: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDate: "" })
 
 
@@ -109,6 +107,7 @@ function RMDomesticListing(props) {
     }
 
     useEffect(() => {
+        console.log(props.isMasterSummaryDrawer, "ismaster summary");
         callFilterApi()
     }, [shown])
 
@@ -116,6 +115,7 @@ function RMDomesticListing(props) {
     useEffect(() => {
         if (rmDataList?.length > 0) {
             setTotalRecordCount(rmDataList[0].TotalRecordCount)
+            console.log(rmDataList[0].TotalRecordCount, rmDataList[0], "total");
         }
 
     }, [rmDataList])
@@ -476,19 +476,13 @@ function RMDomesticListing(props) {
         gridApi.paginationSetPageSize(Number(newPageSize));
 
         if (Number(newPageSize) === 10) {
-            setPageSize10(true)
-            setPageSize50(false)
-            setPageSize100(false)
+            setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
         }
         else if (Number(newPageSize) === 50) {
-            setPageSize10(false)
-            setPageSize50(true)
-            setPageSize100(false)
+            setPageSize(prevState => ({ ...prevState, pageSize50: true, pageSize10: false, pageSize100: false }))
         }
         else if (Number(newPageSize) === 100) {
-            setPageSize10(false)
-            setPageSize50(false)
-            setPageSize100(true)
+            setPageSize(prevState => ({ ...prevState, pageSize100: true, pageSize10: false, pageSize50: false }))
         }
     };
 
@@ -589,7 +583,7 @@ function RMDomesticListing(props) {
     }
 
     return (
-        <div className={`ag-grid-react custom-pagination ${DownloadAccessibility ? "show-table-btn" : ""}`}>
+        <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${DownloadAccessibility ? "show-table-btn" : ""}`}>
             {(loader && !props.isMasterSummaryDrawer) && <LoaderCustom />}
             <Row className={`filter-row-large pt-4 ${props?.isSimulation ? 'zindex-0 ' : ''}`}>
                 <Col md="3" lg="3">
@@ -612,11 +606,14 @@ function RMDomesticListing(props) {
                                 <div className="d-flex justify-content-end bd-highlight w100">
 
                                     <>
-
-                                        <div className="warning-message d-flex align-items-center">
-                                            {warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
-                                        </div>
-                                        <button disabled={isSearchButtonDisable} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
+                                        {(props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) &&
+                                            <div className="warning-message d-flex align-items-center">
+                                                {warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
+                                            </div>
+                                        }
+                                        {(props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) &&
+                                            <button disabled={isSearchButtonDisable} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
+                                        }
 
                                         {AddAccessibility && (
                                             <button
@@ -716,13 +713,15 @@ function RMDomesticListing(props) {
                                         <option value="100">100</option>
                                     </select>
                                 </div>
-                                <div className="d-flex pagination-button-container">
-                                    <p><button className="previous-btn" type="button" disabled={false} onClick={() => onBtPrevious()}> </button></p>
-                                    {pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 10)}</p>}
-                                    {pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 50)}</p>}
-                                    {pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 100)}</p>}
-                                    <p><button className="next-btn" type="button" onClick={() => onBtNext()}> </button></p>
-                                </div>
+                                {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) &&
+                                    <div className="d-flex pagination-button-container">
+                                        <p><button className="previous-btn" type="button" disabled={false} onClick={() => onBtPrevious()}> </button></p>
+                                        {pageSize.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 10)}</p>}
+                                        {pageSize.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 50)}</p>}
+                                        {pageSize.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 100)}</p>}
+                                        <p><button className="next-btn" type="button" onClick={() => onBtNext()}> </button></p>
+                                    </div>
+                                }
                             </div>
                         </div>
                     </div>

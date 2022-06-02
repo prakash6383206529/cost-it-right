@@ -8,7 +8,7 @@ import { getBOPImportDataList, deleteBOP, getBOPCategorySelectList, getAllVendor
 import { getPlantSelectList, } from '../../../actions/Common';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
-import { onFloatingFilterChanged, onSearch, resetState, onBtPrevious, onBtNext } from '../../common/commonPagination'
+import { onFloatingFilterChanged, onSearch, resetState, onBtPrevious, onBtNext, onPageSizeChanged } from '../../common/commonPagination'
 import Toaster from '../../common/Toaster';
 import DayTime from '../../common/DayTimeWrapper'
 import BulkUpload from '../../massUpload/BulkUpload';
@@ -64,9 +64,7 @@ class BOPImportListing extends Component {
             totalRecordCount: 0,
             isFilterButtonClicked: false,
             currentRowIndex: 0,
-            pageSize10: true,
-            pageSize50: false,
-            pageSize100: false,
+            pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
         }
     }
 
@@ -189,6 +187,10 @@ class BOPImportListing extends Component {
 
     onBtNext = () => {
         onBtNext(this, "BOP")   // COMMON PAGINATION FUNCTION
+    };
+
+    onPageSizeChanged = (newPageSize) => {
+        onPageSizeChanged(this, newPageSize)    // COMMON PAGINATION FUNCTION
     };
 
     /**
@@ -349,21 +351,6 @@ class BOPImportListing extends Component {
         params.api.paginationGoToPage(0);
     };
 
-    onPageSizeChanged = (newPageSize) => {
-        var value = document.getElementById('page-size').value;
-        this.state.gridApi.paginationSetPageSize(Number(value));
-
-        if (Number(newPageSize) === 10) {
-            this.setState({ pageSize10: true, pageSize50: false, pageSize100: false })
-        }
-        else if (Number(newPageSize) === 50) {
-            this.setState({ pageSize10: false, pageSize50: true, pageSize100: false })
-        }
-        else if (Number(newPageSize) === 100) {
-            this.setState({ pageSize10: false, pageSize50: false, pageSize100: true })
-
-        }
-    };
 
     onBtExport = () => {
         let tempArr = []
@@ -626,9 +613,9 @@ class BOPImportListing extends Component {
                                     </div>
                                     <div className="d-flex pagination-button-container">
                                         <p><button className="previous-btn" type="button" disabled={false} onClick={() => this.onBtPrevious()}> </button></p>
-                                        {this.state.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 10)}</p>}
-                                        {this.state.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 50)}</p>}
-                                        {this.state.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 100)}</p>}
+                                        {this.state.pageSize.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 10)}</p>}
+                                        {this.state.pageSize.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 50)}</p>}
+                                        {this.state.pageSize.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 100)}</p>}
                                         <p><button className="next-btn" type="button" onClick={() => this.onBtNext()}> </button></p>
                                     </div>
                                 </div>
