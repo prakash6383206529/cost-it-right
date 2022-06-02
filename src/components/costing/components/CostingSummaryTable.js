@@ -754,7 +754,9 @@ const CostingSummaryTable = (props) => {
       Toaster.warning('A costing is pending for approval for this part or one of it\'s child part. Please approve that first')
     }
   }
-  const vendorNameUIClass = () => {
+
+  //**START** ADD  DYNAMIC CLASS FOR COSTING SUMMARY WHEN COMPONENT REUSE IN DIFFERENT PAGE 
+  const vendorNameClass = () => {
     switch (true) {
       case simulationMode:
         return "simulation-costing-summary"
@@ -764,6 +766,7 @@ const CostingSummaryTable = (props) => {
         return "main-costing-summary"
     }
   }
+  //**END** ADD  DYNAMIC CLASS FOR COSTING SUMMARY WHEN COMPONENT REUSE IN DIFFERENT PAGE
   return (
     <Fragment>
       {
@@ -819,7 +822,7 @@ const CostingSummaryTable = (props) => {
             </Col>
           </Row>
           <div ref={componentRef}>
-            <Row id="summaryPdf" className={`${customClass} ${vendorNameUIClass()} ${drawerDetailPDF ? 'remove-space-border' : ''} ${simulationMode ? "simulation-print" : ""}`}>
+            <Row id="summaryPdf" className={`${customClass} ${vendorNameClass()} ${drawerDetailPDF ? 'remove-space-border' : ''} ${simulationMode ? "simulation-print" : ""}`}>
               {(drawerDetailPDF || pdfHead) &&
                 <>
                   <Col md="12" className='pdf-header-wrapper d-flex justify-content-between'>
