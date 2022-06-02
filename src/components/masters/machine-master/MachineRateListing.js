@@ -20,7 +20,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { onFloatingFilterChanged, onSearch, resetState, onBtPrevious, onBtNext, onPageSizeChanged } from '../../common/commonPagination'
-import { getFilteredData, userDetails, loggedInUserId, getConfigurationKey } from '../../../helper'
+import { getFilteredData, userDetails, loggedInUserId, getConfigurationKey, userDepartmetList } from '../../../helper'
 import { getListingForSimulationCombined } from '../../simulation/actions/Simulation';
 import { masterFinalLevelUser } from '../../masters/actions/Material'
 import ProcessGroupDrawer from './ProcessGroupDrawer'
@@ -56,7 +56,7 @@ class MachineRateListing extends Component {
             isOpenProcessGroupDrawer: false,
 
             //states for pagination purpose
-            floatingFilterData: { CostingHead: "", Technologies: "", VendorName: "", Plants: "", MachineNumber: "", MachineTypeName: "", MachineTonnage: "", ProcessName: "", MachineRate: "", EffectiveDateNew: "" },
+            floatingFilterData: { CostingHead: "", Technologies: "", VendorName: "", Plants: "", MachineNumber: "", MachineTypeName: "", MachineTonnage: "", ProcessName: "", MachineRate: "", EffectiveDateNew: "", DepartmentCode: this.props.isSimulation ? userDepartmetList() : "" },
             warningMessage: false,
             filterModel: {},
             isSearchButtonDisable: true,
@@ -131,7 +131,7 @@ class MachineRateListing extends Component {
                     setTimeout(() => {
                         let obj = this.state.floatingFilterData
                         for (var prop in obj) {
-                            if (obj[prop] !== "") {
+                            if (prop !== "DepartmentCode" && obj[prop] !== "") {
                                 isReset = false
                             }
                         }
