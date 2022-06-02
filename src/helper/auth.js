@@ -45,3 +45,8 @@ export function getConfigurationKey() {
   const configurationKey = reactLocalStorage.getObject('InitialConfiguration')
   return configurationKey
 }
+
+export function userDepartmetList() {
+  const userDetail = reactLocalStorage.getObject('departmentList')
+  return userDetail
+}
