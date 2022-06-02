@@ -755,6 +755,18 @@ const CostingSummaryTable = (props) => {
     }
   }
 
+  //**START** ADD  DYNAMIC CLASS FOR COSTING SUMMARY WHEN COMPONENT REUSE IN DIFFERENT PAGE 
+  const vendorNameClass = () => {
+    switch (true) {
+      case simulationMode:
+        return "simulation-costing-summary"
+      case approvalMode:
+        return "costing-approval-summary"
+      default:
+        return "main-costing-summary"
+    }
+  }
+  //**END** ADD  DYNAMIC CLASS FOR COSTING SUMMARY WHEN COMPONENT REUSE IN DIFFERENT PAGE
   return (
     <Fragment>
       {
@@ -810,7 +822,7 @@ const CostingSummaryTable = (props) => {
             </Col>
           </Row>
           <div ref={componentRef}>
-            <Row id="summaryPdf" className={`${customClass} ${drawerDetailPDF ? 'remove-space-border' : ''} ${simulationMode ? "simulation-print" : ""}`}>
+            <Row id="summaryPdf" className={`${customClass} ${vendorNameClass()} ${drawerDetailPDF ? 'remove-space-border' : ''} ${simulationMode ? "simulation-print" : ""}`}>
               {(drawerDetailPDF || pdfHead) &&
                 <>
                   <Col md="12" className='pdf-header-wrapper d-flex justify-content-between'>
@@ -833,44 +845,45 @@ const CostingSummaryTable = (props) => {
 
                         {viewCostingData &&
                           viewCostingData.map((data, index) => {
-
+                            const title = data.zbc === 0 ? data.plantName : (data.zbc === 1 ? data.vendorName + "(" + data.vendorCode + ") " + (localStorage.IsVendorPlantConfigurable ? " (" + data.vendorPlantName + ") " : "") : 'CBC') + "(SOB: " + data.shareOfBusinessPercent + "%)"
                             return (
                               <th scope="col" className='header-name'>
-                                <div class="element w-60 d-inline-flex align-items-center">
-                                  {
-                                    !isApproval && (data.status === DRAFT) && <>
-                                      {!pdfHead && !drawerDetailPDF && <div class="custom-check1 d-inline-block">
-                                        <label
-                                          className="custom-checkbox pl-0 mb-0"
-                                          onChange={() => moduleHandler(data.costingId, 'top', data)}
-                                        >
-                                          {''}
-                                          <input
-                                            type="checkbox"
-                                            value={"All"}
-                                            // disabled={true}
-                                            checked={multipleCostings.includes(data.costingId)}
-                                          />
-                                          <span
-                                            className=" before-box"
-                                            checked={multipleCostings.includes(data.costingId)}
+                                <div className='header-name-button-container'>
+                                  <div class="element d-inline-flex align-items-center">
+                                    {
+                                      !isApproval && (data.status === DRAFT) && <>
+                                        {!pdfHead && !drawerDetailPDF && <div class="custom-check1 d-inline-block">
+                                          <label
+                                            className="custom-checkbox pl-0 mb-0"
                                             onChange={() => moduleHandler(data.costingId, 'top', data)}
-                                          />
-                                        </label>
-                                      </div>}
-                                    </>
-                                  }
-                                  {
-                                    (isApproval && data.CostingHeading !== '-') ? <span>{data.CostingHeading}</span> : <span className={`checkbox-text`}>{data.zbc === 0 ? `ZBC(${data.plantName})` : data.zbc === 1 ? `${data.vendorName}(${data.vendorCode}) ${localStorage.IsVendorPlantConfigurable ? `(${data.vendorPlantName})` : ''}` : 'CBC'}{` (SOB: ${data.shareOfBusinessPercent}%)`}</span>
-                                  }
-                                </div>
+                                          >
+                                            {''}
+                                            <input
+                                              type="checkbox"
+                                              value={"All"}
+                                              // disabled={true}
+                                              checked={multipleCostings.includes(data.costingId)}
+                                            />
+                                            <span
+                                              className=" before-box"
+                                              checked={multipleCostings.includes(data.costingId)}
+                                              onChange={() => moduleHandler(data.costingId, 'top', data)}
+                                            />
+                                          </label>
+                                        </div>}
+                                      </>
+                                    }
+                                    {
+                                      (isApproval && data.CostingHeading !== '-') ? <span>{data.CostingHeading}</span> : <span className={`checkbox-text`} title={title}>{data.zbc === 0 ? `ZBC(${data.plantName})` : data.zbc === 1 ? `${data.vendorName}(${data.vendorCode}) ${localStorage.IsVendorPlantConfigurable ? `(${data.vendorPlantName})` : ''}` : 'CBC'}{` (SOB: ${data.shareOfBusinessPercent}%)`}</span>
+                                    }
+                                  </div>
 
-                                <div class="action w-40 d-inline-block text-right">
-                                  {((!viewMode && (!pdfHead && !drawerDetailPDF)) && EditAccessibility) && (data.status === DRAFT) && <button className="Edit mr-1 mb-0 align-middle" type={"button"} title={"Edit Costing"} onClick={() => editCostingDetail(index)} />}
-                                  {((!viewMode && (!pdfHead && !drawerDetailPDF)) && AddAccessibility) && <button className="Add-file mr-1 mb-0 align-middle" type={"button"} title={"Add Costing"} onClick={() => addNewCosting(index)} />}
-                                  {((!viewMode || (approvalMode && data.CostingHeading === '-')) && (!pdfHead && !drawerDetailPDF)) && <button type="button" class="CancelIcon mb-0 align-middle" title={"Remove Costing"} onClick={() => deleteCostingFromView(index)}></button>}
+                                  <div class="action  text-right">
+                                    {((!viewMode && (!pdfHead && !drawerDetailPDF)) && EditAccessibility) && (data.status === DRAFT) && <button className="Edit mr-1 mb-0 align-middle" type={"button"} title={"Edit Costing"} onClick={() => editCostingDetail(index)} />}
+                                    {((!viewMode && (!pdfHead && !drawerDetailPDF)) && AddAccessibility) && <button className="Add-file mr-1 mb-0 align-middle" type={"button"} title={"Add Costing"} onClick={() => addNewCosting(index)} />}
+                                    {((!viewMode || (approvalMode && data.CostingHeading === '-')) && (!pdfHead && !drawerDetailPDF)) && <button type="button" class="CancelIcon mb-0 align-middle" title={"Remove Costing"} onClick={() => deleteCostingFromView(index)}></button>}
+                                  </div>
                                 </div>
-
                               </th>
                             )
                           })}
