@@ -843,7 +843,7 @@ const CostingSummaryTable = (props) => {
 
                         {viewCostingData &&
                           viewCostingData.map((data, index) => {
-                            const title = data.zbc === 0 ? data.plantName : (data.zbc === 1 ? data.vendorName + "(" + data.vendorCode + ")" + (localStorage.IsVendorPlantConfigurable ? "(" + data.vendorPlantName + ")" : "") : 'CBC') + "(SOB: " + data.shareOfBusinessPercent + "%)"
+                            const title = data.zbc === 0 ? data.plantName : (data.zbc === 1 ? data.vendorName + "(" + data.vendorCode + ") " + (localStorage.IsVendorPlantConfigurable ? " (" + data.vendorPlantName + ") " : "") : 'CBC') + "(SOB: " + data.shareOfBusinessPercent + "%)"
                             return (
                               <th scope="col" className='header-name'>
                                 <div className='header-name-button-container'>
