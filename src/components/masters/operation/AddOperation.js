@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { required, getVendorCode, maxLength80, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength10, maxLength15, positiveAndDecimalNumber, maxLength512, decimalLengthsix } from "../../../helper/validation";
-import { renderText, renderMultiSelectField, searchableSelect, renderTextAreaField, renderDatePicker } from "../../layout/FormInputs";
+import { renderText, renderMultiSelectField, searchableSelect, renderTextAreaField, renderDatePicker, renderNumberInputField } from "../../layout/FormInputs";
 import { getVendorWithVendorCodeSelectList } from '../actions/Supplier';
 import { createOperationsAPI, getOperationDataAPI, updateOperationAPI, fileUploadOperation, fileDeleteOperation, checkAndGetOperationCode } from '../actions/OtherOperation';
 import { getTechnologySelectList, getPlantSelectListByType, getPlantBySupplier, getUOMSelectList, } from '../../../actions/Common';
@@ -1005,7 +1005,7 @@ class AddOperation extends Component {
                           type="text"
                           placeholder={"Enter"}
                           validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
-                          component={renderText}
+                          component={renderNumberInputField}
                           required={true}
                           disabled={isViewMode || (isEditFlag && isOperationAssociated)}
                           onChange={this.handleRateChange}
@@ -1020,7 +1020,7 @@ class AddOperation extends Component {
                           type="text"
                           placeholder={"Enter"}
                           validate={[positiveAndDecimalNumber, maxLength10]}
-                          component={renderText}
+                          component={renderNumberInputField}
                           disabled={isEditFlag ? true : false}
                           className=" "
                           customClassName=" withBorder"
