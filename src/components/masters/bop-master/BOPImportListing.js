@@ -17,7 +17,7 @@ import { BOP_IMPORT_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
 import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
 import { BopImport, INR, BOP_MASTER_ID } from '../../../config/constants';
-import { getFilteredData, loggedInUserId, userDetails } from '../../../helper';
+import { getFilteredData, loggedInUserId, userDepartmetList, userDetails } from '../../../helper';
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -57,7 +57,7 @@ class BOPImportListing extends Component {
             isFinalApprovar: false,
 
             //states for pagination purpose
-            floatingFilterData: { IsVendor: "", BoughtOutPartNumber: "", BoughtOutPartName: "", BoughtOutPartCategory: "", UOM: "", Specification: "", Plants: "", Vendor: "", BasicRate: "", NetLandedCost: "", EffectiveDateNew: "", Currency: "" },
+            floatingFilterData: { IsVendor: "", BoughtOutPartNumber: "", BoughtOutPartName: "", BoughtOutPartCategory: "", UOM: "", Specification: "", Plants: "", Vendor: "", BasicRate: "", NetLandedCost: "", EffectiveDateNew: "", Currency: "", DepartmentCode: this.props.isSimulation ? userDepartmetList() : "" },
             warningMessage: false,
             filterModel: {},
             isSearchButtonDisable: true,
@@ -153,7 +153,7 @@ class BOPImportListing extends Component {
                 setTimeout(() => {
                     let obj = this.state.floatingFilterData
                     for (var prop in obj) {
-                        if (obj[prop] !== "") {
+                        if (prop !== "DepartmentCode" && obj[prop] !== "") {
                             isReset = false
                         }
                     }

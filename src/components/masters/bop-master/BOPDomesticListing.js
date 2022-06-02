@@ -16,7 +16,7 @@ import BulkUpload from '../../massUpload/BulkUpload';
 import { BOP_DOMESTIC_DOWNLOAD_EXCEl, } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
 import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
-import { getConfigurationKey, getFilteredData, loggedInUserId, userDetails } from '../../../helper';
+import { getConfigurationKey, getFilteredData, loggedInUserId, userDepartmetList, userDetails } from '../../../helper';
 import { BopDomestic, } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -56,7 +56,7 @@ class BOPDomesticListing extends Component {
             isFinalApprovar: false,
 
             //states for pagination purpose
-            floatingFilterData: { IsVendor: "", BoughtOutPartNumber: "", BoughtOutPartName: "", BoughtOutPartCategory: "", UOM: "", Specification: "", Plants: "", Vendor: "", BasicRate: "", NetLandedCost: "", EffectiveDateNew: "" },
+            floatingFilterData: { IsVendor: "", BoughtOutPartNumber: "", BoughtOutPartName: "", BoughtOutPartCategory: "", UOM: "", Specification: "", Plants: "", Vendor: "", BasicRate: "", NetLandedCost: "", EffectiveDateNew: "", DepartmentCode: this.props.isSimulation ? userDepartmetList() : "" },
             warningMessage: false,
             filterModel: {},
             isSearchButtonDisable: true,
@@ -142,7 +142,7 @@ class BOPDomesticListing extends Component {
                         setTimeout(() => {
                             let obj = this.state.floatingFilterData
                             for (var prop in obj) {
-                                if (obj[prop] !== "") {
+                                if (prop !== "DepartmentCode" && obj[prop] !== "") {
                                     isReset = false
                                 }
                             }

@@ -19,7 +19,7 @@ import BulkUpload from '../../massUpload/BulkUpload';
 import { ADDITIONAL_MASTERS, OPERATION, OperationMaster, OPERATIONS_ID } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
 import { loggedInUserId, userDetails } from '../../../helper/auth';
-import { getFilteredData } from '../../../helper'
+import { getFilteredData, userDepartmetList } from '../../../helper'
 import { costingHeadObjs, OPERATION_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
 import DayTime from '../../common/DayTimeWrapper'
@@ -66,7 +66,7 @@ class OperationListing extends Component {
             isFinalApprovar: false,
 
             //states for pagination purpose
-            floatingFilterData: { CostingHead: "", Technology: "", OperationName: "", OperationCode: "", Plants: "", VendorName: "", UnitOfMeasurement: "", Rate: "", EffectiveDate: "" },
+            floatingFilterData: { CostingHead: "", Technology: "", OperationName: "", OperationCode: "", Plants: "", VendorName: "", UnitOfMeasurement: "", Rate: "", EffectiveDate: "", DepartmentCode: this.props.isSimulation ? userDepartmetList() : "" },
             warningMessage: false,
             filterModel: {},
             isSearchButtonDisable: true,
@@ -193,9 +193,6 @@ class OperationListing extends Component {
                         this.setState({ tableData: Data })
                     }
 
-                    // if (this.props.isSimulation) {
-                    //     this.props.apply(Data)
-                    // }
                 } else {
 
                 }
@@ -208,7 +205,7 @@ class OperationListing extends Component {
                     setTimeout(() => {
                         let obj = this.state.floatingFilterData
                         for (var prop in obj) {
-                            if (obj[prop] !== "") {
+                            if (prop !== "DepartmentCode" && obj[prop] !== "") {
                                 isReset = false
                             }
                         }

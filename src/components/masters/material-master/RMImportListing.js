@@ -64,7 +64,7 @@ function RMImportListing(props) {
   const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
   const [currentRowIndex, setCurrentRowIndex] = useState(0)
   const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
-  const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", RawMaterialCode: "", Category: "", MaterialType: "", Plant: "", UOM: "", VendorName: "", BasicRate: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDate: "" })
+  const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", RawMaterialCode: "", Category: "", MaterialType: "", Plant: "", UOM: "", VendorName: "", BasicRate: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDate: "", DepartmentCode: isSimulation ? userDepartmetList() : "" })
 
   var filterParams = {
     comparator: function (filterLocalDateAtMidnight, cellValue) {
@@ -205,7 +205,7 @@ function RMImportListing(props) {
           let isReset = true
           setTimeout(() => {
             for (var prop in floatingFilterData) {
-              if (floatingFilterData[prop] !== "") {
+              if (prop !== "DepartmentCode" && floatingFilterData[prop] !== "") {
                 isReset = false
               }
             }
@@ -523,7 +523,9 @@ function RMImportListing(props) {
     gridOptions?.api?.setFilterModel(null);
 
     for (var prop in floatingFilterData) {
-      floatingFilterData[prop] = ""
+      if (prop !== "DepartmentCode") {
+        floatingFilterData[prop] = ""
+      }
     }
     setFloatingFilterData(floatingFilterData)
     setWarningMessage(false)
