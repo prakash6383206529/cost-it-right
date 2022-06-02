@@ -46,7 +46,6 @@ function VerifySimulation(props) {
     const isBOPDomesticOrImport = ((Number(selectedMasterForSimulation.value) === Number(BOPDOMESTIC)) || (Number(selectedMasterForSimulation.value) === Number(BOPIMPORT)))
     const isMachineRate = Number(selectedMasterForSimulation.value) === (Number(MACHINERATE));
     const isOverHeadProfit = Number(selectedMasterForSimulation.value) === (Number(OVERHEAD));
-    console.log('isOverHeadProfit: ', isOverHeadProfit);
     const gridRef = useRef();
 
     // const isAssemblyCosting = true
