@@ -2,10 +2,10 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { required, number, maxLength6, maxLength80, minLength10, maxLength12,checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength15, postiveNumber, maxLength10, maxLength3, } from "../../../helper/validation";
+import { required, number, maxLength6, maxLength80, minLength10, maxLength12, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength15, postiveNumber, maxLength10, maxLength3, } from "../../../helper/validation";
 
 import { loggedInUserId } from "../../../helper/auth";
-import { renderText, searchableSelect } from "../../layout/FormInputs";
+import { renderNumberInputField, renderText, searchableSelect } from "../../layout/FormInputs";
 import { createPlantAPI, getPlantUnitAPI, updatePlantAPI } from '../actions/Plant';
 import {
   fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, fetchSupplierCityDataAPI, getSupplierList,
@@ -378,7 +378,7 @@ class AddVBCPlant extends Component {
                           type="text"
                           placeholder={""}
                           validate={[postiveNumber, minLength10, maxLength12, checkWhiteSpaces]}
-                          component={renderText}
+                          component={renderNumberInputField}
                           //    required={true}
                           maxLength={12}
                           className=""

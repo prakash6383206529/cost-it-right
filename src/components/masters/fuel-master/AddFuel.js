@@ -4,7 +4,7 @@ import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Table } from 'reactstrap';
 import { required, checkForDecimalAndNull, positiveAndDecimalNumber, maxLength10, decimalLengthsix } from "../../../helper/validation";
 import {
-  searchableSelect, focusOnError, renderText,
+  searchableSelect, focusOnError, renderNumberInputField,
 } from "../../layout/FormInputs";
 import { getUOMSelectList, fetchStateDataAPI, getAllCity } from '../../../actions/Common';
 import { getFuelComboData, createFuelDetail, updateFuelDetail, getFuelDetailData, } from '../actions/Fuel';
@@ -587,7 +587,7 @@ class AddFuel extends Component {
                               type="text"
                               placeholder={"Enter"}
                               validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
-                              component={renderText}
+                              component={renderNumberInputField}
                               required={true}
                               className=""
                               customClassName=" withBorder"

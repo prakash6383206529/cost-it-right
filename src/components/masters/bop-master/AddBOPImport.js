@@ -6,7 +6,7 @@ import {
   required, checkForNull, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter, maxLength20,
   postiveNumber, maxLength10, positiveAndDecimalNumber, maxLength512, maxLength, decimalLengthsix, checkWhiteSpaces
 } from "../../../helper/validation";
-import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField, renderDatePicker } from "../../layout/FormInputs";
+import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField, renderDatePicker, renderNumberInputField } from "../../layout/FormInputs";
 import { fetchMaterialComboAPI, getPlantBySupplier, getUOMSelectList, getCurrencySelectList, getPlantSelectListByType, } from '../../../actions/Common';
 import {
   createBOPImport, updateBOPImport, getBOPCategorySelectList, getBOPImportById,
@@ -1221,7 +1221,7 @@ class AddBOPImport extends Component {
                               type="text"
                               placeholder={"Enter"}
                               validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
-                              component={renderText}
+                              component={renderNumberInputField}
                               required={true}
                               disabled={isViewMode || (isEditFlag && isBOPAssociated)}
                               className=" "
@@ -1235,7 +1235,7 @@ class AddBOPImport extends Component {
                               type="text"
                               placeholder={""}
                               validate={[]}
-                              component={renderText}
+                              component={renderNumberInputField}
                               required={false}
                               disabled={true}
                               className=" "
@@ -1251,7 +1251,7 @@ class AddBOPImport extends Component {
                                 type="text"
                                 placeholder={""}
                                 validate={[]}
-                                component={renderText}
+                                component={renderNumberInputField}
                                 required={false}
                                 disabled={true}
                                 className=" "
