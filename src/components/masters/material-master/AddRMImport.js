@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { required, getVendorCode, positiveAndDecimalNumber, acceptAllExceptSingleSpecialCharacter, maxLength512, checkForNull, checkForDecimalAndNull, decimalLengthsix, maxLength70 } from "../../../helper/validation";
-import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField, renderDatePicker } from "../../layout/FormInputs";
+import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField, renderDatePicker, renderNumberInputField } from "../../layout/FormInputs";
 import {
   getRawMaterialCategory, fetchGradeDataAPI, fetchSpecificationDataAPI, getCityBySupplier, getPlantByCity,
   getPlantByCityAndSupplier, fetchRMGradeAPI, getSupplierList, getPlantBySupplier, getUOMSelectList,
@@ -1634,7 +1634,7 @@ class AddRMImport extends Component {
                               type="text"
                               placeholder={""}
                               validate={[positiveAndDecimalNumber]}
-                              component={renderText}
+                              component={renderNumberInputField}
                               required={false}
                               disabled={isViewFlag || (isEditFlag && isRMAssociated)}
                               className=" "
@@ -1649,7 +1649,7 @@ class AddRMImport extends Component {
                               type="text"
                               placeholder={"Enter"}
                               validate={[required, positiveAndDecimalNumber, decimalLengthsix]}
-                              component={renderText}
+                              component={renderNumberInputField}
                               required={true}
                               disabled={isViewFlag || (isEditFlag && isRMAssociated) ? true : false}
                               maxLength="15"
@@ -1664,7 +1664,7 @@ class AddRMImport extends Component {
                               type="text"
                               placeholder={"Enter"}
                               validate={[required, positiveAndDecimalNumber, decimalLengthsix]}
-                              component={renderText}
+                              component={renderNumberInputField}
                               required={true}
                               className=""
                               maxLength="15"
@@ -1680,7 +1680,7 @@ class AddRMImport extends Component {
                               type="text"
                               placeholder={"Enter"}
                               validate={[positiveAndDecimalNumber, decimalLengthsix]}
-                              component={renderText}
+                              component={renderNumberInputField}
                               required={false}
                               className=""
                               maxLength="15"
@@ -1695,7 +1695,7 @@ class AddRMImport extends Component {
                               type="text"
                               placeholder={"Enter"}
                               validate={[positiveAndDecimalNumber, decimalLengthsix]}
-                              component={renderText}
+                              component={renderNumberInputField}
                               required={false}
                               className=""
                               maxLength="15"
@@ -1710,7 +1710,7 @@ class AddRMImport extends Component {
                               type="text"
                               placeholder={""}
                               validate={[]}
-                              component={renderText}
+                              component={renderNumberInputField}
                               required={false}
 
                               className=" "
@@ -1727,7 +1727,7 @@ class AddRMImport extends Component {
                                 type="text"
                                 placeholder={""}
                                 validate={[]}
-                                component={renderText}
+                                component={renderNumberInputField}
                                 required={false}
 
                                 className=" "

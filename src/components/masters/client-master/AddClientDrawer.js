@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { required, email, minLength7, maxLength70, acceptAllExceptSingleSpecialCharacter,maxLength12,minLength10, maxLength80, checkWhiteSpaces, maxLength20, postiveNumber, maxLength10, maxLength5 } from "../../../helper/validation";
-import { renderText, renderEmailInputField, searchableSelect } from "../../layout/FormInputs";
+import { required, email, minLength7, maxLength70, acceptAllExceptSingleSpecialCharacter, maxLength12, minLength10, maxLength80, checkWhiteSpaces, maxLength20, postiveNumber, maxLength10, maxLength5 } from "../../../helper/validation";
+import { renderText, renderEmailInputField, searchableSelect, renderNumberInputField } from "../../layout/FormInputs";
 import { createClient, updateClient, getClientData } from '../actions/Client';
 import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, getCityByCountry, } from '../../../actions/Common';
 import Toaster from '../../common/Toaster';
@@ -345,7 +345,7 @@ class AddClientDrawer extends Component {
                                                     type="text"
                                                     placeholder={''}
                                                     validate={[postiveNumber, minLength10, maxLength12, checkWhiteSpaces]}
-                                                    component={renderText}
+                                                    component={renderNumberInputField}
                                                     // required={true}
                                                     // maxLength={12}
                                                     className=""
@@ -360,7 +360,7 @@ class AddClientDrawer extends Component {
                                                     type="text"
                                                     placeholder={''}
                                                     validate={[postiveNumber, maxLength5, checkWhiteSpaces]}
-                                                    component={renderText}
+                                                    component={renderNumberInputField}
                                                     // required={true}
                                                     maxLength={5}
                                                     className=""
@@ -379,9 +379,9 @@ class AddClientDrawer extends Component {
                                             label="Mobile No."
                                             type="text"
                                             placeholder={''}
-                                            component={renderText}
+                                            component={renderNumberInputField}
                                             disabled={isViewMode}
-                                            validate={[postiveNumber, maxLength12,minLength10, checkWhiteSpaces]}
+                                            validate={[postiveNumber, maxLength12, minLength10, checkWhiteSpaces]}
                                             // required={true}
                                             maxLength={10}
                                             customClassName={'withBorder'}
@@ -446,7 +446,7 @@ class AddClientDrawer extends Component {
                                             type="text"
                                             placeholder={''}
                                             validate={[postiveNumber]}
-                                            component={renderText}
+                                            component={renderNumberInputField}
                                             // required={true}
                                             maxLength={6}
                                             customClassName={'withBorder'}

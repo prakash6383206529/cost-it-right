@@ -2,12 +2,13 @@ import React, { Fragment, useState, useEffect, useContext } from 'react'
 import { Row, Col } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
-import { TextFieldHookForm, } from '../../../../layout/HookFormInputs'
+import { NumberFieldHookForm, } from '../../../../layout/HookFormInputs'
 import { clampingTime, feedByMin, findRpm, passesNo, totalMachineTime, } from './CommonFormula'
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, } from '../../../../../helper'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 import { saveProcessCostCalculationData } from '../../../actions/CostWorking'
 import Toaster from '../../../../common/Toaster'
+import { debounce } from 'lodash'
 
 function FaceMilling(props) {
   const WeightCalculatorRequest = props.calculatorData.WeightCalculatorRequest
@@ -16,7 +17,7 @@ function FaceMilling(props) {
   const dispatch = useDispatch()
 
   const [dataToSend, setDataToSend] = useState({})
-
+  const [isDisable, setIsDisable] = useState(false)
   const defaultValues = {
     cutLength: WeightCalculatorRequest && WeightCalculatorRequest.CutLength !== undefined ? WeightCalculatorRequest.CutLength : '',
     rpm: WeightCalculatorRequest && WeightCalculatorRequest.Rpm !== undefined ? WeightCalculatorRequest.Rpm : '',
@@ -117,8 +118,8 @@ function FaceMilling(props) {
     setValue('clampingValue', checkForDecimalAndNull(clampingValue, trim))
     setTotalMachiningTime(totalMachiningTime)
   }
-  const onSubmit = (value) => {
-
+  const onSubmit = debounce(handleSubmit((value) => {
+    setIsDisable(true)
     let obj = {}
     obj.ProcessCalculationId = props.calculatorData.ProcessCalculationId ? props.calculatorData.ProcessCalculationId : "00000000-0000-0000-0000-000000000000"
     obj.CostingProcessDetailId = WeightCalculatorRequest && WeightCalculatorRequest.CostingProcessDetailId ? WeightCalculatorRequest.CostingProcessDetailId : "00000000-0000-0000-0000-000000000000"
@@ -158,13 +159,14 @@ function FaceMilling(props) {
     obj.MachineRate = props.calculatorData.MHR
     obj.ProcessCost = totalMachiningTime * props.calculatorData.MHR
     dispatch(saveProcessCostCalculationData(obj, res => {
+      setIsDisable(false)
       if (res.data.Result) {
         obj.ProcessCalculationId = res.data.Identity
         Toaster.success('Calculation saved sucessfully.')
         calculateMachineTime(totalMachiningTime, obj)
       }
     }))
-  }
+  }), 500);
   const onCancel = () => {
     calculateMachineTime('0.00')
   }
@@ -172,7 +174,7 @@ function FaceMilling(props) {
     <Fragment>
       <Row>
         <Col>
-          <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}>
+          <form noValidate className="form">
             <Col md="12" className={''}>
               <div className="border pl-3 pr-3 pt-3">
                 <Col md="12">
@@ -181,7 +183,7 @@ function FaceMilling(props) {
                 <Col md="12">
                   <Row className={'mt15'}>
                     <Col md="4">
-                      <TextFieldHookForm
+                      <NumberFieldHookForm
                         label={`Cutter Diameter(mm)`}
                         name={'cutterDiameter'}
                         Controller={Controller}
@@ -206,7 +208,7 @@ function FaceMilling(props) {
                       />
                     </Col>
                     <Col md="4">
-                      <TextFieldHookForm
+                      <NumberFieldHookForm
                         label={`Length of Area Cut(mm)`}
                         name={'cutLengthOfArea'}
                         Controller={Controller}
@@ -231,7 +233,7 @@ function FaceMilling(props) {
                       />
                     </Col>
                     <Col md="4">
-                      <TextFieldHookForm
+                      <NumberFieldHookForm
                         label={`Width of area to cut`}
                         name={'areaWidth'}
                         Controller={Controller}
@@ -256,7 +258,7 @@ function FaceMilling(props) {
                       />
                     </Col>
                     <Col md="4">
-                      <TextFieldHookForm
+                      <NumberFieldHookForm
                         label={`Cut Length(mm)`}
                         name={'cutLength'}
                         Controller={Controller}
@@ -275,7 +277,7 @@ function FaceMilling(props) {
 
                   <Row>
                     <Col md="4">
-                      <TextFieldHookForm
+                      <NumberFieldHookForm
                         label={`Material To be removed`}
                         name={'removedMaterial'}
                         Controller={Controller}
@@ -300,7 +302,7 @@ function FaceMilling(props) {
                       />
                     </Col>
                     <Col md="4">
-                      <TextFieldHookForm
+                      <NumberFieldHookForm
                         label={`Depth of cut`}
                         name={'doc'}
                         Controller={Controller}
@@ -325,7 +327,7 @@ function FaceMilling(props) {
                       />
                     </Col>
                     <Col md="4">
-                      <TextFieldHookForm
+                      <NumberFieldHookForm
                         label="No. of Passes"
                         name={'numberOfPasses'}
                         Controller={Controller}
@@ -349,7 +351,7 @@ function FaceMilling(props) {
                 <Col md="12">
                   <Row className={'mt15'}>
                     <Col md="4">
-                      <TextFieldHookForm
+                      <NumberFieldHookForm
                         label={`Cutting Speed(m/sec)`}
                         name={'cuttingSpeed'}
                         Controller={Controller}
@@ -374,7 +376,7 @@ function FaceMilling(props) {
                       />
                     </Col>
                     <Col md="4">
-                      <TextFieldHookForm
+                      <NumberFieldHookForm
                         label={`RPM`}
                         name={'rpm'}
                         Controller={Controller}
@@ -390,7 +392,7 @@ function FaceMilling(props) {
                       />
                     </Col>
                     <Col md="4">
-                      <TextFieldHookForm
+                      <NumberFieldHookForm
                         label={`No. of Teeth on Cutter`}
                         name={'toothNo'}
                         Controller={Controller}
@@ -406,7 +408,7 @@ function FaceMilling(props) {
                       />
                     </Col>
                     <Col md="4">
-                      <TextFieldHookForm
+                      <NumberFieldHookForm
                         label={`Feed/ Tooth`}
                         name={'toothFeed'}
                         Controller={Controller}
@@ -430,7 +432,7 @@ function FaceMilling(props) {
                       />
                     </Col>
                     <Col md="4">
-                      <TextFieldHookForm
+                      <NumberFieldHookForm
                         label={`Feed/Rev`}
                         name={'feedRev'}
                         Controller={Controller}
@@ -446,7 +448,7 @@ function FaceMilling(props) {
                       />
                     </Col>
                     <Col md="4">
-                      <TextFieldHookForm
+                      <NumberFieldHookForm
                         label={`Feed/Min(mm/min)`}
                         name={'feedMin'}
                         Controller={Controller}
@@ -470,7 +472,7 @@ function FaceMilling(props) {
                 <Col md="12">
                   <Row className={'mt15'}>
                     <Col md="4">
-                      <TextFieldHookForm
+                      <NumberFieldHookForm
                         label={`Total Cut time (min)`}
                         name={'cutTime'}
                         Controller={Controller}
@@ -486,7 +488,7 @@ function FaceMilling(props) {
                       />
                     </Col>
                     <Col md="4">
-                      <TextFieldHookForm
+                      <NumberFieldHookForm
                         label={`Additional Time(%)`}
                         name={'clampingPercentage'}
                         Controller={Controller}
@@ -511,7 +513,7 @@ function FaceMilling(props) {
                       />
                     </Col>
                     <Col md="4">
-                      <TextFieldHookForm
+                      <NumberFieldHookForm
                         label={`Additional Time(min)`}
                         name={'clampingValue'}
                         Controller={Controller}
@@ -539,7 +541,11 @@ function FaceMilling(props) {
             <div className="mt25 col-md-12 text-right">
               <button onClick={onCancel} type="submit" value="CANCEL" className="reset mr15 cancel-btn">
                 <div className={'cancel-icon'}></div>CANCEL</button>
-              <button type="submit" className="btn-primary save-btn" disabled={props.CostingViewMode ? true : false}>
+              <button type="button"
+                onClick={onSubmit}
+                disabled={props.CostingViewMode || isDisable ? true : false}
+                className="btn-primary save-btn"
+              >
                 <div className={"save-icon"}></div>
                 {'SAVE'}
               </button>
