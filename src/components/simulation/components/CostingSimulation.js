@@ -1054,8 +1054,6 @@ function CostingSimulation(props) {
                                                         <AgGridColumn width={140} field="BoughtOutPartQuantity" headerName='BOP Quantity' cellRenderer='BOPQuantityFormatter' ></AgGridColumn>
                                                         <AgGridColumn width={140} field="OldBOPRate" headerName='Old BOP Rate' cellRenderer={BOPQuantityFormatter} ></AgGridColumn>
                                                         <AgGridColumn width={140} field="NewBOPRate" headerName='New BOP Rate' cellRenderer={BOPQuantityFormatter} ></AgGridColumn>
-                                                        <AgGridColumn width={140} field="OldBOPCost" headerName='Old BOP Cost' cellRenderer={BOPQuantityFormatter} ></AgGridColumn>
-                                                        <AgGridColumn width={140} field="NewBOPCost" headerName='New BOP Cost' cellRenderer={BOPQuantityFormatter} ></AgGridColumn>
                                                         <AgGridColumn width={140} field="OldNetBoughtOutPartCost" headerName='Old Net BOP Cost' cellRenderer={decimalFormatter} ></AgGridColumn>
                                                         <AgGridColumn width={140} field="NewNetBoughtOutPartCost" headerName='New Net BOP Cost' cellRenderer={decimalFormatter}></AgGridColumn>
                                                         <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" headerName='BOP Variance' cellRenderer={decimalFormatter} ></AgGridColumn>
