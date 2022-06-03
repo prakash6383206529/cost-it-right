@@ -1179,7 +1179,7 @@ function TabDiscountOther(props) {
                     <div className="col-sm-12 text-right bluefooter-butn mt-3">
 
                       {!CostingViewMode && <button
-                        type="submit"
+                        type="button"
                         className="submit-button mr5 save-btn"
                         onClick={(data, e) => { handleSubmit(onSubmit(data, e, false)) }}
                         disabled={isDisable}
@@ -1189,7 +1189,7 @@ function TabDiscountOther(props) {
                       </button>}
 
                       {!CostingViewMode && <button
-                        type="submit"
+                        type="button"
                         className="submit-button save-btn"
                         onClick={(data, e) => { handleSubmit(onSubmit(data, e, true)) }}
                         disabled={isDisable}
