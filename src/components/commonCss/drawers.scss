@@ -26,10 +26,24 @@
     .MuiPaper-root {
         padding-bottom: 0 !important;
     }
-    .drawer-1500px {
-        padding-bottom: 0;
+    .view-conversion-cost-drawer {
+        max-width: 1210px;
+        .drawer-1500px {
+            padding-bottom: 0;
+            min-width: 1180px;
+        }
     }
     .view-conversion-header {
+        padding-right: 0;
         min-height: calc(100vh - 88px);
+    }
+    @media screen and (min-width:$middleDesktop) {
+        .view-conversion-cost-drawer {
+            max-width: 1390px;
+            .drawer-1500px {
+                padding-bottom: 0;
+                min-width: 1360px;
+            }
+        }
     }
 }
