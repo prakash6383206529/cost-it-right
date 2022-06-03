@@ -16,7 +16,7 @@ import { MESSAGES } from '../../../../config/message';
 import { ViewCostingContext } from '../CostingDetails';
 import DayTime from '../../../common/DayTimeWrapper'
 import { createToprowObjAndSave, findSurfaceTreatmentData } from '../../CostingUtil';
-import _ from 'lodash'
+import _, { debounce } from 'lodash'
 import ScrollToTop from '../../../common/ScrollToTop';
 
 function TabRMCC(props) {
@@ -1181,7 +1181,7 @@ function TabRMCC(props) {
   * @method saveCosting
   * @description SAVE COSTING
   */
-  const saveCosting = () => {
+  const saveCosting = debounce(handleSubmit(() => {
 
     if (ErrorObjRMCC && Object.keys(ErrorObjRMCC).length > 0) return false;
 
@@ -1248,7 +1248,7 @@ function TabRMCC(props) {
       dispatch(CloseOpenAccordion())
       dispatch(isDataChange(false))
     }
-  }
+  }), 500)
 
   const InjectDiscountAPICall = () => {
     dispatch(saveDiscountOtherCostTab({ ...ComponentItemDiscountData, EffectiveDate: CostingEffectiveDate, CallingFrom: 2 }, res => {
@@ -1361,12 +1361,6 @@ function TabRMCC(props) {
 
   }
 
-  /**
-   * @method onSubmit
-   * @description Used to Submit the form
-   */
-  const onSubmit = (values) => { }
-
   return (
     <>
       <div className="login-container signup-form" id="rm-cc-costing-header">
@@ -1376,7 +1370,6 @@ function TabRMCC(props) {
               <form
                 noValidate
                 className="form"
-                onSubmit={handleSubmit(onSubmit)}
               >
                 <Row id='go-top-top'>
                   <Col md="12">

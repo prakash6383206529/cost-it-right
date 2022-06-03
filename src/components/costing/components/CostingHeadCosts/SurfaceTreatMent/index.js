@@ -13,6 +13,7 @@ import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../.
 import { createToprowObjAndSave, findrmCctData } from '../../../CostingUtil';
 import { ViewCostingContext } from '../../CostingDetails';
 import { useState } from 'react';
+import { debounce } from 'lodash';
 
 function SurfaceTreatment(props) {
   const { surfaceData, transportationData, item } = props;
@@ -59,11 +60,6 @@ function SurfaceTreatment(props) {
   const cancel = () => {
     props.closeDrawer()
   }
-
-  const onSubmit = data => toggleDrawer('')
-
-
-
   const setTransportationObj = (obj) => {
 
     setTransportationObject(obj)
@@ -94,7 +90,7 @@ function SurfaceTreatment(props) {
   * @method saveData
   * @description SAVE DATA ASSEMBLY
   */
-  const saveData = () => {
+  const saveData = debounce(handleSubmit(() => {
     if (transportationObject.UOM === "Percentage" && transportationObject.Rate !== null && transportationObject.Rate > 100) {
       return false
     }
@@ -201,7 +197,7 @@ function SurfaceTreatment(props) {
         }))
       }
     }
-  }
+  }), 500);
 
   const InjectDiscountAPICall = () => {
     dispatch(saveDiscountOtherCostTab(ComponentItemDiscountData, res => {
@@ -235,7 +231,7 @@ function SurfaceTreatment(props) {
             <form
               noValidate
               className="form"
-              onSubmit={handleSubmit(onSubmit)}
+
             >
               <Row className="mb-3 pt-3">
                 <Col>

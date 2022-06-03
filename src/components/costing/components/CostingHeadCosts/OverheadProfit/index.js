@@ -14,6 +14,7 @@ import Rejection from './Rejection';
 import Icc from './Icc';
 import PaymentTerms from './PaymentTerms';
 import { Link } from 'react-scroll'
+import { debounce } from 'lodash';
 
 function OverheadProfit(props) {
   const { data } = props;
@@ -1092,9 +1093,9 @@ function OverheadProfit(props) {
   * @method onSubmit
   * @description Used to Submit the form
   */
-  const onSubmit = (values) => {
+  const onSubmit = debounce(handleSubmit((values) => {
     props.saveCosting(values)
-  }
+  }), 500);
 
   /**
   * @method render
@@ -1912,8 +1913,8 @@ function OverheadProfit(props) {
             <Row className=" no-gutters justify-content-between btn-stciky-container overhead-profit-save-btn">
               <div className="col-sm-12 text-right bluefooter-butn ">
                 {!CostingViewMode && <Link to="assembly-costing-header" spy={true} smooth={true} offset={-330} delay={200}> <button
-                  type={'submit'}
-                  onClick={handleSubmit(onSubmit)}
+                  type={'button'}
+                  onClick={onSubmit}
                   className="submit-button mr5 save-btn">
                   <div className={"save-icon"}></div>
                   {'Save'}

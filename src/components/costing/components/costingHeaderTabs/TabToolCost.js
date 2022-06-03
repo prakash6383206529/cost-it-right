@@ -24,6 +24,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import AddTool from '../Drawers/AddTool';
 import { gridDataAdded } from '../../actions/Costing'
 import { createToprowObjAndSave } from '../../CostingUtil';
+import { debounce } from 'lodash';
 
 function TabToolCost(props) {
 
@@ -247,7 +248,7 @@ function TabToolCost(props) {
   * @method saveCosting
   * @description SAVE COSTING
   */
-  const saveCosting = (formData) => {
+  const saveCosting = debounce(handleSubmit((formData) => {
     if (checkIsToolTabChange || gridData) {
 
       const tabData = RMCCTabData[0]
@@ -284,7 +285,7 @@ function TabToolCost(props) {
       }))
     }
 
-  }
+  }), 500);
 
   const InjectDiscountAPICall = () => {
     dispatch(saveDiscountOtherCostTab({ ...ComponentItemDiscountData, CallingFrom: 5 }, res => {
@@ -456,7 +457,6 @@ function TabToolCost(props) {
               <form
                 noValidate
                 className="form"
-                onSubmit={handleSubmit(onSubmit)}
               >
                 {!IsApplicableProcessWise &&
                   <Row>
