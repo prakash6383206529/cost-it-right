@@ -10,6 +10,7 @@ import { setAttachmentFileData, uploadSimulationAttachmentByCategory, uploadSimu
 
 import { loggedInUserId } from '../../../../helper';
 import Toaster from '../../../common/Toaster';
+import LoaderCustom from '../../../common/LoaderCustom';
 
 
 function AttachmentSec(props) {
@@ -37,6 +38,13 @@ function AttachmentSec(props) {
 
     const [initialFiles, setInitialFiles] = useState([]);
     const [isDisable, setIsDisable] = useState(false)
+    const [attachmentLoaderObj, setAttachmentLoaderObj] = useState({
+        loaderImSheet: false,
+        loaderSupConfirm: false,
+        loaderInBackup: false,
+        loaderOther: false,
+        loaderAttch: false,
+    })
 
     const { attachmentsData } = useSelector((state) => state.simulation)
 
@@ -90,7 +98,7 @@ function AttachmentSec(props) {
     * @method setDisableFalseFunctionAttachmentFiles
     * @description setDisableFalseFunctionAttachmentFiles
     */
-    const setDisableFalseFunctionAttachmentFiles = () => {
+    const setDisableFalseFunctionAttachmentFiles = (value) => {
         setTimeout(() => {
             let loopImpactSheet = 1
             let loopSupplierConfirm = 1
@@ -111,13 +119,33 @@ function AttachmentSec(props) {
                 setIsDisable(false)
             }
         }, 500);
+
+        switch (value) {
+            case IMPACT_SHEET:
+                setAttachmentLoaderObj(prevState => ({ ...prevState, loaderImSheet: false }))
+                break;
+            case SUPPLIER_CONFRIM:
+                setAttachmentLoaderObj(prevState => ({ ...prevState, loaderSupConfirm: false }))
+                break;
+            case INVOICE_BACKUP:
+                setAttachmentLoaderObj(prevState => ({ ...prevState, loaderInBackup: false }))
+                break;
+            case OTHER:
+                setAttachmentLoaderObj(prevState => ({ ...prevState, loaderOther: false }))
+                break;
+            case ATTACHMENTS:
+                setAttachmentLoaderObj(prevState => ({ ...prevState, loaderAttch: false }))
+                break;
+            default:
+                break;
+        }
     }
 
     // called every time a file's `status` changes
     const handleChangeStatus = ({ meta, file }, status) => {
 
+        setAttachmentLoaderObj(prevState => ({ ...prevState, loaderImSheet: true }))
         setIsDisable(true)
-
         if (status === 'removed') {
             const removedFileName = file.name;
             let tempArr = files && files.filter(item => item.OriginalFileName !== removedFileName)
@@ -132,7 +160,7 @@ function AttachmentSec(props) {
             data.append('Folder', IMPACT_SHEET)
 
             dispatch(uploadSimulationAttachmentByCategory(data, (res) => {
-                setDisableFalseFunctionAttachmentFiles()
+                setDisableFalseFunctionAttachmentFiles(IMPACT_SHEET)
                 let Data = res?.data[0]
                 files.push(Data)
                 setFiles(files)
@@ -141,16 +169,16 @@ function AttachmentSec(props) {
         }
 
         if (status === 'rejected_file_type') {
-            setDisableFalseFunctionAttachmentFiles()
+            setDisableFalseFunctionAttachmentFiles(IMPACT_SHEET)
             Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
         } else if (status === 'error_file_size') {
-            setDisableFalseFunctionAttachmentFiles()
+            setDisableFalseFunctionAttachmentFiles(IMPACT_SHEET)
             dropzoneImpactSheet.current?.files.pop()
             Toaster.warning("File size greater than 5mb not allowed")
         } else if (status === 'error_validation'
             || status === 'error_upload_params' || status === 'exception_upload'
             || status === 'aborted' || status === 'error_upload') {
-            setDisableFalseFunctionAttachmentFiles()
+            setDisableFalseFunctionAttachmentFiles(IMPACT_SHEET)
             dropzoneImpactSheet.current?.files.pop()
             Toaster.warning("Something went wrong")
         }
@@ -158,6 +186,7 @@ function AttachmentSec(props) {
 
     const handleChangeSupplierConfirmationStatus = ({ meta, file }, status) => {
 
+        setAttachmentLoaderObj(prevState => ({ ...prevState, loaderSupConfirm: true }))
         setIsDisable(true)
 
         if (status === 'removed') {
@@ -174,7 +203,7 @@ function AttachmentSec(props) {
             data.append('Folder', SUPPLIER_CONFRIM)
 
             dispatch(uploadSimulationAttachmentByCategory(data, (res) => {
-                setDisableFalseFunctionAttachmentFiles()
+                setDisableFalseFunctionAttachmentFiles(SUPPLIER_CONFRIM)
                 let Data = res?.data[0]
                 supplierFiles.push(Data)
                 setSupplierFiles(supplierFiles)
@@ -185,13 +214,13 @@ function AttachmentSec(props) {
         if (status === 'rejected_file_type') {
             Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
         } else if (status === 'error_file_size') {
-            setDisableFalseFunctionAttachmentFiles()
+            setDisableFalseFunctionAttachmentFiles(SUPPLIER_CONFRIM)
             dropzoneSupplierConfirm.current?.files.pop()
             Toaster.warning("File size greater than 5mb not allowed")
         } else if (status === 'error_validation'
             || status === 'error_upload_params' || status === 'exception_upload'
             || status === 'aborted' || status === 'error_upload') {
-            setDisableFalseFunctionAttachmentFiles()
+            setDisableFalseFunctionAttachmentFiles(SUPPLIER_CONFRIM)
             dropzoneSupplierConfirm.current?.files.pop()
             Toaster.warning("Something went wrong")
         }
@@ -200,7 +229,7 @@ function AttachmentSec(props) {
     const handleChangeInvoiceBackupStatus = ({ meta, file }, status) => {
 
         setIsDisable(true)
-
+        setAttachmentLoaderObj(prevState => ({ ...prevState, loaderInBackup: true }))
         if (status === 'removed') {
             const removedFileName = file.name;
             let tempArr = invoiceFiles && invoiceFiles.filter(item => item.OriginalFileName !== removedFileName)
@@ -214,7 +243,7 @@ function AttachmentSec(props) {
             data.append('Token', token)
             data.append('Folder', INVOICE_BACKUP)
             dispatch(uploadSimulationAttachmentByCategory(data, (res) => {
-                setDisableFalseFunctionAttachmentFiles()
+                setDisableFalseFunctionAttachmentFiles(INVOICE_BACKUP)
                 let Data = res?.data[0]
                 invoiceFiles.push(Data)
                 setInvoiceFiles(invoiceFiles)
@@ -225,13 +254,13 @@ function AttachmentSec(props) {
         if (status === 'rejected_file_type') {
             Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
         } else if (status === 'error_file_size') {
-            setDisableFalseFunctionAttachmentFiles()
+            setDisableFalseFunctionAttachmentFiles(INVOICE_BACKUP)
             dropzoneInvoiceBackup.current?.files.pop()
             Toaster.warning("File size greater than 5mb not allowed")
         } else if (status === 'error_validation'
             || status === 'error_upload_params' || status === 'exception_upload'
             || status === 'aborted' || status === 'error_upload') {
-            setDisableFalseFunctionAttachmentFiles()
+            setDisableFalseFunctionAttachmentFiles(INVOICE_BACKUP)
             dropzoneInvoiceBackup.current?.files.pop()
             Toaster.warning("Something went wrong")
         }
@@ -240,7 +269,7 @@ function AttachmentSec(props) {
     const handleOtherChangeStatus = ({ meta, file }, status) => {
 
         setIsDisable(true)
-
+        setAttachmentLoaderObj(prevState => ({ ...prevState, loaderOther: true }))
         if (status === 'removed') {
             const removedFileName = file.name;
             let tempArr = otherFiles && otherFiles.filter(item => item.OriginalFileName !== removedFileName)
@@ -254,7 +283,7 @@ function AttachmentSec(props) {
             data.append('Token', token)
             data.append('Folder', OTHER)
             dispatch(uploadSimulationAttachmentByCategory(data, (res) => {
-                setDisableFalseFunctionAttachmentFiles()
+                setDisableFalseFunctionAttachmentFiles(OTHER)
                 let Data = res?.data[0]
                 otherFiles.push(Data)
                 setOtherFiles(otherFiles)
@@ -265,13 +294,13 @@ function AttachmentSec(props) {
         if (status === 'rejected_file_type') {
             Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
         } else if (status === 'error_file_size') {
-            setDisableFalseFunctionAttachmentFiles()
+            setDisableFalseFunctionAttachmentFiles(OTHER)
             dropzoneOthers.current?.files.pop()
             Toaster.warning("File size greater than 5mb not allowed")
         } else if (status === 'error_validation'
             || status === 'error_upload_params' || status === 'exception_upload'
             || status === 'aborted' || status === 'error_upload') {
-            setDisableFalseFunctionAttachmentFiles()
+            setDisableFalseFunctionAttachmentFiles(OTHER)
             dropzoneOthers.current?.files.pop()
             Toaster.warning("Something went wrong")
         }
@@ -280,7 +309,7 @@ function AttachmentSec(props) {
     const handleChangeAttachment = ({ meta, file }, status) => {
 
         setIsDisable(true)
-
+        setAttachmentLoaderObj(prevState => ({ ...prevState, loaderAttch: true }))
         if (status === 'removed') {
             const removedFileName = file.name;
             let tempArr = attachmentFiles && attachmentFiles.filter(item => item.OriginalFileName !== removedFileName)
@@ -294,7 +323,7 @@ function AttachmentSec(props) {
             data.append('Token', token)
             data.append('Folder', ATTACHMENTS)
             dispatch(uploadSimulationAttachmentByCategory(data, (res) => {
-                setDisableFalseFunctionAttachmentFiles()
+                setDisableFalseFunctionAttachmentFiles(ATTACHMENTS)
                 let Data = res?.data[0]
                 attachmentFiles.push(Data)
                 setAttachmentFiles(attachmentFiles)
@@ -305,13 +334,13 @@ function AttachmentSec(props) {
         if (status === 'rejected_file_type') {
             Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
         } else if (status === 'error_file_size') {
-            setDisableFalseFunctionAttachmentFiles()
+            setDisableFalseFunctionAttachmentFiles(ATTACHMENTS)
             dropzoneAttachments.current?.files.pop()
             Toaster.warning("File size greater than 5mb not allowed")
         } else if (status === 'error_validation'
             || status === 'error_upload_params' || status === 'exception_upload'
             || status === 'aborted' || status === 'error_upload') {
-            setDisableFalseFunctionAttachmentFiles()
+            setDisableFalseFunctionAttachmentFiles(ATTACHMENTS)
             dropzoneAttachments.current?.files.pop()
             Toaster.warning("Something went wrong")
         }
@@ -506,13 +535,14 @@ function AttachmentSec(props) {
                         </Col>}
                         <div className="w-100">
                             <div className={"attachment-wrapper mt-0 mb-3"}>
+                                {attachmentLoaderObj.loaderImSheet && <LoaderCustom customClass="attachment-sec-loader" />}
                                 {files &&
                                     files.map((f) => {
                                         const withOutTild = f.FileURL.replace("~", "");
                                         const fileURL = `${FILE_URL}${withOutTild}`;
                                         return (
                                             <div className={"attachment images"}>
-                                                <a href={fileURL} target="_blank">
+                                                <a href={fileURL} target="_blank" rel="noreferrer">
                                                     {f.OriginalFileName}
                                                 </a>
                                                 {(type === 'Sender') && <img
@@ -594,13 +624,14 @@ function AttachmentSec(props) {
                         </Col>}
                         <div className="w-100">
                             <div className={"attachment-wrapper mt-0 mb-3"}>
+                                {attachmentLoaderObj.loaderSupConfirm && <LoaderCustom customClass="attachment-sec-loader" />}
                                 {supplierFiles &&
                                     supplierFiles.map((f) => {
                                         const withOutTild = f.FileURL.replace("~", "");
                                         const fileURL = `${FILE_URL}${withOutTild}`;
                                         return (
                                             <div className={"attachment images"}>
-                                                <a href={fileURL} target="_blank">
+                                                <a href={fileURL} target="_blank" rel="noreferrer">
                                                     {f.OriginalFileName}
                                                 </a>
                                                 {(type === 'Sender') && <img
@@ -682,13 +713,14 @@ function AttachmentSec(props) {
                         </Col>}
                         <div className="w-100">
                             <div className={"attachment-wrapper mt-0 mb-3"}>
+                                {attachmentLoaderObj.loaderInBackup && <LoaderCustom customClass="attachment-sec-loader" />}
                                 {invoiceFiles &&
                                     invoiceFiles.map((f) => {
                                         const withOutTild = f.FileURL.replace("~", "");
                                         const fileURL = `${FILE_URL}${withOutTild}`;
                                         return (
                                             <div className={"attachment images"}>
-                                                <a href={fileURL} target="_blank">
+                                                <a href={fileURL} target="_blank" rel="noreferrer">
                                                     {f.OriginalFileName}
                                                 </a>
                                                 {(type === 'Sender') && <img
@@ -769,13 +801,14 @@ function AttachmentSec(props) {
                         </Col>}
                         <div className="w-100">
                             <div className={"attachment-wrapper mt-0 mb-3"}>
+                                {attachmentLoaderObj.loaderOther && <LoaderCustom customClass="attachment-sec-loader" />}
                                 {otherFiles &&
                                     otherFiles.map((f) => {
                                         const withOutTild = f.FileURL.replace("~", "");
                                         const fileURL = `${FILE_URL}${withOutTild}`;
                                         return (
                                             <div className={"attachment images"}>
-                                                <a href={fileURL} target="_blank">
+                                                <a href={fileURL} target="_blank" rel="noreferrer">
                                                     {f.OriginalFileName}
                                                 </a>
                                                 {(type === 'Sender') && <img
@@ -856,13 +889,14 @@ function AttachmentSec(props) {
                         </Col>}
                         <div className="w-100">
                             <div className={"attachment-wrapper mt-0 mb-3"}>
+                                {attachmentLoaderObj.loaderAttch && <LoaderCustom customClass="attachment-sec-loader" />}
                                 {attachmentFiles &&
                                     attachmentFiles.map((f) => {
                                         const withOutTild = f.FileURL.replace("~", "");
                                         const fileURL = `${FILE_URL}${withOutTild}`;
                                         return (
                                             <div className={"attachment images"}>
-                                                <a href={fileURL} target="_blank">
+                                                <a href={fileURL} target="_blank" rel="noreferrer">
                                                     {f.OriginalFileName}
                                                 </a>
                                                 {(type === 'Sender') && <img
