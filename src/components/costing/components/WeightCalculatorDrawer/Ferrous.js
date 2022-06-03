@@ -475,7 +475,7 @@ function Ferrous(props) {
                                 <Col md="3">
                                     <NumberFieldHookForm
                                         // Confirm this name from tanmay sir
-                                        label={`Net RM Costttttt`}
+                                        label={`Net RM Cost`}
                                         name={'NetRMCost'}
                                         Controller={Controller}
                                         control={control}
