@@ -14,6 +14,7 @@ import { MESSAGES } from '../../../../config/message';
 import { ViewCostingContext } from '../CostingDetails';
 import { createToprowObjAndSave } from '../../CostingUtil';
 import { Link } from 'react-scroll';
+import { debounce } from 'lodash';
 
 function TabPackagingFreight(props) {
 
@@ -148,7 +149,7 @@ function TabPackagingFreight(props) {
   * @method saveCosting
   * @description SAVE COSTING
   */
-  const saveCosting = () => {
+  const saveCosting = debounce(handleSubmit(() => {
 
     if (checkIsFreightPackageChange) {
 
@@ -183,7 +184,7 @@ function TabPackagingFreight(props) {
       }
 
     }
-  }
+  }), 500)
 
 
   const InjectDiscountAPICall = () => {
@@ -215,7 +216,6 @@ function TabPackagingFreight(props) {
               <form
                 noValidate
                 className="form"
-                onSubmit={handleSubmit(onSubmit)}
               >
                 <Row>
                   <Col md="12">
