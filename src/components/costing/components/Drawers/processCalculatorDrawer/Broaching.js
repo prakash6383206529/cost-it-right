@@ -56,6 +56,9 @@ function Broaching(props) {
         setTotalCycleTimeMins()   //totalCycleTimeMins
     }, [fieldValues])
 
+    useEffect(() => {
+        setTotalCycleTimeMins()
+    }, [dataToSend.CuttingTimeMins])
 
     const { calculateMachineTime } = props
     const [totalMachiningTime, setTotalMachiningTime] = useState(WeightCalculatorRequest && WeightCalculatorRequest.TotalMachiningTime !== undefined ? WeightCalculatorRequest.TotalMachiningTime : '')

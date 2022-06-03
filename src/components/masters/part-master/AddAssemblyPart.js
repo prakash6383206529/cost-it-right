@@ -102,7 +102,7 @@ class AddAssemblyPart extends Component {
             return productArray
           })
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
-          this.setState({ minEffectiveDate: Data.EffectiveDate })
+          this.setState({ minEffectiveDate: Data.LatestEffectiveDate })
 
           this.setState({ DataToCheck: Data })
 
@@ -151,11 +151,11 @@ class AddAssemblyPart extends Component {
           let finalData = res.data.Data
           this.props.change("Description", finalData.Description)
           this.props.change("AssemblyPartName", finalData.PartName)
-          this.setState({ disablePartName: true })
+          this.setState({ disablePartName: true, minEffectiveDate: finalData.EffectiveDate })
         } else {
           this.props.change("Description", "")
           this.props.change("AssemblyPartName", "")
-          this.setState({ disablePartName: false })
+          this.setState({ disablePartName: false, minEffectiveDate: "" })
         }
       })
     }
@@ -1159,9 +1159,7 @@ class AddAssemblyPart extends Component {
           {
             this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} disablePopup={disablePopup} />
           }
-          {/* {
-            this.state.showPopupDraft && <PopupMsgWrapper isOpen={this.state.showPopupDraft} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirmDraft} message={`${MESSAGES.COSTING_REJECT_ALERT}`} />
-          } */}
+
         </div>
       </>
     );

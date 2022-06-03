@@ -536,13 +536,11 @@ function AddFreight(props) {
                       Controller={Controller}
                       control={control}
                       register={register}
-                      mandatory={true}
                       rules={{
-                        required: true,
                         pattern: {
                           value: /^[0-9]\d*(\.\d+)?$/i,
                           message: 'Invalid Number.'
-                        },
+                        }
                       }}
                       handleChange={() => { }}
                       defaultValue={''}

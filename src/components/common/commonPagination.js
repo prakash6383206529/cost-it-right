@@ -52,7 +52,9 @@ export var resetState = (gridOptions, thiss, master) => {
     var obj = thiss.state.floatingFilterData
 
     for (var prop in obj) {
-        obj[prop] = ""
+        if (prop !== "DepartmentCode") {
+            obj[prop] = ""
+        }
     }
 
     thiss.setState({ floatingFilterData: obj, warningMessage: false, pageNo: 1, currentRowIndex: 0 })
