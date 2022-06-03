@@ -84,12 +84,11 @@ class AddIndivisualPart extends Component {
           })
           this.setState({ DataToCheck: Data })
           this.props.change("EffectiveDate", DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
-          this.setState({ minEffectiveDate: Data.EffectiveDate })
+          this.setState({ minEffectiveDate: Data.LatestEffectiveDate })
 
           setTimeout(() => {
             this.setState({
               isEditFlag: true,
-              // isLoader: false,
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
               files: Data.Attachements,
               ProductGroup: productArray,
@@ -126,11 +125,11 @@ class AddIndivisualPart extends Component {
           let finalData = res.data.Data
           this.props.change("Description", finalData.Description)
           this.props.change("PartName", finalData.PartName)
-          this.setState({ disablePartName: true })
+          this.setState({ disablePartName: true, minEffectiveDate: finalData.EffectiveDate })
         } else {
           this.props.change("Description", "")
           this.props.change("PartName", "")
-          this.setState({ disablePartName: false })
+          this.setState({ disablePartName: false, minEffectiveDate: "" })
         }
       })
     }
@@ -308,7 +307,7 @@ class AddIndivisualPart extends Component {
   * @description Used to Submit the form
   */
   onSubmit = debounce((values) => {
-    const { PartId, selectedPlants, effectiveDate, isEditFlag, files, DataToCheck, DropdownChanged, ProductGroup, oldProductGroup, uploadAttachements } = this.state;
+    const { PartId, effectiveDate, isEditFlag, files, DataToCheck, DropdownChanged, ProductGroup, oldProductGroup, uploadAttachements } = this.state;
     const { initialConfiguration } = this.props;
     let isStructureChanges
     let productArray = (initialConfiguration?.IsProductMasterConfigurable) ? ProductGroup && ProductGroup.map((item) => ({ GroupCode: item.Text })) : [{ GroupCode: values.GroupCode }]
@@ -387,8 +386,6 @@ class AddIndivisualPart extends Component {
           this.cancel()
         }
       });
-
-
 
     } else {
 
@@ -620,18 +617,10 @@ class AddIndivisualPart extends Component {
                                   component={renderDatePicker}
                                   className="form-control"
                                   disabled={isEditFlag && !isViewMode ? getConfigurationKey().IsBOMEditable ? false : true : (isViewMode)}
-
                                 />
-
                               </div>
                             </div>
                           </Col>
-
-                        </Row>
-
-                        <Row>
-
-
                         </Row>
 
                         <Row>
