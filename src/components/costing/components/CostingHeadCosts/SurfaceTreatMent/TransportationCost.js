@@ -10,6 +10,7 @@ import { ViewCostingContext } from '../../CostingDetails'
 import WarningMessage from '../../../../common/WarningMessage';
 
 function TransportationCost(props) {
+  console.log('props: ', props);
 
   const { data, item } = props;
   const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
