@@ -169,7 +169,7 @@ function TabPackagingFreight(props) {
         // "NetPackagingAndFreight": PackageAndFreightTabData && PackageAndFreightTabData[0].NetPackagingAndFreight,
         "CostingPartDetails": PackageAndFreightTabData && PackageAndFreightTabData[0].CostingPartDetails
       }
-      console.log(data, "data");
+
       if (costData.IsAssemblyPart === true) {
         if (!CostingViewMode) {
           let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 4, CostingEffectiveDate)
