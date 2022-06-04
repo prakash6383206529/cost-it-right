@@ -227,7 +227,7 @@ function SimulationApprovalListing(props) {
             Toaster.warning('Status should be same for sending multiple costing for approval')
             gridApi.deselectAll()
         } else if (!allEqual(tempArrDepartmentId)) {
-            Toaster.warning('Department should be same for sending multiple costing for approval')
+            Toaster.warning('Purchase Group should be same for sending multiple costing for approval')
             gridApi.deselectAll()
         } else if (!allEqual(tempArrIsFinalLevelButtonShow)) {
             Toaster.warning('Level should be same for sending multiple costing for approval')

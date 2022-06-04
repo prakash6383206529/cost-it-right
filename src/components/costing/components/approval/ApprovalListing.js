@@ -254,7 +254,7 @@ function ApprovalListing(props) {
 
     if (!allEqual(departmentArray)) {
       gridApi.deselectAll()
-      return Toaster.warning("Department should be same for sending multiple costing for approval")
+      return Toaster.warning("Purchase Group should be same for sending multiple costing for approval")
     }
     if (!allEqual(technologyArray)) {
       gridApi.deselectAll()

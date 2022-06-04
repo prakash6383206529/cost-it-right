@@ -2481,3 +2481,16 @@ export function getFgWiseImpactDataForCosting(costingId, callback) {
     })
   }
 }
+
+export function sapPushedCostingInitialMoment(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.sapPushedCostingInitialMoment, data, config());
+    request.then((response) => {
+      callback(response)
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error)
+      apiErrors(error);
+    })
+  }
+}
