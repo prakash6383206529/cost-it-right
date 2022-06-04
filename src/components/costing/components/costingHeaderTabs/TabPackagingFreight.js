@@ -166,22 +166,23 @@ function TabPackagingFreight(props) {
         "EffectiveDate": CostingEffectiveDate,
         "TotalCost": netPOPrice,
         "CostingNumber": costData.CostingNumber,
-        //"NetPackagingAndFreight": PackageAndFreightTabData && PackageAndFreightTabData[0].NetPackagingAndFreight,
+        // "NetPackagingAndFreight": PackageAndFreightTabData && PackageAndFreightTabData[0].NetPackagingAndFreight,
         "CostingPartDetails": PackageAndFreightTabData && PackageAndFreightTabData[0].CostingPartDetails
       }
+      console.log(data, "data");
       if (costData.IsAssemblyPart === true) {
         if (!CostingViewMode) {
           let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 4, CostingEffectiveDate)
           dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
         }
-        dispatch(saveCostingPackageFreightTab(data, res => {
-          if (res.data.Result) {
-            Toaster.success(MESSAGES.PACKAGE_FREIGHT_COSTING_SAVE_SUCCESS);
-            dispatch(setComponentPackageFreightItemData({}, () => { }))
-            InjectDiscountAPICall()
-          }
-        }))
       }
+      dispatch(saveCostingPackageFreightTab(data, res => {
+        if (res.data.Result) {
+          Toaster.success(MESSAGES.PACKAGE_FREIGHT_COSTING_SAVE_SUCCESS);
+          dispatch(setComponentPackageFreightItemData({}, () => { }))
+          InjectDiscountAPICall()
+        }
+      }))
 
     }
   }), 500)
