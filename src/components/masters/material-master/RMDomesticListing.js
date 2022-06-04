@@ -107,7 +107,6 @@ function RMDomesticListing(props) {
     }
 
     useEffect(() => {
-        console.log(props.isMasterSummaryDrawer, "ismaster summary");
         callFilterApi()
     }, [shown])
 
@@ -115,7 +114,6 @@ function RMDomesticListing(props) {
     useEffect(() => {
         if (rmDataList?.length > 0) {
             setTotalRecordCount(rmDataList[0].TotalRecordCount)
-            console.log(rmDataList[0].TotalRecordCount, rmDataList[0], "total");
         }
 
     }, [rmDataList])

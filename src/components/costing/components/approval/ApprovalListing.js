@@ -240,7 +240,6 @@ function ApprovalListing(props) {
     let plantArray = []
 
     selectedRows && selectedRows.map((item) => {
-      console.log('item: ', item);
       reasonArray.push(item.ReasonId)
       technologyArray.push(item.TechnologyId)
       departmentArray.push(item.DepartmentId)
