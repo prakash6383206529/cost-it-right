@@ -108,7 +108,6 @@ function RMDomesticListing(props) {
     }
 
     useEffect(() => {
-
         callFilterApi()
     }, [shown])
 
@@ -116,7 +115,6 @@ function RMDomesticListing(props) {
     useEffect(() => {
         if (rmDataList?.length > 0) {
             setTotalRecordCount(rmDataList[0].TotalRecordCount)
-
         }
 
     }, [rmDataList])
