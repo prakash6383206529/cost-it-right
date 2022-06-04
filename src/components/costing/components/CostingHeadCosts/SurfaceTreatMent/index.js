@@ -17,7 +17,7 @@ import { debounce } from 'lodash';
 
 function SurfaceTreatment(props) {
   const { surfaceData, transportationData, item } = props;
-  console.log('transportationData: ', transportationData);
+
 
   const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
 
@@ -164,9 +164,9 @@ function SurfaceTreatment(props) {
           dispatch(saveCostingSurfaceTab(requestData, res => {
             if (res.data.Result) {
               Toaster.success(MESSAGES.SURFACE_TREATMENT_COSTING_SAVE_SUCCESS);
-              InjectDiscountAPICall()
+              setCallDiscountApi(true)
+              props.closeDrawer('')
             }
-            props.closeDrawer('')
           }))
         }
 
