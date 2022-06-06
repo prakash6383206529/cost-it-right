@@ -41,7 +41,6 @@ const SendForApproval = (props) => {
 
   const partNo = useSelector((state) => state.costing.partNo)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const partInfo = useSelector((state) => state.costing.partInfo)
 
   const [selectedDepartment, setSelectedDepartment] = useState('')
   const [selectedApprover, setSelectedApprover] = useState('')
@@ -65,14 +64,14 @@ const SendForApproval = (props) => {
 
   useEffect(() => {
     let obj = {}
-    obj.TechnologyId = props.isApprovalisting ? props.technologyId : partInfo.TechnologyId
+    obj.TechnologyId = props.technologyId
     obj.DepartmentId = '00000000-0000-0000-0000-000000000000'
     obj.LoggedInUserLevelId = userDetails().LoggedInLevelId
     obj.LoggedInUserId = userDetails().LoggedInUserId
     let drawerDataObj = {}
     drawerDataObj.EffectiveDate = viewApprovalData[0].effectiveDate
     drawerDataObj.CostingHead = viewApprovalData[0].typeOfCosting === 0 ? 'ZBC' : 'VBC'
-    drawerDataObj.Technology = props.isApprovalisting ? props.technologyId : partInfo.TechnologyId
+    drawerDataObj.Technology = props.technologyId
     setCostingApprovalDrawerData(drawerDataObj);
 
 
@@ -95,7 +94,7 @@ const SendForApproval = (props) => {
           let requestObject = {
             LoggedInUserId: userData.LoggedInUserId,
             DepartmentId: departObj[0]?.Value,
-            TechnologyId: props.isApprovalisting ? props.technologyId : partNo.technologyId,
+            TechnologyId: props.technologyId,
             ReasonId: 0 // key only for minda
           }
           dispatch(getAllApprovalUserFilterByDepartment(requestObject, (res) => {
@@ -155,7 +154,7 @@ const SendForApproval = (props) => {
       let requestObject = {
         LoggedInUserId: userData.LoggedInUserId,
         DepartmentId: newValue.value,
-        TechnologyId: partNo.technologyId,
+        TechnologyId: props.technologyId,
       }
       dispatch(getAllApprovalUserFilterByDepartment(requestObject, (res) => {
         if (res.data.DataList.length <= 1) {
@@ -289,46 +288,7 @@ const SendForApproval = (props) => {
     }
 
     let temp = []
-    let plantCount = 0
-    let venderCount = 0
 
-    viewApprovalData.forEach((element, index, arr) => {
-      if (element.plantId !== '-') {
-        if (index > 0) {
-          if (element.plantId === arr[index - 1].plantId) {
-            plantCount = plantCount + 1
-          } else {
-            return false
-          }
-        } else {
-          return false
-        }
-      }
-      else if (element.vendorId !== '-') {
-        if (index > 0) {
-
-          if (element.vendorId === arr[index - 1].vendorId) {
-            venderCount = venderCount + 1
-          } else {
-            return false
-          }
-        } else {
-          return false
-        }
-      }
-    });
-
-    if (viewApprovalData.length > 1) {
-
-      if (plantCount > 0) {
-        Toaster.warning('Costings with same plant cannot be sent for approval')
-        return false
-      }
-      if (venderCount > 0) {
-        Toaster.warning('Costings with same vendor cannot be sent for approval')
-        return false
-      }
-    }
     setIsDisable(true)
 
     viewApprovalData.map((data) => {
@@ -532,6 +492,7 @@ const SendForApproval = (props) => {
             </Row>
             {viewApprovalData &&
               viewApprovalData.map((data, index) => {
+                console.log('data: ', data);
 
                 return (
                   <div className="" key={index}>

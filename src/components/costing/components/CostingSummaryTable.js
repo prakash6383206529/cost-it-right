@@ -1699,6 +1699,7 @@ const CostingSummaryTable = (props) => {
             isOpen={showApproval}
             closeDrawer={closeShowApproval}
             anchor={'right'}
+            technologyId={technologyId}
           />
         )
       }
