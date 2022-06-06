@@ -483,7 +483,6 @@ const SendForApproval = (props) => {
             </Row>
             {viewApprovalData &&
               viewApprovalData.map((data, index) => {
-                console.log('data: ', data);
 
                 return (
                   <div className="" key={index}>
