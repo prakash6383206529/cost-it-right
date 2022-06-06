@@ -2764,6 +2764,9 @@ body {
   .ag-paging-row-summary-panel {
     display: none;
   }
+  .ag-icon-first, .ag-icon-last {
+    display: none;
+  }
 }
 .ag-overlay-loading-center {
   display: none;
