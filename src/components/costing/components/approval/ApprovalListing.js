@@ -316,7 +316,7 @@ function ApprovalListing(props) {
       costingObj.revisedPrice = item.NetPOPrice
       costingObj.nPOPriceWithCurrency = item.NetPOPriceOtherCurrency
       costingObj.currencyRate = item.CurrencyExchangeRate
-      costingObj.variance = item.OldPOPrice && item.OldPOPrice !== '-' ? item.OldPOPrice : 0 - item.NetPOPrice && item.NetPOPrice !== '-' ? item.NetPOPrice : 0
+      costingObj.variance = (item.OldPOPrice && item.OldPOPrice !== '-' ? item.OldPOPrice : 0) - (item.NetPOPrice && item.NetPOPrice !== '-' ? item.NetPOPrice : 0)
       costingObj.reason = ''
       costingObj.ecnNo = ''
       costingObj.effectiveDate = DayTime(item.EffectiveDate).format('YYYY-MM-DD HH:mm:ss')
