@@ -370,6 +370,7 @@ class ProfitListing extends Component {
             effectiveDateFormatter: this.effectiveDateFormatter,
             statusButtonFormatter: this.statusButtonFormatter,
             hyphenFormatter: this.hyphenFormatter,
+            customNoRowsOverlay: NoContentFound
         };
 
         return (

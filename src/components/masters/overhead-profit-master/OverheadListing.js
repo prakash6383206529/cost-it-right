@@ -364,7 +364,8 @@ class OverheadListing extends Component {
             effectiveDateFormatter: this.effectiveDateFormatter,
             statusButtonFormatter: this.statusButtonFormatter,
             hyphenFormatter: this.hyphenFormatter,
-            plantFormatter: this.plantFormatter
+            plantFormatter: this.plantFormatter,
+            customNoRowsOverlay: NoContentFound
         };
 
 

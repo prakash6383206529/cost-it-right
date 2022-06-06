@@ -411,6 +411,7 @@ class ReasonListing extends Component {
                 noRowsOverlayComponent={'customNoRowsOverlay'}
                 noRowsOverlayComponentParams={{
                   title: EMPTY_DATA,
+                  imagClass: 'imagClass pt-3'
                 }}
                 frameworkComponents={frameworkComponents}
               >
