@@ -238,6 +238,7 @@ function ApprovalListing(props) {
     let statusArray = []
     let effectiveDateArray = []
     let plantArray = []
+    let partArray = []
 
     selectedRows && selectedRows.map((item) => {
       reasonArray.push(item.ReasonId)
@@ -247,35 +248,39 @@ function ApprovalListing(props) {
       statusArray.push(item.SimulationTechnologyHead)
       effectiveDateArray.push(item.EffectiveDate)
       plantArray.push(item.PlantCode)
+      partArray.push(item.PartNumber)
       return null
     })
 
     if (!allEqual(departmentArray)) {
       gridApi.deselectAll()
-      Toaster.warning("Department should be same for sending multiple costing for approval")
+      Toaster.warning("Department should be same for sending costings for approval")
     } else if (!allEqual(technologyArray)) {
       gridApi.deselectAll()
-      Toaster.warning("Technology should be same for sending multiple costing for approval")
+      Toaster.warning("Technology should be same for sending costings for approval")
     } else if (!allEqual(vendorArray)) {
       gridApi.deselectAll()
-      Toaster.warning("Vendor should be same for sending multiple costing for approval")
+      Toaster.warning("Vendor should be same for sending costings for approval")
     } else if (!allEqual(reasonArray)) {
       gridApi.deselectAll()
-      Toaster.warning("Reason should be same for sending multiple costing for approval")
+      Toaster.warning("Reason should be same for sending costings for approval")
     } else if (!allEqual(statusArray)) {
       gridApi.deselectAll()
-      Toaster.warning('Status should be same for sending multiple costing for approval')
+      Toaster.warning('Status should be same for sending costings for approval')
     } else if (!allEqual(effectiveDateArray)) {
       gridApi.deselectAll()
-      Toaster.warning('Effective Date should be same for sending multiple costing for approval')
+      Toaster.warning('Effective Date should be same for sending costings for approval')
     } else if (!allEqual(plantArray)) {
       gridApi.deselectAll()
-      Toaster.warning('Plant should be same for sending multiple costing for approval')
-    }
-
-    else {
+      Toaster.warning('Plant should be same for sending costings for approval')
+    } else {
       setReasonId(selectedRows && selectedRows[0]?.ReasonId)
     }
+    if (selectedRows.length > 1 && allEqual(vendorArray) && allEqual(plantArray) && allEqual(partArray)) {
+      gridApi.deselectAll()
+      Toaster.warning('Vendor and Plant should be different against a Part number')
+    }
+
     setSelectedRowData(selectedRows)
   }
 
@@ -305,7 +310,7 @@ function ApprovalListing(props) {
       costingObj.revisedPrice = item.NetPOPrice
       costingObj.nPOPriceWithCurrency = item.NetPOPriceOtherCurrency
       costingObj.currencyRate = item.CurrencyExchangeRate
-      costingObj.variance = Number(item.NetPOPrice && item.NetPOPrice !== '-' ? item.oldNetPOPrice : 0) - Number(item.NetPOPrice && item.NetPOPrice !== '-' ? item.NetPOPrice : 0)
+      costingObj.variance = (item.OldPOPrice && item.OldPOPrice !== '-' ? item.OldPOPrice : 0) - (item.NetPOPrice && item.NetPOPrice !== '-' ? item.NetPOPrice : 0)
       costingObj.reason = ''
       costingObj.ecnNo = ''
       costingObj.effectiveDate = DayTime(item.EffectiveDate).format('YYYY-MM-DD HH:mm:ss')
@@ -395,6 +400,7 @@ function ApprovalListing(props) {
     resizable: true,
     filter: true,
     sortable: true,
+    headerCheckboxSelectionFilteredOnly: true,
     headerCheckboxSelection: isFirstColumn,
     checkboxSelection: isFirstColumn
   };
