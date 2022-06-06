@@ -25,13 +25,6 @@ class CostingTab extends Component {
     }
   }
 
-  /**
-  * @method componentDidMount
-  * @description used to called after mounting component
-  */
-  componentDidMount() {
-
-  }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.data !== this.state.data) {
@@ -178,7 +171,6 @@ class CostingTab extends Component {
 
   selectAllHandler = (parentIndex, actionRows) => {
     const { Modules, } = this.state;
-    //const { actionSelectList } = this.props;
 
     let checkedActions = actionRows.filter(item => item.IsChecked === true)
 
@@ -206,7 +198,7 @@ class CostingTab extends Component {
     const { Modules, checkBox } = this.state;
     let booleanVal = this.state.checkBox
     this.setState({ checkBox: !booleanVal })
-    let tempArray = [];
+
     let isCheckedSelectAll = checkBox
     let actionRows
     let actionArray = Modules && Modules.map((item, index) => {
@@ -221,7 +213,11 @@ class CostingTab extends Component {
           item1.IsChecked = isCheckedSelectAll;
         }
       })
-      item.IsChecked = isCheckedSelectAll
+      if (item?.Sequence === 0) {
+        item.IsChecked = false
+      } else {
+        item.IsChecked = isCheckedSelectAll
+      }
       return actionRows;
     })
     this.setState({ Modules: actionArray, })
@@ -356,18 +352,6 @@ class CostingTab extends Component {
     this.props.permissions(Modules, COSTING)
   }
 
-  /**
-  * @method cancel
-  * @description used to cancel role edit
-  */
-  cancel = () => {
-
-  }
-
-  clearForm = () => {
-
-  }
-
   render() {
     const { actionSelectList } = this.state;
     return (
@@ -383,15 +367,6 @@ class CostingTab extends Component {
                       <input
                         type="checkbox"
                         value={"All"}
-                        // className={
-                        //     this.isCheckAll(item, item)
-                        //         ? "selected-box"
-                        //         : "not-selected-box"
-                        // }
-                        // checked={this.isCheckAll(
-                        //     index,
-                        //     item.Actions
-                        // )}
                         onClick={() =>
                           this.selectAllHandlerEvery()
                         }

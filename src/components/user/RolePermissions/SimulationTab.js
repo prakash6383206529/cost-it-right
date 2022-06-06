@@ -26,14 +26,6 @@ class SimulationTab extends Component {
         }
     }
 
-    /**
-    * @method componentDidMount
-    * @description used to called after mounting component
-    */
-    componentDidMount() {
-
-    }
-
     UNSAFE_componentWillReceiveProps(nextProps) {
         if (nextProps.data !== this.state.data) {
             const { data, actionData, actionSelectList } = nextProps;
@@ -91,8 +83,7 @@ class SimulationTab extends Component {
     * @description used to checked module
     */
     moduleHandler = (index) => {
-        //alert('hi')
-        const { Modules, checkedAll } = this.state;
+        const { Modules } = this.state;
         const isModuleChecked = Modules[index].IsChecked;
 
         let actionArray = [];
@@ -136,7 +127,7 @@ class SimulationTab extends Component {
     * @description used to select module's action row (Horizontally)
     */
     isCheckAll = (parentIndex, actionData) => {
-        const { Modules, actionSelectList } = this.state;
+        const { Modules } = this.state;
 
         let tempArray = actionData && actionData.filter(item => item.IsChecked === true)
         if (actionData && actionData !== undefined) {
@@ -145,9 +136,7 @@ class SimulationTab extends Component {
     }
 
     selectAllHandler = (parentIndex, actionRows) => {
-        const { Modules, actionSelectList } = this.state;
-        //const { actionSelectList } = this.props;
-
+        const { Modules } = this.state;
         let checkedActions = actionRows.filter(item => item.IsChecked === true)
 
         let tempArray = [];
@@ -174,7 +163,6 @@ class SimulationTab extends Component {
         const { Modules, checkBox } = this.state;
         let booleanVal = this.state.checkBox
         this.setState({ checkBox: !booleanVal })
-        let tempArray = [];
         let isCheckedSelectAll = checkBox
         let actionRows
         let actionArray = Modules && Modules.map((item, index) => {
@@ -188,10 +176,12 @@ class SimulationTab extends Component {
                 } else {
                     item1.IsChecked = isCheckedSelectAll;
                 }
-                // 
-
             })
-            item.IsChecked = isCheckedSelectAll
+            if (item?.Sequence === 0) {
+                item.IsChecked = false
+            } else {
+                item.IsChecked = isCheckedSelectAll
+            }
             return actionRows;
         })
         this.setState({ Modules: actionArray, })
@@ -296,15 +286,6 @@ class SimulationTab extends Component {
                                             <input
                                                 type="checkbox"
                                                 value={"All"}
-                                                // className={
-                                                //     this.isCheckAll(item, item)
-                                                //         ? "selected-box"
-                                                //         : "not-selected-box"
-                                                // }
-                                                // checked={this.isCheckAll(
-                                                //     index,
-                                                //     item.Actions
-                                                // )}
                                                 onClick={() =>
                                                     this.selectAllHandlerEvery()
                                                 }
