@@ -62,7 +62,7 @@ function ApprovalSummary(props) {
 
       const { PartDetails, ApprovalDetails, ApprovalLevelStep, DepartmentId, Technology, ApprovalProcessId,
         ApprovalProcessSummaryId, ApprovalNumber, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow,
-        CostingId, PartId, LastCostingId, PartNumber } = res?.data?.Data?.Costings[0];
+        CostingId, PartId, LastCostingId, PartNumber, DepartmentCode } = res?.data?.Data?.Costings[0];
 
       const technologyId = res?.data?.Data?.Costings[0].PartDetails.TechnologyId
       const Data = res?.data?.Data?.Costings[0].ApprovalDetails[0]
@@ -89,7 +89,7 @@ function ApprovalSummary(props) {
         VendorCode: Data.VendorCode,
         VendorName: Data.VendorName,
         Plant: Data.TypeOfCosting === 'VBC' ? Data.DestinationPlantCode : Data.PlantCode,
-        DepartmentCode: Data?.DepartmentCode,
+        DepartmentCode: DepartmentCode,
         NewPOPrice: Data.NewPOPrice,
         EffectiveDate: Data.EffectiveDate,
       })

@@ -720,6 +720,8 @@ export function runSimulationOnSelectedCombinedProcessCosting(data, callback) {
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error)
         })
     }
 }

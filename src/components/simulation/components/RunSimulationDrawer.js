@@ -6,7 +6,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 //import CostingSimulation from './CostingSimulation';
 import { EXCHNAGERATE, COMBINED_PROCESS, RMDOMESTIC, RMIMPORT, OPERATIONS, SURFACETREATMENT, MACHINERATE, BOPDOMESTIC, BOPIMPORT } from '../../../config/constants';
-import { runSimulationOnSelectedCosting, getSelectListOfSimulationApplicability, runSimulationOnSelectedExchangeCosting, runSimulationOnSelectedCombinedProcessCosting, runSimulationOnSelectedSurfaceTreatmentCosting, runSimulationOnSelectedMachineRateCosting, runSimulationOnSelectedBoughtOutPartCosting,runSimulationOnSelectedOverheadProfitCosting,runSimulationOnSelectedProfitCosting } from '../actions/Simulation';
+import { runSimulationOnSelectedCosting, getSelectListOfSimulationApplicability, runSimulationOnSelectedExchangeCosting, runSimulationOnSelectedCombinedProcessCosting, runSimulationOnSelectedSurfaceTreatmentCosting, runSimulationOnSelectedMachineRateCosting, runSimulationOnSelectedBoughtOutPartCosting, runSimulationOnSelectedOverheadProfitCosting, runSimulationOnSelectedProfitCosting } from '../actions/Simulation';
 import { DatePickerHookForm } from '../../layout/HookFormInputs';
 import DayTime from '../../common/DayTimeWrapper'
 // import { EXCHNAGERATE } from '../../../config/constants';
@@ -161,10 +161,6 @@ function RunSimulationDrawer(props) {
 
     const checkForResponse = (res) => {
         setRunSimulationDisable(false)
-        if ('response' in res) {
-            if (res && res?.response?.data?.Result === false) {
-            }
-        }
         if (res?.data?.Result) {
             Toaster.success('Simulation process has been run successfully.')
             runSimulationCosting()
@@ -210,11 +206,7 @@ function RunSimulationDrawer(props) {
                 break;
             case Number(COMBINED_PROCESS):
                 dispatch(runSimulationOnSelectedCombinedProcessCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
-
-                    if (res.data.Result) {
-                        Toaster.success('Simulation process has been run successfully.')
-                        runSimulationCosting()
-                    }
+                    checkForResponse(res)
                 }))
                 break;
             case Number(RMDOMESTIC):

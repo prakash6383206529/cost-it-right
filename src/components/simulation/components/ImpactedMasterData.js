@@ -31,7 +31,7 @@ export function Impactedmasterdata(props) {
             exchangeRateListing = data?.ExchangeRateImpactedMasterDataList?.length === 0 ? false : true
             bopListing = data?.BoughtOutPartImpactedMasterDataList?.length === 0 || data?.BoughtOutPartImpactedMasterDataList === null ? false : true
             machineRateListing = data?.MachineRateImpactedMasterDataList?.length === 0 ? false : true
-            combinedProcessListing = data?.CombinedProcessImpactedMasterDataList?.length === 0 || data?.BoughtOutPartImpactedMasterDataList === null ? false : true
+            combinedProcessListing = data?.CombinedProcessImpactedMasterDataList?.length === 0 || data?.CombinedProcessImpactedMasterDataList === null ? false : true
         }
 
         return (<>
