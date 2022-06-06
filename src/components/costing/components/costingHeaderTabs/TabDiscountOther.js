@@ -48,6 +48,7 @@ function TabDiscountOther(props) {
   const currencySelectList = useSelector(state => state.comman.currencySelectList)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { DiscountCostData, ExchangeRateData, CostingEffectiveDate, RMCCTabData, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, CostingDataList, getAssemBOPCharge } = useSelector(state => state.costing)
+
   const [totalCost, setTotalCost] = useState(0)
   const [discountObj, setDiscountObj] = useState({})
   const [otherCostApplicability, setOtherCostApplicability] = useState([])
@@ -97,26 +98,28 @@ function TabDiscountOther(props) {
 
   //USED TO SET ITEM DATA THAT WILL CALL WHEN CLICK ON OTHER TAB
   useEffect(() => {
+
     setTimeout(() => {
 
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: costData.CostingId }
       })
+
       let data = {
-        "CostingId": costData.CostingId,
-        "PartId": costData.PartId,
-        "PartNumber": costData.PartNumber,
+        "CostingId": costData?.CostingId,
+        "PartId": costData?.PartId,
+        "PartNumber": costData?.PartNumber,
         "NetPOPrice": netPOPrice,
         "TotalCost": netPOPrice,
         "LoggedInUserId": loggedInUserId(),
         "EffectiveDate": CostingEffectiveDate,
         "CostingPartDetails": {
-          "CostingDetailId": costData.CostingId,
-          "PartId": costData.PartId,
+          "CostingDetailId": costData?.CostingId,
+          "PartId": costData?.PartId,
           "PartTypeId": "00000000-0000-0000-0000-000000000000",
-          "Type": costData.VendorType,
-          "PartNumber": costData.PartNumber,
-          "PartName": costData.PartName,
+          "Type": costData?.VendorType,
+          "PartNumber": costData?.PartNumber,
+          "PartName": costData?.PartName,
           "Quantity": 1,
           "IsOpen": true,
           "IsPrimary": true,
@@ -134,25 +137,26 @@ function TabDiscountOther(props) {
             "IsChangeCurrency": IsCurrencyChange,
             "NetPOPriceINR": netPOPrice,
             "NetPOPriceOtherCurrency": getValues('NetPOPriceOtherCurrency'),
-            "CurrencyId": currency.value,
-            "Currency": currency.label,
+            "CurrencyId": currency?.value,
+            "Currency": currency?.label,
             "Remark": getValues('Remarks'),
             "OtherCostDescription": getValues('OtherCostDescription'),
             "CurrencyExchangeRate": CurrencyExchangeRate,
             "EffectiveDate": effectiveDate,
             "OtherCostPercentage": '',
             "PercentageOtherCost": getValues('PercentageOtherCost'),
-            "OtherCostType": otherCostType.value,
-            "DiscountCostType": hundiscountType.value,
-            "OtherCostApplicabilityId": otherCostApplicability.value,
-            "OtherCostApplicability": otherCostApplicability.label,
-            "DiscountApplicbilityId": discountCostApplicability.value,
-            "DiscountApplicability": discountCostApplicability.label
+            "OtherCostType": otherCostType?.value,
+            "DiscountCostType": hundiscountType?.value,
+            "OtherCostApplicabilityId": otherCostApplicability?.value,
+            "OtherCostApplicability": otherCostApplicability?.label,
+            "DiscountApplicbilityId": discountCostApplicability?.value,
+            "DiscountApplicability": discountCostApplicability?.label
           }
         },
         "Attachements": updatedFiles,
         "IsChanged": true,
       }
+
       dispatch(setComponentDiscountOtherItemData(data, () => { }))
     }, 1000)
   }, [DiscountCostData])
@@ -1152,7 +1156,7 @@ function TabDiscountOther(props) {
                     <div className="col-sm-12 text-right bluefooter-butn mt-3">
 
                       {!CostingViewMode && <button
-                        type="submit"
+                        type="button"
                         className="submit-button mr5 save-btn"
                         onClick={(data, e) => { handleSubmit(onSubmit(data, e, false)) }}
                         disabled={isDisable}
@@ -1162,7 +1166,7 @@ function TabDiscountOther(props) {
                       </button>}
 
                       {!CostingViewMode && <button
-                        type="submit"
+                        type="button"
                         className="submit-button save-btn"
                         onClick={(data, e) => { handleSubmit(onSubmit(data, e, true)) }}
                         disabled={isDisable}

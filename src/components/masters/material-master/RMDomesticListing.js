@@ -8,6 +8,7 @@ import {
     masterFinalLevelUser,
 } from '../actions/Material';
 import { checkForDecimalAndNull } from "../../../helper/validation";
+import { userDepartmetList } from "../../../helper/auth"
 import { EMPTY_DATA, RMDOMESTIC } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
@@ -60,7 +61,7 @@ function RMDomesticListing(props) {
     const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
     const [currentRowIndex, setCurrentRowIndex] = useState(0)
     const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
-    const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", RawMaterialCode: "", Category: "", MaterialType: "", Plant: "", UOM: "", VendorName: "", BasicRate: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDate: "" })
+    const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", RawMaterialCode: "", Category: "", MaterialType: "", Plant: "", UOM: "", VendorName: "", BasicRate: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDate: "", DepartmentCode: isSimulation ? userDepartmetList() : "" })
 
 
     var filterParams = {
@@ -107,7 +108,6 @@ function RMDomesticListing(props) {
     }
 
     useEffect(() => {
-        console.log(props.isMasterSummaryDrawer, "ismaster summary");
         callFilterApi()
     }, [shown])
 
@@ -115,7 +115,6 @@ function RMDomesticListing(props) {
     useEffect(() => {
         if (rmDataList?.length > 0) {
             setTotalRecordCount(rmDataList[0].TotalRecordCount)
-            console.log(rmDataList[0].TotalRecordCount, rmDataList[0], "total");
         }
 
     }, [rmDataList])
@@ -203,7 +202,7 @@ function RMDomesticListing(props) {
                     let isReset = true
                     setTimeout(() => {
                         for (var prop in floatingFilterData) {
-                            if (floatingFilterData[prop] !== "") {
+                            if (prop !== "DepartmentCode" && floatingFilterData[prop] !== "") {
                                 isReset = false
                             }
                         }
@@ -260,7 +259,10 @@ function RMDomesticListing(props) {
         gridOptions?.api?.setFilterModel(null);
 
         for (var prop in floatingFilterData) {
-            floatingFilterData[prop] = ""
+
+            if (prop !== "DepartmentCode") {
+                floatingFilterData[prop] = ""
+            }
         }
 
         setFloatingFilterData(floatingFilterData)
