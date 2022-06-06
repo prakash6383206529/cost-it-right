@@ -229,7 +229,19 @@ function RMDomesticListing(props) {
         }
 
         if (value?.filterInstance?.appliedModel === null || value?.filterInstance?.appliedModel?.filter === "") {
-            setWarningMessage(false)
+            let isFilterEmpty = true
+
+            if (model !== undefined && model !== null) {
+                if (Object.keys(model).length > 0) {
+                    isFilterEmpty = false
+                }
+
+                if (isFilterEmpty) {
+                    setWarningMessage(false)
+                    setIsSearchButtonDisable(true)
+                }
+            }
+
         } else {
 
             if (value.column.colId === "EffectiveDate" || value.column.colId === "CreatedDate") {
