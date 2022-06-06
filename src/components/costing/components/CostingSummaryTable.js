@@ -1012,6 +1012,7 @@ const CostingSummaryTable = (props) => {
                                   (data.CostingHeading !== VARIANCE && icons) && (!pdfHead && !drawerDetailPDF) &&
                                   <button
                                     type="button"
+                                    title='View'
                                     class="float-right mb-0 View "
                                     onClick={() => viewRM(index)}
                                   >
@@ -1041,6 +1042,7 @@ const CostingSummaryTable = (props) => {
                                   (data.CostingHeading !== VARIANCE && icons) && (!pdfHead && !drawerDetailPDF) &&
                                   <button
                                     type="button"
+                                    title='View'
                                     class="float-right mb-0 View "
                                     onClick={() => viewBop(index)}
                                   >
@@ -1098,6 +1100,7 @@ const CostingSummaryTable = (props) => {
                                   (data.CostingHeading !== VARIANCE && icons) && (!pdfHead && !drawerDetailPDF) &&
                                   <button
                                     type="button"
+                                    title='View'
                                     class="float-right mb-0 View "
                                     onClick={() => viewConversionCost(index)}
                                   >
@@ -1156,6 +1159,7 @@ const CostingSummaryTable = (props) => {
                                   (data.CostingHeading !== VARIANCE && icons) && (!pdfHead && !drawerDetailPDF) &&
                                   <button
                                     type="button"
+                                    title='View'
                                     class="float-right mb-0 View "
                                     onClick={() => viewSurfaceTreatmentCost(index)}
                                   >
@@ -1266,6 +1270,7 @@ const CostingSummaryTable = (props) => {
                                   (data.CostingHeading !== VARIANCE && icons) && (!pdfHead && !drawerDetailPDF) &&
                                   <button
                                     type="button"
+                                    title='View'
                                     class="float-right mb-0 View "
                                     onClick={() => overHeadProfit(index)}
                                   >
@@ -1313,6 +1318,7 @@ const CostingSummaryTable = (props) => {
                                   (data.CostingHeading !== VARIANCE && icons) && (!pdfHead && !drawerDetailPDF) &&
                                   <button
                                     type="button"
+                                    title='View'
                                     class="float-right mb-0 View "
                                     onClick={() => viewPackagingAndFrieghtData(index)}
                                   >
@@ -1385,6 +1391,7 @@ const CostingSummaryTable = (props) => {
                                   (data.CostingHeading !== VARIANCE && icons) && (!pdfHead && !drawerDetailPDF) &&
                                   <button
                                     type="button"
+                                    title='View'
                                     class="float-right mb-0 View "
                                     onClick={() => viewToolCostData(index)}
                                   >
@@ -1550,6 +1557,7 @@ const CostingSummaryTable = (props) => {
 
                                       <button
                                         type='button'
+                                        title='View'
                                         className='btn-a'
                                         onClick={() => viewAttachmentData(index)}
                                       > {data.CostingHeading !== VARIANCE ? 'View Attachment' : ''}</button>
