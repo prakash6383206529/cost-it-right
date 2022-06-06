@@ -151,14 +151,6 @@ class ZBCPlantListing extends Component {
             IsActive: !cell, //Status of the user.
         }
         this.setState({ showPopupToggle: true, cellData: data, cellValue: cell })
-        const toastrConfirmOptions = {
-            onOk: () => {
-                this.confirmDeactivateItem(data, cell)
-            },
-            onCancel: () => { },
-            component: () => <ConfirmComponent />,
-        };
-
     }
 
     confirmDeactivateItem = (data, cell) => {
