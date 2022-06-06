@@ -160,7 +160,7 @@ export function Summarysection(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (
             <>
-                <button className="Balance mb-0" type={'button'} onClick={() => DisplayCompareCosting(cell, row)} />
+                <button title='Compare' className="Balance mb-0" type={'button'} onClick={() => DisplayCompareCosting(cell, row)} />
             </>
         )
     }
@@ -274,7 +274,7 @@ export function Summarysection(props) {
                             <Col md="12">
                                 <Row>
                                     <Col>
-                                        <div className={`ag-grid-wrapper height-width-wrapper ${costingList && costingList?.length <=0 ?"overlay-contain": ""}`}>
+                                        <div className={`ag-grid-wrapper height-width-wrapper ${costingList && costingList?.length <= 0 ? "overlay-contain" : ""}`}>
                                             <div className="ag-grid-header">
                                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                                                 <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
