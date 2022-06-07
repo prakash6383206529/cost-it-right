@@ -71,7 +71,8 @@ class AddAssemblyPart extends Component {
       warningMessage: false,
       attachmentLoader: false,
       convertPartToAssembly: false,
-      partListingData: []
+      partListingData: [],
+      inputLoader: false
     }
   }
 
@@ -80,12 +81,13 @@ class AddAssemblyPart extends Component {
   * @description 
   */
   componentDidMount() {
+    this.setState({ inputLoader: true })
     this.props.getPlantSelectListByType(ZBC, () => { })
     this.props.getProductGroupSelectList(() => { })
     this.props.getTechnologySelectList(() => { })
     this.props.getPartDataList(0, 100, { Technology: "", PartNumber: "", PartName: "", ECNNumber: "", RevisionNumber: "", DrawingNumber: "", EffectiveDate: "" }, false, (res) => {
 
-      this.setState({ partListingData: res?.data?.DataList })
+      this.setState({ partListingData: res?.data?.DataList, inputLoader: false })
     })
     this.getDetails()
   }
@@ -912,7 +914,8 @@ class AddAssemblyPart extends Component {
                         {this.state.convertPartToAssembly &&
                           <Col md="3" className='mb-4'>
                             <label>{"Part No"}<span className="asterisk-required">*</span></label>
-                            <div className="fullinput-icon mr-3">
+                            <div className="fullinput-icon w-100">
+                              {this.state.inputLoader && <LoaderCustom customClass="assembly-part-loader" />}
                               <AsyncSelect
                                 name="partNo"
                                 ref={this.myRef}
@@ -982,9 +985,6 @@ class AddAssemblyPart extends Component {
                             disabled={isViewMode}
                           />
                         </Col>
-                      </Row>
-
-                      <Row>
                         <Col md="3">
                           <Field
                             label={`ECN No.`}
