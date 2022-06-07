@@ -59,7 +59,6 @@ class IndivisualPartListing extends Component {
             pageSize10: true,
             pageSize50: false,
             pageSize100: false,
-            enableSearchFilterSearchButton: true
         }
     }
 
@@ -153,7 +152,6 @@ class IndivisualPartListing extends Component {
 
     onFloatingFilterChanged = (value) => {
         this.setState({ warningMessage: true })
-        this.setState({ enableSearchFilterSearchButton: true })
         const model = gridOptions?.api?.getFilterModel();
 
         if (value?.filterInstance?.appliedModel === null || value?.filterInstance?.appliedModel?.filter === "") {
@@ -161,17 +159,16 @@ class IndivisualPartListing extends Component {
             if (model !== undefined && model !== null) {
                 if (Object.keys(model).length > 0) {
                     isFilterEmpty = false
-                    this.setState({ enableSearchFilterSearchButton: false, warningMessage: true })
+                    this.setState({ warningMessage: true })
                 }
                 if (isFilterEmpty) {
-                    this.setState({ warningMessage: false, enableSearchFilterSearchButton: true })
+                    this.setState({ warningMessage: false })
                 }
             }
 
             return false
         } else {
 
-            this.setState({ enableSearchFilterSearchButton: false })
             if (value.column.colId === "EffectiveDateNew" || value.column.colId === "CreatedDate") {
                 this.setState({ isSearchButtonDisable: false })
                 return false
@@ -521,7 +518,7 @@ class IndivisualPartListing extends Component {
                                     {this.state.warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                                 </div>
                                 <div>
-                                    <button title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch(this)} disabled={this.state.enableSearchFilterSearchButton}><div class="filter mr-0"></div></button>
+                                    <button title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch(this)} disabled={!this.state.warningMessage}><div class="filter mr-0"></div></button>
                                     {AddAccessibility && (
                                         <button
                                             type="button"
