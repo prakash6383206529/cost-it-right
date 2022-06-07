@@ -72,7 +72,8 @@ class AddAssemblyPart extends Component {
       attachmentLoader: false,
       convertPartToAssembly: false,
       partListingData: [],
-      inputLoader: false
+      inputLoader: false,
+      warningMessageTechnology: false
     }
   }
 
@@ -116,7 +117,6 @@ class AddAssemblyPart extends Component {
           this.setState({ minEffectiveDate: Data.LatestEffectiveDate })
 
           this.setState({ DataToCheck: Data })
-
           setTimeout(() => {
             this.setState({
               isEditFlag: true,
@@ -129,7 +129,8 @@ class AddAssemblyPart extends Component {
               ProductGroup: productArray,
               oldProductGroup: productArray,
               isBomEditable: Data.IsBOMEditable,
-              warningMessage: true
+              warningMessage: true,
+              warningMessageTechnology: Data.IsBOMEditable ? true : false,
             }, () => this.setState({ isLoader: false }))
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
             let files = Data.Attachements && Data.Attachements.map((item) => {
@@ -465,10 +466,10 @@ class AddAssemblyPart extends Component {
   closeBOMViewerDrawer = (e = '', drawerData, isSaved, isEqual) => {
     this.setState({ isOpenBOMViewerDrawer: false, BOMViewerData: drawerData, avoidAPICall: isSaved, BOMChanged: isEqual ? false : true })
 
-    if (drawerData.length !== 1 && !this.state.isEditFlag) {
-      this.setState({ minEffectiveDate: this.state.effectiveDate, warningMessage: true })
+    if (drawerData.length !== 1) {
+      this.setState({ minEffectiveDate: this.state.effectiveDate, warningMessage: true, warningMessageTechnology: this.state.isEditFlag ? (this.state.isBomEditable ? true : false) : true })
     } else if (drawerData.length === 1) {
-      this.setState({ minEffectiveDate: "", warningMessage: false })
+      this.setState({ minEffectiveDate: "", warningMessage: false, warningMessageTechnology: false })
     }
 
     if (isEqual) {
@@ -1083,8 +1084,9 @@ class AddAssemblyPart extends Component {
                               this.handleTechnologyChange
                             }
                             valueDescription={this.state.TechnologySelected}
-                            disabled={isEditFlag || isViewMode}
+                            disabled={isViewMode || this.state.warningMessageTechnology || (isEditFlag && !this.state.isBomEditable)}
                           />
+                          {this.state.warningMessageTechnology && <WarningMessage dClass="mr-3 assembly-viw-bom-wrapper" message={`Please reset the BOM to change the technology`} />}
                         </Col>
 
                         <Col md="3">
@@ -1108,7 +1110,7 @@ class AddAssemblyPart extends Component {
                               />
                             </div>
                           </div>
-                          {this.state.warningMessage && <WarningMessage dClass="mr-3 assembly-viw-bom-wrapper" message={'Please reset the BOM to select the previous date'} />}
+                          {this.state.warningMessage && <WarningMessage dClass="mr-3 assembly-viw-bom-wrapper" message={`Revised date is ${DayTime(this.state?.minEffectiveDate).format('DD/MM/YYYY')} please reset the BOM to select the previous date`} />}
                         </Col>
 
 
