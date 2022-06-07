@@ -28,6 +28,7 @@ class AddVBCPlant extends Component {
       state: [],
       PlantId: '',
       IsActive: true,
+      isViewMode: this.props?.isViewMode ? true : false,
     }
   }
 
@@ -288,7 +289,7 @@ class AddVBCPlant extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, isEditFlag } = this.props;
+    const { handleSubmit, isEditFlag, isViewMode } = this.props;
     const { country } = this.state;
     return (
       <>
@@ -337,7 +338,7 @@ class AddVBCPlant extends Component {
                       required={true}
                       handleChangeDescription={this.vendorHandler}
                       valueDescription={this.state.vendor}
-                      disabled={isEditFlag ? true : false}
+                      disabled={(isEditFlag || isViewMode) ? true : false}
                     />
                   </Col>
                   <Col md="6">
@@ -351,6 +352,7 @@ class AddVBCPlant extends Component {
                       required={true}
                       className=""
                       customClassName={"withBorder"}
+                      disabled={isViewMode}
                     />
                   </Col>
                 </Row>
@@ -366,7 +368,7 @@ class AddVBCPlant extends Component {
                       //required={true}
                       className=""
                       customClassName={"withBorder"}
-                      disabled={isEditFlag ? true : false}
+                      disabled={(isEditFlag || isViewMode) ? true : false}
                     />
                   </Col>
                   <Col md="6">
@@ -383,6 +385,7 @@ class AddVBCPlant extends Component {
                           maxLength={12}
                           className=""
                           customClassName={"withBorder"}
+                          disabled={isViewMode}
                         />
                       </Col>
                       <Col className="Ext phoneNumber pr-0" md="4">
@@ -397,6 +400,7 @@ class AddVBCPlant extends Component {
                           maxLength={3}
                           className=""
                           customClassName={"withBorder"}
+                          disabled={isViewMode}
                         />
                       </Col>
                     </Row>
@@ -415,6 +419,7 @@ class AddVBCPlant extends Component {
                       maxLength={26}
                       className=""
                       customClassName={"withBorder"}
+                      disabled={isViewMode}
                     />
                   </Col>
                   <Col md="6">
@@ -429,6 +434,7 @@ class AddVBCPlant extends Component {
                       maxLength={26}
                       className=""
                       customClassName={"withBorder"}
+                      disabled={isViewMode}
                     />
                   </Col>
                 </Row>
@@ -451,6 +457,7 @@ class AddVBCPlant extends Component {
                       required={true}
                       handleChangeDescription={this.countryHandler}
                       valueDescription={this.state.country}
+                      disabled={isViewMode}
                     />
                   </Col>
                   {(country.length === 0 || country.label === "India") && (
@@ -472,6 +479,7 @@ class AddVBCPlant extends Component {
                         required={true}
                         handleChangeDescription={this.stateHandler}
                         valueDescription={this.state.state}
+                        disabled={isViewMode}
                       />
                     </Col>
                   )}
@@ -496,6 +504,7 @@ class AddVBCPlant extends Component {
                       required={true}
                       handleChangeDescription={this.cityHandler}
                       valueDescription={this.state.city}
+                      disabled={isViewMode}
                     />
                   </Col>
                   <Col md="6">
@@ -510,6 +519,7 @@ class AddVBCPlant extends Component {
                       //maxLength={6}
                       className=""
                       customClassName={"withBorder"}
+                      disabled={isViewMode}
                     />
                   </Col>
                 </Row>
@@ -527,6 +537,7 @@ class AddVBCPlant extends Component {
                     <button
                       type="submit"
                       className="user-btn save-btn"
+                      disabled={isViewMode}
                     >
                       <div className={"save-icon"}></div>
                       {isEditFlag ? "Update" : "Save"}
