@@ -70,19 +70,6 @@ class VBCPlantListing extends Component {
     }
 
     /**
-    * @method editItemDetails
-    * @description confirm edit item
-    */
-    editItemDetails = (Id) => {
-        this.setState({
-            isOpenVendor: true,
-            isEditFlag: true,
-            ID: Id,
-            isViewMode: false,
-        })
-    }
-
-    /**
     * @method deleteItem
     * @description confirm delete part
     */
@@ -115,7 +102,10 @@ class VBCPlantListing extends Component {
         this.confirmDeactivateItem(this.state.cellData, this.state.cellValue)
     }
 
-
+    /**
+      * @method viewOrEditItemDetails
+      * @description confirm edit item
+      */
     viewOrEditItemDetails = (Id, isViewMode) => {
         this.setState({
             isOpenVendor: true,
@@ -131,14 +121,13 @@ class VBCPlantListing extends Component {
     */
     buttonFormatter = (cell, row, props) => {
         const cellValue = cell.value;
-        console.log('cellValue: ', cellValue);
 
         const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.props;
         return (
             <>
                 {ViewAccessibility && <button title='View' className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
-                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cell.value)} />}
-                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell.value)} />}
+                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
+                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
     }
