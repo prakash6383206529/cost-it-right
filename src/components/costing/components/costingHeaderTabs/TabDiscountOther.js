@@ -467,6 +467,7 @@ function TabDiscountOther(props) {
   * @description TOGGLE CURRENCY CHANGE
   */
   const onPressChangeCurrency = () => {
+    setValue('Currency', '')
     setCurrency([])
     setIsCurrencyChange(!IsCurrencyChange)
     setCurrencyExchangeRate(0)
