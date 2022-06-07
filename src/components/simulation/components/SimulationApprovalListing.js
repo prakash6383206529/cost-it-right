@@ -392,17 +392,17 @@ function SimulationApprovalListing(props) {
 
                                 <Col md="2" lg="2" className="search-user-block mb-3">
                                     <div className="d-flex justify-content-end bd-highlight w100">
+                                        <button type="button" className="user-btn  mr5" title="Reset Grid" onClick={() => resetState()}>
+                                            <div className="refresh mr-0"></div>
+                                        </button>
                                         <button
-                                            class="user-btn approval-btn mr5"
+                                            class="user-btn approval-btn"
                                             onClick={sendForApproval}
                                             // disabled={selectedRowData && selectedRowData.length === 0 ? true : disableApproveButton ? true : false}
                                             title="Send For Approval"
+                                            disabled={simualtionApprovalList && simualtionApprovalList.length === 0 ? true : false}
                                         >
                                             <div className="send-for-approval"></div>
-                                            {/* {'Send For Approval'} */}
-                                        </button>
-                                        <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
-                                            <div className="refresh mr-0"></div>
                                         </button>
                                     </div>
                                 </Col>
