@@ -2,10 +2,10 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { required, number, maxLength6, maxLength80, minLength10, maxLength12,checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength15, postiveNumber, maxLength10, maxLength3, } from "../../../helper/validation";
+import { required, number, maxLength6, maxLength80, minLength10, maxLength12, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength15, postiveNumber, maxLength10, maxLength3, } from "../../../helper/validation";
 
 import { loggedInUserId } from "../../../helper/auth";
-import { renderText, searchableSelect } from "../../layout/FormInputs";
+import { renderNumberInputField, renderText, searchableSelect } from "../../layout/FormInputs";
 import { createPlantAPI, getPlantUnitAPI, updatePlantAPI } from '../actions/Plant';
 import {
   fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, fetchSupplierCityDataAPI, getSupplierList,
@@ -26,6 +26,7 @@ class AddVBCPlant extends Component {
       state: [],
       PlantId: '',
       IsActive: true,
+      isViewMode: this.props?.isViewMode ? true : false,
     }
   }
 
@@ -286,7 +287,7 @@ class AddVBCPlant extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, isEditFlag } = this.props;
+    const { handleSubmit, isEditFlag, isViewMode } = this.props;
     const { country } = this.state;
     return (
       <>
@@ -335,7 +336,7 @@ class AddVBCPlant extends Component {
                       required={true}
                       handleChangeDescription={this.vendorHandler}
                       valueDescription={this.state.vendor}
-                      disabled={isEditFlag ? true : false}
+                      disabled={(isEditFlag || isViewMode) ? true : false}
                     />
                   </Col>
                   <Col md="6">
@@ -349,6 +350,7 @@ class AddVBCPlant extends Component {
                       required={true}
                       className=""
                       customClassName={"withBorder"}
+                      disabled={isViewMode}
                     />
                   </Col>
                 </Row>
@@ -364,7 +366,7 @@ class AddVBCPlant extends Component {
                       //required={true}
                       className=""
                       customClassName={"withBorder"}
-                      disabled={isEditFlag ? true : false}
+                      disabled={(isEditFlag || isViewMode) ? true : false}
                     />
                   </Col>
                   <Col md="6">
@@ -376,11 +378,12 @@ class AddVBCPlant extends Component {
                           type="text"
                           placeholder={""}
                           validate={[postiveNumber, minLength10, maxLength12, checkWhiteSpaces]}
-                          component={renderText}
+                          component={renderNumberInputField}
                           //    required={true}
                           maxLength={12}
                           className=""
                           customClassName={"withBorder"}
+                          disabled={isViewMode}
                         />
                       </Col>
                       <Col className="Ext phoneNumber pr-0" md="4">
@@ -395,6 +398,7 @@ class AddVBCPlant extends Component {
                           maxLength={3}
                           className=""
                           customClassName={"withBorder"}
+                          disabled={isViewMode}
                         />
                       </Col>
                     </Row>
@@ -413,6 +417,7 @@ class AddVBCPlant extends Component {
                       maxLength={26}
                       className=""
                       customClassName={"withBorder"}
+                      disabled={isViewMode}
                     />
                   </Col>
                   <Col md="6">
@@ -427,6 +432,7 @@ class AddVBCPlant extends Component {
                       maxLength={26}
                       className=""
                       customClassName={"withBorder"}
+                      disabled={isViewMode}
                     />
                   </Col>
                 </Row>
@@ -449,6 +455,7 @@ class AddVBCPlant extends Component {
                       required={true}
                       handleChangeDescription={this.countryHandler}
                       valueDescription={this.state.country}
+                      disabled={isViewMode}
                     />
                   </Col>
                   {(country.length === 0 || country.label === "India") && (
@@ -470,6 +477,7 @@ class AddVBCPlant extends Component {
                         required={true}
                         handleChangeDescription={this.stateHandler}
                         valueDescription={this.state.state}
+                        disabled={isViewMode}
                       />
                     </Col>
                   )}
@@ -494,6 +502,7 @@ class AddVBCPlant extends Component {
                       required={true}
                       handleChangeDescription={this.cityHandler}
                       valueDescription={this.state.city}
+                      disabled={isViewMode}
                     />
                   </Col>
                   <Col md="6">
@@ -508,6 +517,7 @@ class AddVBCPlant extends Component {
                       //maxLength={6}
                       className=""
                       customClassName={"withBorder"}
+                      disabled={isViewMode}
                     />
                   </Col>
                 </Row>
@@ -525,6 +535,7 @@ class AddVBCPlant extends Component {
                     <button
                       type="submit"
                       className="user-btn save-btn"
+                      disabled={isViewMode}
                     >
                       <div className={"save-icon"}></div>
                       {isEditFlag ? "Update" : "Save"}

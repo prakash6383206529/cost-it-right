@@ -8,7 +8,7 @@ import { getBOPImportDataList, deleteBOP, getBOPCategorySelectList, getAllVendor
 import { getPlantSelectList, } from '../../../actions/Common';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
-import { onFloatingFilterChanged, onSearch, resetState, onBtPrevious, onBtNext } from '../../common/commonPagination'
+import { onFloatingFilterChanged, onSearch, resetState, onBtPrevious, onBtNext, onPageSizeChanged } from '../../common/commonPagination'
 import Toaster from '../../common/Toaster';
 import DayTime from '../../common/DayTimeWrapper'
 import BulkUpload from '../../massUpload/BulkUpload';
@@ -17,7 +17,7 @@ import { BOP_IMPORT_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
 import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
 import { BopImport, INR, BOP_MASTER_ID } from '../../../config/constants';
-import { getFilteredData, loggedInUserId, userDetails } from '../../../helper';
+import { getFilteredData, loggedInUserId, userDepartmetList, userDetails } from '../../../helper';
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -57,17 +57,14 @@ class BOPImportListing extends Component {
             isFinalApprovar: false,
 
             //states for pagination purpose
-            floatingFilterData: { IsVendor: "", BoughtOutPartNumber: "", BoughtOutPartName: "", BoughtOutPartCategory: "", UOM: "", Specification: "", Plants: "", Vendor: "", BasicRate: "", NetLandedCost: "", EffectiveDateNew: "", Currency: "" },
+            floatingFilterData: { IsVendor: "", BoughtOutPartNumber: "", BoughtOutPartName: "", BoughtOutPartCategory: "", UOM: "", Specification: "", Plants: "", Vendor: "", BasicRate: "", NetLandedCost: "", EffectiveDateNew: "", Currency: "", DepartmentCode: this.props.isSimulation ? userDepartmetList() : "" },
             warningMessage: false,
             filterModel: {},
-            isSearchButtonDisable: true,
             pageNo: 1,
             totalRecordCount: 0,
             isFilterButtonClicked: false,
             currentRowIndex: 0,
-            pageSize10: true,
-            pageSize50: false,
-            pageSize100: false,
+            pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
         }
     }
 
@@ -155,7 +152,7 @@ class BOPImportListing extends Component {
                 setTimeout(() => {
                     let obj = this.state.floatingFilterData
                     for (var prop in obj) {
-                        if (obj[prop] !== "") {
+                        if (prop !== "DepartmentCode" && obj[prop] !== "") {
                             isReset = false
                         }
                     }
@@ -190,6 +187,10 @@ class BOPImportListing extends Component {
 
     onBtNext = () => {
         onBtNext(this, "BOP")   // COMMON PAGINATION FUNCTION
+    };
+
+    onPageSizeChanged = (newPageSize) => {
+        onPageSizeChanged(this, newPageSize)    // COMMON PAGINATION FUNCTION
     };
 
     /**
@@ -350,21 +351,6 @@ class BOPImportListing extends Component {
         params.api.paginationGoToPage(0);
     };
 
-    onPageSizeChanged = (newPageSize) => {
-        var value = document.getElementById('page-size').value;
-        this.state.gridApi.paginationSetPageSize(Number(value));
-
-        if (Number(newPageSize) === 10) {
-            this.setState({ pageSize10: true, pageSize50: false, pageSize100: false })
-        }
-        else if (Number(newPageSize) === 50) {
-            this.setState({ pageSize10: false, pageSize50: true, pageSize100: false })
-        }
-        else if (Number(newPageSize) === 100) {
-            this.setState({ pageSize10: false, pageSize50: false, pageSize100: true })
-
-        }
-    };
 
     onBtExport = () => {
         let tempArr = []
@@ -524,7 +510,7 @@ class BOPImportListing extends Component {
                                 }
 
                                 {
-                                    <button disabled={this.state.isSearchButtonDisable} title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch()}><div class="filter mr-0"></div></button>
+                                    <button disabled={!this.state.warningMessage} title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch()}><div class="filter mr-0"></div></button>
 
                                 }
 
@@ -624,9 +610,9 @@ class BOPImportListing extends Component {
                                     </div>
                                     <div className="d-flex pagination-button-container">
                                         <p><button className="previous-btn" type="button" disabled={false} onClick={() => this.onBtPrevious()}> </button></p>
-                                        {this.state.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 10)}</p>}
-                                        {this.state.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 50)}</p>}
-                                        {this.state.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 100)}</p>}
+                                        {this.state.pageSize.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 10)}</p>}
+                                        {this.state.pageSize.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 50)}</p>}
+                                        {this.state.pageSize.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 100)}</p>}
                                         <p><button className="next-btn" type="button" onClick={() => this.onBtNext()}> </button></p>
                                     </div>
                                 </div>

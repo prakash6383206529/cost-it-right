@@ -17,6 +17,7 @@ import Popup from 'reactjs-popup';
 import OperationCostExcludedOverhead from './OperationCostExcludedOverhead';
 import { MACHINING, } from '../../../../../config/masterData'
 import { findProcessCost, findProductionPerHour } from '../../../CostingUtil';
+import { debounce } from 'lodash';
 
 let counter = 0;
 function ProcessCost(props) {
@@ -135,7 +136,7 @@ function ProcessCost(props) {
    * @method toggleWeightCalculator
    * @description For opening weight calculator
   */
-  const toggleWeightCalculator = (id, list = [], parentIndex = '') => {
+  const toggleWeightCalculator = debounce((id, list = [], parentIndex = '') => {
     setCalciIndex(id)
     setParentCalciIndex(parentIndex)
     setListData(list)
@@ -168,7 +169,7 @@ function ProcessCost(props) {
       }))
     }
     // setCalculatorData(calciData)
-  }
+  }, 500);
 
   const closeCalculatorDrawer = (e, value, weightData = {}) => {
 
@@ -204,7 +205,7 @@ function ProcessCost(props) {
         setIsFromApi(false)
         setTabData(tempArr2)
         setGridData(tempArray)
-        setValue(`${ProcessGridFields}.${calciIndex}.Quantity`, tempData.UOMType === TIME ? checkForDecimalAndNull(weightData.CycleTime, getConfigurationKey().NoOfDecimalForInputOutput) : weightData.Quantity)
+        setValue(`${ProcessGridFields}.${calciIndex}.Quantity`, tempData.UOMType === TIME ? checkForNull(weightData.CycleTime) : weightData.Quantity)
         setValue(`${ProcessGridFields}.${calciIndex}.ProcessCost`, checkForDecimalAndNull(weightData.ProcessCost, getConfigurationKey().NoOfDecimalForPrice))
         // setValue(`${ProcessGridFields}.${calciIndex}.ProductionPerHour`, weightData.UOMType === TIME ? checkForDecimalAndNull(weightData.PartsPerHour, getConfigurationKey().NoOfDecimalForInputOutput) : '-')
       }, 100)
@@ -225,7 +226,7 @@ function ProcessCost(props) {
       }
       let gridTempArr = Object.assign([...listData], { [calciIndex]: tempData })
 
-      setValue(`${SingleProcessGridField}.${calciIndex}.${parentCalciIndex}.Quantity`, tempData.UOMType === TIME ? checkForDecimalAndNull(weightData.CycleTime, getConfigurationKey().NoOfDecimalForInputOutput) : weightData.Quantity)
+      setValue(`${SingleProcessGridField}.${calciIndex}.${parentCalciIndex}.Quantity`, tempData.UOMType === TIME ? checkForDecimalAndNull(weightData.CycleTime, getConfigurationKey().NoOfDecimalForInputOutput) : checkForDecimalAndNull(weightData.Quantity, getConfigurationKey().NoOfDecimalForInputOutput))
       setValue(`${SingleProcessGridField}.${calciIndex}.${parentCalciIndex}.ProcessCost`, checkForDecimalAndNull(weightData.ProcessCost, initialConfiguration.NoOfDecimalForPrice))
       //MAIN PROCESS ROW WITH GROUP
       let ProcessCostTotal = 0
@@ -247,7 +248,7 @@ function ProcessCost(props) {
       }
       let processTemparr = Object.assign([...gridData], { [parentCalciIndex]: processTempData })
 
-      setValue(`${ProcessGridFields}.${parentCalciIndex}.Quantity`, checkForDecimalAndNull(totalQuantity, initialConfiguration.NoOfDecimalForInputOutput))
+      setValue(`${ProcessGridFields}.${parentCalciIndex}.Quantity`, checkForDecimalAndNull(totalQuantity, getConfigurationKey().NoOfDecimalForInputOutput))
       setValue(`${ProcessGridFields}.${parentCalciIndex}.ProcessCost`, checkForDecimalAndNull(ProcessCostTotal, initialConfiguration.NoOfDecimalForPrice))
 
       let apiArr = formatMainArr(processTemparr)
@@ -402,7 +403,7 @@ function ProcessCost(props) {
     const setDataInGridAndApi = (tempArr) => {
       tempArr && tempArr.map((el, index) => {
         setValue(`${ProcessGridFields}.${index}.ProcessCost`, checkForDecimalAndNull(el.ProcessCost, initialConfiguration.NoOfDecimalForPrice))
-        setValue(`${ProcessGridFields}.${index}.Quantity`, el.Quantity)
+        setValue(`${ProcessGridFields}.${index}.Quantity`, checkForDecimalAndNull(el.Quantity, getConfigurationKey().NoOfDecimalForInputOutput))
         return null
       })
 
@@ -612,7 +613,7 @@ function ProcessCost(props) {
       setTabData(tempArr2)
       tempArrAfterDelete && tempArrAfterDelete.map((el, i) => {
         setValue(`${ProcessGridFields}.${i}.ProcessCost`, checkForDecimalAndNull(el.ProcessCost, initialConfiguration.NoOfDecimalForPrice))
-        setValue(`${ProcessGridFields}.${i}.Quantity`, el.Quantity)
+        setValue(`${ProcessGridFields}.${i}.Quantity`, checkForDecimalAndNull(el.Quantity, getConfigurationKey().NoOfDecimalForInputOutput))
         return null
       })
     }, 200)
@@ -663,7 +664,7 @@ function ProcessCost(props) {
     setTabData(tempArr3)
     tempArrAfterDelete && tempArrAfterDelete.map((el, i) => {
       setValue(`${SingleProcessGridField}.${i}.${parentIndex}.ProcessCost`, checkForDecimalAndNull(el.ProcessCost, initialConfiguration.NoOfDecimalForPrice))
-      setValue(`${SingleProcessGridField}.${i}.${parentIndex}.Quantity`, el.Quantity)
+      setValue(`${SingleProcessGridField}.${i}.${parentIndex}.Quantity`, checkForDecimalAndNull(el.Quantity, getConfigurationKey().NoOfDecimalForInputOutput))
       return null
     })
 
@@ -775,7 +776,7 @@ function ProcessCost(props) {
         ProcessCost: processCost
       }
       let gridTempArr = Object.assign([...list], { [index]: tempData })
-      setValue(`${SingleProcessGridField}.${index}.${parentIndex}.ProcessCost`, checkForDecimalAndNull(processCost, initialConfiguration.NoOfDecimalForPrice))
+      setValue(`${SingleProcessGridField}.${index}.${parentIndex}.ProcessCost`, checkForDecimalAndNull(processCost, getConfigurationKey().NoOfDecimalForInputOutput))
 
       //MAIN PROCESS ROW WITH GROUP
       let ProcessCostTotal = 0
@@ -806,7 +807,7 @@ function ProcessCost(props) {
       }, 0)
 
       setValue(`${ProcessGridFields}.${parentIndex}.ProcessCost`, checkForDecimalAndNull(ProcessCostTotal, initialConfiguration.NoOfDecimalForPrice))
-      setValue(`${ProcessGridFields}.${parentIndex}.Quantity`, checkForDecimalAndNull(quantityTotal, initialConfiguration.NoOfDecimalForPrice))
+      setValue(`${ProcessGridFields}.${parentIndex}.Quantity`, checkForDecimalAndNull(quantityTotal, getConfigurationKey().NoOfDecimalForInputOutput))
 
       tempArr = {
         ...tabData,
@@ -1146,7 +1147,7 @@ function ProcessCost(props) {
                                             message: 'Invalid Number.',
                                           },
                                         }}
-                                        defaultValue={item.Quantity ? checkForDecimalAndNull(item.Quantity, trimForMeasurment,) : '1'}
+                                        defaultValue={item.Quantity ? checkForDecimalAndNull(item.Quantity, getConfigurationKey().NoOfDecimalForInputOutput) : '1'}
                                         className=""
                                         customClassName={'withBorder'}
                                         handleChange={(e) => {

@@ -6,7 +6,7 @@ import {
   required, checkForNull, number, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter, maxLength20, alphaNumeric,
   maxLength, postiveNumber, maxLength10, positiveAndDecimalNumber, maxLength512, maxLength80, checkWhiteSpaces, decimalLengthsix, applySuperScript
 } from "../../../helper/validation";
-import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField, focusOnError, renderDatePicker } from "../../layout/FormInputs";
+import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField, focusOnError, renderDatePicker, renderNumberInputField } from "../../layout/FormInputs";
 import { fetchMaterialComboAPI, getCityBySupplier, getPlantBySupplier, getUOMSelectList, getPlantSelectListByType, getCityByCountry, getAllCity } from '../../../actions/Common';
 import { getVendorWithVendorCodeSelectList, getVendorTypeBOPSelectList, } from '../actions/Supplier';
 import { getPartSelectList } from '../actions/Part';
@@ -1032,7 +1032,6 @@ class AddBOPDomestic extends Component {
                                   value={this.state.vendorName}
                                   noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
                                   isDisabled={(isEditFlag || this.state.inputLoader) ? true : false} />
-                                {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
                               </div>
                               {!isEditFlag && (
                                 <div
@@ -1041,6 +1040,7 @@ class AddBOPDomestic extends Component {
                                 ></div>
                               )}
                             </div>
+                            {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
                           </Col>
                           {(getConfigurationKey().IsVendorPlantConfigurable && this.state.IsVendor) && (
                             <Col md="3">
@@ -1140,7 +1140,7 @@ class AddBOPDomestic extends Component {
                               type="text"
                               placeholder={"Enter"}
                               validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
-                              component={renderText}
+                              component={renderNumberInputField}
                               required={true}
                               disabled={isViewMode || (isEditFlag && isBOPAssociated)}
                               className=" "
@@ -1154,7 +1154,7 @@ class AddBOPDomestic extends Component {
                               type="text"
                               placeholder={""}
                               validate={[number]}
-                              component={renderText}
+                              component={renderNumberInputField}
                               required={false}
                               disabled={true}
                               className=" "

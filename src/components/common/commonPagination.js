@@ -8,17 +8,22 @@ export var onFloatingFilterChanged = (value, gridOptions, thiss) => {
     }
 
     if (value?.filterInstance?.appliedModel === null || value?.filterInstance?.appliedModel?.filter === "") {
-        thiss.setState({ warningMessage: false })
+        let isFilterEmpty = true
+        if (model !== undefined && model !== null) {
+            if (Object.keys(model).length > 0) {
+                isFilterEmpty = false
+            }
+            if (isFilterEmpty) {
+                thiss.setState({ warningMessage: false })
+            }
+        }
 
     } else {
 
         if (value.column.colId === "EffectiveDate" || value.column.colId === "CreatedDate") {
-            thiss.setState({ isSearchButtonDisable: false })
             return false
         }
         thiss.setState({ floatingFilterData: { ...thiss.state.floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter } })
-        thiss.setState({ isSearchButtonDisable: false })
-
     }
 }
 
@@ -52,7 +57,9 @@ export var resetState = (gridOptions, thiss, master) => {
     var obj = thiss.state.floatingFilterData
 
     for (var prop in obj) {
-        obj[prop] = ""
+        if (prop !== "DepartmentCode") {
+            obj[prop] = ""
+        }
     }
 
     thiss.setState({ floatingFilterData: obj, warningMessage: false, pageNo: 1, currentRowIndex: 0 })
@@ -125,3 +132,22 @@ export var onBtNext = (thiss, master) => {
         thiss.setState({ currentRowIndex: nextNo })
     }
 };
+
+
+
+export var onPageSizeChanged = (thiss, newPageSize) => {
+
+    thiss.state.gridApi.paginationSetPageSize(Number(newPageSize));
+
+    if (Number(newPageSize) === 10) {
+        thiss.setState({ pageSize: { pageSize10: true, pageSize50: false, pageSize100: false } })
+    }
+    else if (Number(newPageSize) === 50) {
+        thiss.setState({ pageSize: { pageSize10: false, pageSize50: true, pageSize100: false } })
+    }
+    else if (Number(newPageSize) === 100) {
+        thiss.setState({ pageSize: { pageSize10: false, pageSize50: false, pageSize100: true } })
+
+    }
+
+}

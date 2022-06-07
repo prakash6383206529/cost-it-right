@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, Table } from 'reactstrap'
 import { checkForDecimalAndNull, checkVendorPlantConfigurable, formViewData, loggedInUserId } from '../../../../helper'
 import { getApprovalSummary } from '../../actions/Approval'
-import { getSingleCostingDetails, setCostingViewData, storePartNumber } from '../../actions/Costing'
+import { getSingleCostingDetails, setCostingViewData, storePartNumber, sapPushedCostingInitialMoment } from '../../actions/Costing'
 import ApprovalWorkFlow from './ApprovalWorkFlow'
 import ApproveRejectDrawer from './ApproveRejectDrawer'
 import CostingSummaryTable from '../CostingSummaryTable'
@@ -18,6 +18,7 @@ import { Fgwiseimactdata } from '../../../simulation/components/FgWiseImactData'
 import HeaderTitle from '../../../common/HeaderTitle'
 import CalculatorWrapper from '../../../common/Calculator/CalculatorWrapper'
 import { EMPTY_GUID } from '../../../../config/constants'
+import Toaster from '../../../common/Toaster'
 
 function ApprovalSummary(props) {
   const { approvalNumber, approvalProcessId } = props.location.state
@@ -61,9 +62,11 @@ function ApprovalSummary(props) {
 
       const { PartDetails, ApprovalDetails, ApprovalLevelStep, DepartmentId, Technology, ApprovalProcessId,
         ApprovalProcessSummaryId, ApprovalNumber, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow,
-        CostingId, PartId, LastCostingId } = res?.data?.Data?.Costings[0];
+        CostingId, PartId, LastCostingId, PartNumber, DepartmentCode } = res?.data?.Data?.Costings[0];
 
       const technologyId = res?.data?.Data?.Costings[0].PartDetails.TechnologyId
+      const Data = res?.data?.Data?.Costings[0].ApprovalDetails[0]
+
       setIsLoader(false)
       dispatch(storePartNumber({ partId: PartId }))
       setPartDetail(PartDetails)
@@ -81,7 +84,14 @@ function ApprovalSummary(props) {
         ApprovalNumber: ApprovalNumber,
         CostingId: CostingId,
         ReasonId: ApprovalDetails[0].ReasonId,
-        LastCostingId: LastCostingId
+        LastCostingId: LastCostingId,
+        PartNumber: PartNumber,
+        VendorCode: Data.VendorCode,
+        VendorName: Data.VendorName,
+        Plant: Data.TypeOfCosting === 'VBC' ? Data.DestinationPlantCode : Data.PlantCode,
+        DepartmentCode: DepartmentCode,
+        NewPOPrice: Data.NewPOPrice,
+        EffectiveDate: Data.EffectiveDate,
       })
       let requestArray = []
       let requestObject = {}
@@ -98,9 +108,33 @@ function ApprovalSummary(props) {
     )
   }
 
-  const handleApproveAndPushButton = () => {
-    setShowPushDrawer(true)
-    setApproveDrawer(true)
+  const handlePushButton = () => {
+    // ********** THIS FUNCTION WILL GET CALLED WHEN PUSH BUTTON IS CLICKED **********
+    let requestObject = {
+      "AmmendentDataRequests": [
+        {
+          "CostingId": approvalData.CostingId,
+          "Vendor": approvalData.VendorCode,
+          "PurchasingGroup": approvalData.DepartmentCode,
+          "Plant": approvalData.Plant,
+          "MaterialCode": approvalData?.PartNumber,
+          "NewPOPrice": approvalData.NewPOPrice,
+          "EffectiveDate": approvalData.EffectiveDate
+        }
+      ],
+      "LoggedInUserId": loggedInUser
+    }
+
+    dispatch(sapPushedCostingInitialMoment(requestObject, res => {
+      let status = 200
+      if ('response' in res) {
+        status = res && res?.response?.status
+      }
+      if (status !== undefined && status === 200) {
+        Toaster.success('Repush has been done successfully')
+      }
+      setShowListing(true)
+    }))
   }
 
   const closeDrawer = (e = '', type) => {
@@ -227,19 +261,19 @@ function ApprovalSummary(props) {
                         </span>
                       </th>
                       <th className='overflow'>
-                        <span className="d-block grey-text">{`Assembly/Part No.`}</span>
+                        <span className="d-block grey-text">{`Assembly/Part No.:`}</span>
                         <span className="d-block " title={partDetail.PartNumber}>
                           {partDetail.PartNumber ? partDetail.PartNumber : '-'}
                         </span>
                       </th>
                       <th className='overflow'>
-                        <span className="d-block grey-text">{`Assembly/Part Name`}</span>
+                        <span className="d-block grey-text">{`Assembly/Part Name:`}</span>
                         <span className="d-block" title={partDetail.PartName}>
                           {partDetail.PartName ? partDetail.PartName : '-'}
                         </span>
                       </th>
                       <th className='overflow-description'>
-                        <span className="d-block grey-text">{`Assembly/Part Description`}</span>
+                        <span className="d-block grey-text">{`Assembly/Part Description:`}</span>
                         <span className="d-block" title={partDetail.Description}>
                           {partDetail.Description ? partDetail.Description : '-'}
                         </span>
@@ -336,7 +370,7 @@ function ApprovalSummary(props) {
                         {approvalDetails.CostingId ? approvalDetails.CostingNumber : '-'}
                       </td>
                       {/* <td> */}
-                      {approvalDetails.TypeOfCosting === 'VBC' && <td> {approvalDetails.VendorName ? approvalDetails.VendorName : '-'}</td>}
+                      {approvalDetails.TypeOfCosting === 'VBC' && <td> {(approvalDetails.VendorName || approvalDetails.VendorCode) ? `${approvalDetails.VendorName}(${approvalDetails.VendorCode})` : '-'}</td>}
                       {/* </td> */}
                       {
                         checkVendorPlantConfigurable() &&
@@ -491,6 +525,19 @@ function ApprovalSummary(props) {
                   } */}
                 </Fragment>
 
+              </div>
+            </Row>
+          }
+          {
+            showPushButton &&
+            <Row className="sf-btn-footer no-gutters justify-content-between">
+              <div className="col-sm-12 text-right bluefooter-butn">
+                <Fragment>
+                  <button type="submit" className="submit-button mr5 save-btn" onClick={() => handlePushButton()}>
+                    <div className={"save-icon"}></div>
+                    {"Repush"}
+                  </button>
+                </Fragment>
               </div>
             </Row>
           }

@@ -14,12 +14,12 @@ import {
 } from '../actions/OtherOperation';
 import Switch from "react-switch";
 import AddOperation from './AddOperation';
-import { onFloatingFilterChanged, onSearch, resetState, onBtPrevious, onBtNext } from '../../common/commonPagination'
+import { onFloatingFilterChanged, onSearch, resetState, onBtPrevious, onBtNext, onPageSizeChanged } from '../../common/commonPagination'
 import BulkUpload from '../../massUpload/BulkUpload';
 import { ADDITIONAL_MASTERS, OPERATION, OperationMaster, OPERATIONS_ID } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
 import { loggedInUserId, userDetails } from '../../../helper/auth';
-import { getFilteredData } from '../../../helper'
+import { getFilteredData, userDepartmetList } from '../../../helper'
 import { costingHeadObjs, OPERATION_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
 import DayTime from '../../common/DayTimeWrapper'
@@ -66,17 +66,14 @@ class OperationListing extends Component {
             isFinalApprovar: false,
 
             //states for pagination purpose
-            floatingFilterData: { CostingHead: "", Technology: "", OperationName: "", OperationCode: "", Plants: "", VendorName: "", UnitOfMeasurement: "", Rate: "", EffectiveDate: "" },
+            floatingFilterData: { CostingHead: "", Technology: "", OperationName: "", OperationCode: "", Plants: "", VendorName: "", UnitOfMeasurement: "", Rate: "", EffectiveDate: "", DepartmentCode: this.props.isSimulation ? userDepartmetList() : "" },
             warningMessage: false,
             filterModel: {},
-            isSearchButtonDisable: true,
             pageNo: 1,
             totalRecordCount: 0,
             isFilterButtonClicked: false,
             currentRowIndex: 0,
-            pageSize10: true,
-            pageSize50: false,
-            pageSize100: false,
+            pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
         }
     }
 
@@ -195,9 +192,6 @@ class OperationListing extends Component {
                         this.setState({ tableData: Data })
                     }
 
-                    // if (this.props.isSimulation) {
-                    //     this.props.apply(Data)
-                    // }
                 } else {
 
                 }
@@ -210,7 +204,7 @@ class OperationListing extends Component {
                     setTimeout(() => {
                         let obj = this.state.floatingFilterData
                         for (var prop in obj) {
-                            if (obj[prop] !== "") {
+                            if (prop !== "DepartmentCode" && obj[prop] !== "") {
                                 isReset = false
                             }
                         }
@@ -261,6 +255,10 @@ class OperationListing extends Component {
     onBtNext = () => {
         onBtNext(this, "Operation")   // COMMON PAGINATION FUNCTION
 
+    };
+
+    onPageSizeChanged = (newPageSize) => {
+        onPageSizeChanged(this, newPageSize)    // COMMON PAGINATION FUNCTION
     };
 
     /**
@@ -570,21 +568,6 @@ class OperationListing extends Component {
         params.api.paginationGoToPage(0);
     };
 
-    onPageSizeChanged = (newPageSize) => {
-        var value = document.getElementById('page-size').value;
-        this.state.gridApi.paginationSetPageSize(Number(newPageSize));
-
-        if (Number(newPageSize) === 10) {
-            this.setState({ pageSize10: true, pageSize50: false, pageSize100: false })
-        }
-        else if (Number(newPageSize) === 50) {
-            this.setState({ pageSize10: false, pageSize50: true, pageSize100: false })
-        }
-        else if (Number(newPageSize) === 100) {
-            this.setState({ pageSize10: false, pageSize50: false, pageSize100: true })
-        }
-    };
-
     onBtExport = () => {
         let tempArr = this.state.tableData && this.state.tableData
         return this.returnExcelColumn(OPERATION_DOWNLOAD_EXCEl, tempArr)
@@ -731,7 +714,7 @@ class OperationListing extends Component {
         return (
             <div className="container-fluid">
                 {(this.state.isLoader && !this.props.isMasterSummaryDrawer) && <LoaderCustom />}
-                <div className={`ag-grid-react custom-pagination ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
+                <div className={`ag-grid-react ${(this.props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
                     <form>
 
                         <Row className={`pt-4 filter-row-large blue-before ${isSimulation ? "zindex-0" : ""}`}>
@@ -739,8 +722,20 @@ class OperationListing extends Component {
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                             </Col>
                             <Col md="9" lg="9" className=" mb-3 d-flex justify-content-end">
-                                {(!isSimulation) &&
-                                    <div className="d-flex justify-content-end bd-highlight w100">
+
+
+                                <div className="d-flex justify-content-end bd-highlight w100">
+                                    {(this.props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) &&
+                                        <div className="warning-message d-flex align-items-center">
+                                            {this.state.warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
+                                        </div>
+                                    }
+
+                                    {(this.props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) &&
+                                        <button disabled={!this.state.warningMessage} title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch()}><div class="filter mr-0"></div></button>
+
+                                    }
+                                    {(!isSimulation) && <>
 
                                         {this.state.shown ?
                                             <button type="button" className="user-btn mr5 filter-btn-top mt3px" onClick={() => this.setState({ shown: !this.state.shown })}>
@@ -750,16 +745,6 @@ class OperationListing extends Component {
                                             ""
                                         }
 
-                                        {
-                                            <div className="warning-message d-flex align-items-center">
-                                                {this.state.warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
-                                            </div>
-                                        }
-
-                                        {
-                                            <button disabled={this.state.isSearchButtonDisable} title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch()}><div class="filter mr-0"></div></button>
-
-                                        }
                                         {AddAccessibility && !this.props?.isMasterSummaryDrawer && (
                                             <button
                                                 type="button"
@@ -795,8 +780,10 @@ class OperationListing extends Component {
                                                 </ExcelFile>
                                             </>
                                         }
-                                    </div>
-                                }
+                                    </>
+                                    }
+                                </div>
+
                                 <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => this.resetState()}>
                                     <div className="refresh mr-0"></div>
                                 </button>
@@ -847,13 +834,15 @@ class OperationListing extends Component {
                                         <option value="100">100</option>
                                     </select>
                                 </div>
-                                <div className="d-flex pagination-button-container">
-                                    <p><button className="previous-btn" type="button" disabled={false} onClick={() => this.onBtPrevious()}> </button></p>
-                                    {this.state.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 10)}</p>}
-                                    {this.state.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 50)}</p>}
-                                    {this.state.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 100)}</p>}
-                                    <p><button className="next-btn" type="button" onClick={() => this.onBtNext()}> </button></p>
-                                </div>
+                                {(this.props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) &&
+                                    <div className="d-flex pagination-button-container">
+                                        <p><button className="previous-btn" type="button" disabled={false} onClick={() => this.onBtPrevious()}> </button></p>
+                                        {this.state.pageSize.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 10)}</p>}
+                                        {this.state.pageSize.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 50)}</p>}
+                                        {this.state.pageSize.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 100)}</p>}
+                                        <p><button className="next-btn" type="button" onClick={() => this.onBtNext()}> </button></p>
+                                    </div>
+                                }
                             </div>
                         </div>
                     </div>

@@ -2,8 +2,8 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Label } from 'reactstrap';
-import { required, maxLength100, getVendorCode, number, maxLength512, positiveAndDecimalNumber, maxLength15, checkPercentageValue, decimalLengthThree } from "../../../helper/validation";
-import { renderText, searchableSelect, renderTextAreaField, renderDatePicker } from "../../layout/FormInputs";
+import { required, getVendorCode, maxLength512, positiveAndDecimalNumber, maxLength15, checkPercentageValue, decimalLengthThree } from "../../../helper/validation";
+import { searchableSelect, renderTextAreaField, renderDatePicker, renderNumberInputField } from "../../layout/FormInputs";
 import { fetchModelTypeAPI, fetchCostingHeadsAPI, } from '../../../actions/Common';
 import { getVendorWithVendorCodeSelectList } from '../actions/Supplier';
 import {
@@ -143,7 +143,7 @@ class AddProfit extends Component {
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           this.setState({ minEffectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '' })
           setTimeout(() => {
-            const { modelTypes, costingHead, vendorWithVendorCodeSelectList, clientSelectList } = this.props;
+            const { modelTypes, costingHead, clientSelectList } = this.props;
 
             const modelObj = modelTypes && modelTypes.find(item => Number(item.Value) === Data.ModelTypeId)
             const AppliObj = costingHead && costingHead.find(item => Number(item.Value) === Data.ProfitApplicabilityId)
@@ -852,7 +852,8 @@ class AddProfit extends Component {
                             />{" "}
                             <span>Vendor Based</span>
                           </Label>
-                          <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 radio-box pt-0"} check>
+                          {/* MAY BE USED LATER */}
+                          {/* <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 radio-box pt-0"} check>
                             <input
                               type="radio"
                               name="costingHead"
@@ -865,7 +866,7 @@ class AddProfit extends Component {
                               disabled={isEditFlag ? true : false}
                             />{" "}
                             <span>Client Based</span>
-                          </Label>
+                          </Label> */}
                         </Col>
                       </Row>
                       <Row>
@@ -970,7 +971,7 @@ class AddProfit extends Component {
                               validate={
                                 !isProfitPercent ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []
                               }
-                              component={renderText}
+                              component={renderNumberInputField}
                               onBlur={this.handlePercent}
                               required={!isProfitPercent ? true : false}
                               onChange={(event) => this.handleChangeProfitPercentage(event.target.value)}
@@ -990,7 +991,7 @@ class AddProfit extends Component {
                               placeholder={!isRM ? "Enter" : ""}
                               validate={!isRM ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []}
                               onChange={(event) => this.handleChangeProfitPercentageRM(event.target.value)}
-                              component={renderText}
+                              component={renderNumberInputField}
                               required={!isRM ? true : false}
                               className=""
                               customClassName=" withBorder"
@@ -1007,7 +1008,7 @@ class AddProfit extends Component {
                               placeholder={!isCC ? "Enter" : ""}
                               validate={!isCC ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []}
                               onChange={(event) => this.handleChangeProfitPercentageCC(event.target.value)}
-                              component={renderText}
+                              component={renderNumberInputField}
                               //onChange={this.handleCalculation}
                               required={!isCC ? true : false}
                               className=""
@@ -1025,7 +1026,7 @@ class AddProfit extends Component {
                               placeholder={!isBOP ? "Enter" : ""}
                               validate={!isBOP ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []}
                               onChange={(event) => this.handleChangeProfitPercentageBOP(event.target.value)}
-                              component={renderText}
+                              component={renderNumberInputField}
                               //onChange={this.handleCalculation}
                               required={!isBOP ? true : false}
                               className=""

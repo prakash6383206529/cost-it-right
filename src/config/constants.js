@@ -920,6 +920,7 @@ export const API = {
   getSelectListOfSimulationLinkingTokens: `${BASE_URL}/simulation/select-list-get-simulation-linking-tokens`,
   getFgWiseImpactData: `${BASE_URL}/sap-integration/get-fg-wise-impact-data`,
   sapPushedInitialMoment: `${BASE_URL}/sap-integration/sap-pushed-initial-moment`,
+  sapPushedCostingInitialMoment: `${BASE_URL}/sap-integration/insert-costing-data-on-sap`,
 
   uploadFileOnSimulation: `${BASE_URL}/simulation/simulation-file-upload`,
   draftSurfaceTreatmentSimulation: `${BASE_URL}/simulation/draft-simulation-surface-treatment-and-operation`,
@@ -1888,4 +1889,4 @@ export const IV = 'ozzzguugcusjqmbj'
 
 
 //VERSION 
-export const VERSION = "V1.2.246";
+export const VERSION = "V1.2.263";

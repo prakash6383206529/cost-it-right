@@ -22,7 +22,7 @@ import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { CheckApprovalApplicableMaster, getConfigurationKey, getFilteredData, loggedInUserId, userDetails, } from '../../../helper';
+import { CheckApprovalApplicableMaster, getConfigurationKey, getFilteredData, loggedInUserId, userDepartmetList, userDetails, } from '../../../helper';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
@@ -58,15 +58,12 @@ function RMImportListing(props) {
   //STATES BELOW ARE MADE FOR PAGINATION PURPOSE
   const [warningMessage, setWarningMessage] = useState(false)
   const [filterModel, setFilterModel] = useState({});
-  const [isSearchButtonDisable, setIsSearchButtonDisable] = useState(true);
   const [pageNo, setPageNo] = useState(1)
   const [totalRecordCount, setTotalRecordCount] = useState(0)
   const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
   const [currentRowIndex, setCurrentRowIndex] = useState(0)
-  const [pageSize10, setPageSize10] = useState(true)
-  const [pageSize50, setPageSize50] = useState(false)
-  const [pageSize100, setPageSize100] = useState(false)
-  const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", RawMaterialCode: "", Category: "", MaterialType: "", Plant: "", UOM: "", VendorName: "", BasicRate: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDate: "" })
+  const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
+  const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", RawMaterialCode: "", Category: "", MaterialType: "", Plant: "", UOM: "", VendorName: "", BasicRate: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDate: "", DepartmentCode: isSimulation ? userDepartmetList() : "" })
 
   var filterParams = {
     comparator: function (filterLocalDateAtMidnight, cellValue) {
@@ -206,7 +203,7 @@ function RMImportListing(props) {
           let isReset = true
           setTimeout(() => {
             for (var prop in floatingFilterData) {
-              if (floatingFilterData[prop] !== "") {
+              if (prop !== "DepartmentCode" && floatingFilterData[prop] !== "") {
                 isReset = false
               }
             }
@@ -232,15 +229,21 @@ function RMImportListing(props) {
       setWarningMessage(true)
     }
     if (value?.filterInstance?.appliedModel === null || value?.filterInstance?.appliedModel?.filter === "") {
-      setWarningMessage(false)
+
+      let isFilterEmpty = true
+      if (model !== undefined && model !== null) {
+        if (Object.keys(model).length > 0) {
+          isFilterEmpty = false
+        }
+        if (isFilterEmpty) {
+          setWarningMessage(false)
+        }
+      }
     } else {
       if (value.column.colId === "EffectiveDate" || value.column.colId === "CreatedDate") {
-        setIsSearchButtonDisable(false)
         return false
       }
-
       setFloatingFilterData({ ...floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter })
-      setIsSearchButtonDisable(false)
     }
   }
 
@@ -456,19 +459,13 @@ function RMImportListing(props) {
     gridApi.paginationSetPageSize(Number(value));
 
     if (Number(newPageSize) === 10) {
-      setPageSize10(true)
-      setPageSize50(false)
-      setPageSize100(false)
+      setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
     }
     else if (Number(newPageSize) === 50) {
-      setPageSize10(false)
-      setPageSize50(true)
-      setPageSize100(false)
+      setPageSize(prevState => ({ ...prevState, pageSize50: true, pageSize10: false, pageSize100: false }))
     }
     else if (Number(newPageSize) === 100) {
-      setPageSize10(false)
-      setPageSize50(false)
-      setPageSize100(true)
+      setPageSize(prevState => ({ ...prevState, pageSize100: true, pageSize10: false, pageSize50: false }))
     }
 
   };
@@ -518,7 +515,9 @@ function RMImportListing(props) {
     gridOptions?.api?.setFilterModel(null);
 
     for (var prop in floatingFilterData) {
-      floatingFilterData[prop] = ""
+      if (prop !== "DepartmentCode") {
+        floatingFilterData[prop] = ""
+      }
     }
     setFloatingFilterData(floatingFilterData)
     setWarningMessage(false)
@@ -589,7 +588,7 @@ function RMImportListing(props) {
             {isSimulation &&
               <div className="warning-message d-flex align-items-center">
                 {warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
-                <button disabled={isSearchButtonDisable} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
+                <button disabled={!warningMessage} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
               </div>
             }
             {!isSimulation &&
@@ -611,7 +610,7 @@ function RMImportListing(props) {
                   }
 
                   {
-                    <button disabled={isSearchButtonDisable} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
+                    <button disabled={!warningMessage} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
                   }
 
                   {AddAccessibility && (
@@ -716,9 +715,9 @@ function RMImportListing(props) {
 
                 <div className="d-flex pagination-button-container">
                   <p><button className="previous-btn" type="button" disabled={false} onClick={() => onBtPrevious()}> </button></p>
-                  {pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 10)}</p>}
-                  {pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 50)}</p>}
-                  {pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 100)}</p>}
+                  {pageSize.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 10)}</p>}
+                  {pageSize.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 50)}</p>}
+                  {pageSize.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 100)}</p>}
                   <p><button className="next-btn" type="button" onClick={() => onBtNext()}> </button></p>
                 </div>
               </div>

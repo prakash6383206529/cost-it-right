@@ -21,6 +21,7 @@ import { gridDataAdded, isDataChange, setMasterBatchObj, setRMCCErrors, setRMCut
 import { getTechnology, technologyForDensity, isMultipleRMAllow, } from '../../../../../config/masterData'
 import PopupMsgWrapper from '../../../../common/PopupMsgWrapper';
 import { SHEETMETAL, RUBBER, FORGING, DIE_CASTING, PLASTIC, CORRUGATEDBOX, Ferrous_Casting } from '../../../../../config/masterData'
+import { debounce } from 'lodash'
 
 let counter = 0;
 function RawMaterialCost(props) {
@@ -217,7 +218,7 @@ function RawMaterialCost(props) {
    * @method toggleWeightCalculator
    * @description TOGGLE WEIGHT CALCULATOR DRAWER
    */
-  const toggleWeightCalculator = (index) => {
+  const toggleWeightCalculator = debounce((index) => {
     setEditIndex(index)
     let tempData = gridData[index]
     if (technologyForDensity.includes(costData.ETechnologyType)) {
@@ -269,7 +270,7 @@ function RawMaterialCost(props) {
       default:
         return "none";
     }
-  }
+  }, 500)
 
   /**
    * @method closeWeightDrawer

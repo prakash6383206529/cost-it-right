@@ -8,7 +8,6 @@ import { MESSAGES } from '../../../config/message';
 import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import Switch from "react-switch";
-import DayTime from '../../common/DayTimeWrapper'
 import { loggedInUserId } from '../../../helper/auth';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
@@ -21,6 +20,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import WarningMessage from '../../common/WarningMessage'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import DayTime from '../../common/DayTimeWrapper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -152,28 +152,30 @@ class IndivisualPartListing extends Component {
 
     onFloatingFilterChanged = (value) => {
         this.setState({ warningMessage: true })
-        this.setState({ enableSearchFilterSearchButton: true })
+        const model = gridOptions?.api?.getFilterModel();
 
         if (value?.filterInstance?.appliedModel === null || value?.filterInstance?.appliedModel?.filter === "") {
-            this.setState({ warningMessage: false })
+            let isFilterEmpty = true
+            if (model !== undefined && model !== null) {
+                if (Object.keys(model).length > 0) {
+                    isFilterEmpty = false
+                    this.setState({ warningMessage: true })
+                }
+                if (isFilterEmpty) {
+                    this.setState({ warningMessage: false })
+                }
+            }
 
             return false
         } else {
 
-            if (value.column.colId === 'Technology') { this.setState({ floatingFilterData: { ...this.state.floatingFilterData, Technology: value.filterInstance.appliedModel.filter } }) }
-            if (value.column.colId === 'PartNumber') { this.setState({ floatingFilterData: { ...this.state.floatingFilterData, PartNumber: value.filterInstance.appliedModel.filter } }) }
-
-            if (value.column.colId === 'PartName') { this.setState({ floatingFilterData: { ...this.state.floatingFilterData, PartName: value.filterInstance.appliedModel.filter } }) }
-            if (value.column.colId === 'ECNNumber') { this.setState({ floatingFilterData: { ...this.state.floatingFilterData, ECNNumber: value.filterInstance.appliedModel.filter } }) }
-
-            if (value.column.colId === 'RevisionNumber') { this.setState({ floatingFilterData: { ...this.state.floatingFilterData, RevisionNumber: value.filterInstance.appliedModel.filter } }) }
-
-            if (value.column.colId === 'DrawingNumber') { this.setState({ floatingFilterData: { ...this.state.floatingFilterData, DrawingNumber: value.filterInstance.appliedModel.filter } }) }
-            if (value.column.colId === 'EffectiveDateNew') { this.setState({ floatingFilterData: { ...this.state.floatingFilterData, EffectiveDate: DayTime(value.filterInstance.appliedModel.filter).format("YYYY-DD-MMTHH:mm:ss") } }) }
-
+            if (value.column.colId === "EffectiveDateNew" || value.column.colId === "CreatedDate") {
+                this.setState({ isSearchButtonDisable: false })
+                return false
+            }
+            this.setState({ floatingFilterData: { ...this.state.floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter } })
 
         }
-
     }
 
 
@@ -267,9 +269,9 @@ class IndivisualPartListing extends Component {
         const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.props;
         return (
             <>
-                {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
-                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
-                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+                {ViewAccessibility && <button title='View' className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
+                {EditAccessibility && <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
+                {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
     };
@@ -459,23 +461,38 @@ class IndivisualPartListing extends Component {
         const { isBulkUpload } = this.state;
         const { AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
 
-        const onExportToCSV = (row) => {
-            // ...
-            let products = []
-            products = this.props.newPartsListing
-            return products; // must return the data which you want to be exported
+        var filterParams = {
+            date: "",
+            comparator: function (filterLocalDateAtMidnight, cellValue) {
+                var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+                var newDate = filterLocalDateAtMidnight != null ? DayTime(filterLocalDateAtMidnight).format('DD/MM/YYYY') : '';
+                setDate(newDate)
+                if (dateAsString == null) return -1;
+                var dateParts = dateAsString.split('/');
+                var cellDate = new Date(
+                    Number(dateParts[2]),
+                    Number(dateParts[1]) - 1,
+                    Number(dateParts[0])
+                );
+                if (filterLocalDateAtMidnight.getTime() === cellDate.getTime()) {
+                    return 0;
+                }
+                if (cellDate < filterLocalDateAtMidnight) {
+                    return -1;
+                }
+                if (cellDate > filterLocalDateAtMidnight) {
+                    return 1;
+                }
+            },
+            browserDatePicker: true,
+            minValidYear: 2000,
+        };
+
+        var setDate = (date) => {
+            this.setState({ floatingFilterData: { ...this.state.floatingFilterData, newDate: date } })
+
         }
 
-        const options = {
-            clearSearch: true,
-            noDataText: <NoContentFound title={EMPTY_DATA} />,
-            paginationShowsTotal: this.renderPaginationShowsTotal,
-            prePage: <span className="prev-page-pg"></span>, // Previous page button text
-            nextPage: <span className="next-page-pg"></span>, // Next page button text
-            firstPage: <span className="first-page-pg"></span>, // First page button text
-            lastPage: <span className="last-page-pg"></span>,
-
-        };
 
         const defaultColDef = {
             resizable: true,
@@ -500,7 +517,7 @@ class IndivisualPartListing extends Component {
                                     {this.state.warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                                 </div>
                                 <div>
-                                    <button title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch(this)}><div class="filter mr-0"></div></button>
+                                    <button title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch(this)} disabled={!this.state.warningMessage}><div class="filter mr-0"></div></button>
                                     {AddAccessibility && (
                                         <button
                                             type="button"
@@ -571,7 +588,7 @@ class IndivisualPartListing extends Component {
                                 <AgGridColumn field="ECNNumber" headerName="ECN No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}  ></AgGridColumn>
+                                <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}  ></AgGridColumn>
                                 <AgGridColumn field="PartId" headerName="Action" width={160} type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                             </AgGridReact>
                             <div className="button-wrapper">

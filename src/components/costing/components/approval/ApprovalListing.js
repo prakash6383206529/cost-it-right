@@ -240,6 +240,7 @@ function ApprovalListing(props) {
     let statusArray = []
     let effectiveDateArray = []
     let plantArray = []
+    let partArray = []
 
     selectedRows && selectedRows.map((item) => {
       reasonArray.push(item.ReasonId)
@@ -249,42 +250,43 @@ function ApprovalListing(props) {
       statusArray.push(item.SimulationTechnologyHead)
       effectiveDateArray.push(item.EffectiveDate)
       plantArray.push(item.PlantCode)
+      partArray.push(item.PartNumber)
       return null
     })
 
     if (!allEqual(departmentArray)) {
       gridApi.deselectAll()
-      return Toaster.warning("Department should be same for sending multiple costing for approval")
+      return Toaster.warning("Purchase Group should be same for sending multiple costing for approval")
     }
     if (!allEqual(technologyArray)) {
       gridApi.deselectAll()
-      return Toaster.warning("Technology should be same for sending multiple costing for approval")
-    }
-    if (!allEqual(vendorArray)) {
+      Toaster.warning("Technology should be same for sending costings for approval")
+    } else if (!allEqual(vendorArray)) {
       gridApi.deselectAll()
-      return Toaster.warning("Vendor should be same for sending multiple costing for approval")
+      Toaster.warning("Vendor should be same for sending multiple costing for approval")
     }
-    // if (!allEqual(reasonArray)) {
+    //REASON CHECK IS NOT APPLICABLE IN RE
+    // else if (!allEqual(reasonArray)) {
     //   gridApi.deselectAll()
-    //   return Toaster.warning("Vendor should be same for sending multiple costing for approval")
+    //   Toaster.warning("Reason should be same for sending multiple costing for approval")
     // }
-
-    if (!allEqual(statusArray)) {
-      Toaster.warning('Status should be same for sending multiple costing for approval')
+    else if (!allEqual(statusArray)) {
       gridApi.deselectAll()
-    }
-    if (!allEqual(effectiveDateArray)) {
-      Toaster.warning('Effective Date should be same for sending multiple costing for approval')
+      Toaster.warning('Status should be same for sending costings for approval')
+    } else if (!allEqual(effectiveDateArray)) {
       gridApi.deselectAll()
-    }
-    if (!allEqual(plantArray)) {
-      Toaster.warning('Plant should be same for sending multiple costing for approval')
+      Toaster.warning('Effective Date should be same for sending costings for approval')
+    } else if (!allEqual(plantArray)) {
       gridApi.deselectAll()
-    }
-
-    else {
+      Toaster.warning('Plant should be same for sending costings for approval')
+    } else {
       setReasonId(selectedRows && selectedRows[0]?.ReasonId)
     }
+    if (selectedRows.length > 1 && allEqual(vendorArray) && allEqual(plantArray) && allEqual(partArray)) {
+      gridApi.deselectAll()
+      Toaster.warning('Vendor and Plant should be different against a Part number')
+    }
+
     setSelectedRowData(selectedRows)
   }
 
@@ -314,7 +316,7 @@ function ApprovalListing(props) {
       costingObj.revisedPrice = item.NetPOPrice
       costingObj.nPOPriceWithCurrency = item.NetPOPriceOtherCurrency
       costingObj.currencyRate = item.CurrencyExchangeRate
-      costingObj.variance = Number(item.NetPOPrice && item.NetPOPrice !== '-' ? item.oldNetPOPrice : 0) - Number(item.NetPOPrice && item.NetPOPrice !== '-' ? item.NetPOPrice : 0)
+      costingObj.variance = (item.OldPOPrice && item.OldPOPrice !== '-' ? item.OldPOPrice : 0) - (item.NetPOPrice && item.NetPOPrice !== '-' ? item.NetPOPrice : 0)
       costingObj.reason = ''
       costingObj.ecnNo = ''
       costingObj.effectiveDate = DayTime(item.EffectiveDate).format('YYYY-MM-DD HH:mm:ss')
@@ -327,7 +329,7 @@ function ApprovalListing(props) {
       costingObj.destinationPlantId = item.DestinationPlantId
       let date = costingObj.effectiveDate
       if (costingObj.effectiveDate) {
-        let variance = Number(item.poPrice && item.poPrice !== '-' ? item.oldPoPrice : 0) - Number(item.poPrice && item.poPrice !== '-' ? item.poPrice : 0)
+        let variance = Number(item.OldPOPrice && item.OldPOPrice !== '-' ? item.OldPOPrice : 0) - Number(item.NetPOPrice && item.NetPOPrice !== '-' ? item.NetPOPrice : 0)
         let month = new Date(date).getMonth()
         let year = ''
         let sequence = SEQUENCE_OF_MONTH[month]
@@ -403,6 +405,7 @@ function ApprovalListing(props) {
     resizable: true,
     filter: true,
     sortable: true,
+    headerCheckboxSelectionFilteredOnly: true,
     headerCheckboxSelection: isFirstColumn,
     checkboxSelection: isFirstColumn
   };

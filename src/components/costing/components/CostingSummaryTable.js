@@ -26,6 +26,7 @@ import cirHeader from "../../../assests/images/logo/CIRlogo.jpg";
 import Logo from '../../../assests/images/logo/company-logo.svg';
 import LoaderCustom from '../../common/LoaderCustom'
 import ReactToPrint from 'react-to-print';
+import BOMViewer from '../../masters/part-master/BOMViewer'
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
@@ -86,6 +87,7 @@ const CostingSummaryTable = (props) => {
   const partNumber = useSelector(state => state.costing.partNo);
   const { initialConfiguration, topAndLeftMenuData } = useSelector(state => state.auth)
   const [pdfName, setPdfName] = useState('')
+  const [IsOpenViewHirarchy, setIsOpenViewHirarchy] = useState(false);
 
   const componentRef = useRef();
   const onBeforeContentResolve = useRef(null)
@@ -96,6 +98,7 @@ const CostingSummaryTable = (props) => {
 
   useEffect(() => {
     applyPermission(topAndLeftMenuData, selectedTechnology)
+
 
     if (!viewMode && viewCostingData && partInfo) {
       let obj = {}
@@ -132,11 +135,15 @@ const CostingSummaryTable = (props) => {
       setIsViewRM(false)
       setIsViewConversionCost(false)
       setViewBOP(false)
-      setPdfName(viewCostingData[0]?.partId)
+      setPdfName(viewCostingData[0].partNumber)
     }
   }, [viewCostingData])
 
 
+
+  const closeVisualDrawer = () => {
+    setIsOpenViewHirarchy(false)
+  }
 
   /**
   * @method applyPermission
@@ -288,7 +295,6 @@ const CostingSummaryTable = (props) => {
   */
   const editHandler = (index) => {
     const editObject = {
-      partId: viewCostingData[index].partId,
       plantId: viewCostingData[index].plantId,
       plantName: viewCostingData[index].plantName,
       costingId: viewCostingData[index].costingId,
@@ -625,7 +631,7 @@ const CostingSummaryTable = (props) => {
           obj.ecnNo = ''
           obj.effectiveDate = viewCostingData[index].effectiveDate
           obj.isDate = viewCostingData[index].effectiveDate ? true : false
-          obj.partNo = viewCostingData[index].partId // Part id id part number here 
+          obj.partNo = viewCostingData[index].partNumber // Part id id part number here  USE PART NUMBER KEY HERE 
 
           obj.destinationPlantCode = viewCostingData[index].destinationPlantCode
           obj.destinationPlantName = viewCostingData[index].destinationPlantName
@@ -756,6 +762,18 @@ const CostingSummaryTable = (props) => {
     }
   }
 
+  //**START** ADD  DYNAMIC CLASS FOR COSTING SUMMARY WHEN COMPONENT REUSE IN DIFFERENT PAGE 
+  const vendorNameClass = () => {
+    switch (true) {
+      case simulationMode:
+        return "simulation-costing-summary"
+      case approvalMode:
+        return "costing-approval-summary"
+      default:
+        return "main-costing-summary"
+    }
+  }
+  //**END** ADD  DYNAMIC CLASS FOR COSTING SUMMARY WHEN COMPONENT REUSE IN DIFFERENT PAGE
   return (
     <Fragment>
       {
@@ -811,7 +829,7 @@ const CostingSummaryTable = (props) => {
             </Col>
           </Row>
           <div ref={componentRef}>
-            <Row id="summaryPdf" className={`${customClass} ${drawerDetailPDF ? 'remove-space-border' : ''} ${simulationMode ? "simulation-print" : ""}`}>
+            <Row id="summaryPdf" className={`${customClass} ${vendorNameClass()} ${drawerDetailPDF ? 'remove-space-border' : ''} ${simulationMode ? "simulation-print" : ""}`}>
               {(drawerDetailPDF || pdfHead) &&
                 <>
                   <Col md="12" className='pdf-header-wrapper d-flex justify-content-between'>
@@ -833,45 +851,47 @@ const CostingSummaryTable = (props) => {
                         }
 
                         {viewCostingData &&
-                          viewCostingData?.map((data, index) => {
-
+                          viewCostingData.map((data, index) => {
+                            const title = data.zbc === 0 ? data.plantName : (data.zbc === 1 ? data.vendorName + "(" + data.vendorCode + ") " + (localStorage.IsVendorPlantConfigurable ? " (" + data.vendorPlantName + ") " : "") : 'CBC') + "(SOB: " + data.shareOfBusinessPercent + "%)"
                             return (
                               <th scope="col" className='header-name'>
-                                <div class="element w-60 d-inline-flex align-items-center">
-                                  {
-                                    !isSummaryDrawer && !isApproval && (data.status === DRAFT) && <>
-                                      {!pdfHead && !drawerDetailPDF && <div class="custom-check1 d-inline-block">
-                                        <label
-                                          className="custom-checkbox pl-0 mb-0"
-                                          onChange={() => moduleHandler(data.costingId, 'top', data)}
-                                        >
-                                          {''}
-                                          <input
-                                            type="checkbox"
-                                            value={"All"}
-                                            // disabled={true}
-                                            checked={multipleCostings.includes(data.costingId)}
-                                          />
-                                          <span
-                                            className=" before-box"
-                                            checked={multipleCostings.includes(data.costingId)}
+                                <div className='header-name-button-container'>
+                                  <div class="element d-inline-flex align-items-center">
+                                    {
+                                      !isApproval && (data.status === DRAFT) && <>
+                                        {!pdfHead && !drawerDetailPDF && <div class="custom-check1 d-inline-block">
+                                          <label
+                                            className="custom-checkbox pl-0 mb-0"
                                             onChange={() => moduleHandler(data.costingId, 'top', data)}
-                                          />
-                                        </label>
-                                      </div>}
-                                    </>
-                                  }
-                                  {
-                                    (isApproval && data.CostingHeading !== '-') ? <span>{data.CostingHeading}</span> : <span className={`checkbox-text`}>{data.zbc === 0 ? `ZBC(${data.plantName})` : data.zbc === 1 ? `${data.vendorName}(${data.vendorCode}) ${localStorage.IsVendorPlantConfigurable ? `(${data.vendorPlantName})` : ''}` : 'CBC'}{` (SOB: ${data.shareOfBusinessPercent}%)`}</span>
-                                  }
-                                </div>
+                                          >
+                                            {''}
+                                            <input
+                                              type="checkbox"
+                                              value={"All"}
+                                              // disabled={true}
+                                              checked={multipleCostings.includes(data.costingId)}
+                                            />
+                                            <span
+                                              className=" before-box"
+                                              checked={multipleCostings.includes(data.costingId)}
+                                              onChange={() => moduleHandler(data.costingId, 'top', data)}
+                                            />
+                                          </label>
+                                        </div>}
+                                      </>
+                                    }
+                                    {
+                                      (isApproval && data.CostingHeading !== '-') ? <span>{data.CostingHeading}</span> : <span className={`checkbox-text`} title={title}>{data.zbc === 0 ? `ZBC(${data.plantName})` : data.zbc === 1 ? `${data.vendorName}(${data.vendorCode}) ${localStorage.IsVendorPlantConfigurable ? `(${data.vendorPlantName})` : ''}` : 'CBC'}{` (SOB: ${data.shareOfBusinessPercent}%)`}</span>
+                                    }
+                                  </div>
 
-                                <div class="action w-40 d-inline-block text-right">
-                                  {((!viewMode && (!pdfHead && !drawerDetailPDF)) && EditAccessibility) && (data.status === DRAFT) && <button className="Edit mr-1 mb-0 align-middle" type={"button"} title={"Edit Costing"} onClick={() => editCostingDetail(index)} />}
-                                  {((!viewMode && (!pdfHead && !drawerDetailPDF)) && AddAccessibility) && <button className="Add-file mr-1 mb-0 align-middle" type={"button"} title={"Add Costing"} onClick={() => addNewCosting(index)} />}
-                                  {((!viewMode || (approvalMode && data.CostingHeading === '-')) && (!pdfHead && !drawerDetailPDF)) && <button type="button" class="CancelIcon mb-0 align-middle" title={"Remove Costing"} onClick={() => deleteCostingFromView(index)}></button>}
+                                  <div class="action  text-right">
+                                    {(!viewMode && (!pdfHead && !drawerDetailPDF)) && (data.IsAssemblyCosting === true) && < button title='View BOM' className="hirarchy-btn mr-1 mb-0 align-middle" type={'button'} onClick={() => setIsOpenViewHirarchy(true)} />}
+                                    {((!viewMode && (!pdfHead && !drawerDetailPDF)) && EditAccessibility) && (data.status === DRAFT) && <button className="Edit mr-1 mb-0 align-middle" type={"button"} title={"Edit Costing"} onClick={() => editCostingDetail(index)} />}
+                                    {((!viewMode && (!pdfHead && !drawerDetailPDF)) && AddAccessibility) && <button className="Add-file mr-1 mb-0 align-middle" type={"button"} title={"Add Costing"} onClick={() => addNewCosting(index)} />}
+                                    {((!viewMode || (approvalMode && data.CostingHeading === '-')) && (!pdfHead && !drawerDetailPDF)) && <button type="button" class="CancelIcon mb-0 align-middle" title={"Remove Costing"} onClick={() => deleteCostingFromView(index)}></button>}
+                                  </div>
                                 </div>
-
                               </th>
                             )
                           })}
@@ -906,7 +926,8 @@ const CostingSummaryTable = (props) => {
                                       }
                                     </span>
                                     <span class="d-block">{checkForDecimalAndNull(data.poPrice, initialConfiguration.NoOfDecimalForPrice)}</span>
-                                    <span class="d-block">{data.partId}</span>
+                                    {/* USE PART NUMBER KEY HERE */}
+                                    <span class="d-block">{data.partNumber}</span>
                                     <span class="d-block">{data.partName}</span>
                                     <span class="d-block">{data.zbc === 0 ? data.plantName : data.destinationPlantName}</span>
 
@@ -923,7 +944,8 @@ const CostingSummaryTable = (props) => {
                               viewCostingData?.map((data, index) => {
                                 return (
                                   <td>
-                                    <span class="d-block">{data.CostingHeading !== VARIANCE ? data.partId : ''}</span>
+                                    {/* USE PART NUMBER KEY HERE */}
+                                    <span class="d-block">{data.CostingHeading !== VARIANCE ? data.partNumber : ''}</span>
                                     <span class="d-block">{data.CostingHeading !== VARIANCE ? data.partName : ''}</span>
 
                                   </td>
@@ -999,6 +1021,7 @@ const CostingSummaryTable = (props) => {
                                   (data.CostingHeading !== VARIANCE && icons) && (!pdfHead && !drawerDetailPDF) &&
                                   <button
                                     type="button"
+                                    title='View'
                                     class="float-right mb-0 View "
                                     onClick={() => viewRM(index)}
                                   >
@@ -1028,6 +1051,7 @@ const CostingSummaryTable = (props) => {
                                   (data.CostingHeading !== VARIANCE && icons) && (!pdfHead && !drawerDetailPDF) &&
                                   <button
                                     type="button"
+                                    title='View'
                                     class="float-right mb-0 View "
                                     onClick={() => viewBop(index)}
                                   >
@@ -1085,6 +1109,7 @@ const CostingSummaryTable = (props) => {
                                   (data.CostingHeading !== VARIANCE && icons) && (!pdfHead && !drawerDetailPDF) &&
                                   <button
                                     type="button"
+                                    title='View'
                                     class="float-right mb-0 View "
                                     onClick={() => viewConversionCost(index)}
                                   >
@@ -1143,6 +1168,7 @@ const CostingSummaryTable = (props) => {
                                   (data.CostingHeading !== VARIANCE && icons) && (!pdfHead && !drawerDetailPDF) &&
                                   <button
                                     type="button"
+                                    title='View'
                                     class="float-right mb-0 View "
                                     onClick={() => viewSurfaceTreatmentCost(index)}
                                   >
@@ -1253,6 +1279,7 @@ const CostingSummaryTable = (props) => {
                                   (data.CostingHeading !== VARIANCE && icons) && (!pdfHead && !drawerDetailPDF) &&
                                   <button
                                     type="button"
+                                    title='View'
                                     class="float-right mb-0 View "
                                     onClick={() => overHeadProfit(index)}
                                   >
@@ -1300,6 +1327,7 @@ const CostingSummaryTable = (props) => {
                                   (data.CostingHeading !== VARIANCE && icons) && (!pdfHead && !drawerDetailPDF) &&
                                   <button
                                     type="button"
+                                    title='View'
                                     class="float-right mb-0 View "
                                     onClick={() => viewPackagingAndFrieghtData(index)}
                                   >
@@ -1372,6 +1400,7 @@ const CostingSummaryTable = (props) => {
                                   (data.CostingHeading !== VARIANCE && icons) && (!pdfHead && !drawerDetailPDF) &&
                                   <button
                                     type="button"
+                                    title='View'
                                     class="float-right mb-0 View "
                                     onClick={() => viewToolCostData(index)}
                                   >
@@ -1495,7 +1524,7 @@ const CostingSummaryTable = (props) => {
                           {viewCostingData &&
                             viewCostingData?.map((data, index) => {
 
-                              return <td> {data.CostingHeading === VARIANCE && (isApproval && (Number(data.nPOPriceWithCurrency) !== 0 || Number(data.nPOPrice) !== 0) ? viewCostingData?.length > 0 && viewCostingData[0]?.nPOPriceWithCurrency > viewCostingData[1]?.nPOPriceWithCurrency ? <span className='positive-sign'>-</span> : <span className='positive-sign'>+</span> : '')}
+                              return <td> {data.CostingHeading === VARIANCE && (isApproval && (Number(data.nPOPriceWithCurrency) !== 0 || Number(data.nPOPrice) !== 0) ? viewCostingData?.length > 0 && (viewCostingData[0]?.nPOPriceWithCurrency > viewCostingData[1]?.nPOPriceWithCurrency || viewCostingData[0]?.nPOPrice > viewCostingData[1]?.nPOPrice) ? <span className='positive-sign'>-</span> : <span className='positive-sign'>+</span> : '')}
                                 <span>{data.nPOPriceWithCurrency !== null ? checkForDecimalAndNull((viewCostingData[0]?.currency?.currencyTitle) !== "-" ? Math.abs(data.nPOPriceWithCurrency) : Math.abs(data.nPOPrice), initialConfiguration.NoOfDecimalForPrice) : '-'}</span> </td>
                             })}
                         </tr>
@@ -1537,6 +1566,7 @@ const CostingSummaryTable = (props) => {
 
                                       <button
                                         type='button'
+                                        title='View'
                                         className='btn-a'
                                         onClick={() => viewAttachmentData(index)}
                                       > {data.CostingHeading !== VARIANCE ? 'View Attachment' : ''}</button>
@@ -1680,6 +1710,7 @@ const CostingSummaryTable = (props) => {
             isOpen={showApproval}
             closeDrawer={closeShowApproval}
             anchor={'right'}
+            technologyId={technologyId}
           />
         )
       }
@@ -1693,6 +1724,17 @@ const CostingSummaryTable = (props) => {
           />
         )
       }
+
+      {IsOpenViewHirarchy && <BOMViewer
+        isOpen={IsOpenViewHirarchy}
+        closeDrawer={closeVisualDrawer}
+        isEditFlag={true}
+        // USE PART NUMBER KEY HERE
+        PartId={viewCostingData[0].partId}
+        anchor={'right'}
+        isFromVishualAd={true}
+        NewAddedLevelOneChilds={[]}
+      />}
     </Fragment >
   )
 }

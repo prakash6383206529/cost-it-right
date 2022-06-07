@@ -11,7 +11,7 @@ import { loggedInUserId, } from "../../../helper/auth";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import DayTime from '../../common/DayTimeWrapper'
-import { renderText, searchableSelect, } from "../../layout/FormInputs";
+import { renderNumberInputField, searchableSelect, } from "../../layout/FormInputs";
 import LoaderCustom from '../../common/LoaderCustom';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import { debounce } from 'lodash';
@@ -359,7 +359,7 @@ class AddExchangeRate extends Component {
                           type="text"
                           placeholder={"Enter"}
                           validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
-                          component={renderText}
+                          component={renderNumberInputField}
                           required={true}
                           onChange={this.onFinancialDataChange}
                           disabled={isViewMode}
@@ -374,7 +374,7 @@ class AddExchangeRate extends Component {
                           type="text"
                           placeholder={"Enter"}
                           validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
-                          component={renderText}
+                          component={renderNumberInputField}
                           disabled={isViewMode}
                           onChange={this.onFinancialDataChange}
                           className=" "
@@ -388,7 +388,7 @@ class AddExchangeRate extends Component {
                           type="text"
                           placeholder={"Enter"}
                           validate={[positiveAndDecimalNumber, maxLength10, decimalLengthThree]}
-                          component={renderText}
+                          component={renderNumberInputField}
                           max={100}
                           disabled={isViewMode}
                           onChange={this.onFinancialDataChange}
@@ -404,7 +404,7 @@ class AddExchangeRate extends Component {
                           type="text"
                           placeholder={"Enter"}
                           validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
-                          component={renderText}
+                          component={renderNumberInputField}
                           disabled={isViewMode}
                           onChange={this.onFinancialDataChange}
                           className=" "

@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
 import { required, number, minLength10, maxLength12, maxLength6 } from "../../../helper/validation";
-import { renderText, searchableSelect } from "../../layout/FormInputs";
+import { renderNumberInputField, renderText, searchableSelect } from "../../layout/FormInputs";
 import { createPlantAPI, } from '../actions/Plant';
 import {
   fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, fetchSupplierCityDataAPI,
@@ -303,7 +303,7 @@ class AddVendorPlantDrawer extends Component {
                           type="text"
                           placeholder={""}
                           validate={[required, number, minLength10, maxLength12]}
-                          component={renderText}
+                          component={renderNumberInputField}
                           required={true}
                           maxLength={12}
                           className=""
@@ -317,7 +317,7 @@ class AddVendorPlantDrawer extends Component {
                           type="text"
                           placeholder={""}
                           validate={[required]}
-                          component={renderText}
+                          component={renderNumberInputField}
                           required={true}
                           maxLength={5}
                           className=""

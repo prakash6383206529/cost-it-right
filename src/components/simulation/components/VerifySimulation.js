@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Row, Col, } from 'reactstrap';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -45,6 +45,7 @@ function VerifySimulation(props) {
     const isBOPDomesticOrImport = ((Number(selectedMasterForSimulation.value) === Number(BOPDOMESTIC)) || (Number(selectedMasterForSimulation.value) === Number(BOPIMPORT)))
     const isMachineRate = Number(selectedMasterForSimulation.value) === (Number(MACHINERATE));
     const isOverHeadProfit = Number(selectedMasterForSimulation.value) === (Number(OVERHEAD));
+    const gridRef = useRef();
 
     // const isAssemblyCosting = true
     const dispatch = useDispatch()
@@ -304,6 +305,11 @@ function VerifySimulation(props) {
         setSelectedRowData(selectedRows)
     }
 
+    useEffect(() => {
+        if (verifyList && verifyList.length > 0) {
+            window.screen.width >= 1600 && gridRef.current.api.sizeColumnsToFit();
+        }
+    }, [verifyList])
     const runSimulation = debounce(() => {
         if (selectedRowData.length === 0) {
             Toaster.warning('Please select atleast one costing.')
@@ -384,9 +390,11 @@ function VerifySimulation(props) {
     };
 
     const onGridReady = (params) => {
+
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
+        window.screen.width >= 1600 && gridRef.current.api.sizeColumnsToFit();
 
     };
 
@@ -404,6 +412,7 @@ function VerifySimulation(props) {
         gridOptions?.api?.setFilterModel(null);
         gridApi.setQuickFilter(null);
         document.getElementById("filter-text-box").value = "";
+        window.screen.width >= 1600 && gridRef.current.api.sizeColumnsToFit();
 
     }
 
@@ -460,6 +469,7 @@ function VerifySimulation(props) {
                                                 domLayout='autoHeight'
                                                 // columnDefs={c}
                                                 rowData={verifyList}
+                                                ref={gridRef}
                                                 pagination={true}
                                                 paginationPageSize={10}
                                                 onGridReady={onGridReady}
@@ -487,56 +497,30 @@ function VerifySimulation(props) {
                                                 <AgGridColumn width={130} field="RevisionNumber" cellRenderer='revisionFormatter' headerName="Revision No."></AgGridColumn>
                                                 <AgGridColumn width={130} field="POPrice" headerName="Current PO Price" cellRenderer='poPriceFormatter'></AgGridColumn>
 
-                                                {isSurfaceTreatmentOrOperation === true &&
-                                                    <>
-                                                        <AgGridColumn width={185} field="OperationName" headerName="Operation Name"></AgGridColumn>
-                                                        <AgGridColumn width={185} field="OperationCode" headerName="Operation Code"></AgGridColumn>
-                                                        <AgGridColumn width={185} field="NewOperationRate" headerName="New Rate"></AgGridColumn>
-                                                        <AgGridColumn width={185} field="OldOperationRate" headerName="Old Rate"></AgGridColumn>
-                                                    </>
-                                                }
+                                                {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="OperationName" headerName="Operation Name"></AgGridColumn>}
+                                                {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="OperationCode" headerName="Operation Code"></AgGridColumn>}
+                                                {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="NewOperationRate" headerName="New Rate"></AgGridColumn>}
+                                                {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="OldOperationRate" headerName="Old Rate"></AgGridColumn>}
 
-                                                {isBOPDomesticOrImport === true &&
-                                                    <>
-                                                        <AgGridColumn width={130} field="BoughtOutPartCode" headerName="BOP Number"></AgGridColumn>
-                                                        <AgGridColumn width={130} field="BoughtOutPartName" headerName="BOP Name"></AgGridColumn>
-                                                        <AgGridColumn width={145} field="OldBoughtOutPartRate" headerName="Old Basic Rate"></AgGridColumn>
-                                                        <AgGridColumn width={150} field="NewBoughtOutPartRate" cellRenderer='newBRFormatter' headerName="New Basic Rate"></AgGridColumn>
-                                                    </>
-                                                }
+                                                {isBOPDomesticOrImport === true && <AgGridColumn width={130} field="BoughtOutPartCode" headerName="BOP Number"></AgGridColumn>}
+                                                {isBOPDomesticOrImport === true && <AgGridColumn width={130} field="BoughtOutPartName" headerName="BOP Name"></AgGridColumn>}
+                                                {isBOPDomesticOrImport === true && <AgGridColumn width={145} field="OldBoughtOutPartRate" headerName="Old Basic Rate"></AgGridColumn>}
+                                                {isBOPDomesticOrImport === true && <AgGridColumn width={150} field="NewBoughtOutPartRate" cellRenderer='newBRFormatter' headerName="New Basic Rate"></AgGridColumn>}
 
-                                                {/* {isBOPDomesticOrImport === true &&
-                                                    <>
-                                                        <AgGridColumn width={130} field="ModelType" headerName="Model Type"></AgGridColumn>
-                                                        <AgGridColumn width={130} field="OverheadApplicabilityType" headerName="Overhead Applicability Type"></AgGridColumn>
-                                                             </>
-                                                } */}
-                                                {isMachineRate &&
-                                                    <>
-                                                        <AgGridColumn width={145} field="ProcessName" headerName="Process Name"></AgGridColumn>
-                                                        <AgGridColumn width={150} field="MachineNumber" headerName="Machine Number"></AgGridColumn>
-                                                        <AgGridColumn width={145} field="OldMachineRate" headerName="Old Machine Rate"></AgGridColumn>
-                                                        <AgGridColumn width={150} field="NewMachineRate" headerName="New Machine Rate"></AgGridColumn>
-                                                    </>
-                                                }
-                                                {isRMDomesticOrRMImport === true &&
-                                                    <>
-                                                        <AgGridColumn width={120} field="RMName" headerName="RM Name" ></AgGridColumn>
-                                                        <AgGridColumn width={120} field="RMGrade" headerName="RM Grade" ></AgGridColumn>
-                                                        <AgGridColumn width={145} field="OldBasicRate" headerName="Old Basic Rate"></AgGridColumn>
-                                                        <AgGridColumn width={150} field="NewBasicRate" cellRenderer='newBRFormatter' headerName="New Basic Rate"></AgGridColumn>
-                                                        <AgGridColumn width={145} field="OldScrapRate" headerName="Old Scrap Rate"></AgGridColumn>
-                                                        <AgGridColumn width={150} field="NewScrapRate" cellRenderer='newSRFormatter' headerName="New Scrap Rate" ></AgGridColumn>
-                                                        <AgGridColumn field="RawMaterialId" hide ></AgGridColumn>
-                                                    </>
-                                                }
+                                                {isMachineRate && <AgGridColumn width={145} field="ProcessName" headerName="Process Name"></AgGridColumn>}
+                                                {isMachineRate && <AgGridColumn width={150} field="MachineNumber" headerName="Machine Number"></AgGridColumn>}
+                                                {isMachineRate && <AgGridColumn width={145} field="OldMachineRate" headerName="Old Machine Rate"></AgGridColumn>}
+                                                {isMachineRate && <AgGridColumn width={150} field="NewMachineRate" headerName="New Machine Rate"></AgGridColumn>}
 
-                                                {isOverHeadProfit === true &&
-                                                    <>
-                                                        <AgGridColumn width={120} field="OverheadName" headerName="Overhead Name" ></AgGridColumn>
-                                                    </>
-                                                }
+                                                {isRMDomesticOrRMImport === true && <AgGridColumn width={120} field="RMName" headerName="RM Name" ></AgGridColumn>}
+                                                {isRMDomesticOrRMImport === true && <AgGridColumn width={120} field="RMGrade" headerName="RM Grade" ></AgGridColumn>}
+                                                {isRMDomesticOrRMImport === true && <AgGridColumn width={145} field="OldBasicRate" headerName="Old Basic Rate"></AgGridColumn>}
+                                                {isRMDomesticOrRMImport === true && <AgGridColumn width={150} field="NewBasicRate" cellRenderer='newBRFormatter' headerName="New Basic Rate"></AgGridColumn>}
+                                                {isRMDomesticOrRMImport === true && <AgGridColumn width={145} field="OldScrapRate" headerName="Old Scrap Rate"></AgGridColumn>}
+                                                {isRMDomesticOrRMImport === true && <AgGridColumn width={150} field="NewScrapRate" cellRenderer='newSRFormatter' headerName="New Scrap Rate" ></AgGridColumn>}
+                                                {isRMDomesticOrRMImport === true && <AgGridColumn field="RawMaterialId" hide ></AgGridColumn>}
 
+                                                {isOverHeadProfit === true && <AgGridColumn width={120} field="OverheadName" headerName="Overhead Name" ></AgGridColumn>}
                                             </AgGridReact>
 
                                             <div className="paging-container d-inline-block float-right">

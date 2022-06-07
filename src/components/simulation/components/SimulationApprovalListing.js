@@ -133,8 +133,8 @@ function SimulationApprovalListing(props) {
 
         return (
             <>
-                <button className="View" type={'button'} onClick={() => viewDetails(row)} />
-                {row.Status === DRAFT && <button className="Delete ml-1" type={'button'} onClick={() => deleteItem(row)} />}
+                <button title='View' className="View" type={'button'} onClick={() => viewDetails(row)} />
+                {row.Status === DRAFT && <button title='Delete' className="Delete ml-1" type={'button'} onClick={() => deleteItem(row)} />}
             </>
         )
     }
@@ -227,7 +227,7 @@ function SimulationApprovalListing(props) {
             Toaster.warning('Status should be same for sending multiple costing for approval')
             gridApi.deselectAll()
         } else if (!allEqual(tempArrDepartmentId)) {
-            Toaster.warning('Department should be same for sending multiple costing for approval')
+            Toaster.warning('Purchase Group should be same for sending multiple costing for approval')
             gridApi.deselectAll()
         } else if (!allEqual(tempArrIsFinalLevelButtonShow)) {
             Toaster.warning('Level should be same for sending multiple costing for approval')

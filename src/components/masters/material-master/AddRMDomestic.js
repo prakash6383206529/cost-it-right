@@ -1537,7 +1537,6 @@ class AddRMDomestic extends Component {
                                   noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
                                   isDisabled={isEditFlag || isViewFlag || this.state.inputLoader}
                                 />
-                                {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
                               </div>
                               {!isEditFlag && (
                                 <div
@@ -1546,6 +1545,7 @@ class AddRMDomestic extends Component {
                                 ></div>
                               )}
                             </div>
+                            {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
                           </Col>
                           {initialConfiguration.IsVendorPlantConfigurable && this.state.IsVendor && (
                             <Col md="3">

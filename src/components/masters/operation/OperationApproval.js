@@ -14,6 +14,7 @@ import MasterSendForApproval from '../MasterSendForApproval';
 import Toaster from '../../common/Toaster'
 import { masterFinalLevelUser } from '../actions/Material'
 import { loggedInUserId, userDetails } from '../../../helper'
+import NoContentFound from '../../common/NoContentFound';
 
 
 
@@ -179,6 +180,7 @@ function OperationApproval(props) {
         statusFormatter: statusFormatter,
         linkableFormatter: linkableFormatter,
         effectiveDateRenderer: effectiveDateFormatter,
+        customNoRowsOverlay: NoContentFound
 
     };
 

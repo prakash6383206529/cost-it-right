@@ -38,7 +38,6 @@ const SendForApproval = (props) => {
 
   const partNo = useSelector((state) => state.costing.partNo)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const partInfo = useSelector((state) => state.costing.partInfo)
 
   const [selectedDepartment, setSelectedDepartment] = useState('')
   const [selectedApprover, setSelectedApprover] = useState('')
@@ -121,14 +120,14 @@ const SendForApproval = (props) => {
     }
 
     let obj = {}
-    obj.TechnologyId = props.isApprovalisting ? props.technologyId : partInfo.TechnologyId
+    obj.TechnologyId = props.technologyId
     obj.DepartmentId = '00000000-0000-0000-0000-000000000000'
     obj.LoggedInUserLevelId = userDetails().LoggedInLevelId
     obj.LoggedInUserId = userDetails().LoggedInUserId
     let drawerDataObj = {}
     drawerDataObj.EffectiveDate = viewApprovalData[0].effectiveDate
     drawerDataObj.CostingHead = viewApprovalData[0].typeOfCosting === 0 ? 'ZBC' : 'VBC'
-    drawerDataObj.Technology = props.isApprovalisting ? props.technologyId : partInfo.TechnologyId
+    drawerDataObj.Technology = props.technologyId
     setCostingApprovalDrawerData(drawerDataObj);
 
 
@@ -148,26 +147,23 @@ const SendForApproval = (props) => {
           setSelectedDepartment({ label: departObj[0]?.Text, value: departObj[0]?.Value })
           setValue('dept', { label: departObj[0]?.Text, value: departObj[0]?.Value })
 
-          dispatch(
-            getAllApprovalUserFilterByDepartment({
-              LoggedInUserId: userData.LoggedInUserId,
-              DepartmentId: departObj[0]?.Value,
-              TechnologyId: props.isApprovalisting ? props.technologyId : partNo.technologyId,
-              ReasonId: 0 // key only for minda
-            }, (res) => {
-              if (res.data.DataList.length === 1) {
-                setShowValidation(true)
-                return false
-              }
-              const Data = res.data.DataList[1]
-
-              setApprover(Data.Text)
-              setSelectedApprover(Data.Value)
-              setSelectedApproverLevelId({ levelName: Data.LevelName, levelId: Data.LevelId })
-              setValue('approver', { label: Data.Text, value: Data.Value })
-            },
-            ),
-          )
+          let requestObject = {
+            LoggedInUserId: userData.LoggedInUserId,
+            DepartmentId: departObj[0]?.Value,
+            TechnologyId: props.technologyId,
+            ReasonId: 0 // key only for minda
+          }
+          dispatch(getAllApprovalUserFilterByDepartment(requestObject, (res) => {
+            if (res.data.DataList.length === 1) {
+              setShowValidation(true)
+              return false
+            }
+            const Data = res.data.DataList[1]
+            setApprover(Data.Text)
+            setSelectedApprover(Data.Value)
+            setSelectedApproverLevelId({ levelName: Data.LevelName, levelId: Data.LevelId })
+            setValue('approver', { label: Data.Text, value: Data.Value })
+          }))
         }))
       }
 
@@ -226,30 +222,22 @@ const SendForApproval = (props) => {
       setValue('approver', '')
       setSelectedApprover('')
       setShowValidation(false)
-      dispatch(
-        getAllApprovalUserFilterByDepartment({
-          LoggedInUserId: userData.LoggedInUserId,
-          DepartmentId: newValue.value,
-          TechnologyId: props.isApprovalisting ? props.technologyId : partNo.technologyId
-        }, (res) => {
-          if (res.data.DataList.length <= 1) {
-            setShowValidation(true)
-          }
-          res.data.DataList &&
-            res.data.DataList.map((item) => {
-              if (item.Value === '0') return false;
-              tempDropdownList.push({
-                label: item.Text,
-                value: item.Value,
-                levelId: item.LevelId,
-                levelName: item.LevelName
-              })
-              return null
-            })
-          setApprovalDropDown(tempDropdownList)
-        },
-        ),
-      )
+      let requestObject = {
+        LoggedInUserId: userData.LoggedInUserId,
+        DepartmentId: newValue.value,
+        TechnologyId: props.technologyId,
+      }
+      dispatch(getAllApprovalUserFilterByDepartment(requestObject, (res) => {
+        if (res.data.DataList.length <= 1) {
+          setShowValidation(true)
+        }
+        res.data.DataList && res.data.DataList.map((item) => {
+          if (item.Value === '0') return false;
+          tempDropdownList.push({ label: item.Text, value: item.Value, levelId: item.LevelId, levelName: item.LevelName })
+          return null
+        })
+        setApprovalDropDown(tempDropdownList)
+      }))
       setSelectedDepartment(newValue)
     } else {
       setSelectedDepartment('')
@@ -297,38 +285,36 @@ const SendForApproval = (props) => {
     }
     setFinancialYear(year)
 
-    dispatch(
-      getVolumeDataByPartAndYear(partNo.value ? partNo.value : partNo.partId, year, (res) => {
-        if (res.data.Result === true || res.status === 202) {
-          let approvedQtyArr = res.data.Data.VolumeApprovedDetails
-          let budgetedQtyArr = res.data.Data.VolumeBudgetedDetails
-          let actualQty = 0
-          let totalBudgetedQty = 0
-          let actualRemQty = 0
-          approvedQtyArr.map((data) => {
-            if (data.Sequence < sequence) {
+    dispatch(getVolumeDataByPartAndYear(partNo.value ? partNo.value : partNo.partId, year, (res) => {
+      if (res.data.Result === true || res.status === 202) {
+        let approvedQtyArr = res.data.Data.VolumeApprovedDetails
+        let budgetedQtyArr = res.data.Data.VolumeBudgetedDetails
+        let actualQty = 0
+        let totalBudgetedQty = 0
+        let actualRemQty = 0
+        approvedQtyArr.map((data) => {
+          if (data.Sequence < sequence) {
+            actualQty += parseInt(data.ApprovedQuantity)
+          } else if (data.Sequence >= sequence) {
+            actualRemQty += parseInt(data.ApprovedQuantity)
+          }
+          return null
+        })
+        budgetedQtyArr.map((data) => (
 
-              actualQty += parseInt(data.ApprovedQuantity)
-            } else if (data.Sequence >= sequence) {
-              actualRemQty += parseInt(data.ApprovedQuantity)
-            }
-            return null
-          })
-          budgetedQtyArr.map((data) => (
+          // if (data.Sequence >= sequence) {
+          totalBudgetedQty += parseInt(data.BudgetedQuantity)
+          // }
+        ))
+        temp.consumptionQty = checkForNull(actualQty)
+        temp.remainingQty = checkForNull(totalBudgetedQty - actualQty)
+        temp.annualImpact = temp.variance !== '' ? totalBudgetedQty * temp.variance : 0
+        temp.yearImpact = temp.variance !== '' ? (totalBudgetedQty - actualQty) * temp.variance : 0
+        viewDataTemp[index] = temp
+        dispatch(setCostingApprovalData(viewDataTemp))
+      }
 
-            // if (data.Sequence >= sequence) {
-            totalBudgetedQty += parseInt(data.BudgetedQuantity)
-            // }
-          ))
-          temp.consumptionQty = checkForNull(actualQty)
-          temp.remainingQty = checkForNull(totalBudgetedQty - actualQty)
-          temp.annualImpact = temp.variance !== '' ? totalBudgetedQty * temp.variance : 0
-          temp.yearImpact = temp.variance !== '' ? (totalBudgetedQty - actualQty) * temp.variance : 0
-          viewDataTemp[index] = temp
-          dispatch(setCostingApprovalData(viewDataTemp))
-        }
-
-      }),
+    }),
     )
   }
 
@@ -373,46 +359,7 @@ const SendForApproval = (props) => {
     }
 
     let temp = []
-    let plantCount = 0
-    let venderCount = 0
 
-    viewApprovalData.forEach((element, index, arr) => {
-      if (element.plantId !== '-') {
-        if (index > 0) {
-          if (element.plantId === arr[index - 1].plantId) {
-            plantCount = plantCount + 1
-          } else {
-            return false
-          }
-        } else {
-          return false
-        }
-      }
-      else if (element.vendorId !== '-') {
-        if (index > 0) {
-
-          if (element.vendorId === arr[index - 1].vendorId) {
-            venderCount = venderCount + 1
-          } else {
-            return false
-          }
-        } else {
-          return false
-        }
-      }
-    });
-
-    if (viewApprovalData.length > 1) {
-
-      if (plantCount > 0) {
-        Toaster.warning('Costings with same plant cannot be sent for approval')
-        return false
-      }
-      if (venderCount > 0) {
-        Toaster.warning('Costings with same vendor cannot be sent for approval')
-        return false
-      }
-    }
     setIsDisable(true)
 
     viewApprovalData.map((data) => {
@@ -476,15 +423,13 @@ const SendForApproval = (props) => {
     // debounce_fun()
     // 
     // props.closeDrawer()
-    dispatch(
-      sendForApprovalBySender(obj, (res) => {
-        setIsDisable(false)
-        Toaster.success(viewApprovalData.length === 1 ? `Costing ID ${viewApprovalData[0].costingName} has been sent for approval to ${approver.split('(')[0]}.` : `Costings has been sent for approval to ${approver.split('(')[0]}.`)
-        props.closeDrawer('', 'Submit')
-        dispatch(setCostingApprovalData([]))
-        dispatch(setCostingViewData([]))
-      }),
-    )
+    dispatch(sendForApprovalBySender(obj, (res) => {
+      setIsDisable(false)
+      Toaster.success(viewApprovalData.length === 1 ? `Costing ID ${viewApprovalData[0].costingName} has been sent for approval to ${approver.split('(')[0]}.` : `Costings has been sent for approval to ${approver.split('(')[0]}.`)
+      props.closeDrawer('', 'Submit')
+      dispatch(setCostingApprovalData([]))
+      dispatch(setCostingViewData([]))
+    }))
   }), 500)
 
   const handleApproverChange = (data) => {
@@ -528,15 +473,13 @@ const SendForApproval = (props) => {
     if (status === "done") {
       let data = new FormData();
       data.append("file", file);
-      dispatch(
-        fileUploadCosting(data, (res) => {
-          let Data = res.data[0];
-          files.push(Data);
-          setFiles(files);
-          setIsOpen(!IsOpen);
-          setAttachmentLoader(false)
-        })
-      );
+      dispatch(fileUploadCosting(data, (res) => {
+        let Data = res.data[0];
+        files.push(Data);
+        setFiles(files);
+        setIsOpen(!IsOpen);
+        setAttachmentLoader(false)
+      }));
     }
 
     if (status === "rejected_file_type") {

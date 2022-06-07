@@ -14,6 +14,7 @@ import { MESSAGES } from '../../../../config/message';
 import { ViewCostingContext } from '../CostingDetails';
 import { createToprowObjAndSave } from '../../CostingUtil';
 import { Link } from 'react-scroll';
+import { debounce } from 'lodash';
 
 function TabPackagingFreight(props) {
 
@@ -148,7 +149,7 @@ function TabPackagingFreight(props) {
   * @method saveCosting
   * @description SAVE COSTING
   */
-  const saveCosting = () => {
+  const saveCosting = debounce(handleSubmit(() => {
 
     if (checkIsFreightPackageChange) {
 
@@ -165,25 +166,26 @@ function TabPackagingFreight(props) {
         "EffectiveDate": CostingEffectiveDate,
         "TotalCost": netPOPrice,
         "CostingNumber": costData.CostingNumber,
-        //"NetPackagingAndFreight": PackageAndFreightTabData && PackageAndFreightTabData[0].NetPackagingAndFreight,
+        // "NetPackagingAndFreight": PackageAndFreightTabData && PackageAndFreightTabData[0].NetPackagingAndFreight,
         "CostingPartDetails": PackageAndFreightTabData && PackageAndFreightTabData[0].CostingPartDetails
       }
+
       if (costData.IsAssemblyPart === true) {
         if (!CostingViewMode) {
           let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 4, CostingEffectiveDate)
           dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
         }
-        dispatch(saveCostingPackageFreightTab(data, res => {
-          if (res.data.Result) {
-            Toaster.success(MESSAGES.PACKAGE_FREIGHT_COSTING_SAVE_SUCCESS);
-            dispatch(setComponentPackageFreightItemData({}, () => { }))
-            InjectDiscountAPICall()
-          }
-        }))
       }
+      dispatch(saveCostingPackageFreightTab(data, res => {
+        if (res.data.Result) {
+          Toaster.success(MESSAGES.PACKAGE_FREIGHT_COSTING_SAVE_SUCCESS);
+          dispatch(setComponentPackageFreightItemData({}, () => { }))
+          InjectDiscountAPICall()
+        }
+      }))
 
     }
-  }
+  }), 500)
 
 
   const InjectDiscountAPICall = () => {
@@ -215,7 +217,6 @@ function TabPackagingFreight(props) {
               <form
                 noValidate
                 className="form"
-                onSubmit={handleSubmit(onSubmit)}
               >
                 <Row>
                   <Col md="12">
