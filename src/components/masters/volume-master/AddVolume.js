@@ -739,7 +739,7 @@ class AddVolume extends Component {
                           </Col>
                         </Row>
 
-                        <Row className="z12">
+                        <Row>
                           {!this.state.IsVendor && (
                             <Col md="3">
                               <Field

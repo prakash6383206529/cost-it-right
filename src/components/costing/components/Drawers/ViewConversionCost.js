@@ -606,7 +606,7 @@ function ViewConversionCost(props) {
       </Row>
       <Row>
         {/*TRANSPORTATION COST GRID */}
-        <Col md="12">
+        <Col md="12" className='mb-3'>
           <Table className="table cr-brdr-main mb-0" size="sm">
             <thead>
               <tr>
