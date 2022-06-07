@@ -323,7 +323,7 @@ function ApprovalListing(props) {
       costingObj.destinationPlantId = item.DestinationPlantId
       let date = costingObj.effectiveDate
       if (costingObj.effectiveDate) {
-        let variance = Number(item.oldPoPrice && item.oldPoPrice !== '-' ? item.oldPoPrice : 0) - Number(item.poPrice && item.poPrice !== '-' ? item.poPrice : 0)
+        let variance = Number(item.OldPOPrice && item.OldPOPrice !== '-' ? item.OldPOPrice : 0) - Number(item.NetPOPrice && item.NetPOPrice !== '-' ? item.NetPOPrice : 0)
         let month = new Date(date).getMonth()
         let year = ''
         let sequence = SEQUENCE_OF_MONTH[month]
