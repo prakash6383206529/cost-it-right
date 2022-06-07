@@ -14,19 +14,16 @@ export var onFloatingFilterChanged = (value, gridOptions, thiss) => {
                 isFilterEmpty = false
             }
             if (isFilterEmpty) {
-                thiss.setState({ warningMessage: false, isSearchButtonDisable: true })
+                thiss.setState({ warningMessage: false })
             }
         }
 
     } else {
 
         if (value.column.colId === "EffectiveDate" || value.column.colId === "CreatedDate") {
-            thiss.setState({ isSearchButtonDisable: false })
             return false
         }
         thiss.setState({ floatingFilterData: { ...thiss.state.floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter } })
-        thiss.setState({ isSearchButtonDisable: false })
-
     }
 }
 
