@@ -349,8 +349,9 @@ function AddToComparisonDrawer(props) {
           obj.totalTabSum = checkForNull(obj.nTotalRMBOPCC) + checkForNull(obj.nsTreamnt) + checkForNull(obj.nOverheadProfit) + checkForNull(obj.nPackagingAndFreight) + checkForNull(obj.totalToolCost)
 
           // //For Drawer Edit
-          obj.partId = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails.PartId : '-' // PART NUMBER KEY NAME
-          obj.partNumber = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails.PartNumber : '-'
+          obj.partId = dataFromAPI && dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.PartId ? dataFromAPI.CostingPartDetails.PartId : '-' // PART NUMBER KEY NAME
+          obj.partNumber = dataFromAPI && dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.PartNumber ? dataFromAPI.CostingPartDetails.PartNumber : '-'
+
           obj.plantId = dataFromAPI.PlantId ? dataFromAPI.PlantId : '-'
           obj.plantName = dataFromAPI.PlantName ? dataFromAPI.PlantName : '-'
           obj.plantCode = dataFromAPI.PlantCode ? dataFromAPI.PlantCode : '-'
