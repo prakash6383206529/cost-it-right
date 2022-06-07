@@ -361,7 +361,7 @@ function ApprovalSummary(props) {
                         {approvalDetails.CostingId ? approvalDetails.CostingNumber : '-'}
                       </td>
                       {/* <td> */}
-                      {approvalDetails.TypeOfCosting === 'VBC' && <td> {approvalDetails.VendorName ? approvalDetails.VendorName : '-'}</td>}
+                      {approvalDetails.TypeOfCosting === 'VBC' && <td> {(approvalDetails.VendorName || approvalDetails.VendorCode) ? `${approvalDetails.VendorName}(${approvalDetails.VendorCode})` : '-'}</td>}
                       {/* </td> */}
                       {
                         checkVendorPlantConfigurable() &&
