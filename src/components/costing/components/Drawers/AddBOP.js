@@ -214,6 +214,7 @@ function AddBOP(props) {
     resizable: true,
     filter: true,
     sortable: true,
+    headerCheckboxSelectionFilteredOnly: true,
     headerCheckboxSelection: isFirstColumn,
     checkboxSelection: isFirstColumn
   };

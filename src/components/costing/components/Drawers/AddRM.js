@@ -179,6 +179,7 @@ function AddRM(props) {
     resizable: true,
     filter: true,
     sortable: true,
+    headerCheckboxSelectionFilteredOnly: true,
     headerCheckboxSelection: isMultipleRMAllow(costData.ETechnologyType) ? isFirstColumn : false,
     checkboxSelection: isFirstColumn
   };
