@@ -8,7 +8,7 @@ import { renderText, renderTextAreaField, focusOnError, renderDatePicker, render
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common';
 import {
   createAssemblyPart, updateAssemblyPart, getAssemblyPartDetail, fileUploadPart, fileDeletePart,
-  getBOMViewerTreeDataByPartIdAndLevel, getProductGroupSelectList, getPartDescription
+  getBOMViewerTreeDataByPartIdAndLevel, getProductGroupSelectList, getPartDescription, getPartDataList, getPartData,
 } from '../actions/Part';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
@@ -25,6 +25,8 @@ import imgRedcross from "../../../assests/images/red-cross.png";
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import _, { debounce } from 'lodash';
 import WarningMessage from '../../common/WarningMessage'
+import Switch from "react-switch";
+import AsyncSelect from 'react-select/async';
 
 const selector = formValueSelector('AddAssemblyPart')
 export const PartEffectiveDate = React.createContext()
@@ -66,7 +68,9 @@ class AddAssemblyPart extends Component {
       isDisableBomNo: false,
       minEffectiveDate: '',
       warningMessage: false,
-      attachmentLoader: false
+      attachmentLoader: false,
+      convertPartToAssembly: false,
+      partListingData: []
     }
   }
 
@@ -78,6 +82,10 @@ class AddAssemblyPart extends Component {
     this.props.getPlantSelectListByType(ZBC, () => { })
     this.props.getProductGroupSelectList(() => { })
     this.props.getTechnologySelectList(() => { })
+    this.props.getPartDataList(0, 100, { Technology: "", PartNumber: "", PartName: "", ECNNumber: "", RevisionNumber: "", DrawingNumber: "", EffectiveDate: "" }, false, (res) => {
+
+      this.setState({ partListingData: res?.data?.DataList })
+    })
     this.getDetails()
   }
 
@@ -143,6 +151,28 @@ class AddAssemblyPart extends Component {
   }
 
 
+  onSwitchChange = () => {
+
+    setTimeout(() => {
+      this.setState({ convertPartToAssembly: !this.state.convertPartToAssembly })
+
+    }, 200);
+
+    let value = !this.state.convertPartToAssembly
+    if (value === false) {
+      this.props.change("EffectiveDate", "")
+      this.props.change("ECNNumber", "")
+      this.props.change("DrawingNumber", "")
+      this.props.change("RevisionNumber", "")
+      this.props.change("AssemblyPartNumber", "")
+      this.props.change("AssemblyPartName", "")
+      this.props.change("BOMNumber", "")
+      this.props.change("Description", "")
+      this.props.change("Remark", "")
+      this.setState({ ProductGroup: [], })
+    }
+  }
+
   onPartNoChange = debounce((e) => {
 
     if (!this.state.isEditFlag) {
@@ -160,6 +190,36 @@ class AddAssemblyPart extends Component {
       })
     }
   }, 600)
+
+
+
+  handlePartNo = (newValue, actionMeta) => {
+    if (newValue && newValue !== '') {
+
+      this.props.getPartData(newValue.value, res => {
+        if (res && res.data && res.data.Result) {
+          const Data = res.data.Data;
+          let productArray = []
+
+          Data && Data.GroupCodeList.map((item) => {
+            productArray.push({ Text: item.GroupCode, Value: item.GroupCode, })
+            return productArray
+          })
+          this.setState({ DataToCheck: Data })
+          this.props.change("EffectiveDate", DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
+          this.props.change("ECNNumber", Data?.ECNNumber)
+          this.props.change("DrawingNumber", Data?.DrawingNumber)
+          this.props.change("RevisionNumber", Data?.RevisionNumber)
+          this.props.change("AssemblyPartNumber", Data?.PartNumber)
+          this.props.change("AssemblyPartName", Data?.PartName)
+          this.props.change("BOMNumber", Data?.BOMNumber)
+          this.props.change("Description", Data?.Description)
+          this.props.change("Remark", Data?.Remark)
+          this.setState({ ProductGroup: productArray, })
+        }
+      })
+    }
+  };
 
 
   /**
@@ -252,7 +312,6 @@ class AddAssemblyPart extends Component {
       })
       this.setState({ BOMViewerData: tempArray }, () => this.getLevelOneNewAddedChild())
     }
-
   }
 
   /**
@@ -316,7 +375,13 @@ class AddAssemblyPart extends Component {
       return temp
     }
 
-
+    if (label === 'partNo') {
+      this.state.partListingData.length > 0 && this.state.partListingData.map((item) => {
+        temp.push({ label: item.PartNumber, value: item.PartId })
+        return null
+      })
+      return temp
+    }
   }
 
   /**
@@ -514,9 +579,9 @@ class AddAssemblyPart extends Component {
   }
 
   /**
- * @method cancel
- * @description used to Reset form
- */
+  * @method cancel
+  * @description used to Reset form
+  */
   cancel = () => {
     const { reset } = this.props;
     reset();
@@ -768,6 +833,23 @@ class AddAssemblyPart extends Component {
   render() {
     const { handleSubmit, initialConfiguration } = this.props;
     const { isEditFlag, isOpenChildDrawer, isOpenBOMViewerDrawer, isViewMode, setDisable, disablePopup } = this.state;
+
+    const filterList = (inputValue) => {
+      let tempArr = []
+      tempArr = this.renderListing("partNo").filter(i =>
+        i.label !== null && i.label.toLowerCase().includes(inputValue.toLowerCase())
+      );
+
+      if (tempArr.length <= 100) {
+        return tempArr
+      } else {
+        return tempArr.slice(0, 100)
+      }
+    };
+    const promiseOptions = inputValue =>
+      new Promise(resolve => {
+        resolve(filterList(inputValue));
+      });
     return (
       <>
         <div className="container-fluid">
@@ -795,11 +877,54 @@ class AddAssemblyPart extends Component {
                   >
                     <div className="add-min-height">
                       <Row>
+                        {false &&
+                          <Col md="4" className="switch mb15">
+                            <label className="switch-level">
+                              <div className={"left-title"}>Add assembly</div>
+                              <Switch
+                                onChange={this.onSwitchChange}
+                                checked={this.state.convertPartToAssembly}
+                                id="normal-switch"
+                                disabled={isEditFlag ? true : false}
+                                background="#4DC771"
+                                onColor="#4DC771"
+                                onHandleColor="#ffffff"
+                                offColor="#4DC771"
+                                uncheckedIcon={false}
+                                checkedIcon={false}
+                                height={20}
+                                width={46}
+                              />
+                              <div className={"right-title"}>
+                                Convert part to assembly
+                              </div>
+                            </label>
+                          </Col>
+                        }
+                      </Row>
+                      <Row>
                         <Col md="12">
                           <div className="left-border">
                             {"Assembly Details:"}
                           </div>
                         </Col>
+
+                        {this.state.convertPartToAssembly &&
+                          <Col md="3" className='mb-4'>
+                            <label>{"Part No"}<span className="asterisk-required">*</span></label>
+                            <div className="fullinput-icon mr-3">
+                              <AsyncSelect
+                                name="partNo"
+                                ref={this.myRef}
+                                key={this.state.updateAsyncDropdown}
+                                loadOptions={promiseOptions}
+                                onChange={(e) => this.handlePartNo(e)}
+                                value={this.state.vendorName}
+                                noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter part no" : "No results found"}
+                                isDisabled={(isEditFlag || this.state.inputLoader) ? true : false} />
+                            </div>
+                          </Col>
+                        }
                         <Col md="3">
                           <Field
                             label={`BOM No.`}
@@ -961,7 +1086,6 @@ class AddAssemblyPart extends Component {
                             disabled={isEditFlag || isViewMode}
                           />
                         </Col>
-
 
                         <Col md="3">
                           <div className="form-group">
@@ -1214,6 +1338,8 @@ export default connect(mapStateToProps, {
   getBOMViewerTreeDataByPartIdAndLevel,
   getProductGroupSelectList,
   getPartDescription,
+  getPartDataList,
+  getPartData,
 })(reduxForm({
   form: 'AddAssemblyPart',
   onSubmitFail: errors => {

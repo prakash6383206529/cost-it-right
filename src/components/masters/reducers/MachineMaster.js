@@ -19,7 +19,8 @@ import {
 
 const initialState = {
     processGroupApiData: [],
-    processIdList: []
+    processIdList: [],
+    machineDatalist: []
 };
 
 export default function MachineReducer(state = initialState, action) {

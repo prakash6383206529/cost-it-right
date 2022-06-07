@@ -26,6 +26,7 @@ import cirHeader from "../../../assests/images/logo/CIRlogo.jpg";
 import Logo from '../../../assests/images/logo/company-logo.svg';
 import LoaderCustom from '../../common/LoaderCustom'
 import ReactToPrint from 'react-to-print';
+import BOMViewer from '../../masters/part-master/BOMViewer'
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
@@ -85,6 +86,7 @@ const CostingSummaryTable = (props) => {
   const partNumber = useSelector(state => state.costing.partNo);
   const { initialConfiguration, topAndLeftMenuData } = useSelector(state => state.auth)
   const [pdfName, setPdfName] = useState('')
+  const [IsOpenViewHirarchy, setIsOpenViewHirarchy] = useState(false);
 
   const componentRef = useRef();
   const onBeforeContentResolve = useRef(null)
@@ -95,6 +97,7 @@ const CostingSummaryTable = (props) => {
 
   useEffect(() => {
     applyPermission(topAndLeftMenuData, selectedTechnology)
+
 
     if (!viewMode && viewCostingData && partInfo) {
       let obj = {}
@@ -131,11 +134,15 @@ const CostingSummaryTable = (props) => {
       setIsViewRM(false)
       setIsViewConversionCost(false)
       setViewBOP(false)
-      setPdfName(viewCostingData[0].partId)
+      setPdfName(viewCostingData[0].partNumber)
     }
   }, [viewCostingData])
 
 
+
+  const closeVisualDrawer = () => {
+    setIsOpenViewHirarchy(false)
+  }
 
   /**
   * @method applyPermission
@@ -287,7 +294,6 @@ const CostingSummaryTable = (props) => {
   */
   const editHandler = (index) => {
     const editObject = {
-      partId: viewCostingData[index].partId,
       plantId: viewCostingData[index].plantId,
       plantName: viewCostingData[index].plantName,
       costingId: viewCostingData[index].costingId,
@@ -624,7 +630,7 @@ const CostingSummaryTable = (props) => {
           obj.ecnNo = ''
           obj.effectiveDate = viewCostingData[index].effectiveDate
           obj.isDate = viewCostingData[index].effectiveDate ? true : false
-          obj.partNo = viewCostingData[index].partId // Part id id part number here 
+          obj.partNo = viewCostingData[index].partNumber // Part id id part number here  USE PART NUMBER KEY HERE 
 
           obj.destinationPlantCode = viewCostingData[index].destinationPlantCode
           obj.destinationPlantName = viewCostingData[index].destinationPlantName
@@ -879,6 +885,7 @@ const CostingSummaryTable = (props) => {
                                   </div>
 
                                   <div class="action  text-right">
+                                    {(!viewMode && (!pdfHead && !drawerDetailPDF)) && (data.IsAssemblyCosting === true) && < button title='View BOM' className="hirarchy-btn mr-1 mb-0 align-middle" type={'button'} onClick={() => setIsOpenViewHirarchy(true)} />}
                                     {((!viewMode && (!pdfHead && !drawerDetailPDF)) && EditAccessibility) && (data.status === DRAFT) && <button className="Edit mr-1 mb-0 align-middle" type={"button"} title={"Edit Costing"} onClick={() => editCostingDetail(index)} />}
                                     {((!viewMode && (!pdfHead && !drawerDetailPDF)) && AddAccessibility) && <button className="Add-file mr-1 mb-0 align-middle" type={"button"} title={"Add Costing"} onClick={() => addNewCosting(index)} />}
                                     {((!viewMode || (approvalMode && data.CostingHeading === '-')) && (!pdfHead && !drawerDetailPDF)) && <button type="button" class="CancelIcon mb-0 align-middle" title={"Remove Costing"} onClick={() => deleteCostingFromView(index)}></button>}
@@ -918,7 +925,8 @@ const CostingSummaryTable = (props) => {
                                       }
                                     </span>
                                     <span class="d-block">{checkForDecimalAndNull(data.poPrice, initialConfiguration.NoOfDecimalForPrice)}</span>
-                                    <span class="d-block">{data.partId}</span>
+                                    {/* USE PART NUMBER KEY HERE */}
+                                    <span class="d-block">{data.partNumber}</span>
                                     <span class="d-block">{data.partName}</span>
                                     <span class="d-block">{data.zbc === 0 ? data.plantName : data.destinationPlantName}</span>
 
@@ -935,7 +943,8 @@ const CostingSummaryTable = (props) => {
                               viewCostingData.map((data, index) => {
                                 return (
                                   <td>
-                                    <span class="d-block">{data.CostingHeading !== VARIANCE ? data.partId : ''}</span>
+                                    {/* USE PART NUMBER KEY HERE */}
+                                    <span class="d-block">{data.CostingHeading !== VARIANCE ? data.partNumber : ''}</span>
                                     <span class="d-block">{data.CostingHeading !== VARIANCE ? data.partName : ''}</span>
 
                                   </td>
@@ -1011,6 +1020,7 @@ const CostingSummaryTable = (props) => {
                                   (data.CostingHeading !== VARIANCE && icons) && (!pdfHead && !drawerDetailPDF) &&
                                   <button
                                     type="button"
+                                    title='View'
                                     class="float-right mb-0 View "
                                     onClick={() => viewRM(index)}
                                   >
@@ -1040,6 +1050,7 @@ const CostingSummaryTable = (props) => {
                                   (data.CostingHeading !== VARIANCE && icons) && (!pdfHead && !drawerDetailPDF) &&
                                   <button
                                     type="button"
+                                    title='View'
                                     class="float-right mb-0 View "
                                     onClick={() => viewBop(index)}
                                   >
@@ -1097,6 +1108,7 @@ const CostingSummaryTable = (props) => {
                                   (data.CostingHeading !== VARIANCE && icons) && (!pdfHead && !drawerDetailPDF) &&
                                   <button
                                     type="button"
+                                    title='View'
                                     class="float-right mb-0 View "
                                     onClick={() => viewConversionCost(index)}
                                   >
@@ -1155,6 +1167,7 @@ const CostingSummaryTable = (props) => {
                                   (data.CostingHeading !== VARIANCE && icons) && (!pdfHead && !drawerDetailPDF) &&
                                   <button
                                     type="button"
+                                    title='View'
                                     class="float-right mb-0 View "
                                     onClick={() => viewSurfaceTreatmentCost(index)}
                                   >
@@ -1265,6 +1278,7 @@ const CostingSummaryTable = (props) => {
                                   (data.CostingHeading !== VARIANCE && icons) && (!pdfHead && !drawerDetailPDF) &&
                                   <button
                                     type="button"
+                                    title='View'
                                     class="float-right mb-0 View "
                                     onClick={() => overHeadProfit(index)}
                                   >
@@ -1312,6 +1326,7 @@ const CostingSummaryTable = (props) => {
                                   (data.CostingHeading !== VARIANCE && icons) && (!pdfHead && !drawerDetailPDF) &&
                                   <button
                                     type="button"
+                                    title='View'
                                     class="float-right mb-0 View "
                                     onClick={() => viewPackagingAndFrieghtData(index)}
                                   >
@@ -1384,6 +1399,7 @@ const CostingSummaryTable = (props) => {
                                   (data.CostingHeading !== VARIANCE && icons) && (!pdfHead && !drawerDetailPDF) &&
                                   <button
                                     type="button"
+                                    title='View'
                                     class="float-right mb-0 View "
                                     onClick={() => viewToolCostData(index)}
                                   >
@@ -1549,6 +1565,7 @@ const CostingSummaryTable = (props) => {
 
                                       <button
                                         type='button'
+                                        title='View'
                                         className='btn-a'
                                         onClick={() => viewAttachmentData(index)}
                                       > {data.CostingHeading !== VARIANCE ? 'View Attachment' : ''}</button>
@@ -1706,6 +1723,17 @@ const CostingSummaryTable = (props) => {
           />
         )
       }
+
+      {IsOpenViewHirarchy && <BOMViewer
+        isOpen={IsOpenViewHirarchy}
+        closeDrawer={closeVisualDrawer}
+        isEditFlag={true}
+        // USE PART NUMBER KEY HERE
+        PartId={viewCostingData[0].partId}
+        anchor={'right'}
+        isFromVishualAd={true}
+        NewAddedLevelOneChilds={[]}
+      />}
     </Fragment >
   )
 }

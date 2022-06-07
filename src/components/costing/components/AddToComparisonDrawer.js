@@ -17,7 +17,7 @@ function AddToComparisonDrawer(props) {
 
   const { editObject, isEditFlag, viewMode } = props
 
-  const { partId, plantId, plantName, costingId, CostingNumber, index, typeOfCosting, VendorId, vendorName,
+  const { plantId, plantName, costingId, CostingNumber, index, typeOfCosting, VendorId, vendorName,
     vendorPlantName, vendorPlantId, destinationPlantCode, destinationPlantName, destinationPlantId } = editObject
 
 
@@ -349,7 +349,8 @@ function AddToComparisonDrawer(props) {
           obj.totalTabSum = checkForNull(obj.nTotalRMBOPCC) + checkForNull(obj.nsTreamnt) + checkForNull(obj.nOverheadProfit) + checkForNull(obj.nPackagingAndFreight) + checkForNull(obj.totalToolCost)
 
           // //For Drawer Edit
-          obj.partId = dataFromAPI.PartNumber ? dataFromAPI.PartNumber : '-'
+          obj.partId = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails.PartId : '-' // PART NUMBER KEY NAME
+          obj.partNumber = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails.PartNumber : '-'
           obj.plantId = dataFromAPI.PlantId ? dataFromAPI.PlantId : '-'
           obj.plantName = dataFromAPI.PlantName ? dataFromAPI.PlantName : '-'
           obj.plantCode = dataFromAPI.PlantCode ? dataFromAPI.PlantCode : '-'
