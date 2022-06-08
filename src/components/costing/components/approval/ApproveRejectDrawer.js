@@ -451,8 +451,16 @@ function ApproveRejectDrawer(props) {
         senderObj.IsMultiSimulation = isSimulationApprovalListing ? true : false      // IF WE SEND MULTIPLE TOKENS FOR SIMULATION THEN THIS WILL BE TRUE (requirement)
 
         //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
+        setIsDisableSubmit(true)
         dispatch(simulationApprovalRequestBySender(senderObj, res => {
           setIsDisable(false)
+          let status = 200
+          if ('response' in res) {
+            status = res && res?.response?.status
+          }
+          if (status === 200) {
+            setIsDisableSubmit(false)
+          }
           if (res?.data?.Result) {
             Toaster.success('Simulation token has been sent for approval.')
             props.closeDrawer('', 'submit')
