@@ -361,10 +361,7 @@ function OtherVerifySimulation(props) {
                                                     <div className="refresh mr-0"></div>
                                                 </button>
                                             </div>
-                                            <div
-                                                className="ag-theme-material"
-
-                                            >
+                                            <div className="ag-theme-material">
                                                 <AgGridReact
                                                     defaultColDef={defaultColDef}
                                                     floatingFilter={true}
@@ -375,8 +372,8 @@ function OtherVerifySimulation(props) {
                                                     paginationPageSize={10}
                                                     onGridReady={onGridReady}
                                                     gridOptions={gridOptions}
-                                                    // loadingOverlayComponent={'customLoadingOverlay'}
-                                                    // noRowsOverlayComponent={'customNoRowsOverlay'}
+                                                    loadingOverlayComponent={'customLoadingOverlay'}
+                                                    noRowsOverlayComponent={'customNoRowsOverlay'}
                                                     noRowsOverlayComponentParams={{
                                                         title: EMPTY_DATA,
                                                         customClassName: 'nodata-found-container'
@@ -393,31 +390,26 @@ function OtherVerifySimulation(props) {
                                                     <AgGridColumn width={110} field="ECNNumber" cellRenderer='ecnFormatter' headerName="ECN No."></AgGridColumn>
                                                     <AgGridColumn width={130} field="RevisionNumber" cellRenderer='revisionFormatter' headerName="Revision No."></AgGridColumn>
                                                     {isExchangeRate && <AgGridColumn width={130} field="Currency" headerName="Currency"></AgGridColumn>}
-                                                    {/* {isCombinedProcess !== true && <AgGridColumn width={130} field="Currency" headerName="Currency"></AgGridColumn>} */}
-                                                    {isExchangeRate &&
-                                                        <>
-                                                            <AgGridColumn width={130} field="POPrice" headerName="PO Price Old"></AgGridColumn>
-                                                            <AgGridColumn width={145} field="OldExchangeRate" headerName="Old Exchange Rate"></AgGridColumn>
-                                                            <AgGridColumn width={150} field="NewExchangeRate" cellRenderer='newExchangeRateFormatter' headerName="New Exchange Rate"></AgGridColumn>
-                                                        </>
-                                                    }
-                                                    {isCombinedProcess &&
-                                                        <>
-                                                            <AgGridColumn width={130} field="OldPOPrice" headerName="PO Price Old" cellRenderer='decimalFormatter'></AgGridColumn>
-                                                            <AgGridColumn width={130} field="NewPOPrice" headerName="PO Price New" cellRenderer='decimalFormatter'></AgGridColumn>
-                                                            <AgGridColumn width={145} field="OldNetCC" headerName="Old CC" cellRenderer='decimalFormatter'></AgGridColumn>
-                                                            <AgGridColumn width={150} field="NewNetCC" cellRenderer='newExchangeRateFormatter' headerName="New CC"></AgGridColumn>
-                                                        </>
-                                                    }
-                                                </AgGridReact>
+                                                    <AgGridColumn width={130} field="POPrice" headerName="PO Price Old"></AgGridColumn>
 
-                                                <div className="paging-container d-inline-block float-right">
-                                                    <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
-                                                        <option value="10" selected={true}>10</option>
-                                                        <option value="50">50</option>
-                                                        <option value="100">100</option>
-                                                    </select>
-                                                </div>
+
+                                                    {isExchangeRate && <AgGridColumn width={145} field="OldExchangeRate" headerName="Old Exchange Rate"></AgGridColumn>}
+                                                    {isExchangeRate && <AgGridColumn width={150} field="NewExchangeRate" cellRenderer='newExchangeRateFormatter' headerName="New Exchange Rate"></AgGridColumn>}
+
+                                                    {isCombinedProcess && <AgGridColumn width={130} field="OldPOPrice" headerName="PO Price Old" cellRenderer='decimalFormatter'></AgGridColumn>}
+                                                    {isCombinedProcess && <AgGridColumn width={130} field="NewPOPrice" headerName="PO Price New" cellRenderer='decimalFormatter'></AgGridColumn>}
+                                                    {isCombinedProcess && <AgGridColumn width={145} field="OldNetCC" headerName="Old CC" cellRenderer='decimalFormatter'></AgGridColumn>}
+                                                    {isCombinedProcess && <AgGridColumn width={150} field="NewNetCC" cellRenderer='newExchangeRateFormatter' headerName="New CC"></AgGridColumn>}
+
+
+                                                </AgGridReact>
+                                            </div>
+                                            <div className="paging-container d-inline-block float-right">
+                                                <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
+                                                    <option value="10" selected={true}>10</option>
+                                                    <option value="50">50</option>
+                                                    <option value="100">100</option>
+                                                </select>
                                             </div>
                                         </div>
                                     </div>
