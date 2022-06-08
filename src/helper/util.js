@@ -900,3 +900,22 @@ export function isUploadSimulation(master) {
 }
 
 export const allEqual = arr => arr.every(val => val === arr[0]);
+
+export const currency = (value) => {
+  switch (value) {
+    case "USD":
+      return "$"
+    case "EUR":
+      return "€"
+    case "GBP":
+      return "£"
+    case "IDR":
+      return "Rp"
+    case "JPY":
+      return "¥"
+    case "VND":
+      return "₫"
+    default:
+      break;
+  }
+}
