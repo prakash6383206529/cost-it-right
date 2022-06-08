@@ -1049,12 +1049,6 @@ class AddPower extends Component {
       return { PlantName: item.Text, PlantId: item.Value, }
     })
 
-    let vendorPlantArray = selectedVendorPlants && selectedVendorPlants.map((item) => {
-      return { VendorPlantName: item.Text, VendorPlantId: item.Value, }
-    })
-
-    if (IsVendor && initialConfiguration.IsVendorPlantConfigurable && vendorPlantArray.length === 0) return false;
-
     const NetPowerCostPerUnit = powerGrid && powerGrid.reduce((accummlator, el) => {
       return accummlator + checkForNull(el.CostPerUnit * el.PowerContributionPercentage / 100);
     }, 0)
@@ -1074,7 +1068,6 @@ class AddPower extends Component {
           VendorId: vendorName.value,
           VendorName: vendorName.label,
           VendorCode: VendorCode,
-          VendorPlants: initialConfiguration.IsVendorPlantConfigurable ? (IsVendor ? vendorPlantArray : []) : [],
           NetPowerCostPerUnit: values.NetPowerCostPerUnit,
           IsVendor: IsVendor,
           IsActive: true,
@@ -1162,7 +1155,6 @@ class AddPower extends Component {
         this.setState({ setDisable: true })
         const vendorPowerData = {
           VendorId: vendorName.value,
-          VendorPlants: initialConfiguration.IsVendorPlantConfigurable ? (IsVendor ? vendorPlantArray : []) : [],
           NetPowerCostPerUnit: values.NetPowerCostPerUnit,
           IsVendor: IsVendor,
           LoggedInUserId: loggedInUserId(),

@@ -468,7 +468,7 @@ class AddRMDomestic extends Component {
             this.props.fetchSpecificationDataAPI(Data.RMGrade, (res) => {
 
               setTimeout(() => {
-                const { gradeSelectList, rmSpecification, cityList, categoryList, rawMaterialNameSelectList, UOMSelectList, technologySelectList, plantSelectList } = this.props
+                const { gradeSelectList, rmSpecification, cityList, categoryList, rawMaterialNameSelectList, UOMSelectList } = this.props
 
 
                 const materialNameObj = rawMaterialNameSelectList && rawMaterialNameSelectList.find((item) => item.Value === Data.RawMaterial,)
@@ -477,22 +477,12 @@ class AddRMDomestic extends Component {
                 const specObj = rmSpecification && rmSpecification.find((item) => item.Value === Data.RMSpec)
 
                 const categoryObj = categoryList && categoryList.find((item) => Number(item.Value) === Data.Category)
-                const destinationPlantObj = plantSelectList && plantSelectList.find((item) => item.Value === Data.DestinationPlantId)
-
-                const technologyObj = technologySelectList && technologySelectList.find((item) => Number(item.Value) === Data.TechnologyId)
 
 
                 let plantArray = []
                 Data && Data.Plant.map((item) => {
                   plantArray.push({ Text: item.PlantName, Value: item.PlantId })
                   return plantArray
-                })
-
-
-                let vendorPlantArray = []
-                Data && Data.VendorPlant.map((item) => {
-                  vendorPlantArray.push({ Text: item.PlantName, Value: item.PlantId, })
-                  return vendorPlantArray
                 })
 
                 const sourceLocationObj = cityList && cityList.find((item) => Number(item.Value) === Data.SourceLocation)
@@ -510,9 +500,8 @@ class AddRMDomestic extends Component {
                   RMSpec: specObj !== undefined ? { label: specObj.Text, value: specObj.Value } : [],
                   Category: categoryObj !== undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
                   selectedPlants: plantArray,
-                  Technology: technologyObj !== undefined ? { label: technologyObj.Text, value: technologyObj.Value } : [],
-                  vendorName: Data.Vendor !== undefined ? { label: Data.VendorName, value: Data.Vendor } : [],
-                  selectedVendorPlants: vendorPlantArray,
+                  Technology: Data.TechnologyName !== undefined ? { label: Data.TechnologyName, value: Data.TechnologyId } : [],
+                  vendorName: Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.Vendor } : [],
                   HasDifferentSource: Data.HasDifferentSource,
                   sourceLocation: sourceLocationObj !== undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value, } : [],
                   UOM: UOMObj !== undefined ? { label: UOMObj.Display, value: UOMObj.Value } : [],
@@ -520,9 +509,9 @@ class AddRMDomestic extends Component {
                   oldDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
                   remarks: Data.Remark,
                   files: Data.FileList,
-                  singlePlantSelected: destinationPlantObj !== undefined ? { label: destinationPlantObj.Text, value: destinationPlantObj.Value } : [],
+                  singlePlantSelected: Data.DestinationPlantName !== undefined ? { label: Data.DestinationPlantName, value: Data.DestinationPlantId } : [],
                   netLandedCost: Data.NetLandedCost ? Data.NetLandedCost : '',
-                  showExtraCost: technologyObj.Text === SHEET_METAL ? true : false,
+                  showExtraCost: Data.TechnologyName === SHEET_METAL ? true : false,
                 }, () => this.setState({ isLoader: false }))
                 // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
                 let files = Data.FileList && Data.FileList.map((item) => {
@@ -1042,13 +1031,6 @@ class AddRMDomestic extends Component {
       return plantArray
     })
 
-    let vendorPlantArray = []
-    selectedVendorPlants &&
-      selectedVendorPlants.map((item) => {
-        vendorPlantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '', })
-        return vendorPlantArray
-      })
-
     let updatedFiles = files.map((file) => {
       return { ...file, ContextId: RawMaterialID }
     })
@@ -1153,7 +1135,6 @@ class AddRMDomestic extends Component {
       formData.Remark = remarks
       formData.LoggedInUserId = loggedInUserId()
       formData.Plant = IsVendor === false ? plantArray : []
-      formData.VendorPlant = initialConfiguration && initialConfiguration.IsVendorPlantConfigurable ? (IsVendor ? vendorPlantArray : []) : []
       formData.VendorCode = VendorCode
       formData.Attachements = files
       formData.DestinationPlantId = IsVendor ? singlePlantSelected.value : '00000000-0000-0000-0000-000000000000'

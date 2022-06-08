@@ -107,6 +107,7 @@ function AddVendorDrawer(props) {
   * @description  USED TO HANDLE VENDOR CHANGE
   */
   const handleVendorChange = (newValue) => {
+
     if (newValue && newValue !== '') {
       setVendor(newValue)
       reset({ VendorPlant: '' })
@@ -137,6 +138,7 @@ function AddVendorDrawer(props) {
       setData({})
     }
   }
+
 
   /**
 * @method handleDestinationPlantChange
@@ -244,7 +246,7 @@ function AddVendorDrawer(props) {
                       mandatory={true}
                       handleChange={handleDestinationPlantChange}
                       errors={errors.DestinationPlant}
-                      disabled={VendorInputLoader}
+                      disabled={vendor.length === 0 ? true : false}
                     />
                   </Col>}
 
@@ -263,7 +265,7 @@ function AddVendorDrawer(props) {
                       mandatory={true}
                       handleChange={handleChangeVendorPlant}
                       errors={errors.VendorPlant}
-                      disabled={VendorInputLoader}
+                      disabled={vendor.length === 0 ? true : false}
                     />
                   </Col>}
               </Row>

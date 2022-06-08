@@ -142,11 +142,8 @@ class AddOverhead extends Component {
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           this.setState({ minEffectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '' })
           setTimeout(() => {
-            const { modelTypes, costingHead, vendorWithVendorCodeSelectList, clientSelectList, plantSelectList } = this.props;
-            const modelObj = modelTypes && modelTypes.find(item => Number(item.Value) === Data.ModelTypeId)
+            const { costingHead, plantSelectList } = this.props;
             const AppliObj = costingHead && costingHead.find(item => Number(item.Value) === Data.OverheadApplicabilityId)
-            // const vendorObj = vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.find(item => item.Value === Data.VendorId)
-            const clientObj = clientSelectList && clientSelectList.find(item => item.Value === Data.ClientId)
             const plantObj = plantSelectList && plantSelectList.find((item) => item.Value === Data.PlantId)
             let Head = '';
             if (Data.IsVendor === true && Data.VendorId != null) {
@@ -162,10 +159,10 @@ class AddOverhead extends Component {
               // isLoader: false,
               IsVendor: Data.IsClient ? Data.IsClient : Data.IsVendor,
               costingHead: Head,
-              ModelType: modelObj && modelObj !== undefined ? { label: modelObj.Text, value: modelObj.Value } : [],
+              ModelType: Data.ModelType !== undefined ? { label: Data.ModelType, value: Data.ModelTypeId } : [],
               vendorName: Data.VendorName && Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.VendorId } : [],
               plant: plantObj && plantObj !== undefined ? { label: plantObj.Text, value: plantObj.Value } : [],
-              client: clientObj && clientObj !== undefined ? { label: clientObj.Text, value: clientObj.Value } : [],
+              client: Data.ClientName !== undefined ? { label: Data.ClientName, value: Data.ClientId } : [],
               overheadAppli: AppliObj && AppliObj !== undefined ? { label: AppliObj.Text, value: AppliObj.Value } : [],
               remarks: Data.Remark,
               files: Data.Attachements,

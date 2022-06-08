@@ -353,20 +353,10 @@ class AddOperation extends Component {
             return technologyArray;
           })
 
-          let vendorPlantArray = [];
-          Data && Data.VendorPlant.map((item) => {
-            vendorPlantArray.push({ Text: item.PlantName, Value: item.PlantId })
-            return vendorPlantArray;
-          })
-
 
           setTimeout(() => {
-            const { vendorWithVendorCodeSelectList, UOMSelectList, plantSelectList } = this.props;
-
-            const vendorObj = vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.find(item => item.Value === Data.VendorId)
+            const { UOMSelectList } = this.props;
             const UOMObj = UOMSelectList && UOMSelectList.find(item => item.Value === Data.UnitOfMeasurementId)
-            const destinationPlantObj = plantSelectList && plantSelectList.find((item) => item.Value === Data.DestinationPlantId)
-
 
             this.setState({
               isEditFlag: true,
@@ -375,8 +365,7 @@ class AddOperation extends Component {
               IsVendor: Data.IsVendor,
               selectedTechnology: technologyArray,
               selectedPlants: plantArray,
-              vendorName: vendorObj && vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
-              selectedVendorPlants: vendorPlantArray,
+              vendorName: Data.VendorName && Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.VendorId } : [],
               UOM: UOMObj && UOMObj !== undefined ? { label: UOMObj.Display, value: UOMObj.Value } : [],
               oldUOM: UOMObj && UOMObj !== undefined ? { label: UOMObj.Display, value: UOMObj.Value } : [],
               isSurfaceTreatment: Data.IsSurfaceTreatmentOperation,
@@ -385,7 +374,7 @@ class AddOperation extends Component {
               // effectiveDate: moment(Data.EffectiveDate).isValid ? moment(Data.EffectiveDate)._d : '',
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
               oldDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
-              destinationPlant: destinationPlantObj !== undefined ? { label: destinationPlantObj.Text, value: destinationPlantObj.Value } : [],
+              destinationPlant: Data.DestinationPlantName !== undefined ? { label: Data.DestinationPlantName, value: Data.DestinationPlantId } : [],
               dataToChange: Data
             })
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********

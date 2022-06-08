@@ -24,17 +24,13 @@ class AddVendorDrawer extends Component {
             selectedVendorType: [],
             selectedPlants: [],
             plantsArray: [],
-
             country: [],
             state: [],
             city: [],
-
             isOpenFuel: false,
             isOpenPlant: false,
-
             isOpenVendorPlant: false,
             VendorId: '',
-
             isVisible: false,
             vendor: '',
             DataToCheck: [],
@@ -270,7 +266,6 @@ class AddVendorDrawer extends Component {
                 if (res && res.data && res.data.Data) {
                     let Data = res.data.Data;
                     let tempArr = [];
-                    let tempVendorPlant = [];
                     this.props.fetchStateDataAPI(Data.CountryId, () => { })
                     this.props.fetchCityDataAPI(Data.StateId, () => { })
                     this.setState({ DataToCheck: Data })
@@ -279,27 +274,14 @@ class AddVendorDrawer extends Component {
                         return null;
                     })
 
-                    Data && Data.VendorPlants && Data.VendorPlants.map((item) => {
-                        tempVendorPlant.push({ Text: item.PlantName, Value: item.PlantId })
-                        return null;
-                    })
-
                     setTimeout(() => {
-                        const { countryList, stateList, cityList } = this.props;
-
-                        const CountryObj = countryList && countryList.find(item => Number(item.Value) === Data.CountryId)
-                        const StateObj = stateList && stateList.find(item => Number(item.Value) === Data.StateId)
-                        const CityObj = cityList && cityList.find(item => Number(item.Value) === Data.CityId)
-
                         this.setState({
                             isEditFlag: true,
                             // isLoader: false,
                             selectedVendorType: tempArr,
-                            country: CountryObj && CountryObj !== undefined ? { label: CountryObj.Text, value: CountryObj.Value } : [],
-                            state: StateObj && StateObj !== undefined ? { label: StateObj.Text, value: StateObj.Value } : [],
-                            city: CityObj && CityObj !== undefined ? { label: CityObj.Text, value: CityObj.Value } : [],
-                            existedVendorPlants: tempVendorPlant,
-                            selectedVendorPlants: tempVendorPlant,
+                            country: Data.Country !== undefined ? { label: Data.Country, value: Data.CountryId } : [],
+                            state: Data.State !== undefined ? { label: Data.State, value: Data.StateId } : [],
+                            city: Data.City !== undefined ? { label: Data.City, value: Data.CityId } : [],
                         }, () => this.setState({ isLoader: false }))
                     }, 1000)
 
@@ -341,20 +323,13 @@ class AddVendorDrawer extends Component {
     */
     onSubmit = debounce((values) => {
         const { selectedVendorType, selectedVendorPlants, existedVendorPlants, city, VendorId, DropdownChanged, DataToCheck } = this.state;
-        const { supplierData, vendorPlantSelectList } = this.props;
+        const { supplierData } = this.props;
 
 
         let vendorArray = [];
         selectedVendorType && selectedVendorType.map((item) => {
             vendorArray.push({ VendorType: item.Text, VendorTypeId: item.Value })
             return vendorArray;
-        })
-
-        //Vendor Plants Array
-        let VendorPlantsArray = [];
-        vendorPlantSelectList && vendorPlantSelectList.map((item, index) => {
-            VendorPlantsArray.push(item.Value)
-            return null;
         })
 
         //DefaultIds Get in Edit Mode.
@@ -369,18 +344,6 @@ class AddVendorDrawer extends Component {
         selectedVendorPlants && selectedVendorPlants.map((item, index) => {
             SelectedVendorPlantIds.push(item.Value)
             return null;
-        })
-
-        //Additonal Vendor Plant Id's
-        let AdditonalPlants = SelectedVendorPlantIds.filter(x => !DefaultVendorPlantIds.includes(x));
-
-        //Removed Vendor Plant Id's
-        let removedVendorPlants = DefaultVendorPlantIds.filter(x => !SelectedVendorPlantIds.includes(x));
-
-        let vendorPlantArray = [];
-        selectedVendorPlants && selectedVendorPlants.map((item) => {
-            vendorPlantArray.push({ VendorType: item.Text, VendorTypeId: item.Value })
-            return vendorPlantArray;
         })
 
         /** Update existing detail of supplier master **/
@@ -407,8 +370,6 @@ class AddVendorDrawer extends Component {
                 MobileNumber: values.MobileNumber,
                 Extension: values.Extension,
                 LoggedInUserId: loggedInUserId(),
-                AddedVendorPlants: AdditonalPlants,
-                RemoveVendorPlants: removedVendorPlants,
                 VendorTypes: vendorArray,
             }
             this.props.reset()
@@ -429,7 +390,6 @@ class AddVendorDrawer extends Component {
                 IsActive: true,
                 LoggedInUserId: loggedInUserId(),
                 VendorTypes: vendorArray,
-                VendorPlants: vendorPlantArray,
                 UserId: loggedInUserId(),
                 AddressLine1: values.AddressLine1 ? values.AddressLine1.trim() : values.AddressLine1,
                 AddressLine2: values.AddressLine2 ? values.AddressLine2.trim() : values.AddressLine2,

@@ -118,14 +118,11 @@ class AddExchangeRate extends Component {
           this.setState({ DataToChange: Data })
 
           setTimeout(() => {
-            const { currencySelectList } = this.props;
-
-            const currencyObj = currencySelectList && currencySelectList.find(item => Number(item.Value) === Data.CurrencyId)
             this.setState({ minEffectiveDate: Data.EffectiveDate })
             this.setState({
               isEditFlag: true,
               // isLoader: false,
-              currency: currencyObj && currencyObj !== undefined ? { label: currencyObj.Text, value: currencyObj.Value } : [],
+              currency: Data.Currency !== undefined ? { label: Data.Currency, value: Data.CurrencyId } : [],
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(new Date(Data.EffectiveDate)).format('MM/DD/YYYY') : '',
             }, () => this.setState({ isLoader: false }))
           }, 500)

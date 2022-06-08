@@ -82,8 +82,6 @@ class AddFuel extends Component {
           this.setState({ RateChange: Data })
           setTimeout(() => {
             const { fuelComboSelectList } = this.props;
-
-            const fuelObj = fuelComboSelectList && fuelComboSelectList.Fuels.find(item => Number(item.Value) === Data.FuelId)
             const UOMObj = fuelComboSelectList && fuelComboSelectList.UnitOfMeasurements.find(item => item.Value === Data.UnitOfMeasurementId)
 
             let rateGridArray = Data && Data.FuelDetatils.map((item) => {
@@ -98,7 +96,7 @@ class AddFuel extends Component {
 
             this.setState({
               isEditFlag: true,
-              fuel: fuelObj && fuelObj !== undefined ? { label: fuelObj.Text, value: fuelObj.Value } : [],
+              fuel: Data.FuelName && Data.FuelName !== undefined ? { label: Data.FuelName, value: Data.FuelId } : [],
               UOM: UOMObj && UOMObj !== undefined ? { label: UOMObj.Display, value: UOMObj.Value } : [],
               rateGrid: rateGridArray,
             }, () => this.setState({ isLoader: false }))

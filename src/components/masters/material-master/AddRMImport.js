@@ -465,14 +465,12 @@ class AddRMImport extends Component {
             this.props.fetchSpecificationDataAPI(Data.RMGrade, res => {
 
               setTimeout(() => {
-                const { gradeSelectList, rmSpecification, cityList, categoryList, rawMaterialNameSelectList, UOMSelectList, currencySelectList, technologySelectList, plantSelectList } = this.props;
+                const { gradeSelectList, rmSpecification, cityList, categoryList, rawMaterialNameSelectList, UOMSelectList, currencySelectList } = this.props;
 
                 const materialNameObj = rawMaterialNameSelectList && rawMaterialNameSelectList.find(item => item.Value === Data.RawMaterial)
                 const gradeObj = gradeSelectList && gradeSelectList.find(item => item.Value === Data.RMGrade)
                 const specObj = rmSpecification && rmSpecification.find(item => item.Value === Data.RMSpec)
                 const categoryObj = categoryList && categoryList.find(item => Number(item.Value) === Data.Category)
-                const destinationPlantObj = plantSelectList && plantSelectList.find((item) => item.Value === Data.DestinationPlantId)
-                const technologyObj = technologySelectList && technologySelectList.find((item) => Number(item.Value) === Data.TechnologyId) //NEED TO UNCOMMENT AFTER KEY ADDED IN BACKEND
                 const currencyObj = currencySelectList && currencySelectList.find(item => item.Text === Data.Currency)
                 this.props.change('FreightCharge', Data.RMFreightCost ? Data.RMFreightCost : '')
                 this.props.change('ShearingCost', Data.RMShearingCost ? Data.RMShearingCost : '')
@@ -490,14 +488,6 @@ class AddRMImport extends Component {
                   return plantArray;
                 })
 
-
-                let vendorPlantArray = [];
-                Data && Data.VendorPlant.map((item) => {
-                  vendorPlantArray.push({ Text: item.PlantName, Value: item.PlantId })
-                  return vendorPlantArray;
-                })
-
-
                 const sourceLocationObj = cityList && cityList.find(item => Number(item.Value) === Data.SourceLocation)
                 const UOMObj = UOMSelectList && UOMSelectList.find(item => item.Value === Data.UOM)
 
@@ -510,10 +500,9 @@ class AddRMImport extends Component {
                   RMGrade: gradeObj !== undefined ? { label: gradeObj.Text, value: gradeObj.Value } : [],
                   RMSpec: specObj !== undefined ? { label: specObj.Text, value: specObj.Value } : [],
                   Category: categoryObj !== undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
-                  Technology: technologyObj !== undefined ? { label: technologyObj.Text, value: technologyObj.Value } : '', //NNED TO UNCOMMENT AFTER KEY ADDED IN BACKEND
+                  Technology: Data.TechnologyName !== undefined ? { label: Data.TechnologyName, value: Data.TechnologyId } : [],
                   selectedPlants: plantArray,
-                  vendorName: Data.Vendor !== undefined ? { label: Data.VendorName, value: Data.Vendor } : [],
-                  selectedVendorPlants: vendorPlantArray,
+                  vendorName: Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.Vendor } : [],
                   HasDifferentSource: Data.HasDifferentSource,
                   sourceLocation: sourceLocationObj !== undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value } : [],
                   UOM: UOMObj !== undefined ? { label: UOMObj.Display, value: UOMObj.Value } : [],
@@ -522,10 +511,10 @@ class AddRMImport extends Component {
                   currency: currencyObj !== undefined ? { label: currencyObj.Text, value: currencyObj.Value } : [],
                   remarks: Data.Remark,
                   files: Data.FileList,
-                  singlePlantSelected: destinationPlantObj !== undefined ? { label: destinationPlantObj.Text, value: destinationPlantObj.Value } : [],
+                  singlePlantSelected: Data.DestinationPlantName !== undefined ? { label: Data.DestinationPlantName, value: Data.DestinationPlantId } : [],
                   // FreightCharge:Data.FreightCharge
                   netCurrencyCost: Data.NetLandedCostConversion ? Data.NetLandedCostConversion : '',
-                  showExtraCost: technologyObj.Text === SHEET_METAL ? true : false,
+                  showExtraCost: Data.TechnologyName === SHEET_METAL ? true : false,
                 }, () => this.setState({ isLoader: false }))
                 // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
                 let files = Data.FileList && Data.FileList.map((item) => {
@@ -1001,13 +990,6 @@ class AddRMImport extends Component {
     })
 
 
-
-    let vendorPlantArray = [];
-    selectedVendorPlants && selectedVendorPlants.map((item) => {
-      vendorPlantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' })
-      return vendorPlantArray;
-    })
-
     if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(RM_MASTER_ID) !== true)) {
 
       let updatedFiles = files.map((file) => {
@@ -1125,7 +1107,6 @@ class AddRMImport extends Component {
         Remark: remarks,
         LoggedInUserId: loggedInUserId(),
         Plant: IsVendor === false ? plantArray : [],
-        VendorPlant: initialConfiguration && initialConfiguration.IsVendorPlantConfigurable ? (IsVendor ? vendorPlantArray : []) : [],
         VendorCode: VendorCode,
         Attachements: files,
         Currency: currency.label,
