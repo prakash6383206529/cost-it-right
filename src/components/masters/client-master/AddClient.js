@@ -152,18 +152,12 @@ class AddClient extends Component {
                     this.props.fetchCityDataAPI(Data.StateId, () => { })
 
                     setTimeout(() => {
-                        const { countryList, stateList, cityList } = this.props;
-
-                        const CountryObj = countryList && countryList.find(item => item.Value === Data.CountryId)
-                        const StateObj = stateList && stateList.find(item => item.Value === Data.StateId)
-                        const CityObj = cityList && cityList.find(item => item.Value === Data.CityIdRef)
-
                         this.setState({
                             isEditFlag: true,
                             isLoader: false,
-                            country: { label: CountryObj.Text, value: CountryObj.Value },
-                            state: { label: StateObj.Text, value: StateObj.Value },
-                            city: { label: CityObj.Text, value: CityObj.Value },
+                            country: Data.CountryName !== undefined ? { label: Data.CountryName, value: Data.CountryId } : [],
+                            state: Data.StateName !== undefined ? { label: Data.StateName, value: Data.StateId } : [],
+                            city: Data.CityName !== undefined ? { label: Data.CityName, value: Data.CityId } : [],
                         })
                     }, 500)
 

@@ -85,17 +85,12 @@ class AddSpecification extends Component {
           this.props.getRMGradeSelectListByRawMaterial(Data.RawMaterialId, res => { })
 
           setTimeout(() => {
-            const { rawMaterialNameSelectList, MaterialSelectList, gradeSelectList } = this.props;
+            const { rawMaterialNameSelectList } = this.props;
             this.props.change('Code', Data?.RawMaterialCode)
             let tempObj1 = rawMaterialNameSelectList && rawMaterialNameSelectList.find(item => item.Value === Data.RawMaterialId)
-            // let tempObj2 = MaterialSelectList && MaterialSelectList.find(item => item.Value === Data.MaterialId)
-            let tempObj3 = gradeSelectList && gradeSelectList.find(item => item.Value === Data.GradeId)
-
-            // this.setDensity(Data.MaterialId);
             this.setState({
               RawMaterial: tempObj1 && tempObj1 !== undefined ? { label: tempObj1.Text, value: tempObj1.Value } : [],
-              // material: tempObj2 && tempObj2 !== undefined ? { label: tempObj2.Text, value: tempObj2.Value } : [],
-              RMGrade: tempObj3 && tempObj3 !== undefined ? { label: tempObj3.Text, value: tempObj3.Value } : [],
+              RMGrade: Data.GradeName !== undefined ? { label: Data.GradeName, value: Data.GradeId } : [],
             })
           }, 500)
 
