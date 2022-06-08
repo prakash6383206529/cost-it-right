@@ -437,7 +437,7 @@ function Plastic(props) {
             </div>
           </Col>
 
-          {!CostingViewMode && <div className="col-sm-12 text-right px-0 mt-4">
+          {!CostingViewMode && <div className="col-sm-12 text-right mt-4">
             <button
               type={'button'}
               className="reset mr15 cancel-btn"
