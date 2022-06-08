@@ -291,7 +291,7 @@ class UsersListing extends Component {
 		if (cellValue === loggedInUserId()) return null;
 		return (
 			<div className="">
-				{EditAccessibility && <button className="Edit " type={'button'} onClick={() => this.editItemDetails(cellValue, false)} />}
+				{EditAccessibility && <button title='Edit' className="Edit " type={'button'} onClick={() => this.editItemDetails(cellValue, false)} />}
 				{/* <Button className="btn btn-danger" onClick={() => this.deleteItem(cell)}><i className="far fa-trash-alt"></i></Button> */}
 			</div>
 		)

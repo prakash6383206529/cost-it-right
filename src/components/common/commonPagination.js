@@ -8,17 +8,22 @@ export var onFloatingFilterChanged = (value, gridOptions, thiss) => {
     }
 
     if (value?.filterInstance?.appliedModel === null || value?.filterInstance?.appliedModel?.filter === "") {
-        thiss.setState({ warningMessage: false })
+        let isFilterEmpty = true
+        if (model !== undefined && model !== null) {
+            if (Object.keys(model).length > 0) {
+                isFilterEmpty = false
+            }
+            if (isFilterEmpty) {
+                thiss.setState({ warningMessage: false })
+            }
+        }
 
     } else {
 
         if (value.column.colId === "EffectiveDate" || value.column.colId === "CreatedDate") {
-            thiss.setState({ isSearchButtonDisable: false })
             return false
         }
         thiss.setState({ floatingFilterData: { ...thiss.state.floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter } })
-        thiss.setState({ isSearchButtonDisable: false })
-
     }
 }
 

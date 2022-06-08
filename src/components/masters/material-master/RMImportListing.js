@@ -58,7 +58,6 @@ function RMImportListing(props) {
   //STATES BELOW ARE MADE FOR PAGINATION PURPOSE
   const [warningMessage, setWarningMessage] = useState(false)
   const [filterModel, setFilterModel] = useState({});
-  const [isSearchButtonDisable, setIsSearchButtonDisable] = useState(true);
   const [pageNo, setPageNo] = useState(1)
   const [totalRecordCount, setTotalRecordCount] = useState(0)
   const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
@@ -230,16 +229,21 @@ function RMImportListing(props) {
       setWarningMessage(true)
     }
     if (value?.filterInstance?.appliedModel === null || value?.filterInstance?.appliedModel?.filter === "") {
-      setWarningMessage(false)
+
+      let isFilterEmpty = true
+      if (model !== undefined && model !== null) {
+        if (Object.keys(model).length > 0) {
+          isFilterEmpty = false
+        }
+        if (isFilterEmpty) {
+          setWarningMessage(false)
+        }
+      }
     } else {
       if (value.column.colId === "EffectiveDate" || value.column.colId === "CreatedDate") {
-        setIsSearchButtonDisable(false)
         return false
       }
-      console.log(value.column.colId, value.filterInstance.appliedModel.filter, "val col");
-
       setFloatingFilterData({ ...floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter })
-      setIsSearchButtonDisable(false)
     }
   }
 
@@ -584,7 +588,7 @@ function RMImportListing(props) {
             {isSimulation &&
               <div className="warning-message d-flex align-items-center">
                 {warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
-                <button disabled={isSearchButtonDisable} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
+                <button disabled={!warningMessage} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
               </div>
             }
             {!isSimulation &&
@@ -606,7 +610,7 @@ function RMImportListing(props) {
                   }
 
                   {
-                    <button disabled={isSearchButtonDisable} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
+                    <button disabled={!warningMessage} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
                   }
 
                   {AddAccessibility && (

@@ -400,6 +400,9 @@
  .add-child-input {
      @include inputLoader(30px, 40px, 17px, 17px, 31px, $responsiveRight:17px)
  }
+ .assembly-part-loader {
+     @include inputLoader(29px, 17px, 16px, 16px,  $responsiveRight:16px)
+ }
 // <------END input field loader----->
 .costing-table {
     .loaderinner {

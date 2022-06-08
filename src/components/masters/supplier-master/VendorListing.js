@@ -38,7 +38,6 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 
-
 function enumFormatter(cell, row, enumObject) {
     return enumObject[cell];
 }
@@ -76,7 +75,7 @@ class VendorListing extends Component {
             showPopup: false,
             deletedId: '',
             isViewMode: false,
-            isLoader: false
+            isLoader: false,
 
         }
     }
@@ -105,26 +104,25 @@ class VendorListing extends Component {
 
 
     onFloatingFilterChanged = (value) => {
-        this.setState({ enableSearchFilterSearchButton: true })
         this.setState({ warningMessage: true })
-
+        const model = gridOptions?.api?.getFilterModel();
 
         if (value?.filterInstance?.appliedModel === null || value?.filterInstance?.appliedModel?.filter === "") {
-            this.setState({ warningMessage: false })
+            let isFilterEmpty = true
+            if (model !== undefined && model !== null) {
+                if (Object.keys(model).length > 0) {
+                    isFilterEmpty = false
+                    this.setState({ warningMessage: true })
+                }
+                if (isFilterEmpty) {
+                    this.setState({ warningMessage: false })
+                }
+            }
             return false
+
         } else {
 
-            if (value.column.colId === 'VendorType') { this.setState({ floatingFilterData: { ...this.state.floatingFilterData, vendorType: value.filterInstance.appliedModel.filter } }) }
-            if (value.column.colId === 'VendorName') { this.setState({ floatingFilterData: { ...this.state.floatingFilterData, vendorName: value.filterInstance.appliedModel.filter } }) }
-
-            if (value.column.colId === 'VendorCode') { this.setState({ floatingFilterData: { ...this.state.floatingFilterData, VendorCode: value.filterInstance.appliedModel.filter } }) }
-            if (value.column.colId === 'Country') { this.setState({ floatingFilterData: { ...this.state.floatingFilterData, Country: value.filterInstance.appliedModel.filter } }) }
-
-            if (value.column.colId === 'State') { this.setState({ floatingFilterData: { ...this.state.floatingFilterData, State: value.filterInstance.appliedModel.filter } }) }
-
-            if (value.column.colId === 'City') { this.setState({ floatingFilterData: { ...this.state.floatingFilterData, City: value.filterInstance.appliedModel.filter } }) }
-
-
+            this.setState({ floatingFilterData: { ...this.state.floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter } })
         }
 
     }
@@ -136,13 +134,10 @@ class VendorListing extends Component {
 
             data.setState({ pageNo: data.state.pageNo + 1 })
             const nextNo = data.state.currentRowIndex + 10;
-
-            //     //gridApi.paginationGoToNextPage();
             data.getTableListData(nextNo, '', "", "", 100, this.state.floatingFilterData, true)
             data.setState({ currentRowIndex: nextNo })
 
         }
-
     }
 
     onBtPrevious(data) {
@@ -151,14 +146,9 @@ class VendorListing extends Component {
 
             data.setState({ pageNo: data.state.pageNo - 1 })
             const previousNo = data.state.currentRowIndex - 10;
-
-
             data.getTableListData(previousNo, '', "", "", 100, this.state.floatingFilterData, true)
             data.setState({ currentRowIndex: previousNo })
-
         }
-        //  gridApi.paginationGoToPreviousPage();
-
     }
 
 
@@ -334,9 +324,9 @@ class VendorListing extends Component {
         const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.state;
         return (
             <>
-                {ViewAccessibility && <button className="View" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
-                {EditAccessibility && <button className="Edit" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
-                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+                {ViewAccessibility && <button title='View' className="View" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
+                {EditAccessibility && <button title='Edit' className="Edit" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
+                {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
     };
@@ -489,14 +479,9 @@ class VendorListing extends Component {
     * @description Filter user listing on the basis of role and department
     */
     filterList = () => {
-        const { vendorType, vendorName, country } = this.state;
-        const vType = vendorType && vendorType != null ? vendorType.value : null;
-        const vName = vendorName && vendorName != null ? vendorName.value : null;
-        const Country = country && country != null ? country.value : null;
-
 
         this.getTableListData(this.state.currentRowIndex, '', "", "", 100, this.state.floatingFilterData, true)
-        //this.getTableListData(vType, vName, Country)
+
     }
 
     /**
@@ -715,7 +700,7 @@ class VendorListing extends Component {
                                     {this.state.warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                                 </div>
                                 <div>
-                                    <button title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch(this)}><div class="filter mr-0"></div></button>
+                                    <button title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch(this)} disabled={!this.state.warningMessage}><div class="filter mr-0"></div></button>
                                     {AddAccessibility && (
                                         <button
                                             type="button"

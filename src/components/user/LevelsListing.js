@@ -232,7 +232,7 @@ class LevelsListing extends Component {
 		const { EditAccessibility, DeleteAccessibility } = this.state;
 		return (
 			<>
-				{EditAccessibility && <button type={'button'} className="Edit mr-2" onClick={() => this.editItemDetails(cell, rowIndex)} />}
+				{EditAccessibility && <button title='Edit' type={'button'} className="Edit mr-2" onClick={() => this.editItemDetails(cell, rowIndex)} />}
 				{/* {DeleteAccessibility && <button type={'button'} className="Delete" onClick={() => this.deleteItem(cell)} />} */}
 			</>
 		)
