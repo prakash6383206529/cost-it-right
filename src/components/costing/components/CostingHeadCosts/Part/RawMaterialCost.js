@@ -57,6 +57,7 @@ function RawMaterialCost(props) {
   const { CostingEffectiveDate } = useSelector(state => state.costing)
   const [showPopup, setShowPopup] = useState(false)
   const [masterBatch, setMasterBatch] = useState(false)
+
   const { ferrousCalculatorReset } = useSelector(state => state.costWorking)
   const RMDivisor = (item?.CostingPartDetails?.RMDivisor !== null) ? item?.CostingPartDetails?.RMDivisor : 0;
   const isScrapRecoveryPercentageApplied = item?.IsScrapRecoveryPercentageApplied
@@ -163,7 +164,7 @@ function RawMaterialCost(props) {
       } else {
         let tempObj = {
           RMName: `${rowData.RawMaterial} - ${rowData.RMGrade}`,
-          RMRate: (rowData.Currency === '-' || rowData.Currency === INR) ? rowData.NetLandedCost : rowData.NetLandedCostConversion,
+          RMRate: (rowData.EntryType === 'Domestic') ? rowData.NetLandedCost : rowData.NetLandedCostConversion,
           MaterialType: rowData.MaterialType,
           RMGrade: rowData.RMGrade,
           Density: rowData.Density,
@@ -195,10 +196,11 @@ function RawMaterialCost(props) {
     }
 
     if (rowData && rowData.length > 0 && IsApplyMasterBatch) {
+      console.log('rowData: ', rowData);
 
       setValue('MBName', rowData && rowData[0].RawMaterial !== undefined ? rowData[0].RawMaterial : '')
       setValue('MBId', rowData && rowData[0].RawMaterialId !== undefined ? rowData[0].RawMaterialId : '')
-      setValue('MBPrice', rowData && (rowData[0].Currency === '-' || rowData[0].Currency === INR) ? rowData[0].NetLandedCost : rowData[0].NetLandedCostConversion)
+      setValue('MBPrice', rowData && (rowData[0].EntryType === 'Domestic') ? rowData[0].NetLandedCost : rowData[0].NetLandedCostConversion)
     }
     setDrawerOpen(false)
   }
@@ -993,7 +995,7 @@ function RawMaterialCost(props) {
     if (value === true) {
       setIsApplyMasterBatch(false)
     }
-    setMasterBatch(value)
+    setMasterBatch(true)
   }
 
   /**
@@ -1245,7 +1247,7 @@ function RawMaterialCost(props) {
               {IsApplyMasterBatch && costData.ETechnologyType === PLASTIC &&
                 <>
                   <div>
-                    <button onClick={MasterBatchToggle} title={'Add Master Batch'} disabled={(CostingViewMode || IsLocked)} type="button" class="user-btn mt30"><div class="plus"></div>Add Master Batch</button>
+                    <button onClick={MasterBatchToggle} title={'Add Master Batch'} disabled={(CostingViewMode || IsLocked || masterBatch)} type="button" class="user-btn mt30"><div class="plus"></div>Add Master Batch</button>
                   </div>
                   {/* <Col md="2" > */}
                   <TextFieldHookForm
@@ -1326,7 +1328,7 @@ function RawMaterialCost(props) {
                         handleMBPercentage(e.target.value)
                       }}
                       errors={errors.MBPercentage}
-                      disabled={(CostingViewMode || IsLocked || checkForNull(getValues('MBPrice')) === 0) ? true : false}
+                      disabled={(CostingViewMode || IsLocked || checkForNull(getValues('MBPrice')) === 0 || masterBatch) ? true : false}
                     />
                   </Col>
                   <Col md="2">
