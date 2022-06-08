@@ -898,6 +898,8 @@ const SendForApproval = (props) => {
                 closeDrawer={verifyImpactDrawer}
                 isSimulation={false}
                 amendmentDetails={costingApprovalDrawerData}
+                vendorIdState={viewApprovalData[0].vendorId}
+                EffectiveDate={DayTime(viewApprovalData[0].effectiveDate).format('YYYY-MM-DD HH:mm:ss')}
               />}
           </div>
         </div>
