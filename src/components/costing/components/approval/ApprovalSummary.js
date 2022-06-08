@@ -15,12 +15,15 @@ import { Redirect } from 'react-router'
 import LoaderCustom from '../../../common/LoaderCustom';
 import CalculatorWrapper from '../../../common/Calculator/CalculatorWrapper'
 import { debounce } from 'lodash'
-import Toaster from '../../../common/Toaster'
 import { INR } from '../../../../config/constants'
 import { Fgwiseimactdata } from '../../../simulation/components/FgWiseImactData'
 import HeaderTitle from '../../../common/HeaderTitle'
 import { EMPTY_GUID } from '../../../../config/constants'
 import { ErrorMessage } from '../../../simulation/SimulationUtils'
+import { Impactedmasterdata } from '../../../simulation/components/ImpactedMasterData'
+import NoContentFound from '../../../common/NoContentFound'
+import { getLastSimulationData } from '../../../simulation/actions/Simulation'
+import Toaster from '../../../common/Toaster'
 
 function ApprovalSummary(props) {
   const { approvalNumber, approvalProcessId } = props.location.state
@@ -43,7 +46,11 @@ function ApprovalSummary(props) {
   const [viewButton, setViewButton] = useState(false)
   const [pushButton, setPushButton] = useState(false)
   const [isLoader, setIsLoader] = useState(false);
-  const [fgWiseAcc, setFgWiseAcc] = useState(true)
+  const [fgWiseAcc, setFgWiseAcc] = useState(false)
+  const [lastRevisionDataAcc, setLastRevisionDataAcc] = useState(false)
+  const [editWarning, setEditWarning] = useState(false)
+  const [impactedMasterDataListForLastRevisionData, setImpactedMasterDataListForLastRevisionData] = useState([])
+  const [masterIdForLastRevision, setMasterIdForLastRevision] = useState('')
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
   const headerName = ['Revision No.', 'Name', 'Old Cost/Pc', 'New Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
@@ -53,13 +60,55 @@ function ApprovalSummary(props) {
     approvalSummaryHandler()
   }, [])
 
+  useEffect(() => {
+
+    if (Object.keys(approvalData).length > 0) {
+      dispatch(getLastSimulationData(approvalData.VendorId, approvalData.EffectiveDate, res => {
+        const structureOfData = {
+          ExchangeRateImpactedMasterDataList: [],
+          OperationImpactedMasterDataList: [],
+          RawMaterialImpactedMasterDataList: [],
+          BoughtOutPartImpactedMasterDataList: []
+        }
+        let masterId
+        let Data = []
+        if (Number(res?.status) === 204) {
+          Data = structureOfData
+        } else {
+          Data = res?.data?.Data
+          masterId = res?.data?.Data?.SimulationTechnologyId;
+        }
+
+        if (res) {
+          setImpactedMasterDataListForLastRevisionData(Data)
+          setMasterIdForLastRevision(masterId)
+          // setLastRevisionDataAcc(true)
+        }
+      }))
+    }
+
+  }, [approvalData])
+
+  useEffect(() => {
+    let check = impactedMasterDataListForLastRevisionData?.RawMaterialImpactedMasterDataList?.length <= 0 &&
+      impactedMasterDataListForLastRevisionData?.OperationImpactedMasterDataList?.length <= 0 &&
+      impactedMasterDataListForLastRevisionData?.ExchangeRateImpactedMasterDataList?.length <= 0 &&
+      impactedMasterDataListForLastRevisionData?.BoughtOutPartImpactedMasterDataList?.length <= 0
+    if (lastRevisionDataAcc && check) {
+      Toaster.warning('There is no data for the Last Revision.')
+      setEditWarning(true)
+    } else {
+      setEditWarning(false)
+    }
+  }, [lastRevisionDataAcc, impactedMasterDataListForLastRevisionData])
+
   const approvalSummaryHandler = () => {
     setIsLoader(true)
     dispatch(getApprovalSummary(approvalNumber, approvalProcessId, loggedInUser, (res) => {
 
       const { PartDetails, ApprovalDetails, ApprovalLevelStep, DepartmentId, Technology, ApprovalProcessId,
         ApprovalProcessSummaryId, ApprovalNumber, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow,
-        CostingId, PartId, LastCostingId, PurchasingGroup, MaterialGroup, DecimalOption } = res?.data?.Data?.Costings[0];
+        CostingId, PartId, LastCostingId, PurchasingGroup, MaterialGroup, DecimalOption, VendorId } = res?.data?.Data?.Costings[0];
 
       const technologyId = res?.data?.Data?.Costings[0].PartDetails.TechnologyId
       setIsLoader(false)
@@ -82,7 +131,9 @@ function ApprovalSummary(props) {
         PurchasingGroup: PurchasingGroup,
         MaterialGroup: MaterialGroup,
         DecimalOption: DecimalOption,
-        LastCostingId: LastCostingId
+        LastCostingId: LastCostingId,
+        EffectiveDate: ApprovalDetails[0].EffectiveDate,
+        VendorId: VendorId
       })
     }),
 
@@ -434,6 +485,8 @@ function ApprovalSummary(props) {
                 </Table>
               </Col>
             </Row>
+            {/* THIS SHOULD BE COMMENTED IN MINDA */}
+            {/* 
             <Row className="mb-3">
               <Col md="6"> <div className="left-border">{'FG wise Impact:'}</div></Col>
               <Col md="6">
@@ -448,8 +501,8 @@ function ApprovalSummary(props) {
                 </div>
               </Col>
             </Row>
-            {/* THIS SHOULD BE COMMENTED IN MINDA */}
-            {/* {fgWiseAcc && <Row className="mb-3">
+           
+           {fgWiseAcc && <Row className="mb-3">
               <Col md="12">
                 <Fgwiseimactdata
                   headerName={headerName}
@@ -459,7 +512,35 @@ function ApprovalSummary(props) {
                   approvalSummaryTrue={true}
                 />
               </Col>
-            </Row>} */}
+                    }
+                  
+                  */}
+
+            <Row className="mb-3">
+              <Col md="6"> <HeaderTitle title={'Last Revision Data:'} /></Col>
+              <Col md="6">
+                <div className={'right-details'}>
+                  <button className="btn btn-small-primary-circle ml-1 float-right" type="button" onClick={() => { setLastRevisionDataAcc(!lastRevisionDataAcc) }}>
+                    {lastRevisionDataAcc ? (
+                      <i className="fa fa-minus"></i>
+                    ) : (
+
+                      <i className="fa fa-plus"></i>
+
+                    )}
+                  </button>
+                </div>
+              </Col>
+              <div className="accordian-content w-100 px-3 impacted-min-height">
+                {lastRevisionDataAcc && <Impactedmasterdata data={impactedMasterDataListForLastRevisionData} masterId={masterIdForLastRevision} viewCostingAndPartNo={false} lastRevision={true} />}
+                <div align="center">
+                  {editWarning && <NoContentFound title={"There is no data for the Last Revision."} />}
+                </div>
+                {/* {costingDrawer && lastRevisionDataAcc && <div align="center">
+                    <NoContentFound title={"There is no data for the Last Revision."} />
+                  </div>} */}
+              </div>
+            </Row>
             <Row>
               <Col md="10">
                 <div className="left-border">{'Costing Summary:'}</div>
