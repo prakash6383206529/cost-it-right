@@ -1483,13 +1483,13 @@ const CostingSummaryTable = (props) => {
                       </tr>
                       {
 
-                        <tr class={`background-light-blue netPo-row ${isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.nPOPrice > viewCostingData[1]?.nPOPrice ? 'green-row' : viewCostingData[0]?.nPOPrice < viewCostingData[1]?.nPOPrice ? 'red-row' : '' : '-'}`}>
-                          <th>Net PO Price (INR){simulationDrawer && '(Old)'}</th>
+                        <tr class={`background-light-blue netPo-row ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].nPOPrice > viewCostingData[1].nPOPrice ? 'green-row' : viewCostingData[0].nPOPrice < viewCostingData[1].nPOPrice ? 'red-row' : '' : '-'}`}>
+                          <th>Net PO Price ({getConfigurationKey().BaseCurrency}){simulationDrawer && '(Old)'}</th>
                           {viewCostingData &&
                             viewCostingData?.map((data, index) => {
                               return <td>
-                                {data.CostingHeading === VARIANCE && (isApproval && Number(data.nPOPrice) !== 0 ? viewCostingData?.length > 0 && viewCostingData[0]?.nPOPrice > viewCostingData[1]?.nPOPrice ? <span className='positive-sign'>-</span> : <span className='positive-sign'>+</span> : '')}
-                                <span>{checkForDecimalAndNull(Math.abs(data.nPOPrice), initialConfiguration.NoOfDecimalForPrice)}</span>
+                                {data.CostingHeading === VARIANCE && (isApproval ? viewCostingData.length > 0 && viewCostingData[0].nPOPrice > viewCostingData[1].nPOPrice ? <span className='positive-sign'>+</span> : '' : '')}
+                                <span>{currency(getConfigurationKey().BaseCurrency)}{checkForDecimalAndNull(data.nPOPrice, initialConfiguration.NoOfDecimalForPrice)}</span>
                               </td>
                             })}
 
@@ -1505,7 +1505,7 @@ const CostingSummaryTable = (props) => {
                             return (
                               <td>
                                 <div>
-                                  <span className={`small-grey-text mr-1 ${data.CostingHeading !== VARIANCE ? data.currency.currencyValue === '-' ? 'd-none' : '' : ''}  `}>{data.CostingHeading !== VARIANCE ? data.currency.currencyTitle : ''}/{getConfigurationKey().BaseCurrency}</span> {' '}
+                                  <span className={`small-grey-text mr-1 ${data.CostingHeading !== VARIANCE ? data.currency.currencyValue === '-' ? 'd-none' : '' : ''}  `}>{data.CostingHeading !== VARIANCE ? `${data.currency.currencyTitle}/${getConfigurationKey().BaseCurrency}` : ''}</span> {' '}
                                   <span className="">{data.CostingHeading !== VARIANCE ? data.currency.currencyValue === '-' ? '-' : checkForDecimalAndNull(data.currency.currencyValue, initialConfiguration.NoOfDecimalForPrice) : ''}</span>
                                 </div>
                               </td>
