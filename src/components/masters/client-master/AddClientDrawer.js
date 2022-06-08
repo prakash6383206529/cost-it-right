@@ -147,17 +147,11 @@ class AddClientDrawer extends Component {
                     this.props.fetchCityDataAPI(Data.StateId, () => { })
 
                     setTimeout(() => {
-                        const { countryList, stateList, cityList } = this.props;
-
-                        const CountryObj = countryList && countryList.find(item => Number(item.Value) === Data.CountryId)
-                        const StateObj = stateList && stateList.find(item => Number(item.Value) === Data.StateId)
-                        const CityObj = cityList && cityList.find(item => Number(item.Value) === Data.CityId)
-
                         this.setState({
                             // isLoader: false,
-                            country: CountryObj && CountryObj !== undefined ? { label: CountryObj.Text, value: CountryObj.Value } : [],
-                            state: StateObj && StateObj !== undefined ? { label: StateObj.Text, value: StateObj.Value } : [],
-                            city: CityObj && CityObj !== undefined ? { label: CityObj.Text, value: CityObj.Value } : [],
+                            country: Data.CountryName !== undefined ? { label: Data.CountryName, value: Data.CountryId } : [],
+                            state: Data.StateName !== undefined ? { label: Data.StateName, value: Data.StateId } : [],
+                            city: Data.CityName !== undefined ? { label: Data.CityName, value: Data.CityId } : [],
                         }, () => this.setState({ isLoader: false }))
                     }, 500)
 

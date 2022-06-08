@@ -111,14 +111,9 @@ class AddFreight extends Component {
           const Data = res.data.Data;
           this.setState({ DataToChange: Data })
           setTimeout(() => {
-            const { cityList, vendorListByVendorType, freightModeSelectList, } = this.props;
+            const { freightModeSelectList, } = this.props;
             let modeObj =
               freightModeSelectList && freightModeSelectList.find((item) => item.Value === Data.Mode);
-            let vendorObj =
-              vendorListByVendorType && vendorListByVendorType.find((item) => item.Value === Data.VendorId);
-            let sourceLocationObj =
-              cityList && cityList.find((item) => Number(item.Value) === Data.SourceCityId);
-            let destinationLocationObj = cityList && cityList.find((item) => Number(item.Value) === Data.DestinationCityId);
             let GridArray =
               Data &&
               Data.FullTruckLoadDetails.map((item) => {
@@ -140,24 +135,9 @@ class AddFreight extends Component {
                 modeObj && modeObj !== undefined
                   ? { label: modeObj.Text, value: modeObj.Value }
                   : [],
-              vendorName:
-                vendorObj && vendorObj !== undefined
-                  ? { label: vendorObj.Text, value: vendorObj.Value }
-                  : [],
-              sourceLocation:
-                sourceLocationObj && sourceLocationObj !== undefined
-                  ? {
-                    label: sourceLocationObj.Text,
-                    value: sourceLocationObj.Value,
-                  }
-                  : [],
-              destinationLocation:
-                destinationLocationObj && destinationLocationObj !== undefined
-                  ? {
-                    label: destinationLocationObj.Text,
-                    value: destinationLocationObj.Value,
-                  }
-                  : [],
+              vendorName: Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.VendorId } : [],
+              sourceLocation: Data.SourceCityName !== undefined ? { label: Data.SourceCityName, value: Data.SourceCityId } : [],
+              destinationLocation: Data.DestinationCityName !== undefined ? { label: Data.DestinationCityName, value: Data.DestinationCityId } : [],
               gridTable: GridArray,
             }, () => this.setState({ isLoader: false }));
           }, 200);

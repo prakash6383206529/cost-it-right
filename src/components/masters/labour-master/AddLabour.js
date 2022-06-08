@@ -90,9 +90,7 @@ class AddLabour extends Component {
           this.props.getPlantListByState(Data.StateId, () => { })
 
           setTimeout(() => {
-            const { fuelComboSelectList, VendorLabourTypeSelectList, plantSelectList, } = this.props
-            let stateObj = fuelComboSelectList && fuelComboSelectList.States.find((el) => Number(el.Value) === Data.StateId)
-            const vendorObj = VendorLabourTypeSelectList && VendorLabourTypeSelectList.find((item) => item.Value === Data.VendorId,)
+            const { plantSelectList, } = this.props
             const plantObj =
               plantSelectList && plantSelectList.find((item) => item.Value === Data.Plants[0].PlantId,)
 
@@ -115,19 +113,9 @@ class AddLabour extends Component {
               // isLoader: false,
               IsVendor: Data.IsVendor,
               IsEmployeContractual: Data.IsContractBase,
-              vendorName: Data.IsContractBase
-                ? vendorObj && vendorObj !== undefined
-                  ? { label: vendorObj.Text, value: vendorObj.Value }
-                  : []
-                : [],
-              StateName:
-                stateObj && stateObj !== undefined
-                  ? { label: stateObj.Text, value: stateObj.Value }
-                  : [],
-              selectedPlants:
-                plantObj && plantObj !== undefined
-                  ? { label: plantObj.Text, value: plantObj.Value }
-                  : [],
+              vendorName: Data.IsContractBase ? Data.VendorName && Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.VendorId } : [] : [],
+              StateName: Data.StateName !== undefined ? { label: Data.StateName, value: Data.StateId } : [],
+              selectedPlants: plantObj && plantObj !== undefined ? { label: plantObj.Text, value: plantObj.Value } : [],
               gridTable: GridArray,
             }, () => this.setState({ isLoader: false }))
           }, 500)
