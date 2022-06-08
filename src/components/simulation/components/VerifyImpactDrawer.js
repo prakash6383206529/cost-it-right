@@ -45,6 +45,7 @@ function VerifyImpactDrawer(props) {
       impactedMasterDataListForLastRevisionData?.OperationImpactedMasterDataList?.length <= 0 &&
       impactedMasterDataListForLastRevisionData?.ExchangeRateImpactedMasterDataList?.length <= 0 &&
       impactedMasterDataListForLastRevisionData?.BoughtOutPartImpactedMasterDataList?.length <= 0
+
     if (lastRevisionDataAcc && check) {
       Toaster.warning('There is no data for the Last Revision.')
       setEditWarning(true)
@@ -64,11 +65,13 @@ function VerifyImpactDrawer(props) {
   }, [lastSimulationData, impactedMasterData])
 
   useEffect(() => {
-    if (vendorIdState && EffectiveDate && simulationId !== undefined) {
+    if (vendorIdState && EffectiveDate) {
       dispatch(getLastSimulationData(vendorIdState, EffectiveDate, (res) => {
         setMasterIdForLastRevision(res?.data?.Data?.SimulationTechnologyId)
       }))
-      dispatch(getImpactedMasterData(simulationId, () => { }))
+      if (simulationId !== undefined) {
+        dispatch(getImpactedMasterData(simulationId, () => { }))
+      }
     }
 
   }, [EffectiveDate, vendorIdState, simulationId])
@@ -215,13 +218,13 @@ function VerifyImpactDrawer(props) {
                   </div>
                 </Col>
                 <div className="accordian-content w-100 px-3 impacted-min-height">
-                  {lastRevisionDataAcc && !costingDrawer && <Impactedmasterdata data={impactedMasterDataListForLastRevisionData} masterId={masterIdForLastRevision} viewCostingAndPartNo={false} lastRevision={true} />}
+                  {lastRevisionDataAcc && <Impactedmasterdata data={impactedMasterDataListForLastRevisionData} masterId={masterIdForLastRevision} viewCostingAndPartNo={false} lastRevision={true} />}
                   <div align="center">
                     {editWarning && <NoContentFound title={"There is no data for the Last Revision."} />}
                   </div>
-                  {costingDrawer && lastRevisionDataAcc && <div align="center">
+                  {/* {costingDrawer && lastRevisionDataAcc && <div align="center">
                     <NoContentFound title={"There is no data for the Last Revision."} />
-                  </div>}
+                  </div>} */}
                 </div>
               </Row>
             </form>
