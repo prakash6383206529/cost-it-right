@@ -197,6 +197,7 @@ class AddAssemblyPart extends Component {
 
 
   handlePartNo = (newValue, actionMeta) => {
+    this.setState({ partAssembly: newValue })
     if (newValue && newValue !== '') {
 
       this.props.getPartData(newValue.value, res => {
@@ -215,10 +216,11 @@ class AddAssemblyPart extends Component {
           this.props.change("RevisionNumber", Data?.RevisionNumber)
           this.props.change("AssemblyPartNumber", Data?.PartNumber)
           this.props.change("AssemblyPartName", Data?.PartName)
-          this.props.change("BOMNumber", Data?.BOMNumber)
+          this.props.change("BOMNumber", '')
           this.props.change("Description", Data?.Description)
           this.props.change("Remark", Data?.Remark)
           this.setState({ ProductGroup: productArray, })
+          this.setState({ effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '' })
         }
       })
     }
@@ -393,7 +395,7 @@ class AddAssemblyPart extends Component {
   */
   checkIsFormFilled = () => {
     const { fieldsObj } = this.props;
-    if (fieldsObj.BOMNumber === undefined || fieldsObj.AssemblyPartNumber === undefined || fieldsObj.AssemblyPartName === undefined || Object.keys(this.state.TechnologySelected).length === 0 || this.state.effectiveDate === "") {
+    if ((fieldsObj.BOMNumber === undefined || fieldsObj.BOMNumber === '') || fieldsObj.AssemblyPartNumber === undefined || fieldsObj.AssemblyPartName === undefined || Object.keys(this.state.TechnologySelected).length === 0 || this.state.effectiveDate === "") {
       return false;
     } else {
       return true;
@@ -620,7 +622,7 @@ class AddAssemblyPart extends Component {
   * @description Used to Submit the form
   */
   onSubmit = debounce((values) => {
-    const { PartId, isEditFlag, selectedPlants, BOMViewerData, files, avoidAPICall, DataToCheck, DropdownChanged, ProductGroup, BOMChanged } = this.state;
+    const { PartId, isEditFlag, selectedPlants, BOMViewerData, files, avoidAPICall, DataToCheck, DropdownChanged, ProductGroup, BOMChanged, convertPartToAssembly } = this.state;
     const { partData, initialConfiguration } = this.props;
 
     let plantArray = selectedPlants && selectedPlants.map((item) => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
@@ -655,7 +657,7 @@ class AddAssemblyPart extends Component {
       return childPartArray;
     })
 
-    if (isEditFlag) {
+    if (isEditFlag || convertPartToAssembly) {
       let isGroupCodeChange = this.checkGroupCodeChange(values)
 
       if (!DropdownChanged && String(DataToCheck.AssemblyPartName) === String(values.AssemblyPartName) && !isGroupCodeChange && String(DataToCheck.Description) === String(values.Description) &&
@@ -665,30 +667,30 @@ class AddAssemblyPart extends Component {
         return false;
       }
 
+      if (!convertPartToAssembly) {
+        //THIS CONDITION IS TO CHECK IF IsBomEditable KEY FROM API IS FALSE AND THERE IS CHANGE ON ONLY PART DESCRIPTION ,PART NAME AND ATTACHMENT(TO UPDATE EXISTING RECORD)
+        if (this.state.isBomEditable === false && !isGroupCodeChange && String(DataToCheck.ECNNumber) === String(values.ECNNumber) &&
+          String(DataToCheck.RevisionNumber) === String(values.RevisionNumber) && String(DataToCheck.DrawingNumber) === String(values.DrawingNumber) && !BOMChanged) {
+          isStructureChanges = false
+        }
 
-      //THIS CONDITION IS TO CHECK IF IsBomEditable KEY FROM API IS FALSE AND THERE IS CHANGE ON ONLY PART DESCRIPTION ,PART NAME AND ATTACHMENT(TO UPDATE EXISTING RECORD)
-      if (this.state.isBomEditable === false && !isGroupCodeChange && String(DataToCheck.ECNNumber) === String(values.ECNNumber) &&
-        String(DataToCheck.RevisionNumber) === String(values.RevisionNumber) && String(DataToCheck.DrawingNumber) === String(values.DrawingNumber) && !BOMChanged) {
-        isStructureChanges = false
-      }
-
-      //THIS CONDITION IS TO CHECK IF IsBomEditable KEY FROM API IS FALSE AND TEHRE IS CHANGE IN OTHER FIELD ALSO APART FROM PART DESCRIPTION,NAME AND ATTACHMENT (TO CREATE NEW RECORD)
-      else if (this.state.isBomEditable === false && (isGroupCodeChange || String(DataToCheck.ECNNumber) !== String(values.ECNNumber) ||
-        String(DataToCheck.RevisionNumber) !== String(values.RevisionNumber) || String(DataToCheck.DrawingNumber) !== String(values.DrawingNumber)
-        || BOMChanged)) {
-        // IF THERE ARE CHANGES ,THEN REVISION NO SHOULD BE CHANGED
-        if (String(DataToCheck.RevisionNumber) === String(values.RevisionNumber) || String(DataToCheck.BOMNumber) === String(values.BOMNumber) || DayTime(DataToCheck.EffectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(this.state.effectiveDate).format('YYYY-MM-DD HH:mm:ss')) {
-          Toaster.warning('Please edit Revision no , BOM no and Effective date')
-          return false
-        } else {
-          isStructureChanges = true
+        //THIS CONDITION IS TO CHECK IF IsBomEditable KEY FROM API IS FALSE AND TEHRE IS CHANGE IN OTHER FIELD ALSO APART FROM PART DESCRIPTION,NAME AND ATTACHMENT (TO CREATE NEW RECORD)
+        else if (this.state.isBomEditable === false && (isGroupCodeChange || String(DataToCheck.ECNNumber) !== String(values.ECNNumber) ||
+          String(DataToCheck.RevisionNumber) !== String(values.RevisionNumber) || String(DataToCheck.DrawingNumber) !== String(values.DrawingNumber)
+          || BOMChanged)) {
+          // IF THERE ARE CHANGES ,THEN REVISION NO SHOULD BE CHANGED
+          if (String(DataToCheck.RevisionNumber) === String(values.RevisionNumber) || String(DataToCheck.BOMNumber) === String(values.BOMNumber) || DayTime(DataToCheck.EffectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(this.state.effectiveDate).format('YYYY-MM-DD HH:mm:ss')) {
+            Toaster.warning('Please edit Revision no , BOM no and Effective date')
+            return false
+          } else {
+            isStructureChanges = true
+          }
+        }
+        // THIS CONDITION IS WHEN IsBomEditable KEY FROM API IS TRUE (WHATEVER USER CHANGE OLD RECORD WILL GET UPDATE)
+        else {
+          isStructureChanges = false
         }
       }
-      // THIS CONDITION IS WHEN IsBomEditable KEY FROM API IS TRUE (WHATEVER USER CHANGE OLD RECORD WILL GET UPDATE)
-      else {
-        isStructureChanges = false
-      }
-
       this.setState({ setDisable: true, disablePopup: false, isLoader: true })
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: PartId }
@@ -714,7 +716,8 @@ class AddAssemblyPart extends Component {
         IsForcefulUpdated: false,
         BOMLevelCount: BOMLevelCount,
         GroupCodeList: productArray,
-        IsStructureChanges: isStructureChanges
+        IsStructureChanges: isStructureChanges,
+        IsConvertedToAssembly: convertPartToAssembly ? true : false
       }
       this.props.updateAssemblyPart(updateData, (res) => {
         this.setState({ setDisable: false, isLoader: false })
@@ -835,7 +838,7 @@ class AddAssemblyPart extends Component {
   */
   render() {
     const { handleSubmit, initialConfiguration } = this.props;
-    const { isEditFlag, isOpenChildDrawer, isOpenBOMViewerDrawer, isViewMode, setDisable, disablePopup } = this.state;
+    const { isEditFlag, isOpenChildDrawer, isOpenBOMViewerDrawer, isViewMode, setDisable, disablePopup, convertPartToAssembly } = this.state;
 
     const filterList = (inputValue) => {
       let tempArr = []
@@ -925,7 +928,7 @@ class AddAssemblyPart extends Component {
                                 onChange={(e) => this.handlePartNo(e)}
                                 value={this.state.vendorName}
                                 noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter part no" : "No results found"}
-                                isDisabled={(isEditFlag || this.state.inputLoader) ? true : false} />
+                                isDisabled={(isEditFlag || this.state.inputLoader || convertPartToAssembly) ? true : false} />
                             </div>
                           </Col>
                         }
@@ -955,7 +958,7 @@ class AddAssemblyPart extends Component {
                             onChange={this.onPartNoChange}
                             className=""
                             customClassName={"withBorder"}
-                            disabled={isEditFlag ? true : false}
+                            disabled={isEditFlag || convertPartToAssembly ? true : false}
                           />
                         </Col>
                         <Col md="3">
@@ -969,7 +972,7 @@ class AddAssemblyPart extends Component {
                             required={true}
                             className=""
                             customClassName={"withBorder"}
-                            disabled={isViewMode || (!isEditFlag && this.state.disablePartName)}
+                            disabled={isViewMode || (!isEditFlag && this.state.disablePartName) || convertPartToAssembly}
                           />
                         </Col>
                         <Col md="3">
@@ -1279,6 +1282,7 @@ class AddAssemblyPart extends Component {
                 NewAddedLevelOneChilds={this.state.NewAddedLevelOneChilds}
                 isFromVishualAd={isViewMode}
                 avoidAPICall={this.state.avoidAPICall}
+                partAssembly={this.state.partAssembly}
               />
             </PartEffectiveDate.Provider>
           )}
