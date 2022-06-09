@@ -143,11 +143,9 @@ class AddProfit extends Component {
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           this.setState({ minEffectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '' })
           setTimeout(() => {
-            const { modelTypes, costingHead, clientSelectList } = this.props;
+            const { costingHead } = this.props;
 
-            const modelObj = modelTypes && modelTypes.find(item => Number(item.Value) === Data.ModelTypeId)
             const AppliObj = costingHead && costingHead.find(item => Number(item.Value) === Data.ProfitApplicabilityId)
-            const clientObj = clientSelectList && clientSelectList.find(item => item.Value === Data.ClientId)
 
             let Head = '';
             if (Data.IsVendor === true && Data.VendorId != null) {
@@ -163,9 +161,9 @@ class AddProfit extends Component {
               // isLoader: false,
               IsVendor: Data.IsClient ? Data.IsClient : Data.IsVendor,
               costingHead: Head,
-              ModelType: modelObj && modelObj !== undefined ? { label: modelObj.Text, value: modelObj.Value } : [],
+              ModelType: Data.ModelType !== undefined ? { label: Data.ModelType, value: Data.ModelTypeId } : [],
               vendorName: Data.VendorName && Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.VendorId } : [],
-              client: clientObj && clientObj !== undefined ? { label: clientObj.Text, value: clientObj.Value } : [],
+              client: Data.ClientName !== undefined ? { label: Data.ClientName, value: Data.ClientId } : [],
               profitAppli: AppliObj && AppliObj !== undefined ? { label: AppliObj.Text, value: AppliObj.Value } : [],
               remarks: Data.Remark,
               files: Data.Attachements,
