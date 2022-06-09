@@ -479,6 +479,7 @@ class BOMViewer extends Component {
                 anchor={"right"}
                 setChildPartsData={this.setChildPartsData}
                 BOMViewerData={this.state.flowpoints}
+                partAssembly={this.props.partAssembly}
               />
             )}
             {isOpenVisualDrawer && (
