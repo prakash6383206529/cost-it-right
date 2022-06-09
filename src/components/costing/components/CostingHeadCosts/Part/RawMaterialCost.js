@@ -11,7 +11,7 @@ import Toaster from '../../../../common/Toaster'
 import { calculatePercentage, calculatePercentageValue, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey, isRMDivisorApplicable } from '../../../../../helper'
 import OpenWeightCalculator from '../../WeightCalculatorDrawer'
 import { getRawMaterialCalculationForCorrugatedBox, getRawMaterialCalculationForDieCasting, getRawMaterialCalculationForFerrous, getRawMaterialCalculationForForging, getRawMaterialCalculationForPlastic, getRawMaterialCalculationForRubber, getRawMaterialCalculationForSheetMetal, } from '../../../actions/CostWorking'
-import { ViewCostingContext } from '../../CostingDetails'
+import { CopyCostingContext, ViewCostingContext } from '../../CostingDetails'
 import { G, INR, KG, MG } from '../../../../../config/constants'
 import TooltipCustom from '../../../../common/Tooltip'
 import Popup from 'reactjs-popup';
@@ -43,6 +43,7 @@ function RawMaterialCost(props) {
   const rmGridFields = 'rmGridFields';
   const costData = useContext(costingInfoContext)
   const CostingViewMode = useContext(ViewCostingContext);
+  const IsCopyCostingMode = useContext(CopyCostingContext)
   const [isDrawerOpen, setDrawerOpen] = useState(false)
   const [editIndex, setEditIndex] = useState(false)
   const [isWeightDrawerOpen, setWeightDrawerOpen] = useState(false)
@@ -1120,7 +1121,7 @@ function RawMaterialCost(props) {
                                   handleFinishWeightChange(e?.target?.value, index)
                                 }}
                                 errors={!gridData[index].FinishWeight && errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].FinishWeight : ''}
-                                disabled={(CostingViewMode || IsLocked) ? true : false}
+                                disabled={(CostingViewMode || IsLocked || IsCopyCostingMode) ? true : false}
                               />
                             </td>
 

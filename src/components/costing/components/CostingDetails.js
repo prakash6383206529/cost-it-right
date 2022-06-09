@@ -34,6 +34,7 @@ import { debounce } from 'lodash';
 
 export const ViewCostingContext = React.createContext()
 export const EditCostingContext = React.createContext()
+export const CopyCostingContext = React.createContext()
 
 function IsolateReRender(control) {
   const values = useWatch({
@@ -99,6 +100,8 @@ function CostingDetails(props) {
   const [IsCostingViewMode, setIsCostingViewMode] = useState(false)
   // FOR EDIT MODE COSTING
   const [IsCostingEditMode, setIsCostingEditMode] = useState(false)
+  // FOR COPY COSTING MODE
+  const [IsCopyCostingMode, setIsCopyCostingMode] = useState(false)
 
   // client based costing
   const [clientDrawer, setClientDrawer] = useState(false)
@@ -805,6 +808,7 @@ function CostingDetails(props) {
           dispatch(getBriefCostingById(res.data.Data.CostingId, () => {
             setIsCostingViewMode(false)
             setIsCostingEditMode(false)
+            setIsCopyCostingMode(false)
             setStepTwo(true)
             setStepOne(false)
           }))
@@ -848,6 +852,7 @@ function CostingDetails(props) {
           dispatch(getBriefCostingById(res.data.Data.CostingId, (res) => {
             setIsCostingViewMode(false)
             setIsCostingEditMode(false)
+            setIsCopyCostingMode(false)
             setStepTwo(true)
             setStepOne(false)
           }))
@@ -863,6 +868,7 @@ function CostingDetails(props) {
           dispatch(getBriefCostingById(res.data.Data.CostingId, (res) => {
             setIsCostingViewMode(false)
             setIsCostingEditMode(false)
+            setIsCopyCostingMode(false)
             setStepTwo(true)
             setStepOne(false)
           }))
@@ -892,6 +898,7 @@ function CostingDetails(props) {
     } else {
       setIsCostingViewMode(true)
       setIsCostingEditMode(false)
+      setIsCopyCostingMode(false)
       moveToCostingDetail(index, type)
     }
   }
@@ -913,6 +920,7 @@ function CostingDetails(props) {
     } else {
       setIsCostingViewMode(false)
       setIsCostingEditMode(true)
+      setIsCopyCostingMode(false)
       moveToCostingDetail(index, type)
     }
   }
@@ -1074,6 +1082,7 @@ function CostingDetails(props) {
       setIsCostingViewMode(false)
       setIsCostingEditMode(false)
       setIsCopyCostingDrawer(true)
+      setIsCopyCostingMode(true)
 
       if (type === ZBC) {
         const tempcopyCostingData = zbcPlantGrid[index]
@@ -1122,6 +1131,7 @@ function CostingDetails(props) {
     dispatch(deleteDraftCosting(reqData, () => {
       setIsCostingViewMode(false)
       setIsCostingEditMode(false)
+      setIsCopyCostingMode(false)
       let tempArray = []
 
       if (type === ZBC) {
@@ -2245,13 +2255,16 @@ function CostingDetails(props) {
                 {stepTwo && (
                   <ViewCostingContext.Provider value={IsCostingViewMode} >
                     <EditCostingContext.Provider value={IsCostingEditMode} >
-                      <CostingDetailStepTwo
-                        backBtn={backToFirstStep}
-                        partInfo={Object.keys(props.partInfoStepTwo).length > 0 ? props.partInfoStepTwo : partInfoStepTwo}
-                        costingInfo={Object.keys(props.costingData).length > 0 ? props.costingData : costingData}
-                        toggle={props.toggle}
-                        IsCostingViewMode={IsCostingViewMode}
-                      />
+                      <CopyCostingContext.Provider value={IsCopyCostingMode} >
+                        <CostingDetailStepTwo
+                          backBtn={backToFirstStep}
+                          partInfo={Object.keys(props.partInfoStepTwo).length > 0 ? props.partInfoStepTwo : partInfoStepTwo}
+                          costingInfo={Object.keys(props.costingData).length > 0 ? props.costingData : costingData}
+                          toggle={props.toggle}
+                          IsCostingViewMode={IsCostingViewMode}
+                          IsCopyCostingMode={IsCopyCostingMode}
+                        />
+                      </CopyCostingContext.Provider>
                     </EditCostingContext.Provider>
                   </ViewCostingContext.Provider>
                 )}
