@@ -243,7 +243,7 @@ function MRSimulation(props) {
 
         obj.SimulationCombinedProcess = tempArr
         dispatch(runVerifyMachineRateSimulation(obj, res => {
-            if (res.data.Result) {
+            if (res?.data?.Result) {
                 setToken(res.data.Identity)
                 setShowVerifyPage(true)
             }
