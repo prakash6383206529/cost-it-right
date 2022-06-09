@@ -51,11 +51,6 @@ class IndivisualProductListing extends Component {
 
     }
 
-    // Get updated list after any action performed.
-    getUpdatedData = () => {
-        this.getTableListData()
-    }
-
     /**
     * @method getTableListData
     * @description Get DATA LIST
@@ -288,16 +283,12 @@ class IndivisualProductListing extends Component {
         temp && temp.map((item) => {
             if (item.ECNNumber === null) {
                 item.ECNNumber = ' '
-            } else if (item.RevisionNumber === null) {
+            } if (item.RevisionNumber === null) {
                 item.RevisionNumber = ' '
-            } else if (item.DrawingNumber === null) {
+            } if (item.DrawingNumber === null) {
                 item.DrawingNumber = ' '
-            } else if (item.EffectiveDate?.includes('T')) {
+            } if (item.EffectiveDate?.includes('T')) {
                 item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
-            } else if (item.IsConsideredForMBOM === true) {
-                item.IsConsideredForMBOM = 'Yes'
-            } else if (item.IsConsideredForMBOM === false) {
-                item.IsConsideredForMBOM = 'No'
             }
             return item
         })
