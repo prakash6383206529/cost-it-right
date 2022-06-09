@@ -62,7 +62,6 @@ class AddBOPImport extends Component {
       isVendorNameNotSelected: false,
       IsSendForApproval: false,
       vendorName: [],
-      selectedVendorPlants: [],
       approvalObj: {},
       minEffectiveDate: '',
       sourceLocation: [],
@@ -147,7 +146,6 @@ class AddBOPImport extends Component {
     this.setState({
       IsVendor: !this.state.IsVendor,
       vendorName: [],
-      selectedVendorPlants: [],
       selectedPlants: [],
     }, () => {
       const { IsVendor } = this.state;
@@ -302,14 +300,7 @@ class AddBOPImport extends Component {
       });
       return temp;
     }
-    if (label === 'VendorPlant') {
-      filterPlantList && filterPlantList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ Text: item.Text, Value: item.Value })
-        return null;
-      });
-      return temp;
-    }
+
     if (label === 'SourceLocation') {
       cityList && cityList.map(item => {
         if (item.Value === '0') return false;
@@ -391,12 +382,12 @@ class AddBOPImport extends Component {
   */
   handleVendorName = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ vendorName: newValue, isVendorNameNotSelected: false, selectedVendorPlants: [], }, () => {
+      this.setState({ vendorName: newValue, isVendorNameNotSelected: false, }, () => {
         const { vendorName } = this.state;
         this.props.getPlantBySupplier(vendorName.value, () => { })
       });
     } else {
-      this.setState({ vendorName: [], selectedVendorPlants: [], })
+      this.setState({ vendorName: [], })
     }
   };
 
@@ -415,14 +406,6 @@ class AddBOPImport extends Component {
       }
     })
   }
-
-  /**
-  * @method handleVendorPlant
-  * @description called
-  */
-  handleVendorPlant = (e) => {
-    this.setState({ selectedVendorPlants: e })
-  };
 
   /**
   * @method handleSourceSupplierCity
@@ -659,7 +642,6 @@ class AddBOPImport extends Component {
       IsVendor: false,
       selectedPartAssembly: [],
       selectedPlants: [],
-      selectedVendorPlants: [],
       sourceLocation: [],
       UOM: [],
     })
@@ -673,8 +655,7 @@ class AddBOPImport extends Component {
   * @description Used to Submit the form
   */
   onSubmit = debounce((values) => {
-    const { IsVendor, BOPCategory, selectedPlants, vendorName, currency,
-      selectedVendorPlants, sourceLocation, BOPID, isEditFlag, files, effectiveDate, oldDate, UOM, netLandedConverionCost, DataToChange, DropdownChange, uploadAttachements, isDateChange, IsFinancialDataChanged } = this.state;
+    const { IsVendor, BOPCategory, selectedPlants, vendorName, currency, sourceLocation, BOPID, isEditFlag, files, effectiveDate, oldDate, UOM, netLandedConverionCost, DataToChange, DropdownChange, uploadAttachements, isDateChange, IsFinancialDataChanged } = this.state;
 
     if (vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
@@ -1104,27 +1085,6 @@ class AddBOPImport extends Component {
                             </div>
                             {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
                           </Col>
-                          {(getConfigurationKey().IsVendorPlantConfigurable && this.state.IsVendor) && (
-                            <Col md="3">
-                              <Field
-                                label="Vendor Plant"
-                                name="VendorPlant"
-                                placeholder={"Select"}
-                                selection={
-                                  this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length === 0 ? [] : this.state.selectedVendorPlants}
-                                options={this.renderListing("VendorPlant")}
-                                selectionChanged={this.handleVendorPlant}
-                                validate={
-                                  this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length === 0 ? [required] : []}
-                                optionValue={(option) => option.Value}
-                                optionLabel={(option) => option.Text}
-                                component={renderMultiSelectField}
-                                mendatory={true}
-                                className="multiselect-with-border"
-                                disabled={isEditFlag ? true : false}
-                              />
-                            </Col>
-                          )}
                           {this.state.IsVendor && (
                             <>
                               <Col md="3">
