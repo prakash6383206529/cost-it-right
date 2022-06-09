@@ -788,4 +788,16 @@ export function getPartDescription(partNumber, partId, callback) {
 }
 
 
-
+export function convertPartToAssembly(requestData, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        axios.put(`${API.convertPartToAssembly}`, requestData, config())
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+                callback(error);
+            });
+    };
+}
