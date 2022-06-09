@@ -904,6 +904,7 @@ const CostingSummaryTable = (props) => {
                               <span className="d-block">PO Price</span>
                               <span className="d-block">Part Number</span>
                               <span className="d-block">Part Name</span>
+                              <span className="d-block">Revision Number</span>
                               <span className="d-block">Plant Name</span>
 
                             </td>
@@ -927,6 +928,7 @@ const CostingSummaryTable = (props) => {
                                     {/* USE PART NUMBER KEY HERE */}
                                     <span class="d-block">{data.partNumber}</span>
                                     <span class="d-block">{data.partName}</span>
+                                    <span class="d-block">{data.RevisionNumber}</span>
                                     <span class="d-block">{data.zbc === 0 ? data.plantName : data.destinationPlantName}</span>
 
                                   </td>
@@ -937,6 +939,7 @@ const CostingSummaryTable = (props) => {
                             <td>
                               <span class="d-block">Part Number</span>
                               <span class="d-block">Part Name</span>
+                              {/* <span className="d-block">Revision Number</span> */}
                             </td>
                             {viewCostingData &&
                               viewCostingData.map((data, index) => {
