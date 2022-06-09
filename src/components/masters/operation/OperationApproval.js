@@ -207,7 +207,7 @@ function OperationApproval(props) {
                             <button type="button" className="user-btn mr5" title="Reset Grid" onClick={resetState}>
                                 <div className="refresh mr-0"></div>
                             </button>
-                            <button title="Send For Approval" class="user-btn approval-btn" disabled={isFinalApprover} onClick={sendForApproval}>
+                            <button title="Send For Approval" class="user-btn approval-btn" disabled={OperationApprovalList && (isFinalApprover || OperationApprovalList.length === 0) ? true : false} onClick={sendForApproval}>
                                 <div className="send-for-approval mr-0" ></div>
                             </button>
                         </div>
