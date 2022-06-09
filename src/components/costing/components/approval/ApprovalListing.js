@@ -598,6 +598,7 @@ function ApprovalListing(props) {
           isReport={isOpen}
           selectedRowData={selectedRowData}
           isSimulation={false}
+          simulationDrawer={false}
         />
       }
     </Fragment>
