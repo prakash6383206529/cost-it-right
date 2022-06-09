@@ -1282,6 +1282,7 @@ function CostingSimulation(props) {
                     // closeDrawer={closeDrawer}
                     isSimulation={true}
                     simulationMode={true}
+                    simulationDrawer={true}
                 />
             }
             {

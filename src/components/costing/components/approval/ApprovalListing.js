@@ -603,6 +603,7 @@ function ApprovalListing(props) {
           isSummaryDrawer={isOpen}
           selectedRowData={selectedRowData}
           isSimulation={false}
+          simulationDrawer={false}
         />
       }
     </Fragment>
