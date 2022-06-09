@@ -86,14 +86,9 @@ class AddLabour extends Component {
       this.props.getLabourData(data.ID, (res) => {
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data
-
           this.props.getPlantListByState(Data.StateId, () => { })
 
           setTimeout(() => {
-            const { plantSelectList, } = this.props
-            const plantObj =
-              plantSelectList && plantSelectList.find((item) => item.Value === Data.Plants[0].PlantId,)
-
             let GridArray =
               Data &&
               Data.LabourDetails.map((item) => {
@@ -115,7 +110,7 @@ class AddLabour extends Component {
               IsEmployeContractual: Data.IsContractBase,
               vendorName: Data.IsContractBase ? Data.VendorName && Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.VendorId } : [] : [],
               StateName: Data.StateName !== undefined ? { label: Data.StateName, value: Data.StateId } : [],
-              selectedPlants: plantObj && plantObj !== undefined ? { label: plantObj.Text, value: plantObj.Value } : [],
+              selectedPlants: Data.Plants[0].PlantName !== undefined ? { label: Data.Plants[0].PlantName, value: Data.Plants[0].PlantId } : [],
               gridTable: GridArray,
             }, () => this.setState({ isLoader: false }))
           }, 500)

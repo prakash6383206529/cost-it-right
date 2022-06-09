@@ -62,7 +62,6 @@ class AddRMDomestic extends Component {
 
       vendorName: [],
       VendorCode: '',
-      selectedVendorPlants: [],
       vendorLocation: [],
       isVendorNameNotSelected: false,
       updateAsyncDropdown: false,
@@ -258,7 +257,7 @@ class AddRMDomestic extends Component {
   handleVendorName = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
       this.setState(
-        { vendorName: newValue, isVendorNameNotSelected: false, selectedVendorPlants: [], vendorLocation: [] },
+        { vendorName: newValue, isVendorNameNotSelected: false, vendorLocation: [] },
         () => {
           const { vendorName } = this.state
           const result =
@@ -272,21 +271,11 @@ class AddRMDomestic extends Component {
     } else {
       this.setState({
         vendorName: [],
-        selectedVendorPlants: [],
         vendorLocation: [],
       })
       this.props.getPlantBySupplier('', () => { })
     }
   }
-
-  /**
-   * @method handleVendorPlant
-   * @description called
-   */
-  handleVendorPlant = (e) => {
-    this.setState({ selectedVendorPlants: e })
-  }
-
   /**
    * @method handleVendorLocation
    * @description called
@@ -539,7 +528,6 @@ class AddRMDomestic extends Component {
       {
         IsVendor: !this.state.IsVendor,
         vendorName: [],
-        selectedVendorPlants: [],
         vendorLocation: [],
       },
       () => {
@@ -775,15 +763,6 @@ class AddRMDomestic extends Component {
       return temp
     }
 
-    if (label === 'VendorPlant') {
-      filterPlantList && filterPlantList.map((item) => {
-        if (item.Value === '0') return false
-        temp.push({ Text: item.Text, Value: item.Value })
-        return null
-      })
-      return temp
-    }
-
     if (label === 'VendorLocation') {
       filterCityListBySupplier && filterCityListBySupplier.map((item) => {
         if (item.Value === '0') return false
@@ -843,7 +822,6 @@ class AddRMDomestic extends Component {
       Category: [],
       selectedPlants: [],
       vendorName: [],
-      selectedVendorPlants: [],
       vendorLocation: [],
       HasDifferentSource: false,
       sourceLocation: [],
@@ -1001,7 +979,7 @@ class AddRMDomestic extends Component {
 
     //  
     const { IsVendor, RawMaterial, RMGrade, RMSpec, Category, Technology, selectedPlants, vendorName,
-      VendorCode, selectedVendorPlants, HasDifferentSource, sourceLocation,
+      VendorCode, HasDifferentSource, sourceLocation,
       UOM, remarks, RawMaterialID, isEditFlag, files, effectiveDate, netLandedCost, oldDate, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, isSourceChange, uploadAttachements, IsFinancialDataChanged } = this.state
     const { initialConfiguration, fieldsObj } = this.props
     this.setState({ setDisable: true, disablePopup: false })
@@ -1530,27 +1508,6 @@ class AddRMDomestic extends Component {
                             {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
                           </Col>
 
-                          {initialConfiguration.IsVendorPlantConfigurable && this.state.IsVendor && (
-                            <Col md="3">
-                              <Field
-                                label="Vendor Plant"
-                                name="DestinationSupplierPlantId"
-                                placeholder={"Select"}
-                                selection={this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length === 0 ? [] : this.state.selectedVendorPlants}
-                                options={this.renderListing("VendorPlant")}
-                                selectionChanged={this.handleVendorPlant}
-                                validate={this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length === 0 ? [required] : []}
-                                required={true}
-                                optionValue={(option) => option.Value}
-                                optionLabel={(option) => option.Text}
-                                component={renderMultiSelectField}
-                                mendatory={true}
-                                className="multiselect-with-border"
-                                disabled={isEditFlag ? true : false}
-
-                              />
-                            </Col>
-                          )}
                           {(this.state.HasDifferentSource ||
                             this.state.IsVendor) && (
                               <>
