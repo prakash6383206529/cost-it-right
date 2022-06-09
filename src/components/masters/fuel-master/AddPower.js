@@ -53,7 +53,6 @@ class AddPower extends Component {
 
       vendorName: [],
       VendorCode: '',
-      selectedVendorPlants: [],
       vendorLocation: [],
 
       isOpenVendor: false,
@@ -292,16 +291,11 @@ class AddPower extends Component {
 
             const vendorObj = vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.find(item => item.Value === Data.VendorId)
 
-            let tempVendorPlant = Data && Data.VendorPlants.map((item) => {
-              return { Text: item.VendorPlantName, Value: item.VendorPlantId }
-            })
-
             this.setState({
               isEditFlag: true,
               isLoader: false,
               IsVendor: Data.IsVendor,
               VendorCode: Data.VendorCode,
-              selectedVendorPlants: tempVendorPlant,
               vendorName: vendorObj && vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
             })
             this.props.change('NetPowerCostPerUnit', Data.NetPowerCostPerUnit)
@@ -389,7 +383,6 @@ class AddPower extends Component {
     this.setState({
       IsVendor: !this.state.IsVendor,
       vendorName: [],
-      selectedVendorPlants: [],
     });
     this.setState({ inputLoader: true })
     this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
@@ -401,14 +394,14 @@ class AddPower extends Component {
   */
   handleVendorName = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ vendorName: newValue, isVendorNameNotSelected: false, selectedVendorPlants: [] }, () => {
+      this.setState({ vendorName: newValue, isVendorNameNotSelected: false }, () => {
         const { vendorName } = this.state;
         const result = vendorName && vendorName.label ? getVendorCode(vendorName.label) : '';
         this.setState({ VendorCode: result })
         this.props.getPlantBySupplier(vendorName.value, () => { })
       });
     } else {
-      this.setState({ vendorName: [], selectedVendorPlants: [], })
+      this.setState({ vendorName: [] })
       this.props.getPlantBySupplier('', () => { })
     }
   };
@@ -421,10 +414,6 @@ class AddPower extends Component {
     this.setState({ isOpenVendor: false }, () => {
       this.props.getVendorWithVendorCodeSelectList()
     })
-  }
-
-  handleVendorPlant = (e) => {
-    this.setState({ selectedVendorPlants: e })
   }
 
   /**
@@ -950,14 +939,6 @@ class AddPower extends Component {
       return temp;
     }
 
-    if (label === 'VendorPlant') {
-      filterPlantList && filterPlantList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ Text: item.Text, Value: item.Value })
-      });
-      return temp;
-    }
-
     if (label === 'state') {
       fuelComboSelectList && fuelComboSelectList.States && fuelComboSelectList.States.map(item => {
         if (item.Value === '0') return false;
@@ -1009,7 +990,6 @@ class AddPower extends Component {
       powerGrid: [],
       isEditIndex: false,
       vendorName: [],
-      selectedVendorPlants: [],
       vendorLocation: [],
       isOpenVendor: false,
       UOM: [],
@@ -1026,7 +1006,7 @@ class AddPower extends Component {
   */
   onSubmit = debounce((values) => {
     const { isEditFlag, PowerDetailID, IsVendor, VendorCode, selectedPlants, StateName, powerGrid,
-      effectiveDate, vendorName, selectedVendorPlants, DataToChangeVendor, DataToChangeZ, powerGridEditIndex, DropdownChanged, ind,
+      effectiveDate, vendorName, DataToChangeVendor, DataToChangeZ, powerGridEditIndex, DropdownChanged, ind,
       handleChange, DeleteChanged, AddChanged } = this.state;
     const { initialConfiguration, fieldsObj } = this.props;
 
@@ -1308,22 +1288,6 @@ class AddPower extends Component {
                               </div>
                               {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
                             </Col>
-                            {initialConfiguration && initialConfiguration.IsVendorPlantConfigurable && <Col md="3">
-                              <Field
-                                label="Vendor Plant"
-                                name="VendorPlant"
-                                placeholder="Select"
-                                selection={(this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length === 0) ? [] : this.state.selectedVendorPlants}
-                                options={this.renderListing('VendorPlant')}
-                                selectionChanged={this.handleVendorPlant}
-                                optionValue={option => option.Value}
-                                optionLabel={option => option.Text}
-                                component={renderMultiSelectField}
-                                mendatory={true}
-                                className="multiselect-with-border"
-                                disabled={isViewMode}
-                              />
-                            </Col>}
                             <Col md="3">
                               <div className="d-flex justify-space-between align-items-center inputwith-icon">
                                 <div className="fullinput-icon">
