@@ -145,6 +145,7 @@ class AddChildDrawer extends Component {
                                         TechnologySelected={this.props.TechnologySelected}
                                         setChildParts={this.setChildParts}
                                         BOMViewerData={this.props.BOMViewerData}
+                                        partAssembly={this.props.partAssembly}
                                     />
                                 }
 

@@ -189,11 +189,11 @@ class AddComponentForm extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, isEditFlag } = this.props;
+    const { handleSubmit, isEditFlag, partAssembly } = this.props;
     const filterList = (inputValue) => {
       let tempArr = []
       tempArr = this.renderListing("part").filter(i =>
-        i.label !== null && i.label.toLowerCase().includes(inputValue.toLowerCase())
+        i.label !== null && i.label !== partAssembly.label && i.label.toLowerCase().includes(inputValue.toLowerCase())
       );
       if (tempArr.length <= 100) {
         return tempArr
