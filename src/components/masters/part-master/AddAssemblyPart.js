@@ -5,10 +5,10 @@ import { Row, Col } from 'reactstrap';
 import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength75, maxLength20, maxLength80, maxLength512 } from "../../../helper/validation";
 import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
 import { renderText, renderTextAreaField, focusOnError, renderDatePicker, renderMultiSelectField, searchableSelect } from "../../layout/FormInputs";
-import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common';
+import { getPlantSelectListByType, getTechnologySelectList, getPartSelectList } from '../../../actions/Common';
 import {
   createAssemblyPart, updateAssemblyPart, getAssemblyPartDetail, fileUploadPart, fileDeletePart,
-  getBOMViewerTreeDataByPartIdAndLevel, getProductGroupSelectList, getPartDescription, getPartDataList, getPartData,
+  getBOMViewerTreeDataByPartIdAndLevel, getProductGroupSelectList, getPartDescription, getPartData, convertPartToAssembly,
 } from '../actions/Part';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
@@ -71,8 +71,9 @@ class AddAssemblyPart extends Component {
       attachmentLoader: false,
       convertPartToAssembly: false,
       partListingData: [],
+      warningMessageTechnology: false,
       inputLoader: false,
-      warningMessageTechnology: false
+      convertPartToAssemblyPartId: ""
     }
   }
 
@@ -85,9 +86,8 @@ class AddAssemblyPart extends Component {
     this.props.getPlantSelectListByType(ZBC, () => { })
     this.props.getProductGroupSelectList(() => { })
     this.props.getTechnologySelectList(() => { })
-    this.props.getPartDataList(0, 100, { Technology: "", PartNumber: "", PartName: "", ECNNumber: "", RevisionNumber: "", DrawingNumber: "", EffectiveDate: "" }, false, (res) => {
-
-      this.setState({ partListingData: res?.data?.DataList, inputLoader: false })
+    this.props.getPartSelectList((res) => {
+      this.setState({ partListingData: res?.data?.SelectList, inputLoader: false })
     })
     this.getDetails()
   }
@@ -209,7 +209,7 @@ class AddAssemblyPart extends Component {
             productArray.push({ Text: item.GroupCode, Value: item.GroupCode, })
             return productArray
           })
-          this.setState({ DataToCheck: Data })
+          this.setState({ DataToCheck: Data, convertPartToAssemblyPartId: newValue.value })
           this.props.change("EffectiveDate", DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           this.props.change("ECNNumber", Data?.ECNNumber)
           this.props.change("DrawingNumber", Data?.DrawingNumber)
@@ -382,7 +382,7 @@ class AddAssemblyPart extends Component {
 
     if (label === 'partNo') {
       this.state.partListingData.length > 0 && this.state.partListingData.map((item) => {
-        temp.push({ label: item.PartNumber, value: item.PartId })
+        temp.push({ label: item.Text, value: item.Value })
         return null
       })
       return temp
@@ -698,7 +698,7 @@ class AddAssemblyPart extends Component {
       let updateData = {
         BOMNumber: values.BOMNumber,
         LoggedInUserId: loggedInUserId(),
-        AssemblyPartId: PartId,
+        AssemblyPartId: convertPartToAssembly ? this.state.convertPartToAssemblyPartId : PartId,
         AssemblyPartName: values.AssemblyPartName,
         AssemblyPartNumber: values.AssemblyPartNumber,
         TechnologyIdRef: this.state.TechnologySelected.value ? this.state.TechnologySelected.value : "",
@@ -719,13 +719,27 @@ class AddAssemblyPart extends Component {
         IsStructureChanges: isStructureChanges,
         IsConvertedToAssembly: convertPartToAssembly ? true : false
       }
-      this.props.updateAssemblyPart(updateData, (res) => {
-        this.setState({ setDisable: false, isLoader: false })
-        if (res?.data?.Result) {
-          Toaster.success(MESSAGES.UPDATE_BOM_SUCCESS);
-          this.cancel()
-        }
-      });
+
+      if (convertPartToAssembly) {
+        this.props.convertPartToAssembly(updateData, (res) => {
+          this.setState({ setDisable: false, isLoader: false })
+          if (res?.data?.Result) {
+            Toaster.success(MESSAGES.UPDATE_BOM_SUCCESS);
+            this.cancel()
+          }
+        });
+      }
+
+      else {
+        this.props.updateAssemblyPart(updateData, (res) => {
+          this.setState({ setDisable: false, isLoader: false })
+          if (res?.data?.Result) {
+            Toaster.success(MESSAGES.UPDATE_BOM_SUCCESS);
+            this.cancel()
+          }
+        });
+      }
+
 
     } else {
       this.setState({ setDisable: true, isLoader: true })
@@ -883,7 +897,7 @@ class AddAssemblyPart extends Component {
                   >
                     <div className="add-min-height">
                       <Row>
-                        {false &&
+                        {true &&
                           <Col md="4" className="switch mb15">
                             <label className="switch-level">
                               <div className={"left-title"}>Add assembly</div>
@@ -928,7 +942,7 @@ class AddAssemblyPart extends Component {
                                 onChange={(e) => this.handlePartNo(e)}
                                 value={this.state.vendorName}
                                 noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter part no" : "No results found"}
-                                isDisabled={(isEditFlag || this.state.inputLoader || convertPartToAssembly) ? true : false} />
+                                isDisabled={(isEditFlag || this.state.inputLoader) ? true : false} />
                             </div>
                           </Col>
                         }
@@ -1338,13 +1352,14 @@ export default connect(mapStateToProps, {
   fileUploadPart,
   fileDeletePart,
   getTechnologySelectList,
+  getPartSelectList,
   createAssemblyPart,
   updateAssemblyPart,
+  convertPartToAssembly,
   getAssemblyPartDetail,
   getBOMViewerTreeDataByPartIdAndLevel,
   getProductGroupSelectList,
   getPartDescription,
-  getPartDataList,
   getPartData,
 })(reduxForm({
   form: 'AddAssemblyPart',
