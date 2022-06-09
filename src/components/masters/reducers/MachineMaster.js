@@ -69,11 +69,16 @@ export default function MachineReducer(state = initialState, action) {
                 machineTypeData: action.payload
             };
         case GET_MACHINE_DATALIST_SUCCESS:
+            let arr = []
+            action.payload && action.payload.map((item) => {
+                item.CostingHeadNew = item.CostingHead === 'VBC' ? "Vendor Based" : "Zero Based"
+                arr.push(item)
+            })
             return {
                 ...state,
                 loading: false,
                 error: true,
-                machineDatalist: action.payload
+                machineDatalist: arr
             };
         case GET_MACHINE_DATA_SUCCESS:
             return {
