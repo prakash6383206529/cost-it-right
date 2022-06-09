@@ -64,7 +64,6 @@ class AddRMImport extends Component {
 
       vendorName: [],
       VendorCode: '',
-      selectedVendorPlants: [],
       vendorLocation: [],
       isVendorNameNotSelected: false,
 
@@ -255,25 +254,16 @@ class AddRMImport extends Component {
   */
   handleVendorName = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ vendorName: newValue, isVendorNameNotSelected: false, selectedVendorPlants: [], vendorLocation: [] }, () => {
+      this.setState({ vendorName: newValue, isVendorNameNotSelected: false, vendorLocation: [] }, () => {
         const { vendorName } = this.state;
         const result = vendorName && vendorName.label ? getVendorCode(vendorName.label) : '';
         this.setState({ VendorCode: result })
         this.props.getPlantBySupplier(vendorName.value, () => { })
       });
     } else {
-      this.setState({ vendorName: [], selectedVendorPlants: [], vendorLocation: [] })
+      this.setState({ vendorName: [], vendorLocation: [] })
     }
   };
-
-  /**
-  * @method handleVendorPlant
-  * @description called
-  */
-  handleVendorPlant = (e) => {
-    this.setState({ selectedVendorPlants: e })
-  };
-
   /**
   * @method handleVendorLocation
   * @description called
@@ -548,7 +538,6 @@ class AddRMImport extends Component {
     this.setState({
       IsVendor: !this.state.IsVendor,
       vendorName: [],
-      selectedVendorPlants: [],
       vendorLocation: [],
     }, () => {
       const { IsVendor } = this.state;
@@ -752,14 +741,6 @@ class AddRMImport extends Component {
       });
       return temp;
     }
-    if (label === 'VendorPlant') {
-      filterPlantList && filterPlantList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ Text: item.Text, Value: item.Value })
-        return null;
-      });
-      return temp;
-    }
     if (label === 'VendorLocation') {
       filterCityListBySupplier && filterCityListBySupplier.map(item => {
         if (item.Value === '0') return false;
@@ -825,7 +806,6 @@ class AddRMImport extends Component {
       Category: [],
       selectedPlants: [],
       vendorName: [],
-      selectedVendorPlants: [],
       vendorLocation: [],
       HasDifferentSource: false,
       sourceLocation: [],
@@ -963,7 +943,7 @@ class AddRMImport extends Component {
   */
   onSubmit = (values) => {
     const { IsVendor, RawMaterial, RMGrade, RMSpec, Category, selectedPlants, vendorName, VendorCode,
-      selectedVendorPlants, HasDifferentSource, sourceLocation, UOM, currency,
+      HasDifferentSource, sourceLocation, UOM, currency,
       effectiveDate, remarks, RawMaterialID, isEditFlag, files, Technology, netCost, oldDate, netCurrencyCost, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, isSourceChange, uploadAttachements, currencyValue, IsFinancialDataChanged } = this.state;
 
     const { initialConfiguration, fieldsObj } = this.props;
@@ -1500,26 +1480,6 @@ class AddRMImport extends Component {
                             </div>
                             {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
                           </Col>
-                          {initialConfiguration && initialConfiguration.IsVendorPlantConfigurable && this.state.IsVendor && (
-                            <Col md="3">
-                              <Field
-                                label="Vendor Plant"
-                                name="DestinationSupplierPlantId"
-                                placeholder={"Select"}
-                                selection={
-                                  this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length === 0 ? [] : this.state.selectedVendorPlants}
-                                options={this.renderListing("VendorPlant")}
-                                validate={this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length === 0 ? [required] : []}
-                                selectionChanged={this.handleVendorPlant}
-                                optionValue={(option) => option.Value}
-                                optionLabel={(option) => option.Text}
-                                component={renderMultiSelectField}
-                                mendatory={true}
-                                className="multiselect-with-border"
-                                disabled={isEditFlag ? true : false}
-                              />
-                            </Col>
-                          )}
                           {(this.state.HasDifferentSource ||
                             this.state.IsVendor) && (
                               <>

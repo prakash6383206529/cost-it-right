@@ -139,7 +139,6 @@ function AddBOP(props) {
 
       const data = {
         VendorId: costData.VendorId,
-        VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
         DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID,
         EffectiveDate: CostingEffectiveDate,
         CostingId: costData.CostingId,

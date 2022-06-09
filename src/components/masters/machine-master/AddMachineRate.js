@@ -16,7 +16,7 @@ import {
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { EMPTY_DATA, EMPTY_GUID, } from '../../../config/constants'
-import { checkVendorPlantConfigurable, getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
+import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
 import Switch from "react-switch";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
@@ -63,7 +63,6 @@ class AddMachineRate extends Component {
       selectedTechnology: [],
       isVendorNameNotSelected: false,
       vendorName: [],
-      selectedVendorPlants: [],
       selectedPlants: [],
       isFinalApprovar: false,
       approvalObj: {},
@@ -295,11 +294,8 @@ class AddMachineRate extends Component {
           this.props.change('Description', Data.Description)
           this.setState({ minEffectiveDate: Data.EffectiveDate })
           setTimeout(() => {
-            const { vendorListByVendorType, machineTypeSelectList, plantSelectList, } = this.props;
-
-
-            // let technologyArray = Data && Data.Technology.map((item) => ({ label: item.Technology, value: item.TechnologyId }))
-
+            const { machineTypeSelectList } = this.props;
+            let plantObj;
             let MachineProcessArray = Data && Data.MachineProcessRates.map(el => {
               return {
                 processName: el.ProcessName,
@@ -311,15 +307,19 @@ class AddMachineRate extends Component {
             })
 
             const machineTypeObj = machineTypeSelectList && machineTypeSelectList.find(item => Number(item.Value) === Data.MachineTypeId)
-
+            if (getConfigurationKey().IsDestinationPlantConfigure) {
+              plantObj = Data.DestinationPlantName !== undefined ? { label: Data.DestinationPlantName, value: Data.DestinationPlantId } : []
+            } else {
+              plantObj = Data && Data.Plant.length > 0 ? { label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId } : []
+            }
             this.setState({
               isEditFlag: true,
               IsFinancialDataChanged: false,
               IsVendor: Data.IsVendor,
               IsCopied: Data.IsCopied,
               IsDetailedEntry: Data.IsDetailedEntry,
-              selectedTechnology: Data.TechnologyName !== undefined ? { label: Data.TechnologyName, value: Data.TechnologyId } : [],
-              selectedPlants: Data.PlantName !== undefined ? { label: Data.PlantName, value: Data.PlantId } : Data.DestinationPlantName !== undefined ? { label: Data.DestinationPlantName, value: Data.DestinationPlantId } : [],
+              selectedTechnology: Data.Technology[0].Technology !== undefined ? { label: Data.Technology[0].Technology, value: Data.Technology[0].TechnologyId } : [],
+              selectedPlants: plantObj,
               vendorName: Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.Vendor } : [],
               machineType: machineTypeObj && machineTypeObj !== undefined ? { label: machineTypeObj.Text, value: machineTypeObj.Value } : [],
               processGrid: MachineProcessArray,
@@ -359,7 +359,6 @@ class AddMachineRate extends Component {
     this.setState({
       IsVendor: !this.state.IsVendor,
       vendorName: [],
-      selectedVendorPlants: [],
       vendorLocation: [],
       selectedPlants: [],
       inputLoader: true,
@@ -437,14 +436,6 @@ class AddMachineRate extends Component {
       });
       return temp;
     }
-    if (label === 'VendorPlant') {
-      filterPlantList && filterPlantList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ Text: item.Text, Value: item.Value })
-        return null;
-      });
-      return temp;
-    }
     if (label === 'plant') {
       plantSelectList && plantSelectList.map(item => {
         if (item.Value === '0') return false;
@@ -504,22 +495,14 @@ class AddMachineRate extends Component {
   */
   handleVendorName = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ vendorName: newValue, isVendorNameNotSelected: false, selectedVendorPlants: [], vendorLocation: [] }, () => {
+      this.setState({ vendorName: newValue, isVendorNameNotSelected: false, vendorLocation: [] }, () => {
         const { vendorName } = this.state;
         this.props.getPlantBySupplier(vendorName.value, () => { })
       });
     } else {
-      this.setState({ vendorName: [], selectedVendorPlants: [], vendorLocation: [] })
+      this.setState({ vendorName: [], vendorLocation: [] })
       this.props.getPlantBySupplier('', () => { })
     }
-  };
-
-  /**
-   * @method handleVendorPlant
-   * @description called
-   */
-  handleVendorPlant = (e) => {
-    this.setState({ selectedVendorPlants: e })
   };
 
   /**
@@ -960,7 +943,7 @@ class AddMachineRate extends Component {
   * @description Used to Submit the form
   */
   onSubmit = debounce((values) => {
-    const { IsVendor, MachineID, isEditFlag, IsDetailedEntry, vendorName, selectedTechnology, selectedPlants, selectedVendorPlants,
+    const { IsVendor, MachineID, isEditFlag, IsDetailedEntry, vendorName, selectedTechnology, selectedPlants,
       remarks, machineType, files, processGrid, isViewFlag, DropdownChange, effectiveDate, oldDate, uploadAttachements, isDateChange, IsFinancialDataChanged, DataToChange } = this.state;
 
 
@@ -1363,24 +1346,7 @@ class AddMachineRate extends Component {
                             {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
 
                           </Col>}
-                        {this.state.IsVendor &&
-                          checkVendorPlantConfigurable() &&
-                          <Col md="3">
-                            <Field
-                              label="Vendor Plant"
-                              name="VendorPlant"
-                              placeholder="--- Plant ---"
-                              selection={(this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length === 0) ? [] : this.state.selectedVendorPlants}
-                              options={this.renderListing('VendorPlant')}
-                              selectionChanged={this.handleVendorPlant}
-                              optionValue={option => option.Value}
-                              optionLabel={option => option.Text}
-                              component={renderMultiSelectField}
-                              mendatory={true}
-                              className="multiselect-with-border"
-                              disabled={isEditFlag || isViewFlag ? true : false}
-                            />
-                          </Col>}
+
                         {(this.state.IsVendor === false || getConfigurationKey().IsDestinationPlantConfigure) && (
                           <Col md="3">
                             <Field

@@ -42,7 +42,6 @@ class AddOperation extends Component {
       isVendorNameNotSelected: false,
 
       vendorName: [],
-      selectedVendorPlants: [],
       oldDate: '',
       UOM: [],
       isViewMode: this.props?.data?.isViewMode ? true : false,
@@ -167,14 +166,6 @@ class AddOperation extends Component {
       });
       return temp;
     }
-    if (label === 'VendorPlant') {
-      filterPlantList && filterPlantList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ Text: item.Text, Value: item.Value })
-        return null;
-      });
-      return temp;
-    }
     if (label === 'UOM') {
       UOMSelectList && UOMSelectList.map(item => {
         const accept = AcceptableOperationUOM.includes(item.Type)
@@ -221,12 +212,12 @@ class AddOperation extends Component {
   */
   handleVendorName = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ vendorName: newValue, isVendorNameNotSelected: false, selectedVendorPlants: [] }, () => {
+      this.setState({ vendorName: newValue, isVendorNameNotSelected: false }, () => {
         const { vendorName } = this.state;
         this.props.getPlantBySupplier(vendorName.value, () => { })
       });
     } else {
-      this.setState({ vendorName: [], selectedVendorPlants: [], })
+      this.setState({ vendorName: [] })
     }
   };
 
@@ -247,14 +238,6 @@ class AddOperation extends Component {
       this.cancel()
     }
   }
-
-  /**
-  * @method handleVendorPlant
-  * @description called
-  */
-  handleVendorPlant = (e) => {
-    this.setState({ selectedVendorPlants: e })
-  };
 
   /**
   * @method handleUOM
@@ -538,7 +521,6 @@ class AddOperation extends Component {
       selectedTechnology: [],
       selectedPlants: [],
       vendorName: [],
-      selectedVendorPlants: [],
       UOM: [],
       isSurfaceTreatment: false,
       isShowForm: false,
@@ -553,7 +535,7 @@ class AddOperation extends Component {
   * @description Used to Submit the form
   */
   onSubmit = debounce((values) => {
-    const { IsVendor, selectedVendorPlants, selectedPlants, vendorName, files,
+    const { IsVendor, selectedPlants, vendorName, files,
       UOM, oldUOM, isSurfaceTreatment, selectedTechnology, remarks, OperationId, oldDate, effectiveDate, destinationPlant, DataToChange, uploadAttachements, isDateChange, IsFinancialDataChanged, isEditFlag } = this.state;
     const { initialConfiguration, filedObj } = this.props;
     const userDetail = userDetails()
@@ -577,13 +559,6 @@ class AddOperation extends Component {
       plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' })
       return plantArray;
     })
-
-    let vendorPlants = [];
-    selectedVendorPlants && selectedVendorPlants.map((item) => {
-      vendorPlants.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' })
-      return vendorPlants;
-    })
-
     /** Update existing detail of supplier master **/
     // if (this.state.isEditFlag && this.state.isFinalApprovar) {
 
@@ -670,7 +645,6 @@ class AddOperation extends Component {
         Technology: technologyArray,
         Remark: remarks,
         Plant: !IsVendor ? plantArray : [],
-        VendorPlant: initialConfiguration.IsVendorPlantConfigurable ? (IsVendor ? vendorPlants : []) : [],
         Attachements: files,
         LoggedInUserId: loggedInUserId(),
         EffectiveDate: DayTime(effectiveDate).format('YYYY/MM/DD'),
@@ -936,25 +910,6 @@ class AddOperation extends Component {
                         </Col>
 
                       )}
-                      {initialConfiguration && initialConfiguration.IsVendorPlantConfigurable && this.state.IsVendor && (
-                        <Col md="3">
-                          <Field
-                            label="Vendor Plant"
-                            name="VendorPlant"
-                            placeholder="Select"
-                            selection={this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length === 0 ? [] : this.state.selectedVendorPlants}
-                            options={this.renderListing("VendorPlant")}
-                            selectionChanged={this.handleVendorPlant}
-                            optionValue={(option) => option.Value}
-                            optionLabel={(option) => option.Text}
-                            component={renderMultiSelectField}
-                            mendatory={true}
-                            className="multiselect-with-border"
-                            disabled={isEditFlag ? true : false}
-                          />
-                        </Col>
-                      )}
-
                       {
                         this.state.IsVendor && getConfigurationKey().IsDestinationPlantConfigure &&
                         <Col md="3">
