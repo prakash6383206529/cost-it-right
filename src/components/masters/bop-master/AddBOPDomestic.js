@@ -58,7 +58,6 @@ class AddBOPDomestic extends Component {
       isOpenVendor: false,
 
       vendorName: [],
-      selectedVendorPlants: [],
       vendorLocation: [],
       oldDate: '',
 
@@ -143,7 +142,6 @@ class AddBOPDomestic extends Component {
     this.setState({
       IsVendor: !this.state.IsVendor,
       vendorName: [],
-      selectedVendorPlants: [],
       vendorLocation: [],
       selectedPlants: [],
     }, () => {
@@ -305,14 +303,6 @@ class AddBOPDomestic extends Component {
       });
       return temp;
     }
-    if (label === 'VendorPlant') {
-      filterPlantList && filterPlantList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ Text: item.Text, Value: item.Value })
-        return null;
-      });
-      return temp;
-    }
     if (label === 'SourceLocation') {
       cityList && cityList.map(item => {
         if (item.Value === '0') return false;
@@ -374,13 +364,13 @@ class AddBOPDomestic extends Component {
   */
   handleVendorName = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ vendorName: newValue, isVendorNameNotSelected: false, selectedVendorPlants: [], }, () => {
+      this.setState({ vendorName: newValue, isVendorNameNotSelected: false, }, () => {
         const { vendorName } = this.state;
         this.props.getPlantBySupplier(vendorName.value, () => { })
         //this.props.getCityBySupplier(vendorName.value, () => { })
       });
     } else {
-      this.setState({ vendorName: [], selectedVendorPlants: [], })
+      this.setState({ vendorName: [], })
     }
   };
 
@@ -399,14 +389,6 @@ class AddBOPDomestic extends Component {
       }
     })
   }
-
-  /**
-  * @method handleVendorPlant
-  * @description called
-  */
-  handleVendorPlant = (e) => {
-    this.setState({ selectedVendorPlants: e })
-  };
 
   /**
   * @method handleSourceSupplierCity
@@ -591,7 +573,6 @@ class AddBOPDomestic extends Component {
       selectedPlants: [],
       isOpenVendor: false,
       vendorName: [],
-      selectedVendorPlants: [],
       sourceLocation: [],
       UOM: [],
     })
@@ -608,7 +589,7 @@ class AddBOPDomestic extends Component {
 
     const { IsVendor, BOPCategory, selectedPlants, vendorName,
 
-      selectedVendorPlants, sourceLocation, BOPID, isEditFlag, files, oldDate, effectiveDate, UOM, DataToCheck, uploadAttachements, isDateChange, IsFinancialDataChanged } = this.state;
+      sourceLocation, BOPID, isEditFlag, files, oldDate, effectiveDate, UOM, DataToCheck, uploadAttachements, isDateChange, IsFinancialDataChanged } = this.state;
 
     if (vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
@@ -1033,27 +1014,7 @@ class AddBOPDomestic extends Component {
                             </div>
                             {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
                           </Col>
-                          {(getConfigurationKey().IsVendorPlantConfigurable && this.state.IsVendor) && (
-                            <Col md="3">
-                              <Field
-                                label="Vendor Plant"
-                                name="VendorPlant"
-                                placeholder={"Select"}
-                                selection={
-                                  this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length === 0 ? [] : this.state.selectedVendorPlants}
-                                options={this.renderListing("VendorPlant")}
-                                selectionChanged={this.handleVendorPlant}
-                                validate={
-                                  this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length === 0 ? [required] : []}
-                                optionValue={(option) => option.Value}
-                                optionLabel={(option) => option.Text}
-                                component={renderMultiSelectField}
-                                mendatory={this.state.IsVendor ? true : false}
-                                className="multiselect-with-border"
-                                disabled={isEditFlag ? true : false}
-                              />
-                            </Col>
-                          )}
+
                           {this.state.IsVendor && (
                             <>
                               <Col md="3">

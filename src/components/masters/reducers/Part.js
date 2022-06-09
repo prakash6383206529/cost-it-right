@@ -22,7 +22,7 @@ import {
 import DayTime from '../../common/DayTimeWrapper';
 
 const initialState = {
-
+    productDataList: []
 };
 
 export default function partReducer(state = initialState, action) {
@@ -95,7 +95,7 @@ export default function partReducer(state = initialState, action) {
 
             return {
                 ...state,
-                newPartsListing: arrNew,        
+                newPartsListing: arrNew,
                 loading: false,
                 error: false
             };
@@ -155,11 +155,21 @@ export default function partReducer(state = initialState, action) {
                 error: true
             };
         case GET_PRODUCT_DATA_LIST:
+
+            let temp = action.payload && action.payload.map((item) => {
+                if (item.IsConsideredForMBOM === true) {
+                    item.IsConsideredForMBOM = 'YES'
+                } else {
+                    item.IsConsideredForMBOM = 'NO'
+                }
+                return item
+            })
+
             return {
                 ...state,
                 loading: false,
                 error: true,
-                productDataList: action.payload
+                productDataList: temp
             }
         case GET_PRODUCT_UNIT_DATA:
             return {
