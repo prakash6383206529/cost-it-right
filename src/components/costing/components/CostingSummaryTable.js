@@ -402,7 +402,6 @@ const CostingSummaryTable = (props) => {
       )
     }
   }
-  console.log(viewCostingData[0]?.currency?.currencyTitle, "console.log(viewCostingData[0]?.currency?.currencyTitle")
   /**
  * @method editCostingDetail
  * @description EDIT COSTING DETAIL (WILL GO TO COSTING DETAIL PAGE)
