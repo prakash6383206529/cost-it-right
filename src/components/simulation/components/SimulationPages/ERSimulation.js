@@ -202,7 +202,7 @@ function ERSimulation(props) {
 
         dispatch(runVerifyExchangeRateSimulation(obj, res => {
             setIsDisable(false)
-            if (res.data.Result) {
+            if (res?.data?.Result) {
                 setToken(res.data.Identity)
                 setShowVerifyPage(true)
             }
