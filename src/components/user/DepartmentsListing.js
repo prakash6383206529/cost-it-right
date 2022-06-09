@@ -275,7 +275,7 @@ class DepartmentsListing extends Component {
                   >
                     {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
                     <AgGridColumn field="DepartmentName" headerName={getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}></AgGridColumn>
-                    {getConfigurationKey().IsCompanyConfigureOnPlant && <AgGridColumn field="DepartmentCode" headerName="Company Code"></AgGridColumn>}
+                    <AgGridColumn field="DepartmentCode" headerName={getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company Code' : 'Department'}></AgGridColumn>
                     <AgGridColumn field="DepartmentId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                   </AgGridReact>
                   <div className="paging-container d-inline-block float-right">
