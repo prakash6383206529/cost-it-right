@@ -740,6 +740,7 @@ function ReportListing(props) {
                     isReport={isOpen}
                     selectedRowData={selectedRowData}
                     isSimulation={false}
+                    simulationDrawer={false}
                 />
             }
             {isViewRM && <ViewRM

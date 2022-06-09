@@ -1216,6 +1216,7 @@ function CostingSimulation(props) {
                     master={selectedMasterForSimulation ? selectedMasterForSimulation.value : master}
                     // closeDrawer={closeDrawer}
                     isSimulation={true}
+                    simulationDrawer={true}
                 />
             }
             {
