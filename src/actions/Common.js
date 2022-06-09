@@ -1530,7 +1530,7 @@ export function getPartSelectList(callback) {
 
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getPartSelectList}`, config());
+    const request = axios.get(`${API.getPartSelectLists}`, config());
     request.then((response) => {
       if (response.data.Result) {
         callback(response);
