@@ -206,7 +206,7 @@ class Department extends Component {
 											/>
 										</div>
 										{
-											this.state.isCompanyConfigurable &&
+
 											<div className="input-group col-md-12 input-withouticon" >
 												<Field
 													label="Code"
