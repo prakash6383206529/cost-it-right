@@ -209,27 +209,22 @@ class AddBOPDomestic extends Component {
           //this.props.getCityBySupplier(Data.Vendor, () => { })
 
           setTimeout(() => {
-            const { cityList, bopCategorySelectList, UOMSelectList, plantSelectList } = this.props;
+            const { cityList, UOMSelectList } = this.props;
             let plantObj;
-            let categoryObj = bopCategorySelectList && bopCategorySelectList.find(item => Number(item.Value) === Data.CategoryId)
             if (getConfigurationKey().IsDestinationPlantConfigure) {
-              let obj = plantSelectList && plantSelectList.find(item => item.Value === Data.DestinationPlantId)
-              plantObj = { label: obj?.Text, value: obj?.Value }
+              plantObj = Data.DestinationPlantName !== undefined ? { label: Data.DestinationPlantName, value: Data.DestinationPlantId } : []
             } else {
               plantObj = Data && Data.Plant.length > 0 ? { label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId } : []
             }
-            let vendorPlantArray = Data && Data.VendorPlant.map((item) => ({ Text: item.PlantName, Value: item.PlantId }))
             let sourceLocationObj = cityList && cityList.find(item => Number(item.Value) === Data.SourceLocation)
             let uomObject = UOMSelectList && UOMSelectList.find(item => item.Value === Data.UnitOfMeasurementId)
             this.setState({
               IsFinancialDataChanged: false,
               isEditFlag: true,
               IsVendor: Data.IsVendor,
-              BOPCategory: categoryObj && categoryObj !== undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
-              // selectedPartAssembly: partArray,
+              BOPCategory: Data.CategoryName !== undefined ? { label: Data.CategoryName, value: Data.CategoryId } : [],
               selectedPlants: plantObj,
-              vendorName: Data.Vendor !== undefined ? { label: Data.VendorName, value: Data.Vendor } : [],
-              selectedVendorPlants: vendorPlantArray,
+              vendorName: Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.Vendor } : [],
               sourceLocation: sourceLocationObj && sourceLocationObj !== undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value } : [],
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
               oldDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
@@ -623,7 +618,6 @@ class AddBOPDomestic extends Component {
     this.setState({ isVendorNameNotSelected: false })
 
     let plantArray = selectedPlants !== undefined ? { PlantName: selectedPlants.label, PlantId: selectedPlants.value, PlantCode: '' } : {}
-    let vendorPlantArray = selectedVendorPlants && selectedVendorPlants.map(item => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
 
     if (selectedPlants.length === 0 && !this.state.IsVendor) {
       return false;
@@ -719,7 +713,6 @@ class AddBOPDomestic extends Component {
         LoggedInUserId: loggedInUserId(),
         Plant: IsVendor === false ? [plantArray] : [],
         DestinationPlantId: selectedPlants.value ? selectedPlants.value : "00000000-0000-0000-0000-000000000000",
-        VendorPlant: getConfigurationKey().IsVendorPlantConfigurable ? (IsVendor ? vendorPlantArray : []) : [],
         Attachements: files,
       }
 

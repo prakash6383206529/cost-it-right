@@ -1513,8 +1513,8 @@ const CostingSummaryTable = (props) => {
                       </tr>
                       {
 
-                        <tr class={`background-light-blue netRm-row  ${isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.nPOPriceWithCurrency > viewCostingData[1]?.nPOPriceWithCurrency ? 'green-row' : viewCostingData[0]?.nPOPriceWithCurrency < viewCostingData[1]?.nPOPriceWithCurrency ? 'red-row' : '' : '-'}`}>
-                          <th>Net PO Price ({(viewCostingData[0]?.currency?.currencyTitle) !== "-" ? viewCostingData[0]?.currency?.currencyTitle : 'INR'}){simulationDrawer && '(Old)'}</th>
+                        <tr class={`background-light-blue netRm-row  ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].nPOPriceWithCurrency > viewCostingData[1].nPOPriceWithCurrency ? 'green-row' : viewCostingData[0].nPOPriceWithCurrency < viewCostingData[1].nPOPriceWithCurrency ? 'red-row' : '' : '-'}`}>
+                          <th>Net PO Price (in Currency){simulationDrawer && '(Old)'}</th>
                           {/* {viewCostingData &&
                         viewCostingData?.map((data, index) => {
                           return <td>Net PO Price({(data.currency.currencyTitle !== '-' ? data.currency.currencyTitle : 'INR')})</td>
@@ -1524,8 +1524,8 @@ const CostingSummaryTable = (props) => {
                           {viewCostingData &&
                             viewCostingData?.map((data, index) => {
 
-                              return <td> {data.CostingHeading === VARIANCE && (isApproval && (Number(data.nPOPriceWithCurrency) !== 0 || Number(data.nPOPrice) !== 0) ? viewCostingData?.length > 0 && (viewCostingData[0]?.nPOPriceWithCurrency > viewCostingData[1]?.nPOPriceWithCurrency || viewCostingData[0]?.nPOPrice > viewCostingData[1]?.nPOPrice) ? <span className='positive-sign'>-</span> : <span className='positive-sign'>+</span> : '')}
-                                <span>{data.nPOPriceWithCurrency !== null ? checkForDecimalAndNull((viewCostingData[0]?.currency?.currencyTitle) !== "-" ? Math.abs(data.nPOPriceWithCurrency) : Math.abs(data.nPOPrice), initialConfiguration.NoOfDecimalForPrice) : '-'}</span> </td>
+                              return <td> {data.CostingHeading === VARIANCE && (isApproval ? viewCostingData.length > 0 && viewCostingData[0].nPOPriceWithCurrency > viewCostingData[1].nPOPriceWithCurrency ? <span className='positive-sign'>+</span> : '' : '')}
+                                <span>{data.nPOPriceWithCurrency !== null ? checkForDecimalAndNull((data?.currency?.currencyTitle) !== "-" ? (data.nPOPriceWithCurrency) : data.nPOPrice, initialConfiguration.NoOfDecimalForPrice) : '-'}</span> </td>
                             })}
                         </tr>
                       }
