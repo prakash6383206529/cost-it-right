@@ -222,7 +222,7 @@ function VerifyImpactDrawer(props) {
                 </>
               }
 
-              {!costingDrawer && <Row className="mb-3 pr-0 mx-0">
+              <Row className="mb-3 pr-0 mx-0">
                 <Col md="6"> <HeaderTitle title={'Last Revision Data:'} /></Col>
                 <Col md="6">
                   <div className={'right-details'}>
@@ -245,7 +245,7 @@ function VerifyImpactDrawer(props) {
                   </div>} */}
                 </div>
               </Row>
-              }
+
             </form>
           </div>
         </Container>
