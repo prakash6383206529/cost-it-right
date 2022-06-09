@@ -335,6 +335,28 @@ function CostingSimulation(props) {
 
     }
 
+    const onRowSelected = (e) => {
+        let row = e.node.isSelected()
+        setGridSelection(row, e.node)
+    }
+
+    const setGridSelection = (type, clickedElement) => {
+        var selectedRows = gridApi.getSelectedRows();
+        const rowIndex = clickedElement.rowIndex
+        const VendorName = clickedElement.data.VendorName
+        const PlantCode = clickedElement.data.PlantCode
+        const PartNo = clickedElement.data.PartNo
+        gridApi.forEachNode(node => {
+            if (node.rowIndex !== rowIndex) {
+                if (node.data.VendorName === VendorName && node.data.PlantCode === PlantCode &&
+                    node.data.PartNo === PartNo) {
+                    node.setSelected(type);
+                }
+            }
+        });
+        setSelectedRowData(selectedRows)
+    }
+
     const onSaveSimulation = () => {
         setShowApprovalHistory(true)
     }
@@ -1011,6 +1033,7 @@ function CostingSimulation(props) {
                                                     // frameworkComponents={frameworkComponents}
                                                     onSelectionChanged={onRowSelect}
                                                     isRowSelectable={isRowSelectable}
+                                                    onRowSelected={onRowSelected}
                                                 >
                                                     {/* <AgGridColumn width={150} field="CostingNumber" headerName='Costing ID'></AgGridColumn>
                                                     <AgGridColumn width={110} field="PartNo" headerName='Part No.'></AgGridColumn>
