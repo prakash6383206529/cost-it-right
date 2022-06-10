@@ -32,7 +32,7 @@ import { currency } from '../../../helper'
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
 const CostingSummaryTable = (props) => {
-  const { viewMode, showDetail, technologyId, costingID, showWarningMsg, simulationMode, isApproval, simulationDrawer, customClass, selectedTechnology, master, isSimulationDone, approvalMode } = props
+  const { viewMode, showDetail, technologyId, costingID, showWarningMsg, simulationMode, isApproval, simulationDrawer, customClass, selectedTechnology, master, isSimulationDone, approvalMode, drawerViewMode } = props
   let history = useHistory();
 
   const dispatch = useDispatch()
@@ -711,7 +711,7 @@ const CostingSummaryTable = (props) => {
     return checkForDecimalAndNull(arr, initialConfiguration.NoOfDecimalForInputOutput)
   }
   const reactToPrintTriggerDetail = useCallback(() => {
-    return <button className="user-btn mr-1 mb-2 px-2" title='pdf' disabled={viewCostingData?.length === 1 ? false : true}> <div className='pdf-detail'></div>  D </button>
+    return <button className="user-btn mr-1 mb-2 px-2" title='Detailed pdf' disabled={viewCostingData?.length === 1 ? false : true}> <div className='pdf-detail'></div>  D </button>
   }, [viewCostingData])
 
   const handleAfterPrintDetail = () => {
@@ -797,7 +797,7 @@ const CostingSummaryTable = (props) => {
                   trigger={reactToPrintTriggerDetail}
                 />
               }
-              {!simulationDrawer && <ReactToPrint
+              {!simulationDrawer && !drawerViewMode && <ReactToPrint
                 bodyClass={`my-3 simple-pdf ${simulationMode ? 'mx-1 simulation-print' : 'mx-2'}`}
                 documentTitle={`${simulationMode ? 'Compare-costing.pdf' : `${pdfName}-costing`}`}
                 content={reactToPrintContent}
@@ -858,7 +858,7 @@ const CostingSummaryTable = (props) => {
                                   <div class="element d-inline-flex align-items-center">
                                     {
                                       !isApproval && (data.status === DRAFT) && <>
-                                        {!pdfHead && !drawerDetailPDF && <div class="custom-check1 d-inline-block">
+                                        {!pdfHead && !drawerDetailPDF && !viewMode && < div class="custom-check1 d-inline-block">
                                           <label
                                             className="custom-checkbox pl-0 mb-0"
                                             onChange={() => moduleHandler(data.costingId, 'top', data)}
@@ -1318,7 +1318,7 @@ const CostingSummaryTable = (props) => {
                         anchor={'right'}
                         isPDFShow={true} /></th></tr>}
 
-                      <tr class="background-light-blue">
+                      <tr class={`background-light-blue ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].nPackagingAndFreight > viewCostingData[1].nPackagingAndFreight ? 'green-row' : viewCostingData[0].nPackagingAndFreight < viewCostingData[1].nPackagingAndFreight ? 'red-row' : ' ' : '-'}`}>
                         <th>Net Packaging & Freight</th>
                         {viewCostingData &&
                           viewCostingData.map((data, index) => {
@@ -1391,7 +1391,7 @@ const CostingSummaryTable = (props) => {
                         isPDFShow={true}
                       /> </th> </tr>}
 
-                      <tr class="background-light-blue">
+                      <tr class={`background-light-blue ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].totalToolCost > viewCostingData[1].totalToolCost ? 'green-row' : viewCostingData[0].totalToolCost < viewCostingData[1].totalToolCost ? 'red-row' : ' ' : '-'}`}>
                         <th>Net Tool Cost</th>
                         {viewCostingData &&
                           viewCostingData.map((data, index) => {
@@ -1490,7 +1490,7 @@ const CostingSummaryTable = (props) => {
                             viewCostingData.map((data, index) => {
                               return <td>
                                 {data.CostingHeading === VARIANCE && (isApproval ? viewCostingData.length > 0 && viewCostingData[0].nPOPrice > viewCostingData[1].nPOPrice ? <span className='positive-sign'>+</span> : '' : '')}
-                                <span>{currency(getConfigurationKey().BaseCurrency)}{checkForDecimalAndNull(data.nPOPrice, initialConfiguration.NoOfDecimalForPrice)}</span>
+                                <span><span className='currency-symbol'>{currency(getConfigurationKey().BaseCurrency)}</span>{checkForDecimalAndNull(data.nPOPrice, initialConfiguration.NoOfDecimalForPrice)}</span>
                               </td>
                             })}
 
@@ -1526,7 +1526,7 @@ const CostingSummaryTable = (props) => {
                           {viewCostingData &&
                             viewCostingData.map((data, index) => {
                               return <td> {data.CostingHeading === VARIANCE && (isApproval ? viewCostingData.length > 0 && viewCostingData[0].nPOPriceWithCurrency > viewCostingData[1].nPOPriceWithCurrency ? <span className='positive-sign'>+</span> : '' : '')}
-                                <span>{currency(viewCostingData[0]?.currency?.currencyTitle)}{data.nPOPriceWithCurrency !== null ? checkForDecimalAndNull((data?.currency?.currencyTitle) !== "-" ? (data.nPOPriceWithCurrency) : data.nPOPrice, initialConfiguration.NoOfDecimalForPrice) : '-'}</span> </td>
+                                <span><span className='currency-symbol'>{currency(data.currency.currencyTitle !== '-' ? data.currency.currencyTitle : getConfigurationKey().BaseCurrency)}</span>{data.nPOPriceWithCurrency !== null ? checkForDecimalAndNull((data?.currency?.currencyTitle) !== "-" ? (data.nPOPriceWithCurrency) : data.nPOPrice, initialConfiguration.NoOfDecimalForPrice) : '-'}</span> </td>
                             })}
                         </tr>
                       }
@@ -1726,16 +1726,18 @@ const CostingSummaryTable = (props) => {
         )
       }
 
-      {IsOpenViewHirarchy && <BOMViewer
-        isOpen={IsOpenViewHirarchy}
-        closeDrawer={closeVisualDrawer}
-        isEditFlag={true}
-        // USE PART NUMBER KEY HERE
-        PartId={viewCostingData[0].partId}
-        anchor={'right'}
-        isFromVishualAd={true}
-        NewAddedLevelOneChilds={[]}
-      />}
+      {
+        IsOpenViewHirarchy && <BOMViewer
+          isOpen={IsOpenViewHirarchy}
+          closeDrawer={closeVisualDrawer}
+          isEditFlag={true}
+          // USE PART NUMBER KEY HERE
+          PartId={viewCostingData[0].partId}
+          anchor={'right'}
+          isFromVishualAd={true}
+          NewAddedLevelOneChilds={[]}
+        />
+      }
     </Fragment >
   )
 }
