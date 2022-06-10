@@ -735,7 +735,7 @@ function SimulationApprovalSummary(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (
             <>
-                <Link to="campare-costing" spy={true} title="Compare" smooth={true} activeClass="active" ><button className="Balance mb-0" type={'button'} onClick={() => DisplayCompareCosting(cell, row)}></button></Link>
+                <Link to="compare-costing" spy={true} title="Compare" smooth={true} activeClass="active" ><button className="Balance mb-0" type={'button'} onClick={() => DisplayCompareCosting(cell, row)}></button></Link>
                 {row?.IsAssemblyExist && <button className="hirarchy-btn" title='Assembly Impact' type={'button'} onClick={() => { viewAssembly(cell, row, props?.rowIndex) }}> </button>}
             </>
         )
@@ -1322,7 +1322,7 @@ function SimulationApprovalSummary(props) {
                         </>}
                         <Row className="mt-2">
                             <Col md="10">
-                                <div id="campare-costing" className="left-border">{'Compare Costing:'}</div>
+                                <div id="compare-costing" className="left-border">{'Compare Costing:'}</div>
                             </Col>
                             <Col md="2" className="text-right">
                                 <div className="right-border">
