@@ -1524,3 +1524,20 @@ export function getAllCity(callback) {
     })
   }
 }
+
+
+export function getPartSelectList(callback) {
+
+  return (dispatch) => {
+    dispatch({ type: API_REQUEST });
+    const request = axios.get(`${API.getPartSelectLists}`, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: FETCH_MATER_DATA_FAILURE, });
+      apiErrors(error);
+    });
+  };
+}

@@ -154,15 +154,22 @@ const SendForApproval = (props) => {
             ReasonId: 0 // key only for minda
           }
           dispatch(getAllApprovalUserFilterByDepartment(requestObject, (res) => {
+            let tempDropdownList = []
             if (res.data.DataList.length === 1) {
               setShowValidation(true)
               return false
             }
+            res.data.DataList && res.data.DataList.map((item) => {
+              if (item.Value === '0') return false;
+              tempDropdownList.push({ label: item.Text, value: item.Value, levelId: item.LevelId, levelName: item.LevelName })
+              return null
+            })
             const Data = res.data.DataList[1]
             setApprover(Data.Text)
             setSelectedApprover(Data.Value)
             setSelectedApproverLevelId({ levelName: Data.LevelName, levelId: Data.LevelId })
             setValue('approver', { label: Data.Text, value: Data.Value })
+            setApprovalDropDown(tempDropdownList)
           }))
         }))
       }

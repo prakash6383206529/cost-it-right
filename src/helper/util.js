@@ -707,7 +707,7 @@ export function formViewData(costingSummary, header = '') {
 
   //MASTER BATCH OBJECT
   obj.CostingMasterBatchRawMaterialCostResponse = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingMasterBatchRawMaterialCostResponse ? dataFromAPI.CostingPartDetails.CostingMasterBatchRawMaterialCostResponse : []
-
+  obj.RevisionNumber = dataFromAPI.RevisionNumber ? dataFromAPI.RevisionNumber : '-'
 
   // temp = [...temp, obj]
   temp.push(obj)
@@ -900,3 +900,26 @@ export function isUploadSimulation(master) {
 }
 
 export const allEqual = arr => arr.every(val => val === arr[0]);
+
+//**START** FOR SHOWING CURRENCY SYMBOL 
+export const currency = (value) => {
+  switch (value) {
+    case "USD":
+      return "$"
+    case "EUR":
+      return "€"
+    case "GBP":
+      return "£"
+    case "IDR":
+      return "Rp"
+    case "JPY":
+      return "¥"
+    case "VND":
+      return "₫"
+    case "INR":
+      return "₹"
+    default:
+      break;
+  }
+}
+//**END** FOR SHOWING CURRENCY SYMBOL

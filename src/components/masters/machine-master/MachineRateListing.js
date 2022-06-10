@@ -56,7 +56,7 @@ class MachineRateListing extends Component {
             isOpenProcessGroupDrawer: false,
 
             //states for pagination purpose
-            floatingFilterData: { CostingHead: "", Technologies: "", VendorName: "", Plants: "", MachineNumber: "", MachineTypeName: "", MachineTonnage: "", ProcessName: "", MachineRate: "", EffectiveDateNew: "", DepartmentCode: this.props.isSimulation ? userDepartmetList() : "" },
+            floatingFilterData: { CostingHeadNew: "", Technologies: "", VendorName: "", Plants: "", MachineNumber: "", MachineTypeName: "", MachineTonnage: "", ProcessName: "", MachineRate: "", EffectiveDateNew: "", DepartmentCode: this.props.isSimulation ? userDepartmetList() : "" },
             warningMessage: false,
             filterModel: {},
             pageNo: 1,
@@ -620,7 +620,7 @@ class MachineRateListing extends Component {
                                     onSelectionChanged={onRowSelect}
                                     onFilterModified={this.onFloatingFilterChanged}
                                 >
-                                    <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
+                                    <AgGridColumn field="CostingHeadNew" headerName="Costing Head" ></AgGridColumn>
                                     {!isSimulation && <AgGridColumn field="Technologies" headerName="Technology"></AgGridColumn>}
                                     <AgGridColumn field="VendorName" headerName="Vendor(Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="Plants" headerName="Plant(Code)" cellRenderer='hyphenFormatter'></AgGridColumn>

@@ -39,6 +39,7 @@ export const API = {
   getPlantSelectList: `${BASE_URL}/configuration/select-list-get-plant`,
   getPlantSelectListByType: `${BASE_URL}/configuration/select-list-get-plants-by-type`,
   getVendorPlantSelectList: `${BASE_URL}/configuration/select-list-get-un-associated-vendor-plants`,
+  getPartSelectLists: `${BASE_URL}/masters-part/select-list-component-part-for-convert-to-assembly`,
 
   //Combo apis
 
@@ -134,6 +135,7 @@ export const API = {
   getBOMViewerTree: `${BASE_URL}/masters-part/get-visual-aid-bom-level-tree-view`,
   getChildDrawerBOPData: `${BASE_URL}/masters-bought-out-part/get-bought-out-part-by-id`,
   BOMUploadPart: `${BASE_URL}/masters-part/upload-bom-json`,
+  convertPartToAssembly: `${BASE_URL}/masters-part/convert-part-to-assembly`,
 
   //BOM API'S
   createBOMAPI: `${BASE_URL}/masters-part-bill-of-material/generate-bill-of-material`,
@@ -1889,4 +1891,4 @@ export const IV = 'ozzzguugcusjqmbj'
 
 
 //VERSION 
-export const VERSION = "V1.2.266";
+export const VERSION = "V1.2.270";
