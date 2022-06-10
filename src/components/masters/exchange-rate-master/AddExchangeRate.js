@@ -45,9 +45,9 @@ class AddExchangeRate extends Component {
    * @description called after render the component
    */
   componentDidMount() {
-
-    this.props.getCurrencySelectList(() => { })
-
+    if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
+      this.props.getCurrencySelectList(() => { })
+    }
     this.getDetail()
   }
 

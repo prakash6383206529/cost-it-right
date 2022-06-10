@@ -21,7 +21,7 @@ class SimulationTab extends Component {
             Modules: [],
             actionData: [],
             actionSelectList: [],
-            checkBox: true
+            checkBox: false
 
         }
     }
@@ -98,7 +98,7 @@ class SimulationTab extends Component {
 
             tempArray = Object.assign([...Modules], { [index]: Object.assign({}, Modules[index], { IsChecked: false, Actions: actionArray }) })
 
-            this.setState({ Modules: tempArray })
+            this.setState({ Modules: tempArray, checkBox: false })
         } else {
             actionArray = actionRow && actionRow.map((item, index) => {
                 item.IsChecked = true;
@@ -107,7 +107,7 @@ class SimulationTab extends Component {
 
             tempArray = Object.assign([...Modules], { [index]: Object.assign({}, Modules[index], { IsChecked: true, Actions: actionArray }) })
 
-            this.setState({ Modules: tempArray })
+            this.setState({ Modules: tempArray, checkBox: false })
         }
     }
 
@@ -148,14 +148,14 @@ class SimulationTab extends Component {
                 return item;
             })
             tempArray = Object.assign([...Modules], { [parentIndex]: Object.assign({}, Modules[parentIndex], { IsChecked: false, Actions: actionArray }) })
-            this.setState({ Modules: tempArray, })
+            this.setState({ Modules: tempArray, checkBox: false })
         } else {
             let actionArray = actionRows && actionRows.map((item, index) => {
                 item.IsChecked = true;
                 return item;
             })
             tempArray = Object.assign([...Modules], { [parentIndex]: Object.assign({}, Modules[parentIndex], { IsChecked: true, Actions: actionArray }) })
-            this.setState({ Modules: tempArray, })
+            this.setState({ Modules: tempArray, checkBox: false })
         }
     }
 
@@ -163,7 +163,8 @@ class SimulationTab extends Component {
         const { Modules, checkBox } = this.state;
         let booleanVal = this.state.checkBox
         this.setState({ checkBox: !booleanVal })
-        let isCheckedSelectAll = checkBox
+        let isCheckedSelectAll = !booleanVal
+
         let actionRows
         let actionArray = Modules && Modules.map((item, index) => {
             if (item.Sequence === 0) {
@@ -259,17 +260,6 @@ class SimulationTab extends Component {
         this.props.permissions(Modules, SIMULATION)
     }
 
-    /**
-    * @method cancel
-    * @description used to cancel role edit
-    */
-    cancel = () => {
-
-    }
-
-    clearForm = () => {
-
-    }
 
     render() {
         const { actionSelectList } = this.state;
@@ -286,6 +276,7 @@ class SimulationTab extends Component {
                                             <input
                                                 type="checkbox"
                                                 value={"All"}
+                                                checked={this.state.checkBox}
                                                 onClick={() =>
                                                     this.selectAllHandlerEvery()
                                                 }
