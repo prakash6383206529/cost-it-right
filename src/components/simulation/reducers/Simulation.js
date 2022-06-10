@@ -69,7 +69,7 @@ export default function SimulationReducer(state = initialState, action) {
                 else if (item.Status === 'POUpdated') {
                     item.ProvisionalStatus = 'R'
                 } else {
-                    // THIS IS FOR PENDINGFORAPPROVAL, AWAITINGFORAPPROVAL, PUSHED, APPROVED
+                    // THIS IS FOR PENDINGFORAPPROVAL, AWAITINGFORAPPROVAL, PUSHED, APPROVED, ERROR
                     item.ProvisionalStatus = 'U'
                 }
                 return null;
