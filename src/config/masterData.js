@@ -1777,6 +1777,8 @@ export const DIE_CASTING = 23
 export const SIMULATION_LEFT_MENU_NOT_INCLUDED = ["Simulation Upload", "RM Import", "RM Domestic", "BOP Domestic", "BOP Import", "Process-Simulation", "Process", "Operation-Simulation", "Surface Treatment", "Overhead-Simulation", "Overhead", "Profits", "Profits-Simulation", "Freight-Simulation", "Combined Process", "Operations", "Exchange Rates", "Machine Rate"]
 
 export const RMDomesticSimulation = [
+    // ******* RMShearingCost AND RMFreightCost WILL NOT COME IN RE *****
+
     { label: "CostingHead", value: "CostingHead" },
     { label: "RawMaterial", value: "RawMaterial" },
     { label: "RMGrade", value: "RMGrade" },
@@ -1790,8 +1792,6 @@ export const RMDomesticSimulation = [
     { label: "UOM", value: "UOM" },
     { label: "BasicRate", value: "BasicRate" },
     { label: 'NewBasicRate', value: 'NewBasicRate' },
-    { label: 'RMFreightCost', value: "RMFreightCost" },
-    { label: "RMShearingCost", value: "RMShearingCost" },
     { label: "ScrapRate", value: "ScrapRate" },
     { label: 'NewScrapRate', value: 'NewScrapRate' },
     { label: "NetLandedCost", value: "NetLandedCost" },
@@ -3415,7 +3415,7 @@ export const ERImpactDownloadArray = ["Currency", "CostingNumber", "PartNumber",
 
 export const CPImpactDownloadArray = ["CostingNumber", "PartNumber", "OldNetCC", "NewNetCC", "OldPOPrice", "NewPOPrice", "EffectiveDate"]
 
-export const RawMaterialDomesticFileHeads = ["CostingHead", "RawMaterial", "RMGrade", "RMSpec", "RawMaterialCode", "Category", "TechnologyName", "VendorName", "VendorLocation", "UOM", "BasicRate", "NewBasicRate", "RMFreightCost", "RMShearingCost", "ScrapRate", "NewScrapRate", "NetLandedCost", "EffectiveDate", "RawMaterialId", "VendorId", "PlantId"]
+export const RawMaterialDomesticFileHeads = ["CostingHead", "RawMaterial", "RMGrade", "RMSpec", "RawMaterialCode", "Category", "TechnologyName", "VendorName", "VendorLocation", "UOM", "BasicRate", "NewBasicRate", "ScrapRate", "NewScrapRate", "NetLandedCost", "EffectiveDate", "RawMaterialId", "VendorId", "PlantId"]
 
 export const RawMaterialImportFileHeads = ["CostingHead", "RawMaterial", "RMGrade", "RMSpec", "RawMaterialCode", "Category", "TechnologyName", "VendorName", "VendorLocation", "UOM", "BasicRate", "NewBasicRate", "ScrapRate", "NewScrapRate", "NetLandedCost", "EffectiveDate", "RawMaterialId", "VendorId", "PlantId", "RMCode"]
 
