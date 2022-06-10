@@ -927,7 +927,7 @@ function CostingSimulation(props) {
     };
 
     const isRowSelectable = rowNode => statusForLinkedToken === true ? false : true;
-    return [
+    return (
         <>
             {
                 loader ? <LoaderCustom /> :
@@ -1089,8 +1089,8 @@ function CostingSimulation(props) {
                                                     {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={220} field="OldNetPOPriceOtherCurrency" headerName='PO Price Old(in Currency)' cellRenderer='oldPOCurrencyFormatter'></AgGridColumn>}
                                                     {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={220} field="NewNetPOPriceOtherCurrency" headerName='PO Price New (in Currency)' cellRenderer='newPOCurrencyFormatter'></AgGridColumn>}
                                                     {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={170} field="POVariance" headerName='PO Variance' cellRenderer={decimalFormatter}></AgGridColumn>}
-                                                    {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={170} field="OldExchangeRate" headerName='Exchange Rate Old' cellRenderer='oldExchangeFormatter'></AgGridColumn>}
-                                                    {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={170} field="NewExchangeRate" headerName='Exchange Rate New' cellRenderer='newExchangeFormatter'></AgGridColumn>}
+                                                    {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={170} field="OldExchangeRate" headerName='Old Exchange Rate' cellRenderer='oldExchangeFormatter'></AgGridColumn>}
+                                                    {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={170} field="NewExchangeRate" headerName='New Exchange Rate' cellRenderer='newExchangeFormatter'></AgGridColumn>}
                                                     {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={140} field="ERVariance" headerName='Variance' cellRenderer='varianceFormatter'></AgGridColumn>}
 
 
@@ -1231,7 +1231,7 @@ function CostingSimulation(props) {
             }
         </>
 
-    ];
+    );
 }
 
 
