@@ -964,6 +964,7 @@ h3 {
 }
 .drawer-wrapper {
   width: 465px;
+  position: relative;
   .drawer-heading {
     background-color: #eaf0f9;
     border: #ced9e9 1px solid;
@@ -971,6 +972,9 @@ h3 {
     border-right-width: 0;
     padding: 22px 16px;
     margin-bottom: 15px;
+    position: sticky;
+    top: 0;
+    z-index: 13;
     h3 {
       font-size: 22px;
       font-weight: $font-medium;
