@@ -672,7 +672,7 @@ function SimulationApprovalSummary(props) {
 
         return (
             <>
-                <Link to="campare-costing" spy={true} title="Compare" smooth={true} activeClass="active" ><button className="Balance mb-0" type={'button'} onClick={() => DisplayCompareCosting(cell, row)}></button></Link>
+                <Link to="compare-costing" spy={true} title="Compare" smooth={true} activeClass="active" ><button className="Balance mb-0" type={'button'} onClick={() => DisplayCompareCosting(cell, row)}></button></Link>
                 {row?.IsAssemblyExist && <button className="hirarchy-btn" title='Assembly Impact' type={'button'} onClick={() => { viewAssembly(cell, row, props?.rowIndex) }}> </button>}
             </>
         )
