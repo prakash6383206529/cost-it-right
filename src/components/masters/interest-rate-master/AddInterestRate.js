@@ -63,8 +63,10 @@ class AddInterestRate extends Component {
    * @description called after render the component
    */
   componentDidMount() {
-    this.props.getICCAppliSelectList(() => { })
-    this.props.getPaymentTermsAppliSelectList(() => { })
+    if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
+      this.props.getICCAppliSelectList(() => { })
+      this.props.getPaymentTermsAppliSelectList(() => { })
+    }
     this.getDetail()
   }
 

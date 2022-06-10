@@ -93,10 +93,13 @@ class AddBOPDomestic extends Component {
   * @description Called before render the component
   */
   UNSAFE_componentWillMount() {
-    this.props.getUOMSelectList(() => { })
-    this.props.getBOPCategorySelectList(() => { })
     this.props.getPartSelectList(() => { })
-    this.props.getPlantSelectListByType(ZBC, () => { })
+    if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
+
+      this.props.getUOMSelectList(() => { })
+      this.props.getBOPCategorySelectList(() => { })
+      this.props.getPlantSelectListByType(ZBC, () => { })
+    }
   }
 
   /**
@@ -104,13 +107,16 @@ class AddBOPDomestic extends Component {
    * @description Called after rendering the component
    */
   componentDidMount() {
+    this.getDetails()
     this.setState({ inputLoader: true })
     this.props.fetchMaterialComboAPI(res => { });
-    this.props.getVendorTypeBOPSelectList(() => { this.setState({ inputLoader: false }) })
-    this.getDetails()
     this.props.getAllCity(cityId => {
       this.props.getCityByCountry(cityId, 0, () => { })
     })
+    if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
+
+      this.props.getVendorTypeBOPSelectList(() => { this.setState({ inputLoader: false }) })
+    }
 
     let obj = {
       MasterId: BOP_MASTER_ID,

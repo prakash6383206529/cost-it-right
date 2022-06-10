@@ -37,8 +37,10 @@ class AddProcessDrawer extends Component {
    * @description called after render the component
    */
   componentDidMount() {
-    this.props.getPlantSelectList(() => { })
-    this.props.getMachineSelectList(() => { })
+    if (!(this.props.isEditFlag || this.props.isViewFlag)) {
+      this.props.getMachineSelectList(() => { })
+      this.props.getPlantSelectList(() => { })
+    }
     this.getData()
   }
 
