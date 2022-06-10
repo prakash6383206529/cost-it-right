@@ -46,11 +46,13 @@ class AddVendorDrawer extends Component {
     * @description called before render the component
     */
     UNSAFE_componentWillMount() {
-        this.props.getVendorTypesSelectList()
-        this.props.getVendorPlantSelectList(() => { })
-        this.props.fetchCountryDataAPI(() => { })
-        this.props.fetchStateDataAPI(0, () => { })
-        this.props.fetchCityDataAPI(0, () => { })
+        if (!(this.props.isEditFlag || this.props.isViewFlag)) {
+            this.props.getVendorTypesSelectList()
+            this.props.getVendorPlantSelectList(() => { })
+            this.props.fetchCountryDataAPI(() => { })
+            this.props.fetchStateDataAPI(0, () => { })
+            this.props.fetchCityDataAPI(0, () => { })
+        }
     }
 
     /**
@@ -58,7 +60,9 @@ class AddVendorDrawer extends Component {
     * @description called after render the component
     */
     componentDidMount() {
-        this.props.getSupplierByIdAPI('', false, () => { })
+        if (!(this.props.isEditFlag || this.props.isViewFlag)) {
+            this.props.getSupplierByIdAPI('', false, () => { })
+        }
         this.getDetail()
     }
 

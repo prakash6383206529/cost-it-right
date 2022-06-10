@@ -80,8 +80,10 @@ class AddOverhead extends Component {
    */
   componentDidMount() {
     this.props.fetchModelTypeAPI('--Model Types--', res => { });
-    this.props.fetchCostingHeadsAPI('--Costing Heads--', res => { });
-    this.props.getClientSelectList(() => { })
+    if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
+      this.props.fetchCostingHeadsAPI('--Costing Heads--', res => { });
+      this.props.getClientSelectList(() => { })
+    }
     this.getDetails();
   }
 
