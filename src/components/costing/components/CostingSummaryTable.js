@@ -403,7 +403,6 @@ const CostingSummaryTable = (props) => {
       )
     }
   }
-  console.log(viewCostingData[0]?.currency?.currencyTitle, "console.log(viewCostingData[0]?.currency?.currencyTitle")
   /**
  * @method editCostingDetail
  * @description EDIT COSTING DETAIL (WILL GO TO COSTING DETAIL PAGE)
@@ -887,7 +886,7 @@ const CostingSummaryTable = (props) => {
                                   </div>
 
                                   <div class="action  text-right">
-                                    {(!viewMode && (!pdfHead && !drawerDetailPDF)) && (data.IsAssemblyCosting === true) && < button title='View BOM' className="hirarchy-btn mr-1 mb-0 align-middle" type={'button'} onClick={() => setIsOpenViewHirarchy(true)} />}
+                                    {((!pdfHead && !drawerDetailPDF)) && (data.IsAssemblyCosting === true) && < button title='View BOM' className="hirarchy-btn mr-1 mb-0 align-middle" type={'button'} onClick={() => setIsOpenViewHirarchy(true)} />}
                                     {((!viewMode && (!pdfHead && !drawerDetailPDF)) && EditAccessibility) && (data.status === DRAFT) && <button className="Edit mr-1 mb-0 align-middle" type={"button"} title={"Edit Costing"} onClick={() => editCostingDetail(index)} />}
                                     {((!viewMode && (!pdfHead && !drawerDetailPDF)) && AddAccessibility) && <button className="Add-file mr-1 mb-0 align-middle" type={"button"} title={"Add Costing"} onClick={() => addNewCosting(index)} />}
                                     {((!viewMode || (approvalMode && data.CostingHeading === '-')) && (!pdfHead && !drawerDetailPDF)) && <button type="button" class="CancelIcon mb-0 align-middle" title={"Remove Costing"} onClick={() => deleteCostingFromView(index)}></button>}
@@ -907,6 +906,7 @@ const CostingSummaryTable = (props) => {
                               <span className="d-block">PO Price</span>
                               <span className="d-block">Part Number</span>
                               <span className="d-block">Part Name</span>
+                              <span className="d-block">Revision Number</span>
                               <span className="d-block">Plant Name</span>
 
                             </td>
@@ -930,6 +930,7 @@ const CostingSummaryTable = (props) => {
                                     {/* USE PART NUMBER KEY HERE */}
                                     <span class="d-block">{data.partNumber}</span>
                                     <span class="d-block">{data.partName}</span>
+                                    <span class="d-block">{data.RevisionNumber}</span>
                                     <span class="d-block">{data.zbc === 0 ? data.plantName : data.destinationPlantName}</span>
 
                                   </td>
@@ -940,6 +941,7 @@ const CostingSummaryTable = (props) => {
                             <td>
                               <span class="d-block">Part Number</span>
                               <span class="d-block">Part Name</span>
+                              {/* <span className="d-block">Revision Number</span> */}
                             </td>
                             {viewCostingData &&
                               viewCostingData?.map((data, index) => {

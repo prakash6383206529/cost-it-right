@@ -163,7 +163,7 @@ function OPSImulation(props) {
         dispatch(runSimulationOnSelectedOverheadProfitCosting(obj, res => {
 
             setIsDisable(false)
-            if (res.data.Result) {
+            if (res?.data?.Result) {
                 setToken(res.data.Identity)
                 setShowVerifyPage(true)
             }

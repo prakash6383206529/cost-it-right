@@ -6,7 +6,7 @@ import Drawer from '@material-ui/core/Drawer';
 import { SearchableSelectHookForm, } from '../../layout/HookFormInputs';
 import { getVendorWithVendorCodeSelectList, getPlantBySupplier, getPlantSelectListByType } from '../../../actions/Common';
 import { getVBCDetailByVendorId, } from '../actions/Costing';
-import { checkVendorPlantConfigurable, getConfigurationKey, getVendorCode, } from '../../../helper';
+import { getConfigurationKey, getVendorCode, } from '../../../helper';
 import { EMPTY_GUID_0, ZBC } from '../../../config/constants';
 import WarningMessage from '../../common/WarningMessage';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -16,7 +16,6 @@ function AddVendorDrawer(props) {
   const { register, handleSubmit, formState: { errors }, reset, control } = useForm();
 
   const [vendor, setVendor] = useState([]);
-  const [vendorPlant, setVendorPlant] = useState([]);
   const [data, setData] = useState({});
   const [selectedVendors, setSelectedVendors] = useState([]);
   const [DestinationPlant, setDestinationPlant] = useState([]);
@@ -82,15 +81,6 @@ function AddVendorDrawer(props) {
       return temp;
     }
 
-    if (label === 'VendorPlant') {
-      filterPlantList && filterPlantList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
-        return null;
-      });
-      return temp;
-    }
-
     if (label === 'DestinationPlant') {
       plantSelectList && plantSelectList.map((item) => {
         if (item.Value === '0') return false
@@ -110,8 +100,6 @@ function AddVendorDrawer(props) {
 
     if (newValue && newValue !== '') {
       setVendor(newValue)
-      reset({ VendorPlant: '' })
-      setVendorPlant([])
       setData({})
 
       //IF VENDOR PLANT IS CONFIGURABLE
@@ -134,7 +122,6 @@ function AddVendorDrawer(props) {
 
     } else {
       setVendor([])
-      setVendorPlant([])
       setData({})
     }
   }
@@ -147,28 +134,6 @@ function AddVendorDrawer(props) {
   const handleDestinationPlantChange = (newValue) => {
     if (newValue && newValue !== '') {
       setDestinationPlant(newValue)
-    }
-  }
-
-  /**
-  * @method handleChangeVendorPlant
-  * @description  USED TO HANDLE CHANGE
-  */
-  const handleChangeVendorPlant = (newValue) => {
-    if (newValue && newValue !== '') {
-      setVendorPlant(newValue)
-      let data = {
-        VendorId: vendor.value,
-        VendorPlantId: getConfigurationKey().IsVendorPlantConfigurable ? newValue.value : "00000000-0000-0000-0000-000000000000",
-      }
-      dispatch(getVBCDetailByVendorId(data, (res) => {
-
-        if (res && res.data && res.data.Data) {
-          setData(res.data.Data)
-        }
-      }))
-    } else {
-      setVendorPlant([])
     }
   }
 
@@ -249,33 +214,13 @@ function AddVendorDrawer(props) {
                       disabled={vendor.length === 0 ? true : false}
                     />
                   </Col>}
-
-                {initialConfiguration?.IsVendorPlantConfigurable &&
-                  <Col md="12">
-                    <SearchableSelectHookForm
-                      label={"Vendor Plant"}
-                      name={"VendorPlant"}
-                      placeholder={"-Select-"}
-                      Controller={Controller}
-                      control={control}
-                      rules={{ required: true }}
-                      register={register}
-                      defaultValue={vendorPlant.length !== 0 ? vendorPlant : ""}
-                      options={renderListing("VendorPlant")}
-                      mandatory={true}
-                      handleChange={handleChangeVendorPlant}
-                      errors={errors.VendorPlant}
-                      disabled={vendor.length === 0 ? true : false}
-                    />
-                  </Col>}
-
               </Row>
               <Row>
-                <Col md="12"  className="mt-n2 re-warning">
-                <WarningMessage   message={`If you have same price settled at different plants, please use Destination Plant Code as 2000` } />
+                <Col md="12" className="mt-n2 re-warning">
+                  <WarningMessage message={`If you have same price settled at different plants, please use Destination Plant Code as 2000`} />
                 </Col>
-                </Row>
-              
+              </Row>
+
               <Row className="justify-content-between">
                 <div className="col-sm-12 text-right">
                   <button

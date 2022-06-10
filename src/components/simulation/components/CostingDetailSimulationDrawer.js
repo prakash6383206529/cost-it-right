@@ -206,7 +206,7 @@ function CostingDetailSimulationDrawer(props) {
                                         }
                                     </Row>
                                 }
-                                <CostingSummaryTable customClass="ml-0" simulationDrawer={true} simulationMode={props.simulationMode} viewMode={true} master={master} isSimulationDone={isSimulation} costingID={costingID} isSummaryDrawer={isSummaryDrawer} />
+                                <CostingSummaryTable customClass="ml-0" simulationDrawer={props.simulationDrawer} simulationMode={props.simulationMode} viewMode={true} master={master} isSimulationDone={isSimulation} costingID={costingID} isSummaryDrawer={isSummaryDrawer} />
                             </form>
                             <Row className="sf-btn-footer no-gutters justify-content-between">
                                 <div className="col-md-12 px-3">

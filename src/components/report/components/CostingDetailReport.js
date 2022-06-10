@@ -679,6 +679,7 @@ function ReportListing(props) {
                     selectedRowData={selectedRowData}
                     isSimulation={false}
                     simulationMode={false}
+                    simulationDrawer={false}
                 />
             }
             {isViewRM && <ViewRM
