@@ -127,13 +127,14 @@ class AddMachineRate extends Component {
 
       return true
     }
-
-    this.props.getTechnologySelectList(() => { })
-    this.props.getVendorListByVendorType(true, () => { })
-    this.props.getPlantSelectListByType(ZBC, () => { })
     this.props.getMachineTypeSelectList(() => { })
-    this.props.getUOMSelectList(() => { })
     this.props.getProcessesSelectList(() => { })
+    this.props.getUOMSelectList(() => { })
+    if (!(editDetails.isEditFlag || editDetails.isViewFlag)) {
+      this.props.getTechnologySelectList(() => { })
+      this.props.getVendorListByVendorType(true, () => { })
+      this.props.getPlantSelectListByType(ZBC, () => { })
+    }
 
     if (initialConfiguration.IsMachineNumberConfigure && editDetails && editDetails.isEditFlag === false) {
       this.props.checkAndGetMachineNumber('', res => {

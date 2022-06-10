@@ -91,10 +91,10 @@ class AddOperation extends Component {
    * @description called after render the component
    */
   componentDidMount() {
-
-    this.props.getTechnologySelectList(() => { })
-    this.props.getPlantSelectListByType(ZBC, () => { })
-
+    if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
+      this.props.getTechnologySelectList(() => { })
+      this.props.getPlantSelectListByType(ZBC, () => { })
+    }
     let obj = {
       MasterId: OPERATIONS_ID,
       DepartmentId: userDetails().DepartmentId,

@@ -119,10 +119,12 @@ class AddRMImport extends Component {
   */
   UNSAFE_componentWillMount() {
     this.props.getRawMaterialNameChild(() => { })
-    this.props.getUOMSelectList(() => { })
-    this.props.getSupplierList(() => { })
-    this.props.fetchPlantDataAPI(() => { })
     this.props.getCurrencySelectList(() => { })
+    if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
+      this.props.getUOMSelectList(() => { })
+      this.props.getSupplierList(() => { })
+      this.props.fetchPlantDataAPI(() => { })
+    }
   }
 
   /**
@@ -134,12 +136,14 @@ class AddRMImport extends Component {
     this.setState({ inputLoader: true })
     this.getDetails(data);
     this.props.change('NetLandedCost', 0)
-    this.props.getRawMaterialCategory(res => { });
     this.props.fetchSupplierCityDataAPI(res => { });
-    this.props.getVendorListByVendorType(false, () => { this.setState({ inputLoader: false }) })
-    this.props.getTechnologySelectList(() => { this.setState({ inputLoader: false }) })
-    this.props.fetchSpecificationDataAPI(0, () => { })
-    this.props.getPlantSelectListByType(ZBC, () => { })
+    if (!(data.isEditFlag || data.isViewFlag)) {
+      this.props.getRawMaterialCategory(res => { });
+      this.props.getVendorListByVendorType(false, () => { this.setState({ inputLoader: false }) })
+      this.props.getTechnologySelectList(() => { this.setState({ inputLoader: false }) })
+      this.props.fetchSpecificationDataAPI(0, () => { })
+      this.props.getPlantSelectListByType(ZBC, () => { })
+    }
 
     let obj = {
       MasterId: RM_MASTER_ID,

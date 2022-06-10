@@ -84,11 +84,13 @@ class AddPower extends Component {
    * @description Called after rendering the component
    */
   componentDidMount() {
-    this.props.getPlantListByState('', () => { })
-    this.props.getPlantBySupplier('', () => { })
     this.props.getPowerTypeSelectList(() => { })
-    this.props.getFuelComboData(() => { })
     this.props.getUOMSelectList(() => { })
+    if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
+      this.props.getFuelComboData(() => { })
+      this.props.getPlantListByState('', () => { })
+      this.props.getPlantBySupplier('', () => { })
+    }
     this.getDetails();
   }
 

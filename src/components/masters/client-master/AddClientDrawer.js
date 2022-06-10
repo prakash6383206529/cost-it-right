@@ -38,7 +38,9 @@ class AddClientDrawer extends Component {
     * @description called after render the component
     */
     componentDidMount() {
-        this.props.fetchCountryDataAPI(() => { })
+        if (!(this.props.isEditFlag || this.props.isViewFlag)) {
+            this.props.fetchCountryDataAPI(() => { })
+        }
         this.getDetail()
 
     }
