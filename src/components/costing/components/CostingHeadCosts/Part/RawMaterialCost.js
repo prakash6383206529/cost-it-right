@@ -1121,7 +1121,7 @@ function RawMaterialCost(props) {
                                   handleFinishWeightChange(e?.target?.value, index)
                                 }}
                                 errors={!gridData[index].FinishWeight && errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].FinishWeight : ''}
-                                disabled={(CostingViewMode || IsLocked || IsCopyCostingMode) ? true : false}
+                                disabled={(CostingViewMode || IsLocked) ? true : false}
                               />
                             </td>
 
