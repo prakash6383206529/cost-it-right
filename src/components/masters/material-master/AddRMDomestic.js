@@ -120,10 +120,11 @@ class AddRMDomestic extends Component {
   UNSAFE_componentWillMount() {
     this.props.getRawMaterialNameChild(() => { })
     this.props.getUOMSelectList(() => { })
-    this.props.getSupplierList(() => { })
-    this.props.fetchPlantDataAPI(() => { })
-    this.props.getRMGradeSelectListByRawMaterial('', (res) => { })
-
+    if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
+      this.props.getSupplierList(() => { })
+      this.props.fetchPlantDataAPI(() => { })
+      this.props.getRMGradeSelectListByRawMaterial('', (res) => { })
+    }
   }
 
   /**
@@ -135,13 +136,15 @@ class AddRMDomestic extends Component {
     const { data } = this.props
     this.getDetails(data)
     this.props.getRawMaterialCategory((res) => { })
-    this.props.getVendorListByVendorType(false, () => { this.setState({ inputLoader: false }) })
-    this.props.getTechnologySelectList(() => { this.setState({ inputLoader: false }) })
-    this.props.fetchSpecificationDataAPI(0, () => { })
-    this.props.getPlantSelectListByType(ZBC, () => { })
     this.props.getAllCity(cityId => {
       this.props.getCityByCountry(cityId, 0, () => { })
     })
+    if (!(data.isEditFlag || data.isViewFlag)) {
+      this.props.fetchSpecificationDataAPI(0, () => { })
+      this.props.getVendorListByVendorType(false, () => { this.setState({ inputLoader: false }) })
+      this.props.getTechnologySelectList(() => { this.setState({ inputLoader: false }) })
+      this.props.getPlantSelectListByType(ZBC, () => { })
+    }
     let obj = {
       MasterId: RM_MASTER_ID,
       DepartmentId: userDetails().DepartmentId,

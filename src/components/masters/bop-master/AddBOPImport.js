@@ -101,10 +101,12 @@ class AddBOPImport extends Component {
   * @description Called before render the component
   */
   UNSAFE_componentWillMount() {
-    this.props.getUOMSelectList(() => { })
-    this.props.getBOPCategorySelectList(() => { })
-    this.props.getPartSelectList(() => { })
-    this.props.getPlantSelectListByType(ZBC, () => { })
+    if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
+      this.props.getUOMSelectList(() => { })
+      this.props.getBOPCategorySelectList(() => { })
+      this.props.getPartSelectList(() => { })
+      this.props.getPlantSelectListByType(ZBC, () => { })
+    }
   }
 
   /**
@@ -114,8 +116,10 @@ class AddBOPImport extends Component {
   componentDidMount() {
     this.setState({ inputLoader: true })
     this.props.fetchMaterialComboAPI(res => { });
-    this.props.getVendorTypeBOPSelectList(() => { this.setState({ inputLoader: false }) })
-    this.props.getCurrencySelectList(() => { })
+    if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
+      this.props.getVendorTypeBOPSelectList(() => { this.setState({ inputLoader: false }) })
+      this.props.getCurrencySelectList(() => { })
+    }
     this.getDetails()
 
     let obj = {
