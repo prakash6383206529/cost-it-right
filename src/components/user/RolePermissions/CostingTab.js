@@ -21,7 +21,7 @@ class CostingTab extends Component {
       Modules: [],
       actionData: [],
       actionSelectList: [],
-      checkBox: true
+      checkBox: false
     }
   }
 
@@ -115,6 +115,7 @@ class CostingTab extends Component {
   * @description used to checked module
   */
   moduleHandler = (index) => {
+
     //alert('hi')
     const { Modules, } = this.state;
     const isModuleChecked = Modules[index].IsChecked;
@@ -131,7 +132,7 @@ class CostingTab extends Component {
 
       tempArray = Object.assign([...Modules], { [index]: Object.assign({}, Modules[index], { IsChecked: false, Actions: actionArray }) })
 
-      this.setState({ Modules: tempArray })
+      this.setState({ Modules: tempArray, checkBox: false })
     } else {
       actionArray = actionRow && actionRow.map((item, index) => {
         item.IsChecked = true;
@@ -140,7 +141,7 @@ class CostingTab extends Component {
 
       tempArray = Object.assign([...Modules], { [index]: Object.assign({}, Modules[index], { IsChecked: true, Actions: actionArray }) })
 
-      this.setState({ Modules: tempArray })
+      this.setState({ Modules: tempArray, checkBox: false })
     }
   }
 
@@ -182,14 +183,14 @@ class CostingTab extends Component {
         return item;
       })
       tempArray = Object.assign([...Modules], { [parentIndex]: Object.assign({}, Modules[parentIndex], { IsChecked: false, Actions: actionArray }) })
-      this.setState({ Modules: tempArray, })
+      this.setState({ Modules: tempArray, checkBox: false })
     } else {
       let actionArray = actionRows && actionRows.map((item, index) => {
         item.IsChecked = true;
         return item;
       })
       tempArray = Object.assign([...Modules], { [parentIndex]: Object.assign({}, Modules[parentIndex], { IsChecked: true, Actions: actionArray }) })
-      this.setState({ Modules: tempArray, })
+      this.setState({ Modules: tempArray, checkBox: false })
     }
   }
 
@@ -198,7 +199,7 @@ class CostingTab extends Component {
     let booleanVal = this.state.checkBox
     this.setState({ checkBox: !booleanVal })
 
-    let isCheckedSelectAll = checkBox
+    let isCheckedSelectAll = !booleanVal
     let actionRows
     let actionArray = Modules && Modules.map((item, index) => {
       if (item.Sequence === 0) {
@@ -366,6 +367,7 @@ class CostingTab extends Component {
                       <input
                         type="checkbox"
                         value={"All"}
+                        checked={this.state.checkBox}
                         onClick={() =>
                           this.selectAllHandlerEvery()
                         }
