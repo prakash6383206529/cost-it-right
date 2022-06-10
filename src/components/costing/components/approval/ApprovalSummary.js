@@ -449,7 +449,11 @@ function ApprovalSummary(props) {
                         {approvalDetails.NewPOPrice !== null ? checkForDecimalAndNull(approvalDetails.NewPOPrice, initialConfiguration?.NoOfDecimalForPrice) : '-'}
                       </td>
                       <td>
-                        {approvalDetails.Variance !== null ? checkForDecimalAndNull(approvalDetails.Variance, initialConfiguration?.NoOfDecimalForPrice) : '-'}
+                        {approvalDetails.Variance !== null ?
+                          <div>
+                            {approvalDetails.Variance ? (approvalDetails.OldPOPrice > approvalDetails.NewPOPrice ? <span className='positive-sign'>-</span> : <span className='positive-sign'>+</span>) : ''}
+                            {Math.abs(checkForDecimalAndNull(approvalDetails.Variance, initialConfiguration?.NoOfDecimalForPrice))}</div>
+                          : '-'}
                       </td>
                       <td>
                         {approvalDetails.ConsumptionQuantity !== null ? approvalDetails.ConsumptionQuantity : '-'}
