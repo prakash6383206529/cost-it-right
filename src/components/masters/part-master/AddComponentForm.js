@@ -88,7 +88,7 @@ class AddComponentForm extends Component {
   * @description Used show listing of unit of measurement
   */
   renderListing = (label) => {
-    const { componentPartSelectList } = this.props;
+    const { componentPartSelectList, partAssembly } = this.props;
     const { BOMViewerData } = this.props;
     let tempArr = [];
     BOMViewerData && BOMViewerData.map(el => {
@@ -101,8 +101,7 @@ class AddComponentForm extends Component {
     const temp = [];
     if (label === 'part') {
       componentPartSelectList && componentPartSelectList.map(item => {
-
-        if (item.Value === '0' || tempArr.includes(item.Value)) return false;
+        if (item.Value === '0' || tempArr.includes(item.Value) || (partAssembly && (item.Value === partAssembly.value))) return false;
         // 
         temp.push({ label: item.Text, value: item.Value })
         return null;
@@ -185,11 +184,11 @@ class AddComponentForm extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, isEditFlag, partAssembly } = this.props;
+    const { handleSubmit, isEditFlag } = this.props;
     const filterList = (inputValue) => {
       let tempArr = []
       tempArr = this.renderListing("part").filter(i =>
-        i.label !== null && i.label !== partAssembly.label && i.label.toLowerCase().includes(inputValue.toLowerCase())
+        i.label !== null && i.label.toLowerCase().includes(inputValue.toLowerCase())
       );
       if (tempArr.length <= 100) {
         return tempArr
