@@ -1095,11 +1095,11 @@ export const MHRMoreZBC = [
 
 export const CLIENT_DOWNLOAD_EXCEl = [
     { label: "CompanyName", value: "CompanyName", },
-    { label: "ClientName", value: "ClientName", },
-    { label: "ClientEmailId", value: "ClientEmailId", },
-    { label: "CountryName", value: "CountryName", },
-    { label: "StateName", value: "StateName", },
-    { label: "CityName", value: "CityName", },
+    { label: "ContactName", value: "ClientName", },
+    { label: "EmailId", value: "ClientEmailId", },
+    { label: "Country", value: "CountryName", },
+    { label: "State", value: "StateName", },
+    { label: "City", value: "CityName", },
 ]
 
 
