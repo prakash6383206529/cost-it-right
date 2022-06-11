@@ -517,7 +517,7 @@ function ApprovalSummary(props) {
                   */}
 
             <Row className="mb-3">
-              <Col md="6"> <HeaderTitle title={'Last Revision Data:'} /></Col>
+              <Col md="6"><div className="left-border">{'Last Revision Data:'}</div></Col>
               <Col md="6">
                 <div className={'right-details'}>
                   <button className="btn btn-small-primary-circle ml-1 float-right" type="button" onClick={() => { setLastRevisionDataAcc(!lastRevisionDataAcc) }}>
