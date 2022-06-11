@@ -11,6 +11,7 @@ import { ASSEMBLY } from '../../../config/constants';
 import { getRandomSixDigit } from '../../../helper/util';
 import VisualAdDrawer from './VisualAdDrawer';
 import _ from 'lodash'
+import LoaderCustom from '../../common/LoaderCustom';
 
 class BOMViewer extends Component {
   constructor(props) {
@@ -32,7 +33,8 @@ class BOMViewer extends Component {
       bomFromAPI: [],
       isCancel: false,
       isSaved: false,
-      partType: ''
+      partType: '',
+      isLoader: false
 
     }
   }
@@ -44,6 +46,7 @@ class BOMViewer extends Component {
   componentDidMount() {
     const { isEditFlag, PartId, NewAddedLevelOneChilds, avoidAPICall } = this.props;
     if (isEditFlag && !avoidAPICall) {
+      this.setState({ isLoader: true })
       this.props.getBOMViewerTree(PartId, res => {
         if (res && res.status === 200) {
           let Data = res.data.Data;
@@ -53,7 +56,9 @@ class BOMViewer extends Component {
           tempArray && tempArray.map((el, i) => {
             if (el.Level === 'L1') {
               outputArray.push(el.Input)
+              this.setState({ isLoader: false })
             }
+            this.setState({ isLoader: false })
             return null;
           })
 
@@ -305,6 +310,7 @@ class BOMViewer extends Component {
                   ></div>
                 </Col>
               </Row>
+              {this.state.isLoader && <LoaderCustom />}
               <form
                 noValidate
                 className="form bom-drawer-form"
@@ -356,6 +362,7 @@ class BOMViewer extends Component {
                       </Col>
                     )}
                 </Row>
+
                 <Row className="flowspace-row">
                   <Flowspace
                     theme="#2196f3"
@@ -445,7 +452,7 @@ class BOMViewer extends Component {
                   </Flowspace>
                 </Row>
 
-                <Row className="sf-btn-footer no-gutters justify-content-between">
+                {!isFromVishualAd && <Row className="sf-btn-footer no-gutters justify-content-between">
                   <div className="col-sm-12 text-right bluefooter-butn">
                     <button
                       type={"button"}
@@ -455,17 +462,15 @@ class BOMViewer extends Component {
                       <div className={'cancel-icon'}></div>
                       {"Cancel"}
                     </button>
-                    {!isFromVishualAd && (
-                      <button
-                        type="submit"
-                        className="submit-button mr5 save-btn"
-                      >
-                        <div className={"save-icon"}></div>
-                        {"Save"}
-                      </button>
-                    )}
+                    <button
+                      type="submit"
+                      className="submit-button mr5 save-btn"
+                    >
+                      <div className={"save-icon"}></div>
+                      {"Save"}
+                    </button>
                   </div>
-                </Row>
+                </Row>}
               </form>
             </div>
             {isOpenChildDrawer && (
