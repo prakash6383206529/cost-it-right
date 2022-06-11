@@ -117,10 +117,12 @@ class AddRMImport extends Component {
   */
   UNSAFE_componentWillMount() {
     this.props.getRawMaterialNameChild(() => { })
-    this.props.getUOMSelectList(() => { })
-    this.props.getSupplierList(() => { })
-    this.props.fetchPlantDataAPI(() => { })
     this.props.getCurrencySelectList(() => { })
+    if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
+      this.props.getUOMSelectList(() => { })
+      this.props.getSupplierList(() => { })
+      this.props.fetchPlantDataAPI(() => { })
+    }
   }
 
   /**
@@ -129,15 +131,17 @@ class AddRMImport extends Component {
    */
   componentDidMount() {
     const { data } = this.props;
-    this.setState({ inputLoader: true })
     this.getDetails(data);
     this.props.change('NetLandedCost', 0)
-    this.props.getRawMaterialCategory(res => { });
     this.props.fetchSupplierCityDataAPI(res => { });
-    this.props.getVendorListByVendorType(false, () => { this.setState({ inputLoader: false }) })
-    this.props.getTechnologySelectList(() => { this.setState({ inputLoader: false }) })
-    this.props.fetchSpecificationDataAPI(0, () => { })
-    this.props.getPlantSelectListByType(ZBC, () => { })
+    if (!(data.isEditFlag || data.isViewFlag)) {
+      this.setState({ inputLoader: true })
+      this.props.getRawMaterialCategory(res => { });
+      this.props.getVendorListByVendorType(false, () => { this.setState({ inputLoader: false }) })
+      this.props.getTechnologySelectList(() => { this.setState({ inputLoader: false }) })
+      this.props.fetchSpecificationDataAPI(0, () => { })
+      this.props.getPlantSelectListByType(ZBC, () => { })
+    }
 
     let obj = {
       MasterId: RM_MASTER_ID,
@@ -435,12 +439,7 @@ class AddRMImport extends Component {
       this.props.getRMImportDataById(data, true, res => {
         if (res && res.data && res.data.Result) {
           const Data = res.data.Data;
-          this.setState({ DataToChange: Data, inputLoader: true })
-          if (Data.IsVendor) {
-            this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
-          } else {
-            this.props.getVendorListByVendorType(Data.IsVendor, () => { this.setState({ inputLoader: false }) })
-          }
+          this.setState({ DataToChange: Data })
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           this.setState({ minEffectiveDate: Data.EffectiveDate })
           this.props.getRMGradeSelectListByRawMaterial(Data.RawMaterial, res => {

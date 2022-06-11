@@ -61,11 +61,13 @@ class AddLabour extends Component {
    */
   componentDidMount() {
     this.setState({ inputLoader: true })
-    this.props.getFuelComboData(() => { })
-    this.props.getPlantListByState('', () => { })
-    this.props.getMachineTypeSelectList(() => { })
     this.props.labourTypeVendorSelectList(() => { this.setState({ inputLoader: false }) })
-    this.props.getLabourTypeByMachineTypeSelectList('', () => { })
+    if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
+      this.props.getLabourTypeByMachineTypeSelectList('', () => { })
+      this.props.getFuelComboData(() => { })
+      this.props.getPlantListByState('', () => { })
+      this.props.getMachineTypeSelectList(() => { })
+    }
     this.getDetail()
   }
 

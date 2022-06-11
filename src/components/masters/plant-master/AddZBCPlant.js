@@ -41,16 +41,20 @@ class AddZBCPlant extends Component {
   * @description Used to cancel modal
   */
   componentDidMount() {
-    this.props.fetchCountryDataAPI(() => { })
-    this.props.getComapanySelectList(() => { })
+    if (!(this.props.isEditFlag || this.props.isViewFlag)) {
+      this.props.fetchCountryDataAPI(() => { })
+      this.props.getComapanySelectList(() => { })
+    }
 
     this.getDetails()
 
   }
 
   UNSAFE_componentWillMount() {
-    this.props.fetchStateDataAPI(0, () => { })
     this.props.fetchCityDataAPI(0, () => { })
+    if (!(this.props.isEditFlag || this.props.isViewFlag)) {
+      this.props.fetchStateDataAPI(0, () => { })
+    }
   }
 
   /**
