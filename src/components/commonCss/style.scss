@@ -7284,11 +7284,26 @@ body {
       min-width: 1140px;
     }
   }
+  .tool-cost-container {
+    .sticky-btn-footer {
+      margin: 0 -10px -12px !important;
+      .bluefooter-butn {
+       padding: 0 15px !important;
+      }
+    }
+  }
 }
 
 .view-rm-cost {
   .container {
     max-width: 1280px;
+  }
+}
+.tool-cost-container {
+  .sticky-btn-footer {
+    .bluefooter-butn {
+      padding: 0 15px !important;
+    }
   }
 }
 
@@ -8363,3 +8378,4 @@ table.group-process-table {
   font-weight: 600;
   margin-right: 1px;
 }
+
