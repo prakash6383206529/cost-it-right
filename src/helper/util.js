@@ -933,6 +933,8 @@ export const currency = (value) => {
       return "₫"
     case "INR":
       return "₹"
+    case "THB":
+      return "฿"
     default:
       break;
   }
