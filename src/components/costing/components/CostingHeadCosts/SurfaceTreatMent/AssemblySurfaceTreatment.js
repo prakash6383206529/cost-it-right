@@ -118,10 +118,10 @@ function AssemblySurfaceTreatment(props) {
     <>
       <tr>
         <div className="accordian-row" style={{ display: 'contents' }}
-          onClick={() => { toggle(item.BOMLevel, item.PartNumber, true) }} // UNCOMMENT IT WHEN CHILD PART SURFACE TREATMENT START
         >
-
-          <td className='part-overflow'>
+          <td className='part-overflow'
+            onClick={() => { toggle(item.BOMLevel, item.PartNumber, true) }} // UNCOMMENT IT WHEN CHILD PART SURFACE TREATMENT START 
+          >
             <span className={`part-name ${item && item.BOMLevel}`} title={item && item.PartNumber}>
               {item && item.PartNumber}<div className={`${item.IsOpen ? 'Open' : 'Close'}`}></div>
             </span>
