@@ -6,7 +6,7 @@ import { connect } from "react-redux";
 import { Loader } from "../common/Loader";
 import {
   minLength3, minLength6, minLength10, maxLength11, maxLength12, required, email, minLength7, maxLength18,
-  maxLength6, checkWhiteSpaces, maxLength15, postiveNumber, maxLength80, maxLength5, acceptAllExceptSingleSpecialCharacter
+  maxLength6, checkWhiteSpaces, maxLength15, postiveNumber, maxLength80, maxLength5, acceptAllExceptSingleSpecialCharacter, strongPassword,
 } from "../../helper/validation";
 import { renderPasswordInputField, focusOnError, renderEmailInputField, renderText, searchableSelect, renderMultiSelectField, renderNumberInputField, } from "../layout/FormInputs";
 import {
@@ -1351,7 +1351,7 @@ class UserRegistration extends Component {
                               placeholder="Enter"
                               component={renderPasswordInputField}
                               onChange={this.passwordPatternHandler}
-                              validate={[required, minLength6, maxLength18, checkWhiteSpaces]}
+                              validate={[required, minLength6, maxLength18, checkWhiteSpaces, strongPassword]}
 
                               isShowHide={this.state.isShowHidePassword}
                               showHide={this.showHidePasswordHandler}
