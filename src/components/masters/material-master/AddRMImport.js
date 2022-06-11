@@ -131,11 +131,11 @@ class AddRMImport extends Component {
    */
   componentDidMount() {
     const { data } = this.props;
-    this.setState({ inputLoader: true })
     this.getDetails(data);
     this.props.change('NetLandedCost', 0)
     this.props.fetchSupplierCityDataAPI(res => { });
     if (!(data.isEditFlag || data.isViewFlag)) {
+      this.setState({ inputLoader: true })
       this.props.getRawMaterialCategory(res => { });
       this.props.getVendorListByVendorType(false, () => { this.setState({ inputLoader: false }) })
       this.props.getTechnologySelectList(() => { this.setState({ inputLoader: false }) })
@@ -439,12 +439,7 @@ class AddRMImport extends Component {
       this.props.getRMImportDataById(data, true, res => {
         if (res && res.data && res.data.Result) {
           const Data = res.data.Data;
-          this.setState({ DataToChange: Data, inputLoader: true })
-          if (Data.IsVendor) {
-            this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
-          } else {
-            this.props.getVendorListByVendorType(Data.IsVendor, () => { this.setState({ inputLoader: false }) })
-          }
+          this.setState({ DataToChange: Data })
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           this.setState({ minEffectiveDate: Data.EffectiveDate })
           this.props.getRMGradeSelectListByRawMaterial(Data.RawMaterial, res => {

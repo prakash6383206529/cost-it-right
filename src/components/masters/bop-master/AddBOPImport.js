@@ -114,9 +114,9 @@ class AddBOPImport extends Component {
    * @description Called after rendering the component
    */
   componentDidMount() {
-    this.setState({ inputLoader: true })
     this.props.fetchMaterialComboAPI(res => { });
     if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
+      this.setState({ inputLoader: true })
       this.props.getVendorTypeBOPSelectList(() => { this.setState({ inputLoader: false }) })
       this.props.getCurrencySelectList(() => { })
     }
@@ -202,12 +202,6 @@ class AddBOPImport extends Component {
 
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           this.setState({ minEffectiveDate: Data.EffectiveDate })
-          this.setState({ inputLoader: true })
-          if (Data.IsVendor) {
-            this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
-          } else {
-            this.props.getVendorTypeBOPSelectList(() => { this.setState({ inputLoader: false }) })
-          }
           this.props.getPlantBySupplier(Data.Vendor, () => { })
 
           setTimeout(() => {
