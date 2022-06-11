@@ -329,19 +329,19 @@ function ApprovalSummary(props) {
                         </span>
                       </th>
                       <th>
-                        <span className="d-block grey-text">{`ECN No:`}</span>
+                        <span className="d-block grey-text">{`ECN No.:`}</span>
                         <span className="d-block">
                           {partDetail.ECNNumber ? partDetail.ECNNumber : '-'}
                         </span>
                       </th>
                       <th>
-                        <span className="d-block grey-text">{`Drawing No:`}</span>
+                        <span className="d-block grey-text">{`Drawing No.:`}</span>
                         <span className="d-block">
                           {partDetail.DrawingNumber ? partDetail.DrawingNumber : '-'}
                         </span>
                       </th>
                       <th>
-                        <span className="d-block grey-text">{`Revision No:`}</span>
+                        <span className="d-block grey-text">{`Revision No.:`}</span>
                         <span className="d-block">
                           {partDetail.RevisionNumber
                             ? partDetail.RevisionNumber
@@ -385,32 +385,32 @@ function ApprovalSummary(props) {
                 <Table responsive className="table cr-brdr-main" size="sm">
                   <thead>
                     <tr>
-                      <th>{`Costing ID`}</th>
+                      <th>{`Costing ID:`}</th>
                       {approvalDetails.TypeOfCosting === 'VBC' && (
-                        <th>{`ZBC/Vendor Name`}</th>
+                        <th>{`ZBC/Vendor Name:`}</th>
                       )}
                       {
                         checkVendorPlantConfigurable() &&
                         <th>
-                          {approvalDetails.TypeOfCosting === 'VBC' ? 'Vendor Plant' : 'Plant'}{` Code`}
+                          {approvalDetails.TypeOfCosting === 'VBC' ? 'Vendor Plant' : 'Plant'}{` Code:`}
                         </th>
                       }
                       {
                         (initialConfiguration?.IsDestinationPlantConfigure && approvalDetails.TypeOfCosting === 'VBC') &&
                         <th>
-                          {`Plant(Code)`}
+                          {`Plant(Code):`}
                         </th>
                       }
-                      <th>{`SOB`}</th>
+                      <th>{`SOB(%):`}</th>
                       {/* <th>{`ECN Ref No`}</th> */}
-                      <th>{`Old/Current Price`}</th>
+                      <th>{`Old/Current Price:`}</th>
                       <th>{`New/Revised Price:`}</th>
-                      <th>{`Variance`}</th>
-                      <th>{`Consumption Quantity`}</th>
-                      <th>{`Remaining Quantity`}</th>
-                      <th>{`Effective Date`}</th>
-                      <th>{`Annual Impact`}</th>
-                      <th>{`Impact of The Year`}</th>
+                      <th>{`Variance:`}</th>
+                      <th>{`Consumption Quantity:`}</th>
+                      <th>{`Remaining Quantity:`}</th>
+                      <th>{`Effective Date:`}</th>
+                      <th>{`Annual Impact:`}</th>
+                      <th>{`Impact of The Year:`}</th>
 
                     </tr>
                   </thead>
