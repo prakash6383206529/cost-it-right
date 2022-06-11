@@ -1491,7 +1491,7 @@ const CostingSummaryTable = (props) => {
                             viewCostingData?.map((data, index) => {
                               return <td>
                                 {data.CostingHeading === VARIANCE && (isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.nPOPrice > viewCostingData[1]?.nPOPrice ? <span className='positive-sign'>+</span> : '' : '')}
-                                <span>{currency(getConfigurationKey().BaseCurrency)}{checkForDecimalAndNull(data?.nPOPrice, initialConfiguration.NoOfDecimalForPrice)}</span>
+                                <span><span className='currency-symbol'>{currency(getConfigurationKey().BaseCurrency)}</span>{checkForDecimalAndNull(data.nPOPrice, initialConfiguration.NoOfDecimalForPrice)}</span>
                               </td>
                             })}
 
