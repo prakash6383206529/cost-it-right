@@ -408,8 +408,8 @@ function TabToolCost(props) {
           <Col md="12">
             <div className="shadow-lgg login-formg">
 
-              <Row className="m-0  costing-border border-bottom-0 align-items-center ">
-                <Col md="9" className="px-30 py-4 border-section">
+              <Row className="m-0 py-3 costing-border border-bottom-0 align-items-center ">
+                <Col md="9" className="px-3 border-section">
                   <span className="d-inline-block pr-2 text-dark-blue">Applicability: </span>
                   <div className="switch d-inline-flex">
                     <label className="switch-level d-inline-flex w-auto">
@@ -437,26 +437,27 @@ function TabToolCost(props) {
                     </label>
                   </div>
                 </Col>
-                <Col md="3" className="px-30 py-4 border-section text-dark-blue pl10">
-                  {"Net Tool Cost"}
-                  {IsApplicableProcessWise && <span className="d-inline-block pl-2 font-weight-500">{checkForDecimalAndNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost, initialConfiguration.NoOfDecimalForPrice)}</span>}
-
+                <Col md="3" className="border-section pl-0 d-flex justify-content-between align-items-center text-dark-blue">
+                  <div>
+                    {"Net Tool Cost:"}
+                    {IsApplicableProcessWise && <span className="d-inline-block pl-1 font-weight-500">{checkForDecimalAndNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost, initialConfiguration.NoOfDecimalForPrice)}</span>}
+                  </div>
                   {IsApplicableProcessWise &&
-                    <Col >
+                    <>
                       {!CostingViewMode && <button
                         type="button"
                         className={'user-btn'}
                         onClick={DrawerToggle}
                       >
                         <div className={'plus'}></div>ADD TOOL</button>}
-                    </Col>
+                    </>
                   }
                 </Col>
               </Row>
 
               <form
                 noValidate
-                className="form"
+                className="form costing-border border-top-0 px-3"
               >
                 {!IsApplicableProcessWise &&
                   <Row>
@@ -503,9 +504,6 @@ function TabToolCost(props) {
                       {/* <----------------------START AG Grid convert on 21-10-2021---------------------------------------------> */}
                       <div className="ag-grid-react">
                         <div className={`ag-grid-wrapper height-width-wrapper ${gridData && gridData?.length <= 0 ? "overlay-contain" : ""}`}>
-                          <div className="ag-grid-header">
-                            {/* <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => onFilterTextBoxChanged(e)} /> */}
-                          </div>
                           <div
                             className="ag-theme-material">
                             <AgGridReact
