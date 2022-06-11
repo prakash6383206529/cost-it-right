@@ -88,6 +88,7 @@ const CostingSummaryTable = (props) => {
   const { initialConfiguration, topAndLeftMenuData } = useSelector(state => state.auth)
   const [pdfName, setPdfName] = useState('')
   const [IsOpenViewHirarchy, setIsOpenViewHirarchy] = useState(false);
+  const [viewBomPartId, setViewBomPartId] = useState("");
 
   const componentRef = useRef();
   const onBeforeContentResolve = useRef(null)
@@ -428,6 +429,12 @@ const CostingSummaryTable = (props) => {
 
       }))
     }
+  }
+
+
+  const viewBomCostingDetail = (index) => {
+    setIsOpenViewHirarchy(true)
+    setViewBomPartId(viewCostingData[index].partId)
   }
 
   /**
@@ -884,7 +891,7 @@ const CostingSummaryTable = (props) => {
                                   </div>
 
                                   <div class="action  text-right">
-                                    {((!pdfHead && !drawerDetailPDF)) && (data.IsAssemblyCosting === true) && < button title='View BOM' className="hirarchy-btn mr-1 mb-0 align-middle" type={'button'} onClick={() => setIsOpenViewHirarchy(true)} />}
+                                    {((!pdfHead && !drawerDetailPDF)) && (data.IsAssemblyCosting === true) && < button title='View BOM' className="hirarchy-btn mr-1 mb-0 align-middle" type={'button'} onClick={() => viewBomCostingDetail(index)} />}
                                     {((!viewMode && (!pdfHead && !drawerDetailPDF)) && EditAccessibility) && (data.status === DRAFT) && <button className="Edit mr-1 mb-0 align-middle" type={"button"} title={"Edit Costing"} onClick={() => editCostingDetail(index)} />}
                                     {((!viewMode && (!pdfHead && !drawerDetailPDF)) && AddAccessibility) && <button className="Add-file mr-1 mb-0 align-middle" type={"button"} title={"Add Costing"} onClick={() => addNewCosting(index)} />}
                                     {((!viewMode || (approvalMode && data.CostingHeading === '-')) && (!pdfHead && !drawerDetailPDF)) && <button type="button" class="CancelIcon mb-0 align-middle" title={"Remove Costing"} onClick={() => deleteCostingFromView(index)}></button>}
@@ -1731,7 +1738,7 @@ const CostingSummaryTable = (props) => {
           closeDrawer={closeVisualDrawer}
           isEditFlag={true}
           // USE PART NUMBER KEY HERE
-          PartId={viewCostingData[0].partId}
+          PartId={viewBomPartId}
           anchor={'right'}
           isFromVishualAd={true}
           NewAddedLevelOneChilds={[]}
