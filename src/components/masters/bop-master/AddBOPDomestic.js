@@ -109,13 +109,12 @@ class AddBOPDomestic extends Component {
    */
   componentDidMount() {
     this.getDetails()
-    this.setState({ inputLoader: true })
     this.props.fetchMaterialComboAPI(res => { });
     this.props.getAllCity(cityId => {
       this.props.getCityByCountry(cityId, 0, () => { })
     })
     if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
-
+      this.setState({ inputLoader: true })
       this.props.getVendorTypeBOPSelectList(() => { this.setState({ inputLoader: false }) })
     }
 
@@ -202,16 +201,7 @@ class AddBOPDomestic extends Component {
           this.setState({ DataToCheck: Data })
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           this.setState({ minEffectiveDate: Data.EffectiveDate })
-          this.setState({ inputLoader: true })
-          if (Data.IsVendor) {
-            this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
-          } else {
-            this.props.getVendorTypeBOPSelectList(() => { this.setState({ inputLoader: false }) })
-          }
-
           this.props.getPlantBySupplier(Data.Vendor, () => { })
-          //this.props.getCityBySupplier(Data.Vendor, () => { })
-
           setTimeout(() => {
             const { cityList, UOMSelectList } = this.props;
             let plantObj;

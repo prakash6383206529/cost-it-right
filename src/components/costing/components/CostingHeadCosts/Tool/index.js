@@ -531,7 +531,7 @@ function Tool(props) {
   */
   return (
     <>
-      <div className="user-page p-0">
+      <div className="user-page tool-cost-container p-0">
         <div>
 
           <form noValidate className="form" >

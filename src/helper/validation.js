@@ -354,4 +354,7 @@ export const CheckIsCostingDateSelected = (costingDate) => {
     return !IsSelected;
 }
 
-
+export const strongPassword = value =>
+    value && /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{6,}$/.test(value)
+        ? ""
+        : 'Password should contain at-least : | one lower case letter(a-z) | one upper case letter(A-Z) | one digit(0-9) | one special character.';

@@ -89,6 +89,7 @@ const CostingSummaryTable = (props) => {
   const { initialConfiguration, topAndLeftMenuData } = useSelector(state => state.auth)
   const [pdfName, setPdfName] = useState('')
   const [IsOpenViewHirarchy, setIsOpenViewHirarchy] = useState(false);
+  const [viewBomPartId, setViewBomPartId] = useState("");
 
   const componentRef = useRef();
   const onBeforeContentResolve = useRef(null)
@@ -136,7 +137,7 @@ const CostingSummaryTable = (props) => {
       setIsViewRM(false)
       setIsViewConversionCost(false)
       setViewBOP(false)
-      setPdfName(viewCostingData[0].partNumber)
+      setPdfName(viewCostingData[0]?.partNumber)
     }
   }, [viewCostingData])
 
@@ -432,6 +433,12 @@ const CostingSummaryTable = (props) => {
     }
   }
 
+
+  const viewBomCostingDetail = (index) => {
+    setIsOpenViewHirarchy(true)
+    setViewBomPartId(viewCostingData[index].partId)
+  }
+
   /**
    * @method addComparisonDrawerToggle
    * @description HANDLE ADD TO COMPARISON DRAWER TOGGLE
@@ -647,8 +654,8 @@ const CostingSummaryTable = (props) => {
     let effectiveDateArray = []
     let plantArray = []
 
-    viewCostingData.map(item => vendorArray.push(item.vendorId))
-    viewCostingData && viewCostingData.map((item) => {
+    viewCostingData?.map(item => vendorArray.push(item.vendorId))
+    viewCostingData && viewCostingData?.map((item) => {
       vendorArray.push(item.vendorId)
       effectiveDateArray.push(item.EffectiveDate)
       plantArray.push(item.PlantCode)
@@ -851,7 +858,7 @@ const CostingSummaryTable = (props) => {
                         }
 
                         {viewCostingData &&
-                          viewCostingData.map((data, index) => {
+                          viewCostingData?.map((data, index) => {
                             const title = data.zbc === 0 ? data.plantName : (data.zbc === 1 ? data.vendorName + "(" + data.vendorCode + ") " + (localStorage.IsVendorPlantConfigurable ? " (" + data.vendorPlantName + ") " : "") : 'CBC') + "(SOB: " + data.shareOfBusinessPercent + "%)"
                             return (
                               <th scope="col" className='header-name'>
@@ -886,7 +893,7 @@ const CostingSummaryTable = (props) => {
                                   </div>
 
                                   <div class="action  text-right">
-                                    {((!pdfHead && !drawerDetailPDF)) && (data.IsAssemblyCosting === true) && < button title='View BOM' className="hirarchy-btn mr-1 mb-0 align-middle" type={'button'} onClick={() => setIsOpenViewHirarchy(true)} />}
+                                    {((!pdfHead && !drawerDetailPDF)) && (data.IsAssemblyCosting === true) && < button title='View BOM' className="hirarchy-btn mr-1 mb-0 align-middle" type={'button'} onClick={() => viewBomCostingDetail(index)} />}
                                     {((!viewMode && (!pdfHead && !drawerDetailPDF)) && EditAccessibility) && (data.status === DRAFT) && <button className="Edit mr-1 mb-0 align-middle" type={"button"} title={"Edit Costing"} onClick={() => editCostingDetail(index)} />}
                                     {((!viewMode && (!pdfHead && !drawerDetailPDF)) && AddAccessibility) && <button className="Add-file mr-1 mb-0 align-middle" type={"button"} title={"Add Costing"} onClick={() => addNewCosting(index)} />}
                                     {((!viewMode || (approvalMode && data.CostingHeading === '-')) && (!pdfHead && !drawerDetailPDF)) && <button type="button" class="CancelIcon mb-0 align-middle" title={"Remove Costing"} onClick={() => deleteCostingFromView(index)}></button>}
@@ -1485,12 +1492,12 @@ const CostingSummaryTable = (props) => {
                       </tr>
                       {
 
-                        <tr class={`background-light-blue netPo-row ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].nPOPrice > viewCostingData[1].nPOPrice ? 'green-row' : viewCostingData[0].nPOPrice < viewCostingData[1].nPOPrice ? 'red-row' : '' : '-'}`}>
+                        <tr class={`background-light-blue netPo-row ${isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.nPOPrice > viewCostingData[1]?.nPOPrice ? 'green-row' : viewCostingData[0]?.nPOPrice < viewCostingData[1]?.nPOPrice ? 'red-row' : '' : '-'}`}>
                           <th>Net PO Price ({getConfigurationKey().BaseCurrency}){simulationDrawer && '(Old)'}</th>
                           {viewCostingData &&
                             viewCostingData?.map((data, index) => {
                               return <td>
-                                {data.CostingHeading === VARIANCE && (isApproval ? viewCostingData.length > 0 && viewCostingData[0].nPOPrice > viewCostingData[1].nPOPrice ? <span className='positive-sign'>+</span> : '' : '')}
+                                {data.CostingHeading === VARIANCE && (isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.nPOPrice > viewCostingData[1]?.nPOPrice ? <span className='positive-sign'>+</span> : '' : '')}
                                 <span><span className='currency-symbol'>{currency(getConfigurationKey().BaseCurrency)}</span>{checkForDecimalAndNull(data.nPOPrice, initialConfiguration.NoOfDecimalForPrice)}</span>
                               </td>
                             })}
@@ -1516,7 +1523,7 @@ const CostingSummaryTable = (props) => {
                       </tr>
                       {
 
-                        <tr class={`background-light-blue netRm-row  ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].nPOPriceWithCurrency > viewCostingData[1].nPOPriceWithCurrency ? 'green-row' : viewCostingData[0].nPOPriceWithCurrency < viewCostingData[1].nPOPriceWithCurrency ? 'red-row' : '' : '-'}`}>
+                        <tr class={`background-light-blue netRm-row  ${isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.nPOPriceWithCurrency > viewCostingData[1]?.nPOPriceWithCurrency ? 'green-row' : viewCostingData[0]?.nPOPriceWithCurrency < viewCostingData[1]?.nPOPriceWithCurrency ? 'red-row' : '' : '-'}`}>
                           <th>Net PO Price (In Currency){simulationDrawer && '(Old)'}</th>
                           {/* {viewCostingData &&
                         viewCostingData?.map((data, index) => {
@@ -1526,8 +1533,8 @@ const CostingSummaryTable = (props) => {
 
                           {viewCostingData &&
                             viewCostingData.map((data, index) => {
-                              return <td> {data.CostingHeading === VARIANCE && (isApproval ? viewCostingData.length > 0 && viewCostingData[0].nPOPriceWithCurrency > viewCostingData[1].nPOPriceWithCurrency ? <span className='positive-sign'>+</span> : '' : '')}
-                                <span><span className='currency-symbol'>{currency(data.currency.currencyTitle !== '-' ? data.currency.currencyTitle : getConfigurationKey().BaseCurrency)}</span>{data.nPOPriceWithCurrency !== null ? checkForDecimalAndNull((data?.currency?.currencyTitle) !== "-" ? (data.nPOPriceWithCurrency) : data.nPOPrice, initialConfiguration.NoOfDecimalForPrice) : '-'}</span> </td>
+                              return <td> {data.CostingHeading === VARIANCE && (isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.nPOPriceWithCurrency > viewCostingData[1]?.nPOPriceWithCurrency ? <span className='positive-sign'>+</span> : '' : '')}
+                                <span><span className='currency-symbol'>{currency(data.currency.currencyTitle !== '-' ? data.currency.currencyTitle : getConfigurationKey().BaseCurrency)}</span>{data?.nPOPriceWithCurrency !== null ? checkForDecimalAndNull((data?.currency?.currencyTitle) !== "-" ? (data?.nPOPriceWithCurrency) : data?.nPOPrice, initialConfiguration.NoOfDecimalForPrice) : '-'}</span> </td>
                             })}
                         </tr>
                       }
@@ -1733,7 +1740,7 @@ const CostingSummaryTable = (props) => {
           closeDrawer={closeVisualDrawer}
           isEditFlag={true}
           // USE PART NUMBER KEY HERE
-          PartId={viewCostingData[0].partId}
+          PartId={viewBomPartId}
           anchor={'right'}
           isFromVishualAd={true}
           NewAddedLevelOneChilds={[]}
