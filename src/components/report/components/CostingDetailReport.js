@@ -37,6 +37,7 @@ function ReportListing(props) {
     const [costingVersionChange, setCostingVersion] = useState('');
     const [tableData, setTableData] = useState([])
     const [isLoader, setLoader] = useState(true)
+    const [isReportLoader, setIsReportLoader] = useState(false)
     const [isOpen, setIsOpen] = useState(false)
     const [userId, setUserId] = useState(false)
     const [warningMessage, setWarningMessage] = useState(false)
@@ -126,12 +127,12 @@ function ReportListing(props) {
     }
 
     const viewDetails = (UserId, cell, row) => {
-
+        setIsReportLoader(true)
         if (row.BaseCostingId && Object.keys(row.BaseCostingId).length > 0) {
             dispatch(getSingleCostingDetails(row.BaseCostingId, (res) => {
                 if (res.data.Data) {
                     let dataFromAPI = res.data.Data
-
+                    setIsReportLoader(false)
                     const tempObj = formViewData(dataFromAPI)
                     dispatch(setCostingViewData(tempObj))
                 }
@@ -743,6 +744,7 @@ function ReportListing(props) {
                     selectedRowData={selectedRowData}
                     isSimulation={false}
                     simulationDrawer={false}
+                    isReportLoader={isReportLoader}
                 />
             }
             {isViewRM && <ViewRM
