@@ -4,10 +4,9 @@ import { Field, reduxForm } from 'redux-form'
 import { Row, Col } from 'reactstrap'
 import { EMPTY_DATA } from '../../../config/constants'
 import {
-  getInitialPlantSelectList, getInitialMachineSelectList, deleteProcess,
+  deleteProcess,
   getProcessDataList,
   getMachineSelectListByPlant,
-  getPlantSelectListByMachine,
 } from '../actions/Process';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
@@ -25,7 +24,6 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper'
 import { searchableSelect } from '../../layout/FormInputs'
 
-const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
@@ -46,7 +44,7 @@ class ProcessListing extends Component {
       rowData: null,
       showPopup: false,
       deletedId: '',
-      isLoader:false
+      isLoader: false
     }
   }
 
@@ -55,8 +53,6 @@ class ProcessListing extends Component {
   * @description Called after rendering the component
   */
   componentDidMount() {
-    this.props.getInitialPlantSelectList(() => { })
-    this.props.getInitialMachineSelectList(() => { })
     this.getDataList()
   }
 
@@ -65,9 +61,9 @@ class ProcessListing extends Component {
       plant_id: plant_id,
       machine_id: machine_id,
     }
-    this.setState({isLoader:true})
+    this.setState({ isLoader: true })
     this.props.getProcessDataList(filterData, (res) => {
-      this.setState({isLoader:false})
+      this.setState({ isLoader: false })
       if (res && res.status === 200) {
         let Data = res.data.DataList;
         this.setState({ tableData: Data })
@@ -158,9 +154,9 @@ class ProcessListing extends Component {
       plant_id: plant_id,
       machine_id: machine_id,
     }
-    this.setState({isLoader:true})
+    this.setState({ isLoader: true })
     this.props.getProcessDataList(filterData, (res) => {
-      this.setState({isLoader:false})
+      this.setState({ isLoader: false })
       if (res && res.status === 200) {
         let Data = res.data.DataList
         this.setState({ tableData: Data })
@@ -434,19 +430,7 @@ class ProcessListing extends Component {
   render() {
     const { handleSubmit, AddAccessibility, DownloadAccessibility } = this.props;
     const { isOpenProcessDrawer, isEditFlag } = this.state;
-
-    const options = {
-      clearSearch: true,
-      noDataText: (this.props.processList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
-      paginationShowsTotal: this.renderPaginationShowsTotal,
-      exportCSVBtn: this.createCustomExportCSVButton,
-      prePage: <span className="prev-page-pg"></span>, // Previous page button text
-      nextPage: <span className="next-page-pg"></span>, // Next page button text
-      firstPage: <span className="first-page-pg"></span>, // First page button text
-      lastPage: <span className="last-page-pg"></span>,
-
-    }
-
+    const ExcelFile = ReactExport.ExcelFile
     const defaultColDef = {
       resizable: true,
       filter: true,
@@ -564,7 +548,7 @@ class ProcessListing extends Component {
         </form>
         <Row>
           <Col>
-            <div className={`ag-grid-wrapper height-width-wrapper ${this.props.processList && this.props.processList?.length <=0 ?"overlay-contain": ""}`}>
+            <div className={`ag-grid-wrapper height-width-wrapper ${this.props.processList && this.props.processList?.length <= 0 ? "overlay-contain" : ""}`}>
               <div className="ag-grid-header">
                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
               </div>
@@ -636,12 +620,9 @@ function mapStateToProps({ process }) {
  * @param {function} mapDispatchToProps
  */
 export default connect(mapStateToProps, {
-  getInitialPlantSelectList,
-  getInitialMachineSelectList,
   deleteProcess,
   getProcessDataList,
   getMachineSelectListByPlant,
-  getPlantSelectListByMachine,
 })(
   reduxForm({
     form: 'ProcessListing',

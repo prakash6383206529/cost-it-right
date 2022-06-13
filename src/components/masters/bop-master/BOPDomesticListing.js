@@ -269,9 +269,9 @@ class BOPDomesticListing extends Component {
 
         return (
             <>
-                {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, true)} />}
-                {isEditbale && <button className="Edit" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, false)} />}
-                {isDeleteButton && <button className="Delete ml-2" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+                {ViewAccessibility && <button title='View' className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, true)} />}
+                {isEditbale && <button title='Edit' className="Edit" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, false)} />}
+                {isDeleteButton && <button title='Delete' className="Delete ml-2" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
     };
@@ -450,7 +450,7 @@ class BOPDomesticListing extends Component {
                         <Col md="6" lg="6">
                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                         </Col>
-                        <Col md="6" lg="6" className="mb-2">
+                        <Col md="6" lg="6" className="mb-3">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
                                     {this.state.shown ? (

@@ -450,7 +450,6 @@ class AddBOPDomestic extends Component {
 
   handleCalculation = () => {
     const { fieldsObj, initialConfiguration } = this.props
-    console.log('fieldsObj: ', fieldsObj);
     const BasicRate = fieldsObj && fieldsObj.BasicRate !== undefined ? fieldsObj.BasicRate : 0;
     const NetLandedCost = checkForNull(BasicRate)
 
@@ -890,7 +889,7 @@ class AddBOPDomestic extends Component {
                               name={"BoughtOutPartNumber"}
                               type="text"
                               placeholder={"Enter"}
-                              validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength20]}
+                              validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces]}
                               component={renderText}
                               required={true}
                               disabled={isEditFlag ? true : false}

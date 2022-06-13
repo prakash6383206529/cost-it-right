@@ -12,14 +12,14 @@ import { getTechnologySelectList, getPlantSelectListByType, getPlantBySupplier, 
 import { getVendorListByVendorType, } from '../actions/Material';
 import {
   createMachineDetails, updateMachineDetails, getMachineDetailsData, getMachineTypeSelectList, getProcessesSelectList,
-  getFuelUnitCost, getLabourCost, getPowerCostUnit, fileUploadMachine, fileDeleteMachine, getProcessGroupByMachineId
+  getFuelUnitCost, getLabourCost, getPowerCostUnit, fileUploadMachine, fileDeleteMachine, getProcessGroupByMachineId, setGroupProcessList, setProcessList
 } from '../actions/MachineMaster';
 import { getLabourTypeByMachineTypeSelectList } from '../actions/Labour';
 import { getFuelComboData, } from '../actions/Fuel';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { EMPTY_DATA, EMPTY_GUID } from '../../../config/constants'
-import { loggedInUserId, userDetails } from "../../../helper/auth";
+import { EMPTY_DATA, EMPTY_GUID, TIME } from '../../../config/constants'
+import { loggedInUserId, userDetails, getConfigurationKey } from "../../../helper/auth";
 import Switch from "react-switch";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
@@ -39,8 +39,7 @@ import imgRedcross from '../../../assests/images/red-cross.png'
 import { masterFinalLevelUser } from '../actions/Material'
 import MasterSendForApproval from '../MasterSendForApproval'
 import { ProcessGroup } from '../masterUtil';
-
-
+import _ from 'lodash'
 
 const selector = formValueSelector('AddMoreDetails');
 
@@ -108,13 +107,14 @@ class AddMoreDetails extends Component {
       isPowerOpen: false,
       isLabourOpen: false,
       isProcessOpen: false,
+      isProcessGroupOpen: false,
       UOM: [],
       effectiveDate: '',
       showPopup: false,
       updatedObj: {},
       lockUOMAndRate: false,
-      // isProcessGroup: getConfigurationKey().IsMachineProcessGroup // UNCOMMENT IT AFTER DONE FROM BACKEND AND REMOVE BELOW CODE
-      isProcessGroup: false
+      isProcessGroup: getConfigurationKey().IsMachineProcessGroup, // UNCOMMENT IT AFTER DONE FROM BACKEND AND REMOVE BELOW CODE
+      // isProcessGroup: true
     }
   }
 
@@ -235,7 +235,47 @@ class AddMoreDetails extends Component {
 
           const Data = res.data.Data;
 
-          this.props.getProcessGroupByMachineId(Data.MachineId, res => { })
+          this.props.getProcessGroupByMachineId(Data.MachineId, res => {
+            // SET GET API STRUCTURE IN THE FORM OF SAVE API STRUCTURE BY DEFAULT
+            let updateArrayList = []
+            let tempArray = []
+            let singleRecordObject = {}
+            res?.data?.DataList && res?.data?.DataList.map((item) => {
+              singleRecordObject = {}
+              let ProcessIdListTemp = []
+              tempArray = item.GroupName
+              item.ProcessList && item.ProcessList.map((item1) => {
+                ProcessIdListTemp.push(item1.ProcessId)
+                return null
+              })
+              singleRecordObject.ProcessGroupName = tempArray
+              singleRecordObject.ProcessIdList = ProcessIdListTemp
+              updateArrayList.push(singleRecordObject)
+              return null
+            })
+            this.props.setGroupProcessList(updateArrayList)
+
+            // TO DISABLE DELETE BUTTON WHEN GET DATA API CALLED (IN EDIT)
+            let uniqueProcessId = []
+            _.uniqBy(res?.data?.DataList, function (o) {
+              uniqueProcessId.push(o?.ProcessId)
+            });
+            let allProcessId = []
+            res?.data?.DataList && res?.data?.DataList.map((item) => {
+              let ProcessIdListTemp = []
+              item.ProcessList && item.ProcessList.map((item1) => {
+                ProcessIdListTemp.push(item1.ProcessId)
+                return null
+              })
+
+              allProcessId = [...allProcessId, ...ProcessIdListTemp]
+              return null
+            })
+            let uniqueSet = [...new Set(allProcessId)]
+            this.props.setProcessList(uniqueSet)
+            this.setState({ UniqueProcessId: uniqueSet })
+
+          })
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
 
           this.props.getLabourTypeByMachineTypeSelectList(Data.MachineTypeId ? Data.MachineTypeId : 0, () => { })
@@ -243,6 +283,7 @@ class AddMoreDetails extends Component {
           setTimeout(() => {
             const { plantSelectList, machineTypeSelectList, ShiftTypeSelectList, DepreciationTypeSelectList,
               fuelComboSelectList, } = this.props;
+            const uomDetail = this.findUOMType(Data.MachineProcessRates.UnitOfMeasurementId)
 
             // let technologyArray = Data && Data.Technology.map((item) => ({ Text: item.Technology, Value: item.TechnologyId }))
             const plantObj = Data.Plant && plantSelectList && plantSelectList.find(item => item.Value === Data.Plant[0].PlantId)
@@ -294,14 +335,27 @@ class AddMoreDetails extends Component {
               processGrid: MachineProcessArray,
               remarks: Data.Remark,
               files: Data.Attachements,
-              effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : ''
-            })
+              effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
+              UOM: (this.state.isProcessGroup && !this.state.isViewMode) ? { label: Data.MachineProcessRates[0].UnitOfMeasurement, value: Data.MachineProcessRates.UnitOfMeasurementId, type: uomDetail.Type, uom: uomDetail.Text } : [],
+              lockUOMAndRate: (this.state.isProcessGroup && !this.state.isViewMode)
+            }, () => this.props.change('MachineRate', (this.state.isProcessGroup && !this.state.isViewMode) ? Data.MachineProcessRates[0].MachineRate : ''))
           }, 500)
         }
       })
     } else {
       this.props.getMachineDetailsData('', res => { })
     }
+  }
+
+  findGroupCode = (clickedData, arr) => {
+    let isContainGroup = _.find(arr, function (obj) {
+      if (obj.ProcessId === clickedData) {
+        return true;
+      } else {
+        return false
+      }
+    });
+    return isContainGroup
   }
 
   /**
@@ -341,6 +395,7 @@ class AddMoreDetails extends Component {
     if (label === 'ProcessNameList') {
       processSelectList && processSelectList.map(item => {
         if (item.Value === '0') return false;
+        if (this.findGroupCode(item.Value, this.state.processGrid)) return false;
         temp.push({ label: item.Text, value: item.Value })
         return null;
       });
@@ -383,7 +438,7 @@ class AddMoreDetails extends Component {
         const accept = AcceptableMachineUOM.includes(item.Type)
         if (accept === false) return false
         if (item.Value === '0') return false;
-        temp.push({ label: item.Display, value: item.Value })
+        temp.push({ label: item.Display, value: item.Value, type: item.Type, uom: item.Text })
         return null;
       });
       return temp;
@@ -600,7 +655,8 @@ class AddMoreDetails extends Component {
   */
   handleUOM = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ UOM: newValue });
+      this.setState({ UOM: newValue }, () => { this.handleProcessCalculation() });
+
     } else {
       this.setState({ UOM: [] })
     }
@@ -748,7 +804,6 @@ class AddMoreDetails extends Component {
       this.totalMachineCost()
       this.powerCost()
       this.handleLabourCalculation()
-      this.handleProcessCalculation()
       if (LoanPercentage) {
         checkPercentageValue(LoanPercentage, "Loan percentage should not be more than 100") ? this.props.change('LoanPercentage', LoanPercentage) : this.props.change('LoanPercentage', 0)
       }
@@ -930,6 +985,7 @@ class AddMoreDetails extends Component {
   */
   totalMachineCost = () => {
     const { fieldsObj, initialConfiguration } = this.props;
+
     const { IsAnnualMaintenanceFixed, IsAnnualConsumableFixed, IsInsuranceFixed, machineFullValue } = this.state;
 
     const BuildingCostPerSquareFeet = fieldsObj && fieldsObj.BuildingCostPerSquareFeet !== undefined ? checkForNull(fieldsObj.BuildingCostPerSquareFeet) : 0;
@@ -950,7 +1006,7 @@ class AddMoreDetails extends Component {
 
 
     machineFullValue.annualAreaCost = annualAreaCost;
-    const TotalMachineCostPerAnnum = checkForNull(DepreciationAmount + AnnualMaintanceAmount + AnnualConsumableAmount + AnnualInsuranceAmount + annualAreaCost + OtherYearlyCost);
+    const TotalMachineCostPerAnnum = checkForNull(DepreciationAmount) + checkForNull(AnnualMaintanceAmount) + checkForNull(AnnualConsumableAmount) + checkForNull(AnnualInsuranceAmount) + checkForNull(annualAreaCost) + checkForNull(OtherYearlyCost)
     machineFullValue.TotalMachineCostPerAnnum = TotalMachineCostPerAnnum
 
 
@@ -1020,13 +1076,23 @@ class AddMoreDetails extends Component {
   * @description called
   */
   handleProcessCalculation = () => {
-    const { fieldsObj, initialConfiguration } = this.props
+    const { fieldsObj, initialConfiguration, } = this.props
+    const { UOM } = this.state
+
+    let MachineRate
     const OutputPerHours = fieldsObj && fieldsObj.OutputPerHours !== undefined ? checkForNull(fieldsObj.OutputPerHours) : 0;
     const NumberOfWorkingHoursPerYear = fieldsObj && fieldsObj.NumberOfWorkingHoursPerYear !== undefined ? checkForNull(fieldsObj.NumberOfWorkingHoursPerYear) : 0;
-    const TotalMachineCostPerAnnum = fieldsObj && fieldsObj.TotalMachineCostPerAnnum !== undefined ? checkForNull(fieldsObj.TotalMachineCostPerAnnum) : 0;
+    // const TotalMachineCostPerAnnum = fieldsObj && fieldsObj.TotalMachineCostPerAnnum !== undefined ? checkForNull(fieldsObj.TotalMachineCostPerAnnum) : 0;
+    const TotalMachineCostPerAnnum = checkForNull(fieldsObj.TotalCost) + checkForNull(fieldsObj.RateOfInterestValue) + checkForNull(fieldsObj.DepreciationAmount) + checkForNull(fieldsObj.TotalMachineCostPerAnnum) + checkForNull(fieldsObj.TotalFuelCostPerYear) + checkForNull(fieldsObj.TotalPowerCostPerYear) + checkForNull(this.calculateTotalLabourCost())
 
+    if (UOM.type === TIME) {
+
+      MachineRate = checkForNull(TotalMachineCostPerAnnum / NumberOfWorkingHoursPerYear) // THIS IS FOR HOUR CALCUALTION
+    } else {
+      MachineRate = fieldsObj.MachineRate // THIS IS FOR ALL UOM EXCEPT HOUR
+    }
     this.props.change('OutputPerYear', checkForDecimalAndNull(OutputPerHours * NumberOfWorkingHoursPerYear))
-    this.props.change('MachineRate', checkForDecimalAndNull(TotalMachineCostPerAnnum / (OutputPerHours * NumberOfWorkingHoursPerYear), initialConfiguration.NoOfDecimalForPrice))
+    this.props.change('MachineRate', checkForDecimalAndNull(MachineRate, initialConfiguration.NoOfDecimalForPrice))
   }
 
   /**
@@ -1190,6 +1256,7 @@ class AddMoreDetails extends Component {
   */
   processTableHandler = () => {
     const { processName, UOM, processGrid, isProcessGroup } = this.state;
+
     const { fieldsObj } = this.props
     const OutputPerHours = this.state.UOM.label === HOUR ? 0 : fieldsObj.OutputPerHours
 
@@ -1212,17 +1279,17 @@ class AddMoreDetails extends Component {
     const TotalMachineCostPerAnnum = fieldsObj && fieldsObj.TotalMachineCostPerAnnum !== undefined ? checkForNull(fieldsObj.TotalMachineCostPerAnnum) : 0;
 
     // CONDITION TO CHECK OUTPUT PER HOUR, NUMBER OF WORKING HOUR AND TOTAL MACHINE MACHINE COST IS NEGATIVE OR NOT A NUMBER
-    if (OutputPerHours < 0 || isNaN(OutputPerHours) || NumberOfWorkingHoursPerYear < 0 || isNaN(NumberOfWorkingHoursPerYear) || TotalMachineCostPerAnnum < 0 || isNaN(TotalMachineCostPerAnnum)) {
+    if (NumberOfWorkingHoursPerYear < 0 || isNaN(NumberOfWorkingHoursPerYear) || TotalMachineCostPerAnnum < 0 || isNaN(TotalMachineCostPerAnnum)) {
       Toaster.warning('Machine Rate can not be negative')
       return false;
     }
 
     let MachineRate
     const OutputPerYear = checkForNull(OutputPerHours * NumberOfWorkingHoursPerYear);
-    if (UOM.label === HOUR) {
+    if (UOM.type === TIME) {
       MachineRate = checkForNull(TotalMachineCostPerAnnum / NumberOfWorkingHoursPerYear) // THIS IS FOR HOUR CALCUALTION
     } else {
-      MachineRate = checkForNull(TotalMachineCostPerAnnum / OutputPerYear); // THIS IS FOR ALL UOM EXCEPT HOUR
+      MachineRate = fieldsObj.MachineRate // THIS IS FOR ALL UOM EXCEPT HOUR
     }
 
     const tempArray = [];
@@ -1245,14 +1312,14 @@ class AddMoreDetails extends Component {
     }, () => {
       this.props.change('OutputPerHours', isProcessGroup ? OutputPerHours : 0)
       this.props.change('OutputPerYear', isProcessGroup ? OutputPerYear : 0)
-      this.props.change('MachineRate', isProcessGroup ? MachineRate : 0)
+      this.props.change('MachineRate', isProcessGroup ? checkForDecimalAndNull(MachineRate, this.props.initialConfiguration.NoOfDecimalForPrice) : 0)
     });
   }
 
   /**
-* @method updateProcessGrid
-* @description Used to handle updateProcessGrid
-*/
+  * @method updateProcessGrid
+  * @description Used to handle updateProcessGrid
+  */
   updateProcessGrid = () => {
     const { processName, UOM, processGrid, processGridEditIndex } = this.state;
     const { fieldsObj } = this.props
@@ -1279,14 +1346,14 @@ class AddMoreDetails extends Component {
     const TotalMachineCostPerAnnum = fieldsObj.TotalMachineCostPerAnnum
 
     // CONDITION TO CHECK OUTPUT PER HOUR, NUMBER OF WORKING HOUR AND TOTAL MACHINE MACHINE COST IS NEGATIVE OR NOT A NUMBER
-    if (OutputPerHours < 0 || isNaN(OutputPerHours) || NumberOfWorkingHoursPerYear < 0 || isNaN(NumberOfWorkingHoursPerYear) || TotalMachineCostPerAnnum < 0 || isNaN(TotalMachineCostPerAnnum)) {
+    if (NumberOfWorkingHoursPerYear < 0 || isNaN(NumberOfWorkingHoursPerYear) || TotalMachineCostPerAnnum < 0 || isNaN(TotalMachineCostPerAnnum)) {
       Toaster.warning('Machine rate can not be negative.')
       return false;
     }
 
     let MachineRate
     const OutputPerYear = checkForNull(OutputPerHours * NumberOfWorkingHoursPerYear);
-    if (UOM.label === HOUR) {
+    if (UOM.type === TIME) {
       MachineRate = checkForNull(TotalMachineCostPerAnnum / NumberOfWorkingHoursPerYear) // THIS IS FOR HOUR CALCUALTION
     } else {
       MachineRate = checkForNull(TotalMachineCostPerAnnum / OutputPerYear); // THIS IS FOR ALL UOM EXCEPT HOUR
@@ -1336,7 +1403,7 @@ class AddMoreDetails extends Component {
     }, () => {
       this.props.change('OutputPerHours', isProcessGroup ? fieldsObj.OutputPerHours : 0)
       this.props.change('OutputPerYear', isProcessGroup ? fieldsObj.OutputPerYear : 0)
-      this.props.change('MachineRate', isProcessGroup ? fieldsObj.MachineRate : 0)
+      this.props.change('MachineRate', isProcessGroup ? checkForDecimalAndNull(fieldsObj.MachineRate, this.props.initialConfiguration.NoOfDecimalForPrice) : 0)
     });
   };
 
@@ -1347,17 +1414,22 @@ class AddMoreDetails extends Component {
   editItemDetails = (index) => {
     const { processGrid } = this.state;
     const tempData = processGrid[index];
-
+    const uomDetail = this.findUOMType(tempData.UnitOfMeasurementId)
     this.setState({
       processGridEditIndex: index,
       isEditIndex: true,
       processName: { label: tempData.processName, value: tempData.processId },
-      UOM: { label: tempData.UnitOfMeasurement, value: tempData.UnitOfMeasurementId },
+      UOM: { label: tempData.UnitOfMeasurement, value: tempData.UnitOfMeasurementId, type: uomDetail.Type, uom: uomDetail.Text },
     }, () => {
       this.props.change('OutputPerHours', tempData.OutputPerHours)
       this.props.change('OutputPerYear', tempData.OutputPerYear)
       this.props.change('MachineRate', tempData.MachineRate)
     })
+  }
+
+  findUOMType = (uomId) => {
+    const uomObj = this.props.UOMSelectList && this.props.UOMSelectList.find(item => item.Value === uomId)
+    return { type: uomObj.Type, uom: uomObj.Text, }
   }
 
   /**
@@ -1378,7 +1450,9 @@ class AddMoreDetails extends Component {
     this.setState({
       processGrid: tempData,
       lockUOMAndRate: tempData.length === 0 ? false : true,
-      UOM: tempData.length === 0 ? [] : UOM
+      UOM: tempData.length === 0 ? [] : !this.state.lockUOMAndRate ? [] : UOM,
+      isEditIndex: false,
+      processName: [],
     }, () => {
       this.props.change('OutputPerHours', tempData.length > 0 ? fieldsObj.OutputPerHours : 0)
       this.props.change('OutputPerYear', tempData.length > 0 ? fieldsObj.OutputPerYear : 0)
@@ -1759,7 +1833,7 @@ class AddMoreDetails extends Component {
   /**
   * @method workingHourToggle
   * @description WORKING HOUR ROW OPEN  AND CLOSE
- */
+  */
   workingHourToggle = () => {
     const { isWorkingOpen } = this.state
     this.setState({ isWorkingOpen: !isWorkingOpen })
@@ -1786,7 +1860,7 @@ class AddMoreDetails extends Component {
   /**
   * @method powerToggle
   * @description POWER OPEN  AND CLOSE
- */
+  */
   powerToggle = () => {
     const { isPowerOpen } = this.state
     this.setState({ isPowerOpen: !isPowerOpen })
@@ -1800,7 +1874,7 @@ class AddMoreDetails extends Component {
   /**
   * @method labourToggle
   * @description lABOUR OPEN  AND CLOSE
- */
+  */
   labourToggle = () => {
     const { isLabourOpen } = this.state
     this.setState({ isLabourOpen: !isLabourOpen })
@@ -1814,11 +1888,28 @@ class AddMoreDetails extends Component {
     const { isProcessOpen } = this.state
     this.setState({ isProcessOpen: !isProcessOpen })
   }
+  processGroupToggle = () => {
+    const { isProcessGroupOpen } = this.state
+    this.setState({ isProcessGroupOpen: !isProcessGroupOpen })
+  }
   handleKeyDown = function (e) {
     if (e.key === 'Enter' && e.shiftKey === false) {
       e.preventDefault();
     }
   };
+
+  changeDropdownValue = () => {
+    this.setState({ DropdownChange: false })
+  }
+
+  showDelete = (uniqueProcessId) => {
+    if (this.state.UniqueProcessId?.length === 0 || this.state.UniqueProcessId === []) {
+      this.setState({ UniqueProcessId: [...this.state.UniqueProcessId, ...uniqueProcessId] })
+    } else {
+      this.setState({ UniqueProcessId: [...uniqueProcessId] })
+    }
+  }
+
   /**
   * @method render
   * @description Renders the component
@@ -1826,7 +1917,7 @@ class AddMoreDetails extends Component {
   render() {
     const { handleSubmit, loading, initialConfiguration, isMachineAssociated } = this.props;
     const { isLoader, isOpenAvailability, isEditFlag, isOpenMachineType, isOpenProcessDrawer, manufactureYear,
-      isLoanOpen, isWorkingOpen, isDepreciationOpen, isVariableCostOpen, isPowerOpen, isLabourOpen, isProcessOpen } = this.state;
+      isLoanOpen, isWorkingOpen, isDepreciationOpen, isVariableCostOpen, isPowerOpen, isLabourOpen, isProcessOpen, UniqueProcessId, isProcessGroupOpen } = this.state;
 
     return (
       <>
@@ -3123,7 +3214,8 @@ class AddMoreDetails extends Component {
                                 disabled={this.state.lockUOMAndRate}
                               />
                             </Col>
-                            {
+                            {/* COMMENT FOR NOW MAY BE USED LATER */}
+                            {/* {
                               // (this.state.UOM && (this.state.UOM.label !== HOUR || this.state.UOM.length === 0)) &&.la
                               (this.state.UOM.length === 0 || this.state.UOM.label !== HOUR) &&
                               <>
@@ -3157,7 +3249,8 @@ class AddMoreDetails extends Component {
                                 </Col>
                               </>
 
-                            }
+                            } */}
+
                             <Col className="d-flex col-auto">
                               <div className="machine-rate-filed pr-3">
                                 <Field
@@ -3167,9 +3260,9 @@ class AddMoreDetails extends Component {
                                   placeholder={''}
                                   validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
                                   component={renderText}
-                                  onChange={this.handleMachineRate}
+                                  // onChange={this.handleMachineRate}
                                   //required={true}
-                                  disabled={true}
+                                  disabled={this.state.UOM.type === TIME ? true : this.state.isViewMode || this.state.lockUOMAndRate || (isEditFlag && isMachineAssociated)}
                                   className=" "
                                   customClassName=" withBorder"
                                 />
@@ -3198,7 +3291,7 @@ class AddMoreDetails extends Component {
                               </div>
                             </Col>
                             <Col md="12">
-                              <Table className="table" size="sm" >
+                              <Table className="table border" size="sm" >
                                 <thead>
                                   <tr>
                                     <th>{`Process Name`}</th>
@@ -3222,7 +3315,7 @@ class AddMoreDetails extends Component {
                                           <td>{checkForDecimalAndNull(item.MachineRate, initialConfiguration.NoOfDecimalForPrice)}</td>
                                           <td>
                                             <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(index)} />
-                                            <button className="Delete" type={'button'} onClick={() => this.deleteItem(index)} />
+                                            <button className="Delete" type={'button'} onClick={() => this.deleteItem(index)} disabled={UniqueProcessId?.includes(item.ProcessId)} />
                                           </td>
                                         </tr>
                                       )
@@ -3238,14 +3331,23 @@ class AddMoreDetails extends Component {
 
                       {
                         this.state.isProcessGroup &&
-                        <Row>
-                          <Col md="12" className='mt-2'>
+                        <Row className='mb-3 accordian-container'>
+                          <Col md="6" className='mt-2'>
                             <HeaderTitle
                               title={'Process Group:'} />
                           </Col>
-                          <Col md="12">
-                            <ProcessGroup isViewFlag={this.state.isViewFlag} processListing={this.state.processGrid} isViewMode={this.state.isViewMode} isListing={false} />
+                          <Col md="6">
+                            <div className={'right-details'}>
+                              <a
+                                onClick={this.processGroupToggle}
+                                className={`${isProcessGroupOpen ? 'minus-icon' : 'plus-icon'} pull-right`}></a>
+                            </div>
                           </Col>
+                          {isProcessGroupOpen && <div className="accordian-content row mx-0 w-100">
+                            <Col md="12">
+                              <ProcessGroup isViewFlag={this.state.isViewFlag} isEditFlag={isEditFlag} processListing={this.state.processGrid} isListing={false} isViewMode={this.state.isViewMode} changeDropdownValue={this.changeDropdownValue} showDelete={this.showDelete} />
+                            </Col>
+                          </div>}
                         </Row>
                       }
                       <Row>
@@ -3514,7 +3616,9 @@ export default connect(mapStateToProps, {
   fileUploadMachine,
   fileDeleteMachine,
   masterFinalLevelUser,
-  getProcessGroupByMachineId
+  getProcessGroupByMachineId,
+  setGroupProcessList,
+  setProcessList
 })(reduxForm({
   form: 'AddMoreDetails',
   onSubmitFail: errors => {

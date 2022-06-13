@@ -15,13 +15,14 @@ import {
     GET_MACHINE_APPROVAL_LIST,
     config,
     SET_PROCESS_GROUP_FOR_API,
-    SET_PROCESS_GROUP_LIST
+    SET_PROCESS_GROUP_LIST,
+    STORE_PROCESS_LIST
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
 import { loggedInUserId, userDetails } from '../../../helper';
 
-const headers = config
+// const config() = config
 
 /**
  * @method createMachineType
@@ -29,7 +30,7 @@ const headers = config
  */
 export function createMachineType(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createMachineType, data, headers);
+        const request = axios.post(API.createMachineType, data, config());
         request.then((response) => {
             if (response.data.Result === true) {
                 dispatch({ type: CREATE_SUCCESS, });
@@ -49,7 +50,7 @@ export function createMachineType(data, callback) {
 export function getMachineTypeListAPI(callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.get(API.getMachineTypeListAPI, headers)
+        axios.get(API.getMachineTypeListAPI, config())
             .then((response) => {
                 if (response.data.Result === true) {
                     dispatch({
@@ -74,7 +75,7 @@ export function getMachineTypeDataAPI(ID, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
         if (ID !== '') {
-            axios.get(`${API.getMachineTypeDataAPI}/${ID}`, headers)
+            axios.get(`${API.getMachineTypeDataAPI}/${ID}`, config())
                 .then((response) => {
                     if (response.data.Result === true) {
                         dispatch({
@@ -104,7 +105,7 @@ export function getMachineTypeDataAPI(ID, callback) {
 export function deleteMachineTypeAPI(Id, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteMachineTypeAPI}/${Id}`, headers)
+        axios.delete(`${API.deleteMachineTypeAPI}/${Id}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -121,7 +122,7 @@ export function deleteMachineTypeAPI(Id, callback) {
 export function updateMachineTypeAPI(requestData, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateMachineTypeAPI}`, requestData, headers)
+        axios.put(`${API.updateMachineTypeAPI}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -137,7 +138,7 @@ export function updateMachineTypeAPI(requestData, callback) {
  */
 export function createMachine(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createMachine, data, headers);
+        const request = axios.post(API.createMachine, data, config());
         request.then((response) => {
             if (response.data.Result === true) {
                 dispatch({ type: CREATE_SUCCESS, });
@@ -157,7 +158,7 @@ export function createMachine(data, callback) {
  */
 export function copyMachine(MachineId, callback) {
     return (dispatch) => {
-        const request = axios.post(`${API.copyMachine}/${MachineId}`, '', headers);
+        const request = axios.post(`${API.copyMachine}/${MachineId}`, '', config());
         request.then((response) => {
             if (response.data.Result === true) {
                 dispatch({ type: CREATE_SUCCESS, });
@@ -178,7 +179,7 @@ export function getMachineDataList(data, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
         const queryParams = `costing_head=${data.costing_head}&technology_id=${data.technology_id}&vendor_id=${data.vendor_id}&machine_type_id=${data.machine_type_id}&process_id=${data.process_id}&plant_id=${data.plant_id}`
-        axios.get(`${API.getMachineDataList}?${queryParams}`, headers)
+        axios.get(`${API.getMachineDataList}?${queryParams}`, config())
             .then((response) => {
 
                 const value = response.data.DataList.filter((item) => item.EffectiveDateNew = item.EffectiveDate)
@@ -206,7 +207,7 @@ export function getMachineData(ID, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
         if (ID !== '') {
-            axios.get(`${API.getMachineData}/${ID}`, headers)
+            axios.get(`${API.getMachineData}/${ID}`, config())
                 .then((response) => {
                     if (response.data.Result === true) {
                         dispatch({
@@ -236,7 +237,7 @@ export function getMachineData(ID, callback) {
 export function getMachineDetailsData(ID, callback) {
     return (dispatch) => {
         if (ID !== '') {
-            axios.get(`${API.getMachineDetailsData}/${ID}`, headers)
+            axios.get(`${API.getMachineDetailsData}/${ID}`, config())
                 .then((response) => {
                     if (response.data.Result === true) {
                         dispatch({
@@ -266,7 +267,7 @@ export function getMachineDetailsData(ID, callback) {
 export function deleteMachine(Id, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteMachine}/${Id}`, headers)
+        axios.delete(`${API.deleteMachine}/${Id}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -283,7 +284,7 @@ export function deleteMachine(Id, callback) {
 export function updateMachine(requestData, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateMachine}`, requestData, headers)
+        axios.put(`${API.updateMachine}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -301,7 +302,7 @@ export function updateMachine(requestData, callback) {
 export function getMachineTypeSelectList(callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getMachineTypeSelectList}`, headers);
+        const request = axios.get(`${API.getMachineTypeSelectList}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -325,7 +326,7 @@ export function getMachineTypeSelectList(callback) {
 export function getProcessesSelectList(callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getProcessesSelectList}`, headers);
+        const request = axios.get(`${API.getProcessesSelectList}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -351,7 +352,7 @@ export function getMachineSelectList(callback) {
         //dispatch({ type: API_REQUEST });
         // const id = '802da383-4745-420d-9186-2dbe42f00f5b';
         const id = "00000000-0000-0000-0000-000000000000" //uncomment it when code is deployed.
-        const request = axios.get(`${API.getMachineSelectList}/${id}`, headers);
+        const request = axios.get(`${API.getMachineSelectList}/${id}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -374,7 +375,7 @@ export function getMachineSelectList(callback) {
  */
 export function fileUploadMachine(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.fileUploadMachine, data, headers);
+        const request = axios.post(API.fileUploadMachine, data, config());
         request.then((response) => {
             if (response && response.status === 200) {
                 callback(response);
@@ -393,7 +394,7 @@ export function fileUploadMachine(data, callback) {
 export function fileDeleteMachine(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.fileDeleteMachine}/${data.Id}/${data.DeletedBy}`, headers)
+        axios.delete(`${API.fileDeleteMachine}/${data.Id}/${data.DeletedBy}`, config())
             .then((response) => {
                 dispatch({ type: CREATE_SUCCESS, });
                 callback(response);
@@ -410,7 +411,7 @@ export function fileDeleteMachine(data, callback) {
  */
 export function checkAndGetMachineNumber(number, callback) {
     return (dispatch) => {
-        const request = axios.post(`${API.checkAndGetMachineNumber}?machineNumber=${number}`, '', headers);
+        const request = axios.post(`${API.checkAndGetMachineNumber}?machineNumber=${number}`, '', config());
         request.then((response) => {
             if (response && response.status === 200) {
                 callback(response);
@@ -430,7 +431,7 @@ export function getFuelUnitCost(data, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
         const queryParams = `fuelId=${data.fuelId}&plantId=${data.plantId}`
-        axios.get(`${API.getFuelUnitCost}?${queryParams}`, headers)
+        axios.get(`${API.getFuelUnitCost}?${queryParams}`, config())
             .then((response) => {
                 if (response && response.data && response.data.Result === true) {
                     callback(response);
@@ -451,7 +452,7 @@ export function getLabourCost(data, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
         const queryParams = `labourTypeId=${data.labourTypeId}&machineTypeId=${data.machineTypeId}`
-        axios.get(`${API.getLabourCost}?${queryParams}`, headers)
+        axios.get(`${API.getLabourCost}?${queryParams}`, config())
             .then((response) => {
                 if (response.data.Result === true) {
                     callback(response);
@@ -471,7 +472,7 @@ export function getLabourCost(data, callback) {
 export function getPowerCostUnit(plantId, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.get(`${API.getPowerCostUnit}?plantId=${plantId}`, headers)
+        axios.get(`${API.getPowerCostUnit}?plantId=${plantId}`, config())
             .then((response) => {
                 if (response.data.Result === true) {
                     callback(response);
@@ -490,7 +491,7 @@ export function getPowerCostUnit(plantId, callback) {
  */
 export function createMachineDetails(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createMachineDetails, data, headers);
+        const request = axios.post(API.createMachineDetails, data, config());
         request.then((response) => {
             if (response.data.Result === true) {
                 dispatch({ type: CREATE_SUCCESS, });
@@ -510,7 +511,7 @@ export function createMachineDetails(data, callback) {
 export function updateMachineDetails(requestData, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateMachineDetails}`, requestData, headers)
+        axios.put(`${API.updateMachineDetails}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -527,7 +528,7 @@ export function updateMachineDetails(requestData, callback) {
  */
 export function bulkUploadMachineZBC(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.bulkUploadMachineZBC, data, headers);
+        const request = axios.post(API.bulkUploadMachineZBC, data, config());
         request.then((response) => {
             if (response.status === 200) {
                 callback(response);
@@ -546,7 +547,7 @@ export function bulkUploadMachineZBC(data, callback) {
  */
 export function bulkUploadMachineVBC(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.bulkUploadMachineVBC, data, headers);
+        const request = axios.post(API.bulkUploadMachineVBC, data, config());
         request.then((response) => {
             if (response.status === 200) {
                 callback(response);
@@ -565,7 +566,7 @@ export function bulkUploadMachineVBC(data, callback) {
  */
 export function bulkUploadMachineMoreZBC(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.bulkUploadMachineMoreZBC, data, headers);
+        const request = axios.post(API.bulkUploadMachineMoreZBC, data, config());
         request.then((response) => {
             if (response.status === 200) {
                 callback(response);
@@ -586,7 +587,7 @@ export function bulkUploadMachineMoreZBC(data, callback) {
 
 export function masterApprovalRequestBySenderMachine(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.masterSendToApproverMachine, data, headers)
+        const request = axios.post(API.masterSendToApproverMachine, data, config())
         request.then((response) => {
             if (response.data.Result) {
                 callback(response)
@@ -612,7 +613,7 @@ export function getMachineApprovalList(callback) {
     return (dispatch) => {
 
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getRMApprovalList}?logged_in_user_id=${loggedInUserId()}&logged_in_user_level_id=${userDetails().LoggedInMasterLevelId}&masterId=${4}`, headers);
+        const request = axios.get(`${API.getRMApprovalList}?logged_in_user_id=${loggedInUserId()}&logged_in_user_level_id=${userDetails().LoggedInMasterLevelId}&masterId=${4}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 //
@@ -643,12 +644,12 @@ export function setGroupProcessList(data) {
 
 export function getProcessGroupByMachineId(machineId, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getProcessGroupList}/${machineId}`, headers)
+        const request = axios.get(`${API.getProcessGroupList}/${machineId}`, config())
         request.then((response) => {
-            if (response.data.Result) {
+            if ((response.data.Result) || response?.status === 204) {
                 dispatch({
                     type: SET_PROCESS_GROUP_LIST,
-                    payload: response.data.DataList
+                    payload: response?.status === 204 ? [] : response.data.DataList
                 })
                 callback(response)
             }
@@ -656,6 +657,15 @@ export function getProcessGroupByMachineId(machineId, callback) {
             callback(error)
             dispatch({ type: API_FAILURE })
             apiErrors(error)
+        })
+    }
+}
+
+export function setProcessList(data) {
+    return (dispatch) => {
+        dispatch({
+            type: STORE_PROCESS_LIST,
+            payload: data
         })
     }
 }

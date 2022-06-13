@@ -126,11 +126,11 @@ function SimulationHistory(props) {
     <div className="container-fluid simulation-history-page">
       <Row>
         <Col sm="12" >
-          <h1 className="mb-4">{`Simulation History`}</h1>
+          <h1 className="mb-4">{`Simulation Historyff`}</h1>
         </Col>
       </Row>
       <div className="ag-grid-react">
-        <div className={`ag-grid-wrapper height-width-wrapper ${simulationHistory && simulationHistory?.length <=0 ?"overlay-contain": ""}`}>
+        <div className={`ag-grid-wrapper height-width-wrapper ${simulationHistory && simulationHistory?.length <= 0 ? "overlay-contain" : ""}`}>
           <div className="ag-grid-header">
             {/* <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => onFilterTextBoxChanged(e)} /> */}
           </div>

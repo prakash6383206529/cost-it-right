@@ -32,14 +32,14 @@ class RolesListing extends Component {
       rowData: null,
       sideBar: { toolPanels: ['columns'] },
       showData: false,
-      showPopup:false,
-      deletedId:''
+      showPopup: false,
+      deletedId: ''
 
     }
   }
 
   componentDidMount() {
-    this.setState({isLoader:true})
+    this.setState({ isLoader: true })
     const { topAndLeftMenuData } = this.props;
     if (topAndLeftMenuData !== undefined) {
       const userMenu = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === 'Users');
@@ -97,15 +97,15 @@ class RolesListing extends Component {
   * @description confirm delete part
   */
   deleteItem = (Id) => {
-    this.setState({showPopup:true, deletedId:Id })
+    this.setState({ showPopup: true, deletedId: Id })
   }
 
-  onPopupConfirm =() => {
+  onPopupConfirm = () => {
     this.confirmDeleteItem(this.state.deletedId);
-   
-}
-closePopUp= () =>{
-    this.setState({showPopup:false})
+
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
   }
   /**
   * @method confirmDeleteItem
@@ -118,7 +118,7 @@ closePopUp= () =>{
         this.getRolesListData();
       }
     });
-    this.setState({showPopup:false})
+    this.setState({ showPopup: false })
   }
 
   /**
@@ -132,8 +132,8 @@ closePopUp= () =>{
     const { EditAccessibility, DeleteAccessibility } = this.state;
     return (
       <>
-        {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
-        {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+        {EditAccessibility && <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+        {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
       </>
     )
   };
@@ -222,7 +222,7 @@ closePopUp= () =>{
           </Row>
           <Row class="">
             <Col className="table-mt-0">
-              <div className={`ag-grid-wrapper height-width-wrapper ${this.state.tableData && this.state.tableData?.length <=0 ?"overlay-contain": ""}`}>
+              <div className={`ag-grid-wrapper height-width-wrapper ${this.state.tableData && this.state.tableData?.length <= 0 ? "overlay-contain" : ""}`}>
                 <div className="ag-grid-header">
                   <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                 </div>
@@ -258,9 +258,9 @@ closePopUp= () =>{
                 </div>
               </div>
               {
-                this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.ROLE_DELETE_ALERT}`}  />
-                }
-            
+                this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.ROLE_DELETE_ALERT}`} />
+              }
+
             </Col>
           </Row>
         </ >

@@ -310,7 +310,7 @@ class AddIndivisualProduct extends Component {
 
         } else {
 
-            this.setState({ setDisable: true })
+            this.setState({ setDisable: true, isLoader: true })
             let formData = {
                 LoggedInUserId: loggedInUserId(),
                 Remark: values.Remark,
@@ -327,7 +327,7 @@ class AddIndivisualProduct extends Component {
             }
 
             this.props.createProduct(formData, (res) => {
-                this.setState({ setDisable: false })
+                this.setState({ setDisable: false, isLoader: false })
                 if (res?.data?.Result === true) {
                     Toaster.success(MESSAGES.PRODUCT_ADD_SUCCESS);
                     this.cancel()

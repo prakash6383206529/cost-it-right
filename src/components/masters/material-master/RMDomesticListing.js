@@ -26,8 +26,8 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
 import { CheckApprovalApplicableMaster, getConfigurationKey, getFilteredData, userDepartmetList, loggedInUserId, userDetails } from '../../../helper';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
-import { filterParams } from '../../common/DateFilter'
 import { getListingForSimulationCombined } from '../../simulation/actions/Simulation';
+import WarningMessage from '../../common/WarningMessage';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -36,9 +36,7 @@ const gridOptions = {};
 
 
 function RMDomesticListing(props) {
-    const { AddAccessibility, BulkUploadAccessibility, EditAccessibility, ViewRMAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation, apply, selectionForListingMasterAPI, objectForMultipleSimulation } = props;
-
-
+    const { AddAccessibility, BulkUploadAccessibility, ViewRMAccessibility, EditAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation, apply, selectionForListingMasterAPI, objectForMultipleSimulation } = props;
     const [value, setvalue] = useState({ min: 0, max: 0 });
     const [maxRange, setmaxRange] = useState(0);
     const [isBulkUpload, setisBulkUpload] = useState(false);
@@ -52,9 +50,46 @@ function RMDomesticListing(props) {
     const [showPopup, setShowPopup] = useState(false)
     const [deletedId, setDeletedId] = useState('')
     const [showPopupBulk, setShowPopupBulk] = useState(false)
-    const [editTable, setEditTable] = useState(EditAccessibility)
     const [viewAction, setViewAction] = useState(ViewRMAccessibility)
     const [isFinalLevelUser, setIsFinalLevelUser] = useState(false)
+    const [warningMessage, setWarningMessage] = useState(false)
+    const [filterModel, setFilterModel] = useState({});
+    const [isSearchButtonDisable, setIsSearchButtonDisable] = useState(true);
+    const [pageNo, setPageNo] = useState(1)
+    const [totalRecordCount, setTotalRecordCount] = useState(0)
+    const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
+    const [currentRowIndex, setCurrentRowIndex] = useState(0)
+    const [pageSize10, setPageSize10] = useState(true)
+    const [pageSize50, setPageSize50] = useState(false)
+    const [pageSize100, setPageSize100] = useState(false)
+    const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", RawMaterialCode: "", Category: "", MaterialType: "", Plant: "", UOM: "", VendorName: "", BasicRate: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDate: "" })
+
+
+    var filterParams = {
+        comparator: function (filterLocalDateAtMidnight, cellValue) {
+            var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+            var newDate = filterLocalDateAtMidnight != null ? DayTime(filterLocalDateAtMidnight).format('DD/MM/YYYY') : '';
+            setFloatingFilterData({ ...floatingFilterData, EffectiveDate: newDate })
+            if (dateAsString == null) return -1;
+            var dateParts = dateAsString.split('/');
+            var cellDate = new Date(
+                Number(dateParts[2]),
+                Number(dateParts[1]) - 1,
+                Number(dateParts[0])
+            );
+            if (filterLocalDateAtMidnight.getTime() === cellDate.getTime()) {
+                return 0;
+            }
+            if (cellDate < filterLocalDateAtMidnight) {
+                return -1;
+            }
+            if (cellDate > filterLocalDateAtMidnight) {
+                return 1;
+            }
+        },
+        browserDatePicker: true,
+        minValidYear: 2000,
+    };
 
 
     /**
@@ -79,6 +114,13 @@ function RMDomesticListing(props) {
 
 
     useEffect(() => {
+        if (rmDataList?.length > 0) {
+            setTotalRecordCount(rmDataList[0].TotalRecordCount)
+        }
+
+    }, [rmDataList])
+
+    useEffect(() => {
         if (isSimulation && selectionForListingMasterAPI === 'Combined') {
             props?.changeSetLoader(true)
             dispatch(getListingForSimulationCombined(objectForMultipleSimulation, RMDOMESTIC, (res) => {
@@ -88,7 +130,7 @@ function RMDomesticListing(props) {
             if (isSimulation) {
                 props?.changeTokenCheckBox(false)
             }
-            getDataList()
+            getDataList(null, null, null, null, null, 0, 0, 100, true, floatingFilterData)
         }
         setvalue({ min: 0, max: 0 });
     }, [])
@@ -107,6 +149,8 @@ function RMDomesticListing(props) {
         }))
     }, [])
 
+
+
     const getFilterRMData = () => {
         if (isSimulation) {
             return getFilteredData(rmDataList, RM_MASTER_ID)
@@ -119,7 +163,7 @@ function RMDomesticListing(props) {
     * @method hideForm
     * @description HIDE DOMESTIC, IMPORT FORMS
     */
-    const getDataList = (costingHead = null, plantId = null, materialId = null, gradeId = null, vendorId = null, technologyId = 0) => {
+    const getDataList = (costingHead = null, plantId = null, materialId = null, gradeId = null, vendorId = null, technologyId = 0, skip = 0, take = 100, isPagination = true, dataObj) => {
         const { isSimulation } = props
 
         const filterData = {
@@ -137,7 +181,7 @@ function RMDomesticListing(props) {
         //THIS CONDTION IS FOR IF THIS COMPONENT IS RENDER FROM MASTER APPROVAL SUMMARY IN THIS NO GET API
         setloader(true)
         if (!props.isMasterSummaryDrawer) {
-            dispatch(getRMDomesticDataList(filterData, (res) => {
+            dispatch(getRMDomesticDataList(filterData, skip, take, isPagination, dataObj, (res) => {
                 if (isSimulation) {
                     props?.changeTokenCheckBox(true)
                 }
@@ -155,9 +199,102 @@ function RMDomesticListing(props) {
                     setmaxRange(0);
                     setloader(false);
                 }
+
+                if (res) {
+                    let isReset = true
+                    setTimeout(() => {
+                        for (var prop in floatingFilterData) {
+                            if (floatingFilterData[prop] !== "") {
+                                isReset = false
+                            }
+                        }
+                        // Sets the filter model via the grid API
+                        isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(filterModel))
+                    }, 300);
+
+                    setTimeout(() => {
+                        setIsFilterButtonClicked(false)
+                    }, 600);
+                }
+
             }))
         }
     }
+
+
+    const onFloatingFilterChanged = (value) => {
+        //setEnableSearchFilterButton(false)
+        // Gets filter model via the grid API
+        const model = gridOptions?.api?.getFilterModel();
+
+        setFilterModel(model)
+        if (!isFilterButtonClicked) {
+            setWarningMessage(true)
+        }
+
+        if (value?.filterInstance?.appliedModel === null || value?.filterInstance?.appliedModel?.filter === "") {
+            setWarningMessage(false)
+
+        } else {
+
+            if (value.column.colId === "EffectiveDate" || value.column.colId === "CreatedDate") {
+                setIsSearchButtonDisable(false)
+                return false
+            }
+
+            setFloatingFilterData({ ...floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter })
+            setIsSearchButtonDisable(false)
+        }
+    }
+
+
+    const onSearch = () => {
+
+        setWarningMessage(false)
+        setIsFilterButtonClicked(true)
+        setPageNo(1)
+        setCurrentRowIndex(0)
+        gridOptions?.columnApi?.resetColumnState();
+        getDataList(null, null, null, null, null, 0, 0, 100, true, floatingFilterData)
+    }
+
+
+
+    const resetState = () => {
+
+        setIsFilterButtonClicked(false)
+        gridOptions?.columnApi?.resetColumnState(null);
+        gridOptions?.api?.setFilterModel(null);
+
+        for (var prop in floatingFilterData) {
+            floatingFilterData[prop] = ""
+        }
+
+        setFloatingFilterData(floatingFilterData)
+        setWarningMessage(false)
+        setPageNo(1)
+        setCurrentRowIndex(0)
+        getDataList(null, null, null, null, null, 0, 0, 100, true, floatingFilterData)
+    }
+
+
+    const onBtPrevious = () => {
+        if (currentRowIndex >= 10) {
+            setPageNo(pageNo - 1)
+            const previousNo = currentRowIndex - 10;
+            getDataList(null, null, null, null, null, 0, previousNo, 100, true, floatingFilterData)
+            setCurrentRowIndex(previousNo)
+        }
+    }
+
+    const onBtNext = () => {
+        if (currentRowIndex < (totalRecordCount - 10)) {
+            setPageNo(pageNo + 1)
+            const nextNo = currentRowIndex + 10;
+            getDataList(null, null, null, null, null, 0, nextNo, 100, true, floatingFilterData)
+            setCurrentRowIndex(nextNo)
+        }
+    };
 
     /**
     * @method viewOrEditItemDetails
@@ -240,9 +377,9 @@ function RMDomesticListing(props) {
 
         return (
             <>
-                {viewAction && < button className="View mr5" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
-                {isEditbale && <button className="Edit mr-2 align-middle" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
-                {isDeleteButton && <button className="Delete align-middle" type={'button'} onClick={() => deleteItem(cellValue)} />}
+                {viewAction && < button title='View' className="View" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
+                {isEditbale && <button title='Edit' className="Edit align-middle" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
+                {isDeleteButton && <button title='Delete' className="Delete align-middle" type={'button'} onClick={() => deleteItem(cellValue)} />}
             </>
         )
     };
@@ -317,7 +454,6 @@ function RMDomesticListing(props) {
     }
 
 
-
     const formToggle = () => {
         props.formToggle()
     }
@@ -341,7 +477,6 @@ function RMDomesticListing(props) {
     }
 
 
-
     /**
     * @method confirmDensity
     * @description confirm density popup.
@@ -361,6 +496,22 @@ function RMDomesticListing(props) {
     const onPageSizeChanged = (newPageSize) => {
         var value = document.getElementById('page-size').value;
         gridApi.paginationSetPageSize(Number(newPageSize));
+
+        if (Number(newPageSize) === 10) {
+            setPageSize10(true)
+            setPageSize50(false)
+            setPageSize100(false)
+        }
+        else if (Number(newPageSize) === 50) {
+            setPageSize10(false)
+            setPageSize50(true)
+            setPageSize100(false)
+        }
+        else if (Number(newPageSize) === 100) {
+            setPageSize10(false)
+            setPageSize50(false)
+            setPageSize100(true)
+        }
     };
 
     const returnExcelColumn = (data = [], TempData) => {
@@ -410,10 +561,6 @@ function RMDomesticListing(props) {
         gridApi.setQuickFilter(e.target.value);
     }
 
-    const resetState = () => {
-        gridOptions.columnApi.resetColumnState(null);
-        gridOptions.api.setFilterModel(null);
-    }
 
     /**
     * @method render
@@ -471,65 +618,70 @@ function RMDomesticListing(props) {
 
 
     return (
-        <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
+        <div className={`ag-grid-react custom-pagination ${DownloadAccessibility ? "show-table-btn" : ""}`}>
             {(loader && !props.isMasterSummaryDrawer) && <LoaderCustom />}
             <Row className={`filter-row-large pt-4 ${props?.isSimulation ? 'zindex-0 ' : ''}`}>
-                <Col md="6" lg="6">
+                <Col md="3" lg="3">
                     <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                 </Col>
-                <Col md="6" lg="6" className="mb-3 d-flex justify-content-end">
+                <Col md="9" lg="9" className="mb-3 d-flex justify-content-end">
                     {
                         // SHOW FILTER BUTTON ONLY FOR RM MASTER NOT FOR SIMULATION AMD MASTER APPROVAL SUMMARY
                         (!props.isMasterSummaryDrawer) &&
                         <>
+
+                            {isSimulation &&
+
+                                <div className="warning-message d-flex align-items-center">
+                                    {warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
+                                    <button disabled={isSearchButtonDisable} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
+                                </div>
+                            }
                             {!isSimulation &&
                                 <div className="d-flex justify-content-end bd-highlight w100">
-                                    <div>
-                                        <>
-                                            {shown ? (
-                                                <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => { setshown(!shown) }}>
-                                                    <div className="cancel-icon-white"></div>
-                                                </button>
-                                            ) : (<>
+
+                                    <>
+
+                                        <div className="warning-message d-flex align-items-center">
+                                            {warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
+                                        </div>
+                                        <button disabled={isSearchButtonDisable} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
+
+                                        {AddAccessibility && (
+                                            <button
+                                                type="button"
+                                                className={"user-btn mr5"}
+                                                onClick={formToggle}
+                                                title="Add"
+                                            >
+                                                <div className={"plus mr-0"}></div>
+                                                {/* ADD */}
+                                            </button>
+                                        )}
+                                        {BulkUploadAccessibility && (
+                                            <button
+                                                type="button"
+                                                className={"user-btn mr5"}
+                                                onClick={bulkToggle}
+                                                title="Bulk Upload"
+                                            >
+                                                <div className={"upload mr-0"}></div>
+                                                {/* Bulk Upload */}
+                                            </button>
+                                        )}
+                                        {
+                                            DownloadAccessibility &&
+                                            <>
+                                                <ExcelFile filename={'RM Domestic'} fileExtension={'.xls'} element={
+                                                    <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                                        {/* DOWNLOAD */}
+                                                    </button>}>
+                                                    {onBtExport()}
+                                                </ExcelFile>
                                             </>
+                                        }
 
-                                            )}
-                                            {AddAccessibility && (
-                                                <button
-                                                    type="button"
-                                                    className={"user-btn mr5"}
-                                                    onClick={formToggle}
-                                                    title="Add"
-                                                >
-                                                    <div className={"plus mr-0"}></div>
-                                                    {/* ADD */}
-                                                </button>
-                                            )}
-                                            {BulkUploadAccessibility && (
-                                                <button
-                                                    type="button"
-                                                    className={"user-btn mr5"}
-                                                    onClick={bulkToggle}
-                                                    title="Bulk Upload"
-                                                >
-                                                    <div className={"upload mr-0"}></div>
-                                                    {/* Bulk Upload */}
-                                                </button>
-                                            )}
-                                            {
-                                                DownloadAccessibility &&
-                                                <>
-                                                    <ExcelFile filename={'RM Domestic'} fileExtension={'.xls'} element={
-                                                        <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-                                                            {/* DOWNLOAD */}
-                                                        </button>}>
-                                                        {onBtExport()}
-                                                    </ExcelFile>
-                                                </>
-                                            }
-
-                                        </>
-                                    </div>
+                                    </>
                                 </div>
                             }
                             <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
@@ -562,6 +714,7 @@ function RMDomesticListing(props) {
                                 frameworkComponents={frameworkComponents}
                                 rowSelection={'multiple'}
                                 onSelectionChanged={onRowSelect}
+                                onFilterModified={onFloatingFilterChanged}
                             >
                                 <AgGridColumn field="CostingHead" headerName="Head"></AgGridColumn>
 
@@ -598,17 +751,25 @@ function RMDomesticListing(props) {
                                 <AgGridColumn field="NetLandedCost" headerName="Net Cost(INR)" cellRenderer='costFormatter'></AgGridColumn>
 
                                 <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-
-                                {(!isSimulation && !props.isMasterSummaryDrawer) && <AgGridColumn width={160} field="RawMaterialId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                {(!isSimulation && !props.isMasterSummaryDrawer) && <AgGridColumn width={160} field="RawMaterialId" cellClass={"actions-wrapper"} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                 <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
                                 <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>
                             </AgGridReact>
-                            <div className="paging-container d-inline-block float-right">
-                                <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
-                                    <option value="10" selected={true}>10</option>
-                                    <option value="50">50</option>
-                                    <option value="100">100</option>
-                                </select>
+                            <div className='button-wrapper'>
+                                <div className="paging-container d-inline-block float-right">
+                                    <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
+                                        <option value="10" selected={true}>10</option>
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                    </select>
+                                </div>
+                                <div className="d-flex pagination-button-container">
+                                    <p><button className="previous-btn" type="button" disabled={false} onClick={() => onBtPrevious()}> </button></p>
+                                    {pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 10)}</p>}
+                                    {pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 50)}</p>}
+                                    {pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 100)}</p>}
+                                    <p><button className="next-btn" type="button" onClick={() => onBtNext()}> </button></p>
+                                </div>
                             </div>
                         </div>
                     </div>

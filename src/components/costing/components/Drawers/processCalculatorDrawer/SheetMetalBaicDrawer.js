@@ -10,6 +10,7 @@ import { AREA, DIMENSIONLESS, MASS, TIME, VOLUMETYPE } from '../../../../../conf
 import { saveDefaultProcessCostCalculationData } from '../../../actions/CostWorking';
 import Toaster from '../../../../common/Toaster';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import { findProcessCost } from '../../../CostingUtil';
 
 function SheetMetalBaicDrawer(props) {
   /*******************************************************************************************************************************************************************/
@@ -178,9 +179,9 @@ function SheetMetalBaicDrawer(props) {
         case TIME:
 
           //This need to be done later
-          cost = rate / (quantity === 0 ? 1 : quantity);
+          // cost = rate / (quantity === 0 ? 1 : quantity);
 
-
+          cost = findProcessCost(props.calculatorData.UOM, rate, quantity === 0 ? 1 : quantity)
           setProcessCost(cost)
           setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
           return;
@@ -252,12 +253,20 @@ function SheetMetalBaicDrawer(props) {
   // const quantity = (e) => {
   //   setQuantity(e.target.value)
   // }
+
+  const handleKeyDown = function (e) {
+    if (e.key === 'Enter' && e.shiftKey === false) {
+      e.preventDefault();
+    }
+  };
+
   return (
     <Fragment>
       <Row>
         <Col>
-          <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}>
-            <Col md="12" className={'mt25'}>
+          <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}
+            onKeyDown={(e) => { handleKeyDown(e, onSubmit.bind(this)); }}>
+            <Col md="12" className={''}>
               <div className="border pl-3 pr-3 pt-3">
                 {/* <Col md="10">
                   <div className="left-border">{'Distance:'}</div>
@@ -364,7 +373,7 @@ function SheetMetalBaicDrawer(props) {
                   </Col>
                   <Col md="3">
                     <TextFieldHookForm
-                      label={props.calculatorData.UOMType === MASS ? `Weight` : props.calculatorData.UOMType === TIME ? `Part / Hour` : `Quantity`}
+                      label={props.calculatorData.UOMType === MASS ? `Weight` : props.calculatorData.UOMType === TIME ? `Parts/Hour` : `Quantity`}
                       name={'Quantity'}
                       Controller={Controller}
                       control={control}

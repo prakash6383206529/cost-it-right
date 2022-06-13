@@ -109,6 +109,7 @@ function AssemblySurfaceTreatment(props) {
     />
   })
 
+
   /**
   * @method render
   * @description Renders the component
@@ -155,7 +156,7 @@ function AssemblySurfaceTreatment(props) {
                 </div> : ''
             }
           </td>
-          <td>{checkForNull(item?.Quantity ? item.Quantity : 3)}</td>
+          <td>{checkForNull(item?.Quantity)}</td>
           <td>
             {item.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostWithQuantitys !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostWithQuantitys, initialConfiguration.NoOfDecimalForPrice) : 0}
           </td>
@@ -186,7 +187,7 @@ function AssemblySurfaceTreatment(props) {
               >
                 <div className={`${CostingViewMode ? 'fa fa-eye pr-1' : 'plus'}`}></div> Surface T.</button>
             }
-            <div className={`lock-width ${(item.IsLocked || item.IsPartLocked) ? 'lock_icon ml-3' : ''}`}>{''}</div>
+            <div className={`lock-width ${(item.IsLocked || item.IsPartLocked) ? 'lock_icon' : ''}`}>{''}</div>
           </div>
         </td>
         {/*WHEN COSTING OF THAT PART IS  APPROVED SO COSTING COMES AUTOMATICALLY FROM BACKEND AND THIS KEY WILL COME TRUE (WORK LIKE VIEW MODE)*/}
@@ -196,6 +197,7 @@ function AssemblySurfaceTreatment(props) {
       {item.IsOpen && nestedPartComponent}
 
       {item.IsOpen && nestedAssembly}
+
 
 
       {IsDrawerOpen && <SurfaceTreatment

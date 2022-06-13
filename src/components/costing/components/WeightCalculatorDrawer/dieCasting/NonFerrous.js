@@ -205,12 +205,19 @@ function NonFerrous(props) {
     const onCancel = () => {
         props.toggleDrawer('')
     }
+
+    const handleKeyDown = function (e) {
+        if (e.key === 'Enter' && e.shiftKey === false) {
+            e.preventDefault();
+        }
+    };
+
     return (
         <Fragment>
             <Row>
 
                 <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}
-                >
+                    onKeyDown={(e) => { handleKeyDown(e, onSubmit.bind(this)); }}>
                     <Col md="12">
                         <div className="costing-border px-4">
                             <Row>
@@ -432,7 +439,7 @@ function NonFerrous(props) {
                                 </Col>
                                 <Col md="3">
                                     <NumberFieldHookForm
-                                        label={`Scrap Recovery %`}
+                                        label={`Scrap Recovery(%)`}
                                         name={'recovery'}
                                         Controller={Controller}
                                         control={control}

@@ -988,6 +988,10 @@ function RawMaterialCost(props) {
   // const rmGridFields = 'rmGridFields'
 
   const DisableMasterBatchCheckbox = (value) => {
+
+    if (value === true) {
+      setIsApplyMasterBatch(false)
+    }
     setMasterBatch(value)
   }
 
@@ -1031,7 +1035,7 @@ function RawMaterialCost(props) {
                       {getTechnology.includes(costData.ETechnologyType) && <th style={{ width: "195px" }} className="text-center">{`Weight Calculator`}</th>}
                       <th style={{ width: "190px" }}>{`Gross Weight`}</th>
                       <th style={{ width: "190px" }}>{`Finish Weight`}</th>
-                      {isScrapRecoveryPercentageApplied && <th style={{ width: "200px" }}>{`Scrap Recovery %`}</th>}
+                      {isScrapRecoveryPercentageApplied && <th style={{ width: "200px" }}>{`Scrap Recovery(%)`}</th>}
                       {costData.ETechnologyType === PLASTIC && <th style={{ width: "190px" }}>{'Burning Loss Weight'}</th>}
                       <th style={{ width: "190px" }}>{`Scrap Weight`}</th>
                       {/* //Add i here for MB+ */}

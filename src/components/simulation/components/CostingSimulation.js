@@ -850,8 +850,10 @@ function CostingSimulation(props) {
     }
 
     const resetState = () => {
-        gridOptions.columnApi.resetColumnState();
-        gridOptions.api.setFilterModel(null);
+        gridOptions?.columnApi?.resetColumnState();
+        gridOptions?.api?.setFilterModel(null);
+        gridApi?.setQuickFilter(null);
+        document.getElementById("filter-text-box").value = "";
         window.screen.width >= 1921 && gridRef.current.api.sizeColumnsToFit();
     }
     const errorBoxClass = () => {
@@ -1164,7 +1166,7 @@ function CostingSimulation(props) {
                         {isVerifyImpactDrawer &&
                             <VerifyImpactDrawer
                                 isOpen={isVerifyImpactDrawer}
-                                anchor={'right'}
+                                anchor={'bottom'}
                                 approvalData={[]}
                                 type={'Approve'}
                                 closeDrawer={verifyImpactDrawer}

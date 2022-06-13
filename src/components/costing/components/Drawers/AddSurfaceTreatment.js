@@ -47,7 +47,7 @@ function AddSurfaceTreatment(props) {
     if (costData.VendorType === ZBC) {
       const data = {
         PlantId: costData.PlantId,
-        TechnologyId: costData.TechnologyId,
+        TechnologyId: costData.ETechnologyType,
         CostingId: costData.CostingId,
         EffectiveDate: CostingEffectiveDate,
       }
@@ -65,7 +65,7 @@ function AddSurfaceTreatment(props) {
 
       const data = {
         VendorId: costData.VendorId,
-        TechnologyId: costData.TechnologyId,
+        TechnologyId: costData.ETechnologyType,
         VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
         DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID,
         EffectiveDate: CostingEffectiveDate,
@@ -243,7 +243,7 @@ function AddSurfaceTreatment(props) {
 
               <Row className="mx-0 mb-3">
                 <Col>
-                  <div className={`ag-grid-wrapper min-height-auto height-width-wrapper ${tableData && tableData?.length <=0 ?"overlay-contain": ""}`}>
+                  <div className={`ag-grid-wrapper min-height-auto height-width-wrapper ${tableData && tableData?.length <= 0 ? "overlay-contain" : ""}`}>
                     <div className="ag-grid-header">
                       <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                       <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>

@@ -578,6 +578,7 @@ function ReportListing(props) {
         setCurrentRowIndex(0)
         getTableData(0, 100, true, floatingFilterData, true, true);
     }
+
     return (
         <div className="container-fluid report-listing-page ag-grid-react">
             {isLoader && <LoaderCustom />}
@@ -590,7 +591,7 @@ function ReportListing(props) {
                     {/* <Col md="2" lg="2">
                         <button title="Last Week" type="button" class="user-btn mr5" onClick={() => lastWeekFilter()}><div class="swap rotate90 mr-2"></div>Last Week</button>
                     </Col> */}
-                    <Col md="10" lg="10" className="search-user-block mb-3 px-0">
+                    <Col md="12" lg="12" className="search-user-block mb-3">
                         <div className="d-flex justify-content-end bd-highlight excel-btn w100 mb-4 pb-2">
                             <div className="warning-message d-flex align-items-center">
                                 {warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}

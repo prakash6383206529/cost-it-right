@@ -8,6 +8,7 @@ import { costingInfoContext } from '../../CostingDetailStepTwo'
 import { saveMachiningProcessCostCalculationData } from '../../../actions/CostWorking'
 import Toaster from '../../../../common/Toaster'
 import { debounce } from 'lodash'
+import { findProcessCost } from '../../../CostingUtil'
 
 function Broaching(props) {
     const WeightCalculatorRequest = props.calculatorData.WeightCalculatorRequest
@@ -95,7 +96,8 @@ function Broaching(props) {
         const partsPerHour = (3600 / checkForNull(TotalCycleTimeSec)) * (checkForNull(efficiencyPercentage) / 100)
         setDataToSend(prevState => ({ ...prevState, partsPerHour: partsPerHour }))
         setValue('partsPerHour', checkForDecimalAndNull(partsPerHour, getConfigurationKey().NoOfDecimalForInputOutput))
-        const processCost = (props?.calculatorData?.MHR) / checkForNull(partsPerHour)
+        // const processCost = (props?.calculatorData?.MHR) / checkForNull(partsPerHour)
+        const processCost = findProcessCost(props?.calculatorData?.UOM, props?.calculatorData?.MHR, partsPerHour)
         setDataToSend(prevState => ({ ...prevState, processCost: processCost }))
         setValue('processCost', checkForDecimalAndNull(processCost, getConfigurationKey().NoOfDecimalForPrice))
 
@@ -167,6 +169,7 @@ function Broaching(props) {
         obj.LoadingAndUnloadingTime = value.loadingAndUnloadingTime
         obj.TotalCycleTimeMins = dataToSend.totalCycleTimeMins
         obj.TotalCycleTimeSec = dataToSend.TotalCycleTimeSec
+        obj.CycleTime = dataToSend.TotalCycleTimeSec
         obj.EfficiencyPercentage = value.efficiencyPercentage
         obj.PartPerHour = dataToSend.partsPerHour
         obj.ProcessCost = dataToSend.processCost
@@ -183,11 +186,19 @@ function Broaching(props) {
     const onCancel = () => {
         calculateMachineTime('0.00')
     }
+
+    const handleKeyDown = function (e) {
+        if (e.key === 'Enter' && e.shiftKey === false) {
+            e.preventDefault();
+        }
+    };
+
     return (
         <Fragment>
             <Row>
                 <Col>
-                    <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}>
+                    <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}
+                        onKeyDown={(e) => { handleKeyDown(e, onSubmit.bind(this)); }}>
                         <Col md="12" className={''}>
                             <div className="border pl-3 pr-3 pt-3">
                                 <Col md="12">
@@ -197,7 +208,7 @@ function Broaching(props) {
                                     <Row className={'mt15'}>
                                         <Col md="4">
                                             <TextFieldHookForm
-                                                label={`No of Teeth`}
+                                                label={`No. of Teeth`}
                                                 name={'noOFTeeth'}
                                                 Controller={Controller}
                                                 control={control}

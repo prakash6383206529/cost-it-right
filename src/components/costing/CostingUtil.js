@@ -1,7 +1,12 @@
-import { LEVEL0 } from "../../config/constants";
+
+import { HOUR, MINUTES, SECONDS } from "../../config/constants";
 import { checkForNull, loggedInUserId } from "../../helper"
 import DayTime from "../common/DayTimeWrapper";
+import { useDispatch } from "react-redux";
+import { getVolumeDataByPartAndYear } from "../masters/actions/Volume";
 
+
+// TO CREATE OBJECT FOR IN SAVE-ASSEMBLY-PART-ROW-COSTING
 export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, tabId, effectiveDate) => {
 
   let Arr = JSON.parse(localStorage.getItem('costingArray'))
@@ -132,13 +137,111 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
 
 }
 
+//TO FIND SURFACE TREATMENT OBJECT HAVING SAME PART NO AS RMCC TAB PART NO
 export const findSurfaceTreatmentData = (rmCCData) => {
   let surfaceTreatmentArr = JSON.parse(localStorage.getItem('surfaceCostingArray'))
   let sTSubAssembly = surfaceTreatmentArr && surfaceTreatmentArr.find(surfaceItem => surfaceItem.PartNumber === rmCCData.PartNumber && surfaceItem.AssemblyPartNumber === rmCCData.AssemblyPartNumber)
   return sTSubAssembly
 }
+
+// TO FIND RMCC OBJECT HAVING SAME PART NO AS SURFACE TREATMENT PART NO
 export const findrmCctData = (surfaceData) => {
   let costingArr = JSON.parse(localStorage.getItem('costingArray'))
   let rmCcSubAssembly = costingArr && costingArr.find(costingItem => costingItem.PartNumber === surfaceData.PartNumber && costingItem.AssemblyPartNumber === surfaceData.AssemblyPartNumber)
   return rmCcSubAssembly
+}
+
+// TO FIND PARTS/HOUR (PRODUCTION)
+export const findProductionPerHour = (quantity) => {
+  return checkForNull(3600 / quantity)
+}
+
+// TO FIND PROCESS COST IF UOM TYPE IS TIME AND ON THE BASIS OF UOM (HOURS,MINUTES,SECONDS)
+export const findProcessCost = (uom, mhr, productionPerHour) => {
+  let processCost = 0
+  if (uom === HOUR) {
+    processCost = checkForNull((checkForNull(mhr) / checkForNull(productionPerHour)))
+  } else if (uom === MINUTES) {
+    processCost = checkForNull(((checkForNull(mhr) * 60) / checkForNull(productionPerHour)))
+  } else if (uom === SECONDS) {
+    processCost = checkForNull(((checkForNull(mhr) * 3600) / checkForNull(productionPerHour)))
+  }
+  return processCost
+}
+
+
+// function findVolumeFields(res){
+//   const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
+//   let approvedQtyArr = res.data.Data.VolumeApprovedDetails
+//         let budgetedQtyArr = res.data.Data.VolumeBudgetedDetails
+//         let actualQty = 0
+//         let totalBudgetedQty = 0
+//         let variance = Number(costingObj.poPrice && costingObj.poPrice !== '-' ? costingObj.oldPoPrice : 0) - Number(costingObj.poPrice && costingObj.poPrice !== '-' ? costingObj.poPrice : 0)
+//         let month = new Date(date).getMonth()
+//         let year = ''
+
+//         if (month <= 2) {
+//           year = `${new Date(date).getFullYear() - 1}-${new Date(date).getFullYear()}`
+//         } else {
+//           year = `${new Date(date).getFullYear()}-${new Date(date).getFullYear() + 1}`
+//         }
+
+
+//             obj.consumptionQty = checkForNull(actualQty)
+//             obj.remainingQty = checkForNull(totalBudgetedQty - actualQty)
+//             obj.annualImpact = variance !== '' ? totalBudgetedQty * variance : 0
+//             obj.yearImpact = variance !== '' ? (totalBudgetedQty - actualQty) * variance : 0
+
+//         approvedQtyArr.map((data) => {
+//           if (data.Sequence < sequence) {
+//             //USE IN FUTURE
+//             // if(data.Date <= moment(effectiveDate).format('dd/MM/YYYY')){ 
+//             //   actualQty += parseInt(data.ApprovedQuantity)
+//             // } 
+//             actualQty += parseInt(data.ApprovedQuantity)
+//           } else if (data.Sequence >= sequence) {
+//             // actualRemQty += parseInt(data.ApprovedQuantity)  //MAY BE USE IN FUTURE
+//           }
+//         })
+//         budgetedQtyArr.map((data) => {
+//           // if (data.Sequence >= sequence) {
+//           totalBudgetedQty += parseInt(data.BudgetedQuantity)
+//           // }
+//         })
+// }
+
+export const formatCostingApprovalObj = (costingObj) => {
+
+
+  let obj = {}
+  // add vendor key here
+  obj.typeOfCosting = costingObj.zbc
+  obj.plantCode = costingObj.plantCode
+  obj.plantName = costingObj.plantName
+  obj.plantId = costingObj.plantId
+  obj.vendorId = costingObj.vendorId
+  obj.vendorName = costingObj.vendorName
+  obj.vendorCode = costingObj.vendorCode
+  obj.vendorPlantId = costingObj.vendorPlantId
+  obj.vendorPlantName = costingObj.vendorPlantName
+  obj.vendorPlantCode = costingObj.vendorPlantCode
+  obj.costingName = costingObj.CostingNumber
+  obj.costingId = costingObj.costingId
+  obj.oldPrice = costingObj.oldPoPrice
+  obj.revisedPrice = costingObj.poPrice
+  obj.nPOPriceWithCurrency = costingObj.nPOPriceWithCurrency
+  obj.currencyRate = costingObj.currencyValue
+  obj.variance = Number(costingObj.poPrice && costingObj.poPrice !== '-' ? costingObj.oldPoPrice : 0) - Number(costingObj.poPrice && costingObj.poPrice !== '-' ? costingObj.poPrice : 0)
+
+
+  obj.reason = ''
+  obj.ecnNo = ''
+  obj.effectiveDate = costingObj.effectiveDate
+  obj.isDate = costingObj.effectiveDate ? true : false
+  obj.partNo = costingObj.partId
+  obj.destinationPlantCode = costingObj.destinationPlantCode
+  obj.destinationPlantName = costingObj.destinationPlantName
+  obj.destinationPlantId = costingObj.destinationPlantId
+
+  return obj
 }

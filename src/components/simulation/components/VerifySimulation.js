@@ -404,8 +404,10 @@ function VerifySimulation(props) {
     }
 
     const resetState = () => {
-        gridOptions.columnApi.resetColumnState();
-        gridOptions.api.setFilterModel(null);
+        gridOptions?.columnApi?.resetColumnState();
+        gridOptions?.api?.setFilterModel(null);
+        gridApi.setQuickFilter(null);
+        document.getElementById("filter-text-box").value = "";
 
     }
 

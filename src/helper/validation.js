@@ -39,7 +39,7 @@ export const maxLength18 = maxLength(18);
 export const maxLength12 = maxLength(12);
 export const maxLength25 = maxLength(25);
 export const maxLength20 = maxLength(20);
-export const maxLength26 = maxLength(25);
+export const maxLength26 = maxLength(26);
 export const maxLength30 = maxLength(30);
 export const maxLength45 = maxLength(45);
 export const maxLength50 = maxLength(50);
@@ -109,8 +109,7 @@ export const selectRequired = value =>
     ? undefined : 'This field is required.');
 
 export const checkWhiteSpaces = value => {
-
-    return value && !value.toString().replace(/\s/g, '').length ? 'This field is invalid.' : undefined;
+    return value && (value.startsWith(' ') || value.endsWith(' ')) ? 'Text should not start and end with space' : undefined;
 }
 
 export const number = value =>

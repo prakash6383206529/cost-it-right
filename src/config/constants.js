@@ -2,16 +2,16 @@
  * Define all the constants required in application inside this file and export them
  */
 
-import { getAuthToken } from '../helper/auth';
+export const config = () => {
 
-export const config = {
-  headers: {
+  let headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Credentials': 'true',
-    'Authorization': `Bearer ${getAuthToken()}`,
+    'Authorization': `Bearer ${JSON.parse(localStorage.getItem('userDetail'))?.Token}`,
     'Access-From': 'WEB',
     'Api-Key': `${process.env.REACT_APP_API_KEY}`,
-  },
+  }
+  return { headers }
 }
 
 // DEVELOPMENT MIL URL
@@ -119,6 +119,7 @@ export const API = {
   productAttachment: `${BASE_URL}/masters-product/product-file-upload`,
   bulkUploadProduct: `${BASE_URL}/masters-product/bulk-upload-for-product-json`,
   productGroupSelectList: `${BASE_URL}/masters-product/select-list-get-product-group-code`,
+  getPartDescription: `${BASE_URL}/masters-part/get-info-name-by-part-number-and-type`,
 
   //ASSEMBLY PART
   createAssemblyPart: `${BASE_URL}/masters-part/create-assembly-part`,
@@ -484,6 +485,8 @@ export const API = {
   deleteDraftCosting: `${BASE_URL}/costing/delete-draft-costing`,
   getNCCCExistingCosting: `${BASE_URL}/costing/get-ncc-exist-costings-list`,
   createNCCCosting: `${BASE_URL}/costing/create-ncc-costing`,
+  getMachineProcessGroupDetail: `${BASE_URL}/costing/get-costing-machine-process-group-detail`,
+  getFgWiseImpactDataForCosting: `${BASE_URL}/costing/get-fgwise-impact-detail`,
   //getRMCCTabData: `${BASE_URL}/costing/get-zbc-costing-rm-bop-cc-detail-for-tab-grid`,
 
   getRMCCTabData: `${BASE_URL}/costing/get-costing-detail-for-rm-bop-cc`,
@@ -823,7 +826,7 @@ export const API = {
   getMachineTypeSelectListByTechnology: `${BASE_URL}/masters-machine/get-machine-type-select-list-by-technology`,
   getMachineTypeSelectListByVendor: `${BASE_URL}/masters-machine/get-machine-type-select-list-by-vendor`,
   getProcessSelectListByMachineType: `${BASE_URL}/masters-machine/get-process-select-list-by-machine-type`,
-  getProcessGroupList: `${BASE_URL}/masters-machine/get-process-group/`,
+  getProcessGroupList: `${BASE_URL}/masters-machine/get-process-group`,
 
   //POWER MASTER
   getPowerTypeSelectList: `${BASE_URL}/configuration/select-list-get-power-type`,
@@ -1293,10 +1296,8 @@ export const CHECK_IS_OVERHEAD_AND_PROFIT_DATA_CHANGE = 'CHECK_IS_OVERHEAD_AND_P
 export const CHECK_IS_PACKAGE_AND_FREIGHT_DATA_CHANGE = 'CHECK_IS_PACKAGE_AND_FREIGHT_DATA_CHANGE'
 export const CHECK_IS_TOOL_DATA_CHANGE = 'CHECK_IS_TOOL_DATA_CHANGE'
 export const CHECK_IS_DISCOUNT_DATA_CHANGE = 'CHECK_IS_DISCOUNT_DATA_CHANGE'
-
-
-
 export const SET_NEW_ARRAY_FOR_COSTING = 'SET_NEW_ARRAY_FOR_COSTING'
+export const GET_FG_WISE_IMPACT_DATA_FOR_COSTING = 'GET_FG_WISE_IMPACT_DATA_FOR_COSTING'
 
 //WEIGHT CALCULATION COSTING
 
@@ -1366,6 +1367,9 @@ export const FERROUS_CALCULATOR_RESET = 'FERROUS_CALCULATOR_RESET';
 export const SELECTED_IDS_OF_OPERATION_AND_OTHEROPERATION = 'SELECTED_IDS_OF_OPERATION_AND_OTHEROPERATION'
 export const SET_MASTER_BATCH_OBJ = 'SET_MASTER_BATCH_OBJ'
 export const SELECTED_IDS_OF_OPERATION = 'SELECTED_IDS_OF_OPERATION'
+export const SELECTED_PROCESS_AND_GROUPCODE = 'SELECTED_PROCESS_AND_GROUPCODE'
+export const SET_PROCESS_ID = 'SET_PROCESS_ID'
+export const SET_PROCESSGROUP_ID = 'SET_PROCESSGROUP_ID'
 
 //WEIGHT CALCULATION COSTING RM DRAWER
 export const GET_RAW_MATERIAL_CALCI_INFO = 'GET_RAW_MATERIAL_CALCI_INFO'
@@ -1468,6 +1472,7 @@ export const GET_DEPRECIATION_SELECTLIST_SUCCESS = 'GET_DEPRECIATION_SELECTLIST_
 export const GET_MACHINE_APPROVAL_LIST = 'GET_MACHINE_APPROVAL_LIST'
 export const SET_PROCESS_GROUP_FOR_API = 'SET_PROCESS_GROUP_FOR_API'
 export const SET_PROCESS_GROUP_LIST = 'SET_PROCESS_GROUP_LIST'
+export const STORE_PROCESS_LIST = 'STORE_PROCESS_LIST'
 
 //POWER MASTER
 export const GET_POWER_TYPE_SELECTLIST_SUCCESS = 'GET_POWER_TYPE_SELECTLIST_SUCCESS'
@@ -1722,6 +1727,8 @@ export const HOUR = "Hours"
 export const NO = "Number"
 export const STROKE = "Stroke"
 export const SHOTS = "SHOT"
+export const MINUTES = 'Minutes'
+export const SECONDS = 'Seconds'
 
 // export const INR = "INR"
 
@@ -1849,4 +1856,4 @@ export const KEY = 'awvmhujtecmcecmj';
 export const IV = 'vuqqsafvwouoqtgh'
 
 //VERSION 
-export const VERSION = "V1.2.194.2";
+export const VERSION = "V1.2.242";

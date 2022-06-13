@@ -150,11 +150,26 @@ function OpenWeightCalculator(props) {
         break;
     }
   }
+  const drawerClassHandler = () => {
+    switch (Number(technology)) {
+      case FORGING:
+        return 'forging'
+
+      case SHEETMETAL:
+        return 'sheet-metal'
+
+      case Ferrous_Casting:
+        return 'ferrous'
+
+      default:
+        break;
+    }
+  }
 
   return (
     <div>
       <Drawer
-        className="weight-drawer-costing calculator-drawer"
+        className={`weight-drawer-costing calculator-drawer calculator__${drawerClassHandler()}`}
         anchor={props.anchor}
         open={props.isOpen}
       // onClose={(e) => toggleDrawer(e)}

@@ -1,25 +1,25 @@
 import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, Table } from 'reactstrap'
-import { checkForDecimalAndNull, checkVendorPlantConfigurable, formViewData, getPOPriceAfterDecimal, loggedInUserId } from '../../../../helper'
+import { checkForDecimalAndNull, checkVendorPlantConfigurable, formViewData, loggedInUserId, getPOPriceAfterDecimal } from '../../../../helper'
 import { approvalPushedOnSap, getApprovalSummary } from '../../actions/Approval'
-import { setCostingViewData, storePartNumber } from '../../actions/Costing'
+import { getSingleCostingDetails, setCostingViewData, storePartNumber } from '../../actions/Costing'
 import ApprovalWorkFlow from './ApprovalWorkFlow'
 import ApproveRejectDrawer from './ApproveRejectDrawer'
 import CostingSummaryTable from '../CostingSummaryTable'
 import DayTime from '../../../common/DayTimeWrapper'
 import { Fragment } from 'react'
-import ApprovalListing from './ApprovalListing'
 import ViewDrawer from './ViewDrawer'
 import PushButtonDrawer from './PushButtonDrawer'
-import { Errorbox } from '../../../common/ErrorBox'
 import { Redirect } from 'react-router'
 import LoaderCustom from '../../../common/LoaderCustom';
 import CalculatorWrapper from '../../../common/Calculator/CalculatorWrapper'
 import { debounce } from 'lodash'
 import Toaster from '../../../common/Toaster'
 import { INR } from '../../../../config/constants'
-import { ErrorMessage } from '../../../simulation/SimulationUtils' //THIS CODE WILL BE USE FOR SHWOING ERROR AND SUCCESS MESSAGE
+import { Fgwiseimactdata } from '../../../simulation/components/FgWiseImactData'
+import HeaderTitle from '../../../common/HeaderTitle'
+import { EMPTY_GUID } from '../../../../config/constants'
 
 function ApprovalSummary(props) {
   const { approvalNumber, approvalProcessId } = props.location.state
@@ -38,13 +38,16 @@ function ApprovalSummary(props) {
   const [showListing, setShowListing] = useState(false)
   const [showFinalLevelButtons, setShowFinalLevelButton] = useState(false) //This is for showing approve ,reject and approve and push button when costing approval is at final level for aaproval
   const [showPushButton, setShowPushButton] = useState(false) // This is for showing push button when costing is approved and need to push it for scheduling
-  const [hidePushButton, setHideButton] = useState(false) // This is for hiding push button ,when it is send for push for scheduling.
   const [showPushDrawer, setShowPushDrawer] = useState(false)
   const [viewButton, setViewButton] = useState(false)
   const [pushButton, setPushButton] = useState(false)
   const [isLoader, setIsLoader] = useState(false);
-
+  const [fgWiseAcc, setFgWiseAcc] = useState(true)
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
+
+  const headerName = ['Revision No.', 'Name', 'Old Cost/Pc', 'New Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
+  const parentField = ['PartNumber', '-', 'PartName', '-', '-', '-', 'VariancePerPiece', 'VolumePerYear', 'ImpactPerQuarter', 'ImpactPerYear']
+  const childField = ['PartNumber', 'ECNNumber', 'PartName', 'OldCost', 'NewCost', 'Quantity', 'VariancePerPiece', '-', '-', '-']
   useEffect(() => {
     approvalSummaryHandler()
   }, [])
@@ -55,10 +58,9 @@ function ApprovalSummary(props) {
 
       const { PartDetails, ApprovalDetails, ApprovalLevelStep, DepartmentId, Technology, ApprovalProcessId,
         ApprovalProcessSummaryId, ApprovalNumber, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow,
-        CostingId, PartId, PurchasingGroup, MaterialGroup, DecimalOption } = res?.data?.Data?.Costings[0];
+        CostingId, PartId, LastCostingId, PurchasingGroup, MaterialGroup, DecimalOption } = res?.data?.Data?.Costings[0];
 
       const technologyId = res?.data?.Data?.Costings[0].PartDetails.TechnologyId
-      const partNumber = PartDetails.PartNumber
       setIsLoader(false)
       dispatch(storePartNumber({ partId: PartId }))
       setPartDetail(PartDetails)
@@ -78,7 +80,8 @@ function ApprovalSummary(props) {
         ReasonId: ApprovalDetails[0].ReasonId,
         PurchasingGroup: PurchasingGroup,
         MaterialGroup: MaterialGroup,
-        DecimalOption: DecimalOption
+        DecimalOption: DecimalOption,
+        LastCostingId: LastCostingId
       })
     }),
 
@@ -127,6 +130,29 @@ function ApprovalSummary(props) {
     partDetail
   ]
 
+  const displayCompareCosting = () => {
+
+    dispatch(getSingleCostingDetails(approvalData.CostingId, res => {
+      const Data = res.data.Data
+      const newObj = formViewData(Data, 'New Costing')
+      let finalObj = []
+      if (approvalData.LastCostingId !== EMPTY_GUID) {
+        dispatch(getSingleCostingDetails(approvalData.LastCostingId, response => {
+          const oldData = response.data.Data
+          const oldObj = formViewData(oldData, 'Old Costing')
+          finalObj = [oldObj[0], newObj[0]]
+          dispatch(setCostingViewData(finalObj))
+          setCostingSummary(!costingSummary)
+        }))
+      } else {
+
+        dispatch(setCostingViewData(newObj))
+        setCostingSummary(!costingSummary)
+      }
+
+    }))
+
+  }
   if (showListing) {
     return <Redirect to="/approval-listing" />
   }
@@ -184,7 +210,6 @@ function ApprovalSummary(props) {
         <>
           {isLoader && <LoaderCustom />}
           <div className="container-fluid approval-summary-page">
-            <ErrorMessage approvalNumber={approvalNumber} />
             <h2 className="heading-main">Approval Summary</h2>
             <Row>
               <Col md="8">
@@ -309,6 +334,12 @@ function ApprovalSummary(props) {
                           {approvalDetails.TypeOfCosting === 'VBC' ? 'Vendor Plant' : 'Plant'}{` Code`}
                         </th>
                       }
+                      {
+                        (initialConfiguration.IsDestinationPlantConfigure && approvalDetails.TypeOfCosting === 'VBC') &&
+                        <th>
+                          {`Plant(Code)`}
+                        </th>
+                      }
                       <th>{`SOB`}</th>
                       {/* <th>{`ECN Ref No`}</th> */}
                       <th>{`Old/Current Price`}</th>
@@ -336,6 +367,12 @@ function ApprovalSummary(props) {
                           {
                             approvalDetails.TypeOfCosting === 'VBC' ? (approvalDetails.VendorPlantCode ? approvalDetails.VendorPlantCode : '-') : approvalDetails.PlantCode ? approvalDetails.PlantCode : '-'
                           }
+                        </td>
+                      }
+                      {
+                        (initialConfiguration.IsDestinationPlantConfigure && approvalDetails.TypeOfCosting === 'VBC') &&
+                        <td>
+                          {`${approvalDetails.DestinationPlantName}(${approvalDetails.DestinationPlantCode})`}
                         </td>
                       }
                       <td>
@@ -395,28 +432,43 @@ function ApprovalSummary(props) {
                 </Table>
               </Col>
             </Row>
-
+            <Row className="mb-3">
+              <Col md="6"> <div className="left-border">{'FG wise Impact:'}</div></Col>
+              <Col md="6">
+                <div className={'right-details'}>
+                  <button className="btn btn-small-primary-circle ml-1 float-right" type="button" onClick={() => { setFgWiseAcc(!fgWiseAcc) }}>
+                    {fgWiseAcc ? (
+                      <i className="fa fa-minus"></i>
+                    ) : (
+                      <i className="fa fa-plus"></i>
+                    )}
+                  </button>
+                </div>
+              </Col>
+            </Row>
+            {/* THIS SHOULD BE COMMENTED IN MINDA */}
+            {/* {fgWiseAcc && <Row className="mb-3">
+              <Col md="12">
+                <Fgwiseimactdata
+                  headerName={headerName}
+                  parentField={parentField}
+                  childField={childField}
+                  impactType={'FgWise'}
+                  approvalSummaryTrue={true}
+                />
+              </Col>
+            </Row>} */}
             <Row>
               <Col md="10">
                 <div className="left-border">{'Costing Summary:'}</div>
               </Col>
               <Col md="2" className="text-right">
                 <div className="right-border">
-                  <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setCostingSummary(!costingSummary) }}>
+                  <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => displayCompareCosting()}>
                     {costingSummary ? (
-                      <i
-                        // onClick={() => {
-                        //   setCostingSummary(false)
-                        // }}
-                        className="fa fa-minus"
-                      ></i>
+                      <i className="fa fa-minus"></i>
                     ) : (
-                      <i
-                        // onClick={() => {
-                        //   setCostingSummary(true)
-                        // }}
-                        className="fa fa-plus"
-                      ></i>
+                      <i className="fa fa-plus"></i>
                     )}
                   </button>
                 </div>
@@ -424,7 +476,7 @@ function ApprovalSummary(props) {
             </Row>
             <Row className="mb-4">
               <Col md="12" className="costing-summary-row">
-                {costingSummary && <CostingSummaryTable viewMode={true} costingID={approvalDetails.CostingId} />}
+                {costingSummary && <CostingSummaryTable viewMode={true} costingID={approvalDetails.CostingId} approvalMode={true} isApproval={approvalData.LastCostingId !== EMPTY_GUID ? true : false} simulationMode={false} />}
               </Col>
             </Row>
             {/* Costing Summary page here */}
@@ -474,8 +526,6 @@ function ApprovalSummary(props) {
             </Row>
           }
         </>
-        //  :
-        // <ApprovalListing />
       }
 
       {approveDrawer && (

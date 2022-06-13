@@ -45,6 +45,10 @@
 .View { @include icons("../../assests/images/Group-8858.svg", $shadowColor:#0cbeeb, $borderColor:#bbe8f9);
  @include extra-icon-styles;
 }
+.add-process { @include icons("../../assests/images/process-add.svg", $shadowColor:#0cbeeb, $borderColor:#bbe8f9);
+    border-radius: 4px;
+ @include extra-icon-styles;
+}
 .hirarchy-btn { @include icons("../../assests/images/hirarchy-btn.svg", $background-size:none, $shadowColor:#0cbeeb, $borderColor:#bbe8f9);
     background-color: #cef2fb;
     margin-left: 5px;
@@ -140,6 +144,10 @@
 .hirarchy-icon { @include icons("../../assests/images/hirarchy-icon.svg", 18px , 12px);
     margin-right: 5px;
 }
+.group-process { @include icons("../../assests/images/group-process.svg");
+    margin-right: 5px;
+    border-radius: 4px
+}
 .trashred-icon {  @include icons("../../assests/images/trash-red.svg", 11px, 14px);
     margin-right: 5px;
 }
@@ -160,7 +168,7 @@
 }
 .Copy.All { @include icons("../../assests/images/Copy.svg", $shadowColor:#f8a000, $borderColor:#feeccc);
     @include extra-icon-styles;
-    margin: 0;
+    
 }
 .Create { @include icons("../../assests/images/Create.svg");
     @include extra-icon-styles;
@@ -283,8 +291,8 @@
     grid-gap: 5px;
     justify-content: end;
     button {
-        margin-right: 0;
-        margin-left: 0;
+        margin-right: 0 !important;
+        margin-left: 0 !important;
     }
 }
 
@@ -297,5 +305,19 @@
             .row {
                 left: unset !important;
             }
+        }
+    }
+    .actions-wrapper {
+        .ag-react-container {
+            display: flex;
+            justify-content: end;
+            grid-gap: 5px;
+            align-items: center;
+            button {
+                margin: 0;
+            }
+        }
+        .ag-cell-wrapper {
+            @extend .ag-react-container;
         }
     }

@@ -8,6 +8,7 @@ import {
   ELECTRONICS, RIVET, NON_FERROUS_HPDC, RUBBER, NON_FERROUS_GDC, FORGING, FASTNERS, RIVETS, RMDOMESTIC, RMIMPORT, BOPDOMESTIC, BOPIMPORT, PROCESS, OPERATIONS, SURFACETREATMENT, MACHINERATE, OVERHEAD, PROFIT, EXCHNAGERATE,
 } from '../config/constants'
 import { getConfigurationKey } from './auth'
+import { data } from 'react-dom-factories';
 
 
 
@@ -546,7 +547,7 @@ export function getNetSurfaceAreaBothSide(data) {
   return checkForNull(value)
 }
 
-export function formViewData(costingSummary) {
+export function formViewData(costingSummary, header = '') {
   let temp = []
   let dataFromAPI = costingSummary
   let obj = {}
@@ -686,7 +687,7 @@ export function formViewData(costingSummary) {
   obj.destinationPlantCode = dataFromAPI.DestinationPlantCode ? dataFromAPI.DestinationPlantCode : '-'
   obj.destinationPlantName = dataFromAPI.DestinationPlantName ? dataFromAPI.DestinationPlantName : '-'
   obj.destinationPlantId = dataFromAPI.DestinationPlantId ? dataFromAPI.DestinationPlantId : '-'
-  obj.CostingHeading = dataFromAPI.CostingHeading ? dataFromAPI.CostingHeading : '-'
+  obj.CostingHeading = header
   obj.partName = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.PartName ? dataFromAPI.CostingPartDetails.PartName : '-'
   obj.netOtherOperationCost = dataFromAPI && dataFromAPI.NetOtherOperationCost ? dataFromAPI.NetOtherOperationCost : 0
   obj.masterBatchTotal = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.MasterBatchTotal ? dataFromAPI.CostingPartDetails.MasterBatchTotal : 0
@@ -910,3 +911,4 @@ export function getPOPriceAfterDecimal(decimalValue, PoPrice = 0) {
     return { netPo, quantity }
   }
 }
+export const allEqual = arr => arr.every(val => val === arr[0]);

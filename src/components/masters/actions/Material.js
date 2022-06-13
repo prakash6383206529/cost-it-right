@@ -51,15 +51,13 @@ import Toaster from '../../common/Toaster';
 import { loggedInUserId, userDetails } from '../../../helper';
 import { MESSAGES } from '../../../config/message';
 
-const headers = config
-
 /**
  * @method createMaterialAPI
  * @description create material master
  */
 export function createMaterialAPI(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createMaterialAPI, data, headers);
+        const request = axios.post(API.createMaterialAPI, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -90,7 +88,7 @@ export function createMaterialAPI(data, callback) {
 export function getRawMaterialDataAPI(RawMaterialId, callback) {
     return (dispatch) => {
         if (RawMaterialId !== '') {
-            axios.get(`${API.getRawMaterialDataAPI}/${RawMaterialId}`, headers)
+            axios.get(`${API.getRawMaterialDataAPI}/${RawMaterialId}`, config())
                 .then((response) => {
                     dispatch({
                         type: GET_RAW_MATERIAL_DATA_SUCCESS,
@@ -118,7 +116,7 @@ export function getRawMaterialDataAPI(RawMaterialId, callback) {
 export function updateRawMaterialAPI(requestData, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateRawMaterialAPI}`, requestData, headers)
+        axios.put(`${API.updateRawMaterialAPI}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -135,7 +133,7 @@ export function updateRawMaterialAPI(requestData, callback) {
 export function deleteRawMaterialAPI(RawMaterialId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteRawMaterialAPI}/${RawMaterialId}`, headers)
+        axios.delete(`${API.deleteRawMaterialAPI}/${RawMaterialId}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -155,7 +153,7 @@ export function createRMCategoryAPI(data, callback) {
         // dispatch({
         //     type:  API_REQUEST,
         // });
-        const request = axios.post(API.createRMCategoryAPI, data, headers);
+        const request = axios.post(API.createRMCategoryAPI, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -184,7 +182,7 @@ export function createRMCategoryAPI(data, callback) {
 export function getCategoryDataAPI(CategoryId, callback) {
     return (dispatch) => {
         if (CategoryId !== '') {
-            axios.get(`${API.getCategoryDataAPI}/${CategoryId}`, headers)
+            axios.get(`${API.getCategoryDataAPI}/${CategoryId}`, config())
                 .then((response) => {
                     dispatch({
                         type: GET_CATEGORY_DATA_SUCCESS,
@@ -212,7 +210,7 @@ export function getCategoryDataAPI(CategoryId, callback) {
 export function updateCategoryAPI(requestData, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateCategoryAPI}`, requestData, headers)
+        axios.put(`${API.updateCategoryAPI}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -229,7 +227,7 @@ export function updateCategoryAPI(requestData, callback) {
 export function deleteCategoryAPI(CategoryId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteCategoryAPI}/${CategoryId}`, headers)
+        axios.delete(`${API.deleteCategoryAPI}/${CategoryId}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -248,7 +246,7 @@ export function createRMGradeAPI(data, callback) {
         // dispatch({
         //     type:  API_REQUEST,
         // });
-        const request = axios.post(API.createRMGradeAPI, data, headers);
+        const request = axios.post(API.createRMGradeAPI, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -277,7 +275,7 @@ export function createRMGradeAPI(data, callback) {
 export function getRMGradeDataAPI(GradeId, callback) {
     return (dispatch) => {
         if (GradeId !== '') {
-            axios.get(`${API.getRMGradeDataAPI}/${GradeId}`, headers)
+            axios.get(`${API.getRMGradeDataAPI}/${GradeId}`, config())
                 .then((response) => {
                     dispatch({
                         type: GET_GRADE_DATA_SUCCESS,
@@ -306,7 +304,7 @@ export function getRMGradeDataAPI(GradeId, callback) {
 export function updateRMGradeAPI(requestData, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateRMGradeAPI}`, requestData, headers)
+        axios.put(`${API.updateRMGradeAPI}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -323,7 +321,7 @@ export function updateRMGradeAPI(requestData, callback) {
 export function deleteRMGradeAPI(ID, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteRMGradeAPI}/${ID}`, headers)
+        axios.delete(`${API.deleteRMGradeAPI}/${ID}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -339,7 +337,7 @@ export function deleteRMGradeAPI(ID, callback) {
  */
 export function createRMSpecificationAPI(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createRMSpecificationAPI, data, headers);
+        const request = axios.post(API.createRMSpecificationAPI, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({ type: CREATE_MATERIAL_SUCCESS, });
@@ -359,7 +357,7 @@ export function createRMSpecificationAPI(data, callback) {
  */
 export function createAssociation(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createAssociation, data, headers);
+        const request = axios.post(API.createAssociation, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({ type: CREATE_MATERIAL_SUCCESS, });
@@ -381,7 +379,7 @@ export function createAssociation(data, callback) {
 export function getRMSpecificationDataAPI(SpecificationId, callback) {
     return (dispatch) => {
         if (SpecificationId !== '') {
-            axios.get(`${API.getRMSpecificationDataAPI}/${SpecificationId}`, headers)
+            axios.get(`${API.getRMSpecificationDataAPI}/${SpecificationId}`, config())
                 .then((response) => {
                     dispatch({
                         type: GET_SPECIFICATION_DATA_SUCCESS,
@@ -410,7 +408,7 @@ export function getRMSpecificationDataList(data, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
         const queryParams = `raw_material_id=${data.MaterialId}&grade_id=${data.GradeId}`
-        const request = axios.get(`${API.getRMSpecificationDataList}?${queryParams}`, headers);
+        const request = axios.get(`${API.getRMSpecificationDataList}?${queryParams}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 dispatch({
@@ -434,7 +432,7 @@ export function getRMSpecificationDataList(data, callback) {
 export function updateRMSpecificationAPI(requestData, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateRMSpecificationAPI}`, requestData, headers)
+        axios.put(`${API.updateRMSpecificationAPI}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -452,7 +450,7 @@ export function updateRMSpecificationAPI(requestData, callback) {
 export function deleteRMSpecificationAPI(ID, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteRMSpecificationAPI}/${ID}`, headers)
+        axios.delete(`${API.deleteRMSpecificationAPI}/${ID}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -470,7 +468,7 @@ export function deleteRMSpecificationAPI(ID, callback) {
 export function getRMGradeSelectListByRawMaterial(Id, callback) {
     return (dispatch) => {
         if (Id !== '') {
-            const request = axios.get(`${API.getRMGradeSelectListByRawMaterial}/${Id}`, headers);
+            const request = axios.get(`${API.getRMGradeSelectListByRawMaterial}/${Id}`, config());
             request.then((response) => {
                 if (response.data.Result) {
                     dispatch({
@@ -500,7 +498,7 @@ export function getRMGradeSelectListByRawMaterial(Id, callback) {
 export function getRMTypeSelectListAPI(callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getRMTypeSelectListAPI}`, headers);
+        const request = axios.get(`${API.getRMTypeSelectListAPI}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -524,7 +522,7 @@ export function getRMTypeSelectListAPI(callback) {
 export function getGradeSelectList(callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getGradeSelectList}`, headers);
+        const request = axios.get(`${API.getGradeSelectList}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -548,7 +546,7 @@ export function getGradeSelectList(callback) {
 // export function getGradeByRMTypeSelectListAPI(ID, callback) {
 //     return (dispatch) => {
 //         //dispatch({ type: API_REQUEST });
-//         const request = axios.get(`${API.getGradeByRMTypeSelectListAPI}/${ID}`, headers);
+//         const request = axios.get(`${API.getGradeByRMTypeSelectListAPI}/${ID}`, config());
 //         request.then((response) => {
 //             if (response.data.Result) {
 //                 dispatch({
@@ -571,10 +569,10 @@ export function getGradeSelectList(callback) {
  */
 export function getRowMaterialDataAPI() {
     return (dispatch) => {
-        const API1 = axios.get(API.getRMMaterialAPI, headers);
-        const API2 = axios.get(API.getRMGradeAPI, headers);
-        const API3 = axios.get(API.getRMCategoryAPI, headers);
-        const API4 = axios.get(API.getRMSpecificationAPI, headers);
+        const API1 = axios.get(API.getRMMaterialAPI, config());
+        const API2 = axios.get(API.getRMGradeAPI, config());
+        const API3 = axios.get(API.getRMCategoryAPI, config());
+        const API4 = axios.get(API.getRMSpecificationAPI, config());
         Promise.all([API1, API2, API3, API4])
             .then((response) => {
                 dispatch({
@@ -610,7 +608,7 @@ export function getRowMaterialDataAPI() {
  */
 export function createMaterialTypeAPI(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createMaterialType, data, headers);
+        const request = axios.post(API.createMaterialType, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -642,7 +640,7 @@ export function createMaterialTypeAPI(data, callback) {
 export function getMaterialTypeDataAPI(MaterialTypeId, callback) {
     return (dispatch) => {
         if (MaterialTypeId !== '') {
-            axios.get(`${API.getMaterialTypeDataAPI}/${MaterialTypeId}`, headers)
+            axios.get(`${API.getMaterialTypeDataAPI}/${MaterialTypeId}`, config())
                 .then((response) => {
                     dispatch({
                         type: GET_MATERIAL_TYPE_DATA_SUCCESS,
@@ -670,7 +668,7 @@ export function getMaterialTypeDataAPI(MaterialTypeId, callback) {
 export function deleteMaterialTypeAPI(MaterialTypeId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteMaterialTypeAPI}/${MaterialTypeId}`, headers)
+        axios.delete(`${API.deleteMaterialTypeAPI}/${MaterialTypeId}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -689,7 +687,7 @@ export function deleteMaterialTypeAPI(MaterialTypeId, callback) {
 export function updateMaterialtypeAPI(requestData, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateMaterialtypeAPI}`, requestData, headers)
+        axios.put(`${API.updateMaterialtypeAPI}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -706,7 +704,7 @@ export function updateMaterialtypeAPI(requestData, callback) {
  */
 export function createRMDetailAPI(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createMaterial, data, headers);
+        const request = axios.post(API.createMaterial, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -735,7 +733,7 @@ export function createRMDetailAPI(data, callback) {
  */
 export function createRMDomestic(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createRMDomestic, data, headers);
+        const request = axios.post(API.createRMDomestic, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -755,7 +753,7 @@ export function createRMDomestic(data, callback) {
 export function getRawMaterialDetailsDataAPI(RawMaterialDetailsId, callback) {
     return (dispatch) => {
         if (RawMaterialDetailsId != '') {
-            axios.get(`${API.getRawMaterialDetailsDataAPI}/${RawMaterialDetailsId}`, headers)
+            axios.get(`${API.getRawMaterialDetailsDataAPI}/${RawMaterialDetailsId}`, config())
                 .then((response) => {
                     dispatch({
                         type: GET_RAW_MATERIAL_DETAILS_UNIT_DATA_SUCCESS,
@@ -783,7 +781,7 @@ export function getRawMaterialDetailsDataAPI(RawMaterialDetailsId, callback) {
 export function getRawMaterialDetailsAPI(data, isValid, callback) {
     return (dispatch) => {
         if (isValid) {
-            axios.get(`${API.getRMDomesticDataById}/${data.Id}/${data.IsVendor}`, headers)
+            axios.get(`${API.getRMDomesticDataById}/${data.Id}/${data.IsVendor}`, config())
                 .then((response) => {
                     dispatch({
                         type: GET_RAW_MATERIAL_DETAILS_DATA_SUCCESS,
@@ -811,7 +809,7 @@ export function getRawMaterialDetailsAPI(data, isValid, callback) {
 export function updateRMDomesticAPI(requestData, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateRMDomesticAPI}`, requestData, headers)
+        axios.put(`${API.updateRMDomesticAPI}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -829,7 +827,7 @@ export function updateRMDomesticAPI(requestData, callback) {
 export function deleteRawMaterialDetailAPI(RawMaterialDetailsId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteRawMaterialDetailAPI}/${RawMaterialDetailsId}`, headers)
+        axios.delete(`${API.deleteRawMaterialDetailAPI}/${RawMaterialDetailsId}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -845,8 +843,8 @@ export function deleteRawMaterialDetailAPI(RawMaterialDetailsId, callback) {
  */
 export function getMaterialDetailAPI(filterData) {
     return (dispatch) => {
-        const API1 = axios.get(API.getMaterialTypeDataList, headers);
-        const API2 = axios.post(API.getMaterial, filterData, headers);
+        const API1 = axios.get(API.getMaterialTypeDataList, config());
+        const API2 = axios.post(API.getMaterial, filterData, config());
         Promise.all([API1, API2])
             .then((response) => {
                 dispatch({
@@ -873,7 +871,7 @@ export function getMaterialDetailAPI(filterData) {
  */
 export function getMaterialTypeDataListAPI(callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getMaterialTypeDataList}`, headers);
+        const request = axios.get(`${API.getMaterialTypeDataList}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -910,7 +908,7 @@ export function rawMaterialForCosting(data) {
 export function getAllRawMaterialList(callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getRMMaterialAPI}`, headers);
+        const request = axios.get(`${API.getRMMaterialAPI}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -933,7 +931,7 @@ export function getAllRawMaterialList(callback) {
  */
 export function createRawMaterialNameChild(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createRawMaterialNameChild, data, headers);
+        const request = axios.post(API.createRawMaterialNameChild, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -951,7 +949,7 @@ export function createRawMaterialNameChild(data, callback) {
  */
 export function getRawMaterialNameChild(callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getRawMaterialNameChild}`, headers);
+        const request = axios.get(`${API.getRawMaterialNameChild}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -974,7 +972,7 @@ export function getRawMaterialNameChild(callback) {
  */
 export function getUnassociatedRawMaterail(callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getUnassociatedRawMaterial}`, headers);
+        const request = axios.get(`${API.getUnassociatedRawMaterial}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -998,7 +996,7 @@ export function getUnassociatedRawMaterail(callback) {
  */
 export function getGradeListByRawMaterialNameChild(ID, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getGradeListByRawMaterialNameChild}/${ID}`, headers);
+        const request = axios.get(`${API.getGradeListByRawMaterialNameChild}/${ID}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -1021,7 +1019,7 @@ export function getGradeListByRawMaterialNameChild(ID, callback) {
  */
 export function getVendorListByVendorType(isVendor, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getVendorListByVendorType}/${isVendor}`, headers);
+        const request = axios.get(`${API.getVendorListByVendorType}/${isVendor}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -1044,7 +1042,7 @@ export function getVendorListByVendorType(isVendor, callback) {
  */
 export function getVendorWithVendorCodeSelectList(callback) {
     return (dispatch) => {
-        const request = axios.get(API.getVendorWithVendorCodeSelectList, headers);
+        const request = axios.get(API.getVendorWithVendorCodeSelectList, config());
         request.then((response) => {
             dispatch({
                 type: GET_VENDORLIST_BY_VENDORTYPE_SELECTLIST,
@@ -1062,12 +1060,12 @@ export function getVendorWithVendorCodeSelectList(callback) {
  * @method getRMDomesticDataList
  * @description Used to get RM Domestic Datalist
  */
-export function getRMDomesticDataList(data, callback) {
+export function getRMDomesticDataList(data, skip, take, isPagination, obj, callback) {
     return (dispatch) => {
-
-        dispatch({ type: API_REQUEST });
+        dispatch({ type: GET_RM_DOMESTIC_LIST });
         const queryParams = `CostingHead=${(data.costingHead === VBC || data.costingHead === 1) ? 1 : (data.costingHead === ZBC || data.costingHead === 0) ? 0 : null}&PlantId=${data.plantId}&material_id=${data.material_id}&grade_id=${data.grade_id}&vendor_id=${data.vendor_id}&technology_id=${data.technologyId}&net_landed_min_range=${data.net_landed_min_range}&net_landed_max_range=${data.net_landed_max_range}&departmentCode=${data.departmentCode}&statusId=${data.statusId}`
-        const request = axios.get(`${API.getRMDomesticDataList}?${queryParams}`, headers);
+        const queryParamsSecond = `Technology=${obj.TechnologyName !== undefined ? obj.TechnologyName : ""}&RMName=${obj.RawMaterial !== undefined ? obj.RawMaterial : ""}&RMGrade=${obj.RMGrade !== undefined ? obj.RMGrade : ""}&RMSpecs=${obj.RMSpec !== undefined ? obj.RMSpec : ""}&RMCode=${obj.RawMaterialCode !== undefined ? obj.RawMaterialCode : ""}&RMCategory=${obj.Category !== undefined ? obj.Category : ""}&Plant=${obj.Plant !== undefined ? obj.Plant : ""}&Vendor=${obj.VendorName !== undefined ? obj.VendorName : ""}&UOM=${obj.UOM !== undefined ? obj.UOM : ""}&BasicRate=${obj.BasicRate !== undefined ? obj.BasicRate : ""}&ScrapRate=${obj.ScrapRate !== undefined ? obj.ScrapRate : ""}&FreightCost=${obj.RMFreightCost !== undefined ? obj.RMFreightCost : ""}&ShearingCost=${obj.RMShearingCost !== undefined ? obj.RMShearingCost : ""}&NetCost=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&EffectiveDate=${obj.EffectiveDate !== undefined ? obj.EffectiveDate : ""}&MaterialType=${obj.MaterialType !== undefined ? obj.MaterialType : ""}&applyPagination=${isPagination}&skip=${skip}&take=${take}`
+        const request = axios.get(`${API.getRMDomesticDataList}?${queryParams}&${queryParamsSecond}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 //
@@ -1078,12 +1076,10 @@ export function getRMDomesticDataList(data, callback) {
             }
             callback(response);
         }).catch((error) => {
-
-
             dispatch({ type: API_FAILURE, });
             callback(error);
 
-            //apiErrors(error);
+            apiErrors(error);
         });
     };
 }
@@ -1094,7 +1090,7 @@ export function getRMDomesticDataList(data, callback) {
  */
 export function fileUploadRMDomestic(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.fileUploadRMDomestic, data, headers);
+        const request = axios.post(API.fileUploadRMDomestic, data, config());
         request.then((response) => {
             if (response && response.status === 200) {
                 callback(response);
@@ -1113,7 +1109,7 @@ export function fileUploadRMDomestic(data, callback) {
  */
 export function createRMImport(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createRMImport, data, headers);
+        const request = axios.post(API.createRMImport, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -1133,7 +1129,7 @@ export function createRMImport(data, callback) {
 export function updateRMImportAPI(requestData, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateRMImportAPI}`, requestData, headers)
+        axios.put(`${API.updateRMImportAPI}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -1151,7 +1147,7 @@ export function updateRMImportAPI(requestData, callback) {
 export function getRMImportDataById(data, isValid, callback) {
     return (dispatch) => {
         if (isValid) {
-            axios.get(`${API.getRMImportDataById}/${data.Id}/${data.IsVendor}`, headers)
+            axios.get(`${API.getRMImportDataById}/${data.Id}/${data.IsVendor}`, config())
                 .then((response) => {
                     dispatch({
                         type: GET_RAW_MATERIAL_DETAILS_DATA_SUCCESS,
@@ -1181,7 +1177,7 @@ export function getRMImportDataById(data, isValid, callback) {
 export function getRMImportDataList(data, callback) {
     return (dispatch) => {
         const queryParams = `CostingHead=${(data.costingHead === VBC || data.costingHead === 1) ? 1 : (data.costingHead === ZBC || data.costingHead === 0) ? 0 : null}&PlantId=${data.plantId}&material_id=${data.material_id}&grade_id=${data.grade_id}&vendor_id=${data.vendor_id}&technology_id=${data.technologyId}&net_landed_min_range=${data.net_landed_min_range}&net_landed_max_range=${data.net_landed_max_range}&departmentCode=${data.departmentCode}&statusId=${data.statusId}`
-        const request = axios.get(`${API.getRMImportDataList}?${queryParams}`, headers);
+        const request = axios.get(`${API.getRMImportDataList}?${queryParams}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 dispatch({
@@ -1208,7 +1204,7 @@ export function fileUpdateRMDomestic(data, callback) {
         let multipartHeaders = {
             'Content-Type': 'multipart/form-data;'
         };
-        const request = axios.put(API.fileUpdateRMDomestic, data, headers);
+        const request = axios.put(API.fileUpdateRMDomestic, data, config());
         request.then((response) => {
             if (response && response.status === 200) {
                 callback(response);
@@ -1227,7 +1223,7 @@ export function fileUpdateRMDomestic(data, callback) {
 export function fileDeleteRMDomestic(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.fileDeleteRMDomestic}/${data.Id}/${data.DeletedBy}`, headers)
+        axios.delete(`${API.fileDeleteRMDomestic}/${data.Id}/${data.DeletedBy}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -1243,7 +1239,7 @@ export function fileDeleteRMDomestic(data, callback) {
  */
 export function bulkUploadRMDomesticZBC(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.bulkUploadRMDomesticZBC, data, headers);
+        const request = axios.post(API.bulkUploadRMDomesticZBC, data, config());
         request.then((response) => {
             if (response.status === 200) {
                 callback(response);
@@ -1262,7 +1258,7 @@ export function bulkUploadRMDomesticZBC(data, callback) {
  */
 export function bulkUploadRMDomesticVBC(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.bulkUploadRMDomesticVBC, data, headers);
+        const request = axios.post(API.bulkUploadRMDomesticVBC, data, config());
         request.then((response) => {
             if (response.status === 200) {
                 callback(response);
@@ -1281,7 +1277,7 @@ export function bulkUploadRMDomesticVBC(data, callback) {
  */
 export function bulkfileUploadRM(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.bulkfileUploadRM, data, headers);
+        const request = axios.post(API.bulkfileUploadRM, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -1299,7 +1295,7 @@ export function bulkfileUploadRM(data, callback) {
  */
 export function bulkUploadRMImportZBC(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.bulkUploadRMImportZBC, data, headers);
+        const request = axios.post(API.bulkUploadRMImportZBC, data, config());
         request.then((response) => {
             if (response.status === 200) {
                 callback(response);
@@ -1318,7 +1314,7 @@ export function bulkUploadRMImportZBC(data, callback) {
  */
 export function bulkUploadRMImportVBC(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.bulkUploadRMImportVBC, data, headers);
+        const request = axios.post(API.bulkUploadRMImportVBC, data, config());
         request.then((response) => {
             if (response.status === 200) {
                 callback(response);
@@ -1337,7 +1333,7 @@ export function bulkUploadRMImportVBC(data, callback) {
  */
 export function bulkUploadRMSpecification(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.bulkUploadRMSpecification, data, headers);
+        const request = axios.post(API.bulkUploadRMSpecification, data, config());
         request.then((response) => {
             if (response.status === 200) {
                 callback(response);
@@ -1357,7 +1353,7 @@ export function bulkUploadRMSpecification(data, callback) {
 export function getRawMaterialChildById(ID, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getRawMaterialChildById}/${ID}`, headers);
+        const request = axios.get(`${API.getRawMaterialChildById}/${ID}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -1375,7 +1371,7 @@ export function getRawMaterialChildById(ID, callback) {
  */
 export function updateRawMaterialChildName(data, callback) {
     return (dispatch) => {
-        const request = axios.put(API.updateRawMaterialChildName, data, headers);
+        const request = axios.put(API.updateRawMaterialChildName, data, config());
         request.then((response) => {
             if (response && response.status === 200) {
                 callback(response);
@@ -1394,7 +1390,7 @@ export function updateRawMaterialChildName(data, callback) {
 export function getRawMaterialFilterSelectList(callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getRawMaterialFilterSelectList}`, headers);
+        const request = axios.get(`${API.getRawMaterialFilterSelectList}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -1416,7 +1412,7 @@ export function getRawMaterialFilterSelectList(callback) {
  */
 export function getGradeFilterByRawMaterialSelectList(ID, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getGradeFilterByRawMaterialSelectList}/${ID}`, headers);
+        const request = axios.get(`${API.getGradeFilterByRawMaterialSelectList}/${ID}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -1438,7 +1434,7 @@ export function getGradeFilterByRawMaterialSelectList(ID, callback) {
  */
 export function getVendorFilterByRawMaterialSelectList(ID, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getVendorFilterByRawMaterialSelectList}/${ID}`, headers);
+        const request = axios.get(`${API.getVendorFilterByRawMaterialSelectList}/${ID}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -1460,7 +1456,7 @@ export function getVendorFilterByRawMaterialSelectList(ID, callback) {
  */
 export function getRawMaterialFilterByGradeSelectList(ID, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getRawMaterialFilterByGradeSelectList}/${ID}`, headers);
+        const request = axios.get(`${API.getRawMaterialFilterByGradeSelectList}/${ID}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -1482,7 +1478,7 @@ export function getRawMaterialFilterByGradeSelectList(ID, callback) {
  */
 export function getVendorFilterByGradeSelectList(ID, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getVendorFilterByGradeSelectList}/${ID}`, headers);
+        const request = axios.get(`${API.getVendorFilterByGradeSelectList}/${ID}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -1504,7 +1500,7 @@ export function getVendorFilterByGradeSelectList(ID, callback) {
  */
 export function getRawMaterialFilterByVendorSelectList(ID, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getRawMaterialFilterByVendorSelectList}/${ID}`, headers);
+        const request = axios.get(`${API.getRawMaterialFilterByVendorSelectList}/${ID}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -1526,7 +1522,7 @@ export function getRawMaterialFilterByVendorSelectList(ID, callback) {
  */
 export function getGradeFilterByVendorSelectList(ID, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getGradeFilterByVendorSelectList}/${ID}`, headers);
+        const request = axios.get(`${API.getGradeFilterByVendorSelectList}/${ID}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -1548,7 +1544,7 @@ export function getGradeFilterByVendorSelectList(ID, callback) {
  */
 export function getMaterialTypeSelectList(callback) {
     return (dispatch) => {
-        const request = axios.get(API.getMaterialTypeSelectList, headers);
+        const request = axios.get(API.getMaterialTypeSelectList, config());
         request.then((response) => {
             dispatch({
                 type: GET_MATERIAL_DATA_SELECTLIST_SUCCESS,
@@ -1568,7 +1564,7 @@ export function getMaterialTypeSelectList(callback) {
  */
 export function checkAndGetRawMaterialCode(code, callback) {
     return (dispatch) => {
-        const request = axios.post(`${API.checkAndGetRawMaterialCode}?materialCode=${code}`, '', headers);
+        const request = axios.post(`${API.checkAndGetRawMaterialCode}?materialCode=${code}`, '', config());
         request.then((response) => {
             if (response && response.status === 200) {
                 callback(response);
@@ -1599,7 +1595,7 @@ export function getRMApprovalList(callback) {
     return (dispatch) => {
 
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getRMApprovalList}?logged_in_user_id=${loggedInUserId()}&logged_in_user_level_id=${userDetails().LoggedInMasterLevelId}&masterId=${1}`, headers);
+        const request = axios.get(`${API.getRMApprovalList}?logged_in_user_id=${loggedInUserId()}&logged_in_user_level_id=${userDetails().LoggedInMasterLevelId}&masterId=${1}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 //
@@ -1626,7 +1622,7 @@ export function getRMApprovalList(callback) {
 export function getAllMasterApprovalDepartment(callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getAllMasterApprovalDepartment}`, headers)
+        const request = axios.get(`${API.getAllMasterApprovalDepartment}`, config())
         request
             .then((response) => {
                 if (response.data.Result) {
@@ -1653,7 +1649,7 @@ export function getAllMasterApprovalDepartment(callback) {
 */
 export function getAllMasterApprovalUserByDepartment(data, callback) {
     return (dispatch) => {
-        const request = axios.post(`${API.getAllMasterApprovalUserByDepartment}`, data, headers,)
+        const request = axios.post(`${API.getAllMasterApprovalUserByDepartment}`, data, config(),)
 
         request
             .then((response) => {
@@ -1686,7 +1682,7 @@ export function getAllMasterApprovalUserByDepartment(data, callback) {
  */
 export function masterApprovalRequestBySender(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.masterSendToApprover, data, headers)
+        const request = axios.post(API.masterSendToApprover, data, config())
         request.then((response) => {
             if (response.data.Result) {
                 callback(response)
@@ -1711,7 +1707,7 @@ export function masterApprovalRequestBySender(data, callback) {
  */
 export function approvalOrRejectRequestByMasterApprove(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.approveOrRejectMasterByApprover, data, headers)
+        const request = axios.post(API.approveOrRejectMasterByApprover, data, config())
         request
             .then((response) => {
                 if (response.data.Result) {
@@ -1742,7 +1738,7 @@ export function getMasterApprovalSummary(tokenNo, approvalProcessId, masterId, c
 
     return (dispatch) => {
         const request = axios.get(
-            `${API.getMasterApprovalSummaryByApprovalNo}/${tokenNo}/${approvalProcessId}/${loggedInUserId()}`, headers)
+            `${API.getMasterApprovalSummaryByApprovalNo}/${tokenNo}/${approvalProcessId}/${loggedInUserId()}`, config())
         request
             .then((response) => {
                 if (response.data.Result) {
@@ -1793,7 +1789,7 @@ export function getMasterApprovalSummary(tokenNo, approvalProcessId, masterId, c
  */
 export function masterFinalLevelUser(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.masterFinalLeveluser, data, headers)
+        const request = axios.post(API.masterFinalLeveluser, data, config())
         request
             .then((response) => {
                 if (response.data.Result) {

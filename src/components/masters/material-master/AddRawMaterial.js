@@ -2,15 +2,13 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { required, acceptAllExceptSingleSpecialCharacter, maxLength80 } from "../../../helper/validation";
+import { required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces } from "../../../helper/validation";
 import { renderText, } from "../../layout/FormInputs";
 import { createRawMaterialNameChild, getRawMaterialChildById, updateRawMaterialChildName } from '../actions/Material';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
-import saveImg from '../../../assests/images/check.png'
-import cancelImg from '../../../assests/images/times.png'
 
 class AddRawMaterial extends Component {
   constructor(props) {
@@ -135,7 +133,7 @@ class AddRawMaterial extends Component {
                       name={"RawMaterialName"}
                       type="text"
                       placeholder={""}
-                      validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80]}
+                      validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces]}
                       component={renderText}
                       required={true}
                       className=" "

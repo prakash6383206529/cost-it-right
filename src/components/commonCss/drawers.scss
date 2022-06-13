@@ -1,0 +1,35 @@
+@import 'cssVariable.scss';
+.calculator {
+    &__forging {
+       .drawer-1500px {
+           min-width: 1024px;
+       }
+       .text-overflow {
+           min-width: 70px;
+       }
+       .text-help {
+           line-height: 1.2;
+       }
+       @media screen and (max-width: $max1367)  {
+       table {
+               td {
+                   font-size: 14px;
+               }
+           }
+           .bluefooter-butn.border {
+               font-size: 15px;
+           }
+       }
+    }
+}
+.conversion-cost {
+    .MuiPaper-root {
+        padding-bottom: 0 !important;
+    }
+    .drawer-1500px {
+        padding-bottom: 0;
+    }
+    .view-conversion-header {
+        min-height: calc(100vh - 88px);
+    }
+}

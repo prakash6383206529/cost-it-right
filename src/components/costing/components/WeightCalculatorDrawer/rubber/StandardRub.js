@@ -1,14 +1,13 @@
 import React, { useState, useEffect, Fragment, useContext } from 'react'
-import { Row, Col, Table } from 'reactstrap'
+import { Row, Col } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
 import { TextFieldHookForm, SearchableSelectHookForm } from '../../../../layout/HookFormInputs'
-import { calculateScrapWeight, checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../../helper'
+import { checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../../helper'
 import { saveRawMaterialCalciData } from '../../../actions/CostWorking'
 import Toaster from '../../../../common/Toaster'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 import { KG, EMPTY_DATA } from '../../../../../config/constants'
-import NoContentFound from '../../../../common/NoContentFound'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -24,9 +23,12 @@ function StandardRub(props) {
 
     const costData = useContext(costingInfoContext)
     const [tableData, setTableData] = useState([])
+    const [disableCondition, setDisableCondition] = useState(true)
+    const [agGridTable, setAgGridTable] = useState(true)
     const [timeOutId, setTimeoutId] = useState([])
     const [totalRMCost, setTotalRMCost] = useState("")
     const [rmDropDownData, setRmDropDownData] = useState([])
+    const [allRmData, setAllRmData] = useState([])
     const [rmRowDataState, setRmRowDataState] = useState({})
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
@@ -73,6 +75,7 @@ function StandardRub(props) {
             })
             count++
         })
+        setAllRmData(arr)
         setRmDropDownData(arr)
     }, [])
 
@@ -206,10 +209,75 @@ function StandardRub(props) {
     }
 
 
-    const deleteItem = () => {
+    const deleteItem = (gridData) => {
 
+        let arr = []
+        let count = 0
+        rmData && rmData.map((item) => {
+            arr.push({
+                label: item.RMName, value: count
+            })
+            count++
+        })
+        setAllRmData(arr)
+
+        setAgGridTable(false)
+        gridData.pop()
+        // grid.applyTransaction({ remove: [rowData] })
+        setTableData([...gridData])
+        // setAgGridTable(true)
+        let tableDataArray = [...gridData]
+        let totalRMCost = tableDataArray && tableDataArray.reduce((accummlator, el) => {
+            return accummlator + el.NetRmCost
+        }, 0)
+        setTotalRMCost(totalRMCost)
+
+
+        /////
+
+        let dropDown = []
+        arr && arr.map((item) => {
+            let count = 0
+            gridData && gridData.map((ele) => {
+                if (item.label == ele.RmName) {
+                    count++
+                }
+            })
+
+            if (count > 0) {
+                return false
+            } else {
+                dropDown.push(item)
+            }
+        })
+        setRmDropDownData(dropDown)
+        /////
+        setTimeout(() => {
+            setAgGridTable(true)
+        }, 300);
     }
-    const editItem = () => {
+    const editItem = (gridData) => {
+
+        setDisableCondition(false)
+        let e = gridData[gridData.length - 1]
+        rmData && rmData.map((item, index) => {
+            if (item.RMName === e.RmName) {
+                setRmRowDataState(rmData[index])
+            }
+            return false
+        })
+
+        let obj = e
+        setValue('InnerDiameter', checkForDecimalAndNull(obj.InnerDiameter, getConfigurationKey().NoOfDecimalForInputOutput))
+        setValue('OuterDiameter', checkForDecimalAndNull(obj.OuterDiameter, getConfigurationKey().NoOfDecimalForInputOutput))
+        setValue('Length', checkForDecimalAndNull(obj.Length, getConfigurationKey().NoOfDecimalForInputOutput))
+        setValue('CuttingAllowance', checkForDecimalAndNull(obj.CuttingAllowance, getConfigurationKey().NoOfDecimalForInputOutput))
+        setValue('Volume', checkForDecimalAndNull(obj.Volume, getConfigurationKey().NoOfDecimalForInputOutput))
+        setValue('GrossWeight', checkForDecimalAndNull(obj.GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
+        setValue('FinishWeight', checkForDecimalAndNull(obj.FinishWeight, getConfigurationKey().NoOfDecimalForInputOutput))
+        setTimeout(() => {
+            setValue('ScrapWeight', checkForDecimalAndNull(obj.ScrapWeight, getConfigurationKey().NoOfDecimalForInputOutput))
+        }, 200);
 
     }
 
@@ -228,8 +296,8 @@ function StandardRub(props) {
         return (
             <>
 
-                {isEditable && <button className="Edit mr-2 align-middle" type={'button'} onClick={() => editItem()} />}
-                {isEditable && <button className="Delete align-middle" type={'button'} onClick={() => deleteItem()} />}
+                {isEditable && <button className="Edit mr-2 align-middle" type={'button'} onClick={() => editItem(props?.agGridReact?.gridOptions.rowData)} />}
+                {isEditable && <button className="Delete align-middle" type={'button'} onClick={() => deleteItem(props?.agGridReact?.gridOptions.rowData)} />}
             </>
         )
     };
@@ -257,6 +325,7 @@ function StandardRub(props) {
 
     const addRow = () => {
 
+
         let obj = {
             RmName: rmRowDataState.RMName,
             InnerDiameter: Number(getValues('InnerDiameter')),
@@ -278,11 +347,18 @@ function StandardRub(props) {
             Toaster.warning("Please fill all the mandatory fields first.")
             return false;
         }
-        setTableData([...tableData, obj])
+
+
+        if (disableCondition) {
+            setTableData([...tableData, obj])
+        } else {
+            let array = [...tableData]
+            array.pop()
+            setTableData([...array, obj])
+        }
 
 
         reset({
-
             InnerDiameter: "",
             OuterDiameter: "",
             Length: "",
@@ -315,6 +391,36 @@ function StandardRub(props) {
         }, 0)
 
         setTotalRMCost(totalRMCost)
+        setDisableCondition(true)
+
+
+    }
+
+    const onCancel = () => {
+
+        reset({
+
+            InnerDiameter: "",
+            OuterDiameter: "",
+            Length: "",
+            CuttingAllowance: "",
+            TotalLength: "",
+            Volume: "",
+            GrossWeight: "",
+            FinishWeight: "",
+            ScrapWeight: "",
+            NetRmCost: "",
+            RawMaterial: []
+
+        })
+        setRmRowDataState({})
+
+        setTimeout(() => {
+            setValue('ScrapWeight', 0)
+        }, 300);
+        setDisableCondition(true)
+
+
     }
 
     const onSubmit = () => {
@@ -327,23 +433,11 @@ function StandardRub(props) {
         obj.CostingId = costData.CostingId
         obj.TechnologyId = costData.TechnologyId
         // obj.CostingRawMaterialDetailId = rmRowData.RawMaterialDetailId
-        // obj.RawMaterialName = rmRowData.RMName
-        // obj.RawMaterialType = rmRowData.MaterialType
-        // obj.BasicRatePerUOM = rmRowData.RMRate
-        // obj.ScrapRate = rmRowData.ScrapRate
         // obj.NetLandedCost = grossWeights * rmRowData.RMRate - (grossWeights - getValues('finishWeight')) * rmRowData.ScrapRate
         // obj.PartNumber = costData.PartNumber
         // obj.TechnologyName = costData.TechnologyName
-        // obj.Density = rmRowData.Density
-        // obj.UOMId = rmRowData.UOMId
-        // obj.UOM = rmRowData.UOM
         obj.UOMForDimension = KG
-
-
-        // obj.ShotWeight = getValues('shotWeight')
-        // obj.NumberOfCavity = getValues('noOfCavity')
-        // obj.GrossWeight = grossWeights
-        // obj.FinishWeight = getValues('finishWeight')
+        obj.RmDropDownData = rmDropDownData
         obj.CalculatedRmTableData = tableData
 
         dispatch(saveRawMaterialCalciData(obj, res => {
@@ -363,15 +457,24 @@ function StandardRub(props) {
         hyphenFormatter: hyphenFormatter,
         totalValueRenderer: buttonFormatter,
 
-
     };
 
+    const UnitFormat = () => {
+        return <>Volume(mm<sup>3</sup>)</>
+    }
+
+    const handleKeyDown = function (e) {
+        if (e.key === 'Enter' && e.shiftKey === false) {
+            e.preventDefault();
+        }
+    };
 
     return (
         <Fragment>
             <Row>
                 <Col>
-                    <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}>
+                    <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}
+                        onKeyDown={(e) => { handleKeyDown(e, onSubmit.bind(this)); }}>
                         <Col md="12" className={'mt25'}>
                             <div className="border pl-3 pr-3 pt-3">
                                 {/* <Col md="12">
@@ -386,7 +489,7 @@ function StandardRub(props) {
                                         <Col md="12 d-flex weight-calculator-headings">
                                             <div className="d-inline-block "><span className="grey-text d-block">RM Name:</span><span className="text-dark-blue one-line-overflow" title={rmRowDataState.RMName}>{`${rmRowDataState.RMName !== undefined ? rmRowDataState.RMName : ''}`}</span></div>
                                             <div className="d-inline-block "><span className="grey-text d-block">Material:</span><span className="text-dark-blue">{`${rmRowDataState.MaterialType !== undefined ? rmRowDataState.MaterialType : ''}`}</span></div>
-                                            <div className="d-inline-block "><span className="grey-text d-block">Density(g/cm){<sup>3</sup>}):</span><span className="text-dark-blue">{`${rmRowDataState.Density !== undefined ? rmRowDataState.Density : ''}`}</span></div>
+                                            <div className="d-inline-block "><span className="grey-text d-block">Density(g/cm){<sup>3</sup>}:</span><span className="text-dark-blue">{`${rmRowDataState.Density !== undefined ? rmRowDataState.Density : ''}`}</span></div>
                                             <div className="d-inline-block "><span className="grey-text d-block">RM Rate(INR):</span><span className="text-dark-blue">{`${rmRowDataState.RMRate !== undefined ? rmRowDataState.RMRate : ''}`}</span></div>
                                             {props?.appyMasterBatch && < div className="d-inline-block "><span className="grey-text d-block">RM Rate(including Master Batch):</span><span className="text-dark-blue">{`${rmRowDataState.RMRate !== undefined ? checkForDecimalAndNull(5, getConfigurationKey().NoOfDecimalForInputOutput) : ''}`}</span></div>}
                                             <div className="d-inline-block "><span className="grey-text d-block">Scrap Rate(INR):</span><span className="text-dark-blue">{`${rmRowDataState.ScrapRate !== undefined ? rmRowDataState.ScrapRate : ''}`}</span></div>
@@ -410,14 +513,14 @@ function StandardRub(props) {
                                             className=""
                                             customClassName={'withBorder'}
                                             errors={errors.RawMaterial}
-                                            disabled={props.CostingViewMode ? true : false}
+                                            disabled={props.CostingViewMode || !disableCondition ? true : false}
                                         />
                                     </Col>
 
                                     <Row className={'mt15'}>
                                         <Col md="3">
                                             <TextFieldHookForm
-                                                label={`Inner Diameter (mm)`}
+                                                label={`Inner Diameter(mm)`}
                                                 name={'InnerDiameter'}
                                                 Controller={Controller}
                                                 control={control}
@@ -437,12 +540,12 @@ function StandardRub(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.shotWeight}
-                                                disabled={(props.isEditFlag && Object.keys(rmRowDataState).length > 0 ? false : true) || (tableData.length > 0 ? true : false)}
+                                                disabled={(props.isEditFlag && Object.keys(rmRowDataState).length > 0 ? false : true) || ((tableData.length > 0 && disableCondition) ? true : false)}
                                             />
                                         </Col>
                                         <Col md="3">
                                             <TextFieldHookForm
-                                                label={`Outer Diameter (mm)`}
+                                                label={`Outer Diameter(mm)`}
                                                 name={'OuterDiameter'}
                                                 Controller={Controller}
                                                 control={control}
@@ -467,7 +570,7 @@ function StandardRub(props) {
                                         </Col>
                                         <Col md="3">
                                             <TextFieldHookForm
-                                                label={`Length (mm)`}
+                                                label={`Length(mm)`}
                                                 name={'Length'}
                                                 Controller={Controller}
                                                 control={control}
@@ -487,13 +590,13 @@ function StandardRub(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.finishWeight}
-                                                disabled={(props.isEditFlag && Object.keys(rmRowDataState).length > 0 ? false : true) || (tableData.length > 0 ? true : false)}
+                                                disabled={(props.isEditFlag && Object.keys(rmRowDataState).length > 0 ? false : true) || ((tableData.length > 0 && disableCondition) ? true : false)}
                                             />
                                         </Col>
 
                                         <Col md="3">
                                             <TextFieldHookForm
-                                                label={`Cutting Allowance (mm)`}
+                                                label={`Cutting Allowance(mm)`}
                                                 name={'CuttingAllowance'}
                                                 Controller={Controller}
                                                 control={control}
@@ -513,14 +616,14 @@ function StandardRub(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.grossWeight}
-                                                disabled={(props.isEditFlag && Object.keys(rmRowDataState).length > 0 ? false : true) || (tableData.length > 0 ? true : false)}
+                                                disabled={(props.isEditFlag && Object.keys(rmRowDataState).length > 0 ? false : true) || ((tableData.length > 0 && disableCondition) ? true : false)}
                                             />
                                         </Col>
 
 
                                         <Col md="3">
                                             <TextFieldHookForm
-                                                label={`Total Length`}
+                                                label={`Total Length(mm)`}
                                                 name={'TotalLength'}
                                                 Controller={Controller}
                                                 control={control}
@@ -546,7 +649,7 @@ function StandardRub(props) {
 
                                         <Col md="3">
                                             <TextFieldHookForm
-                                                label={`Volume (mm^3)`}
+                                                label={UnitFormat()}
                                                 name={'Volume'}
                                                 Controller={Controller}
                                                 control={control}
@@ -572,7 +675,7 @@ function StandardRub(props) {
 
                                         <Col md="3">
                                             <TextFieldHookForm
-                                                label={`Gross Weight (Kg)`}
+                                                label={`Gross Weight(Kg)`}
                                                 name={'GrossWeight'}
                                                 Controller={Controller}
                                                 control={control}
@@ -598,7 +701,7 @@ function StandardRub(props) {
 
                                         <Col md="3">
                                             <TextFieldHookForm
-                                                label={`Finish Weight`}
+                                                label={`Finish Weight(Kg)`}
                                                 name={'FinishWeight'}
                                                 Controller={Controller}
                                                 control={control}
@@ -624,7 +727,7 @@ function StandardRub(props) {
 
                                         <Col md="3">
                                             <TextFieldHookForm
-                                                label={`Scrap Weight (Kg)`}
+                                                label={`Scrap Weight(Kg)`}
                                                 name={'ScrapWeight'}
                                                 Controller={Controller}
                                                 control={control}
@@ -650,7 +753,7 @@ function StandardRub(props) {
 
                                         <Col md="3">
                                             <TextFieldHookForm
-                                                label={`Net RM Cost/ Component`}
+                                                label={`Net RM Cost/Component`}
                                                 name={'NetRmCost'}
                                                 Controller={Controller}
                                                 control={control}
@@ -680,7 +783,18 @@ function StandardRub(props) {
                                             onClick={() => addRow()}
                                             disabled={props.isEditFlag && Object.keys(rmRowDataState).length > 0 ? false : true}
                                         >
-                                            <div className={'plus'}></div>ADD
+                                            <div className={'plus'}></div>{disableCondition ? "ADD" : "UPDATE"}
+                                        </button>
+
+                                        <button
+                                            onClick={onCancel} // Need to change this cancel functionality
+                                            type="submit"
+                                            value="CANCEL"
+                                            className="reset ml-10 cancel-btn mt-4"
+                                            disabled={props.isEditFlag && Object.keys(rmRowDataState).length > 0 ? false : true}
+                                        >
+                                            <div className={''}></div>
+                                            RESET
                                         </button>
 
                                     </Row>

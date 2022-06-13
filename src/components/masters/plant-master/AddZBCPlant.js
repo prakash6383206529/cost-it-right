@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { required, maxLength6, maxLength80, checkWhiteSpaces,minLength10,alphaNumeric,vlidatePhoneNumber,maxLength71,maxLength7 ,maxLength5, acceptAllExceptSingleSpecialCharacter, maxLength4, postiveNumber, maxLength10, maxLength12, } from "../../../helper/validation";
+import { required, maxLength6, maxLength80, checkWhiteSpaces, minLength10, alphaNumeric, maxLength71, maxLength5, acceptAllExceptSingleSpecialCharacter, maxLength4, postiveNumber, maxLength12, } from "../../../helper/validation";
 import { userDetails, loggedInUserId } from "../../../helper/auth";
 import { renderText, searchableSelect } from "../../layout/FormInputs";
 import { createPlantAPI, getPlantUnitAPI, updatePlantAPI, getComapanySelectList } from '../actions/Plant';
@@ -72,20 +72,13 @@ class AddZBCPlant extends Component {
           this.props.fetchCityDataAPI(Data.StateId, () => { })
 
           setTimeout(() => {
-            const { countryList, stateList, cityList, companySelectList } = this.props;
-
-            const CountryObj = countryList && countryList.find(item => Number(item.Value) === Data.CountryId)
-            const StateObj = stateList && stateList.find(item => Number(item.Value) === Data.StateId)
-            const CityObj = cityList && cityList.find(item => Number(item.Value) === Data.CityIdRef)
-            const CompanyObj = companySelectList && companySelectList.find(item => Number(item.Value) === Data.CompanyId)
-
             this.setState({
               isEditFlag: true,
               // isLoader: false,
-              country: CountryObj && CountryObj !== undefined ? { label: CountryObj.Text, value: CountryObj.Value } : [],
-              state: StateObj && StateObj !== undefined ? { label: StateObj.Text, value: StateObj.Value } : [],
-              city: CityObj && CityObj !== undefined ? { label: CityObj.Text, value: CityObj.Value } : [],
-              company: CompanyObj && CompanyObj !== undefined ? { label: CompanyObj.Text, value: CompanyObj.Value } : []
+              country: Data.CountryName !== undefined ? { label: Data.CountryName, value: Data.CountryId } : [],
+              state: Data.StateName !== undefined ? { label: Data.StateName, value: Data.StateId } : [],
+              city: Data.CityName !== undefined ? { label: Data.CityName, value: Data.CityIdRef } : [],
+              company: Data.CompanyName !== undefined ? { label: Data.CompanyName, value: Data.CompanyId } : []
             }, () => this.setState({ isLoader: false }))
           }, 500)
         }
@@ -132,6 +125,7 @@ class AddZBCPlant extends Component {
       companySelectList && companySelectList.map(item => {
         if (item.Value === '0') return false;
         temp.push({ label: item.Text, value: item.Value })
+        return null
       });
       return temp
     }
@@ -420,7 +414,7 @@ class AddZBCPlant extends Component {
                           name={"Extension"}
                           type="text"
                           placeholder={""}
-                          validate={[postiveNumber, maxLength5 , checkWhiteSpaces]}
+                          validate={[postiveNumber, maxLength5, checkWhiteSpaces]}
                           component={renderText}
                           maxLength={5}
                           className=""
@@ -535,7 +529,7 @@ class AddZBCPlant extends Component {
                       name={"ZipCode"}
                       type="text"
                       placeholder={""}
-                      validate={[required, postiveNumber, maxLength6, checkWhiteSpaces]}
+                      validate={[required, postiveNumber, maxLength6]}
                       component={renderText}
                       required={true}
                       maxLength={6}

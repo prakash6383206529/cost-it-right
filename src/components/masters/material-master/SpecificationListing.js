@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import {reduxForm } from "redux-form";
+import { reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import {
     getRMSpecificationDataList, deleteRMSpecificationAPI, getRMGradeSelectListByRawMaterial, getGradeSelectList, getRawMaterialNameChild,
@@ -47,7 +47,7 @@ class SpecificationListing extends Component {
             showPopup: false,
             showPopup2: false,
             deletedId: '',
-            isLoader:false
+            isLoader: false
 
         }
     }
@@ -70,13 +70,13 @@ class SpecificationListing extends Component {
             MaterialId: materialId,
             GradeId: gradeId
         }
-        this.setState({isLoader:true})
+        this.setState({ isLoader: true })
         this.props.getRMSpecificationDataList(data, res => {
             if (res.status === 204 && res.data === '') {
                 this.setState({ specificationData: [], })
             } else if (res && res.data && res.data.DataList) {
                 let Data = res.data.DataList;
-                this.setState({ specificationData: Data, isLoader:false})
+                this.setState({ specificationData: Data, isLoader: false })
             }
         });
     }
@@ -218,8 +218,8 @@ class SpecificationListing extends Component {
         const { EditAccessibility, DeleteAccessibility } = this.props;
         return (
             <>
-                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
-                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+                {EditAccessibility && <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+                {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
     };
@@ -445,7 +445,7 @@ class SpecificationListing extends Component {
 
                 <Row>
                     <Col>
-                        <div className={`ag-grid-wrapper height-width-wrapper ${this.props.rmSpecificationList && this.props.rmSpecificationList?.length <=0 ?"overlay-contain": ""}`}>
+                        <div className={`ag-grid-wrapper height-width-wrapper ${this.props.rmSpecificationList && this.props.rmSpecificationList?.length <= 0 ? "overlay-contain" : ""}`}>
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                             </div>

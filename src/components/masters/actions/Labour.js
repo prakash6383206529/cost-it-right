@@ -13,7 +13,7 @@ import {
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 
-const headers = config
+// const config() = config
 
 /**
  * @method createLabour
@@ -21,7 +21,7 @@ const headers = config
  */
 export function createLabour(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createLabour, data, headers);
+        const request = axios.post(API.createLabour, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -44,7 +44,7 @@ export function getLabourDataList(isAPICall, data, callback) {
         if (isAPICall) {
 
             const queryParams = `employment_terms=${data.employment_terms}&state_id=${data.state}&plant_id=${data.plant}&labour_type_id=${data.labour_type}&machine_type_id=${data.machine_type}`;
-            const request = axios.get(`${API.getLabourDataList}?${queryParams}`, headers);
+            const request = axios.get(`${API.getLabourDataList}?${queryParams}`, config());
             request.then((response) => {
                 if (response.data.Result || response.status === 204) {
 
@@ -75,7 +75,7 @@ export function getLabourData(labourId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         if (labourId !== '') {
-            axios.get(`${API.getLabourData}/${labourId}`, headers)
+            axios.get(`${API.getLabourData}/${labourId}`, config())
                 .then((response) => {
                     if (response.data.Result) {
                         dispatch({
@@ -105,7 +105,7 @@ export function getLabourData(labourId, callback) {
 export function deleteLabour(Id, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteLabour}/${Id}`, headers)
+        axios.delete(`${API.deleteLabour}/${Id}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -122,7 +122,7 @@ export function deleteLabour(Id, callback) {
 export function updateLabour(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateLabour}`, requestData, headers)
+        axios.put(`${API.updateLabour}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -139,7 +139,7 @@ export function updateLabour(requestData, callback) {
  */
 export function labourTypeVendorSelectList(callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.labourTypeVendorSelectList}`, headers);
+        const request = axios.get(`${API.labourTypeVendorSelectList}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -163,7 +163,7 @@ export function labourTypeVendorSelectList(callback) {
 export function getLabourTypeByPlantSelectList(ID, callback) {
     return (dispatch) => {
         if (ID !== '') {
-            const request = axios.get(`${API.getLabourTypeByPlantSelectList}/${ID}`, headers);
+            const request = axios.get(`${API.getLabourTypeByPlantSelectList}/${ID}`, config());
             request.then((response) => {
                 if (response.data.Result) {
                     dispatch({
@@ -195,7 +195,7 @@ export function getLabourTypeByPlantSelectList(ID, callback) {
 export function getLabourTypeByMachineTypeSelectList(ID, callback) {
     return (dispatch) => {
         if (ID !== '') {
-            const request = axios.get(`${API.getLabourTypeByMachineTypeSelectList}/${ID}`, headers);
+            const request = axios.get(`${API.getLabourTypeByMachineTypeSelectList}/${ID}`, config());
             request.then((response) => {
                 if (response.data.Result) {
                     dispatch({
@@ -225,7 +225,7 @@ export function getLabourTypeByMachineTypeSelectList(ID, callback) {
  */
 export function labourBulkUpload(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.labourBulkUpload, data, headers);
+        const request = axios.post(API.labourBulkUpload, data, config());
         request.then((response) => {
             if (response.status === 200) {
                 callback(response);

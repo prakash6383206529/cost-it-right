@@ -2,20 +2,15 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { EMPTY_DATA, MACHINERATE, MACHINE_MASTER_ID, RMDOMESTIC } from '../../../config/constants';
-import {
-    getInitialPlantSelectList, getInitialMachineTypeSelectList, getInitialProcessesSelectList, getInitialVendorWithVendorCodeSelectList, getMachineTypeSelectListByPlant,
-    getVendorSelectListByTechnology, getMachineTypeSelectListByTechnology, getMachineTypeSelectListByVendor, getProcessSelectListByMachineType,
-} from '../actions/Process';
+import { EMPTY_DATA, MACHINERATE, MACHINE_MASTER_ID } from '../../../config/constants';
 import { getMachineDataList, deleteMachine, copyMachine, getProcessGroupByMachineId } from '../actions/MachineMaster';
-import { getTechnologySelectList, } from '../../../actions/Common';
+import { getTechnologySelectList } from '../../../actions/Common';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { MACHINERATE_DOWNLOAD_EXCEl } from '../../../config/masterData';
-import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import DayTime from '../../common/DayTimeWrapper'
 import { MachineRate } from '../../../config/constants';
@@ -25,7 +20,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
-import { getFilteredData, userDetails, loggedInUserId } from '../../../helper'
+import { getFilteredData, userDetails, loggedInUserId, getConfigurationKey } from '../../../helper'
 import { getListingForSimulationCombined } from '../../simulation/actions/Simulation';
 import { masterFinalLevelUser } from '../../masters/actions/Material'
 import ProcessGroupDrawer from './ProcessGroupDrawer'
@@ -55,8 +50,8 @@ class MachineRateListing extends Component {
             showPopup: false,
             deletedId: '',
             isFinalApprovar: false,
-            // isProcessGroup: getConfigurationKey().IsMachineProcessGroup // UNCOMMENT IT AFTER DONE FROM BACKEND AND REMOVE BELOW CODE
-            isProcessGroup: false,
+            isProcessGroup: getConfigurationKey().IsMachineProcessGroup, // UNCOMMENT IT AFTER DONE FROM BACKEND AND REMOVE BELOW CODE
+            // isProcessGroup: false,
             isOpenProcessGroupDrawer: false,
         }
     }
@@ -66,11 +61,7 @@ class MachineRateListing extends Component {
     * @description Called after rendering the component
     */
     componentDidMount() {
-        this.props.getTechnologySelectList(() => { })
-        this.props.getInitialPlantSelectList(() => { })
-        this.props.getInitialVendorWithVendorCodeSelectList(() => { })
-        this.props.getInitialMachineTypeSelectList(() => { })
-        this.props.getInitialProcessesSelectList(() => { })
+
         if (this.props.isSimulation) {
             if (this.props.selectionForListingMasterAPI === 'Combined') {
                 this.props?.changeSetLoader(true)
@@ -147,7 +138,7 @@ class MachineRateListing extends Component {
 
     viewProcessGroupDetail = (rowData) => {
         this.props.getProcessGroupByMachineId(rowData.MachineId, res => {
-            if (res.data.Result) {
+            if (res.data.Result || res.status === 204) {
                 this.setState({
                     isOpenProcessGroupDrawer: true
                 })
@@ -179,14 +170,6 @@ class MachineRateListing extends Component {
     */
     deleteItem = (Id) => {
         this.setState({ showPopup: true, deletedId: Id })
-        const toastrConfirmOptions = {
-            onOk: () => {
-                this.confirmDelete(Id);
-            },
-            onCancel: () => { },
-            component: () => <ConfirmComponent />,
-        };
-
     }
 
     /**
@@ -248,11 +231,11 @@ class MachineRateListing extends Component {
 
         return (
             <>
-                {ViewAccessibility && <button className="View mr-2" type={'button'} title={'View Process Group'} onClick={() => this.viewProcessGroupDetail(rowData)} />}
-                {this.state.isProcessGroup && <button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, true)} />}
-                {isEditable && <button className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, false)} />}
+                {this.state.isProcessGroup && <button className="group-process" type={'button'} title={'View Process Group'} onClick={() => this.viewProcessGroupDetail(rowData)} />}
+                {ViewAccessibility && <button title="View" className="View" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, true)} />}
+                {isEditable && <button title="Edit" className="Edit" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, false)} />}
                 <button className="Copy All Costing" title="Copy Machine" type={'button'} onClick={() => this.copyItem(cellValue)} />
-                {isDeleteButton && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+                {isDeleteButton && <button title="Delete" className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
     };
@@ -310,15 +293,12 @@ class MachineRateListing extends Component {
         return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
     }
 
-
     renderPlantFormatter = (props) => {
         const row = props?.data;
 
         const value = row.CostingHead === 'VBC' ? row.DestinationPlant : row.Plants
         return value
     }
-
-
 
     bulkToggle = () => {
         this.setState({ isBulkUpload: true })
@@ -329,7 +309,6 @@ class MachineRateListing extends Component {
             this.getDataList()
         })
     }
-
 
     displayForm = () => {
         this.props.displayForm()
@@ -377,7 +356,6 @@ class MachineRateListing extends Component {
         params.api.paginationGoToPage(0);
     };
     onPageSizeChanged = (newPageSize) => {
-        var value = document.getElementById('page-size').value;
         this.state.gridApi.paginationSetPageSize(Number(newPageSize));
     };
 
@@ -385,9 +363,9 @@ class MachineRateListing extends Component {
         let tempArr = []
         if (this.props.isSimulation === true) {
             const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-            data && data.map((item => {
+            data && data.map((item => (
                 tempArr.push(item.data)
-            }))
+            )))
         } else {
             tempArr = this.props.machineDatalist && this.props.machineDatalist
         }
@@ -403,8 +381,6 @@ class MachineRateListing extends Component {
         gridOptions.api.setFilterModel(null);
     }
 
-
-
     getFilterMachineData = () => {
         if (this.props.isSimulation) {
             return getFilteredData(this.props.machineDatalist, MACHINE_MASTER_ID)
@@ -413,14 +389,13 @@ class MachineRateListing extends Component {
         }
     }
 
-
     /**
     * @method render
     * @description Renders the component
     */
     render() {
         const { handleSubmit, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility, isSimulation } = this.props;
-        const { isBulkUpload, isLoader } = this.state;
+        const { isBulkUpload } = this.state;
 
         const isFirstColumn = (params) => {
             if (isSimulation) {
@@ -432,7 +407,6 @@ class MachineRateListing extends Component {
             } else {
                 return false
             }
-
         }
         const defaultColDef = {
             resizable: true,
@@ -457,9 +431,7 @@ class MachineRateListing extends Component {
                 let length = this.state.gridApi.getSelectedRows().length
                 this.props.apply(selectedRows, length)
             }
-
         }
-
 
         return (
             <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
@@ -553,14 +525,14 @@ class MachineRateListing extends Component {
                                     <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
                                     {!isSimulation && <AgGridColumn field="Technologies" headerName="Technology"></AgGridColumn>}
                                     <AgGridColumn field="VendorName" headerName="Vendor(Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="Plants" headerName="Plant(Code)" cellRenderer='renderPlantFormatter'></AgGridColumn>
+                                    <AgGridColumn field="Plants" headerName="Plant(Code)" cellRenderer='hyphenFormatter'></AgGridColumn>
                                     <AgGridColumn field="MachineNumber" headerName="Machine Number" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="MachineTypeName" headerName="Machine Type" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="MachineTonnage" cellRenderer={'hyphenFormatter'} headerName="Machine Tonnage"></AgGridColumn>
                                     <AgGridColumn field="ProcessName" headerName="Process Name"></AgGridColumn>
                                     <AgGridColumn field="MachineRate" headerName="Machine Rate"></AgGridColumn>
                                     <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                                    {!isSimulation && !this.props?.isMasterSummaryDrawer && <AgGridColumn field="MachineId" width={200} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                    {!isSimulation && !this.props?.isMasterSummaryDrawer && <AgGridColumn field="MachineId" width={230} cellClass={"actions-wrapper"} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">
                                     <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
@@ -589,7 +561,7 @@ class MachineRateListing extends Component {
                     this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.MACHINE_DELETE_ALERT}`} />
                 }
                 {
-                    this.state.isOpenProcessGroupDrawer && <ProcessGroupDrawer anchor={'right'} isOpen={this.state.isOpenProcessGroupDrawer} toggleDrawer={this.closeProcessGroupDrawer} />
+                    this.state.isOpenProcessGroupDrawer && <ProcessGroupDrawer anchor={'right'} isOpen={this.state.isOpenProcessGroupDrawer} toggleDrawer={this.closeProcessGroupDrawer} isViewFlag={true} />
                 }
             </div >
         );
@@ -622,18 +594,9 @@ function mapStateToProps(state) {
 */
 export default connect(mapStateToProps, {
     getTechnologySelectList,
-    getInitialPlantSelectList,
-    getInitialVendorWithVendorCodeSelectList,
-    getInitialMachineTypeSelectList,
-    getInitialProcessesSelectList,
     getMachineDataList,
     deleteMachine,
     copyMachine,
-    getMachineTypeSelectListByPlant,
-    getVendorSelectListByTechnology,
-    getMachineTypeSelectListByTechnology,
-    getMachineTypeSelectListByVendor,
-    getProcessSelectListByMachineType,
     getListingForSimulationCombined,
     masterFinalLevelUser,
     getProcessGroupByMachineId
