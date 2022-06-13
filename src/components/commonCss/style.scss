@@ -1260,23 +1260,24 @@ button.user-btn.pull-right {
     @extend .Close;
   }
 }
-
-.process-name {
-  @extend .part-name;
-
-  .Open,
-  .Close {
-    right: 8px;
-    top: 46%;
-    left: unset;
-  }
-
-  &.text-overflow {
-    padding-left: 25px !important;
+table.table {
+  .process-name {
+    @extend .part-name;
 
     .Open,
     .Close {
-      left: 5px;
+      right: 8px;
+      top: 46%;
+      left: unset;
+    }
+
+    &.text-overflow {
+      padding-left: 25px !important;
+
+      .Open,
+      .Close {
+        left: 5px;
+      }
     }
   }
 }
