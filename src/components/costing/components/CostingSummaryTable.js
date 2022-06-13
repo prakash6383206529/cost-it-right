@@ -681,7 +681,7 @@ const CostingSummaryTable = (props) => {
   useEffect(() => {
     if (viewCostingData?.length === 1) {
 
-      setIsWarningFlag(viewCostingData && viewCostingData?.length === 1 && viewCostingData[0]?.IsApprovalLocked)
+      setIsWarningFlag(viewCostingData && viewCostingData.length === 1 && viewCostingData[0]?.IsApprovalLocked)
       // setIsWarningFlag(false)
     }
   }, [viewCostingData])
