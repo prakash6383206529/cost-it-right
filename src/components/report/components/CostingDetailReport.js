@@ -248,6 +248,7 @@ function ReportListing(props) {
         > {checkForDecimalAndNull(cellValue, initialConfiguration.NoOfDecimalForPrice)}</div> : '-';
     }
     const getTableData = (skip, take, isPagination, data, isLastWeek, isCallApi) => {
+        setLoader(true)
         let newData = {}
         if (isLastWeek) {
             let currentDate = new Date()
@@ -263,6 +264,7 @@ function ReportListing(props) {
         }
         dispatch(getCostingReport(skip, take, isPagination, newData, isLastWeek, isCallApi, (res) => {
             if (res) {
+                setLoader(false)
                 let isReset = true
                 setLoader(false)
                 setTimeout(() => {
