@@ -586,7 +586,7 @@ function ReportListing(props) {
 
                 <h1 className="mb-0">Costing Details Report</h1>
 
-                <Row className="pt-3 mb-2 blue-before">
+                <Row className="pt-4 mt-2 mb-2 blue-before">
                     {/* COMMENT FOR NOW AS TOLD BY TR */}
                     {/* <Col md="2" lg="2">
                         <button title="Last Week" type="button" class="user-btn mr5" onClick={() => lastWeekFilter()}><div class="swap rotate90 mr-2"></div>Last Week</button>
