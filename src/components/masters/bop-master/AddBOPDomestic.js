@@ -3,10 +3,10 @@ import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import {
-  required, checkForNull, number, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter, maxLength20, alphaNumeric,
-  maxLength, postiveNumber, maxLength10, positiveAndDecimalNumber, maxLength512, maxLength80, checkWhiteSpaces, decimalLengthsix, applySuperScript
+  required, checkForNull, number, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter, maxLength20,
+  maxLength, maxLength10, positiveAndDecimalNumber, maxLength512, maxLength80, checkWhiteSpaces, decimalLengthsix
 } from "../../../helper/validation";
-import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField, focusOnError, renderDatePicker, renderNumberInputField } from "../../layout/FormInputs";
+import { renderText, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker, renderNumberInputField } from "../../layout/FormInputs";
 import { fetchMaterialComboAPI, getCityBySupplier, getPlantBySupplier, getUOMSelectList, getPlantSelectListByType, getCityByCountry, getAllCity } from '../../../actions/Common';
 import { getVendorWithVendorCodeSelectList, getVendorTypeBOPSelectList, } from '../actions/Supplier';
 import { getPartSelectList } from '../actions/Part';
@@ -14,13 +14,13 @@ import { masterFinalLevelUser } from '../actions/Material'
 import { createBOPDomestic, updateBOPDomestic, getBOPCategorySelectList, getBOPDomesticById, fileUploadBOPDomestic, fileDeleteBOPDomestic, } from '../actions/BoughtOutParts';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { checkVendorPlantConfigurable, getConfigurationKey, loggedInUserId,userDetails } from "../../../helper/auth";
+import { checkVendorPlantConfigurable, getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
 import Switch from "react-switch";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
-import { FILE_URL, ZBC,BOP_MASTER_ID,EMPTY_GUID } from '../../../config/constants';
+import { FILE_URL, ZBC, BOP_MASTER_ID, EMPTY_GUID } from '../../../config/constants';
 import AddBOPCategory from './AddBOPCategory';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
@@ -48,26 +48,20 @@ class AddBOPDomestic extends Component {
       isEditFlag: false,
       IsVendor: false,
       isViewMode: this.props?.data?.isViewMode ? true : false,
-
       BOPCategory: [],
       isCategoryDrawerOpen: false,
       isVendorNameNotSelected: false,
-
       selectedPartAssembly: [],
       selectedPlants: [],
-
       isOpenVendor: false,
-
       vendorName: [],
       vendorLocation: [],
       oldDate: '',
-
       sourceLocation: [],
       IsSendForApproval: false,
       UOM: [],
       isOpenUOM: false,
       approveDrawer: false,
-
       effectiveDate: '',
       minEffectiveDate: '',
       isDateChange: false,
@@ -75,7 +69,6 @@ class AddBOPDomestic extends Component {
       isFinalApprovar: false,
       approvalObj: {},
       IsFinancialDataChanged: true,
-
       NetLandedCost: '',
       DataToCheck: [],
       DropdownChanged: true,
@@ -94,10 +87,9 @@ class AddBOPDomestic extends Component {
   * @description Called before render the component
   */
   UNSAFE_componentWillMount() {
+    this.props.getUOMSelectList(() => { })
     this.props.getPartSelectList(() => { })
     if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
-
-      this.props.getUOMSelectList(() => { })
       this.props.getBOPCategorySelectList(() => { })
       this.props.getPlantSelectListByType(ZBC, () => { })
     }
@@ -137,8 +129,6 @@ class AddBOPDomestic extends Component {
       this.handleCalculation()
     }
   }
-
-
 
   /**
   * @method onPressVendor
@@ -746,7 +736,7 @@ class AddBOPDomestic extends Component {
 
 
 
-     
+
     }
   }, 500)
 
@@ -844,7 +834,7 @@ class AddBOPDomestic extends Component {
                               />
                               <div className={"right-title"}>
                                 Vendor Based
-                                  </div>
+                              </div>
                             </label>
                           </Col>
                         </Row>
@@ -1162,10 +1152,10 @@ class AddBOPDomestic extends Component {
                                         Drag and Drop or{" "}
                                         <span className="text-primary">
                                           Browse
-                                            </span>
+                                        </span>
                                         <br />
-                                            file to upload
-                                          </span>
+                                        file to upload
+                                      </span>
                                     </div>
                                   )
                                 }
