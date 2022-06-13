@@ -2838,8 +2838,7 @@ export const RMIMPORT_DOWNLOAD_EXCEl = [
     { label: "FreightCost", value: "RMFreightCost", },
     { label: "ShearingCost", value: "RMShearingCost", },
     { label: "ScrapRate", value: "ScrapRate", },
-    { label: "NetLandedCost", value: "NetLandedCost", },
-    { label: "CutOffPrice", value: "CutOffPrice", },
+    { label: "NetCost(Currency)", value: "NetLandedCost", },
     { label: "NetCost(INR)", value: "NetLandedCostConversion", },
     { label: "EffectiveDate", value: "EffectiveDate", },
 
@@ -2865,7 +2864,6 @@ export const OPERATION_DOWNLOAD_EXCEl = [
     { label: "OperationName", value: "OperationName", },
     { label: "OperationCode", value: "OperationCode", },
     { label: "Plant(Code)", value: "Plants", },
-    { label: "DestinationPlant", value: "DestinationPlant", },
     { label: "Vendor(Code)", value: "VendorName", },
     { label: "UnitOfMeasurement", value: "UnitOfMeasurement", },
     { label: "Rate", value: "Rate", },
