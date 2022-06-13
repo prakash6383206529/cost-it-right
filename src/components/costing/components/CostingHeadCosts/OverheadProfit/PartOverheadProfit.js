@@ -109,8 +109,8 @@ function PartOverheadProfit(props) {
   */
   return (
     <>
-      <tr id="assembly-costing-header" className="accordian-row" onClick={() => toggle(item.BOMLevel, item.PartNumber)}>
-        <td className='part-overflow'>
+      <tr id="assembly-costing-header" className="accordian-row">
+        <td className='part-overflow' onClick={() => toggle(item.BOMLevel, item.PartNumber)}>
           <span className={`part-name ${item && item.BOMLevel}`} title={`${item && item.PartNumber}-${item && item.BOMLevel}`}>
             {item && item.PartNumber}-{item && item.BOMLevel}<div className={`${item.IsOpen ? 'Open' : 'Close'}`}></div>
           </span>
