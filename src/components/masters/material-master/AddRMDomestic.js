@@ -120,10 +120,11 @@ class AddRMDomestic extends Component {
   UNSAFE_componentWillMount() {
     this.props.getRawMaterialNameChild(() => { })
     this.props.getUOMSelectList(() => { })
-    this.props.getSupplierList(() => { })
-    this.props.fetchPlantDataAPI(() => { })
-    this.props.getRMGradeSelectListByRawMaterial('', (res) => { })
-
+    if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
+      this.props.getSupplierList(() => { })
+      this.props.fetchPlantDataAPI(() => { })
+      this.props.getRMGradeSelectListByRawMaterial('', (res) => { })
+    }
   }
 
   /**
@@ -131,17 +132,19 @@ class AddRMDomestic extends Component {
    * @description Called after rendering the component
    */
   componentDidMount() {
-    this.setState({ inputLoader: true })
     const { data } = this.props
     this.getDetails(data)
     this.props.getRawMaterialCategory((res) => { })
-    this.props.getVendorListByVendorType(false, () => { this.setState({ inputLoader: false }) })
-    this.props.getTechnologySelectList(() => { this.setState({ inputLoader: false }) })
-    this.props.fetchSpecificationDataAPI(0, () => { })
-    this.props.getPlantSelectListByType(ZBC, () => { })
     this.props.getAllCity(cityId => {
       this.props.getCityByCountry(cityId, 0, () => { })
     })
+    if (!(data.isEditFlag || data.isViewFlag)) {
+      this.setState({ inputLoader: true })
+      this.props.fetchSpecificationDataAPI(0, () => { })
+      this.props.getVendorListByVendorType(false, () => { this.setState({ inputLoader: false }) })
+      this.props.getTechnologySelectList(() => { this.setState({ inputLoader: false }) })
+      this.props.getPlantSelectListByType(ZBC, () => { })
+    }
     let obj = {
       MasterId: RM_MASTER_ID,
       DepartmentId: userDetails().DepartmentId,
@@ -424,21 +427,9 @@ class AddRMDomestic extends Component {
         isEditFlag: false, isLoader: true, isShowForm: true, RawMaterialID: data.Id,
       })
       this.props.getRawMaterialDetailsAPI(data, true, (res) => {
-
-
         if (res && res.data && res.data.Result) {
           const Data = res.data.Data
-
-
-
           this.setState({ DataToChange: Data }, () => { })
-          this.setState({ inputLoader: true })
-          if (Data.IsVendor) {
-            this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
-          } else {
-            this.props.getVendorListByVendorType(Data.IsVendor, () => { this.setState({ inputLoader: false }) })
-          }
-          // this.props.getVendorListByVendorType(Data.IsVendor, () => { })
           this.props.getPlantBySupplier(Data.Vendor, () => { })
           this.props.change('FrieghtCharge', Data.RMFreightCost ? Data.RMFreightCost : '')
           this.props.change('ShearingCost', Data.RMShearingCost ? Data.RMShearingCost : '')

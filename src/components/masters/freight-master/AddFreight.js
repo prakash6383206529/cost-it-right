@@ -61,14 +61,15 @@ class AddFreight extends Component {
    * @description Called after rendering the component
    */
   componentDidMount() {
-
     this.props.getFreightModeSelectList((res) => { });
     this.props.getFreigtFullTruckCapacitySelectList((res) => { });
     this.props.getFreigtRateCriteriaSelectList((res) => { });
+    if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
+      this.props.getAllCity(cityId => {
+        this.props.getCityByCountry(cityId, 0, () => { })
+      })
+    }
     this.getDetails();
-    this.props.getAllCity(cityId => {
-      this.props.getCityByCountry(cityId, 0, () => { })
-    })
   }
   /**
    * @method onPressVendor

@@ -185,19 +185,8 @@ function CostingDetailSimulationDrawer(props) {
                                         }
                                     </Row>
                                 }
-                                <CostingSummaryTable customClass="ml-0" simulationDrawer={props.simulationDrawer} simulationMode={true} viewMode={true} master={master} isSimulationDone={isSimulation} />
+                                <CostingSummaryTable customClass="ml-0" simulationDrawer={props.simulationDrawer} simulationMode={true} viewMode={true} master={master} isSimulationDone={isSimulation} drawerViewMode={true} />
                             </form>
-                            <Row className="sf-btn-footer no-gutters justify-content-between">
-                                <div className="col-md-12 px-3">
-                                    <div className="text-right px-3">
-
-                                        <button type={"button"} className="cancel-btn" onClick={cancel}>
-                                            <div className={"cancel-icon"}></div>{" "}
-                                            {"CANCEL"}
-                                        </button>
-                                    </div>
-                                </div>
-                            </Row>
                         </div>
                     </Container>
                 </Drawer>
