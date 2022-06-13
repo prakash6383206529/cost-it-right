@@ -71,7 +71,8 @@ function ApprovalSummary(props) {
           ExchangeRateImpactedMasterDataList: [],
           OperationImpactedMasterDataList: [],
           RawMaterialImpactedMasterDataList: [],
-          BoughtOutPartImpactedMasterDataList: []
+          BoughtOutPartImpactedMasterDataList: [],
+          CombinedProcessImpactedMasterDataList: [],
         }
         let masterId
         let Data = []
