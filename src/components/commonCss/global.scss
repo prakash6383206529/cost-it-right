@@ -601,6 +601,13 @@ a:hover {
         // .ag-header-cell:first-child { comment for future purpose
         //   border-left: 1px solid #e5eaf9;
         // }
+        .ag-center-cols-clipper {
+          .ag-cell {
+            &:first-child { 
+              border-left: 1px solid #e5eaf9;
+            }
+          }
+        }
         .ag-header {
           border-top: 1px solid #e5eaf9;
           font-weight: normal;
@@ -659,9 +666,6 @@ a:hover {
               .ag-cell-wrapper {
                 justify-content: center;
               }
-            }
-            &:first-child { 
-              border-left: 1px solid #e5eaf9;
             }
           }
         }
