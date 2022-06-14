@@ -47,3 +47,18 @@
         }
     }
 }
+@media screen and (max-width: $max1367)  {
+    .drawer-wrapper {
+        .table {
+            td, th {
+                padding: 0.71rem 6px;
+                &:first-child {
+                     padding-left: 10px;
+                }
+                &:last-child {
+                    padding-right: 10px;
+                }
+            } 
+        }
+    }
+}

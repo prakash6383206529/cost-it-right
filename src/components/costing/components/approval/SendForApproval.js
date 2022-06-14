@@ -508,7 +508,7 @@ const SendForApproval = (props) => {
                           {(data.typeOfCosting === 0 || data.typeOfCosting === 'ZBC') ? 'ZBC' : `${data.vendorName}`}
                         </h6>
                         <div className=" d-inline-block mr-4">
-                          {`Part No.:`}{" "}
+                          {`Part No:`}{" "}
                           <span className="grey-text">{`${isApprovalisting ? data.partNo : partNo.partNumber}`}</span>
                         </div>
                         <div className=" d-inline-block mr-4">

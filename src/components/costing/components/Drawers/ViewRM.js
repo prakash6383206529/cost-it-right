@@ -137,7 +137,7 @@ function ViewRM(props) {
             {viewRM && viewRM.length > 0 && viewRM.map((item, index) => {
               return (
                 <tr key={index}>
-                  {isAssemblyCosting && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
+                  {isAssemblyCosting && <td className={`${isPDFShow ? '' : 'text-overflow'}`}> <span title={item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</span></td>}
                   <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item.RMName}>{item.RMName}</span></td>
                   <td>{checkForDecimalAndNull(item.RMRate, initialConfiguration.NoOfDecimalForPrice)}</td>
                   <td>{checkForDecimalAndNull(item.ScrapRate, initialConfiguration.NoOfDecimalForPrice)}</td>

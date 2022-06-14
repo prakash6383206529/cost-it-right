@@ -53,9 +53,9 @@ function ViewBOP(props) {
                 viewBOPCost.map((item, index) => {
                   return (
                     <tr key={index}>
-                      {IsAssemblyCosting && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
-                      <td>{item.BOPPartNumber}</td>
-                      <td>{item.BOPPartName}</td>
+                      {IsAssemblyCosting && <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</span></td>}
+                      <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item.BOPPartNumber}>{item.BOPPartNumber}</span></td>
+                      <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item.BOPPartName}>{item.BOPPartName}</span></td>
                       <td>{item.Currency}</td>
                       <td>
                         {checkForDecimalAndNull(item.LandedCostINR, initialConfiguration.NoOfDecimalForPrice)}
