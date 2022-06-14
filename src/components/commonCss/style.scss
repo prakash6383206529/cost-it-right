@@ -3006,6 +3006,11 @@ button:disabled,
       min-width: 350px;
       left: -165px;
     }
+    &.max225 {
+      min-width: 225px;
+      left: -103px;
+      text-align: right;
+    }
   }
 
   .tooltip-icon {
@@ -3198,7 +3203,7 @@ button:disabled,
 
     td,
     th {
-      padding: 0.71rem 30px;
+      padding: 0.71rem 15px;
     }
   }
 
@@ -3495,7 +3500,7 @@ body {
 .costing-details-page {
   .accordian-row {
     >td {
-      padding: 15px 30px;
+      padding: 15px;
     }
   }
 }

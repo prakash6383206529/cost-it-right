@@ -316,7 +316,7 @@ function ApprovalSummary(props) {
                         </span>
                       </th>
                       <th className='overflow'>
-                        <span className="d-block grey-text">{`Assembly/Part No.:`}</span>
+                        <span className="d-block grey-text">{`Assembly/Part No:`}</span>
                         <span className="d-block " title={partDetail.PartNumber}>
                           {partDetail.PartNumber ? partDetail.PartNumber : '-'}
                         </span>
@@ -334,19 +334,19 @@ function ApprovalSummary(props) {
                         </span>
                       </th>
                       <th>
-                        <span className="d-block grey-text">{`ECN No.:`}</span>
+                        <span className="d-block grey-text">{`ECN No:`}</span>
                         <span className="d-block">
                           {partDetail.ECNNumber ? partDetail.ECNNumber : '-'}
                         </span>
                       </th>
                       <th>
-                        <span className="d-block grey-text">{`Drawing No.:`}</span>
+                        <span className="d-block grey-text">{`Drawing No:`}</span>
                         <span className="d-block">
                           {partDetail.DrawingNumber ? partDetail.DrawingNumber : '-'}
                         </span>
                       </th>
                       <th>
-                        <span className="d-block grey-text">{`Revision No.:`}</span>
+                        <span className="d-block grey-text">{`Revision No:`}</span>
                         <span className="d-block">
                           {partDetail.RevisionNumber
                             ? partDetail.RevisionNumber
