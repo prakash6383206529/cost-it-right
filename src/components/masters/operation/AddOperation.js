@@ -572,6 +572,7 @@ class AddOperation extends Component {
         OperationId: OperationId,
         UnitOfMeasurementId: UOM.value,
         Rate: values.Rate,
+        VendorPlant: [],
         Technology: technologyArray,
         Description: values.Description,
         Remark: remarks,
@@ -646,7 +647,8 @@ class AddOperation extends Component {
         Attachements: files,
         LoggedInUserId: loggedInUserId(),
         EffectiveDate: DayTime(effectiveDate).format('YYYY/MM/DD HH:mm:ss'),
-        DestinationPlantId: getConfigurationKey().IsDestinationPlantConfigure ? destinationPlant.value : '00000000-0000-0000-0000-000000000000'
+        DestinationPlantId: getConfigurationKey().IsDestinationPlantConfigure ? destinationPlant.value : '00000000-0000-0000-0000-000000000000',
+        VendorPlant: []
       }
 
 
