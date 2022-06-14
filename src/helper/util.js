@@ -917,7 +917,7 @@ export function getPOPriceAfterDecimal(decimalValue, PoPrice = 0) {
 export const allEqual = arr => arr.every(val => val === arr[0]);
 
 //**START** FOR SHOWING CURRENCY SYMBOL 
-export const currency = (value) => {
+export const getCurrencySymbol = (value) => {
   switch (value) {
     case "USD":
       return "$"
