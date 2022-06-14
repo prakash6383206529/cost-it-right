@@ -153,7 +153,7 @@ function SimulationInsights(props) {
         if (ele.field === "DisplayStatus") {
           let obj = {
             field: "DisplayStatus",
-            headerName: "Display Status",
+            headerName: "Status",
             cellRendererFramework: (params) => <div className={params.value}>{params.value}</div>,
             //cellStyle: { background: "green" },    // DO NOT DELETE THIS
             //cellClass: ["Draft"]                       // DO NOT DELETE THIS
@@ -170,9 +170,10 @@ function SimulationInsights(props) {
           let obj = {
             field: "SimulationStatus",
             headerName: "Simulation Status",
-            cellRendererFramework: (params) => <div className={params.value}>{params.value}</div>
+            cellRendererFramework: (params) => <div className={params.value}>{params.value}</div>,
             //cellStyle: { background: "green" },      // DO NOT DELETE THIS
             //cellClass: ["Draft"]                     // DO NOT DELETE THIS
+            hide: true,
           }
 
           let obj1 = {

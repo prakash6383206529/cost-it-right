@@ -2415,6 +2415,7 @@ td,
   .Error,
   .Pushed,
   .POUpdated,
+  .PO.Updated,
   .Draft,
   .Linked,
   [class^="Pending"],
@@ -2464,6 +2465,7 @@ td,
   }
   .Pushed,
   .POUpdated,
+  .PO.Updated,
   .Linked {
     background-color: #498cef;
   }
