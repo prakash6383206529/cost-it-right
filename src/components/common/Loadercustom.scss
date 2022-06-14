@@ -449,3 +449,10 @@
         max-height: 160px;
     }
 }
+.report-costing {
+    justify-content: start;
+    padding-top: calc(100vh - 25rem);
+    @media screen and (min-width:$middleDesktop) {
+        padding-top: calc(100vh - 33rem);
+    }
+}
