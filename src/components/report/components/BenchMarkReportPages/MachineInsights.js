@@ -9,10 +9,11 @@ import { AgGridReact } from 'ag-grid-react/lib/agGridReact';
 import LoaderCustom from '../../../common/LoaderCustom';
 import { AgGridColumn } from 'ag-grid-react/lib/agGridColumn';
 import NoContentFound from '../../../common/NoContentFound'
-import { EMPTY_DATA } from '../../../../config/constants'
+import { defaultPageSize, EMPTY_DATA } from '../../../../config/constants'
 import { Costmovementgraph } from '../../../dashboard/CostMovementGraph'
 import { graphColor1, graphColor2, graphColor3, graphColor4, graphColor6, options5 } from '../../../dashboard/ChartsDashboard'
 import { getProcessesSelectList } from '../../../masters/actions/MachineMaster'
+import { PaginationWrapper } from '../../../common/commonPagination';
 
 function Insights(props) {
     const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
@@ -159,8 +160,7 @@ function Insights(props) {
     };
 
     const onPageSizeChanged = (newPageSize) => {
-        var value = document.getElementById('page-size').value;
-        gridApi.paginationSetPageSize(Number(value));
+        gridApi.paginationSetPageSize(Number(newPageSize));
     };
 
     const frameworkComponents = {
@@ -274,7 +274,7 @@ function Insights(props) {
                                                 rowSelection={'single'}
                                                 onSelectionChanged={onSelectionChanged}
                                                 pagination={true}
-                                                paginationPageSize={10}
+                                                paginationPageSize={defaultPageSize}
                                                 onGridReady={onGridReady}
                                                 gridOptions={gridOptions}
                                                 // enableCellTextSelection={true}
@@ -304,13 +304,7 @@ function Insights(props) {
                                                     <AgGridColumn width="150" field="Plant8" headerName="Plant 8" />
                                                 </AgGridColumn>
                                             </AgGridReact>
-                                            <div className="paging-container d-inline-block float-right">
-                                                <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
-                                                    <option value="10" selected={true}>10</option>
-                                                    <option value="50">50</option>
-                                                    <option value="100">100</option>
-                                                </select>
-                                            </div>
+                                            {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                                         </div>
                                     </div>
                                 </div>

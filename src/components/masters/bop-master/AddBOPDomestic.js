@@ -624,6 +624,7 @@ class AddBOPDomestic extends Component {
         UnitOfMeasurementId: UOM.value,
         IsForcefulUpdated: true,
         NumberOfPieces: 1,
+        VendorPlant: [],
         IsFinancialDataChanged: isDateChange ? true : false
       }
       if (IsFinancialDataChanged) {
@@ -678,6 +679,7 @@ class AddBOPDomestic extends Component {
         IsActive: true,
         LoggedInUserId: loggedInUserId(),
         Plant: IsVendor === false ? [plantArray] : [],
+        VendorPlant: [],
         DestinationPlantId: selectedPlants.value ? selectedPlants.value : "00000000-0000-0000-0000-000000000000",
         Attachements: files,
       }

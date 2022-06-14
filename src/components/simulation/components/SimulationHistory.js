@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { loggedInUserId } from '../../../helper/auth'
 import { Badge } from 'reactstrap'
 import NoContentFound from '../../common/NoContentFound'
-import { EMPTY_DATA } from '../../../config/constants'
+import { defaultPageSize, EMPTY_DATA } from '../../../config/constants'
 import { GridTotalFormate } from '../../common/TableGridFunctions'
 import DayTime from '../../common/DayTimeWrapper'
 import { checkForDecimalAndNull } from '../../../helper'
@@ -16,6 +16,7 @@ import { AgGridColumn } from 'ag-grid-react/lib/agGridColumn';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../common/LoaderCustom'
+import { PaginationWrapper } from '../../common/commonPagination'
 
 function SimulationHistory(props) {
 
@@ -70,8 +71,7 @@ function SimulationHistory(props) {
     customNoRowsOverlay: NoContentFound,
   };
   const onPageSizeChanged = (newPageSize) => {
-    var value = document.getElementById('page-size').value;
-    gridApi.paginationSetPageSize(Number(value));
+    gridApi.paginationSetPageSize(Number(newPageSize));
   };
 
   const statusFormatter = (cell, row, enumObject, rowIndex) => {
@@ -143,7 +143,7 @@ function SimulationHistory(props) {
               // columnDefs={c}
               rowData={simulationHistory}
               pagination={true}
-              paginationPageSize={10}
+              paginationPageSize={defaultPageSize}
               onGridReady={onGridReady}
               gridOptions={gridOptions}
               loadingOverlayComponent={'customLoadingOverlay'}
@@ -170,13 +170,7 @@ function SimulationHistory(props) {
               <AgGridColumn field="CostingStatus" headerName="Status"></AgGridColumn>
               <AgGridColumn field="SimulationId" headerName="Actions"></AgGridColumn>
             </AgGridReact>
-            <div className="paging-container d-inline-block float-right">
-              <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
-                <option value="10" selected={true}>10</option>
-                <option value="50">50</option>
-                <option value="100">100</option>
-              </select>
-            </div>
+            {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
           </div>
         </div>
       </div>

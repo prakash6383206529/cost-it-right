@@ -1048,6 +1048,7 @@ class AddPower extends Component {
           IsActive: true,
           CreatedDate: '',
           LoggedInUserId: loggedInUserId(),
+          VendorPlant: [],
         }
 
         this.props.updateVendorPowerDetail(vendorDetailData, (res) => {
@@ -1093,6 +1094,7 @@ class AddPower extends Component {
           StateName: StateName.label,
           IsActive: true,
           NetPowerCostPerUnit: NetPowerCostPerUnit,
+          VendorPlant: [],
           SEBChargesDetails: [
             {
               PowerSEBPCId: '',
@@ -1150,6 +1152,7 @@ class AddPower extends Component {
           Plants: plantArray,
           StateId: StateName.value,
           NetPowerCostPerUnit: NetPowerCostPerUnit,
+          VendorPlant: [],
           SEBChargesDetails: [
             {
               PowerSEBPCId: '',
