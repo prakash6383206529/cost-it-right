@@ -116,10 +116,10 @@ class AddBOPImport extends Component {
    */
   componentDidMount() {
     this.props.fetchMaterialComboAPI(res => { });
+    this.props.getCurrencySelectList(() => { })
     if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
       this.setState({ inputLoader: true })
       this.props.getVendorTypeBOPSelectList(() => { this.setState({ inputLoader: false }) })
-      this.props.getCurrencySelectList(() => { })
     }
     this.getDetails()
 
@@ -701,6 +701,7 @@ class AddBOPImport extends Component {
         Remark: values.Remark,
         LoggedInUserId: loggedInUserId(),
         Plant: IsVendor === false ? [plantArray] : [],
+        VendorPlant: [],
         Attachements: updatedFiles,
         UnitOfMeasurementId: UOM.value,
         NetLandedCostConversion: netLandedConverionCost,
@@ -766,6 +767,7 @@ class AddBOPImport extends Component {
         DestinationPlantId: selectedPlants.value ? selectedPlants.value : "00000000-0000-0000-0000-000000000000",
         Attachements: files,
         UnitOfMeasurementId: UOM.value,
+        VendorPlant: [],
         NetLandedCostConversion: netLandedConverionCost,
         IsFinancialDataChanged: isDateChange ? true : false
       }

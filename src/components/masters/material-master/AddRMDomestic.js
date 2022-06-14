@@ -1024,7 +1024,8 @@ class AddRMDomestic extends Component {
       IsCutOffApplicable: values.cutOffPrice < values.NetLandedCost ? true : false,
       RawMaterialCode: values.Code,
       JaliScrapCost: values.CircleScrapCost ? values.CircleScrapCost : '',// THIS KEY FOR CIRCLE SCRAP COST
-      IsFinancialDataChanged: isDateChange ? true : false
+      IsFinancialDataChanged: isDateChange ? true : false,
+      VendorPlant: []
     }
     if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(RM_MASTER_ID) !== true)) {
       //this.setState({ updatedObj: requestData })
@@ -1105,6 +1106,7 @@ class AddRMDomestic extends Component {
       formData.LoggedInUserId = loggedInUserId()
       formData.Plant = IsVendor === false ? plantArray : []
       formData.VendorCode = VendorCode
+      formData.VendorPlant = []
       formData.Attachements = files
       formData.DestinationPlantId = IsVendor ? singlePlantSelected.value : '00000000-0000-0000-0000-000000000000'
       formData.CutOffPrice = values.cutOffPrice

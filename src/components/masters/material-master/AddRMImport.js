@@ -997,7 +997,8 @@ class AddRMImport extends Component {
         IsCutOffApplicable: values.cutOffPrice < netCost ? true : false,
         RawMaterialCode: values.Code,
         JaliScrapCost: values.CircleScrapCost ? values.CircleScrapCost : '', // THIS KEY FOR CIRCLE SCRAP COST
-        IsFinancialDataChanged: isDateChange ? true : false
+        IsFinancialDataChanged: isDateChange ? true : false,
+        VendorPlant: []
       }
       //DONT DELETE COMMENTED CODE BELOW
 
@@ -1099,8 +1100,8 @@ class AddRMImport extends Component {
         RawMaterialCode: values.Code,
         JaliScrapCost: values.CircleScrapCost ? values.CircleScrapCost : '', // THIS KEY FOR CIRCLE SCRAP COST
         // RawMaterialCode: values.Code
-
-        IsSendForApproval: false
+        IsSendForApproval: false,
+        VendorPlant: []
       }
       // let obj
       // if(CheckApprovalApplicableMaster(RM_MASTER_ID) === true){
