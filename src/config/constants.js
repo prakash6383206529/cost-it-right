@@ -1838,6 +1838,8 @@ export const MACHINE_MASTER_ID = 4
 //approve reject drawer
 export const provisional = "Provisional"
 
+//default value for page size
+export const defaultPageSize = 10;
 
 //AllConastant File Moved here
 

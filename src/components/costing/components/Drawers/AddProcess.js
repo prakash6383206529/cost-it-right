@@ -4,7 +4,7 @@ import { Container, Row, Col, NavItem, TabContent, TabPane, Nav, NavLink } from 
 import { getProcessDrawerDataList, getProcessDrawerVBCDataList, setIdsOfProcess, setIdsOfProcessGroup, setSelectedDataOfCheckBox } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import NoContentFound from '../../../common/NoContentFound';
-import { EMPTY_DATA } from '../../../../config/constants';
+import { defaultPageSize, EMPTY_DATA } from '../../../../config/constants';
 import Toaster from '../../../common/Toaster';
 import classnames from 'classnames';
 import Drawer from '@material-ui/core/Drawer';
@@ -17,6 +17,7 @@ import { FORGING, Ferrous_Casting, DIE_CASTING, MACHINING } from '../../../../co
 import GroupProcess from './GroupProcess';
 import _ from 'lodash'
 import { getConfigurationKey } from '../../../../helper';
+import { PaginationWrapper } from '../../../common/commonPagination';
 
 const gridOptions = {};
 
@@ -222,8 +223,7 @@ function AddProcess(props) {
   };
 
   const onPageSizeChanged = (newPageSize) => {
-    var value = document.getElementById('page-size').value;
-    gridApi.paginationSetPageSize(Number(value));
+    gridApi.paginationSetPageSize(Number(newPageSize));
   };
 
   const onFilterTextBoxChanged = (e) => {
@@ -363,7 +363,7 @@ function AddProcess(props) {
                                   domLayout='autoHeight'
                                   rowData={tableData}
                                   pagination={true}
-                                  paginationPageSize={10}
+                                  paginationPageSize={defaultPageSize}
                                   onGridReady={onGridReady}
                                   gridOptions={gridOptions}
                                   loadingOverlayComponent={'customLoadingOverlay'}
@@ -389,13 +389,7 @@ function AddProcess(props) {
                                   <AgGridColumn field="MachineRate" headerName={'Machine Rate'}></AgGridColumn>
 
                                 </AgGridReact>
-                                <div className="paging-container d-inline-block float-right">
-                                  <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
-                                    <option value="10" selected={true}>10</option>
-                                    <option value="50">50</option>
-                                    <option value="100">100</option>
-                                  </select>
-                                </div>
+                                {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                               </div>
                             </div>
                           </Col>

@@ -5,7 +5,7 @@ import AddUOM from './AddUOM';
 import { getUnitOfMeasurementAPI, deleteUnitOfMeasurementAPI, activeInactiveUOM } from '../actions/unitOfMeasurment';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { EMPTY_DATA } from '../../../config/constants';
+import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import Switch from "react-switch";
@@ -22,6 +22,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import ScrollToTop from '../../common/ScrollToTop';
 import LoaderCustom from '../../common/LoaderCustom';
+import { PaginationWrapper } from '../../common/commonPagination';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -50,7 +51,7 @@ class UOMMaster extends Component {
       showData: false,
       showPopup: false,
       deletedId: '',
-      isLoader:false
+      isLoader: false
 
     }
   }
@@ -65,9 +66,9 @@ class UOMMaster extends Component {
   }
 
   getUOMDataList = () => {
-    this.setState({isLoader:true})
+    this.setState({ isLoader: true })
     this.props.getUnitOfMeasurementAPI(res => {
-      this.setState({isLoader:false})
+      this.setState({ isLoader: false })
       if (res && res.data && res.data.DataList) {
         let Data = res.data.DataList;
         this.setState({ dataList: Data })
@@ -256,8 +257,7 @@ class UOMMaster extends Component {
   };
 
   onPageSizeChanged = (newPageSize) => {
-    var value = document.getElementById('page-size').value;
-    this.state.gridApi.paginationSetPageSize(Number(value));
+    this.state.gridApi.paginationSetPageSize(Number(newPageSize));
   };
 
   onBtExport = () => {
@@ -388,7 +388,7 @@ class UOMMaster extends Component {
           <Row>
             <Col>
 
-              <div className={`ag-grid-wrapper height-width-wrapper  ${this.state.dataList && this.state.dataList?.length <=0 ?"overlay-contain": ""}`}>
+              <div className={`ag-grid-wrapper height-width-wrapper  ${this.state.dataList && this.state.dataList?.length <= 0 ? "overlay-contain" : ""}`}>
                 <div className="ag-grid-header">
                   <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                 </div>
@@ -400,7 +400,7 @@ class UOMMaster extends Component {
                     // columnDefs={c}
                     rowData={this.state.dataList}
                     pagination={true}
-                    paginationPageSize={10}
+                    paginationPageSize={defaultPageSize}
                     onGridReady={this.onGridReady}
                     gridOptions={gridOptions}
                     noRowsOverlayComponent={'customNoRowsOverlay'}
@@ -414,13 +414,7 @@ class UOMMaster extends Component {
                     <AgGridColumn field="UnitSymbol" headerName="Unit Symbol"></AgGridColumn>
                     <AgGridColumn field="UnitType" headerName="Unit Type"></AgGridColumn>
                   </AgGridReact>
-                  <div className="paging-container d-inline-block float-right">
-                    <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
-                      <option value="10" selected={true}>10</option>
-                      <option value="50">50</option>
-                      <option value="100">100</option>
-                    </select>
-                  </div>
+                  {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
                 </div>
               </div>
 

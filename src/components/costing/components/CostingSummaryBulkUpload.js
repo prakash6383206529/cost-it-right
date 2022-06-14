@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import ReactExport from 'react-export-excel';
-import { EMPTY_DATA, REJECTED } from '../../../config/constants';
+import { defaultPageSize, EMPTY_DATA, REJECTED } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { getCostingBulkUploadList, sendForApprovalFromBulkUpload, getErrorFile, generateReport } from '../actions/CostWorking';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
@@ -15,6 +15,7 @@ import { AgGridReact } from 'ag-grid-react/lib/agGridReact';
 import { AgGridColumn } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import { PaginationWrapper } from '../../common/commonPagination';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -67,8 +68,7 @@ class CostingSummaryBulkUpload extends Component {
         params.api.paginationGoToPage(0);
     };
     onPageSizeChanged = (newPageSize) => {
-        var value = document.getElementById('page-size').value;
-        this.state.gridApi.paginationSetPageSize(Number(value));
+        this.state.gridApi.paginationSetPageSize(Number(newPageSize));
     };
     /**
    * @method buttonFormatter
@@ -232,7 +232,7 @@ class CostingSummaryBulkUpload extends Component {
                                     // columnDefs={c}
                                     rowData={this.props.costingBulkUploadList}
                                     pagination={true}
-                                    paginationPageSize={10}
+                                    paginationPageSize={defaultPageSize}
                                     onGridReady={this.onGridReady}
                                     gridOptions={gridOptions}
                                     loadingOverlayComponent={'customLoadingOverlay'}
@@ -252,13 +252,7 @@ class CostingSummaryBulkUpload extends Component {
                                     <AgGridColumn field="OriginalFileName" headerName="File Name"></AgGridColumn>
                                     <AgGridColumn minWidth="230" field="CostingBulkUploadFileId" headerName="Actions" cellRenderer='totalValueRenderer'></AgGridColumn>
                                 </AgGridReact>
-                                <div className="paging-container d-inline-block float-right">
-                                    <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
-                                        <option value="10" selected={true}>10</option>
-                                        <option value="50">50</option>
-                                        <option value="100">100</option>
-                                    </select>
-                                </div>
+                                {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
                             </div>
                         </div>
                     </div>

@@ -5,7 +5,7 @@ import { getOperationDrawerDataList, getOperationDrawerVBCDataList } from '../..
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import { GridTotalFormate } from '../../../common/TableGridFunctions';
 import NoContentFound from '../../../common/NoContentFound';
-import { EMPTY_DATA } from '../../../../config/constants';
+import { defaultPageSize, EMPTY_DATA } from '../../../../config/constants';
 import Toaster from '../../../common/Toaster';
 import Drawer from '@material-ui/core/Drawer';
 import { EMPTY_GUID, ZBC } from '../../../../config/constants';
@@ -14,6 +14,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../../helper';
+import { PaginationWrapper } from '../../../common/commonPagination';
 const gridOptions = {};
 
 function AddOperation(props) {
@@ -146,8 +147,7 @@ function AddOperation(props) {
   };
 
   const onPageSizeChanged = (newPageSize) => {
-    var value = document.getElementById('page-size').value;
-    gridApi.paginationSetPageSize(Number(value));
+    gridApi.paginationSetPageSize(Number(newPageSize));
   };
 
   const onFilterTextBoxChanged = (e) => {
@@ -226,7 +226,7 @@ function AddOperation(props) {
                         // columnDefs={c}
                         rowData={tableData}
                         pagination={true}
-                        paginationPageSize={10}
+                        paginationPageSize={defaultPageSize}
                         onGridReady={onGridReady}
                         gridOptions={gridOptions}
                         loadingOverlayComponent={'customLoadingOverlay'}
@@ -251,13 +251,7 @@ function AddOperation(props) {
 
 
                       </AgGridReact>
-                      <div className="paging-container d-inline-block float-right">
-                        <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
-                          <option value="10" selected={true}>10</option>
-                          <option value="50">50</option>
-                          <option value="100">100</option>
-                        </select>
-                      </div>
+                      {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                     </div>
                   </div>
                 </Col>

@@ -8,8 +8,7 @@ import {
     masterFinalLevelUser,
 } from '../actions/Material';
 import { checkForDecimalAndNull } from "../../../helper/validation";
-// import { userDepartmetList } from "../../../helper/auth"
-import { EMPTY_DATA, RMDOMESTIC } from '../../../config/constants';
+import { defaultPageSize, EMPTY_DATA, RMDOMESTIC } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
@@ -28,6 +27,7 @@ import { CheckApprovalApplicableMaster, getConfigurationKey, getFilteredData, us
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getListingForSimulationCombined } from '../../simulation/actions/Simulation';
 import WarningMessage from '../../common/WarningMessage';
+import { PaginationWrapper } from '../../common/commonPagination';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -494,9 +494,11 @@ function RMDomesticListing(props) {
         setgridColumnApi(params.columnApi);
         params.api.paginationGoToPage(0);
     };
+    // const setPage = (obj) => {
+    //     setPageSize(prevState => ({ ...prevState, pageSize50: obj.pageSize50, pageSize10: obj.pageSize10, pageSize100: obj.pageSize100 }))
+    // }
 
     const onPageSizeChanged = (newPageSize) => {
-        var value = document.getElementById('page-size').value;
         gridApi.paginationSetPageSize(Number(newPageSize));
 
         if (Number(newPageSize) === 10) {
@@ -697,7 +699,7 @@ function RMDomesticListing(props) {
                                 domLayout='autoHeight'
                                 rowData={getFilterRMData()}
                                 pagination={true}
-                                paginationPageSize={10}
+                                paginationPageSize={defaultPageSize}
                                 onGridReady={onGridReady}
                                 gridOptions={gridOptions}
                                 noRowsOverlayComponent={'customNoRowsOverlay'}
@@ -750,13 +752,7 @@ function RMDomesticListing(props) {
                                 <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>
                             </AgGridReact>
                             <div className='button-wrapper'>
-                                <div className="paging-container d-inline-block float-right">
-                                    <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
-                                        <option value="10" selected={true}>10</option>
-                                        <option value="50">50</option>
-                                        <option value="100">100</option>
-                                    </select>
-                                </div>
+                                {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                                 {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) &&
                                     <div className="d-flex pagination-button-container">
                                         <p><button className="previous-btn" type="button" disabled={false} onClick={() => onBtPrevious()}> </button></p>

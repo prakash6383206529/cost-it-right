@@ -5,7 +5,7 @@ import { Row, Col } from 'reactstrap'
 import { focusOnError } from '../../layout/FormInputs'
 import Toaster from '../../common/Toaster'
 import { MESSAGES } from '../../../config/message'
-import { EMPTY_DATA } from '../../../config/constants'
+import { defaultPageSize, EMPTY_DATA } from '../../../config/constants'
 import NoContentFound from '../../common/NoContentFound'
 import { getVolumeDataList, deleteVolume, getFinancialYearSelectList, } from '../actions/Volume'
 import { getPlantSelectList, getVendorWithVendorCodeSelectList } from '../../../actions/Common'
@@ -24,6 +24,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper'
 import ScrollToTop from '../../common/ScrollToTop'
 import AddLimit from './AddLimit'
+import { PaginationWrapper } from '../../common/commonPagination'
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -376,8 +377,7 @@ class VolumeListing extends Component {
   };
 
   onPageSizeChanged = (newPageSize) => {
-    var value = document.getElementById('page-size').value;
-    this.state.gridApi.paginationSetPageSize(Number(value));
+    this.state.gridApi.paginationSetPageSize(Number(newPageSize));
   };
 
   onBtExport = () => {
@@ -589,7 +589,7 @@ class VolumeListing extends Component {
                 rowData={this.props.volumeDataList}
                 pagination={true}
                 editable={true}
-                paginationPageSize={10}
+                paginationPageSize={defaultPageSize}
                 onGridReady={this.onGridReady}
                 gridOptions={gridOptions}
                 noRowsOverlayComponent={'customNoRowsOverlay'}
@@ -610,13 +610,7 @@ class VolumeListing extends Component {
                 <AgGridColumn field="ApprovedQuantity" headerName="Approved Quantity"></AgGridColumn>
                 <AgGridColumn field="VolumeId" width={120} headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
               </AgGridReact>
-              <div className="paging-container d-inline-block float-right">
-                <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
-                  <option value="10" selected={true}>10</option>
-                  <option value="50">50</option>
-                  <option value="100">100</option>
-                </select>
-              </div>
+              {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
             </div>
           </div>
 
