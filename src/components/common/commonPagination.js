@@ -1,4 +1,5 @@
-export var onFloatingFilterChanged = (value, gridOptions, thiss) => {
+import React from 'react';
+export const onFloatingFilterChanged = (value, gridOptions, thiss) => {
 
     const model = gridOptions?.api?.getFilterModel();
     thiss.setState({ filterModel: model })
@@ -28,7 +29,7 @@ export var onFloatingFilterChanged = (value, gridOptions, thiss) => {
 }
 
 
-export var onSearch = (gridOptions, thiss, master) => {
+export const onSearch = (gridOptions, thiss, master) => {
 
     thiss.setState({ warningMessage: false, isFilterButtonClicked: true, pageNo: 1, currentRowIndex: 0 })
     gridOptions?.columnApi?.resetColumnState();
@@ -49,7 +50,7 @@ export var onSearch = (gridOptions, thiss, master) => {
 }
 
 
-export var resetState = (gridOptions, thiss, master) => {
+export const resetState = (gridOptions, thiss, master) => {
 
     thiss.setState({ isFilterButtonClicked: false })
     gridOptions?.columnApi?.resetColumnState(null);
@@ -82,7 +83,7 @@ export var resetState = (gridOptions, thiss, master) => {
 }
 
 
-export var onBtPrevious = (thiss, master) => {
+export const onBtPrevious = (thiss, master) => {
     if (thiss.state.currentRowIndex >= 10) {
 
         thiss.setState({ pageNo: thiss.state.pageNo - 1 })
@@ -109,7 +110,7 @@ export var onBtPrevious = (thiss, master) => {
 
 
 
-export var onBtNext = (thiss, master) => {
+export const onBtNext = (thiss, master) => {
     if (thiss.state.currentRowIndex < (thiss.state.totalRecordCount - 10)) {
 
         thiss.setState({ pageNo: thiss.state.pageNo + 1 })
@@ -135,7 +136,7 @@ export var onBtNext = (thiss, master) => {
 
 
 
-export var onPageSizeChanged = (thiss, newPageSize) => {
+export const onPageSizeChanged = (thiss, newPageSize) => {
 
     thiss.state.gridApi.paginationSetPageSize(Number(newPageSize));
 
@@ -150,4 +151,19 @@ export var onPageSizeChanged = (thiss, newPageSize) => {
 
     }
 
+}
+export function PaginationWrapper(props) {
+    const onPageSizeChangedCommon = (newPageSize) => {
+        props.setPage(newPageSize)
+    }
+
+    return (
+        <div className="paging-container d-inline-block float-right">
+            <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChangedCommon(e.target.value)} id="page-size">
+                <option value={props.pageSize1 ? props.pageSize1 : 10} selected={true}>{props?.pageSize1 ? props?.pageSize1 : 10}</option>
+                <option value={props?.pageSize2 ? props?.pageSize2 : 50}>{props?.pageSize2 ? props?.pageSize2 : 50}</option>
+                <option value={props?.pageSize3 ? props?.pageSize3 : 100}>{props?.pageSize3 ? props?.pageSize3 : 100}</option>
+            </select>
+        </div>
+    )
 }

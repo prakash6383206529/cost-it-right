@@ -17,7 +17,7 @@ import { getApprovalSimulatedCostingSummary, getComparisionSimulationData, getIm
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import Toaster from '../../common/Toaster';
-import { EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, FILE_URL, ZBC, SURFACETREATMENT, OPERATIONS, BOPDOMESTIC, BOPIMPORT, AssemblyWiseImpactt, MACHINERATE, ImpactMaster, } from '../../../config/constants';
+import { EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, FILE_URL, ZBC, SURFACETREATMENT, OPERATIONS, BOPDOMESTIC, BOPIMPORT, AssemblyWiseImpactt, MACHINERATE, ImpactMaster, defaultPageSize, } from '../../../config/constants';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
 import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId } from '../../../helper';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
@@ -43,6 +43,7 @@ import ViewAssembly from './ViewAssembly';
 import AssemblyWiseImpactSummary from './AssemblyWiseImpactSummary';
 import _ from 'lodash'
 import CalculatorWrapper from '../../common/Calculator/CalculatorWrapper';
+import { PaginationWrapper } from '../../common/commonPagination';
 
 const gridOptions = {};
 const ExcelFile = ReactExport.ExcelFile;
@@ -869,8 +870,6 @@ function SimulationApprovalSummary(props) {
 
 
     const onPageSizeChanged = (newPageSize) => {
-
-        // var value = document.getElementById('page-size').value;
         gridApi.paginationSetPageSize(Number(newPageSize));
 
     };
@@ -1177,7 +1176,7 @@ function SimulationApprovalSummary(props) {
                                                                 // columnDefs={c}
                                                                 rowData={costingList}
                                                                 pagination={true}
-                                                                paginationPageSize={10}
+                                                                paginationPageSize={defaultPageSize}
                                                                 onGridReady={onGridReady}
                                                                 gridOptions={gridOptions}
                                                                 loadingOverlayComponent={'customLoadingOverlay'}
@@ -1276,13 +1275,7 @@ function SimulationApprovalSummary(props) {
                                                                 <AgGridColumn field="SimulationId" headerName='Actions'   type="rightAligned" cellRenderer='buttonFormatter'></AgGridColumn> */}
 
                                                             </AgGridReact>
-                                                            <div className="paging-container d-inline-block float-right">
-                                                                <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
-                                                                    <option value="10" selected={true}>10</option>
-                                                                    <option value="50">50</option>
-                                                                    <option value="100">100</option>
-                                                                </select>
-                                                            </div>
+                                                            {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                                                         </div>
                                                     </div>
                                                 </Col>
