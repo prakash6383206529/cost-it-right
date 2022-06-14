@@ -903,7 +903,7 @@ function SimulationApprovalSummary(props) {
                     <CalculatorWrapper />
                     {loader && <LoaderCustom />}
                     <div className={`container-fluid  smh-approval-summary-page ${loader === true ? 'loader-wrapper' : ''}`} id="go-to-top">
-                        <ErrorMessage approvalNumber={approvalNumber} />
+                        <ErrorMessage approvalNumber={approvalNumber} SimulationId={simulationDetail.SimulationId} />
 
                         <h2 className="heading-main">Approval Summary</h2>
                         <ScrollToTop pointProp={"go-to-top"} />

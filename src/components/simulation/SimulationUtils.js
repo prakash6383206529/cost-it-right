@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { BOPImpactDownloadArray, CPImpactDownloadArray, ERImpactDownloadArray, OperationImpactDownloadArray, RMImpactedDownloadArray } from "../../config/masterData";
 import { Errorbox } from "../common/ErrorBox";
 import { useDispatch } from 'react-redux';
-import { getAmmendentStatus } from './actions/Simulation'
+import { getAmmendentStatus, getFgWiseImpactData } from './actions/Simulation'
 import imgRedcross from '../../assests/images/red-cross.png';
 import imgGreencross from '../../assests/images/greenCross.png';
 export const SimulationUtils = (TempData) => {
@@ -220,10 +220,13 @@ export const ErrorMessage = (props) => {
     const [isSuccessfullyInsert, setIsSuccessfullyInsert] = useState(true)
     const [showbutton, setShowButton] = useState(false)
     const [ammendentButton, setAmmendmentButton] = useState(false)
+    const [sobButton, setSobButton] = useState(false)
     const [amendentStatus, setAmendentstatus] = useState('')
     const [toggleSeeData, setToggleSeeData] = useState(true)
+    const [showSobMessageList, setShowSobMessageList] = useState(false)
+    const [sobMessage, setSobMessage] = useState([])
     const [toggleAmmendmentData, setToggleAmmendmentStatus] = useState(true)
-    const { approvalNumber } = props
+    const { approvalNumber, SimulationId } = props
     const dispatch = useDispatch()
 
     const funcForErrorBoxButton = () => {
@@ -236,6 +239,13 @@ export const ErrorMessage = (props) => {
         const statusWithButton = <><p className={`${toggleAmmendmentData ? 'status-overflow' : ''} `}><span>{amendentStatus}</span></p>{<button className='see-data-btn' onClick={() => { setToggleAmmendmentStatus(!toggleAmmendmentData) }}>Show {toggleAmmendmentData ? 'all' : 'less'} data</button>}</>
         return statusWithButton
     }
+
+    const funcForSobMessage = () => {
+
+        const statusWithButton = <><p className={`${toggleAmmendmentData ? 'status-overflow' : ''} `}><span>{sobMessage}</span></p>{<button className='see-data-btn' onClick={() => { setToggleAmmendmentStatus(!toggleAmmendmentData) }}>Show {toggleAmmendmentData ? 'all' : 'less'} data</button>}</>
+        return statusWithButton
+    }
+
     useEffect(() => {
         const obj = {
             approvalTokenNumber: approvalNumber
@@ -258,12 +268,78 @@ export const ErrorMessage = (props) => {
                 setAmmendmentButton(amendentStatus.length > 245 ? true : false)
             }
         }))
+
+
     }, [])
+
+
+    useEffect(() => {
+
+        SimulationId && dispatch(getFgWiseImpactData(SimulationId, (res) => {
+            if (res && res.data && res.data.Result) {
+
+                let Data = res.data.DataList
+                let listOfSobMessages = []
+                let partNumberObjectArray = []
+
+                Data.map((item) => {
+
+                    item.childPartsList.map((ele) => {
+                        listOfSobMessages.push(ele.SOBMessage)
+                        partNumberObjectArray.push({ [ele.SOBMessage]: ele.PartNumber })
+                    })
+                })
+
+                listOfSobMessages = listOfSobMessages.filter((x, i, a) => a.indexOf(x) === i) // TO FIND UNIQUE ELEMENTS
+                let newArr = []
+                let obj = {}
+
+                listOfSobMessages.map((item, index) => {
+                    let arr = []
+                    if (item == "" || item == null) {
+                        return false
+                    }
+                    setShowSobMessageList(true)
+
+                    partNumberObjectArray.map((ele, i) => {
+
+                        if (ele[item] !== undefined) {
+
+                            if (partNumberObjectArray.length - 1 === i) {
+                                arr.push(ele[item])
+                            } else {
+                                arr.push(ele[item] + " ")
+                            }
+                        }
+                    })
+
+                    arr = arr.filter((x, i, a) => a.indexOf(x) === i) // TO FIND UNIQUE ELEMENTS
+                    obj[index] = [item, ...arr]
+
+                    if (newArr.length === 0) {
+                        newArr = [...newArr, " ", " ", item, " (", ...arr, ")", " "]
+
+                    } else {
+                        newArr = [...newArr, ", ", " ", item, " (", ...arr, ")", " "]
+                    }
+                })
+                setSobMessage(newArr);
+                setSobButton(newArr.length > 22 ? true : false)
+            }
+        }))
+
+
+    }, [SimulationId])
+
+
     const deleteInsertStatusBox = () => {
         setRecordInsertStatusBox(false)
     }
     const deleteAmendmentStatusBox = () => {
         setAmendmentStatusBox(false)
+    }
+    const deleteSobMessageList = () => {
+        setShowSobMessageList(false)
     }
 
     const errorBoxClassForAmmendent = () => {
@@ -311,6 +387,19 @@ export const ErrorMessage = (props) => {
             </div>
 
         }
+
+        {showSobMessageList &&
+            <div className="error-box-container">
+                <Errorbox customClass={"error"} errorText={sobButton ? funcForSobMessage() : sobMessage} />
+                <img
+                    className="float-right"
+                    alt={""}
+                    onClick={deleteSobMessageList}
+                    src={imgRedcross}
+                ></img>
+            </div>
+        }
+
     </>)
 }
 // **END** SHOWING STATUS BOX ON THE TOP FOR ERROR AND SUCCESS RESPONSE
