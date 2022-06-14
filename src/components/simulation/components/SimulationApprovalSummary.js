@@ -1006,7 +1006,7 @@ function SimulationApprovalSummary(props) {
                                     <thead>
                                         <tr>
                                             <th className="align-top">
-                                                <span className="d-block grey-text">{`Token No.:`}</span>
+                                                <span className="d-block grey-text">{`Token No:`}</span>
                                                 <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.TokenNumber}</span>
                                             </th>
                                             <th className="align-top">
