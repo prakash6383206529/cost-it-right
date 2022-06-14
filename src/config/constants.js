@@ -1869,6 +1869,8 @@ export const MACHINE_MASTER_ID = 4
 export const provisional = "Provisional"
 export const APPROVER = 'Approver'
 
+//default value for page size
+export const defaultPageSize = 10;
 
 //AllConastant File Moved here
 

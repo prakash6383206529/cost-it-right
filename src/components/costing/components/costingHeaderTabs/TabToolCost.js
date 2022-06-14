@@ -15,7 +15,7 @@ import { MESSAGES } from '../../../../config/message';
 import { ViewCostingContext } from '../CostingDetails';
 import LoaderCustom from '../../../common/LoaderCustom';
 import NoContentFound from '../../../common/NoContentFound';
-import { EMPTY_DATA } from '../../../../config/constants';
+import { defaultPageSize, EMPTY_DATA } from '../../../../config/constants';
 import { GridTotalFormate } from '../../../common/TableGridFunctions';
 import { AgGridReact } from 'ag-grid-react/lib/agGridReact';
 import { AgGridColumn } from 'ag-grid-react/lib/agGridColumn';
@@ -25,6 +25,7 @@ import AddTool from '../Drawers/AddTool';
 import { gridDataAdded } from '../../actions/Costing'
 import { createToprowObjAndSave } from '../../CostingUtil';
 import { debounce } from 'lodash';
+import { PaginationWrapper } from '../../../common/commonPagination';
 
 function TabToolCost(props) {
 
@@ -354,8 +355,7 @@ function TabToolCost(props) {
     decimalFormatter: decimalFormatter,
   };
   const onPageSizeChanged = (newPageSize) => {
-    var value = document.getElementById('page-size').value;
-    gridApi.paginationSetPageSize(Number(value));
+    gridApi.paginationSetPageSize(Number(newPageSize));
   };
 
 
@@ -513,7 +513,7 @@ function TabToolCost(props) {
                               // columnDefs={c}
                               rowData={gridData}
                               pagination={true}
-                              paginationPageSize={10}
+                              paginationPageSize={defaultPageSize}
                               onGridReady={onGridReady}
                               gridOptions={gridOptions}
                               loadingOverlayComponent={'customLoadingOverlay'}
@@ -540,13 +540,7 @@ function TabToolCost(props) {
                               <AgGridColumn field="NetToolCost" headerName="Net Tool Cost" cellRenderer={'decimalFormatter'}></AgGridColumn>
                               <AgGridColumn width={160} field="Life" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                             </AgGridReact>
-                            <div className="paging-container d-inline-block float-right">
-                              <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
-                                <option value="10" selected={true}>10</option>
-                                <option value="50">50</option>
-                                <option value="100">100</option>
-                              </select>
-                            </div>
+                            {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                           </div>
                         </div>
                       </div>

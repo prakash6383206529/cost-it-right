@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Row, Col, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
-import { EMPTY_DATA, OPERATIONS, SURFACETREATMENT } from '../../../../config/constants';
+import { defaultPageSize, EMPTY_DATA, OPERATIONS, SURFACETREATMENT } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper';
 import Toaster from '../../../common/Toaster';
@@ -18,6 +18,7 @@ import { TextFieldHookForm } from '../../../layout/HookFormInputs';
 import { VBC, ZBC } from '../../../../config/constants';
 import { runVerifySurfaceTreatmentSimulation } from '../../actions/Simulation';
 import VerifySimulation from '../VerifySimulation';
+import { PaginationWrapper } from '../../../common/commonPagination';
 
 const gridOptions = {
 
@@ -182,8 +183,7 @@ function OperationSTSimulation(props) {
     };
 
     const onPageSizeChanged = (newPageSize) => {
-        var value = document.getElementById('page-size').value;
-        gridApi.paginationSetPageSize(Number(value));
+        gridApi.paginationSetPageSize(Number(newPageSize));
     };
 
 
@@ -352,7 +352,7 @@ function OperationSTSimulation(props) {
                                                 // columnDefs={c}
                                                 rowData={list}
                                                 pagination={true}
-                                                paginationPageSize={10}
+                                                paginationPageSize={defaultPageSize}
                                                 onGridReady={onGridReady}
                                                 gridOptions={gridOptions}
                                                 // loadingOverlayComponent={'customLoadingOverlay'}
@@ -383,14 +383,7 @@ function OperationSTSimulation(props) {
                                                 <AgGridColumn field="CostingId" hide={true}></AgGridColumn>
 
                                             </AgGridReact>
-
-                                            <div className="paging-container d-inline-block float-right">
-                                                <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
-                                                    <option value="10" selected={true}>10</option>
-                                                    <option value="50">50</option>
-                                                    <option value="100">100</option>
-                                                </select>
-                                            </div>
+                                            {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                                         </div>
                                     </div>
 
