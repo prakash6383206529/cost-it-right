@@ -51,6 +51,7 @@ function ReportListing(props) {
     const [isAssemblyCosting, setIsAssemblyCosting] = useState(false)
     const [rmMBDetail, setrmMBDetail] = useState({})
     const [pageNo, setPageNo] = useState(1)
+    const [disableNextButtton, setDisableNextButtton] = useState(false)
     const [currentRowIndex, setCurrentRowIndex] = useState(0)
     const [floatingFilterData, setFloatingFilterData] = useState({ CostingNumber: "", TechnologyName: "", AmorizationQuantity: "", AnyOtherCost: "", CostingVersion: "", DisplayStatus: "", EffectiveDate: "", Currency: "", DepartmentCode: userDetails().Role === 'SuperAdmin' || userDetails().Role === 'Group Category Head' ? "" : JSON.parse(localStorage.getItem('departmentList')), DepartmentName: "", DiscountCost: "", ECNNumber: "", FinalPOPrice: "", RawMaterialFinishWeight: "", FreightCost: "", FreightPercentage: "", FreightType: "", GrossWeight: "", HundiOrDiscountValue: "", ICCApplicability: "", ICCCost: "", ICCInterestRate: "", ICCOn: "", MasterBatchTotal: "", ModelTypeForOverheadAndProfit: "", ModifiedByName: "", ModifiedByUserName: "", ModifiedDate: "", NetBoughtOutPartCost: "", NetConversionCost: "", NetConvertedPOPrice: "", NetDiscountsCost: "", NetFreightPackaging: "", NetFreightPackagingCost: "", NetICCCost: "", NetOperationCost: "", NetOtherCost: "", NetOverheadAndProfitCost: "", NetPOPrice: "", NetPOPriceINR: "", NetPOPriceInCurrency: "", NetPOPriceOtherCurrency: "", NetProcessCost: "", NetRawMaterialsCost: "", NetSurfaceTreatmentCost: "", NetToolCost: "", NetTotalRMBOPCC: "", OtherCost: "", OtherCostPercentage: "", OverheadApplicability: "", OverheadCombinedCost: "", OverheadCost: "", OverheadOn: "", OverheadPercentage: "", PackagingCost: "", PackagingCostPercentage: "", PartName: "", PartNumber: "", PartType: "", PaymentTermCost: "", PaymentTermsOn: "", PlantCode: "", PlantName: "", ProfitApplicability: "", ProfitCost: "", ProfitOn: "", ProfitPercentage: "", RMGrade: "", RMSpecification: "", RawMaterialCode: "", RawMaterialGrossWeight: "", RawMaterialName: "", RawMaterialRate: "", RawMaterialScrapWeight: "", RawMaterialSpecification: "", RecordInsertedBy: "", RejectOn: "", RejectionApplicability: "", RejectionCost: "", RejectionPercentage: "", Remark: "", Rev: "", RevisionNumber: "", ScrapRate: "", ScrapWeight: "", SurfaceTreatmentCost: "", ToolCost: "", ToolLife: "", ToolMaintenaceCost: "", ToolPrice: "", ToolQuantity: "", TotalCost: "", TotalOtherCost: "", TotalRecordCount: "", TransportationCost: "", VendorCode: "", VendorName: "", Version: "", RawMaterialGrade: "", HundiOrDiscountPercentage: "", FromDate: "", ToDate: "" })
     const [enableSearchFilterSearchButton, setEnableSearchFilterButton] = useState(true)
@@ -293,6 +294,11 @@ function ReportListing(props) {
 
     const onBtNext = () => {
 
+        if ((pageSize10 && pageNo === Math.ceil(totalRecordCount / 10)) || (pageSize50 && pageNo === Math.ceil(totalRecordCount / 50)) || (pageSize100 && pageNo === Math.ceil(totalRecordCount / 100))) {
+            setDisableNextButtton(true)
+            return false
+        }
+
         if (currentRowIndex < (totalRecordCount - 10)) {
 
             setPageNo(pageNo + 1)
@@ -305,6 +311,7 @@ function ReportListing(props) {
     };
 
     const onBtPrevious = () => {
+        setDisableNextButtton(false)
 
         if (currentRowIndex >= 10) {
             setPageNo(pageNo - 1)
@@ -429,6 +436,7 @@ function ReportListing(props) {
             setPageSize10(true)
             setPageSize50(false)
             setPageSize100(false)
+            setDisableNextButtton(false)
 
         }
         else if (Number(newPageSize) === 50) {
@@ -724,7 +732,7 @@ function ReportListing(props) {
                             {pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 10)}</p>}
                             {pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 50)}</p>}
                             {pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 100)}</p>}
-                            <p><button className="next-btn" type="button" onClick={() => onBtNext()}> </button></p>
+                            <p><button className="next-btn" type="button" disabled={disableNextButtton} onClick={() => onBtNext()}> </button></p>
                         </div>
 
                     </div>
