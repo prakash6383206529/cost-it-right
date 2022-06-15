@@ -101,7 +101,7 @@ function VerifyImpactDrawer(props) {
                 </Col>
               </Row>
               {fgWiseAcc &&
-                <ErrorMessage SimulationId={simulationId} />
+                <ErrorMessage />
               }
 
               {!costingDrawer && <Row >
