@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { BOPImpactDownloadArray, CPImpactDownloadArray, ERImpactDownloadArray, OperationImpactDownloadArray, RMImpactedDownloadArray } from "../../config/masterData";
 import { Errorbox } from "../common/ErrorBox";
-import { useDispatch } from 'react-redux';
-import { getAmmendentStatus, getFgWiseImpactData } from './actions/Simulation'
+import { useDispatch, useSelector } from 'react-redux';
+import { getAmmendentStatus, } from './actions/Simulation'
 import imgRedcross from '../../assests/images/red-cross.png';
 import imgGreencross from '../../assests/images/greenCross.png';
 export const SimulationUtils = (TempData) => {
@@ -226,8 +226,9 @@ export const ErrorMessage = (props) => {
     const [showSobMessageList, setShowSobMessageList] = useState(false)
     const [sobMessage, setSobMessage] = useState([])
     const [toggleAmmendmentData, setToggleAmmendmentStatus] = useState(true)
-    const { approvalNumber, SimulationId } = props
+    const { approvalNumber } = props
     const dispatch = useDispatch()
+    const impactData = useSelector((state) => state.simulation.impactData)
 
     const funcForErrorBoxButton = () => {
 
@@ -268,68 +269,74 @@ export const ErrorMessage = (props) => {
                 setAmmendmentButton(amendentStatus.length > 245 ? true : false)
             }
         }))
-
-
     }, [])
 
 
     useEffect(() => {
 
-        SimulationId && dispatch(getFgWiseImpactData(SimulationId, (res) => {
-            if (res && res.data && res.data.Result) {
+        if (impactData && impactData.length > 0) {
 
-                let Data = res.data.DataList
-                let listOfSobMessages = []
-                let partNumberObjectArray = []
+            let Data = impactData
+            let listOfSobMessages = []
+            let partNumberObjectArray = []
 
-                Data.map((item) => {
+            Data.map((item) =>
 
-                    item.childPartsList.map((ele) => {
-                        listOfSobMessages.push(ele.SOBMessage)
-                        partNumberObjectArray.push({ [ele.SOBMessage]: ele.PartNumber })
-                    })
+                item.childPartsList.map((ele) => {
+                    listOfSobMessages.push(ele.SOBMessage)
+                    partNumberObjectArray.push({ [ele.SOBMessage]: ele.PartNumber })
+                    return null
                 })
+            )
 
-                listOfSobMessages = listOfSobMessages.filter((x, i, a) => a.indexOf(x) === i) // TO FIND UNIQUE ELEMENTS
-                let newArr = []
-                let obj = {}
+            listOfSobMessages = listOfSobMessages.filter((x, i, a) => a.indexOf(x) === i) // TO FIND UNIQUE ELEMENTS
+            let newArr = []
 
-                listOfSobMessages.map((item, index) => {
-                    let arr = []
-                    if (item == "" || item == null) {
-                        return false
-                    }
-                    setShowSobMessageList(true)
+            listOfSobMessages.map((item, index) => {
+                let arr = []
+                if (item === "" || item === null) {
+                    setShowSobMessageList(false)
+                    return false
+                }
+                setShowSobMessageList(true)
 
-                    partNumberObjectArray.map((ele, i) => {
-
-                        if (ele[item] !== undefined) {
-
-                            if (partNumberObjectArray.length - 1 === i) {
-                                arr.push(ele[item])
-                            } else {
-                                arr.push(ele[item] + " ")
-                            }
+                partNumberObjectArray.map((ele, i) => {
+                    //HERE ITEM = SOB MESSAGE AND ELE = OBJECT OF ARRAY
+                    if (ele[item] !== undefined) {
+                        //THIS IF IS FOR HANDLING LAST INDEX CONDITION
+                        if (partNumberObjectArray.length - 1 === i) {
+                            arr.push(ele[item])
+                        } else {
+                            arr.push(ele[item] + " ") // FETCHING PART NUMBER HERE
                         }
-                    })
-
-                    arr = arr.filter((x, i, a) => a.indexOf(x) === i) // TO FIND UNIQUE ELEMENTS
-                    obj[index] = [item, ...arr]
-
-                    if (newArr.length === 0) {
-                        newArr = [...newArr, " ", " ", item, " (", ...arr, ")", " "]
-
-                    } else {
-                        newArr = [...newArr, ", ", " ", item, " (", ...arr, ")", " "]
                     }
                 })
-                setSobMessage(newArr);
-                setSobButton(newArr.length > 22 ? true : false)
-            }
-        }))
 
+                arr = arr.filter((x, i, a) => a.indexOf(x) === i) // TO FIND UNIQUE PART NUMBER FOR PARTICULAR MESSAGE
 
-    }, [SimulationId])
+                let arrWithComma = []
+                arr.map((item, index) => {
+                    arrWithComma.push(item)
+                    if (index !== arr.length - 1) {
+                        arrWithComma.push(",")
+                    }
+                })
+                arr = arrWithComma
+
+                if (newArr.length === 0) {
+                    //THIS IF IS FOR INSERTING ON FIRST INDEX(AS  COMMA(,) SHOULD NOT COME AT START POSITION)
+                    newArr = [...newArr, " ", " ", item, " (", ...arr, ")", " "]
+
+                } else {
+                    newArr = [...newArr, ", ", " ", item, " (", ...arr, ")", " "]
+                }
+                return null
+            })
+            setSobMessage(newArr);
+            setSobButton(newArr.length > 22 ? true : false)
+        }
+
+    }, [impactData])
 
 
     const deleteInsertStatusBox = () => {
@@ -355,11 +362,11 @@ export const ErrorMessage = (props) => {
         }
         return temp
     }
+
     const errorBoxClassForStatus = () => {
         let temp;
 
         temp = (noContent || status === null || status === '' || status === undefined) ? 'd-none' : isSuccessfullyInsert ? 'success' : 'error';
-
         return temp
     }
     return (<>
@@ -385,7 +392,6 @@ export const ErrorMessage = (props) => {
                     src={errorBoxClassForAmmendent() === 'd-none' ? '' : errorBoxClassForAmmendent() === "success" ? imgGreencross : imgRedcross}
                 ></img>
             </div>
-
         }
 
         {showSobMessageList &&

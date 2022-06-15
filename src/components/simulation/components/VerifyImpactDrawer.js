@@ -10,15 +10,12 @@ import { getImpactedMasterData, getLastSimulationData } from '../actions/Simulat
 import AssemblyWiseImpactSummary from './AssemblyWiseImpactSummary';
 import Toaster from '../../common/Toaster';
 import NoContentFound from '../../common/NoContentFound';
+import { ErrorMessage } from '../SimulationUtils';
 
 
 function VerifyImpactDrawer(props) {
   const { SimulationTechnologyIdState, simulationId, vendorIdState, EffectiveDate, amendmentDetails, dataForAssemblyImpactInVerifyImpact, assemblyImpactButtonTrue, costingDrawer, costingIdArray, approvalSummaryTrue, isSimulation } = props
 
-  const [id, setId] = useState('')
-  const [compareCostingObj, setCompareCostingObj] = useState([])
-  const [simulationTechnologyIdOfRevisionData, setSimulationTechnologyIdOfRevisionData] = useState("")
-  const [lastRevisionData, SetLastRevisionData] = useState([])
   const [impactedMasterDataListForLastRevisionData, setImpactedMasterDataListForLastRevisionData] = useState([])
   const [impactedMasterDataListForImpactedMaster, setImpactedMasterDataListForImpactedMaster] = useState([])
   const [showAssemblyWise, setShowAssemblyWise] = useState(false)
@@ -30,19 +27,7 @@ function VerifyImpactDrawer(props) {
   const [masterIdForLastRevision, setMasterIdForLastRevision] = useState('')
   const [editWarning, setEditWarning] = useState(false)
   const [accDisable, setAccDisable] = useState(false)
-  const headerName = ['Revision No.', 'Name', 'Old Cost/Pc', 'New Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
-  const parentField = ['PartNumber', '-', 'PartName', '-', '-', '-', 'VariancePerPiece', 'VolumePerYear', 'ImpactPerQuarter', 'ImpactPerYear']
-  const childField = ['PartNumber', 'ECNNumber', 'PartName', 'OldCost', 'NewCost', 'Quantity', 'VariancePerPiece', '-', '-', '-']
-
   const dispatch = useDispatch()
-
-
-  const selectedTechnologyForSimulation = useSelector(state => state.simulation.selectedTechnologyForSimulation)
-  useEffect(() => {
-    // dispatch(getFgWiseImpactData(simulationId, () => { }))
-
-  }, [])
-
 
   const toggleDrawer = (event, type = 'cancel') => {
     if (
@@ -115,6 +100,9 @@ function VerifyImpactDrawer(props) {
                   ></div>
                 </Col>
               </Row>
+              {fgWiseAcc &&
+                <ErrorMessage SimulationId={simulationId} />
+              }
 
               {!costingDrawer && <Row >
                 <Col md="12">
@@ -146,6 +134,7 @@ function VerifyImpactDrawer(props) {
                   </div>
                 </Col>
               </Row>}
+
 
               {!costingDrawer && <Row className="mb-3 pr-0 mx-0">
                 <Col md="6"> <HeaderTitle title={'Impacted Master Data:'} /></Col>

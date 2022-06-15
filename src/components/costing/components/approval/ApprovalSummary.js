@@ -14,7 +14,6 @@ import PushButtonDrawer from './PushButtonDrawer'
 import { Redirect } from 'react-router'
 import LoaderCustom from '../../../common/LoaderCustom';
 import { Fgwiseimactdata } from '../../../simulation/components/FgWiseImactData'
-import HeaderTitle from '../../../common/HeaderTitle'
 import CalculatorWrapper from '../../../common/Calculator/CalculatorWrapper'
 import { EMPTY_GUID } from '../../../../config/constants'
 import { ErrorMessage } from '../../../simulation/SimulationUtils'
@@ -44,8 +43,8 @@ function ApprovalSummary(props) {
   const [viewButton, setViewButton] = useState(false)
   const [pushButton, setPushButton] = useState(false)
   const [isLoader, setIsLoader] = useState(false);
-  const [fgWiseAcc, setFgWiseAcc] = useState(false)
-  const [costingIdArray, setCostingIdArray] = useState([])
+  const [fgWiseAcc, setFgWiseAcc] = useState(true)
+  const [costingIdArray, setCostingIdArray] = useState({})
   const [lastRevisionDataAcc, setLastRevisionDataAcc] = useState(false)
   const [editWarning, setEditWarning] = useState(false)
   const [impactedMasterDataListForLastRevisionData, setImpactedMasterDataListForLastRevisionData] = useState([])
@@ -271,7 +270,7 @@ function ApprovalSummary(props) {
         <>
           {isLoader && <LoaderCustom />}
           <div className="container-fluid approval-summary-page">
-            <ErrorMessage approvalNumber={approvalNumber} />
+            <ErrorMessage approvalNumber={approvalNumber} costingIdArray={costingIdArray} />
             <h2 className="heading-main">Approval Summary</h2>
             <Row>
               <Col md="8">
