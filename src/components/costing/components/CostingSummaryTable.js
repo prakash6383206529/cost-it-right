@@ -793,6 +793,17 @@ const CostingSummaryTable = (props) => {
       return varianceWithCurrency
     }
   }
+  // GET PLUS AND MINUS SIGN FOR NET PO PRICE (IN CURRENCY)
+  const getPlusMinusSign = () => {
+    let temp = ''
+    if (viewCostingData[0]?.currency?.currencyTitle === '-') {
+      temp = viewCostingData[0]?.nPOPrice > viewCostingData[1]?.nPOPrice ? '-' : '+';
+    }
+    else {
+      temp = viewCostingData[0]?.nPOPriceWithCurrency > viewCostingData[1]?.nPOPriceWithCurrency ? '-' : "+"
+    }
+    return temp
+  }
 
   return (
     <Fragment>
@@ -1427,7 +1438,6 @@ const CostingSummaryTable = (props) => {
                                     class="float-right mb-0 View "
                                     onClick={() => viewToolCostData(index)}
                                   >
-
                                   </button>
                                 }
                               </td>
@@ -1510,8 +1520,8 @@ const CostingSummaryTable = (props) => {
                           {viewCostingData &&
                             viewCostingData?.map((data, index) => {
                               return <td>
-                                {data?.CostingHeading === VARIANCE && (isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.nPOPrice > viewCostingData[1]?.nPOPrice ? <span className='positive-sign'>+</span> : '' : '')}
-                                <span><span className='currency-symbol'>{getCurrencySymbol(getConfigurationKey().BaseCurrency)}</span>{checkForDecimalAndNull(data?.nPOPrice, initialConfiguration.NoOfDecimalForPrice)}</span>
+                                {data?.CostingHeading === VARIANCE && (isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.nPOPrice > viewCostingData[1]?.nPOPrice ? <span className='positive-sign'>-</span> : <span className='positive-sign'>+</span> : '')}
+                                <span><span className='currency-symbol'>{getCurrencySymbol(getConfigurationKey().BaseCurrency)}</span>{checkForDecimalAndNull(Math.abs(data?.nPOPrice), initialConfiguration.NoOfDecimalForPrice)}</span>
                               </td>
                             })}
 
@@ -1545,9 +1555,9 @@ const CostingSummaryTable = (props) => {
 
 
                           {viewCostingData &&
-                            viewCostingData?.map((data, index) => {
-                              return <td> {data?.CostingHeading === VARIANCE && (isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.nPOPriceWithCurrency > viewCostingData[1]?.nPOPriceWithCurrency ? <span className='positive-sign'>+</span> : '' : '')}
-                                <span><span className='currency-symbol'>{getCurrencySymbol(data?.currency.currencyTitle !== '-' ? data?.currency.currencyTitle : getConfigurationKey().BaseCurrency)}</span>{data?.nPOPriceWithCurrency !== null ? checkForDecimalAndNull((data?.currency?.currencyTitle) !== "-" ? (data?.nPOPriceWithCurrency) : data?.nPOPrice, initialConfiguration.NoOfDecimalForPrice) : '-'}</span> </td>
+                            viewCostingData.map((data, index) => {
+                              return <td> {data?.CostingHeading === VARIANCE && (isApproval ? viewCostingData?.length > 0 && <span className='positive-sign'>{getPlusMinusSign()}</span> : '')}
+                                <span><span className='currency-symbol'>{getCurrencySymbol(data?.currency.currencyTitle !== '-' ? data?.currency.currencyTitle : getConfigurationKey().BaseCurrency)}</span>{data?.nPOPriceWithCurrency !== null ? checkForDecimalAndNull((data?.currency?.currencyTitle) !== "-" ? (Math.abs(data?.nPOPriceWithCurrency)) : Math.abs(data?.nPOPrice), initialConfiguration.NoOfDecimalForPrice) : '-'}</span> </td>
                             })}
                         </tr>
                       }
