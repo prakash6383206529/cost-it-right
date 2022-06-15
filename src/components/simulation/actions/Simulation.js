@@ -687,6 +687,11 @@ export function getverifyCombinedProcessSimulationList(token, callback) {
 export function getFgWiseImpactData(data, callback) {
     return (dispatch) => {
 
+        dispatch({
+            type: GET_FG_WISE_IMPACT_DATA,
+            payload: [],
+        })
+
         const request = axios.get(`${API.getFgWiseImpactData}?simulationId=${data}`, config());
         request.then((response) => {
             if (response.data.Result) {
