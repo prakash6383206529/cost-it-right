@@ -209,7 +209,7 @@ function AssemblyPart(props) {
                 type="button"
                 className={'user-btn add-oprn-btn mr-1'}
                 onClick={bopHandlingDrawer}>
-                <div className={`${item?.CostingPartDetails?.IsApplyBOPHandlingCharges ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`BOP H`}</button>
+                <div className={`${(item?.CostingPartDetails?.IsApplyBOPHandlingCharges || CostingViewMode || item?.IsLocked) ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`BOP H`}</button>
 
               {checkForNull(item?.CostingPartDetails?.TotalOperationCostPerAssembly) !== 0 ?
                 <button
@@ -222,7 +222,7 @@ function AssemblyPart(props) {
                   type="button"
                   className={'user-btn add-oprn-btn'}
                   onClick={DrawerToggle}>
-                  <div className={`${CostingViewMode ? 'fa fa-eye pr-1' : 'plus'}`}></div>{'OPER'}</button>}
+                  <div className={`${(CostingViewMode || item?.IsLocked) ? 'fa fa-eye pr-1' : 'plus'}`}></div>{'OPER'}</button>}
             </div>
             {/*WHEN COSTING OF THAT PART IS  APPROVED SO COSTING COMES AUTOMATICALLY FROM BACKEND AND THIS KEY WILL COME TRUE (WORK LIKE VIEW MODE)*/}
             <div className={`${(item.IsLocked || item.IsPartLocked) ? 'lock_icon ml-3 tooltip-n' : ''}`}>{false && <span class="tooltiptext">{`This costing already approved via assembly costing`}</span>}</div>

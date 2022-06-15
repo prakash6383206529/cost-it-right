@@ -106,7 +106,7 @@ function PartSurfaceTreatment(props) {
                 //onClick={DrawerToggle}
                 onClick={() => toggle(item.BOMLevel, item.PartNumber)}
               >
-                <div className={`${CostingViewMode ? 'fa fa-eye pr-1' : 'plus'}`}></div>Surface T.</button>
+                <div className={`${(CostingViewMode || item.IsPartLocked) ? 'fa fa-eye pr-1' : 'plus'}`}></div>Surface T.</button>
             }
             <div className={`lock-width ${(item.IsLocked || item.IsPartLocked) ? 'lock_icon' : ''}`}>{''}</div>
           </div>
