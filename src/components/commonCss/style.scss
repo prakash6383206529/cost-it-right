@@ -4283,7 +4283,7 @@ body {
   font-size: 14px;
   color: #a78610f2 !important;
   font-weight: 500;
-  &.assembly-viw-bom-wrapper {
+  &.assembly-view-bom-wrapper {
     transform: translateY(-30px);
    img {
      @media screen and (max-width: 1680px) {
@@ -4291,6 +4291,15 @@ body {
       }
    }
   }
+  &.date {
+    img {
+      margin-bottom: 20px;
+      @media screen and (max-width: 1440px) {
+        margin-bottom: 40px;
+       }
+    }
+  }
+
 }
 
 .warning-row {

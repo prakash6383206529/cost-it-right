@@ -1103,7 +1103,7 @@ class AddAssemblyPart extends Component {
                             valueDescription={this.state.TechnologySelected}
                             disabled={isViewMode || this.state.warningMessageTechnology || (isEditFlag && !this.state.isBomEditable)}
                           />
-                          {this.state.warningMessageTechnology && <WarningMessage dClass="mr-3 assembly-viw-bom-wrapper" message={`Please reset the BOM to change the technology`} />}
+                          {this.state.warningMessageTechnology && !isViewMode && <WarningMessage dClass="assembly-view-bom-wrapper" message={`Please reset the BOM to change the technology`} />}
                         </Col>
 
                         <Col md="3">
@@ -1127,7 +1127,7 @@ class AddAssemblyPart extends Component {
                               />
                             </div>
                           </div>
-                          {this.state.warningMessage && <WarningMessage dClass="mr-3 assembly-viw-bom-wrapper" message={`Revised date is ${DayTime(this.state?.minEffectiveDate).format('DD/MM/YYYY')} please reset the BOM to select the previous date`} />}
+                          {this.state.warningMessage && !isViewMode && <WarningMessage dClass="assembly-view-bom-wrapper date" message={`Revised date is ${DayTime(this.state?.minEffectiveDate).format('DD/MM/YYYY')} please reset the BOM to select the previous date`} />}
                         </Col>
 
 
