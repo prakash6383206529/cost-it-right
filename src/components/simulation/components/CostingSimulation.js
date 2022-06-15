@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRawMaterialNameChild } from '../../masters/actions/Material';
 import NoContentFound from '../../common/NoContentFound';
-import { BOPDOMESTIC, BOPIMPORT, COSTINGSIMULATIONROUND, TOFIXEDVALUE, EMPTY_DATA, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, ImpactMaster, EXCHNAGERATE, COMBINED_PROCESS } from '../../../config/constants';
+import { BOPDOMESTIC, BOPIMPORT, COSTINGSIMULATIONROUND, TOFIXEDVALUE, EMPTY_DATA, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, ImpactMaster, EXCHNAGERATE, COMBINED_PROCESS, defaultPageSize } from '../../../config/constants';
 import { getComparisionSimulationData, getCostingBoughtOutPartSimulationList, getCostingSimulationList, getCostingSurfaceTreatmentSimulationList, setShowSimulationPage, getSimulatedAssemblyWiseImpactDate, getImpactedMasterData, getExchangeCostingSimulationList, getCombinedProcessCostingSimulationList } from '../actions/Simulation';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
@@ -32,6 +32,7 @@ import { Errorbox } from '../../common/ErrorBox';
 import { impactmasterDownload, SimulationUtils } from '../SimulationUtils'
 import ViewAssembly from './ViewAssembly';
 import _ from 'lodash';
+import { PaginationWrapper } from '../../common/commonPagination';
 
 
 const gridOptions = {};
@@ -681,21 +682,31 @@ function CostingSimulation(props) {
 
     }
 
-    const varianceOperationFormatter = (props) => {
+    const operVarianceFormatter = (props) => {
+        // ********** THIS IS RE SPECIFIC **********
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        let roudOffOld = 0, rounfOffNew = 0
+        roudOffOld = _.round(row.OldOperationCost, COSTINGSIMULATIONROUND)
+        rounfOffNew = _.round(row.NewOperationCost, COSTINGSIMULATIONROUND)
+        let value = Math.abs(roudOffOld - rounfOffNew)
         return (<div>
-            {row.OperationCostVariance ? (row.NewOperationCost > row.OldOperationCost ? < span className='positive-sign'>+</span> : < span className='positive-sign'>-</span>) : ''}
-            {cell != null ? checkForDecimalAndNull(Math.abs(row.OperationCostVariance), getConfigurationKey().NoOfDecimalForPrice) : '-'}
+            {value ? (row.NewOperationCost > row.OldOperationCost ? < span className='positive-sign'>+</span> : < span className='positive-sign'>-</span>) : ''}
+            {cell != null ? (Math.abs(value)).toFixed(COSTINGSIMULATIONROUND) : '-'}
         </div >)
     }
 
     const varianceBOPFormatter = (props) => {
+        // ********** THIS IS RE SPECIFIC **********
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        let roudOffOld = 0, rounfOffNew = 0
+        roudOffOld = _.round(row.OldNetBoughtOutPartCost, COSTINGSIMULATIONROUND)
+        rounfOffNew = _.round(row.NewNetBoughtOutPartCost, COSTINGSIMULATIONROUND)
+        let value = Math.abs(roudOffOld - rounfOffNew)
         return (<div>
-            {row.NetBoughtOutPartCostVariance ? (row.NewNetBoughtOutPartCost > row.OldNetBoughtOutPartCost ? < span className='positive-sign'>+</span> : < span className='positive-sign'>-</span>) : ''}
-            {cell != null ? checkForDecimalAndNull(Math.abs(row.NetBoughtOutPartCostVariance), getConfigurationKey().NoOfDecimalForPrice) : '-'}
+            {value ? (row.NewNetBoughtOutPartCost > row.OldNetBoughtOutPartCost ? < span className='positive-sign'>+</span> : < span className='positive-sign'>-</span>) : ''}
+            {cell != null ? (Math.abs(value)).toFixed(COSTINGSIMULATIONROUND) : '-'}
         </div >)
     }
 
@@ -952,8 +963,7 @@ function CostingSimulation(props) {
     };
 
     const onPageSizeChanged = (newPageSize) => {
-        var value = document.getElementById('page-size').value;
-        gridApi.paginationSetPageSize(Number(value));
+        gridApi.paginationSetPageSize(Number(newPageSize));
     };
 
     const onFilterTextBoxChanged = (e) => {
@@ -1015,6 +1025,8 @@ function CostingSimulation(props) {
         BOPQuantityFormatter: BOPQuantityFormatter,
         operSTFormatter: operSTFormatter,
         CPvarianceFormatter: CPvarianceFormatter,
+        operVarianceFormatter: operVarianceFormatter,
+        varianceBOPFormatter: varianceBOPFormatter
     };
 
     const isRowSelectable = rowNode => statusForLinkedToken === true ? false : true;
@@ -1086,7 +1098,7 @@ function CostingSimulation(props) {
                                                     // columnDefs={c}
                                                     rowData={tableData}
                                                     pagination={true}
-                                                    paginationPageSize={10}
+                                                    paginationPageSize={defaultPageSize}
                                                     onGridReady={onGridReady}
                                                     gridOptions={gridOptions}
                                                     // loadingOverlayComponent={'customLoadingOverlay'}
@@ -1149,15 +1161,15 @@ function CostingSimulation(props) {
                                                     {(isOperation || showOperationColumn) && <AgGridColumn width={140} field="NewOperationRate" headerName='New Oper Rate' cellRenderer="operQuantityFormatter"></AgGridColumn>}
                                                     {(isOperation || showOperationColumn) && <AgGridColumn width={140} field="OldNetOperationCost" headerName='Old Net Oper Cost' cellRenderer="oldOPERFormatter" ></AgGridColumn>}
                                                     {(isOperation || showOperationColumn) && <AgGridColumn width={140} field="NewNetOperationCost" headerName='New Net Oper Cost' cellRenderer="newOPERFormatter"></AgGridColumn>}
-                                                    {(isOperation || showOperationColumn) && <AgGridColumn width={140} field="OperationCostVariance" headerName='Oper Variance' ></AgGridColumn>}
+                                                    {(isOperation || showOperationColumn) && <AgGridColumn width={140} field="OperationCostVariance" headerName='Oper Variance' cellRenderer="operVarianceFormatter" ></AgGridColumn>}
 
 
                                                     {(isBOPDomesticOrImport || showBOPColumn) && <AgGridColumn width={140} field="BoughtOutPartQuantity" headerName='BOP Quantity' cellRenderer='BOPQuantityFormatter' ></AgGridColumn>}
-                                                    {(isBOPDomesticOrImport || showBOPColumn) && <AgGridColumn width={140} field="OldBOPRate" headerName='Old BOP Rate' cellRenderer={BOPQuantityFormatter} ></AgGridColumn>}
-                                                    {(isBOPDomesticOrImport || showBOPColumn) && <AgGridColumn width={140} field="NewBOPRate" headerName='New BOP Rate' cellRenderer={BOPQuantityFormatter} ></AgGridColumn>}
-                                                    {(isBOPDomesticOrImport || showBOPColumn) && <AgGridColumn width={140} field="OldNetBoughtOutPartCost" headerName='Old Net BOP Cost' cellRenderer={decimalFormatter} ></AgGridColumn>}
-                                                    {(isBOPDomesticOrImport || showBOPColumn) && <AgGridColumn width={140} field="NewNetBoughtOutPartCost" headerName='New Net BOP Cost' cellRenderer={decimalFormatter}></AgGridColumn>}
-                                                    {(isBOPDomesticOrImport || showBOPColumn) && <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" headerName='BOP Variance' cellRenderer={decimalFormatter} ></AgGridColumn>}
+                                                    {(isBOPDomesticOrImport || showBOPColumn) && <AgGridColumn width={140} field="OldBOPRate" headerName='Old BOP Rate' cellRenderer='BOPQuantityFormatter' ></AgGridColumn>}
+                                                    {(isBOPDomesticOrImport || showBOPColumn) && <AgGridColumn width={140} field="NewBOPRate" headerName='New BOP Rate' cellRenderer='BOPQuantityFormatter' ></AgGridColumn>}
+                                                    {(isBOPDomesticOrImport || showBOPColumn) && <AgGridColumn width={140} field="OldNetBoughtOutPartCost" headerName='Old Net BOP Cost' cellRendere='decimalFormatter' ></AgGridColumn>}
+                                                    {(isBOPDomesticOrImport || showBOPColumn) && <AgGridColumn width={140} field="NewNetBoughtOutPartCost" headerName='New Net BOP Cost' cellRenderer='decimalFormatter'></AgGridColumn>}
+                                                    {(isBOPDomesticOrImport || showBOPColumn) && <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" headerName='BOP Variance' cellRenderer='varianceBOPFormatter' ></AgGridColumn>}
 
 
                                                     {(isMachineRate || showMachineRateColumn) && <AgGridColumn width={140} field="OldMachineRate" headerName='Old Machine Rate' ></AgGridColumn>}
@@ -1173,13 +1185,13 @@ function CostingSimulation(props) {
 
                                                     {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={220} field="OldNetPOPriceOtherCurrency" headerName='PO Price Old(in Currency)' cellRenderer='oldPOCurrencyFormatter'></AgGridColumn>}
                                                     {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={220} field="NewNetPOPriceOtherCurrency" headerName='PO Price New (in Currency)' cellRenderer='newPOCurrencyFormatter'></AgGridColumn>}
-                                                    {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={170} field="POVariance" headerName='PO Variance' cellRenderer={decimalFormatter}></AgGridColumn>}
+                                                    {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={170} field="POVariance" headerName='PO Variance' cellRenderer='decimalFormatter'></AgGridColumn>}
                                                     {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={170} field="OldExchangeRate" headerName='Old Exchange Rate' cellRenderer='oldExchangeFormatter'></AgGridColumn>}
                                                     {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={170} field="NewExchangeRate" headerName='New Exchange Rate' cellRenderer='newExchangeFormatter'></AgGridColumn>}
                                                     {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={140} field="ERVariance" headerName='Variance' cellRenderer='varianceFormatter'></AgGridColumn>}
 
-                                                    {(isCombinedProcess || showCombinedProcessColumn) && <AgGridColumn width={140} field="OldNetCC" headerName='Old Net CC' cellRenderer={decimalFormatter}></AgGridColumn>}
-                                                    {(isCombinedProcess || showCombinedProcessColumn) && <AgGridColumn width={140} field="NewNetCC" headerName='New Net CC' cellRenderer={decimalFormatter}></AgGridColumn>}
+                                                    {(isCombinedProcess || showCombinedProcessColumn) && <AgGridColumn width={140} field="OldNetCC" headerName='Old Net CC' cellRenderer='decimalFormatter'></AgGridColumn>}
+                                                    {(isCombinedProcess || showCombinedProcessColumn) && <AgGridColumn width={140} field="NewNetCC" headerName='New Net CC' cellRenderer='decimalFormatter'></AgGridColumn>}
                                                     {(isCombinedProcess || showCombinedProcessColumn) && <AgGridColumn width={140} field="CPVariance" headerName='Variance' cellRenderer='CPvarianceFormatter'></AgGridColumn>}
 
 
@@ -1201,18 +1213,12 @@ function CostingSimulation(props) {
                                                     <AgGridColumn width={120} field="CostingId" headerName='Actions' type="rightAligned" floatingFilter={false} cellRenderer='buttonFormatter' pinned="right"></AgGridColumn>
                                                 </AgGridReact>
 
-                                                <div className="paging-container d-inline-block float-right">
-                                                    <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
-                                                        <option value="10" selected={true}>10</option>
-                                                        <option value="50">50</option>
-                                                        <option value="100">100</option>
-                                                    </select>
-                                                </div>
-                                            </div >
-                                        </div >
-                                    </Col >
-                                </Row >
-                            </div >
+                                                {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
+                                            </div>
+                                        </div>
+                                    </Col>
+                                </Row>
+                            </div>
                             <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer">
                                 <div className="col-sm-12 text-right bluefooter-butn">
 
