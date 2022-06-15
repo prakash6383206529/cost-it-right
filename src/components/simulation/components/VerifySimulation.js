@@ -505,8 +505,8 @@ function VerifySimulation(props) {
 
                                                 {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="OperationName" headerName="Operation Name"></AgGridColumn>}
                                                 {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="OperationCode" headerName="Operation Code"></AgGridColumn>}
-                                                {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="NewOperationRate" headerName="New Rate"></AgGridColumn>}
                                                 {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="OldOperationRate" headerName="Old Rate"></AgGridColumn>}
+                                                {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="NewOperationRate" headerName="New Rate"></AgGridColumn>}
 
                                                 {isBOPDomesticOrImport === true && <AgGridColumn width={130} field="BoughtOutPartCode" headerName="BOP Number"></AgGridColumn>}
                                                 {isBOPDomesticOrImport === true && <AgGridColumn width={130} field="BoughtOutPartName" headerName="BOP Name"></AgGridColumn>}
