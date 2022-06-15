@@ -550,12 +550,6 @@ function SimulationApprovalSummary(props) {
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
-    const rmNameFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return cell ? `${cell} - ${row.RMGrade} ` : '-'
-    }
-
     const RMVarianceFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let roudOffOld = 0, rounfOffNew = 0
