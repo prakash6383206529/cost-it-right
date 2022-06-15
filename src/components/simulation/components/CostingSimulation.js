@@ -681,21 +681,31 @@ function CostingSimulation(props) {
 
     }
 
-    const varianceOperationFormatter = (props) => {
+    const operVarianceFormatter = (props) => {
+        // ********** THIS IS RE SPECIFIC **********
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        let roudOffOld = 0, rounfOffNew = 0
+        roudOffOld = _.round(row.OldOperationCost, COSTINGSIMULATIONROUND)
+        rounfOffNew = _.round(row.NewOperationCost, COSTINGSIMULATIONROUND)
+        let value = Math.abs(roudOffOld - rounfOffNew)
         return (<div>
-            {row.OperationCostVariance ? (row.NewOperationCost > row.OldOperationCost ? < span className='positive-sign'>+</span> : < span className='positive-sign'>-</span>) : ''}
-            {cell != null ? checkForDecimalAndNull(Math.abs(row.OperationCostVariance), getConfigurationKey().NoOfDecimalForPrice) : '-'}
+            {value ? (row.NewOperationCost > row.OldOperationCost ? < span className='positive-sign'>+</span> : < span className='positive-sign'>-</span>) : ''}
+            {cell != null ? (Math.abs(value)).toFixed(COSTINGSIMULATIONROUND) : '-'}
         </div >)
     }
 
     const varianceBOPFormatter = (props) => {
+        // ********** THIS IS RE SPECIFIC **********
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        let roudOffOld = 0, rounfOffNew = 0
+        roudOffOld = _.round(row.OldNetBoughtOutPartCost, COSTINGSIMULATIONROUND)
+        rounfOffNew = _.round(row.NewNetBoughtOutPartCost, COSTINGSIMULATIONROUND)
+        let value = Math.abs(roudOffOld - rounfOffNew)
         return (<div>
-            {row.NetBoughtOutPartCostVariance ? (row.NewNetBoughtOutPartCost > row.OldNetBoughtOutPartCost ? < span className='positive-sign'>+</span> : < span className='positive-sign'>-</span>) : ''}
-            {cell != null ? checkForDecimalAndNull(Math.abs(row.NetBoughtOutPartCostVariance), getConfigurationKey().NoOfDecimalForPrice) : '-'}
+            {value ? (row.NewNetBoughtOutPartCost > row.OldNetBoughtOutPartCost ? < span className='positive-sign'>+</span> : < span className='positive-sign'>-</span>) : ''}
+            {cell != null ? (Math.abs(value)).toFixed(COSTINGSIMULATIONROUND) : '-'}
         </div >)
     }
 
@@ -1015,6 +1025,8 @@ function CostingSimulation(props) {
         BOPQuantityFormatter: BOPQuantityFormatter,
         operSTFormatter: operSTFormatter,
         CPvarianceFormatter: CPvarianceFormatter,
+        operVarianceFormatter: operVarianceFormatter,
+        varianceBOPFormatter: varianceBOPFormatter
     };
 
     const isRowSelectable = rowNode => statusForLinkedToken === true ? false : true;
@@ -1149,15 +1161,15 @@ function CostingSimulation(props) {
                                                     {(isOperation || showOperationColumn) && <AgGridColumn width={140} field="NewOperationRate" headerName='New Oper Rate' cellRenderer="operQuantityFormatter"></AgGridColumn>}
                                                     {(isOperation || showOperationColumn) && <AgGridColumn width={140} field="OldNetOperationCost" headerName='Old Net Oper Cost' cellRenderer="oldOPERFormatter" ></AgGridColumn>}
                                                     {(isOperation || showOperationColumn) && <AgGridColumn width={140} field="NewNetOperationCost" headerName='New Net Oper Cost' cellRenderer="newOPERFormatter"></AgGridColumn>}
-                                                    {(isOperation || showOperationColumn) && <AgGridColumn width={140} field="OperationCostVariance" headerName='Oper Variance' ></AgGridColumn>}
+                                                    {(isOperation || showOperationColumn) && <AgGridColumn width={140} field="OperationCostVariance" headerName='Oper Variance' cellRenderer="operVarianceFormatter" ></AgGridColumn>}
 
 
                                                     {(isBOPDomesticOrImport || showBOPColumn) && <AgGridColumn width={140} field="BoughtOutPartQuantity" headerName='BOP Quantity' cellRenderer='BOPQuantityFormatter' ></AgGridColumn>}
-                                                    {(isBOPDomesticOrImport || showBOPColumn) && <AgGridColumn width={140} field="OldBOPRate" headerName='Old BOP Rate' cellRenderer={BOPQuantityFormatter} ></AgGridColumn>}
-                                                    {(isBOPDomesticOrImport || showBOPColumn) && <AgGridColumn width={140} field="NewBOPRate" headerName='New BOP Rate' cellRenderer={BOPQuantityFormatter} ></AgGridColumn>}
-                                                    {(isBOPDomesticOrImport || showBOPColumn) && <AgGridColumn width={140} field="OldNetBoughtOutPartCost" headerName='Old Net BOP Cost' cellRenderer={decimalFormatter} ></AgGridColumn>}
-                                                    {(isBOPDomesticOrImport || showBOPColumn) && <AgGridColumn width={140} field="NewNetBoughtOutPartCost" headerName='New Net BOP Cost' cellRenderer={decimalFormatter}></AgGridColumn>}
-                                                    {(isBOPDomesticOrImport || showBOPColumn) && <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" headerName='BOP Variance' cellRenderer={decimalFormatter} ></AgGridColumn>}
+                                                    {(isBOPDomesticOrImport || showBOPColumn) && <AgGridColumn width={140} field="OldBOPRate" headerName='Old BOP Rate' cellRenderer='BOPQuantityFormatter' ></AgGridColumn>}
+                                                    {(isBOPDomesticOrImport || showBOPColumn) && <AgGridColumn width={140} field="NewBOPRate" headerName='New BOP Rate' cellRenderer='BOPQuantityFormatter' ></AgGridColumn>}
+                                                    {(isBOPDomesticOrImport || showBOPColumn) && <AgGridColumn width={140} field="OldNetBoughtOutPartCost" headerName='Old Net BOP Cost' cellRendere='decimalFormatter' ></AgGridColumn>}
+                                                    {(isBOPDomesticOrImport || showBOPColumn) && <AgGridColumn width={140} field="NewNetBoughtOutPartCost" headerName='New Net BOP Cost' cellRenderer='decimalFormatter'></AgGridColumn>}
+                                                    {(isBOPDomesticOrImport || showBOPColumn) && <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" headerName='BOP Variance' cellRenderer='varianceBOPFormatter' ></AgGridColumn>}
 
 
                                                     {(isMachineRate || showMachineRateColumn) && <AgGridColumn width={140} field="OldMachineRate" headerName='Old Machine Rate' ></AgGridColumn>}
@@ -1173,13 +1185,13 @@ function CostingSimulation(props) {
 
                                                     {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={220} field="OldNetPOPriceOtherCurrency" headerName='PO Price Old(in Currency)' cellRenderer='oldPOCurrencyFormatter'></AgGridColumn>}
                                                     {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={220} field="NewNetPOPriceOtherCurrency" headerName='PO Price New (in Currency)' cellRenderer='newPOCurrencyFormatter'></AgGridColumn>}
-                                                    {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={170} field="POVariance" headerName='PO Variance' cellRenderer={decimalFormatter}></AgGridColumn>}
+                                                    {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={170} field="POVariance" headerName='PO Variance' cellRenderer='decimalFormatter'></AgGridColumn>}
                                                     {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={170} field="OldExchangeRate" headerName='Old Exchange Rate' cellRenderer='oldExchangeFormatter'></AgGridColumn>}
                                                     {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={170} field="NewExchangeRate" headerName='New Exchange Rate' cellRenderer='newExchangeFormatter'></AgGridColumn>}
                                                     {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={140} field="ERVariance" headerName='Variance' cellRenderer='varianceFormatter'></AgGridColumn>}
 
-                                                    {(isCombinedProcess || showCombinedProcessColumn) && <AgGridColumn width={140} field="OldNetCC" headerName='Old Net CC' cellRenderer={decimalFormatter}></AgGridColumn>}
-                                                    {(isCombinedProcess || showCombinedProcessColumn) && <AgGridColumn width={140} field="NewNetCC" headerName='New Net CC' cellRenderer={decimalFormatter}></AgGridColumn>}
+                                                    {(isCombinedProcess || showCombinedProcessColumn) && <AgGridColumn width={140} field="OldNetCC" headerName='Old Net CC' cellRenderer='decimalFormatter'></AgGridColumn>}
+                                                    {(isCombinedProcess || showCombinedProcessColumn) && <AgGridColumn width={140} field="NewNetCC" headerName='New Net CC' cellRenderer='decimalFormatter'></AgGridColumn>}
                                                     {(isCombinedProcess || showCombinedProcessColumn) && <AgGridColumn width={140} field="CPVariance" headerName='Variance' cellRenderer='CPvarianceFormatter'></AgGridColumn>}
 
 

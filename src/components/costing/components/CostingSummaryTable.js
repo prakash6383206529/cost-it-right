@@ -1326,13 +1326,13 @@ const CostingSummaryTable = (props) => {
                         anchor={'right'}
                         isPDFShow={true} /></th></tr>}
 
-                      <tr class={`background-light-blue ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].nPackagingAndFreight > viewCostingData[1].nPackagingAndFreight ? 'green-row' : viewCostingData[0].nPackagingAndFreight < viewCostingData[1].nPackagingAndFreight ? 'red-row' : ' ' : '-'}`}>
+                      <tr className={`background-light-blue ${isApproval ? (viewCostingData?.length > 0 && viewCostingData[0].nPackagingAndFreight > viewCostingData[1].nPackagingAndFreight ? 'green-row' : (viewCostingData[0].nPackagingAndFreight < viewCostingData[1].nPackagingAndFreight ? 'red-row' : '')) : ''}`}>
                         <th>Net Packaging & Freight</th>
                         {viewCostingData &&
                           viewCostingData?.map((data, index) => {
                             return (
                               <td>
-                                <span>{data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.nPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice) : ''}</span>
+                                <span>{data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.nPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice) : ''}</span>
                                 {
                                   (data.CostingHeading !== VARIANCE && icons) && (!pdfHead && !drawerDetailPDF) &&
                                   <button
@@ -1399,7 +1399,7 @@ const CostingSummaryTable = (props) => {
                         isPDFShow={true}
                       /> </th> </tr>}
 
-                      <tr class={`background-light-blue ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].totalToolCost > viewCostingData[1].totalToolCost ? 'green-row' : viewCostingData[0].totalToolCost < viewCostingData[1].totalToolCost ? 'red-row' : ' ' : '-'}`}>
+                      <tr class={`background-light-blue ${isApproval ? viewCostingData.length > 0 && viewCostingData[0]?.totalToolCost > viewCostingData[1]?.totalToolCost ? 'green-row' : viewCostingData[0]?.totalToolCost < viewCostingData[1]?.totalToolCost ? 'red-row' : ' ' : '-'}`}>
                         <th>Net Tool Cost</th>
                         {viewCostingData &&
                           viewCostingData?.map((data, index) => {
