@@ -1,11 +1,11 @@
 import React from 'react';
-export const onFloatingFilterChanged = (value, gridOptions, thiss) => {
+export const onFloatingFilterChanged = (value, gridOptions, thisReference) => {
 
     const model = gridOptions?.api?.getFilterModel();
-    thiss.setState({ filterModel: model })
+    thisReference.setState({ filterModel: model })
 
-    if (!thiss.state.isFilterButtonClicked) {
-        thiss.setState({ warningMessage: true })
+    if (!thisReference.state.isFilterButtonClicked) {
+        thisReference.setState({ warningMessage: true })
     }
 
     if (value?.filterInstance?.appliedModel === null || value?.filterInstance?.appliedModel?.filter === "") {
@@ -15,7 +15,7 @@ export const onFloatingFilterChanged = (value, gridOptions, thiss) => {
                 isFilterEmpty = false
             }
             if (isFilterEmpty) {
-                thiss.setState({ warningMessage: false })
+                thisReference.setState({ warningMessage: false })
             }
         }
 
@@ -24,25 +24,25 @@ export const onFloatingFilterChanged = (value, gridOptions, thiss) => {
         if (value.column.colId === "EffectiveDate" || value.column.colId === "CreatedDate") {
             return false
         }
-        thiss.setState({ floatingFilterData: { ...thiss.state.floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter } })
+        thisReference.setState({ floatingFilterData: { ...thisReference.state.floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter } })
     }
 }
 
 
-export const onSearch = (gridOptions, thiss, master) => {
+export const onSearch = (gridOptions, thisReference, master) => {
 
-    thiss.setState({ warningMessage: false, isFilterButtonClicked: true, pageNo: 1, currentRowIndex: 0 })
+    thisReference.setState({ warningMessage: false, isFilterButtonClicked: true, pageNo: 1, currentRowIndex: 0 })
     gridOptions?.columnApi?.resetColumnState();
 
     switch (master) {
         case "BOP":
-            thiss.getDataList("", 0, "", "", 0, 100, true, thiss.state.floatingFilterData)
+            thisReference.getDataList("", 0, "", "", 0, 100, true, thisReference.state.floatingFilterData)
             break;
         case "Machine":
-            thiss.getDataList("", 0, "", 0, "", "", 0, 100, true, thiss.state.floatingFilterData)
+            thisReference.getDataList("", 0, "", 0, "", "", 0, 100, true, thisReference.state.floatingFilterData)
             break;
         case "Operation":
-            thiss.getTableListData(null, null, null, null, 0, 100, true, thiss.state.floatingFilterData)
+            thisReference.getTableListData(null, null, null, null, 0, 100, true, thisReference.state.floatingFilterData)
             break;
         default:
 
@@ -50,12 +50,12 @@ export const onSearch = (gridOptions, thiss, master) => {
 }
 
 
-export const resetState = (gridOptions, thiss, master) => {
+export const resetState = (gridOptions, thisReference, master) => {
 
-    thiss.setState({ isFilterButtonClicked: false })
+    thisReference.setState({ isFilterButtonClicked: false })
     gridOptions?.columnApi?.resetColumnState(null);
     gridOptions?.api?.setFilterModel(null);
-    var obj = thiss.state.floatingFilterData
+    var obj = thisReference.state.floatingFilterData
 
     for (var prop in obj) {
         if (prop !== "DepartmentCode") {
@@ -63,17 +63,17 @@ export const resetState = (gridOptions, thiss, master) => {
         }
     }
 
-    thiss.setState({ floatingFilterData: obj, warningMessage: false, pageNo: 1, currentRowIndex: 0 })
+    thisReference.setState({ floatingFilterData: obj, warningMessage: false, pageNo: 1, currentRowIndex: 0 })
 
     switch (master) {
         case "BOP":
-            thiss.getDataList("", 0, "", "", 0, 100, true, thiss.state.floatingFilterData)
+            thisReference.getDataList("", 0, "", "", 0, 100, true, thisReference.state.floatingFilterData)
             break;
         case "Machine":
-            thiss.getDataList("", 0, "", 0, "", "", 0, 100, true, thiss.state.floatingFilterData)
+            thisReference.getDataList("", 0, "", 0, "", "", 0, 100, true, thisReference.state.floatingFilterData)
             break;
         case "Operation":
-            thiss.getTableListData(null, null, null, null, 0, 100, true, thiss.state.floatingFilterData)
+            thisReference.getTableListData(null, null, null, null, 0, 100, true, thisReference.state.floatingFilterData)
             break;
 
         default:
@@ -83,71 +83,71 @@ export const resetState = (gridOptions, thiss, master) => {
 }
 
 
-export const onBtPrevious = (thiss, master) => {
-    if (thiss.state.currentRowIndex >= 10) {
+export const onBtPrevious = (thisReference, master) => {
+    if (thisReference.state.currentRowIndex >= 10) {
 
-        thiss.setState({ pageNo: thiss.state.pageNo - 1 })
-        const previousNo = thiss.state.currentRowIndex - 10;
+        thisReference.setState({ pageNo: thisReference.state.pageNo - 1 })
+        const previousNo = thisReference.state.currentRowIndex - 10;
 
         switch (master) {
             case "BOP":
-                thiss.getDataList("", 0, "", "", previousNo, 100, true, thiss.state.floatingFilterData)
+                thisReference.getDataList("", 0, "", "", previousNo, 100, true, thisReference.state.floatingFilterData)
                 break;
             case "Machine":
-                thiss.getDataList("", 0, "", 0, "", "", previousNo, 100, true, thiss.state.floatingFilterData)
+                thisReference.getDataList("", 0, "", 0, "", "", previousNo, 100, true, thisReference.state.floatingFilterData)
                 break;
             case "Operation":
-                thiss.getTableListData(null, null, null, null, previousNo, 100, true, thiss.state.floatingFilterData)
+                thisReference.getTableListData(null, null, null, null, previousNo, 100, true, thisReference.state.floatingFilterData)
                 break;
 
             default:
 
         }
-        thiss.setState({ currentRowIndex: previousNo })
+        thisReference.setState({ currentRowIndex: previousNo })
 
     }
 }
 
 
 
-export const onBtNext = (thiss, master) => {
-    if (thiss.state.currentRowIndex < (thiss.state.totalRecordCount - 10)) {
+export const onBtNext = (thisReference, master) => {
+    if (thisReference.state.currentRowIndex < (thisReference.state.totalRecordCount - 10)) {
 
-        thiss.setState({ pageNo: thiss.state.pageNo + 1 })
-        const nextNo = thiss.state.currentRowIndex + 10;
+        thisReference.setState({ pageNo: thisReference.state.pageNo + 1 })
+        const nextNo = thisReference.state.currentRowIndex + 10;
 
         switch (master) {
             case "BOP":
-                thiss.getDataList("", 0, "", "", nextNo, 100, true, thiss.state.floatingFilterData)
+                thisReference.getDataList("", 0, "", "", nextNo, 100, true, thisReference.state.floatingFilterData)
                 break;
             case "Machine":
-                thiss.getDataList("", 0, "", 0, "", "", nextNo, 100, true, thiss.state.floatingFilterData)
+                thisReference.getDataList("", 0, "", 0, "", "", nextNo, 100, true, thisReference.state.floatingFilterData)
                 break;
             case "Operation":
-                thiss.getTableListData(null, null, null, null, nextNo, 100, true, thiss.state.floatingFilterData)
+                thisReference.getTableListData(null, null, null, null, nextNo, 100, true, thisReference.state.floatingFilterData)
                 break;
 
             default:
         }
 
-        thiss.setState({ currentRowIndex: nextNo })
+        thisReference.setState({ currentRowIndex: nextNo })
     }
 };
 
 
 
-export const onPageSizeChanged = (thiss, newPageSize) => {
+export const onPageSizeChanged = (thisReference, newPageSize) => {
 
-    thiss.state.gridApi.paginationSetPageSize(Number(newPageSize));
+    thisReference.state.gridApi.paginationSetPageSize(Number(newPageSize));
 
     if (Number(newPageSize) === 10) {
-        thiss.setState({ pageSize: { pageSize10: true, pageSize50: false, pageSize100: false } })
+        thisReference.setState({ pageSize: { pageSize10: true, pageSize50: false, pageSize100: false } })
     }
     else if (Number(newPageSize) === 50) {
-        thiss.setState({ pageSize: { pageSize10: false, pageSize50: true, pageSize100: false } })
+        thisReference.setState({ pageSize: { pageSize10: false, pageSize50: true, pageSize100: false } })
     }
     else if (Number(newPageSize) === 100) {
-        thiss.setState({ pageSize: { pageSize10: false, pageSize50: false, pageSize100: true } })
+        thisReference.setState({ pageSize: { pageSize10: false, pageSize50: false, pageSize100: true } })
 
     }
 
