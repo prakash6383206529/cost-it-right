@@ -50,6 +50,7 @@ function ApprovalSummary(props) {
   const [editWarning, setEditWarning] = useState(false)
   const [impactedMasterDataListForLastRevisionData, setImpactedMasterDataListForLastRevisionData] = useState([])
   const [masterIdForLastRevision, setMasterIdForLastRevision] = useState('')
+  const [fgWise, setFgWise] = useState(false)
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
   const [accDisable, setAccDisable] = useState(false)
 
@@ -246,11 +247,14 @@ function ApprovalSummary(props) {
   }
 
   const displayCompareCostingFgWise = (CostingApprovalProcessSummaryId) => {
+    setFgWise(true)
     dispatch(getSingleCostingDetails(CostingApprovalProcessSummaryId, res => {
       const Data = res.data.Data
       const newObj = formViewData(Data)
       dispatch(setCostingViewData(newObj))
-      setCostingSummary(true)
+      setTimeout(() => {
+        setCostingSummary(true)
+      }, 500);
     }))
   }
 
@@ -572,7 +576,7 @@ function ApprovalSummary(props) {
             </Row>
             <Row className="mb-4" id='compare-costing'>
               <Col md="12" className="costing-summary-row">
-                {costingSummary && <CostingSummaryTable viewMode={true} costingID={approvalDetails.CostingId} approvalMode={true} isApproval={approvalData.LastCostingId !== EMPTY_GUID ? true : false} simulationMode={false} />}
+                {costingSummary && <CostingSummaryTable viewMode={true} costingID={approvalDetails.CostingId} approvalMode={true} isApproval={(approvalData.LastCostingId === EMPTY_GUID || fgWise) ? false : true} simulationMode={false} />}
               </Col>
             </Row>
             {/* Costing Summary page here */}
