@@ -6,7 +6,7 @@ import { getApprovalList, } from '../../actions/Approval'
 import { loggedInUserId, userDetails } from '../../../../helper/auth'
 import ApprovalSummary from './ApprovalSummary'
 import NoContentFound from '../../../common/NoContentFound'
-import { DRAFT, EMPTY_DATA } from '../../../../config/constants'
+import { defaultPageSize, DRAFT, EMPTY_DATA } from '../../../../config/constants'
 import DayTime from '../../../common/DayTimeWrapper'
 import ApproveRejectDrawer from './ApproveRejectDrawer'
 import { allEqual, checkForDecimalAndNull, checkForNull, formViewData } from '../../../../helper'
@@ -25,6 +25,7 @@ import { getVolumeDataByPartAndYear } from '../../../masters/actions/Volume'
 import { getSingleCostingDetails, setCostingApprovalData, setCostingViewData } from '../../actions/Costing'
 import SendForApproval from './SendForApproval'
 import CostingDetailSimulationDrawer from '../../../simulation/components/CostingDetailSimulationDrawer'
+import { PaginationWrapper } from '../../../common/commonPagination'
 
 const gridOptions = {};
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
@@ -418,7 +419,6 @@ function ApprovalListing(props) {
   };
 
   const onPageSizeChanged = (targetValue) => {
-    var value = document.getElementById('page-size').value;
     gridApi.paginationSetPageSize(Number(targetValue));
   };
 
@@ -509,7 +509,7 @@ function ApprovalListing(props) {
                       // columnDefs={c}
                       rowData={approvalList}
                       pagination={true}
-                      paginationPageSize={10}
+                      paginationPageSize={defaultPageSize}
                       onGridReady={onGridReady}
                       gridOptions={gridOptions}
                       //loadingOverlayComponent={'customLoadingOverlay'}
@@ -545,13 +545,7 @@ function ApprovalListing(props) {
                       {!isApproval && <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="Status" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>}
                     </AgGridReact>
 
-                    <div className="paging-container d-inline-block float-right">
-                      <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
-                        <option value="10" selected={true}>10</option>
-                        <option value="50">50</option>
-                        <option value="100">100</option>
-                      </select>
-                    </div>
+                    {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                     <div className="text-right pb-3">
                       <WarningMessage message="It may take up to 5 minutes for the status to be updated." />
                     </div>

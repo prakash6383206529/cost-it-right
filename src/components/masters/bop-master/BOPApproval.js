@@ -5,7 +5,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../common/LoaderCustom'
-import { EMPTY_DATA } from '../../../config/constants';
+import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import { DRAFT, BOP_MASTER_ID } from '../../../config/constants';
 import { getBOPApprovalList } from '../actions/BoughtOutParts'
 import DayTime from '../../common/DayTimeWrapper'
@@ -15,6 +15,7 @@ import MasterSendForApproval from '../MasterSendForApproval';
 import { masterFinalLevelUser } from '../actions/Material'
 import { loggedInUserId, userDetails } from '../../../helper'
 import NoContentFound from '../../common/NoContentFound';
+import { PaginationWrapper } from '../../common/commonPagination';
 
 
 
@@ -180,13 +181,7 @@ function BOPApproval(props) {
     };
 
     const onPageSizeChanged = (newPageSize) => {
-
-        var value = document.getElementById('page-size').value;
-
-
         gridApi.paginationSetPageSize(Number(newPageSize));
-
-
     };
 
     const onFilterTextBoxChanged = (e) => {
@@ -247,7 +242,7 @@ function BOPApproval(props) {
                                     // columnDefs={c}
                                     rowData={BopApprovalList}
                                     pagination={true}
-                                    paginationPageSize={10}
+                                    paginationPageSize={defaultPageSize}
                                     onGridReady={onGridReady}
                                     gridOptions={gridOptions}
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
@@ -281,13 +276,7 @@ function BOPApproval(props) {
                                     <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="Status" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>
                                 </AgGridReact>
 
-                                <div className="paging-container d-inline-block float-right">
-                                    <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
-                                        <option value="10" selected={true}>10</option>
-                                        <option value="50">50</option>
-                                        <option value="100">100</option>
-                                    </select>
-                                </div>
+                                {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                             </div>
                         </div>
                     </div>

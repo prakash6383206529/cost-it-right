@@ -588,14 +588,6 @@ a:hover {
           color: #256bd1;
         }
       }
-      .ag-pinned-right-header {
-        .ag-header-cell {
-          border-right: 1px solid #e5eaf9;
-        }
-        // .ag-header-cell:first-child {
-        //   border-left: 1px solid #e5eaf9;
-        // }
-      }
       .ag-grid-wrapper {
         &.rminsights_table {
           min-height: auto;
@@ -609,6 +601,13 @@ a:hover {
         // .ag-header-cell:first-child { comment for future purpose
         //   border-left: 1px solid #e5eaf9;
         // }
+        .ag-center-cols-clipper {
+          .ag-cell {
+            &:first-child { 
+              border-left: 1px solid #e5eaf9;
+            }
+          }
+        }
         .ag-header {
           border-top: 1px solid #e5eaf9;
           font-weight: normal;
@@ -616,10 +615,18 @@ a:hover {
           .ag-header-cell-label {
             color: #3d4465;
           }
+          .ag-header-cell, .ag-header-group-cell{
+            &:first-child {
+              border-left: 1px solid #e5eaf9;
+            }
+          }
         }
         .ag-pinned-left-header,
         .ag-root-wrapper {
           border: none;
+        }
+        .ag-pinned-right-header {
+          border: none !important;
         }
         .ag-row {
           .ag-cell {
@@ -660,9 +667,6 @@ a:hover {
                 justify-content: center;
               }
             }
-            // &:first-child { comment for future purpose
-            //   border-left: 1px solid #e5eaf9;
-            // }
           }
         }
       }
@@ -767,9 +771,7 @@ a:hover {
     }
   }
 }
-.ag-body-viewport, .ag-header {
-  border-left: 1px solid #e5eaf9;
-}
+
 .ag-theme-material {
   .ag-checkbox-input-wrapper {
     height: 18px !important;
@@ -2533,18 +2535,22 @@ body {
 
 .L1 {
   margin-left: 10px;
+  display: -webkit-box;
 }
 
 .L2 {
   margin-left: 10px;
+  display: -webkit-box;
 }
 
 .L3 {
   margin-left: 10px;
+  display: -webkit-box;
 }
 
 .L4 {
   margin-left: 10px;
+  display: -webkit-box;
 }
 
 .sf-mainheader .nav-scroller {

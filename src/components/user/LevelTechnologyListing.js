@@ -12,9 +12,10 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { getConfigurationKey } from '../../helper/auth';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
+import { PaginationWrapper } from '../common/commonPagination';
 
 const gridOptions = {};
-
+const defaultPageSize = 5;
 class LevelTechnologyListing extends Component {
 	constructor(props) {
 		super(props);
@@ -47,7 +48,7 @@ class LevelTechnologyListing extends Component {
 		this.setState({ isLoader: true })
 		this.props.getAllLevelMappingAPI(res => {
 			this.setState({ isLoader: false })
-			if (res.status == 204 && res.data == '') {
+			if (res.status === 204 && res.data === '') {
 				this.setState({ tableData: [], })
 			} else if (res && res.data && res.data.DataList) {
 				let Data = res.data.DataList;
@@ -125,7 +126,7 @@ class LevelTechnologyListing extends Component {
 		const { EditAccessibility } = this.props;
 		return (
 			<>
-				{EditAccessibility && <button title='Edit' type={'button'} className="Edit " onClick={() => this.editItemDetails(cellValue, 'Costing')} />}
+				{EditAccessibility && <button type={'button'} className="Edit " onClick={() => this.editItemDetails(cellValue, 'Costing')} />}
 				{/* {DeleteAccessibility && <button type={'button'} className="Delete" onClick={() => this.deleteItem(cell)} />} */}
 			</>
 		)
@@ -143,7 +144,7 @@ class LevelTechnologyListing extends Component {
 		const { EditAccessibility } = this.props;
 		return (
 			<>
-				{EditAccessibility && <button title='Edit' type={'button'} className="Edit " onClick={() => this.editItemDetails(cellValue, 'Simulation')} />}
+				{EditAccessibility && <button type={'button'} className="Edit " onClick={() => this.editItemDetails(cellValue, 'Simulation')} />}
 				{/* {DeleteAccessibility && <button type={'button'} className="Delete" onClick={() => this.deleteItem(cell)} />} */}
 			</>
 		)
@@ -159,14 +160,10 @@ class LevelTechnologyListing extends Component {
 		const { EditAccessibility } = this.props;
 		return (
 			<>
-				{EditAccessibility && <button title='Edit' type={'button'} className="Edit " onClick={() => this.editItemDetails(cellValue, 'Master')} />}
+				{EditAccessibility && <button type={'button'} className="Edit " onClick={() => this.editItemDetails(cellValue, 'Master')} />}
 				{/* {DeleteAccessibility && <button type={'button'} className="Delete" onClick={() => this.deleteItem(cell)} />} */}
 			</>
 		)
-	}
-
-	afterSearch = (searchText, result) => {
-
 	}
 
 	onGridReady = (params) => {
@@ -176,76 +173,50 @@ class LevelTechnologyListing extends Component {
 		params.api.paginationGoToPage(0);
 	};
 
-	onPageSizeChanged = (newPageSize) => {
+	levelMappingFilterHandler(e) {
+		this.agGrid1?.current.api.setQuickFilter(e.target.value);
+	}
 
-		// var value = document.getElementById('page-size').value;
-		// this.state.gridApi.paginationSetPageSize(Number(value));
+	simulationFilterHandler(e) {
+		this.agGrid2?.current.api.setQuickFilter(e.target.value);
+	}
+
+	masterFilterHandler(e) {
+		this.agGrid3?.current.api.setQuickFilter(e.target.value);
+	}
+
+	levelMappingResetState() {
+		this.agGrid1?.current?.columnApi?.resetColumnState();
+		this.agGrid1?.current?.api.setFilterModel(null)
+	}
+	simulationResetState() {
+		this.agGrid2?.current?.columnApi?.resetColumnState();
+		this.agGrid2?.current?.api.setFilterModel(null)
+	}
+	masterResetState() {
+		this.agGrid3?.current?.columnApi?.resetColumnState();
+		this.agGrid3?.current?.api.setFilterModel(null)
+	}
+
+	levelMappingPagination = (newPageSize) => {
 		this.agGrid1?.current.api.paginationSetPageSize(Number(newPageSize))
-
 	};
 
-	onFilterTextBoxChanged(e) {
-		this.state.gridApi.setQuickFilter(e.target.value);
-	}
-
-	resetState() {
-		gridOptions.columnApi.resetColumnState();
-		gridOptions.api.setFilterModel(null);
-	}
-
-	onGridReady1 = (params) => {
-		this.gridApi = params.api;
-		this.gridApi.sizeColumnsToFit();
-		this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
-		params.api.paginationGoToPage(0);
-	};
-
-	onPageSizeChanged1 = (newPageSize) => {
-		// var value = document.getElementById('page-size1').value;
-		// this.state.gridApi.paginationSetPageSize(Number(value));
+	simulationPagination = (newPageSize) => {
 		this.agGrid2?.current.api.paginationSetPageSize(Number(newPageSize))
 	};
 
-	onPageSizeChanged2 = (newPageSize) => {
-		// var value = document.getElementById('page-size1').value;
-		// this.state.gridApi.paginationSetPageSize(Number(value));
+	masterPagination = (newPageSize) => {
 		this.agGrid3?.current.api.paginationSetPageSize(Number(newPageSize))
 	};
 
-	onFilterTextBoxChanged1(e) {
-
-
-		this.state.gridApi.setQuickFilter(e.target.value);
-	}
-
-	resetState1() {
-		gridOptions.columnApi.resetColumnState();
-	}
 
 	/**
 	* @method render
 	* @description Renders the component
 	*/
 	render() {
-		const { isEditFlag } = this.state;
 		const { AddAccessibility } = this.props;
-		const options = {
-			//clearSearch: true,
-			noDataText: (this.props.levelMappingList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
-			afterSearch: this.afterSearch,
-			paginationShowsTotal: this.renderPaginationShowsTotal,
-			prePage: <span className="prev-page-pg"></span>, // Previous page button text
-			nextPage: <span className="next-page-pg"></span>, // Next page button text
-			firstPage: <span className="first-page-pg"></span>, // First page button text
-			lastPage: <span className="last-page-pg"></span>,
-			pagination: true,
-			sizePerPageList: [
-				{ text: '5', value: 5 },
-				{ text: '10', value: 10 }
-			],
-			sizePerPage: 5,
-		};
-
 		const defaultColDef = {
 			resizable: true,
 			filter: true,
@@ -266,7 +237,7 @@ class LevelTechnologyListing extends Component {
 					{this.state.isLoader && <LoaderCustom />}
 					<Row className="levellisting-page">
 						<Col md="12">
-							<h2 className="manage-level-heading">{`Costing Level Mapping`}</h2>
+							<h2 className="manage-level-heading">{`Level Mapping`}</h2>
 						</Col>
 					</Row>
 					<Row className="levellisting-page">
@@ -279,7 +250,7 @@ class LevelTechnologyListing extends Component {
 								onClick={this.props.mappingToggler}>
 								<div className={'plus mr-0'}></div>
 							</button>}
-							<button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState1()}>
+							<button type="button" className="user-btn" title="Reset Grid" onClick={() => this.levelMappingResetState()}>
 								<div className="refresh mr-0"></div>
 							</button>
 						</Col>
@@ -288,7 +259,7 @@ class LevelTechnologyListing extends Component {
 						<Col className="level-table" md="12">
 							<div className={`ag-grid-wrapper height-width-wrapper ${this.state.tableData && this.state.tableData?.length <= 0 ? "overlay-contain" : ""}`}>
 								<div className="ag-grid-header">
-									<input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+									<input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.levelMappingFilterHandler(e)} />
 								</div>
 								<div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
 									<AgGridReact
@@ -299,7 +270,7 @@ class LevelTechnologyListing extends Component {
 										rowData={this.state.tableData}
 										pagination={true}
 										ref={this.agGrid1}
-										paginationPageSize={5}
+										paginationPageSize={defaultPageSize}
 										onGridReady={this.onGridReady}
 										gridOptions={gridOptions}
 										loadingOverlayComponent={'customLoadingOverlay'}
@@ -315,13 +286,7 @@ class LevelTechnologyListing extends Component {
 										<AgGridColumn field="Level" headerName="Highest Approval Level"></AgGridColumn>
 										<AgGridColumn field="LevelId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
 									</AgGridReact>
-									<div className="paging-container d-inline-block float-right">
-										<select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
-											<option value="5" selected={true}>5</option>
-											<option value="20">20</option>
-											<option value="50">50</option>
-										</select>
-									</div>
+									{<PaginationWrapper gridApi={this.gridApi} setPage={this.levelMappingPagination} pageSize1={5} pageSize2={15} pageSize3={25} />}
 								</div>
 							</div>
 						</Col>
@@ -337,7 +302,7 @@ class LevelTechnologyListing extends Component {
 					<Row className="levellisting-page">
 						<Col md="6" className=""></Col>
 						<Col md="6" className="text-right search-user-block mb-3">
-							<button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+							<button type="button" className="user-btn" title="Reset Grid" onClick={() => this.simulationResetState()}>
 								<div className="refresh mr-0"></div>
 							</button>
 						</Col>
@@ -347,7 +312,7 @@ class LevelTechnologyListing extends Component {
 						<Col className="level-table" md="12 ">
 							<div className={`ag-grid-wrapper height-width-wrapper ${this.props.simulationLevelDataList && this.props.simulationLevelDataList?.length <= 0 ? "overlay-contain" : ""}`}>
 								<div className="ag-grid-header">
-									<input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged1(e)} />
+									<input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.simulationFilterHandler(e)} />
 								</div>
 								<div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
 									<AgGridReact
@@ -356,9 +321,9 @@ class LevelTechnologyListing extends Component {
 										// columnDefs={c}
 										rowData={this.props.simulationLevelDataList}
 										pagination={true}
-										paginationPageSize={5}
+										paginationPageSize={defaultPageSize}
 										ref={this.agGrid2}
-										onGridReady={this.onGridReady1}
+										onGridReady={this.onGridReady}
 										gridOptions={gridOptions}
 										loadingOverlayComponent={'customLoadingOverlay'}
 										noRowsOverlayComponent={'customNoRowsOverlay'}
@@ -373,17 +338,9 @@ class LevelTechnologyListing extends Component {
 										<AgGridColumn field="Level" headerName="Highest Approval Level"></AgGridColumn>
 										<AgGridColumn field="LevelId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'simulationButtonFormatter'}></AgGridColumn>
 									</AgGridReact>
-									<div className="paging-container d-inline-block float-right">
-										<select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged1(e.target.value)} id="page-size1">
-											<option value="5" selected={true}>5</option>
-											<option value="20">20</option>
-											<option value="50">50</option>
-										</select>
-									</div>
+									{<PaginationWrapper gridApi={this.gridApi} setPage={this.simulationPagination} pageSize1={5} pageSize2={15} pageSize3={25} />}
 								</div>
 							</div>
-
-
 						</Col>
 					</Row>
 				</div>
@@ -400,7 +357,7 @@ class LevelTechnologyListing extends Component {
 							<Row className="levellisting-page">
 								<Col md="6" className=""></Col>
 								<Col md="6" className="text-right search-user-block mb-3">
-									<button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+									<button type="button" className="user-btn" title="Reset Grid" onClick={() => this.masterResetState()}>
 										<div className="refresh mr-0"></div>
 									</button>
 								</Col>
@@ -410,7 +367,7 @@ class LevelTechnologyListing extends Component {
 								<Col className="level-table" md="12 ">
 									<div className={`ag-grid-wrapper height-width-wrapper ${this.props.masterLevelDataList && this.props.masterLevelDataList?.length <= 0 ? "overlay-contain" : ""}`}>
 										<div className="ag-grid-header">
-											<input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged1(e)} />
+											<input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.masterFilterHandler(e)} />
 										</div>
 										<div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
 											<AgGridReact
@@ -420,8 +377,8 @@ class LevelTechnologyListing extends Component {
 												rowData={this.props.masterLevelDataList}
 												pagination={true}
 												ref={this.agGrid3}
-												paginationPageSize={5}
-												onGridReady={this.onGridReady1}
+												paginationPageSize={defaultPageSize}
+												onGridReady={this.onGridReady}
 												gridOptions={gridOptions}
 												loadingOverlayComponent={'customLoadingOverlay'}
 												noRowsOverlayComponent={'customNoRowsOverlay'}
@@ -436,13 +393,7 @@ class LevelTechnologyListing extends Component {
 												<AgGridColumn field="Level" headerName="Highest Approval Level"></AgGridColumn>
 												<AgGridColumn field="LevelId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'masterButtonFormatter'}></AgGridColumn>
 											</AgGridReact>
-											<div className="paging-container d-inline-block float-right">
-												<select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged2(e.target.value)} id="page-size1">
-													<option value="5" selected={true}>5</option>
-													<option value="20">20</option>
-													<option value="50">50</option>
-												</select>
-											</div>
+											{<PaginationWrapper gridApi={this.gridApi} setPage={this.masterPagination} pageSize1={5} pageSize2={15} pageSize3={25} />}
 										</div>
 									</div>
 
@@ -469,7 +420,6 @@ function mapStateToProps({ auth }) {
 
 	return { loading, levelMappingList, simulationLevelDataList, masterLevelDataList };
 }
-
 
 export default connect(mapStateToProps,
 	{
