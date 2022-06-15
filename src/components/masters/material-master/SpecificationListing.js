@@ -300,7 +300,7 @@ class SpecificationListing extends Component {
         this.confirmDensity(this.state.deletedId);
     }
     closePopUp = () => {
-        this.setState({ showPopup2: false })
+        this.setState({ showPopup: false, showPopup2: false })
     }
     /**
     * @name onSubmit
