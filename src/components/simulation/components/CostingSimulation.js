@@ -686,11 +686,11 @@ function CostingSimulation(props) {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let roudOffOld = 0, rounfOffNew = 0
-        roudOffOld = _.round(row.OldNetOperationCost, COSTINGSIMULATIONROUND)
-        rounfOffNew = _.round(row.NewNetOperationCost, COSTINGSIMULATIONROUND)
+        roudOffOld = _.round(row.OldOperationCost, COSTINGSIMULATIONROUND)
+        rounfOffNew = _.round(row.NewOperationCost, COSTINGSIMULATIONROUND)
         let value = Math.abs(roudOffOld - rounfOffNew)
         return (<div>
-            {value ? (row.NewNetOperationCost > row.OldNetOperationCost ? < span className='positive-sign'>+</span> : < span className='positive-sign'>-</span>) : ''}
+            {value ? (row.NewOperationCost > row.OldOperationCost ? < span className='positive-sign'>+</span> : < span className='positive-sign'>-</span>) : ''}
             {cell != null ? (Math.abs(value)).toFixed(COSTINGSIMULATIONROUND) : '-'}
         </div >)
     }
