@@ -2457,6 +2457,11 @@ export function checkHistoryCostingAndSAPPoPrice(params, callback) {
 //FG WISE IMPACT DATA SHOW IN COSTING SUMMARY
 export function getFgWiseImpactDataForCosting(costingId, callback) {
   return (dispatch) => {
+
+    dispatch({
+      type: GET_FG_WISE_IMPACT_DATA,
+      payload: [],
+    })
     const request = axios.post(`${API.getFgWiseImpactDataForCosting}`, costingId, config());
     // const request = axios.post(API.getFgWiseImpactDataForCosting, costingId, config())
     request.then((response) => {

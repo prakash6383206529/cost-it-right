@@ -20,7 +20,6 @@ export function Fgwiseimactdata(props) {
 
     const impactData = useSelector((state) => state.simulation.impactData)
 
-
     useEffect(() => {
         if (SimulationId && !approvalSummaryTrue) {
             setLoader(true)
@@ -42,15 +41,14 @@ export function Fgwiseimactdata(props) {
         }
 
         // dispatch(getFgWiseImpactData(SimulationId, (res) => {
-
-
-
     }, [SimulationId])
 
     useEffect(() => {
-        if (approvalSummaryTrue && costingIdArray) {
+
+        if (approvalSummaryTrue && costingIdArray && Object.keys(costingIdArray).length > 0) {
             setLoader(true)
             fgWiseAccDisable(true)
+
             dispatch(getFgWiseImpactDataForCosting(costingIdArray, (res) => {
                 if (res && res.data && res.data.Result) {
                     setshowTableData(true)
