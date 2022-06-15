@@ -346,19 +346,17 @@ class AddVolume extends Component {
     this.setState({ DataToChange: false })
   }
 
-  deleteItem = (ID, index) => {
-    const { tableData } = this.state
-
-    let filterData = tableData.map((item) => {
+  deleteItem = (ID) => {
+    const { tableData } = this.state;
+    let tempData = tableData.filter((item, i) => {
       if (item.VolumeApprovedDetailId === ID) {
-        return { ...item, BudgetedQuantity: 0, ApprovedQuantity: 0 }
+        return false;
       }
-      return item
-    })
-    this.setState({ tableData: filterData })
+      return true;
+    });
+    this.setState({ tableData: tempData })
     this.setState({ DataToChange: false })
   }
-
   /**
    * @method getDetail
    * @description USED TO GET VOLUME DETAIL
