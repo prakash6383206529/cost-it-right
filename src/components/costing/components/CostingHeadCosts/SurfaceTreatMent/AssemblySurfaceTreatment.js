@@ -185,7 +185,7 @@ function AssemblySurfaceTreatment(props) {
                   DrawerToggle()
                 }}
               >
-                <div className={`${CostingViewMode ? 'fa fa-eye pr-1' : 'plus'}`}></div> Surface T.</button>
+                <div className={`${(CostingViewMode || item?.IsLocked || item?.IsPartLocked) ? 'fa fa-eye pr-1' : 'plus'}`}></div> Surface T.</button>
             }
             <div className={`lock-width ${(item.IsLocked || item.IsPartLocked) ? 'lock_icon' : ''}`}>{''}</div>
           </div>
