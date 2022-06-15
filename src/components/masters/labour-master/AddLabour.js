@@ -565,6 +565,7 @@ class AddLabour extends Component {
         Plants: [
           { PlantId: selectedPlants.value, PlantName: selectedPlants.label },
         ],
+        VendorPlant: [],
       }
 
       this.props.updateLabour(updateData, (res) => {
@@ -589,6 +590,7 @@ class AddLabour extends Component {
           { PlantId: selectedPlants.value, PlantName: selectedPlants.label },
         ],
         LoggedInUserId: loggedInUserId(),
+        VendorPlant: [],
       }
 
       this.props.createLabour(formData, (res) => {

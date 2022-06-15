@@ -22,6 +22,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
+import { PaginationWrapper } from '../common/commonPagination';
 
 const gridOptions = {};
 
@@ -337,7 +338,6 @@ class LevelsListing extends Component {
 	};
 
 	onPageSizeChanged = (newPageSize) => {
-		var value = document.getElementById('page-size').value;
 		this.state.gridApi.paginationSetPageSize(Number(newPageSize));
 	};
 
@@ -451,13 +451,7 @@ class LevelsListing extends Component {
 														<AgGridColumn width="100" field="Level" suppressSizeToFit={true} headerName="Level"></AgGridColumn>
 														<AgGridColumn field="Users" tooltipField="Users" headerName="Users"></AgGridColumn>
 													</AgGridReact>
-													<div className="paging-container d-inline-block float-right">
-														<select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
-															<option value="5" selected={true}>5</option>
-															<option value="20">20</option>
-															<option value="50">50</option>
-														</select>
-													</div>
+													{<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} pageSize1={5} pageSize2={15} pageSize3={25} />}
 												</div>
 											</div>
 
