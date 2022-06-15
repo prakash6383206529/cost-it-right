@@ -550,37 +550,23 @@ function SimulationApprovalSummary(props) {
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
-    const rmNameFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+    const RMVarianceFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return cell ? `${cell} - ${row.RMGrade} ` : '-'
-    }
-
-    const varianceFormatter = (props) => {
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         let roudOffOld = 0, rounfOffNew = 0
         roudOffOld = _.round(row.OldNetRawMaterialsCost, COSTINGSIMULATIONROUND)
         rounfOffNew = _.round(row.NewNetRawMaterialsCost, COSTINGSIMULATIONROUND)
         let newRoundOffVariance = checkForNull(roudOffOld - rounfOffNew).toFixed(COSTINGSIMULATIONROUND)
-
-        newRoundOffVariance = newRoundOffVariance > 0 ? `-${Math.abs(newRoundOffVariance)}` : `+${Math.abs(newRoundOffVariance)}`;
+        newRoundOffVariance = (row.OldNetRawMaterialsCost < row.NewNetRawMaterialsCost) ? `+${Math.abs(newRoundOffVariance)}` : `-${Math.abs(newRoundOffVariance)}`;
         return newRoundOffVariance;
-        // return cell != null ? checkForDecimalAndNull(newRoundOffVariance, getConfigurationKey().NoOfDecimalForPrice) : ''
     }
 
     const BOPVarianceFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let variance = checkForDecimalAndNull(row.NetBoughtOutPartCostVariance, getConfigurationKey().NoOfDecimalForPrice)
-        variance = variance > 0 ? `-${Math.abs(variance)}` : `+${Math.abs(variance)}`;
+        variance = (row.OldNetBoughtOutPartCost < row.NewNetBoughtOutPartCost) ? `+${Math.abs(variance)}` : `-${Math.abs(variance)}`;
         return variance;
     }
-    const OPVarianceFormatter = (props) => {
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        let variance = checkForDecimalAndNull(row.OperationCostVariance, getConfigurationKey().NoOfDecimalForPrice)
-        variance = variance > 0 ? `-${Math.abs(variance)}` : `+${Math.abs(variance)}`;
-        return variance;
-    }
+
     const STVarianceFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let variance = checkForDecimalAndNull(row.NetSurfaceTreatmentCostVariance, getConfigurationKey().NoOfDecimalForPrice)
@@ -592,6 +578,27 @@ function SimulationApprovalSummary(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let variance = checkForDecimalAndNull(row.POVariance, getConfigurationKey().NoOfDecimalForPrice)
         variance = variance > 0 ? `-${Math.abs(variance)}` : `+${Math.abs(variance)}`;
+        return variance;
+    }
+
+    const CCVarianceFormatter = (props) => {
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        let variance = checkForDecimalAndNull(row.POVariance, getConfigurationKey().NoOfDecimalForPrice)
+        variance = (row.OldNetCC < row.NewNetCC) ? `+${Math.abs(variance)}` : `-${Math.abs(variance)}`;
+        return variance;
+    }
+
+    const ERvarianceFormatter = (props) => {
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        let variance = checkForDecimalAndNull(row.Variance, getConfigurationKey().NoOfDecimalForPrice)
+        variance = (row.OldExchangeRate < row.NewExchangeRate) ? `+${Math.abs(variance)}` : `-${Math.abs(variance)}`;
+        return variance;
+    }
+
+    const operationFormatter = (props) => {
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        let variance = checkForDecimalAndNull(row.OperationCostVariance, getConfigurationKey().NoOfDecimalForPrice)
+        variance = (row.OldOperationCost < row.NewOperationCost) ? `+${Math.abs(variance)}` : `-${Math.abs(variance)}`;
         return variance;
     }
 
@@ -844,7 +851,7 @@ function SimulationApprovalSummary(props) {
         costFormatter: costFormatter,
         effectiveDateFormatter: effectiveDateFormatter,
         rawMaterailFormat: rawMaterailFormat,
-        varianceFormatter: varianceFormatter,
+        RMVarianceFormatter: RMVarianceFormatter,
         newERFormatter: newERFormatter,
         oldERFormatter: oldERFormatter,
         oldPOCurrencyFormatter: oldPOCurrencyFormatter,
@@ -856,7 +863,6 @@ function SimulationApprovalSummary(props) {
         oldBOPFormatter: oldBOPFormatter,
         newBOPFormatter: newBOPFormatter,
         BOPVarianceFormatter: BOPVarianceFormatter,
-        OPVarianceFormatter: OPVarianceFormatter,
         STVarianceFormatter: STVarianceFormatter,
         bopMaterailFormat: bopMaterailFormat,
         newSTFormatter: newSTFormatter,
@@ -866,7 +872,10 @@ function SimulationApprovalSummary(props) {
         plantFormatter: plantFormatter,
         rawMaterailCodeSpecFormatter: rawMaterailCodeSpecFormatter,
         operationCodeFormatter: operationCodeFormatter,
-        bopNumberFormat: bopNumberFormat
+        bopNumberFormat: bopNumberFormat,
+        operationFormatter: operationFormatter,
+        CCVarianceFormatter: CCVarianceFormatter,
+        ERvarianceFormatter: ERvarianceFormatter
     };
 
 
@@ -1175,7 +1184,7 @@ function SimulationApprovalSummary(props) {
                                                                     <>
                                                                         <AgGridColumn width={140} field="OldOperationCost" headerName="Old Operation Cost" cellRenderer='oldOperationFormatter'></AgGridColumn>
                                                                         <AgGridColumn width={140} field="NewOperationCost" headerName="New Operation Cost" cellRenderer='newOperationFormatter'></AgGridColumn>
-                                                                        <AgGridColumn width={140} field="OperationCostVariance" headerName="Operation Variance" ></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="OperationCostVariance" headerName="Operation Variance" cellRenderer='operationFormatter' ></AgGridColumn>
                                                                     </>
                                                                 }
                                                                 <AgGridColumn width={140} field="OldPOPrice" cellRenderer='oldPOFormatter' headerName={String(SimulationTechnologyId) === EXCHNAGERATE ? 'PO Price' : "Old PO Price"}></AgGridColumn>
@@ -1192,7 +1201,7 @@ function SimulationApprovalSummary(props) {
 
                                                                         <AgGridColumn width={140} field="OldNetRawMaterialsCost" cellRenderer='oldRMFormatter' headerName="Old RMC/pc" ></AgGridColumn>
                                                                         <AgGridColumn width={140} field="NewNetRawMaterialsCost" cellRenderer='newRMFormatter' headerName="New RMC/pc" ></AgGridColumn>
-                                                                        <AgGridColumn width={140} field="RMVariance" headerName="RM Variance" cellRenderer='varianceFormatter' ></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="RMVariance" headerName="RM Variance" cellRenderer='RMVarianceFormatter' ></AgGridColumn>
                                                                     </>
                                                                 }
                                                                 {
@@ -1200,7 +1209,7 @@ function SimulationApprovalSummary(props) {
                                                                     <>
                                                                         <AgGridColumn width={140} field="OldNetCC" cellRenderer='oldCCFormatter' headerName="Old CC" ></AgGridColumn>
                                                                         <AgGridColumn width={140} field="NewNetCC" cellRenderer='newCCFormatter' headerName="New CC" ></AgGridColumn>
-                                                                        <AgGridColumn width={140} field="Variance" headerName="Variance"></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="Variance" headerName="Variance" cellRenderer='CCVarianceFormatter'></AgGridColumn>
                                                                     </>
                                                                 }
 
@@ -1215,7 +1224,7 @@ function SimulationApprovalSummary(props) {
                                                                         <AgGridColumn width={140} field="POVariance" headerName="PO Variance" cellRenderer='POVarianceFormatter' ></AgGridColumn>
                                                                         <AgGridColumn width={140} field="OldExchangeRate" cellRenderer='oldERFormatter' headerName="Old Exchange Rate" ></AgGridColumn>
                                                                         <AgGridColumn width={140} field="NewExchangeRate" cellRenderer='newERFormatter' headerName="New Exchange Rate" ></AgGridColumn>
-                                                                        <AgGridColumn width={140} field="Variance" headerName="Exchange Rate Variance" cellRenderer='varianceFormatter' ></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="Variance" headerName="Exchange Rate Variance" cellRenderer='ERvarianceFormatter' ></AgGridColumn>
                                                                     </>
                                                                 }
                                                                 {
