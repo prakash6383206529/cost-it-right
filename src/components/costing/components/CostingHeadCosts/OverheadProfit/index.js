@@ -1910,15 +1910,15 @@ function OverheadProfit(props) {
               setPaymentTermsDetail={props.setPaymentTermsDetail}
             />
 
-            <Row className=" no-gutters justify-content-between btn-stciky-container overhead-profit-save-btn">
+            <Row className=" no-gutters justify-content-between btn-sticky-container overhead-profit-save-btn">
               <div className="col-sm-12 text-right bluefooter-butn ">
-                {!CostingViewMode && <Link to="assembly-costing-header" spy={true} smooth={true} offset={-330} delay={200}> <button
+                {!CostingViewMode && <button
                   type={'button'}
                   onClick={onSubmit}
-                  className="submit-button mr5 save-btn">
+                  className="submit-button save-btn">
                   <div className={"save-icon"}></div>
                   {'Save'}
-                </button> </Link>}
+                </button>}
               </div>
             </Row>
           </form>

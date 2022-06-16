@@ -2337,13 +2337,6 @@ input:disabled {
   }
 }
 
-.shadow-lgg {
-  .form {
-    .sf-btn-footer {
-      margin: 0 -30px -15px;
-    }
-  }
-}
 
 .bottom-footer {
   margin: 0 -30px -15px;
@@ -3253,6 +3246,9 @@ button:disabled,
       }
     }
   }
+}
+.costing-details-page .table td.overhead-profit-container.cr-innerwrap-td {
+  padding: 0.71rem 15px 0 15px !important;
 }
 
 .costing-page-tabs {
@@ -7440,10 +7436,10 @@ body {
   transform: translateY(-13px);
 }
 
-.btn-stciky-container {
+.btn-sticky-container {
   position: sticky;
   bottom: 0;
-  padding: 0 28px !important;
+  padding: 0 16px !important;
 }
 
 .rmcc-main-headings {
@@ -7509,7 +7505,7 @@ body {
   font-size: 16px;
 }
 
-git .sticky-btn-footer {
+ .sticky-btn-footer {
   position: sticky !important;
   bottom: 0;
 
