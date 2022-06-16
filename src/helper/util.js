@@ -701,6 +701,9 @@ export function formViewData(costingSummary, header = '') {
   obj.childPartBOPHandlingCharges = dataFromAPI.CostingPartDetails?.ChildPartBOPHandlingCharges ? dataFromAPI.CostingPartDetails.ChildPartBOPHandlingCharges : []
   obj.masterBatchRMName = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.MasterBatchRMName ? dataFromAPI.CostingPartDetails.MasterBatchRMName : '-'
 
+  // GETTING WARNING MESSAGE WITH APPROVER NAME AND LEVEL WHEN COSTING IS UNDER APPROVAL 
+  obj.getApprovalLockedMessage = dataFromAPI.ApprovalLockedMessage && dataFromAPI.ApprovalLockedMessage !== null ? dataFromAPI.ApprovalLockedMessage : '';
+
   //MASTER BATCH OBJECT
   obj.CostingMasterBatchRawMaterialCostResponse = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingMasterBatchRawMaterialCostResponse ? dataFromAPI.CostingPartDetails.CostingMasterBatchRawMaterialCostResponse : []
   obj.RevisionNumber = dataFromAPI.RevisionNumber ? dataFromAPI.RevisionNumber : '-'

@@ -8382,3 +8382,14 @@ table.group-process-table {
   margin-right: 1px;
 }
 
+.costing-summary-warning-mesaage {
+ display: flex !important;
+ align-items: center;
+ margin-top: -5px;
+ span {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+ } 
+}
