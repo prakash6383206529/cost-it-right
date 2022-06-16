@@ -14,7 +14,7 @@ import ViewPackagingAndFreight from './Drawers/ViewPackagingAndFreight'
 import ViewToolCost from './Drawers/viewToolCost'
 import SendForApproval from './approval/SendForApproval'
 import Toaster from '../../common/Toaster'
-import { checkForDecimalAndNull, checkForNull, checkPermission, formViewData, getTechnologyPermission, loggedInUserId, userDetails, calculatePercentage, allEqual, getConfigurationKey } from '../../../helper'
+import { checkForDecimalAndNull, checkForNull, checkPermission, formViewData, getTechnologyPermission, loggedInUserId, userDetails, calculatePercentage, allEqual, getConfigurationKey, getCurrencySymbol } from '../../../helper'
 import Attachament from './Drawers/Attachament'
 import { BOPDOMESTIC, BOPIMPORT, COSTING, DRAFT, EMPTY_GUID_0, FILE_URL, OPERATIONS, REJECTED, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC } from '../../../config/constants'
 import { useHistory } from "react-router-dom";
@@ -26,8 +26,7 @@ import cirHeader from "../../../assests/images/logo/CIRlogo.jpg";
 import Logo from '../../../assests/images/logo/company-logo.svg';
 import LoaderCustom from '../../common/LoaderCustom'
 import ReactToPrint from 'react-to-print';
-import BOMViewer from '../../masters/part-master/BOMViewer'
-import { getCurrencySymbol } from '../../../helper'
+import BOMViewer from '../../masters/part-master/BOMViewer';
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
@@ -80,6 +79,7 @@ const CostingSummaryTable = (props) => {
   const [iccPaymentData, setIccPaymentData] = useState("")
 
   const [warningMsg, setShowWarningMsg] = useState(false)
+  const [isLockedState, setIsLockedState] = useState(false)
 
   const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
   const viewApprovalData = useSelector((state) => state.costing.costingApprovalData)
@@ -138,6 +138,13 @@ const CostingSummaryTable = (props) => {
       setViewBOP(false)
       setPdfName(viewCostingData[0]?.partNumber)
     }
+    viewCostingData.map(item => {
+      if (item.IsApprovalLocked) {
+        setIsLockedState(true)
+      }
+      return;
+    })
+
   }, [viewCostingData])
 
 
@@ -842,7 +849,6 @@ const CostingSummaryTable = (props) => {
                     <div className="compare-arrows"></div>
                     Add To Comparison{' '}
                   </button>
-                  {isWarningFlag && <WarningMessage dClass={"col-md-12 pr-0 justify-content-end"} message={'A costing is pending for approval for this part or one of it\'s child part. Please approve that first'} />}
                   {(showWarningMsg && !warningMsg) && <WarningMessage dClass={"col-md-12 pr-0 justify-content-end"} message={'Costing for this part/Assembly is not yet done!'} />}
                 </>}
             </Col>
@@ -866,7 +872,7 @@ const CostingSummaryTable = (props) => {
                     <thead>
                       <tr className="main-row">
                         {
-                          isApproval ? <th scope="col" className='approval-summary-headers'>{props.id}</th> : <th scope="col" className='header-name-left'>VBC/ZBC</th>
+                          isApproval ? <th scope="col" className='approval-summary-headers'>{props.id}</th> : <th scope="col" className={`header-name-left ${isLockedState ? 'pt-4' : ''}`}>VBC/ZBC</th>
                         }
 
                         {viewCostingData &&
@@ -874,6 +880,7 @@ const CostingSummaryTable = (props) => {
                             const title = data?.zbc === 0 ? data?.plantName : (data?.zbc === 1 ? data?.vendorName + "(" + data?.vendorCode + ") " + (localStorage.IsVendorPlantConfigurable ? " (" + data?.vendorPlantName + ") " : "") : 'CBC') + "(SOB: " + data?.shareOfBusinessPercent + "%)"
                             return (
                               <th scope="col" className='header-name'>
+                                {data?.IsApprovalLocked && !pdfHead && !drawerDetailPDF && <WarningMessage title={'A costing is pending for approval for this part or one of it\'s child part. Please approve that first'} dClass={"costing-summary-warning-mesaage"} message={'A costing is pending for approval for this part or one of it\'s child part. Please approve that first'} />}    {/* ADD THIS CODE ONCE DEPLOYED FROM BACKEND{viewCostingData[0].ApprovalLockedMessage}*/}
                                 <div className='header-name-button-container'>
                                   <div class="element d-inline-flex align-items-center">
                                     {
