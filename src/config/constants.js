@@ -17,7 +17,7 @@ export const config = () => {
 // DEVELOPMENT
 const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
 // const BASE_URL = `https://demov3api.costitright.com/api/v1`;
-// const BASE_URL = `http://10.148.80.4:10122/api/v1`;
+//const BASE_URL = `http://10.148.80.4:10122/api/v1`;
 
 //FILE URL
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
@@ -1869,6 +1869,8 @@ export const MACHINE_MASTER_ID = 4
 export const provisional = "Provisional"
 export const APPROVER = 'Approver'
 
+//default value for page size
+export const defaultPageSize = 10;
 
 //AllConastant File Moved here
 
@@ -1891,4 +1893,4 @@ export const IV = 'ozzzguugcusjqmbj'
 
 
 //VERSION 
-export const VERSION = "V1.2.278";
+export const VERSION = "V1.2.285";

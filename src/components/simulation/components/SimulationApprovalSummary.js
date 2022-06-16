@@ -14,7 +14,7 @@ import {
 } from '../../../config/masterData';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common';
 import { getAmmendentStatus, getApprovalSimulatedCostingSummary, getComparisionSimulationData, setAttachmentFileData, getImpactedMasterData, getLastSimulationData, uploadSimulationAttachmentonFTP, getSimulatedAssemblyWiseImpactDate } from '../actions/Simulation'
-import { EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, ZBC, COMBINED_PROCESS, FILE_URL, COSTINGSIMULATIONROUND, SURFACETREATMENT, OPERATIONS, BOPDOMESTIC, BOPIMPORT, AssemblyWiseImpactt, MACHINERATE, ImpactMaster } from '../../../config/constants';
+import { EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, ZBC, COMBINED_PROCESS, FILE_URL, COSTINGSIMULATIONROUND, SURFACETREATMENT, OPERATIONS, BOPDOMESTIC, BOPIMPORT, AssemblyWiseImpactt, MACHINERATE, ImpactMaster, defaultPageSize } from '../../../config/constants';
 import Toaster from '../../common/Toaster';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
 import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId, userDetails } from '../../../helper';
@@ -45,6 +45,7 @@ import AssemblyWiseImpactSummary from './AssemblyWiseImpactSummary';
 import CalculatorWrapper from '../../common/Calculator/CalculatorWrapper';
 import { debounce } from 'lodash';
 import { ErrorMessage } from '../SimulationUtils';
+import { PaginationWrapper } from '../../common/commonPagination';
 
 const gridOptions = {};
 const ExcelFile = ReactExport.ExcelFile;
@@ -549,41 +550,27 @@ function SimulationApprovalSummary(props) {
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
-    const rmNameFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+    const RMVarianceFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return cell ? `${cell} - ${row.RMGrade} ` : '-'
-    }
-
-    const varianceFormatter = (props) => {
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         let roudOffOld = 0, rounfOffNew = 0
         roudOffOld = _.round(row.OldNetRawMaterialsCost, COSTINGSIMULATIONROUND)
         rounfOffNew = _.round(row.NewNetRawMaterialsCost, COSTINGSIMULATIONROUND)
         let newRoundOffVariance = checkForNull(roudOffOld - rounfOffNew).toFixed(COSTINGSIMULATIONROUND)
-
-        newRoundOffVariance = newRoundOffVariance > 0 ? `-${Math.abs(newRoundOffVariance)}` : `+${Math.abs(newRoundOffVariance)}`;
+        newRoundOffVariance = (row.OldNetRawMaterialsCost < row.NewNetRawMaterialsCost) ? `+${Math.abs(newRoundOffVariance)}` : `-${Math.abs(newRoundOffVariance)}`;
         return newRoundOffVariance;
-        // return cell != null ? checkForDecimalAndNull(newRoundOffVariance, getConfigurationKey().NoOfDecimalForPrice) : ''
     }
 
     const BOPVarianceFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let variance = checkForDecimalAndNull(row.NetBoughtOutPartCostVariance, getConfigurationKey().NoOfDecimalForPrice)
-        variance = variance > 0 ? `-${Math.abs(variance)}` : `+${Math.abs(variance)}`;
+        variance = (row.OldNetBoughtOutPartCost < row.NewNetBoughtOutPartCost) ? `+${Math.abs(variance)}` : `-${Math.abs(variance)}`;
         return variance;
     }
-    const OPVarianceFormatter = (props) => {
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        let variance = checkForDecimalAndNull(row.OperationCostVariance, getConfigurationKey().NoOfDecimalForPrice)
-        variance = variance > 0 ? `-${Math.abs(variance)}` : `+${Math.abs(variance)}`;
-        return variance;
-    }
+
     const STVarianceFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let variance = checkForDecimalAndNull(row.NetSurfaceTreatmentCostVariance, getConfigurationKey().NoOfDecimalForPrice)
-        variance = variance > 0 ? `-${Math.abs(variance)}` : `+${Math.abs(variance)}`;
+        variance = (row.OldNetSurfaceTreatmentCost < row.NewNetSurfaceTreatmentCost) ? `+${Math.abs(variance)}` : `-${Math.abs(variance)}`;
         return variance;
     }
 
@@ -591,6 +578,27 @@ function SimulationApprovalSummary(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let variance = checkForDecimalAndNull(row.POVariance, getConfigurationKey().NoOfDecimalForPrice)
         variance = variance > 0 ? `-${Math.abs(variance)}` : `+${Math.abs(variance)}`;
+        return variance;
+    }
+
+    const CCVarianceFormatter = (props) => {
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        let variance = checkForDecimalAndNull(row.POVariance, getConfigurationKey().NoOfDecimalForPrice)
+        variance = (row.OldNetCC < row.NewNetCC) ? `+${Math.abs(variance)}` : `-${Math.abs(variance)}`;
+        return variance;
+    }
+
+    const ERvarianceFormatter = (props) => {
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        let variance = checkForDecimalAndNull(row.Variance, getConfigurationKey().NoOfDecimalForPrice)
+        variance = (row.OldExchangeRate < row.NewExchangeRate) ? `+${Math.abs(variance)}` : `-${Math.abs(variance)}`;
+        return variance;
+    }
+
+    const operationFormatter = (props) => {
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        let variance = checkForDecimalAndNull(row.OperationCostVariance, getConfigurationKey().NoOfDecimalForPrice)
+        variance = (row.OldOperationCost < row.NewOperationCost) ? `+${Math.abs(variance)}` : `-${Math.abs(variance)}`;
         return variance;
     }
 
@@ -806,8 +814,6 @@ function SimulationApprovalSummary(props) {
 
 
     const onPageSizeChanged = (newPageSize) => {
-
-        // var value = document.getElementById('page-size').value;
         gridApi.paginationSetPageSize(Number(newPageSize));
 
     };
@@ -845,7 +851,7 @@ function SimulationApprovalSummary(props) {
         costFormatter: costFormatter,
         effectiveDateFormatter: effectiveDateFormatter,
         rawMaterailFormat: rawMaterailFormat,
-        varianceFormatter: varianceFormatter,
+        RMVarianceFormatter: RMVarianceFormatter,
         newERFormatter: newERFormatter,
         oldERFormatter: oldERFormatter,
         oldPOCurrencyFormatter: oldPOCurrencyFormatter,
@@ -857,7 +863,6 @@ function SimulationApprovalSummary(props) {
         oldBOPFormatter: oldBOPFormatter,
         newBOPFormatter: newBOPFormatter,
         BOPVarianceFormatter: BOPVarianceFormatter,
-        OPVarianceFormatter: OPVarianceFormatter,
         STVarianceFormatter: STVarianceFormatter,
         bopMaterailFormat: bopMaterailFormat,
         newSTFormatter: newSTFormatter,
@@ -867,7 +872,10 @@ function SimulationApprovalSummary(props) {
         plantFormatter: plantFormatter,
         rawMaterailCodeSpecFormatter: rawMaterailCodeSpecFormatter,
         operationCodeFormatter: operationCodeFormatter,
-        bopNumberFormat: bopNumberFormat
+        bopNumberFormat: bopNumberFormat,
+        operationFormatter: operationFormatter,
+        CCVarianceFormatter: CCVarianceFormatter,
+        ERvarianceFormatter: ERvarianceFormatter
     };
 
 
@@ -954,7 +962,7 @@ function SimulationApprovalSummary(props) {
                                     <thead>
                                         <tr>
                                             <th className="align-top">
-                                                <span className="d-block grey-text">{`Token No.: `}</span>
+                                                <span className="d-block grey-text">{`Token No:`}</span>
                                                 <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.TokenNumber}</span>
                                             </th>
                                             <th className="align-top">
@@ -1126,7 +1134,7 @@ function SimulationApprovalSummary(props) {
                                                                 // columnDefs={c}
                                                                 rowData={costingList}
                                                                 pagination={true}
-                                                                paginationPageSize={10}
+                                                                paginationPageSize={defaultPageSize}
                                                                 onGridReady={onGridReady}
                                                                 gridOptions={gridOptions}
                                                                 loadingOverlayComponent={'customLoadingOverlay'}
@@ -1168,7 +1176,7 @@ function SimulationApprovalSummary(props) {
                                                                     <>
                                                                         <AgGridColumn width={140} field="OldNetSurfaceTreatmentCost" headerName="Old ST Cost" cellRenderer='oldSTFormatter'></AgGridColumn>
                                                                         <AgGridColumn width={140} field="NewNetSurfaceTreatmentCost" headerName="New ST Cost" cellRenderer='newSTFormatter'></AgGridColumn>
-                                                                        <AgGridColumn width={140} field="NetSurfaceTreatmentCostVariance" headerName="ST Variance" ></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="NetSurfaceTreatmentCostVariance" headerName="ST Variance" cellRenderer='STVarianceFormatter'></AgGridColumn>
                                                                     </>
                                                                 }
                                                                 {
@@ -1176,7 +1184,7 @@ function SimulationApprovalSummary(props) {
                                                                     <>
                                                                         <AgGridColumn width={140} field="OldOperationCost" headerName="Old Operation Cost" cellRenderer='oldOperationFormatter'></AgGridColumn>
                                                                         <AgGridColumn width={140} field="NewOperationCost" headerName="New Operation Cost" cellRenderer='newOperationFormatter'></AgGridColumn>
-                                                                        <AgGridColumn width={140} field="OperationCostVariance" headerName="Operation Variance" ></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="OperationCostVariance" headerName="Operation Variance" cellRenderer='operationFormatter' ></AgGridColumn>
                                                                     </>
                                                                 }
                                                                 <AgGridColumn width={140} field="OldPOPrice" cellRenderer='oldPOFormatter' headerName={String(SimulationTechnologyId) === EXCHNAGERATE ? 'PO Price' : "Old PO Price"}></AgGridColumn>
@@ -1193,7 +1201,7 @@ function SimulationApprovalSummary(props) {
 
                                                                         <AgGridColumn width={140} field="OldNetRawMaterialsCost" cellRenderer='oldRMFormatter' headerName="Old RMC/pc" ></AgGridColumn>
                                                                         <AgGridColumn width={140} field="NewNetRawMaterialsCost" cellRenderer='newRMFormatter' headerName="New RMC/pc" ></AgGridColumn>
-                                                                        <AgGridColumn width={140} field="RMVariance" headerName="RM Variance" cellRenderer='varianceFormatter' ></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="RMVariance" headerName="RM Variance" cellRenderer='RMVarianceFormatter' ></AgGridColumn>
                                                                     </>
                                                                 }
                                                                 {
@@ -1201,7 +1209,7 @@ function SimulationApprovalSummary(props) {
                                                                     <>
                                                                         <AgGridColumn width={140} field="OldNetCC" cellRenderer='oldCCFormatter' headerName="Old CC" ></AgGridColumn>
                                                                         <AgGridColumn width={140} field="NewNetCC" cellRenderer='newCCFormatter' headerName="New CC" ></AgGridColumn>
-                                                                        <AgGridColumn width={140} field="Variance" headerName="Variance"></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="Variance" headerName="Variance" cellRenderer='CCVarianceFormatter'></AgGridColumn>
                                                                     </>
                                                                 }
 
@@ -1216,7 +1224,7 @@ function SimulationApprovalSummary(props) {
                                                                         <AgGridColumn width={140} field="POVariance" headerName="PO Variance" cellRenderer='POVarianceFormatter' ></AgGridColumn>
                                                                         <AgGridColumn width={140} field="OldExchangeRate" cellRenderer='oldERFormatter' headerName="Old Exchange Rate" ></AgGridColumn>
                                                                         <AgGridColumn width={140} field="NewExchangeRate" cellRenderer='newERFormatter' headerName="New Exchange Rate" ></AgGridColumn>
-                                                                        <AgGridColumn width={140} field="Variance" headerName="Exchange Rate Variance" cellRenderer='varianceFormatter' ></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="Variance" headerName="Exchange Rate Variance" cellRenderer='ERvarianceFormatter' ></AgGridColumn>
                                                                     </>
                                                                 }
                                                                 {
@@ -1238,13 +1246,7 @@ function SimulationApprovalSummary(props) {
                                                                 <AgGridColumn field="SimulationId" headerName='Actions'   type="rightAligned" cellRenderer='buttonFormatter'></AgGridColumn> */}
 
                                                             </AgGridReact>
-                                                            <div className="paging-container d-inline-block float-right">
-                                                                <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
-                                                                    <option value="10" selected={true}>10</option>
-                                                                    <option value="50">50</option>
-                                                                    <option value="100">100</option>
-                                                                </select>
-                                                            </div>
+                                                            {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                                                         </div>
                                                     </div>
                                                 </Col>

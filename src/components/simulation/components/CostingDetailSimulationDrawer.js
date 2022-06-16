@@ -7,6 +7,7 @@ import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper'
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
 import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, OPERATIONS, RAW_MATERIAL, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, COMBINED_PROCESS } from '../../../config/constants';
+import LoaderCustom from '../../common/LoaderCustom';
 
 
 
@@ -21,7 +22,7 @@ function CostingDetailSimulationDrawer(props) {
     };
 
     // table code starts here
-    const { simulationDetail, pricesDetail, selectedRowData, costingArr, master, isSummaryDrawer, isSimulation, costingID } = props
+    const { simulationDetail, pricesDetail, selectedRowData, costingArr, master, isReport, isSummaryDrawer, isSimulation, isReportLoader } = props
 
     const dispatch = useDispatch()
 
@@ -206,7 +207,8 @@ function CostingDetailSimulationDrawer(props) {
                                         }
                                     </Row>
                                 }
-                                <CostingSummaryTable customClass="ml-0" simulationDrawer={props.simulationDrawer} simulationMode={props.simulationMode} viewMode={true} master={master} isSimulationDone={isSimulation} costingID={costingID} isSummaryDrawer={isSummaryDrawer} drawerViewMode={true} />
+                                {isReportLoader && <LoaderCustom customClass={"report-costing"} />}
+                                <CostingSummaryTable customClass="ml-0" simulationDrawer={props.simulationDrawer} simulationMode={true} viewMode={true} master={master} isSimulationDone={isSimulation} drawerViewMode={true} />
                             </form>
                         </div>
                     </Container>

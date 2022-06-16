@@ -6,7 +6,7 @@ import { focusOnError, searchableSelect } from "../../layout/FormInputs";
 import { required } from "../../../helper/validation";
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { EMPTY_DATA } from '../../../config/constants';
+import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import $ from 'jquery';
 import NoContentFound from '../../common/NoContentFound';
 import {
@@ -30,7 +30,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import WarningMessage from '../../common/WarningMessage'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import ScrollToTop from '../../common/ScrollToTop';
-
+import { onPageSizeChanged, PaginationWrapper } from '../../common/commonPagination';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -76,6 +76,7 @@ class VendorListing extends Component {
             deletedId: '',
             isViewMode: false,
             isLoader: false,
+            pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
 
         }
     }
@@ -533,9 +534,9 @@ class VendorListing extends Component {
     };
 
     onPageSizeChanged = (newPageSize) => {
-        var value = document.getElementById('page-size').value;
-        this.state.gridApi.paginationSetPageSize(Number(value));
+        onPageSizeChanged(this, newPageSize)    // COMMON PAGINATION FUNCTION
     };
+
 
     onBtExport = () => {
         let tempArr = this.props.supplierDataList && this.props.supplierDataList
@@ -751,7 +752,7 @@ class VendorListing extends Component {
                             domLayout='autoHeight'
                             rowData={this.props.supplierDataList}
                             pagination={true}
-                            paginationPageSize={10}
+                            paginationPageSize={defaultPageSize}
                             onGridReady={this.onGridReady}
                             onFilterModified={this.onFloatingFilterChanged}
                             gridOptions={gridOptions}
@@ -773,16 +774,14 @@ class VendorListing extends Component {
                             <AgGridColumn field="VendorId" width={"230px"} cellClass="actions-wrapper" headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                         </AgGridReact>
                         <div className="button-wrapper">
-                            <div className="paging-container d-inline-block float-right">
-                                <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
-                                    <option value="10" selected={true}>10</option>
-                                    <option value="50">50</option>
-                                    <option value="100">100</option>
-                                </select>
-                            </div>
+
+                            {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
                             <div className="d-flex pagination-button-container">
                                 <p><button className="previous-btn" type="button" disabled={this.state.pageNo === 1 ? true : false} onClick={() => this.onBtPrevious(this)}> </button></p>
-                                <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 10)}</p>
+                                {/* <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 10)}</p> */}
+                                {this.state.pageSize.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 10)}</p>}
+                                {this.state.pageSize.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 50)}</p>}
+                                {this.state.pageSize.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 100)}</p>}
                                 <p><button className="next-btn" type="button" onClick={() => this.onBtNext(this)}> </button></p>
                             </div>
                         </div>

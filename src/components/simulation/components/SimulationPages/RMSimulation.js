@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Row, Col, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
-import { EMPTY_DATA } from '../../../../config/constants';
+import { defaultPageSize, EMPTY_DATA } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper';
 import { GridTotalFormate } from '../../../common/TableGridFunctions';
@@ -19,6 +19,8 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import Simulation from '../Simulation';
 import { debounce } from 'lodash'
 import { VBC, ZBC } from '../../../../config/constants';
+import { PaginationWrapper } from '../../../common/commonPagination';
+
 const gridOptions = {
 
 };
@@ -59,7 +61,7 @@ function RMSimulation(props) {
     useEffect(() => {
         if (list && list.length > 0) {
             if (isImpactedMaster) {
-                window.screen.width >= 1440 && gridRef.current.api.sizeColumnsToFit();    //FOR RE SPECIFIC DUE TO LESS COLUMN IN GRID
+                window.screen.width >= 1365 && gridRef.current.api.sizeColumnsToFit();    //FOR RE SPECIFIC DUE TO LESS COLUMN IN GRID
             }
             window.screen.width >= 1921 && gridRef.current.api.sizeColumnsToFit();
         }
@@ -165,7 +167,7 @@ function RMSimulation(props) {
         gridOptions?.columnApi?.resetColumnState();
         gridOptions?.api?.setFilterModel(null);
         if (isImpactedMaster) {
-            window.screen.width >= 1600 && gridRef.current.api.sizeColumnsToFit();
+            window.screen.width >= 1365 && gridRef.current.api.sizeColumnsToFit();
         }
         window.screen.width >= 1921 && gridRef.current.api.sizeColumnsToFit();
     }
@@ -461,7 +463,7 @@ function RMSimulation(props) {
                                             // columnDefs={c}
                                             rowData={list}
                                             pagination={true}
-                                            paginationPageSize={10}
+                                            paginationPageSize={defaultPageSize}
                                             onGridReady={onGridReady}
                                             gridOptions={gridOptions}
                                             loadingOverlayComponent={'customLoadingOverlay'}
@@ -508,13 +510,7 @@ function RMSimulation(props) {
 
                                         </AgGridReact>
 
-                                        <div className="paging-container d-inline-block float-right">
-                                            <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
-                                                <option value="10" selected={true}>10</option>
-                                                <option value="50">50</option>
-                                                <option value="100">100</option>
-                                            </select>
-                                        </div>
+                                        {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                                     </div>
                                 </div>
 

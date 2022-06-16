@@ -11,12 +11,13 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
-import { ReportMaster, EMPTY_DATA } from '../../../config/constants';
+import { ReportMaster, EMPTY_DATA, defaultPageSize } from '../../../config/constants';
 import LoaderCustom from '../../common/LoaderCustom';
 import WarningMessage from '../../common/WarningMessage'
 import CostingDetailSimulationDrawer from '../../simulation/components/CostingDetailSimulationDrawer'
 import { formViewData, checkForDecimalAndNull } from '../../../helper'
 import ViewRM from '../../costing/components/Drawers/ViewRM'
+import { PaginationWrapper } from '../../common/commonPagination'
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -34,6 +35,7 @@ function ReportListing(props) {
     const [costingVersionChange, setCostingVersion] = useState('');
     const [tableData, setTableData] = useState([])
     const [isLoader, setLoader] = useState(true)
+    const [isReportLoader, setIsReportLoader] = useState(false)
     const [isOpen, setIsOpen] = useState(false)
     const [userId, setUserId] = useState(false)
     const [warningMessage, setWarningMessage] = useState(false)
@@ -46,6 +48,7 @@ function ReportListing(props) {
     const [isAssemblyCosting, setIsAssemblyCosting] = useState(false)
     const [rmMBDetail, setrmMBDetail] = useState({})
     const [pageNo, setPageNo] = useState(1)
+    const [disableNextButtton, setDisableNextButtton] = useState(false)
     const [currentRowIndex, setCurrentRowIndex] = useState(0)
     const [floatingFilterData, setFloatingFilterData] = useState({ CostingNumber: "", TechnologyName: "", AmorizationQuantity: "", AnyOtherCost: "", CostingVersion: "", DisplayStatus: "", EffectiveDate: "", Currency: "", DepartmentCode: "", DepartmentName: "", DiscountCost: "", ECNNumber: "", FinalPOPrice: "", RawMaterialFinishWeight: "", FreightCost: "", FreightPercentage: "", FreightType: "", GrossWeight: "", HundiOrDiscountValue: "", ICCApplicability: "", ICCCost: "", ICCInterestRate: "", ICCOn: "", MasterBatchTotal: "", ModelTypeForOverheadAndProfit: "", ModifiedByName: "", ModifiedByUserName: "", ModifiedDate: "", NetBoughtOutPartCost: "", NetConversionCost: "", NetConvertedPOPrice: "", NetDiscountsCost: "", NetFreightPackaging: "", NetFreightPackagingCost: "", NetICCCost: "", NetOperationCost: "", NetOtherCost: "", NetOverheadAndProfitCost: "", NetPOPrice: "", NetPOPriceINR: "", NetPOPriceInCurrency: "", NetPOPriceOtherCurrency: "", NetProcessCost: "", NetRawMaterialsCost: "", NetSurfaceTreatmentCost: "", NetToolCost: "", NetTotalRMBOPCC: "", OtherCost: "", OtherCostPercentage: "", OverheadApplicability: "", OverheadCombinedCost: "", OverheadCost: "", OverheadOn: "", OverheadPercentage: "", PackagingCost: "", PackagingCostPercentage: "", PartName: "", PartNumber: "", PartType: "", PaymentTermCost: "", PaymentTermsOn: "", PlantCode: "", PlantName: "", ProfitApplicability: "", ProfitCost: "", ProfitOn: "", ProfitPercentage: "", RMGrade: "", RMSpecification: "", RawMaterialCode: "", RawMaterialGrossWeight: "", RawMaterialName: "", RawMaterialRate: "", RawMaterialScrapWeight: "", RawMaterialSpecification: "", RecordInsertedBy: "", RejectOn: "", RejectionApplicability: "", RejectionCost: "", RejectionPercentage: "", Remark: "", Rev: "", RevisionNumber: "", ScrapRate: "", ScrapWeight: "", SurfaceTreatmentCost: "", ToolCost: "", ToolLife: "", ToolMaintenaceCost: "", ToolPrice: "", ToolQuantity: "", TotalCost: "", TotalOtherCost: "", TotalRecordCount: "", TransportationCost: "", VendorCode: "", VendorName: "", Version: "", RawMaterialGrade: "", HundiOrDiscountPercentage: "", FromDate: "", ToDate: "" })
     const [enableSearchFilterSearchButton, setEnableSearchFilterButton] = useState(true)
@@ -123,12 +126,12 @@ function ReportListing(props) {
     }
 
     const viewDetails = (UserId, cell, row) => {
-
+        setIsReportLoader(true)
         if (row.BaseCostingId && Object.keys(row.BaseCostingId).length > 0) {
             dispatch(getSingleCostingDetails(row.BaseCostingId, (res) => {
                 if (res.data.Data) {
                     let dataFromAPI = res.data.Data
-
+                    setIsReportLoader(false)
                     const tempObj = formViewData(dataFromAPI)
                     dispatch(setCostingViewData(tempObj))
                 }
@@ -246,6 +249,7 @@ function ReportListing(props) {
         > {checkForDecimalAndNull(cellValue, initialConfiguration.NoOfDecimalForPrice)}</div> : '-';
     }
     const getTableData = (skip, take, isPagination, data, isLastWeek, isCallApi) => {
+        setLoader(true)
         let newData = {}
         if (isLastWeek) {
             let currentDate = new Date()
@@ -261,6 +265,7 @@ function ReportListing(props) {
         }
         dispatch(getCostingReport(skip, take, isPagination, newData, isLastWeek, isCallApi, (res) => {
             if (res) {
+                setLoader(false)
                 let isReset = true
                 setLoader(false)
                 setTimeout(() => {
@@ -285,6 +290,11 @@ function ReportListing(props) {
 
     const onBtNext = () => {
 
+        if ((pageSize10 && pageNo === Math.ceil(totalRecordCount / 10)) || (pageSize50 && pageNo === Math.ceil(totalRecordCount / 50)) || (pageSize100 && pageNo === Math.ceil(totalRecordCount / 100))) {
+            setDisableNextButtton(true)
+            return false
+        }
+
         if (currentRowIndex < (totalRecordCount - 10)) {
 
             setPageNo(pageNo + 1)
@@ -297,6 +307,7 @@ function ReportListing(props) {
     };
 
     const onBtPrevious = () => {
+        setDisableNextButtton(false)
 
         if (currentRowIndex >= 10) {
             setPageNo(pageNo - 1)
@@ -420,12 +431,12 @@ function ReportListing(props) {
     };
 
     const onPageSizeChanged = (newPageSize) => {
-        var value = document.getElementById('page-size').value;
-        gridApi.paginationSetPageSize(Number(value));
+        gridApi.paginationSetPageSize(Number(newPageSize));
         if (Number(newPageSize) === 10) {
             setPageSize10(true)
             setPageSize50(false)
             setPageSize100(false)
+            setDisableNextButtton(false)
 
         }
         else if (Number(newPageSize) === 50) {
@@ -570,7 +581,7 @@ function ReportListing(props) {
                         rowData={reportListingData}
                         pagination={true}
                         onFilterModified={onFloatingFilterChanged}
-                        paginationPageSize={10}
+                        paginationPageSize={defaultPageSize}
                         onGridReady={onGridReady}
                         gridOptions={gridOptions}
                         noRowsOverlayComponent={'customNoRowsOverlay'}
@@ -651,19 +662,13 @@ function ReportListing(props) {
 
                     </AgGridReact>
                     <div className='button-wrapper'>
-                        <div className="paging-container d-inline-block float-right">
-                            <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
-                                <option value="10" selected={true}>10</option>
-                                <option value="50">50</option>
-                                <option value="100">100</option>
-                            </select>
-                        </div>
+                        {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                         <div className="d-flex pagination-button-container">
                             <p><button className="previous-btn" type="button" disabled={false} onClick={() => onBtPrevious()}> </button></p>
                             {pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 10)}</p>}
                             {pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 50)}</p>}
                             {pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 100)}</p>}
-                            <p><button className="next-btn" type="button" onClick={() => onBtNext()}> </button></p>
+                            <p><button className="next-btn" type="button" disabled={disableNextButtton} onClick={() => onBtNext()}> </button></p>
                         </div>
 
                     </div>
@@ -680,6 +685,7 @@ function ReportListing(props) {
                     isSimulation={false}
                     simulationMode={false}
                     simulationDrawer={false}
+                    isReportLoader={isReportLoader}
                 />
             }
             {isViewRM && <ViewRM

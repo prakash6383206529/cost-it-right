@@ -1004,7 +1004,8 @@ class AddMachineRate extends Component {
           Attachements: updatedFiles,
           IsForcefulUpdated: true,
           EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
-          MachineProcessGroup: this.props.processGroupApiData
+          MachineProcessGroup: this.props.processGroupApiData,
+          VendorPlant: [],
         }
 
         if (IsFinancialDataChanged) {
@@ -1068,7 +1069,8 @@ class AddMachineRate extends Component {
         Remark: remarks,
         Attachements: files,
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
-        MachineProcessGroup: this.props.processGroupApiData
+        MachineProcessGroup: this.props.processGroupApiData,
+        VendorPlant: [],
       }
 
       let obj = {}

@@ -897,7 +897,7 @@ class AddAssemblyPart extends Component {
                   >
                     <div className="add-min-height">
                       <Row>
-                        {true &&
+                        {!isEditFlag &&
                           <Col md="4" className="switch mb15">
                             <label className="switch-level">
                               <div className={"left-title"}>Add assembly</div>

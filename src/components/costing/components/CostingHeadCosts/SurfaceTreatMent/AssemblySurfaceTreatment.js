@@ -132,7 +132,7 @@ function AssemblySurfaceTreatment(props) {
             {
               item.CostingPartDetails && (item.CostingPartDetails.TotalSurfaceTreatmentCostWithQuantity !== null && item.CostingPartDetails.TotalSurfaceTreatmentCostWithQuantity !== 0) ?
                 <div class="tooltip-n ml-2"><i className="fa fa-info-circle text-primary tooltip-icon"></i>
-                  <span class="tooltiptext">
+                  <span class="tooltiptext text-right">
                     {`Assembly's Surface Treatment Cost:- ${checkForDecimalAndNull(item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly, initialConfiguration.NoOfDecimalForPrice)}`}
                     <br></br>
                     {`Sub Assembly's Surface Treatment Cost:- ${checkForDecimalAndNull(item.CostingPartDetails.TotalSurfaceTreatmentCostPerSubAssembly, initialConfiguration.NoOfDecimalForPrice)}`}
@@ -146,7 +146,7 @@ function AssemblySurfaceTreatment(props) {
             {
               item.CostingPartDetails && (item.CostingPartDetails.TotalTransportationCostWithQuantity !== null && item.CostingPartDetails.TotalTransportationCostWithQuantity !== 0) ?
                 <div class="tooltip-n ml-2"><i className="fa fa-info-circle text-primary tooltip-icon"></i>
-                  <span class="tooltiptext">
+                  <span class="tooltiptext max225">
                     {`Assembly's Extra Cost:- ${checkForDecimalAndNull(item.CostingPartDetails.TotalTransportationCostPerAssembly, initialConfiguration.NoOfDecimalForPrice)}`}
                     <br></br>
                     {`Sub Assembly's Extra Cost:- ${checkForDecimalAndNull(item.CostingPartDetails.TotalTransportationCostPerSubAssembly, initialConfiguration.NoOfDecimalForPrice)}`}

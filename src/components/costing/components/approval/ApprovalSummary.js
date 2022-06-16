@@ -14,7 +14,6 @@ import PushButtonDrawer from './PushButtonDrawer'
 import { Redirect } from 'react-router'
 import LoaderCustom from '../../../common/LoaderCustom';
 import { Fgwiseimactdata } from '../../../simulation/components/FgWiseImactData'
-import HeaderTitle from '../../../common/HeaderTitle'
 import CalculatorWrapper from '../../../common/Calculator/CalculatorWrapper'
 import { EMPTY_GUID } from '../../../../config/constants'
 import { ErrorMessage } from '../../../simulation/SimulationUtils'
@@ -44,12 +43,13 @@ function ApprovalSummary(props) {
   const [viewButton, setViewButton] = useState(false)
   const [pushButton, setPushButton] = useState(false)
   const [isLoader, setIsLoader] = useState(false);
-  const [fgWiseAcc, setFgWiseAcc] = useState(false)
-  const [costingIdArray, setCostingIdArray] = useState([])
+  const [fgWiseAcc, setFgWiseAcc] = useState(true)
+  const [costingIdArray, setCostingIdArray] = useState({})
   const [lastRevisionDataAcc, setLastRevisionDataAcc] = useState(false)
   const [editWarning, setEditWarning] = useState(false)
   const [impactedMasterDataListForLastRevisionData, setImpactedMasterDataListForLastRevisionData] = useState([])
   const [masterIdForLastRevision, setMasterIdForLastRevision] = useState('')
+  const [fgWise, setFgWise] = useState(false)
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
   const [accDisable, setAccDisable] = useState(false)
 
@@ -71,7 +71,8 @@ function ApprovalSummary(props) {
           ExchangeRateImpactedMasterDataList: [],
           OperationImpactedMasterDataList: [],
           RawMaterialImpactedMasterDataList: [],
-          BoughtOutPartImpactedMasterDataList: []
+          BoughtOutPartImpactedMasterDataList: [],
+          CombinedProcessImpactedMasterDataList: [],
         }
         let masterId
         let Data = []
@@ -245,11 +246,14 @@ function ApprovalSummary(props) {
   }
 
   const displayCompareCostingFgWise = (CostingApprovalProcessSummaryId) => {
+    setFgWise(true)
     dispatch(getSingleCostingDetails(CostingApprovalProcessSummaryId, res => {
       const Data = res.data.Data
       const newObj = formViewData(Data)
       dispatch(setCostingViewData(newObj))
-      setCostingSummary(true)
+      setTimeout(() => {
+        setCostingSummary(true)
+      }, 500);
     }))
   }
 
@@ -270,7 +274,7 @@ function ApprovalSummary(props) {
         <>
           {isLoader && <LoaderCustom />}
           <div className="container-fluid approval-summary-page">
-            <ErrorMessage approvalNumber={approvalNumber} />
+            <ErrorMessage approvalNumber={approvalNumber} costingIdArray={costingIdArray} />
             <h2 className="heading-main">Approval Summary</h2>
             <Row>
               <Col md="8">
@@ -311,7 +315,7 @@ function ApprovalSummary(props) {
                         </span>
                       </th>
                       <th className='overflow'>
-                        <span className="d-block grey-text">{`Assembly/Part No.:`}</span>
+                        <span className="d-block grey-text">{`Assembly/Part No:`}</span>
                         <span className="d-block " title={partDetail.PartNumber}>
                           {partDetail.PartNumber ? partDetail.PartNumber : '-'}
                         </span>
@@ -329,19 +333,19 @@ function ApprovalSummary(props) {
                         </span>
                       </th>
                       <th>
-                        <span className="d-block grey-text">{`ECN No.:`}</span>
+                        <span className="d-block grey-text">{`ECN No:`}</span>
                         <span className="d-block">
                           {partDetail.ECNNumber ? partDetail.ECNNumber : '-'}
                         </span>
                       </th>
                       <th>
-                        <span className="d-block grey-text">{`Drawing No.:`}</span>
+                        <span className="d-block grey-text">{`Drawing No:`}</span>
                         <span className="d-block">
                           {partDetail.DrawingNumber ? partDetail.DrawingNumber : '-'}
                         </span>
                       </th>
                       <th>
-                        <span className="d-block grey-text">{`Revision No.:`}</span>
+                        <span className="d-block grey-text">{`Revision No:`}</span>
                         <span className="d-block">
                           {partDetail.RevisionNumber
                             ? partDetail.RevisionNumber
@@ -571,7 +575,7 @@ function ApprovalSummary(props) {
             </Row>
             <Row className="mb-4" id='compare-costing'>
               <Col md="12" className="costing-summary-row">
-                {costingSummary && <CostingSummaryTable viewMode={true} costingID={approvalDetails.CostingId} approvalMode={true} isApproval={approvalData.LastCostingId !== EMPTY_GUID ? true : false} simulationMode={false} />}
+                {costingSummary && <CostingSummaryTable viewMode={true} costingID={approvalDetails.CostingId} approvalMode={true} isApproval={(approvalData.LastCostingId === EMPTY_GUID || fgWise) ? false : true} simulationMode={false} />}
               </Col>
             </Row>
             {/* Costing Summary page here */}
