@@ -100,10 +100,6 @@ function VerifyImpactDrawer(props) {
                   ></div>
                 </Col>
               </Row>
-              {fgWiseAcc &&
-                <ErrorMessage />
-              }
-
               {!costingDrawer && <Row >
                 <Col md="12">
                   <div className="border impact-drawer-header">
@@ -136,7 +132,7 @@ function VerifyImpactDrawer(props) {
               </Row>}
 
 
-              {!costingDrawer && <Row className="mb-3 pr-0 mx-0">
+              {!costingDrawer && <Row className="pr-0 mx-0">
                 <Col md="6"> <HeaderTitle title={'Impacted Master Data:'} /></Col>
                 <Col md="6">
                   <div className={'right-details'}>
@@ -154,8 +150,11 @@ function VerifyImpactDrawer(props) {
                 </div>
                 }
               </Row>}
-
               <Row className="mb-3 pr-0 mx-0">
+                <Col md="12">
+                  {fgWiseAcc && <ErrorMessage />}
+                </Col>
+
                 <Col md="6"> <HeaderTitle title={'FG wise Impact:'} /></Col>
                 <Col md="6">
                   <div className={'right-details'}>

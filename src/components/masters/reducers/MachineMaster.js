@@ -71,7 +71,7 @@ export default function MachineReducer(state = initialState, action) {
         case GET_MACHINE_DATALIST_SUCCESS:
             let arr = []
             action.payload && action.payload.map((item) => {
-                item.CostingHeadNew = item.CostingHead === 'VBC' ? "Vendor Based" : "Zero Based"
+                item.CostingHeadNew = item.CostingHead === 'VBC' || item.CostingHead === "Vendor Based" ? "Vendor Based" : "Zero Based"
                 arr.push(item)
             })
             return {
