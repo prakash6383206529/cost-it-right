@@ -119,15 +119,9 @@ export function formatRMSimulationObject(simulationDetail, selectedRowData, cost
     if (simulationDetail && selectedRowData && costingArr) {
         let temp = []
         costingArr && costingArr.map(item => {
-            let checked = false
-            selectedRowData && selectedRowData.map(item1 => {
-                if (item1.CostingId === item.CostingId) {
-                    checked = true
-                    return false
-                }
-                return true
-            })
+            let checked = true
             temp.push({ CostingId: item.CostingId, CostingNumber: item.CostingNumber, IsChecked: checked, LineNumber: item.LineNumber, SANumber: item.SANumber })
+            return null
         })
 
         // let uniqueArr = [];
