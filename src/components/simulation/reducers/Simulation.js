@@ -21,6 +21,7 @@ import {
     SET_TOKEN_CHECK_BOX,
     SET_KEY_FOR_API_CALLS,
     SET_TOKEN_FOR_SIMULATION,
+    GET_MASTER_SELECT_LIST_SIMUALTION
 
 } from '../../../config/constants';
 
@@ -167,7 +168,12 @@ export default function SimulationReducer(state = initialState, action) {
                 loading: false,
                 tokenForSimulation: action.payload
             }
-
+        case GET_MASTER_SELECT_LIST_SIMUALTION:                     //THIS CODE IS FOR SELECTING MASTER LIST IN SIMULATION
+            return {
+                ...state,
+                loading: false,
+                masterSelectListSimulation: action.payload
+            }
         default:
             return state;
     }
