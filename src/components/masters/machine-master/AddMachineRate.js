@@ -6,7 +6,7 @@ import {
   required, checkForNull, number, postiveNumber, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter,
   checkWhiteSpaces, maxLength80, maxLength10, positiveAndDecimalNumber, maxLength512
 } from "../../../helper/validation";
-import { renderText, searchableSelect, renderTextAreaField, renderMultiSelectField, focusOnError, renderDatePicker } from "../../layout/FormInputs";
+import { renderText, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker } from "../../layout/FormInputs";
 import { getTechnologySelectList, getPlantSelectListByType, getPlantBySupplier, getUOMSelectList } from '../../../actions/Common';
 import { getVendorListByVendorType, masterFinalLevelUser } from '../actions/Material';
 import {
@@ -36,6 +36,7 @@ import { CheckApprovalApplicableMaster } from '../../../helper'
 import AsyncSelect from 'react-select/async';
 import { ProcessGroup } from '../masterUtil';
 import _ from 'lodash'
+import { getCostingSpecificTechnology } from '../../costing/actions/Costing'
 
 
 const selector = formValueSelector('AddMachineRate');
@@ -131,7 +132,7 @@ class AddMachineRate extends Component {
     this.props.getProcessesSelectList(() => { })
     this.props.getUOMSelectList(() => { })
     if (!(editDetails.isEditFlag || editDetails.isViewFlag)) {
-      this.props.getTechnologySelectList(() => { })
+      this.props.getCostingSpecificTechnology(loggedInUserId(), () => { })
       this.props.getVendorListByVendorType(true, () => { })
       this.props.getPlantSelectListByType(ZBC, () => { })
     }
@@ -418,11 +419,11 @@ class AddMachineRate extends Component {
   * @description Used to show type of listing
   */
   renderListing = (label) => {
-    const { technologySelectList, vendorListByVendorType, plantSelectList, filterPlantList,
-      UOMSelectList, machineTypeSelectList, processSelectList, } = this.props;
+    const { vendorListByVendorType, plantSelectList,
+      UOMSelectList, machineTypeSelectList, processSelectList, costingSpecifiTechnology } = this.props;
     const temp = [];
     if (label === 'technology') {
-      technologySelectList && technologySelectList.map(item => {
+      costingSpecifiTechnology && costingSpecifiTechnology.map(item => {
         if (item.Value === '0') return false;
         temp.push({ label: item.Text, value: item.Value })
         return null;
@@ -1845,13 +1846,14 @@ class AddMachineRate extends Component {
 * @param {*} state
 */
 function mapStateToProps(state) {
-  const { comman, material, machine, auth } = state;
+  const { comman, material, machine, auth, costing } = state;
   const fieldsObj = selector(state, 'MachineNumber', 'MachineName', 'TonnageCapacity', 'MachineRate', 'Description');
 
   const { plantList, technologySelectList, plantSelectList, filterPlantList, UOMSelectList, } = comman;
   const { machineTypeSelectList, processSelectList, machineData, loading, processGroupApiData } = machine;
   const { vendorListByVendorType } = material;
   const { initialConfiguration, } = auth;
+  const { costingSpecifiTechnology } = costing
 
 
 
@@ -1869,7 +1871,7 @@ function mapStateToProps(state) {
 
   return {
     vendorListByVendorType, plantList, technologySelectList, plantSelectList, filterPlantList, UOMSelectList,
-    machineTypeSelectList, processSelectList, fieldsObj, machineData, initialValues, loading, initialConfiguration, processGroupApiData
+    machineTypeSelectList, processSelectList, fieldsObj, machineData, initialValues, loading, initialConfiguration, processGroupApiData, costingSpecifiTechnology
   }
 
 }
@@ -1899,7 +1901,8 @@ export default connect(mapStateToProps, {
   getMachineData,
   getProcessGroupByMachineId,
   setGroupProcessList,
-  setProcessList
+  setProcessList,
+  getCostingSpecificTechnology
 })(reduxForm({
   form: 'AddMachineRate',
   enableReinitialize: true,
