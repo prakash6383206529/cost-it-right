@@ -1451,7 +1451,7 @@ function TabRMCC(props) {
                       type={'button'}
                       className="submit-button save-btn"
                       onClick={saveCosting}
-                      disabled={Object.keys(ComponentItemData).length === 0 || (DayTime(CostingEffectiveDate).isValid() === false) ? true : false}
+                      disabled={Object.keys(ComponentItemData).length === 0 || (DayTime(CostingEffectiveDate).isValid() === false || !checkIsDataChange) ? true : false}
                     >
                       <div className={'save-icon'}></div>
                       {'Save'}
