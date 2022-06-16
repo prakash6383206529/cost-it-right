@@ -55,7 +55,7 @@ function Simulation(props) {
     const [tableData, setTableData] = useState([])
     const [rowCount, setRowCount] = useState({})
     const [editWarning, setEditWarning] = useState(true)
-    const [filterStatus, setFilterStatus] = useState('')
+    const [filterStatus, setFilterStatus] = useState(`Please check the ${(selectedMasterForSimulation?.label)} that you want to edit.`)
     const [token, setToken] = useState([])
     const [showTokenDropdown, setShowTokenDropdown] = useState(false)
     const [selectionForListingMasterAPI, setSelectionForListingMasterAPI] = useState('')

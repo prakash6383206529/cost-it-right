@@ -332,9 +332,9 @@ class Main extends Component {
                     {/* <Route path="/simulation-history" component={AuthMiddleware(SimulationHistory, Simulation_History)} /> */}
 
                     {/* <Route path="/simulation-history" component={SimulationHistory} /> */}
-                    <Route path="/simulation-history" component={AuthMiddleware(SimulationApprovalListing, Simulation_History)} />
+                    <Route path="/simulation-history" component={AuthMiddleware(SimulationApprovalListing, Simulation_Page)} />
 
-                    <Route path='/simulation-approval-summary' component={AuthMiddleware(SimulationApprovalSummary, Simulation_History)} />
+                    <Route path='/simulation-approval-summary' component={AuthMiddleware(SimulationApprovalSummary, Simulation_Page)} />
 
                     <Route path="/simulation" component={AuthMiddleware(Simulation, Simulation_Page)} />
 

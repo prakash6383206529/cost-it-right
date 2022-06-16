@@ -5,7 +5,7 @@ import { Row, Col } from 'reactstrap';
 import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength75, maxLength20, maxLength80, maxLength512 } from "../../../helper/validation";
 import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
 import { renderText, renderTextAreaField, focusOnError, renderDatePicker, renderMultiSelectField, searchableSelect } from "../../layout/FormInputs";
-import { getPlantSelectListByType, getTechnologySelectList, getPartSelectList } from '../../../actions/Common';
+import { getPlantSelectListByType, getPartSelectList } from '../../../actions/Common';
 import {
   createAssemblyPart, updateAssemblyPart, getAssemblyPartDetail, fileUploadPart, fileDeletePart,
   getBOMViewerTreeDataByPartIdAndLevel, getProductGroupSelectList, getPartDescription, getPartData, convertPartToAssembly,
@@ -27,6 +27,7 @@ import _, { debounce } from 'lodash';
 import WarningMessage from '../../common/WarningMessage'
 import Switch from "react-switch";
 import AsyncSelect from 'react-select/async';
+import { getCostingSpecificTechnology } from '../../costing/actions/Costing'
 
 const selector = formValueSelector('AddAssemblyPart')
 export const PartEffectiveDate = React.createContext()
@@ -85,7 +86,7 @@ class AddAssemblyPart extends Component {
     this.setState({ inputLoader: true })
     this.props.getPlantSelectListByType(ZBC, () => { })
     this.props.getProductGroupSelectList(() => { })
-    this.props.getTechnologySelectList(() => { })
+    this.props.getCostingSpecificTechnology(loggedInUserId(), () => { })
     this.props.getPartSelectList((res) => {
       this.setState({ partListingData: res?.data?.SelectList, inputLoader: false })
     })
@@ -347,7 +348,7 @@ class AddAssemblyPart extends Component {
   * @description Used show listing of unit of measurement
   */
   renderListing = (label) => {
-    const { plantSelectList, productGroupSelectList, technologySelectList } = this.props;
+    const { plantSelectList, productGroupSelectList, costingSpecifiTechnology } = this.props;
     const temp = [];
 
     if (label === 'plant') {
@@ -370,8 +371,8 @@ class AddAssemblyPart extends Component {
 
 
     if (label === 'technology') {
-      technologySelectList &&
-        technologySelectList.map((item) => {
+      costingSpecifiTechnology &&
+        costingSpecifiTechnology.map((item) => {
 
           if (item.Value === '0') return false
           temp.push({ label: item.Text, value: item.Value })
@@ -1318,10 +1319,11 @@ class AddAssemblyPart extends Component {
 function mapStateToProps(state) {
   const fieldsObj = selector(state, 'BOMNumber', 'AssemblyPartNumber', 'AssemblyPartName', 'ECNNumber', 'RevisionNumber',
     'Description', 'DrawingNumber', 'GroupCode', 'Remark', 'TechnologyId')
-  const { comman, part, auth } = state;
-  const { plantSelectList, technologySelectList } = comman;
+  const { comman, part, auth, costing } = state;
+  const { plantSelectList } = comman;
   const { partData, actualBOMTreeData, productGroupSelectList } = part;
   const { initialConfiguration } = auth;
+  const { costingSpecifiTechnology } = costing
   let initialValues = {};
   if (partData && Object.keys(partData).length > 0) {
     initialValues = {
@@ -1337,7 +1339,7 @@ function mapStateToProps(state) {
     }
   }
 
-  return { plantSelectList, partData, actualBOMTreeData, fieldsObj, initialValues, initialConfiguration, productGroupSelectList, technologySelectList }
+  return { plantSelectList, partData, actualBOMTreeData, fieldsObj, initialValues, initialConfiguration, productGroupSelectList, costingSpecifiTechnology }
 
 }
 
@@ -1351,7 +1353,6 @@ export default connect(mapStateToProps, {
   getPlantSelectListByType,
   fileUploadPart,
   fileDeletePart,
-  getTechnologySelectList,
   getPartSelectList,
   createAssemblyPart,
   updateAssemblyPart,
@@ -1361,6 +1362,7 @@ export default connect(mapStateToProps, {
   getProductGroupSelectList,
   getPartDescription,
   getPartData,
+  getCostingSpecificTechnology
 })(reduxForm({
   form: 'AddAssemblyPart',
   onSubmitFail: errors => {
