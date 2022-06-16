@@ -96,6 +96,9 @@ function CostingSimulation(props) {
     const [showExchangeRateColumn, setShowExchangeRateColumn] = useState(false);
     const [showMachineRateColumn, setShowMachineRateColumn] = useState(false);
     const [showCombinedProcessColumn, setShowCombinedProcessColumn] = useState(false);
+    const [downloadList, setDownloadList] = useState([]);
+    const [rejectedList, setRejectedList] = useState([]);
+    const [sendInAPIState, setSendInAPIState] = useState([]);
 
     const isSurfaceTreatment = (Number(master) === Number(SURFACETREATMENT));
     const isOperation = (Number(master) === Number(OPERATIONS));
@@ -154,6 +157,34 @@ function CostingSimulation(props) {
         dispatch(setShowSimulationPage(true))
     };
 
+    const getListMultipleAndAssembly = (SimulationCostingList, storeInRemovedObjects) => {
+        let tempRemoveObject1 = []
+        let tempArray1 = SimulationCostingList
+
+        SimulationCostingList && SimulationCostingList.map((itemTrue, index) => {         // INDEX OF NOT ASSEMBLY
+            if (itemTrue.IsAssemblyExist === false) {               // goes inside for assembly false values (NOT ASSEMBLY)
+
+                SimulationCostingList && SimulationCostingList.map((itemFalse) => {
+
+                    if (itemFalse.IsAssemblyExist === true) {       // goes insode for ASSEMBLY 
+                        if (itemFalse.PartNo === itemTrue.PartNo && itemFalse.PlantCode === itemTrue.PlantCode &&
+                            itemFalse.VendorName === itemTrue.VendorName) {         // ALL SAME THEN INSIDE IF 
+                            tempRemoveObject1.push(itemTrue)
+                            tempArray1.splice(index, 1)
+                        }
+                    }
+                    return null
+                })
+
+            }
+            return null
+        })
+        if (storeInRemovedObjects) {
+            setRejectedList(tempRemoveObject1)
+        }
+        return tempArray1
+    }
+
     const setCommonStateForList = (res) => {
         if (res.data.Result) {
             const tokenNo = res.data.Data.SimulationTokenNumber
@@ -208,7 +239,7 @@ function CostingSimulation(props) {
                     uniqeArray.push(item);
                 }
             }
-            setTableData(uniqeArray)
+
             setTokenNo(tokenNo)
             setCostingArr(Data.SimulatedCostingList)
             setSimulationDetail({ TokenNo: Data.SimulationTokenNumber, Status: Data.SimulationStatus, SimulationId: Data.SimulationId, SimulationAppliedOn: Data.SimulationAppliedOn, EffectiveDate: Data.EffectiveDate })
@@ -220,6 +251,15 @@ function CostingSimulation(props) {
             tempObj.Technology = Data.SimulatedCostingList[0].Technology
             tempObj.Vendor = Data.SimulatedCostingList[0].VendorName
             setAmendmentDetails(tempObj)
+
+            //LISTING
+            // SECOND PARAMETER TRUE | TO SAVE UNIQUE LIST OF NON REQUIRED COSTING(COMPONENT COSTING OF ASSEMBLY'S CHILD)  
+            const list = getListMultipleAndAssembly(uniqeArray, true)
+            setTableData(list)
+
+            //DOWNLOAD
+            setDownloadList(getListMultipleAndAssembly(Data.SimulatedCostingList, false))
+
         }
     }
 
@@ -359,6 +399,28 @@ function CostingSimulation(props) {
 
     const setGridSelection = (type, clickedElement) => {
         var selectedRows = gridApi.getSelectedRows();
+        let sendInAPI = sendInAPIState ? sendInAPIState : []
+        if (type) {
+            rejectedList && rejectedList.map((item) => {
+                if (item.PartNo === clickedElement.data.PartNo && item.PlantCode === clickedElement.data.PlantCode &&
+                    item.VendorName === clickedElement.data.VendorName) {
+                    sendInAPI.push(item)
+                }
+                return null
+            })
+        } else {
+            let temp = sendInAPI
+            temp && temp.map((item, index) => {
+                if (item.PartNo === clickedElement.data.PartNo && item.PlantCode === clickedElement.data.PlantCode &&
+                    item.VendorName === clickedElement.data.VendorName) {
+                    sendInAPI.splice(index, 1)
+                }
+                return null
+            })
+        }
+        setSendInAPIState(sendInAPI)                // TO SEND IN API
+        setCostingArr([...selectedRows, ...sendInAPI])
+
         const rowIndex = clickedElement.rowIndex
         const VendorName = clickedElement.data.VendorName
         const PlantCode = clickedElement.data.PlantCode
@@ -695,11 +757,11 @@ function CostingSimulation(props) {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let roudOffOld = 0, rounfOffNew = 0
-        roudOffOld = _.round(row.OldOperationCost, COSTINGSIMULATIONROUND)
-        rounfOffNew = _.round(row.NewOperationCost, COSTINGSIMULATIONROUND)
+        roudOffOld = _.round(row.OldNetOperationCost, COSTINGSIMULATIONROUND)
+        rounfOffNew = _.round(row.NewNetOperationCost, COSTINGSIMULATIONROUND)
         let value = Math.abs(roudOffOld - rounfOffNew)
         return (<div>
-            {value ? (row.NewOperationCost > row.OldOperationCost ? < span className='positive-sign'>+</span> : < span className='positive-sign'>-</span>) : ''}
+            {value ? (row.NewNetOperationCost > row.OldNetOperationCost ? < span className='positive-sign'>+</span> : < span className='positive-sign'>-</span>) : ''}
             {cell != null ? (Math.abs(value)).toFixed(COSTINGSIMULATIONROUND) : '-'}
         </div >)
     }
@@ -919,18 +981,18 @@ function CostingSimulation(props) {
         switch (Number(master)) {
             case Number(RMDOMESTIC):
             case Number(RMIMPORT):
-                return returnExcelColumn(isTokenAPI ? finalGrid : CostingSimulationDownloadRM, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : costingList && costingList?.length > 0 ? costingList : [])
+                return returnExcelColumn(isTokenAPI ? finalGrid : CostingSimulationDownloadRM, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : downloadList && downloadList?.length > 0 ? downloadList : [])
             case Number(SURFACETREATMENT):
-                return returnExcelColumn(isTokenAPI ? finalGrid : CostingSimulationDownloadST, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : costingList && costingList?.length > 0 ? costingList : [])
+                return returnExcelColumn(isTokenAPI ? finalGrid : CostingSimulationDownloadST, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : downloadList && downloadList?.length > 0 ? downloadList : [])
             case Number(OPERATIONS):
-                return returnExcelColumn(isTokenAPI ? finalGrid : CostingSimulationDownloadOperation, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : costingList && costingList?.length > 0 ? costingList : [])
+                return returnExcelColumn(isTokenAPI ? finalGrid : CostingSimulationDownloadOperation, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : downloadList && downloadList?.length > 0 ? downloadList : [])
             case Number(BOPDOMESTIC):
             case Number(BOPIMPORT):
-                return returnExcelColumn(isTokenAPI ? finalGrid : CostingSimulationDownloadBOP, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : costingList && costingList?.length > 0 ? costingList : [])
+                return returnExcelColumn(isTokenAPI ? finalGrid : CostingSimulationDownloadBOP, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : downloadList && downloadList?.length > 0 ? downloadList : [])
             case Number(EXCHNAGERATE):
-                return returnExcelColumn(isTokenAPI ? finalGrid : EXCHANGESIMULATIONDOWNLOAD, selectedRowData.length > 0 ? selectedRowData : costingList && costingList.length > 0 ? costingList : [])
+                return returnExcelColumn(isTokenAPI ? finalGrid : EXCHANGESIMULATIONDOWNLOAD, selectedRowData.length > 0 ? selectedRowData : downloadList && downloadList.length > 0 ? downloadList : [])
             case Number(COMBINED_PROCESS):
-                return returnExcelColumn(isTokenAPI ? finalGrid : COMBINEDPROCESSSIMULATION, selectedRowData.length > 0 ? selectedRowData : costingList && costingList.length > 0 ? costingList : [])
+                return returnExcelColumn(isTokenAPI ? finalGrid : COMBINEDPROCESSSIMULATION, selectedRowData.length > 0 ? selectedRowData : downloadList && downloadList.length > 0 ? downloadList : [])
             default:
                 return 'foo'
         }

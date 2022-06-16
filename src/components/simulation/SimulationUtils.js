@@ -307,7 +307,8 @@ export const ErrorMessage = (props) => {
                         if (partNumberObjectArray.length - 1 === i) {
                             arr.push(ele[item])
                         } else {
-                            arr.push(ele[item] + " ") // FETCHING PART NUMBER HERE
+                            arr.push(ele[item])
+                            // FETCHING PART NUMBER HERE
                         }
                     }
                 })
