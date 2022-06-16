@@ -7,7 +7,7 @@ import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaFie
 import {
   getRawMaterialCategory, fetchGradeDataAPI, fetchSpecificationDataAPI, getCityBySupplier, getPlantByCity,
   getPlantByCityAndSupplier, fetchRMGradeAPI, getSupplierList, getPlantBySupplier, getUOMSelectList,
-  getCurrencySelectList, fetchSupplierCityDataAPI, fetchPlantDataAPI, getTechnologySelectList, getPlantSelectListByType
+  getCurrencySelectList, fetchSupplierCityDataAPI, fetchPlantDataAPI, getPlantSelectListByType
 } from '../../../actions/Common';
 import {
   createRMImport, getRMImportDataById, updateRMImportAPI, getRawMaterialNameChild,
@@ -1932,7 +1932,7 @@ function mapStateToProps(state) {
   const { uniOfMeasurementList, rowMaterialList, rmGradeList, rmSpecification, plantList,
     supplierSelectList, filterPlantList, filterCityListBySupplier, cityList, technologyList,
     categoryList, filterPlantListByCity, filterPlantListByCityAndSupplier, UOMSelectList,
-    currencySelectList, technologySelectList, plantSelectList } = comman;
+    currencySelectList, plantSelectList } = comman;
 
   const { initialConfiguration } = auth;
   const { costingSpecifiTechnology } = costing
@@ -1956,7 +1956,7 @@ function mapStateToProps(state) {
     plantList, supplierSelectList, cityList, technologyList, categoryList, rawMaterialDetails,
     filterPlantListByCity, filterCityListBySupplier, rawMaterialDetailsData, initialValues,
     fieldsObj, filterPlantListByCityAndSupplier, rawMaterialNameSelectList, gradeSelectList,
-    filterPlantList, UOMSelectList, vendorListByVendorType, currencySelectList, technologySelectList, plantSelectList,
+    filterPlantList, UOMSelectList, vendorListByVendorType, currencySelectList, plantSelectList,
     initialConfiguration, costingSpecifiTechnology
   }
 
@@ -1989,7 +1989,6 @@ export default connect(mapStateToProps, {
   fileUploadRMDomestic,
   getCurrencySelectList,
   fetchPlantDataAPI,
-  getTechnologySelectList,
   getPlantSelectListByType,
   getExchangeRateByCurrency,
   getVendorWithVendorCodeSelectList,

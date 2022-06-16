@@ -5,7 +5,7 @@ import { Row, Col } from 'reactstrap';
 import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength75, maxLength20, maxLength80, maxLength512 } from "../../../helper/validation";
 import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
 import { renderText, renderTextAreaField, focusOnError, renderDatePicker, renderMultiSelectField, searchableSelect } from "../../layout/FormInputs";
-import { getPlantSelectListByType, getTechnologySelectList, getPartSelectList } from '../../../actions/Common';
+import { getPlantSelectListByType, getPartSelectList } from '../../../actions/Common';
 import {
   createAssemblyPart, updateAssemblyPart, getAssemblyPartDetail, fileUploadPart, fileDeletePart,
   getBOMViewerTreeDataByPartIdAndLevel, getProductGroupSelectList, getPartDescription, getPartData, convertPartToAssembly,
@@ -1320,7 +1320,7 @@ function mapStateToProps(state) {
   const fieldsObj = selector(state, 'BOMNumber', 'AssemblyPartNumber', 'AssemblyPartName', 'ECNNumber', 'RevisionNumber',
     'Description', 'DrawingNumber', 'GroupCode', 'Remark', 'TechnologyId')
   const { comman, part, auth, costing } = state;
-  const { plantSelectList, technologySelectList } = comman;
+  const { plantSelectList } = comman;
   const { partData, actualBOMTreeData, productGroupSelectList } = part;
   const { initialConfiguration } = auth;
   const { costingSpecifiTechnology } = costing
@@ -1339,7 +1339,7 @@ function mapStateToProps(state) {
     }
   }
 
-  return { plantSelectList, partData, actualBOMTreeData, fieldsObj, initialValues, initialConfiguration, productGroupSelectList, technologySelectList, costingSpecifiTechnology }
+  return { plantSelectList, partData, actualBOMTreeData, fieldsObj, initialValues, initialConfiguration, productGroupSelectList, costingSpecifiTechnology }
 
 }
 
@@ -1353,7 +1353,6 @@ export default connect(mapStateToProps, {
   getPlantSelectListByType,
   fileUploadPart,
   fileDeletePart,
-  getTechnologySelectList,
   getPartSelectList,
   createAssemblyPart,
   updateAssemblyPart,
