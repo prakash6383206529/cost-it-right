@@ -1012,14 +1012,11 @@ class AddPower extends Component {
       handleChange, DeleteChanged, AddChanged } = this.state;
     const { initialConfiguration, fieldsObj } = this.props;
 
-    if (vendorName.length <= 0) {
+    if (IsVendor && vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
       return false
     }
     this.setState({ isVendorNameNotSelected: false })
-
-
-
     let plantArray = selectedPlants && selectedPlants.map((item) => {
       return { PlantName: item.Text, PlantId: item.Value, }
     })
@@ -1126,7 +1123,6 @@ class AddPower extends Component {
       }
 
     } else {
-
       if (IsVendor) {
 
         this.setState({ setDisable: true })
