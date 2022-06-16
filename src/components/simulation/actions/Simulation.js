@@ -51,6 +51,7 @@ import {
     SET_TOKEN_CHECK_BOX,
     SET_KEY_FOR_API_CALLS,
     SET_TOKEN_FOR_SIMULATION,
+    GET_MASTER_SELECT_LIST_SIMUALTION
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
@@ -1402,6 +1403,29 @@ export function setTokenForSimulation(value) {
             type: SET_TOKEN_FOR_SIMULATION,
             payload: value,
         });
+    }
+}
+
+
+
+//FOR SELECTING MASTER LIST IN SIMULATION
+export function getMasterSelectListSimulation(loggedInUserId, callback) {
+
+    return (dispatch) => {
+        const request = axios.get(`${API.getMasterSelectListSimulation}/${loggedInUserId}`, config());
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_MASTER_SELECT_LIST_SIMUALTION,
+                    payload: response.data.SelectList
+                })
+                callback(response)
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback(error)
+        })
     }
 }
 

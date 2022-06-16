@@ -4,7 +4,7 @@ import RMDomesticListing from '../../masters/material-master/RMDomesticListing';
 import RMImportListing from '../../masters/material-master/RMImportListing';
 import { Row, Col } from 'reactstrap'
 import { Controller, useForm } from 'react-hook-form';
-import { getListingForSimulationCombined, getSelectListOfMasters, setMasterForSimulation, setTechnologyForSimulation, setVendorForSimulation, getTokenSelectListAPI, setTokenCheckBoxValue, setTokenForSimulation } from '../actions/Simulation';
+import { getListingForSimulationCombined, getMasterSelectListSimulation, setMasterForSimulation, setTechnologyForSimulation, setVendorForSimulation, getTokenSelectListAPI, setTokenCheckBoxValue, setTokenForSimulation } from '../actions/Simulation';
 import { useDispatch, useSelector } from 'react-redux';
 import SimulationUploadDrawer from './SimulationUploadDrawer';
 import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, COMBINED_PROCESS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, RM_MASTER_ID } from '../../../config/constants';
@@ -12,7 +12,7 @@ import ReactExport from 'react-export-excel';
 import { CombinedProcessSimulation, getTechnologyForSimulation, OperationSimulation, RMDomesticSimulation, RMImportSimulation, SurfaceTreatmentSimulation, MachineRateSimulation, BOPDomesticSimulation, BOPImportSimulation, OverheadProfitSimulation } from '../../../config/masterData';
 import Toaster from '../../common/Toaster';
 import RMSimulation from './SimulationPages/RMSimulation';
-import { getCostingTechnologySelectList } from '../../costing/actions/Costing';
+import { getCostingSpecificTechnology } from '../../costing/actions/Costing';
 import CostingSimulation from './CostingSimulation';
 import WarningMessage from '../../common/WarningMessage';
 import MachineRateListing from '../../masters/machine-master/MachineRateListing';
@@ -71,8 +71,8 @@ function Simulation(props) {
 
     useEffect(() => {
         setInputLoader(true)
-        dispatch(getSelectListOfMasters(() => { }))
-        dispatch(getCostingTechnologySelectList(() => { }))
+        dispatch(getMasterSelectListSimulation(loggedInUserId(), () => { }))
+        dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
         dispatch(getVendorWithVendorCodeSelectList(() => { setInputLoader(false) }))
         setShowEditTable(false)
         if (props.isRMPage) {
@@ -89,10 +89,10 @@ function Simulation(props) {
         }
     }, [])
 
-    const masterList = useSelector(state => state.simulation.masterSelectList)
+    const masterList = useSelector(state => state.simulation.masterSelectListSimulation)
     const rmDomesticListing = useSelector(state => state.material.rmDataList)
     const rmImportListing = useSelector(state => state.material.rmImportDataList)
-    const technologySelectList = useSelector(state => state.costing.technologySelectList)
+    const technologySelectList = useSelector(state => state.costing.costingSpecifiTechnology)
     const exchangeRateDataList = useSelector(state => state.exchangeRate.exchangeRateDataList)
     const processCostingList = useSelector(state => state.simulation.combinedProcessList)
 
