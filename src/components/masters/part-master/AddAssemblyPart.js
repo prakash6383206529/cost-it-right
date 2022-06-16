@@ -681,7 +681,7 @@ class AddAssemblyPart extends Component {
           || BOMChanged)) {
           // IF THERE ARE CHANGES ,THEN REVISION NO SHOULD BE CHANGED
           if (String(DataToCheck.RevisionNumber) === String(values.RevisionNumber) || String(DataToCheck.BOMNumber) === String(values.BOMNumber) || DayTime(DataToCheck.EffectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(this.state.effectiveDate).format('YYYY-MM-DD HH:mm:ss')) {
-            Toaster.warning('Please edit Revision no , BOM no and Effective date')
+            Toaster.warning('Please edit Revision no, ECN no, BOM no and Effective date')
             return false
           } else {
             isStructureChanges = true
