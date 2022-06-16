@@ -1992,7 +1992,7 @@ function mapStateToProps(state) {
   const fieldsObj = selector(state, 'BasicRate', 'FrieghtCharge', 'ShearingCost', 'ScrapRate')
 
   const { rowMaterialList, rmGradeList, rmSpecification, plantList, supplierSelectList, filterPlantList, filterCityListBySupplier,
-    cityList, technologyList, categoryList, filterPlantListByCity, filterPlantListByCityAndSupplier, UOMSelectList, technologySelectList,
+    cityList, technologyList, categoryList, filterPlantListByCity, filterPlantListByCityAndSupplier, UOMSelectList,
     plantSelectList } = comman
   const { costingSpecifiTechnology } = costing
 
@@ -2018,7 +2018,7 @@ function mapStateToProps(state) {
     technologyList, categoryList, rawMaterialDetails, filterPlantListByCity,
     filterCityListBySupplier, rawMaterialDetailsData, initialValues, fieldsObj,
     filterPlantListByCityAndSupplier, rawMaterialNameSelectList, gradeSelectList,
-    filterPlantList, UOMSelectList, vendorListByVendorType, technologySelectList, plantSelectList,
+    filterPlantList, UOMSelectList, vendorListByVendorType, plantSelectList,
     initialConfiguration, costingSpecifiTechnology
   }
 }

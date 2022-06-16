@@ -6,7 +6,7 @@ import { required, getVendorCode, maxLength80, checkWhiteSpaces, acceptAllExcept
 import { renderText, renderMultiSelectField, searchableSelect, renderTextAreaField, renderDatePicker, renderNumberInputField } from "../../layout/FormInputs";
 import { getVendorWithVendorCodeSelectList } from '../actions/Supplier';
 import { createOperationsAPI, getOperationDataAPI, updateOperationAPI, fileUploadOperation, fileDeleteOperation, checkAndGetOperationCode } from '../actions/OtherOperation';
-import { getTechnologySelectList, getPlantSelectListByType, getPlantBySupplier, getUOMSelectList, } from '../../../actions/Common';
+import { getPlantSelectListByType, getPlantBySupplier, getUOMSelectList, } from '../../../actions/Common';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
@@ -1215,7 +1215,7 @@ class AddOperation extends Component {
 function mapStateToProps(state) {
   const { comman, otherOperation, supplier, auth, costing } = state;
   const filedObj = selector(state, 'OperationCode', 'text');
-  const { technologySelectList, plantSelectList, filterPlantList, UOMSelectList, } = comman;
+  const { plantSelectList, filterPlantList, UOMSelectList, } = comman;
   const { operationData } = otherOperation;
   const { vendorWithVendorCodeSelectList } = supplier;
   const { initialConfiguration } = auth;
@@ -1234,7 +1234,7 @@ function mapStateToProps(state) {
   }
 
   return {
-    technologySelectList, plantSelectList, UOMSelectList,
+    plantSelectList, UOMSelectList,
     operationData, filterPlantList, vendorWithVendorCodeSelectList, filedObj,
     initialValues, initialConfiguration, costingSpecifiTechnology
   }
@@ -1247,7 +1247,6 @@ function mapStateToProps(state) {
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
-  getTechnologySelectList,
   getPlantSelectListByType,
   getVendorWithVendorCodeSelectList,
   getPlantBySupplier,

@@ -7,7 +7,7 @@ import {
   checkWhiteSpaces, maxLength80, maxLength10, positiveAndDecimalNumber, maxLength512
 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker } from "../../layout/FormInputs";
-import { getTechnologySelectList, getPlantSelectListByType, getPlantBySupplier, getUOMSelectList } from '../../../actions/Common';
+import { getPlantSelectListByType, getPlantBySupplier, getUOMSelectList } from '../../../actions/Common';
 import { getVendorListByVendorType, masterFinalLevelUser } from '../actions/Material';
 import {
   createMachine, updateMachine, updateMachineDetails, getMachineTypeSelectList, getProcessesSelectList, fileUploadMachine, fileDeleteMachine,
@@ -1849,7 +1849,7 @@ function mapStateToProps(state) {
   const { comman, material, machine, auth, costing } = state;
   const fieldsObj = selector(state, 'MachineNumber', 'MachineName', 'TonnageCapacity', 'MachineRate', 'Description');
 
-  const { plantList, technologySelectList, plantSelectList, filterPlantList, UOMSelectList, } = comman;
+  const { plantList, plantSelectList, filterPlantList, UOMSelectList, } = comman;
   const { machineTypeSelectList, processSelectList, machineData, loading, processGroupApiData } = machine;
   const { vendorListByVendorType } = material;
   const { initialConfiguration, } = auth;
@@ -1870,7 +1870,7 @@ function mapStateToProps(state) {
   }
 
   return {
-    vendorListByVendorType, plantList, technologySelectList, plantSelectList, filterPlantList, UOMSelectList,
+    vendorListByVendorType, plantList, plantSelectList, filterPlantList, UOMSelectList,
     machineTypeSelectList, processSelectList, fieldsObj, machineData, initialValues, loading, initialConfiguration, processGroupApiData, costingSpecifiTechnology
   }
 
@@ -1884,7 +1884,6 @@ function mapStateToProps(state) {
 */
 export default connect(mapStateToProps, {
   dirty: isDirty('AddMachineRate'),
-  getTechnologySelectList,
   getVendorListByVendorType,
   getPlantSelectListByType,
   getPlantBySupplier,
