@@ -28,7 +28,7 @@ import Dropzone from 'react-dropzone-uploader';
 import "react-datepicker/dist/react-datepicker.css";
 import { FILE_URL, INR, ZBC, RM_MASTER_ID, EMPTY_GUID } from '../../../config/constants';
 import { AcceptableRMUOM } from '../../../config/masterData'
-import { getExchangeRateByCurrency } from "../../costing/actions/Costing"
+import { getExchangeRateByCurrency, getCostingSpecificTechnology } from "../../costing/actions/Costing"
 import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom';
 import WarningMessage from '../../common/WarningMessage';
@@ -39,6 +39,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { animateScroll as scroll } from 'react-scroll';
 import AsyncSelect from 'react-select/async';
 import TooltipCustom from '../../common/Tooltip';
+
 
 const selector = formValueSelector('AddRMImport');
 
@@ -138,7 +139,7 @@ class AddRMImport extends Component {
       this.setState({ inputLoader: true })
       this.props.getRawMaterialCategory(res => { });
       this.props.getVendorListByVendorType(false, () => { this.setState({ inputLoader: false }) })
-      this.props.getTechnologySelectList(() => { this.setState({ inputLoader: false }) })
+      this.props.getCostingSpecificTechnology(loggedInUserId(), () => { this.setState({ inputLoader: false }) })
       this.props.fetchSpecificationDataAPI(0, () => { })
       this.props.getPlantSelectListByType(ZBC, () => { })
     }
@@ -660,9 +661,9 @@ class AddRMImport extends Component {
   * @description Used to show type of listing
   */
   renderListing = (label) => {
-    const { gradeSelectList, rmSpecification, filterPlantList,
+    const { gradeSelectList, rmSpecification,
       cityList, categoryList, filterCityListBySupplier, rawMaterialNameSelectList,
-      UOMSelectList, currencySelectList, vendorListByVendorType, technologySelectList, plantSelectList } = this.props;
+      UOMSelectList, currencySelectList, vendorListByVendorType, plantSelectList, costingSpecifiTechnology } = this.props;
     const temp = [];
     if (label === 'material') {
       rawMaterialNameSelectList && rawMaterialNameSelectList.map(item => {
@@ -697,8 +698,8 @@ class AddRMImport extends Component {
       return temp;
     }
     if (label === 'technology') {
-      technologySelectList &&
-        technologySelectList.map((item) => {
+      costingSpecifiTechnology &&
+        costingSpecifiTechnology.map((item) => {
           if (item.Value === '0') return false
           temp.push({ label: item.Text, value: item.Value })
           return null
@@ -1928,7 +1929,7 @@ class AddRMImport extends Component {
 * @param {*} state
 */
 function mapStateToProps(state) {
-  const { comman, material, auth } = state;
+  const { comman, material, auth, costing } = state;
   const fieldsObj = selector(state, 'BasicRate', 'FreightCharge', 'ShearingCost', 'ScrapRate');
 
   const { uniOfMeasurementList, rowMaterialList, rmGradeList, rmSpecification, plantList,
@@ -1937,6 +1938,7 @@ function mapStateToProps(state) {
     currencySelectList, technologySelectList, plantSelectList } = comman;
 
   const { initialConfiguration } = auth;
+  const { costingSpecifiTechnology } = costing
 
   const { rawMaterialDetails, rawMaterialDetailsData, rawMaterialNameSelectList,
     gradeSelectList, vendorListByVendorType } = material;
@@ -1958,7 +1960,7 @@ function mapStateToProps(state) {
     filterPlantListByCity, filterCityListBySupplier, rawMaterialDetailsData, initialValues,
     fieldsObj, filterPlantListByCityAndSupplier, rawMaterialNameSelectList, gradeSelectList,
     filterPlantList, UOMSelectList, vendorListByVendorType, currencySelectList, technologySelectList, plantSelectList,
-    initialConfiguration,
+    initialConfiguration, costingSpecifiTechnology
   }
 
 }
@@ -1995,7 +1997,8 @@ export default connect(mapStateToProps, {
   getExchangeRateByCurrency,
   getVendorWithVendorCodeSelectList,
   checkAndGetRawMaterialCode,
-  masterFinalLevelUser
+  masterFinalLevelUser,
+  getCostingSpecificTechnology
 })(reduxForm({
   form: 'AddRMImport',
   enableReinitialize: true,

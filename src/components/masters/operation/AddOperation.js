@@ -26,6 +26,7 @@ import AsyncSelect from 'react-select/async';
 import LoaderCustom from '../../common/LoaderCustom';
 import { CheckApprovalApplicableMaster } from '../../../helper';
 import { masterFinalLevelUser } from '../actions/Material'
+import { getCostingSpecificTechnology } from '../../costing/actions/Costing'
 
 const selector = formValueSelector('AddOperation');
 
@@ -95,7 +96,7 @@ class AddOperation extends Component {
    */
   componentDidMount() {
     if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
-      this.props.getTechnologySelectList(() => { })
+      this.props.getCostingSpecificTechnology(loggedInUserId(), () => { })
       this.props.getPlantSelectListByType(ZBC, () => { })
     }
     let obj = {
@@ -108,12 +109,8 @@ class AddOperation extends Component {
       if (res.data.Result) {
         this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
       }
-
     })
-
     this.getDetail()
-
-
   }
 
   componentDidUpdate(prevProps) {
@@ -129,11 +126,11 @@ class AddOperation extends Component {
   * @description Used show listing of unit of measurement
   */
   renderListing = (label) => {
-    const { technologySelectList, plantSelectList, vendorWithVendorCodeSelectList, filterPlantList,
+    const { costingSpecifiTechnology, plantSelectList, vendorWithVendorCodeSelectList,
       UOMSelectList, } = this.props;
     const temp = [];
     if (label === 'technology') {
-      technologySelectList && technologySelectList.map(item => {
+      costingSpecifiTechnology && costingSpecifiTechnology.map(item => {
         if (item.Value === '0') return false;
         temp.push({ Text: item.Text, Value: item.Value })
         return null;
@@ -1190,12 +1187,13 @@ class AddOperation extends Component {
 * @param {*} state
 */
 function mapStateToProps(state) {
-  const { comman, otherOperation, supplier, auth, } = state;
+  const { comman, otherOperation, supplier, auth, costing } = state;
   const filedObj = selector(state, 'OperationCode', 'text');
   const { technologySelectList, plantSelectList, filterPlantList, UOMSelectList, } = comman;
   const { operationData } = otherOperation;
   const { vendorWithVendorCodeSelectList } = supplier;
   const { initialConfiguration } = auth;
+  const { costingSpecifiTechnology } = costing
 
   let initialValues = {};
   if (operationData && operationData !== undefined) {
@@ -1212,7 +1210,7 @@ function mapStateToProps(state) {
   return {
     technologySelectList, plantSelectList, UOMSelectList,
     operationData, filterPlantList, vendorWithVendorCodeSelectList, filedObj,
-    initialValues, initialConfiguration,
+    initialValues, initialConfiguration, costingSpecifiTechnology
   }
 }
 
@@ -1235,6 +1233,7 @@ export default connect(mapStateToProps, {
   fileDeleteOperation,
   masterFinalLevelUser,
   checkAndGetOperationCode,
+  getCostingSpecificTechnology
 })(reduxForm({
   form: 'AddOperation',
   enableReinitialize: true,
