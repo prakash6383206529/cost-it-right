@@ -119,8 +119,8 @@ class AddRMImport extends Component {
   UNSAFE_componentWillMount() {
     this.props.getRawMaterialNameChild(() => { })
     this.props.getCurrencySelectList(() => { })
+    this.props.getUOMSelectList(() => { })
     if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
-      this.props.getUOMSelectList(() => { })
       this.props.getSupplierList(() => { })
       this.props.fetchPlantDataAPI(() => { })
     }
