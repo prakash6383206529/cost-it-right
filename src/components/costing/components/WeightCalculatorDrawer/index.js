@@ -21,7 +21,7 @@ function OpenWeightCalculator(props) {
   if (!isSummary) {
     const { CostingPartDetails } = item
     const { IsApplyMasterBatch, MasterBatchTotal, MasterBatchPercentage } = CostingPartDetails
-    appyMasterBatch = (IsApplyMasterBatch === null || IsApplyMasterBatch === false) ? false : true
+    appyMasterBatch = (IsApplyMasterBatch === null || IsApplyMasterBatch === undefined || IsApplyMasterBatch === false) ? false : true
 
     if (appyMasterBatch) {
 
@@ -35,7 +35,7 @@ function OpenWeightCalculator(props) {
     }
   } else {
     const { IsApplyMasterBatch, MasterBatchTotal, MasterBatchPercentage } = rmMBDetail
-    appyMasterBatch = (IsApplyMasterBatch === null || IsApplyMasterBatch === false) ? false : true
+    appyMasterBatch = (IsApplyMasterBatch === null || IsApplyMasterBatch === undefined || IsApplyMasterBatch === false) ? false : true
     if (appyMasterBatch) {
 
       const RMRate = calculatePercentageValue(rmRowData.RMRate, (100 - MasterBatchPercentage));
