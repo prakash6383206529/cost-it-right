@@ -4,9 +4,9 @@ import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { required, getVendorCode, positiveAndDecimalNumber, maxLength15, acceptAllExceptSingleSpecialCharacter, maxLength70, maxLength512, checkForDecimalAndNull, checkForNull, decimalLengthsix } from "../../../helper/validation";
 import { renderText, renderNumberInputField, searchableSelect, renderMultiSelectField, renderTextAreaField, focusOnError, renderDatePicker, } from '../../layout/FormInputs'
-import { AcceptableRMUOM, FASTNERS } from '../../../config/masterData'
+import { AcceptableRMUOM } from '../../../config/masterData'
 import {
-  getTechnologySelectList, getRawMaterialCategory, fetchGradeDataAPI, fetchSpecificationDataAPI, getCityBySupplier, getPlantByCity,
+  getRawMaterialCategory, fetchGradeDataAPI, fetchSpecificationDataAPI, getCityBySupplier, getPlantByCity,
   getPlantByCityAndSupplier, fetchRMGradeAPI, getSupplierList, getPlantBySupplier, getUOMSelectList, fetchSupplierCityDataAPI,
   fetchPlantDataAPI, getPlantSelectListByType, getCityByCountry, getAllCity
 } from '../../../actions/Common'
@@ -38,6 +38,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { animateScroll as scroll } from 'react-scroll';
 
 import AsyncSelect from 'react-select/async';
+import { getCostingSpecificTechnology } from '../../costing/actions/Costing'
 
 
 const selector = formValueSelector('AddRMDomestic')
@@ -144,7 +145,7 @@ class AddRMDomestic extends Component {
       this.setState({ inputLoader: true })
       this.props.fetchSpecificationDataAPI(0, () => { })
       this.props.getVendorListByVendorType(false, () => { this.setState({ inputLoader: false }) })
-      this.props.getTechnologySelectList(() => { this.setState({ inputLoader: false }) })
+      this.props.getCostingSpecificTechnology(loggedInUserId(), () => { this.setState({ inputLoader: false }) })
       this.props.getPlantSelectListByType(ZBC, () => { })
     }
     let obj = {
@@ -157,10 +158,7 @@ class AddRMDomestic extends Component {
       if (res.data.Result) {
         this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
       }
-
     })
-
-
   }
 
   componentDidUpdate(prevProps) {
@@ -679,7 +677,7 @@ class AddRMDomestic extends Component {
    * @description Used to show type of listing
    */
   renderListing = (label) => {
-    const { gradeSelectList, rmSpecification, filterPlantList, cityList, categoryList, filterCityListBySupplier, rawMaterialNameSelectList, UOMSelectList, vendorListByVendorType, technologySelectList, plantSelectList } = this.props
+    const { gradeSelectList, rmSpecification, cityList, categoryList, filterCityListBySupplier, rawMaterialNameSelectList, UOMSelectList, vendorListByVendorType, plantSelectList, costingSpecifiTechnology } = this.props
     const temp = []
 
     if (label === 'material') {
@@ -719,8 +717,8 @@ class AddRMDomestic extends Component {
     }
 
     if (label === 'technology') {
-      technologySelectList &&
-        technologySelectList.map((item) => {
+      costingSpecifiTechnology &&
+        costingSpecifiTechnology.map((item) => {
 
           if (item.Value === '0') return false
           temp.push({ label: item.Text, value: item.Value })
@@ -1936,12 +1934,13 @@ class AddRMDomestic extends Component {
  * @param {*} state
  */
 function mapStateToProps(state) {
-  const { comman, material, auth } = state
+  const { comman, material, auth, costing } = state
   const fieldsObj = selector(state, 'BasicRate', 'FrieghtCharge', 'ShearingCost', 'ScrapRate')
 
   const { rowMaterialList, rmGradeList, rmSpecification, plantList, supplierSelectList, filterPlantList, filterCityListBySupplier,
-    cityList, technologyList, categoryList, filterPlantListByCity, filterPlantListByCityAndSupplier, UOMSelectList, technologySelectList,
+    cityList, technologyList, categoryList, filterPlantListByCity, filterPlantListByCityAndSupplier, UOMSelectList,
     plantSelectList } = comman
+  const { costingSpecifiTechnology } = costing
 
   const { initialConfiguration } = auth;
 
@@ -1965,8 +1964,8 @@ function mapStateToProps(state) {
     technologyList, categoryList, rawMaterialDetails, filterPlantListByCity,
     filterCityListBySupplier, rawMaterialDetailsData, initialValues, fieldsObj,
     filterPlantListByCityAndSupplier, rawMaterialNameSelectList, gradeSelectList,
-    filterPlantList, UOMSelectList, vendorListByVendorType, technologySelectList, plantSelectList,
-    initialConfiguration
+    filterPlantList, UOMSelectList, vendorListByVendorType, plantSelectList,
+    initialConfiguration, costingSpecifiTechnology
   }
 }
 
@@ -1979,7 +1978,7 @@ function mapStateToProps(state) {
 export default connect(mapStateToProps, {
   createRMDomestic,
   getRawMaterialCategory,
-  getTechnologySelectList,
+  getCostingSpecificTechnology,
   fetchSupplierCityDataAPI,
   fetchGradeDataAPI,
   fetchPlantDataAPI,
