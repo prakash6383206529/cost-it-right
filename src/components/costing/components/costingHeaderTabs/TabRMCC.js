@@ -18,6 +18,7 @@ import DayTime from '../../../common/DayTimeWrapper'
 import { createToprowObjAndSave, findSurfaceTreatmentData } from '../../CostingUtil';
 import _, { debounce } from 'lodash'
 import ScrollToTop from '../../../common/ScrollToTop';
+import WarningMessage from '../../../common/WarningMessage';
 
 function TabRMCC(props) {
 
@@ -1440,14 +1441,15 @@ function TabRMCC(props) {
                 </Row>
 
                 {!CostingViewMode &&
-                  <div className="col-sm-12 text-right bluefooter-butn btn-stciky-container">
+                  <div className="col-sm-12 text-right d-flex align-items-center justify-content-end bluefooter-butn btn-sticky-container">
+                    <WarningMessage dClass="mr-2" textClass="d-flex" message="Please click on save button to save the data" />
                     <button type={"button"} className="reset mr15 cancel-btn" onClick={props.backBtn}>
                       <div className={'cancel-icon'}></div>
                       {"Cancel"}
                     </button>
                     <button
                       type={'button'}
-                      className="submit-button mr5 save-btn"
+                      className="submit-button save-btn"
                       onClick={saveCosting}
                       disabled={Object.keys(ComponentItemData).length === 0 || (DayTime(CostingEffectiveDate).isValid() === false || !checkIsDataChange) ? true : false}
                     >
