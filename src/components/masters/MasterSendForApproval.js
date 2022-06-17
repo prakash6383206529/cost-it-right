@@ -338,7 +338,7 @@ function MasterSendForApproval(props) {
                             <Row className="drawer-heading">
                                 <Col>
                                     <div className={'header-wrapper left'}>
-                                        <h3>{type === 'Approve' ? 'Send For Approval' : `Reject ${getHeaderNameForReject()}`}</h3>
+                                        <h3>{type === 'Sender' ? 'Send For Approval' : `${type} ${getHeaderNameForReject()}`}</h3>
                                     </div>
                                     <div
                                         onClick={(e) => toggleDrawer(e)}
