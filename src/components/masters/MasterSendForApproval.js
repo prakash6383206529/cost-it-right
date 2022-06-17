@@ -310,6 +310,20 @@ function MasterSendForApproval(props) {
 
     }), 500)
 
+    const getHeaderNameForApproveReject = () => {
+        switch (masterId) {
+            case 1:
+                return "Raw Material"
+            case 2:
+                return "Bought Out Part"
+            case 3:
+                return "Operation"
+            case 4:
+                return "Machine"
+            default:
+                break;
+        }
+    }
 
     return (
         <>
@@ -324,7 +338,7 @@ function MasterSendForApproval(props) {
                             <Row className="drawer-heading">
                                 <Col>
                                     <div className={'header-wrapper left'}>
-                                        <h3>{'Send For Approval'}</h3>
+                                        <h3>{type === 'Sender' ? 'Send For Approval' : `${type} ${getHeaderNameForApproveReject()}`}</h3>
                                     </div>
                                     <div
                                         onClick={(e) => toggleDrawer(e)}
