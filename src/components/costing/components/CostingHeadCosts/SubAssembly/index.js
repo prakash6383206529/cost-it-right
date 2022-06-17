@@ -19,12 +19,13 @@ function AssemblyPart(props) {
   const [IsDrawerOpen, setDrawerOpen] = useState(false)
   const [isOpenBOPDrawer, setIsOpenBOPDrawer] = useState(false)
 
+  const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
+
   const CostingViewMode = useContext(ViewCostingContext);
   const costData = useContext(costingInfoContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { CostingEffectiveDate } = useSelector(state => state.costing)
   const dispatch = useDispatch()
-
   const toggle = (BOMLevel, PartNumber) => {
     if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
 
@@ -209,7 +210,7 @@ function AssemblyPart(props) {
                 type="button"
                 className={'user-btn add-oprn-btn mr-1'}
                 onClick={bopHandlingDrawer}>
-                <div className={`${(item?.CostingPartDetails?.IsApplyBOPHandlingCharges || CostingViewMode || item?.IsLocked) ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`BOP H`}</button>
+                <div className={`${(item?.CostingPartDetails?.IsApplyBOPHandlingCharges || CostingViewMode || IsLocked) ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`BOP H`}</button>
 
               {checkForNull(item?.CostingPartDetails?.TotalOperationCostPerAssembly) !== 0 ?
                 <button
@@ -222,7 +223,7 @@ function AssemblyPart(props) {
                   type="button"
                   className={'user-btn add-oprn-btn'}
                   onClick={DrawerToggle}>
-                  <div className={`${(CostingViewMode || item?.IsLocked) ? 'fa fa-eye pr-1' : 'plus'}`}></div>{'OPER'}</button>}
+                  <div className={`${(CostingViewMode || IsLocked) ? 'fa fa-eye pr-1' : 'plus'}`}></div>{'OPER'}</button>}
             </div>
             {/*WHEN COSTING OF THAT PART IS  APPROVED SO COSTING COMES AUTOMATICALLY FROM BACKEND AND THIS KEY WILL COME TRUE (WORK LIKE VIEW MODE)*/}
             <div className={`${(item.IsLocked || item.IsPartLocked) ? 'lock_icon ml-3 tooltip-n' : ''}`}>{false && <span class="tooltiptext">{`This costing already approved via assembly costing`}</span>}</div>
