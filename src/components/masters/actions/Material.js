@@ -911,10 +911,10 @@ export function getAllRawMaterialList(callback) {
         //dispatch({ type: API_REQUEST });
         const request = axios.get(`${API.getRMMaterialAPI}`, config());
         request.then((response) => {
-            if (response.data.Result) {
+            if (response.data.Result || response.status === 204) {
                 dispatch({
                     type: GET_RM_LIST_SUCCESS,
-                    payload: response.data.DataList,
+                    payload: response.status === 204 ? [] : response.data.DataList,
                 });
                 callback(response);
             }

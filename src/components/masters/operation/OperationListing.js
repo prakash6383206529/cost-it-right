@@ -169,7 +169,7 @@ class OperationListing extends Component {
                 }
                 this.setState({ isLoader: false })
                 if (res.status === 204 && res.data === '') {
-                    this.setState({ tableData: [], })
+                    this.setState({ tableData: [], isLoader: false })
                 } else if (res && res.data && res.data.DataList) {
                     let Data = res.data.DataList;
                     if (Number(this.props.isOperationST) === Number(SURFACETREATMENT)) {

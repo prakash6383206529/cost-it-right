@@ -126,12 +126,12 @@ class InterestRateListing extends Component {
     }
     this.props.getInterestRateDataList(true, filterData, res => {
       if (res.status === 204 && res.data === '') {
-        this.setState({ tableData: [], })
+        this.setState({ tableData: [], isLoader: false })
       } else if (res && res.data && res.data.DataList) {
         let Data = res.data.DataList;
-        this.setState({ tableData: Data, }, () => { this.setState({ isLoader: false }) })
+        this.setState({ tableData: Data, isLoader: false }, () => { this.setState({ isLoader: false }) })
       } else {
-        this.setState({ tableData: [], })
+        this.setState({ tableData: [], isLoader: false })
       }
     });
   }
