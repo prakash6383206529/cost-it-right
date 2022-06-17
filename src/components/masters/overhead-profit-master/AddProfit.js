@@ -733,7 +733,7 @@ class AddProfit extends Component {
         ProfitRMPercentage: !isRM ? values.ProfitRMPercentage : '',
         Remark: remarks,
         VendorId: IsVendor ? (costingHead === 'vendor' ? vendorName.value : '') : userDetail.ZBCSupplierInfo.VendorId,
-        VendorCode: IsVendor ? (costingHead === 'vendor' ? getVendorCode(`vendorName`.label) : '') : userDetail.ZBCSupplierInfo.VendorNameWithCode,
+        VendorCode: IsVendor ? (costingHead === 'vendor' ? getVendorCode(vendorName.label) : '') : userDetail.ZBCSupplierInfo.VendorNameWithCode,
         ClientId: costingHead === 'client' ? client.value : '',
         ProfitApplicabilityId: profitAppli.value,
         ModelTypeId: ModelType.value,
