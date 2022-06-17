@@ -225,7 +225,7 @@ function AssemblyPart(props) {
                   <div className={`${CostingViewMode ? 'fa fa-eye pr-1' : 'plus'}`}></div>{'OPER'}</button>}
             </div>
             {/*WHEN COSTING OF THAT PART IS  APPROVED SO COSTING COMES AUTOMATICALLY FROM BACKEND AND THIS KEY WILL COME TRUE (WORK LIKE VIEW MODE)*/}
-            <div className={`${(item.IsLocked || item.IsPartLocked) ? 'lock_icon ml-3 tooltip-n' : ''}`}>{(item.IsLocked || item.IsPartLocked) && <span class="tooltiptext">{`${item.IsLocked ? "Child assemblies costing are coming from individual costing, please edit there if want to change costing" : "This sub-assembly is already associated at lower level below , from where it can be edited"}`}</span>}</div>
+            <div className={`${(item.IsLocked || item.IsPartLocked) ? 'lock_icon ml-3 tooltip-n' : ''}`}>{(item.IsLocked || item.IsPartLocked) && <span class="tooltiptext">{`${item.IsLocked ? "Child assemblies costing are coming from individual costing, please edit there if want to change costing" : "This sub-assembly is already present at multiple level in this BOM. Please go to the lowest level to enter the data."}`}</span>}</div>
           </div>
         </td>
 
