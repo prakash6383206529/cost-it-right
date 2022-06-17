@@ -21,6 +21,7 @@ function AssemblySurfaceTreatment(props) {
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const dispatch = useDispatch()
 
+  const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
   const toggle = (BOMLevel, PartNumber, IsCollapse) => {
     setIsOpen(!IsOpen)
     setCount(Count + 1)
@@ -185,7 +186,7 @@ function AssemblySurfaceTreatment(props) {
                   DrawerToggle()
                 }}
               >
-                <div className={`${(CostingViewMode || item?.IsLocked || item?.IsPartLocked) ? 'fa fa-eye pr-1' : 'plus'}`}></div> Surface T.</button>
+                <div className={`${(CostingViewMode || IsLocked) ? 'fa fa-eye pr-1' : 'plus'}`}></div> Surface T.</button>
             }
             <div className={`lock-width ${(item.IsLocked || item.IsPartLocked) ? 'lock_icon' : ''}`}>{''}</div>
           </div>

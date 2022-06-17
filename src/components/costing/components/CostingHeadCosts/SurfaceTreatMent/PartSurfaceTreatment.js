@@ -19,6 +19,8 @@ function PartSurfaceTreatment(props) {
   const CostingViewMode = useContext(ViewCostingContext);
   const dispatch = useDispatch()
 
+  const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
+
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
   const toggle = (BOMLevel, PartNumber) => {
@@ -106,7 +108,7 @@ function PartSurfaceTreatment(props) {
                 //onClick={DrawerToggle}
                 onClick={() => toggle(item.BOMLevel, item.PartNumber)}
               >
-                <div className={`${(CostingViewMode || item.IsPartLocked) ? 'fa fa-eye pr-1' : 'plus'}`}></div>Surface T.</button>
+                <div className={`${(CostingViewMode || IsLocked) ? 'fa fa-eye pr-1' : 'plus'}`}></div>Surface T.</button>
             }
             <div className={`lock-width ${(item.IsLocked || item.IsPartLocked) ? 'lock_icon' : ''}`}>{''}</div>
           </div>
