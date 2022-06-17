@@ -79,11 +79,11 @@ class PowerListing extends Component {
         this.setState({ isLoader: false })
         if (res && res.status === 200) {
           let Data = res.data.DataList;
-          this.setState({ tableData: Data })
+          this.setState({ tableData: Data, isLoader: false })
         } else if (res && res.response && res.response.status === 412) {
-          this.setState({ tableData: [] })
+          this.setState({ tableData: [], isLoader: false })
         } else {
-          this.setState({ tableData: [] })
+          this.setState({ tableData: [], isLoader: false })
         }
       })
 

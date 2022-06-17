@@ -61,7 +61,7 @@ class IndivisualProductListing extends Component {
         this.props.getProductDataList((res) => {
             this.setState({ isLoader: false })
             if (res.status === 204 && res.data === '') {
-                this.setState({ tableData: [], })
+                this.setState({ tableData: [], isLoader: false })
             } else if (res && res.data && res.data.DataList) {
 
                 let Data = res.data.DataList;

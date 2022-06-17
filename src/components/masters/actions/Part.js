@@ -304,11 +304,13 @@ export function getAssemblyPartDataList(callback) {
     return (dispatch) => {
         const request = axios.get(`${API.getAssemblyPartDataList}`, config());
         request.then((response) => {
-            dispatch({
-                type: GET_ALL_PARTS_SUCCESS,
-                payload: response.data.DataList,
-            });
-            callback(response);
+            if (response.data.Result || response.status === 204) {
+                dispatch({
+                    type: GET_ALL_PARTS_SUCCESS,
+                    payload: response.status === 204 ? [] : response.data.DataList
+                });
+                callback(response);
+            }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             callback(error);
@@ -326,11 +328,13 @@ export function getAssemblyPartDetail(PartId, callback) {
         if (PartId !== '') {
             const request = axios.get(`${API.getAssemblyPartDetail}/${PartId}`, config());
             request.then((response) => {
-                dispatch({
-                    type: GET_UNIT_PART_DATA_SUCCESS,
-                    payload: response.data.Data,
-                });
-                callback(response);
+                if (response.data.Result || response.status === 204) {
+                    dispatch({
+                        type: GET_UNIT_PART_DATA_SUCCESS,
+                        payload: response.status === 204 ? [] : response.data.Data,
+                    });
+                    callback(response);
+                }
             }).catch((error) => {
                 dispatch({ type: API_FAILURE });
                 callback(error);
@@ -629,10 +633,10 @@ export function getProductDataList(callback) {
     return (dispatch) => {
         const request = axios.get(`${API.getProductDataList}`, config());
         request.then((response) => {
-            if (response.data.Result === true) {
+            if (response.data.Result === true || response.status === 204) {
                 dispatch({
                     type: GET_PRODUCT_DATA_LIST,
-                    payload: response.data.DataList,
+                    payload: response.status === 204 ? [] : response.data.DataList,
                 });
                 callback(response);
             }
