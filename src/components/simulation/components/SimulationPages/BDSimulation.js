@@ -19,6 +19,7 @@ import Simulation from '../Simulation';
 import { debounce } from 'lodash'
 import { VBC, ZBC } from '../../../../config/constants';
 import { PaginationWrapper } from '../../../common/commonPagination';
+import DatePicker from "react-datepicker";
 
 const gridOptions = {
 
@@ -35,6 +36,8 @@ function BDSimulation(props) {
     const [showMainSimulation, setShowMainSimulation] = useState(false)
     const [isDisable, setIsDisable] = useState(false)
     const gridRef = useRef();
+    const [effectiveDate, setEffectiveDate] = useState('');
+    const [isEffectiveDateSelected, setIsEffectiveDateSelected] = useState(false);
 
     const { register, control, setValue, formState: { errors }, } = useForm({
         mode: 'onChange',
@@ -64,6 +67,11 @@ function BDSimulation(props) {
     }, [list])
 
     const verifySimulation = debounce(() => {
+        if (!isEffectiveDateSelected) {
+            Toaster.warning('Please select effective date')
+            return false
+        }
+
         let basicRateCount = 0
 
         list && list.map((li) => {
@@ -90,6 +98,7 @@ function BDSimulation(props) {
         obj.LoggedInUserId = loggedInUserId()
         obj.TechnologyId = selectedTechnologyForSimulation.value
         obj.TechnologyName = selectedTechnologyForSimulation.label
+        obj.EffectiveDate = effectiveDate
         // if (filteredRMData.plantId && filteredRMData.plantId.value) {
         //     obj.PlantId = filteredRMData.plantId ? filteredRMData.plantId.value : ''
         // }
@@ -287,6 +296,12 @@ function BDSimulation(props) {
             gridRef.current.api.sizeColumnsToFit();
         }
     }
+    const handleEffectiveDateChange = (date) => {
+        setEffectiveDate(date)
+        setIsEffectiveDateSelected(true)
+    }
+
+
     const frameworkComponents = {
         effectiveDateRenderer: effectiveDateFormatter,
         costingHeadFormatter: costingHeadFormatter,
@@ -413,6 +428,32 @@ function BDSimulation(props) {
                             !isImpactedMaster &&
                             <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                                 <div className="col-sm-12 text-right bluefooter-butn">
+                                    <>
+
+                                        <div className="inputbox date-section">
+                                            <DatePicker
+                                                name="EffectiveDate"
+                                                //selected={effectiveDate}
+                                                //selected={effectiveDate ? new Date(effectiveDate) : ''}
+                                                selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
+                                                onChange={handleEffectiveDateChange}
+                                                showMonthDropdown
+                                                showYearDropdown
+                                                dateFormat="dd/MM/yyyy"
+                                                //maxDate={new Date()}
+                                                //minDate={new Date(minDate)}
+                                                dropdownMode="select"
+                                                placeholderText="Select date"
+                                                className="withBorder"
+                                                autoComplete={"off"}
+                                                disabledKeyboardNavigation
+                                                onChangeRaw={(e) => e.preventDefault()}
+
+                                            />
+                                        </div>
+
+                                    </>
+
                                     <button type={"button"} className="mr15 cancel-btn" onClick={cancel} disabled={isDisable}>
                                         <div className={"cancel-icon"}></div>
                                         {"CANCEL"}

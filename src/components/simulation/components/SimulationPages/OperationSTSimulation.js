@@ -20,6 +20,7 @@ import { VBC, ZBC } from '../../../../config/constants';
 import { runVerifySurfaceTreatmentSimulation } from '../../actions/Simulation';
 import VerifySimulation from '../VerifySimulation';
 import { PaginationWrapper } from '../../../common/commonPagination';
+import DatePicker from "react-datepicker";
 
 const gridOptions = {
 
@@ -35,6 +36,9 @@ function OperationSTSimulation(props) {
     const [selectedRowData, setSelectedRowData] = useState([]);
     const [tableData, setTableData] = useState([])
     const [isDisable, setIsDisable] = useState(false)
+    const [effectiveDate, setEffectiveDate] = useState('');
+    const [isEffectiveDateSelected, setIsEffectiveDateSelected] = useState(false);
+
     const gridRef = useRef();
 
     const { register, control, setValue, formState: { errors }, } = useForm({
@@ -207,6 +211,12 @@ function OperationSTSimulation(props) {
         return row.Rate != null ? checkForDecimalAndNull(Rate, getConfigurationKey().NoOfDecimalForPrice) : ''
     }
 
+    const handleEffectiveDateChange = (date) => {
+        setEffectiveDate(date)
+        setIsEffectiveDateSelected(true)
+    }
+
+
     const frameworkComponents = {
         effectiveDateRenderer: effectiveDateFormatter,
         costFormatter: costFormatter,
@@ -225,7 +235,10 @@ function OperationSTSimulation(props) {
     let obj = {}
     const verifySimulation = debounce(() => {
         /**********CONDITION FOR: IS ANY FIELD EDITED****************/
-
+        if (!isEffectiveDateSelected) {
+            Toaster.warning('Please select effective date')
+            return false
+        }
         let Count = 0
         let tempData = list
         let arr = []
@@ -267,7 +280,7 @@ function OperationSTSimulation(props) {
         })
 
         obj.SimulationIds = tokenForMultiSimulation
-
+        obj.EffectiveDate = effectiveDate
         obj.SimulationSurfaceTreatmentAndOperation = tempArr
         dispatch(runVerifySurfaceTreatmentSimulation(obj, res => {
             setIsDisable(false)
@@ -394,6 +407,32 @@ function OperationSTSimulation(props) {
                                 !isImpactedMaster &&
                                 <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                                     <div className="col-sm-12 text-right bluefooter-butn">
+                                        <>
+
+                                            <div className="inputbox date-section">
+                                                <DatePicker
+                                                    name="EffectiveDate"
+                                                    //selected={effectiveDate}
+                                                    //selected={effectiveDate ? new Date(effectiveDate) : ''}
+                                                    selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
+                                                    onChange={handleEffectiveDateChange}
+                                                    showMonthDropdown
+                                                    showYearDropdown
+                                                    dateFormat="dd/MM/yyyy"
+                                                    //maxDate={new Date()}
+                                                    //minDate={new Date(minDate)}
+                                                    dropdownMode="select"
+                                                    placeholderText="Select date"
+                                                    className="withBorder"
+                                                    autoComplete={"off"}
+                                                    disabledKeyboardNavigation
+                                                    onChangeRaw={(e) => e.preventDefault()}
+
+                                                />
+                                            </div>
+
+                                        </>
+
                                         <button type={"button"} className="mr15 cancel-btn" onClick={cancel} disabled={isDisable}>
                                             <div className={"cancel-icon"}></div>
                                             {"CANCEL"}
