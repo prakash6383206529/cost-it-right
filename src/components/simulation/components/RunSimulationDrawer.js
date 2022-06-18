@@ -17,6 +17,7 @@ import Switch from 'react-switch'
 import { Fragment } from 'react';
 import { debounce } from 'lodash';
 import WarningMessage from '../../common/WarningMessage';
+import DatePicker from "react-datepicker";
 
 function RunSimulationDrawer(props) {
     const { objs, masterId, simulationTechnologyId, vendorId, tokenNo, date } = props
@@ -585,32 +586,16 @@ function RunSimulationDrawer(props) {
 
                                             <Row>
                                                 <Col md="12" className="inputbox date-section">
-                                                    <DatePickerHookForm
-                                                        name={`EffectiveDate`}
-                                                        label={'Effective Date'}
-                                                        selected={selectedDate}
-                                                        handleChange={(date) => {
-                                                            handleEffectiveDateChange(date);
-                                                        }}
-                                                        //defaultValue={data.effectiveDate != "" ? moment(data.effectiveDate).format('DD/MM/YYYY') : ""}
-                                                        rules={{ required: true }}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        register={register}
+                                                    <DatePicker
+                                                        selected={DayTime(date).isValid() ? new Date(date) : ''}
+                                                        dateFormat="dd/MM/yyyy"
                                                         showMonthDropdown
                                                         showYearDropdown
-                                                        dateFormat="aa/MM/yyyy"
-                                                        //maxDate={new Date()}
-                                                        dropdownMode="select"
-                                                        placeholderText="Select date"
-                                                        customClassName="withBorder"
-                                                        className="withBorder"
-                                                        autoComplete={"off"}
+                                                        readonly="readonly"
+                                                        onBlur={() => null}
+                                                        autoComplete={'off'}
                                                         disabledKeyboardNavigation
-                                                        onChangeRaw={(e) => e.preventDefault()}
                                                         disabled={true}
-                                                        mandatory={true}
-                                                        errors={errors.EffectiveDate}
                                                     />
                                                 </Col>
                                                 <Col md="12" className="mt-4 pt-1 warning-text-container">
