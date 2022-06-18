@@ -69,7 +69,8 @@ class AddProfit extends Component {
       inputLoader: false,
       minEffectiveDate: '',
       isDataChanged: this.props.data.isEditFlag,
-      attachmentLoader: false
+      attachmentLoader: false,
+      vendorCode: ""
     }
   }
 
@@ -170,6 +171,7 @@ class AddProfit extends Component {
               remarks: Data.Remark,
               files: Data.Attachements,
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
+              vendorCode: (Data.VendorCode && Data.VendorCode !== undefined) ? Data.VendorCode : ""
             }, () => {
               this.checkProfitFields()
               this.setState({ isLoader: false })
@@ -704,7 +706,7 @@ class AddProfit extends Component {
         ProfitRMPercentage: values.ProfitRMPercentage,
         Remark: remarks,
         VendorId: IsVendor ? (costingHead === 'vendor' ? vendorName.value : '') : userDetail.ZBCSupplierInfo.VendorId,
-        VendorCode: IsVendor ? (costingHead === 'vendor' ? getVendorCode(vendorName.label) : '') : userDetail.ZBCSupplierInfo.VendorNameWithCode,
+        VendorCode: this.state.vendorCode ? this.state.vendorCode : "",
         ClientId: costingHead === 'client' ? client.value : '',
         ProfitApplicabilityId: profitAppli.value,
         ModelTypeId: ModelType.value,
@@ -718,7 +720,6 @@ class AddProfit extends Component {
       if (isEditFlag) {
         this.setState({ showPopup: true, updatedObj: requestData })
       }
-
 
 
     } else {
