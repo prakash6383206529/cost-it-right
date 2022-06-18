@@ -2348,7 +2348,7 @@ input:disabled {
 }
 
 .add-min-height {
-  min-height: calc(100vh - 268px);
+  min-height: calc(100vh - 263px);
 }
 
 .role-permision-page {
@@ -8378,4 +8378,17 @@ padding-bottom: 3px;
   text-overflow: ellipsis;
   white-space: nowrap;
  } 
+}
+.inputbox.date-section.verfiy-page {
+  max-width: 146px;
+  height: auto;
+  input {
+    height: 32px !important;
+    min-height: 32px;
+    border: 1px solid #256bd1 !important;
+    @media screen and (max-width:$max1367) {
+      height: calc(32px * 80 / 100) !important;
+      min-height:calc(32px * 80 / 100) ;
+    }
+  }
 }
