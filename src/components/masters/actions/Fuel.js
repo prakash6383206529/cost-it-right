@@ -90,7 +90,7 @@ export function getFuelDetailDataList(isAPICall, data, callback) {
                 if (response && (response.data.Result === true || response.status === 204)) {
                     dispatch({
                         type: GET_FUEL_DATALIST_SUCCESS,
-                        payload: response.data.DataList,
+                        payload: response.status === 204 ? [] : response.data.DataList,
                     });
                     callback(response);
                 }
