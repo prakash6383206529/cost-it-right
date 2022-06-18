@@ -95,7 +95,7 @@ function VerifySimulation(props) {
                         setHideRunButton(false)
                         setSimulationTechnologyId(data.SimulationtechnologyId)
                         setVendorId(data.VendorId)
-
+                        setEffectiveDate(data.EffectiveDate)
                     }
                 }))
                 break;
@@ -113,6 +113,7 @@ function VerifySimulation(props) {
                         setSimualtionId(data.SimulationId)
                         setSimulationTechnologyId(data.SimulationtechnologyId)
                         setHideRunButton(false)
+                        setEffectiveDate(data.EffectiveDate)
                     }
                 }))
                 break;
@@ -130,6 +131,7 @@ function VerifySimulation(props) {
                         setSimualtionId(data.SimulationId)
                         setSimulationTechnologyId(data.SimulationtechnologyId)
                         setHideRunButton(false)
+                        setEffectiveDate(data.EffectiveDate)
                     }
                 }))
                 break;
@@ -146,6 +148,7 @@ function VerifySimulation(props) {
                         setTokenNo(data.TokenNumber)
                         setSimualtionId(data.SimulationId)
                         setHideRunButton(false)
+                        setEffectiveDate(data.EffectiveDate)
                     }
                 }))
                 break;
@@ -162,6 +165,7 @@ function VerifySimulation(props) {
                         setTokenNo(data.TokenNumber)
                         setSimualtionId(data.SimulationId)
                         setHideRunButton(false)
+                        setEffectiveDate(data.EffectiveDate)
                     }
                 }))
                 break;
@@ -178,6 +182,7 @@ function VerifySimulation(props) {
                         setTokenNo(data.TokenNumber)
                         setSimualtionId(data.SimulationId)
                         setHideRunButton(false)
+                        setEffectiveDate(data.EffectiveDate)
                     }
                 }))
                 break;
