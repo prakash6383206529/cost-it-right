@@ -18,7 +18,7 @@ import { debounce } from 'lodash';
 import WarningMessage from '../../common/WarningMessage';
 
 function RunSimulationDrawer(props) {
-    const { objs, masterId, simulationTechnologyId, vendorId, tokenNo } = props
+    const { objs, masterId, simulationTechnologyId, vendorId, tokenNo, date } = props
 
 
     const { register, control, formState: { errors }, handleSubmit, setValue, getValues, reset, } = useForm({
@@ -34,7 +34,7 @@ function RunSimulationDrawer(props) {
 
     const [multipleHeads, setMultipleHeads] = useState([])
     const [opposite, setIsOpposite] = useState(false)
-    const [selectedDate, setSelectedDate] = useState('')
+    const [selectedDate, setSelectedDate] = useState(date !== null ? date : "")
     const [selectedData, setSelectedData] = useState([])
     const [provisionalCheck, setProvisionalCheck] = useState(false)
     const [inputOtherCost, setInputOtherCost] = useState(false)
@@ -621,7 +621,7 @@ function RunSimulationDrawer(props) {
                                                         autoComplete={"off"}
                                                         disabledKeyboardNavigation
                                                         onChangeRaw={(e) => e.preventDefault()}
-                                                        disabled={false}
+                                                        disabled={true}
                                                         mandatory={true}
                                                         errors={errors.EffectiveDate}
                                                     />

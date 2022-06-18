@@ -27,6 +27,7 @@ function VerifySimulation(props) {
     const [selectedRowData, setSelectedRowData] = useState([]);
 
     const [selectedIds, setSelectedIds] = useState('')
+    const [effectiveDate, setEffectiveDate] = useState('')
     const [tokenNo, setTokenNo] = useState('')
     const [simulationId, setSimualtionId] = useState('')
     const [simulationTechnologyId, setSimulationTechnologyId] = useState('')
@@ -76,7 +77,7 @@ function VerifySimulation(props) {
                         setHideRunButton(false)
                         setSimulationTechnologyId(data.SimulationtechnologyId)
                         setVendorId(data.VendorId)
-
+                        setEffectiveDate(data.EffectiveDate)
                     }
                 }))
                 break;
@@ -572,6 +573,7 @@ function VerifySimulation(props) {
                     vendorId={vendorId}
                     isOpen={simulationDrawer}
                     closeDrawer={closeDrawer}
+                    date={effectiveDate}
                     objs={objs}
                     anchor={"right"}
                 />

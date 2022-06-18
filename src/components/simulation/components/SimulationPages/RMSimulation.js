@@ -9,6 +9,7 @@ import Toaster from '../../../common/Toaster';
 import { runVerifySimulation } from '../../actions/Simulation';
 import { Fragment } from 'react';
 import { TextFieldHookForm } from '../../../layout/HookFormInputs';
+import DatePicker from "react-datepicker";
 import { useForm, Controller } from 'react-hook-form'
 import RunSimulationDrawer from '../RunSimulationDrawer';
 import VerifySimulation from '../VerifySimulation';
@@ -20,6 +21,7 @@ import Simulation from '../Simulation';
 import { VBC, ZBC } from '../../../../config/constants';
 import { debounce } from 'lodash'
 import { PaginationWrapper } from '../../../common/commonPagination';
+import { Field } from 'redux-form';
 
 const gridOptions = {
 
@@ -37,6 +39,8 @@ function RMSimulation(props) {
     const [showMainSimulation, setShowMainSimulation] = useState(false)
     const [textFilterSearch, setTextFilterSearch] = useState('')
     const [isDisable, setIsDisable] = useState(false)
+    const [effectiveDate, setEffectiveDate] = useState('');
+    const [isEffectiveDateSelected, setIsEffectiveDateSelected] = useState(false);
     const gridRef = useRef();
 
     const { register, control, setValue, formState: { errors }, } = useForm({
@@ -68,6 +72,11 @@ function RMSimulation(props) {
     }, [list])
 
     const verifySimulation = debounce(() => {
+        if (!isEffectiveDateSelected) {
+            Toaster.warning('Please select effective date')
+            return false
+        }
+
         let basicRateCount = 0
         let basicScrapCount = 0
         let isScrapRateGreaterThanBasiRate = false
@@ -145,6 +154,7 @@ function RMSimulation(props) {
 
         obj.SimulationIds = tokenForMultiSimulation
         obj.SimulationRawMaterials = tempArr
+        obj.EffectiveDate = effectiveDate
         dispatch(runVerifySimulation(obj, res => {
             setIsDisable(false)
 
@@ -379,6 +389,12 @@ function RMSimulation(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
     }
 
+
+    const handleEffectiveDateChange = (date) => {
+        setEffectiveDate(date)
+        setIsEffectiveDateSelected(true)
+    }
+
     const frameworkComponents = {
         effectiveDateFormatter: effectiveDateFormatter,
         costingHeadFormatter: costingHeadFormatter,
@@ -545,6 +561,35 @@ function RMSimulation(props) {
                             !isImpactedMaster &&
                             <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                                 <div className="col-sm-12 text-right bluefooter-butn">
+
+                                    <>
+
+                                        <div className="inputbox date-section">
+                                            <DatePicker
+                                                name="EffectiveDate"
+                                                //selected={effectiveDate}
+                                                //selected={effectiveDate ? new Date(effectiveDate) : ''}
+                                                selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
+                                                onChange={handleEffectiveDateChange}
+                                                showMonthDropdown
+                                                showYearDropdown
+                                                dateFormat="dd/MM/yyyy"
+                                                //maxDate={new Date()}
+                                                //minDate={new Date(minDate)}
+                                                dropdownMode="select"
+                                                placeholderText="Select date"
+                                                className="withBorder"
+                                                autoComplete={"off"}
+                                                disabledKeyboardNavigation
+                                                onChangeRaw={(e) => e.preventDefault()}
+
+                                            />
+                                        </div>
+
+                                    </>
+
+
+
                                     <button type={"button"} className="mr15 cancel-btn" onClick={cancel} disabled={isDisable}>
                                         <div className={"cancel-icon"}></div>
                                         {"CANCEL"}
