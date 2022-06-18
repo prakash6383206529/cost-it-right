@@ -1407,6 +1407,7 @@ function SimulationApprovalSummary(props) {
                                     isPartImpactAssembly={true}
                                     impactType={'AssemblySummary'}
                                     isImpactDrawer={false}
+                                    simulationId={simulationDetail.SimulationId}
                                 />
                             }
                             {/* {lastRevisionDataAccordian &&
