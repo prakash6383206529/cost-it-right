@@ -22,6 +22,7 @@ import { debounce } from 'lodash'
 import { VBC, ZBC } from '../../../../config/constants';
 import { PaginationWrapper } from '../../../common/commonPagination';
 import { Field } from 'redux-form';
+import WarningMessage from '../../../common/WarningMessage';
 
 const gridOptions = {
 
@@ -41,6 +42,7 @@ function RMSimulation(props) {
     const [isDisable, setIsDisable] = useState(false)
     const [effectiveDate, setEffectiveDate] = useState('');
     const [isEffectiveDateSelected, setIsEffectiveDateSelected] = useState(false);
+    const [isWarningMessageShow, setIsWarningMessageShow] = useState(false)
     const gridRef = useRef();
 
     const { register, control, setValue, formState: { errors }, } = useForm({
@@ -74,7 +76,7 @@ function RMSimulation(props) {
 
     const verifySimulation = debounce(() => {
         if (!isEffectiveDateSelected) {
-            Toaster.warning('Please select effective date')
+            setIsWarningMessageShow(true)
             return false
         }
 
@@ -372,6 +374,7 @@ function RMSimulation(props) {
     const handleEffectiveDateChange = (date) => {
         setEffectiveDate(date)
         setIsEffectiveDateSelected(true)
+        setIsWarningMessageShow(false)
     }
 
     const frameworkComponents = {
@@ -539,15 +542,11 @@ function RMSimulation(props) {
                                     <div className="inputbox date-section mr-3 verfiy-page">
                                         <DatePicker
                                             name="EffectiveDate"
-                                            //selected={effectiveDate}
-                                            //selected={effectiveDate ? new Date(effectiveDate) : ''}
                                             selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
                                             onChange={handleEffectiveDateChange}
                                             showMonthDropdown
                                             showYearDropdown
                                             dateFormat="dd/MM/yyyy"
-                                            //maxDate={new Date()}
-                                            //minDate={new Date(minDate)}
                                             dropdownMode="select"
                                             placeholderText="Select effective date"
                                             className="withBorder"
@@ -555,7 +554,9 @@ function RMSimulation(props) {
                                             disabledKeyboardNavigation
                                             onChangeRaw={(e) => e.preventDefault()}
                                         />
-                                    </div>    <button type={"button"} className="mr15 cancel-btn" onClick={cancel} disabled={isDisable}>
+                                        {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
+                                    </div>
+                                    <button type={"button"} className="mr15 cancel-btn" onClick={cancel} disabled={isDisable}>
                                         <div className={"cancel-icon"}></div>
                                         {"CANCEL"}
                                     </button>
