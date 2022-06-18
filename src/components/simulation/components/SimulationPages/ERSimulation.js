@@ -18,6 +18,7 @@ import OtherVerifySimulation from '../OtherVerifySimulation';
 import { debounce } from 'lodash'
 import { PaginationWrapper } from '../../../common/commonPagination';
 import DatePicker from "react-datepicker";
+import WarningMessage from '../../../common/WarningMessage';
 
 const gridOptions = {
 
@@ -34,6 +35,7 @@ function ERSimulation(props) {
     const [isDisable, setIsDisable] = useState(false)
     const [effectiveDate, setEffectiveDate] = useState('');
     const [isEffectiveDateSelected, setIsEffectiveDateSelected] = useState(false);
+    const [isWarningMessageShow, setIsWarningMessageShow] = useState(false);
 
     const dispatch = useDispatch()
 
@@ -162,6 +164,7 @@ function ERSimulation(props) {
     const handleEffectiveDateChange = (date) => {
         setEffectiveDate(date)
         setIsEffectiveDateSelected(true)
+        setIsWarningMessageShow(false)
     }
 
 
@@ -184,7 +187,7 @@ function ERSimulation(props) {
     const verifySimulation = debounce(() => {
         /**********POST METHOD TO CALL HERE AND AND SEND TOKEN TO VERIFY PAGE ****************/
         if (!isEffectiveDateSelected) {
-            Toaster.warning('Please select effective date')
+            setIsWarningMessageShow(true)
             return false
         }
 
@@ -292,32 +295,24 @@ function ERSimulation(props) {
                         {
                             !isImpactedMaster &&
                             <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
-                                <div className="col-sm-12 text-right bluefooter-butn">
-                                    <>
-
-                                        <div className="inputbox date-section">
-                                            <DatePicker
-                                                name="EffectiveDate"
-                                                //selected={effectiveDate}
-                                                //selected={effectiveDate ? new Date(effectiveDate) : ''}
-                                                selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
-                                                onChange={handleEffectiveDateChange}
-                                                showMonthDropdown
-                                                showYearDropdown
-                                                dateFormat="dd/MM/yyyy"
-                                                //maxDate={new Date()}
-                                                //minDate={new Date(minDate)}
-                                                dropdownMode="select"
-                                                placeholderText="Select date"
-                                                className="withBorder"
-                                                autoComplete={"off"}
-                                                disabledKeyboardNavigation
-                                                onChangeRaw={(e) => e.preventDefault()}
-
-                                            />
-                                        </div>
-
-                                    </>
+                                <div className="col-sm-12 text-right bluefooter-butn d-flex justify-content-end align-items-center">
+                                    <div className="inputbox date-section mr-3 verfiy-page">
+                                        <DatePicker
+                                            name="EffectiveDate"
+                                            selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
+                                            onChange={handleEffectiveDateChange}
+                                            showMonthDropdown
+                                            showYearDropdown
+                                            dateFormat="dd/MM/yyyy"
+                                            dropdownMode="select"
+                                            placeholderText="Select effective date"
+                                            className="withBorder"
+                                            autoComplete={"off"}
+                                            disabledKeyboardNavigation
+                                            onChangeRaw={(e) => e.preventDefault()}
+                                        />
+                                        {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
+                                    </div>
 
                                     <button type={"button"} className="mr15 cancel-btn" onClick={cancel} disabled={isDisable}>
                                         <div className={"cancel-icon"}></div>
