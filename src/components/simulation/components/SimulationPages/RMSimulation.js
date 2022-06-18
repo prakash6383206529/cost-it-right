@@ -561,37 +561,27 @@ function RMSimulation(props) {
                         {
                             !isImpactedMaster &&
                             <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
-                                <div className="col-sm-12 text-right bluefooter-butn">
-
-                                    <>
-
-                                        <div className="inputbox date-section">
-                                            <DatePicker
-                                                name="EffectiveDate"
-                                                //selected={effectiveDate}
-                                                //selected={effectiveDate ? new Date(effectiveDate) : ''}
-                                                selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
-                                                onChange={handleEffectiveDateChange}
-                                                showMonthDropdown
-                                                showYearDropdown
-                                                dateFormat="dd/MM/yyyy"
-                                                //maxDate={new Date()}
-                                                //minDate={new Date(minDate)}
-                                                dropdownMode="select"
-                                                placeholderText="Select date"
-                                                className="withBorder"
-                                                autoComplete={"off"}
-                                                disabledKeyboardNavigation
-                                                onChangeRaw={(e) => e.preventDefault()}
-
-                                            />
-                                        </div>
-
-                                    </>
-
-
-
-                                    <button type={"button"} className="mr15 cancel-btn" onClick={cancel} disabled={isDisable}>
+                                <div className="col-sm-12 text-right bluefooter-butn d-flex justify-content-end align-items-center">
+                                    <div className="inputbox date-section mr-3 verfiy-page">
+                                        <DatePicker
+                                            name="EffectiveDate"
+                                            //selected={effectiveDate}
+                                            //selected={effectiveDate ? new Date(effectiveDate) : ''}
+                                            selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
+                                            onChange={handleEffectiveDateChange}
+                                            showMonthDropdown
+                                            showYearDropdown
+                                            dateFormat="dd/MM/yyyy"
+                                            //maxDate={new Date()}
+                                            //minDate={new Date(minDate)}
+                                            dropdownMode="select"
+                                            placeholderText="Select effective date"
+                                            className="withBorder"
+                                            autoComplete={"off"}
+                                            disabledKeyboardNavigation
+                                            onChangeRaw={(e) => e.preventDefault()}
+                                        />
+                                    </div>    <button type={"button"} className="mr15 cancel-btn" onClick={cancel} disabled={isDisable}>
                                         <div className={"cancel-icon"}></div>
                                         {"CANCEL"}
                                     </button>
@@ -600,11 +590,6 @@ function RMSimulation(props) {
                                         </div>{" "}
                                         {"Verify"}
                                     </button>
-                                    {/* <button onClick={runSimulation} type="submit" className="user-btn mr5 save-btn"                    >
-                                <div className={"Run"}>
-                                </div>{" "}
-                                {"RUN SIMULATION"}
-                            </button> */}
                                 </div>
                             </Row>
                         }
