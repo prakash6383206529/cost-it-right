@@ -606,6 +606,7 @@ function CostingSummary(props) {
         technologyId={TechnologyId}
         showWarningMsg={showWarningMsg}
         selectedTechnology={technology.label}
+        costingSummaryMainPage={true}
       />}
 
       {IsBulkOpen && <BOMUpload
