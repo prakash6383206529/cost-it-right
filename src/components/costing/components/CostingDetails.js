@@ -1634,7 +1634,7 @@ function CostingDetails(props) {
       resolve(filterList(inputValue));
     });
 
-
+  const loaderObj = { isLoader: inputLoader, }
   return (
     <>
       <span className="position-relative costing-page-tabs d-block w-100">
@@ -1691,7 +1691,6 @@ function CostingDetails(props) {
                         />
                       </Col>
                       <Col className="col-md-15">
-                        {inputLoader && <LoaderCustom customClass="part-input-loader" />}
                         <AsyncSearchableSelectHookForm
                           label={"Assembly/Part No."}
                           name={"Part"}
@@ -1703,7 +1702,7 @@ function CostingDetails(props) {
                           defaultValue={part.length !== 0 ? part : ""}
                           asyncOptions={promiseOptions}
                           mandatory={true}
-                          isLoading={false}
+                          isLoading={loaderObj}
                           handleChange={handlePartChange}
                           errors={errors.Part}
                           disabled={(technology.length === 0 || inputLoader) ? true : false}

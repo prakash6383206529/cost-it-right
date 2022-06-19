@@ -933,8 +933,8 @@ class AddAssemblyPart extends Component {
                         {this.state.convertPartToAssembly &&
                           <Col md="3" className='mb-4'>
                             <label>{"Part No"}<span className="asterisk-required">*</span></label>
-                            <div className="fullinput-icon w-100">
-                              {this.state.inputLoader && <LoaderCustom customClass="assembly-part-loader" />}
+                            <div className="fullinput-icon w-100 p-relative">
+                              {this.state.inputLoader && <LoaderCustom customClass="input-loader" />}
                               <AsyncSelect
                                 name="partNo"
                                 ref={this.myRef}

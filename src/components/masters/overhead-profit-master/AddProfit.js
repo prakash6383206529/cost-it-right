@@ -914,10 +914,10 @@ class AddProfit extends Component {
                           />
                         </Col>
                         {this.state.IsVendor && costingHead === "vendor" && (
-                          <>
-                            <Col md="3">
-                              <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                              {this.state.inputLoader && <LoaderCustom customClass={`vendor-input-loader-second-col`} />}
+                          <Col md="3">
+                            <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
+                            <div className='p-relative'>
+                              {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
                               <AsyncSelect
                                 name="vendorName"
                                 ref={this.myRef}
@@ -928,31 +928,30 @@ class AddProfit extends Component {
                                 noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
                                 isDisabled={(isEditFlag || this.state.inputLoader) ? true : false} />
                               {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
-
-                            </Col>
-                            <Col md="3" >
-                              <Field
-                                name="Plant"
-                                type="text"
-                                label={"Plant"}
-                                component={searchableSelect}
-                                placeholder={"Select"}
-                                options={this.renderListing("plant")}
-                                //onKeyUp={(e) => this.changeItemDesc(e)}
-                                validate={
-                                  this.state.plant == null ||
-                                    this.state.plant.length === 0
-                                    ? [required]
-                                    : []
-                                }
-                                required={true}
-                                handleChangeDescription={this.handlePlant}
-                                valueDescription={this.state.plant}
-                                disabled={isEditFlag ? true : false}
-                              />
-                            </Col>
-                          </>
+                            </div>
+                          </Col>
                         )}
+                        <Col md="3" >
+                          <Field
+                            name="Plant"
+                            type="text"
+                            label={"Plant"}
+                            component={searchableSelect}
+                            placeholder={"Select"}
+                            options={this.renderListing("plant")}
+                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                            validate={
+                              this.state.plant == null ||
+                                this.state.plant.length === 0
+                                ? [required]
+                                : []
+                            }
+                            required={true}
+                            handleChangeDescription={this.handlePlant}
+                            valueDescription={this.state.plant}
+                            disabled={isEditFlag ? true : false}
+                          />
+                        </Col>
                         {this.state.IsVendor && costingHead === "client" && (
                           <Col md="3">
                             <Field

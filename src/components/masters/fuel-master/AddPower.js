@@ -1274,9 +1274,9 @@ class AddPower extends Component {
                             <Col md="3">
 
                               <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                              <div className="d-flex justify-space-between align-items-center p-relative async-select">
-                                {this.state.inputLoader && <LoaderCustom customClass={`vendor-input-loader`} />}
-                                <div className="fullinput-icon">
+                              <div className="d-flex justify-space-between align-items-center async-select">
+                                <div className="fullinput-icon p-relative">
+                                  {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
                                   <AsyncSelect
                                     name="vendorName"
                                     ref={this.myRef}

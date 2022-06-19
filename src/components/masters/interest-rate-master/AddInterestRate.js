@@ -514,46 +514,47 @@ class AddInterestRate extends Component {
                       </Col>
                     </Row>
                     <Row>
-                      {this.state.IsVendor && (
-                        <>
+                      <>
+                        {this.state.IsVendor && (
                           <Col md="3" className='mb-4'>
 
                             <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                            {this.state.inputLoader && <LoaderCustom customClass={`vendor-input-loader-col`} />}
-                            <AsyncSelect
-                              name="vendorName"
-                              ref={this.myRef}
-                              key={this.state.updateAsyncDropdown}
-                              loadOptions={promiseOptions}
-                              onChange={(e) => this.handleVendorName(e)}
-                              noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
-                              value={this.state.vendorName} isDisabled={isEditFlag ? true : false} />
-                            {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
-
+                            <div className='p-relative'>
+                              {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
+                              <AsyncSelect
+                                name="vendorName"
+                                ref={this.myRef}
+                                key={this.state.updateAsyncDropdown}
+                                loadOptions={promiseOptions}
+                                onChange={(e) => this.handleVendorName(e)}
+                                noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
+                                value={this.state.vendorName} isDisabled={(isEditFlag || this.state.inputLoader) ? true : false} />
+                              {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
+                            </div>
                           </Col>
-                          <Col md="3" >
-                            <Field
-                              name="Plant"
-                              type="text"
-                              label={"Plant"}
-                              component={searchableSelect}
-                              placeholder={"Select"}
-                              options={this.renderListing("plant")}
-                              //onKeyUp={(e) => this.changeItemDesc(e)}
-                              validate={
-                                this.state.plant == null ||
-                                  this.state.plant.length === 0
-                                  ? [required]
-                                  : []
-                              }
-                              required={true}
-                              handleChangeDescription={this.handlePlant}
-                              valueDescription={this.state.plant}
-                              disabled={isEditFlag ? true : false}
-                            />
-                          </Col>
-                        </>
-                      )}
+                        )}
+                        <Col md="3" >
+                          <Field
+                            name="Plant"
+                            type="text"
+                            label={"Plant"}
+                            component={searchableSelect}
+                            placeholder={"Select"}
+                            options={this.renderListing("plant")}
+                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                            validate={
+                              this.state.plant == null ||
+                                this.state.plant.length === 0
+                                ? [required]
+                                : []
+                            }
+                            required={true}
+                            handleChangeDescription={this.handlePlant}
+                            valueDescription={this.state.plant}
+                            disabled={isEditFlag ? true : false}
+                          />
+                        </Col>
+                      </>
                     </Row>
 
                     <Row>
