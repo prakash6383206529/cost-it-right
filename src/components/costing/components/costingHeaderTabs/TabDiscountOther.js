@@ -22,6 +22,7 @@ import redcrossImg from '../../../../assests/images/red-cross.png'
 import { debounce } from 'lodash'
 import { createToprowObjAndSave } from '../../CostingUtil';
 import LoaderCustom from '../../../common/LoaderCustom';
+import WarningMessage from '../../../common/WarningMessage';
 function TabDiscountOther(props) {
   // ********* INITIALIZE REF FOR DROPZONE ********
   const dropzone = useRef(null);
@@ -56,6 +57,7 @@ function TabDiscountOther(props) {
   const [netPoPriceCurrencyState, setNetPoPriceCurrencyState] = useState('')
   const [attachmentLoader, setAttachmentLoader] = useState(false)
   const costingHead = useSelector(state => state.comman.costingHead)
+  const [showWarning, setShowWarning] = useState(false)
 
   useEffect(() => {
     // CostingViewMode CONDITION IS USED TO AVOID CALCULATION IN VIEWMODE
@@ -473,6 +475,7 @@ function TabDiscountOther(props) {
     setCurrencyExchangeRate(0)
     setValue('NetPOPriceOtherCurrency', 0)
     setNetPoPriceCurrencyState(0)
+    setShowWarning(false)
   }
 
   /**
@@ -483,6 +486,12 @@ function TabDiscountOther(props) {
     if (newValue && newValue !== '') {
       setCurrency(newValue)
       dispatch(getExchangeRateByCurrency(newValue.label, DayTime(CostingEffectiveDate).format('YYYY-MM-DD'), res => {
+        if (Object.keys(res.data.Data).length === 0) {
+          setShowWarning(true)
+        }
+        else {
+          setShowWarning(false)
+        }
         if (res && res.data && res.data.Result) {
           let Data = res.data.Data;
           const NetPOPriceINR = getValues('NetPOPriceINR');
@@ -1055,6 +1064,7 @@ function TabDiscountOther(props) {
                             errors={errors.Currency}
                             disabled={CostingViewMode || CostingEffectiveDate === '' ? true : false}
                           />
+                          {showWarning && <WarningMessage dClass="mt-n3" message={`${currency.label} rate is not present in the Exchange Master`} />}
                         </Col>
                         <Col md="4">
                           <TextFieldHookForm

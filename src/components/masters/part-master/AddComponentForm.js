@@ -221,10 +221,11 @@ class AddComponentForm extends Component {
             <Col md="6">
               <label>{"Part No."}<span className="asterisk-required">*</span></label>
               <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter first few digits to see the part numbers" />
-              {this.state.isLoader && <LoaderCustom customClass="add-child-input" />}
-              <AsyncSelect name="PartNumber" ref={this.myRef} key={this.state.updateAsyncDropdown} cacheOptions defaultOptions loadOptions={promiseOptions} onChange={(e) => this.handlePartChange(e)} />
-              {this.state.isPartNoNotSelected && <div className='text-help'>This field is required.</div>}
-
+              <div className='p-relative'>
+                {this.state.isLoader && <LoaderCustom customClass="input-loader" />}
+                <AsyncSelect name="PartNumber" ref={this.myRef} key={this.state.updateAsyncDropdown} cacheOptions defaultOptions loadOptions={promiseOptions} onChange={(e) => this.handlePartChange(e)} />
+                {this.state.isPartNoNotSelected && <div className='text-help'>This field is required.</div>}
+              </div>
             </Col>
             <Col md="6">
               <Field
