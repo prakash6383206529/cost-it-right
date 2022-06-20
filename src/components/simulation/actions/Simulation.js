@@ -1196,7 +1196,7 @@ export function getMasterSelectListSimulation(loggedInUserId, callback) {
 }
 
 export function setSelectedCostingListSimualtion(value) {
-    console.log('actiokoikoion ', value);
+
     return (dispatch) => {
         dispatch({
             type: SET_SELECTED_COSTING_LIST_SIMULATION,
