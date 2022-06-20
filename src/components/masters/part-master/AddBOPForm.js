@@ -9,7 +9,7 @@ import { } from '../../../actions/Common';
 import { BOUGHTOUTPART } from '../../../config/constants';
 import LoaderCustom from '../../common/LoaderCustom';
 import { PartEffectiveDate } from './AddAssemblyPart';
-
+import AsyncSelect from 'react-select/async';
 
 class AddBOPForm extends Component {
   static contextType = PartEffectiveDate
@@ -23,7 +23,9 @@ class AddBOPForm extends Component {
       isAddMore: false,
       selectedParts: [],
       titleObj: {},
-      isLoader: false
+      isLoader: false,
+      updateAsyncDropdown: false,
+      isBOPNoNotSelected: false
     }
   }
 
@@ -59,7 +61,7 @@ class AddBOPForm extends Component {
   */
   handleBOPPartChange = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ BOPPart: newValue }, () => {
+      this.setState({ BOPPart: newValue, isPartNoNotSelected: false }, () => {
         const { BOPPart } = this.state;
         this.props.getDrawerBOPData(BOPPart.value, () => { })
       });
@@ -130,6 +132,12 @@ class AddBOPForm extends Component {
     const { isAddMore, BOPPart } = this.state;
     const { DrawerPartData } = this.props;
 
+
+    if (BOPPart.length <= 0) {
+      this.setState({ isBOPNoNotSelected: true })      // IF PART NO IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY
+      return false
+    }
+    this.setState({ isBOPNoNotSelected: false })
     /** Update existing detail of supplier master **/
     let childData = {
       PartNumber: BOPPart ? BOPPart : [],
@@ -149,13 +157,14 @@ class AddBOPForm extends Component {
     this.props.getDrawerBOPData('', () => { })
 
     if (isAddMore) {
-      this.setState({
-        BOPPart: []
-      })
-      this.props.setChildParts(childData)
+      this.setState({ updateAsyncDropdown: !this.state.updateAsyncDropdown })
+      return false
     } else {
       this.props.toggleDrawer('', childData)
     }
+    setTimeout(() => {
+      this.setState({ updateAsyncDropdown: !this.state.updateAsyncDropdown })      // UPDATING RANDOM STATE AFTER 1 SECOND FOR REFRESHING THE ASYNC SELECT DROPDOWN AFTER CLICKING ON  ADD MORE BUTTON
+    }, 1000);
 
   }
 
@@ -171,6 +180,25 @@ class AddBOPForm extends Component {
   */
   render() {
     const { handleSubmit, isEditFlag, } = this.props;
+
+    const filterList = (inputValue) => {
+      let tempArr = []
+      tempArr = this.renderListing("BOPPart").filter(i =>
+        i.label !== null && i.label.toLowerCase().includes(inputValue.toLowerCase())
+      );
+      if (tempArr.length <= 100) {
+        return tempArr
+      } else {
+        return tempArr.slice(0, 100)
+      }
+    };
+
+    const promiseOptions = inputValue =>
+      new Promise(resolve => {
+        resolve(filterList(inputValue));
+
+      });
+
     return (
       <>
         <form
@@ -180,27 +208,22 @@ class AddBOPForm extends Component {
           onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
         >
           <Row>
+
             <Col md="6">
-              {this.state.isLoader && <LoaderCustom customClass="add-child-input" />}
-              <Field
-                name="BOPPartNumber"
-                type="text"
-                label={"BOP Part No."}
-                component={searchableSelect}
-                placeholder={"BOP Part"}
-                options={this.renderListing("BOPPart")}
-                //onKeyUp={(e) => this.changeItemDesc(e)}
-                validate={
-                  this.state.BOPPart == null ||
-                    this.state.BOPPart.length === 0
-                    ? [required]
-                    : []
-                }
-                required={true}
-                handleChangeDescription={this.handleBOPPartChange}
-                valueDescription={this.state.BOPPart}
-                disabled={this.state.isLoader ? true : false}
-              />
+              <label>{"BOP Part No."}<span className="asterisk-required">*</span></label>
+              <div className='p-relative'>
+                {this.state.isLoader && <LoaderCustom customClass="input-loader" />}
+                <AsyncSelect
+                  name="BOPPartNumber"
+                  ref={this.myRef}
+                  key={this.state.updateAsyncDropdown}
+                  cacheOptions
+                  loadOptions={promiseOptions}
+                  onChange={(e) => this.handleBOPPartChange(e)}
+                  noOptionsMessage={({ inputValue }) => !inputValue ? 'Please enter first few digits to see the BOP numbers' : "No results found"}
+                />
+                {this.state.isBOPNoNotSelected && <div className='text-help'>This field is required.</div>}
+              </div>
             </Col>
             <Col md="6">
               <Field
