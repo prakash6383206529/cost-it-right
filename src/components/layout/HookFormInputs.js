@@ -37,11 +37,13 @@ export const TextFieldHooks = (input) => {
 
 
 export const TextFieldHookForm = (field) => {
-  const { label, Controller, control, register, name, defaultValue, mandatory, errors, rules, handleChange, hidden } = field
+  const { label, Controller, control, register, name, defaultValue, mandatory, errors, rules, handleChange, hidden, isLoading } = field
   //const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""} ${touched && error ? "has-danger" : ""}`;
   const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""}`;
   const InputClassName = `form-control ${field.className ? field.className : ""}`;
   const isDisabled = field.disabled === true ? true : false;
+  let isLoader = (isLoading && isLoading?.isLoader === true) ? true : false;
+  let loaderClass = isLoading && isLoading?.isLoader ? isLoading?.loaderClass !== undefined ? isLoading?.loaderClass : '' : '';
 
   return (
     <>
@@ -63,19 +65,22 @@ export const TextFieldHookForm = (field) => {
           hidden={hidden}
           render={({ field: { onChange, onBlur, value } }) => {
             return (
-              <input
-                {...field}
-                {...register}
-                name={name}
-                className={InputClassName}
-                disabled={isDisabled}
-                value={value}
-                onChange={(e) => {
-                  handleChange(e);
-                  onChange(e)
-                }}
-                hidden={hidden}
-              />
+              <div className={`${isLoader ? "p-relative" : ''}`}>
+                <input
+                  {...field}
+                  {...register}
+                  name={name}
+                  className={InputClassName}
+                  disabled={isDisabled}
+                  value={value}
+                  onChange={(e) => {
+                    handleChange(e);
+                    onChange(e)
+                  }}
+                  hidden={hidden}
+                />
+                {isLoader && <LoaderCustom customClass={`input-loader ${loaderClass}`} />}
+              </div>
             )
           }
           }

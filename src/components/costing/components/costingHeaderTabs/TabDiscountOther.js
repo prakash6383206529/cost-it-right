@@ -58,6 +58,7 @@ function TabDiscountOther(props) {
   const [attachmentLoader, setAttachmentLoader] = useState(false)
   const costingHead = useSelector(state => state.comman.costingHead)
   const [showWarning, setShowWarning] = useState(false)
+  const [isInputLoader, setIsInputLader] = useState(false)
 
   useEffect(() => {
     // CostingViewMode CONDITION IS USED TO AVOID CALCULATION IN VIEWMODE
@@ -458,7 +459,9 @@ function TabDiscountOther(props) {
   const handleCurrencyChange = (newValue) => {
     if (newValue && newValue !== '') {
       setCurrency(newValue)
+      setIsInputLader(true)
       dispatch(getExchangeRateByCurrency(newValue.label, DayTime(CostingEffectiveDate).format('YYYY-MM-DD'), res => {
+        setIsInputLader(false)
         if (Object.keys(res.data.Data).length === 0) {
           setShowWarning(true)
         }
@@ -471,6 +474,7 @@ function TabDiscountOther(props) {
           setValue('NetPOPriceOtherCurrency', checkForDecimalAndNull((NetPOPriceINR / Data.CurrencyExchangeRate), initialConfiguration.NoOfDecimalForPrice))
           setNetPoPriceCurrencyState(NetPOPriceINR / Data.CurrencyExchangeRate)
           setCurrencyExchangeRate(Data.CurrencyExchangeRate)
+          setIsInputLader(false)
         }
       }))
     } else {
@@ -742,6 +746,7 @@ function TabDiscountOther(props) {
       DiscountApplicability: value.label
     })
   }
+  const isLoaderObj = { isLoader: isInputLoader, loaderClass: "align-items-center" }
   return (
     <>
       <div className="login-container signup-form">
@@ -1054,6 +1059,7 @@ function TabDiscountOther(props) {
                             customClassName={'withBorder'}
                             errors={errors.NetPOPriceOtherCurrency}
                             disabled={true}
+                            isLoading={isLoaderObj}
                           />
                         </Col>
                       </>
