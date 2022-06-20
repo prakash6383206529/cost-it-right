@@ -248,6 +248,7 @@ export const ErrorMessage = (props) => {
     }
 
     useEffect(() => {
+        setShowSobMessageList(false)
         const obj = {
             approvalTokenNumber: approvalNumber
         }
@@ -273,6 +274,8 @@ export const ErrorMessage = (props) => {
 
 
     useEffect(() => {
+
+        setShowSobMessageList(false)
 
         if (impactData && impactData.length > 0) {
 
