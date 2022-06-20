@@ -56,11 +56,13 @@ export function getPlantDataAPI(isVe, callback) {
     return (dispatch) => {
         const request = axios.get(`${API.getAllPlantAPI}?isVendor=${isVe}`, config());
         request.then((response) => {
-            dispatch({
-                type: GET_PLANT_FILTER_LIST,
-                payload: response.data.DataList
-            });
-            callback(response);
+            if (response.data.Result || response.status === 204) {
+                dispatch({
+                    type: GET_PLANT_FILTER_LIST,
+                    payload: response.status === 204 ? [] : response.data.DataList
+                });
+                callback(response);
+            }
         }).catch((error) => {
             dispatch({
                 type: API_FAILURE

@@ -5,6 +5,7 @@ import { EMPTY_DATA } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper';
 import { runVerifyCombinedProcessSimulation } from '../../actions/Simulation';
+import DayTime from '../../../common/DayTimeWrapper'
 import { Fragment } from 'react';
 import { Controller, useForm } from 'react-hook-form'
 import RunSimulationDrawer from '../RunSimulationDrawer';
@@ -18,6 +19,8 @@ import debounce from 'lodash.debounce';
 import { TextFieldHookForm } from '../../../layout/HookFormInputs';
 import { VBC, ZBC } from '../../../../config/constants';
 import Toaster from '../../../common/Toaster';
+import DatePicker from "react-datepicker";
+import WarningMessage from '../../../common/WarningMessage';
 
 const gridOptions = {
 
@@ -32,6 +35,9 @@ function CPSimulation(props) {
     const [showMainSimulation, setShowMainSimulation] = useState(false)
     const [selectedRowData, setSelectedRowData] = useState([]);
     const [tableData, setTableData] = useState([])
+    const [effectiveDate, setEffectiveDate] = useState('');
+    const [isEffectiveDateSelected, setIsEffectiveDateSelected] = useState(false);
+    const [isWarningMessageShow, setIsWarningMessageShow] = useState(false)
 
 
     const { register, control, setValue, formState: { errors }, } = useForm({
@@ -48,10 +54,6 @@ function CPSimulation(props) {
         setShowVerifyPage(false)
     }
 
-    const effectiveDateFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
-    }
 
     useEffect(() => {
         if (isbulkUpload) {
@@ -186,16 +188,6 @@ function CPSimulation(props) {
         return row.ConversionCost != null ? checkForDecimalAndNull(ConversionCost, getConfigurationKey().NoOfDecimalForPrice) : ''
     }
 
-    const frameworkComponents = {
-        effectiveDateRenderer: effectiveDateFormatter,
-        costFormatter: costFormatter,
-        customNoRowsOverlay: NoContentFound,
-        newCPFormatter: newCPFormatter,
-        oldCPFormatter: oldCPFormatter,
-        statusFormatter: statusFormatter,
-        NewcostFormatter: NewcostFormatter,
-        OldcostFormatter: OldcostFormatter
-    };
 
     const onRowSelect = () => {
         var selectedRows = gridApi.getSelectedRows();
@@ -204,7 +196,10 @@ function CPSimulation(props) {
     let obj = {}
     const verifySimulation = debounce(() => {
         /**********CONDITION FOR: IS ANY FIELD EDITED****************/
-
+        if (!isEffectiveDateSelected) {
+            setIsWarningMessageShow(true)
+            return false
+        }
         let ccCount = 0
         let tempData = list
         let arr = []
@@ -240,11 +235,13 @@ function CPSimulation(props) {
             tempObj.RemainingTotal = item.RemainingTotal
             tempObj.OldTotalCost = item.TotalCost
             tempObj.NewTotalCost = item.NewTotal
+            tempObj.EffectiveDate = item.EffectiveDate
             tempArr.push(tempObj)
             return null
         })
         obj.SimulationIds = tokenForMultiSimulation
         obj.SimulationCombinedProcess = tempArr
+        obj.EffectiveDate = DayTime(effectiveDate).format('YYYY/MM/DD HH:mm')
 
         dispatch(runVerifyCombinedProcessSimulation(obj, res => {
             if (res.data.Result) {
@@ -258,6 +255,27 @@ function CPSimulation(props) {
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
     }
+    const handleEffectiveDateChange = (date) => {
+        setEffectiveDate(date)
+        setIsEffectiveDateSelected(true)
+        setIsWarningMessageShow(false)
+    }
+    const effectiveDateFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cell != null ? DayTime(cell).format('DD/MM/YYYY') : '';
+    }
+
+    const frameworkComponents = {
+        effectiveDateRenderer: effectiveDateFormatter,
+        costFormatter: costFormatter,
+        customNoRowsOverlay: NoContentFound,
+        newCPFormatter: newCPFormatter,
+        oldCPFormatter: oldCPFormatter,
+        statusFormatter: statusFormatter,
+        NewcostFormatter: NewcostFormatter,
+        OldcostFormatter: OldcostFormatter
+    };
+
     return (
         <div>
             <div className={`ag-grid-react`}>
@@ -390,7 +408,24 @@ function CPSimulation(props) {
                             {
                                 !isImpactedMaster &&
                                 <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
-                                    <div className="col-sm-12 text-right bluefooter-butn">
+                                    <div className="col-sm-12 text-right bluefooter-butn d-flex justify-content-end align-items-center">
+                                        <div className="inputbox date-section mr-3 verfiy-page">
+                                            <DatePicker
+                                                name="EffectiveDate"
+                                                selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
+                                                onChange={handleEffectiveDateChange}
+                                                showMonthDropdown
+                                                showYearDropdown
+                                                dateFormat="dd/MM/yyyy"
+                                                dropdownMode="select"
+                                                placeholderText="Select effective date"
+                                                className="withBorder"
+                                                autoComplete={"off"}
+                                                disabledKeyboardNavigation
+                                                onChangeRaw={(e) => e.preventDefault()}
+                                            />
+                                            {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
+                                        </div>
                                         <button type={"button"} className="mr15 cancel-btn" onClick={cancel}>
                                             <div className={"cancel-icon"}></div>
                                             {"CANCEL"}

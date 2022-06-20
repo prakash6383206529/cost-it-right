@@ -132,7 +132,7 @@ class ExchangeRateListing extends Component {
                 this.props?.changeTokenCheckBox(true)
             }
             if (res.status === 204 && res.data === '') {
-                this.setState({ tableData: [], })
+                this.setState({ tableData: [], isLoader: false })
             } else if (res && res.data && res.data.DataList) {
                 let Data = res.data.DataList;
                 this.setState({ tableData: Data, }, () => { this.setState({ isLoader: false }) })

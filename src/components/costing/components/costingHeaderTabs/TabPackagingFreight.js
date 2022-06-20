@@ -232,13 +232,13 @@ function TabPackagingFreight(props) {
                         {PackageAndFreightTabData && PackageAndFreightTabData.map((item, index) => {
                           return (
                             <>
-                              <tr class="accordian-row" key={index} id="costing-header">
+                              <tr class="accordian-row" key={index} >
                                 <td>{item.PartNumber}</td>
                                 <td>{item.CostingPartDetails.PackagingNetCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.PackagingNetCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
                                 <td>{item.CostingPartDetails.FreightNetCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.FreightNetCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
                               </tr>
                               <tr>
-                                <td colSpan={3} className="cr-innerwrap-td ">
+                                <td colSpan={3} className="cr-innerwrap-td">
                                   <div>
                                     <PackageAndFreight
                                       index={index}
@@ -257,14 +257,14 @@ function TabPackagingFreight(props) {
                   </Col>
                 </Row>
                 <div className="col-sm-12 text-right bluefooter-butn sticky-btn-footer packaging-freight-btn-save">
-                  {!CostingViewMode && <Link to="costing-header" spy={true} smooth={true} offset={-350} delay={100}> <button
+                  {!CostingViewMode && <button
                     type={"button"}
-                    className="submit-button mr5 save-btn"
+                    className="submit-button save-btn"
                     onClick={saveCosting}
                   >
                     <div className={"save-icon"}></div>
                     {"Save"}
-                  </button> </Link>}
+                  </button>}
                 </div>
               </form>
             </div>

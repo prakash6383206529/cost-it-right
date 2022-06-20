@@ -19,6 +19,9 @@ import Simulation from '../Simulation';
 import { debounce } from 'lodash'
 import { VBC, ZBC } from '../../../../config/constants';
 import { PaginationWrapper } from '../../../common/commonPagination';
+import DatePicker from "react-datepicker";
+import WarningMessage from '../../../common/WarningMessage';
+import { getMaxDate, getMinimumDate } from '../../SimulationUtils';
 
 const gridOptions = {
 
@@ -35,6 +38,11 @@ function BDSimulation(props) {
     const [showMainSimulation, setShowMainSimulation] = useState(false)
     const [isDisable, setIsDisable] = useState(false)
     const gridRef = useRef();
+    const [effectiveDate, setEffectiveDate] = useState('');
+    const [isEffectiveDateSelected, setIsEffectiveDateSelected] = useState(false);
+    const [isWarningMessageShow, setIsWarningMessageShow] = useState(false);
+    const [maxDate, setMaxDate] = useState('');
+    const [titleObj, setTitleObj] = useState({})
 
     const { register, control, setValue, formState: { errors }, } = useForm({
         mode: 'onChange',
@@ -51,6 +59,7 @@ function BDSimulation(props) {
         if (isbulkUpload) {
             setValue('NoOfCorrectRow', rowCount.correctRow)
             setValue('NoOfRowsWithoutChange', rowCount.NoOfRowsWithoutChange)
+            setTitleObj(prevState => ({ ...prevState, rowWithChanges: rowCount.correctRow, rowWithoutChanges: rowCount.NoOfRowsWithoutChange }))
         }
     }, [])
 
@@ -60,10 +69,17 @@ function BDSimulation(props) {
             if (isImpactedMaster) {
                 gridRef.current.api.sizeColumnsToFit();
             }
+            let maxDate = getMaxDate(list)
+            setMaxDate(maxDate)
         }
     }, [list])
 
     const verifySimulation = debounce(() => {
+        if (!isEffectiveDateSelected) {
+            setIsWarningMessageShow(true)
+            return false
+        }
+
         let basicRateCount = 0
 
         list && list.map((li) => {
@@ -90,6 +106,7 @@ function BDSimulation(props) {
         obj.LoggedInUserId = loggedInUserId()
         obj.TechnologyId = selectedTechnologyForSimulation.value
         obj.TechnologyName = selectedTechnologyForSimulation.label
+        obj.EffectiveDate = effectiveDate
         // if (filteredRMData.plantId && filteredRMData.plantId.value) {
         //     obj.PlantId = filteredRMData.plantId ? filteredRMData.plantId.value : ''
         // }
@@ -109,6 +126,7 @@ function BDSimulation(props) {
 
         obj.SimulationIds = tokenForMultiSimulation
         obj.SimulationBoughtOutPart = tempArr
+        obj.EffectiveDate = DayTime(effectiveDate).format('YYYY/MM/DD HH:mm')
 
         dispatch(runVerifyBoughtOutPartSimulation(obj, res => {
             setIsDisable(false)
@@ -287,6 +305,13 @@ function BDSimulation(props) {
             gridRef.current.api.sizeColumnsToFit();
         }
     }
+    const handleEffectiveDateChange = (date) => {
+        setEffectiveDate(date)
+        setIsEffectiveDateSelected(true)
+        setIsWarningMessageShow(false)
+    }
+
+
     const frameworkComponents = {
         effectiveDateRenderer: effectiveDateFormatter,
         costingHeadFormatter: costingHeadFormatter,
@@ -320,11 +345,12 @@ function BDSimulation(props) {
                                         isbulkUpload && <>
                                             <div className='d-flex justify-content-end bulk-upload-row'>
                                                 <div className="d-flex align-items-center">
-                                                    <label>No. of rows with changes:</label>
+                                                    <label>Rows with changes:</label>
                                                     <TextFieldHookForm
                                                         label=""
                                                         name={'NoOfCorrectRow'}
                                                         Controller={Controller}
+                                                        title={titleObj.rowWithChanges}
                                                         control={control}
                                                         register={register}
                                                         rules={{ required: false }}
@@ -338,10 +364,11 @@ function BDSimulation(props) {
                                                     />
                                                 </div>
                                                 <div className="d-flex align-items-center">
-                                                    <label>No. of rows without changes:</label>
+                                                    <label>Rows without changes:</label>
                                                     <TextFieldHookForm
                                                         label=""
                                                         name={'NoOfRowsWithoutChange'}
+                                                        title={titleObj.rowWithoutChanges}
                                                         Controller={Controller}
                                                         control={control}
                                                         register={register}
@@ -412,7 +439,25 @@ function BDSimulation(props) {
                         {
                             !isImpactedMaster &&
                             <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
-                                <div className="col-sm-12 text-right bluefooter-butn">
+                                <div className="col-sm-12 text-right bluefooter-butn d-flex justify-content-end align-items-center">
+                                    <div className="inputbox date-section mr-3 verfiy-page">
+                                        <DatePicker
+                                            name="EffectiveDate"
+                                            selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
+                                            onChange={handleEffectiveDateChange}
+                                            showMonthDropdown
+                                            showYearDropdown
+                                            dateFormat="dd/MM/yyyy"
+                                            minDate={new Date(maxDate)}
+                                            dropdownMode="select"
+                                            placeholderText="Select effective date"
+                                            className="withBorder"
+                                            autoComplete={"off"}
+                                            disabledKeyboardNavigation
+                                            onChangeRaw={(e) => e.preventDefault()}
+                                        />
+                                        {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
+                                    </div>
                                     <button type={"button"} className="mr15 cancel-btn" onClick={cancel} disabled={isDisable}>
                                         <div className={"cancel-icon"}></div>
                                         {"CANCEL"}

@@ -33,6 +33,9 @@ import {
   CHECK_HISTORY_COSTING_AND_SAP_PO_PRICE,
   GET_FG_WISE_IMPACT_DATA_FOR_COSTING,
   GET_FG_WISE_IMPACT_DATA,
+  SAVE_PART_NUMBER_STOP_API_CALL,
+  SET_PART_NUMBER_ARRAY_API_CALL,
+  SET_MESSAGE_FOR_ASSEMBLY,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -2499,3 +2502,43 @@ export function sapPushedCostingInitialMoment(data, callback) {
     })
   }
 }
+/**
+ * @method isDataChange
+ * @description THIS METHOD IS FOR CALLING SAVE API IF CHNAGES HAVE BEEN MADE 
+*/
+
+export function savePartNumberAndBOMLevel(isDataChange) {
+  return (dispatch) => {
+    dispatch({
+      type: SAVE_PART_NUMBER_STOP_API_CALL,
+      payload: isDataChange
+    })
+  }
+}
+
+/**
+ * @method isDataChange
+ * @description THIS METHOD IS FOR CALLING SAVE API IF CHNAGES HAVE BEEN MADE 
+*/
+
+export function setPartNumberArrayAPICALL(isDataChange) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_PART_NUMBER_ARRAY_API_CALL,
+      payload: isDataChange
+    })
+  }
+}
+
+/**
+ * @method setMessageForAssembly
+ * @description SET COMPONENT ITEM DATA  
+ */
+export function setMessageForAssembly(message) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_MESSAGE_FOR_ASSEMBLY,
+      payload: message,
+    });
+  }
+};

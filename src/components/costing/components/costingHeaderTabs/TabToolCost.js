@@ -556,10 +556,10 @@ function TabToolCost(props) {
 
 
       {!CostingViewMode && IsApplicableProcessWise &&
-        <div className="col-sm-12 text-right bluefooter-butn btn-stciky-container">
+        <div className="col-sm-12 text-right bluefooter-butn btn-sticky-container">
           <button
             type={'button'}
-            className="submit-button mr5 save-btn"
+            className="submit-button save-btn"
             onClick={saveCosting}
           >
             <div className={'save-icon'}></div>

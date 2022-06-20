@@ -27,6 +27,7 @@ function VerifySimulation(props) {
     const [selectedRowData, setSelectedRowData] = useState([]);
 
     const [selectedIds, setSelectedIds] = useState('')
+    const [effectiveDate, setEffectiveDate] = useState('')
     const [tokenNo, setTokenNo] = useState('')
     const [simulationId, setSimualtionId] = useState('')
     const [simulationTechnologyId, setSimulationTechnologyId] = useState('')
@@ -76,7 +77,7 @@ function VerifySimulation(props) {
                         setHideRunButton(false)
                         setSimulationTechnologyId(data.SimulationtechnologyId)
                         setVendorId(data.VendorId)
-
+                        setEffectiveDate(data.EffectiveDate)
                     }
                 }))
                 break;
@@ -94,7 +95,7 @@ function VerifySimulation(props) {
                         setHideRunButton(false)
                         setSimulationTechnologyId(data.SimulationtechnologyId)
                         setVendorId(data.VendorId)
-
+                        setEffectiveDate(data.EffectiveDate)
                     }
                 }))
                 break;
@@ -112,6 +113,7 @@ function VerifySimulation(props) {
                         setSimualtionId(data.SimulationId)
                         setSimulationTechnologyId(data.SimulationtechnologyId)
                         setHideRunButton(false)
+                        setEffectiveDate(data.EffectiveDate)
                     }
                 }))
                 break;
@@ -129,6 +131,7 @@ function VerifySimulation(props) {
                         setSimualtionId(data.SimulationId)
                         setSimulationTechnologyId(data.SimulationtechnologyId)
                         setHideRunButton(false)
+                        setEffectiveDate(data.EffectiveDate)
                     }
                 }))
                 break;
@@ -145,6 +148,7 @@ function VerifySimulation(props) {
                         setTokenNo(data.TokenNumber)
                         setSimualtionId(data.SimulationId)
                         setHideRunButton(false)
+                        setEffectiveDate(data.EffectiveDate)
                     }
                 }))
                 break;
@@ -161,6 +165,7 @@ function VerifySimulation(props) {
                         setTokenNo(data.TokenNumber)
                         setSimualtionId(data.SimulationId)
                         setHideRunButton(false)
+                        setEffectiveDate(data.EffectiveDate)
                     }
                 }))
                 break;
@@ -177,6 +182,7 @@ function VerifySimulation(props) {
                         setTokenNo(data.TokenNumber)
                         setSimualtionId(data.SimulationId)
                         setHideRunButton(false)
+                        setEffectiveDate(data.EffectiveDate)
                     }
                 }))
                 break;
@@ -499,8 +505,8 @@ function VerifySimulation(props) {
 
                                                 {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="OperationName" headerName="Operation Name"></AgGridColumn>}
                                                 {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="OperationCode" headerName="Operation Code"></AgGridColumn>}
-                                                {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="NewOperationRate" headerName="New Rate"></AgGridColumn>}
                                                 {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="OldOperationRate" headerName="Old Rate"></AgGridColumn>}
+                                                {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="NewOperationRate" headerName="New Rate"></AgGridColumn>}
 
                                                 {isBOPDomesticOrImport === true && <AgGridColumn width={130} field="BoughtOutPartCode" headerName="BOP Number"></AgGridColumn>}
                                                 {isBOPDomesticOrImport === true && <AgGridColumn width={130} field="BoughtOutPartName" headerName="BOP Name"></AgGridColumn>}
@@ -567,6 +573,7 @@ function VerifySimulation(props) {
                     vendorId={vendorId}
                     isOpen={simulationDrawer}
                     closeDrawer={closeDrawer}
+                    date={effectiveDate}
                     objs={objs}
                     anchor={"right"}
                 />

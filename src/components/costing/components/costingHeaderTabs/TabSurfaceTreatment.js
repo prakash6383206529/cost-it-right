@@ -8,7 +8,7 @@ import { checkForNull, userDetails, } from '../../../../helper';
 import PartSurfaceTreatment from '../CostingHeadCosts/SurfaceTreatMent/PartSurfaceTreatment';
 import AssemblySurfaceTreatment from '../CostingHeadCosts/SurfaceTreatMent/AssemblySurfaceTreatment';
 import { LEVEL0 } from '../../../../config/constants';
-import { ViewCostingContext } from '../CostingDetails';
+import { VbcExistingCosting, ViewCostingContext } from '../CostingDetails';
 import _ from 'lodash'
 
 function TabSurfaceTreatment(props) {
@@ -18,14 +18,15 @@ function TabSurfaceTreatment(props) {
   let SurfaceTabData = useSelector(state => state.costing.SurfaceTabData)
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
+  const vbcExistingCosting = useContext(VbcExistingCosting);
 
   useEffect(() => {
     if (Object.keys(costData).length > 0) {
       const data = {
         CostingId: costData.CostingId,
         PartId: costData.PartId,
-        AssemCostingId: costData.CostingId,
-        SubAsmCostingId: costData.CostingId
+        AssemCostingId: vbcExistingCosting.AssemblyCostingId ? vbcExistingCosting.AssemblyCostingId : costData.CostingId,
+        SubAsmCostingId: vbcExistingCosting.SubAssemblyCostingId ? vbcExistingCosting.SubAssemblyCostingId : costData.CostingId,
       }
       dispatch(getSurfaceTreatmentTabData(data, true, res => {
         let tempArr = [];

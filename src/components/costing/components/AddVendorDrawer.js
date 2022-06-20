@@ -148,7 +148,8 @@ function AddVendorDrawer(props) {
   const onSubmit = data => {
     toggleDrawer('')
   }
-
+  const VendorLoaderObj = { isLoader: VendorInputLoader }
+  const plantLoaderObj = { isLoader: inputLoader }
   /**
   * @method render
   * @description Renders the component
@@ -177,7 +178,6 @@ function AddVendorDrawer(props) {
             <form onSubmit={handleSubmit(onSubmit)}>
               <Row className="pl-3">
                 <Col md="12">
-                  {VendorInputLoader && <LoaderCustom customClass="vendor-input-loader-first-col" />}
                   <SearchableSelectHookForm
                     label={"Vendor"}
                     name={"Vendor"}
@@ -191,13 +191,13 @@ function AddVendorDrawer(props) {
                     mandatory={true}
                     handleChange={handleVendorChange}
                     errors={errors.Vendor}
+                    isLoading={VendorLoaderObj}
                   />
                 </Col>
 
                 {initialConfiguration?.IsDestinationPlantConfigure &&
 
                   <Col md="12">
-                    {inputLoader && <LoaderCustom customClass="vendor-input-loader-first-col" />}
                     <SearchableSelectHookForm
                       label={"Destination Plant"}
                       name={"DestinationPlant"}
@@ -212,6 +212,7 @@ function AddVendorDrawer(props) {
                       handleChange={handleDestinationPlantChange}
                       errors={errors.DestinationPlant}
                       disabled={vendor.length === 0 ? true : false}
+                      isLoading={plantLoaderObj}
                     />
                   </Col>}
               </Row>
