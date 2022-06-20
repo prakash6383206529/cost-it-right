@@ -66,7 +66,6 @@ function SurfaceTreatment(props) {
     props.closeDrawer()
   }
   const setTransportationObj = (obj) => {
-
     setTransportationObject(obj)
     setTrasportObj(obj.tempObj)
 
