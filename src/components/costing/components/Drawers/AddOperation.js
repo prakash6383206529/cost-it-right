@@ -86,7 +86,9 @@ function AddOperation(props) {
   }, []);
 
 
-  const onRowSelect = () => {
+  const onRowSelect = (event) => {
+    console.log('event: ', event);
+    console.log(event.node.isSelected(), 'event.node.isSelected()');
     var selectedRows = gridApi.getSelectedRows();
     setSelectedRowData(selectedRows)
     // if (isSelected) {
@@ -238,6 +240,7 @@ function AddOperation(props) {
                         rowSelection={'multiple'}
                         frameworkComponents={frameworkComponents}
                         onSelectionChanged={onRowSelect}
+                        // onRowSelected={onRowSelect}
                         isRowSelectable={isRowSelectable}
                       >
                         <AgGridColumn field="OperationId" hide={true}></AgGridColumn>
