@@ -24,13 +24,14 @@ import "react-datepicker/dist/react-datepicker.css";
 import DayTime from '../../../common/DayTimeWrapper'
 import { createToprowObjAndSave, findSurfaceTreatmentData } from '../../CostingUtil';
 import _ from 'lodash'
+import WarningMessage from '../../../common/WarningMessage';
 
 function CostingHeaderTabs(props) {
   const dispatch = useDispatch()
 
   const { ComponentItemData, ComponentItemOverheadData, ComponentItemPackageFreightData, ComponentItemToolData,
     ComponentItemDiscountData, IsIncludedSurfaceInOverheadProfit, costingData, CostingEffectiveDate,
-    IsCostingDateDisabled, ActualCostingDataList, CostingDataList, RMCCTabData, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData, checkIsDataChange, checkIsOverheadProfitChange, checkIsFreightPackageChange, checkIsToolTabChange } = useSelector(state => state.costing)
+    IsCostingDateDisabled, ActualCostingDataList, CostingDataList, RMCCTabData, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData, checkIsDataChange, checkIsOverheadProfitChange, checkIsFreightPackageChange, checkIsToolTabChange, messageForAssembly } = useSelector(state => state.costing)
 
   const [activeTab, setActiveTab] = useState('1');
   const [IsOpenViewHirarchy, setIsOpenViewHirarchy] = useState(false);
@@ -294,19 +295,7 @@ function CostingHeaderTabs(props) {
     setIsOpenViewHirarchy(false)
   }
 
-  /**
-  * @method render
-  * @description Renders the component
-  */
-  //  THIS CODE WILL USE FOR WARNING MESSAGE FOR CHILD PART COSTING IS UNDER APPROVAL
-  const parts = ['SIPL-part5', 'SIPL-part4', 'SIPL-part1', 'SIPL-part3']
-
-  const allPart = parts.map(item => {
-    let part = item + ', ';
-    return part
-  })
-
-  const warningMessage = <span className='part-flow'>Child Parts (<span title={allPart}>{allPart}</span>) costing is under approval flow</span>
+  const warningMessage = <span className='part-flow'>Child Parts (<span title={messageForAssembly}>{messageForAssembly}</span>) costing is under approval flow</span>
   return (
     <>
       <div className="user-page p-0">
@@ -350,9 +339,9 @@ function CostingHeaderTabs(props) {
                 <span>View BOM</span>
               </button>
               {/* THIS WARNING MESSAGE WILL COME WHEN CHILD PART COSTING IS UNDER APPROVAL  */}
-              {/* <div className='mb-n2'>
+              {messageForAssembly !== '' && <div className='mb-n2'>
                 <WarningMessage message={warningMessage} />
-              </div> */}
+              </div>}
             </Col>}
         </Row>
 
