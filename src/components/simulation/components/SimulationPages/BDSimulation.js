@@ -21,6 +21,7 @@ import { VBC, ZBC } from '../../../../config/constants';
 import { PaginationWrapper } from '../../../common/commonPagination';
 import DatePicker from "react-datepicker";
 import WarningMessage from '../../../common/WarningMessage';
+import { getMaxDate, getMinimumDate } from '../../SimulationUtils';
 
 const gridOptions = {
 
@@ -41,6 +42,7 @@ function BDSimulation(props) {
     const [isEffectiveDateSelected, setIsEffectiveDateSelected] = useState(false);
     const [isWarningMessageShow, setIsWarningMessageShow] = useState(false);
     const [titleObj, setTitleObj] = useState({})
+    const [maxDate, setMaxDate] = useState('');
 
     const { register, control, setValue, formState: { errors }, } = useForm({
         mode: 'onChange',
@@ -67,6 +69,8 @@ function BDSimulation(props) {
             if (isImpactedMaster) {
                 gridRef.current.api.sizeColumnsToFit();
             }
+            let maxDate = getMaxDate(list)
+            setMaxDate(maxDate)
         }
     }, [list])
 
@@ -444,6 +448,7 @@ function BDSimulation(props) {
                                             showMonthDropdown
                                             showYearDropdown
                                             dateFormat="dd/MM/yyyy"
+                                            minDate={new Date(maxDate)}
                                             dropdownMode="select"
                                             placeholderText="Select effective date"
                                             className="withBorder"

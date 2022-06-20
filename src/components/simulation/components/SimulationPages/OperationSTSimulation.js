@@ -22,6 +22,7 @@ import VerifySimulation from '../VerifySimulation';
 import { PaginationWrapper } from '../../../common/commonPagination';
 import DatePicker from "react-datepicker";
 import WarningMessage from '../../../common/WarningMessage';
+import { getMaxDate } from '../../SimulationUtils';
 
 const gridOptions = {
 
@@ -41,6 +42,7 @@ function OperationSTSimulation(props) {
     const [isEffectiveDateSelected, setIsEffectiveDateSelected] = useState(false);
     const [isWarningMessageShow, setIsWarningMessageShow] = useState(false);
     const [titleObj, setTitleObj] = useState({})
+    const [maxDate, setMaxDate] = useState('');
 
     const gridRef = useRef();
 
@@ -73,6 +75,8 @@ function OperationSTSimulation(props) {
     useEffect(() => {
         if (list && list.length >= 0) {
             gridRef.current.api.sizeColumnsToFit();
+            let maxDate = getMaxDate(list)
+            setMaxDate(maxDate)
         }
     }, [list])
 
@@ -422,6 +426,7 @@ function OperationSTSimulation(props) {
                                                 showMonthDropdown
                                                 showYearDropdown
                                                 dateFormat="dd/MM/yyyy"
+                                                minDate={new Date(maxDate)}
                                                 dropdownMode="select"
                                                 placeholderText="Select effective date"
                                                 className="withBorder"
