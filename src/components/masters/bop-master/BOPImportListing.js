@@ -23,9 +23,10 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
-import { getListingForSimulationCombined } from '../../simulation/actions/Simulation';
+import { getListingForSimulationCombined, setSelectedCostingListSimualtion } from '../../simulation/actions/Simulation';
 import { masterFinalLevelUser } from '../../masters/actions/Material'
 import WarningMessage from '../../common/WarningMessage';
+import _, { set } from 'lodash';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -178,6 +179,7 @@ class BOPImportListing extends Component {
 
     resetState = () => {
         resetState(gridOptions, this, "BOP")  //COMMON PAGINATION FUNCTION
+        this.props.setSelectedCostingListSimualtion([])
     }
 
     onBtPrevious = () => {
@@ -305,7 +307,17 @@ class BOPImportListing extends Component {
         } else if (cellValue === false) {
             cellValue = 'Zero Based'
         }
-        return cellValue          // IN SUMMARY DRAWER COSTING HEAD IS ROWDATA.COSTINGHEAD & IN MAIN DOMESTIC LISTING IT IS CELLVALUE
+        //return cellValue          // IN SUMMARY DRAWER COSTING HEAD IS ROWDATA.COSTINGHEAD & IN MAIN DOMESTIC LISTING IT IS CELLVALUE
+        if (this.props.selectedCostingListSimulation?.length > 0) {
+            this.props.selectedCostingListSimulation.map((item) => {
+                if (item.BoughtOutPartId == props.node.data.BoughtOutPartId) {
+                    props.node.setSelected(true)
+                }
+            })
+            return cellValue
+        } else {
+            return cellValue
+        }
 
     }
 
@@ -474,12 +486,21 @@ class BOPImportListing extends Component {
             effectiveDateFormatter: this.effectiveDateFormatter,
         };
 
+
         const onRowSelect = () => {
 
             var selectedRows = this.state.gridApi.getSelectedRows();
+            if (selectedRows === undefined || selectedRows === null) {
+                selectedRows = this.props.selectedCostingListSimulation
+            }
+
             if (this.props.isSimulation) {
-                let length = this.state.gridApi.getSelectedRows().length
-                this.props.apply(selectedRows, length)
+                let uniqeArray = _.uniq(selectedRows)
+                this.props.setSelectedCostingListSimualtion(uniqeArray)
+                let finalArr = selectedRows
+                let length = finalArr?.length
+                let uniqueArray = _.uniq(finalArr)
+                this.props.apply(uniqueArray, length)
             }
             this.setState({ selectedRowData: selectedRows })
         }
@@ -583,7 +604,9 @@ class BOPImportListing extends Component {
                                     }}
                                     frameworkComponents={frameworkComponents}
                                     rowSelection={'multiple'}
-                                    onSelectionChanged={onRowSelect}
+                                    //onSelectionChanged={onRowSelect}
+                                    onRowSelected={onRowSelect}
+                                    suppressRowClickSelection={true}
                                     onFilterModified={this.onFloatingFilterChanged}
                                 >
                                     {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
@@ -643,13 +666,14 @@ class BOPImportListing extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ boughtOutparts, comman, supplier, auth }) {
+function mapStateToProps({ boughtOutparts, comman, supplier, auth, simulation }) {
     const { bopCategorySelectList, vendorAllSelectList, bopImportList } = boughtOutparts;
     const { plantSelectList, } = comman;
     const { vendorWithVendorCodeSelectList } = supplier;
     const { initialConfiguration } = auth;
+    const { selectedCostingListSimulation } = simulation;
 
-    return { bopCategorySelectList, plantSelectList, vendorAllSelectList, bopImportList, vendorWithVendorCodeSelectList, initialConfiguration }
+    return { bopCategorySelectList, plantSelectList, vendorAllSelectList, bopImportList, vendorWithVendorCodeSelectList, initialConfiguration, selectedCostingListSimulation }
 }
 
 /**
@@ -666,7 +690,8 @@ export default connect(mapStateToProps, {
     getAllVendorSelectList,
     getVendorWithVendorCodeSelectList,
     getListingForSimulationCombined,
-    masterFinalLevelUser
+    masterFinalLevelUser,
+    setSelectedCostingListSimualtion
 })(reduxForm({
     form: 'BOPImportListing',
     enableReinitialize: true,

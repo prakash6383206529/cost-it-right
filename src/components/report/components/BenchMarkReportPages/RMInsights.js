@@ -46,7 +46,7 @@ function Insights(props) {
     const technologySelectList = useSelector(state => state.costing.technologySelectList)
     const gradeSelectList = useSelector(state => state.material.gradeSelectList)
     const filterRMSelectList = useSelector(state => state.material.filterRMSelectList.RawMaterials)
-    // console.log(filterRMSelectList,'this is material')
+    // 
 
 
     const handleTechnologyChange = (value) => {
@@ -127,7 +127,7 @@ function Insights(props) {
         setAverageGrpahData(avgGraphData);
         setMinimumGrpahData(minGraphData);
         setMaximumGrpahData(maxGraphData);
-        // console.log(rowData);
+        // 
     }
 
     const renderListing = (label) => {
@@ -159,7 +159,7 @@ function Insights(props) {
             }
         }
         else {
-            // console.log('genrated');
+            // 
         }
     }
 

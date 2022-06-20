@@ -86,17 +86,9 @@ function AddOperation(props) {
   }, []);
 
 
-  const onRowSelect = () => {
+  const onRowSelect = (event) => {
     var selectedRows = gridApi.getSelectedRows();
     setSelectedRowData(selectedRows)
-    // if (isSelected) {
-    //   let tempArr = [...selectedRowData, row]
-    //   setSelectedRowData(tempArr)
-    // } else {
-    //   const OperationId = row.OperationId;
-    //   let tempArr = selectedRowData && selectedRowData.filter(el => el.OperationId !== OperationId)
-    //   setSelectedRowData(tempArr)
-    // }
 
   }
 
@@ -238,6 +230,7 @@ function AddOperation(props) {
                         rowSelection={'multiple'}
                         frameworkComponents={frameworkComponents}
                         onSelectionChanged={onRowSelect}
+                        // onRowSelected={onRowSelect}
                         isRowSelectable={isRowSelectable}
                       >
                         <AgGridColumn field="OperationId" hide={true}></AgGridColumn>
