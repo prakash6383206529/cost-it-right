@@ -120,6 +120,7 @@ function BDSimulation(props) {
 
         obj.SimulationIds = tokenForMultiSimulation
         obj.SimulationBoughtOutPart = tempArr
+        obj.EffectiveDate = DayTime(effectiveDate).format('YYYY/MM/DD HH:mm')
 
         dispatch(runVerifyBoughtOutPartSimulation(obj, res => {
             setIsDisable(false)

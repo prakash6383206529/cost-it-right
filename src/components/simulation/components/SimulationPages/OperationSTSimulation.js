@@ -283,7 +283,7 @@ function OperationSTSimulation(props) {
         })
 
         obj.SimulationIds = tokenForMultiSimulation
-        obj.EffectiveDate = effectiveDate
+        obj.EffectiveDate = obj.EffectiveDate = DayTime(effectiveDate).format('YYYY/MM/DD HH:mm')
         obj.SimulationSurfaceTreatmentAndOperation = tempArr
         dispatch(runVerifySurfaceTreatmentSimulation(obj, res => {
             setIsDisable(false)
