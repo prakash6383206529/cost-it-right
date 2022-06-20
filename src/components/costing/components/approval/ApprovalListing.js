@@ -235,6 +235,27 @@ function ApprovalListing(props) {
 
   const onRowSelect = () => {
     var selectedRows = gridApi.getSelectedRows();
+    let temp = []
+    selectedRows && selectedRows.map((item, index) => {
+      if (item.IsApprovalLocked) {
+        temp.push(item.CostingNumber)
+        return false
+      }
+      return null
+    })
+
+    console.log('temp: ', temp);
+    if (temp.length > 1) {
+      setSelectedRowData([])
+      Toaster.warning(`A part or it's child part/parent part  costing for costing numbers ${temp.map(item => item)} is under approval.Please approve that first.`)
+      gridApi.deselectAll()
+      return false
+    } else if (temp.length === 1) {
+      console.log(selectedRows, "selectedRows");
+      Toaster.warning(selectedRows[0].ApprovalLockedMessage)
+      gridApi.deselectAll()
+      return false
+    }
 
     let reasonArray = []
     let technologyArray = []
@@ -285,6 +306,7 @@ function ApprovalListing(props) {
       gridApi.deselectAll()
       Toaster.warning('Vendor and Plant should be different against a Part number')
     }
+
 
     setSelectedRowData(selectedRows)
   }
