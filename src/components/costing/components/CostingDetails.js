@@ -34,6 +34,7 @@ import { debounce } from 'lodash';
 export const ViewCostingContext = React.createContext()
 export const EditCostingContext = React.createContext()
 export const CopyCostingContext = React.createContext()
+export const VbcExistingCosting = React.createContext()
 
 function IsolateReRender(control) {
   const values = useWatch({
@@ -117,6 +118,7 @@ function CostingDetails(props) {
   const [titleObj, setTitleObj] = useState({})
   //dropdown loader 
   const [inputLoader, setInputLoader] = useState(false)
+  const [costingOptionsSelectedObject, setCostingOptionsSelectedObject] = useState({})
 
   const dispatch = useDispatch()
 
@@ -480,6 +482,14 @@ function CostingDetails(props) {
    * @description HANDLE COSTING CHANGE
    */
   const handleCostingChange = (newValue, type, index) => {
+    let tempObject = vbcVendorGrid[index]?.CostingOptions
+    const indexOfCostingOptions = tempObject.findIndex((el) => el.CostingId === newValue.value)
+    let costingOptionsSelectedObjectTemp = {
+      SubAssemblyCostingId: tempObject[indexOfCostingOptions].SubAssemblyCostingId,
+      AssemblyCostingId: tempObject[indexOfCostingOptions].AssemblyCostingId
+    }
+    setCostingOptionsSelectedObject(costingOptionsSelectedObjectTemp)
+
     let tempArray = []
 
     if (type === ZBC && newValue !== '') {
@@ -2275,14 +2285,16 @@ function CostingDetails(props) {
                   <ViewCostingContext.Provider value={IsCostingViewMode} >
                     <EditCostingContext.Provider value={IsCostingEditMode} >
                       <CopyCostingContext.Provider value={IsCopyCostingMode} >
-                        <CostingDetailStepTwo
-                          backBtn={backToFirstStep}
-                          partInfo={Object.keys(props.partInfoStepTwo).length > 0 ? props.partInfoStepTwo : partInfoStepTwo}
-                          costingInfo={Object.keys(props.costingData).length > 0 ? props.costingData : costingData}
-                          toggle={props.toggle}
-                          IsCostingViewMode={IsCostingViewMode}
-                          IsCopyCostingMode={IsCopyCostingMode}
-                        />
+                        <VbcExistingCosting.Provider value={costingOptionsSelectedObject} >
+                          <CostingDetailStepTwo
+                            backBtn={backToFirstStep}
+                            partInfo={Object.keys(props.partInfoStepTwo).length > 0 ? props.partInfoStepTwo : partInfoStepTwo}
+                            costingInfo={Object.keys(props.costingData).length > 0 ? props.costingData : costingData}
+                            toggle={props.toggle}
+                            IsCostingViewMode={IsCostingViewMode}
+                            IsCopyCostingMode={IsCopyCostingMode}
+                          />
+                        </VbcExistingCosting.Provider>
                       </CopyCostingContext.Provider>
                     </EditCostingContext.Provider>
                   </ViewCostingContext.Provider>
