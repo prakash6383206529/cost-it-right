@@ -23,6 +23,7 @@ import { debounce } from 'lodash'
 import { PaginationWrapper } from '../../../common/commonPagination';
 import { Field } from 'redux-form';
 import WarningMessage from '../../../common/WarningMessage';
+import { getMaxDate, getMinimumDate } from '../../SimulationUtils';
 
 const gridOptions = {
 
@@ -41,6 +42,7 @@ function RMSimulation(props) {
     const [textFilterSearch, setTextFilterSearch] = useState('')
     const [isDisable, setIsDisable] = useState(false)
     const [effectiveDate, setEffectiveDate] = useState('');
+    const [maxDate, setMaxDate] = useState('');
     const [isEffectiveDateSelected, setIsEffectiveDateSelected] = useState(false);
     const [isWarningMessageShow, setIsWarningMessageShow] = useState(false)
     const gridRef = useRef();
@@ -69,6 +71,10 @@ function RMSimulation(props) {
                 window.screen.width >= 1600 && gridRef.current.api.sizeColumnsToFit();
             }
             window.screen.width >= 1921 && gridRef.current.api.sizeColumnsToFit();
+
+            let maxDate = getMaxDate(list)
+            setMaxDate(maxDate)
+
         }
 
     }, [list])
@@ -572,6 +578,7 @@ function RMSimulation(props) {
                                             showMonthDropdown
                                             showYearDropdown
                                             dateFormat="dd/MM/yyyy"
+                                            minDate={new Date(maxDate)}
                                             dropdownMode="select"
                                             placeholderText="Select effective date"
                                             className="withBorder"
