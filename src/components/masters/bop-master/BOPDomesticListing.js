@@ -23,9 +23,10 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
-import { getListingForSimulationCombined } from '../../simulation/actions/Simulation';
+import { getListingForSimulationCombined, setSelectedCostingListSimualtion } from '../../simulation/actions/Simulation';
 import { masterFinalLevelUser } from '../../masters/actions/Material'
 import WarningMessage from '../../common/WarningMessage';
+import _ from 'lodash';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -170,6 +171,7 @@ class BOPDomesticListing extends Component {
 
     resetState = () => {
         resetState(gridOptions, this, "BOP")  //COMMON PAGINATION FUNCTION
+        this.props.setSelectedCostingListSimualtion([])
     }
 
     onBtPrevious = () => {
@@ -348,6 +350,27 @@ class BOPDomesticListing extends Component {
         )
     };
 
+
+
+    checkBoxRenderer = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        // var selectedRows = gridApi?.getSelectedRows();
+
+
+        if (this.props.selectedCostingListSimulation?.length > 0) {
+            this.props.selectedCostingListSimulation.map((item) => {
+                if (item.RawMaterialId == props.node.data.RawMaterialId) {
+                    props.node.setSelected(true)
+                }
+            })
+            return cellValue
+        } else {
+            return cellValue
+        }
+
+    }
+
+
     /**
     * @method costingHeadFormatter
     * @description Renders Costing head
@@ -360,7 +383,20 @@ class BOPDomesticListing extends Component {
         } else if (cellValue === false) {
             cellValue = 'Zero Based'
         }
-        return cellValue          // IN SUMMARY DRAWER COSTING HEAD IS ROWDATA.COSTINGHEAD & IN MAIN DOMESTIC LISTING IT IS CELLVALUE
+        //return cellValue          // IN SUMMARY DRAWER COSTING HEAD IS ROWDATA.COSTINGHEAD & IN MAIN DOMESTIC LISTING IT IS CELLVALUE
+
+
+
+        if (this.props.selectedCostingListSimulation?.length > 0) {
+            this.props.selectedCostingListSimulation.map((item) => {
+                if (item.BoughtOutPartId == props.node.data.BoughtOutPartId) {
+                    props.node.setSelected(true)
+                }
+            })
+            return cellValue
+        } else {
+            return cellValue
+        }
 
     }
 
@@ -520,20 +556,25 @@ class BOPDomesticListing extends Component {
             hyphenFormatter: this.hyphenFormatter,
             costingHeadFormatter: this.costingHeadFormatter,
             effectiveDateFormatter: this.effectiveDateFormatter,
+            checkBoxRenderer: this.checkBoxRenderer
         };
 
         const onRowSelect = () => {
 
             var selectedRows = this.state.gridApi.getSelectedRows();
-            if (this.props.isSimulation) {
-                let length = this.state.gridApi.getSelectedRows().length
-                this.props.apply(selectedRows, length)
+            if (selectedRows == undefined || selectedRows == null) {
+                selectedRows = this.props.selectedCostingListSimulation
             }
-
+            if (this.props.isSimulation) {
+                let uniqeArray = _.uniq(selectedRows)
+                this.props.setSelectedCostingListSimualtion(uniqeArray)
+                let finalArr = selectedRows
+                let length = finalArr?.length
+                let uniqueArray = _.uniq(finalArr)
+                this.props.apply(uniqueArray, length)
+            }
             this.setState({ selectedRowData: selectedRows })
-
         }
-
 
         return (
 
@@ -633,8 +674,10 @@ class BOPDomesticListing extends Component {
                                     }}
                                     frameworkComponents={frameworkComponents}
                                     rowSelection={'multiple'}
-                                    onSelectionChanged={onRowSelect}
+                                    //onSelectionChanged={onRowSelect}
+                                    onRowSelected={onRowSelect}
                                     onFilterModified={this.onFloatingFilterChanged}
+                                    suppressRowClickSelection={true}
                                 >
                                     <AgGridColumn field="IsVendor" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                                     <AgGridColumn field="BoughtOutPartNumber" headerName="Insert Part No."></AgGridColumn>
@@ -690,11 +733,12 @@ class BOPDomesticListing extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ boughtOutparts, supplier, auth, material }) {
+function mapStateToProps({ boughtOutparts, supplier, auth, material, simulation }) {
     const { bopCategorySelectList, vendorAllSelectList, plantSelectList, bopDomesticList } = boughtOutparts;
     const { vendorWithVendorCodeSelectList } = supplier;
     const { initialConfiguration } = auth;
-    return { bopCategorySelectList, plantSelectList, vendorAllSelectList, bopDomesticList, vendorWithVendorCodeSelectList, initialConfiguration }
+    const { selectedCostingListSimulation } = simulation;
+    return { bopCategorySelectList, plantSelectList, vendorAllSelectList, bopDomesticList, vendorWithVendorCodeSelectList, initialConfiguration, selectedCostingListSimulation }
 }
 
 /**
@@ -712,7 +756,8 @@ export default connect(mapStateToProps, {
     getPlantSelectListByVendor,
     getVendorWithVendorCodeSelectList,
     getListingForSimulationCombined,
-    masterFinalLevelUser
+    masterFinalLevelUser,
+    setSelectedCostingListSimualtion
 })(reduxForm({
     form: 'BOPDomesticListing',
     enableReinitialize: true,

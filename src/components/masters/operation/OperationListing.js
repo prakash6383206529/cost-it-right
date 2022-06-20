@@ -28,9 +28,10 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
-import { getListingForSimulationCombined } from '../../simulation/actions/Simulation'
+import { getListingForSimulationCombined, setSelectedCostingListSimualtion } from '../../simulation/actions/Simulation'
 import { masterFinalLevelUser } from '../../masters/actions/Material'
 import WarningMessage from '../../common/WarningMessage';
+import _, { set } from 'lodash';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -246,6 +247,7 @@ class OperationListing extends Component {
 
     resetState = () => {
         resetState(gridOptions, this, "Operation")  //COMMON PAGINATION FUNCTION
+        this.props.setSelectedCostingListSimualtion([])
     }
 
     onBtPrevious = () => {
@@ -510,7 +512,19 @@ class OperationListing extends Component {
     costingHeadFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         let data = (cellValue === true || cellValue === 'Vendor Based' || cellValue === 'VBC') ? 'Vendor Based' : 'Zero Based';
-        return data;
+
+
+
+        if (this.props.selectedCostingListSimulation?.length > 0) {
+            this.props.selectedCostingListSimulation.map((item) => {
+                if (item.OperationId == props.node.data.OperationId) {
+                    props.node.setSelected(true)
+                }
+            })
+            return data
+        } else {
+            return data
+        }
     }
 
     /**
@@ -659,12 +673,22 @@ class OperationListing extends Component {
                 />
             )
         }
+
         const onRowSelect = () => {
             const { isSimulation } = this.props
             var selectedRows = this.state.gridApi.getSelectedRows();
-            if (isSimulation) {
-                let length = this.state.gridApi.getSelectedRows().length
-                this.props.apply(selectedRows, length)
+            if (selectedRows == undefined || selectedRows == null) {
+                selectedRows = this.props.selectedCostingListSimulation
+            }
+
+
+            if (this.props.isSimulation) {
+                let uniqeArray = _.uniq(selectedRows)
+                this.props.setSelectedCostingListSimualtion(uniqeArray)
+                let finalArr = selectedRows
+                let length = finalArr?.length
+                let uniqueArray = _.uniq(finalArr)
+                this.props.apply(uniqueArray, length)
             }
 
             this.setState({ selectedRowData: selectedRows })
@@ -804,7 +828,9 @@ class OperationListing extends Component {
                                 }}
                                 frameworkComponents={frameworkComponents}
                                 rowSelection={'multiple'}
-                                onSelectionChanged={onRowSelect}
+                                //onSelectionChanged={onRowSelect}
+                                onRowSelected={onRowSelect}
+                                suppressRowClickSelection={true}
                                 onFilterModified={this.onFloatingFilterChanged}
                             >
 
@@ -858,10 +884,11 @@ class OperationListing extends Component {
 * @description return state to component as props
 * @param {*} state
                 */
-function mapStateToProps({ otherOperation, auth }) {
+function mapStateToProps({ otherOperation, auth, simulation }) {
     const { loading, filterOperation, operationList, operationSurfaceTreatmentList, operationIndividualList } = otherOperation;
     const { leftMenuData, initialConfiguration, topAndLeftMenuData } = auth;
-    return { loading, filterOperation, leftMenuData, operationList, initialConfiguration, topAndLeftMenuData, operationSurfaceTreatmentList, operationIndividualList };
+    const { selectedCostingListSimulation } = simulation;
+    return { loading, filterOperation, leftMenuData, operationList, initialConfiguration, topAndLeftMenuData, operationSurfaceTreatmentList, operationIndividualList, selectedCostingListSimulation };
 }
 
 /**
@@ -883,7 +910,8 @@ export default connect(mapStateToProps, {
     getTechnologyListByVendor,
     getOperationListByVendor,
     getListingForSimulationCombined,
-    masterFinalLevelUser
+    masterFinalLevelUser,
+    setSelectedCostingListSimualtion
 })(reduxForm({
     form: 'OperationListing',
     onSubmitFail: errors => {
