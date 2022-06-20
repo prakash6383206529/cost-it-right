@@ -51,7 +51,8 @@ import {
     SET_TOKEN_CHECK_BOX,
     SET_KEY_FOR_API_CALLS,
     SET_TOKEN_FOR_SIMULATION,
-    GET_MASTER_SELECT_LIST_SIMUALTION
+    GET_MASTER_SELECT_LIST_SIMUALTION,
+    SET_SELECTED_COSTING_LIST_SIMULATION
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
@@ -1426,6 +1427,16 @@ export function getMasterSelectListSimulation(loggedInUserId, callback) {
             apiErrors(error);
             callback(error)
         })
+    }
+}
+
+export function setSelectedCostingListSimualtion(value) {
+    console.log('actiokoikoion ', value);
+    return (dispatch) => {
+        dispatch({
+            type: SET_SELECTED_COSTING_LIST_SIMULATION,
+            payload: value,
+        });
     }
 }
 

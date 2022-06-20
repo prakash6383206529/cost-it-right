@@ -22,19 +22,15 @@ import {
     GET_VALUE_TO_SHOW_COSTING_SIMULATION,
     GET_KEYS_FOR_DOWNLOAD_SUMMARY,
     SET_TOKEN_CHECK_BOX,
-    SET_KEY_FOR_API_CALLS,
     SET_TOKEN_FOR_SIMULATION,
-    GET_MASTER_SELECT_LIST_SIMUALTION
+    GET_MASTER_SELECT_LIST_SIMUALTION,
+    SET_SELECTED_COSTING_LIST_SIMULATION
 
 } from '../../../config/constants';
 
 const initialState = {
-
-    count: 1
-
-
-
-
+    count: 1,
+    selectedCostingListSimulation: []
 };
 
 export default function SimulationReducer(state = initialState, action) {
@@ -208,7 +204,12 @@ export default function SimulationReducer(state = initialState, action) {
                 loading: false,
                 masterSelectListSimulation: action.payload
             }
-
+        case SET_SELECTED_COSTING_LIST_SIMULATION:
+            return {
+                ...state,
+                loading: false,
+                selectedCostingListSimulation: action.payload
+            }
         default:
             return state;
     }

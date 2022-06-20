@@ -345,6 +345,7 @@ function CostingSummary(props) {
       resolve(filterList(inputValue));
     });
 
+
   const loaderObj = { isLoader: inputLoader }
   return (
     <>

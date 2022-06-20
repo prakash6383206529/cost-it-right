@@ -4,7 +4,7 @@ import RMDomesticListing from '../../masters/material-master/RMDomesticListing';
 import RMImportListing from '../../masters/material-master/RMImportListing';
 import { Row, Col } from 'reactstrap'
 import { Controller, useForm } from 'react-hook-form';
-import { getListingForSimulationCombined, getMasterSelectListSimulation, setMasterForSimulation, setTechnologyForSimulation, setVendorForSimulation, getTokenSelectListAPI, setTokenCheckBoxValue, setTokenForSimulation } from '../actions/Simulation';
+import { getListingForSimulationCombined, getMasterSelectListSimulation, setMasterForSimulation, setTechnologyForSimulation, setVendorForSimulation, getTokenSelectListAPI, setTokenCheckBoxValue, setTokenForSimulation, setSelectedCostingListSimualtion } from '../actions/Simulation';
 import { useDispatch, useSelector } from 'react-redux';
 import SimulationUploadDrawer from './SimulationUploadDrawer';
 import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, COMBINED_PROCESS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, RM_MASTER_ID } from '../../../config/constants';
@@ -33,6 +33,7 @@ import ScrollToTop from '../../common/ScrollToTop';
 import OverheadSimulation from './SimulationPages/OverheadSimulation';
 import ProfitSimulation from './SimulationPages/ProfitSimulation';
 import LoaderCustom from '../../common/LoaderCustom';
+import _ from 'lodash'
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -95,6 +96,7 @@ function Simulation(props) {
     const technologySelectList = useSelector(state => state.costing.costingSpecifiTechnology)
     const exchangeRateDataList = useSelector(state => state.exchangeRate.exchangeRateDataList)
     const processCostingList = useSelector(state => state.simulation.combinedProcessList)
+    const selectedCostingListSimulation = useSelector(state => state.simulation.selectedCostingListSimulation)
 
     useEffect(() => {
         if (technology && (technology?.value !== undefined && technology?.value !== '')) {
@@ -108,6 +110,7 @@ function Simulation(props) {
 
     const handleMasterChange = (value) => {
         dispatch(setFilterForRM({ costingHeadTemp: '', plantId: '', RMid: '', RMGradeid: '', Vendorid: '' }))
+        dispatch(setTokenForSimulation([]))
         setMaster(value)
         setShowMasterList(false)
         setShowTokenDropdown(false)
@@ -414,6 +417,11 @@ function Simulation(props) {
     }
 
     const editTable = (Data, length) => {
+        // let Data = selectedCostingListSimulation
+        let uniqeArray = _.uniq(Data)
+        console.log('Data: ', Data);
+        console.log('uniqeArray: ', uniqeArray);
+        dispatch(setSelectedCostingListSimualtion(uniqeArray))
         setTableData(Data)
         // alert('Hello')
         let flag = true;
