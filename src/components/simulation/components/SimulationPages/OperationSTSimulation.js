@@ -41,6 +41,7 @@ function OperationSTSimulation(props) {
     const [isEffectiveDateSelected, setIsEffectiveDateSelected] = useState(false);
     const [isWarningMessageShow, setIsWarningMessageShow] = useState(false);
     const [maxDate, setMaxDate] = useState('');
+    const [titleObj, setTitleObj] = useState({})
 
     const gridRef = useRef();
 
@@ -67,6 +68,7 @@ function OperationSTSimulation(props) {
         if (isbulkUpload) {
             setValue('NoOfCorrectRow', rowCount.correctRow)
             setValue('NoOfRowsWithoutChange', rowCount.NoOfRowsWithoutChange)
+            setTitleObj(prevState => ({ ...prevState, rowWithChanges: rowCount.correctRow, rowWithoutChanges: rowCount.NoOfRowsWithoutChange }))
         }
     }, [])
     useEffect(() => {
@@ -325,11 +327,12 @@ function OperationSTSimulation(props) {
                                             isbulkUpload &&
                                             <div className='d-flex justify-content-end bulk-upload-row'>
                                                 <div className="d-flex align-items-center">
-                                                    <label>No. of rows with changes:</label>
+                                                    <label>Rows with changes:</label>
                                                     <TextFieldHookForm
                                                         label=""
                                                         name={'NoOfCorrectRow'}
                                                         Controller={Controller}
+                                                        title={titleObj.rowWithChanges}
                                                         control={control}
                                                         register={register}
                                                         rules={{ required: false }}
@@ -343,11 +346,12 @@ function OperationSTSimulation(props) {
                                                     />
                                                 </div>
                                                 <div className="d-flex align-items-center">
-                                                    <label>No. of rows without changes:</label>
+                                                    <label>Rows without changes:</label>
                                                     <TextFieldHookForm
                                                         label=""
                                                         name={'NoOfRowsWithoutChange'}
                                                         Controller={Controller}
+                                                        title={titleObj.rowWithoutChanges}
                                                         control={control}
                                                         register={register}
                                                         rules={{ required: false }}
