@@ -114,7 +114,7 @@ function Insights(props) {
         setAverageGrpahData(avgGraphData);
         setMinimumGrpahData(minGraphData);
         setMaximumGrpahData(maxGraphData);
-        // console.log(rowData);
+        // 
     }
 
     const renderListing = (label) => {
@@ -138,7 +138,7 @@ function Insights(props) {
             }
         }
         else {
-            // console.log('genrated');
+            // 
         }
     }
 

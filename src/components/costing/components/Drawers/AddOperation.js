@@ -87,18 +87,8 @@ function AddOperation(props) {
 
 
   const onRowSelect = (event) => {
-    console.log('event: ', event);
-    console.log(event.node.isSelected(), 'event.node.isSelected()');
     var selectedRows = gridApi.getSelectedRows();
     setSelectedRowData(selectedRows)
-    // if (isSelected) {
-    //   let tempArr = [...selectedRowData, row]
-    //   setSelectedRowData(tempArr)
-    // } else {
-    //   const OperationId = row.OperationId;
-    //   let tempArr = selectedRowData && selectedRowData.filter(el => el.OperationId !== OperationId)
-    //   setSelectedRowData(tempArr)
-    // }
 
   }
 
