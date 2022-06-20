@@ -119,8 +119,8 @@ class AddRMImport extends Component {
   UNSAFE_componentWillMount() {
     this.props.getRawMaterialNameChild(() => { })
     this.props.getCurrencySelectList(() => { })
+    this.props.getUOMSelectList(() => { })
     if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
-      this.props.getUOMSelectList(() => { })
       this.props.getSupplierList(() => { })
       this.props.fetchPlantDataAPI(() => { })
     }
@@ -1448,8 +1448,8 @@ class AddRMImport extends Component {
                           <Col md="3" className='mb-4'>
                             <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
                             <div className="d-flex justify-space-between align-items-center p-relative async-select">
-                              {!this.state.isLoader && this.state.inputLoader && <LoaderCustom customClass={`vendor-input-loader`} />}
-                              <div className="fullinput-icon">
+                              <div className="fullinput-icon p-relative">
+                                {!this.state.isLoader && this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
                                 <AsyncSelect
                                   name="DestinationSupplierId"
                                   ref={this.myRef}

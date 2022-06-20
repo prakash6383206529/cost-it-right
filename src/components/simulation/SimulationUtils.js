@@ -35,6 +35,22 @@ export const SimulationUtils = (TempData) => {
     return TempData
 }
 
+
+export const getMaxDate = (arr) => {
+
+    // ✅ Get Max date
+    let maxDate = new Date(
+        Math.max(
+            ...arr.map(element => {
+                return new Date(element.EffectiveDate);
+            }),
+        ),
+    );
+
+    return maxDate
+
+}
+
 export const checkForChangeInOverheadProfit1Values = (item) => {
     if ((item.NewApplicabilityType === item.ApplicabilityType &&
         (item.NewValue !== null && item.NewValue !== undefined

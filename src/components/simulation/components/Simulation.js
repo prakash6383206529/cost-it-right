@@ -4,14 +4,14 @@ import RMDomesticListing from '../../masters/material-master/RMDomesticListing';
 import RMImportListing from '../../masters/material-master/RMImportListing';
 import { Row, Col } from 'reactstrap'
 import { Controller, useForm } from 'react-hook-form';
-import { getSelectListOfMasters, getTokenSelectListAPI, setMasterForSimulation, setTechnologyForSimulation, setTokenCheckBoxValue, setTokenForSimulation } from '../actions/Simulation';
+import { getMasterSelectListSimulation, getTokenSelectListAPI, setSelectedCostingListSimualtion, setMasterForSimulation, setTechnologyForSimulation, setTokenCheckBoxValue, setTokenForSimulation } from '../actions/Simulation';
 import { useDispatch, useSelector } from 'react-redux';
 import SimulationUploadDrawer from './SimulationUploadDrawer';
 import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, RM_MASTER_ID } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
 import { getTechnologyForSimulation, OperationSimulation, RMDomesticSimulation, RMImportSimulation, SurfaceTreatmentSimulation, MachineRateSimulation, BOPDomesticSimulation, BOPImportSimulation, OverheadProfitSimulation } from '../../../config/masterData';
 import RMSimulation from './SimulationPages/RMSimulation';
-import { getCostingTechnologySelectList } from '../../costing/actions/Costing';
+import { getCostingSpecificTechnology } from '../../costing/actions/Costing';
 import CostingSimulation from './CostingSimulation';
 import WarningMessage from '../../common/WarningMessage';
 import MachineRateListing from '../../masters/machine-master/MachineRateListing';
@@ -32,6 +32,7 @@ import OverheadSimulation from './SimulationPages/OverheadSimulation';
 import ProfitSimulation from './SimulationPages/ProfitSimulation';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import LoaderCustom from '../../common/LoaderCustom';
+import _ from 'lodash'
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -63,10 +64,9 @@ function Simulation(props) {
     const [masterSummaryDrawerState, setmasterSummaryDrawerState] = useState(props.isCancelClicked)
 
     const dispatch = useDispatch()
-
     useEffect(() => {
-        dispatch(getSelectListOfMasters(() => { }))
-        dispatch(getCostingTechnologySelectList(() => { }))
+        dispatch(getMasterSelectListSimulation(loggedInUserId(), () => { }))
+        dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
         setShowEditTable(false)
         if (props.isRMPage) {
             setValue('Technology', { label: selectedTechnologyForSimulation?.label, value: selectedTechnologyForSimulation?.value })
@@ -80,11 +80,12 @@ function Simulation(props) {
         }
     }, [])
 
-    const masterList = useSelector(state => state.simulation.masterSelectList)
+    const masterList = useSelector(state => state.simulation.masterSelectListSimulation)
     const rmDomesticListing = useSelector(state => state.material.rmDataList)
     const rmImportListing = useSelector(state => state.material.rmImportDataList)
-    const technologySelectList = useSelector(state => state.costing.technologySelectList)
+    const technologySelectList = useSelector(state => state.costing.costingSpecifiTechnology)
     const exchangeRateDataList = useSelector(state => state.exchangeRate.exchangeRateDataList)
+    const selectedCostingListSimulation = useSelector(state => state.simulation.selectedCostingListSimulation)
 
     useEffect(() => {
         if (technology && (technology?.value !== undefined && technology?.value !== '')) {
@@ -94,6 +95,7 @@ function Simulation(props) {
 
     const handleMasterChange = (value) => {
         dispatch(setFilterForRM({ costingHeadTemp: '', plantId: '', RMid: '', RMGradeid: '', Vendorid: '' }))
+        dispatch(setTokenForSimulation([]))
         setMaster(value)
         setShowMasterList(false)
         setShowTokenDropdown(false)
@@ -350,6 +352,9 @@ function Simulation(props) {
     }
 
     const editTable = (Data, length) => {
+        // let Data = selectedCostingListSimulation
+        let uniqeArray = _.uniq(Data)
+        dispatch(setSelectedCostingListSimualtion(uniqeArray))
         setTableData(Data)
         // alert('Hello')
         let flag = true;

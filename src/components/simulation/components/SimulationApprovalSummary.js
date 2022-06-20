@@ -1188,85 +1188,54 @@ function SimulationApprovalSummary(props) {
                                                             >
                                                                 <AgGridColumn width={140} field="SimulationCostingId" hide='true'></AgGridColumn>
                                                                 <AgGridColumn width={160} field="CostingNumber" headerName="Costing Id"></AgGridColumn>
-                                                                {
-                                                                    (isRMDomesticOrRMImport || keysForDownloadSummary.IsRawMaterialSimulation) &&
-                                                                    <>
-                                                                        <AgGridColumn width={192} field="RMName" headerName="Raw Material-Grade" cellRenderer='rawMaterailFormat' ></AgGridColumn>
-                                                                        <AgGridColumn width={192} field="RMCode" headerName="Raw Material Code" cellRenderer='rawMaterailCodeSpecFormatter'></AgGridColumn>
-                                                                        <AgGridColumn width={192} field="RMSpecs" headerName="Raw Material Spec" cellRenderer='rawMaterailCodeSpecFormatter'></AgGridColumn>
-                                                                    </>
-                                                                }
+
+
+                                                                {(isRMDomesticOrRMImport || keysForDownloadSummary.IsRawMaterialSimulation) && <AgGridColumn width={192} field="RMName" headerName="Raw Material-Grade" cellRenderer='rawMaterailFormat' ></AgGridColumn>}
+                                                                {(isRMDomesticOrRMImport || keysForDownloadSummary.IsRawMaterialSimulation) && <AgGridColumn width={192} field="RMCode" headerName="Raw Material Code" cellRenderer='rawMaterailCodeSpecFormatter'></AgGridColumn>}
+                                                                {(isRMDomesticOrRMImport || keysForDownloadSummary.IsRawMaterialSimulation) && <AgGridColumn width={192} field="RMSpecs" headerName="Raw Material Spec" cellRenderer='rawMaterailCodeSpecFormatter'></AgGridColumn>}
+
+
                                                                 <AgGridColumn width={136} field="PartNo" headerName="Part No."></AgGridColumn>
                                                                 <AgGridColumn width={160} field="PartName" headerName='Part Name'></AgGridColumn>
                                                                 <AgGridColumn width={150} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>
                                                                 <AgGridColumn width={150} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
                                                                 <AgGridColumn width={150} field="VendorName" headerName="Vendor(Code)"></AgGridColumn>
-                                                                {String(SimulationTechnologyId) !== EXCHNAGERATE &&
-                                                                    <>
-                                                                        <AgGridColumn width={150} field="PlantName" headerName='Plant(Code)' cellRenderer={'plantFormatter'} ></AgGridColumn>
-                                                                    </>
-                                                                }
-                                                                {
-                                                                    (isOperation || isSurfaceTreatment || keysForDownloadSummary.IsSurfaceTreatmentSimulation || keysForDownloadSummary.IsOperationSimulation) &&
-                                                                    <>
-                                                                        <AgGridColumn width={140} field="OperationName" headerName="Operation Name" cellRenderer='operationNameFormatter'></AgGridColumn>
-                                                                        <AgGridColumn width={140} field="OperationCode" headerName="Operation Code" cellRenderer='operationCodeFormatter'></AgGridColumn>
-                                                                    </>
-                                                                }
-                                                                {
-                                                                    (isSurfaceTreatment || keysForDownloadSummary.IsSurfaceTreatmentSimulation) &&
-                                                                    <>
-                                                                        <AgGridColumn width={140} field="OldNetSurfaceTreatmentCost" headerName="Old ST Cost" cellRenderer='oldSTFormatter'></AgGridColumn>
-                                                                        <AgGridColumn width={140} field="NewNetSurfaceTreatmentCost" headerName="New ST Cost" cellRenderer='newSTFormatter'></AgGridColumn>
-                                                                        <AgGridColumn width={140} field="NetSurfaceTreatmentCostVariance" headerName="ST Variance" cellRenderer='STVarianceFormatter'></AgGridColumn>
-                                                                    </>
-                                                                }
-                                                                {
-                                                                    (isOperation || keysForDownloadSummary.IsOperationSimulation) &&
-                                                                    <>
-                                                                        <AgGridColumn width={140} field="OldOperationCost" headerName="Old Operation Cost" cellRenderer='oldOperationFormatter'></AgGridColumn>
-                                                                        <AgGridColumn width={140} field="NewOperationCost" headerName="New Operation Cost" cellRenderer='newOperationFormatter'></AgGridColumn>
-                                                                        <AgGridColumn width={140} field="OperationCostVariance" headerName="Operation Variance" cellRenderer='OPVarianceFormatter'></AgGridColumn>
-                                                                    </>
-                                                                }
-                                                                <AgGridColumn width={140} field="OldPOPrice" cellRenderer='oldPOFormatter' headerName={String(SimulationTechnologyId) === EXCHNAGERATE ? 'PO Price' : "Old PO Price"}></AgGridColumn>
-                                                                {
-                                                                    String(SimulationTechnologyId) !== EXCHNAGERATE &&
-                                                                    <>
-                                                                        <AgGridColumn width={140} field="NewPOPrice" cellRenderer='newPOFormatter' headerName="New PO Price"></AgGridColumn>
-                                                                        <AgGridColumn width={140} field="POVariance" headerName="PO Variance" cellRenderer='POVarianceFormatter' ></AgGridColumn>
-                                                                    </>
-                                                                }
-                                                                {
-                                                                    (isRMDomesticOrRMImport || keysForDownloadSummary.IsRawMaterialSimulation) &&
-                                                                    <>
+                                                                {String(SimulationTechnologyId) !== EXCHNAGERATE && <AgGridColumn width={150} field="PlantName" headerName='Plant(Code)' cellRenderer={'plantFormatter'} ></AgGridColumn>}
 
-                                                                        <AgGridColumn width={140} field="OldNetRawMaterialsCost" cellRenderer='oldRMFormatter' headerName="Old RMC/pc" ></AgGridColumn>
-                                                                        <AgGridColumn width={140} field="NewNetRawMaterialsCost" cellRenderer='newRMFormatter' headerName="New RMC/pc" ></AgGridColumn>
-                                                                        <AgGridColumn width={140} field="RMVariance" headerName="RM Variance" cellRenderer='varianceFormatter' ></AgGridColumn>
-                                                                    </>
-                                                                }
-                                                                {
-                                                                    (isExchangeRate || keysForDownloadSummary.IsExchangeRateSimulation) &&
-                                                                    <>
-                                                                        <AgGridColumn width={140} field="OldNetPOPriceOtherCurrency" cellRenderer='oldPOCurrencyFormatter' headerName="Old PO Price (in Currency)"></AgGridColumn>
-                                                                        <AgGridColumn width={140} field="NewNetPOPriceOtherCurrency" cellRenderer='newPOCurrencyFormatter' headerName="New PO Price (in Currency)"></AgGridColumn>
-                                                                        <AgGridColumn width={140} field="POVariance" headerName="PO Variance" cellRenderer='POVarianceFormatter' ></AgGridColumn>
-                                                                        <AgGridColumn width={140} field="OldExchangeRate" cellRenderer='oldERFormatter' headerName="Exchange Rate Old" ></AgGridColumn>
-                                                                        <AgGridColumn width={140} field="NewExchangeRate" cellRenderer='newERFormatter' headerName="Exchange Rate New" ></AgGridColumn>
-                                                                        <AgGridColumn width={140} field="Variance" headerName="Exchange Rate Variance" cellRenderer='varianceFormatter' ></AgGridColumn>
-                                                                    </>
-                                                                }
-                                                                {
-                                                                    (isBOPDomesticOrImport || keysForDownloadSummary.IsBoughtOutPartSimulation) &&
-                                                                    <>
-                                                                        <AgGridColumn width={140} field="BoughtOutPartName" headerName="Bought Out Part Name" cellRenderer='bopMaterailFormat'></AgGridColumn>
-                                                                        <AgGridColumn width={140} field="BoughtOutPartNumber" headerName="Bought Out Part Number" cellRenderer='bopNumberFormat'></AgGridColumn>
-                                                                        <AgGridColumn width={140} field="OldNetBoughtOutPartCost" headerName="Old BOP Cost" cellRenderer='oldBOPFormatter' ></AgGridColumn>
-                                                                        <AgGridColumn width={140} field="NewNetBoughtOutPartCost" headerName="New BOP Cost" cellRenderer='newBOPFormatter'></AgGridColumn>
-                                                                        <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" headerName="BOP Variance" cellRenderer='BOPVarianceFormatter' ></AgGridColumn>
-                                                                    </>
-                                                                }
+                                                                {(isOperation || isSurfaceTreatment || keysForDownloadSummary.IsSurfaceTreatmentSimulation || keysForDownloadSummary.IsOperationSimulation) && <AgGridColumn width={140} field="OperationName" headerName="Operation Name" cellRenderer='operationNameFormatter'></AgGridColumn>}
+                                                                {(isOperation || isSurfaceTreatment || keysForDownloadSummary.IsSurfaceTreatmentSimulation || keysForDownloadSummary.IsOperationSimulation) && <AgGridColumn width={140} field="OperationCode" headerName="Operation Code" cellRenderer='operationCodeFormatter'></AgGridColumn>}
+
+                                                                {(isSurfaceTreatment || keysForDownloadSummary.IsSurfaceTreatmentSimulation) && <AgGridColumn width={140} field="OldNetSurfaceTreatmentCost" headerName="Old ST Cost" cellRenderer='oldSTFormatter'></AgGridColumn>}
+                                                                {(isSurfaceTreatment || keysForDownloadSummary.IsSurfaceTreatmentSimulation) && <AgGridColumn width={140} field="NewNetSurfaceTreatmentCost" headerName="New ST Cost" cellRenderer='newSTFormatter'></AgGridColumn>}
+                                                                {(isSurfaceTreatment || keysForDownloadSummary.IsSurfaceTreatmentSimulation) && <AgGridColumn width={140} field="NetSurfaceTreatmentCostVariance" headerName="ST Variance" cellRenderer='STVarianceFormatter'></AgGridColumn>}
+
+                                                                {(isOperation || keysForDownloadSummary.IsOperationSimulation) && <AgGridColumn width={140} field="OldOperationCost" headerName="Old Operation Cost" cellRenderer='oldOperationFormatter'></AgGridColumn>}
+                                                                {(isOperation || keysForDownloadSummary.IsOperationSimulation) && <AgGridColumn width={140} field="NewOperationCost" headerName="New Operation Cost" cellRenderer='newOperationFormatter'></AgGridColumn>}
+                                                                {(isOperation || keysForDownloadSummary.IsOperationSimulation) && <AgGridColumn width={140} field="OperationCostVariance" headerName="Operation Variance" cellRenderer='OPVarianceFormatter'></AgGridColumn>}
+
+                                                                <AgGridColumn width={140} field="OldPOPrice" cellRenderer='oldPOFormatter' headerName={String(SimulationTechnologyId) === EXCHNAGERATE ? 'PO Price' : "Old PO Price"}></AgGridColumn>
+
+                                                                {String(SimulationTechnologyId) !== EXCHNAGERATE && <AgGridColumn width={140} field="NewPOPrice" cellRenderer='newPOFormatter' headerName="New PO Price"></AgGridColumn>}
+                                                                {String(SimulationTechnologyId) !== EXCHNAGERATE && <AgGridColumn width={140} field="POVariance" headerName="PO Variance" cellRenderer='POVarianceFormatter' ></AgGridColumn>}
+
+                                                                {(isRMDomesticOrRMImport || keysForDownloadSummary.IsRawMaterialSimulation) && <AgGridColumn width={140} field="OldNetRawMaterialsCost" cellRenderer='oldRMFormatter' headerName="Old RMC/pc" ></AgGridColumn>}
+                                                                {(isRMDomesticOrRMImport || keysForDownloadSummary.IsRawMaterialSimulation) && <AgGridColumn width={140} field="NewNetRawMaterialsCost" cellRenderer='newRMFormatter' headerName="New RMC/pc" ></AgGridColumn>}
+                                                                {(isRMDomesticOrRMImport || keysForDownloadSummary.IsRawMaterialSimulation) && <AgGridColumn width={140} field="RMVariance" headerName="RM Variance" cellRenderer='varianceFormatter' ></AgGridColumn>}
+
+                                                                {(isExchangeRate || keysForDownloadSummary.IsExchangeRateSimulation) && <AgGridColumn width={140} field="OldNetPOPriceOtherCurrency" cellRenderer='oldPOCurrencyFormatter' headerName="Old PO Price (in Currency)"></AgGridColumn>}
+                                                                {(isExchangeRate || keysForDownloadSummary.IsExchangeRateSimulation) && <AgGridColumn width={140} field="NewNetPOPriceOtherCurrency" cellRenderer='newPOCurrencyFormatter' headerName="New PO Price (in Currency)"></AgGridColumn>}
+                                                                {(isExchangeRate || keysForDownloadSummary.IsExchangeRateSimulation) && <AgGridColumn width={140} field="POVariance" headerName="PO Variance" cellRenderer='POVarianceFormatter' ></AgGridColumn>}
+                                                                {(isExchangeRate || keysForDownloadSummary.IsExchangeRateSimulation) && <AgGridColumn width={140} field="OldExchangeRate" cellRenderer='oldERFormatter' headerName="Exchange Rate Old" ></AgGridColumn>}
+                                                                {(isExchangeRate || keysForDownloadSummary.IsExchangeRateSimulation) && <AgGridColumn width={140} field="NewExchangeRate" cellRenderer='newERFormatter' headerName="Exchange Rate New" ></AgGridColumn>}
+                                                                {(isExchangeRate || keysForDownloadSummary.IsExchangeRateSimulation) && <AgGridColumn width={140} field="Variance" headerName="Exchange Rate Variance" cellRenderer='varianceFormatter' ></AgGridColumn>}
+
+                                                                {(isBOPDomesticOrImport || keysForDownloadSummary.IsBoughtOutPartSimulation) && <AgGridColumn width={140} field="BoughtOutPartName" headerName="Bought Out Part Name" cellRenderer='bopMaterailFormat'></AgGridColumn>}
+                                                                {(isBOPDomesticOrImport || keysForDownloadSummary.IsBoughtOutPartSimulation) && <AgGridColumn width={140} field="BoughtOutPartNumber" headerName="Bought Out Part Number" cellRenderer='bopNumberFormat'></AgGridColumn>}
+                                                                {(isBOPDomesticOrImport || keysForDownloadSummary.IsBoughtOutPartSimulation) && <AgGridColumn width={140} field="OldNetBoughtOutPartCost" headerName="Old BOP Cost" cellRenderer='oldBOPFormatter' ></AgGridColumn>}
+                                                                {(isBOPDomesticOrImport || keysForDownloadSummary.IsBoughtOutPartSimulation) && <AgGridColumn width={140} field="NewNetBoughtOutPartCost" headerName="New BOP Cost" cellRenderer='newBOPFormatter'></AgGridColumn>}
+                                                                {(isBOPDomesticOrImport || keysForDownloadSummary.IsBoughtOutPartSimulation) && <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" headerName="BOP Variance" cellRenderer='BOPVarianceFormatter' ></AgGridColumn>}
+
+
                                                                 {(keysForDownloadSummary?.IsBoughtOutPartSimulation || keysForDownloadSummary?.IsSurfaceTreatmentSimulation || keysForDownloadSummary?.IsOperationSimulation ||
                                                                     keysForDownloadSummary?.IsRawMaterialSimulation || keysForDownloadSummary?.IsExchangeRateSimulation || keysForDownloadSummary?.IsMachineRateSimulation) &&
                                                                     < AgGridColumn width={140} field="DraftPOPrice" headerName="Draft PO Price" ></AgGridColumn>}
@@ -1438,6 +1407,7 @@ function SimulationApprovalSummary(props) {
                                     isPartImpactAssembly={true}
                                     impactType={'AssemblySummary'}
                                     isImpactDrawer={false}
+                                    simulationId={simulationDetail.SimulationId}
                                 />
                             }
                             {/* {lastRevisionDataAccordian &&

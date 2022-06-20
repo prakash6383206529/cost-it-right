@@ -17,6 +17,8 @@ import Simulation from '../Simulation';
 import OtherVerifySimulation from '../OtherVerifySimulation';
 import { debounce } from 'lodash'
 import { PaginationWrapper } from '../../../common/commonPagination';
+import DatePicker from "react-datepicker";
+import WarningMessage from '../../../common/WarningMessage';
 
 const gridOptions = {
 
@@ -31,6 +33,9 @@ function ERSimulation(props) {
     const [showMainSimulation, setShowMainSimulation] = useState(false)
     const [selectedRowData, setSelectedRowData] = useState([]);
     const [isDisable, setIsDisable] = useState(false)
+    const [effectiveDate, setEffectiveDate] = useState('');
+    const [isEffectiveDateSelected, setIsEffectiveDateSelected] = useState(false);
+    const [isWarningMessageShow, setIsWarningMessageShow] = useState(false);
 
     const dispatch = useDispatch()
 
@@ -156,6 +161,12 @@ function ERSimulation(props) {
     const onFilterTextBoxChanged = (e) => {
         gridApi.setQuickFilter(e.target.value);
     }
+    const handleEffectiveDateChange = (date) => {
+        setEffectiveDate(date)
+        setIsEffectiveDateSelected(true)
+        setIsWarningMessageShow(false)
+    }
+
 
     const frameworkComponents = {
         effectiveDateRenderer: effectiveDateFormatter,
@@ -175,11 +186,16 @@ function ERSimulation(props) {
     }
     const verifySimulation = debounce(() => {
         /**********POST METHOD TO CALL HERE AND AND SEND TOKEN TO VERIFY PAGE ****************/
+        if (!isEffectiveDateSelected) {
+            setIsWarningMessageShow(true)
+            return false
+        }
 
         if (selectedRowData.length === 0) {
             Toaster.warning('Please select atleast one costing.')
             return false
         }
+
         setIsDisable(true)
         let obj = {}
         obj.SimulationTechnologyId = selectedMasterForSimulation.value
@@ -196,7 +212,7 @@ function ERSimulation(props) {
 
             return null;
         })
-
+        obj.EffectiveDate = obj.EffectiveDate = DayTime(effectiveDate).format('YYYY/MM/DD HH:mm')
         obj.SimulationIds = tokenForMultiSimulation
         obj.SimulationExchangeRates = tempArr
 
@@ -279,7 +295,25 @@ function ERSimulation(props) {
                         {
                             !isImpactedMaster &&
                             <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
-                                <div className="col-sm-12 text-right bluefooter-butn">
+                                <div className="col-sm-12 text-right bluefooter-butn d-flex justify-content-end align-items-center">
+                                    <div className="inputbox date-section mr-3 verfiy-page">
+                                        <DatePicker
+                                            name="EffectiveDate"
+                                            selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
+                                            onChange={handleEffectiveDateChange}
+                                            showMonthDropdown
+                                            showYearDropdown
+                                            dateFormat="dd/MM/yyyy"
+                                            dropdownMode="select"
+                                            placeholderText="Select effective date"
+                                            className="withBorder"
+                                            autoComplete={"off"}
+                                            disabledKeyboardNavigation
+                                            onChangeRaw={(e) => e.preventDefault()}
+                                        />
+                                        {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
+                                    </div>
+
                                     <button type={"button"} className="mr15 cancel-btn" onClick={cancel} disabled={isDisable}>
                                         <div className={"cancel-icon"}></div>
                                         {"CANCEL"}

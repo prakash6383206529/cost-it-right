@@ -9,6 +9,7 @@ import Toaster from '../../../common/Toaster';
 import { runVerifySimulation } from '../../actions/Simulation';
 import { Fragment } from 'react';
 import { TextFieldHookForm } from '../../../layout/HookFormInputs';
+import DatePicker from "react-datepicker";
 import { useForm, Controller } from 'react-hook-form'
 import RunSimulationDrawer from '../RunSimulationDrawer';
 import VerifySimulation from '../VerifySimulation';
@@ -20,6 +21,9 @@ import Simulation from '../Simulation';
 import { debounce } from 'lodash'
 import { VBC, ZBC } from '../../../../config/constants';
 import { PaginationWrapper } from '../../../common/commonPagination';
+import { Field } from 'redux-form';
+import WarningMessage from '../../../common/WarningMessage';
+import { getMaxDate, getMinimumDate } from '../../SimulationUtils';
 
 const gridOptions = {
 
@@ -37,6 +41,10 @@ function RMSimulation(props) {
     const [showMainSimulation, setShowMainSimulation] = useState(false)
     const [textFilterSearch, setTextFilterSearch] = useState('')
     const [isDisable, setIsDisable] = useState(false)
+    const [effectiveDate, setEffectiveDate] = useState('');
+    const [maxDate, setMaxDate] = useState('');
+    const [isEffectiveDateSelected, setIsEffectiveDateSelected] = useState(false);
+    const [isWarningMessageShow, setIsWarningMessageShow] = useState(false)
     const gridRef = useRef();
 
     const { register, control, setValue, formState: { errors }, } = useForm({
@@ -64,11 +72,20 @@ function RMSimulation(props) {
                 window.screen.width >= 1600 && gridRef.current.api.sizeColumnsToFit();
             }
             window.screen.width >= 1921 && gridRef.current.api.sizeColumnsToFit();
+
+            let maxDate = getMaxDate(list)
+            setMaxDate(maxDate)
+
         }
 
     }, [list])
 
     const verifySimulation = debounce(() => {
+        if (!isEffectiveDateSelected) {
+            setIsWarningMessageShow(true)
+            return false
+        }
+
         let basicRateCount = 0
         let basicScrapCount = 0
         let isScrapRateGreaterThanBasiRate = false
@@ -147,6 +164,7 @@ function RMSimulation(props) {
 
         obj.SimulationIds = tokenForMultiSimulation
         obj.SimulationRawMaterials = tempArr
+        obj.EffectiveDate = DayTime(effectiveDate).format('YYYY/MM/DD HH:mm')
         dispatch(runVerifySimulation(obj, res => {
             setIsDisable(false)
 
@@ -380,6 +398,13 @@ function RMSimulation(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
     }
 
+
+    const handleEffectiveDateChange = (date) => {
+        setEffectiveDate(date)
+        setIsEffectiveDateSelected(true)
+        setIsWarningMessageShow(false)
+    }
+
     const frameworkComponents = {
         effectiveDateFormatter: effectiveDateFormatter,
         costingHeadFormatter: costingHeadFormatter,
@@ -545,7 +570,25 @@ function RMSimulation(props) {
                         {
                             !isImpactedMaster &&
                             <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
-                                <div className="col-sm-12 text-right bluefooter-butn">
+                                <div className="col-sm-12 text-right bluefooter-butn d-flex justify-content-end align-items-center">
+                                    <div className="inputbox date-section mr-3 verfiy-page">
+                                        <DatePicker
+                                            name="EffectiveDate"
+                                            selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
+                                            onChange={handleEffectiveDateChange}
+                                            showMonthDropdown
+                                            showYearDropdown
+                                            dateFormat="dd/MM/yyyy"
+                                            minDate={new Date(maxDate)}
+                                            dropdownMode="select"
+                                            placeholderText="Select effective date"
+                                            className="withBorder"
+                                            autoComplete={"off"}
+                                            disabledKeyboardNavigation
+                                            onChangeRaw={(e) => e.preventDefault()}
+                                        />
+                                        {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
+                                    </div>
                                     <button type={"button"} className="mr15 cancel-btn" onClick={cancel} disabled={isDisable}>
                                         <div className={"cancel-icon"}></div>
                                         {"CANCEL"}
@@ -555,11 +598,6 @@ function RMSimulation(props) {
                                         </div>{" "}
                                         {"Verify"}
                                     </button>
-                                    {/* <button onClick={runSimulation} type="submit" className="user-btn mr5 save-btn"                    >
-                                <div className={"Run"}>
-                                </div>{" "}
-                                {"RUN SIMULATION"}
-                            </button> */}
                                 </div>
                             </Row>
                         }

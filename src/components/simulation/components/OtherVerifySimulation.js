@@ -40,6 +40,7 @@ function OtherVerifySimulation(props) {
     const [rowData, setRowData] = useState(null);
     const { filteredRMData } = useSelector(state => state.material)
     const [masterId, setMasterId] = useState('')
+    const [effectiveDate, setEffectiveDate] = useState('')
     const { selectedMasterForSimulation } = useSelector(state => state.simulation)
 
     const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
@@ -69,6 +70,7 @@ function OtherVerifySimulation(props) {
                     setSimualtionId(data.SimulationId)
                     setMasterId(data.SimulationtechnologyId)
                     setHideRunButton(false)
+                    setEffectiveDate(data.EffectiveDate)
                 }
             }))
         }
@@ -335,6 +337,7 @@ function OtherVerifySimulation(props) {
                     objs={objs}
                     masterId={masterId}
                     anchor={"right"}
+                    date={effectiveDate}
                 />
             }
         </>

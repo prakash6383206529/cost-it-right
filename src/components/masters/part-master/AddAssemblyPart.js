@@ -681,7 +681,7 @@ class AddAssemblyPart extends Component {
           || BOMChanged)) {
           // IF THERE ARE CHANGES ,THEN REVISION NO SHOULD BE CHANGED
           if (String(DataToCheck.RevisionNumber) === String(values.RevisionNumber) || String(DataToCheck.BOMNumber) === String(values.BOMNumber) || DayTime(DataToCheck.EffectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(this.state.effectiveDate).format('YYYY-MM-DD HH:mm:ss')) {
-            Toaster.warning('Please edit Revision no , BOM no and Effective date')
+            Toaster.warning('Please edit Revision no, ECN no, BOM no and Effective date')
             return false
           } else {
             isStructureChanges = true
@@ -933,8 +933,8 @@ class AddAssemblyPart extends Component {
                         {this.state.convertPartToAssembly &&
                           <Col md="3" className='mb-4'>
                             <label>{"Part No"}<span className="asterisk-required">*</span></label>
-                            <div className="fullinput-icon w-100">
-                              {this.state.inputLoader && <LoaderCustom customClass="assembly-part-loader" />}
+                            <div className="fullinput-icon w-100 p-relative">
+                              {this.state.inputLoader && <LoaderCustom customClass="input-loader" />}
                               <AsyncSelect
                                 name="partNo"
                                 ref={this.myRef}
@@ -1104,7 +1104,7 @@ class AddAssemblyPart extends Component {
                             valueDescription={this.state.TechnologySelected}
                             disabled={isViewMode || this.state.warningMessageTechnology || (isEditFlag && !this.state.isBomEditable)}
                           />
-                          {this.state.warningMessageTechnology && <WarningMessage dClass="mr-3 assembly-viw-bom-wrapper" message={`Please reset the BOM to change the technology`} />}
+                          {this.state.warningMessageTechnology && !isViewMode && <WarningMessage dClass="assembly-view-bom-wrapper" message={`Please reset the BOM to change the technology`} />}
                         </Col>
 
                         <Col md="3">
@@ -1128,7 +1128,7 @@ class AddAssemblyPart extends Component {
                               />
                             </div>
                           </div>
-                          {this.state.warningMessage && <WarningMessage dClass="mr-3 assembly-viw-bom-wrapper" message={`Revised date is ${DayTime(this.state?.minEffectiveDate).format('DD/MM/YYYY')} please reset the BOM to select the previous date`} />}
+                          {this.state.warningMessage && !isViewMode && <WarningMessage dClass="assembly-view-bom-wrapper date" message={`Revised date is ${DayTime(this.state?.minEffectiveDate).format('DD/MM/YYYY')} please reset the BOM to select the previous date`} />}
                         </Col>
 
 

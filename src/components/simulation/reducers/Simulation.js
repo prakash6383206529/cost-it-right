@@ -1,7 +1,6 @@
 import {
     API_REQUEST,
     GET_SELECTLIST_MASTERS,
-    GET_SIMULATION_HISTORY,
     GET_VERIFY_SIMULATION_LIST,
     GET_COSTING_SIMULATION_LIST,
     GET_SIMULATION_APPROVAL_LIST,
@@ -18,13 +17,15 @@ import {
     GET_VALUE_TO_SHOW_COSTING_SIMULATION,
     GET_KEYS_FOR_DOWNLOAD_SUMMARY,
     SET_TOKEN_CHECK_BOX,
-    SET_KEY_FOR_API_CALLS,
     SET_TOKEN_FOR_SIMULATION,
-    GET_AMMENDENT_STATUS_COSTING
+    GET_AMMENDENT_STATUS_COSTING,
+    GET_MASTER_SELECT_LIST_SIMUALTION,
+    SET_SELECTED_COSTING_LIST_SIMULATION
+
 } from '../../../config/constants';
 
 const initialState = {
-
+    selectedCostingListSimulation: []
 };
 
 export default function SimulationReducer(state = initialState, action) {
@@ -166,7 +167,18 @@ export default function SimulationReducer(state = initialState, action) {
                 loading: false,
                 ammendentStatus: action.payload
             }
-
+        case GET_MASTER_SELECT_LIST_SIMUALTION:                     //THIS CODE IS FOR SELECTING MASTER LIST IN SIMULATION
+            return {
+                ...state,
+                loading: false,
+                masterSelectListSimulation: action.payload
+            }
+        case SET_SELECTED_COSTING_LIST_SIMULATION:
+            return {
+                ...state,
+                loading: false,
+                selectedCostingListSimulation: action.payload
+            }
         default:
             return state;
     }
