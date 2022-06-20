@@ -32,10 +32,10 @@ function OtherVerifySimulation(props) {
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [masterId, setMasterId] = useState('')
+    const [effectiveDate, setEffectiveDate] = useState('')
     const { selectedMasterForSimulation } = useSelector(state => state.simulation)
     const [verifyList, setVerifyList] = useState([])
     const [loader, setLoader] = useState(false)
-    const [effectiveDate, setEffectiveDate] = useState('')
 
     // const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
     //     mode: 'onBlur',

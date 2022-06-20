@@ -212,7 +212,7 @@ function ERSimulation(props) {
 
             return null;
         })
-        obj.EffectiveDate = effectiveDate
+        obj.EffectiveDate = obj.EffectiveDate = DayTime(effectiveDate).format('YYYY/MM/DD HH:mm')
         obj.SimulationIds = tokenForMultiSimulation
         obj.SimulationExchangeRates = tempArr
 

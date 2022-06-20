@@ -157,7 +157,7 @@ function RMSimulation(props) {
 
         obj.SimulationIds = tokenForMultiSimulation
         obj.SimulationRawMaterials = tempArr
-        obj.EffectiveDate = effectiveDate
+        obj.EffectiveDate = DayTime(effectiveDate).format('YYYY/MM/DD HH:mm')
         dispatch(runVerifySimulation(obj, res => {
             setIsDisable(false)
 
