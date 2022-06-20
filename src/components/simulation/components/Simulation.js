@@ -419,8 +419,6 @@ function Simulation(props) {
     const editTable = (Data, length) => {
         // let Data = selectedCostingListSimulation
         let uniqeArray = _.uniq(Data)
-        console.log('Data: ', Data);
-        console.log('uniqeArray: ', uniqeArray);
         dispatch(setSelectedCostingListSimualtion(uniqeArray))
         setTableData(Data)
         // alert('Hello')
