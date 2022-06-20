@@ -43,6 +43,7 @@ function RMSimulation(props) {
     const [effectiveDate, setEffectiveDate] = useState('');
     const [isEffectiveDateSelected, setIsEffectiveDateSelected] = useState(false);
     const [isWarningMessageShow, setIsWarningMessageShow] = useState(false)
+    const [titleObj, setTitleObj] = useState({})
     const gridRef = useRef();
 
     const { register, control, setValue, formState: { errors }, } = useForm({
@@ -61,6 +62,7 @@ function RMSimulation(props) {
         if (isbulkUpload) {
             setValue('NoOfCorrectRow', rowCount.correctRow)
             setValue('NoOfRowsWithoutChange', rowCount.NoOfRowsWithoutChange)
+            setTitleObj(prevState => ({ ...prevState, rowWithChanges: rowCount.correctRow, rowWithoutChanges: rowCount.NoOfRowsWithoutChange }))
         }
 
     }, [])
@@ -430,23 +432,24 @@ function RMSimulation(props) {
                         <Row>
                             <Col className="add-min-height mb-3 sm-edit-page">
                                 <div className={`ag-grid-wrapper height-width-wrapper reset-btn-container ${list && list?.length <= 0 ? "overlay-contain" : ""}`}>
-                                    <div className="ag-grid-header">
+                                    <div className="ag-grid-header d-flex justify-content-between">
                                         <div className='d-flex align-items-center'>
-                                            <input type="text" className="form-control table-search" id="filter-text-box" value={textFilterSearch} placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
-                                            <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
+                                            <input type="text" className="form-control mr-1 table-search" id="filter-text-box" value={textFilterSearch} placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                                            <button type="button" className="user-btn float-right mr-3" title="Reset Grid" onClick={() => resetState()}>
                                                 <div className="refresh mr-0"></div>
                                             </button>
                                         </div>
-                                        <div className='d-flex justify-content-end mt-2'>
+                                        <div className='d-flex justify-content-end'>
                                             {
                                                 isbulkUpload &&
                                                 <div className="d-flex justify-content-end bulk-upload-row rm-row">
                                                     <div className="d-flex align-items-center">
-                                                        <label>No. of rows with changes:</label>
+                                                        <label>Rows with changes:</label>
                                                         <TextFieldHookForm
                                                             label=""
                                                             name={'NoOfCorrectRow'}
                                                             Controller={Controller}
+                                                            title={titleObj.rowWithChanges}
                                                             control={control}
                                                             register={register}
                                                             rules={{ required: false }}
@@ -459,12 +462,13 @@ function RMSimulation(props) {
                                                             disabled={true}
                                                         />
                                                     </div>
-                                                    <div className="d-flex align-items-center">
-                                                        <label>No. of rows without changes:</label>
+                                                    <div className="d-flex align-items-center pl-3">
+                                                        <label>Rows without changes:</label>
                                                         <TextFieldHookForm
                                                             label=""
                                                             name={'NoOfRowsWithoutChange'}
                                                             Controller={Controller}
+                                                            title={titleObj.rowWithoutChanges}
                                                             control={control}
                                                             register={register}
                                                             rules={{ required: false }}
@@ -479,13 +483,13 @@ function RMSimulation(props) {
                                                     </div>
                                                 </div>
                                             }
-                                            {!isImpactedMaster && <div className={`d-flex simulation-label-container ${!isbulkUpload ? 'mtn6' : ''}`}>
+                                            {!isImpactedMaster && <div className={`d-flex simulation-label-container`}>
                                                 <div className='d-flex pl-3'>
                                                     <label>Technology: </label>
-                                                    <p className='technology mx-1' title={list[0].TechnologyName}>{list[0].TechnologyName}</p>
+                                                    <p className='technology ml-1' title={list[0].TechnologyName}>{list[0].TechnologyName}</p>
                                                 </div>
                                                 <div className='d-flex pl-3'>
-                                                    <label className='mx-1'>Vendor:</label>
+                                                    <label className='mr-1'>Vendor:</label>
                                                     <p title={list[0].VendorName}>{list[0].VendorName}</p>
                                                 </div>
                                             </div>}
