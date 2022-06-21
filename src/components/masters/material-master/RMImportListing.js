@@ -129,6 +129,10 @@ function RMImportListing(props) {
         setIsFinalLevelUser(res.data.Data.IsFinalApprovar)
       }
     }))
+
+    return () => {
+      dispatch(setSelectedCostingListSimualtion([]))
+    }
   }, [])
 
   useEffect(() => {
