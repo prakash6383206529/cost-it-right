@@ -480,7 +480,17 @@ function CostingDetails(props) {
    * @description HANDLE COSTING CHANGE
    */
   const handleCostingChange = (newValue, type, index) => {
-    let tempObject = vbcVendorGrid[index]?.CostingOptions
+
+    let tempObject = []
+    if (type === ZBC) {
+      tempObject = zbcPlantGrid && zbcPlantGrid[index]?.CostingOptions
+    } else if (type === VBC) {
+      tempObject = vbcVendorGrid && vbcVendorGrid[index]?.CostingOptions
+    } else if (type === NCC) {
+      // NCC GRID AT PLACE OF vbcVendorGrid
+      tempObject = vbcVendorGrid && vbcVendorGrid[index]?.CostingOptions
+    }
+
     const indexOfCostingOptions = tempObject.findIndex((el) => el.CostingId === newValue.value)
     let costingOptionsSelectedObjectTemp = {
       SubAssemblyCostingId: tempObject[indexOfCostingOptions].SubAssemblyCostingId,
