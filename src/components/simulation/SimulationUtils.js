@@ -268,24 +268,27 @@ export const ErrorMessage = (props) => {
         const obj = {
             approvalTokenNumber: approvalNumber
         }
-        dispatch(getAmmendentStatus(obj, res => {
-            setNoContent(res?.status === 204 ? true : false)
 
-            if (res?.status !== 204) {
-                const { RecordInsertStatus, IsSuccessfullyInsert, AmmendentStatus, IsAmmendentDone, AmmendentNumber } = res?.data?.DataList[0]
-                setStatus(RecordInsertStatus)
-                setIsSuccessfullyInsert(IsSuccessfullyInsert)
-                setAmmendmentStatus(AmmendentStatus);
-                setShowButton(RecordInsertStatus?.length > 245 ? true : false)
-                if (IsAmmendentDone) {
-                    setAmendentstatus(`Amendment Number: ${AmmendentNumber},\u00A0 ${AmmendentStatus}`)
-                } else {
-                    setAmendentstatus(`Amendment Status: \u00A0 ${(AmmendentStatus && AmmendentStatus !== null && AmmendentStatus !== "") ? AmmendentStatus : "-"
-                        } `)
+        if (approvalNumber) {
+            dispatch(getAmmendentStatus(obj, res => {
+                setNoContent(res?.status === 204 ? true : false)
+
+                if (res?.status !== 204) {
+                    const { RecordInsertStatus, IsSuccessfullyInsert, AmmendentStatus, IsAmmendentDone, AmmendentNumber } = res?.data?.DataList[0]
+                    setStatus(RecordInsertStatus)
+                    setIsSuccessfullyInsert(IsSuccessfullyInsert)
+                    setAmmendmentStatus(AmmendentStatus);
+                    setShowButton(RecordInsertStatus?.length > 245 ? true : false)
+                    if (IsAmmendentDone) {
+                        setAmendentstatus(`Amendment Number: ${AmmendentNumber},\u00A0 ${AmmendentStatus}`)
+                    } else {
+                        setAmendentstatus(`Amendment Status: \u00A0 ${(AmmendentStatus && AmmendentStatus !== null && AmmendentStatus !== "") ? AmmendentStatus : "-"
+                            } `)
+                    }
+                    setAmmendmentButton(amendentStatus.length > 245 ? true : false)
                 }
-                setAmmendmentButton(amendentStatus.length > 245 ? true : false)
-            }
-        }))
+            }))
+        }
     }, [])
 
 
