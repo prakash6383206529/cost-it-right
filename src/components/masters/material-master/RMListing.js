@@ -292,7 +292,7 @@ class RMListing extends Component {
 
 
         return (
-            <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
+            <div className={`ag-grid-react min-height100vh ${DownloadAccessibility ? "show-table-btn" : ""}`}>
                 {this.state.isLoader && <LoaderCustom />}
                 <Row className="pt-4 no-filter-row">
                     <Col md={6} className="text-right search-user-block pr-0">
