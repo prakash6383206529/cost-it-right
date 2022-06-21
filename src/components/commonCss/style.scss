@@ -4400,10 +4400,6 @@ body {
   .empty-table-paecholder {
     min-height: calc(100vh - 350px);
 
-    @media screen and (max-width:$miniDesktop) {
-      min-height: calc(100vh - 300px);
-
-    }
   }
 
   .filter-row-large {
@@ -7752,7 +7748,14 @@ body {
 
 // <-------END Calculator css--------->
 .simulation-height {
-  min-height: calc(100vh - 419px) !important;
+  min-height: calc(100vh - 320px) !important;
+  .min-height {
+    min-height: auto !important;
+  }
+  .simulation-Loader {
+    bottom: -5px;
+    right: -5px;
+  }
 }
 
 .other-costing-simulation {
@@ -7898,8 +7901,11 @@ body {
 
 // <-----START Loader center--->
 .max-loader-height {
-  max-height: 32vh;
+  max-height: 34vh;
   overflow-x: hidden;
+  @media screen and (min-height: 892px) {
+    max-height: 62vh;
+  }
 }
 
 // <-----END Loader center--->
@@ -8402,4 +8408,7 @@ padding-bottom: 3px;
       white-space: nowrap;
     }
   }
+}
+.min-height100vh {
+   min-height: calc(100vh - 270px);
 }

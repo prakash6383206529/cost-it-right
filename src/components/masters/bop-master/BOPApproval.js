@@ -202,7 +202,7 @@ function BOPApproval(props) {
 
 
     return (
-        <div>
+        <div className='min-height100vh'>
             {loader && <LoaderCustom />}
             <Row className="pt-4 blue-before">
                 <Col md="6" lg="6" className="search-user-block mb-3">
