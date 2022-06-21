@@ -2,7 +2,7 @@ import React, { useEffect, useContext } from 'react';
 import { useForm, } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
-import { getSurfaceTreatmentTabData, setSurfaceData } from '../../actions/Costing';
+import { getSurfaceTreatmentTabData, setSurfaceData, setMessageForAssembly } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import { checkForNull, userDetails, } from '../../../../helper';
 import PartSurfaceTreatment from '../CostingHeadCosts/SurfaceTreatMent/PartSurfaceTreatment';
@@ -258,7 +258,14 @@ function TabSurfaceTreatment(props) {
   * @description SET ASSEMBLY DETAILS
   */
   const toggleAssembly = (params, Children = {}) => {
-
+    let updatedArr = JSON.parse(localStorage.getItem('surfaceCostingArray'))
+    let tempPartNumber = []
+    updatedArr && updatedArr.map((item) => {
+      if (item.IsCostingLocked === true) {
+        tempPartNumber.push(item.PartNumber)
+      }
+    })
+    dispatch(setMessageForAssembly(tempPartNumber.join(',')))
     let arr = setAssembly(params, Children, SurfaceTabData)
     // dispatch(setSurfaceData(arr, () => { }))
   }

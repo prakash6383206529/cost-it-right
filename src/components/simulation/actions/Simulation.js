@@ -47,7 +47,8 @@ import {
     SET_TOKEN_FOR_SIMULATION,
     GET_AMMENDENT_STATUS_COSTING,
     GET_MASTER_SELECT_LIST_SIMUALTION,
-    SET_SELECTED_COSTING_LIST_SIMULATION
+    SET_SELECTED_COSTING_LIST_SIMULATION,
+    GET_SIMULATION_APPROVAL_LIST_DRAFT
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
@@ -158,14 +159,25 @@ export function getSimulationApprovalList(filterData, callback) {
             type: GET_SIMULATION_APPROVAL_LIST,
             payload: [],
         })
+        dispatch({
+            type: GET_SIMULATION_APPROVAL_LIST_DRAFT,
+            payload: [],
+        })
         const queryParameter = `isDashboard=${filterData.isDashboard}&logged_in_user_id=${filterData.logged_in_user_id}&logged_in_user_level_id=${filterData.logged_in_user_level_id}&token_number=${filterData.token_number}&simulated_by=${filterData.simulated_by}&requested_by=${filterData.requestedBy}&status=${filterData.status}`
         const request = axios.get(`${API.getSimulationApprovalList}?${queryParameter}`, config())
         request.then((response) => {
             if (response.data.Result) {
-                dispatch({
-                    type: GET_SIMULATION_APPROVAL_LIST,
-                    payload: response.data.DataList,
-                })
+                if (filterData.isDashboard) {
+                    dispatch({
+                        type: GET_SIMULATION_APPROVAL_LIST,
+                        payload: response.data.DataList,
+                    })
+                } else {
+                    dispatch({
+                        type: GET_SIMULATION_APPROVAL_LIST_DRAFT,
+                        payload: response.data.DataList,
+                    })
+                }
                 callback(response)
             }
         }).catch((error) => {
