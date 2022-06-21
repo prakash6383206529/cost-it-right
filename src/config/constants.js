@@ -17,7 +17,7 @@ export const config = () => {
 // DEVELOPMENT
 const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
 // const BASE_URL = `https://demov3api.costitright.com/api/v1`;
-//const BASE_URL = `http://10.148.80.4:10122/api/v1`;
+// const BASE_URL = `http://10.148.80.4:10122/api/v1`;
 
 //FILE URL
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
@@ -948,7 +948,6 @@ export const API = {
   draftProfitSimulation: `${BASE_URL}/simulation/draft-simulation-profit`,
   getTokenSelectListAPI: `${BASE_URL}/simulation/select-list-get-draft-token-number-by-technologyId`,
   getListingForSimulationCombined: `${BASE_URL}/simulation/get-master-details-by-token-number`,
-  getAmmendentStatus: `${BASE_URL}/simulation/get-ammendent-status`,             //THIS IS DUMMY API, IT WILL BE REPLACE FROM REAL API IN FUTURE
   getMasterSelectListSimulation: `${BASE_URL}/simulation/select-list-get-simulation-applied-for-master-with-permission`,
   //SIMULATION APPROVAL
   getAllSimulationApprovalDepartment: `${BASE_URL}/app-simulation-approval-system/get-all-simulation-approval-department`,
