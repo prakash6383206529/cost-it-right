@@ -195,7 +195,7 @@ export function ProcessListingSimulation(props) {
     }
 
     return (
-        <div className={`ag-grid-react ${props.DownloadAccessibility ? "show-table-btn" : ""}`}>
+        <div className={`ag-grid-react ${props.DownloadAccessibility ? "show-table-btn" : ""} ${isSimulation ? "cp-simulation-height" : ""}`}>
             < form onSubmit={handleSubmit(onSubmit)} noValidate >
                 <Row className={`pt-4 ${props.isSimulation ? 'zindex-0' : ''}`}>
                     <Col md='6'>
