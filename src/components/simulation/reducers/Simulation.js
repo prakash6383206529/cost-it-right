@@ -24,7 +24,8 @@ import {
     SET_TOKEN_CHECK_BOX,
     SET_TOKEN_FOR_SIMULATION,
     GET_MASTER_SELECT_LIST_SIMUALTION,
-    SET_SELECTED_COSTING_LIST_SIMULATION
+    SET_SELECTED_COSTING_LIST_SIMULATION,
+    GET_SIMULATION_APPROVAL_LIST_DRAFT
 
 } from '../../../config/constants';
 
@@ -78,6 +79,27 @@ export default function SimulationReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 simualtionApprovalList: action.payload
+            }
+        case GET_SIMULATION_APPROVAL_LIST_DRAFT:
+
+            action.payload && action.payload.map(item => {            //if status is draft then we have to show 'Y' in amendment status column & similarly for approved & other.
+                if (item.Status === 'Draft' || item.Status === 'Linked' || item.Status === 'Rejected') {
+                    item.ProvisionalStatus = 'Y' // THIS KEY IS FOR DISLAYING AMMENDEMNT STATUS COLUMN
+                }
+                else if (item.Status === 'POUpdated') {
+                    item.ProvisionalStatus = 'R'
+                } else {
+                    // THIS IS FOR PENDINGFORAPPROVAL, AWAITINGFORAPPROVAL, PUSHED, APPROVED, ERROR
+                    item.ProvisionalStatus = 'U'
+                }
+                return null;
+
+            })
+
+            return {
+                ...state,
+                loading: false,
+                simualtionApprovalListDraft: action.payload
             }
         case SET_SELECTED_MASTER_SIMULATION:
             return {

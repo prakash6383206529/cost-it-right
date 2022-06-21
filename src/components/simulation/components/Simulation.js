@@ -892,7 +892,7 @@ function Simulation(props) {
                                 <div className="d-inline-flex justify-content-start align-items-center mr-3">
                                     <div className="flex-fills label">Vendor:</div>
                                     <div className="flex-fills hide-label pl-0 p-relative">
-                                        {inputLoader && <LoaderCustom customClass="vendor-loader" />}
+                                        {inputLoader && <LoaderCustom customClass="input-loader" />}
                                         <AsyncSearchableSelectHookForm
                                             label={''}
                                             name={'Vendor'}

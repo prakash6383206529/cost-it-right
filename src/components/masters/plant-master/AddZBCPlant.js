@@ -152,10 +152,12 @@ class AddZBCPlant extends Component {
   countryHandler = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
       this.setState({ country: newValue, state: [], city: [] }, () => {
+        this.props.change('ZipCode', '')
         this.getAllCityData()
       });
     } else {
       this.setState({ country: [], state: [], city: [] })
+      this.props.change('ZipCode', '')
       this.props.fetchStateDataAPI(0, () => { })
     }
     this.setState({ DropdownChanged: false })
@@ -168,11 +170,13 @@ class AddZBCPlant extends Component {
   stateHandler = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
       this.setState({ state: newValue, city: [], }, () => {
+        this.props.change('ZipCode', '')
         const { state } = this.state;
         this.props.fetchCityDataAPI(state.value, () => { })
       });
     } else {
       this.setState({ state: [], city: [] });
+      this.props.change('ZipCode', '')
       this.props.fetchCityDataAPI(0, () => { })
     }
 
@@ -185,8 +189,10 @@ class AddZBCPlant extends Component {
   cityHandler = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
       this.setState({ city: newValue });
+      this.props.change('ZipCode', '')
     } else {
       this.setState({ city: [] });
+      this.props.change('ZipCode', '')
     }
     this.setState({ DropdownChanged: false })
   };
@@ -219,7 +225,7 @@ class AddZBCPlant extends Component {
   * @method onSubmit
   * @description Used to Submit the form
   */
-  onSubmit = debounce((values) => {
+  onSubmit = debounce(this.props.handleSubmit((values) => {
     const { city, PlantId, company, DataToCheck, DropdownChanged } = this.state;
     const { isEditFlag, } = this.props;
     const userDetail = userDetails();
@@ -290,7 +296,7 @@ class AddZBCPlant extends Component {
         }
       });
     }
-  }, 500)
+  }), 500)
 
   handleCompanyChange = (value) => {
     if (value && value !== '') {
@@ -325,7 +331,6 @@ class AddZBCPlant extends Component {
               <form
                 noValidate
                 className="form"
-                onSubmit={handleSubmit(this.onSubmit.bind(this))}
                 onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
               >
                 <Row className="drawer-heading">
@@ -552,7 +557,8 @@ class AddZBCPlant extends Component {
                       {"Cancel"}
                     </button>
                     <button
-                      type="submit"
+                      type="button"
+                      onClick={this.onSubmit}
                       className="user-btn save-btn"
                       disabled={isViewMode || setDisable}
                     >
