@@ -1,7 +1,7 @@
 import axios from 'axios'
 import {
   API, API_REQUEST, API_FAILURE, GET_SEND_FOR_APPROVAL_SUCCESS, GET_ALL_APPROVAL_DEPARTMENT, GET_ALL_APPROVAL_USERS_BY_DEPARTMENT,
-  GET_ALL_APPROVAL_USERS_FILTER_BY_DEPARTMENT, GET_ALL_REASON_SELECTLIST, GET_APPROVAL_LIST, config, GET_APPROVAL_SUMMARY, GET_SELECTED_COSTING_STATUS, SET_SAP_DATA,
+  GET_ALL_APPROVAL_USERS_FILTER_BY_DEPARTMENT, GET_ALL_REASON_SELECTLIST, GET_APPROVAL_LIST, config, GET_APPROVAL_SUMMARY, GET_SELECTED_COSTING_STATUS, GET_APPROVAL_LIST_DRAFT, SET_SAP_DATA,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -268,17 +268,31 @@ export function sendForApprovalBySender(data, callback) {
  */
 
 export function getApprovalList(filterData, callback) {
-
   return (dispatch) => {
+    dispatch({
+      type: GET_APPROVAL_LIST,
+      payload: [],
+    })
+    dispatch({
+      type: GET_APPROVAL_LIST_DRAFT,
+      payload: [],
+    })
     const queryParameter = `isDashboard=${filterData.isDashboard}&logged_in_user_id=${filterData.loggedUser}&logged_in_user_level_id=${filterData.logged_in_user_level_id}&part_number=${filterData.partNo}&created_by=${filterData.createdBy}&requested_by=${filterData.requestedBy}&status=${filterData.status}&type_of_costing=''`
     const request = axios.get(`${API.getApprovalList}?${queryParameter}`, config())
     request
       .then((response) => {
         if (response.data.Result) {
-          dispatch({
-            type: GET_APPROVAL_LIST,
-            payload: response.data.DataList,
-          })
+          if (filterData.isDashboard) {
+            dispatch({
+              type: GET_APPROVAL_LIST,
+              payload: response.data.DataList,
+            })
+          } else {
+            dispatch({
+              type: GET_APPROVAL_LIST_DRAFT,
+              payload: response.data.DataList,
+            })
+          }
           callback(response)
         } else {
           Toaster.error(MESSAGES.SOME_ERROR)

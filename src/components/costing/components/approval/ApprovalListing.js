@@ -56,6 +56,7 @@ function ApprovalListing(props) {
   const statusSelectList = useSelector((state) => state.approval.costingStatusList)
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
   const approvalList = useSelector(state => state.approval.approvalList)
+  const approvalListDraft = useSelector(state => state.approval.approvalListDraft)
   const userList = useSelector(state => state.auth.userList)
 
   const isApproval = props.isApproval;
@@ -244,14 +245,12 @@ function ApprovalListing(props) {
       return null
     })
 
-    console.log('temp: ', temp);
     if (temp.length > 1) {
       setSelectedRowData([])
       Toaster.warning(`A part or it's child part/parent part  costing for costing numbers ${temp.map(item => item)} is under approval.Please approve that first.`)
       gridApi.deselectAll()
       return false
     } else if (temp.length === 1) {
-      console.log(selectedRows, "selectedRows");
       Toaster.warning(selectedRows[0].ApprovalLockedMessage)
       gridApi.deselectAll()
       return false
@@ -502,7 +501,7 @@ function ApprovalListing(props) {
                       class="user-btn approval-btn"
                       type='button'
                       onClick={sendForApproval}
-                      disabled={approvalList && approvalList.length === 0 ? true : false}
+                      disabled={((approvalList && approvalList.length === 0) || (approvalListDraft && approvalListDraft.length === 0)) ? true : false}
                     >
                       <div className="send-for-approval mr-0" ></div>
                     </button>
@@ -514,7 +513,7 @@ function ApprovalListing(props) {
           <Row>
             <Col>
               <div className={`ag-grid-react`}>
-                <div className={`ag-grid-wrapper height-width-wrapper min-height-auto ${approvalList && approvalList?.length <= 0 ? "overlay-contain" : ""}`}>
+                <div className={`ag-grid-wrapper height-width-wrapper min-height-auto ${((approvalList && approvalList?.length <= 0) || (approvalListDraft && approvalListDraft?.length <= 0)) ? "overlay-contain" : ""}`}>
                   <div className="ag-grid-header">
                     <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                   </div>
@@ -528,7 +527,7 @@ function ApprovalListing(props) {
                       defaultColDef={defaultColDef}
                       domLayout='autoHeight'
                       // columnDefs={c}
-                      rowData={approvalList}
+                      rowData={isDashboard ? approvalList : approvalListDraft}
                       pagination={true}
                       paginationPageSize={defaultPageSize}
                       onGridReady={onGridReady}
