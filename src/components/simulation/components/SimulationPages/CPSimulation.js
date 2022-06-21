@@ -21,6 +21,7 @@ import { VBC, ZBC } from '../../../../config/constants';
 import Toaster from '../../../common/Toaster';
 import DatePicker from "react-datepicker";
 import WarningMessage from '../../../common/WarningMessage';
+import { getMaxDate } from '../../SimulationUtils';
 
 const gridOptions = {
 
@@ -38,6 +39,7 @@ function CPSimulation(props) {
     const [effectiveDate, setEffectiveDate] = useState('');
     const [isEffectiveDateSelected, setIsEffectiveDateSelected] = useState(false);
     const [isWarningMessageShow, setIsWarningMessageShow] = useState(false)
+    const [maxDate, setMaxDate] = useState('');
 
 
     const { register, control, setValue, formState: { errors }, } = useForm({
@@ -54,6 +56,13 @@ function CPSimulation(props) {
         setShowVerifyPage(false)
     }
 
+
+    useEffect(() => {
+        if (list && list.length > 0) {
+            let maxDate = getMaxDate(list)
+            setMaxDate(maxDate)
+        }
+    }, [list])
 
     useEffect(() => {
         if (isbulkUpload) {
@@ -419,6 +428,7 @@ function CPSimulation(props) {
                                                 dateFormat="dd/MM/yyyy"
                                                 dropdownMode="select"
                                                 placeholderText="Select effective date"
+                                                minDate={new Date(maxDate)}
                                                 className="withBorder"
                                                 autoComplete={"off"}
                                                 disabledKeyboardNavigation
