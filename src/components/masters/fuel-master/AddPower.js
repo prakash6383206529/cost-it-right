@@ -702,7 +702,7 @@ class AddPower extends Component {
     const UnitGeneratedPerAnnum = fieldsObj && fieldsObj.UnitGeneratedPerAnnum !== undefined ? fieldsObj.UnitGeneratedPerAnnum : 0;
     const SelfGeneratedCostPerUnit = fieldsObj && fieldsObj.SelfGeneratedCostPerUnit !== undefined ? fieldsObj.SelfGeneratedCostPerUnit : 0;
     const SelfPowerContribution = fieldsObj && fieldsObj.SelfPowerContribution !== undefined ? fieldsObj.SelfPowerContribution : 0;
-    const CostPerUnitOfMeasurement = power.CostPerUnitOfMeasurement !== undefined ? power.CostPerUnitOfMeasurement : 0;
+    const CostPerUnitOfMeasurement = fieldsObj && fieldsObj.CostPerUnitOfMeasurement !== undefined ? fieldsObj.CostPerUnitOfMeasurement : 0;
     const UnitGeneratedPerUnitOfFuel = fieldsObj && fieldsObj.UnitGeneratedPerUnitOfFuel !== undefined ? fieldsObj.UnitGeneratedPerUnitOfFuel : 0;
 
     const tempArray = [];
@@ -771,14 +771,12 @@ class AddPower extends Component {
       return false;
     }
 
-
-
     const AssetCost = fieldsObj && fieldsObj !== undefined ? fieldsObj.AssetCost : 0;
     const AnnualCost = fieldsObj && fieldsObj !== undefined ? fieldsObj.AnnualCost : 0;
     const UnitGeneratedPerAnnum = fieldsObj && fieldsObj !== undefined ? fieldsObj.UnitGeneratedPerAnnum : 0;
     const SelfGeneratedCostPerUnit = fieldsObj && fieldsObj !== undefined ? fieldsObj.SelfGeneratedCostPerUnit : 0;
     const SelfPowerContribution = fieldsObj && fieldsObj !== undefined ? fieldsObj.SelfPowerContribution : 0;
-    const CostPerUnitOfMeasurement = power.CostPerUnitOfMeasurement !== undefined ? power.CostPerUnitOfMeasurement : 0;
+    const CostPerUnitOfMeasurement = fieldsObj && fieldsObj.CostPerUnitOfMeasurement !== undefined ? fieldsObj.CostPerUnitOfMeasurement : 0;
     const UnitGeneratedPerUnitOfFuel = fieldsObj && fieldsObj !== undefined ? fieldsObj.UnitGeneratedPerUnitOfFuel : 0;
 
     let tempArray = [];
