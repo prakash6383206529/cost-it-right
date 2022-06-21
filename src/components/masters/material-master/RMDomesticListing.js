@@ -148,6 +148,10 @@ function RMDomesticListing(props) {
                 setIsFinalLevelUser(res.data.Data.IsFinalApprovar)
             }
         }))
+
+        return () => {
+            dispatch(setSelectedCostingListSimualtion([]))
+        }
     }, [])
 
 
