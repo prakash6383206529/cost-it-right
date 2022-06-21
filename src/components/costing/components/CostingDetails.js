@@ -1316,6 +1316,7 @@ function CostingDetails(props) {
       setValue("ShareOfBusiness", Data.Price)
       setEffectiveDate(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate).format('MM/DD/YYYY') : '')
     }))
+    setCostingOptionsSelectedObject({})
 
   }
 
