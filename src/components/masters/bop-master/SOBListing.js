@@ -327,7 +327,7 @@ class SOBListing extends Component {
     };
 
     return (
-      <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
+      <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""} min-height100vh`}>
         {this.state.isLoader && <LoaderCustom />}
         <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
           <Row className="pt-4 ">

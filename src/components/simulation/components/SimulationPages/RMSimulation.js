@@ -21,9 +21,8 @@ import Simulation from '../Simulation';
 import { debounce } from 'lodash'
 import { VBC, ZBC } from '../../../../config/constants';
 import { PaginationWrapper } from '../../../common/commonPagination';
-import { Field } from 'redux-form';
 import WarningMessage from '../../../common/WarningMessage';
-import { getMaxDate, getMinimumDate } from '../../SimulationUtils';
+import { getMaxDate } from '../../SimulationUtils';
 
 const gridOptions = {
 
