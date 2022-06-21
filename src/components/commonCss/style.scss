@@ -8425,3 +8425,8 @@ padding-bottom: 3px;
 .min-height100vh {
    min-height: calc(100vh - 270px);
 }
+
+
+ .ag-cell-inline-editing {
+  max-height: 100%!important;
+}
