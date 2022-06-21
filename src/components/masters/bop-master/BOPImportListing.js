@@ -114,6 +114,10 @@ class BOPImportListing extends Component {
 
     }
 
+    componentWillUnmount() {
+        this.props.setSelectedCostingListSimualtion([])
+    }
+
     /**
     * @method getDataList
     * @description GET DATALIST OF IMPORT BOP

@@ -106,6 +106,9 @@ class OperationListing extends Component {
 
     }
 
+    componentWillUnmount() {
+        this.props.setSelectedCostingListSimualtion([])
+    }
 
     UNSAFE_componentWillReceiveProps(nextProps) {
         if (this.props.topAndLeftMenuData !== nextProps.topAndLeftMenuData) {

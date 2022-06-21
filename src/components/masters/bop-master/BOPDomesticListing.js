@@ -91,6 +91,10 @@ class BOPDomesticListing extends Component {
         })
     }
 
+    componentWillUnmount() {
+        this.props.setSelectedCostingListSimualtion([])
+    }
+
     /**
     * @method getDataList
     * @description GET DETAILS OF BOP DOMESTIC
