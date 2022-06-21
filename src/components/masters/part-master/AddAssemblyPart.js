@@ -663,7 +663,7 @@ class AddAssemblyPart extends Component {
 
       if (!DropdownChanged && String(DataToCheck.AssemblyPartName) === String(values.AssemblyPartName) && !isGroupCodeChange && String(DataToCheck.Description) === String(values.Description) &&
         String(DataToCheck.ECNNumber) === String(values.ECNNumber) && String(DataToCheck.RevisionNumber) === String(values.RevisionNumber) &&
-        String(DataToCheck.DrawingNumber) === String(values.DrawingNumber) && BOMChanged === false) {
+        String(DataToCheck.DrawingNumber) === String(values.DrawingNumber) && String(DataToCheck.Remark) === String(values.Remark) && BOMChanged === false && String(DataToCheck.Attachements) === String(values.Attachements)) {
         this.cancel()
         return false;
       }
