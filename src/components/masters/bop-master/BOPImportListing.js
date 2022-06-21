@@ -507,8 +507,8 @@ class BOPImportListing extends Component {
 
 
         return (
-            <div className={`ag-grid-react custom-pagination ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-                {this.state.isLoader && <LoaderCustom />}
+            <div className={`ag-grid-react custom-pagination ${DownloadAccessibility ? "show-table-btn" : ""} ${this.props.isSimulation ? 'simulation-height' : 'min-height100vh'}`}>
+                {this.state.isLoader && <LoaderCustom customClass="simulation-Loader" />}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className={`pt-4 filter-row-large  ${this.props.isSimulation ? 'simulation-filter zindex-0' : ''}`}>
 

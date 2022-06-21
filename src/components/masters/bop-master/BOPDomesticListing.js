@@ -518,11 +518,11 @@ class BOPDomesticListing extends Component {
 
         return (
 
-            <div className={`ag-grid-react ${(this.props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${DownloadAccessibility ? "show-table-btn" : ""}`}>
+            <div className={`ag-grid-react ${(this.props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${DownloadAccessibility ? "show-table-btn" : ""} ${this.props.isSimulation ? 'simulation-height' : 'min-height100vh'}`}>
                 {/* {this.state.isLoader && <LoaderCustom />} */}
-                {(this.state.isLoader && !this.props.isMasterSummaryDrawer) && <LoaderCustom />}
+                {(this.state.isLoader && !this.props.isMasterSummaryDrawer) && <LoaderCustom customClass="simulation-Loader" />}
                 < form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate >
-                    <Row className={`mt-4 filter-row-large  ${this.props.isSimulation ? 'simulation-filter zindex-0 ' : ''}`}>
+                    <Row className={`pt-4 filter-row-large  ${this.props.isSimulation ? 'simulation-filter zindex-0 ' : ''}`}>
                         <Col md="3" lg="3">
                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                         </Col>
@@ -596,7 +596,7 @@ class BOPDomesticListing extends Component {
                 <Row>
                     <Col>
 
-                        <div className={`ag-grid-wrapper  ${this.props.isSimulation ? 'simulation-height' : 'height-width-wrapper'} overlay-contain `}>
+                        <div className={`ag-grid-wrapper overlay-contain `}>
                             <div className={`ag-theme-material ${(this.state.isLoader && !this.props.isMasterSummaryDrawer) && "max-loader-height"}`}>
                                 <AgGridReact
                                     defaultColDef={defaultColDef}

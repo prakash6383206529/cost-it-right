@@ -603,8 +603,8 @@ function RMImportListing(props) {
   };
 
   return (
-    <div className={`ag-grid-react custom-pagination ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-      {(loader && !props.isMasterSummaryDrawer) ? <LoaderCustom /> :
+    <div className={`ag-grid-react custom-pagination ${isSimulation ? 'simulation-height' : 'min-height100vh'}  ${DownloadAccessibility ? "show-table-btn" : ""}`}>
+      {(loader && !props.isMasterSummaryDrawer) ? <LoaderCustom customClass="simulation-Loader" /> :
         <>
           <Row className={`filter-row-large pt-4 ${isSimulation ? "zindex-0" : ""}`}>
             <Col md="3" lg="3">
@@ -686,7 +686,7 @@ function RMImportListing(props) {
           </Row>
           <Row>
             <Col>
-              <div className={`ag-grid-wrapper ${props.isSimulation ? 'simulation-height' : 'height-width-wrapper'} ${getFilterRMData() && getFilterRMData()?.length <= 0 ? "overlay-contain" : ""}`}>
+              <div className={`ag-grid-wrapper ${getFilterRMData() && getFilterRMData()?.length <= 0 ? "overlay-contain" : ""}`}>
                 <div className={`ag-theme-material ${loader && "max-loader-height"}`}>
                   <AgGridReact
                     style={{ height: '100%', width: '100%' }}

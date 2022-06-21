@@ -621,8 +621,8 @@ function RMDomesticListing(props) {
 
 
     return (
-        <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-            {(loader && !props.isMasterSummaryDrawer) ? <LoaderCustom /> :
+        <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${DownloadAccessibility ? "show-table-btn" : ""} ${isSimulation ? 'simulation-height' : 'min-height100vh'}`}>
+            {(loader && !props.isMasterSummaryDrawer) ? <LoaderCustom customClass="simulation-Loader" /> :
                 <>
 
                     <Row className={`filter-row-large pt-4 ${props?.isSimulation ? 'zindex-0 ' : ''}`}>
@@ -702,7 +702,7 @@ function RMDomesticListing(props) {
                     </Row>
                     <Row>
                         <Col>
-                            <div className={`ag-grid-wrapper ${props.isSimulation ? 'simulation-height' : 'height-width-wrapper'} overlay-contain`}>
+                            <div className={`ag-grid-wrapper overlay-contain`}>
                                 <div className={`ag-theme-material ${(loader && !props.isMasterSummaryDrawer) && "max-loader-height"}`}>
                                     <AgGridReact
                                         style={{ height: '100%', width: '100%' }}
