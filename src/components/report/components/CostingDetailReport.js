@@ -117,10 +117,13 @@ function ReportListing(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (
             <>
-                <div
-                    onClick={() => viewDetails(row.UserId, cell, row)}
-                    className={'link'}
-                >{cell}</div>
+                {row.Status !== "CreatedByAssembly" ?
+                    <div
+                        onClick={() => viewDetails(row.UserId, cell, row)}
+                        className={'link'}
+                    >{cell}</div>
+                    : <div>{cell}</div>
+                }
             </>
         )
     }
@@ -193,10 +196,13 @@ function ReportListing(props) {
         const costingID = row.BaseCostingId;
         if (props.data.RawMaterialName === "Multiple RM") {
             return <>
-                <div
-                    onClick={() => viewMultipleRMDetails(costingID)}
-                    className={'link'}
-                >Multiple RM</div>
+                {row.Status !== "CreatedByAssembly" ?
+                    <div
+                        onClick={() => viewMultipleRMDetails(costingID)}
+                        className={'link'}
+                    >Multiple RM</div>
+                    : <div>Multiple RM</div>
+                }
             </>
 
         } else {
@@ -243,11 +249,14 @@ function ReportListing(props) {
         const cellValue = props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const costingID = row.BaseCostingId;
-        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? <div
-            onClick={() => viewMultipleRMDetails(costingID)}
-            className={'link'}
-        > {checkForDecimalAndNull(cellValue, initialConfiguration.NoOfDecimalForPrice)}</div> : '-';
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? <>
+            {row.Status !== "CreatedByAssembly" ?
+                <div
+                    onClick={() => viewMultipleRMDetails(costingID)}
+                    className={'link'}
+                > {checkForDecimalAndNull(cellValue, initialConfiguration.NoOfDecimalForPrice)}</div> : <div>{checkForDecimalAndNull(cellValue, initialConfiguration.NoOfDecimalForPrice)}</div>} </> : '-';
     }
+
     const getTableData = (skip, take, isPagination, data, isLastWeek, isCallApi) => {
         setLoader(true)
         let newData = {}

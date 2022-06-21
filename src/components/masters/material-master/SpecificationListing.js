@@ -74,7 +74,7 @@ class SpecificationListing extends Component {
         this.setState({ isLoader: true })
         this.props.getRMSpecificationDataList(data, res => {
             if (res.status === 204 && res.data === '') {
-                this.setState({ specificationData: [], })
+                this.setState({ specificationData: [], isLoader: false })
             } else if (res && res.data && res.data.DataList) {
                 let Data = res.data.DataList;
                 this.setState({ specificationData: Data, isLoader: false })

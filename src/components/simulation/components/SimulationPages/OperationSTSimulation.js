@@ -19,6 +19,9 @@ import { VBC, ZBC } from '../../../../config/constants';
 import { runVerifySurfaceTreatmentSimulation } from '../../actions/Simulation';
 import VerifySimulation from '../VerifySimulation';
 import { PaginationWrapper } from '../../../common/commonPagination';
+import DatePicker from "react-datepicker";
+import WarningMessage from '../../../common/WarningMessage';
+import { getMaxDate } from '../../SimulationUtils';
 
 const gridOptions = {
 
@@ -34,6 +37,12 @@ function OperationSTSimulation(props) {
     const [selectedRowData, setSelectedRowData] = useState([]);
     const [tableData, setTableData] = useState([])
     const [isDisable, setIsDisable] = useState(false)
+    const [effectiveDate, setEffectiveDate] = useState('');
+    const [isEffectiveDateSelected, setIsEffectiveDateSelected] = useState(false);
+    const [isWarningMessageShow, setIsWarningMessageShow] = useState(false);
+    const [maxDate, setMaxDate] = useState('');
+    const [titleObj, setTitleObj] = useState({})
+
     const gridRef = useRef();
 
     const { register, control, setValue, formState: { errors }, } = useForm({
@@ -59,11 +68,14 @@ function OperationSTSimulation(props) {
         if (isbulkUpload) {
             setValue('NoOfCorrectRow', rowCount.correctRow)
             setValue('NoOfRowsWithoutChange', rowCount.NoOfRowsWithoutChange)
+            setTitleObj(prevState => ({ ...prevState, rowWithChanges: rowCount.correctRow, rowWithoutChanges: rowCount.NoOfRowsWithoutChange }))
         }
     }, [])
     useEffect(() => {
         if (list && list.length >= 0) {
             gridRef.current.api.sizeColumnsToFit();
+            let maxDate = getMaxDate(list)
+            setMaxDate(maxDate)
         }
     }, [list])
 
@@ -206,6 +218,13 @@ function OperationSTSimulation(props) {
         return row.Rate != null ? checkForDecimalAndNull(Rate, getConfigurationKey().NoOfDecimalForPrice) : ''
     }
 
+    const handleEffectiveDateChange = (date) => {
+        setEffectiveDate(date)
+        setIsEffectiveDateSelected(true)
+        setIsWarningMessageShow(false)
+    }
+
+
     const frameworkComponents = {
         effectiveDateRenderer: effectiveDateFormatter,
         costFormatter: costFormatter,
@@ -224,7 +243,10 @@ function OperationSTSimulation(props) {
     let obj = {}
     const verifySimulation = debounce(() => {
         /**********CONDITION FOR: IS ANY FIELD EDITED****************/
-
+        if (!isEffectiveDateSelected) {
+            setIsWarningMessageShow(true)
+            return false
+        }
         let Count = 0
         let tempData = list
         let arr = []
@@ -266,7 +288,7 @@ function OperationSTSimulation(props) {
         })
 
         obj.SimulationIds = tokenForMultiSimulation
-
+        obj.EffectiveDate = obj.EffectiveDate = DayTime(effectiveDate).format('YYYY/MM/DD HH:mm')
         obj.SimulationSurfaceTreatmentAndOperation = tempArr
         dispatch(runVerifySurfaceTreatmentSimulation(obj, res => {
             setIsDisable(false)
@@ -305,11 +327,12 @@ function OperationSTSimulation(props) {
                                             isbulkUpload &&
                                             <div className='d-flex justify-content-end bulk-upload-row'>
                                                 <div className="d-flex align-items-center">
-                                                    <label>No. of rows with changes:</label>
+                                                    <label>Rows with changes:</label>
                                                     <TextFieldHookForm
                                                         label=""
                                                         name={'NoOfCorrectRow'}
                                                         Controller={Controller}
+                                                        title={titleObj.rowWithChanges}
                                                         control={control}
                                                         register={register}
                                                         rules={{ required: false }}
@@ -323,11 +346,12 @@ function OperationSTSimulation(props) {
                                                     />
                                                 </div>
                                                 <div className="d-flex align-items-center">
-                                                    <label>No. of rows without changes:</label>
+                                                    <label>Rows without changes:</label>
                                                     <TextFieldHookForm
                                                         label=""
                                                         name={'NoOfRowsWithoutChange'}
                                                         Controller={Controller}
+                                                        title={titleObj.rowWithoutChanges}
                                                         control={control}
                                                         register={register}
                                                         rules={{ required: false }}
@@ -392,7 +416,26 @@ function OperationSTSimulation(props) {
                             {
                                 !isImpactedMaster &&
                                 <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
-                                    <div className="col-sm-12 text-right bluefooter-butn">
+                                    <div className="col-sm-12 text-right bluefooter-butn d-flex justify-content-end align-items-center">
+                                        <div className="inputbox date-section mr-3 verfiy-page">
+                                            <DatePicker
+                                                name="EffectiveDate"
+                                                selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
+                                                onChange={handleEffectiveDateChange}
+                                                showMonthDropdown
+                                                showYearDropdown
+                                                dateFormat="dd/MM/yyyy"
+                                                minDate={new Date(maxDate)}
+                                                dropdownMode="select"
+                                                placeholderText="Select effective date"
+                                                className="withBorder"
+                                                autoComplete={"off"}
+                                                disabledKeyboardNavigation
+                                                onChangeRaw={(e) => e.preventDefault()}
+                                            />
+                                            {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
+                                        </div>
+
                                         <button type={"button"} className="mr15 cancel-btn" onClick={cancel} disabled={isDisable}>
                                             <div className={"cancel-icon"}></div>
                                             {"CANCEL"}

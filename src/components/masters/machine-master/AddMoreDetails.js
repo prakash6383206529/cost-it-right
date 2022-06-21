@@ -326,7 +326,7 @@ class AddMoreDetails extends Component {
               machineType: machineTypeObj && machineTypeObj !== undefined ? { label: machineTypeObj.Text, value: machineTypeObj.Value } : [],
               shiftType: shiftObj && shiftObj !== undefined ? { label: shiftObj.Text, value: shiftObj.Value } : [],
               depreciationType: depreciationObj && depreciationObj !== undefined ? { label: depreciationObj.Text, value: depreciationObj.Value } : [],
-              DateOfPurchase: DayTime(Data.DateOfPurchase).isValid() === true ? DayTime(Data.DateOfPurchase) : '',
+              DateOfPurchase: DayTime(Data.DateOfPurchase).isValid() === true ? new Date(DayTime(Data.DateOfPurchase)) : '',
               IsAnnualMaintenanceFixed: Data.IsMaintanceFixed,
               IsAnnualConsumableFixed: Data.IsConsumableFixed,
               IsInsuranceFixed: Data.IsInsuranceFixed,
@@ -464,29 +464,34 @@ class AddMoreDetails extends Component {
   */
   handlePlants = (newValue, actionMeta) => {
     const { IsUsesSolarPower, machineFullValue } = this.state;
-    const { initialConfiguration } = this.props
-    if (newValue && newValue !== '') {
-      this.setState({ selectedPlants: newValue, })
-      this.props.getPowerCostUnit(newValue.value, res => {
-        let Data = res.data.DynamicData;
-        if (res && res.data && res.data.Message !== '') {
-          Toaster.warning(res.data.Message)
-          machineFullValue.PowerCostPerUnit = Data.SolarPowerRatePerUnit
-          this.setState({
-            machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue.PowerCostPerUnit }
-          })
-          this.props.change('PowerCostPerUnit', checkForDecimalAndNull(Data.SolarPowerRatePerUnit, initialConfiguration.NoOfDecimalForPrice))
-        } else {
-          //  if(IsUsesSolarPower)
-          machineFullValue.PowerCostPerUnit = IsUsesSolarPower ? Data.SolarPowerRatePerUnit : Data.NetPowerCostPerUnit
-          this.setState({
-            machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue.PowerCostPerUnit }
-          })
-          this.props.change('PowerCostPerUnit', IsUsesSolarPower ? checkForDecimalAndNull(Data.SolarPowerRatePerUnit, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(Data.NetPowerCostPerUnit, initialConfiguration.NoOfDecimalForPrice))
-        }
-      })
-    } else {
-      this.setState({ selectedPlants: [] })
+    const { initialConfiguration, editDetails } = this.props
+    let editMode = editDetails.isEditFlag ? editDetails.isEditFlag : false
+
+    if (!editMode) {
+      if (newValue && newValue !== '') {
+        this.setState({ selectedPlants: newValue, })
+        this.props.getPowerCostUnit(newValue.value, res => {
+          let Data = res.data.DynamicData;
+          if (res && res.data && res.data.Message !== '') {
+            Toaster.warning(res.data.Message)
+            machineFullValue.PowerCostPerUnit = Data.SolarPowerRatePerUnit
+            this.setState({
+              machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue.PowerCostPerUnit }
+            })
+            this.props.change('PowerCostPerUnit', checkForDecimalAndNull(Data.SolarPowerRatePerUnit, initialConfiguration.NoOfDecimalForPrice))
+          } else {
+            //  if(IsUsesSolarPower)
+            machineFullValue.PowerCostPerUnit = IsUsesSolarPower ? Data.SolarPowerRatePerUnit : Data.NetPowerCostPerUnit
+            this.setState({
+              machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue.PowerCostPerUnit }
+            })
+            this.props.change('PowerCostPerUnit', IsUsesSolarPower ? checkForDecimalAndNull(Data.SolarPowerRatePerUnit, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(Data.NetPowerCostPerUnit, initialConfiguration.NoOfDecimalForPrice))
+          }
+        })
+      } else {
+        this.setState({ selectedPlants: [] })
+      }
+
     }
   };
 
@@ -1431,7 +1436,7 @@ class AddMoreDetails extends Component {
 
   findUOMType = (uomId) => {
     const uomObj = this.props.UOMSelectList && this.props.UOMSelectList.find(item => item.Value === uomId)
-    return { type: uomObj.Type, uom: uomObj.Text, }
+    return { type: uomObj?.Type, uom: uomObj?.Text, }
   }
 
   /**
@@ -1680,7 +1685,7 @@ class AddMoreDetails extends Component {
       let MachineData = { ...requestData, MachineId: editDetails.Id }
       this.props.reset()
       this.props.updateMachineDetails(MachineData, (res) => {
-        if (res.data.Result) {
+        if (res?.data?.Result) {
           Toaster.success(MESSAGES.MACHINE_DETAILS_ADD_SUCCESS);
           MachineData.isViewFlag = true
           this.props.hideMoreDetailsForm(MachineData)

@@ -5,7 +5,7 @@ import { Row, Col, Table, } from 'reactstrap';
 import PartCompoment from '../CostingHeadCosts/Part'
 import {
   getRMCCTabData, setRMCCData, saveComponentCostingRMCCTab, setComponentItemData,
-  saveDiscountOtherCostTab, setComponentDiscountOtherItemData, CloseOpenAccordion, saveAssemblyPartRowCostingCalculation, isDataChange, setAllCostingInArray
+  saveDiscountOtherCostTab, setComponentDiscountOtherItemData, CloseOpenAccordion, saveAssemblyPartRowCostingCalculation, isDataChange, setAllCostingInArray, savePartNumberAndBOMLevel, setMessageForAssembly
 } from '../../actions/Costing';
 import { costingInfoContext, NetPOPriceContext } from '../CostingDetailStepTwo';
 import { checkForNull, loggedInUserId } from '../../../../helper';
@@ -13,11 +13,12 @@ import AssemblyPart from '../CostingHeadCosts/SubAssembly';
 import { LEVEL0, LEVEL1, } from '../../../../config/constants';
 import Toaster from '../../../common/Toaster';
 import { MESSAGES } from '../../../../config/message';
-import { ViewCostingContext } from '../CostingDetails';
+import { VbcExistingCosting, ViewCostingContext } from '../CostingDetails';
 import DayTime from '../../../common/DayTimeWrapper'
 import { createToprowObjAndSave, findSurfaceTreatmentData } from '../../CostingUtil';
 import _, { debounce } from 'lodash'
 import ScrollToTop from '../../../common/ScrollToTop';
+import WarningMessage from '../../../common/WarningMessage';
 
 function TabRMCC(props) {
 
@@ -30,6 +31,7 @@ function TabRMCC(props) {
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
   const netPOPrice = useContext(NetPOPriceContext);
+  const vbcExistingCosting = useContext(VbcExistingCosting);
 
 
   useEffect(() => {
@@ -37,9 +39,9 @@ function TabRMCC(props) {
       const data = {
         CostingId: costData.CostingId,
         PartId: costData.PartId,
-        AssemCostingId: costData.CostingId,
-        subAsmCostingId: costData.CostingId,
-        EffectiveDate: CostingEffectiveDate
+        AssemCostingId: vbcExistingCosting.AssemblyCostingId ? vbcExistingCosting.AssemblyCostingId : costData.CostingId,
+        subAsmCostingId: vbcExistingCosting.SubAssemblyCostingId ? vbcExistingCosting.SubAssemblyCostingId : costData.CostingId,
+        EffectiveDate: CostingEffectiveDate ? CostingEffectiveDate : null
       }
       dispatch(getRMCCTabData(data, true, (res) => {
 
@@ -762,6 +764,14 @@ function TabRMCC(props) {
   * @description SET PART DETAILS
   */
   const toggleAssembly = (BOMLevel, PartNumber, Children = {}) => {
+    let updatedArr = JSON.parse(localStorage.getItem('costingArray'))
+    let tempPartNumber = []
+    updatedArr && updatedArr.map((item) => {
+      if (item.IsCostingLocked === true) {
+        tempPartNumber.push(item.PartNumber)
+      }
+    })
+    dispatch(setMessageForAssembly(tempPartNumber.join(',')))
     setAssembly(BOMLevel, PartNumber, Children, RMCCTabData)
   }
 
@@ -924,19 +934,41 @@ function TabRMCC(props) {
       tempArr = RMCCTabData && RMCCTabData.map(i => {
         const params = { BOMLevel: BOMLevel, PartNumber: PartNumber };
         const tempObj = i.CostingChildPartDetails.filter((x) => x.PartNumber === item.AssemblyPartNumber && x.PartType === 'Sub Assembly')
+        let tempArrForCosting = JSON.parse(localStorage.getItem('costingArray'))
 
         if (i.IsAssemblyPart === true) {
           i.CostingPartDetails = { ...i.CostingPartDetails };
 
           if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel && i.AssemblyPartNumber === item.AssemblyPartNumber) {
             i.CostingPartDetails = Data
-            i.IsOpen = !i.IsOpen
+            let tempIsOpen = !i.IsOpen
+            i.IsOpen = tempIsOpen
+            let subAssemblyIndex = tempArrForCosting && tempArrForCosting.findIndex((x) => x.PartNumber === params.PartNumber && x.AssemblyPartNumber === item.AssemblyPartNumber)
+            let tempArr = tempArrForCosting[subAssemblyIndex]
+            tempArr.IsOpen = tempIsOpen
+            // tempArr[0].IsOpen = tempIsOpen
+
+
+            // let childTempArr = tempArrForCosting && tempArrForCosting.filter(childItem => childItem.AssemblyPartNumber === initialPartNo)
+            // let subAssemObj = calculationForSubAssembly(objectToUpdate, quant, 'Sub Assembly', childTempArr)
+            // initialPartNo = objectToUpdate.AssemblyPartNumber
+            // quant = objectToUpdate.CostingPartDetails.Quantity
+            tempArrForCosting = Object.assign([...tempArrForCosting], { [subAssemblyIndex]: tempArr })
+
+
+
+
+            localStorage.setItem('costingArray', [])
+            localStorage.setItem('costingArray', JSON.stringify(tempArrForCosting))
+
+
+
           } else {
             i.IsOpen = false
           }
           formatData(BOMLevel, PartNumber, Data, i.CostingChildPartDetails, item)
 
-        } else if (i.PartNumber === PartNumber && i.BOMLevel === BOMLevel && i.AssemblyPartNumber === item.AssemblyPartNumber) {
+        } else if (i.PartNumber === PartNumber && i.BOMLevel === BOMLevel && i.AssemblyPartNumber === item.AssemblyPartNumber) {      //SINGLE COMPONENT
 
           i.CostingPartDetails = { ...Data, Quantity: i.CostingPartDetails.Quantity };
 
@@ -945,7 +977,6 @@ function TabRMCC(props) {
 
         }
         else {
-
           i.IsOpen = false;
           formatData(BOMLevel, PartNumber, Data, i.CostingChildPartDetails, item)
         }
@@ -1183,7 +1214,6 @@ function TabRMCC(props) {
   * @description SAVE COSTING
   */
   const saveCosting = debounce(handleSubmit(() => {
-
     if (ErrorObjRMCC && Object.keys(ErrorObjRMCC).length > 0) return false;
 
     if (Object.keys(ComponentItemData).length > 0 && ComponentItemData.IsOpen !== false && checkIsDataChange === true) {
@@ -1238,14 +1268,17 @@ function TabRMCC(props) {
       dispatch(saveComponentCostingRMCCTab(requestData, res => {
         if (res.data.Result) {
           Toaster.success(MESSAGES.RMCC_TAB_COSTING_SAVE_SUCCESS);
+          dispatch(savePartNumberAndBOMLevel(''))
           dispatch(CloseOpenAccordion())
           dispatch(setComponentItemData({}, () => { }))
           InjectDiscountAPICall()
           dispatch(isDataChange(false))
+
         }
       }))
     }
     else {
+      dispatch(savePartNumberAndBOMLevel(''))
       dispatch(CloseOpenAccordion())
       dispatch(isDataChange(false))
     }
@@ -1440,14 +1473,15 @@ function TabRMCC(props) {
                 </Row>
 
                 {!CostingViewMode &&
-                  <div className="col-sm-12 text-right bluefooter-butn btn-stciky-container">
+                  <div className="col-sm-12 text-right d-flex align-items-center justify-content-end bluefooter-butn btn-sticky-container">
+                    <WarningMessage dClass="mr-2" textClass="d-flex" message="Please click on save button to save the data" />
                     <button type={"button"} className="reset mr15 cancel-btn" onClick={props.backBtn}>
                       <div className={'cancel-icon'}></div>
                       {"Cancel"}
                     </button>
                     <button
                       type={'button'}
-                      className="submit-button mr5 save-btn"
+                      className="submit-button save-btn"
                       onClick={saveCosting}
                       disabled={Object.keys(ComponentItemData).length === 0 || (DayTime(CostingEffectiveDate).isValid() === false || !checkIsDataChange) ? true : false}
                     >

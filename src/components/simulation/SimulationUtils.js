@@ -34,6 +34,22 @@ export const SimulationUtils = (TempData) => {
     return TempData
 }
 
+
+export const getMaxDate = (arr) => {
+
+    // ✅ Get Max date
+    let maxDate = new Date(
+        Math.max(
+            ...arr.map(element => {
+                return new Date(element.EffectiveDate);
+            }),
+        ),
+    );
+
+    return maxDate
+
+}
+
 export const checkForChangeInOverheadProfit1Values = (item) => {
     if ((item.NewApplicabilityType === item.ApplicabilityType &&
         (item.NewValue !== null && item.NewValue !== undefined
@@ -248,6 +264,7 @@ export const ErrorMessage = (props) => {
     }
 
     useEffect(() => {
+        setShowSobMessageList(false)
         const obj = {
             approvalTokenNumber: approvalNumber
         }
@@ -273,6 +290,8 @@ export const ErrorMessage = (props) => {
 
 
     useEffect(() => {
+
+        setShowSobMessageList(false)
 
         if (impactData && impactData.length > 0) {
 

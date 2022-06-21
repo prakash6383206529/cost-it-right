@@ -2335,20 +2335,13 @@ input:disabled {
   }
 }
 
-.shadow-lgg {
-  .form {
-    .sf-btn-footer {
-      margin: 0 -30px -15px;
-    }
-  }
-}
 
 .bottom-footer {
   margin: 0 -30px -15px;
 }
 
 .add-min-height {
-  min-height: calc(100vh - 268px);
+  min-height: calc(100vh - 263px);
 }
 
 .role-permision-page {
@@ -3252,6 +3245,9 @@ button:disabled,
       }
     }
   }
+}
+.costing-details-page .table td.overhead-profit-container.cr-innerwrap-td {
+  padding: 0.71rem 15px 0 15px !important;
 }
 
 .costing-page-tabs {
@@ -4282,7 +4278,7 @@ body {
   font-size: 14px;
   color: #a78610f2 !important;
   font-weight: 500;
-  &.assembly-viw-bom-wrapper {
+  &.assembly-view-bom-wrapper {
     transform: translateY(-30px);
    img {
      @media screen and (max-width: 1680px) {
@@ -4290,6 +4286,15 @@ body {
       }
    }
   }
+  &.date {
+    img {
+      margin-bottom: 20px;
+      @media screen and (max-width: 1440px) {
+        margin-bottom: 40px;
+       }
+    }
+  }
+
 }
 
 .warning-row {
@@ -4423,7 +4428,7 @@ body {
 .bulk-upload-row {
   label {
     text-align: right;
-    padding-right: 10px;
+    padding-right: 5px;
     margin-bottom: 0 !important;
     white-space: nowrap;
   }
@@ -4431,7 +4436,8 @@ body {
   .form-control {
     max-width: 75px;
     height: 32px;
-    padding: 6px 10px !important;
+    padding: 6px !important;
+    min-width: 50px;
   }
 
   margin-top: -40px;
@@ -7421,10 +7427,10 @@ body {
   transform: translateY(-13px);
 }
 
-.btn-stciky-container {
+.btn-sticky-container {
   position: sticky;
   bottom: 0;
-  padding: 0 28px !important;
+  padding: 0 16px !important;
 }
 
 .rmcc-main-headings {
@@ -7490,7 +7496,7 @@ body {
   font-size: 16px;
 }
 
-git .sticky-btn-footer {
+ .sticky-btn-footer {
   position: sticky !important;
   bottom: 0;
 
@@ -8368,3 +8374,36 @@ table.group-process-table {
   margin-right: 1px;
 }
 
+.costing-summary-warning-mesaage {
+ display: flex !important;
+ align-items: center;
+padding-bottom: 3px;
+ span {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+ } 
+}
+.inputbox.date-section.verfiy-page {
+  max-width: 146px;
+  height: auto;
+  position: relative;
+  input {
+    height: 32px !important;
+    min-height: 32px;
+    border: 1px solid #256bd1 !important;
+    @media screen and (max-width:$max1367) {
+      height: calc(32px * 80 / 100) !important;
+      min-height:calc(32px * 80 / 100) ;
+    }
+  }
+  .error-message {
+    bottom: -8px;
+    left: -4px;
+    span {
+      text-align: left;
+      white-space: nowrap;
+    }
+  }
+}

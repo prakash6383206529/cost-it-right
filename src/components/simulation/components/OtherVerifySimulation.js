@@ -32,6 +32,7 @@ function OtherVerifySimulation(props) {
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [masterId, setMasterId] = useState('')
+    const [effectiveDate, setEffectiveDate] = useState('')
     const { selectedMasterForSimulation } = useSelector(state => state.simulation)
     const [verifyList, setVerifyList] = useState([])
     const [loader, setLoader] = useState(false)
@@ -69,6 +70,7 @@ function OtherVerifySimulation(props) {
                             setSimualtionId(data.SimulationId)
                             setMasterId(data.SimulationtechnologyId)
                             setVerifyList(data.SimulationExchangeRateImpactedCostings)
+                            setEffectiveDate(data.EffectiveDate)
                             setHideRunButton(false)
                         }
                     }))
@@ -89,6 +91,7 @@ function OtherVerifySimulation(props) {
                             setMasterId(data.SimulationtechnologyId)
                             setVerifyList(data.SimulationCombinedProcessImpactedCostings)
                             setHideRunButton(false)
+                            setEffectiveDate(data.EffectiveDate)
                         }
                     }))
                     break;
@@ -446,6 +449,7 @@ function OtherVerifySimulation(props) {
                     objs={objs}
                     masterId={selectedMasterForSimulation.value}
                     anchor={"right"}
+                    date={effectiveDate}
                 />
             }
         </>

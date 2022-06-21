@@ -116,12 +116,12 @@ class ReasonListing extends Component {
     this.props.getAllReasonAPI(true, (res) => {
       this.setState({ isLoader: false })
       if (res.status === 204 && res.data === '') {
-        this.setState({ tableData: [] })
+        this.setState({ tableData: [], isLoader: false })
       } else if (res && res.data && res.data.DataList) {
         let Data = res.data.DataList
-        this.setState({ tableData: Data }, () => this.setState({ renderState: !this.state.renderState }))
+        this.setState({ tableData: Data, isLoader: false }, () => this.setState({ renderState: !this.state.renderState }))
       } else {
-        this.setState({ tableData: [] })
+        this.setState({ tableData: [], isLoader: false })
       }
     })
   }

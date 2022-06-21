@@ -35,6 +35,7 @@ function OPSImulation(props) {
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [showMainSimulation, setShowMainSimulation] = useState(false)
+    const [titleObj, setTitleObj] = useState({})
     const [valuesForDropdownInAgGrid, setValuesForDropdownInAgGrid] = useState(
         {
             applicability: ['BOP', 'BOP + CC', 'CC', 'Fixed', 'RM', 'RM + BOP', 'RM + CC', 'RM + CC + BOP'],
@@ -70,6 +71,7 @@ function OPSImulation(props) {
         if (isbulkUpload) {
             setValue('NoOfCorrectRow', rowCount.correctRow)
             setValue('NoOfRowsWithoutChange', rowCount.NoOfRowsWithoutChange)
+            setTitleObj(prevState => ({ ...prevState, rowWithChanges: rowCount.correctRow, rowWithoutChanges: rowCount.NoOfRowsWithoutChange }))
         }
         setTableData(list)
     }, [])
@@ -924,18 +926,19 @@ function OPSImulation(props) {
                         <Row>
                             <Col className="add-min-height mb-3 sm-edit-page">
                                 <div className={`ag-grid-wrapper height-width-wrapper ${list && list?.length <= 0 ? "overlay-contain" : ""}`}>
-                                    <div className="ag-grid-header">
-                                        <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                                    <div className="ag-grid-header d-flex justify-content-between">
+                                        <input type="text" className="form-control table-search mr-1" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                                     </div>
                                     {
                                         isbulkUpload &&
                                         <div className='d-flex justify-content-end bulk-upload-row'>
                                             <div className="d-flex align-items-center">
-                                                <label>No. of rows with changes:</label>
+                                                <label>Rows with changes:</label>
                                                 <TextFieldHookForm
                                                     label=""
                                                     name={'NoOfCorrectRow'}
                                                     Controller={Controller}
+                                                    title={titleObj.rowWithChanges}
                                                     control={control}
                                                     register={register}
                                                     rules={{ required: false }}
@@ -949,10 +952,11 @@ function OPSImulation(props) {
                                                 />
                                             </div>
                                             <div className="d-flex align-items-center">
-                                                <label>No. of rows without changes:</label>
+                                                <label>Rows without changes:</label>
                                                 <TextFieldHookForm
                                                     label=""
                                                     name={'NoOfRowsWithoutChange'}
+                                                    title={titleObj.rowWithoutChanges}
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
