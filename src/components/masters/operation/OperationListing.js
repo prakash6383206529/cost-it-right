@@ -106,6 +106,9 @@ class OperationListing extends Component {
 
     }
 
+    componentWillUnmount() {
+        this.props.setSelectedCostingListSimualtion([])
+    }
 
     UNSAFE_componentWillReceiveProps(nextProps) {
         if (this.props.topAndLeftMenuData !== nextProps.topAndLeftMenuData) {
@@ -727,8 +730,8 @@ class OperationListing extends Component {
         };
 
         return (
-            <div className="container-fluid">
-                {(this.state.isLoader && !this.props.isMasterSummaryDrawer) && <LoaderCustom />}
+            <div className={`${isSimulation ? 'simulation-height' : 'min-height100vh'}`}>
+                {(this.state.isLoader && !this.props.isMasterSummaryDrawer) && <LoaderCustom customClass="simulation-Loader" />}
                 <div className={`ag-grid-react ${(this.props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
                     <form>
 
@@ -807,7 +810,7 @@ class OperationListing extends Component {
                         </Row>
                     </form>
 
-                    <div className={`ag-grid-wrapper ${this.props.isSimulation ? 'simulation-height' : 'height-width-wrapper'} overlay-contain`}>
+                    <div className={`ag-grid-wrapper overlay-contain ${this.props.isSimulation ? 'min-height' : ''}`}>
                         <div className={`ag-theme-material ${(this.state.isLoader && !this.props.isMasterSummaryDrawer) && "max-loader-height"}`}>
                             <AgGridReact
                                 defaultColDef={defaultColDef}
