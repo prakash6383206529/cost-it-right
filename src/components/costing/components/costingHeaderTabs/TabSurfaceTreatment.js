@@ -258,7 +258,7 @@ function TabSurfaceTreatment(props) {
   * @description SET ASSEMBLY DETAILS
   */
   const toggleAssembly = (params, Children = {}) => {
-    let updatedArr = JSON.parse(localStorage.getItem('costingArray'))
+    let updatedArr = JSON.parse(localStorage.getItem('surfaceCostingArray'))
     let tempPartNumber = []
     updatedArr && updatedArr.map((item) => {
       if (item.IsCostingLocked === true) {
