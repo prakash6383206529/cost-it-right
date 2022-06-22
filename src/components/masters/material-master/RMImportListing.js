@@ -567,9 +567,14 @@ function RMImportListing(props) {
   const onRowSelect = (event) => {
 
     var selectedRows = gridApi && gridApi?.getSelectedRows();
-    if (selectedRows == undefined || selectedRows == null) {
+    if (selectedRows === undefined || selectedRows === null) {
       selectedRows = selectedCostingListSimulation
     }
+
+    if (selectedCostingListSimulation && selectedCostingListSimulation.length > 0) {
+      selectedRows = [...selectedRows, ...selectedCostingListSimulation]
+    }
+
     if (isSimulation) {
       let uniqeArray = _.uniq(selectedRows)
 
