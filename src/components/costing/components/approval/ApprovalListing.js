@@ -405,10 +405,12 @@ function ApprovalListing(props) {
     }
   }
 
-  const closeDrawer = (e = '') => {
+  const closeDrawer = (e = '', type) => {
     setApproveDrawer(false)
-    getTableData()
-    //setRejectDrawer(false)
+    gridApi.deselectAll()
+    if (type !== "cancel") {
+      getTableData()
+    }
   }
 
   const closeShowApproval = (e = '', type) => {
