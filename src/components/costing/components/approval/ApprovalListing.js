@@ -408,10 +408,12 @@ function ApprovalListing(props) {
     //setRejectDrawer(false)
   }
 
-  const closeShowApproval = (e = '') => {
+  const closeShowApproval = (e = '', type) => {
     setOpenDraftDrawer(false)
     gridApi.deselectAll()
-    getTableData()
+    if (type !== "Cancel") {
+      getTableData()
+    }
   }
 
   const isFirstColumn = (params) => {
