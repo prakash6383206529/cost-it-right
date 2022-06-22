@@ -65,6 +65,7 @@ function Simulation(props) {
 
     const dispatch = useDispatch()
     useEffect(() => {
+        dispatch(setTokenForSimulation([]))
         dispatch(getMasterSelectListSimulation(loggedInUserId(), () => { }))
         dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
         setShowEditTable(false)
