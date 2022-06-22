@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, Table } from 'reactstrap'
-import { checkForDecimalAndNull, checkVendorPlantConfigurable, formViewData, loggedInUserId } from '../../../../helper'
+import { checkForDecimalAndNull, checkVendorPlantConfigurable, formViewData, getConfigurationKey, loggedInUserId } from '../../../../helper'
 import { getApprovalSummary } from '../../actions/Approval'
 import { getSingleCostingDetails, setCostingViewData, storePartNumber } from '../../actions/Costing'
 import ApprovalWorkFlow from './ApprovalWorkFlow'
@@ -199,9 +199,6 @@ function ApprovalSummary(props) {
   if (showListing) {
     return <Redirect to="/approval-listing" />
   }
-
-
-
   return (
 
     <>
@@ -337,7 +334,7 @@ function ApprovalSummary(props) {
                         </th>
                       }
                       {
-                        (initialConfiguration.IsDestinationPlantConfigure && approvalDetails.TypeOfCosting === 'VBC') &&
+                        (getConfigurationKey() !== undefined && getConfigurationKey()?.IsDestinationPlantConfigure && approvalDetails.TypeOfCosting === 'VBC') &&
                         <th>
                           {`Plant(Code):`}
                         </th>
@@ -372,7 +369,7 @@ function ApprovalSummary(props) {
                         </td>
                       }
                       {
-                        (initialConfiguration.IsDestinationPlantConfigure && approvalDetails.TypeOfCosting === 'VBC') &&
+                        (getConfigurationKey() !== undefined && getConfigurationKey()?.IsDestinationPlantConfigure && approvalDetails.TypeOfCosting === 'VBC') &&
                         <td>
                           {`${approvalDetails.DestinationPlantName}(${approvalDetails.DestinationPlantCode})`}
                         </td>

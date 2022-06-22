@@ -398,16 +398,20 @@ function ApprovalListing(props) {
     }
   }
 
-  const closeDrawer = (e = '') => {
+  const closeDrawer = (e = '', type) => {
     setApproveDrawer(false)
-    getTableData()
-    //setRejectDrawer(false)
+    gridApi.deselectAll()
+    if (type !== "cancel") {
+      getTableData()
+    }
   }
 
-  const closeShowApproval = (e = '') => {
+  const closeShowApproval = (e = '', type) => {
     setOpenDraftDrawer(false)
     gridApi.deselectAll()
-    getTableData()
+    if (type !== "Cancel") {
+      getTableData()
+    }
   }
 
   const isFirstColumn = (params) => {
