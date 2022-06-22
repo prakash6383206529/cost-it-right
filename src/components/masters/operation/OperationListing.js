@@ -680,10 +680,13 @@ class OperationListing extends Component {
         const onRowSelect = () => {
             const { isSimulation } = this.props
             var selectedRows = this.state.gridApi.getSelectedRows();
-            if (selectedRows == undefined || selectedRows == null) {
+            if (selectedRows === undefined || selectedRows === null) {
                 selectedRows = this.props.selectedCostingListSimulation
             }
 
+            if (this.props.selectedCostingListSimulation && this.props.selectedCostingListSimulation.length > 0) {
+                selectedRows = [...selectedRows, ...this.props.selectedCostingListSimulation]
+            }
 
             if (this.props.isSimulation) {
                 let uniqeArray = _.uniq(selectedRows)
