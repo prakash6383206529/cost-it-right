@@ -498,7 +498,7 @@ function ApprovalListing(props) {
                       class="user-btn approval-btn"
                       type='button'
                       onClick={sendForApproval}
-                      disabled={((approvalList && approvalList.length === 0) || (approvalListDraft && approvalListDraft.length === 0)) ? true : false}
+                      disabled={(isDashboard ? (approvalList && approvalList.length === 0) : (approvalListDraft && approvalListDraft.length === 0)) ? true : false}
                     >
                       <div className="send-for-approval mr-0" ></div>
                     </button>
@@ -510,7 +510,7 @@ function ApprovalListing(props) {
           <Row>
             <Col>
               <div className={`ag-grid-react`}>
-                <div className={`ag-grid-wrapper height-width-wrapper min-height-auto ${((approvalList && approvalList?.length <= 0) || (approvalListDraft && approvalListDraft?.length <= 0)) ? "overlay-contain" : ""}`}>
+                <div className={`ag-grid-wrapper height-width-wrapper min-height-auto ${(isDashboard ? (approvalList && approvalList?.length <= 0) : (approvalListDraft && approvalListDraft?.length <= 0)) ? "overlay-contain" : ""}`}>
                   <div className="ag-grid-header">
                     <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                   </div>
