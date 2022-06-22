@@ -405,7 +405,7 @@ function SimulationApprovalListing(props) {
                                             onClick={sendForApproval}
                                             // disabled={selectedRowData && selectedRowData.length === 0 ? true : disableApproveButton ? true : false}
                                             title="Send For Approval"
-                                            disabled={((simualtionApprovalList && simualtionApprovalList.length === 0) || (simualtionApprovalListDraft && simualtionApprovalListDraft.length === 0)) ? true : false}
+                                            disabled={(isDashboard ? (simualtionApprovalList && simualtionApprovalList.length === 0) : (simualtionApprovalListDraft && simualtionApprovalListDraft.length === 0)) ? true : false}
                                         >
                                             <div className="send-for-approval"></div>
                                         </button>
@@ -415,7 +415,7 @@ function SimulationApprovalListing(props) {
                             </Row>
                         </form>
 
-                        <div className={`ag-grid-wrapper height-width-wrapper min-height-auto ${(simualtionApprovalList && simualtionApprovalList?.length <= 0) || (simualtionApprovalListDraft && simualtionApprovalListDraft?.length <= 0) ? "overlay-contain" : ""}`}>
+                        <div className={`ag-grid-wrapper height-width-wrapper min-height-auto ${isDashboard ? (simualtionApprovalList && simualtionApprovalList?.length <= 0) : (simualtionApprovalListDraft && simualtionApprovalListDraft?.length <= 0) ? "overlay-contain" : ""}`}>
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                             </div>
