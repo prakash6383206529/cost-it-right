@@ -290,9 +290,7 @@ function SimulationApprovalListing(props) {
 
     const closeDrawer = (e = '') => {
         setApproveDrawer(false)
-        setIsApprovalDrawer(false)
-        getTableData()
-        //setRejectDrawer(false)
+        gridApi.deselectAll()
         setSelectedRowData([])
     }
 
