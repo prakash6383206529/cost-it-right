@@ -177,8 +177,9 @@ function SheetMetalBaicDrawer(props) {
           setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
           return;
         case DIMENSIONLESS:
+          let updatedQuantity = quantity === 0 ? 1 : quantity
           setDisabled(true)
-          cost = ((100 / efficiency) * (rate)) / cavity
+          cost = ((100 / efficiency) * (updatedQuantity) * (rate)) / cavity
 
           setProcessCost(cost)
           setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
@@ -355,6 +356,10 @@ function SheetMetalBaicDrawer(props) {
                       mandatory={true}
                       rules={{
                         required: true,
+                        pattern: {
+                          value: /^\d{0,6}(\.\d{0,4})?$/i,
+                          message: 'Maximum length for interger is 6 and for decimal is 4',
+                        },
                       }}
                       handleChange={calculateProcessCost}
                       defaultValue={defaultValues.Quantity}
