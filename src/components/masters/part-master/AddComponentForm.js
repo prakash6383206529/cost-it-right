@@ -254,7 +254,7 @@ class AddComponentForm extends Component {
                 name={"PartDescription"}
                 type="text"
                 placeholder={""}
-                validate={[acceptAllExceptSingleSpecialCharacter]}
+                validate={[]}
                 component={renderText}
                 className=""
                 customClassName={"withBorder"}
