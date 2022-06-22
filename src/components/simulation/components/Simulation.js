@@ -168,6 +168,7 @@ function Simulation(props) {
         setToken([])
         setValue('token', '')
         setSelectionForListingMasterAPI('Master')
+        dispatch(setTokenForSimulation([]))
         setTimeout(() => {
             if (value !== '' && Object.keys(master).length > 0 && technology.label !== '') {
                 let obj = {
