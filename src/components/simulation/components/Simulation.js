@@ -72,6 +72,7 @@ function Simulation(props) {
 
     useEffect(() => {
         setInputLoader(true)
+        dispatch(setTokenForSimulation([]))
         dispatch(getMasterSelectListSimulation(loggedInUserId(), () => { }))
         dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
         dispatch(getVendorWithVendorCodeSelectList(() => { setInputLoader(false) }))
