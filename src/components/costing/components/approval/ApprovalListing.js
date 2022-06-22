@@ -179,7 +179,7 @@ function ApprovalListing(props) {
     const row = props?.valueFormatted ? props.valueFormatted : props?.data;
     return (
       <>
-        <img className={`${row.OldPOPrice > row.NetPOPrice ? 'arrow-ico mr-1 arrow-green' : 'mr-1 arrow-ico arrow-red'}`} src={row.OldPOPrice > row.NetPOPrice ? imgArrowDown : imgArrowUP} alt="arro-up" />
+        <img className={`${(row.NetPOPrice === 0 && row.OldPOPrice === row.NetPOPrice) ? '' : (row.OldPOPrice > row.NetPOPrice ? 'arrow-ico mr-1 arrow-green' : 'mr-1 arrow-ico arrow-red')}`} src={row.OldPOPrice > row.NetPOPrice ? imgArrowDown : imgArrowUP} alt="arro-up" />
         {cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : ''}
       </>
     )
@@ -242,9 +242,9 @@ function ApprovalListing(props) {
     })
 
     if (temp.length > 1) {
-      setSelectedRowData([])
       Toaster.warning(`A part or it's child part/parent part  costing for costing numbers ${temp.map(item => item)} is under approval.Please approve that first.`)
       gridApi.deselectAll()
+      setSelectedRowData([])
       return false
     } else if (temp.length === 1) {
       Toaster.warning(selectedRows[0].ApprovalLockedMessage)
