@@ -817,7 +817,7 @@ class AddLabour extends Component {
                           <div className="inputbox date-section">
                             <DatePicker
                               name="EffectiveDate"
-                              selected={this.state.effectiveDate}
+                              selected={this.state.effectiveDate ? new Date(this.state.effectiveDate) : ""}
                               onChange={this.handleEffectiveDateChange}
                               showMonthDropdown
                               showYearDropdown
