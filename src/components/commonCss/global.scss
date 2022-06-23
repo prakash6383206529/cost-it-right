@@ -889,7 +889,7 @@ a:hover {
       text-align: center;
       color: $headinlightgblack;
       font-size: $font-16;
-      &:first-child {
+      &:first-child,  &:nth-child(2) {
         text-align: left;
       }
     }
@@ -2739,13 +2739,6 @@ body {
           }
         }
       }
-      .simulation-edit {
-        .ag-grid-react {
-          .ag-grid-wrapper {
-            min-height: calc(100vh - 246px);
-          }
-        }
-      }
       .smh-approval-summary-page,
       .dashboard-page {
         .ag-grid-wrapper {
@@ -2962,3 +2955,14 @@ input[type=text]:focus, textarea:focus, button:focus, input:focus, .select__cont
 }
 }
 //<--------------END Input and button focus CSS------->
+
+.simulation-edit {
+  .ag-grid-react {
+    .ag-grid-wrapper {
+      min-height: calc(100vh - 276px) !important;
+      @media screen and (min-width: $middleDesktop) {
+        min-height: calc(100vh - 282px) !important;
+      }
+    }
+  }
+}

@@ -884,14 +884,14 @@ const CostingSummaryTable = (props) => {
                     <thead>
                       <tr className="main-row">
                         {
-                          isApproval ? <th scope="col" className='approval-summary-headers'>{props.id}</th> : <th scope="col" className={`header-name-left ${isLockedState ? 'pt-30' : ''}`}>VBC/ZBC</th>
+                          isApproval ? <th scope="col" className='approval-summary-headers'>{props.id}</th> : <th scope="col" className={`header-name-left ${isLockedState && !drawerDetailPDF && !pdfHead ? 'pt-30' : ''}`}>VBC/ZBC</th>
                         }
 
                         {viewCostingData &&
                           viewCostingData?.map((data, index) => {
                             const title = data?.zbc === 0 ? data?.plantName : (data?.zbc === 1 ? data?.vendorName + "(" + data?.vendorCode + ") " + (localStorage.IsVendorPlantConfigurable ? " (" + data?.vendorPlantName + ") " : "") : 'CBC') + "(SOB: " + data?.shareOfBusinessPercent + "%)"
                             return (
-                              <th scope="col" className={`header-name ${isLockedState && data?.status !== DRAFT && !costingSummaryMainPage ? 'pt-30' : ''}`}>
+                              <th scope="col" className={`header-name ${isLockedState && data?.status !== DRAFT && !costingSummaryMainPage && !pdfHead ? 'pt-30' : ''}`}>
                                 {data?.IsApprovalLocked && !pdfHead && !drawerDetailPDF && costingSummaryMainPage && data?.status === DRAFT && <WarningMessage title={data?.getApprovalLockedMessage} dClass={"costing-summary-warning-mesaage"} message={data?.getApprovalLockedMessage} />}    {/* ADD THIS CODE ONCE DEPLOYED FROM BACKEND{data.ApprovalLockedMessage}*/}
                                 <div className='header-name-button-container'>
                                   <div class="element d-inline-flex align-items-center">
