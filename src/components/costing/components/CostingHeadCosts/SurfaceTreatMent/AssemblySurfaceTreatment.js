@@ -132,7 +132,7 @@ function AssemblySurfaceTreatment(props) {
           <td>{item.CostingPartDetails.TotalSurfaceTreatmentCostWithQuantity !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalSurfaceTreatmentCostWithQuantity, initialConfiguration.NoOfDecimalForPrice) : 0}
             {
               item.CostingPartDetails && (item.CostingPartDetails.TotalSurfaceTreatmentCostWithQuantity !== null && item.CostingPartDetails.TotalSurfaceTreatmentCostWithQuantity !== 0) ?
-                <div class="tooltip-n ml-2"><i className="fa fa-info-circle text-primary tooltip-icon"></i>
+                <div class="tooltip-n ml-2"><i className="fa fa-info-circle text-primary tooltip-icon st-tooltip"></i>
                   <span class="tooltiptext text-right">
                     {`Assembly's Surface Treatment Cost:- ${checkForDecimalAndNull(item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly, initialConfiguration.NoOfDecimalForPrice)}`}
                     <br></br>

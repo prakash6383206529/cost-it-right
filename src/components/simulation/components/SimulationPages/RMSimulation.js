@@ -468,7 +468,7 @@ function RMSimulation(props) {
                                                             disabled={true}
                                                         />
                                                     </div>
-                                                    <div className="d-flex align-items-center pl-3">
+                                                    <div className="d-flex align-items-center">
                                                         <label>Rows without changes:</label>
                                                         <TextFieldHookForm
                                                             label=""
