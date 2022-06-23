@@ -55,6 +55,7 @@ class BOPDomesticListing extends Component {
             deletedId: '',
             isLoader: false,
             isFinalApprovar: false,
+            disableFilter: true,
 
             //states for pagination purpose
             floatingFilterData: { IsVendor: "", BoughtOutPartNumber: "", BoughtOutPartName: "", BoughtOutPartCategory: "", UOM: "", Specification: "", Plants: "", Vendor: "", BasicRate: "", NetLandedCost: "", EffectiveDateNew: "", DepartmentCode: this.props.isSimulation ? userDepartmetList() : "" },
@@ -137,7 +138,6 @@ class BOPDomesticListing extends Component {
                         this.setState({ tableData: [] })
                     }
 
-
                     if (res) {
                         if (res && res.data && res.data.DataList.length > 0) {
                             this.setState({ totalRecordCount: res.data.DataList[0].TotalRecordCount })
@@ -166,6 +166,7 @@ class BOPDomesticListing extends Component {
 
 
     onFloatingFilterChanged = (value) => {
+        this.setState({ disableFilter: false })
         onFloatingFilterChanged(value, gridOptions, this)   // COMMON FUNCTION
     }
 
@@ -388,9 +389,6 @@ class BOPDomesticListing extends Component {
             cellValue = 'Zero Based'
         }
         //return cellValue          // IN SUMMARY DRAWER COSTING HEAD IS ROWDATA.COSTINGHEAD & IN MAIN DOMESTIC LISTING IT IS CELLVALUE
-
-
-
         if (this.props.selectedCostingListSimulation?.length > 0) {
             this.props.selectedCostingListSimulation.map((item) => {
                 if (item.BoughtOutPartId == props.node.data.BoughtOutPartId) {
@@ -563,23 +561,36 @@ class BOPDomesticListing extends Component {
             checkBoxRenderer: this.checkBoxRenderer
         };
 
-        const onRowSelect = () => {
+        const onRowSelect = (event) => {
 
             var selectedRows = this.state.gridApi.getSelectedRows();
+
             if (selectedRows === undefined || selectedRows === null) {
                 selectedRows = this.props.selectedCostingListSimulation
-            }
+            } else if (this.props.selectedCostingListSimulation && this.props.selectedCostingListSimulation.length > 0) {
 
-            if (this.props.selectedCostingListSimulation && this.props.selectedCostingListSimulation.length > 0) {
-                selectedRows = [...selectedRows, ...this.props.selectedCostingListSimulation]
+                let finalData = []
+                if (event.node.isSelected() === false) {
+
+                    for (let i = 0; i < this.props.selectedCostingListSimulation.length; i++) {
+                        if (this.props.selectedCostingListSimulation[i].BoughtOutPartId === event.data.BoughtOutPartId) {
+                            continue;
+                        }
+                        finalData.push(this.props.selectedCostingListSimulation[i])
+                    }
+
+                } else {
+                    finalData = this.props.selectedCostingListSimulation
+                }
+                selectedRows = [...selectedRows, ...finalData]
             }
 
             if (this.props.isSimulation) {
-                let uniqeArray = _.uniq(selectedRows)
+                let uniqeArray = _.uniqBy(selectedRows, "BoughtOutPartId")
                 this.props.setSelectedCostingListSimualtion(uniqeArray)
                 let finalArr = selectedRows
                 let length = finalArr?.length
-                let uniqueArray = _.uniq(finalArr)
+                let uniqueArray = _.uniqBy(finalArr, "BoughtOutPartId")
                 this.props.apply(uniqueArray, length)
             }
             this.setState({ selectedRowData: selectedRows })
@@ -612,7 +623,7 @@ class BOPDomesticListing extends Component {
                                 }
 
                                 {(this.props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) &&
-                                    <button disabled={!this.state.warningMessage} title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch()}><div class="filter mr-0"></div></button>
+                                    <button disabled={this.state.disableFilter} title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch()}><div class="filter mr-0"></div></button>
 
                                 }
 
