@@ -296,7 +296,7 @@ function ViewConversionCost(props) {
                 <th>{`Parts/Hour`}</th>
                 <th>{`MHR`}</th>
                 {!isPDFShow && <th>{`Calculator`}</th>}
-                <th width="125px"><span>Quantity  <div class="tooltip-n ml-1"><i className="fa fa-info-circle text-primary tooltip-icon"></i><span class="tooltiptext process-tooltip">{tooltipText}</span></div></span></th>
+                <th width="125px"><span>Quantity  {!isPDFShow && <div class="tooltip-n ml-1"><i className="fa fa-info-circle text-primary tooltip-icon"></i><span class="tooltiptext process-tooltip">{tooltipText}</span></div>}</span></th>
                 <th>{`Net Cost`}</th>
                 <th className="costing-border-right">{`Remark`}</th>
               </tr>
