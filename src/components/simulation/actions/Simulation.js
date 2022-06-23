@@ -1246,7 +1246,7 @@ export function getTokenSelectListAPI(obj, callback) {
 
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getTokenSelectListAPI}?technologyId=${obj.technologyId}&loggedInUserId=${obj.loggedInUserId}&simulationTechnologyId=${obj.simulationTechnologyId}`, config());
+        const request = axios.get(`${API.getTokenSelectListAPI}?technologyId=${obj.technologyId}&loggedInUserId=${obj.loggedInUserId}&simulationTechnologyId=${obj.simulationTechnologyId}&vendorId=${obj.vendorId}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
