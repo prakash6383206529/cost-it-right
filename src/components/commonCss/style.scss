@@ -7778,9 +7778,6 @@ body {
   }
 }
 
-.other-costing-simulation {
-  min-height: calc(100vh - 308px);
-}
 
 // <-------------START Hover text overflow and show on hover css----------->
 @mixin overflow($maxWidth:140px, $minWidth:75px, $ResponsiveWith:$maxWidth, $lineClamp:1, $whiteSpace:nowrap) {
