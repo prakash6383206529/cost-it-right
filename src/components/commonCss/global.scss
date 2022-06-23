@@ -2956,7 +2956,7 @@ input[type=text]:focus, textarea:focus, button:focus, input:focus, .select__cont
 }
 //<--------------END Input and button focus CSS------->
 
-.simulation-edit {
+.simulation-edit, .other-costing-simulation {
   .ag-grid-react {
     .ag-grid-wrapper {
       min-height: calc(100vh - 276px) !important;
