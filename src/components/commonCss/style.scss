@@ -3041,10 +3041,16 @@ button:disabled,
       min-width: 230px;
       margin-bottom: 3px;
       right: 100px;
-      left: -180px;
+      left: -178px;
       &::after {
         left: 155px;
       }
+    }
+  }
+  &.st-tooltip {
+    .tooltiptext {
+      min-width: 330px;
+      left: -154px;
     }
   }
 }
@@ -4738,6 +4744,11 @@ body {
   .add-min-height {
     min-height: auto !important;
     height: auto !important;
+    .ag-grid-header.justify-content-between {
+      input.form-control.mr-1 {
+        min-width: 245px;
+      }
+    }
   }
 }
 
@@ -7651,11 +7662,6 @@ body {
   }
 }
 
-.simulation-edit {
-  .height-width-wrapper {
-    min-height: calc(100vh - 308px) !important;
-  }
-}
 
 // <----Overhead and profit css----->
 .tooltip-container {
@@ -8426,7 +8432,10 @@ padding-bottom: 3px;
    min-height: calc(100vh - 270px);
 }
 
-
  .ag-cell-inline-editing {
   max-height: 100%!important;
+}
+
+.st-operation .before-box {
+  padding-left: 0;
 }

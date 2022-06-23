@@ -880,7 +880,7 @@ class AddOperation extends Component {
                       )}
                       {this.state.IsVendor && (
                         <Col md="3"><label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                          <div className="d-flex justify-space-between align-items-center p-relative async-select">
+                          <div className="d-flex justify-space-between align-items-center async-select">
                             <div className="fullinput-icon p-relative">
                               {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
                               <AsyncSelect
@@ -998,7 +998,7 @@ class AddOperation extends Component {
                     </Row>
 
                     <Row>
-                      <Col md="4" className="mb-5 pb-1">
+                      <Col md="4" className="mb-5 pb-1 st-operation">
                         <label
                           className={`custom-checkbox ${this.state.isEditFlag ? "disabled" : ""
                             }`}
