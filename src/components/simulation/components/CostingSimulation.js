@@ -996,7 +996,7 @@ function CostingSimulation(props) {
 
                     !showApprovalHistory &&
 
-                    <div className="costing-simulation-page blue-before-inside">
+                    <div className="costing-simulation-page blue-before-inside other-costing-simulation">
                         <div className="container-fluid">
                             <div className={`ag-grid-react`}>
 
@@ -1042,7 +1042,7 @@ function CostingSimulation(props) {
                                 </Row>
                                 <Row>
                                     <Col>
-                                        <div className={`ag-grid-wrapper other-costing-simulation ${tableData && tableData?.length <= 0 ? "overlay-contain" : ""}`}>
+                                        <div className={`ag-grid-wrapper ${tableData && tableData?.length <= 0 ? "overlay-contain" : ""}`}>
                                             <div className="ag-grid-header">
                                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                                             </div>
