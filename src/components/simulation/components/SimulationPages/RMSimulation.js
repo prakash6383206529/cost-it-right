@@ -166,7 +166,8 @@ function RMSimulation(props) {
 
         obj.SimulationIds = tokenForMultiSimulation
         obj.SimulationRawMaterials = tempArr
-        obj.EffectiveDate = DayTime(effectiveDate).format('YYYY/MM/DD HH:mm')
+
+        obj.EffectiveDate = DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
         dispatch(runVerifySimulation(obj, res => {
             setIsDisable(false)
 
@@ -468,7 +469,7 @@ function RMSimulation(props) {
                                                             disabled={true}
                                                         />
                                                     </div>
-                                                    <div className="d-flex align-items-center pl-3">
+                                                    <div className="d-flex align-items-center">
                                                         <label>Rows without changes:</label>
                                                         <TextFieldHookForm
                                                             label=""
