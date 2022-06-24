@@ -29,10 +29,9 @@ import { AcceptableBOPUOM } from '../../../config/masterData'
 import { applySuperScripts } from '../../../helper';
 import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from '../../../assests/images/red-cross.png';
-import { CheckApprovalApplicableMaster } from '../../../helper'   // WILL BE USED LATER WHEN BOP APPROVAL IS DONE
 import MasterSendForApproval from '../MasterSendForApproval'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
-
+import { CheckApprovalApplicableMaster, displayUOM } from '../../../helper';
 import { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
 
@@ -764,7 +763,11 @@ class AddBOPDomestic extends Component {
       e.preventDefault();
     }
   };
-
+  labelWithUOM = (value) => {
+    return <div>
+      <span className='d-flex'>Basic Rate/{displayUOM(value)} (INR)</span>
+    </div>
+  }
   /**
   * @method render
   * @description Renders the component
@@ -1079,7 +1082,7 @@ class AddBOPDomestic extends Component {
 
                           <Col md="3">
                             <Field
-                              label={`Basic Rate/${this.state.UOM.label ? this.state.UOM.label : 'UOM'} (INR)`}
+                              label={this.labelWithUOM(this.state.UOM.label ? this.state.UOM.label : 'UOM')}
                               name={"BasicRate"}
                               type="text"
                               placeholder={"Enter"}
