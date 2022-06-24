@@ -386,6 +386,8 @@ function AddToComparisonDrawer(props) {
           obj.RevisionNumber = dataFromAPI.RevisionNumber ? dataFromAPI.RevisionNumber : '-'
           // GETTING WARNING MESSAGE WITH APPROVER NAME AND LEVEL WHEN COSTING IS UNDER APPROVAL 
           obj.getApprovalLockedMessage = dataFromAPI.ApprovalLockedMessage && dataFromAPI.ApprovalLockedMessage !== null ? dataFromAPI.ApprovalLockedMessage : '';
+          obj.AssemblyCostingId = dataFromAPI.AssemblyCostingId && dataFromAPI.AssemblyCostingId !== null ? dataFromAPI.AssemblyCostingId : '';
+          obj.SubAssemblyCostingId = dataFromAPI.SubAssemblyCostingId && dataFromAPI.SubAssemblyCostingId !== null ? dataFromAPI.SubAssemblyCostingId : '';
           // temp.push(VIEW_COSTING_DATA)
           if (index >= 0) {
 

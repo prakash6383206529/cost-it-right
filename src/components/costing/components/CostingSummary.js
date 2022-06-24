@@ -607,6 +607,7 @@ function CostingSummary(props) {
         showWarningMsg={showWarningMsg}
         selectedTechnology={technology.label}
         costingSummaryMainPage={true}
+        setcostingOptionsSelectFromSummary={props.setcostingOptionsSelectFromSummary}
       />}
 
       {IsBulkOpen && <BOMUpload
