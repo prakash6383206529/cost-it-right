@@ -95,7 +95,7 @@ function CostingSummary(props) {
           setValue('DrawingNumber', Data.DrawingNumber)
           setValue('RevisionNumber', Data.RevisionNumber)
           setValue('ShareOfBusiness', checkForDecimalAndNull(Data.Price, initialConfiguration.NoOfDecimalForPrice))
-          setTechnologyId(Data.ETechnologyType ? Data.ETechnologyType : 1)
+          setTechnologyId(Data?.TechnologyId)
           setEffectiveDate(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           newValue.revisionNumber = Data.RevisionNumber
           newValue.technologyId = costingData.TechnologyId
@@ -211,7 +211,7 @@ function CostingSummary(props) {
                   setValue('RevisionNumber', Data.RevisionNumber)
                   setValue('ShareOfBusiness', checkForDecimalAndNull(Data.Price, initialConfiguration.NoOfDecimalForPrice))
                   setTitleObj(prevState => ({ ...prevState, descriptionTitle: Data.Description, partNameTitle: Data.PartName }))
-                  setTechnologyId(Data.ETechnologyType ? Data.ETechnologyType : 1)
+                  setTechnologyId(Data?.TechnologyId)
                   setEffectiveDate(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
                   newValue.revisionNumber = Data.RevisionNumber
                   newValue.technologyId = technology.value

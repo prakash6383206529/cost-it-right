@@ -774,7 +774,7 @@ function ReportListing(props) {
                 closeDrawer={closeUserDetails}
                 isAssemblyCosting={isAssemblyCosting}
                 anchor={'right'}
-                technologyId={viewCostingData[0].EtechnologyType}
+                technologyId={viewCostingData[0].technologyId}
                 rmMBDetail={rmMBDetail}
                 index={0}
             />}
