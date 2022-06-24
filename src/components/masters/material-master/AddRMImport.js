@@ -39,6 +39,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { animateScroll as scroll } from 'react-scroll';
 import AsyncSelect from 'react-select/async';
 import TooltipCustom from '../../common/Tooltip';
+import { labelWithUOMAndCurrency } from '../../../helper';
 
 
 const selector = formValueSelector('AddRMImport');
@@ -1509,27 +1510,22 @@ class AddRMImport extends Component {
                               <h5>{"Cost:"}</h5>
                             </div>
                           </Col>
-                          <Col md="3">
-                            <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                              <div className="fullinput-icon">
-                                <Field
-                                  name="UnitOfMeasurementId"
-                                  type="text"
-                                  label="UOM"
-                                  component={searchableSelect}
-                                  placeholder={"Select"}
-                                  options={this.renderListing("uom")}
-                                  validate={this.state.UOM == null || this.state.UOM.length === 0 ? [required] : []}
-                                  required={true}
-                                  handleChangeDescription={this.handleUOM}
-                                  valueDescription={this.state.UOM}
-                                  disabled={isEditFlag || isViewFlag}
-                                />
-                              </div>
-
-                            </div>
+                          <Col md="3" className='dropdown-flex'>
+                            <Field
+                              name="UnitOfMeasurementId"
+                              type="text"
+                              label="UOM"
+                              component={searchableSelect}
+                              placeholder={"Select"}
+                              options={this.renderListing("uom")}
+                              validate={this.state.UOM == null || this.state.UOM.length === 0 ? [required] : []}
+                              required={true}
+                              handleChangeDescription={this.handleUOM}
+                              valueDescription={this.state.UOM}
+                              disabled={isEditFlag || isViewFlag}
+                            />
                           </Col>
-                          <Col md="3">
+                          <Col md="3" className='dropdown-flex'>
                             <Field
                               name="Currency"
                               type="text"
@@ -1572,7 +1568,7 @@ class AddRMImport extends Component {
                           </Col>
                           <Col md="3">
                             <Field
-                              label={`Cut Off Price (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label}/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label})`}
+                              label={labelWithUOMAndCurrency("Cut Off Price", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
                               name={"cutOffPrice"}
                               type="text"
                               placeholder={""}
@@ -1587,7 +1583,7 @@ class AddRMImport extends Component {
                           </Col>
                           <Col md="3">
                             <Field
-                              label={`Basic Rate(${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label}/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label})`}
+                              label={labelWithUOMAndCurrency("Basic Rate", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
                               name={"BasicRate"}
                               type="text"
                               placeholder={"Enter"}
@@ -1602,7 +1598,7 @@ class AddRMImport extends Component {
                           </Col>
                           <Col md="3">
                             <Field
-                              label={`Scrap Rate (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label}/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label})`}
+                              label={labelWithUOMAndCurrency("Scrap Rate", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
                               name={"ScrapRate"}
                               type="text"
                               placeholder={"Enter"}
@@ -1618,7 +1614,7 @@ class AddRMImport extends Component {
                           </Col>
                           <Col md="3">
                             <Field
-                              label={`Freight Cost (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label}/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label})`}
+                              label={labelWithUOMAndCurrency("Freight Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
                               name={"FreightCharge"}
                               type="text"
                               placeholder={"Enter"}
@@ -1633,7 +1629,7 @@ class AddRMImport extends Component {
                           </Col>
                           <Col md="3">
                             <Field
-                              label={`Shearing Cost (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label}/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label})`}
+                              label={labelWithUOMAndCurrency("Shearing Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
                               name={"ShearingCost"}
                               type="text"
                               placeholder={"Enter"}
@@ -1648,7 +1644,7 @@ class AddRMImport extends Component {
                           </Col>
                           <Col md="3">
                             <Field
-                              label={`Net Cost (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label}/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label})`}
+                              label={labelWithUOMAndCurrency("Net Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
                               name={"NetLandedCost"}
                               type="text"
                               placeholder={""}
@@ -1665,7 +1661,7 @@ class AddRMImport extends Component {
                             this.state.showCurrency &&
                             <Col md="3">
                               <Field
-                                label={`Net Cost (INR/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label})`}
+                                label={labelWithUOMAndCurrency("Net Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
                                 name={"NetLandedCostCurrency"}
                                 type="text"
                                 placeholder={""}

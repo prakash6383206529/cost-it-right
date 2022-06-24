@@ -58,6 +58,7 @@ function RMImportListing(props) {
   const [showPopup, setShowPopup] = useState(false)
   const [deletedId, setDeletedId] = useState('')
   const [showPopupBulk, setShowPopupBulk] = useState(false)
+  const [disableFilter, setDisableFilter] = useState(true) // STATE MADE FOR CHECKBOX IN SIMULATION
   //STATES BELOW ARE MADE FOR PAGINATION PURPOSE
   const [warningMessage, setWarningMessage] = useState(false)
   const [filterModel, setFilterModel] = useState({});
@@ -137,23 +138,21 @@ function RMImportListing(props) {
 
   useEffect(() => {
 
-    if (isSimulation) {
+    if (isSimulation && selectionForListingMasterAPI === 'Combined') {
+      props?.changeSetLoader(true)
+      dispatch(getListingForSimulationCombined(objectForMultipleSimulation, RMIMPORT, (res) => {
+        props?.changeSetLoader(false)
 
-      if (selectionForListingMasterAPI === 'Combined') {
-        props?.changeSetLoader(true)
-        dispatch(getListingForSimulationCombined(objectForMultipleSimulation, RMIMPORT, (res) => {
-          props?.changeSetLoader(false)
+      }))
 
-        }))
-      }
-      setvalue({ min: 0, max: 0 });
-    }
-    if (selectionForListingMasterAPI === 'Master') {
+    } else {
       if (isSimulation) {
         props?.changeTokenCheckBox(false)
       }
       getDataList(null, null, null, null, null, 0, 0, 100, true, floatingFilterData)
     }
+
+    setvalue({ min: 0, max: 0 });
   }, [])
 
 
@@ -231,7 +230,7 @@ function RMImportListing(props) {
 
 
   const onFloatingFilterChanged = (value) => {
-
+    setDisableFilter(false)
     const model = gridOptions?.api?.getFilterModel();
     setFilterModel(model)
     if (!isFilterButtonClicked) {
@@ -408,9 +407,9 @@ function RMImportListing(props) {
   }
 
   /**
-* @method shearingCostFormatter
-* @description Renders buttons
-*/
+  * @method shearingCostFormatter
+  * @description Renders buttons
+  */
   const shearingCostFormatter = (props) => {
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
     return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : '-';
@@ -568,16 +567,32 @@ function RMImportListing(props) {
   const onRowSelect = (event) => {
 
     var selectedRows = gridApi && gridApi?.getSelectedRows();
-    if (selectedRows == undefined || selectedRows == null) {
+    if (selectedRows === undefined || selectedRows === null) {    //CONDITION FOR FIRST RENDERING OF COMPONENT
       selectedRows = selectedCostingListSimulation
-    }
-    if (isSimulation) {
-      let uniqeArray = _.uniq(selectedRows)
+    } else if (selectedCostingListSimulation && selectedCostingListSimulation.length > 0) {  // CHECKING IF REDUCER HAS DATA
 
-      dispatch(setSelectedCostingListSimualtion(uniqeArray))
+      let finalData = []
+      if (event.node.isSelected() === false) {      // CHECKING IF CURRENT CHECKBOX IS UNSELECTED
+
+        for (let i = 0; i < selectedCostingListSimulation.length; i++) {
+          if (selectedCostingListSimulation[i].RawMaterialId === event.data.RawMaterialId) {       // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
+            continue;
+          }
+          finalData.push(selectedCostingListSimulation[i])
+        }
+
+      } else {
+        finalData = selectedCostingListSimulation
+      }
+      selectedRows = [...selectedRows, ...finalData]
+    }
+
+    if (isSimulation) {
+      let uniqeArray = _.uniqBy(selectedRows, "RawMaterialId")           //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
+      dispatch(setSelectedCostingListSimualtion(uniqeArray))                   //SETTING CHECKBOX STATE DATA IN REDUCER
       let finalArr = selectedRows
       let length = finalArr?.length
-      let uniqueArray = _.uniq(finalArr)
+      let uniqueArray = _.uniqBy(finalArr, "RawMaterialId")
       apply(uniqueArray, length)
     }
   }
@@ -622,7 +637,7 @@ function RMImportListing(props) {
                 {isSimulation &&
                   <div className="warning-message d-flex align-items-center">
                     {warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
-                    <button disabled={!warningMessage} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
+                    <button disabled={disableFilter} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
                   </div>
                 }
                 {!isSimulation &&
@@ -644,7 +659,7 @@ function RMImportListing(props) {
                       }
 
                       {
-                        <button disabled={!warningMessage} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
+                        <button disabled={disableFilter} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
                       }
 
                       {AddAccessibility && (

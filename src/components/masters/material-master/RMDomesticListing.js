@@ -55,6 +55,7 @@ function RMDomesticListing(props) {
     const [showPopupBulk, setShowPopupBulk] = useState(false)
     const [viewAction, setViewAction] = useState(ViewRMAccessibility)
     const [isFinalLevelUser, setIsFinalLevelUser] = useState(false)
+    const [disableFilter, setDisableFilter] = useState(true) // STATE MADE FOR CHECKBOX IN SIMULATION
     //STATES BELOW ARE MADE FOR PAGINATION PURPOSE
     const [warningMessage, setWarningMessage] = useState(false)
     const [filterModel, setFilterModel] = useState({});
@@ -229,6 +230,7 @@ function RMDomesticListing(props) {
 
     const onFloatingFilterChanged = (value) => {
 
+        setDisableFilter(false)
         const model = gridOptions?.api?.getFilterModel();
         setFilterModel(model)
         if (!isFilterButtonClicked) {
@@ -573,17 +575,34 @@ function RMDomesticListing(props) {
     const onRowSelect = (event) => {
 
         var selectedRows = gridApi && gridApi?.getSelectedRows();
-        if (selectedRows === undefined || selectedRows === null) {
+        if (selectedRows === undefined || selectedRows === null) {    //CONDITION FOR FIRST RENDERING OF COMPONENT
             selectedRows = selectedCostingListSimulation
+        } else if (selectedCostingListSimulation && selectedCostingListSimulation.length > 0) {  // CHECKING IF REDUCER HAS DATA
+
+            let finalData = []
+            if (event.node.isSelected() === false) {    // CHECKING IF CURRENT CHECKBOX IS UNSELECTED
+
+                for (let i = 0; i < selectedCostingListSimulation.length; i++) {
+                    if (selectedCostingListSimulation[i].RawMaterialId === event.data.RawMaterialId) {   // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
+                        continue;
+                    }
+                    finalData.push(selectedCostingListSimulation[i])
+                }
+
+            } else {
+                finalData = selectedCostingListSimulation
+            }
+            selectedRows = [...selectedRows, ...finalData]
+
         }
+
         if (isSimulation) {
-            let uniqeArray = _.uniq(selectedRows)
-            dispatch(setSelectedCostingListSimualtion(uniqeArray))
+            let uniqeArray = _.uniqBy(selectedRows, "RawMaterialId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
+            dispatch(setSelectedCostingListSimualtion(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
             let finalArr = selectedRows
             let length = finalArr?.length
-            let uniqueArray = _.uniq(finalArr)
+            let uniqueArray = _.uniqBy(finalArr, "RawMaterialId")
             apply(uniqueArray, length)
-            // }
         }
     }
 
@@ -644,7 +663,7 @@ function RMDomesticListing(props) {
 
                                         <div className="warning-message d-flex align-items-center">
                                             {warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
-                                            <button disabled={!warningMessage} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
+                                            <button disabled={disableFilter} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
                                         </div>
                                     }
                                     {!isSimulation &&
@@ -657,7 +676,7 @@ function RMDomesticListing(props) {
                                                     </div>
                                                 }
                                                 {(props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) &&
-                                                    <button disabled={!warningMessage} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
+                                                    <button disabled={disableFilter} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
                                                 }
 
                                                 {AddAccessibility && (

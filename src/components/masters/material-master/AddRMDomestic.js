@@ -37,7 +37,8 @@ import MasterSendForApproval from '../MasterSendForApproval'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { animateScroll as scroll } from 'react-scroll';
 import AsyncSelect from 'react-select/async';
-import { getCostingSpecificTechnology } from '../../costing/actions/Costing'
+import { getCostingSpecificTechnology } from '../../costing/actions/Costing';
+import { labelWithUOMAndCurrency } from '../../../helper';
 
 const selector = formValueSelector('AddRMDomestic')
 
@@ -1542,29 +1543,24 @@ class AddRMDomestic extends Component {
                               <h5>{"Cost:"}</h5>
                             </div>
                           </Col>
-                          <Col md="3">
-                            <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                              <div className="fullinput-icon">
-                                <Field
-                                  name="UnitOfMeasurementId"
-                                  type="text"
-                                  label="UOM"
-                                  component={searchableSelect}
-                                  placeholder={"Select"}
-                                  options={this.renderListing("uom")}
-                                  validate={this.state.UOM == null || this.state.UOM.length === 0 ? [required] : []}
-                                  required={true}
-                                  handleChangeDescription={this.handleUOM}
-                                  valueDescription={this.state.UOM}
-                                  disabled={isEditFlag || isViewFlag}
-                                />
-                              </div>
-
-                            </div>
+                          <Col md="3" className='dropdown-flex'>
+                            <Field
+                              name="UnitOfMeasurementId"
+                              type="text"
+                              label="UOM"
+                              component={searchableSelect}
+                              placeholder={"Select"}
+                              options={this.renderListing("uom")}
+                              validate={this.state.UOM == null || this.state.UOM.length === 0 ? [required] : []}
+                              required={true}
+                              handleChangeDescription={this.handleUOM}
+                              valueDescription={this.state.UOM}
+                              disabled={isEditFlag || isViewFlag}
+                            />
                           </Col>
                           <Col md="3">
                             <Field
-                              label={`Cut Off Price (INR/${this.state.UOM.label ? this.state.UOM.label : 'UOM'})`}
+                              label={labelWithUOMAndCurrency("Cut Off Price", this.state.UOM.label)}
                               name={"cutOffPrice"}
                               type="text"
                               placeholder={""}
@@ -1579,7 +1575,7 @@ class AddRMDomestic extends Component {
                           </Col>
                           <Col md="3">
                             <Field
-                              label={`Basic Rate (INR/${this.state.UOM.label ? this.state.UOM.label : 'UOM'})`}
+                              label={labelWithUOMAndCurrency("Basic Rate", this.state.UOM.label)}
                               name={"BasicRate"}
                               type="text"
                               placeholder={"Enter"}
@@ -1595,7 +1591,7 @@ class AddRMDomestic extends Component {
                           </Col>
                           <Col md="3">
                             <Field
-                              label={`Scrap Rate (INR/${this.state.UOM.label ? this.state.UOM.label : 'UOM'})`}
+                              label={labelWithUOMAndCurrency("Scrap Rate", this.state.UOM.label)}
                               name={"ScrapRate"}
                               type="text"
                               placeholder={"Enter"}
@@ -1611,7 +1607,7 @@ class AddRMDomestic extends Component {
                           </Col>
                           <Col md="3">
                             <Field
-                              label={`Freight Cost (INR/${this.state.UOM.label ? this.state.UOM.label : 'UOM'})`}
+                              label={labelWithUOMAndCurrency("Freight Cost", this.state.UOM.label)}
                               name={"FrieghtCharge"}
                               type="text"
                               placeholder={"Enter"}
@@ -1627,7 +1623,7 @@ class AddRMDomestic extends Component {
                           </Col>
                           <Col md="3">
                             <Field
-                              label={`Shearing Cost (INR/${this.state.UOM.label ? this.state.UOM.label : 'UOM'})`}
+                              label={labelWithUOMAndCurrency("Shearing Cost", this.state.UOM.label)}
                               name={"ShearingCost"}
                               type="text"
                               placeholder={"Enter"}
@@ -1644,7 +1640,7 @@ class AddRMDomestic extends Component {
                           </Col>
                           <Col md="3">
                             <Field
-                              label={`Net Cost (INR/${this.state.UOM.label ? this.state.UOM.label : 'UOM'})`}
+                              label={labelWithUOMAndCurrency("Net Cost", this.state.UOM.label)}
                               name={"NetLandedCost"}
                               type="text"
                               placeholder={""}
@@ -1828,79 +1824,91 @@ class AddRMDomestic extends Component {
             </div>
           </div>
 
-          {isRMDrawerOpen && (
-            <AddSpecification
-              isOpen={isRMDrawerOpen}
-              closeDrawer={this.closeRMDrawer}
-              isEditFlag={false}
-              ID={""}
-              anchor={"right"}
-              AddAccessibilityRMANDGRADE={this.props.AddAccessibilityRMANDGRADE}
-              EditAccessibilityRMANDGRADE={this.props.EditAccessibilityRMANDGRADE}
-              RawMaterial={""}
-              RMGrade={""}
-              isRMDomesticSpec={true}
-            />
-          )}
+          {
+            isRMDrawerOpen && (
+              <AddSpecification
+                isOpen={isRMDrawerOpen}
+                closeDrawer={this.closeRMDrawer}
+                isEditFlag={false}
+                ID={""}
+                anchor={"right"}
+                AddAccessibilityRMANDGRADE={this.props.AddAccessibilityRMANDGRADE}
+                EditAccessibilityRMANDGRADE={this.props.EditAccessibilityRMANDGRADE}
+                RawMaterial={""}
+                RMGrade={""}
+                isRMDomesticSpec={true}
+              />
+            )
+          }
 
-          {isOpenGrade && (
-            <AddGrade
-              isOpen={isOpenGrade}
-              closeDrawer={this.closeGradeDrawer}
-              isEditFlag={false}
-              RawMaterial={this.state.RawMaterial}
-              anchor={"right"}
-            />
-          )}
+          {
+            isOpenGrade && (
+              <AddGrade
+                isOpen={isOpenGrade}
+                closeDrawer={this.closeGradeDrawer}
+                isEditFlag={false}
+                RawMaterial={this.state.RawMaterial}
+                anchor={"right"}
+              />
+            )
+          }
 
-          {isOpenSpecification && (
-            <AddSpecification
-              isOpen={isOpenSpecification}
-              closeDrawer={this.closeSpecDrawer}
-              isEditFlag={false}
-              ID={""}
-              anchor={"right"}
-              AddAccessibilityRMANDGRADE={this.props.AddAccessibilityRMANDGRADE}
-              EditAccessibilityRMANDGRADE={
-                this.props.EditAccessibilityRMANDGRADE
-              }
-              RawMaterial={this.state.RawMaterial}
-              RMGrade={this.state.RMGrade}
-              isRMDomesticSpec={true}
-            />
-          )}
+          {
+            isOpenSpecification && (
+              <AddSpecification
+                isOpen={isOpenSpecification}
+                closeDrawer={this.closeSpecDrawer}
+                isEditFlag={false}
+                ID={""}
+                anchor={"right"}
+                AddAccessibilityRMANDGRADE={this.props.AddAccessibilityRMANDGRADE}
+                EditAccessibilityRMANDGRADE={
+                  this.props.EditAccessibilityRMANDGRADE
+                }
+                RawMaterial={this.state.RawMaterial}
+                RMGrade={this.state.RMGrade}
+                isRMDomesticSpec={true}
+              />
+            )
+          }
 
-          {isOpenCategory && (
-            <AddCategory
-              isOpen={isOpenCategory}
-              closeDrawer={this.closeCategoryDrawer}
-              isEditFlag={false}
-              ID={""}
-              anchor={"right"}
-            />
-          )}
+          {
+            isOpenCategory && (
+              <AddCategory
+                isOpen={isOpenCategory}
+                closeDrawer={this.closeCategoryDrawer}
+                isEditFlag={false}
+                ID={""}
+                anchor={"right"}
+              />
+            )
+          }
 
-          {isOpenVendor && (
-            <AddVendorDrawer
-              isOpen={isOpenVendor}
-              isRM={true}
-              IsVendor={this.state.IsVendor}
-              closeDrawer={this.closeVendorDrawer}
-              isEditFlag={false}
-              ID={""}
-              anchor={"right"}
-            />
-          )}
+          {
+            isOpenVendor && (
+              <AddVendorDrawer
+                isOpen={isOpenVendor}
+                isRM={true}
+                IsVendor={this.state.IsVendor}
+                closeDrawer={this.closeVendorDrawer}
+                isEditFlag={false}
+                ID={""}
+                anchor={"right"}
+              />
+            )
+          }
 
-          {isOpenUOM && (
-            <AddUOM
-              isOpen={isOpenUOM}
-              closeDrawer={this.closeUOMDrawer}
-              isEditFlag={false}
-              ID={""}
-              anchor={"right"}
-            />
-          )}
+          {
+            isOpenUOM && (
+              <AddUOM
+                isOpen={isOpenUOM}
+                closeDrawer={this.closeUOMDrawer}
+                isEditFlag={false}
+                ID={""}
+                anchor={"right"}
+              />
+            )
+          }
           {
             this.state.approveDrawer && (
               <MasterSendForApproval
