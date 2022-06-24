@@ -51,8 +51,10 @@ function AddProcess(props) {
     let rowData = selectedProcessAndGroup && selectedProcessAndGroup.map((item) => {
       if (item.GroupName) {
         tempArr.push({ MachineId: item.MachineId, GroupName: item.GroupName })
+      } else if (tempArr?.IsChild) {      //  THIS CONDITION STOP MULTIPLE TIMES ADDING SAME CHILD AS PARENT AT TIME OF OPENING-CLOSING ACCORDION
+        return false
       } else {
-        tempArr1.push({ MachineRateId: item.MachineRateId, ProcessId: item.ProcessId })
+        tempArr1.push({ MachineRateId: item.MachineRateId, ProcessId: item.ProcessId, IsChild: true })        // IsChild KEY ADDED TO IDENTIFY CHILD-PARENT OBJECT
       }
 
       let obj = item
