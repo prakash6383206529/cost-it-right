@@ -8430,3 +8430,15 @@ padding-bottom: 3px;
 .st-operation .before-box {
   padding-left: 0;
 }
+.form-group.inputbox.withBorder, .dropdown-flex {
+  label {
+    display: flex;
+  }
+}
+.p-relative {
+  padding-right: 8px;
+  .unit-text:last-child {
+    position: absolute;
+    top: -4px;
+  }
+}
