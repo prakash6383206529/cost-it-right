@@ -41,7 +41,7 @@ const gridOptions = {};
 
 
 function RMImportListing(props) {
-  const { AddAccessibility, BulkUploadAccessibility, EditAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation, ViewRMAccessibility, selectionForListingMasterAPI, objectForMultipleSimulation, apply } = props;
+  const { AddAccessibility, BulkUploadAccessibility, EditAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation, ViewRMAccessibility, selectionForListingMasterAPI, objectForMultipleSimulation, apply, ListFor } = props;
 
   const [value, setvalue] = useState({ min: 0, max: 0 });
   const [maxRange, setmaxRange] = useState(0);
@@ -184,6 +184,7 @@ function RMImportListing(props) {
       net_landed_max_range: value.max,
       departmentCode: isSimulation ? userDepartmetList() : "",
       statusId: CheckApprovalApplicableMaster(RM_MASTER_ID) ? APPROVAL_ID : 0,
+      ListFor: ListFor,
     }
     setloader(true)
     //THIS CONDTION IS FOR IF THIS COMPONENT IS RENDER FROM MASTER APPROVAL SUMMARY IN THIS NO GET API

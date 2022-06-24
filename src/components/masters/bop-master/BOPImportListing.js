@@ -131,6 +131,7 @@ class BOPImportListing extends Component {
             category_id: CategoryId,
             vendor_id: vendorId,
             plant_id: plantId,
+            ListFor: this.props.ListFor,
         }
         this.setState({ isLoader: true })
 
