@@ -1,4 +1,5 @@
 import { toast } from 'react-toastify';
+import React from 'react';
 import 'react-toastify/dist/ReactToastify.css';
 import DayTime from '../components/common/DayTimeWrapper';
 import { reactLocalStorage } from 'reactjs-localstorage'
@@ -900,7 +901,7 @@ export function isUploadSimulation(master) {
 
 export const allEqual = arr => arr.every(val => val === arr[0]);
 
-//**START** FOR SHOWING CURRENCY SYMBOL 
+// FOR SHOWING CURRENCY SYMBOL 
 export const getCurrencySymbol = (value) => {
   switch (value) {
     case "USD":
@@ -923,4 +924,24 @@ export const getCurrencySymbol = (value) => {
       break;
   }
 }
-//**END** FOR SHOWING CURRENCY SYMBOL
+//FOR SHOWING SUPER VALUE FOR UOM
+export const displayUOM = (value) => {
+  let temp = []
+  if (value && value.includes('^')) {
+    for (let i = 0; i < value.length; i++) {
+      temp.push(value.charAt(i))
+    }
+    temp.splice(temp.length - 2, 1);
+    const UOMValue = <div className='p-relative'>{temp.map(item => {
+      return <span className='unit-text'>{item}</span>
+    })}
+    </div>
+    return UOMValue
+  }
+  return value
+}
+export const labelWithUOMAndCurrency = (label, UOM, currency) => {
+  return <div>
+    <span className='d-flex'>{label} ({currency ? currency : getConfigurationKey().BaseCurrency}/{UOM ? displayUOM(UOM) : 'UOM'})</span>
+  </div>
+}
