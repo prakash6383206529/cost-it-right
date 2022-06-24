@@ -158,6 +158,7 @@ class OperationListing extends Component {
             operation_Name_id: operation_Name_id,
             technology_id: this.props.isSimulation ? this.props.technology : technology_id,
             vendor_id: vendor_id,
+            ListFor: this.props.ListFor,
         }
 
 
