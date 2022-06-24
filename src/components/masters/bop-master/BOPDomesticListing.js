@@ -565,15 +565,15 @@ class BOPDomesticListing extends Component {
 
             var selectedRows = this.state.gridApi.getSelectedRows();
 
-            if (selectedRows === undefined || selectedRows === null) {
+            if (selectedRows === undefined || selectedRows === null) {   //CONDITION FOR FIRST RENDERING OF COMPONENT
                 selectedRows = this.props.selectedCostingListSimulation
-            } else if (this.props.selectedCostingListSimulation && this.props.selectedCostingListSimulation.length > 0) {
+            } else if (this.props.selectedCostingListSimulation && this.props.selectedCostingListSimulation.length > 0) {   // CHECKING IF REDUCER HAS DATA
 
                 let finalData = []
-                if (event.node.isSelected() === false) {
+                if (event.node.isSelected() === false) {    // CHECKING IF CURRENT CHECKBOX IS UNSELECTED
 
                     for (let i = 0; i < this.props.selectedCostingListSimulation.length; i++) {
-                        if (this.props.selectedCostingListSimulation[i].BoughtOutPartId === event.data.BoughtOutPartId) {
+                        if (this.props.selectedCostingListSimulation[i].BoughtOutPartId === event.data.BoughtOutPartId) {     // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
                             continue;
                         }
                         finalData.push(this.props.selectedCostingListSimulation[i])
@@ -586,8 +586,8 @@ class BOPDomesticListing extends Component {
             }
 
             if (this.props.isSimulation) {
-                let uniqeArray = _.uniqBy(selectedRows, "BoughtOutPartId")
-                this.props.setSelectedCostingListSimualtion(uniqeArray)
+                let uniqeArray = _.uniqBy(selectedRows, "BoughtOutPartId")           //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
+                this.props.setSelectedCostingListSimualtion(uniqeArray)                     //SETTING CHECKBOX STATE DATA IN REDUCER
                 let finalArr = selectedRows
                 let length = finalArr?.length
                 let uniqueArray = _.uniqBy(finalArr, "BoughtOutPartId")
