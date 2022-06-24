@@ -4,7 +4,7 @@ import { TabContent, TabPane, Nav, NavItem, NavLink, } from 'reactstrap';
 import classnames from 'classnames';
 import CostingDetails from './CostingDetails';
 import CostingSummary from './CostingSummary';
-import {  storePartNumber } from '../actions/Costing';
+import { storePartNumber } from '../actions/Costing';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { useHistory } from "react-router-dom";
 
@@ -16,6 +16,7 @@ function Costing(props) {
   const [activeTab, setActiveTab] = useState('1');
   const [partInfoStepTwo, setPartInfo] = useState({});
   const [costingData, setCostingData] = useState({});
+  const [costingOptionsSelect, setCostingOptionsSelect] = useState({});
 
   /**
   * @method toggle
@@ -38,13 +39,19 @@ function Costing(props) {
   }, [])
 
   const showDetail = (partInfo, costingInfo) => {
-    
     setPartInfo(partInfo)
     setCostingData(costingInfo)
-    if(costingInfo && costingInfo.length>0){
-
+    if (costingInfo && costingInfo.length > 0) {
       toggle("1");
     }
+  }
+
+  const setcostingOptionsSelectFromSummary = (value) => {
+    let obj = {
+      SubAssemblyCostingId: value?.SubAssemblyCostingId,
+      AssemblyCostingId: value?.AssemblyCostingId
+    }
+    setCostingOptionsSelect(obj)
   }
 
   /**
@@ -87,10 +94,11 @@ function Costing(props) {
                 partInfoStepTwo={partInfoStepTwo}
                 costingData={costingData}
                 toggle={toggle}
+                costingOptionsSelect={costingOptionsSelect}
               />
             </TabPane>
             <TabPane tabId="2">
-              <CostingSummary activeTab={activeTab} showDetail={showDetail} />
+              <CostingSummary activeTab={activeTab} showDetail={showDetail} setcostingOptionsSelectFromSummary={setcostingOptionsSelectFromSummary} />
             </TabPane>
           </TabContent>
         </div>

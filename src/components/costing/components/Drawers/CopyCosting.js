@@ -391,6 +391,7 @@ function CopyCosting(props) {
   }), 500)
 
   const onPopupConfirm = () => {
+    props.setCostingOptionSelect()
     setDisablePopup(true)
     dispatch(
       saveCopyCosting(updatedObj, (res) => {
