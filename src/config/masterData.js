@@ -3165,6 +3165,7 @@ export const BOPGridForToken = [
     { label: "OldBOPCost", value: "OldNetBoughtOutPartCost" },
     { label: "NewBOPCost", value: "NewNetBoughtOutPartCost" },
     { label: "BOP Variance", value: "NetBoughtOutPartCostVariance" },
+
 ]
 export const ERGridForToken = [
     { label: "Currency", value: "Currency" },
