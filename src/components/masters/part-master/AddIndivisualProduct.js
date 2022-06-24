@@ -533,7 +533,7 @@ class AddIndivisualProduct extends Component {
                                                 <Row>
                                                     <Col md="4" className="mb-5 pb-1">
                                                         <label
-                                                            className={`custom-checkbox ${this.state.isEditFlag ? "disabled" : ""
+                                                            className={`custom-checkbox ${isViewMode ? "disabled" : ""
                                                                 }`}
                                                             onChange={this.onPressImpactCalculation}
                                                         >
