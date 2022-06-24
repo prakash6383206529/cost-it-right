@@ -566,15 +566,15 @@ function RMImportListing(props) {
   const onRowSelect = (event) => {
 
     var selectedRows = gridApi && gridApi?.getSelectedRows();
-    if (selectedRows === undefined || selectedRows === null) {
+    if (selectedRows === undefined || selectedRows === null) {    //CONDITION FOR FIRST RENDERING OF COMPONENT
       selectedRows = selectedCostingListSimulation
-    } else if (selectedCostingListSimulation && selectedCostingListSimulation.length > 0) {
+    } else if (selectedCostingListSimulation && selectedCostingListSimulation.length > 0) {  // CHECKING IF REDUCER HAS DATA
 
       let finalData = []
-      if (event.node.isSelected() === false) {
+      if (event.node.isSelected() === false) {      // CHECKING IF CURRENT CHECKBOX IS UNSELECTED
 
         for (let i = 0; i < selectedCostingListSimulation.length; i++) {
-          if (selectedCostingListSimulation[i].RawMaterialId === event.data.RawMaterialId) {
+          if (selectedCostingListSimulation[i].RawMaterialId === event.data.RawMaterialId) {       // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
             continue;
           }
           finalData.push(selectedCostingListSimulation[i])
@@ -587,8 +587,8 @@ function RMImportListing(props) {
     }
 
     if (isSimulation) {
-      let uniqeArray = _.uniqBy(selectedRows, "RawMaterialId")
-      dispatch(setSelectedCostingListSimualtion(uniqeArray))
+      let uniqeArray = _.uniqBy(selectedRows, "RawMaterialId")           //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
+      dispatch(setSelectedCostingListSimualtion(uniqeArray))                   //SETTING CHECKBOX STATE DATA IN REDUCER
       let finalArr = selectedRows
       let length = finalArr?.length
       let uniqueArray = _.uniqBy(finalArr, "RawMaterialId")
