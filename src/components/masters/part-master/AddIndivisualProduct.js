@@ -267,14 +267,14 @@ class AddIndivisualProduct extends Component {
     * @description Used to Submit the form
     */
     onSubmit = debounce((values) => {
-        const { ProductId, selectedPlants, effectiveDate, isEditFlag, files, DropdownChanged, isImpactCalculation, uploadAttachements } = this.state;
+        const { ProductId, selectedPlants, effectiveDate, isEditFlag, files, DropdownChanged, isImpactCalculation, DataToCheck, uploadAttachements } = this.state;
 
         let plantArray = selectedPlants && selectedPlants.map((item) => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
 
         if (isEditFlag) {
 
 
-            if (DropdownChanged && uploadAttachements) {
+            if (DropdownChanged && uploadAttachements && (DataToCheck.Remark) === (values.Remark)) {
                 this.cancel()
                 return false;
             }
@@ -569,14 +569,14 @@ class AddIndivisualProduct extends Component {
                                                         <Field
                                                             label={"Remarks"}
                                                             name={`Remark`}
-                                                            placeholder="Type here..."
+                                                            placeholder={!isViewMode ? "Type here..." : ""}
                                                             className=""
                                                             customClassName=" textAreaWithBorder"
                                                             validate={[maxLength512, checkWhiteSpaces]}
                                                             //required={true}
                                                             component={renderTextAreaField}
                                                             maxLength="5000"
-                                                            disabled={isEditFlag ? true : false}
+                                                            disabled={isViewMode ? true : false}
                                                         />
                                                     </Col>
                                                     <Col md="3">
