@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Field, reduxForm } from 'redux-form'
 import { Row, Col } from 'reactstrap'
-import { maxLength, postiveNumber, required } from '../../../helper/validation'
+import { required } from '../../../helper/validation'
 import { searchableSelect } from '../../layout/FormInputs'
 // import { getVendorListByVendorType } from '../actions/Material'
 import { createVolume, updateVolume, getVolumeData, getFinancialYearSelectList, } from '../actions/Volume'
@@ -20,7 +20,6 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { EMPTY_DATA } from '../../../config/constants'
 import { debounce } from 'lodash'
-import TooltipCustom from '../../common/Tooltip';
 import AsyncSelect from 'react-select/async';
 
 const gridOptions = {};
@@ -346,6 +345,10 @@ class AddVolume extends Component {
     this.setState({ DataToChange: false })
   }
 
+  onCellValueChanged = () => {
+    this.setState({ DataToChange: false })
+  }
+
   deleteItem = (ID) => {
     const { tableData } = this.state;
     let tempData = tableData.filter((item, i) => {
@@ -449,9 +452,6 @@ class AddVolume extends Component {
     })
 
     reset('AddVolume')
-
-
-
     this.setState(
       {
         selectedPlants: [],
@@ -839,6 +839,7 @@ class AddVolume extends Component {
                                   domLayout='autoHeight'
                                   // columnDefs={c}
                                   rowData={this.state.tableData}
+                                  onCellValueChanged={this.onCellValueChanged}
                                   pagination={true}
                                   paginationPageSize={12}
                                   onGridReady={this.onGridReady}
