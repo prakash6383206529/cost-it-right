@@ -25,7 +25,7 @@ function GroupProcess(props) {
     useEffect(() => {
         let data = {
             VendorId: costData.VendorId,
-            TechnologyId: Number(costData.ETechnologyType) === Number(FORGING) || Number(costData.ETechnologyType) === Number(DIE_CASTING) || Number(costData.ETechnologyType) === Number(Ferrous_Casting) ? String(`${costData.ETechnologyType},${MACHINING}`) : `${costData.ETechnologyType}`,
+            TechnologyId: Number(costData?.TechnologyId) === Number(FORGING) || Number(costData?.TechnologyId) === Number(DIE_CASTING) || Number(costData?.TechnologyId) === Number(Ferrous_Casting) ? String(`${costData?.TechnologyId},${MACHINING}`) : `${costData?.TechnologyId}`,
             VendorPlantId: getConfigurationKey()?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
             DestinationPlantId: getConfigurationKey()?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID,
             CostingId: costData.CostingId,
