@@ -18,7 +18,7 @@ import {
   getPartInfo, checkPartWithTechnology, createZBCCosting, createVBCCosting, getZBCExistingCosting, getVBCExistingCosting,
   updateZBCSOBDetail, updateVBCSOBDetail, storePartNumber, getBriefCostingById, deleteDraftCosting, getPartSelectListByTechnology,
   setOverheadProfitData, setComponentOverheadItemData, setPackageAndFreightData, setComponentPackageFreightItemData, setToolTabData,
-  setComponentToolItemData, setComponentDiscountOtherItemData, gridDataAdded, getCostingSpecificTechnology, setRMCCData, setComponentItemData, getNCCExistingCosting, createNCCCosting, saveAssemblyBOPHandlingCharge,
+  setComponentToolItemData, setComponentDiscountOtherItemData, gridDataAdded, getCostingSpecificTechnology, setRMCCData, setComponentItemData, getNCCExistingCosting, createNCCCosting, saveAssemblyBOPHandlingCharge, setProcessGroupGrid, savePartNumberAndBOMLevel,
 } from '../actions/Costing'
 import CopyCosting from './Drawers/CopyCosting'
 import ConfirmComponent from '../../../helper/ConfirmComponent';
@@ -599,6 +599,7 @@ function CostingDetails(props) {
    */
   const closeCopyCostingDrawer = (e = '', costingId = '', type = '') => {
     //nextToggle()
+    setCostingOptionsSelectedObject({})
     setIsCopyCostingDrawer(false)
     dispatch(getBriefCostingById('', (res) => { }))
 
@@ -744,6 +745,7 @@ function CostingDetails(props) {
    */
   const addDetails = debounce((index, type) => {
     const userDetail = userDetails()
+    setCostingOptionsSelectedObject({})
 
     if (CheckIsSOBChangedSaved()) {
       warningMessageHandle('SOB_SAVED_WARNING')
@@ -1316,6 +1318,8 @@ function CostingDetails(props) {
       setEffectiveDate(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate).format('MM/DD/YYYY') : '')
     }))
     setCostingOptionsSelectedObject({})
+    dispatch(setProcessGroupGrid([]))
+    dispatch(savePartNumberAndBOMLevel(''))
 
   }
 
@@ -1407,6 +1411,10 @@ function CostingDetails(props) {
     //   component: () => <ConfirmComponent />
     // }
     // return Toaster.confirm(`${'You have changed SOB percent So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
+  }
+
+  const setCostingOptionSelect = () => {
+    setCostingOptionsSelectedObject({})
   }
 
   /**
@@ -2343,6 +2351,7 @@ function CostingDetails(props) {
           selectedCostingId={costingIdForCopy}
           //isEditFlag={false}
           anchor={"right"}
+          setCostingOptionSelect={setCostingOptionSelect}
         />
       )}
 

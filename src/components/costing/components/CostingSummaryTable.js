@@ -420,6 +420,7 @@ const CostingSummaryTable = (props) => {
     dispatch(storePartNumber(partNumber))
 
     let tempData = viewCostingData[index]
+    props?.setcostingOptionsSelectFromSummary(viewCostingData && viewCostingData[index])
     const type = viewCostingData[index]?.zbc === 0 ? 'ZBC' : 'VBC'
     if (type === ZBC) {
       dispatch(getBriefCostingById(tempData?.costingId, (res) => {
