@@ -46,7 +46,7 @@ function AddOperation(props) {
     if (costData.VendorType === ZBC) {
       const data = {
         PlantId: costData.PlantId,
-        TechnologyId: costData.ETechnologyType,
+        TechnologyId: costData?.TechnologyId,
         CostingId: costData.CostingId,
         EffectiveDate: CostingEffectiveDate,
       }
@@ -65,7 +65,7 @@ function AddOperation(props) {
 
       const data = {
         VendorId: costData.VendorId,
-        TechnologyId: costData.ETechnologyType,
+        TechnologyId: costData?.TechnologyId,
         VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
         DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID,
         EffectiveDate: CostingEffectiveDate,

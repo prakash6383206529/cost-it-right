@@ -121,7 +121,7 @@ function RawMaterialCost(props) {
   const DrawerToggle = () => {
     if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
 
-    if ((Object.keys(gridData).length > 0 && gridData[0].WeightCalculationId !== null && Number(costData.ETechnologyType) === Number(Ferrous_Casting))) {
+    if ((Object.keys(gridData).length > 0 && gridData[0].WeightCalculationId !== null && Number(costData?.TechnologyId) === Number(Ferrous_Casting))) {
       setShowPopup(true)
       setDrawerOpen(false)
     }
@@ -138,7 +138,7 @@ function RawMaterialCost(props) {
   const closeDrawer = (e = '', rowData = {}) => {
     if (Object.keys(rowData).length > 0 && IsApplyMasterBatch === false) {
       let tempArray = []
-      if (isMultipleRMAllow(costData.ETechnologyType)) {
+      if (isMultipleRMAllow(costData?.TechnologyId)) {
         let rowArray = rowData && rowData.map(el => {
           return {
             RMName: `${el.RawMaterial} - ${el.RMGrade}`,
@@ -222,7 +222,7 @@ function RawMaterialCost(props) {
   const toggleWeightCalculator = debounce((index) => {
     setEditIndex(index)
     let tempData = gridData[index]
-    if (technologyForDensity.includes(costData.ETechnologyType)) {
+    if (technologyForDensity.includes(costData?.TechnologyId)) {
       if ((tempData.Density === undefined && tempData.Density === null && tempData.Density === "") || Number(tempData.Density) === 0) {
 
         Toaster.warning("This Material's density is not available for weight calculation. Please add density for this material in RM Master > Manage Material.")
@@ -231,7 +231,7 @@ function RawMaterialCost(props) {
     }
 
 
-    switch ((Number(costData.ETechnologyType))) {
+    switch ((Number(costData?.TechnologyId))) {
 
       case SHEETMETAL:
         dispatch(getRawMaterialCalculationForSheetMetal(item.CostingId, tempData.RawMaterialId, tempData.WeightCalculationId, res => {
@@ -652,16 +652,16 @@ function RawMaterialCost(props) {
 
     // GROSS WEIGHT WILL ALWAYS BE KG ON THIS TAB, SO CONVERTING OTHER UNIT INTO KG
     if (Object.keys(weightData).length > 0) {
-      if (costData.ETechnologyType === SHEETMETAL && weightData.UOMForDimension === G) {
+      if (costData?.TechnologyId === SHEETMETAL && weightData.UOMForDimension === G) {
         grossWeight = weightData.GrossWeight / 1000
         finishWeight = weightData.FinishWeight / 1000
         netLandedCost = weightData.RawMaterialCost / 1000
-      } else if (costData.ETechnologyType === SHEETMETAL && weightData.UOMForDimension === KG) {
+      } else if (costData?.TechnologyId === SHEETMETAL && weightData.UOMForDimension === KG) {
         grossWeight = weightData.GrossWeight
         finishWeight = weightData.FinishWeight
         netLandedCost = weightData.RawMaterialCost
 
-      } else if (costData.ETechnologyType === SHEETMETAL && weightData.UOMForDimension === MG) {
+      } else if (costData?.TechnologyId === SHEETMETAL && weightData.UOMForDimension === MG) {
         grossWeight = weightData.GrossWeight / 1000000
         finishWeight = weightData.FinishWeight / 1000000
         netLandedCost = weightData.RawMaterialCost / 1000000
@@ -703,7 +703,7 @@ function RawMaterialCost(props) {
         setGridData(tempArr)
       }, 500)
 
-      if (Number(costData.ETechnologyType) === Number(Ferrous_Casting)) {
+      if (Number(costData?.TechnologyId) === Number(Ferrous_Casting)) {
 
         gridData && gridData.map((item, index) => {
           item.FinishWeight = FinishWeight ? FinishWeight : 0
@@ -951,7 +951,7 @@ function RawMaterialCost(props) {
       isShow = true;
     }
 
-    if (costData && (isMultipleRMAllow(costData.ETechnologyType))) {
+    if (costData && (isMultipleRMAllow(costData?.TechnologyId))) {
       isShow = true;
     }
     return isShow;
@@ -1034,11 +1034,11 @@ function RawMaterialCost(props) {
                       <th>{`RM Rate`}</th>
                       <th>{`Scrap Rate`}</th>
                       <th>{`UOM`}</th>
-                      {getTechnology.includes(costData.ETechnologyType) && <th style={{ width: "195px" }} className="text-center">{`Weight Calculator`}</th>}
+                      {getTechnology.includes(costData?.TechnologyId) && <th style={{ width: "195px" }} className="text-center">{`Weight Calculator`}</th>}
                       <th style={{ width: "190px" }}>{`Gross Weight`}</th>
                       <th style={{ width: "190px" }}>{`Finish Weight`}</th>
                       {isScrapRecoveryPercentageApplied && <th style={{ width: "200px" }}>{`Scrap Recovery(%)`}</th>}
-                      {costData.ETechnologyType === PLASTIC && <th style={{ width: "190px" }}>{'Burning Loss Weight'}</th>}
+                      {costData?.TechnologyId === PLASTIC && <th style={{ width: "190px" }}>{'Burning Loss Weight'}</th>}
                       <th style={{ width: "190px" }}>{`Scrap Weight`}</th>
                       {/* //Add i here for MB+ */}
                       <th style={{ width: "190px" }}>{`Net RM Cost ${isRMDivisorApplicable(costData.TechnologyName) ? '/(' + RMDivisor + ')' : ''}`}</th>
@@ -1057,7 +1057,7 @@ function RawMaterialCost(props) {
                             <td>{item.ScrapRate}</td>
                             <td>{item.UOM}</td>
                             {
-                              getTechnology.includes(costData.ETechnologyType) &&
+                              getTechnology.includes(costData?.TechnologyId) &&
                               <td className="text-center">
                                 <button
                                   className="CalculatorIcon cr-cl-icon "
@@ -1122,7 +1122,7 @@ function RawMaterialCost(props) {
                             </td>
 
                             {
-                              costData.ETechnologyType === PLASTIC && <td>{checkForDecimalAndNull(item.BurningLossWeight, initialConfiguration.NoOfDecimalForInputOutput)}</td>
+                              costData?.TechnologyId === PLASTIC && <td>{checkForDecimalAndNull(item.BurningLossWeight, initialConfiguration.NoOfDecimalForInputOutput)}</td>
                             }
                             {
                               isScrapRecoveryPercentageApplied &&
@@ -1220,7 +1220,7 @@ function RawMaterialCost(props) {
 
             <Row>
               {/* IF THERE IS NEED TO APPLY FOR MULTIPLE TECHNOLOGY, CAN MODIFIED BELOW CONDITION */}
-              {costData.ETechnologyType === PLASTIC &&
+              {costData?.TechnologyId === PLASTIC &&
                 <Col md="2" className="py-3 pr-1 mb-width">
                   <label
                     className={`custom-checkbox mb-0`}
@@ -1243,7 +1243,7 @@ function RawMaterialCost(props) {
               }
 
               {/* IF THERE IS NEED TO APPLY FOR MULTIPLE TECHNOLOGY, CAN MODIFIED BELOW CONDITION */}
-              {IsApplyMasterBatch && costData.ETechnologyType === PLASTIC &&
+              {IsApplyMasterBatch && costData?.TechnologyId === PLASTIC &&
                 <>
                   <div>
                     <button onClick={MasterBatchToggle} title={'Add Master Batch'} disabled={(CostingViewMode || IsLocked || masterBatch)} type="button" class="user-btn mt30"><div class="plus"></div>Add Master Batch</button>
@@ -1378,7 +1378,7 @@ function RawMaterialCost(props) {
             isEditFlag={(CostingViewMode || IsLocked) ? false : true}
             inputDiameter={inputDiameter}
             item={item}
-            technology={costData.ETechnologyType}
+            technology={costData?.TechnologyId}
             ID={''}
             anchor={'right'}
             rmRowData={gridData[editIndex]}
