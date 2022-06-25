@@ -186,6 +186,7 @@ function CostingDetailStepTwo(props) {
         TotalCost: OverAllCost,
       }
       let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
+      console.log('tempArr from packaging: ', tempArr);
       dispatch(setCostingDataList('setHeaderPackageFreightTab', tempArr, () => {
       }))
       dispatch(setPOPrice(calculateNetPOPrice(tempArr), () => { }))
@@ -246,7 +247,14 @@ function CostingDetailStepTwo(props) {
       const RMCC = checkForNull(headCostData.NetRawMaterialsCost) + ConversionCostForCalculation;
       const BOPCC = checkForNull(headCostData.NetBoughtOutPartCost) + ConversionCostForCalculation
       let dataList = CostingDataList && CostingDataList.length > 0 ? CostingDataList[0] : {}
-      const totalTabCost = checkForNull(dataList.NetTotalRMBOPCC) + checkForNull(dataList.NetSurfaceTreatmentCost) + checkForNull(dataList.NetOverheadAndProfitCost) + checkForNull(data.NetPackagingAndFreight) + checkForNull(data.ToolCost)
+      const totalTabCost = checkForNull(dataList.NetTotalRMBOPCC) + checkForNull(dataList.NetSurfaceTreatmentCost) + checkForNull(dataList.NetOverheadAndProfitCost) + checkForNull(dataList.NetPackagingAndFreight) + checkForNull(dataList.ToolCost)
+      console.log('data.ToolCost: ', data.ToolCost);
+      console.log('data.NetPackagingAndFreight: ', data.NetPackagingAndFreight);
+      console.log('dataList.NetOverheadAndProfitCost: ', dataList.NetOverheadAndProfitCost);
+      console.log('dataList.NetSurfaceTreatmentCost: ', dataList.NetSurfaceTreatmentCost);
+      console.log('dataList.NetTotalRMBOPCC: ', dataList.NetTotalRMBOPCC);
+
+      console.log('totalTabCost: ', totalTabCost);
 
       let totalCost = ''
       switch (Text) {
@@ -277,6 +285,7 @@ function CostingDetailStepTwo(props) {
         default:
           break;
       }
+      console.log(totalCost, "totalCost");
       return totalCost
     }
   }
