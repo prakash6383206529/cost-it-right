@@ -4,7 +4,7 @@ import { TabContent, TabPane, Nav, NavItem, NavLink, } from 'reactstrap';
 import classnames from 'classnames';
 import CostingDetails from './CostingDetails';
 import CostingSummary from './CostingSummary';
-import { storePartNumber } from '../actions/Costing';
+import { savePartNumberAndBOMLevel, setProcessGroupGrid, storePartNumber } from '../actions/Costing';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { useHistory } from "react-router-dom";
 
@@ -34,6 +34,7 @@ function Costing(props) {
     if (reactLocalStorage.get('location') === '/costing-summary') {
       toggle("2");
     } else {
+
       toggle("1");
     }
   }, [])
@@ -42,6 +43,7 @@ function Costing(props) {
     setPartInfo(partInfo)
     setCostingData(costingInfo)
     if (costingInfo && costingInfo.length > 0) {
+
       toggle("1");
     }
   }
@@ -51,6 +53,8 @@ function Costing(props) {
       SubAssemblyCostingId: value?.SubAssemblyCostingId,
       AssemblyCostingId: value?.AssemblyCostingId
     }
+    dispatch(setProcessGroupGrid([]))
+    dispatch(savePartNumberAndBOMLevel(''))
     setCostingOptionsSelect(obj)
   }
 
