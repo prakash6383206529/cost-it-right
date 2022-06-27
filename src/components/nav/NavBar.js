@@ -108,8 +108,6 @@ class SideBar extends Component {
   }
 
 
-
-
   /**
    * @method logout
    * @description logout
@@ -256,15 +254,16 @@ class SideBar extends Component {
   renderMaster = (module, LandingPageURL) => {
     const { topAndLeftMenuData } = this.props
 
-    if (window.location.href.includes(LandingPageURL)) {
-      topAndLeftMenuData &&
-        topAndLeftMenuData.map((el, i) => {
-          if (el.ModuleName === module) {
-            this.setLeftMenu(el.ModuleId)
-          }
-        })
-    }
-
+    topAndLeftMenuData &&
+      topAndLeftMenuData.map((el, i) => {
+        if (el.ModuleName === module) {
+          el.Pages.map((item, index) => {
+            if (window.location.href.includes(item.NavigationURL)) {
+              this.setLeftMenu(el.ModuleId)
+            }
+          })
+        }
+      })
 
     return (
       topAndLeftMenuData &&
@@ -354,15 +353,16 @@ class SideBar extends Component {
 
     const { topAndLeftMenuData } = this.props
 
-
-    if (window.location.href.includes(LandingPageURL)) {
-      topAndLeftMenuData &&
-        topAndLeftMenuData.map((el, i) => {
-          if (el.ModuleName === module) {
-            this.setLeftMenu(el.ModuleId)
-          }
-        })
-    }
+    topAndLeftMenuData &&
+      topAndLeftMenuData.map((el, i) => {
+        if (el.ModuleName === module) {
+          el.Pages.map((item, index) => {
+            if (window.location.href.includes(item.NavigationURL)) {
+              this.setLeftMenu(el.ModuleId)
+            }
+          })
+        }
+      })
 
     return (
       topAndLeftMenuData &&
@@ -428,24 +428,16 @@ class SideBar extends Component {
   renderReportAnalytics = (module, LandingPageURL) => {
     const { topAndLeftMenuData } = this.props;
 
-    if (window.location.href.includes(LandingPageURL)) {
-      topAndLeftMenuData &&
-        topAndLeftMenuData.map((el, i) => {
-          if (el.ModuleName === module) {
-            this.setLeftMenu(el.ModuleId)
-          }
-        })
-    }
-
-    topAndLeftMenuData && topAndLeftMenuData.map((el, i) => {
-      if (el.ModuleName === module) {
-        el && el.Pages && el.Pages.map((item, i) => {
-          if (window.location.href.includes(item.NavigationURL)) {
-            this.setLeftMenu(el.ModuleId)
-          }
-        })
-      }
-    })
+    topAndLeftMenuData &&
+      topAndLeftMenuData.map((el, i) => {
+        if (el.ModuleName === module) {
+          el.Pages.map((item, index) => {
+            if (window.location.href.includes(item.NavigationURL)) {
+              this.setLeftMenu(el.ModuleId)
+            }
+          })
+        }
+      })
 
     return (
       topAndLeftMenuData && topAndLeftMenuData.map((el, i) => {
@@ -549,14 +541,16 @@ class SideBar extends Component {
   renderSimulation = (module, LandingPageURL) => {
     const { topAndLeftMenuData } = this.props
 
-    if (window.location.href.includes(LandingPageURL)) {
-      topAndLeftMenuData &&
-        topAndLeftMenuData.map((el, i) => {
-          if (el.ModuleName === module) {
-            this.setLeftMenu(el.ModuleId)
-          }
-        })
-    }
+    topAndLeftMenuData &&
+      topAndLeftMenuData.map((el, i) => {
+        if (el.ModuleName === module) {
+          el.Pages.map((item, index) => {
+            if (window.location.href.includes(item.NavigationURL)) {
+              this.setLeftMenu(el.ModuleId)
+            }
+          })
+        }
+      })
 
     return (
       topAndLeftMenuData && topAndLeftMenuData.map((el, i) => {
@@ -636,15 +630,16 @@ class SideBar extends Component {
   renderUser = (module, LandingPageURL) => {
     const { topAndLeftMenuData } = this.props
 
-    if (window.location.href.includes(LandingPageURL)) {
-      topAndLeftMenuData &&
-        topAndLeftMenuData.map((el, i) => {
-          if (el.ModuleName === module) {
-            this.setLeftMenu(el.ModuleId)
-          }
-        })
-    }
-
+    topAndLeftMenuData &&
+      topAndLeftMenuData.map((el, i) => {
+        if (el.ModuleName === module) {
+          el.Pages.map((item, index) => {
+            if (window.location.href.includes(item.NavigationURL)) {
+              this.setLeftMenu(el.ModuleId)
+            }
+          })
+        }
+      })
 
     return (
       topAndLeftMenuData &&
