@@ -609,6 +609,7 @@ class Level extends Component {
                             required={true}
                             handleChangeDescription={this.technologyHandler}
                             valueDescription={this.state.technology}
+                            disabled={isEditFlag ? true : false}
                           />
                         </div>
                         <div className="input-group col-md-12  form-group input-withouticon" >
