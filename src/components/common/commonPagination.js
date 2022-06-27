@@ -1,4 +1,5 @@
 import React from 'react';
+import { defaultPageSize } from '../../config/constants'
 export const onFloatingFilterChanged = (value, gridOptions, thisReference) => {
 
     const model = gridOptions?.api?.getFilterModel();
@@ -29,20 +30,20 @@ export const onFloatingFilterChanged = (value, gridOptions, thisReference) => {
 }
 
 
-export const onSearch = (gridOptions, thisReference, master) => {
+export const onSearch = (gridOptions, thisReference, master, globalTake) => {
 
     thisReference.setState({ warningMessage: false, isFilterButtonClicked: true, pageNo: 1, currentRowIndex: 0 })
     gridOptions?.columnApi?.resetColumnState();
 
     switch (master) {
         case "BOP":
-            thisReference.getDataList("", 0, "", "", 0, 100, true, thisReference.state.floatingFilterData)
+            thisReference.getDataList("", 0, "", "", 0, globalTake, true, thisReference.state.floatingFilterData)
             break;
         case "Machine":
-            thisReference.getDataList("", 0, "", 0, "", "", 0, 100, true, thisReference.state.floatingFilterData)
+            thisReference.getDataList("", 0, "", 0, "", "", 0, globalTake, true, thisReference.state.floatingFilterData)
             break;
         case "Operation":
-            thisReference.getTableListData(null, null, null, null, 0, 100, true, thisReference.state.floatingFilterData)
+            thisReference.getTableListData(null, null, null, null, 0, globalTake, true, thisReference.state.floatingFilterData)
             break;
         default:
 
@@ -67,18 +68,19 @@ export const resetState = (gridOptions, thisReference, master) => {
 
     switch (master) {
         case "BOP":
-            thisReference.getDataList("", 0, "", "", 0, 100, true, thisReference.state.floatingFilterData)
+            thisReference.getDataList("", 0, "", "", 0, defaultPageSize, true, thisReference.state.floatingFilterData)
             break;
         case "Machine":
-            thisReference.getDataList("", 0, "", 0, "", "", 0, 100, true, thisReference.state.floatingFilterData)
+            thisReference.getDataList("", 0, "", 0, "", "", 0, defaultPageSize, true, thisReference.state.floatingFilterData)
             break;
         case "Operation":
-            thisReference.getTableListData(null, null, null, null, 0, 100, true, thisReference.state.floatingFilterData)
+            thisReference.getTableListData(null, null, null, null, 0, defaultPageSize, true, thisReference.state.floatingFilterData)
             break;
 
         default:
 
     }
+    thisReference.setState({ pageSize: { pageSize10: true, pageSize50: false, pageSize100: false }, globalTake: 10 })
 
 }
 
@@ -91,13 +93,13 @@ export const onBtPrevious = (thisReference, master) => {
 
         switch (master) {
             case "BOP":
-                thisReference.getDataList("", 0, "", "", previousNo, 100, true, thisReference.state.floatingFilterData)
+                thisReference.getDataList("", 0, "", "", previousNo, thisReference.state.globalTake, true, thisReference.state.floatingFilterData)
                 break;
             case "Machine":
-                thisReference.getDataList("", 0, "", 0, "", "", previousNo, 100, true, thisReference.state.floatingFilterData)
+                thisReference.getDataList("", 0, "", 0, "", "", previousNo, thisReference.state.globalTake, true, thisReference.state.floatingFilterData)
                 break;
             case "Operation":
-                thisReference.getTableListData(null, null, null, null, previousNo, 100, true, thisReference.state.floatingFilterData)
+                thisReference.getTableListData(null, null, null, null, previousNo, thisReference.state.globalTake, true, thisReference.state.floatingFilterData)
                 break;
 
             default:
@@ -118,13 +120,13 @@ export const onBtNext = (thisReference, master) => {
 
         switch (master) {
             case "BOP":
-                thisReference.getDataList("", 0, "", "", nextNo, 100, true, thisReference.state.floatingFilterData)
+                thisReference.getDataList("", 0, "", "", nextNo, thisReference.state.globalTake, true, thisReference.state.floatingFilterData)
                 break;
             case "Machine":
-                thisReference.getDataList("", 0, "", 0, "", "", nextNo, 100, true, thisReference.state.floatingFilterData)
+                thisReference.getDataList("", 0, "", 0, "", "", nextNo, thisReference.state.globalTake, true, thisReference.state.floatingFilterData)
                 break;
             case "Operation":
-                thisReference.getTableListData(null, null, null, null, nextNo, 100, true, thisReference.state.floatingFilterData)
+                thisReference.getTableListData(null, null, null, null, nextNo, thisReference.state.globalTake, true, thisReference.state.floatingFilterData)
                 break;
 
             default:
@@ -136,21 +138,71 @@ export const onBtNext = (thisReference, master) => {
 
 
 
-export const onPageSizeChanged = (thisReference, newPageSize) => {
+export const onPageSizeChanged = (thisReference, newPageSize, master, currentRowIndex) => {
 
-    thisReference.state.gridApi.paginationSetPageSize(Number(newPageSize));
+
 
     if (Number(newPageSize) === 10) {
-        thisReference.setState({ pageSize: { pageSize10: true, pageSize50: false, pageSize100: false } })
+
+
+        switch (master) {
+            case "BOP":
+                thisReference.getDataList("", 0, "", "", currentRowIndex, 10, true, thisReference.state.floatingFilterData)
+                break;
+            case "Machine":
+                thisReference.getDataList("", 0, "", 0, "", "", currentRowIndex, 10, true, thisReference.state.floatingFilterData)
+                break;
+            case "Operation":
+                thisReference.getTableListData(null, null, null, null, currentRowIndex, 10, true, thisReference.state.floatingFilterData)
+                break;
+
+            default:
+        }
+
+
+        thisReference.setState({ pageSize: { pageSize10: true, pageSize50: false, pageSize100: false }, globalTake: 10 })
+
     }
     else if (Number(newPageSize) === 50) {
-        thisReference.setState({ pageSize: { pageSize10: false, pageSize50: true, pageSize100: false } })
+
+        switch (master) {
+            case "BOP":
+                thisReference.getDataList("", 0, "", "", currentRowIndex, 50, true, thisReference.state.floatingFilterData)
+                break;
+            case "Machine":
+                thisReference.getDataList("", 0, "", 0, "", "", currentRowIndex, 50, true, thisReference.state.floatingFilterData)
+                break;
+            case "Operation":
+                thisReference.getTableListData(null, null, null, null, currentRowIndex, 50, true, thisReference.state.floatingFilterData)
+                break;
+
+            default:
+        }
+
+
+        thisReference.setState({ pageSize: { pageSize10: false, pageSize50: true, pageSize100: false }, globalTake: 50 })
     }
     else if (Number(newPageSize) === 100) {
-        thisReference.setState({ pageSize: { pageSize10: false, pageSize50: false, pageSize100: true } })
+
+        switch (master) {
+            case "BOP":
+                thisReference.getDataList("", 0, "", "", currentRowIndex, 100, true, thisReference.state.floatingFilterData)
+                break;
+            case "Machine":
+                thisReference.getDataList("", 0, "", 0, "", "", currentRowIndex, 100, true, thisReference.state.floatingFilterData)
+                break;
+            case "Operation":
+                thisReference.getTableListData(null, null, null, null, currentRowIndex, 100, true, thisReference.state.floatingFilterData)
+                break;
+
+            default:
+        }
+
+
+        thisReference.setState({ pageSize: { pageSize10: false, pageSize50: false, pageSize100: true }, globalTake: 100 })
 
     }
-
+    thisReference.state.gridApi.paginationSetPageSize(Number(newPageSize));
 }
 export function PaginationWrapper(props) {
     const onPageSizeChangedCommon = (newPageSize) => {
@@ -159,7 +211,7 @@ export function PaginationWrapper(props) {
 
     return (
         <div className="paging-container d-inline-block float-right">
-            <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChangedCommon(e.target.value)} id="page-size">
+            <select className="form-control paging-dropdown" defaultValue={props.globalTake} onChange={(e) => onPageSizeChangedCommon(e.target.value)} id="page-size">
                 <option value={props.pageSize1 ? props.pageSize1 : 10} selected={true}>{props?.pageSize1 ? props?.pageSize1 : 10}</option>
                 <option value={props?.pageSize2 ? props?.pageSize2 : 50}>{props?.pageSize2 ? props?.pageSize2 : 50}</option>
                 <option value={props?.pageSize3 ? props?.pageSize3 : 100}>{props?.pageSize3 ? props?.pageSize3 : 100}</option>
