@@ -33,6 +33,7 @@ import {
   SAVE_PART_NUMBER_STOP_API_CALL,
   SET_PART_NUMBER_ARRAY_API_CALL,
   SET_MESSAGE_FOR_ASSEMBLY,
+  SET_PROCESS_GROUP_GRID,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -2498,6 +2499,19 @@ export function setMessageForAssembly(message) {
     dispatch({
       type: SET_MESSAGE_FOR_ASSEMBLY,
       payload: message,
+    });
+  }
+};
+
+/**
+ * @method setProcessGroupGrid
+ * @description SET COMPONENT ITEM DATA  
+ */
+export function setProcessGroupGrid(grid) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_PROCESS_GROUP_GRID,
+      payload: grid,
     });
   }
 };

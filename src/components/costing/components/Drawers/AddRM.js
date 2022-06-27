@@ -50,7 +50,7 @@ function AddRM(props) {
 
     var selectedRows = gridApi.getSelectedRows();
     //BELOW CONDITION, WHEN PLASTIC TECHNOLOGY SELECTED, MULTIPLE RM'S CAN BE ADDED
-    if (isMultipleRMAllow(costData.ETechnologyType)) {
+    if (isMultipleRMAllow(costData?.TechnologyId)) {
       if (JSON.stringify(selectedRows) === JSON.stringify(Ids)) return false
       setSelectedRowData(selectedRows)
       // if (isSelected) {
@@ -113,7 +113,7 @@ function AddRM(props) {
     if (costData.VendorType === ZBC) {
 
       const data = {
-        TechnologyId: costData.ETechnologyType,
+        TechnologyId: costData?.TechnologyId,
         PlantId: costData.PlantId,
         CostingId: costData.CostingId,
         EffectiveDate: CostingEffectiveDate,
@@ -135,7 +135,7 @@ function AddRM(props) {
 
       const data = {
         VendorId: costData.VendorId,
-        TechnologyId: costData.ETechnologyType,
+        TechnologyId: costData?.TechnologyId,
         VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
         DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID,
         EffectiveDate: CostingEffectiveDate,
@@ -180,7 +180,7 @@ function AddRM(props) {
     filter: true,
     sortable: true,
     headerCheckboxSelectionFilteredOnly: true,
-    headerCheckboxSelection: isMultipleRMAllow(costData.ETechnologyType) ? isFirstColumn : false,
+    headerCheckboxSelection: isMultipleRMAllow(costData?.TechnologyId) ? isFirstColumn : false,
     checkboxSelection: isFirstColumn
   };
 
@@ -321,7 +321,7 @@ function AddRM(props) {
                           imagClass: "imagClass"
                         }}
                         suppressRowClickSelection={true}
-                        rowSelection={isMultipleRMAllow(costData.ETechnologyType) && !IsApplyMasterBatch ? 'multiple' : 'single'}
+                        rowSelection={isMultipleRMAllow(costData?.TechnologyId) && !IsApplyMasterBatch ? 'multiple' : 'single'}
                         frameworkComponents={frameworkComponents}
                         onSelectionChanged={onRowSelect}
                         isRowSelectable={isRowSelectable}

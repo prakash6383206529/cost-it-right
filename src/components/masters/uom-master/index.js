@@ -22,6 +22,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import ScrollToTop from '../../common/ScrollToTop';
 import LoaderCustom from '../../common/LoaderCustom';
 import { PaginationWrapper } from '../../common/commonPagination';
+import { displayUOM } from '../../../helper/util';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -197,10 +198,14 @@ class UOMMaster extends Component {
     )
   }
 
-  // unitFormatter = (cell, row, enumObject, rowIndex) => {
-  //   return 
-  // }
-
+  unitSymbol = (props) => {
+    const cellValue = props?.value;
+    console.log(cellValue, "cellValue");
+    return (
+      <div>{displayUOM(cellValue)}
+      </div>
+    )
+  }
   /**
   * @method statusButtonFormatter
   * @description Renders buttons
@@ -282,16 +287,6 @@ class UOMMaster extends Component {
     gridOptions.api.setFilterModel(null);
   }
 
-
-  onFilterTextBoxChanged(e) {
-    this.state.gridApi.setQuickFilter(e.target.value);
-  }
-
-  resetState() {
-    gridOptions.columnApi.resetColumnState();
-  }
-
-
   /**
   * @method render
   * @description Renders the component
@@ -309,6 +304,7 @@ class UOMMaster extends Component {
     const frameworkComponents = {
       totalValueRenderer: this.buttonFormatter,
       customNoRowsOverlay: NoContentFound,
+      unitSymbol: this.unitSymbol
     };
 
     return (
@@ -380,7 +376,7 @@ class UOMMaster extends Component {
                     frameworkComponents={frameworkComponents}
                   >
                     <AgGridColumn field="Unit" headerName="Unit"></AgGridColumn>
-                    <AgGridColumn field="UnitSymbol" headerName="Unit Symbol"></AgGridColumn>
+                    <AgGridColumn field="UnitSymbol" headerName="Unit Symbol" cellRenderer={"unitSymbol"}></AgGridColumn>
                     <AgGridColumn field="UnitType" headerName="Unit Type"></AgGridColumn>
                   </AgGridReact>
                   {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
