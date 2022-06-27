@@ -19,7 +19,7 @@ import BulkUpload from '../../massUpload/BulkUpload';
 import { ADDITIONAL_MASTERS, OPERATION, OperationMaster, OPERATIONS_ID } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
 import { loggedInUserId, userDetails } from '../../../helper/auth';
-import { getFilteredData, userDepartmetList } from '../../../helper'
+import { userDepartmetList } from '../../../helper'
 import { costingHeadObjs, OPERATION_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
 import DayTime from '../../common/DayTimeWrapper'
@@ -622,14 +622,6 @@ class OperationListing extends Component {
         this.state.gridApi.setQuickFilter(e.target.value);
     }
 
-    getFilterOperationData = () => {
-        if (this.props.isSimulation) {
-            return getFilteredData(this.state.tableData, OPERATIONS_ID)
-        } else {
-            return this.state.tableData
-        }
-    }
-
     /**
     * @method render
     * @description Renders the component
@@ -836,7 +828,7 @@ class OperationListing extends Component {
                                 defaultColDef={defaultColDef}
                                 floatingFilter={true}
                                 domLayout='autoHeight'
-                                rowData={this.getFilterOperationData()}
+                                rowData={this.state.tableData}
                                 pagination={true}
 
                                 paginationPageSize={this.state.globalTake}

@@ -23,7 +23,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
-import { CheckApprovalApplicableMaster, getConfigurationKey, getFilteredData, userDepartmetList, loggedInUserId, userDetails } from '../../../helper';
+import { CheckApprovalApplicableMaster, getConfigurationKey, userDepartmetList, loggedInUserId, userDetails } from '../../../helper';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getListingForSimulationCombined, setSelectedCostingListSimualtion } from '../../simulation/actions/Simulation';
 import WarningMessage from '../../common/WarningMessage';
@@ -156,14 +156,6 @@ function RMDomesticListing(props) {
         }
     }, [])
 
-
-    const getFilterRMData = () => {
-        if (isSimulation) {
-            return getFilteredData(rmDataList, RM_MASTER_ID)
-        } else {
-            return rmDataList
-        }
-    }
 
     /**
     * @method hideForm
@@ -566,7 +558,7 @@ function RMDomesticListing(props) {
                 tempArr.push(item.data)
             }))
         } else {
-            tempArr = getFilterRMData()
+            tempArr = rmDataList
         }
 
         return returnExcelColumn(RMDOMESTIC_DOWNLOAD_EXCEl, tempArr)
@@ -758,7 +750,7 @@ function RMDomesticListing(props) {
                                         defaultColDef={defaultColDef}
                                         floatingFilter={true}
                                         domLayout='autoHeight'
-                                        rowData={getFilterRMData()}
+                                        rowData={rmDataList}
                                         pagination={true}
                                         paginationPageSize={globalTake}
                                         onGridReady={onGridReady}

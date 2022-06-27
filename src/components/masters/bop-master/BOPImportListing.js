@@ -17,7 +17,7 @@ import { BOP_IMPORT_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
 import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
 import { BopImport, INR, BOP_MASTER_ID } from '../../../config/constants';
-import { getFilteredData, loggedInUserId, userDepartmetList, userDetails } from '../../../helper';
+import { loggedInUserId, userDepartmetList, userDetails } from '../../../helper';
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -415,15 +415,6 @@ class BOPImportListing extends Component {
     }
 
 
-    getFilterBOPData = () => {
-        if (this.props.isSimulation) {
-            return getFilteredData(this.props.bopImportList, BOP_MASTER_ID)
-        } else {
-            return this.props.bopImportList
-        }
-    }
-
-
     /**
     * @method render
     * @description Renders the component
@@ -615,7 +606,7 @@ class BOPImportListing extends Component {
 
                                     domLayout='autoHeight'
                                     // columnDefs={c}
-                                    rowData={this.getFilterBOPData()}
+                                    rowData={this.props.bopImportList}
                                     pagination={true}
                                     paginationPageSize={this.state.globalTake}
                                     onGridReady={this.onGridReady}

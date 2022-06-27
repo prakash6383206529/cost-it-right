@@ -157,16 +157,6 @@ function RMImportListing(props) {
   }, [])
 
 
-  const getFilterRMData = () => {
-    if (isSimulation) {
-      return getFilteredData(rmImportDataList, RM_MASTER_ID)
-    } else {
-
-      return rmImportDataList
-    }
-  }
-
-
   /**
   * @method hideForm
   * @description HIDE DOMESTIC, IMPORT FORMS
@@ -541,7 +531,7 @@ function RMImportListing(props) {
         tempArr.push(item.data)
       }))
     } else {
-      tempArr = getFilterRMData()
+      tempArr = rmImportDataList
     }
     return returnExcelColumn(RMIMPORT_DOWNLOAD_EXCEl, tempArr)
   };
@@ -728,7 +718,7 @@ function RMImportListing(props) {
           </Row>
           <Row>
             <Col>
-              <div className={`ag-grid-wrapper ${getFilterRMData() && getFilterRMData()?.length <= 0 ? "overlay-contain" : ""}`}>
+              <div className={`ag-grid-wrapper ${rmImportDataList && rmImportDataList?.length <= 0 ? "overlay-contain" : ""}`}>
                 <div className={`ag-theme-material ${loader && "max-loader-height"}`}>
                   <AgGridReact
                     style={{ height: '100%', width: '100%' }}
@@ -736,7 +726,7 @@ function RMImportListing(props) {
                     floatingFilter={true}
 
                     domLayout='autoHeight'
-                    rowData={getFilterRMData()}
+                    rowData={rmImportDataList}
                     pagination={true}
                     paginationPageSize={globalTake}
                     onGridReady={onGridReady}
