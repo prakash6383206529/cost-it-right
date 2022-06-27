@@ -282,7 +282,7 @@ export function getApprovalList(filterData, skip, take, isPagination, obj, callb
     const request = axios.get(`${API.getApprovalList}?${queryParameter}&${queryParamsSecond}`, config())
     request
       .then((response) => {
-        if (response) {
+        if (response.data.Result || response.status === 204) {
           if (filterData.isDashboard) {
             dispatch({
               type: GET_APPROVAL_LIST,
