@@ -61,6 +61,7 @@ function RMImportListing(props) {
   const [disableFilter, setDisableFilter] = useState(true) // STATE MADE FOR CHECKBOX IN SIMULATION
   //STATES BELOW ARE MADE FOR PAGINATION PURPOSE
   const [warningMessage, setWarningMessage] = useState(false)
+  const [globalTake, setGlobalTake] = useState(defaultPageSize)
   const [filterModel, setFilterModel] = useState({});
   const [pageNo, setPageNo] = useState(1)
   const [totalRecordCount, setTotalRecordCount] = useState(0)
@@ -149,7 +150,7 @@ function RMImportListing(props) {
       if (isSimulation) {
         props?.changeTokenCheckBox(false)
       }
-      getDataList(null, null, null, null, null, 0, 0, 100, true, floatingFilterData)
+      getDataList(null, null, null, null, null, 0, 0, 10, true, floatingFilterData)
     }
 
     setvalue({ min: 0, max: 0 });
@@ -272,7 +273,7 @@ function RMImportListing(props) {
     if (currentRowIndex >= 10) {
       setPageNo(pageNo - 1)
       const previousNo = currentRowIndex - 10;
-      getDataList(null, null, null, null, null, 0, previousNo, 100, true, floatingFilterData)
+      getDataList(null, null, null, null, null, 0, previousNo, globalTake, true, floatingFilterData)
       setCurrentRowIndex(previousNo)
     }
   }
@@ -281,7 +282,7 @@ function RMImportListing(props) {
     if (currentRowIndex < (totalRecordCount - 10)) {
       setPageNo(pageNo + 1)
       const nextNo = currentRowIndex + 10;
-      getDataList(null, null, null, null, null, 0, nextNo, 100, true, floatingFilterData)
+      getDataList(null, null, null, null, null, 0, nextNo, globalTake, true, floatingFilterData)
       setCurrentRowIndex(nextNo)
     }
   };
@@ -490,17 +491,24 @@ function RMImportListing(props) {
   };
 
   const onPageSizeChanged = (newPageSize) => {
-    gridApi.paginationSetPageSize(Number(newPageSize));
 
     if (Number(newPageSize) === 10) {
+      getDataList(null, null, null, null, null, 0, 0, 10, true, floatingFilterData)
       setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
+      setGlobalTake(10)
     }
     else if (Number(newPageSize) === 50) {
+      getDataList(null, null, null, null, null, 0, 0, 50, true, floatingFilterData)
       setPageSize(prevState => ({ ...prevState, pageSize50: true, pageSize10: false, pageSize100: false }))
+      setGlobalTake(50)
     }
     else if (Number(newPageSize) === 100) {
+      getDataList(null, null, null, null, null, 0, 0, 100, true, floatingFilterData)
       setPageSize(prevState => ({ ...prevState, pageSize100: true, pageSize10: false, pageSize50: false }))
+      setGlobalTake(100)
     }
+
+    gridApi.paginationSetPageSize(Number(newPageSize));
 
   };
 
@@ -557,8 +565,10 @@ function RMImportListing(props) {
     setWarningMessage(false)
     setPageNo(1)
     setCurrentRowIndex(0)
-    getDataList(null, null, null, null, null, 0, 0, 100, true, floatingFilterData)
+    getDataList(null, null, null, null, null, 0, 0, 10, true, floatingFilterData)
     dispatch(setSelectedCostingListSimualtion([]))
+    setGlobalTake(10)
+    setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
   }
 
 
@@ -728,7 +738,7 @@ function RMImportListing(props) {
                     domLayout='autoHeight'
                     rowData={getFilterRMData()}
                     pagination={true}
-                    paginationPageSize={defaultPageSize}
+                    paginationPageSize={globalTake}
                     onGridReady={onGridReady}
                     gridOptions={gridOptions}
                     noRowsOverlayComponent={'customNoRowsOverlay'}
@@ -784,7 +794,7 @@ function RMImportListing(props) {
                     <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>
                   </AgGridReact>
                   <div className='button-wrapper'>
-                    {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
+                    {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake} />}
 
                     <div className="d-flex pagination-button-container">
                       <p><button className="previous-btn" type="button" disabled={false} onClick={() => onBtPrevious()}> </button></p>
