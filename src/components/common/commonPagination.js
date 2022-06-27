@@ -30,20 +30,20 @@ export const onFloatingFilterChanged = (value, gridOptions, thisReference) => {
 }
 
 
-export const onSearch = (gridOptions, thisReference, master) => {
+export const onSearch = (gridOptions, thisReference, master, globalTake) => {
 
     thisReference.setState({ warningMessage: false, isFilterButtonClicked: true, pageNo: 1, currentRowIndex: 0 })
     gridOptions?.columnApi?.resetColumnState();
 
     switch (master) {
         case "BOP":
-            thisReference.getDataList("", 0, "", "", 0, 100, true, thisReference.state.floatingFilterData)
+            thisReference.getDataList("", 0, "", "", 0, globalTake, true, thisReference.state.floatingFilterData)
             break;
         case "Machine":
-            thisReference.getDataList("", 0, "", 0, "", "", 0, 100, true, thisReference.state.floatingFilterData)
+            thisReference.getDataList("", 0, "", 0, "", "", 0, globalTake, true, thisReference.state.floatingFilterData)
             break;
         case "Operation":
-            thisReference.getTableListData(null, null, null, null, 0, 100, true, thisReference.state.floatingFilterData)
+            thisReference.getTableListData(null, null, null, null, 0, globalTake, true, thisReference.state.floatingFilterData)
             break;
         default:
 
