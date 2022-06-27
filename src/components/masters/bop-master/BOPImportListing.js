@@ -67,6 +67,7 @@ class BOPImportListing extends Component {
             isFilterButtonClicked: false,
             currentRowIndex: 0,
             pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
+            globalTake: 10
         }
     }
 
@@ -94,11 +95,11 @@ class BOPImportListing extends Component {
 
                 })
             } else {
-                this.getDataList("", 0, "", "", 0, 100, true, this.state.floatingFilterData)
+                this.getDataList("", 0, "", "", 0, 10, true, this.state.floatingFilterData)
             }
         }
         else {
-            this.getDataList("", 0, "", "", 0, 100, true, this.state.floatingFilterData)
+            this.getDataList("", 0, "", "", 0, 10, true, this.state.floatingFilterData)
         }
         let obj = {
             MasterId: BOP_MASTER_ID,
@@ -198,7 +199,7 @@ class BOPImportListing extends Component {
     };
 
     onPageSizeChanged = (newPageSize) => {
-        onPageSizeChanged(this, newPageSize)    // COMMON PAGINATION FUNCTION
+        onPageSizeChanged(this, newPageSize, "BOP", this.state.currentRowIndex)    // COMMON PAGINATION FUNCTION
     };
 
     /**
@@ -614,7 +615,7 @@ class BOPImportListing extends Component {
                                     // columnDefs={c}
                                     rowData={this.getFilterBOPData()}
                                     pagination={true}
-                                    paginationPageSize={10}
+                                    paginationPageSize={this.state.globalTake}
                                     onGridReady={this.onGridReady}
                                     gridOptions={gridOptions}
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
@@ -646,7 +647,7 @@ class BOPImportListing extends Component {
                                     {!this.props.isSimulation && <AgGridColumn field="BoughtOutPartId" width={160} headerName="Action" cellClass={"actions-wrapper"} type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                 </AgGridReact>
                                 <div className='button-wrapper'>
-                                    {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
+                                    {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} globalTake={this.state.globalTake} />}
                                     <div className="d-flex pagination-button-container">
                                         <p><button className="previous-btn" type="button" disabled={false} onClick={() => this.onBtPrevious()}> </button></p>
                                         {this.state.pageSize.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 10)}</p>}

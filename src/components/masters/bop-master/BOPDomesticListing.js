@@ -66,6 +66,7 @@ class BOPDomesticListing extends Component {
             isFilterButtonClicked: false,
             currentRowIndex: 0,
             pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
+            globalTake: defaultPageSize
         }
     }
 
@@ -78,7 +79,7 @@ class BOPDomesticListing extends Component {
         this.props.getBOPCategorySelectList(() => { })
         this.props.getPlantSelectList(() => { })
         this.props.getVendorWithVendorCodeSelectList(() => { })
-        this.getDataList("", 0, "", "", 0, 100, true, this.state.floatingFilterData)
+        this.getDataList("", 0, "", "", 0, 10, true, this.state.floatingFilterData)
         let obj = {
             MasterId: BOP_MASTER_ID,
             DepartmentId: userDetails().DepartmentId,
@@ -191,7 +192,7 @@ class BOPDomesticListing extends Component {
 
     onPageSizeChanged = (newPageSize) => {
 
-        onPageSizeChanged(this, newPageSize)  // COMMON PAGINATION FUNCTION
+        onPageSizeChanged(this, newPageSize, "BOP", this.state.currentRowIndex)  // COMMON PAGINATION FUNCTION
     };
 
     componentDidUpdate(prevProps, prevState) {
@@ -625,7 +626,7 @@ class BOPDomesticListing extends Component {
                                     domLayout='autoHeight'
                                     rowData={this.getFilterBOPData()}
                                     pagination={true}
-                                    paginationPageSize={defaultPageSize}
+                                    paginationPageSize={this.state.globalTake}
                                     onGridReady={this.onGridReady}
                                     gridOptions={gridOptions}
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
@@ -654,7 +655,7 @@ class BOPDomesticListing extends Component {
                                     {!this.props?.isSimulation && !this.props?.isMasterSummaryDrawer && <AgGridColumn field="BoughtOutPartId" width={160} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                 </AgGridReact>
                                 <div className='button-wrapper'>
-                                    {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
+                                    {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} globalTake={this.state.globalTake} />}
                                     {(this.props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) &&
                                         <div className="d-flex pagination-button-container">
                                             <p><button className="previous-btn" type="button" disabled={false} onClick={() => this.onBtPrevious()}> </button></p>
