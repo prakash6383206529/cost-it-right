@@ -150,7 +150,7 @@ function RMImportListing(props) {
       if (isSimulation) {
         props?.changeTokenCheckBox(false)
       }
-      getDataList(null, null, null, null, null, 0, 0, 10, true, floatingFilterData)
+      getDataList(null, null, null, null, null, 0, 0, defaultPageSize, true, floatingFilterData)
     }
 
     setvalue({ min: 0, max: 0 });
@@ -265,7 +265,7 @@ function RMImportListing(props) {
     setPageNo(1)
     setCurrentRowIndex(0)
     gridOptions?.columnApi?.resetColumnState();
-    getDataList(null, null, null, null, null, 0, 0, 100, true, floatingFilterData)
+    getDataList(null, null, null, null, null, 0, 0, globalTake, true, floatingFilterData)
   }
 
 
