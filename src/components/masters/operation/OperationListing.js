@@ -5,7 +5,7 @@ import { Row, Col, } from 'reactstrap';
 import { focusOnError } from "../../layout/FormInputs";
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { EMPTY_DATA, OPERATIONS, SURFACETREATMENT } from '../../../config/constants';
+import { EMPTY_DATA, OPERATIONS, SURFACETREATMENT, defaultPageSize } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import {
     getOperationsDataList, deleteOperationAPI, getOperationSelectList, getVendorWithVendorCodeSelectList, getTechnologySelectList,
@@ -76,7 +76,7 @@ class OperationListing extends Component {
             isFilterButtonClicked: false,
             currentRowIndex: 0,
             pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
-            globalTake: 10
+            globalTake: defaultPageSize
         }
     }
 
@@ -92,7 +92,7 @@ class OperationListing extends Component {
                 this.setState({ tableData: res.data.DataList })
             })
         } else {
-            this.getTableListData(null, null, null, null, 0, 10, true, this.state.floatingFilterData)
+            this.getTableListData(null, null, null, null, 0, defaultPageSize, true, this.state.floatingFilterData)
         }
         let obj = {
             MasterId: OPERATIONS_ID,
@@ -249,7 +249,7 @@ class OperationListing extends Component {
     }
 
     onSearch = () => {
-        onSearch(gridOptions, this, "Operation")  // COMMON PAGINATION FUNCTION
+        onSearch(gridOptions, this, "Operation", this.state.globalTake)  // COMMON PAGINATION FUNCTION
     }
 
     resetState = () => {

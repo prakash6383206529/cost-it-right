@@ -82,7 +82,7 @@ function ApprovalListing(props) {
     reValidateMode: 'onChange',
   })
   useEffect(() => {
-    getTableData("", "", "", "", 0, 10, true, floatingFilterData)
+    getTableData("", "", "", "", 0, defaultPageSize, true, floatingFilterData)
   }, [])
 
 
@@ -201,10 +201,8 @@ function ApprovalListing(props) {
     setPageNo(1)
     setCurrentRowIndex(0)
     gridOptions?.columnApi?.resetColumnState();
-    getTableData("", "", "", "", 0, 10, true, floatingFilterData)
+    getTableData("", "", "", "", 0, globalTake, true, floatingFilterData)
   }
-
-
 
   const resetState = () => {
     setIsFilterButtonClicked(false)

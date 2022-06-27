@@ -79,7 +79,7 @@ class BOPDomesticListing extends Component {
         this.props.getBOPCategorySelectList(() => { })
         this.props.getPlantSelectList(() => { })
         this.props.getVendorWithVendorCodeSelectList(() => { })
-        this.getDataList("", 0, "", "", 0, 10, true, this.state.floatingFilterData)
+        this.getDataList("", 0, "", "", 0, defaultPageSize, true, this.state.floatingFilterData)
         let obj = {
             MasterId: BOP_MASTER_ID,
             DepartmentId: userDetails().DepartmentId,
@@ -173,7 +173,7 @@ class BOPDomesticListing extends Component {
     }
 
     onSearch = () => {
-        onSearch(gridOptions, this, "BOP")  // COMMON PAGINATION FUNCTION
+        onSearch(gridOptions, this, "BOP", this.state.globalTake)  // COMMON PAGINATION FUNCTION
     }
 
     resetState = () => {

@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { checkForDecimalAndNull } from "../../../helper/validation";
-import { BOPIMPORT, EMPTY_DATA } from '../../../config/constants';
+import { BOPIMPORT, EMPTY_DATA, defaultPageSize } from '../../../config/constants';
 import { getBOPImportDataList, deleteBOP, getBOPCategorySelectList, getAllVendorSelectList, } from '../actions/BoughtOutParts';
 import { getPlantSelectList, } from '../../../actions/Common';
 import NoContentFound from '../../common/NoContentFound';
@@ -67,7 +67,7 @@ class BOPImportListing extends Component {
             isFilterButtonClicked: false,
             currentRowIndex: 0,
             pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
-            globalTake: 10
+            globalTake: defaultPageSize
         }
     }
 
@@ -95,11 +95,11 @@ class BOPImportListing extends Component {
 
                 })
             } else {
-                this.getDataList("", 0, "", "", 0, 10, true, this.state.floatingFilterData)
+                this.getDataList("", 0, "", "", 0, defaultPageSize, true, this.state.floatingFilterData)
             }
         }
         else {
-            this.getDataList("", 0, "", "", 0, 10, true, this.state.floatingFilterData)
+            this.getDataList("", 0, "", "", 0, defaultPageSize, true, this.state.floatingFilterData)
         }
         let obj = {
             MasterId: BOP_MASTER_ID,
@@ -182,7 +182,7 @@ class BOPImportListing extends Component {
     }
 
     onSearch = () => {
-        onSearch(gridOptions, this, "BOP")  // COMMON PAGINATION FUNCTION
+        onSearch(gridOptions, this, "BOP", this.state.globalTake)  // COMMON PAGINATION FUNCTION
     }
 
     resetState = () => {
