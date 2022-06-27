@@ -65,7 +65,7 @@ function ApprovalListing(props) {
 
   //STATES BELOW ARE MADE FOR PAGINATION PURPOSE
   const [warningMessage, setWarningMessage] = useState(false)
-  const [globalTake, setGlobalTake] = useState(10)
+  const [globalTake, setGlobalTake] = useState(defaultPageSize)
   const [filterModel, setFilterModel] = useState({});
   const [pageNo, setPageNo] = useState(1)
   const [totalRecordCount, setTotalRecordCount] = useState(1)
@@ -583,7 +583,7 @@ function ApprovalListing(props) {
     setApproveDrawer(false)
     gridApi.deselectAll()
     if (type !== "cancel") {
-      getTableData()
+      getTableData("", "", "", "", 0, 10, true, floatingFilterData)
     }
   }
 
@@ -591,7 +591,7 @@ function ApprovalListing(props) {
     setOpenDraftDrawer(false)
     gridApi.deselectAll()
     if (type !== "Cancel") {
-      getTableData()
+      getTableData("", "", "", "", 0, 10, true, floatingFilterData)
     }
   }
 
@@ -620,17 +620,17 @@ function ApprovalListing(props) {
 
   const onPageSizeChanged = (newPageSize) => {
     if (Number(newPageSize) === 10) {
-      getTableData("", "", "", "", 0, 10, true, floatingFilterData)
+      getTableData("", "", "", "", currentRowIndex, 10, true, floatingFilterData)
       setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
       setGlobalTake(10)
     }
     else if (Number(newPageSize) === 50) {
-      getTableData("", "", "", "", 0, 50, true, floatingFilterData)
+      getTableData("", "", "", "", currentRowIndex, 50, true, floatingFilterData)
       setPageSize(prevState => ({ ...prevState, pageSize50: true, pageSize10: false, pageSize100: false }))
       setGlobalTake(50)
     }
     else if (Number(newPageSize) === 100) {
-      getTableData("", "", "", "", 0, 100, true, floatingFilterData)
+      getTableData("", "", "", "", currentRowIndex, 100, true, floatingFilterData)
       setPageSize(prevState => ({ ...prevState, pageSize100: true, pageSize10: false, pageSize50: false }))
       setGlobalTake(100)
     }

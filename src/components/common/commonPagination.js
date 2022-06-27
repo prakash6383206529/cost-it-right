@@ -1,4 +1,5 @@
 import React from 'react';
+import { defaultPageSize } from '../../config/constants'
 export const onFloatingFilterChanged = (value, gridOptions, thisReference) => {
 
     const model = gridOptions?.api?.getFilterModel();
@@ -67,13 +68,13 @@ export const resetState = (gridOptions, thisReference, master) => {
 
     switch (master) {
         case "BOP":
-            thisReference.getDataList("", 0, "", "", 0, 10, true, thisReference.state.floatingFilterData)
+            thisReference.getDataList("", 0, "", "", 0, defaultPageSize, true, thisReference.state.floatingFilterData)
             break;
         case "Machine":
-            thisReference.getDataList("", 0, "", 0, "", "", 0, 10, true, thisReference.state.floatingFilterData)
+            thisReference.getDataList("", 0, "", 0, "", "", 0, defaultPageSize, true, thisReference.state.floatingFilterData)
             break;
         case "Operation":
-            thisReference.getTableListData(null, null, null, null, 0, 10, true, thisReference.state.floatingFilterData)
+            thisReference.getTableListData(null, null, null, null, 0, defaultPageSize, true, thisReference.state.floatingFilterData)
             break;
 
         default:
