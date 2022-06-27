@@ -1018,11 +1018,6 @@ class UserRegistration extends Component {
       });
 
 
-    if (TechnologyLevelGrid && TechnologyLevelGrid.length === 0) {
-      Toaster.warning('Users technology level should not be empty.')
-      return false;
-    }
-
     let tempTechnologyLevelArray = []
 
     TechnologyLevelGrid && TechnologyLevelGrid.map((item, index) => {

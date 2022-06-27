@@ -56,6 +56,7 @@ class BOPImportListing extends Component {
             showPopup: false,
             deletedId: '',
             isFinalApprovar: false,
+            disableFilter: true,
 
             //states for pagination purpose
             floatingFilterData: { IsVendor: "", BoughtOutPartNumber: "", BoughtOutPartName: "", BoughtOutPartCategory: "", UOM: "", Specification: "", Plants: "", Vendor: "", BasicRate: "", NetLandedCost: "", EffectiveDateNew: "", Currency: "", DepartmentCode: this.props.isSimulation ? userDepartmetList() : "" },
@@ -92,8 +93,7 @@ class BOPImportListing extends Component {
                     this.props?.changeSetLoader(false)
 
                 })
-            }
-            if (this.props.selectionForListingMasterAPI === 'Master') {
+            } else {
                 this.getDataList("", 0, "", "", 0, 100, true, this.state.floatingFilterData)
             }
         }
@@ -131,6 +131,7 @@ class BOPImportListing extends Component {
             category_id: CategoryId,
             vendor_id: vendorId,
             plant_id: plantId,
+            ListFor: this.props.ListFor,
         }
         this.setState({ isLoader: true })
 
@@ -175,6 +176,7 @@ class BOPImportListing extends Component {
 
 
     onFloatingFilterChanged = (value) => {
+        this.setState({ disableFilter: false })
         onFloatingFilterChanged(value, gridOptions, this)   // COMMON FUNCTION
     }
 
@@ -491,19 +493,35 @@ class BOPImportListing extends Component {
         };
 
 
-        const onRowSelect = () => {
+        const onRowSelect = (event) => {
 
             var selectedRows = this.state.gridApi.getSelectedRows();
-            if (selectedRows === undefined || selectedRows === null) {
+            if (selectedRows === undefined || selectedRows === null) {   //CONDITION FOR FIRST RENDERING OF COMPONENT
                 selectedRows = this.props.selectedCostingListSimulation
+            } else if (this.props.selectedCostingListSimulation && this.props.selectedCostingListSimulation.length > 0) {    // CHECKING IF REDUCER HAS DATA
+
+                let finalData = []
+                if (event.node.isSelected() === false) {    // CHECKING IF CURRENT CHECKBOX IS UNSELECTED
+
+                    for (let i = 0; i < this.props.selectedCostingListSimulation.length; i++) {
+                        if (this.props.selectedCostingListSimulation[i].BoughtOutPartId === event.data.BoughtOutPartId) {    // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
+                            continue;
+                        }
+                        finalData.push(this.props.selectedCostingListSimulation[i])
+                    }
+
+                } else {
+                    finalData = this.props.selectedCostingListSimulation
+                }
+                selectedRows = [...selectedRows, ...finalData]
             }
 
             if (this.props.isSimulation) {
-                let uniqeArray = _.uniq(selectedRows)
-                this.props.setSelectedCostingListSimualtion(uniqeArray)
+                let uniqeArray = _.uniqBy(selectedRows, "BoughtOutPartId")              //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
+                this.props.setSelectedCostingListSimualtion(uniqeArray)                        //SETTING CHECKBOX STATE DATA IN REDUCER
                 let finalArr = selectedRows
                 let length = finalArr?.length
-                let uniqueArray = _.uniq(finalArr)
+                let uniqueArray = _.uniqBy(finalArr, "BoughtOutPartId")
                 this.props.apply(uniqueArray, length)
             }
             this.setState({ selectedRowData: selectedRows })
@@ -535,7 +553,7 @@ class BOPImportListing extends Component {
                                 }
 
                                 {
-                                    <button disabled={!this.state.warningMessage} title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch()}><div class="filter mr-0"></div></button>
+                                    <button disabled={this.state.disableFilter} title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch()}><div class="filter mr-0"></div></button>
 
                                 }
 

@@ -7,7 +7,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { getListingForSimulationCombined, getMasterSelectListSimulation, setMasterForSimulation, setTechnologyForSimulation, setVendorForSimulation, getTokenSelectListAPI, setTokenCheckBoxValue, setTokenForSimulation, setSelectedCostingListSimualtion } from '../actions/Simulation';
 import { useDispatch, useSelector } from 'react-redux';
 import SimulationUploadDrawer from './SimulationUploadDrawer';
-import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, COMBINED_PROCESS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, RM_MASTER_ID } from '../../../config/constants';
+import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, RM_MASTER_ID, COMBINED_PROCESS, EMPTY_GUID } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
 import { CombinedProcessSimulation, getTechnologyForSimulation, OperationSimulation, RMDomesticSimulation, RMImportSimulation, SurfaceTreatmentSimulation, MachineRateSimulation, BOPDomesticSimulation, BOPImportSimulation, OverheadProfitSimulation } from '../../../config/masterData';
 import Toaster from '../../common/Toaster';
@@ -126,7 +126,8 @@ function Simulation(props) {
             let obj = {
                 technologyId: value.value,
                 loggedInUserId: loggedInUserId(),
-                simulationTechnologyId: (String(master.value) === BOPDOMESTIC || String(master.value) === BOPIMPORT || String(master.value) === EXCHNAGERATE || master.value === undefined) ? 0 : master.value
+                simulationTechnologyId: (String(master.value) === BOPDOMESTIC || String(master.value) === BOPIMPORT || String(master.value) === EXCHNAGERATE || master.value === undefined) ? 0 : master.value,
+                vendorId: Object.keys(vendor).length === 0 ? EMPTY_GUID : vendor.value
             }
             dispatch(getTokenSelectListAPI(obj, () => { }))
         }
@@ -152,7 +153,8 @@ function Simulation(props) {
                 let obj = {
                     technologyId: value.value,
                     loggedInUserId: loggedInUserId(),
-                    simulationTechnologyId: master.value
+                    simulationTechnologyId: master.value,
+                    vendorId: Object.keys(vendor).length === 0 ? EMPTY_GUID : vendor.value
                 }
                 dispatch(getTokenSelectListAPI(obj, () => { }))
                 if (value !== '' && Object.keys(master).length > 0) {
@@ -173,9 +175,10 @@ function Simulation(props) {
         setTimeout(() => {
             if (value !== '' && Object.keys(master).length > 0 && technology.label !== '') {
                 let obj = {
-                    technologyId: value.value,
+                    technologyId: technology.value,
                     loggedInUserId: loggedInUserId(),
-                    simulationTechnologyId: master.value
+                    simulationTechnologyId: master.value,
+                    vendorId: Object.keys(vendor).length === 0 ? EMPTY_GUID : value.value
                 }
                 dispatch(getTokenSelectListAPI(obj, () => { }))
                 if (value !== '' && Object.keys(master).length > 0) {
@@ -293,21 +296,21 @@ function Simulation(props) {
 
         switch (value.value) {
             case RMDOMESTIC:
-                return (<RMDomesticListing isSimulation={true} technology={technology.value} isMasterSummaryDrawer={masterSummaryDrawerState ? props.isMasterSummaryDrawer : false} apply={editTable} objectForMultipleSimulation={obj} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} />)
+                return (<RMDomesticListing isSimulation={true} technology={technology.value} isMasterSummaryDrawer={masterSummaryDrawerState ? props.isMasterSummaryDrawer : false} apply={editTable} objectForMultipleSimulation={obj} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} ListFor='simulation' />)
             case RMIMPORT:
-                return (<RMImportListing isSimulation={true} technology={technology.value} isMasterSummaryDrawer={masterSummaryDrawerState ? props.isMasterSummaryDrawer : false} apply={editTable} objectForMultipleSimulation={obj} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} />)
+                return (<RMImportListing isSimulation={true} technology={technology.value} isMasterSummaryDrawer={masterSummaryDrawerState ? props.isMasterSummaryDrawer : false} apply={editTable} objectForMultipleSimulation={obj} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} ListFor='simulation' />)
             case MACHINERATE:
-                return (<MachineRateListing isSimulation={true} isMasterSummaryDrawer={false} technology={technology.value} objectForMultipleSimulation={obj} apply={editTable} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} />)
+                return (<MachineRateListing isSimulation={true} isMasterSummaryDrawer={false} technology={technology.value} objectForMultipleSimulation={obj} apply={editTable} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} ListFor='simulation' />)
             case BOPDOMESTIC:
-                return (<BOPDomesticListing isSimulation={true} isMasterSummaryDrawer={masterSummaryDrawerState ? props.isMasterSummaryDrawer : false} technology={technology.value} objectForMultipleSimulation={obj} apply={editTable} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} />)
+                return (<BOPDomesticListing isSimulation={true} isMasterSummaryDrawer={masterSummaryDrawerState ? props.isMasterSummaryDrawer : false} technology={technology.value} objectForMultipleSimulation={obj} apply={editTable} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} ListFor='simulation' />)
             case BOPIMPORT:
-                return (<BOPImportListing isSimulation={true} isMasterSummaryDrawer={masterSummaryDrawerState ? props.isMasterSummaryDrawer : false} technology={technology.value} objectForMultipleSimulation={obj} apply={editTable} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} />)
+                return (<BOPImportListing isSimulation={true} isMasterSummaryDrawer={masterSummaryDrawerState ? props.isMasterSummaryDrawer : false} technology={technology.value} objectForMultipleSimulation={obj} apply={editTable} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} ListFor='simulation' />)
             case EXCHNAGERATE:
                 return (<ExchangeRateListing isSimulation={true} technology={technology.value} apply={editTable} tokenArray={tokenForSimulation} objectForMultipleSimulation={obj} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} />)
             case OPERATIONS:
-                return (<OperationListing isSimulation={true} isMasterSummaryDrawer={masterSummaryDrawerState ? props.isMasterSummaryDrawer : false} technology={technology.value} objectForMultipleSimulation={obj} apply={editTable} isOperationST={OPERATIONS} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} />)
+                return (<OperationListing isSimulation={true} isMasterSummaryDrawer={masterSummaryDrawerState ? props.isMasterSummaryDrawer : false} technology={technology.value} objectForMultipleSimulation={obj} apply={editTable} isOperationST={OPERATIONS} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} ListFor='simulation' />)
             case SURFACETREATMENT:
-                return (<OperationListing isSimulation={true} isMasterSummaryDrawer={masterSummaryDrawerState ? props.isMasterSummaryDrawer : false} technology={technology.value} objectForMultipleSimulation={obj} apply={editTable} isOperationST={SURFACETREATMENT} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} />)
+                return (<OperationListing isSimulation={true} isMasterSummaryDrawer={masterSummaryDrawerState ? props.isMasterSummaryDrawer : false} technology={technology.value} objectForMultipleSimulation={obj} apply={editTable} isOperationST={SURFACETREATMENT} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} ListFor='simulation' />)
             // case BOPIMPORT:
             //     return (<OverheadListing isSimulation={true} technology={technology.value} apply={editTable} />)
             // case BOPIMPORT:

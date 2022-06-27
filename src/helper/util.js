@@ -1,4 +1,5 @@
 import { toast } from 'react-toastify';
+import React from 'react';
 import 'react-toastify/dist/ReactToastify.css';
 import DayTime from '../components/common/DayTimeWrapper';
 import { reactLocalStorage } from 'reactjs-localstorage'
@@ -576,7 +577,6 @@ export function formViewData(costingSummary, header = '') {
   obj.nConvCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetConversionCost ? dataFromAPI.CostingPartDetails.NetConversionCost : 0
   obj.nTotalRMBOPCC = dataFromAPI.CostingPartDetails && dataFromAPI.NetTotalRMBOPCC ? dataFromAPI.NetTotalRMBOPCC : 0
   obj.netSurfaceTreatmentCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetSurfaceTreatmentCost ? dataFromAPI.CostingPartDetails.NetSurfaceTreatmentCost : 0
-  obj.EtechnologyType = dataFromAPI.ETechnology && dataFromAPI.ETechnology ? dataFromAPI.ETechnology : 0
   obj.RawMaterialCalculatorId = dataFromAPI.RawMaterialCalculatorId && dataFromAPI.RawMaterialCalculatorId ? dataFromAPI.RawMaterialCalculatorId : 0
   obj.modelType = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.ModelType ? dataFromAPI.CostingPartDetails.ModelType : '-'
   obj.aValue = { applicability: 'Applicability', value: 'Value', }
@@ -711,6 +711,8 @@ export function formViewData(costingSummary, header = '') {
   //MASTER BATCH OBJECT
   obj.CostingMasterBatchRawMaterialCostResponse = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingMasterBatchRawMaterialCostResponse ? dataFromAPI.CostingPartDetails.CostingMasterBatchRawMaterialCostResponse : []
   obj.RevisionNumber = dataFromAPI.RevisionNumber ? dataFromAPI.RevisionNumber : '-'
+  obj.AssemblyCostingId = dataFromAPI.AssemblyCostingId && dataFromAPI.AssemblyCostingId !== null ? dataFromAPI.AssemblyCostingId : '';
+  obj.SubAssemblyCostingId = dataFromAPI.SubAssemblyCostingId && dataFromAPI.SubAssemblyCostingId !== null ? dataFromAPI.SubAssemblyCostingId : '';
 
   // temp = [...temp, obj]
   temp.push(obj)
@@ -904,7 +906,7 @@ export function isUploadSimulation(master) {
 
 export const allEqual = arr => arr.every(val => val === arr[0]);
 
-//**START** FOR SHOWING CURRENCY SYMBOL 
+// FOR SHOWING CURRENCY SYMBOL 
 export const getCurrencySymbol = (value) => {
   switch (value) {
     case "USD":
@@ -927,4 +929,24 @@ export const getCurrencySymbol = (value) => {
       break;
   }
 }
-//**END** FOR SHOWING CURRENCY SYMBOL
+//FOR SHOWING SUPER VALUE FOR UOM
+export const displayUOM = (value) => {
+  let temp = []
+  if (value && value.includes('^')) {
+    for (let i = 0; i < value.length; i++) {
+      temp.push(value.charAt(i))
+    }
+    temp.splice(temp.length - 2, 1);
+    const UOMValue = <div className='p-relative'>{temp.map(item => {
+      return <span className='unit-text'>{item}</span>
+    })}
+    </div>
+    return UOMValue
+  }
+  return value
+}
+export const labelWithUOMAndCurrency = (label, UOM, currency) => {
+  return <div>
+    <span className='d-flex'>{label} ({currency ? currency : getConfigurationKey().BaseCurrency}/{UOM ? displayUOM(UOM) : 'UOM'})</span>
+  </div>
+}
