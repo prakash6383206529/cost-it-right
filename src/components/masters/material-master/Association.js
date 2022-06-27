@@ -5,7 +5,7 @@ import { Container, Row, Col, } from 'reactstrap';
 import { searchableSelect } from '../../layout/FormInputs';
 import Drawer from '@material-ui/core/Drawer';
 import { required } from '../../../helper';
-import { getRowMaterialDataAPI, getRawMaterialNameChild, getMaterialTypeDataAPI, createAssociation, getRMGradeSelectListByRawMaterial, getMaterialTypeSelectList, getUnassociatedRawMaterail } from '../actions/Material';
+import { getRawMaterialNameChild, getMaterialTypeDataAPI, createAssociation, getRMGradeSelectListByRawMaterial, getMaterialTypeSelectList, getUnassociatedRawMaterail } from '../actions/Material';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
 import saveImg from '../../../assests/images/check.png'
@@ -278,7 +278,6 @@ function mapStateToProps({ material }) {
  */
 export default connect(mapStateToProps, {
     getMaterialTypeSelectList,
-    getRowMaterialDataAPI,
     getRawMaterialNameChild,
     getMaterialTypeDataAPI,
     getRMGradeSelectListByRawMaterial,

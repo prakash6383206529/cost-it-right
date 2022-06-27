@@ -76,6 +76,7 @@ class OperationListing extends Component {
             isFilterButtonClicked: false,
             currentRowIndex: 0,
             pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
+            globalTake: 10
         }
     }
 
@@ -91,7 +92,7 @@ class OperationListing extends Component {
                 this.setState({ tableData: res.data.DataList })
             })
         } else {
-            this.getTableListData(null, null, null, null, 0, 100, true, this.state.floatingFilterData)
+            this.getTableListData(null, null, null, null, 0, 10, true, this.state.floatingFilterData)
         }
         let obj = {
             MasterId: OPERATIONS_ID,
@@ -266,7 +267,7 @@ class OperationListing extends Component {
     };
 
     onPageSizeChanged = (newPageSize) => {
-        onPageSizeChanged(this, newPageSize)    // COMMON PAGINATION FUNCTION
+        onPageSizeChanged(this, newPageSize, "Operation", this.state.currentRowIndex)    // COMMON PAGINATION FUNCTION
     };
 
     /**
@@ -836,7 +837,7 @@ class OperationListing extends Component {
                                 rowData={this.getFilterOperationData()}
                                 pagination={true}
 
-                                paginationPageSize={10}
+                                paginationPageSize={this.state.globalTake}
                                 onGridReady={this.onGridReady}
                                 gridOptions={gridOptions}
                                 noRowsOverlayComponent={'customNoRowsOverlay'}
@@ -863,7 +864,7 @@ class OperationListing extends Component {
                                 {!isSimulation && !this.props?.isMasterSummaryDrawer && <AgGridColumn field="OperationId" cellClass={"actions-wrapper"} width={150} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                             </AgGridReact>
                             <div className='button-wrapper'>
-                                {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
+                                {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} globalTake={this.state.globalTake} />}
                                 {(this.props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) &&
                                     <div className="d-flex pagination-button-container">
                                         <p><button className="previous-btn" type="button" disabled={false} onClick={() => this.onBtPrevious()}> </button></p>

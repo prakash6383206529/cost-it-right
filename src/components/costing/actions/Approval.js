@@ -267,7 +267,7 @@ export function sendForApprovalBySender(data, callback) {
  * @description for getting list of approval
  */
 
-export function getApprovalList(filterData, callback) {
+export function getApprovalList(filterData, skip, take, isPagination, obj, callback) {
   return (dispatch) => {
     dispatch({
       type: GET_APPROVAL_LIST,
@@ -278,19 +278,20 @@ export function getApprovalList(filterData, callback) {
       payload: [],
     })
     const queryParameter = `isDashboard=${filterData.isDashboard}&logged_in_user_id=${filterData.loggedUser}&logged_in_user_level_id=${filterData.logged_in_user_level_id}&part_number=${filterData.partNo}&created_by=${filterData.createdBy}&requested_by=${filterData.requestedBy}&status=${filterData.status}&type_of_costing=''`
-    const request = axios.get(`${API.getApprovalList}?${queryParameter}`, config())
+    const queryParamsSecond = `ApprovalNumber=${obj.ApprovalNumber !== undefined ? obj.ApprovalNumber : ""}&CostingNumber=${obj.CostingNumber !== undefined ? obj.CostingNumber : ""}&PartNumber=${obj.PartNumber !== undefined ? obj.PartNumber : ""}&PartName=${obj.PartName !== undefined ? obj.PartName : ""}&Vendor=${obj.VendorName !== undefined ? obj.VendorName : ""}&Plant=${obj.PlantName !== undefined ? obj.PlantName : ""}&Technology=${obj.TechnologyName !== undefined ? obj.TechnologyName : ""}&NewPrice=${obj.NetPOPrice !== undefined ? obj.NetPOPrice : ""}&OldPrice=${obj.OldPOPrice !== undefined ? obj.OldPOPrice : ""}&Reason=${obj.Reason !== undefined ? obj.Reason : ""}&EffectiveDate=${obj.EffectiveDate !== undefined ? obj.EffectiveDate : ""}&InitiatedBy=${obj.CreatedBy !== undefined ? obj.CreatedBy : ""}&CreatedOn=${obj.CreatedOn !== undefined ? obj.CreatedOn : ""}&LastApprovedBy=${obj.RequestedBy !== undefined ? obj.RequestedBy : ""}&RequestedOn=${obj.RequestedOn !== undefined ? obj.RequestedOn : ""}&applyPagination=${isPagination}&skip=${skip}&take=${take}`
+    const request = axios.get(`${API.getApprovalList}?${queryParameter}&${queryParamsSecond}`, config())
     request
       .then((response) => {
-        if (response.data.Result) {
+        if (response.data.Result || response.status === 204) {
           if (filterData.isDashboard) {
             dispatch({
               type: GET_APPROVAL_LIST,
-              payload: response.data.DataList,
+              payload: response.status === 204 ? [] : response.data.DataList,
             })
           } else {
             dispatch({
               type: GET_APPROVAL_LIST_DRAFT,
-              payload: response.data.DataList,
+              payload: response.status === 204 ? [] : response.data.DataList,
             })
           }
           callback(response)
