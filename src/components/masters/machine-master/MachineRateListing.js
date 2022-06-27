@@ -84,7 +84,7 @@ class MachineRateListing extends Component {
             }
         }
         if (this.props.selectionForListingMasterAPI === 'Master') {
-            this.getDataList("", 0, "", 0, "", "", 0, 10, true, this.state.floatingFilterData)
+            this.getDataList("", 0, "", 0, "", "", 0, defaultPageSize, true, this.state.floatingFilterData)
         }
         let obj = {
             MasterId: MACHINE_MASTER_ID,
@@ -154,7 +154,7 @@ class MachineRateListing extends Component {
     }
 
     onSearch = () => {
-        onSearch(gridOptions, this, "Machine")  // COMMON PAGINATION FUNCTION
+        onSearch(gridOptions, this, "Machine", this.state.globalTake)  // COMMON PAGINATION FUNCTION
     }
 
     resetState = () => {
