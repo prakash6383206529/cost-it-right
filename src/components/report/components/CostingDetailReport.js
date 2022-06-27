@@ -508,7 +508,7 @@ function ReportListing(props) {
         setPageNo(1)
         setCurrentRowIndex(0)
         getTableData(0, defaultPageSize, true, floatingFilterData, false, true);
-        setGlobalTake(10)
+        setGlobalTake(defaultPageSize)
         setPageSize10(true)
         setPageSize50(false)
         setPageSize100(false)
