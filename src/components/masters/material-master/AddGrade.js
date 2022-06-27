@@ -4,7 +4,7 @@ import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
 import { required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces } from "../../../helper/validation";
 import { renderText, } from "../../layout/FormInputs";
-import { createRMGradeAPI, getRMGradeDataAPI, updateRMGradeAPI, getRowMaterialDataAPI, getMaterialTypeSelectList } from '../actions/Material';
+import { createRMGradeAPI, getRMGradeDataAPI, updateRMGradeAPI, getMaterialTypeSelectList } from '../actions/Material';
 import { getRawMaterialSelectList } from '../../../actions/Common';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
@@ -211,7 +211,6 @@ export default connect(mapStateToProps,
     getMaterialTypeSelectList,
     getRMGradeDataAPI,
     updateRMGradeAPI,
-    getRowMaterialDataAPI,
   })(reduxForm({
     form: 'AddGrade',
     enableReinitialize: true,

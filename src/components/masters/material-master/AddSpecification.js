@@ -6,7 +6,7 @@ import { required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhit
 import { renderText, searchableSelect } from "../../layout/FormInputs";
 import {
   createRMSpecificationAPI, updateRMSpecificationAPI, getRMSpecificationDataAPI,
-  getRowMaterialDataAPI, getRawMaterialNameChild, getMaterialTypeDataAPI, getRMGradeSelectListByRawMaterial,
+  getRawMaterialNameChild, getMaterialTypeDataAPI, getRMGradeSelectListByRawMaterial,
   getMaterialTypeSelectList, checkAndGetRawMaterialCode
 } from '../actions/Material';
 import { fetchRMGradeAPI } from '../../../actions/Common';
@@ -659,7 +659,6 @@ export default connect(mapStateToProps, {
   getMaterialTypeSelectList,
   updateRMSpecificationAPI,
   getRMSpecificationDataAPI,
-  getRowMaterialDataAPI,
   getRawMaterialNameChild,
   getMaterialTypeDataAPI,
   getRMGradeSelectListByRawMaterial,
