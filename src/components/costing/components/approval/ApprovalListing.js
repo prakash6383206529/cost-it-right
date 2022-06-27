@@ -26,6 +26,8 @@ import { getSingleCostingDetails, setCostingApprovalData, setCostingViewData } f
 import SendForApproval from './SendForApproval'
 import CostingDetailSimulationDrawer from '../../../simulation/components/CostingDetailSimulationDrawer'
 import { PaginationWrapper } from '../../../common/commonPagination'
+import { setSelectedCostingListSimualtion } from '../../../simulation/actions/Simulation';
+import _ from 'lodash';
 
 const gridOptions = {};
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
@@ -36,6 +38,7 @@ function ApprovalListing(props) {
   const [shown, setshown] = useState(false)
 
   const [tableData, setTableData] = useState([])
+  const [loader, setloader] = useState(false);
   const [approvalData, setApprovalData] = useState('')
   const [selectedRowData, setSelectedRowData] = useState([]);
   const [approveDrawer, setApproveDrawer] = useState(false)
@@ -49,6 +52,7 @@ function ApprovalListing(props) {
   const [isLoader, setIsLoader] = useState(true)
   const [isOpen, setIsOpen] = useState(false)
   const dispatch = useDispatch()
+  const { selectedCostingListSimulation } = useSelector((state => state.simulation))
 
   const partSelectList = useSelector((state) => state.costing.partSelectList)
   const statusSelectList = useSelector((state) => state.approval.costingStatusList)
@@ -57,15 +61,35 @@ function ApprovalListing(props) {
   const approvalListDraft = useSelector(state => state.approval.approvalListDraft)
   const userList = useSelector(state => state.auth.userList)
 
+  //STATES BELOW ARE MADE FOR PAGINATION PURPOSE
+  const [warningMessage, setWarningMessage] = useState(false)
+  const [globalTake, setGlobalTake] = useState(10)
+  const [filterModel, setFilterModel] = useState({});
+  const [pageNo, setPageNo] = useState(1)
+  const [totalRecordCount, setTotalRecordCount] = useState(1)
+  const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
+  const [currentRowIndex, setCurrentRowIndex] = useState(0)
+  const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
+  const [floatingFilterData, setFloatingFilterData] = useState({ ApprovalNumber: "", CostingNumber: "", PartNumber: "", PartName: "", VendorName: "", PlantName: "", TechnologyName: "", NetPOPrice: "", OldPOPrice: "", Reason: "", EffectiveDate: "", CreatedBy: "", CreatedOn: "", RequestedBy: "", RequestedOn: "" })
+
   const isApproval = props.isApproval;
+  let approvalGridData = isDashboard ? approvalList : approvalListDraft
 
   const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
     mode: 'onBlur',
     reValidateMode: 'onChange',
   })
   useEffect(() => {
-    getTableData()
+    getTableData("", "", "", "", 0, 10, true, floatingFilterData)
   }, [])
+
+
+  useEffect(() => {
+    if (approvalGridData?.length > 0) {
+      setTotalRecordCount(approvalGridData[0].TotalRecordCount)
+    }
+
+  }, [approvalGridData])
 
 
   /**
@@ -78,6 +102,8 @@ function ApprovalListing(props) {
     createdBy = '00000000-0000-0000-0000-000000000000',
     requestedBy = '00000000-0000-0000-0000-000000000000',
     status = '00000000-0000-0000-0000-000000000000',
+    skip = 0, take = 10, isPagination = true, dataObj
+
   ) => {
     let filterData = {
       loggedUser: loggedUser,
@@ -88,12 +114,14 @@ function ApprovalListing(props) {
       status: status,
       isDashboard: isDashboard ?? false
     }
+    setloader(true)
 
     dispatch(
-      getApprovalList(filterData, (res) => {
+      getApprovalList(filterData, skip, take, isPagination, dataObj, (res) => {
         setIsLoader(false)
         if (res.status === 204 && res.data === '') {
           setTableData([])
+          setloader(false)
         } else if (res && res.data && res.data.DataList) {
           let unSelectedData = res.data.DataList
           let temp = []
@@ -108,13 +136,116 @@ function ApprovalListing(props) {
           setSelectedIds(temp)
           let Data = res.data.DynamicData
           setShowFinalLevelButton(Data.IsFinalLevelButtonShow)
+          setloader(false)
           //  setTableData(Data)
+
+          if (res) {
+            let isReset = true
+            setTimeout(() => {
+              for (var prop in floatingFilterData) {
+                if (floatingFilterData[prop] !== "") {
+                  isReset = false
+                }
+              }
+              // Sets the filter model via the grid API
+              isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(filterModel))
+            }, 300);
+
+            setTimeout(() => {
+              setIsFilterButtonClicked(false)
+            }, 600);
+          }
         } else {
           setTableData([])
+          setloader(false)
         }
       }),
     )
   }
+
+  const onFloatingFilterChanged = (value) => {
+
+    const model = gridOptions?.api?.getFilterModel();
+    setFilterModel(model)
+    if (!isFilterButtonClicked) {
+      setWarningMessage(true)
+    }
+
+    if (value?.filterInstance?.appliedModel === null || value?.filterInstance?.appliedModel?.filter === "") {
+      let isFilterEmpty = true
+
+      if (model !== undefined && model !== null) {
+        if (Object.keys(model).length > 0) {
+          isFilterEmpty = false
+        }
+
+        if (isFilterEmpty) {
+          setWarningMessage(false)
+        }
+      }
+
+    } else {
+
+      setFloatingFilterData({ ...floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter })
+    }
+  }
+
+
+  const onSearch = () => {
+
+    setWarningMessage(false)
+    setIsLoader(true)
+    setIsFilterButtonClicked(true)
+    setPageNo(1)
+    setCurrentRowIndex(0)
+    gridOptions?.columnApi?.resetColumnState();
+    getTableData("", "", "", "", 0, 10, true, floatingFilterData)
+  }
+
+
+
+  const resetState = () => {
+    setIsFilterButtonClicked(false)
+    setIsLoader(true)
+    gridOptions?.columnApi?.resetColumnState(null);
+    gridOptions?.api?.setFilterModel(null);
+
+    for (var prop in floatingFilterData) {
+
+      if (prop !== "DepartmentCode") {
+        floatingFilterData[prop] = ""
+      }
+    }
+
+    setFloatingFilterData(floatingFilterData)
+    setWarningMessage(false)
+    setPageNo(1)
+    setCurrentRowIndex(0)
+    dispatch(setSelectedCostingListSimualtion([]))
+    getTableData("", "", "", "", 0, 10, true, floatingFilterData)
+    setGlobalTake(10)
+    setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
+  }
+
+
+  const onBtPrevious = () => {
+    if (currentRowIndex >= 10) {
+      setPageNo(pageNo - 1)
+      const previousNo = currentRowIndex - 10;
+      getTableData("", "", "", "", previousNo, globalTake, true, floatingFilterData)
+      setCurrentRowIndex(previousNo)
+    }
+  }
+
+  const onBtNext = () => {
+    if (currentRowIndex < (totalRecordCount - 10)) {
+      setPageNo(pageNo + 1)
+      const nextNo = currentRowIndex + 10;
+      getTableData("", "", "", "", nextNo, globalTake, true, floatingFilterData)
+      setCurrentRowIndex(nextNo)
+    }
+  };
+
 
 
   /**
@@ -122,6 +253,18 @@ function ApprovalListing(props) {
    * @description Renders Name link
    */
   const linkableFormatter = (props) => {
+
+    if (selectedCostingListSimulation?.length > 0) {
+      selectedCostingListSimulation.map((item) => {
+
+        if (item.CostingId == props.node.data.CostingId) {
+          props.node.setSelected(true)
+        }
+      })
+
+    }
+
+
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
     const row = props?.valueFormatted ? props.valueFormatted : props?.data;
     return (
@@ -218,6 +361,7 @@ function ApprovalListing(props) {
     return (cell !== null && cell !== '-') ? `${cell}(${row.VendorCode})` : '-'
   }
 
+
   const viewDetails = (approvalNumber, approvalProcessId) => {
     setApprovalData({ approvalProcessId: approvalProcessId, approvalNumber: approvalNumber })
     setShowApprovalSummary(true)
@@ -230,10 +374,41 @@ function ApprovalListing(props) {
     )
   }
 
-  const onRowSelect = () => {
+  const onRowSelect = (event) => {
     var selectedRows = gridApi.getSelectedRows();
     let temp = []
-    selectedRows && selectedRows.map((item, index) => {
+
+
+    if (selectedRows === undefined || selectedRows === null) {    //CONDITION FOR FIRST RENDERING OF COMPONENT
+      selectedRows = selectedCostingListSimulation
+    } else if (selectedCostingListSimulation && selectedCostingListSimulation.length > 0) {  // CHECKING IF REDUCER HAS DATA
+
+      let finalData = []
+      if (event.node.isSelected() === false) {    // CHECKING IF CURRENT CHECKBOX IS UNSELECTED
+
+        for (let i = 0; i < selectedCostingListSimulation.length; i++) {
+          if (selectedCostingListSimulation[i].RawMaterialId === event.data.RawMaterialId) {   // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
+            continue;
+          }
+          finalData.push(selectedCostingListSimulation[i])
+        }
+
+      } else {
+        finalData = selectedCostingListSimulation
+      }
+      selectedRows = [...selectedRows, ...finalData]
+
+    }
+
+    let uniqeArray = _.uniqBy(selectedRows, "CostingId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
+    dispatch(setSelectedCostingListSimualtion(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
+    let finalArr = selectedRows
+    let length = finalArr?.length
+    let uniqueArray = _.uniqBy(finalArr, "CostingId")
+
+
+
+    uniqueArray && uniqueArray.map((item, index) => {
       if (item.IsApprovalLocked) {
         temp.push(item.CostingNumber)
         return false
@@ -261,7 +436,7 @@ function ApprovalListing(props) {
     let plantArray = []
     let partArray = []
 
-    selectedRows && selectedRows.map((item) => {
+    uniqeArray && uniqeArray.map((item) => {
       reasonArray.push(item.ReasonId)
       technologyArray.push(item.TechnologyId)
       departmentArray.push(item.DepartmentId)
@@ -295,15 +470,14 @@ function ApprovalListing(props) {
       gridApi.deselectAll()
       Toaster.warning('Plant should be same for sending costings for approval')
     } else {
-      setReasonId(selectedRows && selectedRows[0]?.ReasonId)
+      setReasonId(uniqeArray && uniqeArray[0]?.ReasonId)
     }
-    if (selectedRows.length > 1 && allEqual(vendorArray) && allEqual(plantArray) && allEqual(partArray)) {
+    if (uniqeArray.length > 1 && allEqual(vendorArray) && allEqual(plantArray) && allEqual(partArray)) {
       gridApi.deselectAll()
       Toaster.warning('Vendor and Plant should be different against a Part number')
     }
 
-
-    setSelectedRowData(selectedRows)
+    setSelectedRowData(uniqeArray)
   }
 
 
@@ -438,8 +612,25 @@ function ApprovalListing(props) {
 
   };
 
-  const onPageSizeChanged = (targetValue) => {
-    gridApi.paginationSetPageSize(Number(targetValue));
+  const onPageSizeChanged = (newPageSize) => {
+    if (Number(newPageSize) === 10) {
+      getTableData("", "", "", "", 0, 10, true, floatingFilterData)
+      setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
+      setGlobalTake(10)
+    }
+    else if (Number(newPageSize) === 50) {
+      getTableData("", "", "", "", 0, 50, true, floatingFilterData)
+      setPageSize(prevState => ({ ...prevState, pageSize50: true, pageSize10: false, pageSize100: false }))
+      setGlobalTake(50)
+    }
+    else if (Number(newPageSize) === 100) {
+      getTableData("", "", "", "", 0, 100, true, floatingFilterData)
+      setPageSize(prevState => ({ ...prevState, pageSize100: true, pageSize10: false, pageSize50: false }))
+      setGlobalTake(100)
+    }
+
+    gridApi.paginationSetPageSize(Number(newPageSize));
+
   };
 
   const onFilterTextBoxChanged = (e) => {
@@ -475,9 +666,7 @@ function ApprovalListing(props) {
       }}
     />
   }
-  const resetState = () => {
-    gridOptions?.columnApi?.resetColumnState();
-  }
+
   return (
     <Fragment>
       <CalculatorWrapper />
@@ -488,11 +677,14 @@ function ApprovalListing(props) {
 
             {!isApproval && <h1 className="mb-0">Costing Approval</h1>}
 
-            {isLoader && <LoaderCustom />}
             <Row className="pt-4 blue-before">
               <Col md="6" lg="6" className="search-user-block mb-3">
 
                 <div className="d-flex justify-content-end bd-highlight w100">
+                  <div className="warning-message d-flex align-items-center">
+                    {warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
+                    <button disabled={!warningMessage} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
+                  </div>
                   <div>
                     <button type="button" className="user-btn mr-2" title="Reset Grid" onClick={() => resetState()}>
                       <div className="refresh mr-0"></div>
@@ -511,69 +703,86 @@ function ApprovalListing(props) {
               </Col>
             </Row>
           </form>
-          <Row>
-            <Col>
-              <div className={`ag-grid-react`}>
-                <div className={`ag-grid-wrapper height-width-wrapper min-height-auto ${((approvalList && approvalList?.length <= 0) || (approvalListDraft && approvalListDraft?.length <= 0)) ? "overlay-contain" : ""}`}>
-                  <div className="ag-grid-header">
-                    <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
-                  </div>
-                  <div
-                    className="ag-theme-material"
-                  >
-                    <AgGridReact
-                      floatingFilter={true}
-                      style={{ height: '100%', width: '100%' }}
-                      defaultColDef={defaultColDef}
-                      domLayout='autoHeight'
-                      // columnDefs={c}
-                      rowData={isDashboard ? approvalList : approvalListDraft}
-                      pagination={true}
-                      paginationPageSize={defaultPageSize}
-                      onGridReady={onGridReady}
-                      gridOptions={gridOptions}
-                      //loadingOverlayComponent={'customLoadingOverlay'}
-                      noRowsOverlayComponent={'customNoRowsOverlay'}
-                      noRowsOverlayComponentParams={{
-                        title: EMPTY_DATA,
-                        imagClass: "imagClass"
-                      }}
-                      frameworkComponents={frameworkComponents}
-                      suppressRowClickSelection={true}
-                      rowSelection={'multiple'}
-                      // frameworkComponents={frameworkComponents}
-                      onSelectionChanged={onRowSelect}
-                      isRowSelectable={isRowSelectable}
-                    >
-                      <AgGridColumn field="CostingId" hide dataAlign="center" searchable={false} ></AgGridColumn>
-                      <AgGridColumn cellClass="has-checkbox" field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Approval No."></AgGridColumn>
-                      {isApproval && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" field="Status" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>}
-                      <AgGridColumn field="CostingNumber" headerName="Costing ID" cellRenderer='hyperLinkableFormatter' ></AgGridColumn>
-                      <AgGridColumn field="PartNumber" headerName='Part No.'></AgGridColumn>
-                      <AgGridColumn field="PartName" headerName="Part Name"></AgGridColumn>
-                      <AgGridColumn field="VendorName" cellRenderer='renderVendor' headerName="Vendor"></AgGridColumn>
-                      <AgGridColumn field="PlantName" cellRenderer='renderPlant' headerName="Plant"></AgGridColumn>
-                      <AgGridColumn field='TechnologyName' headerName="Technology"></AgGridColumn>
-                      <AgGridColumn field="NetPOPrice" cellRenderer='priceFormatter' headerName="New Price"></AgGridColumn>
-                      <AgGridColumn field="OldPOPrice" cellRenderer='oldpriceFormatter' headerName="Old PO Price"></AgGridColumn>
-                      <AgGridColumn field='Reason' headerName="Reason"></AgGridColumn>
-                      <AgGridColumn field="EffectiveDate" cellRenderer='dateFormatter' headerName="Effective Date" ></AgGridColumn>
-                      <AgGridColumn field="CreatedBy" headerName="Initiated By" ></AgGridColumn>
-                      <AgGridColumn field="CreatedOn" cellRenderer='dateFormatter' headerName="Created On" ></AgGridColumn>
-                      <AgGridColumn field="RequestedBy" headerName="Last Approval"></AgGridColumn>
-                      <AgGridColumn field="RequestedOn" cellRenderer='requestedOnFormatter' headerName="Requested On"></AgGridColumn>
-                      {!isApproval && <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="Status" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>}
-                    </AgGridReact>
 
-                    {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
-                    <div className="text-right pb-3">
-                      <WarningMessage message="It may take up to 5 minutes for the status to be updated." />
+          {(loader) ? <LoaderCustom customClass="simulation-Loader" /> :
+            <Row>
+              <Col>
+                <div className={`ag-grid-react custom-pagination`}>
+
+                  <div className={`ag-grid-wrapper height-width-wrapper min-height-auto ${((approvalList && approvalList?.length <= 0) || (approvalListDraft && approvalListDraft?.length <= 0)) ? "overlay-contain" : ""}`}>
+                    <div className="ag-grid-header">
+                      <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                    </div>
+                    <div
+                      className="ag-theme-material"
+                    >
+                      <AgGridReact
+                        floatingFilter={true}
+                        style={{ height: '100%', width: '100%' }}
+                        defaultColDef={defaultColDef}
+                        domLayout='autoHeight'
+                        // columnDefs={c}
+                        rowData={isDashboard ? approvalList : approvalListDraft}
+                        pagination={true}
+                        paginationPageSize={globalTake}
+                        onGridReady={onGridReady}
+                        gridOptions={gridOptions}
+                        //loadingOverlayComponent={'customLoadingOverlay'}
+                        noRowsOverlayComponent={'customNoRowsOverlay'}
+                        noRowsOverlayComponentParams={{
+                          title: EMPTY_DATA,
+                          imagClass: "imagClass"
+                        }}
+                        frameworkComponents={frameworkComponents}
+                        suppressRowClickSelection={true}
+                        rowSelection={'multiple'}
+                        // frameworkComponents={frameworkComponents}
+                        onFilterModified={onFloatingFilterChanged}
+                        //onSelectionChanged={onRowSelect}
+                        onRowSelected={onRowSelect}
+                        isRowSelectable={isRowSelectable}
+                      >
+                        <AgGridColumn field="CostingId" hide dataAlign="center" searchable={false} ></AgGridColumn>
+                        <AgGridColumn cellClass="has-checkbox" field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Approval No."></AgGridColumn>
+                        {isApproval && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" field="Status" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>}
+                        <AgGridColumn field="CostingNumber" headerName="Costing ID" cellRenderer='hyperLinkableFormatter' ></AgGridColumn>
+                        <AgGridColumn field="PartNumber" headerName='Part No.'></AgGridColumn>
+                        <AgGridColumn field="PartName" headerName="Part Name"></AgGridColumn>
+                        <AgGridColumn field="VendorName" cellRenderer='renderVendor' headerName="Vendor"></AgGridColumn>
+                        <AgGridColumn field="PlantName" cellRenderer='renderPlant' headerName="Plant"></AgGridColumn>
+                        <AgGridColumn field='TechnologyName' headerName="Technology"></AgGridColumn>
+                        <AgGridColumn field="NetPOPrice" cellRenderer='priceFormatter' headerName="New Price"></AgGridColumn>
+                        <AgGridColumn field="OldPOPrice" cellRenderer='oldpriceFormatter' headerName="Old PO Price"></AgGridColumn>
+                        <AgGridColumn field='Reason' headerName="Reason"></AgGridColumn>
+                        <AgGridColumn field="EffectiveDate" cellRenderer='dateFormatter' headerName="Effective Date" ></AgGridColumn>
+                        <AgGridColumn field="CreatedBy" headerName="Initiated By" ></AgGridColumn>
+                        <AgGridColumn field="CreatedOn" cellRenderer='dateFormatter' headerName="Created On" ></AgGridColumn>
+                        <AgGridColumn field="RequestedBy" headerName="Last Approval"></AgGridColumn>
+                        <AgGridColumn field="RequestedOn" cellRenderer='requestedOnFormatter' headerName="Requested On"></AgGridColumn>
+                        {!isApproval && <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="Status" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>}
+                      </AgGridReact>
+
+                      {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake} />}
+
+                      <div className="d-flex pagination-button-container">
+                        <p><button className="previous-btn" type="button" disabled={false} onClick={() => onBtPrevious()}> </button></p>
+                        {pageSize.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 10)}</p>}
+                        {pageSize.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 50)}</p>}
+                        {pageSize.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 100)}</p>}
+                        <p><button className="next-btn" type="button" onClick={() => onBtNext()}> </button></p>
+                      </div>
+
+
+
+                      <div className="text-right pb-3">
+                        <WarningMessage message="It may take up to 5 minutes for the status to be updated." />
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </Col>
-          </Row>
+              </Col>
+            </Row>
+          }
 
         </div>
         // :
