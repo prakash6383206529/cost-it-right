@@ -112,8 +112,8 @@ function ProcessCost(props) {
       if (JSON.stringify(gridData) !== JSON.stringify(oldGridData)) {
         dispatch(isDataChange(true))
       }
-      if (isFromApi) {
-        let apiArr = formatMainArr(tabData.CostingProcessCostResponse)
+      if (isFromApi && tabData) {
+        let apiArr = formatMainArr(tabData && tabData?.CostingProcessCostResponse)
         tabData.CostingProcessCostResponse = apiArr
       }
 
@@ -524,11 +524,12 @@ function ProcessCost(props) {
 
         let tempArr = [...gridData, ...rowArr]
         setDataInGridAndApi(tempArr)
+        dispatch(setProcessGroupGrid(formatReducerArray(tempArr)))
 
       }
     } else {
       if (rowData.length > 0) {
-        let parentTempData = gridData[groupNameIndex]
+        let parentTempData = processGroupGrid[groupNameIndex]
         let parentProcessList = parentTempData.ProcessList
         let rowArr = rowData && rowData.map((el) => {
           let processQuantityMain = 1
@@ -567,8 +568,9 @@ function ProcessCost(props) {
           Quantity: calculateRowQuantity(arr),
           ProcessCost: calculateRowProcessCost(arr)
         }
-        let mainArr = Object.assign([...gridData], { [groupNameIndex]: parentTempData })
+        let mainArr = Object.assign([...processGroupGrid], { [groupNameIndex]: parentTempData })
         setDataInGridAndApi(mainArr)
+        dispatch(setProcessGroupGrid(formatReducerArray(mainArr)))
       }
     }
 
@@ -672,7 +674,7 @@ function ProcessCost(props) {
   }
 
   const deleteGroupProcess = (index, parentIndex, list) => {
-    let parentTempData = gridData[parentIndex]
+    let parentTempData = processGroupGrid[parentIndex]
     let tempArr2 = [];
     let tempArrAfterDelete = list && list.filter((el, i) => {
       if (i === index) return false;
@@ -701,7 +703,7 @@ function ProcessCost(props) {
       ProductionPerHour: tempArrAfterDelete.length > 0 && tempArrAfterDelete[0].UOMType !== TIME ? '-' : ProductionPerHourTotal,
       Quantity: QuantityTotal
     }
-    tempArr2 = Object.assign([...gridData], { [parentIndex]: parentTempData })
+    tempArr2 = Object.assign([...processGroupGrid], { [parentIndex]: parentTempData })
     let apiArr = formatMainArr(tempArr2)
     let ProcessCost = 0
     ProcessCost = tempArr2 && tempArr2.reduce((accummlator, el) => {
