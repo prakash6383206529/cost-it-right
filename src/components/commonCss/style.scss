@@ -3770,8 +3770,12 @@ body {
 }
 
 .hide-text-help-mb-0 {
+  label {
+    display: none;
+  }
   .form-group {
     margin-bottom: 0px;
+    
   }
 }
 
