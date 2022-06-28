@@ -10,7 +10,7 @@ import PushButtonDrawer from './PushButtonDrawer'
 import { EMPTY_GUID, INR, FILE_URL, REASON_ID } from '../../../../config/constants'
 import { getSimulationApprovalByDepartment, simulationApprovalRequestByApprove, simulationRejectRequestByApprove, simulationApprovalRequestBySender, saveSimulationForRawMaterial, getAllSimulationApprovalList, uploadSimulationAttachment } from '../../../simulation/actions/Simulation'
 import DayTime from '../../../common/DayTimeWrapper'
-import { debounce } from 'lodash'
+import _, { debounce } from 'lodash'
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Dropzone from 'react-dropzone-uploader';
@@ -27,7 +27,7 @@ function ApproveRejectDrawer(props) {
   // ********* INITIALIZE REF FOR DROPZONE ********
   const dropzone = useRef(null);
 
-  const { type, tokenNo, approvalData, IsFinalLevel, IsPushDrawer, isSimulation, dataSend, reasonId, simulationDetail, master, selectedRowData, costingArr, isSaveDone, costingList, showFinalLevelButtons, Attachements, vendorId, SimulationTechnologyId, SimulationType, isSimulationApprovalListing, setSelectedRowsDataEmpty } = props
+  const { type, tokenNo, approvalData, IsFinalLevel, IsPushDrawer, isSimulation, dataSend, reasonId, simulationDetail, master, selectedRowData, costingArr, isSaveDone, costingList, showFinalLevelButtons, Attachements, vendorId, SimulationTechnologyId, SimulationType, isSimulationApprovalListing, apiData } = props
 
 
   const userLoggedIn = loggedInUserId()
@@ -261,7 +261,7 @@ function ApproveRejectDrawer(props) {
   useEffect(() => {
     //THIS OBJ IS FOR SAVE SIMULATION
     if (type === 'Sender' && !isSaveDone && !isSimulationApprovalListing) {
-      let simObj = formatRMSimulationObject(simulationDetail, selectedRowData, costingArr)
+      let simObj = formatRMSimulationObject(simulationDetail, costingArr, apiData)
 
       //THIS CONDITION IS FOR SAVE SIMULATION
       dispatch(saveSimulationForRawMaterial(simObj, res => {
