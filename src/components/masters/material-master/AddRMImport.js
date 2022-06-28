@@ -1372,7 +1372,7 @@ class AddRMImport extends Component {
                               required={true}
                               className=" "
                               customClassName=" withBorder"
-                              disabled={isEditFlag || isViewFlag}
+                              disabled={true}
                             />
 
                           </Col>

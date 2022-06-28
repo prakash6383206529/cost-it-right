@@ -1398,7 +1398,7 @@ class AddRMDomestic extends Component {
                               required={true}
                               className=" "
                               customClassName=" withBorder"
-                              disabled={isEditFlag || isViewFlag}
+                              disabled={true}
                             />
                           </Col>
 

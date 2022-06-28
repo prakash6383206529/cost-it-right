@@ -215,6 +215,9 @@ function AddPackaging(props) {
           totalPackagingCost = getValues('PackagingCost')
           // setValue('PackagingCost',PackagingCostPercentage)
           setPackagingCost(totalPackagingCost)
+          if (!isEditFlag) {
+            setValue('PackagingCost', 0)
+          }
         }
         break;
       default:
