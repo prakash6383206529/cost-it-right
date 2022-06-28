@@ -363,44 +363,31 @@ class UsersListing extends Component {
 
 		const { ActivateAccessibility } = this.state;
 		if (rowData.UserId === loggedInUserId()) return null;
-		if (ActivateAccessibility) {
-			return (
-				<>
-					<label htmlFor="normal-switch" className="normal-switch">
-						{/* <span>Switch with default style</span> */}
-						<Switch
-							onChange={() => this.handleChange(cellValue, rowData)}
-							checked={cellValue}
-							background="#ff6600"
-							onColor="#4DC771"
-							onHandleColor="#ffffff"
-							offColor="#FC5774"
-							id="normal-switch"
-							height={24}
-						/>
-					</label>
-				</>
-			)
-		} else {
-			return (
-				<>
-					{
-						cellValue ?
-							<div className={'Activated'}> {'Active'}</div>
-							:
-							<div className={'Deactivated'}>{'Deactive'}</div>
-					}
-				</>
-			)
-		}
 
+		return (
+			<>
+				<label htmlFor="normal-switch" className="normal-switch">
+					{/* <span>Switch with default style</span> */}
+					<Switch
+						onChange={() => this.handleChange(cellValue, rowData)}
+						checked={cellValue}
+						disabled={!ActivateAccessibility}
+						background="#ff6600"
+						onColor="#4DC771"
+						onHandleColor="#ffffff"
+						offColor="#FC5774"
+						id="normal-switch"
+						height={24}
+					/>
+				</label>
+			</>
+		)
 	}
 
 	/**
 	* @method linkableFormatter
 	* @description Renders Name link
 	*/
-
 
 
 	linkableFormatter = (props) => {
