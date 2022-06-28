@@ -1383,10 +1383,8 @@ const CostingSummaryTable = (props) => {
 
                       {!drawerDetailPDF ? <tr>
                         <td>
-
-                          <span class="d-block small-grey-text"></span>
-                          <span class="d-block small-grey-text">Tool Maintenance Applicability</span>
-                          <span class="d-block small-grey-text">Tool Maintenance Cost</span>
+                          <span class="d-block small-grey-text pt-3"></span>
+                          <span class="d-block small-grey-text">Tool Maintenance Cost on</span>
                           <span class="d-block small-grey-text">Tool Price</span>
                           <span class="d-block small-grey-text">Amortization Quantity (Tool Life)</span>
                           <span class="d-block small-grey-text">Tool Amortization Cost</span>
@@ -1395,22 +1393,20 @@ const CostingSummaryTable = (props) => {
                           viewCostingData?.map((data) => {
                             return (
                               <td className={` ${pdfHead || drawerDetailPDF ? '' : ''}`}>
-                                <div class="d-flex mt7">
-                                  <span class="d-inline-block w-50">
+                                <div class="d-flex">
+                                  <span class="d-inline-block p-0 w-50">
                                     {data?.CostingHeading !== VARIANCE ? data?.toolApplicability.applicability : ''}
                                   </span>{' '}
                                   &nbsp;{' '}
-                                  <span class="d-inline-block w-50">
+                                  <span class="d-inline-block p-0 w-50">
                                     {data?.CostingHeading !== VARIANCE ? data?.toolApplicability.value : ''}
                                   </span>
                                 </div>
                                 <div className="d-flex">
                                   <span className="d-inline-block w-50 ">{data?.CostingHeading !== VARIANCE ? data?.toolApplicabilityValue.toolTitle : ''}</span> &nbsp;{' '}
-                                  <span className="d-inline-block w-50 ">{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.toolApplicabilityValue.toolValue, initialConfiguration.NoOfDecimalForPrice) : ''}</span>
+                                  <span className="d-inline-block w-50 "> {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.toolMaintenanceCost, initialConfiguration.NoOfDecimalForPrice) : ''}</span>
                                 </div>
-                                <span class="d-block small-grey-text">
-                                  {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.toolMaintenanceCost, initialConfiguration.NoOfDecimalForPrice) : ''}
-                                </span>
+
                                 <span class="d-block small-grey-text">
                                   {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.toolPrice, initialConfiguration.NoOfDecimalForPrice) : ''}
                                 </span>

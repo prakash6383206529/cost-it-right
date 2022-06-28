@@ -3770,7 +3770,7 @@ body {
 
 .hide-text-help-mb-0 {
   label {
-    display: none;
+    display: none !important;
   }
   .form-group {
     margin-bottom: 0px;
@@ -8439,10 +8439,12 @@ padding-bottom: 3px;
     display: flex;
   }
 }
-.p-relative {
-  padding-right: 8px;
-  .unit-text:last-child {
-    position: absolute;
-    top: -4px;
+.inputbox, .ag-react-container {
+  .p-relative {
+    padding-right: 8px;
+    .unit-text:last-child {
+      position: absolute;
+      top: -4px;
+    }
   }
 }
