@@ -130,9 +130,6 @@ class LevelsListing extends Component {
 			isShowMappingForm: false,
 			isShowForm: false,
 			isEditFlag: false,
-		}, () => {
-			this.getUpdatedData()
-			this.child.getUpdatedData();
 		})
 	}
 
