@@ -313,10 +313,10 @@ class AddLabour extends Component {
   }
 
   gridHandler = () => {
-    const { machineType, labourType, gridTable, effectiveDate, isDisable, vendorName, selectedPlants, StateName } = this.state
+    const { machineType, labourType, gridTable, effectiveDate, isDisable, vendorName, selectedPlants, StateName, IsEmployeContractual } = this.state
     const { fieldsObj, error } = this.props
 
-    if (vendorName.length == 0 || selectedPlants.length == 0 || StateName == 0) {
+    if ((IsEmployeContractual ? vendorName.length === 0 : false) || selectedPlants.length === 0 || StateName === 0) {
       Toaster.warning('First fill upper detail')
       return false
     }

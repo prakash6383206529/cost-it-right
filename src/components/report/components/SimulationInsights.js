@@ -5,7 +5,7 @@ import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
-import { ReportMaster, EMPTY_DATA } from '../../../config/constants';
+import { ReportMaster, EMPTY_DATA, defaultPageSize } from '../../../config/constants';
 import LoaderCustom from '../../common/LoaderCustom';
 import { getSimulationInsightReport } from '../actions/SimulationInsight';
 import { useDispatch } from 'react-redux';
@@ -37,6 +37,7 @@ function SimulationInsights(props) {
   const [filterModel, setFilterModel] = useState({});
   const [isSearchButtonDisable, setIsSearchButtonDisable] = useState(true);
   const [warningMessage, setWarningMessage] = useState(false)
+  const [globalTake, setGlobalTake] = useState(defaultPageSize)
 
 
   var filterParams = {
@@ -104,7 +105,7 @@ function SimulationInsights(props) {
   };
 
   useEffect(() => {
-    getTableData(0, 100, true, floatingFilterData)
+    getTableData(0, defaultPageSize, true, floatingFilterData)
   }, [])
 
 
@@ -123,7 +124,7 @@ function SimulationInsights(props) {
     if (currentRowIndex >= 10) {
       setPageNo(pageNo - 1)
       const previousNo = currentRowIndex - 10;
-      getTableData(previousNo, 100, true, floatingFilterData)
+      getTableData(previousNo, globalTake, true, floatingFilterData)
       setCurrentRowIndex(previousNo)
     }
   }
@@ -133,7 +134,7 @@ function SimulationInsights(props) {
     if (currentRowIndex < (totalRecordCount - 10)) {
       setPageNo(pageNo + 1)
       const nextNo = currentRowIndex + 10;
-      getTableData(nextNo, 100, true, floatingFilterData)
+      getTableData(nextNo, globalTake, true, floatingFilterData)
       setCurrentRowIndex(nextNo)
     }
   };
@@ -240,7 +241,7 @@ function SimulationInsights(props) {
     setPageNo(1)
     setCurrentRowIndex(0)
     gridOptions?.columnApi?.resetColumnState();
-    getTableData(0, 100, true, floatingFilterData)
+    getTableData(0, globalTake, true, floatingFilterData)
   }
 
 
@@ -298,8 +299,11 @@ function SimulationInsights(props) {
     setWarningMessage(false)
     setPageNo(1)
     setCurrentRowIndex(0)
-    getTableData(0, 100, true, floatingFilterData)
-
+    getTableData(0, defaultPageSize, true, floatingFilterData)
+    setGlobalTake(10)
+    setPageSize10(true)
+    setPageSize50(false)
+    setPageSize100(false)
   }
 
 
@@ -354,19 +358,25 @@ function SimulationInsights(props) {
     gridApi.paginationSetPageSize(Number(value));
 
     if (Number(newPageSize) === 10) {
+      getTableData(currentRowIndex, 10, true, floatingFilterData)
       setPageSize10(true)
       setPageSize50(false)
       setPageSize100(false)
+      setGlobalTake(10)
     }
     else if (Number(newPageSize) === 50) {
+      getTableData(currentRowIndex, 50, true, floatingFilterData)
       setPageSize10(false)
       setPageSize50(true)
       setPageSize100(false)
+      setGlobalTake(50)
     }
     else if (Number(newPageSize) === 100) {
+      getTableData(currentRowIndex, 100, true, floatingFilterData)
       setPageSize10(false)
       setPageSize50(false)
       setPageSize100(true)
+      setGlobalTake(100)
     }
 
   };
@@ -410,7 +420,7 @@ function SimulationInsights(props) {
               columnDefs={tableHeaderColumnDefs}
               rowData={simulationInsightsReport}
               pagination={true}
-              paginationPageSize={10}
+              paginationPageSize={globalTake}
               onGridReady={onGridReady}
               gridOptions={gridOptions}
               loadingOverlayComponent={'customLoadingOverlay'}
@@ -430,7 +440,7 @@ function SimulationInsights(props) {
 
             <div className='button-wrapper'>
               <div className="paging-container d-inline-block float-right">
-                <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
+                <select className="form-control paging-dropdown" defaultValue={globalTake} onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
                   <option value="10" selected={true}>10</option>
                   <option value="50">50</option>
                   <option value="100">100</option>
