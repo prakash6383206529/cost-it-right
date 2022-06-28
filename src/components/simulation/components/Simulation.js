@@ -178,7 +178,7 @@ function Simulation(props) {
                     technologyId: technology.value,
                     loggedInUserId: loggedInUserId(),
                     simulationTechnologyId: master.value,
-                    vendorId: Object.keys(vendor).length === 0 ? EMPTY_GUID : value.value
+                    vendorId: value.value
                 }
                 dispatch(getTokenSelectListAPI(obj, () => { }))
                 if (value !== '' && Object.keys(master).length > 0) {
