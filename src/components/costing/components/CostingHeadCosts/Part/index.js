@@ -30,6 +30,7 @@ function PartCompoment(props) {
   const { rmData, bopData, ccData, item } = props;
 
   const [IsOpen, setIsOpen] = useState(false);
+  const [totalFinishWeight, setTotalFinishWeight] = useState(0);
   const [Count, setCount] = useState(0);
   const [openForAccordian, setOpenForAccordian] = useState(false);
   const { CostingEffectiveDate, partNumberAndBOMlevel, partNumberArrayAPICall } = useSelector(state => state.costing)
@@ -85,7 +86,13 @@ function PartCompoment(props) {
 
   }
   useEffect(() => {
-  }, [partNumberAndBOMlevel])
+    let totalFinishWeight = 0
+    totalFinishWeight = rmData && rmData.reduce((accummlator, el) => {
+      return accummlator + checkForNull(el.FinishWeight)
+    }, 0)
+    setTotalFinishWeight(totalFinishWeight)
+
+  }, [rmData])
 
   useEffect(() => {
     dispatch(setComponentItemData(item, () => { }))
@@ -230,7 +237,7 @@ function PartCompoment(props) {
               <ProcessCost
                 index={props.index}
                 data={ccData}
-                rmFinishWeight={rmData && rmData.length > 0 && rmData[0].FinishWeight !== undefined ? rmData[0].FinishWeight : 0}
+                rmFinishWeight={rmData && rmData.length > 0 && rmData[0].FinishWeight !== undefined ? totalFinishWeight : 0}
                 setConversionCost={props.setConversionCost}
                 item={item}
               />
