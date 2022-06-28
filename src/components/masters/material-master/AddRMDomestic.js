@@ -1129,7 +1129,6 @@ class AddRMDomestic extends Component {
 
         }
 
-
         if (isSourceChange) {
           this.setState({ approveDrawer: true, approvalObj: formData })
           this.setState({ setDisable: false })
@@ -1137,11 +1136,9 @@ class AddRMDomestic extends Component {
 
         } else {
 
-
           if (isEditFlag) {
-
             if (uploadAttachements && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === values.BasicRate && Number(DataToChange.ScrapRate) === values.ScrapRate
-              && Number(DataToChange.NetLandedCost) === values.NetLandedCost && DataToChange.Remark === values.Remark
+              && Number(DataToChange.NetLandedCost) === values.NetLandedCost && DataToChange.Remark === (values.Remark === '' ? null : values.Remark)
               && (Number(DataToChange.CutOffPrice) === values.cutOffPrice || values.cutOffPrice === undefined)
               && DataToChange.RawMaterialCode === values.Code) {
 
@@ -1399,7 +1396,7 @@ class AddRMDomestic extends Component {
                               required={true}
                               className=" "
                               customClassName=" withBorder"
-                              disabled={isEditFlag || isViewFlag}
+                              disabled={true}
                             />
                           </Col>
 
