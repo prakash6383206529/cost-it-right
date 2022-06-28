@@ -3,7 +3,6 @@ import { useForm } from 'react-hook-form'
 import { Row, Col, } from 'reactstrap';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getRawMaterialNameChild } from '../../masters/actions/Material';
 import NoContentFound from '../../common/NoContentFound';
 import { BOPDOMESTIC, BOPIMPORT, COSTINGSIMULATIONROUND, TOFIXEDVALUE, EMPTY_DATA, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, ImpactMaster, EXCHNAGERATE, COMBINED_PROCESS, defaultPageSize } from '../../../config/constants';
 import { getComparisionSimulationData, getCostingBoughtOutPartSimulationList, getCostingSimulationList, getCostingSurfaceTreatmentSimulationList, setShowSimulationPage, getSimulatedAssemblyWiseImpactDate, getImpactedMasterData, getExchangeCostingSimulationList, getCombinedProcessCostingSimulationList } from '../actions/Simulation';
@@ -14,7 +13,6 @@ import VerifyImpactDrawer from './VerifyImpactDrawer';
 import { EMPTY_GUID, ZBC, AssemblyWiseImpactt } from '../../../config/constants';
 import Toaster from '../../common/Toaster';
 import { Redirect } from 'react-router';
-import { getPlantSelectListByType } from '../../../actions/Common';
 import { setCostingViewData } from '../../costing/actions/Costing';
 import {
     ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl,
@@ -59,6 +57,7 @@ function CostingSimulation(props) {
     const [showApprovalHistory, setShowApprovalHistory] = useState(false)
     const [simulationDetail, setSimulationDetail] = useState('')
     const [costingArr, setCostingArr] = useState([])
+    const [apiData, setAPIData] = useState([])
     const [id, setId] = useState('')
     const [isSaveDone, setSaveDone] = useState(isFromApprovalListing ? isFromApprovalListing : false)
     const [oldArr, setOldArr] = useState([])
@@ -99,6 +98,7 @@ function CostingSimulation(props) {
     const [downloadList, setDownloadList] = useState([]);
     const [rejectedList, setRejectedList] = useState([]);
     const [sendInAPIState, setSendInAPIState] = useState([]);
+    const [isMultipleMasterSimulation, setIsMultipleMasterSimulation] = useState(false);
 
     const isSurfaceTreatment = (Number(master) === Number(SURFACETREATMENT));
     const isOperation = (Number(master) === Number(OPERATIONS));
@@ -115,8 +115,6 @@ function CostingSimulation(props) {
 
     useEffect(() => {
         getCostingList()
-        dispatch(getPlantSelectListByType(ZBC, () => { }))
-        dispatch(getRawMaterialNameChild(() => { }))
         dispatch(getImpactedMasterData(simulationId, () => { }))
     }, [])
 
@@ -135,7 +133,7 @@ function CostingSimulation(props) {
         }
 
 
-        if (tableData !== undefined && (Object.keys(tableData).length !== 0 || tableData.length > 0)) {
+        if (tableData !== undefined && tableData.length > 0) {
             let requestData = []
             let isAssemblyInDraft = false
 
@@ -159,30 +157,32 @@ function CostingSimulation(props) {
 
     const getListMultipleAndAssembly = (SimulationCostingList, storeInRemovedObjects) => {
         let tempRemoveObject1 = []
-        let tempArray1 = SimulationCostingList
-
-        SimulationCostingList && SimulationCostingList.map((itemTrue, index) => {         // INDEX OF NOT ASSEMBLY
-            if (itemTrue.IsAssemblyExist === false) {               // goes inside for assembly false values (NOT ASSEMBLY)
-
-                SimulationCostingList && SimulationCostingList.map((itemFalse) => {
-
-                    if (itemFalse.IsAssemblyExist === true) {       // goes insode for ASSEMBLY 
-                        if (itemFalse.PartNo === itemTrue.PartNo && itemFalse.PlantCode === itemTrue.PlantCode &&
-                            itemFalse.VendorName === itemTrue.VendorName) {         // ALL SAME THEN INSIDE IF 
-                            tempRemoveObject1.push(itemTrue)
-                            tempArray1.splice(index, 1)
+        if (SimulationCostingList && SimulationCostingList) {
+            let indexList = []
+            let tempArray1 = []
+            tempArray1 = SimulationCostingList && SimulationCostingList.map((itemTrue, index) => {         // INDEX OF NOT ASSEMBLY
+                if (itemTrue.IsAssemblyExist === false) {               // goes inside for assembly false values (NOT ASSEMBLY)
+                    SimulationCostingList && SimulationCostingList.map((itemFalse) => {
+                        if (itemFalse.IsAssemblyExist === true) {       // goes insode for ASSEMBLY 
+                            if (itemFalse.PartNo === itemTrue.PartNo && itemFalse.PlantCode === itemTrue.PlantCode &&
+                                itemFalse.VendorName === itemTrue.VendorName) {         // ALL SAME THEN INSIDE IF 
+                                tempRemoveObject1.push(itemTrue)
+                                indexList.push(index)
+                            }
                         }
-                    }
-                    return null
-                })
-
+                        return null
+                    })
+                }
+                if (!indexList.includes(index)) {
+                    return itemTrue
+                }
+                return null
+            })
+            if (storeInRemovedObjects) {
+                setRejectedList(tempRemoveObject1)
             }
-            return null
-        })
-        if (storeInRemovedObjects) {
-            setRejectedList(tempRemoveObject1)
+            return tempArray1.filter(e => e)
         }
-        return tempArray1
     }
 
     const setCommonStateForList = (res) => {
@@ -196,8 +196,8 @@ function CostingSimulation(props) {
             setVendorIdState(vendorId)
             setSimulationTechnologyIdState(SimulationTechnologyId)
             setSimulationTypeState(SimulationType)
-
-            Data.SimulatedCostingList && Data.SimulatedCostingList.map(item => {
+            let tempArrayCosting = Data.SimulatedCostingList
+            tempArrayCosting && tempArrayCosting.map(item => {
                 if (item.IsLockedBySimulation) {
                     setSelectedCostingIds(item.CostingId)
                 }
@@ -232,7 +232,7 @@ function CostingSimulation(props) {
             })
             let uniqeArray = []
             const map = new Map();
-            for (const item of Data.SimulatedCostingList) {
+            for (const item of tempArrayCosting) {
                 if (!map.has(item.CostingNumber)) {
 
                     map.set(item.CostingNumber, true);    // set any value to Map
@@ -241,7 +241,8 @@ function CostingSimulation(props) {
             }
 
             setTokenNo(tokenNo)
-            setCostingArr(Data.SimulatedCostingList)
+            setAPIData(tempArrayCosting)
+            setCostingArr(tempArrayCosting)
             setSimulationDetail({ TokenNo: Data.SimulationTokenNumber, Status: Data.SimulationStatus, SimulationId: Data.SimulationId, SimulationAppliedOn: Data.SimulationAppliedOn, EffectiveDate: Data.EffectiveDate })
             setLoader(false)
             let tempObj = {}
@@ -258,7 +259,8 @@ function CostingSimulation(props) {
             setTableData(list)
 
             //DOWNLOAD
-            setDownloadList(getListMultipleAndAssembly(Data.SimulatedCostingList, false))
+            let downloadList = getListMultipleAndAssembly(Data.SimulatedCostingList, false)
+            setDownloadList(downloadList)
 
         }
     }
@@ -267,8 +269,11 @@ function CostingSimulation(props) {
         switch (Number(selectedMasterForSimulation?.value)) {
             case Number(RMDOMESTIC):
             case Number(RMIMPORT):
-                dispatch(getCostingSimulationList(simulationId, plantId, rawMatrialId, (res) => {
-                    setCommonStateForList(res)
+                dispatch(getCostingSimulationList(simulationId, plantId, rawMatrialId, res => {
+                    if (res.data.Data.SimulatedCostingList.length > 0) {
+                        setCommonStateForList(res)
+                    }
+
                 }))
                 break;
             case Number(SURFACETREATMENT):
@@ -304,6 +309,7 @@ function CostingSimulation(props) {
     }
 
     const costingList = useSelector(state => state.simulation.costingSimulationList)
+
     const costingSimulationListAllKeys = useSelector(state => state.simulation.costingSimulationListAllKeys)
 
     const selectedMasterForSimulation = useSelector(state => state.simulation.selectedMasterForSimulation)
@@ -862,6 +868,10 @@ function CostingSimulation(props) {
         setShowExchangeRateColumn(costingSimulationListAllKeys?.IsExchangeRateSimulation === true ? true : false)
         setShowMachineRateColumn(costingSimulationListAllKeys?.IsMachineRateSimulation === true ? true : false)
         setShowCombinedProcessColumn(costingSimulationListAllKeys?.IsCombinedProcessSimulation === true ? true : false)
+        setIsMultipleMasterSimulation(costingSimulationListAllKeys?.IsBoughtOutPartSimulation === true ||
+            costingSimulationListAllKeys?.IsCombinedProcessSimulation === true || costingSimulationListAllKeys?.IsExchangeRateSimulation === true ||
+            costingSimulationListAllKeys?.IsRawMaterialSimulation === true || costingSimulationListAllKeys?.IsOperationSimulation === true ||
+            costingSimulationListAllKeys?.IsSurfaceTreatmentSimulation === true || costingSimulationListAllKeys?.IsBoughtOutPartSimulation === true || costingSimulationListAllKeys?.IsCombinedProcessSimulation === true)
 
 
 
@@ -1218,7 +1228,7 @@ function CostingSimulation(props) {
                                                     {(isRMDomesticOrRMImport || showRMColumn) && <AgGridColumn width={140} field="NewScrapRate" hide></AgGridColumn>}
 
 
-                                                    {(isSurfaceTreatment || showSurfaceTreatmentColumn) && <AgGridColumn width={140} field="SurfaceArea" headerName='Surface Area' cellRenderer='operSTFormatter' ></AgGridColumn>}
+                                                    {((isSurfaceTreatment || showSurfaceTreatmentColumn) && !isMultipleMasterSimulation) && <AgGridColumn width={140} field="SurfaceArea" headerName='Surface Area' cellRenderer='operSTFormatter' ></AgGridColumn>}
                                                     {(isSurfaceTreatment || showSurfaceTreatmentColumn) && <AgGridColumn width={140} field="OldSurfaceTreatmentRate" headerName='Old ST Rate' cellRenderer="operSTFormatter"></AgGridColumn>}
                                                     {(isSurfaceTreatment || showSurfaceTreatmentColumn) && <AgGridColumn width={140} field="NewSurfaceTreatmentRate" headerName='New ST Rate' cellRenderer="operSTFormatter"></AgGridColumn>}
                                                     {(isSurfaceTreatment || showSurfaceTreatmentColumn) && <AgGridColumn width={140} field="OldSurfaceTreatmentCost" headerName='Old Surface Treatment Cost' cellRenderer="oldSTFormatter"></AgGridColumn>}
@@ -1230,7 +1240,7 @@ function CostingSimulation(props) {
                                                     {(isSurfaceTreatment || showSurfaceTreatmentColumn) && <AgGridColumn width={140} field="NetSurfaceTreatmentCostVariance" headerName='ST Variance' cellRenderer='STVarianceFormatter' ></AgGridColumn>}
 
 
-                                                    {(isOperation || showOperationColumn) && <AgGridColumn width={140} field="Quantity" headerName='Quantity' cellRenderer='operQuantityFormatter'  ></AgGridColumn>}
+                                                    {((isOperation || showOperationColumn) && !isMultipleMasterSimulation) && <AgGridColumn width={140} field="Quantity" headerName='Quantity' cellRenderer='operQuantityFormatter'  ></AgGridColumn>}
                                                     {(isOperation || showOperationColumn) && <AgGridColumn width={140} field="OldOperationRate" headerName='Old Oper Rate' cellRenderer="operQuantityFormatter" ></AgGridColumn>}
                                                     {(isOperation || showOperationColumn) && <AgGridColumn width={140} field="NewOperationRate" headerName='New Oper Rate' cellRenderer="operQuantityFormatter"></AgGridColumn>}
                                                     {(isOperation || showOperationColumn) && <AgGridColumn width={140} field="OldNetOperationCost" headerName='Old Net Oper Cost' cellRenderer="oldOPERFormatter" ></AgGridColumn>}
@@ -1238,7 +1248,7 @@ function CostingSimulation(props) {
                                                     {(isOperation || showOperationColumn) && <AgGridColumn width={140} field="OperationCostVariance" headerName='Oper Variance' cellRenderer="operVarianceFormatter" ></AgGridColumn>}
 
 
-                                                    {(isBOPDomesticOrImport || showBOPColumn) && <AgGridColumn width={140} field="BoughtOutPartQuantity" headerName='BOP Quantity' cellRenderer='BOPQuantityFormatter' ></AgGridColumn>}
+                                                    {((isBOPDomesticOrImport || showBOPColumn) && !isMultipleMasterSimulation) && <AgGridColumn width={140} field="BoughtOutPartQuantity" headerName='BOP Quantity' cellRenderer='BOPQuantityFormatter' ></AgGridColumn>}
                                                     {(isBOPDomesticOrImport || showBOPColumn) && <AgGridColumn width={140} field="OldBOPRate" headerName='Old BOP Rate' cellRenderer='BOPQuantityFormatter' ></AgGridColumn>}
                                                     {(isBOPDomesticOrImport || showBOPColumn) && <AgGridColumn width={140} field="NewBOPRate" headerName='New BOP Rate' cellRenderer='BOPQuantityFormatter' ></AgGridColumn>}
                                                     {(isBOPDomesticOrImport || showBOPColumn) && <AgGridColumn width={140} field="OldNetBoughtOutPartCost" headerName='Old Net BOP Cost' cellRenderer='netBOPPartCostFormatter' ></AgGridColumn>}
@@ -1285,14 +1295,14 @@ function CostingSimulation(props) {
                                                     {!(isExchangeRate) && <AgGridColumn width={140} field="NewDiscountCost" hide={hideDataColumn.hideDiscount} cellRenderer='discountCostFormatter' headerName='New Discount'></AgGridColumn>}
 
                                                     <AgGridColumn width={120} field="CostingId" headerName='Actions' type="rightAligned" floatingFilter={false} cellRenderer='buttonFormatter' pinned="right"></AgGridColumn>
-                                                </AgGridReact>
+                                                </AgGridReact >
 
-                                                {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
-                                            </div>
-                                        </div>
-                                    </Col>
-                                </Row>
-                            </div>
+                                                {< PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
+                                            </div >
+                                        </div >
+                                    </Col >
+                                </Row >
+                            </div >
                             <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer">
                                 <div className="col-sm-12 text-right bluefooter-butn">
 
@@ -1341,6 +1351,7 @@ function CostingSimulation(props) {
                                 master={selectedMasterForSimulation ? selectedMasterForSimulation.value : master}
                                 closeDrawer={closeDrawer}
                                 isSimulation={true}
+                                apiData={apiData}
                             // isSaveDone={isSaveDone}
                             />}
 
