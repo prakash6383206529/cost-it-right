@@ -3769,8 +3769,12 @@ body {
 }
 
 .hide-text-help-mb-0 {
+  label {
+    display: none;
+  }
   .form-group {
     margin-bottom: 0px;
+    
   }
 }
 
@@ -6823,7 +6827,7 @@ body {
 }
 
 .imagClass {
-  margin-top: 30px;
+  margin-top: 45px !important;
 }
 
 .imagClass.power-listing {

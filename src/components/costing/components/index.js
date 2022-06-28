@@ -4,7 +4,7 @@ import { TabContent, TabPane, Nav, NavItem, NavLink, } from 'reactstrap';
 import classnames from 'classnames';
 import CostingDetails from './CostingDetails';
 import CostingSummary from './CostingSummary';
-import { savePartNumberAndBOMLevel, setProcessGroupGrid, storePartNumber } from '../actions/Costing';
+import { isDataChange, savePartNumberAndBOMLevel, setProcessGroupGrid, storePartNumber } from '../actions/Costing';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { useHistory } from "react-router-dom";
 
@@ -26,6 +26,7 @@ function Costing(props) {
     if (activeTab !== tab) {
       setActiveTab(tab);
     }
+    dispatch(isDataChange(false))
   }
 
   const dispatch = useDispatch();
@@ -53,6 +54,7 @@ function Costing(props) {
       SubAssemblyCostingId: value?.SubAssemblyCostingId,
       AssemblyCostingId: value?.AssemblyCostingId
     }
+    dispatch(isDataChange(false))
     dispatch(setProcessGroupGrid([]))
     dispatch(savePartNumberAndBOMLevel(''))
     setCostingOptionsSelect(obj)

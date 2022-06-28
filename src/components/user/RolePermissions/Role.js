@@ -234,7 +234,7 @@ class Role extends Component {
 											<div className="col-md-6 ">
 												<div className="d-flex">
 
-													<div class="header-title  Personal-Details pr-3"><h5>Role Name:</h5></div>
+													<div class="header-title d-flex Personal-Details pr-3"><h5>Role Name:</h5><span className="asterisk-required">*</span></div>
 
 													<Field
 														name={"RoleName"}
@@ -242,8 +242,6 @@ class Role extends Component {
 														placeholder={'Enter'}
 														validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength26]}
 														component={renderText}
-														required={true}
-														//maxLength={26}
 														customClassName={'withBorder mb-0 mn-height-auto hide-text-help-mb-0'}
 													/>
 												</div>
