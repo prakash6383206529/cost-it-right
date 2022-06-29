@@ -74,6 +74,9 @@ function TabToolCost(props) {
       let ProcessCostArray = []
       let OperationCostArray = []
 
+      if (RMCCTabData[0].PartType === "Assembly") {
+        setDisableSwitch(true)
+      }
       ProcessCostArray = RMCCTabData && RMCCTabData[0]?.CostingPartDetails?.CostingConversionCost?.CostingProcessCostResponse && RMCCTabData[0]?.CostingPartDetails?.CostingConversionCost?.CostingProcessCostResponse.map(el => {
         return { label: el.ProcessName, value: el.ProcessId };
       })
