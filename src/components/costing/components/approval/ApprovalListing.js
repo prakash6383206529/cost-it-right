@@ -238,6 +238,14 @@ function ApprovalListing(props) {
   }
 
   const onBtNext = () => {
+
+    if (pageSize.pageSize50 && pageNo >= Math.ceil(totalRecordCount / 50)) {
+      return false
+    }
+    if (pageSize.pageSize100 && pageNo >= Math.ceil(totalRecordCount / 100)) {
+      return false
+    }
+
     if (currentRowIndex < (totalRecordCount - 10)) {
       setPageNo(pageNo + 1)
       const nextNo = currentRowIndex + 10;
