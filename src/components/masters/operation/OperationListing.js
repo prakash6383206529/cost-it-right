@@ -10,7 +10,7 @@ import NoContentFound from '../../common/NoContentFound';
 import {
     getOperationsDataList, deleteOperationAPI, getOperationSelectList, getVendorWithVendorCodeSelectList, getTechnologySelectList,
     getVendorListByTechnology, getOperationListByTechnology, getTechnologyListByOperation, getVendorListByOperation,
-    getTechnologyListByVendor, getOperationListByVendor,
+    getTechnologyListByVendor, getOperationListByVendor, setOperationList
 } from '../actions/OtherOperation';
 import Switch from "react-switch";
 import AddOperation from './AddOperation';
@@ -28,7 +28,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
-import { getListingForSimulationCombined, setSelectedCostingListSimualtion } from '../../simulation/actions/Simulation'
+import { getListingForSimulationCombined, setSelectedCostingListSimualtion, } from '../../simulation/actions/Simulation'
 import { masterFinalLevelUser } from '../../masters/actions/Material'
 import WarningMessage from '../../common/WarningMessage';
 import _, { set } from 'lodash';
@@ -81,31 +81,36 @@ class OperationListing extends Component {
     }
 
     componentDidMount() {
-        this.applyPermission(this.props.topAndLeftMenuData)
-        this.props.getTechnologySelectList(() => { })
-        this.props.getOperationSelectList(() => { })
-        this.props.getVendorWithVendorCodeSelectList()
-        if (this.props.isSimulation && this.props?.selectionForListingMasterAPI === 'Combined') {
-            this.props?.changeSetLoader(true)
-            this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, OPERATIONS, (res) => {
-                this.props?.changeSetLoader(false)
-                this.setState({ tableData: res.data.DataList })
-            })
-        } else {
-            this.getTableListData(null, null, null, null, 0, defaultPageSize, true, this.state.floatingFilterData)
-        }
-        let obj = {
-            MasterId: OPERATIONS_ID,
-            DepartmentId: userDetails().DepartmentId,
-            LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
-            LoggedInUserId: loggedInUserId()
-        }
-        this.props.masterFinalLevelUser(obj, (res) => {
-            if (res?.data?.Result) {
-                this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
-            }
-        })
+        if (this.props.stopAPICall === false) {
+            this.applyPermission(this.props.topAndLeftMenuData)
 
+            this.props.getTechnologySelectList(() => { })
+            this.props.getOperationSelectList(() => { })
+            this.props.getVendorWithVendorCodeSelectList()
+            if (this.props.isSimulation && this.props?.selectionForListingMasterAPI === 'Combined') {
+                this.props?.changeSetLoader(true)
+                this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, OPERATIONS, (res) => {
+                    this.props?.changeSetLoader(false)
+                    this.setState({ tableData: res.data.DataList })
+                })
+            } else {
+                this.getTableListData(null, null, null, null, 0, defaultPageSize, true, this.state.floatingFilterData)
+            }
+            let obj = {
+                MasterId: OPERATIONS_ID,
+                DepartmentId: userDetails().DepartmentId,
+                LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
+                LoggedInUserId: loggedInUserId()
+            }
+            this.props.masterFinalLevelUser(obj, (res) => {
+                if (res?.data?.Result) {
+                    this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+                }
+            })
+        }
+        if (this.props.stopAPICall === true) {
+            this.setState({ tableData: this.props.setOperationData })
+        }
     }
 
     componentWillUnmount() {
@@ -163,13 +168,11 @@ class OperationListing extends Component {
             ListFor: this.props.ListFor,
         }
 
-
         if ((isMasterSummaryDrawer !== undefined && !isMasterSummaryDrawer)) {
             if (this.props.isSimulation) {
                 this.props?.changeTokenCheckBox(false)
             }
 
-            let FloatingfilterData = this.state.filterModel
             this.props.getOperationsDataList(filterData, skip, take, isPagination, dataObj, res => {
                 if (this.props.isSimulation) {
                     this.props?.changeTokenCheckBox(true)
@@ -179,6 +182,7 @@ class OperationListing extends Component {
                     this.setState({ tableData: [], isLoader: false })
                 } else if (res && res.data && res.data.DataList) {
                     let Data = res.data.DataList;
+                    this.props.setOperationList(Data)
                     if (Number(this.props.isOperationST) === Number(SURFACETREATMENT)) {
                         let surfaceTreatmentOperationData = []
                         Data && Data.map(item => {
@@ -199,12 +203,9 @@ class OperationListing extends Component {
                         this.setState({ tableData: Data })
                     }
 
-                } else {
-
-                }
-
-                if (res) {
-                    if (res && res.data && res.data.DataList.length > 0) {
+                    // PAGINATION CODE
+                    let FloatingfilterData = this.state.filterModel
+                    if (res.data.DataList.length > 0) {
                         this.setState({ totalRecordCount: res.data.DataList[0].TotalRecordCount })
                     }
                     let isReset = true
@@ -217,14 +218,11 @@ class OperationListing extends Component {
                         }
                         // Sets the filter model via the grid API
                         isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(FloatingfilterData))
-
                     }, 300);
-
                     setTimeout(() => {
                         this.setState({ isFilterButtonClicked: false })
                     }, 600);
                 }
-
             });
         } else {
             if (this.props.isSimulation) {
@@ -737,7 +735,6 @@ class OperationListing extends Component {
             statusButtonFormatter: this.statusButtonFormatter,
             hyphenFormatter: this.hyphenFormatter
         };
-
         return (
             <div className={`${isSimulation ? 'simulation-height' : 'min-height100vh'}`}>
                 {(this.state.isLoader && !this.props.isMasterSummaryDrawer) && <LoaderCustom customClass="simulation-Loader" />}
@@ -895,10 +892,10 @@ class OperationListing extends Component {
 * @param {*} state
                 */
 function mapStateToProps({ otherOperation, auth, simulation }) {
-    const { loading, filterOperation, operationList, operationSurfaceTreatmentList, operationIndividualList } = otherOperation;
+    const { loading, filterOperation, operationList, operationSurfaceTreatmentList, operationIndividualList, setOperationData } = otherOperation;
     const { leftMenuData, initialConfiguration, topAndLeftMenuData } = auth;
     const { selectedCostingListSimulation } = simulation;
-    return { loading, filterOperation, leftMenuData, operationList, initialConfiguration, topAndLeftMenuData, operationSurfaceTreatmentList, operationIndividualList, selectedCostingListSimulation };
+    return { loading, filterOperation, leftMenuData, operationList, initialConfiguration, topAndLeftMenuData, operationSurfaceTreatmentList, operationIndividualList, selectedCostingListSimulation, setOperationData };
 }
 
 /**
@@ -921,7 +918,8 @@ export default connect(mapStateToProps, {
     getOperationListByVendor,
     getListingForSimulationCombined,
     masterFinalLevelUser,
-    setSelectedCostingListSimualtion
+    setSelectedCostingListSimualtion,
+    setOperationList
 })(reduxForm({
     form: 'OperationListing',
     onSubmitFail: errors => {

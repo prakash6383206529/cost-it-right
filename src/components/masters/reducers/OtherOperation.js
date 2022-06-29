@@ -18,6 +18,7 @@ import {
     GET_INITIAL_TECHNOLOGY_SELECTLIST,
     GET_OPERATION_COMBINED_DATA_LIST,
     GET_OPERATION_APPROVAL_LIST,
+    SET_OPERATION_DATA,
 } from '../../../config/constants';
 
 const initialState = {
@@ -139,6 +140,12 @@ export default function OtherOperationReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 OperationApprovalList: action.payload
+            }
+        case SET_OPERATION_DATA:
+            return {
+                ...state,
+                loading: false,
+                setOperationData: action.payload
             }
 
         default:
