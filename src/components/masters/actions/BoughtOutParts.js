@@ -73,7 +73,7 @@ export function getBOPDomesticDataList(data, skip, take, isPagination, obj, call
             type: GET_BOP_DOMESTIC_DATA_LIST,
             payload: undefined
         })
-        const queryParams = `bop_for=${data.bop_for}&NetCost=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&DepartmentCode=`
+        const queryParams = `bop_for=${data.bop_for}&NetCost=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&ListFor=${data.ListFor ? data.ListFor : ''}&DepartmentCode=`
         const queryParamsSecond = bopQueryParms(isPagination, skip, take, obj)
         const request = axios.get(`${API.getBOPDomesticDataList}?${queryParams}&${queryParamsSecond}`, config());
         request.then((response) => {
@@ -100,7 +100,7 @@ export function getBOPDomesticDataList(data, skip, take, isPagination, obj, call
 export function getBOPImportDataList(data, skip, take, isPagination, obj, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const queryParams = `bop_for=${data.bop_for}&Currency=${obj.Currency !== undefined ? obj.Currency : ""}&NetCostCurrency=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&NetCost=${obj.NetLandedCostConversion !== undefined ? obj.NetLandedCostConversion : ""}&DepartmentCode=`
+        const queryParams = `bop_for=${data.bop_for}&Currency=${obj.Currency !== undefined ? obj.Currency : ""}&NetCostCurrency=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&NetCost=${obj.NetLandedCostConversion !== undefined ? obj.NetLandedCostConversion : ""}&ListFor=${data.ListFor ? data.ListFor : ''}&DepartmentCode=`
         const queryParamsSecond = bopQueryParms(isPagination, skip, take, obj)
         const request = axios.get(`${API.getBOPImportDataList}?${queryParams}&${queryParamsSecond}`, config());
         request.then((response) => {

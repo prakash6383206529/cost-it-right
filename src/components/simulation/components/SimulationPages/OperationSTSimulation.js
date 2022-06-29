@@ -288,7 +288,7 @@ function OperationSTSimulation(props) {
         })
 
         obj.SimulationIds = tokenForMultiSimulation
-        obj.EffectiveDate = obj.EffectiveDate = DayTime(effectiveDate).format('YYYY/MM/DD HH:mm')
+        obj.EffectiveDate = DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
         obj.SimulationSurfaceTreatmentAndOperation = tempArr
         dispatch(runVerifySurfaceTreatmentSimulation(obj, res => {
             setIsDisable(false)
@@ -463,7 +463,7 @@ function OperationSTSimulation(props) {
                 }
 
                 {
-                    showMainSimulation && <Simulation isMasterSummaryDrawer={true} isCancelClicked={true} isRMPage={true} />
+                    showMainSimulation && <Simulation isMasterSummaryDrawer={false} isCancelClicked={true} isRMPage={true} />
                 }
                 {
                     showRunSimulationDrawer &&

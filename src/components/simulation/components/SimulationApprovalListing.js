@@ -288,11 +288,12 @@ function SimulationApprovalListing(props) {
         setApproveDrawer(true)
     }
 
-    const closeDrawer = (e = '') => {
+    const closeDrawer = (e = '', type) => {
+        gridApi.deselectAll()
         setApproveDrawer(false)
-        setIsApprovalDrawer(false)
-        getTableData()
-        //setRejectDrawer(false)
+        if (type !== 'cancel') {
+            getTableData()
+        }
         setSelectedRowData([])
     }
 
@@ -405,7 +406,7 @@ function SimulationApprovalListing(props) {
                                             onClick={sendForApproval}
                                             // disabled={selectedRowData && selectedRowData.length === 0 ? true : disableApproveButton ? true : false}
                                             title="Send For Approval"
-                                            disabled={((simualtionApprovalList && simualtionApprovalList.length === 0) || (simualtionApprovalListDraft && simualtionApprovalListDraft.length === 0)) ? true : false}
+                                            disabled={(isDashboard ? (simualtionApprovalList && simualtionApprovalList.length === 0) : (simualtionApprovalListDraft && simualtionApprovalListDraft.length === 0)) ? true : false}
                                         >
                                             <div className="send-for-approval"></div>
                                         </button>

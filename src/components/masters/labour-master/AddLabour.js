@@ -313,10 +313,10 @@ class AddLabour extends Component {
   }
 
   gridHandler = () => {
-    const { machineType, labourType, gridTable, effectiveDate, isDisable, vendorName, selectedPlants, StateName } = this.state
+    const { machineType, labourType, gridTable, effectiveDate, isDisable, vendorName, selectedPlants, StateName, IsEmployeContractual } = this.state
     const { fieldsObj, error } = this.props
 
-    if (vendorName.length == 0 || selectedPlants.length == 0 || StateName == 0) {
+    if ((IsEmployeContractual ? vendorName.length === 0 : false) || selectedPlants.length === 0 || StateName === 0) {
       Toaster.warning('First fill upper detail')
       return false
     }
@@ -698,9 +698,9 @@ class AddLabour extends Component {
                         </div>
                       </Col>
                       {this.state.IsEmployeContractual && (
-                        <Col md="3">
+                        <Col md="3" className='mb-4'>
                           <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                          <div className='p-relative'>
+                          <div className="p-relative">
                             {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
                             <AsyncSelect
                               name="vendorName"
@@ -823,7 +823,7 @@ class AddLabour extends Component {
                           <div className="inputbox date-section">
                             <DatePicker
                               name="EffectiveDate"
-                              selected={this.state.effectiveDate}
+                              selected={this.state.effectiveDate ? new Date(this.state.effectiveDate) : ""}
                               onChange={this.handleEffectiveDateChange}
                               showMonthDropdown
                               showYearDropdown

@@ -358,13 +358,13 @@ class CostingTab extends Component {
     return (
       <div>
         <div className="row form-group grant-user-grid user-costing-tab">
-          <div className="col-md-12 px-0">
+          <div className="col-md-12">
             <Table className="table table-bordered" size="sm">
               <thead>
                 <tr>
                   <th>{`Module`}</th>
                   <th className=" pr-2">
-                    <label className="custom-checkbox align-middle select-all-label">
+                    <label className="custom-checkbox align-middle">
                       <input
                         type="checkbox"
                         value={"All"}

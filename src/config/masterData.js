@@ -3207,11 +3207,10 @@ export const STGridForToken = [
 ]
 
 export const BOPGridForToken = [
-    { label: "BoughtOutPartQuantity", value: "BoughtOutPartQuantity" },
+    { label: "BOP Quantity", value: "BoughtOutPartQuantity" },
     { label: "OldBOPCost", value: "OldNetBoughtOutPartCost" },
     { label: "NewBOPCost", value: "NewNetBoughtOutPartCost" },
     { label: "BOP Variance", value: "NetBoughtOutPartCostVariance" },
-    { label: "BOP Quantity", value: "BOPVariance" },
 ]
 export const ERGridForToken = [
     { label: "Currency", value: "Currency" },

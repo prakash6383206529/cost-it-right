@@ -12,6 +12,7 @@ import {
   isDataChange,
   savePartNumberAndBOMLevel,
   setPartNumberArrayAPICALL,
+  setProcessGroupGrid,
 
 } from '../../../actions/Costing';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId, CheckIsCostingDateSelected } from '../../../../../helper';
@@ -64,6 +65,8 @@ function PartCompoment(props) {
         dispatch(getRMCCTabData(data, false, (res) => {
           if (res && res.data && res.data.Result) {
             let Data = res.data.DataList[0].CostingPartDetails;
+            dispatch(setProcessGroupGrid(Data.CostingConversionCost.CostingProcessCostResponse))
+            // dispatch(setAllCostingInArray(Data))
             props.setPartDetails(BOMLevel, PartNumber, Data, item)
             // dispatch(isDataChange(false))
           }

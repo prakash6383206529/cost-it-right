@@ -51,8 +51,10 @@ function AddProcess(props) {
     let rowData = selectedProcessAndGroup && selectedProcessAndGroup.map((item) => {
       if (item.GroupName) {
         tempArr.push({ MachineId: item.MachineId, GroupName: item.GroupName })
+      } else if (tempArr?.IsChild) {      //  THIS CONDITION STOP MULTIPLE TIMES ADDING SAME CHILD AS PARENT AT TIME OF OPENING-CLOSING ACCORDION
+        return false
       } else {
-        tempArr1.push({ MachineRateId: item.MachineRateId, ProcessId: item.ProcessId })
+        tempArr1.push({ MachineRateId: item.MachineRateId, ProcessId: item.ProcessId, IsChild: true })        // IsChild KEY ADDED TO IDENTIFY CHILD-PARENT OBJECT
       }
 
       let obj = item
@@ -82,17 +84,17 @@ function AddProcess(props) {
     if (costData.VendorType === ZBC) {
       let data = {}
 
-      if (Number(costData.ETechnologyType) === Number(FORGING) || Number(costData.ETechnologyType) === Number(DIE_CASTING) || Number(costData.ETechnologyType) === Number(Ferrous_Casting)) {
+      if (Number(costData?.TechnologyId) === Number(FORGING) || Number(costData?.TechnologyId) === Number(DIE_CASTING) || Number(costData?.TechnologyId) === Number(Ferrous_Casting)) {
         data = {
           PlantId: costData.PlantId,
-          TechnologyId: String(`${costData.ETechnologyType},${MACHINING}`),
+          TechnologyId: String(`${costData?.TechnologyId},${MACHINING}`),
           CostingId: costData.CostingId,
           EffectiveDate: CostingEffectiveDate,
         }
       } else {
         data = {
           PlantId: costData.PlantId,
-          TechnologyId: String(costData.ETechnologyType),
+          TechnologyId: String(costData?.TechnologyId),
           CostingId: costData.CostingId,
           EffectiveDate: CostingEffectiveDate,
         }
@@ -110,10 +112,10 @@ function AddProcess(props) {
 
     } else {
       let data = {}
-      if (Number(costData.ETechnologyType) === Number(FORGING) || Number(costData.ETechnologyType) === Number(DIE_CASTING) || Number(costData.ETechnologyType) === Number(Ferrous_Casting)) {
+      if (Number(costData?.TechnologyId) === Number(FORGING) || Number(costData?.TechnologyId) === Number(DIE_CASTING) || Number(costData?.TechnologyId) === Number(Ferrous_Casting)) {
         data = {
           VendorId: costData.VendorId,
-          TechnologyId: String(`${costData.ETechnologyType},${MACHINING}`),
+          TechnologyId: String(`${costData?.TechnologyId},${MACHINING}`),
           VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
           DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID,
           CostingId: costData.CostingId,
@@ -123,7 +125,7 @@ function AddProcess(props) {
       else {
         data = {
           VendorId: costData.VendorId,
-          TechnologyId: String(costData.ETechnologyType),
+          TechnologyId: String(costData?.TechnologyId),
           VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
           DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID,
           CostingId: costData.CostingId,
