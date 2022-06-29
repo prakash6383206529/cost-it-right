@@ -33,6 +33,7 @@ class Level extends Component {
       technology: [],
       level: [],
       levelType: 'Costing',
+      dataToCheck: [],
     };
   }
 
@@ -41,6 +42,7 @@ class Level extends Component {
   * @description used to called after mounting component
   */
   componentDidMount() {
+
     this.props.setEmptyLevelAPI('', () => { })
     this.props.getAllTechnologyAPI(() => { })
     this.props.getAllLevelAPI(() => { })
@@ -89,6 +91,7 @@ class Level extends Component {
               level: { label: levelObj[0].Text, value: levelObj[0].Value },
               levelType: isEditedlevelType,
             })
+            this.setState({ dataToCheck: this.state.level })
           }, 500)
         }
       })
@@ -113,6 +116,7 @@ class Level extends Component {
               level: { label: levelObj[0].Text, value: levelObj[0].Value },
               levelType: isEditedlevelType,
             })
+            this.setState({ dataToCheck: this.state.level })
           }, 500)
         }
       })
@@ -137,6 +141,7 @@ class Level extends Component {
               level: { label: levelObj[0].Text, value: levelObj[0].Value },
               levelType: isEditedlevelType,
             })
+            this.setState({ dataToCheck: this.state.level })
           }, 500)
         }
       })
@@ -172,6 +177,7 @@ class Level extends Component {
     }
 
     if (label === 'technology' && this.state.levelType === 'Master') {
+
       let arrayOfTechnology = []
       const myArray = getConfigurationKey().ApprovalMasterArrayList.split(",");
       myArray && myArray.map((item) => {
@@ -346,6 +352,10 @@ class Level extends Component {
             ModifiedBy: loggedInUserId()
           }
 
+          if (this.state.dataToCheck.label === formReq.Level) {
+            this.toggleDrawer('')
+            return false
+          }
           this.props.updateLevelMappingAPI(formReq, (res) => {
             if (res && res.data && res.data.Result) {
               Toaster.success(MESSAGES.UPDATE_LEVEL_TECHNOLOGY_USER_SUCCESSFULLY)
@@ -369,14 +379,17 @@ class Level extends Component {
             Level: level.label,
             ModifiedBy: loggedInUserId()
           }
-
+          if (this.state.dataToCheck.label === formReq.Level) {
+            this.toggleDrawer('')
+            return false
+          }
           this.props.updateSimulationLevel(formReq, (res) => {
             if (res && res.data && res.data.Result) {
               Toaster.success(MESSAGES.UPDATE_LEVEL_SUCCESSFULLY)
             }
             this.toggleDrawer('')
             reset();
-            this.setState({ isLoader: false, })
+
           })
         }
         if (this.state.levelType === 'Master') {
@@ -388,14 +401,16 @@ class Level extends Component {
             Level: level.label,
             ModifiedBy: loggedInUserId()
           }
-
+          if (this.state.dataToCheck.label === formReq.Level) {
+            this.toggleDrawer('')
+            return false
+          }
           this.props.updateMasterLevel(formReq, (res) => {
             if (res && res.data && res.data.Result) {
               Toaster.success(MESSAGES.UPDATE_LEVEL_SUCCESSFULLY)
             }
             this.toggleDrawer('')
             reset();
-            this.setState({ isLoader: false, })
           })
         }
 
