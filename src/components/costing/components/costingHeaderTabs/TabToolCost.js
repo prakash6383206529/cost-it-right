@@ -33,7 +33,6 @@ function TabToolCost(props) {
   const dispatch = useDispatch()
   const IsToolCostApplicable = useSelector(state => state.costing.IsToolCostApplicable)
   const [IsApplicableProcessWise, setIsApplicableProcessWise] = useState(false);
-  const [IsApplicablilityDisable, setIsApplicablilityDisable] = useState(true);
   const [isEditFlag, setIsEditFlag] = useState(false)
   const [rowObjData, setRowObjData] = useState([])
   const [editIndex, setEditIndex] = useState('')
@@ -48,6 +47,7 @@ function TabToolCost(props) {
   const [processArray, setProcessArray] = useState([])
   const [operationArray, setOperationArray] = useState([])
   const [gridData, setGridData] = useState([])
+  const [disableSwitch, setDisableSwitch] = useState(false)
 
   const dispense = () => {
     setIsApplicableProcessWise(IsToolCostApplicable)
@@ -57,6 +57,15 @@ function TabToolCost(props) {
   useEffect(() => {
     dispenseCallback()
   }, [IsToolCostApplicable])
+
+  useEffect(() => {
+
+    if (IsApplicableProcessWise && gridData && gridData.length === 0) {
+      setDisableSwitch(false)
+    } else if (gridData.length > 0) {
+      setDisableSwitch(true)
+    }
+  }, [gridData])
 
 
   useEffect(() => {
@@ -420,7 +429,8 @@ function TabToolCost(props) {
                             onChange={onPressApplicability}
                             checked={IsApplicableProcessWise}
                             id="normal-switch"
-                            disabled={CostingViewMode}
+                            disabled={CostingViewMode || disableSwitch}
+                            //disabled={true}
                             background="#4DC771"
                             onColor="#4DC771"
                             onHandleColor="#ffffff"
