@@ -128,11 +128,10 @@ export function formatRMSimulationObject(simulationDetail, selectedRowData, cost
                     count++
                 }
             })
-            if (count === 0) {
+            if (count === 0) {                                              // NOT EQUAL
                 item.IsChecked = false
                 tempFinal.push({ CostingId: item.CostingId, CostingNumber: item.CostingNumber, IsChecked: checked, LineNumber: item.LineNumber, SANumber: item.SANumber })
             }
-
         })
 
         selectedRowData.forEach(object => {
