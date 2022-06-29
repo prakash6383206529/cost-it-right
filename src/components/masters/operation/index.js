@@ -35,8 +35,11 @@ class OperationsMaster extends Component {
         this.setState({ isOperation: true, data: { isEditFlag: false } })
     }
 
-    hideForm = () => {
-        this.setState({ isOperation: false, data: {}, stopAPICall: true })
+    hideForm = (type) => {
+        this.setState({ isOperation: false, data: {}, stopAPICall: false })
+        if (type === 'Cancel') {
+            this.setState({ stopAPICall: true })
+        }
     }
 
     getDetails = (data, isOperationAssociate) => {
