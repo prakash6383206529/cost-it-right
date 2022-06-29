@@ -31,10 +31,6 @@ class OperationsMaster extends Component {
         }
     }
 
-    componentDidMount() {
-        this.setState({ stopAPICall: false })
-    }
-
     displayOperationForm = () => {
         this.setState({ isOperation: true, data: { isEditFlag: false } })
     }
