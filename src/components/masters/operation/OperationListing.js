@@ -81,8 +81,8 @@ class OperationListing extends Component {
     }
 
     componentDidMount() {
+        this.applyPermission(this.props.topAndLeftMenuData)
         if (this.props.stopAPICall === false) {
-            this.applyPermission(this.props.topAndLeftMenuData)
 
             this.props.getTechnologySelectList(() => { })
             this.props.getOperationSelectList(() => { })
