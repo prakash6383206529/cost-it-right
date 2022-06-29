@@ -20,6 +20,7 @@ import {
     config,
     GET_OPERATION_COMBINED_DATA_LIST,
     GET_OPERATION_APPROVAL_LIST,
+    SET_OPERATION_DATA,
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
@@ -744,5 +745,18 @@ export function getOperationApprovalList(callback) {
             callback(error);
             apiErrors(error)
         });
+    };
+}
+
+/**
+ * @method setOperationList
+ * @description setOperationList
+ */
+export function setOperationList(data) {
+    return (dispatch) => {
+        dispatch({
+            type: SET_OPERATION_DATA,
+            payload: data
+        })
     };
 }
