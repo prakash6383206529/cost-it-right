@@ -113,6 +113,15 @@ export const onBtPrevious = (thisReference, master) => {
 
 
 export const onBtNext = (thisReference, master) => {
+
+    if (thisReference.state.pageSize.pageSize50 && thisReference.state.pageNo >= Math.ceil(thisReference.state.totalRecordCount / 50)) {
+        return false
+    }
+
+    if (thisReference.state.pageSize.pageSize100 && thisReference.state.pageNo >= Math.ceil(thisReference.state.totalRecordCount / 100)) {
+        return false
+    }
+
     if (thisReference.state.currentRowIndex < (thisReference.state.totalRecordCount - 10)) {
 
         thisReference.setState({ pageNo: thisReference.state.pageNo + 1 })
