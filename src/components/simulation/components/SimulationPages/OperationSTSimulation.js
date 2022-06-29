@@ -79,32 +79,6 @@ function OperationSTSimulation(props) {
         }
     }, [list])
 
-    const oldRateFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        let valueShow
-        let master = isImpactedMaster ? masterId : selectedMasterForSimulation?.value
-        if (lastRevision) {
-            if (Number(master) === Number(SURFACETREATMENT) || row.IsSurfaceTreatmenOperation === true) {
-                valueShow = row.OldSurfaceTreatmentRatePerUOM
-            } else if (Number(master) === Number(OPERATIONS) || row.IsSurfaceTreatmenOperation === false) {
-                valueShow = row.OldOperationBasicRate
-            }
-        } else {
-            valueShow = row.OldOperationRate
-        }
-        const value = beforeSaveCell(cell)
-        return (
-            <>
-                {
-                    isImpactedMaster ?
-                        valueShow :
-                        <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.Rate)} </span>
-                }
-
-            </>
-        )
-    }
 
     const newRateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -230,7 +204,6 @@ function OperationSTSimulation(props) {
         costFormatter: costFormatter,
         customNoRowsOverlay: NoContentFound,
         newRateFormatter: newRateFormatter,
-        oldRateFormatter: oldRateFormatter,
         statusFormatter: statusFormatter,
         NewcostFormatter: NewcostFormatter,
         OldcostFormatter: OldcostFormatter
@@ -400,7 +373,7 @@ function OperationSTSimulation(props) {
                                                     <AgGridColumn field={`${isbulkUpload ? 'DestinationPlant' : 'Plants'}`} editable='false' headerName="Plant" minWidth={190}></AgGridColumn>
                                                 </>}
                                                 <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={240} headerName="Net Rate" marryChildren={true} >
-                                                    <AgGridColumn minWidth={120} field="Rate" editable='false' headerName="Old" cellRenderer='oldRateFormatter' colId="Rate"></AgGridColumn>
+                                                    <AgGridColumn minWidth={120} field="Rate" editable='false' headerName="Old" colId="Rate"></AgGridColumn>
                                                     <AgGridColumn minWidth={120} cellRenderer='newRateFormatter' editable={!isImpactedMaster} field="NewRate" headerName="New" colId='NewRate'></AgGridColumn>
                                                 </AgGridColumn>
                                                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn>
