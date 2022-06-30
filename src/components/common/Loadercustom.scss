@@ -383,3 +383,8 @@
 .p-relative .login-btn:focus {
    box-shadow: none !important;
 }
+.dashboard-height {
+    .dashboard-loader {
+        justify-content: flex-start !important;
+    }
+}

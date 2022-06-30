@@ -679,122 +679,123 @@ function ApprovalListing(props) {
   return (
     <Fragment>
       <CalculatorWrapper />
+
       {
         !showApprovalSumary &&
-        <div className={` ${!isApproval && 'container-fluid'} approval-listing-page`}>
-          <form noValidate>
+        <> {
+          (loader) ? <LoaderCustom customClass="dashboard-loader" /> :
+            <div className={` ${!isApproval && 'container-fluid'} approval-listing-page`}>
+              <form noValidate>
 
-            {!isApproval && <h1 className="mb-0">Costing Approval</h1>}
+                {!isApproval && <h1 className="mb-0">Costing Approval</h1>}
 
-            <Row className="pt-4 blue-before">
-              <Col md="6" lg="6" className="search-user-block mb-3">
+                <Row className="pt-4 blue-before">
+                  <Col md="6" lg="6" className="search-user-block mb-3">
 
-                <div className="d-flex justify-content-end bd-highlight w100">
-                  <div className="warning-message d-flex align-items-center">
-                    {warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
-                    <button disabled={!warningMessage} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
-                  </div>
-                  <div>
-                    <button type="button" className="user-btn mr-2" title="Reset Grid" onClick={() => resetState()}>
-                      <div className="refresh mr-0"></div>
-                    </button>
-                    <button
-                      title="Send For Approval"
-                      class="user-btn approval-btn"
-                      type='button'
-                      onClick={sendForApproval}
-                      disabled={(isDashboard ? (approvalList && approvalList.length === 0) : (approvalListDraft && approvalListDraft.length === 0)) ? true : false}
-                    >
-                      <div className="send-for-approval mr-0" ></div>
-                    </button>
-                  </div>
-                </div>
-              </Col>
-            </Row>
-          </form>
-
-          {(loader) ? <LoaderCustom customClass="simulation-Loader" /> :
-            <Row>
-              <Col>
-                <div className={`ag-grid-react custom-pagination`}>
-
-                  <div className={`ag-grid-wrapper height-width-wrapper min-height-auto ${((approvalList && approvalList?.length <= 0) || (approvalListDraft && approvalListDraft?.length <= 0)) ? "overlay-contain" : ""}`}>
-                    <div className="ag-grid-header">
-                      <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                    <div className="d-flex justify-content-end bd-highlight w100">
+                      <div className="warning-message d-flex align-items-center">
+                        {warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
+                        <button disabled={!warningMessage} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
+                      </div>
+                      <div>
+                        <button type="button" className="user-btn mr-2" title="Reset Grid" onClick={() => resetState()}>
+                          <div className="refresh mr-0"></div>
+                        </button>
+                        <button
+                          title="Send For Approval"
+                          class="user-btn approval-btn"
+                          type='button'
+                          onClick={sendForApproval}
+                          disabled={(isDashboard ? (approvalList && approvalList.length === 0) : (approvalListDraft && approvalListDraft.length === 0)) ? true : false}
+                        >
+                          <div className="send-for-approval mr-0" ></div>
+                        </button>
+                      </div>
                     </div>
-                    <div
-                      className="ag-theme-material"
-                    >
-                      <AgGridReact
-                        floatingFilter={true}
-                        style={{ height: '100%', width: '100%' }}
-                        defaultColDef={defaultColDef}
-                        domLayout='autoHeight'
-                        // columnDefs={c}
-                        rowData={isDashboard ? approvalList : approvalListDraft}
-                        pagination={true}
-                        paginationPageSize={globalTake}
-                        onGridReady={onGridReady}
-                        gridOptions={gridOptions}
-                        //loadingOverlayComponent={'customLoadingOverlay'}
-                        noRowsOverlayComponent={'customNoRowsOverlay'}
-                        noRowsOverlayComponentParams={{
-                          title: EMPTY_DATA,
-                          imagClass: "imagClass"
-                        }}
-                        frameworkComponents={frameworkComponents}
-                        suppressRowClickSelection={true}
-                        rowSelection={'multiple'}
-                        // frameworkComponents={frameworkComponents}
-                        onFilterModified={onFloatingFilterChanged}
-                        //onSelectionChanged={onRowSelect}
-                        onRowSelected={onRowSelect}
-                        isRowSelectable={isRowSelectable}
-                      >
-                        <AgGridColumn field="CostingId" hide dataAlign="center" searchable={false} ></AgGridColumn>
-                        <AgGridColumn cellClass="has-checkbox" field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Approval No."></AgGridColumn>
-                        {isApproval && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" field="Status" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>}
-                        <AgGridColumn field="CostingNumber" headerName="Costing ID" cellRenderer='hyperLinkableFormatter' ></AgGridColumn>
-                        <AgGridColumn field="PartNumber" headerName='Part No.'></AgGridColumn>
-                        <AgGridColumn field="PartName" headerName="Part Name"></AgGridColumn>
-                        <AgGridColumn field="VendorName" cellRenderer='renderVendor' headerName="Vendor"></AgGridColumn>
-                        <AgGridColumn field="PlantName" cellRenderer='renderPlant' headerName="Plant"></AgGridColumn>
-                        <AgGridColumn field='TechnologyName' headerName="Technology"></AgGridColumn>
-                        <AgGridColumn field="NetPOPrice" cellRenderer='priceFormatter' headerName="New Price"></AgGridColumn>
-                        <AgGridColumn field="OldPOPrice" cellRenderer='oldpriceFormatter' headerName="Old PO Price"></AgGridColumn>
-                        <AgGridColumn field='Reason' headerName="Reason"></AgGridColumn>
-                        <AgGridColumn field="EffectiveDate" cellRenderer='dateFormatter' headerName="Effective Date" ></AgGridColumn>
-                        <AgGridColumn field="CreatedBy" headerName="Initiated By" ></AgGridColumn>
-                        <AgGridColumn field="CreatedOn" cellRenderer='dateFormatter' headerName="Created On" ></AgGridColumn>
-                        <AgGridColumn field="RequestedBy" headerName="Last Approval"></AgGridColumn>
-                        <AgGridColumn field="RequestedOn" cellRenderer='requestedOnFormatter' headerName="Requested On"></AgGridColumn>
-                        {!isApproval && <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="Status" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>}
-                      </AgGridReact>
+                  </Col>
+                </Row>
+              </form>
+              <Row>
+                <Col>
+                  <div className={`ag-grid-react custom-pagination`}>
 
-                      <div className='button-wrapper'>
-                        {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake} />}
-                        <div className="d-flex pagination-button-container">
-                          <p><button className="previous-btn" type="button" disabled={false} onClick={() => onBtPrevious()}> </button></p>
-                          {pageSize.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 10)}</p>}
-                          {pageSize.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 50)}</p>}
-                          {pageSize.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 100)}</p>}
-                          <p><button className="next-btn" type="button" onClick={() => onBtNext()}> </button></p>
+                    <div className={`ag-grid-wrapper height-width-wrapper min-height-auto ${((approvalList && approvalList?.length <= 0) || (approvalListDraft && approvalListDraft?.length <= 0)) ? "overlay-contain" : ""}`}>
+                      <div className="ag-grid-header">
+                        <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                      </div>
+                      <div
+                        className="ag-theme-material"
+                      >
+                        <AgGridReact
+                          floatingFilter={true}
+                          style={{ height: '100%', width: '100%' }}
+                          defaultColDef={defaultColDef}
+                          domLayout='autoHeight'
+                          // columnDefs={c}
+                          rowData={isDashboard ? approvalList : approvalListDraft}
+                          pagination={true}
+                          paginationPageSize={globalTake}
+                          onGridReady={onGridReady}
+                          gridOptions={gridOptions}
+                          //loadingOverlayComponent={'customLoadingOverlay'}
+                          noRowsOverlayComponent={'customNoRowsOverlay'}
+                          noRowsOverlayComponentParams={{
+                            title: EMPTY_DATA,
+                            imagClass: "imagClass"
+                          }}
+                          frameworkComponents={frameworkComponents}
+                          suppressRowClickSelection={true}
+                          rowSelection={'multiple'}
+                          // frameworkComponents={frameworkComponents}
+                          onFilterModified={onFloatingFilterChanged}
+                          //onSelectionChanged={onRowSelect}
+                          onRowSelected={onRowSelect}
+                          isRowSelectable={isRowSelectable}
+                        >
+                          <AgGridColumn field="CostingId" hide dataAlign="center" searchable={false} ></AgGridColumn>
+                          <AgGridColumn cellClass="has-checkbox" field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Approval No."></AgGridColumn>
+                          {isApproval && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" field="Status" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>}
+                          <AgGridColumn field="CostingNumber" headerName="Costing ID" cellRenderer='hyperLinkableFormatter' ></AgGridColumn>
+                          <AgGridColumn field="PartNumber" headerName='Part No.'></AgGridColumn>
+                          <AgGridColumn field="PartName" headerName="Part Name"></AgGridColumn>
+                          <AgGridColumn field="VendorName" cellRenderer='renderVendor' headerName="Vendor"></AgGridColumn>
+                          <AgGridColumn field="PlantName" cellRenderer='renderPlant' headerName="Plant"></AgGridColumn>
+                          <AgGridColumn field='TechnologyName' headerName="Technology"></AgGridColumn>
+                          <AgGridColumn field="NetPOPrice" cellRenderer='priceFormatter' headerName="New Price"></AgGridColumn>
+                          <AgGridColumn field="OldPOPrice" cellRenderer='oldpriceFormatter' headerName="Old PO Price"></AgGridColumn>
+                          <AgGridColumn field='Reason' headerName="Reason"></AgGridColumn>
+                          <AgGridColumn field="EffectiveDate" cellRenderer='dateFormatter' headerName="Effective Date" ></AgGridColumn>
+                          <AgGridColumn field="CreatedBy" headerName="Initiated By" ></AgGridColumn>
+                          <AgGridColumn field="CreatedOn" cellRenderer='dateFormatter' headerName="Created On" ></AgGridColumn>
+                          <AgGridColumn field="RequestedBy" headerName="Last Approval"></AgGridColumn>
+                          <AgGridColumn field="RequestedOn" cellRenderer='requestedOnFormatter' headerName="Requested On"></AgGridColumn>
+                          {!isApproval && <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="Status" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>}
+                        </AgGridReact>
+
+                        <div className='button-wrapper'>
+                          {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake} />}
+                          <div className="d-flex pagination-button-container">
+                            <p><button className="previous-btn" type="button" disabled={false} onClick={() => onBtPrevious()}> </button></p>
+                            {pageSize.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 10)}</p>}
+                            {pageSize.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 50)}</p>}
+                            {pageSize.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 100)}</p>}
+                            <p><button className="next-btn" type="button" onClick={() => onBtNext()}> </button></p>
+                          </div>
+                        </div>
+
+
+
+                        <div className="text-right pb-3">
+                          <WarningMessage message="It may take up to 5 minutes for the status to be updated." />
                         </div>
                       </div>
-
-
-
-                      <div className="text-right pb-3">
-                        <WarningMessage message="It may take up to 5 minutes for the status to be updated." />
-                      </div>
                     </div>
                   </div>
-                </div>
-              </Col>
-            </Row>
-          }
+                </Col>
+              </Row>
+            </div>
+        }</>
 
-        </div>
         // :
         // // <Redirect
         // //   to={{
