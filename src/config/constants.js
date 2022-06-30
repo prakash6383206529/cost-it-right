@@ -1570,6 +1570,9 @@ export const ERROR = 'Error'
 export const POUPDATED = 'POUpdated'
 export const LINKED = 'Linked'
 
+// MASTER APPROVAL STATUS ID
+export const APPROVED_STATUS = '3'
+
 //DECIMAL VALUES FOR PRICE
 export const TWO_DECIMAL_PRICE = 2
 export const FOUR_DECIMAL_PRICE = 4
@@ -1869,4 +1872,4 @@ export const KEY = 'gQUJ79YKYm22Cazw';
 export const IV = 'eTEFSa0PinFKTQNB'
 
 //VERSION 
-export const VERSION = "V1.2.335";
+export const VERSION = "V1.2.336";

@@ -5,7 +5,7 @@ import { Row, Col, } from 'reactstrap';
 import { focusOnError } from "../../layout/FormInputs";
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { EMPTY_DATA, OPERATIONS, SURFACETREATMENT, defaultPageSize } from '../../../config/constants';
+import { EMPTY_DATA, OPERATIONS, SURFACETREATMENT, defaultPageSize, APPROVED_STATUS } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import {
     getOperationsDataList, deleteOperationAPI, getOperationSelectList, getVendorWithVendorCodeSelectList, getTechnologySelectList,
@@ -82,35 +82,38 @@ class OperationListing extends Component {
 
     componentDidMount() {
         this.applyPermission(this.props.topAndLeftMenuData)
-        if (this.props.stopAPICall === false) {
+        setTimeout(() => {
 
-            this.props.getTechnologySelectList(() => { })
-            this.props.getOperationSelectList(() => { })
-            this.props.getVendorWithVendorCodeSelectList()
-            if (this.props.isSimulation && this.props?.selectionForListingMasterAPI === 'Combined') {
-                this.props?.changeSetLoader(true)
-                this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, OPERATIONS, (res) => {
-                    this.props?.changeSetLoader(false)
-                    this.setState({ tableData: res.data.DataList })
-                })
-            } else {
-                this.getTableListData(null, null, null, null, 0, defaultPageSize, true, this.state.floatingFilterData)
-            }
-            let obj = {
-                MasterId: OPERATIONS_ID,
-                DepartmentId: userDetails().DepartmentId,
-                LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
-                LoggedInUserId: loggedInUserId()
-            }
-            this.props.masterFinalLevelUser(obj, (res) => {
-                if (res?.data?.Result) {
-                    this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+            if (this.props.stopAPICall === false) {
+
+                this.props.getTechnologySelectList(() => { })
+                this.props.getOperationSelectList(() => { })
+                this.props.getVendorWithVendorCodeSelectList()
+                if (this.props.isSimulation && this.props?.selectionForListingMasterAPI === 'Combined') {
+                    this.props?.changeSetLoader(true)
+                    this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, OPERATIONS, (res) => {
+                        this.props?.changeSetLoader(false)
+                        this.setState({ tableData: res.data.DataList })
+                    })
+                } else {
+                    this.getTableListData(null, null, null, null, 0, defaultPageSize, true, this.state.floatingFilterData)
                 }
-            })
-        }
-        if (this.props.stopAPICall === true) {
-            this.setState({ tableData: this.props.setOperationData })
-        }
+                let obj = {
+                    MasterId: OPERATIONS_ID,
+                    DepartmentId: userDetails().DepartmentId,
+                    LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
+                    LoggedInUserId: loggedInUserId()
+                }
+                this.props.masterFinalLevelUser(obj, (res) => {
+                    if (res?.data?.Result) {
+                        this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+                    }
+                })
+            }
+            if (this.props.stopAPICall === true) {
+                this.setState({ tableData: this.props.setOperationData })
+            }
+        }, 300);
     }
 
     componentWillUnmount() {
@@ -160,12 +163,16 @@ class OperationListing extends Component {
         this.setState({ isLoader: true })
 
         const { isMasterSummaryDrawer } = this.props
+        // TO HANDLE FUTURE CONDITIONS LIKE [APPROVED_STATUS, DRAFT_STATUS] FOR MULTIPLE STATUS
+        let statusString = [APPROVED_STATUS].join(",")
+
         let filterData = {
             operation_for: operation_for,
             operation_Name_id: operation_Name_id,
             technology_id: this.props.isSimulation ? this.props.technology : technology_id,
             vendor_id: vendor_id,
             ListFor: this.props.ListFor,
+            StatusId: statusString
         }
         // THIS IS FOR SHOWING LIST IN 1 TAB(OPERATION LISTING) & ALSO FOR SHOWING LIST IN SIMULATION
         if ((isMasterSummaryDrawer !== undefined && !isMasterSummaryDrawer)) {
@@ -731,7 +738,7 @@ class OperationListing extends Component {
             hyphenFormatter: this.hyphenFormatter
         };
         return (
-            <div className={`${isSimulation ? 'simulation-height' : 'min-height100vh'}`}>
+            <div className={`${isSimulation ? 'simulation-height' : this.props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
                 {(this.state.isLoader && !this.props.isMasterSummaryDrawer) && <LoaderCustom customClass="simulation-Loader" />}
                 <div className={`ag-grid-react ${(this.props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
                     <form>
@@ -812,7 +819,7 @@ class OperationListing extends Component {
                         </Row>
                     </form>
 
-                    <div className={`ag-grid-wrapper overlay-contain ${this.props.isSimulation ? 'min-height' : ''}`}>
+                    <div className={`ag-grid-wrapper ${this.props?.isDataInMaster ? 'master-approval-overlay' : ''} overlay-contain ${this.props.isSimulation ? 'min-height' : ''}`}>
                         <div className={`ag-theme-material ${(this.state.isLoader && !this.props.isMasterSummaryDrawer) && "max-loader-height"}`}>
                             <AgGridReact
                                 defaultColDef={defaultColDef}
