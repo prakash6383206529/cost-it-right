@@ -1389,6 +1389,15 @@ sans-serif;
       .element.d-inline-flex {
         min-width: 0;
       }
+      .checkbox-text {
+        padding-bottom: 0;
+        padding-top: 0;
+        .sub-heading {
+          display: block;
+          font-size: 11px;
+          margin-bottom: 0 !important;
+        }
+      }
     }
    
   }
