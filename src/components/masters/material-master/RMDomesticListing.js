@@ -8,7 +8,7 @@ import {
     masterFinalLevelUser,
 } from '../actions/Material';
 import { checkForDecimalAndNull } from "../../../helper/validation";
-import { defaultPageSize, EMPTY_DATA, RMDOMESTIC } from '../../../config/constants';
+import { APPROVED_STATUS, defaultPageSize, EMPTY_DATA, RMDOMESTIC } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
@@ -163,6 +163,8 @@ function RMDomesticListing(props) {
     */
     const getDataList = (costingHead = null, plantId = null, materialId = null, gradeId = null, vendorId = null, technologyId = 0, skip = 0, take = 100, isPagination = true, dataObj) => {
         const { isSimulation } = props
+        // TO HANDLE FUTURE CONDITIONS LIKE [APPROVED_STATUS, DRAFT_STATUS] FOR MULTIPLE STATUS
+        let statusString = [APPROVED_STATUS].join(",")
 
         const filterData = {
             costingHead: isSimulation && filteredRMData && filteredRMData.costingHeadTemp ? filteredRMData.costingHeadTemp.value : costingHead,
@@ -176,6 +178,7 @@ function RMDomesticListing(props) {
             departmentCode: isSimulation ? userDepartmetList() : "",
             statusId: CheckApprovalApplicableMaster(RM_MASTER_ID) ? APPROVAL_ID : 0,
             ListFor: ListFor,
+            StatusId: statusString
         }
         //THIS CONDTION IS FOR IF THIS COMPONENT IS RENDER FROM MASTER APPROVAL SUMMARY IN THIS NO GET API
         setloader(true)

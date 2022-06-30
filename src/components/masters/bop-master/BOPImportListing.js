@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { checkForDecimalAndNull } from "../../../helper/validation";
-import { BOPIMPORT, EMPTY_DATA, defaultPageSize } from '../../../config/constants';
+import { BOPIMPORT, EMPTY_DATA, defaultPageSize, APPROVED_STATUS } from '../../../config/constants';
 import { getBOPImportDataList, deleteBOP, getBOPCategorySelectList, getAllVendorSelectList, } from '../actions/BoughtOutParts';
 import { getPlantSelectList, } from '../../../actions/Common';
 import NoContentFound from '../../common/NoContentFound';
@@ -127,12 +127,17 @@ class BOPImportListing extends Component {
         if (this.props.isSimulation) {
             this.props?.changeTokenCheckBox(false)
         }
+
+        // TO HANDLE FUTURE CONDITIONS LIKE [APPROVED_STATUS, DRAFT_STATUS] FOR MULTIPLE STATUS
+        let statusString = [APPROVED_STATUS].join(",")
+
         const filterData = {
             bop_for: bopFor,
             category_id: CategoryId,
             vendor_id: vendorId,
             plant_id: plantId,
             ListFor: this.props.ListFor,
+            StatusId: statusString
         }
         this.setState({ isLoader: true })
 

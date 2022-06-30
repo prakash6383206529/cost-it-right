@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { defaultPageSize, EMPTY_DATA, MACHINERATE, MACHINE_MASTER_ID } from '../../../config/constants';
+import { APPROVED_STATUS, defaultPageSize, EMPTY_DATA, MACHINERATE, MACHINE_MASTER_ID } from '../../../config/constants';
 import { getMachineDataList, deleteMachine, copyMachine, getProcessGroupByMachineId } from '../actions/MachineMaster';
 import { getTechnologySelectList } from '../../../actions/Common';
 import NoContentFound from '../../common/NoContentFound';
@@ -102,6 +102,10 @@ class MachineRateListing extends Component {
 
 
     getDataList = (costing_head = '', technology_id = 0, vendor_id = '', machine_type_id = 0, process_id = '', plant_id = '', skip = 0, take = 100, isPagination = true, dataObj) => {
+
+        // TO HANDLE FUTURE CONDITIONS LIKE [APPROVED_STATUS, DRAFT_STATUS] FOR MULTIPLE STATUS
+        let statusString = [APPROVED_STATUS].join(",")
+
         const filterData = {
             costing_head: costing_head,
             technology_id: this.props.isSimulation ? this.props.technology : technology_id,
@@ -109,6 +113,7 @@ class MachineRateListing extends Component {
             machine_type_id: machine_type_id,
             process_id: process_id,
             plant_id: plant_id,
+            StatusId: statusString
         }
 
         if (this.props.isMasterSummaryDrawer !== undefined && !this.props.isMasterSummaryDrawer) {
