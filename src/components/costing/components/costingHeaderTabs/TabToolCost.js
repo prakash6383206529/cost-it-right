@@ -33,7 +33,6 @@ function TabToolCost(props) {
   const dispatch = useDispatch()
   const IsToolCostApplicable = useSelector(state => state.costing.IsToolCostApplicable)
   const [IsApplicableProcessWise, setIsApplicableProcessWise] = useState(false);
-  const [IsApplicablilityDisable, setIsApplicablilityDisable] = useState(true);
   const [isEditFlag, setIsEditFlag] = useState(false)
   const [rowObjData, setRowObjData] = useState([])
   const [editIndex, setEditIndex] = useState('')
@@ -48,6 +47,7 @@ function TabToolCost(props) {
   const [processArray, setProcessArray] = useState([])
   const [operationArray, setOperationArray] = useState([])
   const [gridData, setGridData] = useState([])
+  const [disableSwitch, setDisableSwitch] = useState(false)
 
   const dispense = () => {
     setIsApplicableProcessWise(IsToolCostApplicable)
@@ -58,6 +58,15 @@ function TabToolCost(props) {
     dispenseCallback()
   }, [IsToolCostApplicable])
 
+  useEffect(() => {
+
+    if (IsApplicableProcessWise && gridData && gridData.length === 0) {
+      setDisableSwitch(false)
+    } else if (gridData.length > 0) {
+      setDisableSwitch(true)
+    }
+  }, [gridData])
+
 
   useEffect(() => {
 
@@ -65,6 +74,9 @@ function TabToolCost(props) {
       let ProcessCostArray = []
       let OperationCostArray = []
 
+      if (RMCCTabData[0].PartType === "Assembly") {
+        setDisableSwitch(true)
+      }
       ProcessCostArray = RMCCTabData && RMCCTabData[0]?.CostingPartDetails?.CostingConversionCost?.CostingProcessCostResponse && RMCCTabData[0]?.CostingPartDetails?.CostingConversionCost?.CostingProcessCostResponse.map(el => {
         return { label: el.ProcessName, value: el.ProcessId };
       })
@@ -420,7 +432,8 @@ function TabToolCost(props) {
                             onChange={onPressApplicability}
                             checked={IsApplicableProcessWise}
                             id="normal-switch"
-                            disabled={CostingViewMode}
+                            disabled={CostingViewMode || disableSwitch}
+                            //disabled={true}
                             background="#4DC771"
                             onColor="#4DC771"
                             onHandleColor="#ffffff"

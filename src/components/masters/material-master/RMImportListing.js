@@ -7,7 +7,7 @@ import {
   masterFinalLevelUser
 } from '../actions/Material';
 import { checkForDecimalAndNull } from "../../../helper/validation";
-import { defaultPageSize, EMPTY_DATA, RMIMPORT } from '../../../config/constants';
+import { APPROVED_STATUS, defaultPageSize, EMPTY_DATA, RMIMPORT } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
@@ -61,6 +61,7 @@ function RMImportListing(props) {
   const [disableFilter, setDisableFilter] = useState(true) // STATE MADE FOR CHECKBOX IN SIMULATION
   //STATES BELOW ARE MADE FOR PAGINATION PURPOSE
   const [warningMessage, setWarningMessage] = useState(false)
+  const [globalTake, setGlobalTake] = useState(defaultPageSize)
   const [filterModel, setFilterModel] = useState({});
   const [pageNo, setPageNo] = useState(1)
   const [totalRecordCount, setTotalRecordCount] = useState(0)
@@ -149,21 +150,11 @@ function RMImportListing(props) {
       if (isSimulation) {
         props?.changeTokenCheckBox(false)
       }
-      getDataList(null, null, null, null, null, 0, 0, 100, true, floatingFilterData)
+      getDataList(null, null, null, null, null, 0, 0, defaultPageSize, true, floatingFilterData)
     }
 
     setvalue({ min: 0, max: 0 });
   }, [])
-
-
-  const getFilterRMData = () => {
-    if (isSimulation) {
-      return getFilteredData(rmImportDataList, RM_MASTER_ID)
-    } else {
-
-      return rmImportDataList
-    }
-  }
 
 
   /**
@@ -172,6 +163,8 @@ function RMImportListing(props) {
   */
   const getDataList = (costingHead = null, plantId = null, materialId = null, gradeId = null, vendorId = null, technologyId = 0, skip = 0, take = 100, isPagination = true, dataObj) => {
     const { isSimulation } = props
+    // TO HANDLE FUTURE CONDITIONS LIKE [APPROVED_STATUS, DRAFT_STATUS] FOR MULTIPLE STATUS
+    let statusString = [APPROVED_STATUS].join(",")
 
     const filterData = {
       costingHead: isSimulation && filteredRMData && filteredRMData.costingHeadTemp ? filteredRMData.costingHeadTemp.value : costingHead,
@@ -184,6 +177,7 @@ function RMImportListing(props) {
       net_landed_max_range: value.max,
       statusId: CheckApprovalApplicableMaster(RM_MASTER_ID) ? APPROVAL_ID : 0,
       ListFor: ListFor,
+      StatusId: statusString
     }
     setloader(true)
     //THIS CONDTION IS FOR IF THIS COMPONENT IS RENDER FROM MASTER APPROVAL SUMMARY IN THIS NO GET API
@@ -263,7 +257,7 @@ function RMImportListing(props) {
     setPageNo(1)
     setCurrentRowIndex(0)
     gridOptions?.columnApi?.resetColumnState();
-    getDataList(null, null, null, null, null, 0, 0, 100, true, floatingFilterData)
+    getDataList(null, null, null, null, null, 0, 0, globalTake, true, floatingFilterData)
   }
 
 
@@ -271,16 +265,25 @@ function RMImportListing(props) {
     if (currentRowIndex >= 10) {
       setPageNo(pageNo - 1)
       const previousNo = currentRowIndex - 10;
-      getDataList(null, null, null, null, null, 0, previousNo, 100, true, floatingFilterData)
+      getDataList(null, null, null, null, null, 0, previousNo, globalTake, true, floatingFilterData)
       setCurrentRowIndex(previousNo)
     }
   }
 
   const onBtNext = () => {
+
+    if (pageSize.pageSize50 && pageNo >= Math.ceil(totalRecordCount / 50)) {
+      return false
+    }
+
+    if (pageSize.pageSize100 && pageNo >= Math.ceil(totalRecordCount / 100)) {
+      return false
+    }
+
     if (currentRowIndex < (totalRecordCount - 10)) {
       setPageNo(pageNo + 1)
       const nextNo = currentRowIndex + 10;
-      getDataList(null, null, null, null, null, 0, nextNo, 100, true, floatingFilterData)
+      getDataList(null, null, null, null, null, 0, nextNo, globalTake, true, floatingFilterData)
       setCurrentRowIndex(nextNo)
     }
   };
@@ -480,17 +483,24 @@ function RMImportListing(props) {
   };
 
   const onPageSizeChanged = (newPageSize) => {
-    gridApi.paginationSetPageSize(Number(newPageSize));
 
     if (Number(newPageSize) === 10) {
+      getDataList(null, null, null, null, null, 0, 0, 10, true, floatingFilterData)
       setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
+      setGlobalTake(10)
     }
     else if (Number(newPageSize) === 50) {
+      getDataList(null, null, null, null, null, 0, 0, 50, true, floatingFilterData)
       setPageSize(prevState => ({ ...prevState, pageSize50: true, pageSize10: false, pageSize100: false }))
+      setGlobalTake(50)
     }
     else if (Number(newPageSize) === 100) {
+      getDataList(null, null, null, null, null, 0, 0, 100, true, floatingFilterData)
       setPageSize(prevState => ({ ...prevState, pageSize100: true, pageSize10: false, pageSize50: false }))
+      setGlobalTake(100)
     }
+
+    gridApi.paginationSetPageSize(Number(newPageSize));
 
   };
 
@@ -523,7 +533,7 @@ function RMImportListing(props) {
         tempArr.push(item.data)
       }))
     } else {
-      tempArr = getFilterRMData()
+      tempArr = rmImportDataList
     }
     return returnExcelColumn(RMIMPORT_DOWNLOAD_EXCEl, tempArr)
   };
@@ -547,8 +557,10 @@ function RMImportListing(props) {
     setWarningMessage(false)
     setPageNo(1)
     setCurrentRowIndex(0)
-    getDataList(null, null, null, null, null, 0, 0, 100, true, floatingFilterData)
+    getDataList(null, null, null, null, null, 0, 0, 10, true, floatingFilterData)
     dispatch(setSelectedCostingListSimualtion([]))
+    setGlobalTake(10)
+    setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
   }
 
 
@@ -706,7 +718,7 @@ function RMImportListing(props) {
           </Row>
           <Row>
             <Col>
-              <div className={`ag-grid-wrapper ${getFilterRMData() && getFilterRMData()?.length <= 0 ? "overlay-contain" : ""}`}>
+              <div className={`ag-grid-wrapper ${rmImportDataList && rmImportDataList?.length <= 0 ? "overlay-contain" : ""}`}>
                 <div className={`ag-theme-material ${loader && "max-loader-height"}`}>
                   <AgGridReact
                     style={{ height: '100%', width: '100%' }}
@@ -714,9 +726,9 @@ function RMImportListing(props) {
                     floatingFilter={true}
 
                     domLayout='autoHeight'
-                    rowData={getFilterRMData()}
+                    rowData={rmImportDataList}
                     pagination={true}
-                    paginationPageSize={defaultPageSize}
+                    paginationPageSize={globalTake}
                     onGridReady={onGridReady}
                     gridOptions={gridOptions}
                     noRowsOverlayComponent={'customNoRowsOverlay'}
@@ -757,7 +769,7 @@ function RMImportListing(props) {
                     <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>
                   </AgGridReact>
                   <div className='button-wrapper'>
-                    {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
+                    {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake} />}
 
                     <div className="d-flex pagination-button-container">
                       <p><button className="previous-btn" type="button" disabled={false} onClick={() => onBtPrevious()}> </button></p>

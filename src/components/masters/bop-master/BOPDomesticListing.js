@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { EMPTY_DATA, BOP_MASTER_ID, BOPDOMESTIC, defaultPageSize } from '../../../config/constants';
+import { EMPTY_DATA, BOP_MASTER_ID, BOPDOMESTIC, defaultPageSize, APPROVED_STATUS } from '../../../config/constants';
 import {
     getBOPDomesticDataList, deleteBOP, getBOPCategorySelectList, getAllVendorSelectList,
     getPlantSelectList, getPlantSelectListByVendor,
@@ -16,7 +16,7 @@ import BulkUpload from '../../massUpload/BulkUpload';
 import { BOP_DOMESTIC_DOWNLOAD_EXCEl, } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
 import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
-import { getFilteredData, loggedInUserId, userDepartmetList, userDetails } from '../../../helper';
+import { loggedInUserId, userDepartmetList, userDetails } from '../../../helper';
 import { BopDomestic, } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -66,6 +66,7 @@ class BOPDomesticListing extends Component {
             isFilterButtonClicked: false,
             currentRowIndex: 0,
             pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
+            globalTake: defaultPageSize
         }
     }
 
@@ -78,7 +79,7 @@ class BOPDomesticListing extends Component {
         this.props.getBOPCategorySelectList(() => { })
         this.props.getPlantSelectList(() => { })
         this.props.getVendorWithVendorCodeSelectList(() => { })
-        this.getDataList("", 0, "", "", 0, 100, true, this.state.floatingFilterData)
+        this.getDataList("", 0, "", "", 0, defaultPageSize, true, this.state.floatingFilterData)
         let obj = {
             MasterId: BOP_MASTER_ID,
             DepartmentId: userDetails().DepartmentId,
@@ -101,12 +102,16 @@ class BOPDomesticListing extends Component {
     * @description GET DETAILS OF BOP DOMESTIC
     */
     getDataList = (bopFor = '', CategoryId = 0, vendorId = '', plantId = '', skip = 0, take = 100, isPagination = true, dataObj) => {
+        // TO HANDLE FUTURE CONDITIONS LIKE [APPROVED_STATUS, DRAFT_STATUS] FOR MULTIPLE STATUS
+        let statusString = [APPROVED_STATUS].join(",")
+
         const filterData = {
             bop_for: bopFor,
             category_id: CategoryId,
             vendor_id: vendorId,
             plant_id: plantId,
             ListFor: this.props.ListFor,
+            StatusId: statusString
         }
         const { isMasterSummaryDrawer } = this.props
 
@@ -172,7 +177,7 @@ class BOPDomesticListing extends Component {
     }
 
     onSearch = () => {
-        onSearch(gridOptions, this, "BOP")  // COMMON PAGINATION FUNCTION
+        onSearch(gridOptions, this, "BOP", this.state.globalTake)  // COMMON PAGINATION FUNCTION
     }
 
     resetState = () => {
@@ -191,7 +196,7 @@ class BOPDomesticListing extends Component {
 
     onPageSizeChanged = (newPageSize) => {
 
-        onPageSizeChanged(this, newPageSize)  // COMMON PAGINATION FUNCTION
+        onPageSizeChanged(this, newPageSize, "BOP", this.state.currentRowIndex)  // COMMON PAGINATION FUNCTION
     };
 
     componentDidUpdate(prevProps, prevState) {
@@ -422,14 +427,6 @@ class BOPDomesticListing extends Component {
         this.state.gridApi.setQuickFilter(e.target.value);
     }
 
-    getFilterBOPData = () => {
-        if (this.props.isSimulation) {
-            return getFilteredData(this.props.bopDomesticList, BOP_MASTER_ID)
-        }
-        else {
-            return this.props.bopDomesticList
-        }
-    }
     /**
     * @method render
     * @description Renders the component
@@ -539,7 +536,7 @@ class BOPDomesticListing extends Component {
 
         return (
 
-            <div className={`ag-grid-react ${(this.props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${DownloadAccessibility ? "show-table-btn" : ""} ${this.props.isSimulation ? 'simulation-height' : 'min-height100vh'}`}>
+            <div className={`ag-grid-react ${(this.props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${DownloadAccessibility ? "show-table-btn" : ""} ${this.props.isSimulation ? 'simulation-height' : this.props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
                 {/* {this.state.isLoader && <LoaderCustom />} */}
                 {(this.state.isLoader && !this.props.isMasterSummaryDrawer) && <LoaderCustom customClass="simulation-Loader" />}
                 < form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate >
@@ -617,15 +614,15 @@ class BOPDomesticListing extends Component {
                 <Row>
                     <Col>
 
-                        <div className={`ag-grid-wrapper overlay-contain `}>
+                        <div className={`ag-grid-wrapper ${this.props?.isDataInMaster ? 'master-approval-overlay' : ''} overlay-contain `}>
                             <div className={`ag-theme-material ${(this.state.isLoader && !this.props.isMasterSummaryDrawer) && "max-loader-height"}`}>
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
                                     floatingFilter={true}
                                     domLayout='autoHeight'
-                                    rowData={this.getFilterBOPData()}
+                                    rowData={this.props.bopDomesticList}
                                     pagination={true}
-                                    paginationPageSize={defaultPageSize}
+                                    paginationPageSize={this.state.globalTake}
                                     onGridReady={this.onGridReady}
                                     gridOptions={gridOptions}
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
@@ -654,7 +651,7 @@ class BOPDomesticListing extends Component {
                                     {!this.props?.isSimulation && !this.props?.isMasterSummaryDrawer && <AgGridColumn field="BoughtOutPartId" width={160} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                 </AgGridReact>
                                 <div className='button-wrapper'>
-                                    {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
+                                    {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} globalTake={this.state.globalTake} />}
                                     {(this.props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) &&
                                         <div className="d-flex pagination-button-container">
                                             <p><button className="previous-btn" type="button" disabled={false} onClick={() => this.onBtPrevious()}> </button></p>

@@ -1117,6 +1117,9 @@ p {
   margin-bottom: 0;
 }
 
+.border-bottom-none {
+  border-bottom: none !important;
+}
 .borderradius-0 {
   border-radius: 0;
 }
@@ -2779,6 +2782,11 @@ body {
   .overlay-contain {
     .ag-center-cols-clipper {
       min-height: 150px !important;
+    }
+    &.master-approval-overlay {
+      .ag-center-cols-clipper {
+        min-height: auto !important;
+      }
     }
   }
 }

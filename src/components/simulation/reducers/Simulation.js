@@ -30,8 +30,8 @@ import {
 } from '../../../config/constants';
 
 const initialState = {
-    count: 1,
-    selectedCostingListSimulation: []
+    selectedCostingListSimulation: [],
+    costingSimulationList: []
 };
 
 export default function SimulationReducer(state = initialState, action) {

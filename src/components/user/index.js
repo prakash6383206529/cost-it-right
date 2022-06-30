@@ -33,32 +33,54 @@ class User extends Component {
 
   topAndLeftMenuFunction = () => {
     let ModuleId = reactLocalStorage.get('ModuleId');
-    this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
-      const { leftMenuData } = this.props;
-      if (leftMenuData !== undefined) {
-        let Data = leftMenuData;
+    let leftMenuFromAPI = []
+    const { topAndLeftMenuData } = this.props;
+    topAndLeftMenuData && topAndLeftMenuData.map(el => {
+      if (el.ModuleId === ModuleId) {
+        leftMenuFromAPI = el.Pages
+      }
+      return null;
+    })
 
-        const userPermissions = Data && Data.find(el => el.PageName === USER)
-        const rolePermissions = Data && Data.find(el => el.PageName === ROLE)
-        const departmentPermissions = Data && Data.find(el => el.PageName === DEPARTMENT)
-        const levelsPermissions = Data && Data.find(el => el.PageName === LEVELS)
+    if (topAndLeftMenuData !== undefined) {
 
-        const userData = userPermissions && userPermissions.Actions && checkPermission(userPermissions.Actions)
-        const roleData = rolePermissions && rolePermissions.Actions && checkPermission(rolePermissions.Actions)
-        const departmentData = departmentPermissions && departmentPermissions.Actions && checkPermission(departmentPermissions.Actions)
-        const levelsData = levelsPermissions && levelsPermissions.Actions && checkPermission(levelsPermissions.Actions)
+      const userPermissions = leftMenuFromAPI && leftMenuFromAPI.find(el => el.PageName === USER)
+      const rolePermissions = leftMenuFromAPI && leftMenuFromAPI.find(el => el.PageName === ROLE)
+      const departmentPermissions = leftMenuFromAPI && leftMenuFromAPI.find(el => el.PageName === DEPARTMENT)
+      const levelsPermissions = leftMenuFromAPI && leftMenuFromAPI.find(el => el.PageName === LEVELS)
 
-        if (userData !== undefined) {
-          this.setState({
-            ViewUserAccessibility: userData && userData.View ? userData.View : false,
-            ViewRoleAccessibility: roleData && roleData.View ? roleData.View : false,
-            ViewDepartmentAccessibility: departmentData && departmentData.View ? departmentData.View : false,
-            ViewLevelAccessibility: levelsData && levelsData.View ? levelsData.View : false,
-            activeTab: userData && userData.View ? '1' : (roleData && roleData.View ? '2' : (departmentData && departmentData.View ? '3' : '4'))
-          })
+      const userData = userPermissions && userPermissions.Actions && checkPermission(userPermissions.Actions)
+      const roleData = rolePermissions && rolePermissions.Actions && checkPermission(rolePermissions.Actions)
+      const departmentData = departmentPermissions && departmentPermissions.Actions && checkPermission(departmentPermissions.Actions)
+      const levelsData = levelsPermissions && levelsPermissions.Actions && checkPermission(levelsPermissions.Actions)
+
+      if (userData !== undefined) {
+
+        for (var prop in userData) {
+          if (userData[prop] === true) {
+            this.setState({ ViewUserAccessibility: true, activeTab: '1' })
+          }
+        }
+
+        for (var propRole in roleData) {
+          if (roleData[propRole] === true) {
+            this.setState({ ViewRoleAccessibility: true, activeTab: this.state.ViewUserAccessibility ? '1' : '2' })
+          }
+        }
+
+        for (var propDepart in departmentData) {
+          if (departmentData[propDepart] === true) {
+            this.setState({ ViewDepartmentAccessibility: true, activeTab: this.state.ViewUserAccessibility ? '1' : (this.state.ViewRoleAccessibility ? '2' : '3') })
+          }
+        }
+
+        for (var propLevel in levelsData) {
+          if (levelsData[propLevel] === true) {
+            this.setState({ ViewLevelAccessibility: true })
+          }
         }
       }
-    })
+    }
   }
 
   componentDidMount() {

@@ -962,7 +962,7 @@ const SendForApproval = (props) => {
                       className="btn btn-primary save-btn"
                       type="button"
                       // className="submit-button save-btn"
-                      disabled={isDisable || isDisabledSAP}
+                      disabled={isDisable || isDisabledSAP || isFinalApproverShow}
                       onClick={onSubmit}
                     >
                       <div className={'save-icon'}></div>

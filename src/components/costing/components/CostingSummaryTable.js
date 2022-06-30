@@ -890,7 +890,7 @@ const CostingSummaryTable = (props) => {
 
                         {viewCostingData &&
                           viewCostingData?.map((data, index) => {
-                            const title = data?.zbc === 0 ? data?.plantName : (data?.zbc === 1 ? data?.vendorName + "(" + data?.vendorCode + ") " + (localStorage.IsVendorPlantConfigurable ? " (" + data?.vendorPlantName + ") " : "") : 'CBC') + "(SOB: " + data?.shareOfBusinessPercent + "%)"
+                            const title = data?.zbc === 0 ? data?.plantName + "(SOB: " + data?.shareOfBusinessPercent + "%)" : (data?.zbc === 1 ? data?.vendorName : 'CBC') + "(SOB: " + data?.shareOfBusinessPercent + "%)"
                             return (
                               <th scope="col" className={`header-name ${isLockedState && data?.status !== DRAFT && costingSummaryMainPage && !pdfHead ? 'pt-30' : ''}`}>
                                 {data?.IsApprovalLocked && !pdfHead && !drawerDetailPDF && costingSummaryMainPage && data?.status === DRAFT && <WarningMessage title={data?.getApprovalLockedMessage} dClass={"costing-summary-warning-mesaage"} message={data?.getApprovalLockedMessage} />}    {/* ADD THIS CODE ONCE DEPLOYED FROM BACKEND{data.ApprovalLockedMessage}*/}
@@ -920,7 +920,7 @@ const CostingSummaryTable = (props) => {
                                       </>
                                     }
                                     {
-                                      (isApproval && data?.CostingHeading !== '-') ? <span>{data?.CostingHeading}</span> : <span className={`checkbox-text`} title={title}>{data?.zbc === 0 ? `ZBC(${data?.plantName})` : data?.zbc === 1 ? `${data?.vendorName}(${data?.vendorCode}) ${localStorage.IsVendorPlantConfigurable ? `(${data?.vendorPlantName})` : ''}` : 'CBC'}{` (SOB: ${data?.shareOfBusinessPercent}%)`}</span>
+                                      (isApproval && data?.CostingHeading !== '-') ? <span>{data?.CostingHeading}</span> : <span className={`checkbox-text`} title={title}>{data?.zbc === 0 ? <span>{data?.plantName}(SOB: {data?.shareOfBusinessPercent}%)<span className='sub-heading'>{data?.plantCode}-ZBC</span></span> : data?.zbc === 1 ? <span>{data?.vendorName}(SOB: {data?.shareOfBusinessPercent}%)<span className='sub-heading'>{data?.vendorCode}-VBC</span></span> : 'CBC'}</span>
                                     }
                                   </div>
 
@@ -942,11 +942,11 @@ const CostingSummaryTable = (props) => {
                           <tr>
                             <td>
                               <span className="d-block">Costing Version</span>
-                              <span className="d-block">PO Price</span>
+                              <span className="d-block">PO Price (Effective from)</span>
                               <span className="d-block">Part Number</span>
                               <span className="d-block">Part Name</span>
                               <span className="d-block">Revision Number</span>
-                              <span className="d-block">Plant Name</span>
+                              <span className="d-block">Plant (Code)</span>
 
                             </td>
                             {viewCostingData &&
@@ -965,13 +965,12 @@ const CostingSummaryTable = (props) => {
                                         </button>
                                       }
                                     </span>
-                                    <span class="d-block">{checkForDecimalAndNull(data?.poPrice, initialConfiguration.NoOfDecimalForPrice)}</span>
+                                    <span class="d-block">{checkForDecimalAndNull(data?.poPrice, initialConfiguration.NoOfDecimalForPrice)} ({DayTime(data?.costingDate).format('DD-MM-YYYY')})</span>
                                     {/* USE PART NUMBER KEY HERE */}
                                     <span class="d-block">{data?.partNumber}</span>
                                     <span class="d-block">{data?.partName}</span>
                                     <span class="d-block">{data?.RevisionNumber}</span>
-                                    <span class="d-block">{data?.zbc === 0 ? data?.plantName : data?.destinationPlantName}</span>
-
+                                    <span class="d-block">{data?.zbc === 0 ? `${data?.plantName} (${data?.plantCode})` : data?.destinationPlantName}</span>
                                   </td>
                                 )
                               })}
@@ -1383,10 +1382,8 @@ const CostingSummaryTable = (props) => {
 
                       {!drawerDetailPDF ? <tr>
                         <td>
-
-                          <span class="d-block small-grey-text"></span>
-                          <span class="d-block small-grey-text">Tool Maintenance Applicability</span>
-                          <span class="d-block small-grey-text">Tool Maintenance Cost</span>
+                          <span class="d-block small-grey-text pt-3"></span>
+                          <span class="d-block small-grey-text">Tool Maintenance Cost on</span>
                           <span class="d-block small-grey-text">Tool Price</span>
                           <span class="d-block small-grey-text">Amortization Quantity (Tool Life)</span>
                           <span class="d-block small-grey-text">Tool Amortization Cost</span>
@@ -1395,22 +1392,20 @@ const CostingSummaryTable = (props) => {
                           viewCostingData?.map((data) => {
                             return (
                               <td className={` ${pdfHead || drawerDetailPDF ? '' : ''}`}>
-                                <div class="d-flex mt7">
-                                  <span class="d-inline-block w-50">
+                                <div class="d-flex">
+                                  <span class="d-inline-block p-0 w-50">
                                     {data?.CostingHeading !== VARIANCE ? data?.toolApplicability.applicability : ''}
                                   </span>{' '}
                                   &nbsp;{' '}
-                                  <span class="d-inline-block w-50">
+                                  <span class="d-inline-block p-0 w-50">
                                     {data?.CostingHeading !== VARIANCE ? data?.toolApplicability.value : ''}
                                   </span>
                                 </div>
                                 <div className="d-flex">
                                   <span className="d-inline-block w-50 ">{data?.CostingHeading !== VARIANCE ? data?.toolApplicabilityValue.toolTitle : ''}</span> &nbsp;{' '}
-                                  <span className="d-inline-block w-50 ">{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.toolApplicabilityValue.toolValue, initialConfiguration.NoOfDecimalForPrice) : ''}</span>
+                                  <span className="d-inline-block w-50 "> {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.toolMaintenanceCost, initialConfiguration.NoOfDecimalForPrice) : ''}</span>
                                 </div>
-                                <span class="d-block small-grey-text">
-                                  {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.toolMaintenanceCost, initialConfiguration.NoOfDecimalForPrice) : ''}
-                                </span>
+
                                 <span class="d-block small-grey-text">
                                   {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.toolPrice, initialConfiguration.NoOfDecimalForPrice) : ''}
                                 </span>

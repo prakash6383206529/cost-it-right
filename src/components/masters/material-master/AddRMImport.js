@@ -1372,7 +1372,7 @@ class AddRMImport extends Component {
                               required={true}
                               className=" "
                               customClassName=" withBorder"
-                              disabled={isEditFlag || isViewFlag}
+                              disabled={true}
                             />
 
                           </Col>
@@ -1664,7 +1664,7 @@ class AddRMImport extends Component {
                             this.state.showCurrency &&
                             <Col md="3">
                               <Field
-                                label={labelWithUOMAndCurrency("Net Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
+                                label={labelWithUOMAndCurrency("Net Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label)}
                                 name={"NetLandedCostCurrency"}
                                 type="text"
                                 placeholder={""}

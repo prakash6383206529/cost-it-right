@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { defaultPageSize, EMPTY_DATA, MACHINERATE, MACHINE_MASTER_ID } from '../../../config/constants';
+import { APPROVED_STATUS, defaultPageSize, EMPTY_DATA, MACHINERATE, MACHINE_MASTER_ID } from '../../../config/constants';
 import { getMachineDataList, deleteMachine, copyMachine, getProcessGroupByMachineId } from '../actions/MachineMaster';
 import { getTechnologySelectList } from '../../../actions/Common';
 import NoContentFound from '../../common/NoContentFound';
@@ -64,6 +64,7 @@ class MachineRateListing extends Component {
             isFilterButtonClicked: false,
             currentRowIndex: 0,
             pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
+            globalTake: defaultPageSize
         }
     }
 
@@ -83,7 +84,7 @@ class MachineRateListing extends Component {
             }
         }
         if (this.props.selectionForListingMasterAPI === 'Master') {
-            this.getDataList("", 0, "", 0, "", "", 0, 100, true, this.state.floatingFilterData)
+            this.getDataList("", 0, "", 0, "", "", 0, defaultPageSize, true, this.state.floatingFilterData)
         }
         let obj = {
             MasterId: MACHINE_MASTER_ID,
@@ -101,6 +102,10 @@ class MachineRateListing extends Component {
 
 
     getDataList = (costing_head = '', technology_id = 0, vendor_id = '', machine_type_id = 0, process_id = '', plant_id = '', skip = 0, take = 100, isPagination = true, dataObj) => {
+
+        // TO HANDLE FUTURE CONDITIONS LIKE [APPROVED_STATUS, DRAFT_STATUS] FOR MULTIPLE STATUS
+        let statusString = [APPROVED_STATUS].join(",")
+
         const filterData = {
             costing_head: costing_head,
             technology_id: this.props.isSimulation ? this.props.technology : technology_id,
@@ -108,6 +113,7 @@ class MachineRateListing extends Component {
             machine_type_id: machine_type_id,
             process_id: process_id,
             plant_id: plant_id,
+            StatusId: statusString
         }
 
         if (this.props.isMasterSummaryDrawer !== undefined && !this.props.isMasterSummaryDrawer) {
@@ -153,7 +159,7 @@ class MachineRateListing extends Component {
     }
 
     onSearch = () => {
-        onSearch(gridOptions, this, "Machine")  // COMMON PAGINATION FUNCTION
+        onSearch(gridOptions, this, "Machine", this.state.globalTake)  // COMMON PAGINATION FUNCTION
     }
 
     resetState = () => {
@@ -169,7 +175,7 @@ class MachineRateListing extends Component {
     };
 
     onPageSizeChanged = (newPageSize) => {
-        onPageSizeChanged(this, newPageSize)    // COMMON PAGINATION FUNCTION
+        onPageSizeChanged(this, newPageSize, "Machine", this.state.currentRowIndex)    // COMMON PAGINATION FUNCTION
     };
 
     /**
@@ -606,7 +612,7 @@ class MachineRateListing extends Component {
                                     domLayout='autoHeight'
                                     rowData={this.getFilterMachineData()}
                                     pagination={true}
-                                    paginationPageSize={defaultPageSize}
+                                    paginationPageSize={this.state.globalTake}
                                     onGridReady={this.onGridReady}
                                     gridOptions={gridOptions}
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
@@ -633,7 +639,7 @@ class MachineRateListing extends Component {
                                     {!isSimulation && !this.props?.isMasterSummaryDrawer && <AgGridColumn field="MachineId" width={230} cellClass={"actions-wrapper"} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                 </AgGridReact>
                                 <div className='button-wrapper'>
-                                    {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
+                                    {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} globalTake={this.state.globalTake} />}
                                     {(this.props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) &&
                                         <div className="d-flex pagination-button-container">
                                             <p><button className="previous-btn" type="button" disabled={false} onClick={() => this.onBtPrevious()}> </button></p>

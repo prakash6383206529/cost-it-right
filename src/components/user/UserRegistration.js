@@ -1622,12 +1622,12 @@ class UserRegistration extends Component {
 
                         <div className="row form-group">
                           <div className="col-md-12">
-                            <Table className="table" size="sm" >
+                            <Table className="table border" size="sm" >
                               <thead>
                                 <tr>
-                                  <th>{`Technology`}</th>
-                                  <th>{`Level`}</th>
-                                  <th className="text-right">{`Action`}</th>
+                                  <th className="border-bottom-none">{`Technology`}</th>
+                                  <th className="border-bottom-none">{`Level`}</th>
+                                  <th className="text-right border-bottom-none">{`Action`}</th>
                                 </tr>
                               </thead>
                               <tbody >
@@ -1646,9 +1646,14 @@ class UserRegistration extends Component {
                                     )
                                   })
                                 }
+                                {this.state.TechnologyLevelGrid.length === 0 && <tr>
+                                  <td colSpan={3}>
+                                    <NoContentFound title={EMPTY_DATA} />
+                                  </td>
+                                </tr>}
                               </tbody>
                             </Table>
-                            {this.state.TechnologyLevelGrid.length === 0 && <NoContentFound title={EMPTY_DATA} />}
+
                           </div>
                         </div>
                       </>
@@ -1728,12 +1733,12 @@ class UserRegistration extends Component {
 
                         <div className="row form-group">
                           <div className="col-md-12">
-                            <Table className="table" size="sm" >
+                            <Table className="table border" size="sm" >
                               <thead>
                                 <tr>
-                                  <th>{`Head`}</th>
-                                  <th>{`Level`}</th>
-                                  <th className="text-right">{`Action`}</th>
+                                  <th className="border-bottom-none">{`Head`}</th>
+                                  <th className="border-bottom-none">{`Level`}</th>
+                                  <th className="text-right border-bottom-none">{`Action`}</th>
                                 </tr>
                               </thead>
                               <tbody >
@@ -1752,9 +1757,13 @@ class UserRegistration extends Component {
                                     )
                                   })
                                 }
+                                {this.state.HeadLevelGrid.length === 0 && <tr>
+                                  <td colSpan={3}>
+                                    <NoContentFound title={EMPTY_DATA} />
+                                  </td>
+                                </tr>}
                               </tbody>
                             </Table>
-                            {this.state.HeadLevelGrid.length === 0 && <NoContentFound title={EMPTY_DATA} />}
                           </div>
                         </div>
                       </>
@@ -1828,15 +1837,15 @@ class UserRegistration extends Component {
 
                             <div className="row form-group">
                               <div className="col-md-12">
-                                <Table className="table" size="sm" >
+                                <Table className="table border" size="sm" >
                                   <thead>
                                     <tr>
-                                      <th>{`Master`}</th>
-                                      <th>{`Level`}</th>
-                                      <th className="text-right">{`Action`}</th>
+                                      <th className="border-bottom-none">{`Master`}</th>
+                                      <th className="border-bottom-none">{`Level`}</th>
+                                      <th className="text-right border-bottom-none">{`Action`}</th>
                                     </tr>
                                   </thead>
-                                  <tbody >
+                                  <tbody>
                                     {
                                       this.state.masterLevelGrid &&
                                       this.state.masterLevelGrid.map((item, index) => {
@@ -1852,9 +1861,15 @@ class UserRegistration extends Component {
                                         )
                                       })
                                     }
+                                    {this.state.masterLevelGrid.length === 0 && <tr>
+                                      <td colSpan={3}>
+                                        <NoContentFound title={EMPTY_DATA} />
+                                      </td>
+                                    </tr>
+                                    }
                                   </tbody>
                                 </Table>
-                                {this.state.masterLevelGrid.length === 0 && <NoContentFound title={EMPTY_DATA} />}
+
                               </div>
                             </div>
                           </>

@@ -53,6 +53,7 @@ function ReportListing(props) {
     const [floatingFilterData, setFloatingFilterData] = useState({ CostingNumber: "", TechnologyName: "", AmorizationQuantity: "", AnyOtherCost: "", CostingVersion: "", DisplayStatus: "", EffectiveDate: "", Currency: "", DepartmentCode: "", DepartmentName: "", DiscountCost: "", ECNNumber: "", FinalPOPrice: "", RawMaterialFinishWeight: "", FreightCost: "", FreightPercentage: "", FreightType: "", GrossWeight: "", HundiOrDiscountValue: "", ICCApplicability: "", ICCCost: "", ICCInterestRate: "", ICCOn: "", MasterBatchTotal: "", ModelTypeForOverheadAndProfit: "", ModifiedByName: "", ModifiedByUserName: "", ModifiedDate: "", NetBoughtOutPartCost: "", NetConversionCost: "", NetConvertedPOPrice: "", NetDiscountsCost: "", NetFreightPackaging: "", NetFreightPackagingCost: "", NetICCCost: "", NetOperationCost: "", NetOtherCost: "", NetOverheadAndProfitCost: "", NetPOPrice: "", NetPOPriceINR: "", NetPOPriceInCurrency: "", NetPOPriceOtherCurrency: "", NetProcessCost: "", NetRawMaterialsCost: "", NetSurfaceTreatmentCost: "", NetToolCost: "", NetTotalRMBOPCC: "", OtherCost: "", OtherCostPercentage: "", OverheadApplicability: "", OverheadCombinedCost: "", OverheadCost: "", OverheadOn: "", OverheadPercentage: "", PackagingCost: "", PackagingCostPercentage: "", PartName: "", PartNumber: "", PartType: "", PaymentTermCost: "", PaymentTermsOn: "", PlantCode: "", PlantName: "", ProfitApplicability: "", ProfitCost: "", ProfitOn: "", ProfitPercentage: "", RMGrade: "", RMSpecification: "", RawMaterialCode: "", RawMaterialGrossWeight: "", RawMaterialName: "", RawMaterialRate: "", RawMaterialScrapWeight: "", RawMaterialSpecification: "", RecordInsertedBy: "", RejectOn: "", RejectionApplicability: "", RejectionCost: "", RejectionPercentage: "", Remark: "", Rev: "", RevisionNumber: "", ScrapRate: "", ScrapWeight: "", SurfaceTreatmentCost: "", ToolCost: "", ToolLife: "", ToolMaintenaceCost: "", ToolPrice: "", ToolQuantity: "", TotalCost: "", TotalOtherCost: "", TotalRecordCount: "", TransportationCost: "", VendorCode: "", VendorName: "", Version: "", RawMaterialGrade: "", HundiOrDiscountPercentage: "", FromDate: "", ToDate: "" })
     const [enableSearchFilterSearchButton, setEnableSearchFilterButton] = useState(true)
     const [reportListingDataStateArray, setReportListingDataStateArray] = useState([])
+    const [globalTake, setGlobalTake] = useState(defaultPageSize)
     const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
     var filterParams = {
         comparator: function (filterLocalDateAtMidnight, cellValue) {
@@ -293,7 +294,7 @@ function ReportListing(props) {
     useEffect(() => {
 
         setLoader(true)
-        getTableData(0, 100, true, floatingFilterData, false, true);
+        getTableData(0, defaultPageSize, true, floatingFilterData, false, true);
 
     }, [])
 
@@ -329,10 +330,10 @@ function ReportListing(props) {
     const apiCall = (no) => {                      //COMMON FUNCTION FOR PREVIOUS & NEXT BUTTON
 
         if (floatingFilterData.FromDate) {
-            getTableData(no, 100, true, floatingFilterData, true, true);
+            getTableData(no, globalTake, true, floatingFilterData, true, true);
         } else {
 
-            getTableData(no, 100, true, floatingFilterData, false, true);
+            getTableData(no, globalTake, true, floatingFilterData, false, true);
         }
     }
 
@@ -410,7 +411,7 @@ function ReportListing(props) {
         //     getTableData(0, 100, true, floatingFilterData, false, true);
 
         // }
-        getTableData(0, 100, true, floatingFilterData, false, true);
+        getTableData(0, globalTake, true, floatingFilterData, false, true);
         setEnableSearchFilterButton(true)
         filterClick = true
         setSearchButtonClicked(true)
@@ -442,22 +443,28 @@ function ReportListing(props) {
     const onPageSizeChanged = (newPageSize) => {
         gridApi.paginationSetPageSize(Number(newPageSize));
         if (Number(newPageSize) === 10) {
+            getTableData(currentRowIndex, 10, true, floatingFilterData, false, true);
             setPageSize10(true)
             setPageSize50(false)
             setPageSize100(false)
             setDisableNextButtton(false)
+            setGlobalTake(10)
 
         }
         else if (Number(newPageSize) === 50) {
+            getTableData(currentRowIndex, 20, true, floatingFilterData, false, true);
             setPageSize10(false)
             setPageSize50(true)
             setPageSize100(false)
+            setGlobalTake(50)
         }
 
         else if (Number(newPageSize) === 100) {
+            getTableData(currentRowIndex, 100, true, floatingFilterData, false, true);
             setPageSize10(false)
             setPageSize50(false)
             setPageSize100(true)
+            setGlobalTake(100)
         }
 
     };
@@ -500,7 +507,11 @@ function ReportListing(props) {
         setWarningMessage(false)
         setPageNo(1)
         setCurrentRowIndex(0)
-        getTableData(0, 100, true, floatingFilterData, false, true);
+        getTableData(0, defaultPageSize, true, floatingFilterData, false, true);
+        setGlobalTake(defaultPageSize)
+        setPageSize10(true)
+        setPageSize50(false)
+        setPageSize100(false)
     }
 
     const onRowSelect = () => {
@@ -590,7 +601,7 @@ function ReportListing(props) {
                         rowData={reportListingData}
                         pagination={true}
                         onFilterModified={onFloatingFilterChanged}
-                        paginationPageSize={defaultPageSize}
+                        paginationPageSize={globalTake}
                         onGridReady={onGridReady}
                         gridOptions={gridOptions}
                         noRowsOverlayComponent={'customNoRowsOverlay'}
@@ -671,7 +682,7 @@ function ReportListing(props) {
 
                     </AgGridReact>
                     <div className='button-wrapper'>
-                        {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
+                        {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake} />}
                         <div className="d-flex pagination-button-container">
                             <p><button className="previous-btn" type="button" disabled={false} onClick={() => onBtPrevious()}> </button></p>
                             {pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 10)}</p>}

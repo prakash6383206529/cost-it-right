@@ -20,6 +20,7 @@ import {
     config,
     GET_OPERATION_COMBINED_DATA_LIST,
     GET_OPERATION_APPROVAL_LIST,
+    SET_OPERATION_DATA,
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
@@ -255,7 +256,7 @@ export function getOperationsDataList(filterData, skip, take, isPagination, obj,
 
         let payload
         //dispatch({ type: API_REQUEST });
-        const QueryParams = `operation_for=${filterData.operation_for}&technology_id=${filterData.technology_id}&ListFor=${filterData.ListFor ? filterData.ListFor : ''}&DepartmentCode=`
+        const QueryParams = `operation_for=${filterData.operation_for}&technology_id=${filterData.technology_id}&ListFor=${filterData.ListFor ? filterData.ListFor : ''}&StatusId=${filterData.StatusId ? filterData.StatusId : ''}&DepartmentCode=`
         const queryParamsSecond = `CostingHead=${obj.CostingHead !== undefined ? obj.CostingHead : ""}&Technology=${obj.Technology !== undefined ? obj.Technology : ""}&Vendor=${obj.VendorName !== undefined ? obj.VendorName : ""}&Plant=${obj.Plants !== undefined ? obj.Plants : ""}&OperationName=${obj.OperationName !== undefined ? obj.OperationName : ""}&OperationCode=${obj.OperationCode !== undefined ? obj.OperationCode : ""}&UOM=${obj.UnitOfMeasurement !== undefined ? obj.UnitOfMeasurement : ""}&Rate=${obj.Rate !== undefined ? obj.Rate : ""}&EffectiveDate=${obj.EffectiveDate !== undefined ? obj.EffectiveDate : ""}&applyPagination=${isPagination}&skip=${skip}&take=${take}`
         axios.get(`${API.getOperationsDataList}?${QueryParams}&${queryParamsSecond}`, config())
 
@@ -743,5 +744,18 @@ export function getOperationApprovalList(callback) {
             callback(error);
             apiErrors(error)
         });
+    };
+}
+
+/**
+ * @method setOperationList
+ * @description setOperationList
+ */
+export function setOperationList(data) {
+    return (dispatch) => {
+        dispatch({
+            type: SET_OPERATION_DATA,
+            payload: data
+        })
     };
 }

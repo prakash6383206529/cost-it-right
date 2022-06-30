@@ -5,12 +5,12 @@ import { Row, Col, } from 'reactstrap';
 import { focusOnError } from "../../layout/FormInputs";
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { EMPTY_DATA, OPERATIONS, SURFACETREATMENT } from '../../../config/constants';
+import { EMPTY_DATA, OPERATIONS, SURFACETREATMENT, defaultPageSize, APPROVED_STATUS } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import {
     getOperationsDataList, deleteOperationAPI, getOperationSelectList, getVendorWithVendorCodeSelectList, getTechnologySelectList,
     getVendorListByTechnology, getOperationListByTechnology, getTechnologyListByOperation, getVendorListByOperation,
-    getTechnologyListByVendor, getOperationListByVendor,
+    getTechnologyListByVendor, getOperationListByVendor, setOperationList
 } from '../actions/OtherOperation';
 import Switch from "react-switch";
 import AddOperation from './AddOperation';
@@ -19,7 +19,7 @@ import BulkUpload from '../../massUpload/BulkUpload';
 import { ADDITIONAL_MASTERS, OPERATION, OperationMaster, OPERATIONS_ID } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
 import { loggedInUserId, userDetails } from '../../../helper/auth';
-import { getFilteredData, userDepartmetList } from '../../../helper'
+import { userDepartmetList } from '../../../helper'
 import { costingHeadObjs, OPERATION_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
 import DayTime from '../../common/DayTimeWrapper'
@@ -28,7 +28,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
-import { getListingForSimulationCombined, setSelectedCostingListSimualtion } from '../../simulation/actions/Simulation'
+import { getListingForSimulationCombined, setSelectedCostingListSimualtion, } from '../../simulation/actions/Simulation'
 import { masterFinalLevelUser } from '../../masters/actions/Material'
 import WarningMessage from '../../common/WarningMessage';
 import _, { set } from 'lodash';
@@ -76,35 +76,44 @@ class OperationListing extends Component {
             isFilterButtonClicked: false,
             currentRowIndex: 0,
             pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
+            globalTake: defaultPageSize
         }
     }
 
     componentDidMount() {
         this.applyPermission(this.props.topAndLeftMenuData)
-        this.props.getTechnologySelectList(() => { })
-        this.props.getOperationSelectList(() => { })
-        this.props.getVendorWithVendorCodeSelectList()
-        if (this.props.isSimulation && this.props?.selectionForListingMasterAPI === 'Combined') {
-            this.props?.changeSetLoader(true)
-            this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, OPERATIONS, (res) => {
-                this.props?.changeSetLoader(false)
-                this.setState({ tableData: res.data.DataList })
-            })
-        } else {
-            this.getTableListData(null, null, null, null, 0, 100, true, this.state.floatingFilterData)
-        }
-        let obj = {
-            MasterId: OPERATIONS_ID,
-            DepartmentId: userDetails().DepartmentId,
-            LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
-            LoggedInUserId: loggedInUserId()
-        }
-        this.props.masterFinalLevelUser(obj, (res) => {
-            if (res?.data?.Result) {
-                this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
-            }
-        })
+        setTimeout(() => {
 
+            if (this.props.stopAPICall === false) {
+
+                this.props.getTechnologySelectList(() => { })
+                this.props.getOperationSelectList(() => { })
+                this.props.getVendorWithVendorCodeSelectList()
+                if (this.props.isSimulation && this.props?.selectionForListingMasterAPI === 'Combined') {
+                    this.props?.changeSetLoader(true)
+                    this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, OPERATIONS, (res) => {
+                        this.props?.changeSetLoader(false)
+                        this.setState({ tableData: res.data.DataList })
+                    })
+                } else {
+                    this.getTableListData(null, null, null, null, 0, defaultPageSize, true, this.state.floatingFilterData)
+                }
+                let obj = {
+                    MasterId: OPERATIONS_ID,
+                    DepartmentId: userDetails().DepartmentId,
+                    LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
+                    LoggedInUserId: loggedInUserId()
+                }
+                this.props.masterFinalLevelUser(obj, (res) => {
+                    if (res?.data?.Result) {
+                        this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+                    }
+                })
+            }
+            if (this.props.stopAPICall === true) {
+                this.setState({ tableData: this.props.setOperationData })
+            }
+        }, 300);
     }
 
     componentWillUnmount() {
@@ -154,21 +163,23 @@ class OperationListing extends Component {
         this.setState({ isLoader: true })
 
         const { isMasterSummaryDrawer } = this.props
+        // TO HANDLE FUTURE CONDITIONS LIKE [APPROVED_STATUS, DRAFT_STATUS] FOR MULTIPLE STATUS
+        let statusString = [APPROVED_STATUS].join(",")
+
         let filterData = {
             operation_for: operation_for,
             operation_Name_id: operation_Name_id,
             technology_id: this.props.isSimulation ? this.props.technology : technology_id,
             vendor_id: vendor_id,
             ListFor: this.props.ListFor,
+            StatusId: statusString
         }
-
-
+        // THIS IS FOR SHOWING LIST IN 1 TAB(OPERATION LISTING) & ALSO FOR SHOWING LIST IN SIMULATION
         if ((isMasterSummaryDrawer !== undefined && !isMasterSummaryDrawer)) {
             if (this.props.isSimulation) {
                 this.props?.changeTokenCheckBox(false)
             }
 
-            let FloatingfilterData = this.state.filterModel
             this.props.getOperationsDataList(filterData, skip, take, isPagination, dataObj, res => {
                 if (this.props.isSimulation) {
                     this.props?.changeTokenCheckBox(true)
@@ -176,8 +187,10 @@ class OperationListing extends Component {
                 this.setState({ isLoader: false })
                 if (res.status === 204 && res.data === '') {
                     this.setState({ tableData: [], isLoader: false })
-                } else if (res && res.data && res.data.DataList) {
+                } else if (res && res.data && res.data.DataList && res.data.DataList.length > 0) {
                     let Data = res.data.DataList;
+                    this.props.setOperationList(Data)
+                    // SURFACE TREATMENT SIMULATION LISTING
                     if (Number(this.props.isOperationST) === Number(SURFACETREATMENT)) {
                         let surfaceTreatmentOperationData = []
                         Data && Data.map(item => {
@@ -186,7 +199,9 @@ class OperationListing extends Component {
                             }
                         })
                         this.setState({ tableData: surfaceTreatmentOperationData })
-                    } else if (Number(this.props.isOperationST) === Number(OPERATIONS)) {
+                    }
+                    // OPERATION SIMULATION LISTING
+                    else if (Number(this.props.isOperationST) === Number(OPERATIONS)) {
                         let OperationData = []
                         Data && Data.map(item => {
                             if (item.IsSurfaceTreatmentOperation === false) {
@@ -194,18 +209,15 @@ class OperationListing extends Component {
                             }
                         })
                         this.setState({ tableData: OperationData })
-                    } else {
+                    }
+                    // MASTER LISTING
+                    else {
                         this.setState({ tableData: Data })
                     }
 
-                } else {
-
-                }
-
-                if (res) {
-                    if (res && res.data && res.data.DataList.length > 0) {
-                        this.setState({ totalRecordCount: res.data.DataList[0].TotalRecordCount })
-                    }
+                    // PAGINATION CODE
+                    let FloatingfilterData = this.state.filterModel
+                    this.setState({ totalRecordCount: res.data.DataList[0].TotalRecordCount })
                     let isReset = true
                     setTimeout(() => {
                         let obj = this.state.floatingFilterData
@@ -214,29 +226,18 @@ class OperationListing extends Component {
                                 isReset = false
                             }
                         }
-                        // Sets the filter model via the grid API
+                        // SETS  THE FILTER MODEL VIA THE GRID API
                         isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(FloatingfilterData))
-
                     }, 300);
-
                     setTimeout(() => {
                         this.setState({ isFilterButtonClicked: false })
                     }, 600);
                 }
-
             });
         } else {
-            if (this.props.isSimulation) {
-                this.props?.changeSetLoader(true)
-            }
-
             setTimeout(() => {
                 this.setState({ tableData: this.props.operationList })
-                if (this.props.isSimulation) {
-                    this.props?.changeSetLoader(false)
-                }
                 this.setState({ isLoader: false })
-
             }, 700);
 
         }
@@ -248,7 +249,7 @@ class OperationListing extends Component {
     }
 
     onSearch = () => {
-        onSearch(gridOptions, this, "Operation")  // COMMON PAGINATION FUNCTION
+        onSearch(gridOptions, this, "Operation", this.state.globalTake)  // COMMON PAGINATION FUNCTION
     }
 
     resetState = () => {
@@ -266,7 +267,7 @@ class OperationListing extends Component {
     };
 
     onPageSizeChanged = (newPageSize) => {
-        onPageSizeChanged(this, newPageSize)    // COMMON PAGINATION FUNCTION
+        onPageSizeChanged(this, newPageSize, "Operation", this.state.currentRowIndex)    // COMMON PAGINATION FUNCTION
     };
 
     /**
@@ -620,14 +621,6 @@ class OperationListing extends Component {
         this.state.gridApi.setQuickFilter(e.target.value);
     }
 
-    getFilterOperationData = () => {
-        if (this.props.isSimulation) {
-            return getFilteredData(this.state.tableData, OPERATIONS_ID)
-        } else {
-            return this.state.tableData
-        }
-    }
-
     /**
     * @method render
     * @description Renders the component
@@ -753,9 +746,8 @@ class OperationListing extends Component {
             statusButtonFormatter: this.statusButtonFormatter,
             hyphenFormatter: this.hyphenFormatter
         };
-
         return (
-            <div className={`${isSimulation ? 'simulation-height' : 'min-height100vh'}`}>
+            <div className={`${isSimulation ? 'simulation-height' : this.props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
                 {(this.state.isLoader && !this.props.isMasterSummaryDrawer) && <LoaderCustom customClass="simulation-Loader" />}
                 <div className={`ag-grid-react ${(this.props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
                     <form>
@@ -836,16 +828,16 @@ class OperationListing extends Component {
                         </Row>
                     </form>
 
-                    <div className={`ag-grid-wrapper overlay-contain ${this.props.isSimulation ? 'min-height' : ''}`}>
+                    <div className={`ag-grid-wrapper ${this.props?.isDataInMaster ? 'master-approval-overlay' : ''} overlay-contain ${this.props.isSimulation ? 'min-height' : ''}`}>
                         <div className={`ag-theme-material ${(this.state.isLoader && !this.props.isMasterSummaryDrawer) && "max-loader-height"}`}>
                             <AgGridReact
                                 defaultColDef={defaultColDef}
                                 floatingFilter={true}
                                 domLayout='autoHeight'
-                                rowData={this.getFilterOperationData()}
+                                rowData={this.state.tableData}
                                 pagination={true}
 
-                                paginationPageSize={10}
+                                paginationPageSize={this.state.globalTake}
                                 onGridReady={this.onGridReady}
                                 gridOptions={gridOptions}
                                 noRowsOverlayComponent={'customNoRowsOverlay'}
@@ -873,7 +865,7 @@ class OperationListing extends Component {
                                 {!isSimulation && !this.props?.isMasterSummaryDrawer && <AgGridColumn field="OperationId" cellClass={"actions-wrapper"} width={150} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                             </AgGridReact>
                             <div className='button-wrapper'>
-                                {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
+                                {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} globalTake={this.state.globalTake} />}
                                 {(this.props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) &&
                                     <div className="d-flex pagination-button-container">
                                         <p><button className="previous-btn" type="button" disabled={false} onClick={() => this.onBtPrevious()}> </button></p>
@@ -912,10 +904,10 @@ class OperationListing extends Component {
 * @param {*} state
                 */
 function mapStateToProps({ otherOperation, auth, simulation }) {
-    const { loading, filterOperation, operationList, operationSurfaceTreatmentList, operationIndividualList } = otherOperation;
+    const { loading, filterOperation, operationList, operationSurfaceTreatmentList, operationIndividualList, setOperationData } = otherOperation;
     const { leftMenuData, initialConfiguration, topAndLeftMenuData } = auth;
     const { selectedCostingListSimulation } = simulation;
-    return { loading, filterOperation, leftMenuData, operationList, initialConfiguration, topAndLeftMenuData, operationSurfaceTreatmentList, operationIndividualList, selectedCostingListSimulation };
+    return { loading, filterOperation, leftMenuData, operationList, initialConfiguration, topAndLeftMenuData, operationSurfaceTreatmentList, operationIndividualList, selectedCostingListSimulation, setOperationData };
 }
 
 /**
@@ -938,7 +930,8 @@ export default connect(mapStateToProps, {
     getOperationListByVendor,
     getListingForSimulationCombined,
     masterFinalLevelUser,
-    setSelectedCostingListSimualtion
+    setSelectedCostingListSimualtion,
+    setOperationList
 })(reduxForm({
     form: 'OperationListing',
     onSubmitFail: errors => {

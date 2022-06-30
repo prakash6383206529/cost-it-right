@@ -564,42 +564,6 @@ export function getGradeSelectList(callback) {
 //     };
 // }
 
-/**
- * @method getRowMaterialDataAPI
- * @description get row material list
- */
-export function getRowMaterialDataAPI() {
-    return (dispatch) => {
-        const API1 = axios.get(API.getRMMaterialAPI, config());
-        const API2 = axios.get(API.getRMGradeAPI, config());
-        const API3 = axios.get(API.getRMCategoryAPI, config());
-        const API4 = axios.get(API.getRMSpecificationAPI, config());
-        Promise.all([API1, API2, API3, API4])
-            .then((response) => {
-                dispatch({
-                    type: GET_RM_LIST_SUCCESS,
-                    payload: response[0].data.DataList,
-                });
-                dispatch({
-                    type: GET_RM_GRADE_LIST_SUCCESS,
-                    payload: response[1].data.DataList,
-                });
-                dispatch({
-                    type: GET_RM_CATEGORY_LIST_SUCCESS,
-                    payload: response[2].data.DataList,
-                });
-                dispatch({
-                    type: GET_RM_SPECIFICATION_LIST_SUCCESS,
-                    payload: response[3].data.DataList,
-                });
-            }).catch((error) => {
-                dispatch({
-                    type: API_FAILURE
-                });
-                apiErrors(error);
-            });
-    };
-}
 
 // Action Creator for material master
 
@@ -1065,7 +1029,7 @@ export function getRMDomesticDataList(data, skip, take, isPagination, obj, callb
     return (dispatch) => {
 
         dispatch({ type: GET_RM_DOMESTIC_LIST });
-        const queryParams = `technology_id=${data.technologyId}&net_landed_min_range=${data.net_landed_min_range}&net_landed_max_range=${data.net_landed_max_range}&statusId=${data.statusId}&NetCost=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&ListFor=${data.ListFor ? data.ListFor : ''}&DepartmentCode=`
+        const queryParams = `technology_id=${data.technologyId}&net_landed_min_range=${data.net_landed_min_range}&net_landed_max_range=${data.net_landed_max_range}&NetCost=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&ListFor=${data.ListFor ? data.ListFor : ''}&StatusId=${data.StatusId ? data.StatusId : ''}&DepartmentCode=`
         const queryParamsSecond = rmQueryParms(isPagination, skip, take, obj)
         const request = axios.get(`${API.getRMDomesticDataList}?${queryParams}&${queryParamsSecond}`, config());
         request.then((response) => {
@@ -1177,7 +1141,7 @@ export function getRMImportDataById(data, isValid, callback) {
  */
 export function getRMImportDataList(data, skip, take, isPagination, obj, callback) {
     return (dispatch) => {
-        const queryParams = `Currency=${obj.Currency !== undefined ? obj.Currency : ""}&NetCostCurrency=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&NetCost=${obj.NetLandedCostConversion !== undefined ? obj.NetLandedCostConversion : ""}&technology_id=${data.technologyId}&net_landed_min_range=${data.net_landed_min_range}&net_landed_max_range=${data.net_landed_max_range}&statusId=${data.statusId}&ListFor=${data.ListFor ? data.ListFor : ''}&DepartmentCode=`
+        const queryParams = `Currency=${obj.Currency !== undefined ? obj.Currency : ""}&NetCostCurrency=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&NetCost=${obj.NetLandedCostConversion !== undefined ? obj.NetLandedCostConversion : ""}&technology_id=${data.technologyId}&net_landed_min_range=${data.net_landed_min_range}&net_landed_max_range=${data.net_landed_max_range}&statusId=${data.statusId}&ListFor=${data.ListFor ? data.ListFor : ''}&StatusId=${data.StatusId ? data.StatusId : ''}&DepartmentCode=`
         const queryParamsSecond = rmQueryParms(isPagination, skip, take, obj)
         const request = axios.get(`${API.getRMImportDataList}?${queryParams}& ${queryParamsSecond} `, config());
         request.then((response) => {
