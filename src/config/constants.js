@@ -1901,4 +1901,4 @@ export const IV = 'ozzzguugcusjqmbj'
 
 
 //VERSION 
-export const VERSION = "V1.2.324.1";
+export const VERSION = "V1.2.324.2";
