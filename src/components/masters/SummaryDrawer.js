@@ -43,7 +43,7 @@ function SummaryDrawer(props) {
     const [isBOPApproval, setIsBOPApproval] = useState(false)
     const [isOperationApproval, setIsOperationApproval] = useState(false)
     const [isMachineApproval, setIsMachineApproval] = useState(false)
-    const [masterCount, setMasterCount] = useState(false)
+    const [isDataInMaster, setIsDataInMaster] = useState(false)
 
 
     useEffect(() => {
@@ -54,20 +54,20 @@ function SummaryDrawer(props) {
             setLoader(false)
             if (Number(props.masterId) === RM_MASTER_ID) {
                 setFiles(Data.ImpactedMasterDataList[0].Files)
-                Data.ImpactedMasterDataList.length > 0 ? setMasterCount(true) : setMasterCount(false);
+                Data.ImpactedMasterDataList.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
             }
             else if (Number(props.masterId) === BOP_MASTER_ID) {
                 setFiles(Data.ImpactedMasterDataListBOP[0].Files)
-                Data.ImpactedMasterDataListBOP.length > 0 ? setMasterCount(true) : setMasterCount(false);
+                Data.ImpactedMasterDataListBOP.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
             } else if (Number(props.masterId) === OPERATIONS_ID) {
                 setFiles(Data.ImpactedMasterDataListOperation[0].Files)
-                Data.ImpactedMasterDataListOperation.length > 0 ? setMasterCount(true) : setMasterCount(false);
+                Data.ImpactedMasterDataListOperation.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
             } else if (Number(props.masterId) === MACHINE_MASTER_ID) {
                 setFiles(Data.ImpactedMasterDataListMachine[0].Files)
-                Data.ImpactedMasterDataListMachine.length > 0 ? setMasterCount(true) : setMasterCount(false);
+                Data.ImpactedMasterDataListMachine.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
             }
             console.log(Data, "Data");
-            Data.NumberOfMaster > 0 ? setMasterCount(true) : setMasterCount(false);
+            Data.NumberOfMaster > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
         }))
 
         if (Number(props.masterId) === RM_MASTER_ID) {            // MASTER ID 1 FOR RAW MATERIAL
@@ -118,15 +118,15 @@ function SummaryDrawer(props) {
 
 
                                 {isRMApproval &&
-                                    <RMDomesticListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' masterCount={masterCount} />}
+                                    <RMDomesticListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} />}
                                 {isBOPApproval &&
-                                    <BOPDomesticListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' masterCount={masterCount} />}
+                                    <BOPDomesticListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} />}
 
                                 {isOperationApproval &&
-                                    <OperationListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' stopAPICall={false} masterCount={masterCount} />}
+                                    <OperationListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} stopAPICall={false} />}
 
                                 {isMachineApproval &&
-                                    <MachineRateListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' masterCount={masterCount} />}
+                                    <MachineRateListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} />}
 
 
                                 <Row>
