@@ -116,7 +116,7 @@ function SummaryDrawer(props) {
                                     <BOPDomesticListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' />}
 
                                 {isOperationApproval &&
-                                    <OperationListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' />}
+                                    <OperationListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' stopAPICall={false} />}
 
                                 {isMachineApproval &&
                                     <MachineRateListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' />}
