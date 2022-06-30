@@ -123,7 +123,7 @@ function SummaryDrawer(props) {
                                     <BOPDomesticListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' masterCount={masterCount} />}
 
                                 {isOperationApproval &&
-                                    <OperationListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' masterCount={masterCount} />}
+                                    <OperationListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' masterCount={masterCount} stopAPICall={false} />}
 
                                 {isMachineApproval &&
                                     <MachineRateListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' masterCount={masterCount} />}
