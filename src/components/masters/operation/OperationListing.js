@@ -747,7 +747,7 @@ class OperationListing extends Component {
             hyphenFormatter: this.hyphenFormatter
         };
         return (
-            <div className={`${isSimulation ? 'simulation-height' : 'min-height100vh'}`}>
+            <div className={`${isSimulation ? 'simulation-height' : this.props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
                 {(this.state.isLoader && !this.props.isMasterSummaryDrawer) && <LoaderCustom customClass="simulation-Loader" />}
                 <div className={`ag-grid-react ${(this.props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
                     <form>
@@ -828,7 +828,7 @@ class OperationListing extends Component {
                         </Row>
                     </form>
 
-                    <div className={`ag-grid-wrapper overlay-contain ${this.props.isSimulation ? 'min-height' : ''}`}>
+                    <div className={`ag-grid-wrapper ${this.props?.masterCount ? 'master-approval-overlay' : ''} overlay-contain ${this.props.isSimulation ? 'min-height' : ''}`}>
                         <div className={`ag-theme-material ${(this.state.isLoader && !this.props.isMasterSummaryDrawer) && "max-loader-height"}`}>
                             <AgGridReact
                                 defaultColDef={defaultColDef}

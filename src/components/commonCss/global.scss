@@ -2783,6 +2783,11 @@ body {
     .ag-center-cols-clipper {
       min-height: 150px !important;
     }
+    &.master-approval-overlay {
+      .ag-center-cols-clipper {
+        min-height: auto !important;
+      }
+    }
   }
 }
 .select-all-label {
