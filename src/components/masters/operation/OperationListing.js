@@ -167,7 +167,7 @@ class OperationListing extends Component {
             vendor_id: vendor_id,
             ListFor: this.props.ListFor,
         }
-
+        // THIS IS FOR SHOWING LIST IN 1 TAB(OPERATION LISTING) & ALSO FOR SHOWING LIST IN SIMULATION
         if ((isMasterSummaryDrawer !== undefined && !isMasterSummaryDrawer)) {
             if (this.props.isSimulation) {
                 this.props?.changeTokenCheckBox(false)
@@ -180,9 +180,10 @@ class OperationListing extends Component {
                 this.setState({ isLoader: false })
                 if (res.status === 204 && res.data === '') {
                     this.setState({ tableData: [], isLoader: false })
-                } else if (res && res.data && res.data.DataList) {
+                } else if (res && res.data && res.data.DataList && res.data.DataList.length > 0) {
                     let Data = res.data.DataList;
                     this.props.setOperationList(Data)
+                    // SURFACE TREATMENT SIMULATION LISTING
                     if (Number(this.props.isOperationST) === Number(SURFACETREATMENT)) {
                         let surfaceTreatmentOperationData = []
                         Data && Data.map(item => {
@@ -191,7 +192,9 @@ class OperationListing extends Component {
                             }
                         })
                         this.setState({ tableData: surfaceTreatmentOperationData })
-                    } else if (Number(this.props.isOperationST) === Number(OPERATIONS)) {
+                    }
+                    // OPERATION SIMULATION LISTING
+                    else if (Number(this.props.isOperationST) === Number(OPERATIONS)) {
                         let OperationData = []
                         Data && Data.map(item => {
                             if (item.IsSurfaceTreatmentOperation === false) {
@@ -199,15 +202,15 @@ class OperationListing extends Component {
                             }
                         })
                         this.setState({ tableData: OperationData })
-                    } else {
+                    }
+                    // MASTER LISTING
+                    else {
                         this.setState({ tableData: Data })
                     }
 
                     // PAGINATION CODE
                     let FloatingfilterData = this.state.filterModel
-                    if (res.data.DataList.length > 0) {
-                        this.setState({ totalRecordCount: res.data.DataList[0].TotalRecordCount })
-                    }
+                    this.setState({ totalRecordCount: res.data.DataList[0].TotalRecordCount })
                     let isReset = true
                     setTimeout(() => {
                         let obj = this.state.floatingFilterData
@@ -216,7 +219,7 @@ class OperationListing extends Component {
                                 isReset = false
                             }
                         }
-                        // Sets the filter model via the grid API
+                        // SETS  THE FILTER MODEL VIA THE GRID API
                         isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(FloatingfilterData))
                     }, 300);
                     setTimeout(() => {
@@ -225,17 +228,9 @@ class OperationListing extends Component {
                 }
             });
         } else {
-            if (this.props.isSimulation) {
-                this.props?.changeSetLoader(true)
-            }
-
             setTimeout(() => {
                 this.setState({ tableData: this.props.operationList })
-                if (this.props.isSimulation) {
-                    this.props?.changeSetLoader(false)
-                }
                 this.setState({ isLoader: false })
-
             }, 700);
 
         }
