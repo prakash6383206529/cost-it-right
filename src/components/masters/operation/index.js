@@ -26,7 +26,8 @@ class OperationsMaster extends Component {
             BulkUploadAccessibility: false,
             DownloadAccessibility: false,
             data: {},
-            isOperationAssociated: false
+            isOperationAssociated: false,
+            stopAPICall: false
         }
     }
 
@@ -34,8 +35,11 @@ class OperationsMaster extends Component {
         this.setState({ isOperation: true, data: { isEditFlag: false } })
     }
 
-    hideForm = () => {
-        this.setState({ isOperation: false, data: {} })
+    hideForm = (type) => {
+        this.setState({ isOperation: false, data: {}, stopAPICall: false })
+        if (type === 'Cancel') {
+            this.setState({ stopAPICall: true })
+        }
     }
 
     getDetails = (data, isOperationAssociate) => {
@@ -115,6 +119,7 @@ class OperationsMaster extends Component {
                                                 DownloadAccessibility={this.state.DownloadAccessibility}
                                                 isMasterSummaryDrawer={false}
                                                 selectionForListingMasterAPI='Master'
+                                                stopAPICall={this.state.stopAPICall}
                                             />
                                         </TabPane>}
 

@@ -230,7 +230,7 @@ class AddOperation extends Component {
   closeApprovalDrawer = (e = '', type) => {
     this.setState({ approveDrawer: false, setDisable: false })
     if (type === 'submit') {
-      this.cancel()
+      this.cancel('submit')
     }
   }
 
@@ -508,7 +508,7 @@ class AddOperation extends Component {
   * @method cancel
   * @description used to Reset form
   */
-  cancel = () => {
+  cancel = (type) => {
     const { reset } = this.props;
     this.props.getPlantBySupplier('', () => { })
     reset();
@@ -522,7 +522,7 @@ class AddOperation extends Component {
       isEditFlag: false,
     })
     this.props.getOperationDataAPI('', () => { })
-    this.props.hideForm()
+    this.props.hideForm(type)
   }
 
   /**
@@ -602,7 +602,7 @@ class AddOperation extends Component {
 
       if (Number(DataToChange.Rate) === Number(values.Rate) && DataToChange.Remark === values.Remark && UOM.value === oldUOM.value
         && DataToChange.Description === values.Description && uploadAttachements) {
-        this.cancel()
+        this.cancel('Cancel')
         return false
       }
 
@@ -669,7 +669,7 @@ class AddOperation extends Component {
 
 
         if (Number(DataToChange.Rate) === Number(values.Rate) && DataToChange.Remark === values.Remark && UOM.value === oldUOM.value && DataToChange.Description === values.Description && uploadAttachements) {
-          this.cancel()
+          this.cancel('Cancel')
           return false
         } else {
           this.setState({ approveDrawer: true, approvalObj: formData })
@@ -683,7 +683,7 @@ class AddOperation extends Component {
           if (res.data.Result) {
             Toaster.success(MESSAGES.OPERATION_ADD_SUCCESS);
             //this.clearForm()
-            this.cancel()
+            this.cancel('submit')
           }
         })
       }
@@ -707,7 +707,7 @@ class AddOperation extends Component {
       this.setState({ setDisable: false })
       if (res?.data?.Result) {
         Toaster.success(MESSAGES.OPERATION_UPDATE_SUCCESS);
-        this.cancel()
+        this.cancel('submit')
       }
     });
   }, 500)
@@ -1105,7 +1105,7 @@ class AddOperation extends Component {
                       <button
                         type={"button"}
                         className="mr15 cancel-btn"
-                        onClick={this.cancel}
+                        onClick={() => { this.cancel('Cancel') }}
                         disabled={setDisable}
                       >
                         <div className={"cancel-icon"}></div>
