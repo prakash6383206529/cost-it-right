@@ -18,7 +18,6 @@ import { getSelectListOfSimulationLinkingTokens } from '../../../simulation/acti
 import { provisional } from '../../../../config/constants'
 import LoaderCustom from '../../../common/LoaderCustom';
 import Toaster from '../../../common/Toaster'
-import _ from 'lodash'
 
 function ApproveRejectDrawer(props) {
   // ********* INITIALIZE REF FOR DROPZONE ********

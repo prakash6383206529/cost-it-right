@@ -862,20 +862,8 @@ function CostingSimulation(props) {
         </div >)
     }
 
-    const netBOPPartCostFormatter = (props) => {
-        const cell = props?.value;
-        return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : ''
-    }
 
-    const operVarianceFormatter = (props) => {
-        const cell = props?.value;
-        return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : ''
-    }
 
-    const BOPVarianceFormatter = (props) => {
-        const cell = props?.value;
-        return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : ''
-    }
 
     useEffect(() => {
 
