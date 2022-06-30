@@ -532,7 +532,7 @@ class BOPDomesticListing extends Component {
 
         return (
 
-            <div className={`ag-grid-react ${(this.props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${DownloadAccessibility ? "show-table-btn" : ""} ${this.props.isSimulation ? 'simulation-height' : 'min-height100vh'}`}>
+            <div className={`ag-grid-react ${(this.props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${DownloadAccessibility ? "show-table-btn" : ""} ${this.props.isSimulation ? 'simulation-height' : this.props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
                 {/* {this.state.isLoader && <LoaderCustom />} */}
                 {(this.state.isLoader && !this.props.isMasterSummaryDrawer) && <LoaderCustom customClass="simulation-Loader" />}
                 < form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate >
@@ -610,7 +610,7 @@ class BOPDomesticListing extends Component {
                 <Row>
                     <Col>
 
-                        <div className={`ag-grid-wrapper overlay-contain `}>
+                        <div className={`ag-grid-wrapper ${this.props?.masterCount ? 'master-approval-overlay' : ''} overlay-contain `}>
                             <div className={`ag-theme-material ${(this.state.isLoader && !this.props.isMasterSummaryDrawer) && "max-loader-height"}`}>
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
