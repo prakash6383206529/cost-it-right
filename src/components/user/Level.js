@@ -58,10 +58,10 @@ class Level extends Component {
   * @description used to get level detail
   */
   getLevelDetail = () => {
-    const { isShowForm, isEditFlag, LevelId } = this.props;
+    const { isShowForm, isEditFlag, TechnologyId } = this.props;
     if (isEditFlag && isShowForm) {
       //$('html, body').animate({ scrollTop: 0 }, 'slow');
-      this.props.getUserLevelAPI(LevelId, () => { })
+      this.props.getUserLevelAPI(TechnologyId, () => { })
     }
   }
 
@@ -70,11 +70,11 @@ class Level extends Component {
   * @description used to get level detail
   */
   getLevelMappingDetail = () => {
-    const { isShowMappingForm, isEditFlag, LevelId, isEditedlevelType } = this.props;
+    const { isShowMappingForm, isEditFlag, TechnologyId, isEditedlevelType } = this.props;
 
     // WHEN COSTING LEVEL DETAILS GET
     if (isEditFlag && isShowMappingForm && isEditedlevelType === 'Costing') {
-      this.props.getLevelMappingAPI(LevelId, (res) => {
+      this.props.getLevelMappingAPI(TechnologyId, (res) => {
         const { technologyList, levelList } = this.props;
 
         if (res && res.data && res.data.Data) {
@@ -85,9 +85,9 @@ class Level extends Component {
             let levelObj = levelList && levelList.filter(item => item.Value === Data.LevelId)
             this.setState({
               isEditMappingFlag: true,
-              LevelId: LevelId,
+              LevelId: TechnologyId,
               isShowTechnologyForm: true,
-              technology: { label: technologyObj[0].Text, value: technologyObj[0].Value },
+              technology: { label: technologyObj && technologyObj[0].Text, value: technologyObj[0].Value },
               level: { label: levelObj[0].Text, value: levelObj[0].Value },
               levelType: isEditedlevelType,
             })
@@ -99,7 +99,7 @@ class Level extends Component {
 
     // WHEN SIMULATION LEVEL DETAILS GET
     if (isEditFlag && isShowMappingForm && isEditedlevelType === 'Simulation') {
-      this.props.getSimulationLevel(LevelId, (res) => {
+      this.props.getSimulationLevel(TechnologyId, (res) => {
         const { simulationTechnologyList, levelList } = this.props;
 
         if (res && res.data && res.data.Data) {
@@ -110,7 +110,7 @@ class Level extends Component {
             let levelObj = levelList && levelList.filter(item => item.Value === Data.LevelId)
             this.setState({
               isEditMappingFlag: true,
-              LevelId: LevelId,
+              LevelId: TechnologyId,
               isShowTechnologyForm: true,
               technology: { label: technologyObj[0].Text, value: technologyObj[0].Value },
               level: { label: levelObj[0].Text, value: levelObj[0].Value },
@@ -124,7 +124,7 @@ class Level extends Component {
 
     // WHEN MASTER LEVEL DETAILS GET
     if (isEditFlag && isShowMappingForm && isEditedlevelType === 'Master') {
-      this.props.getMasterLevel(LevelId, (res) => {
+      this.props.getMasterLevel(TechnologyId, (res) => {
         const { masterList, levelList } = this.props;
 
         if (res && res.data && res.data.Data) {
@@ -135,7 +135,7 @@ class Level extends Component {
             let levelObj = levelList && levelList.filter(item => item.Value === Data.LevelId)
             this.setState({
               isEditMappingFlag: true,
-              LevelId: LevelId,
+              LevelId: TechnologyId,
               isShowTechnologyForm: true,
               technology: { label: technologyObj[0].Text, value: technologyObj[0].Value },
               level: { label: levelObj[0].Text, value: levelObj[0].Value },
@@ -300,7 +300,7 @@ class Level extends Component {
    * @returns {{}}
    */
   onSubmit(values) {
-    const { isShowForm, isShowMappingForm, isEditFlag, LevelId, reset } = this.props;
+    const { isShowForm, isShowMappingForm, isEditFlag, TechnologyId, reset } = this.props;
     const { technology, level } = this.state;
     this.setState({ isLoader: true })
 
@@ -308,7 +308,7 @@ class Level extends Component {
       if (isEditFlag) {
 
         let formReq = {
-          LevelId: LevelId,
+          LevelId: TechnologyId,
           IsActive: true,
           CreatedDate: '',
           LevelName: values.LevelName,

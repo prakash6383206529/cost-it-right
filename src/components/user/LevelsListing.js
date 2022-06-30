@@ -140,7 +140,7 @@ class LevelsListing extends Component {
 	getLevelMappingDetail = (Id, levelType) => {
 		this.setState({
 			isEditFlag: true,
-			LevelId: Id,
+			TechnologyId: Id,
 			isOpen: true,
 			isShowForm: false,
 			isShowMappingForm: true,
@@ -353,7 +353,7 @@ class LevelsListing extends Component {
 	* @description Renders the component
 	*/
 	render() {
-		const { isEditFlag, isShowForm, isShowMappingForm, isOpen, LevelId,
+		const { isEditFlag, isShowForm, isShowMappingForm, isOpen, TechnologyId,
 			AddAccessibility, EditAccessibility, DeleteAccessibility, showImpact } = this.state;
 		const options = {
 			clearSearch: true,
@@ -466,7 +466,7 @@ class LevelsListing extends Component {
 									isShowMappingForm={isShowMappingForm}
 									closeDrawer={this.closeDrawer}
 									isEditFlag={isEditFlag}
-									LevelId={LevelId}
+									TechnologyId={TechnologyId}
 									anchor={'right'}
 									isEditedlevelType={this.state.levelType}
 								/>
