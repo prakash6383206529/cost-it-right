@@ -128,17 +128,16 @@ export function formatRMSimulationObject(simulationDetail, selectedRowData, cost
                     count++
                 }
             })
-            if (count === 0) {
+            if (count === 0) {                                              // NOT EQUAL
                 item.IsChecked = false
-                tempFinal.push(item)
+                tempFinal.push({ CostingId: item.CostingId, CostingNumber: item.CostingNumber, IsChecked: checked, LineNumber: item.LineNumber, SANumber: item.SANumber })
             }
-            temp.push({ CostingId: item.CostingId, CostingNumber: item.CostingNumber, IsChecked: checked, LineNumber: item.LineNumber, SANumber: item.SANumber })
         })
 
         selectedRowData.forEach(object => {
             temp.push({ CostingId: object.CostingId, CostingNumber: object.CostingNumber, IsChecked: true, LineNumber: object.LineNumber, SANumber: object.SANumber })
         });
-        let apiArray = [...selectedRowData, ...tempFinal]
+        let apiArray = [...temp, ...tempFinal]
 
         // let uniqueArr = [];
         // temp.filter(function(item){
