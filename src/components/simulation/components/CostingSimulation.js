@@ -649,20 +649,6 @@ function CostingSimulation(props) {
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
-    const netBOPPartCostFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const classGreen = (row.NewNetBoughtOutPartCost > row.OldNetBoughtOutPartCost) ? 'red-value form-control' : (row.NewNetBoughtOutPartCost < row.OldNetBoughtOutPartCost) ? 'green-value form-control' : 'form-class'
-        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
-    }
-
-    const netCCFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const classGreen = (row.NewNetCC > row.OldNetCC) ? 'red-value form-control' : (row.NewNetCC < row.OldNetCC) ? 'green-value form-control' : 'form-class'
-        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
-    }
-
     const operQuantityFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -697,6 +683,7 @@ function CostingSimulation(props) {
         const classGreen = (row.NewSurfaceTreatmentCost > row.OldSurfaceTreatmentCost) ? 'red-value form-control' : (row.NewSurfaceTreatmentCost < row.OldSurfaceTreatmentCost) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
+
     const oldNetSTFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -730,7 +717,8 @@ function CostingSimulation(props) {
             {cell != null ? (Math.abs(value)).toFixed(COSTINGSIMULATIONROUND) : '-'}
         </div >)
     }
-    const POVarianceFormatter = (props) => {
+
+    const variancePOFormatter = (props) => {
         // ********** THIS IS RE SPECIFIC **********
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -744,7 +732,12 @@ function CostingSimulation(props) {
         </div >)
     }
 
-    const STVarianceFormatter = (props) => {
+    const decimalFormatter = (props) => {
+        const cell = props?.value;
+        return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : ''
+    }
+
+    const varianceSTFormatter = (props) => {
         // ********** THIS IS RE SPECIFIC **********
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -758,41 +751,7 @@ function CostingSimulation(props) {
         </div >)
     }
 
-    const operVarianceFormatter = (props) => {
-        // ********** THIS IS RE SPECIFIC **********
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        let roudOffOld = 0, rounfOffNew = 0
-        roudOffOld = _.round(row.OldNetOperationCost, COSTINGSIMULATIONROUND)
-        rounfOffNew = _.round(row.NewNetOperationCost, COSTINGSIMULATIONROUND)
-        let value = Math.abs(roudOffOld - rounfOffNew)
-        return (<div>
-            {value ? (row.NewNetOperationCost > row.OldNetOperationCost ? < span className='positive-sign'>+</span> : < span className='positive-sign'>-</span>) : ''}
-            {cell != null ? (Math.abs(value)).toFixed(COSTINGSIMULATIONROUND) : '-'}
-        </div >)
-    }
-
-    const decimalFormatter = (props) => {
-        const cell = props?.value;
-        return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : ''
-    }
-
-    const BOPVarianceFormatter = (props) => {
-        // ********** THIS IS RE SPECIFIC **********
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        let roudOffOld = 0, rounfOffNew = 0
-        roudOffOld = _.round(row.OldNetBoughtOutPartCost, COSTINGSIMULATIONROUND)
-        rounfOffNew = _.round(row.NewNetBoughtOutPartCost, COSTINGSIMULATIONROUND)
-        let value = Math.abs(roudOffOld - rounfOffNew)
-        return (<div>
-            {value ? (row.NewNetBoughtOutPartCost > row.OldNetBoughtOutPartCost ? < span className='positive-sign'>+</span> : < span className='positive-sign'>-</span>) : ''}
-            {cell != null ? (Math.abs(value)).toFixed(COSTINGSIMULATIONROUND) : '-'}
-        </div >)
-    }
-
     const ERVarianceFormatter = (props) => {
-        // ********** THIS IS RE SPECIFIC **********
         // ********** THIS IS RE SPECIFIC **********
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -802,21 +761,6 @@ function CostingSimulation(props) {
         let value = Math.abs(roudOffOld - rounfOffNew)
         return (<div>
             {value ? (row.NewExchangeRate > row.OldExchangeRate ? < span className='positive-sign'>+</span> : < span className='positive-sign'>-</span>) : ''}
-            {cell != null ? (Math.abs(value)).toFixed(COSTINGSIMULATIONROUND) : '-'}
-        </div >)
-    }
-
-    const CPvarianceFormatter = (props) => {
-        // ********** THIS IS RE SPECIFIC **********
-        // ********** THIS IS RE SPECIFIC **********
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        let roudOffOld = 0, rounfOffNew = 0
-        roudOffOld = _.round(row.OldNetCC, COSTINGSIMULATIONROUND)
-        rounfOffNew = _.round(row.NewNetCC, COSTINGSIMULATIONROUND)
-        let value = Math.abs(roudOffOld - rounfOffNew)
-        return (<div>
-            {value ? (row.NewNetCC > row.OldNetCC ? < span className='positive-sign'>+</span> : < span className='positive-sign'>-</span>) : ''}
             {cell != null ? (Math.abs(value)).toFixed(COSTINGSIMULATIONROUND) : '-'}
         </div >)
     }
@@ -886,6 +830,63 @@ function CostingSimulation(props) {
         //         setShowBOPColumn(true)
         //     }
         // })
+    }
+    // ??__________
+
+    const netBOPPartCostFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const classGreen = (row.NewNetBoughtOutPartCost > row.OldNetBoughtOutPartCost) ? 'red-value form-control' : (row.NewNetBoughtOutPartCost < row.OldNetBoughtOutPartCost) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+    }
+
+    const operVarianceFormatter = (props) => {
+        // ********** THIS IS RE SPECIFIC **********
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        let roudOffOld = 0, rounfOffNew = 0
+        roudOffOld = _.round(row.OldNetOperationCost, COSTINGSIMULATIONROUND)
+        rounfOffNew = _.round(row.NewNetOperationCost, COSTINGSIMULATIONROUND)
+        let value = Math.abs(roudOffOld - rounfOffNew)
+        return (<div>
+            {value ? (row.NewNetOperationCost > row.OldNetOperationCost ? < span className='positive-sign'>+</span> : < span className='positive-sign'>-</span>) : ''}
+            {cell != null ? (Math.abs(value)).toFixed(COSTINGSIMULATIONROUND) : '-'}
+        </div >)
+    }
+
+    const BOPVarianceFormatter = (props) => {
+        // ********** THIS IS RE SPECIFIC **********
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        let roudOffOld = 0, rounfOffNew = 0
+        roudOffOld = _.round(row.OldNetBoughtOutPartCost, COSTINGSIMULATIONROUND)
+        rounfOffNew = _.round(row.NewNetBoughtOutPartCost, COSTINGSIMULATIONROUND)
+        let value = Math.abs(roudOffOld - rounfOffNew)
+        return (<div>
+            {value ? (row.NewNetBoughtOutPartCost > row.OldNetBoughtOutPartCost ? < span className='positive-sign'>+</span> : < span className='positive-sign'>-</span>) : ''}
+            {cell != null ? (Math.abs(value)).toFixed(COSTINGSIMULATIONROUND) : '-'}
+        </div >)
+    }
+
+    const netCCFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const classGreen = (row.NewNetCC > row.OldNetCC) ? 'red-value form-control' : (row.NewNetCC < row.OldNetCC) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+    }
+    const CPvarianceFormatter = (props) => {
+        // ********** THIS IS RE SPECIFIC **********
+        // ********** THIS IS RE SPECIFIC **********
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        let roudOffOld = 0, rounfOffNew = 0
+        roudOffOld = _.round(row.OldNetCC, COSTINGSIMULATIONROUND)
+        rounfOffNew = _.round(row.NewNetCC, COSTINGSIMULATIONROUND)
+        let value = Math.abs(roudOffOld - rounfOffNew)
+        return (<div>
+            {value ? (row.NewNetCC > row.OldNetCC ? < span className='positive-sign'>+</span> : < span className='positive-sign'>-</span>) : ''}
+            {cell != null ? (Math.abs(value)).toFixed(COSTINGSIMULATIONROUND) : '-'}
+        </div >)
     }
 
     useEffect(() => {
@@ -1096,8 +1097,8 @@ function CostingSimulation(props) {
         oldRMCFormatter: oldRMCFormatter,
         newRMCFormatter: newRMCFormatter,
         varianceRMCFormatter: varianceRMCFormatter,
-        STVarianceFormatter: STVarianceFormatter,
-        POVarianceFormatter: POVarianceFormatter,
+        varianceSTFormatter: varianceSTFormatter,
+        variancePOFormatter: variancePOFormatter,
         oldExchangeFormatter: oldExchangeFormatter,
         newExchangeFormatter: newExchangeFormatter,
         oldPOCurrencyFormatter: oldPOCurrencyFormatter,
@@ -1218,7 +1219,7 @@ function CostingSimulation(props) {
 
                                                     {!(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={140} field="OldPOPrice" headerName='Old PO Price' cellRenderer='oldPOFormatter'></AgGridColumn>}
                                                     {!(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={140} field="NewPOPrice" headerName='New PO Price' cellRenderer='newPOFormatter'></AgGridColumn>}
-                                                    {!(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={140} field="Variance" headerName=' PO Variance' cellRenderer='POVarianceFormatter' ></AgGridColumn>}
+                                                    {!(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={140} field="Variance" headerName=' PO Variance' cellRenderer='variancePOFormatter' ></AgGridColumn>}
 
 
                                                     {(isRMDomesticOrRMImport || showRMColumn) && <AgGridColumn width={140} field="OldNetRawMaterialsCost" headerName='Old RM Cost/Pc' cellRenderer='oldRMCFormatter'></AgGridColumn>}
@@ -1237,7 +1238,7 @@ function CostingSimulation(props) {
                                                     {(isSurfaceTreatment || showSurfaceTreatmentColumn) && <AgGridColumn width={140} field="NewTranspotationCost" headerName='New Extra Cost' ></AgGridColumn>}
                                                     {(isSurfaceTreatment || showSurfaceTreatmentColumn) && <AgGridColumn width={140} field="OldNetSurfaceTreatmentCost" headerName='Old Net ST Cost' cellRenderer="oldNetSTFormatter"></AgGridColumn>}
                                                     {(isSurfaceTreatment || showSurfaceTreatmentColumn) && <AgGridColumn width={140} field="NewNetSurfaceTreatmentCost" headerName='New Net ST Cost' cellRenderer="newNetSTFormatter"></AgGridColumn>}
-                                                    {(isSurfaceTreatment || showSurfaceTreatmentColumn) && <AgGridColumn width={140} field="NetSurfaceTreatmentCostVariance" headerName='ST Variance' cellRenderer='STVarianceFormatter' ></AgGridColumn>}
+                                                    {(isSurfaceTreatment || showSurfaceTreatmentColumn) && <AgGridColumn width={140} field="NetSurfaceTreatmentCostVariance" headerName='ST Variance' cellRenderer='varianceSTFormatter' ></AgGridColumn>}
 
 
                                                     {((isOperation || showOperationColumn) && !isMultipleMasterSimulation) && <AgGridColumn width={140} field="Quantity" headerName='Quantity' cellRenderer='operQuantityFormatter'  ></AgGridColumn>}
