@@ -172,7 +172,6 @@ function ApprovalListing(props) {
     if (!isFilterButtonClicked) {
       setWarningMessage(true)
     }
-
     if (value?.filterInstance?.appliedModel === null || value?.filterInstance?.appliedModel?.filter === "") {
       let isFilterEmpty = true
 
