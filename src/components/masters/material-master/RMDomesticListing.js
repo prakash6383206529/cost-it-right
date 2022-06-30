@@ -660,12 +660,12 @@ function RMDomesticListing(props) {
 
 
     return (
-        <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${DownloadAccessibility ? "show-table-btn" : ""} ${isSimulation ? 'simulation-height' : 'min-height100vh'}`}>
+        <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${DownloadAccessibility ? "show-table-btn" : ""} ${isSimulation ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
             {(loader && !props.isMasterSummaryDrawer) ? <LoaderCustom customClass="simulation-Loader" /> :
                 <>
 
                     <Row className={`filter-row-large pt-4 ${props?.isSimulation ? 'zindex-0 ' : ''}`}>
-                        <Col md="3" lg="3">
+                        <Col md="3" lg="3" className='mb-2'>
                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                         </Col>
                         <Col md="9" lg="9" className="mb-3 d-flex justify-content-end">
@@ -741,7 +741,7 @@ function RMDomesticListing(props) {
                     </Row>
                     <Row>
                         <Col>
-                            <div className={`ag-grid-wrapper overlay-contain`}>
+                            <div className={`ag-grid-wrapper ${props?.isDataInMaster ? 'master-approval-overlay' : ''} overlay-contain`}>
                                 <div className={`ag-theme-material ${(loader && !props.isMasterSummaryDrawer) && "max-loader-height"}`}>
                                     <AgGridReact
                                         style={{ height: '100%', width: '100%' }}
