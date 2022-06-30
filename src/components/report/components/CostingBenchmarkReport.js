@@ -93,7 +93,7 @@ function CostingBenchmarkReport(props) {
             case EXCHNAGERATE:
                 return (<ExchangeRateListing isSimulation={true} technology={technology.value} selectionForListingMasterAPI='Master' />)
             case OPERATIONS:
-                return (<OperationListing isSimulation={true} technology={null} selectionForListingMasterAPI='Master' />)
+                return (<OperationListing isSimulation={true} technology={null} selectionForListingMasterAPI='Master' stopAPICall={false} />)
             default:
                 return <div className="empty-table-paecholder" />;
         }
