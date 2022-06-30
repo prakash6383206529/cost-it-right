@@ -34,7 +34,8 @@ class BOMViewer extends Component {
       isCancel: false,
       isSaved: false,
       partType: '',
-      isLoader: false
+      isLoader: false,
+      zoomOutCount: 9
 
     }
   }
@@ -84,6 +85,27 @@ class BOMViewer extends Component {
 
   childDrawerToggle = () => {
     this.setState({ isOpenChildDrawer: true })
+  }
+
+  zoomOut = () => {
+
+    if (this.state.zoomOutCount > 2) {
+      document.getElementsByClassName("flowspace")[0].classList.remove(`zoomclass${this.state.zoomOutCount + 1}`)
+      document.getElementsByClassName("flowspace")[0].classList.add(`zoomclass${this.state.zoomOutCount}`)
+      this.setState({ zoomOutCount: this.state.zoomOutCount - 1 })
+    }
+  }
+
+  zoomIn = () => {
+
+    if (this.state.zoomOutCount < 11) {
+      document.getElementsByClassName("flowspace")[0].classList.remove(`zoomclass${this.state.zoomOutCount + 1}`)
+      document.getElementsByClassName("flowspace")[0].classList.remove(`zoomclass${this.state.zoomOutCount - 1}`)
+      document.getElementsByClassName("flowspace")[0].classList.remove(`zoomclass${this.state.zoomOutCount}`)
+      document.getElementsByClassName("flowspace")[0].classList.add(`zoomclass${this.state.zoomOutCount + 1}`)
+      this.setState({ zoomOutCount: this.state.zoomOutCount + 1 })
+
+    }
   }
 
   closeChildDrawer = (e = '', childData = {}) => {
@@ -292,7 +314,7 @@ class BOMViewer extends Component {
     return (
       <>
         <Drawer
-          className={"bom-viewer-main"}
+          className={"bom-viewer-main "}
           anchor={this.props.anchor}
           open={this.props.isOpen}
         // onClose={(e) => this.toggleDrawer(e)}
@@ -353,7 +375,6 @@ class BOMViewer extends Component {
                             </button>
                           </>
                         }
-
                         <button
                           type="button"
                           onClick={this.childDrawerToggle}
@@ -363,6 +384,20 @@ class BOMViewer extends Component {
                         </button>
                       </Col>
                     )}
+                  <button
+                    type="button"
+                    onClick={this.zoomIn}
+                    className={"user-btn mr15 pull-right mt10"}
+                  >
+                    <div className={"plus"}></div>ZOOM-IN
+                  </button>
+                  <button
+                    type="button"
+                    onClick={this.zoomOut}
+                    className={"user-btn mr15 pull-right mt10"}
+                  >
+                    <div className={"plus"}></div>ZOOM-OUT
+                  </button>
                 </Row>
 
                 <Row className="flowspace-row">
@@ -378,7 +413,9 @@ class BOMViewer extends Component {
                       overflow: "auto",
                       maxWidth: "100vw",
                       maxHeight: "calc(100vh - 135px)",
+
                     }}
+                    connectionSize={100}
                     onClick={(e) => this.setState({ selected_point: null })}
                     selected={this.state.selected_point}
                   >
