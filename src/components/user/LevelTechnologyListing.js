@@ -74,6 +74,17 @@ class LevelTechnologyListing extends Component {
 		})
 	}
 
+	componentDidUpdate(prevProps) {
+		if (this.props.updateApi !== prevProps.updateApi) {
+
+			if (this.props.cancelButton) {
+				return
+			} else {
+				this.getUpdatedData()
+			}
+		}
+	}
+
 	/**
 	* @method getUpdatedData
 	* @description get updated data after updatesuccess
@@ -284,7 +295,7 @@ class LevelTechnologyListing extends Component {
 										{/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
 										<AgGridColumn field="Technology" headerName="Technology"></AgGridColumn>
 										<AgGridColumn field="Level" headerName="Highest Approval Level"></AgGridColumn>
-										<AgGridColumn field="LevelId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+										<AgGridColumn field="TechnologyId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
 									</AgGridReact>
 									{<PaginationWrapper gridApi={this.gridApi} setPage={this.levelMappingPagination} pageSize1={5} pageSize2={15} pageSize3={25} />}
 								</div>
@@ -336,7 +347,7 @@ class LevelTechnologyListing extends Component {
 										{/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
 										<AgGridColumn field="Technology" headerName="Heads"></AgGridColumn>
 										<AgGridColumn field="Level" headerName="Highest Approval Level"></AgGridColumn>
-										<AgGridColumn field="LevelId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'simulationButtonFormatter'}></AgGridColumn>
+										<AgGridColumn field="TechnologyId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'simulationButtonFormatter'}></AgGridColumn>
 									</AgGridReact>
 									{<PaginationWrapper gridApi={this.gridApi} setPage={this.simulationPagination} pageSize1={5} pageSize2={15} pageSize3={25} />}
 								</div>
@@ -391,7 +402,7 @@ class LevelTechnologyListing extends Component {
 												{/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
 												<AgGridColumn field="Master" headerName="Master"></AgGridColumn>
 												<AgGridColumn field="Level" headerName="Highest Approval Level"></AgGridColumn>
-												<AgGridColumn field="LevelId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'masterButtonFormatter'}></AgGridColumn>
+												<AgGridColumn field="MasterId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'masterButtonFormatter'}></AgGridColumn>
 											</AgGridReact>
 											{<PaginationWrapper gridApi={this.gridApi} setPage={this.masterPagination} pageSize1={5} pageSize2={15} pageSize3={25} />}
 										</div>
