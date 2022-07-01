@@ -7956,6 +7956,9 @@ body {
   .ag-grid-wrapper {
     min-height: auto !important;
   }
+  .button-wrapper {
+    margin-top: -44px!important;
+  }
 }
 
 .calculator-drawer {
@@ -8456,4 +8459,7 @@ padding-bottom: 3px;
   letter-spacing: -2px;
   font-weight: 700;
   user-select: none;
+}
+.dashboard-height {
+  min-height: 350px;
 }
