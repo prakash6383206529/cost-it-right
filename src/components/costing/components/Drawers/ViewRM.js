@@ -14,23 +14,22 @@ import { getRawMaterialCalculationForCorrugatedBox, getRawMaterialCalculationFor
 function ViewRM(props) {
 
   const { viewRMData, rmMBDetail, isAssemblyCosting, isPDFShow, simulationMode, isSimulationDone } = props
-  /*
-  * @method toggleDrawer
-  * @description closing drawer
-  */
+  const dispatch = useDispatch()
+  const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
+  const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
+
   const [viewRM, setViewRM] = useState(viewRMData)
   const [isSimulation, setIsSimulation] = useState(isSimulationDone === false ? isSimulationDone : (simulationMode ? simulationMode : false))
   const [index, setIndex] = useState('')
   const [weightCalculatorDrawer, setWeightCalculatorDrawer] = useState(false)
   const [calciData, setCalciData] = useState({})
+  const masterBatchList = viewCostingData[props.index].CostingMasterBatchRawMaterialCostResponse
 
   useEffect(() => {
     setViewRM(viewRMData)
   }, [])
 
-  const dispatch = useDispatch()
-  const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
-  const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
+
 
   const setCalculatorData = (res, index) => {
     if (res && res.data && res.data.Data) {
@@ -208,7 +207,7 @@ function ViewRM(props) {
         </>}
 
       {
-        isAssemblyCosting && viewCostingData[props.index]?.CostingMasterBatchRawMaterialCostResponse.length > 0 && !isSimulation &&
+        isAssemblyCosting && masterBatchList.length > 0 && !isSimulation &&
         <>
           < Col md="12">
             <div className="left-border mt-4 mb-3">Master Batch</div>
@@ -227,9 +226,9 @@ function ViewRM(props) {
               </thead>
               <tbody>
 
-                {viewCostingData[props.index]?.CostingMasterBatchRawMaterialCostResponse.map((item) => {
+                {masterBatchList.map((item, indexMB) => {
                   return (
-                    < tr key={index}>
+                    < tr key={indexMB}>
                       <td>{item.PartNumber}</td>
                       <td>{item.MasterBatchRMName}</td>
                       <td>{checkForDecimalAndNull(item.MasterBatchRMPrice, initialConfiguration.NoOfDecimalForPrice)}</td>
@@ -239,7 +238,7 @@ function ViewRM(props) {
                   )
                 })
                 }
-                {viewRM.length === 0 && (
+                {masterBatchList.length === 0 && (
                   <tr>
                     <td colSpan={13}>
                       <NoContentFound title={EMPTY_DATA} />
