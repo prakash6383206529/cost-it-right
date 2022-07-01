@@ -82,7 +82,9 @@ class LevelsListing extends Component {
 	}
 
 	UNSAFE_componentWillUpdate() {
-		this.props.getUsersByTechnologyAndLevel(() => { })
+		if (!this.state.isEditFlag) {
+			this.props.getUsersByTechnologyAndLevel(() => { })
+		}
 
 	}
 

@@ -43,13 +43,20 @@ class Level extends Component {
   */
   componentDidMount() {
 
-    this.props.setEmptyLevelAPI('', () => { })
-    this.props.getAllTechnologyAPI(() => { })
-    this.props.getAllLevelAPI(() => { this.setState({ isLoader: this.props.isEditFlag ? true : false }) })
-    this.getLevelDetail()
-    this.getLevelMappingDetail()
-    this.props.getSimulationTechnologySelectList(() => { })
-    this.props.getMastersSelectList(() => { })
+    if (this.props.isEditFlag) {
+      this.props.setEmptyLevelAPI('', () => { })
+      this.props.getAllLevelAPI(() => { this.setState({ isLoader: this.props.isEditFlag ? true : false }) })
+      this.getLevelDetail()
+      this.getLevelMappingDetail()
+    } else {
+      this.props.setEmptyLevelAPI('', () => { })
+      this.props.getAllTechnologyAPI(() => { })
+      this.props.getAllLevelAPI(() => { this.setState({ isLoader: this.props.isEditFlag ? true : false }) })
+      this.getLevelDetail()
+      this.getLevelMappingDetail()
+      this.props.getSimulationTechnologySelectList(() => { })
+      this.props.getMastersSelectList(() => { })
+    }
 
   }
 
