@@ -72,7 +72,7 @@ function Dashboard(props) {
               </Row>
 
               <Row className="m-0">
-                <div className="graph-box w-100">
+                <div className={`graph-box w-100 ${acc1 ? "dashboard-height" : ''}`}>
                   <Row>
                     <Col md="8"><h3 className="mb-0">Costings Approval Status</h3></Col>
                     <Col md="4" className="text-right">

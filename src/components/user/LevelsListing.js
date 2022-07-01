@@ -54,7 +54,9 @@ class LevelsListing extends Component {
 			cellData: {},
 			cellValue: '',
 			showPopupToggle: false,
-			isLoader: false
+			isLoader: false,
+			updateApi: false,
+			cancelButton: false
 
 		}
 	}
@@ -81,6 +83,7 @@ class LevelsListing extends Component {
 
 	UNSAFE_componentWillUpdate() {
 		this.props.getUsersByTechnologyAndLevel(() => { })
+
 	}
 
 	getLevelsListData = () => {
@@ -130,6 +133,8 @@ class LevelsListing extends Component {
 			isShowMappingForm: false,
 			isShowForm: false,
 			isEditFlag: false,
+			updateApi: !this.state.updateApi,
+			cancelButton: e === 'cancel' ? true : false
 		})
 	}
 
@@ -140,7 +145,7 @@ class LevelsListing extends Component {
 	getLevelMappingDetail = (Id, levelType) => {
 		this.setState({
 			isEditFlag: true,
-			LevelId: Id,
+			TechnologyId: Id,
 			isOpen: true,
 			isShowForm: false,
 			isShowMappingForm: true,
@@ -353,25 +358,9 @@ class LevelsListing extends Component {
 	* @description Renders the component
 	*/
 	render() {
-		const { isEditFlag, isShowForm, isShowMappingForm, isOpen, LevelId,
+		const { isEditFlag, isShowForm, isShowMappingForm, isOpen, TechnologyId,
 			AddAccessibility, EditAccessibility, DeleteAccessibility, showImpact } = this.state;
-		const options = {
-			clearSearch: true,
-			noDataText: (this.props.usersListByTechnologyAndLevel === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
-			afterSearch: this.afterSearch,
-			paginationShowsTotal: this.renderPaginationShowsTotal,
-			prePage: <span className="prev-page-pg"></span>, // Previous page button text
-			nextPage: <span className="next-page-pg"></span>, // Next page button text
-			firstPage: <span className="first-page-pg"></span>, // First page button text
-			lastPage: <span className="last-page-pg"></span>,
-			pagination: true,
-			sizePerPageList: [{
-				text: '5', value: 5
-			}, {
-				text: '10', value: 10
-			}],
-			sizePerPage: 5,
-		};
+
 
 		const defaultColDef = {
 			resizable: true,
@@ -400,6 +389,8 @@ class LevelsListing extends Component {
 										AddAccessibility={AddAccessibility}
 										EditAccessibility={EditAccessibility}
 										DeleteAccessibility={DeleteAccessibility}
+										updateApi={this.state.updateApi}
+										cancelButton={this.state.cancelButton}
 									/>
 								</Col>
 							</Row>
@@ -466,7 +457,7 @@ class LevelsListing extends Component {
 									isShowMappingForm={isShowMappingForm}
 									closeDrawer={this.closeDrawer}
 									isEditFlag={isEditFlag}
-									LevelId={LevelId}
+									TechnologyId={TechnologyId}
 									anchor={'right'}
 									isEditedlevelType={this.state.levelType}
 								/>
