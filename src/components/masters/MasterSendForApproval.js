@@ -408,8 +408,8 @@ function MasterSendForApproval(props) {
                                         {
                                             !isBulkUpload && masterId === Number('1') &&
                                             <>
-                                                <div className="input-group form-group col-md-12">
-                                                    <label>Effective Date<span className="asterisk-required">*</span></label>
+                                                <div className="input-group form-group col-md-6">
+                                                    <label className='height-0'>Effective Date<span className="asterisk-required">*</span></label>
                                                     <div className="inputbox date-section">
                                                         <DatePicker
                                                             name="EffectiveDate"
@@ -428,7 +428,7 @@ function MasterSendForApproval(props) {
                                                     </div>
                                                 </div>
 
-                                                <div className="input-group form-group col-md-12">
+                                                <div className="input-group form-group col-md-6">
                                                     <TextFieldHookForm
                                                         label="Basic Rate"
                                                         name={'basicRate'}
@@ -443,7 +443,7 @@ function MasterSendForApproval(props) {
                                                     />
 
                                                 </div>
-                                                <div className="input-group form-group col-md-12">
+                                                <div className="input-group form-group col-md-6">
                                                     <TextFieldHookForm
                                                         label="Scrap Rate"
                                                         name={'scrapRate'}
@@ -458,7 +458,7 @@ function MasterSendForApproval(props) {
                                                     />
 
                                                 </div>
-                                                <div className="input-group form-group col-md-12">
+                                                <div className="input-group form-group col-md-6">
                                                     <TextFieldHookForm
                                                         label="RM Freight Cost"
                                                         name={'freightCost'}
@@ -473,7 +473,7 @@ function MasterSendForApproval(props) {
                                                     />
 
                                                 </div>
-                                                <div className="input-group form-group col-md-12">
+                                                <div className="input-group form-group col-md-6">
                                                     <TextFieldHookForm
                                                         label="Shearing Cost"
                                                         name={'shearingCost'}
@@ -488,7 +488,7 @@ function MasterSendForApproval(props) {
                                                     />
 
                                                 </div>
-                                                <div className="input-group form-group col-md-12">
+                                                <div className="input-group form-group col-md-6">
                                                     <TextFieldHookForm
                                                         label="Net Cost"
                                                         name={'netCost'}
@@ -530,7 +530,7 @@ function MasterSendForApproval(props) {
                                                     </div>
                                                 </div>
 
-                                                <div className="input-group form-group col-md-12">
+                                                <div className="input-group form-group col-md-6">
                                                     <TextFieldHookForm
                                                         label="Basic Rate"
                                                         name={'basicRate'}
@@ -548,7 +548,7 @@ function MasterSendForApproval(props) {
 
 
 
-                                                <div className="input-group form-group col-md-12">
+                                                <div className="input-group form-group col-md-6">
                                                     <TextFieldHookForm
                                                         label="Net Cost"
                                                         name={'netCost'}
