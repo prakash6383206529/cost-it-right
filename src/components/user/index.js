@@ -214,9 +214,9 @@ class User extends Component {
 * @param {*} state
 */
 function mapStateToProps({ auth }) {
-  const { leftMenuData, loading } = auth;
+  const { leftMenuData, loading, topAndLeftMenuData } = auth;
 
-  return { leftMenuData, loading };
+  return { leftMenuData, loading, topAndLeftMenuData };
 }
 
 
