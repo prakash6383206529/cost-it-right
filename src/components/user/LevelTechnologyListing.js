@@ -74,6 +74,17 @@ class LevelTechnologyListing extends Component {
 		})
 	}
 
+	componentDidUpdate(prevProps) {
+		if (this.props.updateApi !== prevProps.updateApi) {
+
+			if (this.props.cancelButton) {
+				return
+			} else {
+				this.getUpdatedData()
+			}
+		}
+	}
+
 	/**
 	* @method getUpdatedData
 	* @description get updated data after updatesuccess
