@@ -13,7 +13,7 @@ import DatePicker from "react-datepicker";
 import DayTime from '../../../common/DayTimeWrapper'
 import Toaster from '../../../common/Toaster';
 import PopupMsgWrapper from '../../../common/PopupMsgWrapper';
-import { debounce } from 'lodash';
+import _, { debounce } from 'lodash';
 
 function CopyCosting(props) {
   const loggedIn = isUserLoggedIn()
@@ -32,7 +32,7 @@ function CopyCosting(props) {
       fromDestinationPlant: type === VBC ? { label: `${copyCostingData.DestinationPlantName}`, value: copyCostingData.DestinationPlantId } : '',
       fromcostingId: selectedCostingId.zbcCosting,
       fromVbccostingId: selectedCostingId.vbcCosting,
-      toVendorName: type === VBC ? { label: `${copyCostingData.VendorName}(${copyCostingData.VendorCode})`, value: copyCostingData.DestinationPlantId, vendorId: copyCostingData.VendorId } : '',
+      toVendorName: type === VBC ? { label: `${copyCostingData.VendorName}(${copyCostingData.VendorCode})`, value: copyCostingData.VendorId } : '',
     },
   })
 
@@ -82,8 +82,7 @@ function CopyCosting(props) {
         vbcVendorGrid.map((item) => (
           VbcTemp.push({
             label: `${item.VendorName}(${item.VendorCode})`,
-            value: item.DestinationPlantId,
-            vendorId: item.VendorId
+            value: item.VendorId
           })
         ))
     } else {
@@ -91,13 +90,15 @@ function CopyCosting(props) {
         vbcVendorGrid.map((item) => (
           VbcTemp.push({
             label: `${item.VendorName}(${item.VendorCode})`,
-            value: item.VendorId,
-            vendorId: item.VendorId
+            value: item.VendorId
             // destPlant: item.DestinationPlantId ? item.DestinationPlantId : ''
           })
         ))
     }
-    setVendorName(VbcTemp)
+
+    let uniqueArray = _.uniqBy(VbcTemp, "vendorId")
+
+    setVendorName(uniqueArray)
 
     if (type === ZBC) {
       getCostingDropDown(copyCostingData.PlantId, ZBC)
@@ -265,7 +266,8 @@ function CopyCosting(props) {
       return temp
 
     })
-    setDestinationPlant(temp)
+    let uniqueArray = _.uniqBy(temp, "value")
+    setDestinationPlant(uniqueArray)
 
   }
 
@@ -330,7 +332,7 @@ function CopyCosting(props) {
     //COPY TO VBC
     if (isToVbc) {
 
-      obj.ToVendorId = value.toVendorName && value.toVendorName.vendorId
+      obj.ToVendorId = value.toVendorName && value.toVendorName.value
       obj.ToVendorname = value.toVendorName && value.toVendorName.label
       obj.ToVendorCode = tovendorCode && tovendorCode[1] && tovendorCode[1].split(')')[0]
       obj.ToVendorPlantId = value.toVendorPlant && value.toVendorPlant.value

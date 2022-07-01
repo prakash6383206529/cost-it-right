@@ -15,6 +15,7 @@ import { MESSAGES } from "../../config/message";
 import { getConfigurationKey, loggedInUserId } from "../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
 import { Container, Row, Col, Label, } from 'reactstrap';
+import LoaderCustom from "../common/LoaderCustom";
 
 /**************************************THIS FILE IS FOR ADDING LEVEL MAPPING*****************************************/
 class Level extends Component {
@@ -23,11 +24,10 @@ class Level extends Component {
     //this.child = React.createRef();
     //this.childMapping = React.createRef();
     this.state = {
-      isLoader: false,
+      isLoader: true,
       isSubmitted: false,
       isEditFlag: false,
       isEditMappingFlag: false,
-      LevelId: '',
       isShowForm: false,
       isShowTechnologyForm: false,
       technology: [],
@@ -58,10 +58,10 @@ class Level extends Component {
   * @description used to get level detail
   */
   getLevelDetail = () => {
-    const { isShowForm, isEditFlag, LevelId } = this.props;
+    const { isShowForm, isEditFlag, TechnologyId } = this.props;
     if (isEditFlag && isShowForm) {
       //$('html, body').animate({ scrollTop: 0 }, 'slow');
-      this.props.getUserLevelAPI(LevelId, () => { })
+      this.props.getUserLevelAPI(TechnologyId, () => { })
     }
   }
 
@@ -70,26 +70,22 @@ class Level extends Component {
   * @description used to get level detail
   */
   getLevelMappingDetail = () => {
-    const { isShowMappingForm, isEditFlag, LevelId, isEditedlevelType } = this.props;
+    const { isShowMappingForm, isEditFlag, TechnologyId, isEditedlevelType } = this.props;
 
     // WHEN COSTING LEVEL DETAILS GET
     if (isEditFlag && isShowMappingForm && isEditedlevelType === 'Costing') {
-      this.props.getLevelMappingAPI(LevelId, (res) => {
-        const { technologyList, levelList } = this.props;
+      this.props.getLevelMappingAPI(TechnologyId, (res) => {
 
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data;
-
           setTimeout(() => {
-            let technologyObj = technologyList && technologyList.filter(item => Number(item.Value) === Data.TechnologyId)
-            let levelObj = levelList && levelList.filter(item => item.Value === Data.LevelId)
             this.setState({
               isEditMappingFlag: true,
-              LevelId: LevelId,
               isShowTechnologyForm: true,
-              technology: { label: technologyObj[0].Text, value: technologyObj[0].Value },
-              level: { label: levelObj[0].Text, value: levelObj[0].Value },
+              technology: { label: Data?.Technology, value: Data?.TechnologyId },
+              level: { label: Data?.Level, value: Data?.LevelId },
               levelType: isEditedlevelType,
+              isLoader: false
             })
             this.setState({ dataToCheck: this.state.level })
           }, 500)
@@ -99,22 +95,18 @@ class Level extends Component {
 
     // WHEN SIMULATION LEVEL DETAILS GET
     if (isEditFlag && isShowMappingForm && isEditedlevelType === 'Simulation') {
-      this.props.getSimulationLevel(LevelId, (res) => {
-        const { simulationTechnologyList, levelList } = this.props;
+      this.props.getSimulationLevel(TechnologyId, (res) => {
 
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data;
-
           setTimeout(() => {
-            let technologyObj = simulationTechnologyList && simulationTechnologyList.filter(item => Number(item.Value) === Data.TechnologyId)
-            let levelObj = levelList && levelList.filter(item => item.Value === Data.LevelId)
             this.setState({
               isEditMappingFlag: true,
-              LevelId: LevelId,
               isShowTechnologyForm: true,
-              technology: { label: technologyObj[0].Text, value: technologyObj[0].Value },
-              level: { label: levelObj[0].Text, value: levelObj[0].Value },
+              technology: { label: Data?.Technology, value: Data?.TechnologyId },
+              level: { label: Data?.Level, value: Data?.LevelId },
               levelType: isEditedlevelType,
+              isLoader: false
             })
             this.setState({ dataToCheck: this.state.level })
           }, 500)
@@ -124,22 +116,18 @@ class Level extends Component {
 
     // WHEN MASTER LEVEL DETAILS GET
     if (isEditFlag && isShowMappingForm && isEditedlevelType === 'Master') {
-      this.props.getMasterLevel(LevelId, (res) => {
-        const { masterList, levelList } = this.props;
-
+      this.props.getMasterLevel(TechnologyId, (res) => {
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data;
 
           setTimeout(() => {
-            let technologyObj = masterList && masterList.filter(item => Number(item.Value) === Data.MasterId)
-            let levelObj = levelList && levelList.filter(item => item.Value === Data.LevelId)
             this.setState({
               isEditMappingFlag: true,
-              LevelId: LevelId,
               isShowTechnologyForm: true,
-              technology: { label: technologyObj[0].Text, value: technologyObj[0].Value },
-              level: { label: levelObj[0].Text, value: levelObj[0].Value },
+              technology: { label: Data?.Master, value: Data?.MasterId },
+              level: { label: Data?.Level, value: Data?.LevelId },
               levelType: isEditedlevelType,
+              isLoader: false
             })
             this.setState({ dataToCheck: this.state.level })
           }, 500)
@@ -249,7 +237,7 @@ class Level extends Component {
       level: [],
     })
     this.props.setEmptyLevelAPI('', () => { })
-    this.toggleDrawer('')
+    this.toggleDrawer('cancel')
   }
 
   /**
@@ -279,14 +267,18 @@ class Level extends Component {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }
-
     this.setState({
       technology: [],
       level: [],
     })
 
     this.props.setEmptyLevelAPI('', () => { })
-    this.props.closeDrawer('')
+    if (event === 'cancel') {
+      this.props.closeDrawer('cancel')
+    } else {
+      this.props.closeDrawer('')
+    }
+
   };
 
   submitLevelTechnology = () => {
@@ -300,7 +292,8 @@ class Level extends Component {
    * @returns {{}}
    */
   onSubmit(values) {
-    const { isShowForm, isShowMappingForm, isEditFlag, LevelId, reset } = this.props;
+    const { isShowForm, isShowMappingForm, isEditFlag, TechnologyId, reset } = this.props;
+
     const { technology, level } = this.state;
     this.setState({ isLoader: true })
 
@@ -308,7 +301,7 @@ class Level extends Component {
       if (isEditFlag) {
 
         let formReq = {
-          LevelId: LevelId,
+          LevelId: TechnologyId,
           IsActive: true,
           CreatedDate: '',
           LevelName: values.LevelName,
@@ -317,6 +310,7 @@ class Level extends Component {
         }
 
         this.props.updateUserLevelAPI(formReq, (res) => {
+
           if (res && res.data && res.data.Result) {
             Toaster.success(MESSAGES.UPDATE_LEVEL_SUCCESSFULLY)
           }
@@ -484,14 +478,13 @@ class Level extends Component {
 
     return (
       <div>
-        {isLoader && <Loader />}
         <Drawer className="add-update-level-drawer" anchor={this.props.anchor} open={this.props.isOpen}
         // onClose={(e) => this.toggleDrawer(e)}
         >
           <Container>
+            {isLoader && <LoaderCustom />}
             <div className={'drawer-wrapper'}>
               <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-
                 <Row className="drawer-heading">
                   <Col className="d-flex">
                     {
