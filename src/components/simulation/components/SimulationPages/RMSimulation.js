@@ -282,7 +282,7 @@ function RMSimulation(props) {
                 {
                     isImpactedMaster ?
                         row.OldScrapRate :
-                        <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.ScrapRate)}</span>
+                        <span>{cell && value ? Number(cell) : Number(row.ScrapRate)}</span>
                 }
             </>
         )
