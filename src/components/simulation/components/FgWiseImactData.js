@@ -123,7 +123,7 @@ export function Fgwiseimactdata(props) {
                                         <tr className="accordian-with-arrow" key={index} id={"fg-wise"}>
                                             <td className="arrow-accordian"><span><Link to={"fg-wise"} spy={true} smooth={true} delay={0}><div class="Close" onClick={() => { toggleAcc(index) }}></div></Link>{item.PartNumber ? item.PartNumber : "-"}</span></td>
                                             <td><span>{'-'}</span></td>
-                                            <td><span className='text-overflow' title={item.PartName}>{item.PartName}</span></td>
+                                            <td className='text-overflow'><span title={item.PartName}>{item.PartName}</span></td>
                                             <td><span>{'-'}</span></td>
                                             <td><span>{'-'}</span></td>
                                             <td><span>{'-'}</span></td>
@@ -147,7 +147,7 @@ export function Fgwiseimactdata(props) {
                                                 <tr className="accordian-content">
                                                     <td><span>{item.PartNumber}</span></td>
                                                     <td className="text-center"><span>{item.RevisionNumber}</span></td>
-                                                    <td><span className='text-overflow' title={item.PartName}>{item.PartName}</span></td>
+                                                    <td className='text-overflow'><span title={item.PartName}>{item.PartName}</span></td>
                                                     <td><span>{checkForDecimalAndNull(item.OldCost, initialConfiguration.NoOfDecimalForPrice)}</span></td>
                                                     <td><span>{checkForDecimalAndNull(item.NewCost, initialConfiguration.NoOfDecimalForPrice)}</span></td>
                                                     <td><span>{item.Quantity}</span></td>
