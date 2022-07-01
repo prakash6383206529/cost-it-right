@@ -1058,7 +1058,7 @@ class AddMoreDetails extends Component {
       const PowerRatingPerKW = fieldsObj && fieldsObj.PowerRatingPerKW !== undefined ? checkForNull(fieldsObj.PowerRatingPerKW) : 0;
       const PowerCostPerUnit = machineFullValue.PowerCostPerUnit !== undefined ? checkForNull(machineFullValue.PowerCostPerUnit) : 0; // may be state
 
-      const totalPowerCostPrYer = PowerRatingPerKW * NumberOfWorkingHoursPerYear * calculatePercentage(UtilizationFactorPercentage)
+      const totalPowerCostPrYer = PowerRatingPerKW * NumberOfWorkingHoursPerYear * calculatePercentage(UtilizationFactorPercentage) * checkForNull(PowerCostPerUnit)
       machineFullValue.totalPowerCostPrYer = totalPowerCostPrYer
       this.setState({ machineFullValue: { ...machineFullValue, totalPowerCostPrYer: machineFullValue.totalPowerCostPrYer } })
       this.props.change('TotalPowerCostPerYear', checkForDecimalAndNull(totalPowerCostPrYer, initialConfiguration.NoOfDecimalForPrice))
