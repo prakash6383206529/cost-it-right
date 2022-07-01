@@ -383,7 +383,7 @@ function SimulationApprovalSummary(props) {
             } if (item.IsMultipleOperation === true) {
                 item.OperationName = 'Multiple Operation'
                 item.OperationCode = 'Multiple Operation'
-            } if (item.IsMultipleSTOperatrion === true) {
+            } if (item.IsMultipleSTOperation === true) {
                 item.OperationName = 'Multiple Surface Treatment'
                 item.OperationCode = 'Multiple Surface Treatment'
             } if (item.IsMultipleBOP === true) {
@@ -774,7 +774,7 @@ function SimulationApprovalSummary(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let temp = ''
         temp = row.OperationName
-        if (row.IsMultipleSTOperatrion === true) {
+        if (row.IsMultipleSTOperation === true) {
             temp = 'Multiple Surface Treatment'
         } if (row.IsMultipleOperation === true) {
             temp = 'Multiple Operation'
@@ -787,7 +787,7 @@ function SimulationApprovalSummary(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let temp = ''
         temp = row.OperationCode
-        if (row.IsMultipleSTOperatrion === true) {
+        if (row.IsMultipleSTOperation === true) {
             temp = 'Multiple Surface Treatment'
         } if (row.IsMultipleOperation === true) {
             temp = 'Multiple Operation'
