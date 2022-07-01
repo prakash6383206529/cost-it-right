@@ -45,7 +45,7 @@ class Level extends Component {
 
     this.props.setEmptyLevelAPI('', () => { })
     this.props.getAllTechnologyAPI(() => { })
-    this.props.getAllLevelAPI(() => { })
+    this.props.getAllLevelAPI(() => { this.setState({ isLoader: this.props.isEditFlag ? true : false }) })
     this.getLevelDetail()
     this.getLevelMappingDetail()
     this.props.getSimulationTechnologySelectList(() => { })
