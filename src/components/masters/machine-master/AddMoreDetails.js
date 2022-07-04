@@ -2591,7 +2591,7 @@ class AddMoreDetails extends Component {
                       </Row>
 
                       {/* VARIABLE COST */}
-                      <Row className="mb-3 accordian-container">
+                      <Row className="mb-3 accordian-container variable-cost">
                         <Col md="6">
                           <HeaderTitle
                             title={'Variable Cost:'}
@@ -2608,7 +2608,7 @@ class AddMoreDetails extends Component {
                           isVariableCostOpen && <div className="accordian-content row mx-0 w-100">
                             <Col md={`${this.state.IsAnnualMaintenanceFixed ? 2 : 3}`} className="switch mb15">
                               <label>Annual Maintenance</label>
-                              <label className="switch-level">
+                              <label className="switch-level mt-2">
                                 <div className={'left-title'}>Fixed</div>
                                 <Switch
                                   onChange={this.onPressAnnualMaintenance}
@@ -2658,7 +2658,7 @@ class AddMoreDetails extends Component {
                             </Col>
                             <Col md={`${this.state.IsAnnualConsumableFixed ? 2 : 3}`} className="switch mb15">
                               <label>Annual Consumable</label>
-                              <label className="switch-level">
+                              <label className="switch-level mt-2">
                                 <div className={'left-title'}>Fixed</div>
                                 <Switch
                                   onChange={this.onPressAnnualConsumable}
@@ -2688,7 +2688,6 @@ class AddMoreDetails extends Component {
                                   component={renderNumberInputField}
                                   //required={true}
                                   disabled={false}
-                                  className=" mt5"
                                   customClassName="withBorder"
                                 />
                               </Col>}
@@ -2709,7 +2708,7 @@ class AddMoreDetails extends Component {
 
                             <Col md={`${this.state.IsInsuranceFixed ? 2 : 3}`} className="switch mb15">
                               <label>Insurance</label>
-                              <label className="switch-level">
+                              <label className="switch-level mt-2">
                                 <div className={'left-title'}>Fixed</div>
                                 <Switch
                                   onChange={this.onPressInsurance}
@@ -2739,7 +2738,6 @@ class AddMoreDetails extends Component {
                                   component={renderNumberInputField}
                                   //required={true}
                                   disabled={false}
-                                  className=" mt5"
                                   customClassName="withBorder"
                                 />
                               </Col>}
