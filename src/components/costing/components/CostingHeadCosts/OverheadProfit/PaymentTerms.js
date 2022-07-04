@@ -55,7 +55,6 @@ function PaymentTerms(props) {
             setValue('NetCost', IsPaymentTermsApplicable ? checkForDecimalAndNull(tempPaymentTermObj.NetCost, initialConfiguration.NoOfDecimalForPrice) : '')
             if (!CostingViewMode) {
                 props.setPaymentTermsDetail(tempObj, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
-                dispatch(isOverheadProfitDataChange(true))
             }
         }, 200)
     }, [tempPaymentTermObj, paymentTermsApplicability])
@@ -71,6 +70,7 @@ function PaymentTerms(props) {
         callPaymentTermAPI(value)
 
         dispatch(gridDataAdded(true))
+        dispatch(isOverheadProfitDataChange(true))
     }
 
     /**
@@ -339,7 +339,7 @@ function PaymentTerms(props) {
                                             message: 'Invalid Number.'
                                         },
                                     }}
-                                    handleChange={() => { }}
+                                    handleChange={() => { dispatch(isOverheadProfitDataChange(true)) }}
                                     defaultValue={''}
                                     className=""
                                     customClassName={'withBorder'}

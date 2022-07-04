@@ -231,6 +231,7 @@ function TabToolCost(props) {
   */
   const onPressApplicability = () => {
     setIsApplicableProcessWise(!IsApplicableProcessWise)
+    dispatch(isToolDataChange(true))
   }
 
   useEffect(() => {
@@ -262,7 +263,8 @@ function TabToolCost(props) {
   * @description SAVE COSTING
   */
   const saveCosting = debounce(handleSubmit((formData) => {
-    if (checkIsToolTabChange || gridData) {
+    console.log('checkIsToolTabChange: ', checkIsToolTabChange);
+    if (checkIsToolTabChange) {
 
       const tabData = RMCCTabData[0]
       const surfaceTabData = SurfaceTabData[0]
@@ -287,6 +289,7 @@ function TabToolCost(props) {
         }
       }
 
+      console.log('bbbbb');
       dispatch(saveToolTab(data, res => {
         if (res.data.Result) {
           Toaster.success(MESSAGES.TOOL_TAB_COSTING_SAVE_SUCCESS);
@@ -380,6 +383,7 @@ function TabToolCost(props) {
     setRowObjData(gridData)
     setIsEditFlag(false)
     setDrawerOpen(true)
+    dispatch(isToolDataChange(true))
   }
 
   const closeDrawer = (e = '', rowData = {}) => {
