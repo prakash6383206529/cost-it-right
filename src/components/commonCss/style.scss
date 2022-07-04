@@ -4906,6 +4906,14 @@ body {
           }
         }
       }
+      tr.accordian-row {
+        td {
+          min-width: 108px;
+          &:first-child {
+            min-width: 150px !important;
+          }
+        }
+      }
     }
 
     .surfacetreatment-main-headings {
