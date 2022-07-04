@@ -35,8 +35,9 @@ class BOMViewer extends Component {
       isSaved: false,
       partType: '',
       isLoader: false,
-      zoomOutCount: 9
-
+      zoomOutCount: 9,
+      isHoverZoomInBtn: false,
+      isHoverZoomOutBtn: false
     }
   }
 
@@ -107,7 +108,18 @@ class BOMViewer extends Component {
 
     }
   }
-
+  handleMouseZoomIn = () => {
+    this.setState({ isHoverZoomInBtn: true })
+  }
+  handleMouseOutZoomIn = () => {
+    this.setState({ isHoverZoomInBtn: false })
+  }
+  handleMouseZoomOut = () => {
+    this.setState({ isHoverZoomOutBtn: true })
+  }
+  handleMouseOutZoomOut = () => {
+    this.setState({ isHoverZoomOutBtn: false })
+  }
   closeChildDrawer = (e = '', childData = {}) => {
     this.setState({ isOpenChildDrawer: false }, () => {
       this.setChildPartsData(childData)
@@ -308,7 +320,6 @@ class BOMViewer extends Component {
   render() {
     const { handleSubmit, isEditFlag, isFromVishualAd, initialConfiguration } = this.props;
     const { isOpenChildDrawer, isOpenVisualDrawer, flowpoints } = this.state;
-
     return (
       <>
         <Drawer
@@ -382,22 +393,11 @@ class BOMViewer extends Component {
                         </button>
                       </Col>
                     )}
-                  <button
-                    type="button"
-                    onClick={this.zoomIn}
-                    className={"user-btn mr15 pull-right mt10"}
-                  >
-                    <div className={"plus"}></div>ZOOM-IN
-                  </button>
-                  <button
-                    type="button"
-                    onClick={this.zoomOut}
-                    className={"user-btn mr15 pull-right mt10"}
-                  >
-                    <div className={"plus"}></div>ZOOM-OUT
-                  </button>
                 </Row>
-
+                <div className='zoom-container'>
+                  <button title='Zoom in' type="button" onClick={this.zoomIn} onMouseOver={this.handleMouseZoomIn} onMouseOut={this.handleMouseOutZoomIn} className={"secondary-btn p-1 mb-1"}><div className={`${this.state.isHoverZoomInBtn ? 'zoom-in-hover' : 'zoom-in'}`}></div></button>
+                  <button title='Zoom out' type="button" onClick={this.zoomOut} onMouseOver={this.handleMouseZoomOut} onMouseOut={this.handleMouseOutZoomOut} className={"secondary-btn p-1"}><div className={`${this.state.isHoverZoomOutBtn ? 'zoom-out-hover' : 'zoom-out'}`}></div></button>
+                </div>
                 <Row className="flowspace-row">
                   <Flowspace
                     theme="#2196f3"
@@ -501,7 +501,7 @@ class BOMViewer extends Component {
                     </button>
                     <button
                       type="submit"
-                      className="submit-button mr5 save-btn"
+                      className="submit-button mr15 save-btn"
                     >
                       <div className={"save-icon"}></div>
                       {"Save"}
