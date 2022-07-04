@@ -30,6 +30,7 @@ class PartMaster extends Component {
             BulkUploadAccessibility: false,
             DownloadAccessibility: false,
             openDrawer: false,
+            isHover: false
         }
     }
 
@@ -114,6 +115,19 @@ class PartMaster extends Component {
     }
 
 
+<<<<<<< HEAD
+=======
+    openFetchDrawer = () => {
+        this.setState({ openDrawer: true })
+    }
+    handleMouse = () => {
+        this.setState({ isHover: true })
+    }
+    handleMouseOut = () => {
+        this.setState({ isHover: false })
+    }
+>>>>>>> f2f8894bf (add zoom in zoom out button for BOM viewer)
+
 
     /**
     * @method render
@@ -153,9 +167,15 @@ class PartMaster extends Component {
                         <div>
                             <div className="d-flex justify-content-between">
                                 <h1>Part Master</h1>
-
+                                <button
+                                    type="button"
+                                    className={'secondary-btn mr5 mt-1'}
+                                    title="Fetch"
+                                    onClick={this.openFetchDrawer}
+                                    onMouseOver={this.handleMouse}
+                                    onMouseOut={this.handleMouseOut}>
+                                    <div className={`${this.state.isHover ? "swap-hover" : "swap"} mr-0`}></div></button>
                             </div>
-
 
                             <Nav tabs className="subtabs mt-0">
                                 <NavItem>
