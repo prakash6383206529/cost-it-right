@@ -255,7 +255,6 @@ function OverheadProfit(props) {
   const calculateOverheadFixedTotalCost = () => {
     if (!CostingViewMode) {
       if (headerCosts !== undefined && overheadFixedFieldValues !== undefined && overheadObj && overheadObj.IsOverheadFixedApplicable) {
-        dispatch(isOverheadProfitDataChange(true))
         setValue('OverheadFixedCost', '-')
         setValue('OverheadFixedTotalCost', checkForDecimalAndNull(overheadFixedFieldValues, initialConfiguration.NoOfDecimalForPrice))
         setOverheadObj({
@@ -275,7 +274,6 @@ function OverheadProfit(props) {
   const calculateProfitFixedTotalCost = () => {
     if (!CostingViewMode) {
       if (headerCosts !== undefined && profitFixedFieldValues !== undefined && profitObj && profitObj.IsProfitFixedApplicable) {
-        dispatch(isOverheadProfitDataChange(true))
         setValue('ProfitFixedCost', '-')
         setValue('ProfitFixedTotalCost', checkForDecimalAndNull(profitFixedFieldValues, initialConfiguration.NoOfDecimalForPrice))
         setProfitObj({
@@ -314,6 +312,7 @@ function OverheadProfit(props) {
     */
   const handleModelTypeChange = (newValue, IsDropdownClicked) => {
     if (IsDropdownClicked && !CostingViewMode && !CheckIsCostingDateSelected(CostingEffectiveDate)) {
+      dispatch(isOverheadProfitDataChange(true))
 
 
       setOverheadObj({})
@@ -322,7 +321,6 @@ function OverheadProfit(props) {
       setProfitValues({}, true)
       setIsSurfaceTreatmentAdded(false)
       if (newValue && newValue !== '' && newValue.value !== undefined && costData.IsVendor !== undefined) {
-        dispatch(isOverheadProfitDataChange(true))
         setModelType(newValue)
         const reqParams = {
           ModelTypeId: newValue.value,
@@ -1083,7 +1081,6 @@ function OverheadProfit(props) {
         }
         // END HERE ADD CC IN PROFIT COMBINED
       }
-      dispatch(isOverheadProfitDataChange(true))
     }
   }
 
@@ -1211,7 +1208,7 @@ function OverheadProfit(props) {
                             //   message: 'Percentage cannot be greater than 100'
                             // },
                           }}
-                          handleChange={() => { }}
+                          handleChange={() => { dispatch(isOverheadProfitDataChange(true)) }}
                           defaultValue={overheadObj.OverheadFixedPercentage !== null ? checkForDecimalAndNull(overheadObj.OverheadFixedPercentage, initialConfiguration.NoOfDecimalForPrice) : ''}
                           className=""
                           customClassName={'withBorder'}
@@ -1227,7 +1224,7 @@ function OverheadProfit(props) {
                           control={control}
                           register={register}
                           mandatory={false}
-                          handleChange={() => { }}
+                          handleChange={() => { dispatch(isOverheadProfitDataChange(true)) }}
                           defaultValue={overheadObj.OverheadFixedCost !== null ? checkForDecimalAndNull(overheadObj.OverheadFixedCost, initialConfiguration.NoOfDecimalForPrice) : ''}
                           className=""
                           customClassName={'withBorder'}
