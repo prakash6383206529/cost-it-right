@@ -81,11 +81,6 @@ class LevelsListing extends Component {
 		this.props.getUsersByTechnologyAndLevel(() => { })
 	}
 
-	UNSAFE_componentWillUpdate() {
-		this.props.getUsersByTechnologyAndLevel(() => { })
-
-	}
-
 	getLevelsListData = () => {
 		this.setState({ isLoader: true })
 		this.props.getAllLevelAPI(res => {
