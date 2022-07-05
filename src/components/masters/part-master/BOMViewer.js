@@ -108,18 +108,36 @@ class BOMViewer extends Component {
 
     }
   }
+
+  /**
+   * @method handleMouseZoomIn
+   * @description FOR ZOOM IN BUTTON CHANGE CSS ON MOUSE HOVER
+   */
   handleMouseZoomIn = () => {
     this.setState({ isHoverZoomInBtn: true })
   }
+  /**
+    * @method handleMouseOutZoomIn
+    * @description FOR ZOOM IN BUTTON CHANGE CSS ON MOUSE LEAVE
+    */
   handleMouseOutZoomIn = () => {
     this.setState({ isHoverZoomInBtn: false })
   }
+  /**
+    * @method handleMouseZoomOut
+    * @description FOR ZOOM OUT BUTTON CHANGE CSS ON MOUSE HOVER
+    */
   handleMouseZoomOut = () => {
     this.setState({ isHoverZoomOutBtn: true })
   }
+  /**
+    * @method handleMouseOutZoomOut
+    * @description FOR ZOOM OUT BUTTON CHANGE CSS ON MOUSE LEAVE
+    */
   handleMouseOutZoomOut = () => {
     this.setState({ isHoverZoomOutBtn: false })
   }
+
   closeChildDrawer = (e = '', childData = {}) => {
     this.setState({ isOpenChildDrawer: false }, () => {
       this.setChildPartsData(childData)
