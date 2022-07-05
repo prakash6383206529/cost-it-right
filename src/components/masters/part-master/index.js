@@ -127,9 +127,17 @@ class PartMaster extends Component {
     openFetchDrawer = () => {
         this.setState({ openDrawer: true })
     }
+    /**
+    * @method handleMouse
+    * @description FOR FETCH BUTTON CHANGE CSS ON MOUSE HOVER
+    */
     handleMouse = () => {
         this.setState({ isHover: true })
     }
+    /**
+    * @method handleMouseOut
+    * @description FOR FETCH BUTTON CHANGE CSS ON MOUSE LEAVE
+    */
     handleMouseOut = () => {
         this.setState({ isHover: false })
     }
