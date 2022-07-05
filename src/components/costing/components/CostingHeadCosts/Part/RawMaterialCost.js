@@ -96,7 +96,7 @@ function RawMaterialCost(props) {
       }
       selectedIds(gridData)
       // BELOW CODE IS USED TO SET CUTOFFRMC IN REDUCER TO GET VALUE IN O&P TAB.
-      if (Object.keys(gridData).length > 0) {
+      if (gridData && gridData?.length > 0) {
         let isCutOffApplicableCount = 0
         let totalCutOff = 0
         gridData && gridData.map(item => {
