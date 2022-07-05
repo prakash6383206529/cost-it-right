@@ -366,11 +366,12 @@ function CostingSimulation(props) {
         selectedRows && selectedRows.map((item, index) => {
             // IsLockedBySimulation COMES TRUE WHEN THAT COSTING IS UNDER APPROVAL
             if (item.IsLockedBySimulation) {
-                temp.push(item.CostingNumber, index)
+                temp.push(item.CostingNumber)
                 return false
             }
             return null
         })
+
 
         if (temp.length > 1) {
             // IF MULTIPLE COSTING ARE SELECTED AND THEY ARE UNDER APPROVAL "IF" WILL GET EXECUTED
@@ -378,9 +379,11 @@ function CostingSimulation(props) {
             Toaster.warning(`Costings ${temp.map(item => item)} is already sent for approval through another token number.`)
             gridApi.deselectAll()
             return false
-        } else if (temp.length === 1) {         // IF SINGLE COSTING IS SELECTED AND THAT IS UNDER APPROVAL "ELSE IF" WILL GET EXECUTED
-            if (selectedRows[temp[1]].LockedBySimulationProcessStep === '' || selectedRows[temp[1]].LockedBySimulationProcessStep === null) {
-                Toaster.warning(`${selectedRows[temp[1]].LockedBySimulationStuckInWhichUser ? selectedRows[temp[1]].LockedBySimulationStuckInWhichUser : '-'}`)
+        }
+
+        else if (temp.length === 1) {         // IF SINGLE COSTING IS SELECTED AND THAT IS UNDER APPROVAL "ELSE IF" WILL GET EXECUTED
+            if (selectedRows[0].LockedBySimulationProcessStep === '' || selectedRows[0].LockedBySimulationProcessStep === null) {
+                Toaster.warning(`${selectedRows[0].LockedBySimulationStuckInWhichUser ? selectedRows[0].LockedBySimulationStuckInWhichUser : '-'}`)
             } else {
                 Toaster.warning(`This costing is under approval with token number ${selectedRows[0].LockedBySimulationToken ? selectedRows[0].LockedBySimulationToken : '-'} at ${selectedRows[0].LockedBySimulationProcessStep ? selectedRows[0].LockedBySimulationProcessStep : "-"} with ${selectedRows[0].LockedBySimulationStuckInWhichUser ? selectedRows[0].LockedBySimulationStuckInWhichUser : '-'} .`)
             }
