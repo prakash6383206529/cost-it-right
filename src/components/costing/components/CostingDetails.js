@@ -46,6 +46,7 @@ function IsolateReRender(control) {
 }
 
 function CostingDetails(props) {
+
   const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
