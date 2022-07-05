@@ -965,7 +965,7 @@ const CostingSummaryTable = (props) => {
                                         </button>
                                       }
                                     </span>
-                                    <span class="d-block">{checkForDecimalAndNull(data?.poPrice, initialConfiguration.NoOfDecimalForPrice)} ({DayTime(data?.costingDate).format('DD-MM-YYYY')})</span>
+                                    <span class="d-block">{checkForDecimalAndNull(data?.poPrice, initialConfiguration.NoOfDecimalForPrice)} ({(data?.effectiveDate && data?.effectiveDate !== '') ? DayTime(data?.effectiveDate).format('DD-MM-YYYY') : "-"})</span>
                                     {/* USE PART NUMBER KEY HERE */}
                                     <span class="d-block">{data?.partNumber}</span>
                                     <span class="d-block">{data?.partName}</span>
