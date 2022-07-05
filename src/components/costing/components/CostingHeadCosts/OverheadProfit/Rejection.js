@@ -223,7 +223,6 @@ function Rejection(props) {
             }
         }
 
-        dispatch(isOverheadProfitDataChange(true))
     }
 
 
@@ -241,6 +240,7 @@ function Rejection(props) {
             setApplicability([])
             checkRejectionApplicability('')
         }
+        dispatch(isOverheadProfitDataChange(true))
     }
 
     return (
@@ -304,7 +304,7 @@ function Rejection(props) {
                                 required: false,
                                 pattern: { value: /^\d*\.?\d*$/, message: 'Invalid Number.' },
                             }}
-                            handleChange={() => { }}
+                            handleChange={() => { dispatch(isOverheadProfitDataChange(true)) }}
                             defaultValue={''}
                             className=""
                             customClassName={'withBorder'}

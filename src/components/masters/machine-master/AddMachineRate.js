@@ -323,7 +323,7 @@ class AddMachineRate extends Component {
               IsDetailedEntry: Data.IsDetailedEntry,
               selectedTechnology: Data.Technology[0].Technology !== undefined ? { label: Data.Technology[0].Technology, value: Data.Technology[0].TechnologyId } : [],
               selectedPlants: plantObj,
-              vendorName: Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.Vendor } : [],
+              vendorName: Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.VendorId } : [],
               machineType: machineTypeObj && machineTypeObj !== undefined ? { label: machineTypeObj.Text, value: machineTypeObj.Value } : [],
               processGrid: MachineProcessArray,
               remarks: Data.Remark,
@@ -1398,9 +1398,10 @@ class AddMachineRate extends Component {
                             name={"MachineName"}
                             type="text"
                             placeholder={'Enter'}
-                            validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
+                            // RE SPECIFIC MACHINE NAME REQUIRED 
+                            validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                             component={renderText}
-                            required={false}
+                            required={true}
                             disabled={isViewMode ? true : false}
                             className=" "
                             customClassName="withBorder"

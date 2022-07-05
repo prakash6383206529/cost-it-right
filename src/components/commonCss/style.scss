@@ -4905,6 +4905,14 @@ body {
           }
         }
       }
+      tr.accordian-row {
+        td {
+          min-width: 108px;
+          &:first-child {
+            min-width: 150px !important;
+          }
+        }
+      }
     }
 
     .surfacetreatment-main-headings {
@@ -8499,4 +8507,32 @@ padding-bottom: 3px;
 }
 .dashboard-height {
   min-height: 350px;
+}
+.zoom-container {
+  position: absolute;
+  z-index: 1;
+  bottom: 80px;
+  right: 30px;
+  display: flex;
+  flex-direction: column;
+  button {
+   max-width: 24px;
+   height: 24px;
+   &:focus {
+    box-shadow: none !important;
+  }
+  &.secondary-btn {
+    padding-left: 0.25rem !important;
+    padding-right: 0.25rem !important;
+    height: 24px !important;
+    width: 24px !important;
+  }
+ }
+}
+.variable-cost {
+  .col-md-1 {
+    .inputbox.withBorder {
+      padding-top: 21px;
+    }
+  }
 }

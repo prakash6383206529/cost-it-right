@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useForm, } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
-import { getOverheadProfitTabData, setOverheadProfitData, setSurfaceCostInOverheadProfit } from '../../actions/Costing';
+import { getOverheadProfitTabData, isOverheadProfitDataChange, setOverheadProfitData, setSurfaceCostInOverheadProfit } from '../../actions/Costing';
 import { costingInfoContext, } from '../CostingDetailStepTwo';
 import { checkForNull, } from '../../../../helper';
 import PartOverheadProfit from '../CostingHeadCosts/OverheadProfit/PartOverheadProfit';
@@ -506,6 +506,7 @@ function TabOverheadProfit(props) {
     dispatch(setSurfaceCostInOverheadProfit(!IsIncludeSurfaceTreatment, () => { }))
     setIsIncludeSurfaceTreatment(!IsIncludeSurfaceTreatment)
     setIsPressST(true)
+    dispatch(isOverheadProfitDataChange(true))
   }
 
   /**

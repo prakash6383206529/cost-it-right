@@ -331,7 +331,7 @@ const CostingSummaryTable = (props) => {
   const addNewCosting = (index) => {
     partNumber.isChanged = false
     dispatch(storePartNumber(partNumber))
-    history.push('/costing')
+
     const userDetail = userDetails()
     let tempData = viewCostingData[index]
     const type = viewCostingData[index]?.zbc === 0 ? 'ZBC' : 'VBC'
@@ -364,7 +364,8 @@ const CostingSummaryTable = (props) => {
           dispatch(getBriefCostingById(res?.data?.Data?.CostingId, () => {
             setPartInfo(res?.data?.Data)
 
-            showDetail(res?.data?.Data, { costingId: res?.data?.Data?.CostingId, type })
+            showDetail(res.data?.Data, { costingId: res.data?.Data?.CostingId, type })
+            history.push('/costing')
           }))
         }
       }),
@@ -372,7 +373,7 @@ const CostingSummaryTable = (props) => {
 
     } else if (type === VBC) {
       const data = {
-        PartId: partInfo.PartId,
+        PartId: partNumber.partId,
         PartTypeId: partInfo.PartTypeId,
         PartType: partInfo.PartType,
         TechnologyId: tempData?.technologyId,
@@ -398,17 +399,21 @@ const CostingSummaryTable = (props) => {
         Price: partInfo.Price,
         EffectiveDate: partInfo.EffectiveDate,
       }
-      dispatch(getBriefCostingById('', (res) => { }))
-      dispatch(createVBCCosting(data, (res) => {
-        if (res?.data?.Result) {
+      dispatch(getBriefCostingById('', (res) => {
 
-          dispatch(getBriefCostingById(res?.data?.Data?.CostingId, () => {
-            showDetail(res?.data?.Data, { costingId: res?.data?.Data?.CostingId, type })
-            setPartInfo(res?.data?.Data)
-          }))
-        }
-      }),
-      )
+        dispatch(createVBCCosting(data, (res) => {
+
+          if (res.data?.Result) {
+            dispatch(getBriefCostingById(res.data?.Data?.CostingId, () => {
+              showDetail(res.data?.Data, { costingId: res.data.Data.CostingId, type })
+              setPartInfo(res.data?.Data)
+              history.push('/costing')
+            }))
+          }
+        }),
+        )
+
+      }))
     }
   }
   /**
@@ -965,7 +970,7 @@ const CostingSummaryTable = (props) => {
                                         </button>
                                       }
                                     </span>
-                                    <span class="d-block">{checkForDecimalAndNull(data?.poPrice, initialConfiguration.NoOfDecimalForPrice)} ({DayTime(data?.costingDate).format('DD-MM-YYYY')})</span>
+                                    <span class="d-block">{checkForDecimalAndNull(data?.poPrice, initialConfiguration.NoOfDecimalForPrice)} ({(data?.effectiveDate && data?.effectiveDate !== '') ? DayTime(data?.effectiveDate).format('DD-MM-YYYY') : "-"})</span>
                                     {/* USE PART NUMBER KEY HERE */}
                                     <span class="d-block">{data?.partNumber}</span>
                                     <span class="d-block">{data?.partName}</span>
