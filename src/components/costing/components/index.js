@@ -7,6 +7,7 @@ import CostingSummary from './CostingSummary';
 import { isDataChange, savePartNumberAndBOMLevel, setProcessGroupGrid, storePartNumber } from '../actions/Costing';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { useHistory } from "react-router-dom";
+import ApprovalListing from './approval/ApprovalListing';
 
 
 
@@ -34,8 +35,11 @@ function Costing(props) {
     dispatch(storePartNumber(''))
     if (reactLocalStorage.get('location') === '/costing-summary') {
       toggle("2");
-    } else {
-
+    }
+    else if (reactLocalStorage.get('location') === '/approval-listing') {
+      toggle("3");
+    }
+    else {
       toggle("1");
     }
   }, [])
@@ -97,6 +101,17 @@ function Costing(props) {
                 Costing Summary
               </NavLink>
             </NavItem>
+            <NavItem>
+              <NavLink
+                className={classnames({ active: activeTab === "3" })}
+                onClick={() => {
+                  toggle("3");
+                  history.push("/approval-listing");
+                }}
+              >
+                Approval Status
+              </NavLink>
+            </NavItem>
           </Nav>
           <TabContent activeTab={activeTab}>
             <TabPane tabId="1">
@@ -109,6 +124,9 @@ function Costing(props) {
             </TabPane>
             <TabPane tabId="2">
               <CostingSummary activeTab={activeTab} showDetail={showDetail} setcostingOptionsSelectFromSummary={setcostingOptionsSelectFromSummary} />
+            </TabPane>
+            <TabPane tabId="3">
+              <ApprovalListing activeTab={activeTab} />
             </TabPane>
           </TabContent>
         </div>
