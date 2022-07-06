@@ -157,6 +157,7 @@ class AddBOPForm extends Component {
     this.props.getDrawerBOPData('', () => { })
 
     if (isAddMore) {
+      this.props.setChildParts(childData)
       this.setState({ updateAsyncDropdown: !this.state.updateAsyncDropdown })
       return false
     } else {
