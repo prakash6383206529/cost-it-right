@@ -685,9 +685,6 @@ function ApprovalListing(props) {
           (loader) ? <LoaderCustom customClass="dashboard-loader" /> :
             <div className={` ${!isApproval && 'container-fluid'} approval-listing-page`}>
               <form noValidate>
-
-                {!isApproval && <h1 className="mb-0">Costing Approval</h1>}
-
                 <Row className="pt-4 blue-before">
                   <Col md="6" lg="6" className="search-user-block mb-3">
 
