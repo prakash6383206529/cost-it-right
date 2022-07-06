@@ -168,7 +168,7 @@ function Tool(props) {
       }
 
       let tempArr = Object.assign([...gridData], { [zeroIndex]: rowArray })
-      dispatch(isToolDataChange(true))
+      // dispatch(isToolDataChange(true))
       setTimeout(() => {
         setGridData(tempArr)
       }, 200)
@@ -517,7 +517,7 @@ function Tool(props) {
     }
 
     let tempArr = Object.assign([...gridData], { [zeroIndex]: rowArray })
-    dispatch(isToolDataChange(true))
+    // dispatch(isToolDataChange(true))
     setTimeout(() => {
       setGridData(tempArr)
     }, 200)

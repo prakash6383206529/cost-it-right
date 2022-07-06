@@ -319,6 +319,7 @@ export function getBriefCostingById(CostingId, callback) {
         type: SET_COSTING_DATALIST_BY_COSTINGID,
         payload: [],
       })
+      callback();
     }
   };
 }
