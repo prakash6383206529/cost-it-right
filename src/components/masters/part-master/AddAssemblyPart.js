@@ -174,6 +174,14 @@ class AddAssemblyPart extends Component {
     this.setState({ minEffectiveDate: "", warningMessage: false, warningMessageTechnology: false, TechnologySelected: [] })
   }
 
+  isRequired = () => {
+    if (this.state.convertPartToAssembly) {
+      return maxLength20
+    } else {
+      return required
+    }
+  }
+
   onPartNoChange = debounce((e) => {
 
     if (!this.state.isEditFlag) {
@@ -191,7 +199,6 @@ class AddAssemblyPart extends Component {
       })
     }
   }, 600)
-
 
 
   handlePartNo = (newValue, actionMeta) => {
@@ -964,7 +971,7 @@ class AddAssemblyPart extends Component {
                             name={"AssemblyPartNumber"}
                             type="text"
                             placeholder={""}
-                            validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20]}
+                            validate={[this.isRequired(), acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20]}
                             component={renderText}
                             required={true}
                             onChange={this.onPartNoChange}
