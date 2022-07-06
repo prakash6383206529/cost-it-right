@@ -170,6 +170,30 @@ function ReportListing(props) {
         return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
     }
 
+
+    const remarkFormatter = (props) => {
+
+        const cellValue = props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const costingID = row.BaseCostingId;
+
+        if (props.data.RawMaterialName === "Multiple RM") {
+            return <>
+                {row.Status !== "CreatedByAssembly" ?
+                    <div
+                        onClick={() => viewMultipleRMDetails(costingID)}
+                        className={'link'}
+                    >Multiple RM</div>
+                    : <div>Multiple RM</div>
+                }
+            </>
+
+        } else {
+            return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
+        }
+
+    }
+
     const viewMultipleRMDetails = (costingID) => {
         dispatch(getSingleCostingDetails(costingID, (res) => {
             if (res.data.Data) {
@@ -199,6 +223,7 @@ function ReportListing(props) {
         const cellValue = props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const costingID = row.BaseCostingId;
+
         if (props.data.RawMaterialName === "Multiple RM") {
             return <>
                 {row.Status !== "CreatedByAssembly" ?
@@ -487,7 +512,8 @@ function ReportListing(props) {
         effectiveDateFormatter: effectiveDateFormatter,
         decimalInputOutputFormatter: decimalInputOutputFormatter,
         decimalPriceFormatter: decimalPriceFormatter,
-        rmHyperLinkFormatter: rmHyperLinkFormatter
+        rmHyperLinkFormatter: rmHyperLinkFormatter,
+        remarkFormatter: remarkFormatter
     };
 
 
@@ -699,6 +725,7 @@ function ReportListing(props) {
                         <AgGridColumn field='RawMaterialGrossWeight' headerName='Gross Weight' cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
                         <AgGridColumn field='RawMaterialFinishWeight' headerName='Finish Weight' cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
                         <AgGridColumn field='NetRawMaterialsCost' headerName='Net RM Cost' cellRenderer='rmHyperLinkFormatter'></AgGridColumn>
+                        <AgGridColumn field='RawMaterialRemark' headerName='RM Remark' cellRenderer='remarkFormatter'></AgGridColumn>
                         <AgGridColumn field='NetBoughtOutPartCost' headerName='Net BOP Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                         <AgGridColumn field='NetProcessCost' headerName='Net Process Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                         <AgGridColumn field='NetOperationCost' headerName='Net Operation Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
