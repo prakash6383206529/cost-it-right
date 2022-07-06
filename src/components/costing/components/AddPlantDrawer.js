@@ -135,7 +135,7 @@ function AddPlantDrawer(props) {
                   <h3>{"Add Plant"}</h3>
                 </div>
                 <div
-                  onClick={(e) => toggleDrawer(e)}
+                  onClick={cancel}
                   className={"close-button right"}
                 ></div>
               </Col>
