@@ -2509,7 +2509,7 @@ button:disabled {
 
 //=============== costing details page only
 .react-datepicker-popper {
-  z-index: 9;
+  z-index: 21;
 }
 
 .costing-details-page {
@@ -8460,9 +8460,11 @@ padding-bottom: 3px;
 .st-operation .before-box {
   padding-left: 0;
 }
-.form-group.inputbox.withBorder, .dropdown-flex {
-  label {
-    display: flex;
+.UOM-label-container {
+  .form-group.inputbox.withBorder, .dropdown-flex {
+    label {
+      display: flex;
+    }
   }
 }
 .inputbox, .ag-react-container {

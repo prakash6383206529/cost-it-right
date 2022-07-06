@@ -1519,7 +1519,7 @@ class AddRMImport extends Component {
 
 
 
-                        <Row>
+                        <Row className='UOM-label-container'>
                           <Col md="12" className="filter-block">
                             <div className=" flex-fills mb-2 pl-0">
                               <h5>{"Cost:"}</h5>
@@ -1729,7 +1729,6 @@ class AddRMImport extends Component {
                               />
                             </Col>
                           }
-
 
                         </Row>
 
