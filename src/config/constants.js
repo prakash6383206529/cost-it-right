@@ -1689,6 +1689,8 @@ export const SIMULATION_APPROVAL_SUMMARY_PATH = '/simulation-approval-summary'
 export const DASHBOARDWITHGRAPH_PATH = '/dashboardWithGraph'
 export const DASHBOARD_PATH = '/'
 export const DASHBOARD_PATH_SECOND = '/dashboard'
+export const SIMULATION_PATH = '/simulation'
+export const SIMULATION_HISTORY_PATH = '/simulation-history'
 
 
 export const EMPTY_GUID = "00000000-0000-0000-0000-000000000000"
@@ -1872,4 +1874,4 @@ export const KEY = 'gQUJ79YKYm22Cazw';
 export const IV = 'eTEFSa0PinFKTQNB'
 
 //VERSION 
-export const VERSION = "V1.2.347";
+export const VERSION = "V1.2.348";
