@@ -20,7 +20,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { onFloatingFilterChanged, onSearch, resetState, onBtPrevious, onBtNext, onPageSizeChanged, PaginationWrapper } from '../../common/commonPagination'
-import { getFilteredData, userDetails, loggedInUserId, getConfigurationKey, userDepartmetList } from '../../../helper'
+import { userDetails, loggedInUserId, getConfigurationKey, userDepartmetList } from '../../../helper'
 import { getListingForSimulationCombined } from '../../simulation/actions/Simulation';
 import { masterFinalLevelUser } from '../../masters/actions/Material'
 import ProcessGroupDrawer from './ProcessGroupDrawer'
@@ -441,14 +441,6 @@ class MachineRateListing extends Component {
         gridOptions.api.setFilterModel(null);
     }
 
-    getFilterMachineData = () => {
-        if (this.props.isSimulation) {
-            return getFilteredData(this.props.machineDatalist, MACHINE_MASTER_ID)
-        } else {
-            return this.props.machineDatalist
-        }
-    }
-
     /**
     * @method render
     * @description Renders the component
@@ -610,7 +602,7 @@ class MachineRateListing extends Component {
                                     defaultColDef={defaultColDef}
                                     floatingFilter={true}
                                     domLayout='autoHeight'
-                                    rowData={this.getFilterMachineData()}
+                                    rowData={this.props.machineDatalist}
                                     pagination={true}
                                     paginationPageSize={this.state.globalTake}
                                     onGridReady={this.onGridReady}
@@ -630,6 +622,7 @@ class MachineRateListing extends Component {
                                     {!isSimulation && <AgGridColumn field="Technologies" headerName="Technology"></AgGridColumn>}
                                     <AgGridColumn field="VendorName" headerName="Vendor(Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="Plants" headerName="Plant(Code)" cellRenderer='hyphenFormatter'></AgGridColumn>
+                                    <AgGridColumn field="MachineName" headerName="Machine Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="MachineNumber" headerName="Machine Number" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="MachineTypeName" headerName="Machine Type" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="MachineTonnage" cellRenderer={'hyphenFormatter'} headerName="Machine Tonnage"></AgGridColumn>
