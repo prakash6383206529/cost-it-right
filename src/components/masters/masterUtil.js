@@ -223,8 +223,7 @@ export const ProcessGroup = (props) => {
                         </div>
                     </Col>
                     <Col md="2" className='mb-2 d-flex align-items-center'>
-                        <div>
-
+                        <div className='d-flex'>
                             {
                                 editIndex === '' ?
                                     <>
