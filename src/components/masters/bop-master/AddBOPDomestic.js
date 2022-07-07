@@ -1053,7 +1053,7 @@ class AddBOPDomestic extends Component {
 
 
 
-                        <Row>
+                        <Row className='UOM-label-container'>
                           <Col md="12">
                             <div className="left-border">{"Cost:"}</div>
                           </Col>
