@@ -8458,6 +8458,7 @@ padding-bottom: 3px;
   .form-group.inputbox.withBorder, .dropdown-flex {
     label {
       display: flex;
+      margin-bottom: 7px !important;
     }
   }
 }
