@@ -4,7 +4,6 @@ import { connect } from 'react-redux'
 import SideBar from './nav/NavBar'
 import { Route, Switch } from 'react-router-dom'
 import ReduxToastr from 'react-redux-toastr'
-import { ToastContainer, toast, Slide } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Footer from './common/Footer'
 import Login from './login/Login'
@@ -20,7 +19,6 @@ import PlantMaster from './masters/plant-master/index'
 import SupplierMaster from './masters/supplier-master/VendorListing'
 import BOPMaster from './masters/bop-master'
 import FuelMaster from './masters/fuel-master'
-import OperationListing from './masters/operation/OperationListing'
 import FreightMaster from './masters/freight-master'
 import LabourListing from './masters/labour-master/LabourListing'
 import OverheadProfit from './masters/overhead-profit-master'
@@ -38,29 +36,25 @@ import { showUserData, TokenAPI, AutoSignin } from '../actions/auth/AuthActions'
 import AuthMiddleware from '../AuthMiddleware'
 import {
   BOP, DASHBOARD, FREIGHT, FUEL_AND_POWER, INTEREST_RATE, LABOUR, MACHINE, OPERATION,
-  OVERHEAD_AND_PROFIT, PART, PLANT, RAW_MATERIAL, UOM, USER, VENDOR, SIMULATION_APPROVAL_SUM,
-  REASON, VOLUME, CLIENT, EXCHANGE_RATE, TAX, COSTING_PATH, APPROVAL_LISTING_PATH, COSTING_DETAILS_REPORT, SIMULATION_INSIGNTS, APPROVAL_APP,
-  APPROVAL_SUMMARY_PATH, COSTING_BULK_UPLOAD, COSTING_SUMMARY_, COSTING_SUMMARY, Approval_Summary, Approval_Listing, CostingSummary_BulkUpload, Simulation_History, Simulation_Page, Simulation_Upload, API,
-  config, DASHBOARDWITHGRAPH_PATH, SIMULATION_APPROVAL_SUMMARY_PATH, DASHBOARD_PATH, DASHBOARD_PATH_SECOND, PRODUCT, OperationMaster, SHEET_METAL
+  OVERHEAD_AND_PROFIT, PART, PLANT, RAW_MATERIAL, UOM, USER, VENDOR,
+  REASON, VOLUME, CLIENT, EXCHANGE_RATE, TAX, COSTING_PATH, APPROVAL_LISTING_PATH, COSTING_DETAILS_REPORT, APPROVAL_APP,
+  APPROVAL_SUMMARY_PATH, COSTING_BULK_UPLOAD, COSTING_SUMMARY_, COSTING_SUMMARY, Simulation_Page, Simulation_Upload, API,
+  DASHBOARDWITHGRAPH_PATH, SIMULATION_APPROVAL_SUMMARY_PATH, DASHBOARD_PATH, DASHBOARD_PATH_SECOND, SHEET_METAL, SIMULATION_PATH, SIMULATION_HISTORY_PATH
 } from '../config/constants'
 import ApprovalSummary from './costing/components/approval/ApprovalSummary'
-import ApprovalListing from './costing/components/approval/ApprovalListing'
 import CostingSummaryBulkUpload from './costing/components/CostingSummaryBulkUpload'
-import SimulationHistory from './simulation/components/SimulationHistory'
-import Simulation from './simulation/components/Simulation'
-import CostingSummary from './costing/components/CostingSummary'
 import SimulationUpload from './simulation/components/SimulationUpload'
 import { userDetails } from '../helper/auth'
 import { formatLoginResult } from '../helper/ApiResponse'
 import axios from 'axios';
 import CostingDetailReport from './report/components/CostingDetailReport'
-import SimulationApprovalListing from './simulation/components/SimulationApprovalListing'
 import SimulationApprovalSummary from './simulation/components/SimulationApprovalSummary'
 import RMApproval from './masters/material-master/RMApproval'
 import OperationsMaster from './masters/operation/index'
 import CostingBenchmarkReport from './report/components/CostingBenchmarkReport'
 import ToasterBoXWrapper from './common/ToasterBoXWrapper'
 import SimulationInsights from './report/components/SimulationInsights'
+import SimulationRoutes from './simulation/Routes'
 const CustomHeader = {
   'Content-Type': 'application/x-www-form-urlencoded',
   'Access-Control-Allow-Origin': '*',
@@ -197,7 +191,9 @@ class Main extends Component {
         location.pathname === SIMULATION_APPROVAL_SUMMARY_PATH ||
         location.pathname === DASHBOARD_PATH ||
         location.pathname === DASHBOARD_PATH_SECOND ||
-        location.pathname === DASHBOARDWITHGRAPH_PATH ? 'w-100' : ''
+        location.pathname === DASHBOARDWITHGRAPH_PATH ||
+        location.pathname !== SIMULATION_PATH ||
+        location.pathname !== SIMULATION_HISTORY_PATH ? 'w-100' : ''
 
     //  ADD DASHBPOARD CLASS FOR DASHBOARD PAGE ONLY
     const DashboardPage = location.pathname === DASHBOARDWITHGRAPH_PATH ? 'Dashboard-page' : '';
@@ -251,12 +247,14 @@ class Main extends Component {
                 location.pathname !== SIMULATION_APPROVAL_SUMMARY_PATH &&
                 location.pathname !== DASHBOARD_PATH &&
                 location.pathname !== DASHBOARD_PATH_SECOND &&
+                location.pathname !== SIMULATION_PATH &&
+                location.pathname !== SIMULATION_HISTORY_PATH &&
                 (
                   <LeftMenu {...this.props} />
                 )}
 
               <div className={isLogin ? `content-page ${fullSizeClass} ${DashboardPage} ${DashboardMainPage}` : ''}>
-                <div className={`${isLogin ? `middleContainer ${Simulation ? 'mh-auto' : ''}` : ''}`}>
+                <div className={`${isLogin ? `middleContainer` : ''}`}>
                   <Switch>
 
                     <Route exact path="/" component={AuthMiddleware(Dashboard, DASHBOARD)} />
@@ -332,11 +330,11 @@ class Main extends Component {
                     {/* <Route path="/simulation-history" component={AuthMiddleware(SimulationHistory, Simulation_History)} /> */}
 
                     {/* <Route path="/simulation-history" component={SimulationHistory} /> */}
-                    <Route path="/simulation-history" component={AuthMiddleware(SimulationApprovalListing, Simulation_Page)} />
+                    <Route path="/simulation-history" component={AuthMiddleware(SimulationRoutes, Simulation_Page)} />
 
                     <Route path='/simulation-approval-summary' component={AuthMiddleware(SimulationApprovalSummary, Simulation_Page)} />
 
-                    <Route path="/simulation" component={AuthMiddleware(Simulation, Simulation_Page)} />
+                    <Route path="/simulation" component={SimulationRoutes} exact={true} />
 
                     <Route path="/simulation-upload" component={AuthMiddleware(SimulationUpload, Simulation_Upload)} />
 

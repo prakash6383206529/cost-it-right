@@ -521,7 +521,7 @@ class MachineRateListing extends Component {
         return (
             <div className={`ag-grid-react ${(this.props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${DownloadAccessibility ? "show-table-btn" : ""}`}>
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-                    {(this.state.isLoader && !this.props.isMasterSummaryDrawer) && <LoaderCustom />}
+                    {(this.state.isLoader && !this.props.isMasterSummaryDrawer) && <LoaderCustom customClass="simulation-Loader" />}
                     <Row className={`pt-4 filter-row-large ${this.props.isSimulation ? 'simulation-filter zindex-0' : ''}`}>
                         <Col md="3" lg="3">
                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />

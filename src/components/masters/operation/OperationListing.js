@@ -586,6 +586,7 @@ class OperationListing extends Component {
 
     onGridReady = (params) => {
         this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
+        window.screen.width >= 1600 && params.api.sizeColumnsToFit()
         params.api.paginationGoToPage(0);
     };
 
@@ -818,8 +819,7 @@ class OperationListing extends Component {
 
                         </Row>
                     </form>
-
-                    <div className={`ag-grid-wrapper ${this.props?.isDataInMaster ? 'master-approval-overlay' : ''} overlay-contain ${this.props.isSimulation ? 'min-height' : ''}`}>
+                    <div className={`ag-grid-wrapper ${this.props?.isDataInMaster ? 'master-approval-overlay' : ''} ${this.state.tableData && this.state.tableData.length <= 0 ? 'overlay-contain' : ''}  ${this.props.isSimulation ? 'min-height' : ''}`}>
                         <div className={`ag-theme-material ${(this.state.isLoader && !this.props.isMasterSummaryDrawer) && "max-loader-height"}`}>
                             <AgGridReact
                                 defaultColDef={defaultColDef}
