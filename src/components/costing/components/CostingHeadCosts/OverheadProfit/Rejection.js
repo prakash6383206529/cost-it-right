@@ -65,7 +65,7 @@ function Rejection(props) {
             let tempObj = {
                 "RejectionApplicabilityId": applicability ? applicability.value : '',
                 "RejectionApplicability": applicability ? applicability.label : '',
-                "RejectionPercentage": applicability ? getValues('RejectionPercentage') : '',
+                "RejectionPercentage": applicability.label === 'Fixed' ? '' : getValues('RejectionPercentage'),
                 "RejectionCost": applicability ? rejectionObj.RejectionCost : '',
                 "RejectionTotalCost": applicability ? rejectionObj.RejectionTotalCost : '',
                 "IsSurfaceTreatmentApplicable": true,
@@ -284,7 +284,7 @@ function Rejection(props) {
                                 pattern: { value: /^\d*\.?\d*$/, message: 'Invalid Number.' },
                                 max: { value: 100, message: 'Percentage cannot be greater than 100' },
                             }}
-                            handleChange={() => { }}
+                            handleChange={() => { dispatch(isOverheadProfitDataChange(true)) }}
                             defaultValue={''}
                             className=""
                             customClassName={'withBorder'}

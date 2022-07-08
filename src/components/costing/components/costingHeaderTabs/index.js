@@ -109,8 +109,6 @@ function CostingHeaderTabs(props) {
     }
 
     // USED FOR OVERHEAD AND PROFIT WHEN CLICKED ON OTHER TABS WITHOUT SAVING
-    console.log('ComponentItemOverheadData:klklkl ', ComponentItemOverheadData);
-    console.log('checkIsOverheadProfitChange:klklkl ', checkIsOverheadProfitChange);
     if (!CostingViewMode && Object.keys(ComponentItemOverheadData).length > 0 && ComponentItemOverheadData.IsOpen !== false && activeTab !== '3' & checkIsOverheadProfitChange) {
 
       let reqData = {
@@ -144,7 +142,6 @@ function CostingHeaderTabs(props) {
           dispatch(isOverheadProfitDataChange(false))
         }))
       } else {
-        console.log('klklkl');
         dispatch(saveComponentOverheadProfitTab(reqData, res => {
           callAssemblyAPi(3)
           dispatch(setComponentOverheadItemData({}, () => { }))
@@ -192,7 +189,6 @@ function CostingHeaderTabs(props) {
         "EffectiveDate": CostingEffectiveDate,
         "TotalCost": netPOPrice,
       }
-      console.log('aaaaa');
       dispatch(saveToolTab(data, res => {
         callAssemblyAPi(5)
         dispatch(setComponentToolItemData({}, () => { }))
