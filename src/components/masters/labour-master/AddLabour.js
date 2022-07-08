@@ -47,7 +47,6 @@ class AddLabour extends Component {
 
       isOpenMachineType: false,
 
-      isDisable: false,
       DropdownChanged: true,
       setDisable: false,
       inputLoader: false,
@@ -61,9 +60,9 @@ class AddLabour extends Component {
   componentDidMount() {
     this.setState({ inputLoader: true })
     this.props.labourTypeVendorSelectList(() => { this.setState({ inputLoader: false }) })
+    this.props.getFuelComboData(() => { })
     if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
       this.props.getLabourTypeByMachineTypeSelectList('', () => { })
-      this.props.getFuelComboData(() => { })
       this.props.getPlantListByState('', () => { })
       this.props.getMachineTypeSelectList(() => { })
     }
@@ -313,7 +312,7 @@ class AddLabour extends Component {
   }
 
   gridHandler = () => {
-    const { machineType, labourType, gridTable, effectiveDate, isDisable, vendorName, selectedPlants, StateName, IsEmployeContractual } = this.state
+    const { machineType, labourType, gridTable, effectiveDate, vendorName, selectedPlants, StateName, IsEmployeContractual } = this.state
     const { fieldsObj, error } = this.props
 
     if ((IsEmployeContractual ? vendorName.length == 0 : false) || selectedPlants.length == 0 || StateName == 0) {
@@ -371,7 +370,6 @@ class AddLabour extends Component {
 
     this.setState(
       {
-        isDisable: true,
         gridTable: tempArray,
         machineType: [],
         labourType: [],
@@ -448,6 +446,7 @@ class AddLabour extends Component {
         labourType: [],
         gridEditIndex: '',
         isEditIndex: false,
+        effectiveDate: ''
       },
       () => this.props.change('LabourRate', 0), this.props.getLabourTypeByMachineTypeSelectList('', () => { })
     )
@@ -499,12 +498,10 @@ class AddLabour extends Component {
       return true
     })
 
-    if (tempData.length === 0) {
-      this.setState({ isDisable: false, selectedPlants: [], vendorName: [], StateName: [] })
-    }
-
     this.setState({ gridTable: tempData })
-    this.setState({ DropdownChanged: false })
+    this.setState({ DropdownChanged: false, effectiveDate: '' })
+    this.resetGridData()
+    this.props.change('LabourRate', '')
   }
 
   /**
@@ -607,14 +604,16 @@ class AddLabour extends Component {
       e.preventDefault();
     }
   };
-
   /**
-  * @method render
-  * @description Renders the component
-  */
+   * @method render
+   * @description Renders the component
+   */
   render() {
+
+
     const { handleSubmit, initialConfiguration } = this.props;
-    const { isEditFlag, isOpenMachineType, isDisable, isViewMode, setDisable } = this.state;
+    const { isEditFlag, isOpenMachineType, isViewMode, setDisable, gridTable } = this.state;
+
 
     const filterList = (inputValue) => {
       let tempArr = []
@@ -704,7 +703,7 @@ class AddLabour extends Component {
                               onChange={(e) => this.handleVendorName(e)}
                               value={this.state.vendorName}
                               noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
-                              isDisabled={(isEditFlag || this.state.inputLoader) ? true : isDisable ? true : false} />
+                              isDisabled={(isEditFlag || this.state.inputLoader) && gridTable.length !== 0 ? true : false} />
                             {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
                           </div>
                         </Col>
@@ -723,8 +722,9 @@ class AddLabour extends Component {
                             required={true}
                             handleChangeDescription={this.handleState}
                             valueDescription={this.state.StateName}
-                            disabled={isEditFlag ? true : isDisable ? true : false}
+                            disabled={(isEditFlag && gridTable.length !== 0) ? true : false}
                           /></div>
+                        { }
                       </Col>
                       <Col md="3">
                         <div className="form-group">
@@ -740,7 +740,7 @@ class AddLabour extends Component {
                             required={true}
                             handleChangeDescription={this.handlePlants}
                             valueDescription={this.state.selectedPlants}
-                            disabled={isEditFlag ? true : isDisable ? true : false}
+                            disabled={(isEditFlag && gridTable.length !== 0) ? true : false}
                           /></div>
                       </Col>
                     </Row>
@@ -829,6 +829,7 @@ class AddLabour extends Component {
                               disabledKeyboardNavigation
                               onChangeRaw={(e) => e.preventDefault()}
                               disabled={isViewMode}
+                              valueDescription={this.state.effectiveDate}
                             />
                           </div>
                         </div>
