@@ -159,21 +159,26 @@ class AddAssemblyPart extends Component {
 
     setTimeout(() => {
       this.setState({ convertPartToAssembly: !this.state.convertPartToAssembly })
-
     }, 200);
 
-    let value = !this.state.convertPartToAssembly
-    if (value === false) {
-      this.props.change("EffectiveDate", "")
-      this.props.change("ECNNumber", "")
-      this.props.change("DrawingNumber", "")
-      this.props.change("RevisionNumber", "")
-      this.props.change("AssemblyPartNumber", "")
-      this.props.change("AssemblyPartName", "")
-      this.props.change("BOMNumber", "")
-      this.props.change("Description", "")
-      this.props.change("Remark", "")
-      this.setState({ ProductGroup: [], })
+    this.props.change("EffectiveDate", "")
+    this.props.change("ECNNumber", "")
+    this.props.change("DrawingNumber", "")
+    this.props.change("RevisionNumber", "")
+    this.props.change("AssemblyPartNumber", "")
+    this.props.change("AssemblyPartName", "")
+    this.props.change("BOMNumber", "")
+    this.props.change("Description", "")
+    this.props.change("Remark", "")
+    this.setState({ ProductGroup: [], BOMViewerData: [] })
+    this.setState({ minEffectiveDate: "", warningMessage: false, warningMessageTechnology: false, TechnologySelected: [] })
+  }
+
+  isRequired = () => {
+    if (this.state.convertPartToAssembly) {
+      return maxLength20
+    } else {
+      return required
     }
   }
 
@@ -194,7 +199,6 @@ class AddAssemblyPart extends Component {
       })
     }
   }, 600)
-
 
 
   handlePartNo = (newValue, actionMeta) => {
@@ -967,7 +971,7 @@ class AddAssemblyPart extends Component {
                             name={"AssemblyPartNumber"}
                             type="text"
                             placeholder={""}
-                            validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20]}
+                            validate={[this.isRequired(), acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20]}
                             component={renderText}
                             required={true}
                             onChange={this.onPartNoChange}

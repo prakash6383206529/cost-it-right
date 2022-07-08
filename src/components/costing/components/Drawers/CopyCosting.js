@@ -96,7 +96,8 @@ function CopyCosting(props) {
         ))
     }
 
-    let uniqueArray = _.uniqBy(VbcTemp, "vendorId")
+    console.log('VbcTemp: ', VbcTemp);
+    let uniqueArray = _.uniqBy(VbcTemp, "value")
 
     setVendorName(uniqueArray)
 

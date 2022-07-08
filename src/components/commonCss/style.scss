@@ -2507,7 +2507,7 @@ button:disabled {
 
 //=============== costing details page only
 .react-datepicker-popper {
-  z-index: 9;
+  z-index: 21;
 }
 
 .costing-details-page {
@@ -4902,6 +4902,14 @@ body {
 
           >th:nth-child(9) {
             width: 165px !important;
+          }
+        }
+      }
+      tr.accordian-row {
+        td {
+          min-width: 108px;
+          &:first-child {
+            min-width: 150px !important;
           }
         }
       }
@@ -8446,9 +8454,11 @@ padding-bottom: 3px;
 .st-operation .before-box {
   padding-left: 0;
 }
-.form-group.inputbox.withBorder, .dropdown-flex {
-  label {
-    display: flex;
+.UOM-label-container {
+  .form-group.inputbox.withBorder, .dropdown-flex {
+    label {
+      display: flex;
+    }
   }
 }
 .inputbox, .ag-react-container {
@@ -8499,4 +8509,32 @@ padding-bottom: 3px;
 }
 .dashboard-height {
   min-height: 350px;
+}
+.zoom-container {
+  position: absolute;
+  z-index: 1;
+  bottom: 80px;
+  right: 30px;
+  display: flex;
+  flex-direction: column;
+  button {
+   max-width: 24px;
+   height: 24px;
+   &:focus {
+    box-shadow: none !important;
+  }
+  &.secondary-btn {
+    padding-left: 0.25rem !important;
+    padding-right: 0.25rem !important;
+    height: 24px !important;
+    width: 24px !important;
+  }
+ }
+}
+.variable-cost {
+  .col-md-1 {
+    .inputbox.withBorder {
+      padding-top: 21px;
+    }
+  }
 }

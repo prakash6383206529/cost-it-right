@@ -96,7 +96,7 @@ function RawMaterialCost(props) {
       }
       selectedIds(gridData)
       // BELOW CODE IS USED TO SET CUTOFFRMC IN REDUCER TO GET VALUE IN O&P TAB.
-      if (Object.keys(gridData).length > 0) {
+      if (gridData && gridData?.length > 0) {
         let isCutOffApplicableCount = 0
         let totalCutOff = 0
         gridData && gridData.map(item => {
@@ -643,7 +643,6 @@ function RawMaterialCost(props) {
    * @description SET WEIGHT IN RM
    */
   const setWeight = (weightData, originalWeight) => {
-
     let tempArr = []
     let tempData = gridData[editIndex]
     let grossWeight
@@ -686,6 +685,7 @@ function RawMaterialCost(props) {
         NetLandedCost: netLandedCost,
         WeightCalculatorRequest: weightData,
         WeightCalculationId: weightData.WeightCalculationId,
+        RawMaterialCalculatorId: weightData.WeightCalculationId,
         IsCalculatedEntry: true,
         CutOffRMC: CutOffRMC,
         ScrapRecoveryPercentage: RecoveryPercentage,

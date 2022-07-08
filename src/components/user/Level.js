@@ -43,14 +43,20 @@ class Level extends Component {
   */
   componentDidMount() {
 
-    this.props.setEmptyLevelAPI('', () => { })
-    this.props.getAllTechnologyAPI(() => { })
-    this.props.getAllLevelAPI(() => { this.setState({ isLoader: this.props.isEditFlag ? true : false }) })
-    this.getLevelDetail()
-    this.getLevelMappingDetail()
-    this.props.getSimulationTechnologySelectList(() => { })
-    this.props.getMastersSelectList(() => { })
-
+    if (this.props.isEditFlag) {
+      this.props.getAllLevelAPI(() => { this.setState({ isLoader: this.props.isEditFlag ? true : false }) })
+      this.getLevelDetail()
+      this.getLevelMappingDetail()
+    } else {
+      if (this.state.levelType === 'Costing') {
+        this.props.getAllTechnologyAPI(() => { })
+      } else if (this.state.levelType === 'Simulation') {
+        this.props.getSimulationTechnologySelectList(() => { })
+      }
+      this.props.getAllLevelAPI(() => { this.setState({ isLoader: this.props.isEditFlag ? true : false }) })
+      this.getLevelDetail()
+      this.getLevelMappingDetail()
+    }
   }
 
   /**
@@ -141,7 +147,7 @@ class Level extends Component {
   * @description Used show listing of unit of measurement
   */
   searchableSelectType = (label) => {
-    const { technologyList, levelList, simulationTechnologyList, masterList } = this.props;
+    const { technologyList, levelList, simulationTechnologyList } = this.props;
     const temp = [];
 
     // RENDER WHEN COSTING TECHNOLOGY LIST IN USE
@@ -221,6 +227,11 @@ class Level extends Component {
   * @description LEVEL TYPE HANDLING
   */
   onPressRadioLevel = (label) => {
+    if (label === 'Costing') {
+      this.props.getAllTechnologyAPI(() => { })
+    } else if (label === 'Simulation') {
+      this.props.getSimulationTechnologySelectList(() => { })
+    }
     this.setState({ levelType: label });
     this.setState({ technology: { label: "", value: "" }, level: { label: "", value: "" } });
   };
@@ -680,17 +691,10 @@ class Level extends Component {
 * @param {*} state
 */
 const mapStateToProps = ({ auth }) => {
-  const { levelDetail, technologyList, levelList, simulationTechnologyList } = auth;
+  const { technologyList, levelList, simulationTechnologyList } = auth;
   let initialValues = {};
 
-  if (levelDetail && levelDetail !== undefined) {
-    initialValues = {
-      TechnologyId: levelDetail.Technology,
-      LevelId: levelDetail.Level,
-    }
-  }
-
-  return { levelDetail, technologyList, levelList, simulationTechnologyList, initialValues };
+  return { technologyList, levelList, simulationTechnologyList, initialValues };
 };
 
 /**
