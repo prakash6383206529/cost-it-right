@@ -279,6 +279,7 @@ function BDSimulation(props) {
     };
 
     const onGridReady = (params) => {
+        window.screen.width >= 1440 && params.api.sizeColumnsToFit()
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);

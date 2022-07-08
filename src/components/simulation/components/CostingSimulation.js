@@ -1032,13 +1032,13 @@ function CostingSimulation(props) {
     return (
         <>
             {
-                loader ? <LoaderCustom /> :
+                loader ? <LoaderCustom customClass={`center-loader`} /> :
 
                     !showApprovalHistory &&
 
                     <div className="costing-simulation-page blue-before-inside other-costing-simulation">
                         <div className="container-fluid">
-                            <div className={`ag-grid-react`}>
+                            <div className={`ag-grid-react ${isFromApprovalListing ? 'pt-4' : ''}`}>
 
 
                                 <Row>
@@ -1048,7 +1048,7 @@ function CostingSimulation(props) {
                                 </Row>
                                 <Row>
                                     <Col sm="12">
-                                        <h1 class="mb-0">Token No:{tokenNo}</h1>
+                                        <h3 class="mb-0">Token No:{tokenNo}</h3>
                                     </Col>
                                 </Row>
                                 <Row className="filter-row-large pt-4 blue-before">

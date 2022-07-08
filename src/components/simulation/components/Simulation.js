@@ -801,26 +801,21 @@ function Simulation(props) {
     }
 
     // THIS WILL RENDER WHEN CLICK FROM SIMULATION HISTORY FOR DRAFT STATUS
-    if (location?.state?.isFromApprovalListing === true) {
-        const simulationId = location?.state?.approvalProcessId;
-        const masterId = location?.state?.master
+    if (props?.isFromApprovalListing === true) {
+        const simulationId = props?.approvalProcessId;
+        const masterId = props?.master
         // THIS WILL RENDER CONDITIONALLY.(IF BELOW FUNC RETUTM TRUE IT WILL GO TO OTHER COSTING SIMULATION COMPONENT OTHER WISE COSTING SIMULATION)
 
-        return <CostingSimulation simulationId={simulationId} master={masterId} isFromApprovalListing={location?.state?.isFromApprovalListing} statusForLinkedToken={location?.state?.statusForLinkedToken} />
+        return <CostingSimulation simulationId={simulationId} master={masterId} isFromApprovalListing={props?.isFromApprovalListing} statusForLinkedToken={props?.statusForLinkedToken} />
     }
 
 
 
     return (
-        <div className="container-fluid simulation-page">
+        <div className="container-fluid simulation-page mt-4">
             {
                 !showEditTable &&
                 <div className="simulation-main" id="go-to-top">
-                    <Row>
-                        <Col sm="12">
-                            <h1>{`Simulation`}</h1>
-                        </Col>
-                    </Row>
                     <ScrollToTop pointProp={"go-to-top"} />
                     <Row>
                         <Col md="12" className="filter-block zindex-9 simulation-labels">

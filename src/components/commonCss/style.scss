@@ -2353,6 +2353,9 @@ input:disabled {
 
 .add-min-height {
   min-height: calc(100vh - 263px);
+  &.mb-3.sm-edit-page {
+    min-height: calc(100vh - 374px);
+  }
 }
 
 .role-permision-page {
@@ -4770,6 +4773,11 @@ body {
     img {
       margin-top: 25px;
       ;
+    }
+  }
+  .filter-block {
+    &::before {
+      display: none;
     }
   }
 }
@@ -7789,13 +7797,14 @@ body {
 
 // <-------END Calculator css--------->
 .simulation-height {
-  min-height: calc(100vh - 320px) !important;
+  min-height: calc(100vh - 404px) !important;
   .min-height {
     min-height: auto !important;
   }
   .simulation-Loader {
     bottom: -5px;
-    right: -5px;
+    right: -30px;
+    left: -30px;
   }
 }
 
