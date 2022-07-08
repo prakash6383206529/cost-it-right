@@ -472,7 +472,6 @@ function VerifySimulation(props) {
                                             defaultColDef={defaultColDef}
                                             floatingFilter={true}
                                             domLayout='autoHeight'
-                                            // columnDefs={c}
                                             rowData={verifyList}
                                             ref={gridRef}
                                             pagination={true}
@@ -486,10 +485,8 @@ function VerifySimulation(props) {
                                                 imagClass: "verify-simulation-overlay"
                                             }}
                                             frameworkComponents={frameworkComponents}
-                                            // suppressRowClickSelection={true}
                                             rowSelection={'multiple'}
                                             onRowSelected={onRowSelected}
-                                            // frameworkComponents={frameworkComponents}
                                             onSelectionChanged={onRowSelect}
 
                                         >
