@@ -3,8 +3,8 @@ import { Row, Col, } from 'reactstrap';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import NoContentFound from '../../common/NoContentFound';
-import { EMPTY_DATA, EXCHNAGERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, BOPDOMESTIC, BOPIMPORT, MACHINERATE, OVERHEAD, defaultPageSize } from '../../../config/constants';
-import { getVerifyBoughtOutPartSimulationList, getVerifyMachineRateSimulationList, getVerifyOverheadProfitSimulationList, getVerifyProfitSimulationList, getVerifySimulationList, getVerifySurfaceTreatmentSimulationList } from '../actions/Simulation';
+import { EMPTY_DATA, EXCHNAGERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, BOPDOMESTIC, BOPIMPORT, MACHINERATE, OVERHEAD, defaultPageSize, } from '../../../config/constants';
+import { getVerifyBoughtOutPartSimulationList, getVerifyExchangeSimulationList, getVerifyMachineRateSimulationList, getVerifyOverheadProfitSimulationList, getVerifyProfitSimulationList, getVerifySimulationList, getVerifySurfaceTreatmentSimulationList } from '../actions/Simulation';
 import RunSimulationDrawer from './RunSimulationDrawer';
 import CostingSimulation from './CostingSimulation';
 import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../../../helper';
@@ -48,6 +48,8 @@ function VerifySimulation(props) {
     const isMachineRate = Number(selectedMasterForSimulation.value) === (Number(MACHINERATE));
     const isOverHeadProfit = Number(selectedMasterForSimulation.value) === (Number(OVERHEAD));
     const gridRef = useRef();
+
+    const verifyList = useSelector(state => state.simulation.simulationVerifyList)
 
     // const isAssemblyCosting = true
     const dispatch = useDispatch()
@@ -222,18 +224,30 @@ function VerifySimulation(props) {
             //         }
             //     }))
             //     break;
+
+            case Number(EXCHNAGERATE):
+
+                dispatch(getVerifyExchangeSimulationList(props.token, (res) => {
+                    if (res.data.Result) {
+                        const data = res.data.Data
+                        if (data.SimulationExchangeRateImpactedCostings.length === 0) {
+                            Toaster.warning('No approved costing exist for this exchange rate.')
+                            setHideRunButton(true)
+                            return false
+                        }
+                        setTokenNo(data.TokenNumber)
+                        setSimualtionId(data.SimulationId)
+                        setSimulationTechnologyId(data.SimulationtechnologyId)
+                        // setMasterId(data.SimulationtechnologyId)
+                        setHideRunButton(false)
+                        setEffectiveDate(data.EffectiveDate)
+                    }
+                }))
+                break;
             default:
                 break;
         }
-        // }
-
-
-
-
     }
-
-
-    const verifyList = useSelector(state => state.simulation.simulationVerifyList)
 
     const newBRFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -273,7 +287,6 @@ function VerifySimulation(props) {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (cell !== null && cell !== '-') ? `${cell}(${row.PlantCode})` : '-'
-
     }
 
     const renderVendor = (props) => {
@@ -288,13 +301,17 @@ function VerifySimulation(props) {
         return `${cell}-${row.RMGrade ? row.RMGrade : '-'}`
     }
 
+    const newExchangeRateFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const classGreen = (row.NewExchangeRate > row.OldExchangeRate) ? 'red-value form-control' : (row.NewExchangeRate < row.OldExchangeRate) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : '-'
+    }
 
     const onRowSelect = () => {
-
         var selectedRows = gridApi.getSelectedRows();
         if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
         setSelectedRowData(selectedRows)
-
     }
 
     const onRowSelected = (e) => {
@@ -310,7 +327,6 @@ function VerifySimulation(props) {
             if (node.rowIndex !== rowIndex) {
                 if (node.data.CostingNumber === costingNumber) {
                     node.setSelected(type);
-
                 }
             }
         });
@@ -322,6 +338,7 @@ function VerifySimulation(props) {
             window.screen.width >= 1600 && gridRef.current.api.sizeColumnsToFit();
         }
     }, [verifyList])
+
     const runSimulation = debounce(() => {
         if (selectedRowData.length === 0) {
             Toaster.warning('Please select atleast one costing.')
@@ -332,6 +349,7 @@ function VerifySimulation(props) {
         obj.SimulationId = simulationId
         obj.LoggedInUserId = loggedInUserId()
         let tempArr = []
+
         switch (Number(selectedMasterForSimulation.value)) {
             case Number(RMDOMESTIC):
             case Number(RMIMPORT):
@@ -366,14 +384,28 @@ function VerifySimulation(props) {
                 })
                 break;
 
+            case Number(EXCHNAGERATE):
+                selectedRowData && selectedRowData.map(item => {
+                    let tempObj = {}
+                    tempObj.CostingId = item.CostingId
+                    tempArr.push(tempObj)
+                    return null;
+                })
+                obj.RunSimualtionExchangeRateCostingInfos = tempArr
+                setObj(obj)
+                setSimulationDrawer(true)
+
+                break;
+
             default:
                 break;
         }
 
-
-        obj.RunSimualtionCostingInfo = tempArr
-        setObj(obj)
-        setSimulationDrawer(true)
+        if (!isExchangeRate) {
+            obj.RunSimualtionCostingInfo = tempArr
+            setObj(obj)
+            setSimulationDrawer(true)
+        }
 
     }, 500)
 
@@ -402,12 +434,10 @@ function VerifySimulation(props) {
     };
 
     const onGridReady = (params) => {
-
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
         window.screen.width >= 1600 && gridRef.current.api.sizeColumnsToFit();
-
     };
 
     const onPageSizeChanged = (newPageSize) => {
@@ -438,7 +468,8 @@ function VerifySimulation(props) {
         newSRFormatter: newSRFormatter,
         customLoadingOverlay: LoaderCustom,
         customNoRowsOverlay: NoContentFound,
-        poPriceFormatter: poPriceFormatter
+        poPriceFormatter: poPriceFormatter,
+        newExchangeRateFormatter: newExchangeRateFormatter
     };
 
     return (
@@ -528,14 +559,20 @@ function VerifySimulation(props) {
                                             {isRMDomesticOrRMImport === true && <AgGridColumn width={150} field="NewScrapRate" cellRenderer='newSRFormatter' headerName="New Scrap Rate" ></AgGridColumn>}
                                             {isRMDomesticOrRMImport === true && <AgGridColumn field="RawMaterialId" hide ></AgGridColumn>}
 
+                                            {isExchangeRate && <AgGridColumn width={130} field="Currency" headerName="Currency"></AgGridColumn>}
+                                            {isExchangeRate && <AgGridColumn width={130} field="POPrice" headerName="PO Price Old"></AgGridColumn>}
+                                            {isExchangeRate && <AgGridColumn width={145} field="OldExchangeRate" headerName="Old Exchange Rate"></AgGridColumn>}
+                                            {isExchangeRate && <AgGridColumn width={150} field="NewExchangeRate" cellRenderer='newExchangeRateFormatter' headerName="New Exchange Rate"></AgGridColumn>}
+
+
                                             {isOverHeadProfit === true && <AgGridColumn width={120} field="OverheadName" headerName="Overhead Name" ></AgGridColumn>}
                                         </AgGridReact>
                                         {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                                     </div>
                                 </div>
                             </div>
-                        </Col>
-                    </Row>
+                        </Col >
+                    </Row >
                     <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer">
                         <div className="col-sm-12 text-right bluefooter-butn">
                             <button type={"button"} className="mr15 cancel-btn" onClick={cancelVerifyPage}>
