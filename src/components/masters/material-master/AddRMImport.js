@@ -462,12 +462,6 @@ class AddRMImport extends Component {
                 this.props.change('cutOffPrice', Data.CutOffPrice ? Data.CutOffPrice : '')
                 this.props.change('Code', Data.RawMaterialCode ? Data.RawMaterialCode : '')
 
-                let plantArray = [];
-                Data && Data.Plant.map((item) => {
-                  plantArray.push({ Text: item.PlantName, Value: item.PlantId })
-                  return plantArray;
-                })
-
                 const sourceLocationObj = cityList && cityList.find(item => Number(item.Value) === Data.SourceLocation)
                 const UOMObj = UOMSelectList && UOMSelectList.find(item => item.Value === Data.UOM)
 
@@ -481,7 +475,7 @@ class AddRMImport extends Component {
                   RMSpec: specObj !== undefined ? { label: specObj.Text, value: specObj.Value } : [],
                   Category: categoryObj !== undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
                   Technology: Data.TechnologyName !== undefined ? { label: Data.TechnologyName, value: Data.TechnologyId } : [],
-                  selectedPlants: plantArray,
+                  selectedPlants: [{ Text: Data.DestinationPlantName, Value: Data.DestinationPlantId }],
                   vendorName: Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.Vendor } : [],
                   HasDifferentSource: Data.HasDifferentSource,
                   sourceLocation: sourceLocationObj !== undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value } : [],
@@ -953,13 +947,16 @@ class AddRMImport extends Component {
 
     this.setState({ isVendorNameNotSelected: false })
 
-    let plantArray = [];
-    selectedPlants && selectedPlants.map((item) => {
-      plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' })
-      return plantArray;
-    })
+    let plantArray = []
+    if (IsVendor) {
+      plantArray.push({ PlantName: singlePlantSelected.label, PlantId: singlePlantSelected.value, PlantCode: '', })
+    } else {
 
-
+      selectedPlants && selectedPlants.map((item) => {
+        plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '', })
+        return plantArray
+      })
+    }
     if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(RM_MASTER_ID) !== true)) {
 
       let updatedFiles = files.map((file) => {
@@ -1076,7 +1073,7 @@ class AddRMImport extends Component {
         NetLandedCost: netCost,
         Remark: remarks,
         LoggedInUserId: loggedInUserId(),
-        Plant: IsVendor === false ? plantArray : [],
+        plant: plantArray,
         VendorCode: VendorCode,
         Attachements: files,
         Currency: currency.label,
@@ -1084,7 +1081,6 @@ class AddRMImport extends Component {
         NetLandedCostConversion: netCurrencyCost,
         RMFreightCost: values.FreightCharge,
         RMShearingCost: values.ShearingCost,
-        DestinationPlantId: IsVendor ? singlePlantSelected.value : '00000000-0000-0000-0000-000000000000',
         CutOffPrice: values.cutOffPrice,
         IsCutOffApplicable: values.cutOffPrice < netCost ? true : false,
         RawMaterialCode: values.Code,
