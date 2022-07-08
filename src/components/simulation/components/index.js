@@ -12,7 +12,6 @@ import SimulationApprovalListing from './SimulationApprovalListing';
 
 function SimulationTab(props) {
     const { location } = props;
-    console.log('location: ', location);
     let history = useHistory();
     const [activeTab, setActiveTab] = useState('1');
 
@@ -44,7 +43,6 @@ function SimulationTab(props) {
     return (
         <>
             <div className="user-page container-fluid">
-                {/* {this.props.loading && <Loader/>} */}
                 <div>
                     <h1>Simulation</h1>
                     <Nav tabs className="subtabs mt-0">
