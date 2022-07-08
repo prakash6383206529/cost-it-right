@@ -24,7 +24,7 @@ function OperationCost(props) {
 
   const dispatch = useDispatch()
   const [gridData, setGridData] = useState(props.data ? props.data : [])
-  const [OldGridData, setOldGridData] = useState(props.data)
+  const [OldGridData, setOldGridData] = useState(props.data ? props.data : [])
   const [rowObjData, setRowObjData] = useState({})
   const [editIndex, setEditIndex] = useState('')
   const [Ids, setIds] = useState([])
