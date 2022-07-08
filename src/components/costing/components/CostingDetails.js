@@ -1722,7 +1722,7 @@ function CostingDetails(props) {
                       </Col>
                       <Col className="col-md-15">
                         <AsyncSearchableSelectHookForm
-                          label={"Assembly/Part No."}
+                          label={"Assembly No./Part No."}
                           name={"Part"}
                           placeholder={"Enter"}
                           Controller={Controller}
