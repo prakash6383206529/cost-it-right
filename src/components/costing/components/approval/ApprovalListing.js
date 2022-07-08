@@ -685,7 +685,7 @@ function ApprovalListing(props) {
       {
         !showApprovalSumary &&
         <> {
-          (loader) ? <LoaderCustom customClass="dashboard-loader" /> :
+          (loader) ? <LoaderCustom customClass="center-loader" /> :
             <div className={` ${!isApproval && 'container-fluid'} approval-listing-page`}>
               <form noValidate>
                 <Row className="pt-4 blue-before">

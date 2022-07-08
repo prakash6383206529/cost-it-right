@@ -390,10 +390,9 @@ function SimulationApprovalListing(props) {
                 <div className={`${!isSmApprovalListing && 'container-fluid'} approval-listing-page`} id='history-go-to-top'>
                     < div className={`ag-grid-react`}>
                         <form onSubmit={handleSubmit(() => { })} noValidate>
-                            {!isSmApprovalListing && <h1 className="mb-0">Simulation History</h1>}
                             {isLoader && <LoaderCustom customClass={"simulation-history-loader"} />}
                             <ScrollToTop pointProp={"history-go-to-top"} />
-                            <Row className="pt-4 blue-before">
+                            <Row className="pt-4">
 
 
                                 <Col md="2" lg="2" className="search-user-block mb-3">

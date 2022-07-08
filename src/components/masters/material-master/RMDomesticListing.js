@@ -745,7 +745,7 @@ function RMDomesticListing(props) {
                     </Row>
                     <Row>
                         <Col>
-                            <div className={`ag-grid-wrapper ${props?.isDataInMaster ? 'master-approval-overlay' : ''} overlay-contain`}>
+                            <div className={`ag-grid-wrapper ${props?.isDataInMaster ? 'master-approval-overlay' : ''} ${rmDataList && rmDataList?.length <= 0 ? 'overlay-contain' : ''}`}>
                                 <div className={`ag-theme-material ${(loader && !props.isMasterSummaryDrawer) && "max-loader-height"}`}>
                                     <AgGridReact
                                         style={{ height: '100%', width: '100%' }}
