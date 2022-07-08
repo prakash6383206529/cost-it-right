@@ -171,6 +171,7 @@ export const ProcessGroup = (props) => {
         setApiData(apiTempArrAfterDelete)
         resetHandler()
         setEditIndex('')
+        props.changeDropdownValue()
     }
 
     return (
