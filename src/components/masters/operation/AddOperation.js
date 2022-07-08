@@ -316,12 +316,6 @@ class AddOperation extends Component {
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           this.setState({ minEffectiveDate: Data.EffectiveDate })
 
-          let plantArray = [];
-          Data && Data.Plant.map((item) => {
-            plantArray.push({ Text: item.PlantName, Value: item.PlantId })
-            return plantArray;
-          })
-
           let technologyArray = [];
           Data && Data.Technology.map((item) => {
             technologyArray.push({ Text: item.Technology, Value: item.TechnologyId })
@@ -339,7 +333,7 @@ class AddOperation extends Component {
               isLoader: false,
               IsVendor: Data.IsVendor,
               selectedTechnology: technologyArray,
-              selectedPlants: plantArray,
+              selectedPlants: [{ Text: Data.DestinationPlantName, Value: Data.DestinationPlantId }],
               vendorName: Data.VendorName && Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.VendorId } : [],
               UOM: UOMObj && UOMObj !== undefined ? { label: UOMObj.Display, value: UOMObj.Value } : [],
               oldUOM: UOMObj && UOMObj !== undefined ? { label: UOMObj.Display, value: UOMObj.Value } : [],
@@ -545,12 +539,16 @@ class AddOperation extends Component {
       technologyArray.push({ Technology: item.Text, TechnologyId: item.Value })
       return technologyArray;
     })
+    let plantArray = []
+    if (IsVendor) {
+      plantArray.push({ PlantName: destinationPlant.label, PlantId: destinationPlant.value, PlantCode: '', })
+    } else {
 
-    let plantArray = [];
-    selectedPlants && selectedPlants.map((item) => {
-      plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' })
-      return plantArray;
-    })
+      selectedPlants && selectedPlants.map((item) => {
+        plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '', })
+        return plantArray
+      })
+    }
     /** Update existing detail of supplier master **/
     // if (this.state.isEditFlag && this.state.isFinalApprovar) {
 
@@ -637,11 +635,15 @@ class AddOperation extends Component {
         LabourRatePerUOM: initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure ? values.LabourRatePerUOM : '',
         Technology: technologyArray,
         Remark: remarks,
-        Plant: !IsVendor ? plantArray : [],
+        plant: plantArray,
         Attachements: files,
         LoggedInUserId: loggedInUserId(),
-        EffectiveDate: DayTime(effectiveDate).format('YYYY/MM/DD'),
+<<<<<<< HEAD
+        EffectiveDate: DayTime(effectiveDate).format('YYYY/MM/DD HH:mm:ss'),
         DestinationPlantId: getConfigurationKey().IsDestinationPlantConfigure ? destinationPlant.value : '00000000-0000-0000-0000-000000000000',
+=======
+        EffectiveDate: DayTime(effectiveDate).format('YYYY/MM/DD HH:mm:ss'),
+>>>>>>> fe1f58b87 (CIR-T758|Manage Raw Material and Operation plant in single table as VBC task completed)
         VendorPlant: []
       }
 
