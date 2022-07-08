@@ -97,7 +97,8 @@ class AddMachineRate extends Component {
       isProcessGroup: getConfigurationKey().IsMachineProcessGroup,// UNCOMMENT IT AFTER DONE FROM BACKEND AND REMOVE BELOW CODE
       // isProcessGroup: false,// UNCOMMENT IT AFTER DONE FROM BACKEND AND REMOVE BELOW CODE
       UniqueProcessId: [],
-      attachmentLoader: false
+      attachmentLoader: false,
+      rowData: []
     }
   }
 
@@ -112,8 +113,18 @@ class AddMachineRate extends Component {
     // For Showing form in view mode if data is added in add more detail form
     if (data.isViewFlag === true) {
       this.setState({
-        isViewFlag: true
+        isViewMode: true,
+        isViewFlag: true,
+        rowData: data?.rowData
       })
+
+      setTimeout(() => {
+        this.setState({
+          processGrid: data?.MachineProcessRates
+        })
+
+      }, 600);
+
 
     }
 
@@ -351,6 +362,10 @@ class AddMachineRate extends Component {
     } else {
       this.props.getMachineData('', res => { })
     }
+  }
+
+  setRowdata = (array = []) => {
+    this.setState({ rowData: array })
   }
 
   /**
@@ -1635,7 +1650,7 @@ class AddMachineRate extends Component {
                                 })
                               }
                               <tr>
-                                {this.state.processGrid.length === 0 && <td colSpan={"6"}>
+                                {this.state.processGrid?.length === 0 && <td colSpan={"6"}>
                                   <NoContentFound title={EMPTY_DATA} />
                                 </td>}
                               </tr>
@@ -1653,7 +1668,7 @@ class AddMachineRate extends Component {
                               title={'Process Group:'} />
                           </Col>
                           <Col md="12">
-                            <ProcessGroup isEditFlag={isEditFlag} processListing={this.state.processGrid} isListing={false} isViewFlag={isViewMode} changeDropdownValue={this.changeDropdownValue} showDelete={this.showDelete} />
+                            <ProcessGroup isEditFlag={isEditFlag} processListing={this.state.processGrid} isListing={false} isViewFlag={isViewMode} changeDropdownValue={this.changeDropdownValue} showDelete={this.showDelete} rowData={this.state.rowData} setRowData={this.setRowdata} />
                           </Col>
                         </Row>
                       }
@@ -1848,7 +1863,7 @@ class AddMachineRate extends Component {
 */
 function mapStateToProps(state) {
   const { comman, material, machine, auth, costing } = state;
-  const fieldsObj = selector(state, 'MachineNumber', 'MachineName', 'TonnageCapacity', 'MachineRate', 'Description');
+  const fieldsObj = selector(state, 'MachineNumber', 'MachineName', 'TonnageCapacity', 'MachineRate', 'Description', 'EffectiveDate');
 
   const { plantList, plantSelectList, filterPlantList, UOMSelectList, } = comman;
   const { machineTypeSelectList, processSelectList, machineData, loading, processGroupApiData } = machine;
