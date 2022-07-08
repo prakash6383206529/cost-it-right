@@ -115,8 +115,6 @@ class PartMaster extends Component {
     }
 
 
-<<<<<<< HEAD
-=======
     openFetchDrawer = () => {
         this.setState({ openDrawer: true })
     }
@@ -134,7 +132,6 @@ class PartMaster extends Component {
     handleMouseOut = () => {
         this.setState({ isHover: false })
     }
->>>>>>> f2f8894bf (add zoom in zoom out button for BOM viewer)
 
 
     /**
