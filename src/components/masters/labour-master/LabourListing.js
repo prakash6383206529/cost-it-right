@@ -263,7 +263,11 @@ class LabourListing extends Component {
   */
   costingHeadFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+<<<<<<< HEAD
     return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
+=======
+    return cellValue === 'Contractual' ? 'Contractual' : 'Employed'
+>>>>>>> 8a6c7274c (Labour masters costing head not coming issue resolved)
   }
 
   /**
@@ -309,8 +313,6 @@ class LabourListing extends Component {
     const machine = machineType ? machineType.value : 0
     this.getTableListData(ETerms, State, Plant, labour, machine)
   }
-
-
 
   /**
    * @method formToggle
