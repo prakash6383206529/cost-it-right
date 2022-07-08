@@ -451,13 +451,6 @@ class AddRMDomestic extends Component {
 
                 const categoryObj = categoryList && categoryList.find((item) => Number(item.Value) === Data.Category)
 
-
-                let plantArray = []
-                Data && Data.Plant.map((item) => {
-                  plantArray.push({ Text: item.PlantName, Value: item.PlantId })
-                  return plantArray
-                })
-
                 const sourceLocationObj = cityList && cityList.find((item) => Number(item.Value) === Data.SourceLocation)
                 const UOMObj = UOMSelectList && UOMSelectList.find((item) => item.Value === Data.UOM)
                 this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : "")
@@ -472,7 +465,7 @@ class AddRMDomestic extends Component {
                   RMGrade: gradeObj !== undefined ? { label: gradeObj.Text, value: gradeObj.Value } : [],
                   RMSpec: specObj !== undefined ? { label: specObj.Text, value: specObj.Value } : [],
                   Category: categoryObj !== undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
-                  selectedPlants: plantArray,
+                  selectedPlants: [{ Text: Data.DestinationPlantName, Value: Data.DestinationPlantId }],
                   Technology: Data.TechnologyName !== undefined ? { label: Data.TechnologyName, value: Data.TechnologyId } : [],
                   vendorName: Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.Vendor } : [],
                   HasDifferentSource: Data.HasDifferentSource,
@@ -986,11 +979,15 @@ class AddRMDomestic extends Component {
     this.setState({ isVendorNameNotSelected: false })
 
     let plantArray = []
-    selectedPlants && selectedPlants.map((item) => {
-      plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '', })
-      return plantArray
-    })
+    if (IsVendor) {
+      plantArray.push({ PlantName: singlePlantSelected.label, PlantId: singlePlantSelected.value, PlantCode: '', })
+    } else {
 
+      selectedPlants && selectedPlants.map((item) => {
+        plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '', })
+        return plantArray
+      })
+    }
     let updatedFiles = files.map((file) => {
       return { ...file, ContextId: RawMaterialID }
     })
@@ -1093,11 +1090,10 @@ class AddRMDomestic extends Component {
       formData.EffectiveDate = DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
       formData.Remark = remarks
       formData.LoggedInUserId = loggedInUserId()
-      formData.Plant = IsVendor === false ? plantArray : []
+      formData.Plant = plantArray
       formData.VendorCode = VendorCode
       formData.VendorPlant = []
       formData.Attachements = files
-      formData.DestinationPlantId = IsVendor ? singlePlantSelected.value : '00000000-0000-0000-0000-000000000000'
       formData.CutOffPrice = values.cutOffPrice
       formData.IsCutOffApplicable = false
       formData.RawMaterialCode = values.Code
@@ -1416,7 +1412,7 @@ class AddRMDomestic extends Component {
                                 optionLabel={(option) => option.Text}
                                 component={renderMultiSelectField}
                                 mendatory={true}
-                                disabled={isViewFlag}
+                                disabled={isEditFlag || isViewFlag}
                                 className="multiselect-with-border"
                               />
                             </Col>)
