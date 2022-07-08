@@ -413,7 +413,7 @@ function CostingSummary(props) {
 
                       <Col className="col-md-15">
                         <AsyncSearchableSelectHookForm
-                          label={"Assembly No./Part No."}
+                          label={"Assembly/Part No."}
                           name={"Part"}
                           placeholder={"Enter"}
                           Controller={Controller}
