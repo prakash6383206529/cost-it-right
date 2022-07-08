@@ -11,8 +11,7 @@ import CostingBulkUploadDrawer from './CostingBulkUploadDrawer';
 import Toaster from '../../common/Toaster';
 import { loggedInUserId } from '../../../helper';
 import { APPROVED, PENDING } from '../../../config/constants';
-import { AgGridReact } from 'ag-grid-react/lib/agGridReact';
-import { AgGridColumn } from 'ag-grid-react';
+import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { PaginationWrapper } from '../../common/commonPagination';
@@ -41,7 +40,11 @@ class CostingSummaryBulkUpload extends Component {
      * @method refresh
      * @description Refresh the list
     */
-    refresh = () => { this.props.getCostingBulkUploadList(() => { }) }
+    refresh = () => {
+        this.props.getCostingBulkUploadList(() => { })
+        gridOptions.columnApi?.resetColumnState();
+        gridOptions.api?.setFilterModel(null);
+    }
 
     generateReport = () => { this.props.generateReport(() => { }) }
 
@@ -163,10 +166,6 @@ class CostingSummaryBulkUpload extends Component {
         this.state.gridApi.setQuickFilter(e.target.value);
     }
 
-    resetState() {
-        gridOptions.columnApi.resetColumnState();
-        gridOptions.api.setFilterModel(null);
-    }
     onSubmit = () => { }
 
     render() {
@@ -237,7 +236,7 @@ class CostingSummaryBulkUpload extends Component {
                                     pagination={true}
                                     paginationPageSize={defaultPageSize}
                                     onGridReady={this.onGridReady}
-                                    gridOptions={this.gridOptions}
+                                    gridOptions={gridOptions}
                                     loadingOverlayComponent={'customLoadingOverlay'}
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                     noRowsOverlayComponentParams={{
