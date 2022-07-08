@@ -1742,7 +1742,7 @@ class AddMachineRate extends Component {
                         </Col>
                       </Row>
                     </div>
-                    <Row className="sf-btn-footer no-gutters justify-content-between">
+                    <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                       <div className="col-sm-12 text-right bluefooter-butn">
                         {
                           !isViewFlag ?
