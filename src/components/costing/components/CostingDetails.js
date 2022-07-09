@@ -1685,10 +1685,10 @@ function CostingDetails(props) {
           </button> */}
 
           {/* COMMENTED FOR NOW 29-06-2021 */}
-          {/* {stepOne && <button onClick={bulkToggle} className="btn btn-link text-primary pr-0">
-            <img src={require('../../../assests/images/add-bom.svg')} alt="print-button" />
+          {stepOne && <button onClick={bulkToggle} className="btn btn-link text-primary pr-0">
+            <div className="add-rounded m-auto"></div>
             <span className="d-block mt-1">ADD BOM</span>
-          </button>} */}
+          </button>}
         </div>
       </span>
       <div className="login-container signup-form costing-details-page">
