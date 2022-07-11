@@ -60,7 +60,7 @@ function ApprovalSummary(props) {
 
   useEffect(() => {
 
-    if (Object.keys(approvalData).length > 0) {
+    if (Object.keys(approvalData).length > 0 && approvalDetails.TypeOfCosting === 'VBC') {
       dispatch(getLastSimulationData(approvalData.VendorId, approvalData.EffectiveDate, res => {
         const structureOfData = {
           ExchangeRateImpactedMasterDataList: [],
@@ -457,31 +457,33 @@ function ApprovalSummary(props) {
                 />
               </Col>
             </Row>}
-            <Row className="mb-3">
-              <Col md="6"><div className="left-border">{'Last Revision Data:'}</div></Col>
-              <Col md="6">
-                <div className={'right-details'}>
-                  <button className="btn btn-small-primary-circle ml-1 float-right" type="button" onClick={() => { setLastRevisionDataAcc(!lastRevisionDataAcc) }}>
-                    {lastRevisionDataAcc ? (
-                      <i className="fa fa-minus"></i>
-                    ) : (
+            {approvalDetails.TypeOfCosting === 'VBC' && <>
+              <Row className="mb-3">
+                <Col md="6"><div className="left-border">{'Last Revision Data:'}</div></Col>
+                <Col md="6">
+                  <div className={'right-details'}>
+                    <button className="btn btn-small-primary-circle ml-1 float-right" type="button" onClick={() => { setLastRevisionDataAcc(!lastRevisionDataAcc) }}>
+                      {lastRevisionDataAcc ? (
+                        <i className="fa fa-minus"></i>
+                      ) : (
 
-                      <i className="fa fa-plus"></i>
+                        <i className="fa fa-plus"></i>
 
-                    )}
-                  </button>
-                </div>
-              </Col>
-              <div className="accordian-content w-100 px-3 impacted-min-height">
-                {lastRevisionDataAcc && <Impactedmasterdata data={impactedMasterDataListForLastRevisionData} masterId={masterIdForLastRevision} viewCostingAndPartNo={false} lastRevision={true} />}
-                <div align="center">
-                  {editWarning && <NoContentFound title={"There is no data for the Last Revision."} />}
-                </div>
-                {/* {costingDrawer && lastRevisionDataAcc && <div align="center">
+                      )}
+                    </button>
+                  </div>
+                </Col>
+                <div className="accordian-content w-100 px-3 impacted-min-height">
+                  {lastRevisionDataAcc && <Impactedmasterdata data={impactedMasterDataListForLastRevisionData} masterId={masterIdForLastRevision} viewCostingAndPartNo={false} lastRevision={true} />}
+                  <div align="center">
+                    {editWarning && <NoContentFound title={"There is no data for the Last Revision."} />}
+                  </div>
+                  {/* {costingDrawer && lastRevisionDataAcc && <div align="center">
                     <NoContentFound title={"There is no data for the Last Revision."} />
                   </div>} */}
-              </div>
-            </Row>
+                </div>
+              </Row>
+            </>}
             <Row>
               <Col md="10">
                 <div className="left-border">{'Costing Summary:'}</div>

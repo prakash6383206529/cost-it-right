@@ -907,6 +907,7 @@ const SendForApproval = (props) => {
                 amendmentDetails={costingApprovalDrawerData}
                 vendorIdState={viewApprovalData[0].vendorId}
                 EffectiveDate={DayTime(viewApprovalData[0].effectiveDate).format('YYYY-MM-DD HH:mm:ss')}
+                TypeOfCosting={viewApprovalData[0].typeOfCosting}
               />}
           </div>
         </div>
