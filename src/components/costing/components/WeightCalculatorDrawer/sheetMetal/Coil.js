@@ -309,7 +309,7 @@ function Coil(props) {
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.StripWidth}
-                                        disabled={isEditFlag ? false : true}
+                                        disabled={CostingViewMode ? true : false}
                                     />
                                 </Col>
                                 <Col md="3">
@@ -332,7 +332,7 @@ function Coil(props) {
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.Thickness}
-                                        disabled={isEditFlag ? false : true}
+                                        disabled={CostingViewMode ? true : false}
                                     />
                                 </Col>
                                 <Col md="3">
@@ -355,7 +355,7 @@ function Coil(props) {
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.Pitch}
-                                        disabled={isEditFlag ? false : true}
+                                        disabled={CostingViewMode ? true : false}
                                     />
                                 </Col>
                                 <Col md="3">
@@ -378,7 +378,7 @@ function Coil(props) {
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.Cavity}
-                                        disabled={isEditFlag ? false : true}
+                                        disabled={CostingViewMode ? true : false}
                                     />
                                 </Col>
                             </Row>
@@ -405,7 +405,7 @@ function Coil(props) {
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.NetSurfaceArea}
-                                        disabled={isEditFlag ? false : true}
+                                        disabled={CostingViewMode ? true : false}
                                     />
                                 </Col>
                                 <Col md="3">
@@ -422,7 +422,7 @@ function Coil(props) {
                                         mandatory={true}
                                         handleChange={handleUnit}
                                         errors={errors.UOMDimension}
-                                        disabled={isEditFlag ? false : true}
+                                        disabled={CostingViewMode ? true : false}
                                     />
 
                                 </Col>
@@ -465,7 +465,7 @@ function Coil(props) {
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.FinishWeight}
-                                        disabled={isEditFlag ? false : true}
+                                        disabled={CostingViewMode ? true : false}
                                     />
                                 </Col>
                             </Row>
@@ -482,7 +482,7 @@ function Coil(props) {
                                 <button
                                     type="button"
                                     onClick={onSubmit}
-                                    disabled={props.CostingViewMode || isDisable ? true : false}
+                                    disabled={CostingViewMode || isDisable ? true : false}
                                     className="submit-button save-btn">
                                     <div className={'save-icon'}></div>
                                     {'Save'}
