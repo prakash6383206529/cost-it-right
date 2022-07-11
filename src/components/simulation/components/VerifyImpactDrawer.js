@@ -10,6 +10,7 @@ import { getImpactedMasterData, getLastSimulationData } from '../actions/Simulat
 import AssemblyWiseImpactSummary from './AssemblyWiseImpactSummary';
 import Toaster from '../../common/Toaster';
 import NoContentFound from '../../common/NoContentFound';
+import { VBC } from '../../../config/constants';
 
 
 function VerifyImpactDrawer(props) {
@@ -65,7 +66,7 @@ function VerifyImpactDrawer(props) {
   }, [lastSimulationData, impactedMasterData])
 
   useEffect(() => {
-    if (vendorIdState && EffectiveDate && TypeOfCosting === 'VBC') {
+    if (vendorIdState && EffectiveDate && TypeOfCosting === VBC) {
       dispatch(getLastSimulationData(vendorIdState, EffectiveDate, (res) => {
         setMasterIdForLastRevision(res?.data?.Data?.SimulationTechnologyId)
       }))
@@ -203,7 +204,7 @@ function VerifyImpactDrawer(props) {
                   </Row>
                 </>
               }
-              {TypeOfCosting === 'VBC' && <>
+              {TypeOfCosting === VBC && <>
                 <Row className="mb-3 pr-0 mx-0">
                   <Col md="6"> <HeaderTitle title={'Last Revision Data:'} /></Col>
                   <Col md="6">

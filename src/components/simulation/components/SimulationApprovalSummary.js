@@ -17,7 +17,7 @@ import { getApprovalSimulatedCostingSummary, getComparisionSimulationData, getIm
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import Toaster from '../../common/Toaster';
-import { EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, FILE_URL, ZBC, SURFACETREATMENT, OPERATIONS, BOPDOMESTIC, BOPIMPORT, AssemblyWiseImpactt, MACHINERATE, ImpactMaster, defaultPageSize, } from '../../../config/constants';
+import { EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, FILE_URL, ZBC, SURFACETREATMENT, OPERATIONS, BOPDOMESTIC, BOPIMPORT, AssemblyWiseImpactt, MACHINERATE, ImpactMaster, defaultPageSize, VBC, } from '../../../config/constants';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
 import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId } from '../../../helper';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
@@ -242,7 +242,7 @@ function SimulationApprovalSummary(props) {
     useEffect(() => {
         // if (costingList.length > 0 && effectiveDate) {
         if (effectiveDate && costingList && simulationDetail.SimulationId) {
-            if (costingList && costingList.length > 0 && effectiveDate && Object.keys('simulationDetail'.length > 0) && DataForAssemblyImpactForFg[0]?.CostingHead === 'VBC') {
+            if (costingList && costingList.length > 0 && effectiveDate && Object.keys('simulationDetail'.length > 0) && DataForAssemblyImpactForFg[0]?.CostingHead === VBC) {
                 dispatch(getLastSimulationData(costingList[0].VendorId, effectiveDate, res => {
                     const structureOfData = {
                         ExchangeRateImpactedMasterDataList: [],
@@ -1372,7 +1372,7 @@ function SimulationApprovalSummary(props) {
                             </div>
                         </Row>
 
-                        {DataForAssemblyImpactForFg[0]?.CostingHead === 'VBC' && <>
+                        {DataForAssemblyImpactForFg[0]?.CostingHead === VBC && <>
                             <Row className="mb-4 reset-btn-container">
                                 <Col md="6"><div className="left-border">{'Last Revision Data:'}</div></Col>
                                 <Col md="6" className="text-right">
