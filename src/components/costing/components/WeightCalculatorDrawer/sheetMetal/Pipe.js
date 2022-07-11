@@ -506,7 +506,7 @@ function Pipe(props) {
                     className=""
                     customClassName={'withBorder'}
                     errors={errors.OuterDiameter}
-                    disabled={isEditFlag ? false : true}
+                    disabled={CostingViewMode ? true : false}
                   />
                 </Col>
                 <Col md="3">
@@ -529,7 +529,7 @@ function Pipe(props) {
                     className=""
                     customClassName={'withBorder'}
                     errors={errors.Thickness}
-                    disabled={isEditFlag ? false : true}
+                    disabled={CostingViewMode ? true : false}
                   />
                 </Col>
                 <Col md="3">
@@ -574,7 +574,7 @@ function Pipe(props) {
                     className=""
                     customClassName={'withBorder'}
                     errors={errors.SheetLength}
-                    disabled={isEditFlag ? false : true}
+                    disabled={CostingViewMode ? true : false}
                   />
                 </Col>
                 <Col md="3">
@@ -597,7 +597,7 @@ function Pipe(props) {
                     className=""
                     customClassName={'withBorder'}
                     errors={errors.PartLength}
-                    disabled={isEditFlag ? false : true}
+                    disabled={CostingViewMode ? true : false}
                   />
                 </Col>
                 <Col md="3">
@@ -788,7 +788,7 @@ function Pipe(props) {
                     mandatory={true}
                     handleChange={handleUnit}
                     errors={errors.UOMDimension}
-                    disabled={isEditFlag ? false : true}
+                    disabled={CostingViewMode ? true : false}
                   />
 
                 </Col>
@@ -831,7 +831,7 @@ function Pipe(props) {
                     className=""
                     customClassName={'withBorder'}
                     errors={errors.FinishWeightOfSheet}
-                    disabled={isEditFlag ? false : true}
+                    disabled={CostingViewMode ? true : false}
                   />
                 </Col>
               </Row>

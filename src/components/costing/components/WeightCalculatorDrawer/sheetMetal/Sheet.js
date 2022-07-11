@@ -365,7 +365,7 @@ function Sheet(props) {
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.SheetThickness}
-                                        disabled={isEditFlag ? false : true}
+                                        disabled={CostingViewMode ? true : false}
                                     />
                                 </Col>
                                 <Col md="3">
@@ -388,7 +388,7 @@ function Sheet(props) {
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.SheetWidth}
-                                        disabled={isEditFlag ? false : true}
+                                        disabled={CostingViewMode ? true : false}
                                     />
                                 </Col>
 
@@ -412,7 +412,7 @@ function Sheet(props) {
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.SheetLength}
-                                        disabled={isEditFlag ? false : true}
+                                        disabled={CostingViewMode ? true : false}
                                     />
                                 </Col>
                                 <Col md="3">
@@ -461,7 +461,7 @@ function Sheet(props) {
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.StripWidth}
-                                        disabled={isEditFlag ? false : true}
+                                        disabled={CostingViewMode ? true : false}
                                     />
                                 </Col>
                                 <Col md="3">
@@ -501,7 +501,7 @@ function Sheet(props) {
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.BlankSize}
-                                        disabled={isEditFlag ? false : true}
+                                        disabled={CostingViewMode ? true : false}
                                     />
                                 </Col>
                                 <Col md="3">
@@ -556,7 +556,7 @@ function Sheet(props) {
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.Cavity}
-                                        disabled={isEditFlag ? false : true}
+                                        disabled={CostingViewMode ? true : false}
                                     />
                                 </Col>
                             </Row>
@@ -583,7 +583,7 @@ function Sheet(props) {
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.NetSurfaceArea}
-                                        disabled={isEditFlag ? false : true}
+                                        disabled={CostingViewMode ? true : false}
                                     />
                                 </Col>
                                 <Col md="3">
@@ -600,7 +600,7 @@ function Sheet(props) {
                                         mandatory={true}
                                         handleChange={handleUnit}
                                         errors={errors.UOMDimension}
-                                        disabled={isEditFlag ? false : true}
+                                        disabled={CostingViewMode ? true : false}
                                     />
 
                                 </Col>
@@ -643,7 +643,7 @@ function Sheet(props) {
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.FinishWeightOfSheet}
-                                        disabled={isEditFlag ? false : true}
+                                        disabled={CostingViewMode ? true : false}
                                     />
                                 </Col>
                             </Row>
@@ -659,7 +659,7 @@ function Sheet(props) {
                             <button
                                 type="button"
                                 onClick={onSubmit}
-                                disabled={props.CostingViewMode || isDisable ? true : false}
+                                disabled={CostingViewMode || isDisable ? true : false}
                                 className="submit-button save-btn">
                                 <div className={'save-icon'}></div>
                                 {'Save'}
