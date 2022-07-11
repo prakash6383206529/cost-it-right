@@ -12,12 +12,11 @@ import { reactLocalStorage } from 'reactjs-localstorage'
 import Toaster from '../../../../common/Toaster'
 import { G, KG, MG, } from '../../../../../config/constants'
 import { AcceptableSheetMetalUOM } from '../../../../../config/masterData'
-import { ViewCostingContext } from '../../CostingDetails'
 import { debounce } from 'lodash'
 
 function Coil(props) {
     const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest;
-    const { rmRowData, isEditFlag, item } = props
+    const { rmRowData, isEditFlag, item, CostingViewMode } = props
 
     const convert = (FinishWeightOfSheet, dimmension) => {
         switch (dimmension) {
@@ -42,7 +41,6 @@ function Coil(props) {
     }
 
     const costData = useContext(costingInfoContext)
-    const CostingViewMode = useContext(ViewCostingContext);
 
     const defaultValues = {
         StripWidth: WeightCalculatorRequest && WeightCalculatorRequest.StripWidth !== null ? WeightCalculatorRequest.StripWidth : '',

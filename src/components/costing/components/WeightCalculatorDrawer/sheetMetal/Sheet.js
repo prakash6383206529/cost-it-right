@@ -12,14 +12,12 @@ import { reactLocalStorage } from 'reactjs-localstorage'
 import Toaster from '../../../../common/Toaster'
 import { G, KG, MG, } from '../../../../../config/constants'
 import { AcceptableSheetMetalUOM } from '../../../../../config/masterData'
-import { ViewCostingContext } from '../../CostingDetails'
 import { debounce } from 'lodash'
 
 function Sheet(props) {
     const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest;
-    const { rmRowData, isEditFlag, item } = props
+    const { rmRowData, isEditFlag, item, CostingViewMode } = props
     const costData = useContext(costingInfoContext)
-    const CostingViewMode = useContext(ViewCostingContext);
 
     const convert = (FinishWeightOfSheet, dimmension) => {
         switch (dimmension) {
@@ -463,7 +461,7 @@ function Sheet(props) {
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.StripWidth}
-                                        disabled={false}
+                                        disabled={isEditFlag ? false : true}
                                     />
                                 </Col>
                                 <Col md="3">
@@ -585,7 +583,7 @@ function Sheet(props) {
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.NetSurfaceArea}
-                                        disabled={false}
+                                        disabled={isEditFlag ? false : true}
                                     />
                                 </Col>
                                 <Col md="3">
