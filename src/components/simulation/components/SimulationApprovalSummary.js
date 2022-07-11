@@ -130,8 +130,6 @@ function SimulationApprovalSummary(props) {
     const [ammendentButton, setAmmendmentButton] = useState(false)
 
     const headerName = ['Revision No.', 'Name', 'Old Cost/Pc', 'New Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
-    const headerNameAssembly = ['Revision No.', 'Name', 'Level', 'Old Price/Pc', 'New Price/Pc', 'Applicable Quantity', 'Variance', '', '', 'Assembly Number']
-
 
     const { setValue, getValues } = useForm({
         mode: 'onBlur',
@@ -177,15 +175,17 @@ function SimulationApprovalSummary(props) {
             setShowFinalLevelButton(IsFinalLevelButtonShow)
             setShowPushButton(IsPushedButtonShow)
 
-
+            // SimulatedCostingList CONTAINS LIST TO SHOW ON UI | SUMMARY BLOCK
             if (SimulatedCostingList !== undefined && (Object.keys(SimulatedCostingList).length !== 0 || SimulatedCostingList.length > 0)) {
                 let requestData = []
                 let isAssemblyInDraft = false
 
+                // UNIQUE LIST BY CostingId 
                 let uniqueArr = _.uniqBy(SimulatedCostingList, function (o) {
                     return o.CostingId;
                 });
 
+                // CREATE OBJECT FOR ASSEMBLY WISE IMPACT API
                 uniqueArr && uniqueArr.map(item => {
                     requestData.push({ CostingId: item.CostingId, delta: item.POVariance, IsSinglePartImpact: false, SimulationId: SimulationId })
                     return null
@@ -207,6 +207,7 @@ function SimulationApprovalSummary(props) {
     }, [])
 
     useEffect(() => {
+        // CHECK IF THERE IS NO DATA FOR EACH MASTER IN LAST REVISION DATA
         let check = impactedMasterDataListForLastRevisionData?.RawMaterialImpactedMasterDataList?.length <= 0 &&
             impactedMasterDataListForLastRevisionData?.OperationImpactedMasterDataList?.length <= 0 &&
             impactedMasterDataListForLastRevisionData?.ExchangeRateImpactedMasterDataList?.length <= 0 &&
@@ -244,7 +245,7 @@ function SimulationApprovalSummary(props) {
     useEffect(() => {
         // if (costingList.length > 0 && effectiveDate) {
         if (effectiveDate && costingList && simulationDetail.SimulationId) {
-            if (costingList && costingList.length > 0 && effectiveDate && Object.keys('simulationDetail'.length > 0)) {
+            if (costingList && costingList.length > 0 && effectiveDate && Object.keys('simulationDetail'.length > 0) && DataForAssemblyImpactForFg[0]?.CostingHead === 'VBC') {
                 dispatch(getLastSimulationData(costingList[0].VendorId, effectiveDate, res => {
                     const structureOfData = {
                         ExchangeRateImpactedMasterDataList: [],
@@ -275,7 +276,7 @@ function SimulationApprovalSummary(props) {
             }
         }
 
-    }, [effectiveDate, costingList, simulationDetail.SimulationId])
+    }, [effectiveDate, costingList, simulationDetail.SimulationId, DataForAssemblyImpactForFg])
 
     useEffect(() => {
         let count = 0
@@ -1281,47 +1282,51 @@ function SimulationApprovalSummary(props) {
                                 />
                             </Col>
                         </Row>
-                        <Row className="mb-4 reset-btn-container">
-                            <Col md="6"><div className="left-border">{'Last Revision Data:'}</div></Col>
-                            <Col md="6" className="text-right">
-                                <div className={'right-details'}>
-                                    <button onClick={() => setLastRevisionDataAccordian(!lastRevisionDataAccordian)} className={`btn btn-small-primary-circle ml-1`}>{lastRevisionDataAccordian ? (
-                                        <i className="fa fa-minus" ></i>
-                                    ) : (
-                                        <i className="fa fa-plus"></i>
-                                    )}</button>
-                                </div>
 
-                            </Col>
-
-                            {lastRevisionDataAccordian &&
-                                <>
-                                    <div className="accordian-content w-100 px-3 impacted-min-height">
-                                        {showLastRevisionData && <Impactedmasterdata data={impactedMasterDataListForLastRevisionData} masterId={simulationDetail.SimulationTechnologyId} viewCostingAndPartNo={false} lastRevision={true} />}
-                                        {impactedMasterDataListForLastRevisionData?.length === 0 ? <div className='border'><NoContentFound title={EMPTY_DATA} /></div> : ""}
+                        {DataForAssemblyImpactForFg[0]?.CostingHead === 'VBC' && <>
+                            <Row className="mb-4 reset-btn-container">
+                                <Col md="6"><div className="left-border">{'Last Revision Data:'}</div></Col>
+                                <Col md="6" className="text-right">
+                                    <div className={'right-details'}>
+                                        <button onClick={() => setLastRevisionDataAccordian(!lastRevisionDataAccordian)} className={`btn btn-small-primary-circle ml-1`}>{lastRevisionDataAccordian ? (
+                                            <i className="fa fa-minus" ></i>
+                                        ) : (
+                                            <i className="fa fa-plus"></i>
+                                        )}</button>
                                     </div>
-                                    {editWarning && <Row className='w-100'>
-                                        <Col md="12">
-                                            <NoContentFound title={"There is no data for the Last Revision."} />
-                                        </Col>
-                                    </Row>}
-                                </>
-                            }
-                            {showViewAssemblyDrawer &&
-                                <ViewAssembly
-                                    isOpen={showViewAssemblyDrawer}
-                                    closeDrawer={closeAssemblyDrawer}
-                                    // approvalData={approvalData}
-                                    anchor={'bottom'}
-                                    dataForAssemblyImpact={dataForAssemblyImpact}
-                                    vendorIdState={costingList[0]?.VendorId}
-                                    isPartImpactAssembly={true}
-                                    impactType={'AssemblySummary'}
-                                    isImpactDrawer={false}
-                                    simulationId={simulationDetail.SimulationId}
-                                />
-                            }
-                            {/* {lastRevisionDataAccordian &&
+
+                                </Col>
+
+                                {lastRevisionDataAccordian &&
+                                    <>
+                                        <div className="accordian-content w-100 px-3 impacted-min-height">
+                                            {showLastRevisionData && <Impactedmasterdata data={impactedMasterDataListForLastRevisionData} masterId={simulationDetail.SimulationTechnologyId} viewCostingAndPartNo={false} lastRevision={true} />}
+                                            {impactedMasterDataListForLastRevisionData?.length === 0 ? <div className='border'><NoContentFound title={EMPTY_DATA} /></div> : ""}
+                                        </div>
+                                        {editWarning && <Row className='w-100'>
+                                            <Col md="12">
+                                                <NoContentFound title={"There is no data for the Last Revision."} />
+                                            </Col>
+                                        </Row>}
+                                    </>
+                                }
+                            </Row>
+                        </>}
+                        {showViewAssemblyDrawer &&
+                            <ViewAssembly
+                                isOpen={showViewAssemblyDrawer}
+                                closeDrawer={closeAssemblyDrawer}
+                                // approvalData={approvalData}
+                                anchor={'bottom'}
+                                dataForAssemblyImpact={dataForAssemblyImpact}
+                                vendorIdState={costingList[0]?.VendorId}
+                                isPartImpactAssembly={true}
+                                impactType={'AssemblySummary'}
+                                isImpactDrawer={false}
+                                simulationId={simulationDetail.SimulationId}
+                            />
+                        }
+                        {/* {lastRevisionDataAccordian &&
                                 <div className="accordian-content w-100">
                                     <div className={`ag - grid - react`}>
                                         <Col md="12" className="mb-3">
@@ -1388,7 +1393,6 @@ function SimulationApprovalSummary(props) {
                                     </div>
                                 </div>
                             } */}
-                        </Row>
 
                     </div>
 
