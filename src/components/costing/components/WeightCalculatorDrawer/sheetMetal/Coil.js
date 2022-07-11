@@ -12,12 +12,11 @@ import { reactLocalStorage } from 'reactjs-localstorage'
 import Toaster from '../../../../common/Toaster'
 import { G, KG, MG, } from '../../../../../config/constants'
 import { AcceptableSheetMetalUOM } from '../../../../../config/masterData'
-import { ViewCostingContext } from '../../CostingDetails'
 import { debounce } from 'lodash'
 
 function Coil(props) {
     const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest;
-    const { rmRowData, isEditFlag, item } = props
+    const { rmRowData, isEditFlag, item, CostingViewMode } = props
 
     const convert = (FinishWeightOfSheet, dimmension) => {
         switch (dimmension) {
@@ -42,7 +41,6 @@ function Coil(props) {
     }
 
     const costData = useContext(costingInfoContext)
-    const CostingViewMode = useContext(ViewCostingContext);
 
     const defaultValues = {
         StripWidth: WeightCalculatorRequest && WeightCalculatorRequest.StripWidth !== null ? WeightCalculatorRequest.StripWidth : '',
@@ -311,7 +309,7 @@ function Coil(props) {
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.StripWidth}
-                                        disabled={isEditFlag ? false : true}
+                                        disabled={CostingViewMode ? true : false}
                                     />
                                 </Col>
                                 <Col md="3">
@@ -334,7 +332,7 @@ function Coil(props) {
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.Thickness}
-                                        disabled={isEditFlag ? false : true}
+                                        disabled={CostingViewMode ? true : false}
                                     />
                                 </Col>
                                 <Col md="3">
@@ -357,7 +355,7 @@ function Coil(props) {
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.Pitch}
-                                        disabled={isEditFlag ? false : true}
+                                        disabled={CostingViewMode ? true : false}
                                     />
                                 </Col>
                                 <Col md="3">
@@ -380,7 +378,7 @@ function Coil(props) {
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.Cavity}
-                                        disabled={isEditFlag ? false : true}
+                                        disabled={CostingViewMode ? true : false}
                                     />
                                 </Col>
                             </Row>
@@ -407,7 +405,7 @@ function Coil(props) {
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.NetSurfaceArea}
-                                        disabled={isEditFlag ? false : true}
+                                        disabled={CostingViewMode ? true : false}
                                     />
                                 </Col>
                                 <Col md="3">
@@ -424,7 +422,7 @@ function Coil(props) {
                                         mandatory={true}
                                         handleChange={handleUnit}
                                         errors={errors.UOMDimension}
-                                        disabled={isEditFlag ? false : true}
+                                        disabled={CostingViewMode ? true : false}
                                     />
 
                                 </Col>
@@ -467,7 +465,7 @@ function Coil(props) {
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.FinishWeight}
-                                        disabled={isEditFlag ? false : true}
+                                        disabled={CostingViewMode ? true : false}
                                     />
                                 </Col>
                             </Row>
@@ -484,7 +482,7 @@ function Coil(props) {
                                 <button
                                     type="button"
                                     onClick={onSubmit}
-                                    disabled={props.CostingViewMode || isDisable ? true : false}
+                                    disabled={CostingViewMode || isDisable ? true : false}
                                     className="submit-button save-btn">
                                     <div className={'save-icon'}></div>
                                     {'Save'}
