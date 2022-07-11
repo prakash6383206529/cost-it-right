@@ -2505,7 +2505,7 @@ export function sapPushedCostingInitialMoment(data, callback) {
   }
 }
 /**
- * @method isDataChange
+ * @method savePartNumberAndBOMLevel
  * @description THIS METHOD IS FOR CALLING SAVE API IF CHNAGES HAVE BEEN MADE 
 */
 
@@ -2519,7 +2519,7 @@ export function savePartNumberAndBOMLevel(isDataChange) {
 }
 
 /**
- * @method isDataChange
+ * @method setPartNumberArrayAPICALL
  * @description THIS METHOD IS FOR CALLING SAVE API IF CHNAGES HAVE BEEN MADE 
 */
 
