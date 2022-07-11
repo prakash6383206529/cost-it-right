@@ -188,11 +188,13 @@ class AddMoreDetails extends Component {
       this.props.change('MachineNumber', fieldsObj.MachineNumber)
       this.props.change('TonnageCapacity', fieldsObj.TonnageCapacity)
       this.props.change('Description', fieldsObj.Description)
-      this.props.change('EffectiveDate', fieldsObj.EffectiveDate)
+      this.props.change('EffectiveDate', fieldsObj.EffectiveDate ? fieldsObj.EffectiveDate : '')
       this.setState({
+        fieldsObj: fieldsObj,
         selectedPlants: selectedPlants,
         selectedTechnology: selectedTechnology,
         machineType: machineType,
+        effectiveDate: fieldsObj.EffectiveDate
       }, () => {
         if (machineType && machineType.value) {
           this.props.getLabourTypeByMachineTypeSelectList(machineType.value ? machineType.value : 0, () => { })
@@ -1652,7 +1654,6 @@ class AddMoreDetails extends Component {
       IsAnnualMaintenanceFixed, IsAnnualConsumableFixed, IsInsuranceFixed, IsUsesFuel, IsUsesSolar, fuelType,
       labourGrid, processGrid, machineFullValue, effectiveDate, IsFinancialDataChanged } = this.state;
 
-
     if (this.state.processGrid.length === 0) {
 
       Toaster.warning('Please add atleast one process')
@@ -1663,8 +1664,7 @@ class AddMoreDetails extends Component {
 
     const userDetail = userDetails()
 
-    let technologyArray = selectedTechnology && { Technology: selectedTechnology.label, TechnologyId: selectedTechnology.value, }
-
+    let technologyArray = selectedTechnology && [{ Technology: selectedTechnology.label ? selectedTechnology.label : selectedTechnology[0].label, TechnologyId: selectedTechnology.value ? selectedTechnology.value : selectedTechnology[0].value }]
 
     let updatedFiles = files.map((file) => ({ ...file, ContextId: MachineID }))
 
@@ -1733,7 +1733,7 @@ class AddMoreDetails extends Component {
       Remark: remarks,
       LoggedInUserId: loggedInUserId(),
       MachineProcessRates: processGrid,
-      Technology: [technologyArray],
+      Technology: (technologyArray.length > 0 && technologyArray[0]?.Technology !== undefined) ? technologyArray : [{ Technology: selectedTechnology.label ? selectedTechnology.label : selectedTechnology[0].label, TechnologyId: selectedTechnology.value ? selectedTechnology.value : selectedTechnology[0].value }],
       Plant: [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }],
       Attachements: updatedFiles,
       VendorPlant: [],
@@ -1833,7 +1833,7 @@ class AddMoreDetails extends Component {
         Remark: remarks,
         LoggedInUserId: loggedInUserId(),
         MachineProcessRates: processGrid,
-        Technology: [technologyArray],
+        Technology: (technologyArray.length > 0 && technologyArray[0]?.Technology !== undefined) ? technologyArray : [{ Technology: selectedTechnology.label ? selectedTechnology.label : selectedTechnology[0].label, TechnologyId: selectedTechnology.value ? selectedTechnology.value : selectedTechnology[0].value }],
         Plant: [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }],
         Attachements: files,
         VendorPlant: [],
@@ -1842,7 +1842,6 @@ class AddMoreDetails extends Component {
         rowData: this.state.rowData,
         IsFinancialDataChanged: this.state.isDateChange ? true : false
       }
-
 
       let obj = {}
       let finalObj = {
@@ -1874,6 +1873,7 @@ class AddMoreDetails extends Component {
 
         this.props.reset()
         this.props.createMachineDetails(formData, (res) => {
+
           if (res.data.Result) {
             formData.isViewFlag = true
             this.props.hideMoreDetailsForm(formData)
@@ -2660,7 +2660,7 @@ class AddMoreDetails extends Component {
                       </Row>
 
                       {/* VARIABLE COST */}
-                      <Row className="mb-3 accordian-container variable-cost">
+                      <Row className="mb-3 accordian-container">
                         <Col md="6">
                           <HeaderTitle
                             title={'Variable Cost:'}
@@ -2707,8 +2707,7 @@ class AddMoreDetails extends Component {
                                   component={renderText}
                                   //required={true}
                                   disabled={disableAllForm}
-                                  className=" mt5"
-                                  customClassName="withBorder"
+                                  customClassName="withBorder pt-1"
                                 />
                               </Col>}
                             <Col md="3">
@@ -2757,7 +2756,7 @@ class AddMoreDetails extends Component {
                                   component={renderNumberInputField}
                                   //required={true}
                                   disabled={disableAllForm}
-                                  customClassName="withBorder"
+                                  customClassName="withBorder pt-1"
                                 />
                               </Col>}
                             <Col md="3">
@@ -2807,7 +2806,7 @@ class AddMoreDetails extends Component {
                                   component={renderNumberInputField}
                                   //required={true}
                                   disabled={disableAllForm}
-                                  customClassName="withBorder"
+                                  customClassName="withBorder pt-1"
                                 />
                               </Col>}
                             <Col md="3">
