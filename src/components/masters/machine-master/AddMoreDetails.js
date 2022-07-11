@@ -2660,7 +2660,7 @@ class AddMoreDetails extends Component {
                       </Row>
 
                       {/* VARIABLE COST */}
-                      <Row className="mb-3 accordian-container variable-cost">
+                      <Row className="mb-3 accordian-container">
                         <Col md="6">
                           <HeaderTitle
                             title={'Variable Cost:'}
@@ -2707,8 +2707,7 @@ class AddMoreDetails extends Component {
                                   component={renderText}
                                   //required={true}
                                   disabled={disableAllForm}
-                                  className=" mt5"
-                                  customClassName="withBorder"
+                                  customClassName="withBorder pt-1"
                                 />
                               </Col>}
                             <Col md="3">
@@ -2757,7 +2756,7 @@ class AddMoreDetails extends Component {
                                   component={renderNumberInputField}
                                   //required={true}
                                   disabled={disableAllForm}
-                                  customClassName="withBorder"
+                                  customClassName="withBorder pt-1"
                                 />
                               </Col>}
                             <Col md="3">
@@ -2807,7 +2806,7 @@ class AddMoreDetails extends Component {
                                   component={renderNumberInputField}
                                   //required={true}
                                   disabled={disableAllForm}
-                                  customClassName="withBorder"
+                                  customClassName="withBorder pt-1"
                                 />
                               </Col>}
                             <Col md="3">
