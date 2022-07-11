@@ -222,7 +222,6 @@ function RawMaterialCost(props) {
   const toggleWeightCalculator = debounce((index) => {
     setEditIndex(index)
     let tempData = gridData[index]
-    console.log('tempData: ', tempData);
     if (technologyForDensity.includes(costData?.TechnologyId)) {
       if ((tempData.Density === undefined && tempData.Density === null && tempData.Density === "") || Number(tempData.Density) === 0) {
 
