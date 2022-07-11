@@ -259,7 +259,6 @@ class AddMachineRate extends Component {
         if (res && res.data && res.data.Result) {
 
           const Data = res.data.Data;
-          console.log('Data: ', Data);
           this.props.getProcessGroupByMachineId(Data.MachineId, res => {
             // this.props.setGroupProcessList(res?.data?.DataList)
             // SET GET API STRUCTURE IN THE FORM OF SAVE API STRUCTURE BY DEFAULT
