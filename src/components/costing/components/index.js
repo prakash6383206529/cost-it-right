@@ -4,7 +4,7 @@ import { TabContent, TabPane, Nav, NavItem, NavLink, } from 'reactstrap';
 import classnames from 'classnames';
 import CostingDetails from './CostingDetails';
 import CostingSummary from './CostingSummary';
-import { isDataChange, savePartNumberAndBOMLevel, setProcessGroupGrid, storePartNumber } from '../actions/Costing';
+import { isDataChange, savePartNumberAndBOMLevel, setPartNumberArrayAPICALL, setProcessGroupGrid, storePartNumber } from '../actions/Costing';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { useHistory } from "react-router-dom";
 import ApprovalListing from './approval/ApprovalListing';
@@ -28,6 +28,8 @@ function Costing(props) {
       setActiveTab(tab);
     }
     dispatch(isDataChange(false))
+    dispatch(setPartNumberArrayAPICALL([]))
+    dispatch(savePartNumberAndBOMLevel(''))
   }
 
   const dispatch = useDispatch();
