@@ -15,7 +15,6 @@ import { reactLocalStorage } from 'reactjs-localstorage'
 import Toaster from '../../../../common/Toaster'
 import { G, KG, MG, STD, } from '../../../../../config/constants'
 import { AcceptableSheetMetalUOM } from '../../../../../config/masterData'
-import { ViewCostingContext } from '../../CostingDetails'
 import { debounce } from 'lodash'
 
 function IsolateReRender(control) {
@@ -53,10 +52,9 @@ function Pipe(props) {
     }
   }
 
-  const { rmRowData, isEditFlag, item } = props
+  const { rmRowData, isEditFlag, item, CostingViewMode } = props
 
   const costData = useContext(costingInfoContext)
-  const CostingViewMode = useContext(ViewCostingContext);
 
   const defaultValues = {
 
@@ -839,7 +837,7 @@ function Pipe(props) {
               </Row>
             </div>
 
-            {isEditFlag && !CostingViewMode &&
+            {!CostingViewMode &&
               <div className="col-sm-12 text-right px-0 mt-4">
                 <button
                   type={'button'}
