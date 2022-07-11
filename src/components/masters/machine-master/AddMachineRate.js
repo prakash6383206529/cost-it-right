@@ -225,11 +225,13 @@ class AddMachineRate extends Component {
       selectedTechnology: data.selectedTechnology,
       selectedPlants: data.selectedPlants,
       machineType: data.machineType,
+      effectiveDate: data.EffectiveDate
     })
     this.props.change('MachineName', data && data.fieldsObj && data.fieldsObj.MachineName)
     this.props.change('MachineNumber', data && data.fieldsObj && data.fieldsObj.MachineNumber)
     this.props.change('TonnageCapacity', data && data.fieldsObj && data.fieldsObj.TonnageCapacity)
     this.props.change('Description', data && data.fieldsObj && data.fieldsObj.Description)
+    this.props.change('EffectiveDate', DayTime(data.EffectiveDate).isValid() ? data.EffectiveDate : '')
   }
 
 
@@ -256,6 +258,7 @@ class AddMachineRate extends Component {
         if (res && res.data && res.data.Result) {
 
           const Data = res.data.Data;
+          console.log('Data: ', Data);
           this.props.getProcessGroupByMachineId(Data.MachineId, res => {
             // this.props.setGroupProcessList(res?.data?.DataList)
             // SET GET API STRUCTURE IN THE FORM OF SAVE API STRUCTURE BY DEFAULT
@@ -320,7 +323,7 @@ class AddMachineRate extends Component {
             })
 
             const machineTypeObj = machineTypeSelectList && machineTypeSelectList.find(item => Number(item.Value) === Data.MachineTypeId)
-            if (getConfigurationKey().IsDestinationPlantConfigure) {
+            if (getConfigurationKey().IsDestinationPlantConfigure && Data.IsVendor) {
               plantObj = Data.DestinationPlantName !== undefined ? { label: Data.DestinationPlantName, value: Data.DestinationPlantId } : []
             } else {
               plantObj = Data && Data.Plant.length > 0 ? { label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId } : []
@@ -1183,18 +1186,16 @@ class AddMachineRate extends Component {
   */
   showFormData = () => {
     const { data } = this.props
-
     this.props.getVendorListByVendorType(data.IsVendor, () => { })
     if (data.IsVendor) {
       this.props.getPlantBySupplier(data.VendorId, () => { })
     }
-
-    this.props.change('EffectiveDate', DayTime(data.EffectiveDate).isValid() ? DayTime(data.EffectiveDate) : '')
+    let technologyArray = [{ label: data.Technology && data.Technology[0].Technology, value: data.Technology && data.Technology[0].TechnologyId }]
     setTimeout(() => {
       const { vendorListByVendorType, machineTypeSelectList, plantSelectList, } = this.props;
 
       // let technologyArray = data && data.Technology.map((item) => ({ Text: item.Technology, Value: item.TechnologyId }))
-      let technologyArray = [{ label: data.Technology && data.Technology[0].Technology, value: data.Technology && data.Technology[0].TechnologyId }]
+      this.props.change('EffectiveDate', DayTime(data.EffectiveDate).isValid() ? DayTime(data.EffectiveDate).format('DD/MM/YYYY') : '')
 
 
       let MachineProcessArray = data && data.MachineProcessRates && data.MachineProcessRates.map(el => {
@@ -1229,6 +1230,7 @@ class AddMachineRate extends Component {
         processGrid: MachineProcessArray,
         remarks: data.Remark,
         files: data.Attachements,
+        effectiveDate: data.EffectiveDate
       }, () => this.setState({ isLoader: false }))
     }, 100)
   }
