@@ -141,6 +141,7 @@ class BOPImportListing extends Component {
         this.setState({ isLoader: true })
 
         let FloatingfilterData = this.state.filterModel
+        let obj = { ...this.state.floatingFilterData }
         this.props.getBOPImportDataList(filterData, skip, take, isPagination, dataObj, (res) => {
             if (this.props.isSimulation) {
                 this.props?.changeTokenCheckBox(true)
@@ -161,7 +162,7 @@ class BOPImportListing extends Component {
                 }
                 let isReset = true
                 setTimeout(() => {
-                    let obj = this.state.floatingFilterData
+
                     for (var prop in obj) {
                         if (prop !== "DepartmentCode" && obj[prop] !== "") {
                             isReset = false
