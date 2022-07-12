@@ -215,10 +215,11 @@ class OperationListing extends Component {
 
                     // PAGINATION CODE
                     let FloatingfilterData = this.state.filterModel
+                    let obj = { ...this.state.floatingFilterData }
                     this.setState({ totalRecordCount: res.data.DataList[0].TotalRecordCount })
                     let isReset = true
                     setTimeout(() => {
-                        let obj = this.state.floatingFilterData
+
                         for (var prop in obj) {
                             if (prop !== "DepartmentCode" && obj[prop] !== "") {
                                 isReset = false
