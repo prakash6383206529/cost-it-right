@@ -109,7 +109,10 @@ export const selectRequired = value =>
     ? undefined : 'This field is required.');
 
 export const checkWhiteSpaces = value => {
-    return value && (value.startsWith(' ') || value.endsWith(' ')) ? 'Text should not start and end with space' : undefined;
+    return value && (value.startsWith(' ') || value.endsWith(' ')) ? 'Text should not start and end with space.' : undefined;
+}
+export const checkSpaceForCode = value => {
+    return value && value.includes('  ') ? 'The field should not contain more than one space.' : undefined;
 }
 
 export const number = value =>
