@@ -33,6 +33,7 @@ import {
   SET_PART_NUMBER_ARRAY_API_CALL,
   SET_MESSAGE_FOR_ASSEMBLY,
   SET_PROCESS_GROUP_GRID,
+  SAVE_BOM_LEVEL_STOP_API_CALL,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -2469,7 +2470,7 @@ export function getFgWiseImpactDataForCosting(data, callback) {
  * @description THIS METHOD IS FOR CALLING SAVE API IF CHNAGES HAVE BEEN MADE 
 */
 
-export function savePartNumberAndBOMLevel(isDataChange) {
+export function savePartNumber(isDataChange) {
   return (dispatch) => {
     dispatch({
       type: SAVE_PART_NUMBER_STOP_API_CALL,
@@ -2517,3 +2518,17 @@ export function setProcessGroupGrid(grid) {
     });
   }
 };
+
+/**
+ * @method saveBOMLevel
+ * @description saveBOMLevel
+*/
+
+export function saveBOMLevel(data) {
+  return (dispatch) => {
+    dispatch({
+      type: SAVE_BOM_LEVEL_STOP_API_CALL,
+      payload: data
+    })
+  }
+}

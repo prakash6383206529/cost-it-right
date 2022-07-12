@@ -10,6 +10,7 @@ import { ViewCostingContext } from '../../CostingDetails';
 import { EMPTY_GUID } from '../../../../../config/constants';
 import _ from 'lodash'
 import AddBOPHandling from '../../Drawers/AddBOPHandling';
+import Toaster from '../../../../common/Toaster';
 
 function AssemblyPart(props) {
   const { children, item, index } = props;
@@ -18,16 +19,22 @@ function AssemblyPart(props) {
   const [Count, setCount] = useState(0);
   const [IsDrawerOpen, setDrawerOpen] = useState(false)
   const [isOpenBOPDrawer, setIsOpenBOPDrawer] = useState(false)
+  const { partNumberAssembly } = useSelector(state => state.costing)
 
   const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
 
   const CostingViewMode = useContext(ViewCostingContext);
   const costData = useContext(costingInfoContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { CostingEffectiveDate } = useSelector(state => state.costing)
+  const { CostingEffectiveDate, bomLevel } = useSelector(state => state.costing)
   const dispatch = useDispatch()
   const toggle = (BOMLevel, PartNumber) => {
     if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
+    if ((partNumberAssembly !== '' && partNumberAssembly !== PartNumber) ||
+      (partNumberAssembly !== '' && partNumberAssembly === PartNumber && bomLevel !== BOMLevel)) {
+      Toaster.warning('Close Accordian first.')
+      return false
+    }
 
     setIsOpen(!IsOpen)
     setCount(Count + 1)

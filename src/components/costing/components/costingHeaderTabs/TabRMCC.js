@@ -5,7 +5,7 @@ import { Row, Col, Table, } from 'reactstrap';
 import PartCompoment from '../CostingHeadCosts/Part'
 import {
   getRMCCTabData, setRMCCData, saveComponentCostingRMCCTab, setComponentItemData,
-  saveDiscountOtherCostTab, setComponentDiscountOtherItemData, CloseOpenAccordion, saveAssemblyPartRowCostingCalculation, isDataChange, setAllCostingInArray, savePartNumberAndBOMLevel, setMessageForAssembly
+  saveDiscountOtherCostTab, setComponentDiscountOtherItemData, CloseOpenAccordion, saveAssemblyPartRowCostingCalculation, isDataChange, setAllCostingInArray, savePartNumber, setMessageForAssembly, saveBOMLevel
 } from '../../actions/Costing';
 import { costingInfoContext, NetPOPriceContext } from '../CostingDetailStepTwo';
 import { checkForNull, loggedInUserId } from '../../../../helper';
@@ -1268,7 +1268,8 @@ function TabRMCC(props) {
       dispatch(saveComponentCostingRMCCTab(requestData, res => {
         if (res.data.Result) {
           Toaster.success(MESSAGES.RMCC_TAB_COSTING_SAVE_SUCCESS);
-          dispatch(savePartNumberAndBOMLevel(''))
+          dispatch(savePartNumber(''))
+          dispatch(saveBOMLevel(''))
           dispatch(CloseOpenAccordion())
           dispatch(setComponentItemData({}, () => { }))
           InjectDiscountAPICall()
@@ -1278,9 +1279,10 @@ function TabRMCC(props) {
       }))
     }
     else {
-      dispatch(savePartNumberAndBOMLevel(''))
+      dispatch(savePartNumber(''))
       dispatch(CloseOpenAccordion())
       dispatch(isDataChange(false))
+      dispatch(saveBOMLevel(''))
     }
   }), 500)
 
