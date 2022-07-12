@@ -130,6 +130,7 @@ class BOPDomesticListing extends Component {
                 }
 
                 let constantFilterData = this.state.filterModel
+                let obj = { ...this.state.floatingFilterData }
                 this.props.getBOPDomesticDataList(filterData, skip, take, isPagination, dataObj, (res) => {
                     this.setState({ isLoader: false })
                     if (this.props.isSimulation) {
@@ -150,7 +151,7 @@ class BOPDomesticListing extends Component {
                         }
                         let isReset = true
                         setTimeout(() => {
-                            let obj = this.state.floatingFilterData
+
                             for (var prop in obj) {
                                 if (prop !== "DepartmentCode" && obj[prop] !== "") {
                                     isReset = false
