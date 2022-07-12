@@ -234,37 +234,37 @@ function RawMaterialCost(props) {
     switch ((Number(costData?.TechnologyId))) {
 
       case SHEETMETAL:
-        dispatch(getRawMaterialCalculationForSheetMetal(item.CostingId, tempData.RawMaterialId, tempData.WeightCalculationId, res => {
+        dispatch(getRawMaterialCalculationForSheetMetal(item.CostingId, tempData.RawMaterialId, tempData.RawMaterialCalculatorId, res => {
           setCalculatorData(res, index)
         }))
         break;
       case FORGING:
-        dispatch(getRawMaterialCalculationForForging(item.CostingId, tempData.RawMaterialId, tempData.WeightCalculationId, res => {
+        dispatch(getRawMaterialCalculationForForging(item.CostingId, tempData.RawMaterialId, tempData.RawMaterialCalculatorId, res => {
           setCalculatorData(res, index)
         }))
         break;
       case Ferrous_Casting:
-        dispatch(getRawMaterialCalculationForFerrous(item.CostingId, tempData.RawMaterialId, tempData.WeightCalculationId, res => {
+        dispatch(getRawMaterialCalculationForFerrous(item.CostingId, tempData.RawMaterialId, tempData.RawMaterialCalculatorId, res => {
           setCalculatorData(res, index)
         }))
         break;
       case PLASTIC:
-        dispatch(getRawMaterialCalculationForPlastic(item.CostingId, tempData.RawMaterialId, tempData.WeightCalculationId, res => {
+        dispatch(getRawMaterialCalculationForPlastic(item.CostingId, tempData.RawMaterialId, tempData.RawMaterialCalculatorId, res => {
           setCalculatorData(res, index)
         }))
         break;
       case CORRUGATEDBOX:
-        dispatch(getRawMaterialCalculationForCorrugatedBox(item.CostingId, tempData.RawMaterialId, tempData.WeightCalculationId, res => {
+        dispatch(getRawMaterialCalculationForCorrugatedBox(item.CostingId, tempData.RawMaterialId, tempData.RawMaterialCalculatorId, res => {
           setCalculatorData(res, index)
         }))
         break;
       case DIE_CASTING:
-        dispatch(getRawMaterialCalculationForDieCasting(item.CostingId, tempData.RawMaterialId, tempData.WeightCalculationId, res => {
+        dispatch(getRawMaterialCalculationForDieCasting(item.CostingId, tempData.RawMaterialId, tempData.RawMaterialCalculatorId, res => {
           setCalculatorData(res, index)
         }))
         break;
       case RUBBER:
-        dispatch(getRawMaterialCalculationForRubber(item.CostingId, tempData.RawMaterialId, tempData.WeightCalculationId, res => {
+        dispatch(getRawMaterialCalculationForRubber(item.CostingId, tempData.RawMaterialId, tempData.RawMaterialCalculatorId, res => {
           setCalculatorData(res, index)
         }))
         break;

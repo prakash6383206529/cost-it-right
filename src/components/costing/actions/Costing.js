@@ -2423,7 +2423,7 @@ export function setIdsOfProcessGroup(data) {
 export function getMachineProcessGroupDetail(data, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST })
-    const queryParams = `vendorId=${data.VendorId}&technologyId=${data.TechnologyId}&effectiveDate=${data.EffectiveDate}&vendorPlantId=${data.VendorPlantId}&destinationPlantId=${data.DestinationPlantId}&costingId=${data.CostingId}`;
+    const queryParams = `vendorId=${data.VendorId}&technologyId=${data.TechnologyId}&effectiveDate=${data.EffectiveDate}&vendorPlantId=${data.VendorPlantId}&destinationPlantId=${data.DestinationPlantId}&costingId=${data.CostingId}&plantId=${data.PlantId}`;
     const request = axios.get(`${API.getMachineProcessGroupDetail}?${queryParams}`, config())
     request.then((response) => {
       if (response.data.Result || response.status === 204) {
@@ -2464,7 +2464,7 @@ export function getFgWiseImpactDataForCosting(data, callback) {
 }
 
 /**
- * @method isDataChange
+ * @method savePartNumberAndBOMLevel
  * @description THIS METHOD IS FOR CALLING SAVE API IF CHNAGES HAVE BEEN MADE 
 */
 
@@ -2478,7 +2478,7 @@ export function savePartNumberAndBOMLevel(isDataChange) {
 }
 
 /**
- * @method isDataChange
+ * @method setPartNumberArrayAPICALL
  * @description THIS METHOD IS FOR CALLING SAVE API IF CHNAGES HAVE BEEN MADE 
 */
 

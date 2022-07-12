@@ -10,10 +10,11 @@ import { getImpactedMasterData, getLastSimulationData } from '../actions/Simulat
 import AssemblyWiseImpactSummary from './AssemblyWiseImpactSummary';
 import Toaster from '../../common/Toaster';
 import NoContentFound from '../../common/NoContentFound';
+import { VBC } from '../../../config/constants';
 
 
 function VerifyImpactDrawer(props) {
-  const { SimulationTechnologyIdState, simulationId, vendorIdState, EffectiveDate, amendmentDetails, dataForAssemblyImpactInVerifyImpact, assemblyImpactButtonTrue, costingDrawer } = props
+  const { SimulationTechnologyIdState, simulationId, vendorIdState, EffectiveDate, amendmentDetails, dataForAssemblyImpactInVerifyImpact, assemblyImpactButtonTrue, costingDrawer, TypeOfCosting, isSimulation } = props
   const [impactedMasterDataListForLastRevisionData, setImpactedMasterDataListForLastRevisionData] = useState([])
   const [impactedMasterDataListForImpactedMaster, setImpactedMasterDataListForImpactedMaster] = useState([])
   const [showAssemblyWise, setShowAssemblyWise] = useState(false)
@@ -65,7 +66,7 @@ function VerifyImpactDrawer(props) {
   }, [lastSimulationData, impactedMasterData])
 
   useEffect(() => {
-    if (vendorIdState && EffectiveDate) {
+    if (vendorIdState && EffectiveDate && TypeOfCosting === VBC) {
       dispatch(getLastSimulationData(vendorIdState, EffectiveDate, (res) => {
         setMasterIdForLastRevision(res?.data?.Data?.SimulationTechnologyId)
       }))
@@ -203,30 +204,31 @@ function VerifyImpactDrawer(props) {
                   </Row>
                 </>
               }
-
-              <Row className="mb-3 pr-0 mx-0">
-                <Col md="6"> <HeaderTitle title={'Last Revision Data:'} /></Col>
-                <Col md="6">
-                  <div className={'right-details'}>
-                    <button className="btn btn-small-primary-circle ml-1 float-right" type="button" onClick={() => { setLastRevisionDataAcc(!lastRevisionDataAcc) }}>
-                      {lastRevisionDataAcc ? (
-                        <i className="fa fa-minus"></i>
-                      ) : (
-                        <i className="fa fa-plus"></i>
-                      )}
-                    </button>
-                  </div>
-                </Col>
-                <div className="accordian-content w-100 px-3 impacted-min-height">
-                  {lastRevisionDataAcc && <Impactedmasterdata data={impactedMasterDataListForLastRevisionData} masterId={masterIdForLastRevision} viewCostingAndPartNo={false} lastRevision={true} />}
-                  <div align="center">
-                    {editWarning && <NoContentFound title={"There is no data for the Last Revision."} />}
-                  </div>
-                  {/* {costingDrawer && lastRevisionDataAcc && <div align="center">
+              {TypeOfCosting === VBC && <>
+                <Row className="mb-3 pr-0 mx-0">
+                  <Col md="6"> <HeaderTitle title={'Last Revision Data:'} /></Col>
+                  <Col md="6">
+                    <div className={'right-details'}>
+                      <button className="btn btn-small-primary-circle ml-1 float-right" type="button" onClick={() => { setLastRevisionDataAcc(!lastRevisionDataAcc) }}>
+                        {lastRevisionDataAcc ? (
+                          <i className="fa fa-minus"></i>
+                        ) : (
+                          <i className="fa fa-plus"></i>
+                        )}
+                      </button>
+                    </div>
+                  </Col>
+                  <div className="accordian-content w-100 px-3 impacted-min-height">
+                    {lastRevisionDataAcc && <Impactedmasterdata data={impactedMasterDataListForLastRevisionData} masterId={masterIdForLastRevision} viewCostingAndPartNo={false} lastRevision={true} />}
+                    <div align="center">
+                      {editWarning && <NoContentFound title={"There is no data for the Last Revision."} />}
+                    </div>
+                    {/* {costingDrawer && lastRevisionDataAcc && <div align="center">
                     <NoContentFound title={"There is no data for the Last Revision."} />
                   </div>} */}
-                </div>
-              </Row>
+                  </div>
+                </Row>
+              </>}
             </form>
           </div>
         </Container>

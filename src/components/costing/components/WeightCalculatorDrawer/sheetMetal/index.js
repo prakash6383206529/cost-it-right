@@ -102,18 +102,18 @@ function WeightCalculator(props) {
           <TabContent activeTab={activeTab}>
             {activeTab === '1' && (
               <TabPane tabId="1">
-                <Pipe rmRowData={props.rmRowData} isEditFlag={props.isEditFlag} toggleDrawer={toggleDrawer} item={props.item} />
+                <Pipe rmRowData={props.rmRowData} isEditFlag={props.isEditFlag} toggleDrawer={toggleDrawer} item={props.item} CostingViewMode={props.CostingViewMode} />
               </TabPane>
             )}
             {activeTab === '2' && (
               <TabPane tabId="2">
-                <Coil rmRowData={props.rmRowData} isEditFlag={props.isEditFlag} toggleDrawer={toggleDrawer} item={props.item} />
+                <Coil rmRowData={props.rmRowData} isEditFlag={props.isEditFlag} toggleDrawer={toggleDrawer} item={props.item} CostingViewMode={props.CostingViewMode} />
               </TabPane>
             )}
             {/* THIS IS FOR SHEET  */}
             {activeTab === '3' && (
               <TabPane tabId="3">
-                <Sheet rmRowData={props.rmRowData} isEditFlag={props.isEditFlag} toggleDrawer={toggleDrawer} item={props.item} />
+                <Sheet rmRowData={props.rmRowData} isEditFlag={props.isEditFlag} toggleDrawer={toggleDrawer} item={props.item} CostingViewMode={props.CostingViewMode} />
               </TabPane>
             )}
             {activeTab === '4' && (

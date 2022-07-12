@@ -363,7 +363,7 @@ function BOPCost(props) {
                           editIndex === index ?
                             <tr key={index}>
                               <td className='text-overflow'><span title={item.BOPPartNumber}>{item.BOPPartNumber}</span></td>
-                              <td>{item.BOPPartName}</td>
+                              <td className='text-overflow'><span title={item.BOPPartName}>{item.BOPPartName}</span></td>
                               <td>{item.BoughtOutPartUOM}</td>
                               <td>{checkForDecimalAndNull(item.LandedCostINR, initialConfiguration.NoOfDecimalForPrice)}</td>
                               <td style={{ width: 200 }}>
@@ -433,7 +433,7 @@ function BOPCost(props) {
                             :
                             <tr key={index}>
                               <td className='text-overflow'><span title={item.BOPPartNumber}>{item.BOPPartNumber}</span> </td>
-                              <td>{item.BOPPartName}</td>
+                              <td className='text-overflow'><span title={item.BOPPartName}>{item.BOPPartName}</span></td>
                               <td>{item.BoughtOutPartUOM}</td>
                               <td>{item.LandedCostINR ? checkForDecimalAndNull(item.LandedCostINR, initialConfiguration.NoOfDecimalForPrice) : ''}</td>
                               <td style={{ width: 200 }}>{checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForInputOutput)}</td>
