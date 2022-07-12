@@ -4441,6 +4441,11 @@ body {
       }
     }
   }
+  .simulation-Loader {
+    bottom: -5px;
+    right: -30px;
+    left: -30px;
+  }
 }
 
 .bulk-upload-row {
@@ -6875,8 +6880,8 @@ body {
   .simulation-main {
     .filter-block {
       .flex-fills:last-child {
-        min-width: 230px;
-        max-width: 255px;
+        min-width: 223px;
+        max-width: 223px;
         width: auto;
       }
     }
@@ -8210,12 +8215,6 @@ body {
 .simulation-labels {
   .flex-fills.label {
     min-width: fit-content !important;
-  }
-
-  .w-72 {
-    .flex-fills.label {
-      min-width: 72px !important;
-    }
   }
 }
 
