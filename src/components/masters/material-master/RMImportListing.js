@@ -234,14 +234,32 @@ function RMImportListing(props) {
     if (value?.filterInstance?.appliedModel === null || value?.filterInstance?.appliedModel?.filter === "") {
 
       let isFilterEmpty = true
+
       if (model !== undefined && model !== null) {
         if (Object.keys(model).length > 0) {
           isFilterEmpty = false
+
+          for (var property in floatingFilterData) {
+
+            if (property === value.column.colId) {
+              floatingFilterData[property] = ""
+            }
+          }
+          setFloatingFilterData(floatingFilterData)
         }
+
         if (isFilterEmpty) {
           setWarningMessage(false)
+          for (var prop in floatingFilterData) {
+
+            if (prop !== "DepartmentCode") {
+              floatingFilterData[prop] = ""
+            }
+          }
+          setFloatingFilterData(floatingFilterData)
         }
       }
+
     } else {
       if (value.column.colId === "EffectiveDate" || value.column.colId === "CreatedDate") {
         return false
