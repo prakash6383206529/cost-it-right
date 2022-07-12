@@ -296,7 +296,7 @@ function CPSimulation(props) {
                                 isbulkUpload &&
                                 <div className="d-flex justify-content-end mt-0 mb-n4 bulk-upload-row">
                                     <div className="d-flex align-items-center">
-                                        <label>rows with changes:</label>
+                                        <label>Rows with changes:</label>
                                         <TextFieldHookForm
                                             label=""
                                             name={'NoOfCorrectRow'}
@@ -314,7 +314,7 @@ function CPSimulation(props) {
                                         />
                                     </div>
                                     <div className="d-flex align-items-center">
-                                        <label>rows without changes:</label>
+                                        <label>Rows without changes:</label>
                                         <TextFieldHookForm
                                             label=""
                                             name={'NoOfRowsWithoutChange'}
