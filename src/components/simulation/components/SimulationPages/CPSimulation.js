@@ -296,7 +296,7 @@ function CPSimulation(props) {
                                 isbulkUpload &&
                                 <div className="d-flex justify-content-end mt-0 mb-n4 bulk-upload-row">
                                     <div className="d-flex align-items-center">
-                                        <label>No of rows with changes:</label>
+                                        <label>rows with changes:</label>
                                         <TextFieldHookForm
                                             label=""
                                             name={'NoOfCorrectRow'}
@@ -314,7 +314,7 @@ function CPSimulation(props) {
                                         />
                                     </div>
                                     <div className="d-flex align-items-center">
-                                        <label>No of rows without changes:</label>
+                                        <label>rows without changes:</label>
                                         <TextFieldHookForm
                                             label=""
                                             name={'NoOfRowsWithoutChange'}
@@ -333,16 +333,13 @@ function CPSimulation(props) {
                                     </div>
                                 </div>
                             }
-                            <Row className={`${isbulkUpload ? 'pt-5' : 'pt-4'} filter-row-large blue-before zindex-0`}>
-                                <Col md="6" lg="6">
+                            <Row className={`filter-row-large blue-before zindex-0`}>
+                                <Col md="6" lg="6" className='d-flex mb-2'>
                                     <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => onFilterTextBoxChanged(e)} />
-                                </Col>
-                                <Col md="6" lg="6" className=" mb-3 d-flex justify-content-end">
                                     <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => resetState()}>
                                         <div className="refresh mr-0"></div>
                                     </button>
                                 </Col>
-
                             </Row>
                             <Row>
                                 <Col className="add-min-height mb-3 sm-edit-page">

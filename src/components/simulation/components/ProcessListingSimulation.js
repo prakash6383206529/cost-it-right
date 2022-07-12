@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import NoContentFound from '../../common/NoContentFound';
-import LoaderCustom from '../../common/LoaderCustom'
 import moment from 'moment'
 import { ProcessMaster, EMPTY_DATA, COMBINED_PROCESS } from '../../../config/constants'
 import ReactExport from 'react-export-excel';
@@ -181,7 +180,6 @@ export function ProcessListingSimulation(props) {
     };
 
     const frameworkComponents = {
-        customLoadingOverlay: LoaderCustom,
         customNoRowsOverlay: NoContentFound,
         effectiveDateFormatter: effectiveDateFormatter,
         statusFormatter: statusFormatter,
@@ -197,7 +195,7 @@ export function ProcessListingSimulation(props) {
     return (
         <div className={`ag-grid-react ${props.DownloadAccessibility ? "show-table-btn" : ""} ${isSimulation ? "cp-simulation-height" : ""}`}>
             < form onSubmit={handleSubmit(onSubmit)} noValidate >
-                <Row className={`pt-4 ${props.isSimulation ? 'zindex-0' : ''}`}>
+                <Row className={`${props.isSimulation ? 'zindex-0' : 'pt-4'}`}>
                     <Col md='6'>
                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => onFilterTextBoxChanged(e)} />
                     </Col>
@@ -255,7 +253,6 @@ export function ProcessListingSimulation(props) {
                                 paginationPageSize={10}
                                 onGridReady={onGridReady}
                                 gridOptions={gridOptions}
-                                // loadingOverlayComponent={'customLoadingOverlay'}
                                 noRowsOverlayComponent={'customNoRowsOverlay'}
                                 noRowsOverlayComponentParams={{
                                     title: EMPTY_DATA,

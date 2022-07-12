@@ -911,7 +911,7 @@ function Simulation(props) {
                                 </div>
                             }
                             {showTokenDropdown &&
-                                <div className={`d-inline-flex justify-content-start align-items-center ${master.value === '3' ? "mt-2 w-72" : ""}`}>
+                                <div className={`d-inline-flex justify-content-start align-items-center`}>
                                     <div className="flex-fills label">Token:</div>
                                     <div className="flex-fills hide-label pl-0">
                                         <SearchableSelectHookForm
@@ -973,7 +973,7 @@ function Simulation(props) {
                 </div>
             }
 
-            {loader ? <LoaderCustom /> :
+            {loader ? <LoaderCustom customClass="simulation-Loader" /> :
 
                 <div className="simulation-edit">
                     {showEditTable && editMasterPage(master.value)}
