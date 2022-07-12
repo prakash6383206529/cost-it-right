@@ -64,7 +64,8 @@ class MachineRateListing extends Component {
             isFilterButtonClicked: false,
             currentRowIndex: 0,
             pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
-            globalTake: defaultPageSize
+            globalTake: defaultPageSize,
+            disableFilter: true,
         }
     }
 
@@ -122,6 +123,7 @@ class MachineRateListing extends Component {
             }
             this.setState({ isLoader: true })
             let FloatingfilterData = this.state.filterModel
+            let obj = { ...this.state.floatingFilterData }
             this.props.getMachineDataList(filterData, skip, take, isPagination, dataObj, (res) => {
                 if (this.props.isSimulation) {
                     this.props?.changeTokenCheckBox(true)
@@ -134,7 +136,6 @@ class MachineRateListing extends Component {
                     }
                     let isReset = true
                     setTimeout(() => {
-                        let obj = this.state.floatingFilterData
                         for (var prop in obj) {
                             if (prop !== "DepartmentCode" && obj[prop] !== "") {
                                 isReset = false
@@ -155,6 +156,7 @@ class MachineRateListing extends Component {
 
 
     onFloatingFilterChanged = (value) => {
+        this.setState({ disableFilter: false })
         onFloatingFilterChanged(value, gridOptions, this)   // COMMON FUNCTION
     }
 
@@ -544,7 +546,7 @@ class MachineRateListing extends Component {
                                 }
 
                                 {(this.props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) &&
-                                    <button disabled={!this.state.warningMessage} title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch()}><div class="filter mr-0"></div></button>
+                                    <button disabled={this.state.disableFilter} title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch()}><div class="filter mr-0"></div></button>
 
                                 }
                                 {AddAccessibility && (
