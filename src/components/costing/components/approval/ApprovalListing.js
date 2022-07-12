@@ -715,7 +715,7 @@ function ApprovalListing(props) {
                 <Col>
                   <div className={`ag-grid-react custom-pagination`}>
 
-                    <div className={`ag-grid-wrapper height-width-wrapper min-height-auto ${((approvalList && approvalList?.length <= 0) || (approvalListDraft && approvalListDraft?.length <= 0)) ? "overlay-contain" : ""}`}>
+                    <div className={`ag-grid-wrapper height-width-wrapper min-height-auto ${isDashboard ? approvalList && approvalList?.length <= 0 ? "overlay-contain" : "" : approvalListDraft && approvalListDraft?.length <= 0 ? "overlay-contain" : ""}`}>
                       <div className="ag-grid-header">
                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                       </div>
