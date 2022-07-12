@@ -10,9 +10,10 @@ import {
   saveAssemblyPartRowCostingCalculation,
   setAllCostingInArray,
   isDataChange,
-  savePartNumberAndBOMLevel,
+  savePartNumber,
   setPartNumberArrayAPICALL,
   setProcessGroupGrid,
+  saveBOMLevel,
 
 } from '../../../actions/Costing';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId, CheckIsCostingDateSelected } from '../../../../../helper';
@@ -33,7 +34,7 @@ function PartCompoment(props) {
   const [totalFinishWeight, setTotalFinishWeight] = useState(0);
   const [Count, setCount] = useState(0);
   const [openForAccordian, setOpenForAccordian] = useState(false);
-  const { CostingEffectiveDate, partNumberAndBOMlevel, partNumberArrayAPICall } = useSelector(state => state.costing)
+  const { CostingEffectiveDate, partNumberAssembly, partNumberArrayAPICall, bomLevel } = useSelector(state => state.costing)
   const { ComponentItemData, RMCCTabData, checkIsDataChange, DiscountCostData, OverheadProfitTabData, SurfaceTabData, ToolTabData, PackageAndFreightTabData, getAssemBOPCharge } = useSelector(state => state.costing)
 
   const dispatch = useDispatch()
@@ -43,15 +44,18 @@ function PartCompoment(props) {
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
   const netPOPrice = useContext(NetPOPriceContext);
+
   const toggle = (BOMLevel, PartNumber, IsOpen) => {
     if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
     setIsOpen(!IsOpen)
     setCount(Count + 1)
     setTimeout(() => {
-      if (partNumberAndBOMlevel !== '' && partNumberAndBOMlevel !== PartNumber) {
+      if ((partNumberAssembly !== '' && partNumberAssembly !== PartNumber) ||
+        (partNumberAssembly !== '' && partNumberAssembly === PartNumber && bomLevel !== BOMLevel)) {
         Toaster.warning('Close Accordian first.')
         return false
       }
+
       if (Object.keys(costData).length > 0 && !partNumberArrayAPICall.includes(PartNumber)) {
         const data = {
           CostingId: item.CostingId !== null ? item.CostingId : "00000000-0000-0000-0000-000000000000",
@@ -60,9 +64,10 @@ function PartCompoment(props) {
           subAsmCostingId: props.subAssembId !== null ? props.subAssembId : EMPTY_GUID,
           EffectiveDate: CostingEffectiveDate
         }
-        dispatch(savePartNumberAndBOMLevel(PartNumber))
+        dispatch(savePartNumber(PartNumber))
         dispatch(setPartNumberArrayAPICALL([...partNumberArrayAPICall, PartNumber]))
-        // dispatch(savePartNumberAndBOMLevel(_.uniq([...partNumberAndBOMlevel, PartNumber])))
+        dispatch(saveBOMLevel(BOMLevel))
+        // dispatch(savePartNumber(_.uniq([...partNumberAssembly, PartNumber])))
         dispatch(getRMCCTabData(data, false, (res) => {
           if (res && res.data && res.data.Result) {
             let Data = res.data.DataList[0].CostingPartDetails;
@@ -75,10 +80,11 @@ function PartCompoment(props) {
       } else {
         props.setPartDetails(BOMLevel, PartNumber, item.CostingPartDetails, item)
         if (IsOpen) {                       // TRUE WHEN ACC IS OPEN,    CLICKED TO CLOSE ACC
-          dispatch(savePartNumberAndBOMLevel(''))
-
+          dispatch(savePartNumber(''))
+          dispatch(saveBOMLevel(''))
         } else {
-          dispatch(savePartNumberAndBOMLevel(PartNumber))
+          dispatch(savePartNumber(PartNumber))
+          dispatch(saveBOMLevel(BOMLevel))
 
         }
       }

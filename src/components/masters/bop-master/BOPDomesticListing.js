@@ -130,6 +130,7 @@ class BOPDomesticListing extends Component {
                 }
 
                 let constantFilterData = this.state.filterModel
+                let obj = { ...this.state.floatingFilterData }
                 this.props.getBOPDomesticDataList(filterData, skip, take, isPagination, dataObj, (res) => {
                     this.setState({ isLoader: false })
                     if (this.props.isSimulation) {
@@ -150,7 +151,7 @@ class BOPDomesticListing extends Component {
                         }
                         let isReset = true
                         setTimeout(() => {
-                            let obj = this.state.floatingFilterData
+
                             for (var prop in obj) {
                                 if (prop !== "DepartmentCode" && obj[prop] !== "") {
                                     isReset = false
@@ -614,7 +615,7 @@ class BOPDomesticListing extends Component {
                 <Row>
                     <Col>
 
-                        <div className={`ag-grid-wrapper ${this.props?.isDataInMaster ? 'master-approval-overlay' : ''} overlay-contain `}>
+                        <div className={`ag-grid-wrapper ${this.props?.isDataInMaster ? 'master-approval-overlay' : ''} ${this.props.bopDomesticList && this.props.bopDomesticList?.length <= 0 ? 'overlay-contain' : ''}`}>
                             <div className={`ag-theme-material ${(this.state.isLoader && !this.props.isMasterSummaryDrawer) && "max-loader-height"}`}>
                                 <AgGridReact
                                     defaultColDef={defaultColDef}

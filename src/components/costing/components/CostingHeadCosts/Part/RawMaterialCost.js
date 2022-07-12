@@ -1232,7 +1232,7 @@ function RawMaterialCost(props) {
                     <input
                       type="checkbox"
                       checked={IsApplyMasterBatch}
-                      disabled={(CostingViewMode || IsLocked || gridData.length !== 1 || masterBatch) ? true : false}
+                      disabled={(CostingViewMode || IsLocked || gridData?.length !== 1 || masterBatch) ? true : false}
                     />
                     <span
                       className=" before-box"

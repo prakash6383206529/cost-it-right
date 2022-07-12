@@ -687,7 +687,7 @@ export function getverifyCombinedProcessSimulationList(token, callback) {
             if (response.data.Result) {
                 dispatch({
                     type: GET_VERIFY_SIMULATION_LIST,
-                    payload: response.data.Data.SimulationExchangeRateImpactedCostings
+                    payload: response.data.Data.SimulationCombinedProcessImpactedCostings
                 })
                 callback(response)
             }
@@ -878,15 +878,12 @@ export function runVerifySurfaceTreatmentSimulation(data, callback) {
         const request = axios.post(API.draftSurfaceTreatmentSimulation, data, config());
         request.then((response) => {
             if (response.data.Result) {
-                dispatch({
-                    type: GET_VERIFY_SIMULATION_LIST,
-                    payload: response.data.Data.SimulationSurfaceTreatmentAndOperationImpactedCosting
-                })
-                callback(response)
+                callback(response);
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            callback(error);
         });
     }
 }

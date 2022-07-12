@@ -14,9 +14,24 @@ export const onFloatingFilterChanged = (value, gridOptions, thisReference) => {
         if (model !== undefined && model !== null) {
             if (Object.keys(model).length > 0) {
                 isFilterEmpty = false
+                for (var property in thisReference.state.floatingFilterData) {
+
+                    if (property === value.column.colId) {
+                        thisReference.state.floatingFilterData[property] = ""
+                    }
+                }
+
+                thisReference.setState({ floatingFilterData: thisReference.state.floatingFilterData })
             }
             if (isFilterEmpty) {
                 thisReference.setState({ warningMessage: false })
+                for (var prop in thisReference.state.floatingFilterData) {
+
+                    if (prop !== "DepartmentCode") {
+                        thisReference.state.floatingFilterData[prop] = ""
+                    }
+                }
+                thisReference.setState({ floatingFilterData: thisReference.state.floatingFilterData })
             }
         }
 

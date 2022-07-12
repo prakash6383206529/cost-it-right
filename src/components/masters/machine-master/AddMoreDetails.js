@@ -964,7 +964,11 @@ class AddMoreDetails extends Component {
 
     if (depreciationType.value === WDM) {
 
-      let date1 = new Date('04/01/2023')
+      let dateNew = new Date(dateOfPurchase !== "" ? dateOfPurchase : this.state.DateOfPurchase)
+      let financialYearMonth = dateNew.getMonth() + 1
+      let financialYear = financialYearMonth > 3 ? dateNew.getFullYear() + 1 : dateNew.getFullYear()
+
+      let date1 = new Date(`04/01/${financialYear}`)
       let date2 = new Date(dateOfPurchase !== "" ? dateOfPurchase : this.state.DateOfPurchase)              // LOGIC TO CALCULATE NO OF DAYS BETWEEN 01 APRIL 2023(FINANCIAL YEAR) AND DATE OF PURCHASE
       let difference = date1.getTime() - date2.getTime();
       let TotalDays = Math.ceil(difference / (1000 * 3600 * 24));

@@ -3,8 +3,8 @@ import { Row, Col, } from 'reactstrap';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import NoContentFound from '../../common/NoContentFound';
-import { EMPTY_DATA, EXCHNAGERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, BOPDOMESTIC, BOPIMPORT, MACHINERATE, OVERHEAD, defaultPageSize, } from '../../../config/constants';
-import { getVerifyBoughtOutPartSimulationList, getVerifyExchangeSimulationList, getVerifyMachineRateSimulationList, getVerifyOverheadProfitSimulationList, getVerifyProfitSimulationList, getVerifySimulationList, getVerifySurfaceTreatmentSimulationList } from '../actions/Simulation';
+import { EMPTY_DATA, EXCHNAGERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, BOPDOMESTIC, BOPIMPORT, MACHINERATE, OVERHEAD, defaultPageSize, COMBINED_PROCESS, } from '../../../config/constants';
+import { getVerifyBoughtOutPartSimulationList, getverifyCombinedProcessSimulationList, getVerifyExchangeSimulationList, getVerifyMachineRateSimulationList, getVerifyOverheadProfitSimulationList, getVerifyProfitSimulationList, getVerifySimulationList, getVerifySurfaceTreatmentSimulationList } from '../actions/Simulation';
 import RunSimulationDrawer from './RunSimulationDrawer';
 import CostingSimulation from './CostingSimulation';
 import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../../../helper';
@@ -23,7 +23,7 @@ import { PaginationWrapper } from '../../common/commonPagination';
 const gridOptions = {};
 
 function VerifySimulation(props) {
-    const { cancelVerifyPage, token } = props
+    const { cancelVerifyPage, token, isCombinedProcess } = props
     const [selectedRowData, setSelectedRowData] = useState([]);
 
     const [selectedIds, setSelectedIds] = useState('')
@@ -244,6 +244,24 @@ function VerifySimulation(props) {
                     }
                 }))
                 break;
+            case Number(COMBINED_PROCESS):
+
+                dispatch(getverifyCombinedProcessSimulationList(props.token, (res) => {
+                    if (res.data.Result) {
+                        const data = res.data.Data
+                        if (data.SimulationCombinedProcessImpactedCostings.length === 0) {           //   for condition
+                            Toaster.warning('No approved costing exist for this combined process.')
+                            setHideRunButton(true)
+                            return false
+                        }
+                        setTokenNo(data.TokenNumber)
+                        setSimualtionId(data.SimulationId)
+                        setSimulationTechnologyId(data.SimulationtechnologyId)
+                        setHideRunButton(false)
+                        setEffectiveDate(data.EffectiveDate)
+                    }
+                }))
+                break;
             default:
                 break;
         }
@@ -306,6 +324,18 @@ function VerifySimulation(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const classGreen = (row.NewExchangeRate > row.OldExchangeRate) ? 'red-value form-control' : (row.NewExchangeRate < row.OldExchangeRate) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : '-'
+    }
+
+    const newCCFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const classGreen = (row.NewNetCC > row.OldNetCC) ? 'red-value form-control' : (row.NewNetCC < row.OldNetCC) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : '-'
+    }
+
+    const decimalFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)
     }
 
     const onRowSelect = () => {
@@ -396,12 +426,23 @@ function VerifySimulation(props) {
                 setSimulationDrawer(true)
 
                 break;
+            case Number(COMBINED_PROCESS):
+                selectedRowData && selectedRowData.map(item => {
+                    let tempObj = {}
+                    tempObj.CostingId = item.CostingId
+                    tempArr.push(tempObj)
+                    return null;
+                })
 
+                obj.RunSimualtionCostingInfo = tempArr
+                setObj(obj)
+                setSimulationDrawer(true)
+                break;
             default:
                 break;
         }
 
-        if (!isExchangeRate) {
+        if (!isExchangeRate && !isCombinedProcess) {
             obj.RunSimualtionCostingInfo = tempArr
             setObj(obj)
             setSimulationDrawer(true)
@@ -469,7 +510,9 @@ function VerifySimulation(props) {
         customLoadingOverlay: LoaderCustom,
         customNoRowsOverlay: NoContentFound,
         poPriceFormatter: poPriceFormatter,
-        newExchangeRateFormatter: newExchangeRateFormatter
+        newExchangeRateFormatter: newExchangeRateFormatter,
+        decimalFormatter: decimalFormatter,
+        newCCFormatter: newCCFormatter
     };
     return (
         <>
@@ -563,6 +606,10 @@ function VerifySimulation(props) {
                                             {isExchangeRate && <AgGridColumn width={145} field="OldExchangeRate" headerName="Old Exchange Rate"></AgGridColumn>}
                                             {isExchangeRate && <AgGridColumn width={150} field="NewExchangeRate" cellRenderer='newExchangeRateFormatter' headerName="New Exchange Rate"></AgGridColumn>}
 
+                                            {isCombinedProcess && <AgGridColumn width={130} field="OldPOPrice" headerName="PO Price Old" cellRenderer='decimalFormatter'></AgGridColumn>}
+                                            {isCombinedProcess && <AgGridColumn width={130} field="NewPOPrice" headerName="PO Price New" cellRenderer='decimalFormatter'></AgGridColumn>}
+                                            {isCombinedProcess && <AgGridColumn width={145} field="OldNetCC" headerName="Old CC" cellRenderer='decimalFormatter'></AgGridColumn>}
+                                            {isCombinedProcess && <AgGridColumn width={150} field="NewNetCC" cellRenderer='newCCFormatter' headerName="New CC"></AgGridColumn>}
 
                                             {isOverHeadProfit === true && <AgGridColumn width={120} field="OverheadName" headerName="Overhead Name" ></AgGridColumn>}
                                         </AgGridReact>
