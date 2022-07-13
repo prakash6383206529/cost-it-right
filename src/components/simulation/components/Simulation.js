@@ -200,8 +200,7 @@ function Simulation(props) {
 
     const returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        let temp1 = getFilteredData(TempData, RM_MASTER_ID)
-        temp = temp1 && temp1.map((item) => {
+        temp = TempData && TempData.map((item) => {
             if (item.CostingHead === true) {
                 item.CostingHead = 'Vendor Based'
             } else if (item.CostingHead === false) {
@@ -325,9 +324,9 @@ function Simulation(props) {
     const renderColumn = (fileName) => {
         switch (fileName) {
             case RMDOMESTIC:
-                return returnExcelColumn(RMDomesticSimulation, getFilteredData(tableData, RM_MASTER_ID) && getFilteredData(tableData, RM_MASTER_ID).length > 0 ? getFilteredData(tableData, RM_MASTER_ID) : [])
+                return returnExcelColumn(RMDomesticSimulation, tableData && tableData ? tableData : [])
             case RMIMPORT:
-                return returnExcelColumn(RMImportSimulation, getFilteredData(tableData, RM_MASTER_ID) && getFilteredData(tableData, RM_MASTER_ID).length > 0 ? getFilteredData(tableData, RM_MASTER_ID) : [])
+                return returnExcelColumn(RMImportSimulation, tableData && tableData.length > 0 ? tableData : [])
 
             case COMBINED_PROCESS:
                 return returnExcelColumn(CombinedProcessSimulation, tableData && tableData.length > 0 ? tableData : [])
