@@ -715,7 +715,9 @@ class AddMoreDetails extends Component {
     this.setState({
       DateOfPurchase: date,
     });
-    this.calculateDepreciation(date)
+    setTimeout(() => {
+      this.calculateDepreciation(date)
+    }, 300);
   };
 
   /**
@@ -968,16 +970,16 @@ class AddMoreDetails extends Component {
       let financialYearMonth = dateNew.getMonth() + 1
       let financialYear = financialYearMonth > 3 ? dateNew.getFullYear() + 1 : dateNew.getFullYear()
 
-      let date1 = new Date(`04/01/${financialYear}`)
+      let date1 = new Date(`03/31/${financialYear}`)
       let date2 = new Date(dateOfPurchase !== "" ? dateOfPurchase : this.state.DateOfPurchase)              // LOGIC TO CALCULATE NO OF DAYS BETWEEN 01 APRIL 2023(FINANCIAL YEAR) AND DATE OF PURCHASE
       let difference = date1.getTime() - date2.getTime();
       let TotalDays = Math.ceil(difference / (1000 * 3600 * 24));
 
       if (isNaN(TotalDays)) {
-        depreciationAmount = checkForNull((TotalCost - checkForNull(CastOfScrap)) * calculatePercentage(DepreciationRatePercentage))
+        depreciationAmount = this.state.DateOfPurchase !== '' ? (checkForNull((TotalCost - checkForNull(CastOfScrap)) * calculatePercentage(DepreciationRatePercentage))) : 0
       }
       else {
-        depreciationAmount = checkForNull((TotalCost - checkForNull(CastOfScrap)) * calculatePercentage(DepreciationRatePercentage)) * checkForNull(TotalDays / 365)
+        depreciationAmount = this.state.DateOfPurchase !== '' ? ((checkForNull((TotalCost - checkForNull(CastOfScrap)) * calculatePercentage(DepreciationRatePercentage)) * checkForNull(TotalDays)) / 365) : 0
       }
       //let rateOfDep = ((1 - checkForNull(CastOfScrap)) / (machinecost)) ^ i
     }
