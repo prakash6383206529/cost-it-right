@@ -720,8 +720,8 @@ class AddRMDomestic extends Component {
     }
     if (label === 'plant') {
       plantSelectList && plantSelectList.map((item) => {
-        if (item.Value === '0') return false
-        temp.push({ Text: item.Text, Value: item.Value })
+        if (item.PlantId === '0') return false
+        temp.push({ Text: item.PlantNameCode, Value: item.PlantId })
         return null
       })
       return temp
@@ -729,8 +729,8 @@ class AddRMDomestic extends Component {
 
     if (label === 'singlePlant') {
       plantSelectList && plantSelectList.map((item) => {
-        if (item.Value === '0') return false
-        temp.push({ label: item.Text, value: item.Value })
+        if (item.PlantId === '0') return false
+        temp.push({ label: item.PlantNameCode, value: item.PlantId })
         return null
       })
       return temp

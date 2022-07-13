@@ -305,7 +305,7 @@ class AddMoreDetails extends Component {
             const uomDetail = this.findUOMType(Data.MachineProcessRates.UnitOfMeasurementId)
 
             // let technologyArray = Data && Data.Technology.map((item) => ({ Text: item.Technology, Value: item.TechnologyId }))
-            const plantObj = Data.Plant && plantSelectList && plantSelectList.find(item => item.Value === Data.Plant[0].PlantId)
+            const plantObj = Data.Plant && plantSelectList && plantSelectList.find(item => item.PlantId === Data.Plant[0].PlantId)
             const machineTypeObj = machineTypeSelectList && machineTypeSelectList.find(item => Number(item.Value) === Data.MachineTypeId)
             const shiftObj = ShiftTypeSelectList && ShiftTypeSelectList.find(item => Number(item.Value) === Number(Data.WorkingShift))
             const depreciationObj = DepreciationTypeSelectList && DepreciationTypeSelectList.find(item => item.Value === Data.DepreciationType)
@@ -403,8 +403,8 @@ class AddMoreDetails extends Component {
     }
     if (label === 'plant') {
       plantSelectList && plantSelectList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
+        if (item.PlantId === '0') return false;
+        temp.push({ label: item.PlantNameCode, value: item.PlantId })
         return null;
       });
       return temp;

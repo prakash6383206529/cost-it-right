@@ -312,59 +312,6 @@ function SimulationApprovalSummary(props) {
         }
     }
 
-    const renderDropdownListing = (label) => {
-        const tempDropdownList = []
-
-        if (label === 'costingHead') {
-            return costingHeadObjs;
-        }
-
-        if (label === 'PartList') {
-            partSelectList && partSelectList.map((item) => {
-                if (item.Value === '0') return false
-                tempDropdownList.push({ label: item.Text, value: item.Value })
-                return null
-            })
-
-            return tempDropdownList
-        }
-
-        if (label === 'plant') {
-            plantSelectList && plantSelectList.map(item => {
-                if (item.Value === '0') return false;
-                tempDropdownList.push({ label: item.Text, value: item.Value })
-            });
-            return tempDropdownList;
-        }
-
-        if (label === 'Status') {
-            statusSelectList && statusSelectList.map((item) => {
-                if (item.Value === '0') return false
-                tempDropdownList.push({ label: item.Text, value: item.Value })
-                return null
-            })
-            return tempDropdownList
-        }
-
-        if (label === 'users') {
-            userList && userList.map((item) => {
-                if (item.Value === '0') return false
-                tempDropdownList.push({ label: item.Text, value: item.Value })
-                return null
-            })
-            return tempDropdownList
-        }
-
-        if (label === 'technology') {
-            technologySelectList && technologySelectList.map((item) => {
-                if (item.Value === '0') return false
-                tempDropdownList.push({ label: item.Text, value: item.Value })
-                return null
-            })
-            return tempDropdownList
-        }
-    }
-
     const Preview = ({ meta }) => {
         const { name, percent, status } = meta
         return (

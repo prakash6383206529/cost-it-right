@@ -160,12 +160,11 @@ class AddVolume extends Component {
     const temp = []
 
     if (label === 'plant') {
-      plantSelectList &&
-        plantSelectList.map((item) => {
-          if (item.Value === '0') return false
-          temp.push({ label: item.Text, value: item.Value })
-          return null
-        })
+      plantSelectList && plantSelectList.map((item) => {
+        if (item.PlantId === '0') return false
+        temp.push({ label: item.PlantNameCode, value: item.PlantId })
+        return null
+      })
       return temp
     }
     if (label === 'VendorNameList') {
