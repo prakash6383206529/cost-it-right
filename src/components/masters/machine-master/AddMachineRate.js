@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector, isDirty } from "redux-form";
 import { Row, Col, Table } from 'reactstrap';
 import {
-  required, checkForNull, number, postiveNumber, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter,
-  checkWhiteSpaces, maxLength80, maxLength10, positiveAndDecimalNumber, maxLength512
+  required, checkForNull, postiveNumber, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter,
+  checkWhiteSpaces, maxLength80, maxLength10, positiveAndDecimalNumber, maxLength512, checkSpaceForCode
 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker } from "../../layout/FormInputs";
 import { getPlantSelectListByType, getPlantBySupplier, getUOMSelectList } from '../../../actions/Common';
@@ -1392,7 +1392,7 @@ class AddMachineRate extends Component {
                             name={"MachineNumber"}
                             type="text"
                             placeholder={'Enter'}
-                            validate={initialConfiguration.IsMachineNumberConfigure ? [] : [required]}
+                            validate={initialConfiguration.IsMachineNumberConfigure ? [] : [required, checkSpaceForCode]}
                             component={renderText}
                             required={initialConfiguration.IsMachineNumberConfigure ? false : true}
                             onBlur={this.checkUniqNumber}
