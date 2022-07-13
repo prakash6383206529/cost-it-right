@@ -791,8 +791,6 @@ class AddBOPDomestic extends Component {
     const promiseOptions = inputValue =>
       new Promise(resolve => {
         resolve(filterList(inputValue));
-
-
       });
     return (
       <>
@@ -860,7 +858,6 @@ class AddBOPDomestic extends Component {
                               required={true}
                               disabled={isEditFlag ? true : false}
                               className=" "
-                              maxLength="20"
                               customClassName=" withBorder"
                             />
                           </Col>
@@ -897,12 +894,12 @@ class AddBOPDomestic extends Component {
                                   disabled={isEditFlag ? true : false}
                                 />
                               </div>
-                              {!isEditFlag && (
+                              {!isEditFlag &&
                                 <div
                                   onClick={this.categoryToggler}
                                   className={"plus-icon-square right"}
                                 ></div>
-                              )}
+                              }
                             </div>
                           </Col>
                           <Col md="3">

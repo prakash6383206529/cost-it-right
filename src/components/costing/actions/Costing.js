@@ -2572,3 +2572,22 @@ export function saveBOMLevel(data) {
     })
   }
 }
+/**
+ * @method checkFinalUser
+ * @description CHECK FINAL USER
+ */
+export function checkFinalUser(data, callback) {
+  return (dispatch) => {
+    const queryParams = `DepartmentId=${data.DepartmentId}&TechnologyId=${data.TechnologyId}&UserId=${data.UserId}&Mode=${data.Mode}`
+    const request = axios.get(`${API.checkFinalUser}?${queryParams}`, config())
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response)
+      }
+    }).catch((error) => {
+      callback(error)
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
+  }
+}
