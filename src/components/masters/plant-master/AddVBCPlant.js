@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { required, number, maxLength6, maxLength80, minLength10, maxLength12, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength15, postiveNumber, maxLength10, maxLength3, } from "../../../helper/validation";
+import { required, number, maxLength6, maxLength80, minLength10, maxLength12, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength15, postiveNumber, maxLength3, checkSpacesInString } from "../../../helper/validation";
 
 import { loggedInUserId } from "../../../helper/auth";
 import { renderNumberInputField, renderText, searchableSelect } from "../../layout/FormInputs";
@@ -363,7 +363,7 @@ class AddVBCPlant extends Component {
                       name={"PlantCode"}
                       type="text"
                       placeholder={""}
-                      validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength15]}
+                      validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength15, checkSpacesInString]}
                       component={renderText}
                       //required={true}
                       className=""

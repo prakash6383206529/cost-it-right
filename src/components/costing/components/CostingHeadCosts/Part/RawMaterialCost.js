@@ -1049,7 +1049,6 @@ function RawMaterialCost(props) {
                   <tbody className='rm-table-body'>
                     {gridData &&
                       gridData.map((item, index) => {
-
                         return (
                           <tr key={index} className=''>
                             <td className='text-overflow'><span title={item.RMName}>{item.RMName}</span></td>
@@ -1062,8 +1061,8 @@ function RawMaterialCost(props) {
                                 <button
                                   className="CalculatorIcon cr-cl-icon "
                                   type={'button'}
-                                  disabled={false}
                                   onClick={() => toggleWeightCalculator(index)}
+                                  disabled={CostingViewMode ? item?.RawMaterialCalculatorId === null ? true : false : false}
                                 />
                               </td>
                             }
