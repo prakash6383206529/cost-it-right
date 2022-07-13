@@ -46,13 +46,6 @@ export function Summarysection(props) {
 
     const dispatch = useDispatch()
 
-    const partSelectList = useSelector((state) => state.costing.partSelectList)
-    const statusSelectList = useSelector((state) => state.approval.costingStatusList)
-    const approvalSimulatedCostingSummary = useSelector((state) => state.approval.approvalSimulatedCostingSummary)
-    const userList = useSelector(state => state.auth.userList)
-    const { technologySelectList, plantSelectList } = useSelector(state => state.comman)
-
-
     const defaultColDef = {
         resizable: true,
         filter: true,

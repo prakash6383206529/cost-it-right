@@ -58,7 +58,6 @@ function VerifySimulation(props) {
         if (token) {
             verifyCostingList()
         }
-        dispatch(getPlantSelectListByType(ZBC, () => { }))
         dispatch(getRawMaterialNameChild(() => { }))
     }, [token])
 
