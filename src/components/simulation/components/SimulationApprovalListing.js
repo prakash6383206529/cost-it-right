@@ -22,6 +22,8 @@ import WarningMessage from '../../common/WarningMessage'
 import { debounce } from 'lodash'
 import ScrollToTop from '../../common/ScrollToTop'
 import { PaginationWrapper } from '../../common/commonPagination'
+import { checkFinalUser } from '../../costing/actions/Costing'
+
 
 const gridOptions = {};
 
@@ -38,6 +40,7 @@ function SimulationApprovalListing(props) {
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [isPendingForApproval, setIsPendingForApproval] = useState(false);
+    const [showFinalLevelButtons, setShowFinalLevelButton] = useState(false)
 
     const dispatch = useDispatch()
     const { simualtionApprovalList, simualtionApprovalListDraft } = useSelector(state => state.simulation)
@@ -281,7 +284,25 @@ function SimulationApprovalListing(props) {
             return false
         }
         setSimulationDetail({ DepartmentId: selectedRowData[0].DepartmentId })
-        setApproveDrawer(true)
+        let obj = {
+            DepartmentId: selectedRowData[0].DepartmentId,
+            UserId: loggedInUserId(),
+            TechnologyId: selectedRowData[0].SimulationTechnologyId,
+            Mode: 'simulation'
+        }
+        if (selectedRowData[0].Status === DRAFT) {
+            setApproveDrawer(true)
+        } else {
+
+            dispatch(checkFinalUser(obj, res => {
+                console.log('res: ', res);
+                if (res && res.data && res.data.Result) {
+                    setShowFinalLevelButton(res.data.Data.IsFinalApprover)
+                    setApproveDrawer(true)
+                }
+            })
+            )
+        }
     }
 
     const closeDrawer = (e = '', type) => {
@@ -481,7 +502,7 @@ function SimulationApprovalListing(props) {
                                         isSimulation={true}
                                         isSimulationApprovalListing={true}
                                         simulationDetail={simulationDetail}
-                                        IsFinalLevel={selectedRowData[0]?.IsFinalLevelButtonShow}
+                                        IsFinalLevel={showFinalLevelButtons}
                                     />
                                 }
                             </div>
