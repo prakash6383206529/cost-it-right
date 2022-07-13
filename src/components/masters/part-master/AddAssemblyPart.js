@@ -857,7 +857,7 @@ class AddAssemblyPart extends Component {
   */
   render() {
     const { handleSubmit, initialConfiguration } = this.props;
-    const { isEditFlag, isOpenChildDrawer, isOpenBOMViewerDrawer, isViewMode, setDisable, disablePopup, convertPartToAssembly } = this.state;
+    const { isEditFlag, isOpenChildDrawer, isOpenBOMViewerDrawer, isViewMode, setDisable, disablePopup, convertPartToAssembly, BOMViewerData } = this.state;
 
     const filterList = (inputValue) => {
       let tempArr = []
@@ -1136,13 +1136,13 @@ class AddAssemblyPart extends Component {
                         </Col>
 
 
-                        <Col md="3">
+                        <Col md="3" className='pt-2'>
                           <button
                             type="button"
                             disabled={false}
                             onClick={this.toggleBOMViewer}
                             className={"user-btn pull-left mt30"}>
-                            <div className={"plus"}></div>VIEW BOM
+                            <div className={`${!isViewMode && BOMViewerData?.length <= 0 ? 'plus' : 'fa fa-eye pr-1'}`}></div> BOM
                           </button>
                         </Col>
                       </Row>
