@@ -457,8 +457,8 @@ class AddMachineRate extends Component {
     }
     if (label === 'plant') {
       plantSelectList && plantSelectList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
+        if (item.PlantId === '0') return false;
+        temp.push({ label: item.PlantNameCode, value: item.PlantId })
         return null;
       });
       return temp;
@@ -1211,7 +1211,7 @@ class AddMachineRate extends Component {
       this.props.change('TonnageCapacity', data.TonnageCapacity)
       this.props.change('Description', data.Description)
       const vendorObj = vendorListByVendorType && vendorListByVendorType.find(item => item.Value === data.VendorId)
-      const plantObj = data.IsVendor === false && plantSelectList && plantSelectList.find(item => item.Value === data.Plant[0].PlantId)
+      const plantObj = data.IsVendor === false && plantSelectList && plantSelectList.find(item => item.PlantId === data.Plant[0].PlantId)
 
       const machineTypeObj = machineTypeSelectList && machineTypeSelectList.find(item => item.Value === data.MachineTypeId)
 

@@ -78,8 +78,6 @@ function OtherVerifySimulation(props) {
 
     const verifyList = useSelector(state => state.simulation.simulationVerifyList)
 
-    const plantSelectList = useSelector(state => state.comman.plantSelectList)
-
     const { rawMaterialNameSelectList } = useSelector(state => state.material)
 
     const buttonFormatter = (cell, row, enumObject, rowIndex) => {

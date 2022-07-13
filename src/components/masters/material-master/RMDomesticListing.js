@@ -106,7 +106,6 @@ function RMDomesticListing(props) {
             dispatch(getVendorListByVendorType(false, () => { }))
             dispatch(getRawMaterialFilterSelectList(() => { }))
             dispatch(getTechnologySelectList(() => { }))
-            dispatch(getPlantSelectListByType(ZBC, () => { }))
         }
     }
 
