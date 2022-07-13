@@ -2067,7 +2067,7 @@ class AddMoreDetails extends Component {
                             handleChangeDescription={this.handlePlants}
                             valueDescription={this.state.selectedPlants}
                             // disabled={isEditFlag ? true : false}
-                            disabled={this.state.isViewFlag || (isEditFlag && isMachineAssociated)}
+                            disabled={(this.state.isViewFlag) || (isEditFlag && isMachineAssociated)}
 
                           />
                         </Col>

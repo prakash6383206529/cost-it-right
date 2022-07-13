@@ -735,10 +735,8 @@ export const API = {
   approvalPushedOnSap: `${BASE_URL}/app-approval-system/approval-pushed-on-sap`,
 
 
-  // ApproveReject Drawer
-
-
-
+  // ApproveReject Drawer final approver
+  checkFinalUser: `${BASE_URL}/app-approval-system/final-user-check`,
 
   //PRIVILEGE
   createPrivilegePage: `${BASE_URL}/app-privilege-permission/create-privilege-page`,
