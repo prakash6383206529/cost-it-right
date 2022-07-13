@@ -54,12 +54,13 @@ function AddVendorDrawer(props) {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }
+    // label=>PlantName
     props.closeDrawer('',
       {
         ...data,
-        DestinationPlantCode: initialConfiguration && initialConfiguration.IsDestinationPlantConfigure ? getVendorCode(DestinationPlant.label) : '',
+        DestinationPlantCode: initialConfiguration && initialConfiguration.IsDestinationPlantConfigure ? DestinationPlant.PlantCode : '',
         DestinationPlantId: initialConfiguration && initialConfiguration.IsDestinationPlantConfigure ? DestinationPlant.value : EMPTY_GUID_0,
-        DestinationPlantName: initialConfiguration && initialConfiguration.IsDestinationPlantConfigure ? DestinationPlant.label : '',
+        DestinationPlantName: initialConfiguration && initialConfiguration.IsDestinationPlantConfigure ? DestinationPlant.PlantName : '',                 //PlantName
         DestinationPlant: DestinationPlant,
       })
   };
@@ -83,8 +84,8 @@ function AddVendorDrawer(props) {
 
     if (label === 'DestinationPlant') {
       plantSelectList && plantSelectList.map((item) => {
-        if (item.Value === '0') return false
-        temp.push({ label: item.Text, value: item.Value })
+        if (item.PlantId === '0') return false
+        temp.push({ label: item.PlantNameCode, value: item.PlantId, PlantName: item.PlantName, PlantCode: item.PlantCode })
         return null
       })
       return temp
@@ -128,9 +129,9 @@ function AddVendorDrawer(props) {
 
 
   /**
-* @method handleDestinationPlantChange
-* @description  USED TO HANDLE DESTINATION PLANT CHANGE
-*/
+  * @method handleDestinationPlantChange
+  * @description  USED TO HANDLE DESTINATION PLANT CHANGE
+  */
   const handleDestinationPlantChange = (newValue) => {
     if (newValue && newValue !== '') {
       setDestinationPlant(newValue)

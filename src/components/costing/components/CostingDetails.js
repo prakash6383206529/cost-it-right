@@ -2182,7 +2182,7 @@ function CostingDetails(props) {
                                   return (
                                     <tr key={index}>
                                       <td className='break-word'>{`${item.VendorName}(${item.VendorCode})`}</td>
-                                      {initialConfiguration?.IsDestinationPlantConfigure && <td className='break-word'>{item?.DestinationPlantName ? item.DestinationPlantName : ''}</td>}
+                                      {initialConfiguration?.IsDestinationPlantConfigure && <td className='break-word'>{item?.DestinationPlantName ? `${item.DestinationPlantName}(${item.DestinationPlantCode})` : ''}</td>}
                                       <td className="w-100px cr-select-height">
                                         <NumberFieldHookForm
                                           label=""
