@@ -22,7 +22,7 @@ import { Redirect } from 'react-router'
 import WarningMessage from '../../../common/WarningMessage'
 import CalculatorWrapper from '../../../common/Calculator/CalculatorWrapper'
 import { getVolumeDataByPartAndYear } from '../../../masters/actions/Volume'
-import { getSingleCostingDetails, setCostingApprovalData, setCostingViewData } from '../../actions/Costing'
+import { getSingleCostingDetails, setCostingApprovalData, setCostingViewData, checkFinalUser } from '../../actions/Costing'
 import SendForApproval from './SendForApproval'
 import CostingDetailSimulationDrawer from '../../../simulation/components/CostingDetailSimulationDrawer'
 import { PaginationWrapper } from '../../../common/commonPagination'
@@ -53,13 +53,9 @@ function ApprovalListing(props) {
   const [isOpen, setIsOpen] = useState(false)
   const dispatch = useDispatch()
   const { selectedCostingListSimulation } = useSelector((state => state.simulation))
-
-  const partSelectList = useSelector((state) => state.costing.partSelectList)
-  const statusSelectList = useSelector((state) => state.approval.costingStatusList)
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
   const approvalList = useSelector(state => state.approval.approvalList)
   const approvalListDraft = useSelector(state => state.approval.approvalListDraft)
-  const userList = useSelector(state => state.auth.userList)
 
   //STATES BELOW ARE MADE FOR PAGINATION PURPOSE
   const [warningMessage, setWarningMessage] = useState(false)
@@ -134,8 +130,6 @@ function ApprovalListing(props) {
             return temp
           })
           setSelectedIds(temp)
-          let Data = res.data.DynamicData
-          setShowFinalLevelButton(Data.IsFinalLevelButtonShow)
           setloader(false)
           //  setTableData(Data)
 
@@ -572,8 +566,19 @@ function ApprovalListing(props) {
     if (selectedRowData[0].Status === DRAFT) {
       setOpenDraftDrawer(true)
     } else {
-
-      setApproveDrawer(true)
+      let obj = {
+        DepartmentId: selectedRowData[0].DepartmentId,
+        UserId: loggedInUserId(),
+        TechnologyId: selectedRowData[0].TechnologyId,
+        Mode: 'costing'
+      }
+      dispatch(checkFinalUser(obj, res => {
+        if (res && res.data && res.data.Result) {
+          setShowFinalLevelButton(res.data.Data.IsFinalApprover)
+          setApproveDrawer(true)
+        }
+      }),
+      )
     }
   }
 
