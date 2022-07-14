@@ -49,11 +49,13 @@ class AddVendorDrawer extends Component {
     * @description called before render the component
     */
     UNSAFE_componentWillMount() {
-        this.props.getVendorTypesSelectList()
-        this.props.getVendorPlantSelectList(() => { })
-        this.props.fetchCountryDataAPI(() => { })
-        this.props.fetchStateDataAPI(0, () => { })
-        this.props.fetchCityDataAPI(0, () => { })
+        if (!(this.props.isEditFlag || this.props.isViewFlag)) {
+            this.props.getVendorTypesSelectList()
+            this.props.getVendorPlantSelectList(() => { })
+            this.props.fetchCountryDataAPI(() => { })
+            this.props.fetchStateDataAPI(0, () => { })
+            this.props.fetchCityDataAPI(0, () => { })
+        }
     }
 
     /**
@@ -271,8 +273,7 @@ class AddVendorDrawer extends Component {
                     let Data = res.data.Data;
                     let tempArr = [];
                     let tempVendorPlant = [];
-                    this.props.fetchStateDataAPI(Data.CountryId, () => { })
-                    this.props.fetchCityDataAPI(Data.StateId, () => { })
+
                     this.setState({ DataToCheck: Data })
                     Data && Data.VendorTypes.map((item) => {
                         tempArr.push({ Text: item.VendorType, Value: (item.VendorTypeId).toString() })
@@ -289,15 +290,17 @@ class AddVendorDrawer extends Component {
 
                         const CountryObj = countryList && countryList.find(item => Number(item.Value) === Data.CountryId)
                         const StateObj = stateList && stateList.find(item => Number(item.Value) === Data.StateId)
+                        console.log('StateObj: ', StateObj);
                         const CityObj = cityList && cityList.find(item => Number(item.Value) === Data.CityId)
+                        console.log('CityObj: ', CityObj);
 
                         this.setState({
                             isEditFlag: true,
                             // isLoader: false,
                             selectedVendorType: tempArr,
-                            country: CountryObj && CountryObj !== undefined ? { label: CountryObj.Text, value: CountryObj.Value } : [],
-                            state: StateObj && StateObj !== undefined ? { label: StateObj.Text, value: StateObj.Value } : [],
-                            city: CityObj && CityObj !== undefined ? { label: CityObj.Text, value: CityObj.Value } : [],
+                            country: Data.Country !== undefined ? { label: Data.Country, value: Data.CountryId } : [],
+                            state: Data.State !== undefined ? { label: Data.State, value: Data.StateId } : [],
+                            city: Data.City !== undefined ? { label: Data.City, value: Data.CityId } : [],
                             existedVendorPlants: tempVendorPlant,
                             selectedVendorPlants: tempVendorPlant,
                         }, () => this.setState({ isLoader: false }))
