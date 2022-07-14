@@ -281,7 +281,6 @@ function SimulationApprovalListing(props) {
     }
 
     const sendForApproval = () => {
-
         if (selectedRowData.length === 0) {
             Toaster.warning('Please select atleast one approval to send for approval.')
             return false
@@ -289,24 +288,27 @@ function SimulationApprovalListing(props) {
         setIsApprovalDrawer(true)
         setSimulationDetail({ DepartmentId: selectedRowData[0].DepartmentId })
         let obj = {
-            DepartmentId: selectedRowData[0].DepartmentId,
+            DepartmentId: selectedRowData[0].Status === DRAFT ? EMPTY_GUID : selectedRowData[0]?.DepartmentId,
             UserId: loggedInUserId(),
             TechnologyId: selectedRowData[0].SimulationTechnologyId,
             Mode: 'simulation'
         }
-        if (selectedRowData[0].Status === DRAFT) {
-            setApproveDrawer(true)
-        } else {
 
-            dispatch(checkFinalUser(obj, res => {
-                console.log('res: ', res);
-                if (res && res.data && res.data.Result) {
+        dispatch(checkFinalUser(obj, res => {
+            if (res && res.data && res.data.Result) {
+                if (selectedRowData[0].Status === DRAFT) {
+                    setApproveDrawer(res.data.Data.IsFinalApprover ? false : true)
+                    if (res.data.Data.IsFinalApprover) {
+                        Toaster.warning("Final level aprrover can not send draft token for aprroval")
+                        gridApi.deselectAll()
+                    }
+                }
+                else {
                     setShowFinalLevelButton(res.data.Data.IsFinalApprover)
                     setApproveDrawer(true)
                 }
-            })
-            )
-        }
+            }
+        }))
     }
 
     const closeDrawer = (e = '', type) => {

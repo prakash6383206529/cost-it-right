@@ -6,7 +6,7 @@ import { getApprovalList, } from '../../actions/Approval'
 import { loggedInUserId, userDetails } from '../../../../helper/auth'
 import ApprovalSummary from './ApprovalSummary'
 import NoContentFound from '../../../common/NoContentFound'
-import { defaultPageSize, DRAFT, EMPTY_DATA } from '../../../../config/constants'
+import { defaultPageSize, DRAFT, EMPTY_DATA, EMPTY_GUID } from '../../../../config/constants'
 import DayTime from '../../../common/DayTimeWrapper'
 import ApproveRejectDrawer from './ApproveRejectDrawer'
 import { allEqual, checkForDecimalAndNull, checkForNull, formViewData } from '../../../../helper'
@@ -35,9 +35,6 @@ const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 function ApprovalListing(props) {
   const { isDashboard } = props
   const loggedUser = loggedInUserId()
-  const [shown, setshown] = useState(false)
-  const [dShown, setDshown] = useState(false)
-
   const [tableData, setTableData] = useState([])
   const [loader, setloader] = useState(false);
   const [approvalData, setApprovalData] = useState('')
@@ -563,30 +560,32 @@ function ApprovalListing(props) {
             costingObj.yearImpact = variance !== '' ? (totalBudgetedQty - actualQty) * variance : 0
 
           }
-        })
-
-        )
+        }))
       }
       temp.push(costingObj)
       dispatch(setCostingApprovalData(temp))
     })
-    if (selectedRowData[0].Status === DRAFT) {
-      setOpenDraftDrawer(true)
-    } else {
-      let obj = {
-        DepartmentId: selectedRowData[0].DepartmentId,
-        UserId: loggedInUserId(),
-        TechnologyId: selectedRowData[0].TechnologyId,
-        Mode: 'costing'
-      }
-      dispatch(checkFinalUser(obj, res => {
-        if (res && res.data && res.data.Result) {
+    let obj = {
+      DepartmentId: selectedRowData[0].Status === DRAFT ? EMPTY_GUID : selectedRowData[0]?.DepartmentId,
+      UserId: loggedInUserId(),
+      TechnologyId: selectedRowData[0].TechnologyId,
+      Mode: 'costing'
+    }
+    dispatch(checkFinalUser(obj, res => {
+      if (res && res.data && res.data.Result) {
+        if (selectedRowData[0].Status === DRAFT) {
+          setOpenDraftDrawer(res.data.Data.IsFinalApprover ? false : true)
+          if (res.data.Data.IsFinalApprover) {
+            Toaster.warning("Final level aprrover can not send draft costing for aprroval")
+            gridApi.deselectAll()
+          }
+        }
+        else {
           setShowFinalLevelButton(res.data.Data.IsFinalApprover)
           setApproveDrawer(true)
         }
-      }),
-      )
-    }
+      }
+    }))
   }
 
   const closeDrawer = (e = '', type) => {
