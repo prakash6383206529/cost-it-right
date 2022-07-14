@@ -189,9 +189,13 @@ class AddMoreDetails extends Component {
       this.props.change('TonnageCapacity', fieldsObj.TonnageCapacity)
       this.props.change('Description', fieldsObj.Description)
       this.props.change('EffectiveDate', fieldsObj.EffectiveDate ? fieldsObj.EffectiveDate : '')
+
+      setTimeout(() => {
+        this.setState({ selectedPlants: selectedPlants, })
+      }, 1500);
+
       this.setState({
         fieldsObj: fieldsObj,
-        selectedPlants: selectedPlants,
         selectedTechnology: selectedTechnology,
         machineType: machineType,
         effectiveDate: fieldsObj.EffectiveDate
@@ -1841,6 +1845,7 @@ class AddMoreDetails extends Component {
         MachineProcessRates: processGrid,
         Technology: (technologyArray.length > 0 && technologyArray[0]?.Technology !== undefined) ? technologyArray : [{ Technology: selectedTechnology.label ? selectedTechnology.label : selectedTechnology[0].label, TechnologyId: selectedTechnology.value ? selectedTechnology.value : selectedTechnology[0].value }],
         Plant: [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }],
+        selectedPlants: selectedPlants,
         Attachements: files,
         VendorPlant: [],
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
@@ -1863,7 +1868,7 @@ class AddMoreDetails extends Component {
 
 
       if (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) {
-        if (IsFinancialDataChanged) {
+        if (IsFinancialDataChanged && isEditFlag) {
 
           if (this.state.isDateChange) {
             this.setState({ approveDrawer: true, approvalObj: finalObj, formDataState: formData })          //IF THE EFFECTIVE DATE IS NOT UPDATED THEN USER SHOULD NOT BE ABLE TO SEND IT FOR APPROVAL IN EDIT MODE
