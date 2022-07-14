@@ -57,6 +57,7 @@ function ReportListing(props) {
     const [enableSearchFilterSearchButton, setEnableSearchFilterButton] = useState(true)
     const [reportListingDataStateArray, setReportListingDataStateArray] = useState([])
     const [globalTake, setGlobalTake] = useState(defaultPageSize)
+    const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
     const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
     var filterParams = {
         comparator: function (filterLocalDateAtMidnight, cellValue) {
@@ -316,6 +317,10 @@ function ReportListing(props) {
                     // Sets the filter model via the grid API
                     isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(filterModel))
                 }, 300);
+
+                setTimeout(() => {
+                    setIsFilterButtonClicked(false)
+                }, 600);
             }
         }))
     }
@@ -382,6 +387,9 @@ function ReportListing(props) {
         // Gets filter model via the grid API
         const model = gridOptions?.api?.getFilterModel();
         setFilterModel(model)
+        if (!isFilterButtonClicked) {
+            setWarningMessage(true)
+        }
 
         if (value?.filterInstance?.appliedModel === null || value?.filterInstance?.appliedModel?.filter === "") {
             setWarningMessage(false)
@@ -410,6 +418,7 @@ function ReportListing(props) {
     }
 
     const onSearch = () => {
+        setIsFilterButtonClicked(true)
         setWarningMessage(false)
         setPageNo(1)
         setCurrentRowIndex(0)
@@ -518,6 +527,7 @@ function ReportListing(props) {
 
 
     const resetState = () => {
+        setIsFilterButtonClicked(false)
         gridOptions?.columnApi?.resetColumnState();
         setSearchButtonClicked(false)
 
