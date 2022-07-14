@@ -290,9 +290,9 @@ class AddVendorDrawer extends Component {
 
                         const CountryObj = countryList && countryList.find(item => Number(item.Value) === Data.CountryId)
                         const StateObj = stateList && stateList.find(item => Number(item.Value) === Data.StateId)
-                        console.log('StateObj: ', StateObj);
+
                         const CityObj = cityList && cityList.find(item => Number(item.Value) === Data.CityId)
-                        console.log('CityObj: ', CityObj);
+
 
                         this.setState({
                             isEditFlag: true,
