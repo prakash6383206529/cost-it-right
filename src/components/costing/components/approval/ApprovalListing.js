@@ -56,6 +56,7 @@ function ApprovalListing(props) {
   const approvalListDraft = useSelector(state => state.approval.approvalListDraft)
 
   //STATES BELOW ARE MADE FOR PAGINATION PURPOSE
+  const [disableFilter, setDisableFilter] = useState(true)
   const [warningMessage, setWarningMessage] = useState(false)
   const [globalTake, setGlobalTake] = useState(defaultPageSize)
   const [filterModel, setFilterModel] = useState({});
@@ -157,6 +158,7 @@ function ApprovalListing(props) {
 
   const onFloatingFilterChanged = (value) => {
 
+    setDisableFilter(false)
     const model = gridOptions?.api?.getFilterModel();
     setFilterModel(model)
     if (!isFilterButtonClicked) {
@@ -168,9 +170,23 @@ function ApprovalListing(props) {
       if (model !== undefined && model !== null) {
         if (Object.keys(model).length > 0) {
           isFilterEmpty = false
+          for (var property in floatingFilterData) {
+
+            if (property === value.column.colId) {
+              floatingFilterData[property] = ""
+            }
+          }
+          setFloatingFilterData(floatingFilterData)
         }
 
         if (isFilterEmpty) {
+
+          for (var prop in floatingFilterData) {
+            if (prop !== "DepartmentCode") {
+              floatingFilterData[prop] = ""
+            }
+          }
+          setFloatingFilterData(floatingFilterData)
           setWarningMessage(false)
         }
       }
@@ -693,7 +709,7 @@ function ApprovalListing(props) {
                     <div className="d-flex justify-content-end bd-highlight w100">
                       <div className="warning-message d-flex align-items-center">
                         {warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
-                        <button disabled={!warningMessage} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
+                        <button disabled={disableFilter} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
                       </div>
                       <div>
                         <button type="button" className="user-btn mr-2" title="Reset Grid" onClick={() => resetState()}>

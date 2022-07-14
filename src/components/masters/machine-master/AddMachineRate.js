@@ -126,7 +126,6 @@ class AddMachineRate extends Component {
 
       }, 600);
 
-
     }
 
     /*WHEN ADD MORE DETAIL FORM IS CANCELLED in ADD FORMAT*/
@@ -155,8 +154,6 @@ class AddMachineRate extends Component {
         this.props.change('MachineNumber', Data.MachineNumber)
       })
     }
-
-
 
     // For reseting form  if cancel the add more detail form
     // if (data.cancelFlag) {
@@ -194,8 +191,6 @@ class AddMachineRate extends Component {
     })
 
 
-
-
     //GET MACHINE VALUES IN EDIT MODE
     this.getDetails()
   }
@@ -224,7 +219,6 @@ class AddMachineRate extends Component {
 
     this.setState({
       selectedTechnology: data.selectedTechnology,
-      selectedPlants: data.selectedPlants,
       machineType: data.machineType,
       effectiveDate: data.EffectiveDate
     })
@@ -232,7 +226,11 @@ class AddMachineRate extends Component {
     this.props.change('MachineNumber', data && data.fieldsObj && data.fieldsObj.MachineNumber)
     this.props.change('TonnageCapacity', data && data.fieldsObj && data.fieldsObj.TonnageCapacity)
     this.props.change('Description', data && data.fieldsObj && data.fieldsObj.Description)
-    this.props.change('EffectiveDate', DayTime(data.EffectiveDate).isValid() ? data.EffectiveDate : '')
+    this.props.change('EffectiveDate', DayTime(data.EffectiveDate).isValid() ? DayTime(data.EffectiveDate) : '')
+    setTimeout(() => {
+      this.setState({ selectedPlants: data.selectedPlants })
+    }, 200);
+
   }
 
 
@@ -519,6 +517,7 @@ class AddMachineRate extends Component {
   * @description called
   */
   handlePlants = (newValue, actionMeta) => {
+
     if (newValue && newValue !== '') {
       this.setState({ selectedPlants: newValue, })
     } else {
@@ -1184,8 +1183,6 @@ class AddMachineRate extends Component {
       const { vendorListByVendorType, machineTypeSelectList, plantSelectList, } = this.props;
 
       // let technologyArray = data && data.Technology.map((item) => ({ Text: item.Technology, Value: item.TechnologyId }))
-      this.props.change('EffectiveDate', DayTime(data.EffectiveDate).isValid() ? DayTime(data.EffectiveDate).format('DD/MM/YYYY') : '')
-
 
       let MachineProcessArray = data && data.MachineProcessRates && data.MachineProcessRates.map(el => {
         return {
