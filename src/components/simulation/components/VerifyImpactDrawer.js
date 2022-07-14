@@ -65,7 +65,7 @@ function VerifyImpactDrawer(props) {
   }, [lastSimulationData, impactedMasterData])
 
   useEffect(() => {
-    if (vendorIdState && EffectiveDate && TypeOfCosting === VBC) {
+    if (vendorIdState && EffectiveDate && (TypeOfCosting === VBC || TypeOfCosting === 1)) {
       dispatch(getLastSimulationData(vendorIdState, EffectiveDate, (res) => {
         setMasterIdForLastRevision(res?.data?.Data?.SimulationTechnologyId)
       }))
