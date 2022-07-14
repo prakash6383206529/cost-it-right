@@ -210,7 +210,7 @@ function VerifyImpactDrawer(props) {
                   </Row>
                 </>
               }
-              {TypeOfCosting === VBC && <>
+              {(TypeOfCosting === VBC || TypeOfCosting === 1) && <>
                 <Row className="mb-3 pr-0 mx-0">
                   <Col md="6"> <HeaderTitle title={'Last Revision Data:'} /></Col>
                   <Col md="6">
