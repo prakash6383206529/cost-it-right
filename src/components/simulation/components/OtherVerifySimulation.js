@@ -103,72 +103,6 @@ function OtherVerifySimulation(props) {
 
     }
 
-
-    // const verifyListExchangeRate = useSelector(state => state.simulation.simulationVerifyList)
-    // const verifyList = useSelector(state => state.simulation.simulationVerifyList)
-    // const verifyList = [{
-    //     CostingId: 0,
-    //     CostingNumber: 1221,
-    //     PartNo: "part1",
-    //     PartName: 10,
-    //     ECNNumber: 20,
-    //     RevisionNumber: 30,
-    //     POPrice: 12,
-    //     OldProcessRate: 11,
-    //     NewProcessRate: 10
-    // }, {
-    //     CostingId: 1,
-    //     CostingNumber: 1222,
-    //     PartNo: "part1",
-    //     PartName: 10,
-    //     ECNNumber: 20,
-    //     RevisionNumber: 30,
-    //     POPrice: 12,
-    //     OldProcessRate: 11,
-    //     NewProcessRate: 10
-    // }, {
-    //     CostingId: 2,
-    //     CostingNumber: 1223,
-    //     PartNo: "part1",
-    //     PartName: 10,
-    //     ECNNumber: 20,
-    //     RevisionNumber: 30,
-    //     POPrice: 12,
-    //     OldProcessRate: 11,
-    //     NewProcessRate: 10
-    // }, {
-    //     CostingId: 3,
-    //     CostingNumber: 1224,
-    //     PartNo: "part1",
-    //     PartName: 10,
-    //     ECNNumber: 20,
-    //     RevisionNumber: 30,
-    //     POPrice: 12,
-    //     OldProcessRate: 11,
-    //     NewProcessRate: 10
-    // }, {
-    //     CostingId: 4,
-    //     CostingNumber: 1225,
-    //     PartNo: "part1",
-    //     PartName: 10,
-    //     ECNNumber: 20,
-    //     RevisionNumber: 30,
-    //     POPrice: 12,
-    //     OldProcessRate: 11,
-    //     NewProcessRate: 10
-    // }, {
-    //     CostingId: 5,
-    //     CostingNumber: 1226,
-    //     PartNo: "part1",
-    //     PartName: 10,
-    //     ECNNumber: 20,
-    //     RevisionNumber: 30,
-    //     POPrice: 12,
-    //     OldProcessRate: 11,
-    //     NewProcessRate: 10
-    // }
-    // ]
-
     const buttonFormatter = (cell, row, enumObject, rowIndex) => {
         return (
             <>
@@ -303,7 +237,7 @@ function OtherVerifySimulation(props) {
             allColumnIds.push(column.colId);
         });
 
-        window.screen.width <= 1366 ? params.columnApi.autoSizeColumns(allColumnIds) : params.api.sizeColumnsToFit()
+        params.api.sizeColumnsToFit()
     };
 
     const onPageSizeChanged = (newPageSize) => {
@@ -355,64 +289,60 @@ function OtherVerifySimulation(props) {
                         </Row>
                         <Row>
                             <Col>
-                                <Col>
-                                    <div className={`ag-grid-react`}>
-                                        <div className={`ag-grid-wrapper height-width-wrapper ${verifyList && verifyList?.length <= 0 ? "overlay-contain" : ""}`}>
-                                            <div className="ag-grid-header">
-                                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
-                                                <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
-                                                    <div className="refresh mr-0"></div>
-                                                </button>
-                                            </div>
-                                            <div className="ag-theme-material">
-                                                <AgGridReact
-                                                    defaultColDef={defaultColDef}
-                                                    floatingFilter={true}
-                                                    domLayout='autoHeight'
-                                                    // columnDefs={c}
-                                                    rowData={verifyList}
-                                                    pagination={true}
-                                                    paginationPageSize={10}
-                                                    onGridReady={onGridReady}
-                                                    gridOptions={gridOptions}
-                                                    loadingOverlayComponent={'customLoadingOverlay'}
-                                                    noRowsOverlayComponent={'customNoRowsOverlay'}
-                                                    noRowsOverlayComponentParams={{
-                                                        title: EMPTY_DATA,
-                                                        customClassName: 'nodata-found-container'
-                                                    }}
-                                                    frameworkComponents={frameworkComponents}
-                                                    rowSelection={'multiple'}
-                                                    onRowSelected={onRowSelected}
-
-                                                >
-                                                    <AgGridColumn field="CostingId" hide ></AgGridColumn>
-                                                    <AgGridColumn width={185} field="CostingNumber" headerName="Costing Number"></AgGridColumn>
-                                                    <AgGridColumn width={110} field="PartNo" headerName="Part No."></AgGridColumn>
-                                                    <AgGridColumn width={120} field="PartName" cellRenderer='descriptionFormatter' headerName="Part Name"></AgGridColumn>
-                                                    <AgGridColumn width={110} field="ECNNumber" cellRenderer='ecnFormatter' headerName="ECN No."></AgGridColumn>
-                                                    <AgGridColumn width={130} field="RevisionNumber" cellRenderer='revisionFormatter' headerName="Revision No."></AgGridColumn>
-                                                    {isExchangeRate && <AgGridColumn width={130} field="Currency" headerName="Currency"></AgGridColumn>}
-                                                    {isExchangeRate && <AgGridColumn width={130} field="POPrice" headerName="PO Price Old" cellRenderer='decimalFormatter'></AgGridColumn>}
-
-
-                                                    {isExchangeRate && <AgGridColumn width={145} field="OldExchangeRate" headerName="Old Exchange Rate"></AgGridColumn>}
-                                                    {isExchangeRate && <AgGridColumn width={150} field="NewExchangeRate" cellRenderer='newExchangeRateFormatter' headerName="New Exchange Rate"></AgGridColumn>}
-
-                                                    {isCombinedProcess && <AgGridColumn width={130} field="OldPOPrice" headerName="PO Price Old" cellRenderer='decimalFormatter'></AgGridColumn>}
-                                                    {isCombinedProcess && <AgGridColumn width={130} field="NewPOPrice" headerName="PO Price New" cellRenderer='decimalFormatter'></AgGridColumn>}
-                                                    {isCombinedProcess && <AgGridColumn width={145} field="OldNetCC" headerName="Old CC" cellRenderer='decimalFormatter'></AgGridColumn>}
-                                                    {isCombinedProcess && <AgGridColumn width={150} field="NewNetCC" cellRenderer='newExchangeRateFormatter' headerName="New CC"></AgGridColumn>}
-
-
-                                                </AgGridReact>
-                                            </div>
-                                            {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
+                                <div className={`ag-grid-react`}>
+                                    <div className={`height-width-wrapper ${verifyList && verifyList?.length <= 0 ? "overlay-contain" : ""}`}>
+                                        <div className="ag-grid-header">
+                                            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                                            <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
+                                                <div className="refresh mr-0"></div>
+                                            </button>
                                         </div>
+                                        <div className="ag-theme-material">
+                                            <AgGridReact
+                                                defaultColDef={defaultColDef}
+                                                floatingFilter={true}
+                                                domLayout='autoHeight'
+                                                // columnDefs={c}
+                                                rowData={verifyList}
+                                                pagination={true}
+                                                paginationPageSize={10}
+                                                onGridReady={onGridReady}
+                                                gridOptions={gridOptions}
+                                                loadingOverlayComponent={'customLoadingOverlay'}
+                                                noRowsOverlayComponent={'customNoRowsOverlay'}
+                                                noRowsOverlayComponentParams={{
+                                                    title: EMPTY_DATA,
+                                                    customClassName: 'nodata-found-container'
+                                                }}
+                                                frameworkComponents={frameworkComponents}
+                                                rowSelection={'multiple'}
+                                                onRowSelected={onRowSelected}
+
+                                            >
+                                                <AgGridColumn field="CostingId" hide ></AgGridColumn>
+                                                <AgGridColumn width={185} field="CostingNumber" headerName="Costing Number"></AgGridColumn>
+                                                <AgGridColumn width={110} field="PartNo" headerName="Part No."></AgGridColumn>
+                                                <AgGridColumn width={180} field="PartName" cellRenderer='descriptionFormatter' headerName="Part Name"></AgGridColumn>
+                                                <AgGridColumn width={110} field="ECNNumber" cellRenderer='ecnFormatter' headerName="ECN No."></AgGridColumn>
+                                                <AgGridColumn width={130} field="RevisionNumber" cellRenderer='revisionFormatter' headerName="Revision No."></AgGridColumn>
+                                                {isExchangeRate && <AgGridColumn width={130} field="Currency" headerName="Currency"></AgGridColumn>}
+                                                {isExchangeRate && <AgGridColumn width={130} field="POPrice" headerName="PO Price Old" cellRenderer='decimalFormatter'></AgGridColumn>}
+
+
+                                                {isExchangeRate && <AgGridColumn width={145} field="OldExchangeRate" headerName="Old Exchange Rate"></AgGridColumn>}
+                                                {isExchangeRate && <AgGridColumn width={150} field="NewExchangeRate" cellRenderer='newExchangeRateFormatter' headerName="New Exchange Rate"></AgGridColumn>}
+
+                                                {isCombinedProcess && <AgGridColumn width={130} field="OldPOPrice" headerName="PO Price Old" cellRenderer='decimalFormatter'></AgGridColumn>}
+                                                {isCombinedProcess && <AgGridColumn width={130} field="NewPOPrice" headerName="PO Price New" cellRenderer='decimalFormatter'></AgGridColumn>}
+                                                {isCombinedProcess && <AgGridColumn width={145} field="OldNetCC" headerName="Old CC" cellRenderer='decimalFormatter'></AgGridColumn>}
+                                                {isCombinedProcess && <AgGridColumn width={150} field="NewNetCC" cellRenderer='newExchangeRateFormatter' headerName="New CC"></AgGridColumn>}
+
+
+                                            </AgGridReact>
+                                        </div>
+                                        {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                                     </div>
-                                </Col>
-
-
+                                </div>
                             </Col>
                         </Row>
                         <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer">

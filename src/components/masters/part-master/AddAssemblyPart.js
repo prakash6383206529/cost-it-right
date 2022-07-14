@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col } from 'reactstrap';
-import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength75, maxLength20, maxLength80, maxLength512 } from "../../../helper/validation";
+import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength75, maxLength20, maxLength80, maxLength512, checkSpacesInString } from "../../../helper/validation";
 import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
 import { renderText, renderTextAreaField, focusOnError, renderDatePicker, renderMultiSelectField, searchableSelect } from "../../layout/FormInputs";
 import { getPlantSelectListByType, getPartSelectList } from '../../../actions/Common';
@@ -357,8 +357,8 @@ class AddAssemblyPart extends Component {
 
     if (label === 'plant') {
       plantSelectList && plantSelectList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ Text: item.Text, Value: item.Value })
+        if (item.PlantId === '0') return false;
+        temp.push({ Text: item.PlantNameCode, Value: item.PlantId })
         return null;
       });
       return temp;
@@ -857,7 +857,7 @@ class AddAssemblyPart extends Component {
   */
   render() {
     const { handleSubmit, initialConfiguration } = this.props;
-    const { isEditFlag, isOpenChildDrawer, isOpenBOMViewerDrawer, isViewMode, setDisable, disablePopup, convertPartToAssembly } = this.state;
+    const { isEditFlag, isOpenChildDrawer, isOpenBOMViewerDrawer, isViewMode, setDisable, disablePopup, convertPartToAssembly, BOMViewerData } = this.state;
 
     const filterList = (inputValue) => {
       let tempArr = []
@@ -957,7 +957,7 @@ class AddAssemblyPart extends Component {
                             name={"BOMNumber"}
                             type="text"
                             placeholder={""}
-                            validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20]}
+                            validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20, checkSpacesInString]}
                             component={renderText}
                             required={true}
                             className=""
@@ -971,7 +971,7 @@ class AddAssemblyPart extends Component {
                             name={"AssemblyPartNumber"}
                             type="text"
                             placeholder={""}
-                            validate={[this.isRequired(), acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20]}
+                            validate={[this.isRequired(), acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20, checkSpacesInString]}
                             component={renderText}
                             required={true}
                             onChange={this.onPartNoChange}
@@ -1136,13 +1136,13 @@ class AddAssemblyPart extends Component {
                         </Col>
 
 
-                        <Col md="3">
+                        <Col md="3" className='pt-2'>
                           <button
                             type="button"
                             disabled={false}
                             onClick={this.toggleBOMViewer}
                             className={"user-btn pull-left mt30"}>
-                            <div className={"plus"}></div>VIEW BOM
+                            <div className={`${!isViewMode && BOMViewerData?.length <= 0 ? 'plus' : 'fa fa-eye pr-1'}`}></div> BOM
                           </button>
                         </Col>
                       </Row>

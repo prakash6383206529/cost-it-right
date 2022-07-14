@@ -2351,6 +2351,9 @@ input:disabled {
 
 .add-min-height {
   min-height: calc(100vh - 263px);
+  &.mb-3.sm-edit-page {
+    min-height: calc(100vh - 374px);
+  }
 }
 
 .role-permision-page {
@@ -4438,6 +4441,11 @@ body {
       }
     }
   }
+  .simulation-Loader {
+    bottom: -5px;
+    right: -30px;
+    left: -30px;
+  }
 }
 
 .bulk-upload-row {
@@ -4769,6 +4777,11 @@ body {
     img {
       margin-top: 25px;
       ;
+    }
+  }
+  .filter-block {
+    &::before {
+      display: none;
     }
   }
 }
@@ -5260,7 +5273,7 @@ body {
 
   // left side menu
   .left-side-menu {
-    width: calc(205px * 80 / 100);
+    width: calc(230px * 80 / 100);
 
     .mb5 {
       margin-bottom: calc(5px * 80 / 100);
@@ -6867,8 +6880,8 @@ body {
   .simulation-main {
     .filter-block {
       .flex-fills:last-child {
-        min-width: 230px;
-        max-width: 255px;
+        min-width: 223px;
+        max-width: 223px;
         width: auto;
       }
     }
@@ -7779,13 +7792,14 @@ body {
 
 // <-------END Calculator css--------->
 .simulation-height {
-  min-height: calc(100vh - 320px) !important;
+  min-height: calc(100vh - 404px) !important;
   .min-height {
     min-height: auto !important;
   }
   .simulation-Loader {
     bottom: -5px;
-    right: -5px;
+    right: -30px;
+    left: -30px;
   }
 }
 .cp-simulation-height {
@@ -8202,12 +8216,6 @@ body {
   .flex-fills.label {
     min-width: fit-content !important;
   }
-
-  .w-72 {
-    .flex-fills.label {
-      min-width: 72px !important;
-    }
-  }
 }
 
 @media screen and (min-width:$middleDesktop) {
@@ -8458,6 +8466,7 @@ padding-bottom: 3px;
   .form-group.inputbox.withBorder, .dropdown-flex {
     label {
       display: flex;
+      margin-bottom: 7px !important;
     }
   }
 }

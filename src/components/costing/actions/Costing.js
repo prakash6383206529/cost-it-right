@@ -37,6 +37,7 @@ import {
   SET_PART_NUMBER_ARRAY_API_CALL,
   SET_MESSAGE_FOR_ASSEMBLY,
   SET_PROCESS_GROUP_GRID,
+  SAVE_BOM_LEVEL_STOP_API_CALL,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -2426,7 +2427,7 @@ export function setIdsOfProcessGroup(data) {
 export function getMachineProcessGroupDetail(data, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST })
-    const queryParams = `vendorId=${data.VendorId}&technologyId=${data.TechnologyId}&effectiveDate=${data.EffectiveDate}&vendorPlantId=${data.VendorPlantId}&destinationPlantId=${data.DestinationPlantId}&costingId=${data.CostingId}`;
+    const queryParams = `vendorId=${data.VendorId}&technologyId=${data.TechnologyId}&effectiveDate=${data.EffectiveDate}&vendorPlantId=${data.VendorPlantId}&destinationPlantId=${data.DestinationPlantId}&costingId=${data.CostingId}&plantId=${data.PlantId}`;
     const request = axios.get(`${API.getMachineProcessGroupDetail}?${queryParams}`, config())
     request.then((response) => {
       if (response.data.Result || response.status === 204) {
@@ -2505,11 +2506,11 @@ export function sapPushedCostingInitialMoment(data, callback) {
   }
 }
 /**
- * @method isDataChange
+ * @method savePartNumberAndBOMLevel
  * @description THIS METHOD IS FOR CALLING SAVE API IF CHNAGES HAVE BEEN MADE 
 */
 
-export function savePartNumberAndBOMLevel(isDataChange) {
+export function savePartNumber(isDataChange) {
   return (dispatch) => {
     dispatch({
       type: SAVE_PART_NUMBER_STOP_API_CALL,
@@ -2519,7 +2520,7 @@ export function savePartNumberAndBOMLevel(isDataChange) {
 }
 
 /**
- * @method isDataChange
+ * @method setPartNumberArrayAPICALL
  * @description THIS METHOD IS FOR CALLING SAVE API IF CHNAGES HAVE BEEN MADE 
 */
 
@@ -2557,3 +2558,36 @@ export function setProcessGroupGrid(grid) {
     });
   }
 };
+
+/**
+ * @method saveBOMLevel
+ * @description saveBOMLevel
+*/
+
+export function saveBOMLevel(data) {
+  return (dispatch) => {
+    dispatch({
+      type: SAVE_BOM_LEVEL_STOP_API_CALL,
+      payload: data
+    })
+  }
+}
+/**
+ * @method checkFinalUser
+ * @description CHECK FINAL USER
+ */
+export function checkFinalUser(data, callback) {
+  return (dispatch) => {
+    const queryParams = `DepartmentId=${data.DepartmentId}&TechnologyId=${data.TechnologyId}&UserId=${data.UserId}&Mode=${data.Mode}`
+    const request = axios.get(`${API.checkFinalUser}?${queryParams}`, config())
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response)
+      }
+    }).catch((error) => {
+      callback(error)
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
+  }
+}

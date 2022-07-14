@@ -107,7 +107,6 @@ function RMDomesticListing(props) {
             dispatch(getVendorListByVendorType(false, () => { }))
             dispatch(getRawMaterialFilterSelectList(() => { }))
             dispatch(getTechnologySelectList(() => { }))
-            dispatch(getPlantSelectListByType(ZBC, () => { }))
         }
     }
 
@@ -239,10 +238,25 @@ function RMDomesticListing(props) {
             if (model !== undefined && model !== null) {
                 if (Object.keys(model).length > 0) {
                     isFilterEmpty = false
+
+                    for (var property in floatingFilterData) {
+
+                        if (property === value.column.colId) {
+                            floatingFilterData[property] = ""
+                        }
+                    }
+                    setFloatingFilterData(floatingFilterData)
                 }
 
                 if (isFilterEmpty) {
                     setWarningMessage(false)
+                    for (var prop in floatingFilterData) {
+
+                        if (prop !== "DepartmentCode") {
+                            floatingFilterData[prop] = ""
+                        }
+                    }
+                    setFloatingFilterData(floatingFilterData)
                 }
             }
 
@@ -745,7 +759,7 @@ function RMDomesticListing(props) {
                     </Row>
                     <Row>
                         <Col>
-                            <div className={`ag-grid-wrapper ${props?.isDataInMaster ? 'master-approval-overlay' : ''} overlay-contain`}>
+                            <div className={`ag-grid-wrapper ${props?.isDataInMaster ? 'master-approval-overlay' : ''} ${rmDataList && rmDataList?.length <= 0 ? 'overlay-contain' : ''}`}>
                                 <div className={`ag-theme-material ${(loader && !props.isMasterSummaryDrawer) && "max-loader-height"}`}>
                                     <AgGridReact
                                         style={{ height: '100%', width: '100%' }}

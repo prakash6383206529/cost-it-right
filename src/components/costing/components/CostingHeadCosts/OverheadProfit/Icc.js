@@ -305,7 +305,7 @@ function Icc(props) {
                                             message: 'Percentage cannot be greater than 100'
                                         },
                                     }}
-                                    handleChange={() => { }}
+                                    handleChange={() => { dispatch(isOverheadProfitDataChange(true)) }}
                                     defaultValue={''}
                                     className=""
                                     customClassName={'withBorder'}

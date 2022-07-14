@@ -263,7 +263,7 @@ class LabourListing extends Component {
   */
   costingHeadFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return cellValue ? 'Contractual' : 'Employed'
+    return cellValue === 'Contractual' ? 'Contractual' : 'Employed'
   }
 
   /**
@@ -309,8 +309,6 @@ class LabourListing extends Component {
     const machine = machineType ? machineType.value : 0
     this.getTableListData(ETerms, State, Plant, labour, machine)
   }
-
-
 
   /**
    * @method formToggle

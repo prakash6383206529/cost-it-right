@@ -22,6 +22,7 @@ function CopyCosting(props) {
   const { copyCostingData, partNo, type, zbcPlantGrid, vbcVendorGrid, selectedCostingId, } = props
 
 
+
   const { register, control, formState: { errors }, handleSubmit, setValue } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -29,7 +30,7 @@ function CopyCosting(props) {
       fromPlant: type === ZBC ? { label: `${copyCostingData.PlantName}(${copyCostingData.PlantCode})`, value: copyCostingData.PlantId, } : '',
       fromVendorName: type === VBC ? { label: `${copyCostingData.VendorName}(${copyCostingData.VendorCode})`, value: copyCostingData.VendorId, } : '',
       // fromVendorPlant: type === VBC ? {label:`${copyCostingData.VendorPlantName}(${copyCostingData.VendorPlantCode})`,value: copyCostingData.VendorPlantId} : ''
-      fromDestinationPlant: type === VBC ? { label: `${copyCostingData.DestinationPlantName}`, value: copyCostingData.DestinationPlantId } : '',
+      fromDestinationPlant: type === VBC ? { label: `${copyCostingData.DestinationPlantName}(${copyCostingData.DestinationPlantCode})`, value: copyCostingData.DestinationPlantId } : '',
       fromcostingId: selectedCostingId.zbcCosting,
       fromVbccostingId: selectedCostingId.vbcCosting,
       toVendorName: type === VBC ? { label: `${copyCostingData.VendorName}(${copyCostingData.VendorCode})`, value: copyCostingData.VendorId } : '',
@@ -96,7 +97,7 @@ function CopyCosting(props) {
         ))
     }
 
-    console.log('VbcTemp: ', VbcTemp);
+
     let uniqueArray = _.uniqBy(VbcTemp, "value")
 
     setVendorName(uniqueArray)
@@ -263,7 +264,7 @@ function CopyCosting(props) {
 
     vbcVendorGrid && vbcVendorGrid.filter(item => {
 
-      temp.push({ label: item.DestinationPlantName, value: item.DestinationPlantId })     // ALL PLANTS LIST SHOULD BE VISIBLE IN THE DROPDOWN IN COPY COSTING DRAWER
+      temp.push({ label: `${item.DestinationPlantName}(${item.DestinationPlantCode})`, value: item.DestinationPlantId, destinationPlantCode: item.DestinationPlantCode })     // ALL PLANTS LIST SHOULD BE VISIBLE IN THE DROPDOWN IN COPY COSTING DRAWER
       return temp
 
     })
@@ -289,7 +290,7 @@ function CopyCosting(props) {
    */
   const submitForm = debounce(handleSubmit((value) => {
     setIsDisable(true)
-    const destination = value.toDestinationPlant && value.toDestinationPlant.label.split('(')
+
     const tovendorCode = value.toVendorName && value.toVendorName.label.split('(')
 
     let obj = {}
@@ -358,7 +359,7 @@ function CopyCosting(props) {
 
     obj.ToDestinationPlantId = value.toDestinationPlant && value.toDestinationPlant.value
     obj.ToDestinationPlantName = value.toDestinationPlant && value.toDestinationPlant.label
-    obj.ToDestinationPlantCode = destination && destination[1].split(')')[0]
+    obj.ToDestinationPlantCode = value.toDestinationPlant && value.toDestinationPlant.destinationPlantCode
     obj.EffectiveDate = DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
     // obj.
 

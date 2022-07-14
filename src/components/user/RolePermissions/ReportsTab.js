@@ -8,7 +8,7 @@ import { Table, } from 'reactstrap';
 import NoContentFound from "../../common/NoContentFound";
 import { EMPTY_DATA } from "../../../config/constants";
 import { REPORTS_AND_ANALYTICS, } from "../../../config/constants";
-import Switch from "react-switch";
+import { renderActionCommon } from "../userUtil"
 
 class ReportsTab extends Component {
   constructor(props) {
@@ -194,35 +194,9 @@ class ReportsTab extends Component {
   * @description used to render row of actions
   */
   renderAction = (actions, parentIndex) => {
-    const { actionSelectList } = this.state;
 
-    return actionSelectList && actionSelectList.map((el, i) => {
-      if (el.Value == 0) return false;
-      return actions && actions.map((item, index) => {
-        if (el.Value !== item.ActionId) return false;
-        return (
-          <td className="text-center">
-            {
-              <label htmlFor="normal-switch" className="normal-switch">
-                <Switch
-                  onChange={() => this.actionCheckHandler(parentIndex, index)}
-                  checked={item.IsChecked}
-                  value={item.ActionId}
-                  id="normal-switch"
-                  onColor="#4DC771"
-                  onHandleColor="#ffffff"
-                  offColor="#959CB6"
-                  checkedIcon={false}
-                  uncheckedIcon={false}
-                  height={18}
-                  width={40}
-                />
-              </label>
-            }
-          </td>
-        )
-      })
-    })
+    return renderActionCommon(actions, parentIndex, this, REPORTS_AND_ANALYTICS)
+
   }
 
   /**

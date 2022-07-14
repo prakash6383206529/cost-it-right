@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required, getVendorCode, maxLength80, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength10, maxLength15, positiveAndDecimalNumber, maxLength512, decimalLengthsix } from "../../../helper/validation";
+import { required, getVendorCode, maxLength80, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength10, maxLength15, positiveAndDecimalNumber, maxLength512, decimalLengthsix, checkSpacesInString } from "../../../helper/validation";
 import { renderText, renderMultiSelectField, searchableSelect, renderTextAreaField, renderDatePicker, renderNumberInputField } from "../../layout/FormInputs";
 import { getVendorWithVendorCodeSelectList } from '../actions/Supplier';
 import { createOperationsAPI, getOperationDataAPI, updateOperationAPI, fileUploadOperation, fileDeleteOperation, checkAndGetOperationCode } from '../actions/OtherOperation';
@@ -139,16 +139,16 @@ class AddOperation extends Component {
     }
     if (label === 'plant') {
       plantSelectList && plantSelectList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ Text: item.Text, Value: item.Value })
+        if (item.PlantId === '0') return false;
+        temp.push({ Text: item.PlantNameCode, Value: item.PlantId })
         return null;
       });
       return temp;
     }
     if (label === 'singlePlant') {
       plantSelectList && plantSelectList.map((item) => {
-        if (item.Value === '0') return false
-        temp.push({ label: item.Text, value: item.Value })
+        if (item.PlantId === '0') return false
+        temp.push({ label: item.PlantNameCode, value: item.PlantId })
         return null
       })
       return temp
@@ -319,12 +319,6 @@ class AddOperation extends Component {
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           this.setState({ minEffectiveDate: Data.EffectiveDate })
 
-          let plantArray = [];
-          Data && Data.Plant.map((item) => {
-            plantArray.push({ Text: item.PlantName, Value: item.PlantId })
-            return plantArray;
-          })
-
           let technologyArray = [];
           Data && Data.Technology.map((item) => {
             technologyArray.push({ Text: item.Technology, Value: item.TechnologyId })
@@ -342,7 +336,7 @@ class AddOperation extends Component {
               isLoader: false,
               IsVendor: Data.IsVendor,
               selectedTechnology: technologyArray,
-              selectedPlants: plantArray,
+              selectedPlants: [{ Text: Data.DestinationPlantName, Value: Data.DestinationPlantId }],
               vendorName: Data.VendorName && Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.VendorId } : [],
               UOM: UOMObj && UOMObj !== undefined ? { label: UOMObj.Display, value: UOMObj.Value } : [],
               oldUOM: UOMObj && UOMObj !== undefined ? { label: UOMObj.Display, value: UOMObj.Value } : [],
@@ -548,12 +542,16 @@ class AddOperation extends Component {
       technologyArray.push({ Technology: item.Text, TechnologyId: item.Value })
       return technologyArray;
     })
+    let plantArray = []
+    if (IsVendor) {
+      plantArray.push({ PlantName: destinationPlant.label, PlantId: destinationPlant.value, PlantCode: '', })
+    } else {
 
-    let plantArray = [];
-    selectedPlants && selectedPlants.map((item) => {
-      plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' })
-      return plantArray;
-    })
+      selectedPlants && selectedPlants.map((item) => {
+        plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '', })
+        return plantArray
+      })
+    }
     /** Update existing detail of supplier master **/
     // if (this.state.isEditFlag && this.state.isFinalApprovar) {
 
@@ -640,11 +638,10 @@ class AddOperation extends Component {
         LabourRatePerUOM: initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure ? values.LabourRatePerUOM : '',
         Technology: technologyArray,
         Remark: remarks,
-        Plant: !IsVendor ? plantArray : [],
+        plant: plantArray,
         Attachements: files,
         LoggedInUserId: loggedInUserId(),
         EffectiveDate: DayTime(effectiveDate).format('YYYY/MM/DD HH:mm:ss'),
-        DestinationPlantId: getConfigurationKey().IsDestinationPlantConfigure ? destinationPlant.value : '00000000-0000-0000-0000-000000000000',
         VendorPlant: []
       }
 
@@ -760,7 +757,7 @@ class AddOperation extends Component {
                     <h2>
                       {this.state.isEditFlag
                         ? "Update Operation"
-                        : "Operation"}
+                        : "Add Operation"}
                     </h2>
                   </div>
                 </div>
@@ -837,7 +834,7 @@ class AddOperation extends Component {
                           name={"OperationCode"}
                           type="text"
                           placeholder={"Enter"}
-                          validate={[acceptAllExceptSingleSpecialCharacter, maxLength15, checkWhiteSpaces, required]}
+                          validate={[acceptAllExceptSingleSpecialCharacter, maxLength15, checkWhiteSpaces, required, checkSpacesInString]}
                           component={renderText}
                           required={true}
                           onBlur={this.checkUniqCode}

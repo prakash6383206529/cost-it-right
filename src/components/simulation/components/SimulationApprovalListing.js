@@ -22,6 +22,8 @@ import WarningMessage from '../../common/WarningMessage'
 import { debounce } from 'lodash'
 import ScrollToTop from '../../common/ScrollToTop'
 import { PaginationWrapper } from '../../common/commonPagination'
+import { checkFinalUser } from '../../costing/actions/Costing'
+
 
 const gridOptions = {};
 
@@ -39,6 +41,7 @@ function SimulationApprovalListing(props) {
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [isApprovalDrawer, setIsApprovalDrawer] = useState(false);
     const [isPendingForApproval, setIsPendingForApproval] = useState(false);
+    const [showFinalLevelButtons, setShowFinalLevelButton] = useState(false)
 
     const dispatch = useDispatch()
     const { simualtionApprovalList, simualtionApprovalListDraft } = useSelector(state => state.simulation)
@@ -278,14 +281,34 @@ function SimulationApprovalListing(props) {
     }
 
     const sendForApproval = () => {
-
         if (selectedRowData.length === 0) {
             Toaster.warning('Please select atleast one approval to send for approval.')
             return false
         }
         setIsApprovalDrawer(true)
         setSimulationDetail({ DepartmentId: selectedRowData[0].DepartmentId })
-        setApproveDrawer(true)
+        let obj = {
+            DepartmentId: selectedRowData[0].Status === DRAFT ? EMPTY_GUID : selectedRowData[0]?.DepartmentId,
+            UserId: loggedInUserId(),
+            TechnologyId: selectedRowData[0].SimulationTechnologyId,
+            Mode: 'simulation'
+        }
+
+        dispatch(checkFinalUser(obj, res => {
+            if (res && res.data && res.data.Result) {
+                if (selectedRowData[0].Status === DRAFT) {
+                    setApproveDrawer(res.data.Data.IsFinalApprover ? false : true)
+                    if (res.data.Data.IsFinalApprover) {
+                        Toaster.warning("Final level aprrover can not send draft token for aprroval")
+                        gridApi.deselectAll()
+                    }
+                }
+                else {
+                    setShowFinalLevelButton(res.data.Data.IsFinalApprover)
+                    setApproveDrawer(true)
+                }
+            }
+        }))
     }
 
     const closeDrawer = (e = '', type) => {
@@ -390,10 +413,9 @@ function SimulationApprovalListing(props) {
                 <div className={`${!isSmApprovalListing && 'container-fluid'} approval-listing-page`} id='history-go-to-top'>
                     < div className={`ag-grid-react`}>
                         <form onSubmit={handleSubmit(() => { })} noValidate>
-                            {!isSmApprovalListing && <h1 className="mb-0">Simulation History</h1>}
                             {isLoader && <LoaderCustom customClass={"simulation-history-loader"} />}
                             <ScrollToTop pointProp={"history-go-to-top"} />
-                            <Row className="pt-4 blue-before">
+                            <Row className="pt-4">
 
 
                                 <Col md="2" lg="2" className="search-user-block mb-3">
@@ -416,7 +438,7 @@ function SimulationApprovalListing(props) {
                             </Row>
                         </form>
 
-                        <div className={`ag-grid-wrapper height-width-wrapper min-height-auto ${(simualtionApprovalList && simualtionApprovalList?.length <= 0) || (simualtionApprovalListDraft && simualtionApprovalListDraft?.length <= 0) ? "overlay-contain" : ""}`}>
+                        <div className={`ag-grid-wrapper height-width-wrapper min-height-auto ${isDashboard ? simualtionApprovalList && simualtionApprovalList?.length <= 0 ? "overlay-contain" : "" : simualtionApprovalListDraft && simualtionApprovalListDraft?.length <= 0 ? "overlay-contain" : ""}`}>
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                             </div>
@@ -490,7 +512,7 @@ function SimulationApprovalListing(props) {
                                         isSimulation={true}
                                         isSimulationApprovalListing={true}
                                         simulationDetail={simulationDetail}
-                                        IsFinalLevel={selectedRowData[0]?.IsFinalLevelButtonShow}
+                                        IsFinalLevel={showFinalLevelButtons}
                                     />
                                 }
                             </div>

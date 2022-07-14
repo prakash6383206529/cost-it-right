@@ -4,7 +4,7 @@ import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import {
   required, checkForNull, number, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter, maxLength20,
-  maxLength, maxLength10, positiveAndDecimalNumber, maxLength512, maxLength80, checkWhiteSpaces, decimalLengthsix
+  maxLength, maxLength10, positiveAndDecimalNumber, maxLength512, maxLength80, checkWhiteSpaces, decimalLengthsix, checkSpacesInString
 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker, renderNumberInputField } from "../../layout/FormInputs";
 import { fetchMaterialComboAPI, getCityBySupplier, getPlantBySupplier, getUOMSelectList, getPlantSelectListByType, getCityByCountry, getAllCity } from '../../../actions/Common';
@@ -276,8 +276,8 @@ class AddBOPDomestic extends Component {
     }
     if (label === 'plant') {
       plantSelectList && plantSelectList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
+        if (item.PlantId === '0') return false;
+        temp.push({ label: item.PlantNameCode, value: item.PlantId })
         return null;
       });
       return temp;
@@ -791,8 +791,6 @@ class AddBOPDomestic extends Component {
     const promiseOptions = inputValue =>
       new Promise(resolve => {
         resolve(filterList(inputValue));
-
-
       });
     return (
       <>
@@ -855,12 +853,11 @@ class AddBOPDomestic extends Component {
                               name={"BoughtOutPartNumber"}
                               type="text"
                               placeholder={"Enter"}
-                              validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces]}
+                              validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, checkSpacesInString]}
                               component={renderText}
                               required={true}
                               disabled={isEditFlag ? true : false}
                               className=" "
-                              maxLength="20"
                               customClassName=" withBorder"
                             />
                           </Col>
@@ -897,12 +894,12 @@ class AddBOPDomestic extends Component {
                                   disabled={isEditFlag ? true : false}
                                 />
                               </div>
-                              {!isEditFlag && (
+                              {!isEditFlag &&
                                 <div
                                   onClick={this.categoryToggler}
                                   className={"plus-icon-square right"}
                                 ></div>
-                              )}
+                              }
                             </div>
                           </Col>
                           <Col md="3">
@@ -1052,7 +1049,7 @@ class AddBOPDomestic extends Component {
 
 
 
-                        <Row>
+                        <Row className='UOM-label-container'>
                           <Col md="12">
                             <div className="left-border">{"Cost:"}</div>
                           </Col>

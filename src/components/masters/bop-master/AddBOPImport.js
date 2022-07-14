@@ -4,7 +4,7 @@ import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import {
   required, checkForNull, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter, maxLength20,
-  maxLength10, positiveAndDecimalNumber, maxLength512, maxLength, decimalLengthsix, checkWhiteSpaces
+  maxLength10, positiveAndDecimalNumber, maxLength512, maxLength, decimalLengthsix, checkWhiteSpaces, checkSpacesInString
 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderTextAreaField, renderDatePicker, renderNumberInputField } from "../../layout/FormInputs";
 import { fetchMaterialComboAPI, getPlantBySupplier, getUOMSelectList, getCurrencySelectList, getPlantSelectListByType, } from '../../../actions/Common';
@@ -284,8 +284,8 @@ class AddBOPImport extends Component {
     }
     if (label === 'plant') {
       plantSelectList && plantSelectList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
+        if (item.PlantId === '0') return false;
+        temp.push({ label: item.PlantNameCode, value: item.PlantId })
         return null;
       });
       return temp;
@@ -947,7 +947,7 @@ class AddBOPImport extends Component {
                               name={"BoughtOutPartNumber"}
                               type="text"
                               placeholder={"Enter"}
-                              validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces]}
+                              validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, checkSpacesInString]}
                               component={renderText}
                               required={true}
                               disabled={isEditFlag ? true : false}
@@ -990,7 +990,7 @@ class AddBOPImport extends Component {
                                   disabled={isEditFlag ? true : false}
                                 />
                               </div>
-                              {!isViewMode &&
+                              {!isEditFlag &&
                                 <div
                                   onClick={this.categoryToggler}
                                   className={"plus-icon-square right"}

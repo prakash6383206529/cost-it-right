@@ -192,6 +192,7 @@ function OperationSTSimulation(props) {
     const onGridReady = (params) => {
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
+        params.api.sizeColumnsToFit()
         params.api.paginationGoToPage(0);
 
     };

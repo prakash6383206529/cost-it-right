@@ -18,7 +18,7 @@ import {
   getPartInfo, checkPartWithTechnology, createZBCCosting, createVBCCosting, getZBCExistingCosting, getVBCExistingCosting,
   updateZBCSOBDetail, updateVBCSOBDetail, storePartNumber, getBriefCostingById, deleteDraftCosting, getPartSelectListByTechnology,
   setOverheadProfitData, setComponentOverheadItemData, setPackageAndFreightData, setComponentPackageFreightItemData, setToolTabData,
-  setComponentToolItemData, setComponentDiscountOtherItemData, gridDataAdded, getCostingSpecificTechnology, setRMCCData, setComponentItemData, getNCCExistingCosting, createNCCCosting, saveAssemblyBOPHandlingCharge, setProcessGroupGrid, savePartNumberAndBOMLevel,
+  setComponentToolItemData, setComponentDiscountOtherItemData, gridDataAdded, getCostingSpecificTechnology, setRMCCData, setComponentItemData, getNCCExistingCosting, createNCCCosting, saveAssemblyBOPHandlingCharge, setProcessGroupGrid, savePartNumber, saveBOMLevel,
 } from '../actions/Costing'
 import CopyCosting from './Drawers/CopyCosting'
 import ConfirmComponent from '../../../helper/ConfirmComponent';
@@ -1320,7 +1320,8 @@ function CostingDetails(props) {
     }))
     setCostingOptionsSelectedObject({})
     dispatch(setProcessGroupGrid([]))
-    dispatch(savePartNumberAndBOMLevel(''))
+    dispatch(savePartNumber(''))
+    dispatch(saveBOMLevel(''))
 
   }
 
@@ -1685,10 +1686,10 @@ function CostingDetails(props) {
           </button> */}
 
           {/* COMMENTED FOR NOW 29-06-2021 */}
-          {/* {stepOne && <button onClick={bulkToggle} className="btn btn-link text-primary pr-0">
-            <img src={require('../../../assests/images/add-bom.svg')} alt="print-button" />
+          {stepOne && <button onClick={bulkToggle} className="btn btn-link text-primary pr-0">
+            <div className="add-rounded m-auto"></div>
             <span className="d-block mt-1">ADD BOM</span>
-          </button>} */}
+          </button>}
         </div>
       </span>
       <div className="login-container signup-form costing-details-page">
@@ -2181,7 +2182,7 @@ function CostingDetails(props) {
                                   return (
                                     <tr key={index}>
                                       <td className='break-word'>{`${item.VendorName}(${item.VendorCode})`}</td>
-                                      {initialConfiguration?.IsDestinationPlantConfigure && <td className='break-word'>{item?.DestinationPlantName ? item.DestinationPlantName : ''}</td>}
+                                      {initialConfiguration?.IsDestinationPlantConfigure && <td className='break-word'>{item?.DestinationPlantName ? `${item.DestinationPlantName}(${item.DestinationPlantCode})` : ''}</td>}
                                       <td className="w-100px cr-select-height">
                                         <NumberFieldHookForm
                                           label=""

@@ -15,7 +15,6 @@ import { reactLocalStorage } from 'reactjs-localstorage'
 import Toaster from '../../../../common/Toaster'
 import { G, KG, MG, STD, } from '../../../../../config/constants'
 import { AcceptableSheetMetalUOM } from '../../../../../config/masterData'
-import { ViewCostingContext } from '../../CostingDetails'
 import { debounce } from 'lodash'
 
 function IsolateReRender(control) {
@@ -53,10 +52,9 @@ function Pipe(props) {
     }
   }
 
-  const { rmRowData, isEditFlag, item } = props
+  const { rmRowData, isEditFlag, item, CostingViewMode } = props
 
   const costData = useContext(costingInfoContext)
-  const CostingViewMode = useContext(ViewCostingContext);
 
   const defaultValues = {
 
@@ -508,7 +506,7 @@ function Pipe(props) {
                     className=""
                     customClassName={'withBorder'}
                     errors={errors.OuterDiameter}
-                    disabled={isEditFlag ? false : true}
+                    disabled={CostingViewMode ? true : false}
                   />
                 </Col>
                 <Col md="3">
@@ -531,7 +529,7 @@ function Pipe(props) {
                     className=""
                     customClassName={'withBorder'}
                     errors={errors.Thickness}
-                    disabled={isEditFlag ? false : true}
+                    disabled={CostingViewMode ? true : false}
                   />
                 </Col>
                 <Col md="3">
@@ -576,7 +574,7 @@ function Pipe(props) {
                     className=""
                     customClassName={'withBorder'}
                     errors={errors.SheetLength}
-                    disabled={isEditFlag ? false : true}
+                    disabled={CostingViewMode ? true : false}
                   />
                 </Col>
                 <Col md="3">
@@ -599,7 +597,7 @@ function Pipe(props) {
                     className=""
                     customClassName={'withBorder'}
                     errors={errors.PartLength}
-                    disabled={isEditFlag ? false : true}
+                    disabled={CostingViewMode ? true : false}
                   />
                 </Col>
                 <Col md="3">
@@ -790,7 +788,7 @@ function Pipe(props) {
                     mandatory={true}
                     handleChange={handleUnit}
                     errors={errors.UOMDimension}
-                    disabled={isEditFlag ? false : true}
+                    disabled={CostingViewMode ? true : false}
                   />
 
                 </Col>
@@ -833,14 +831,13 @@ function Pipe(props) {
                     className=""
                     customClassName={'withBorder'}
                     errors={errors.FinishWeightOfSheet}
-                    disabled={isEditFlag ? false : true}
+                    disabled={CostingViewMode ? true : false}
                   />
                 </Col>
               </Row>
             </div>
-            {
-              isEditFlag &&
 
+            {!CostingViewMode &&
               <div className="col-sm-12 text-right px-0 mt-4">
                 <button
                   type={'button'}

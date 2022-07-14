@@ -29,7 +29,11 @@ export const ProcessGroup = (props) => {
 
     useEffect(() => {
         if (isEditFlag || isViewFlag) {
-            setRowData(processGroupList)
+            if (props?.rowData && props.rowData.length > 0) {
+                setRowData(props?.rowData)
+            } else {
+                setRowData(processGroupList)
+            }
         } else {
             dispatch(setGroupProcessList([]))
         }
@@ -97,6 +101,7 @@ export const ProcessGroup = (props) => {
 
         setApiData([...apiData, obj])
         setRowData([...rowData, tableObj])
+        props.setRowData([...rowData, tableObj])
         resetHandler()
     }
 
@@ -171,6 +176,7 @@ export const ProcessGroup = (props) => {
         setApiData(apiTempArrAfterDelete)
         resetHandler()
         setEditIndex('')
+        props.changeDropdownValue()
     }
 
     return (

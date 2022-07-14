@@ -614,14 +614,14 @@ function CostingSimulation(props) {
     const oldOPERFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const classGreen = (row.NewOperationCost > row.OldOperationCost) ? 'red-value form-control' : (row.NewOperationCost < row.OldOperationCost) ? 'green-value form-control' : 'form-class'
+        const classGreen = (row.NewNetOperationCost > row.OldNetOperationCost) ? 'red-value form-control' : (row.NewNetOperationCost < row.OldNetOperationCost) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
     const newOPERFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const classGreen = (row.NewOperationCost > row.OldOperationCost) ? 'red-value form-control' : (row.NewOperationCost < row.OldOperationCost) ? 'green-value form-control' : 'form-class'
+        const classGreen = (row.NewNetOperationCost > row.OldNetOperationCost) ? 'red-value form-control' : (row.NewNetOperationCost < row.OldNetOperationCost) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
@@ -1085,13 +1085,13 @@ function CostingSimulation(props) {
     return (
         <>
             {
-                loader ? <LoaderCustom /> :
+                loader ? <LoaderCustom customClass={`center-loader`} /> :
 
                     !showApprovalHistory &&
 
                     <div className="costing-simulation-page blue-before-inside other-costing-simulation">
                         <div className="container-fluid">
-                            <div className={`ag-grid-react`}>
+                            <div className={`ag-grid-react ${isFromApprovalListing ? 'pt-4' : ''}`}>
 
 
                                 <Row>
@@ -1101,7 +1101,7 @@ function CostingSimulation(props) {
                                 </Row>
                                 <Row>
                                     <Col sm="12">
-                                        <h1 class="mb-0">Token No:{tokenNo}</h1>
+                                        <h3 class="mb-0">Token No:{tokenNo}</h3>
                                     </Col>
                                 </Row>
                                 <Row className="filter-row-large pt-4 blue-before">
@@ -1217,8 +1217,8 @@ function CostingSimulation(props) {
 
 
                                                     {((isBOPDomesticOrImport || showBOPColumn) && !isMultipleMasterSimulation) && <AgGridColumn width={140} field="BoughtOutPartQuantity" headerName='BOP Quantity' cellRenderer='BOPQuantityFormatter' ></AgGridColumn>}
-                                                    {(isBOPDomesticOrImport || showBOPColumn) && <AgGridColumn width={140} field="OldBOPRate" headerName='Old BOP Rate' cellRenderer={BOPQuantityFormatter} ></AgGridColumn>}
-                                                    {(isBOPDomesticOrImport || showBOPColumn) && <AgGridColumn width={140} field="NewBOPRate" headerName='New BOP Rate' cellRenderer={BOPQuantityFormatter} ></AgGridColumn>}
+                                                    {((isBOPDomesticOrImport || showBOPColumn) && !isMultipleMasterSimulation) && <AgGridColumn width={140} field="OldBOPRate" headerName='Old BOP Rate' cellRenderer={BOPQuantityFormatter} ></AgGridColumn>}
+                                                    {((isBOPDomesticOrImport || showBOPColumn) && !isMultipleMasterSimulation) && <AgGridColumn width={140} field="NewBOPRate" headerName='New BOP Rate' cellRenderer={BOPQuantityFormatter} ></AgGridColumn>}
                                                     {(isBOPDomesticOrImport || showBOPColumn) && <AgGridColumn width={140} field="OldNetBoughtOutPartCost" headerName='Old Net BOP Cost' cellRenderer='netBOPPartCostFormatter' ></AgGridColumn>}
                                                     {(isBOPDomesticOrImport || showBOPColumn) && <AgGridColumn width={140} field="NewNetBoughtOutPartCost" headerName='New Net BOP Cost' cellRenderer='netBOPPartCostFormatter'></AgGridColumn>}
                                                     {(isBOPDomesticOrImport || showBOPColumn) && <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" headerName='BOP Variance' cellRenderer='BOPVarianceFormatter' ></AgGridColumn>}
@@ -1340,6 +1340,7 @@ function CostingSimulation(props) {
                                 dataForAssemblyImpactInVerifyImpact={tableData}
                                 assemblyImpactButtonTrue={assemblyImpactButtonTrue}
                                 approvalSummaryTrue={false}
+                                TypeOfCosting={amendmentDetails.CostingHead}
                             />
                         }
                     </div >

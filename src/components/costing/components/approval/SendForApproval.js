@@ -17,7 +17,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import _, { debounce } from 'lodash'
 import Dropzone from 'react-dropzone-uploader'
-import { FILE_URL } from "../../../../config/constants";
+import { FILE_URL, VBC, ZBC } from "../../../../config/constants";
 import redcrossImg from "../../../../assests/images/red-cross.png";
 import VerifyImpactDrawer from '../../../simulation/components/VerifyImpactDrawer';
 import LoaderCustom from '../../../common/LoaderCustom'
@@ -126,7 +126,7 @@ const SendForApproval = (props) => {
     obj.LoggedInUserId = userDetails().LoggedInUserId
     let drawerDataObj = {}
     drawerDataObj.EffectiveDate = viewApprovalData[0].effectiveDate
-    drawerDataObj.CostingHead = viewApprovalData[0].typeOfCosting === 0 ? 'ZBC' : 'VBC'
+    drawerDataObj.CostingHead = viewApprovalData[0].typeOfCosting === 0 ? ZBC : VBC
     drawerDataObj.Technology = props.technologyId
     setCostingApprovalDrawerData(drawerDataObj);
 
@@ -373,15 +373,15 @@ const SendForApproval = (props) => {
 
       let tempObj = {}
       tempObj.ApprovalProcessId = "00000000-0000-0000-0000-000000000000"
-      tempObj.TypeOfCosting = (data.typeOfCosting === 0 || data.typeOfCosting === 'ZBC') ? 'ZBC' : 'VBC'
+      tempObj.TypeOfCosting = (data.typeOfCosting === 0 || data.typeOfCosting === ZBC) ? ZBC : VBC
       tempObj.PlantId =
-        (Number(data.typeOfCosting) === 0 || data.typeOfCosting === 'ZBC') ? data.plantId : ''
+        (Number(data.typeOfCosting) === 0 || data.typeOfCosting === ZBC) ? data.plantId : ''
       tempObj.PlantNumber =
-        (Number(data.typeOfCosting) === 0 || data.typeOfCosting === 'ZBC') ? data.plantCode : ''
+        (Number(data.typeOfCosting) === 0 || data.typeOfCosting === ZBC) ? data.plantCode : ''
       tempObj.PlantName =
-        (Number(data.typeOfCosting) === 0 || data.typeOfCosting === 'ZBC') ? data.plantName : ''
+        (Number(data.typeOfCosting) === 0 || data.typeOfCosting === ZBC) ? data.plantName : ''
       tempObj.PlantCode =
-        (Number(data.typeOfCosting) === 0 || data.typeOfCosting === 'ZBC') ? data.plantCode : ''
+        (Number(data.typeOfCosting) === 0 || data.typeOfCosting === ZBC) ? data.plantCode : ''
       tempObj.CostingId = data.costingId
       tempObj.CostingNumber = data.costingName
       tempObj.ReasonId = data.reasonId
@@ -406,17 +406,17 @@ const SendForApproval = (props) => {
       tempObj.AnnualImpact = data.annualImpact
       tempObj.ImpactOfTheYear = data.yearImpact
       tempObj.VendorId =
-        (Number(data.typeOfCosting) === 1 || data.typeOfCosting === 'VBC') ? data.vendorId : ''
+        (Number(data.typeOfCosting) === 1 || data.typeOfCosting === VBC) ? data.vendorId : ''
       tempObj.VendorCode =
-        (Number(data.typeOfCosting) === 1 || data.typeOfCosting === 'VBC') ? data.vendorCode : ''
+        (Number(data.typeOfCosting) === 1 || data.typeOfCosting === VBC) ? data.vendorCode : ''
       tempObj.VendorPlantId =
-        (Number(data.typeOfCosting) === 1 || data.typeOfCosting === 'VBC') ? data.vendorePlantId : ''
+        (Number(data.typeOfCosting) === 1 || data.typeOfCosting === VBC) ? data.vendorePlantId : ''
       tempObj.VendorPlantCode =
-        (Number(data.typeOfCosting) === 1 || data.typeOfCosting === 'VBC') ? data.vendorPlantCode : ''
+        (Number(data.typeOfCosting) === 1 || data.typeOfCosting === VBC) ? data.vendorPlantCode : ''
       tempObj.VendorName =
-        (Number(data.typeOfCosting) === 1 || data.typeOfCosting === 'VBC') ? data.vendorName : ''
+        (Number(data.typeOfCosting) === 1 || data.typeOfCosting === VBC) ? data.vendorName : ''
       tempObj.VendorPlantName =
-        (Number(data.typeOfCosting) === 1 || data.typeOfCosting === 'VBC') ? data.vendorPlantName : ''
+        (Number(data.typeOfCosting) === 1 || data.typeOfCosting === VBC) ? data.vendorPlantName : ''
       tempObj.IsFinalApproved = isFinalApproverShow ? true : false
       tempObj.DestinationPlantCode = data.destinationPlantCode
       tempObj.DestinationPlantName = data.destinationPlantName
@@ -570,15 +570,15 @@ const SendForApproval = (props) => {
                     <Row className="px-3">
                       <Col md="12">
                         <h6 className="left-border d-inline-block mr-4">
-                          {(data.typeOfCosting === 0 || data.typeOfCosting === 'ZBC') ? 'ZBC' : `${data.vendorName}`}
+                          {(data.typeOfCosting === 0 || data.typeOfCosting === ZBC) ? ZBC : `${data.vendorName}`}
                         </h6>
                         <div className=" d-inline-block mr-4">
                           {`Part No:`}{" "}
                           <span className="grey-text">{`${isApprovalisting ? data.partNo : partNo.partNumber}`}</span>
                         </div>
                         <div className=" d-inline-block mr-4">
-                          {(data.typeOfCosting === 0 || data.typeOfCosting === 'ZBC') ? `Plant Code:` : `Vendor Code`}{" "}
-                          <span className="grey-text">{(data.typeOfCosting === 0 || data.typeOfCosting === 'ZBC') ? `${data.plantCode}` : `${data.vendorCode}`}</span>
+                          {(data.typeOfCosting === 0 || data.typeOfCosting === ZBC) ? `Plant Code:` : `Vendor Code`}{" "}
+                          <span className="grey-text">{(data.typeOfCosting === 0 || data.typeOfCosting === ZBC) ? `${data.plantCode}` : `${data.vendorCode}`}</span>
                         </div>
                         <div className=" d-inline-block">
                           {`Costing Id:`}{" "}
@@ -985,6 +985,7 @@ const SendForApproval = (props) => {
                 costingIdArray={costingIdArray}
                 vendorIdState={viewApprovalData[0].vendorId}
                 EffectiveDate={DayTime(viewApprovalData[0].effectiveDate).format('YYYY-MM-DD HH:mm:ss')}
+                TypeOfCosting={viewApprovalData[0].typeOfCosting}
               />}
           </div>
         </div>

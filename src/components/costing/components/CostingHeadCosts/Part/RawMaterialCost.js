@@ -234,37 +234,37 @@ function RawMaterialCost(props) {
     switch ((Number(costData?.TechnologyId))) {
 
       case SHEETMETAL:
-        dispatch(getRawMaterialCalculationForSheetMetal(item.CostingId, tempData.RawMaterialId, tempData.WeightCalculationId, res => {
+        dispatch(getRawMaterialCalculationForSheetMetal(item.CostingId, tempData.RawMaterialId, tempData.RawMaterialCalculatorId, res => {
           setCalculatorData(res, index)
         }))
         break;
       case FORGING:
-        dispatch(getRawMaterialCalculationForForging(item.CostingId, tempData.RawMaterialId, tempData.WeightCalculationId, res => {
+        dispatch(getRawMaterialCalculationForForging(item.CostingId, tempData.RawMaterialId, tempData.RawMaterialCalculatorId, res => {
           setCalculatorData(res, index)
         }))
         break;
       case Ferrous_Casting:
-        dispatch(getRawMaterialCalculationForFerrous(item.CostingId, tempData.RawMaterialId, tempData.WeightCalculationId, res => {
+        dispatch(getRawMaterialCalculationForFerrous(item.CostingId, tempData.RawMaterialId, tempData.RawMaterialCalculatorId, res => {
           setCalculatorData(res, index)
         }))
         break;
       case PLASTIC:
-        dispatch(getRawMaterialCalculationForPlastic(item.CostingId, tempData.RawMaterialId, tempData.WeightCalculationId, res => {
+        dispatch(getRawMaterialCalculationForPlastic(item.CostingId, tempData.RawMaterialId, tempData.RawMaterialCalculatorId, res => {
           setCalculatorData(res, index)
         }))
         break;
       case CORRUGATEDBOX:
-        dispatch(getRawMaterialCalculationForCorrugatedBox(item.CostingId, tempData.RawMaterialId, tempData.WeightCalculationId, res => {
+        dispatch(getRawMaterialCalculationForCorrugatedBox(item.CostingId, tempData.RawMaterialId, tempData.RawMaterialCalculatorId, res => {
           setCalculatorData(res, index)
         }))
         break;
       case DIE_CASTING:
-        dispatch(getRawMaterialCalculationForDieCasting(item.CostingId, tempData.RawMaterialId, tempData.WeightCalculationId, res => {
+        dispatch(getRawMaterialCalculationForDieCasting(item.CostingId, tempData.RawMaterialId, tempData.RawMaterialCalculatorId, res => {
           setCalculatorData(res, index)
         }))
         break;
       case RUBBER:
-        dispatch(getRawMaterialCalculationForRubber(item.CostingId, tempData.RawMaterialId, tempData.WeightCalculationId, res => {
+        dispatch(getRawMaterialCalculationForRubber(item.CostingId, tempData.RawMaterialId, tempData.RawMaterialCalculatorId, res => {
           setCalculatorData(res, index)
         }))
         break;
@@ -1051,7 +1051,6 @@ function RawMaterialCost(props) {
                   <tbody className='rm-table-body'>
                     {gridData &&
                       gridData.map((item, index) => {
-
                         return (
                           <tr key={index} className=''>
                             <td className='text-overflow'><span title={item.RMName}>{item.RMName}</span></td>
@@ -1064,8 +1063,8 @@ function RawMaterialCost(props) {
                                 <button
                                   className="CalculatorIcon cr-cl-icon "
                                   type={'button'}
-                                  disabled={false}
                                   onClick={() => toggleWeightCalculator(index)}
+                                  disabled={CostingViewMode ? item?.RawMaterialCalculatorId === null ? true : false : false}
                                 />
                               </td>
                             }
@@ -1232,7 +1231,7 @@ function RawMaterialCost(props) {
                     <input
                       type="checkbox"
                       checked={IsApplyMasterBatch}
-                      disabled={(CostingViewMode || IsLocked || gridData.length !== 1 || masterBatch) ? true : false}
+                      disabled={(CostingViewMode || IsLocked || gridData?.length !== 1 || masterBatch) ? true : false}
                     />
                     <span
                       className=" before-box"

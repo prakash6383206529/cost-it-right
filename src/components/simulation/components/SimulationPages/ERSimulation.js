@@ -14,7 +14,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import Simulation from '../Simulation';
-import OtherVerifySimulation from '../OtherVerifySimulation';
+import VerifySimulation from '../VerifySimulation';
 import { debounce } from 'lodash'
 import { PaginationWrapper } from '../../../common/commonPagination';
 import DatePicker from "react-datepicker";
@@ -335,7 +335,7 @@ function ERSimulation(props) {
                 }
                 {
                     showverifyPage &&
-                    <OtherVerifySimulation isExchangeRate={true} master={master} token={token} cancelVerifyPage={cancelVerifyPage} />
+                    <VerifySimulation isExchangeRate={true} master={master} token={token} cancelVerifyPage={cancelVerifyPage} />
                 }
 
                 {

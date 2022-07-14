@@ -84,32 +84,30 @@ class OperationListing extends Component {
         this.applyPermission(this.props.topAndLeftMenuData)
         setTimeout(() => {
 
-            if (this.props.stopAPICall === false) {
-
-                this.props.getTechnologySelectList(() => { })
-                this.props.getOperationSelectList(() => { })
-                this.props.getVendorWithVendorCodeSelectList()
-                if (this.props.isSimulation && this.props?.selectionForListingMasterAPI === 'Combined') {
-                    this.props?.changeSetLoader(true)
-                    this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, OPERATIONS, (res) => {
-                        this.props?.changeSetLoader(false)
-                        this.setState({ tableData: res.data.DataList })
-                    })
-                } else {
-                    this.getTableListData(null, null, null, null, 0, defaultPageSize, true, this.state.floatingFilterData)
-                }
-                let obj = {
-                    MasterId: OPERATIONS_ID,
-                    DepartmentId: userDetails().DepartmentId,
-                    LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
-                    LoggedInUserId: loggedInUserId()
-                }
-                this.props.masterFinalLevelUser(obj, (res) => {
-                    if (res?.data?.Result) {
-                        this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
-                    }
+            this.props.getTechnologySelectList(() => { })
+            this.props.getOperationSelectList(() => { })
+            this.props.getVendorWithVendorCodeSelectList()
+            if (this.props.isSimulation && this.props?.selectionForListingMasterAPI === 'Combined') {
+                this.props?.changeSetLoader(true)
+                this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, OPERATIONS, (res) => {
+                    this.props?.changeSetLoader(false)
+                    this.setState({ tableData: res.data.DataList })
                 })
+            } else {
+                this.getTableListData(null, null, null, null, 0, defaultPageSize, true, this.state.floatingFilterData)
             }
+            let obj = {
+                MasterId: OPERATIONS_ID,
+                DepartmentId: userDetails().DepartmentId,
+                LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
+                LoggedInUserId: loggedInUserId()
+            }
+            this.props.masterFinalLevelUser(obj, (res) => {
+                if (res?.data?.Result) {
+                    this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+                }
+            })
+
             if (this.props.stopAPICall === true) {
                 this.setState({ tableData: this.props.setOperationData })
             }
@@ -217,10 +215,11 @@ class OperationListing extends Component {
 
                     // PAGINATION CODE
                     let FloatingfilterData = this.state.filterModel
+                    let obj = { ...this.state.floatingFilterData }
                     this.setState({ totalRecordCount: res.data.DataList[0].TotalRecordCount })
                     let isReset = true
                     setTimeout(() => {
-                        let obj = this.state.floatingFilterData
+
                         for (var prop in obj) {
                             if (prop !== "DepartmentCode" && obj[prop] !== "") {
                                 isReset = false
@@ -586,6 +585,7 @@ class OperationListing extends Component {
 
     onGridReady = (params) => {
         this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
+        window.screen.width >= 1600 && params.api.sizeColumnsToFit()
         params.api.paginationGoToPage(0);
     };
 
@@ -827,8 +827,7 @@ class OperationListing extends Component {
 
                         </Row>
                     </form>
-
-                    <div className={`ag-grid-wrapper ${this.props?.isDataInMaster ? 'master-approval-overlay' : ''} overlay-contain ${this.props.isSimulation ? 'min-height' : ''}`}>
+                    <div className={`ag-grid-wrapper ${this.props?.isDataInMaster ? 'master-approval-overlay' : ''} ${this.state.tableData && this.state.tableData.length <= 0 ? 'overlay-contain' : ''}  ${this.props.isSimulation ? 'min-height' : ''}`}>
                         <div className={`ag-theme-material ${(this.state.isLoader && !this.props.isMasterSummaryDrawer) && "max-loader-height"}`}>
                             <AgGridReact
                                 defaultColDef={defaultColDef}

@@ -64,7 +64,8 @@ class MachineRateListing extends Component {
             isFilterButtonClicked: false,
             currentRowIndex: 0,
             pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
-            globalTake: defaultPageSize
+            globalTake: defaultPageSize,
+            disableFilter: true,
         }
     }
 
@@ -122,6 +123,7 @@ class MachineRateListing extends Component {
             }
             this.setState({ isLoader: true })
             let FloatingfilterData = this.state.filterModel
+            let obj = { ...this.state.floatingFilterData }
             this.props.getMachineDataList(filterData, skip, take, isPagination, dataObj, (res) => {
                 if (this.props.isSimulation) {
                     this.props?.changeTokenCheckBox(true)
@@ -134,7 +136,6 @@ class MachineRateListing extends Component {
                     }
                     let isReset = true
                     setTimeout(() => {
-                        let obj = this.state.floatingFilterData
                         for (var prop in obj) {
                             if (prop !== "DepartmentCode" && obj[prop] !== "") {
                                 isReset = false
@@ -155,6 +156,7 @@ class MachineRateListing extends Component {
 
 
     onFloatingFilterChanged = (value) => {
+        this.setState({ disableFilter: false })
         onFloatingFilterChanged(value, gridOptions, this)   // COMMON FUNCTION
     }
 
@@ -521,7 +523,7 @@ class MachineRateListing extends Component {
         return (
             <div className={`ag-grid-react ${(this.props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${DownloadAccessibility ? "show-table-btn" : ""}`}>
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-                    {(this.state.isLoader && !this.props.isMasterSummaryDrawer) && <LoaderCustom />}
+                    {(this.state.isLoader && !this.props.isMasterSummaryDrawer) && <LoaderCustom customClass="simulation-Loader" />}
                     <Row className={`pt-4 filter-row-large ${this.props.isSimulation ? 'simulation-filter zindex-0' : ''}`}>
                         <Col md="3" lg="3">
                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
@@ -544,7 +546,7 @@ class MachineRateListing extends Component {
                                 }
 
                                 {(this.props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) &&
-                                    <button disabled={!this.state.warningMessage} title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch()}><div class="filter mr-0"></div></button>
+                                    <button disabled={this.state.disableFilter} title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch()}><div class="filter mr-0"></div></button>
 
                                 }
                                 {AddAccessibility && (

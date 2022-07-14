@@ -571,8 +571,8 @@ function AddToComparisonDrawer(props) {
     }
     if (label === 'DestinationPlant') {
       DestinationplantSelectList && DestinationplantSelectList.map((item) => {
-        if (item.Value === '0') return false
-        temp.push({ label: item.Text, value: item.Value })
+        if (item.PlantId === '0') return false
+        temp.push({ label: item.PlantNameCode, value: item.PlantId })
         return null
       })
       return temp
