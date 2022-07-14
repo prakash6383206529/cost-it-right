@@ -66,7 +66,7 @@ function VerifyImpactDrawer(props) {
   }, [lastSimulationData, impactedMasterData])
 
   useEffect(() => {
-    if (vendorIdState && EffectiveDate && TypeOfCosting === VBC) {
+    if (vendorIdState && EffectiveDate && (TypeOfCosting === VBC || TypeOfCosting === 1)) {
       dispatch(getLastSimulationData(vendorIdState, EffectiveDate, (res) => {
         setMasterIdForLastRevision(res?.data?.Data?.SimulationTechnologyId)
       }))
@@ -204,7 +204,7 @@ function VerifyImpactDrawer(props) {
                   </Row>
                 </>
               }
-              {TypeOfCosting === VBC && <>
+              {(TypeOfCosting === VBC || TypeOfCosting === 1) && <>
                 <Row className="mb-3 pr-0 mx-0">
                   <Col md="6"> <HeaderTitle title={'Last Revision Data:'} /></Col>
                   <Col md="6">

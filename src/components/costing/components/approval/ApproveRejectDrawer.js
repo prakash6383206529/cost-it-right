@@ -26,7 +26,6 @@ function ApproveRejectDrawer(props) {
   const dropzone = useRef(null);
 
   const { type, approvalData, IsFinalLevel, IsPushDrawer, isSimulation, dataSend, reasonId, simulationDetail, selectedRowData, costingArr, isSaveDone, Attachements, vendorId, SimulationTechnologyId, SimulationType, isSimulationApprovalListing, apiData } = props
-  console.log('IsFinalLevel: ', IsFinalLevel);
   const userLoggedIn = loggedInUserId()
   const userData = userDetails()
   const { TokensList } = useSelector(state => state.simulation)
