@@ -638,12 +638,8 @@ class AddOperation extends Component {
         plant: plantArray,
         Attachements: files,
         LoggedInUserId: loggedInUserId(),
-<<<<<<< HEAD
         EffectiveDate: DayTime(effectiveDate).format('YYYY/MM/DD HH:mm:ss'),
         DestinationPlantId: getConfigurationKey().IsDestinationPlantConfigure ? destinationPlant.value : '00000000-0000-0000-0000-000000000000',
-=======
-        EffectiveDate: DayTime(effectiveDate).format('YYYY/MM/DD HH:mm:ss'),
->>>>>>> fe1f58b87 (CIR-T758|Manage Raw Material and Operation plant in single table as VBC task completed)
         VendorPlant: []
       }
 
