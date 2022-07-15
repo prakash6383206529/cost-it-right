@@ -4,7 +4,6 @@ import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
 import { TextFieldHookForm, SearchableSelectHookForm } from '../../../../layout/HookFormInputs'
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../../helper'
-import { saveRawMaterialCalciData } from '../../../actions/CostWorking'
 import Toaster from '../../../../common/Toaster'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 import { KG, EMPTY_DATA } from '../../../../../config/constants'
@@ -442,14 +441,8 @@ function StandardRub(props) {
         obj.RmDropDownData = rmDropDownData
         obj.CalculatedRmTableData = tableData
 
-        dispatch(saveRawMaterialCalciData(obj, res => {
-            setIsDisable(false)
-            if (res.data.Result) {
-                obj.WeightCalculationId = res.data.Identity
-                Toaster.success("Calculation saved successfully")
-                props.toggleDrawer('', obj, obj)
-            }
-        }))
+        //APPLY NEW ACTION HERE 
+
     }), 500)
 
     const cancel = () => {
