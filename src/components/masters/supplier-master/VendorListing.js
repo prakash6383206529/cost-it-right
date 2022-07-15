@@ -782,7 +782,10 @@ class VendorListing extends Component {
                             </div>
 
                         </div>
-                        <WarningMessage dClass={"vendorListingMessage"} textClass={'vendorListingText'} message={'All the above details of supplier is entered through SAP.'} />
+                        <div className="text-right pb-3">
+                            <WarningMessage message="All the above details of supplier is entered through SAP." />
+                        </div>
+                        {/* <WarningMessage dClass={"vendorListingMessage"} textClass={'vendorListingText'} message={'All the above details of supplier is entered through SAP.'} /> */}
 
                     </div>
                 </div>
