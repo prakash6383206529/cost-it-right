@@ -768,6 +768,9 @@ class VendorListing extends Component {
                                 <p><button className="next-btn" type="button" onClick={() => this.onBtNext(this)}> </button></p>
                             </div>
                         </div>
+                        <div className="text-right pb-3">
+                            <WarningMessage message="All the above details of supplier is entered through SAP." />
+                        </div>
                     </div>
                 </div>
 
