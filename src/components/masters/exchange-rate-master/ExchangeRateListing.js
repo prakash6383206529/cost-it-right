@@ -160,14 +160,8 @@ class ExchangeRateListing extends Component {
     */
     deleteItem = (Id) => {
         this.setState({ showPopup: true, deletedId: Id })
-        const toastrConfirmOptions = {
-            onOk: () => {
-                this.confirmDeleteItem(Id)
-            },
-            onCancel: () => { },
-            component: () => <ConfirmComponent />
-        };
-        // return toastr.confirm(MESSAGES.EXCHANGE_DELETE_ALERT, toastrConfirmOptions);
+
+
     }
 
 
@@ -224,13 +218,13 @@ class ExchangeRateListing extends Component {
     buttonFormatter = (props) => {
 
         const cellValue = props?.value;
-        const rowData = props?.data;
 
-        const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.state;
+        const { DeleteAccessibility, ViewAccessibility } = this.state;
         return (
             <>
                 {ViewAccessibility && <button title='View' className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
-                {EditAccessibility && <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
+                {/* COMMENT BECAUSE DATA IS COMING FROM SAP SO NO NEED TO EDIT  15/07/2022  (MAY BE USED LATER) */}
+                {/* {EditAccessibility && <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />} */}
                 {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
