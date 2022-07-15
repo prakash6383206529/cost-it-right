@@ -242,6 +242,10 @@ export const onPageSizeChanged = (thisReference, newPageSize, master, currentRow
 
 
         thisReference.setState({ pageSize: { pageSize10: false, pageSize50: true, pageSize100: false }, globalTake: 50 })
+
+        setTimeout(() => {
+            thisReference.setState({ warningMessage: false })
+        }, 1000);
     }
     else if (Number(newPageSize) === 100) {
 
@@ -267,6 +271,10 @@ export const onPageSizeChanged = (thisReference, newPageSize, master, currentRow
 
 
         thisReference.setState({ pageSize: { pageSize10: false, pageSize50: false, pageSize100: true }, globalTake: 100 })
+
+        setTimeout(() => {
+            thisReference.setState({ warningMessage: false })
+        }, 1600);
 
     }
     thisReference.state.gridApi.paginationSetPageSize(Number(newPageSize));

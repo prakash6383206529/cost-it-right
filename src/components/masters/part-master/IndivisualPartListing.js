@@ -111,6 +111,10 @@ class IndivisualPartListing extends Component {
                 }, 300);
 
                 setTimeout(() => {
+                    this.setState({ warningMessage: false })
+                }, 335);
+
+                setTimeout(() => {
                     this.setState({ isFilterButtonClicked: false })
                 }, 600);
             }
@@ -565,7 +569,7 @@ class IndivisualPartListing extends Component {
                                 <AgGridColumn field="PartId" headerName="Action" width={160} type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                             </AgGridReact>
                             <div className="button-wrapper">
-                                {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} globalTake={this.state.globalTake} />}
+                                {!this.state.isLoader && <PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} globalTake={this.state.globalTake} />}
                                 <div className="d-flex pagination-button-container">
                                     <p><button className="previous-btn" type="button" disabled={this.state.pageNo === 1 ? true : false} onClick={() => this.onBtPrevious(this)}> </button></p>
                                     {this.state.pageSize.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 10)}</p>}
