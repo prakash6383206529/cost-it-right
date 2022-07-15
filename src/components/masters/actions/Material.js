@@ -1318,7 +1318,7 @@ export function bulkUploadRMSpecification(data, callback) {
 export function getRawMaterialChildById(ID, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getRawMaterialChildById} /${ID}`, config());
+        const request = axios.get(`${API.getRawMaterialChildById}/${ID}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
