@@ -71,6 +71,7 @@ class AddRMImport extends Component {
       HasDifferentSource: false,
       sourceLocation: [],
       oldDate: '',
+      nameDrawer: [],
 
       UOM: [],
       currency: [],
@@ -119,7 +120,6 @@ class AddRMImport extends Component {
   * @description Called before render the component
   */
   UNSAFE_componentWillMount() {
-    this.props.getRawMaterialNameChild(() => { })
     this.props.getCurrencySelectList(() => { })
     this.props.getUOMSelectList(() => { })
     if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
@@ -229,11 +229,14 @@ class AddRMImport extends Component {
   */
   handleTechnologyChange = (newValue) => {
     if (newValue.label === SHEET_METAL) {
-      this.setState({ Technology: newValue, showExtraCost: true })
+      this.setState({ Technology: newValue, showExtraCost: true, nameDrawer: true })
     } else {
-      this.setState({ Technology: newValue, showExtraCost: false })
+      this.setState({ Technology: newValue, showExtraCost: false, nameDrawer: true })
 
     }
+    this.setState({ RawMaterial: [] })
+    this.props.getRawMaterialNameChild(newValue.value, () => { })
+    this.setState({ nameDrawer: false })
   }
 
   /**
@@ -390,19 +393,12 @@ class AddRMImport extends Component {
           else {
             this.setState({ showWarning: false })
           }
-
-
           this.props.change('NetLandedCost', checkForDecimalAndNull(netCost, this.props.initialConfiguration.NoOfDecimalForPrice))
           this.props.change('NetLandedCostCurrency', checkForDecimalAndNull(netCost * res.data.Data.CurrencyExchangeRate, this.props.initialConfiguration.NoOfDecimalForPrice))
           this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate), netCost: checkForNull(netCost), netCurrencyCost: checkForNull(netCost * res.data.Data.CurrencyExchangeRate) })
-
-
-
         })
       }
     }
-
-
   }
 
   /**
@@ -453,70 +449,69 @@ class AddRMImport extends Component {
           this.setState({ minEffectiveDate: Data.EffectiveDate })
           this.props.getRMGradeSelectListByRawMaterial(Data.RawMaterial, res => {
             this.props.fetchSpecificationDataAPI(Data.RMGrade, res => {
+              this.props.getRawMaterialNameChild(Data.TechnologyId, (res) => {
 
-              setTimeout(() => {
-                const { gradeSelectList, rmSpecification, cityList, categoryList, rawMaterialNameSelectList, UOMSelectList, currencySelectList } = this.props;
+                setTimeout(() => {
+                  const { gradeSelectList, rmSpecification, cityList, categoryList, rawMaterialNameSelectList, UOMSelectList, currencySelectList } = this.props;
 
-                const materialNameObj = rawMaterialNameSelectList && rawMaterialNameSelectList.find(item => item.Value === Data.RawMaterial)
-                const gradeObj = gradeSelectList && gradeSelectList.find(item => item.Value === Data.RMGrade)
-                const specObj = rmSpecification && rmSpecification.find(item => item.Value === Data.RMSpec)
-                const categoryObj = categoryList && categoryList.find(item => Number(item.Value) === Data.Category)
-                const currencyObj = currencySelectList && currencySelectList.find(item => item.Text === Data.Currency)
-                this.props.change('FreightCharge', Data.RMFreightCost ? Data.RMFreightCost : '')
-                this.props.change('ShearingCost', Data.RMShearingCost ? Data.RMShearingCost : '')
-                this.handleCurrency({ label: currencyObj.Text, value: currencyObj.Value })
-                this.props.change('NetLandedCostCurrency', Data.NetLandedCostConversion ? Data.NetLandedCostConversion : '')
-                this.props.change('JaliScrapCost', Data.ScrapRate ? Data.ScrapRate : '')
-                this.props.change('CircleScrapCost', Data.JaliScrapCost)
+                  const materialNameObj = res.data.SelectList && res.data.SelectList.find(item => item.Value === Data.RawMaterial)
+                  const gradeObj = gradeSelectList && gradeSelectList.find(item => item.Value === Data.RMGrade)
+                  const specObj = rmSpecification && rmSpecification.find(item => item.Value === Data.RMSpec)
+                  const categoryObj = categoryList && categoryList.find(item => Number(item.Value) === Data.Category)
+                  const currencyObj = currencySelectList && currencySelectList.find(item => item.Text === Data.Currency)
+                  this.props.change('FreightCharge', Data.RMFreightCost ? Data.RMFreightCost : '')
+                  this.props.change('ShearingCost', Data.RMShearingCost ? Data.RMShearingCost : '')
+                  this.handleCurrency(currencyObj ? { label: currencyObj.Text, value: currencyObj.Value } : '')
+                  this.props.change('NetLandedCostCurrency', Data.NetLandedCostConversion ? Data.NetLandedCostConversion : '')
+                  this.props.change('JaliScrapCost', Data.ScrapRate ? Data.ScrapRate : '')
+                  this.props.change('CircleScrapCost', Data.JaliScrapCost)
 
-                this.props.change('cutOffPrice', Data.CutOffPrice ? Data.CutOffPrice : '')
-                this.props.change('Code', Data.RawMaterialCode ? Data.RawMaterialCode : '')
+                  this.props.change('cutOffPrice', Data.CutOffPrice ? Data.CutOffPrice : '')
+                  this.props.change('Code', Data.RawMaterialCode ? Data.RawMaterialCode : '')
 
-                const sourceLocationObj = cityList && cityList.find(item => Number(item.Value) === Data.SourceLocation)
-                const UOMObj = UOMSelectList && UOMSelectList.find(item => item.Value === Data.UOM)
+                  const sourceLocationObj = cityList && cityList.find(item => Number(item.Value) === Data.SourceLocation)
+                  const UOMObj = UOMSelectList && UOMSelectList.find(item => item.Value === Data.UOM)
 
-                this.setState({
-                  IsFinancialDataChanged: false,
-                  isEditFlag: true,
-                  isShowForm: true,
-                  IsVendor: Data.IsVendor,
-                  RawMaterial: materialNameObj !== undefined ? { label: materialNameObj.Text, value: materialNameObj.Value } : [],
-                  RMGrade: gradeObj !== undefined ? { label: gradeObj.Text, value: gradeObj.Value } : [],
-                  RMSpec: specObj !== undefined ? { label: specObj.Text, value: specObj.Value } : [],
-                  Category: categoryObj !== undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
-                  Technology: Data.TechnologyName !== undefined ? { label: Data.TechnologyName, value: Data.TechnologyId } : [],
-                  selectedPlants: [{ Text: Data.DestinationPlantName, Value: Data.DestinationPlantId }],
-                  vendorName: Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.Vendor } : [],
-                  HasDifferentSource: Data.HasDifferentSource,
-                  sourceLocation: sourceLocationObj !== undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value } : [],
-                  UOM: UOMObj !== undefined ? { label: UOMObj.Display, value: UOMObj.Value } : [],
-                  effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
-                  oldDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
-                  currency: currencyObj !== undefined ? { label: currencyObj.Text, value: currencyObj.Value } : [],
-                  remarks: Data.Remark,
-                  files: Data.FileList,
-                  singlePlantSelected: Data.DestinationPlantName !== undefined ? { label: Data.DestinationPlantName, value: Data.DestinationPlantId } : [],
-                  // FreightCharge:Data.FreightCharge
-                  netCurrencyCost: Data.NetLandedCostConversion ? Data.NetLandedCostConversion : '',
-                  showExtraCost: Data.TechnologyName === SHEET_METAL ? true : false,
-                }, () => this.setState({ isLoader: false }))
-                // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
-                let files = Data.FileList && Data.FileList.map((item) => {
-                  item.meta = {}
-                  item.meta.id = item.FileId
-                  item.meta.status = 'done'
-                  return item
-                })
-                if (this.dropzone.current !== null) {
-                  this.dropzone.current.files = files
-                }
-              }, 200);
+                  this.setState({
+                    IsFinancialDataChanged: false,
+                    isEditFlag: true,
+                    isShowForm: true,
+                    IsVendor: Data.IsVendor,
+                    RawMaterial: materialNameObj !== undefined ? { label: materialNameObj.Text, value: materialNameObj.Value } : [],
+                    RMGrade: gradeObj !== undefined ? { label: gradeObj.Text, value: gradeObj.Value } : [],
+                    RMSpec: specObj !== undefined ? { label: specObj.Text, value: specObj.Value } : [],
+                    Category: categoryObj !== undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
+                    Technology: Data.TechnologyName !== undefined ? { label: Data.TechnologyName, value: Data.TechnologyId } : [],
+                    selectedPlants: [{ Text: Data.DestinationPlantName, Value: Data.DestinationPlantId }],
+                    vendorName: Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.Vendor } : [],
+                    HasDifferentSource: Data.HasDifferentSource,
+                    sourceLocation: sourceLocationObj !== undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value } : [],
+                    UOM: UOMObj !== undefined ? { label: UOMObj.Display, value: UOMObj.Value } : [],
+                    effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
+                    oldDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
+                    currency: currencyObj !== undefined ? { label: currencyObj.Text, value: currencyObj.Value } : [],
+                    remarks: Data.Remark,
+                    files: Data.FileList,
+                    singlePlantSelected: Data.DestinationPlantName !== undefined ? { label: Data.DestinationPlantName, value: Data.DestinationPlantId } : [],
+                    // FreightCharge:Data.FreightCharge
+                    netCurrencyCost: Data.NetLandedCostConversion ? Data.NetLandedCostConversion : '',
+                    showExtraCost: Data.TechnologyName === SHEET_METAL ? true : false,
+                  }, () => this.setState({ isLoader: false }))
+                  // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
+                  let files = Data.FileList && Data.FileList.map((item) => {
+                    item.meta = {}
+                    item.meta.id = item.FileId
+                    item.meta.status = 'done'
+                    return item
+                  })
+                  if (this.dropzone.current !== null) {
+                    this.dropzone.current.files = files
+                  }
+                }, 200);
+              })
             });
-
           })
           this.props.getPlantBySupplier(Data.Vendor, () => { })
-
-
         }
       })
     } else {
@@ -562,7 +557,7 @@ class AddRMImport extends Component {
   closeRMDrawer = (e = '', data = {}) => {
     this.setState({ isRMDrawerOpen: false }, () => {
       /* FOR SHOWING RM ,GRADE AND SPECIFICATION SELECTED IN RM SPECIFICATION DRAWER*/
-      this.props.getRawMaterialNameChild(() => {
+      this.props.getRawMaterialNameChild(this.state.Technology, () => {
         if (Object.keys(data).length > 0) {
           this.props.getRMGradeSelectListByRawMaterial(data.RawMaterialId, (res) => {
             this.props.fetchSpecificationDataAPI(data.GradeId, (res) => {
@@ -1301,7 +1296,7 @@ class AddRMImport extends Component {
                                   disabled={isEditFlag || isViewFlag}
                                 />
                               </div>
-                              {!isEditFlag && (
+                              {(!isEditFlag && !this.state.nameDrawer) && (
                                 <div
                                   onClick={this.rmToggler}
                                   className={"plus-icon-square  right"}
@@ -1917,6 +1912,7 @@ class AddRMImport extends Component {
               EditAccessibilityRMANDGRADE={
                 this.props.EditAccessibilityRMANDGRADE
               }
+              Technology={this.state.Technology.value}
             />
           )}
           {isOpenCategory && (
