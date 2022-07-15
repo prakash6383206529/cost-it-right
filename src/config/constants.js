@@ -15,8 +15,8 @@ export const config = {
 }
 
 // DEVELOPMENT MIL URL
-const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
-// const BASE_URL = `https://apiinsight.unominda.com/api/v1`;
+// const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
+const BASE_URL = `https://apiinsightqa.unominda.com/api/v1`;
 
 
 //DEVELOPMENT MIL URL
@@ -1826,6 +1826,10 @@ export const MACHINE_MASTER_ID = 4
 
 //approve reject drawer
 export const provisional = "Provisional"
+
+//default value for page size
+export const defaultPageSize = 10;
+
 
 
 //AllConastant File Moved here
