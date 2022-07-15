@@ -21,7 +21,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import WarningMessage from '../../common/WarningMessage'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import DayTime from '../../common/DayTimeWrapper';
-import { PaginationWrapper } from '../../common/commonPagination';
+import { onFloatingFilterChanged, onSearch, resetState, onBtPrevious, onBtNext, onPageSizeChanged, PaginationWrapper } from '../../common/commonPagination'
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -57,9 +57,8 @@ class IndivisualPartListing extends Component {
             isLoader: false,
             showPopup: false,
             deletedId: '',
-            pageSize10: true,
-            pageSize50: false,
-            pageSize100: false,
+            globalTake: defaultPageSize,
+            pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
         }
     }
 
@@ -69,6 +68,9 @@ class IndivisualPartListing extends Component {
     ApiActionCreator(skip, take, obj, isPagination) {
         this.setState({ isLoader: true })
 
+
+        let constantFilterData = this.state.filterModel
+        let object = { ...this.state.floatingFilterData }
         this.props.getPartDataList(skip, take, obj, isPagination, (res) => {
             this.setState({ isLoader: false })
 
@@ -89,100 +91,69 @@ class IndivisualPartListing extends Component {
                     totalRecordCount: Data[0].TotalRecordCount,
 
                 })
-
-            } else {
-
             }
+
+            if (res) {
+                if (res && res.data && res.data.DataList.length > 0) {
+                    this.setState({ totalRecordCount: res.data.DataList[0].TotalRecordCount })
+                }
+                let isReset = true
+                setTimeout(() => {
+
+                    for (var prop in object) {
+                        if (prop !== "DepartmentCode" && object[prop] !== "") {
+                            isReset = false
+                        }
+                    }
+                    // Sets the filter model via the grid API
+                    isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(constantFilterData))
+
+                }, 300);
+
+                setTimeout(() => {
+                    this.setState({ isFilterButtonClicked: false })
+                }, 600);
+            }
+
         })
 
     }
 
-
-    onBtNext(data) {
-
-        if (data.state.currentRowIndex < (this.state.totalRecordCount - 10)) {
-
-            data.setState({ pageNo: data.state.pageNo + 1 })
-
-            const nextNo = data.state.currentRowIndex + 10;
-
-            data.ApiActionCreator(nextNo, 100, this.state.floatingFilterData, true)
-            data.setState({ currentRowIndex: nextNo })
-        }
-
-    };
-
-    onBtPrevious(data) {
-
-        if (data.state.currentRowIndex >= 10) {
-
-            data.setState({ pageNo: data.state.pageNo - 1 })
-            const previousNo = data.state.currentRowIndex - 10;
-
-            data.ApiActionCreator(previousNo, 100, this.state.floatingFilterData, true)
-            data.setState({ currentRowIndex: previousNo })
-
-        }
-
-
-    };
-
-
-    onSearch(data) {
-
-        this.setState({ warningMessage: false })
-        this.setState({ pageNo: 1 })
-        data.setState({ currentRowIndex: 0 })
-        data.ApiActionCreator(0, 100, this.state.floatingFilterData, true)
-        data.setState({ enableExitFilterSearchButton: true })
-
-    }
-
-    onSearchExit(data) {
-
-        this.setState({ floatingFilterData: { Technology: "", PartNumber: "", PartName: "", ECNNumber: "", RevisionNumber: "", DrawingNumber: "", EffectiveDate: "" } })
-        let emptyObj = { Technology: "", PartNumber: "", PartName: "", ECNNumber: "", RevisionNumber: "", DrawingNumber: "", EffectiveDate: "" }
-        data.setState({ pageNo: 1 })
-        data.ApiActionCreator(0, 100, emptyObj, true)
-        gridOptions.columnApi.resetColumnState();
-        gridOptions.api.setFilterModel(null);
-
-    }
-
-
-
     onFloatingFilterChanged = (value) => {
-        this.setState({ warningMessage: true })
-        const model = gridOptions?.api?.getFilterModel();
 
-        if (value?.filterInstance?.appliedModel === null || value?.filterInstance?.appliedModel?.filter === "") {
-            let isFilterEmpty = true
-            if (model !== undefined && model !== null) {
-                if (Object.keys(model).length > 0) {
-                    isFilterEmpty = false
-                    this.setState({ warningMessage: true })
-                }
-                if (isFilterEmpty) {
-                    this.setState({ warningMessage: false })
-                }
-            }
+        this.setState({ disableFilter: false })
+        onFloatingFilterChanged(value, gridOptions, this)   // COMMON FUNCTION
 
-            return false
-        } else {
-
-            if (value.column.colId === "EffectiveDateNew" || value.column.colId === "CreatedDate") {
-                this.setState({ isSearchButtonDisable: false })
-                return false
-            }
-            this.setState({ floatingFilterData: { ...this.state.floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter } })
-
-        }
     }
+
+
+    onSearch = () => {
+        onSearch(gridOptions, this, "Part", this.state.globalTake)  // COMMON PAGINATION FUNCTION
+    }
+
+    resetState = () => {
+        resetState(gridOptions, this, "Part")  //COMMON PAGINATION FUNCTION
+
+    }
+
+    onBtPrevious = () => {
+        onBtPrevious(this, "Part")       //COMMON PAGINATION FUNCTION
+    }
+
+    onBtNext = () => {
+        onBtNext(this, "Part")   // COMMON PAGINATION FUNCTION
+
+    };
+
+    onPageSizeChanged = (newPageSize) => {
+
+        onPageSizeChanged(this, newPageSize, "Part", this.state.currentRowIndex)  // COMMON PAGINATION FUNCTION
+    };
 
 
 
     componentDidMount() {
-        this.ApiActionCreator(0, 100, this.state.floatingFilterData, true)
+        this.ApiActionCreator(0, defaultPageSize, this.state.floatingFilterData, true)
 
 
     }
@@ -408,20 +379,20 @@ class IndivisualPartListing extends Component {
         //if resolution greater than 1920 table listing fit to 100%
     };
 
-    onPageSizeChanged = (newPageSize) => {
-        var value = document.getElementById('page-size').value;
-        this.state.gridApi.paginationSetPageSize(Number(value));
+    // onPageSizeChanged = (newPageSize) => {
+    //     var value = document.getElementById('page-size').value;
+    //     this.state.gridApi.paginationSetPageSize(Number(value));
 
-        if (Number(newPageSize) === 10) {
-            this.setState({ pageSize10: true, pageSize50: false, pageSize100: false })
-        }
-        else if (Number(newPageSize) === 50) {
-            this.setState({ pageSize10: false, pageSize50: true, pageSize100: false })
-        }
-        else if (Number(newPageSize) === 100) {
-            this.setState({ pageSize10: false, pageSize50: false, pageSize100: true })
-        }
-    };
+    //     if (Number(newPageSize) === 10) {
+    //         this.setState({ pageSize10: true, pageSize50: false, pageSize100: false })
+    //     }
+    //     else if (Number(newPageSize) === 50) {
+    //         this.setState({ pageSize10: false, pageSize50: true, pageSize100: false })
+    //     }
+    //     else if (Number(newPageSize) === 100) {
+    //         this.setState({ pageSize10: false, pageSize50: false, pageSize100: true })
+    //     }
+    // };
 
     onBtExport = () => {
         let tempArr = this.props.newPartsListing && this.props.newPartsListing
@@ -553,7 +524,7 @@ class IndivisualPartListing extends Component {
 
                                         </>
                                     }
-                                    <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.onSearchExit(this)}>
+                                    <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
                                         <div className="refresh mr-0"></div>
                                     </button>
 
@@ -572,7 +543,7 @@ class IndivisualPartListing extends Component {
                                 domLayout='autoHeight'
                                 rowData={this.props.newPartsListing}
                                 pagination={true}
-                                paginationPageSize={defaultPageSize}
+                                paginationPageSize={this.state.globalTake}
                                 onGridReady={this.onGridReady}
                                 gridOptions={gridOptions}
                                 onFilterModified={this.onFloatingFilterChanged}
@@ -594,12 +565,12 @@ class IndivisualPartListing extends Component {
                                 <AgGridColumn field="PartId" headerName="Action" width={160} type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                             </AgGridReact>
                             <div className="button-wrapper">
-                                {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
+                                {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} globalTake={this.state.globalTake} />}
                                 <div className="d-flex pagination-button-container">
                                     <p><button className="previous-btn" type="button" disabled={this.state.pageNo === 1 ? true : false} onClick={() => this.onBtPrevious(this)}> </button></p>
-                                    {this.state.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 10)}</p>}
-                                    {this.state.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 50)}</p>}
-                                    {this.state.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 100)}</p>}
+                                    {this.state.pageSize.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 10)}</p>}
+                                    {this.state.pageSize.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 50)}</p>}
+                                    {this.state.pageSize.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 100)}</p>}
                                     <p><button className="next-btn" type="button" onClick={() => this.onBtNext(this)}> </button></p>
                                 </div>
                             </div>

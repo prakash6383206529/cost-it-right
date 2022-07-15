@@ -60,6 +60,12 @@ export const onSearch = (gridOptions, thisReference, master, globalTake) => {
         case "Operation":
             thisReference.getTableListData(null, null, null, null, 0, globalTake, true, thisReference.state.floatingFilterData)
             break;
+        case "Part":
+            thisReference.ApiActionCreator(0, globalTake, thisReference.state.floatingFilterData, true)
+            break;
+        case "Vendor":
+            thisReference.getTableListData(0, '', "", "", 100, thisReference.state.floatingFilterData, true)
+            break;
         default:
 
     }
@@ -91,6 +97,12 @@ export const resetState = (gridOptions, thisReference, master) => {
         case "Operation":
             thisReference.getTableListData(null, null, null, null, 0, defaultPageSize, true, thisReference.state.floatingFilterData)
             break;
+        case "Part":
+            thisReference.ApiActionCreator(0, defaultPageSize, thisReference.state.floatingFilterData, true)
+            break;
+        case "Vendor":
+            thisReference.getTableListData(0, '', "", "", defaultPageSize, thisReference.state.floatingFilterData, true)
+            break;
 
         default:
 
@@ -115,6 +127,12 @@ export const onBtPrevious = (thisReference, master) => {
                 break;
             case "Operation":
                 thisReference.getTableListData(null, null, null, null, previousNo, thisReference.state.globalTake, true, thisReference.state.floatingFilterData)
+                break;
+            case "Part":
+                thisReference.ApiActionCreator(previousNo, thisReference.state.globalTake, thisReference.state.floatingFilterData, true)
+                break;
+            case "Vendor":
+                thisReference.getTableListData(previousNo, '', "", "", thisReference.state.globalTake, thisReference.state.floatingFilterData, true)
                 break;
 
             default:
@@ -152,6 +170,12 @@ export const onBtNext = (thisReference, master) => {
             case "Operation":
                 thisReference.getTableListData(null, null, null, null, nextNo, thisReference.state.globalTake, true, thisReference.state.floatingFilterData)
                 break;
+            case "Part":
+                thisReference.ApiActionCreator(nextNo, thisReference.state.globalTake, thisReference.state.floatingFilterData, true)
+                break;
+            case "Vendor":
+                thisReference.getTableListData(nextNo, '', "", "", thisReference.state.globalTake, thisReference.state.floatingFilterData, true)
+                break;
 
             default:
         }
@@ -179,6 +203,13 @@ export const onPageSizeChanged = (thisReference, newPageSize, master, currentRow
             case "Operation":
                 thisReference.getTableListData(null, null, null, null, currentRowIndex, 10, true, thisReference.state.floatingFilterData)
                 break;
+            case "Part":
+                thisReference.ApiActionCreator(currentRowIndex, 10, thisReference.state.floatingFilterData, true)
+                break;
+            case "Vendor":
+                thisReference.getTableListData(currentRowIndex, '', "", "", 10, thisReference.state.floatingFilterData, true)
+                break;
+
 
             default:
         }
@@ -199,6 +230,12 @@ export const onPageSizeChanged = (thisReference, newPageSize, master, currentRow
             case "Operation":
                 thisReference.getTableListData(null, null, null, null, currentRowIndex, 50, true, thisReference.state.floatingFilterData)
                 break;
+            case "Part":
+                thisReference.ApiActionCreator(currentRowIndex, 50, thisReference.state.floatingFilterData, true)
+                break;
+            case "Vendor":
+                thisReference.getTableListData(currentRowIndex, '', "", "", 50, thisReference.state.floatingFilterData, true)
+                break;
 
             default:
         }
@@ -217,6 +254,12 @@ export const onPageSizeChanged = (thisReference, newPageSize, master, currentRow
                 break;
             case "Operation":
                 thisReference.getTableListData(null, null, null, null, currentRowIndex, 100, true, thisReference.state.floatingFilterData)
+                break;
+            case "Part":
+                thisReference.ApiActionCreator(currentRowIndex, 100, thisReference.state.floatingFilterData, true)
+                break;
+            case "Vendor":
+                thisReference.getTableListData(currentRowIndex, '', "", "", 100, thisReference.state.floatingFilterData, true)
                 break;
 
             default:
