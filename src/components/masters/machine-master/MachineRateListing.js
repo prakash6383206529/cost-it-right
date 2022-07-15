@@ -147,6 +147,10 @@ class MachineRateListing extends Component {
                     }, 300);
 
                     setTimeout(() => {
+                        this.setState({ warningMessage: false })
+                    }, 335);
+
+                    setTimeout(() => {
                         this.setState({ isFilterButtonClicked: false })
                     }, 600);
                 }
@@ -635,7 +639,7 @@ class MachineRateListing extends Component {
                                     {!isSimulation && !this.props?.isMasterSummaryDrawer && <AgGridColumn field="MachineId" width={230} cellClass={"actions-wrapper"} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                 </AgGridReact>
                                 <div className='button-wrapper'>
-                                    {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} globalTake={this.state.globalTake} />}
+                                    {!this.state.isLoader && <PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} globalTake={this.state.globalTake} />}
                                     {(this.props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) &&
                                         <div className="d-flex pagination-button-container">
                                             <p><button className="previous-btn" type="button" disabled={false} onClick={() => this.onBtPrevious()}> </button></p>

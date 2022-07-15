@@ -228,6 +228,10 @@ class OperationListing extends Component {
                         // SETS  THE FILTER MODEL VIA THE GRID API
                         isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(FloatingfilterData))
                     }, 300);
+
+                    setTimeout(() => {
+                        this.setState({ warningMessage: false })
+                    }, 335);
                     setTimeout(() => {
                         this.setState({ isFilterButtonClicked: false })
                     }, 600);
@@ -864,7 +868,7 @@ class OperationListing extends Component {
                                 {!isSimulation && !this.props?.isMasterSummaryDrawer && <AgGridColumn field="OperationId" cellClass={"actions-wrapper"} width={150} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                             </AgGridReact>
                             <div className='button-wrapper'>
-                                {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} globalTake={this.state.globalTake} />}
+                                {!this.state.isLoader && <PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} globalTake={this.state.globalTake} />}
                                 {(this.props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) &&
                                     <div className="d-flex pagination-button-container">
                                         <p><button className="previous-btn" type="button" disabled={false} onClick={() => this.onBtPrevious()}> </button></p>
