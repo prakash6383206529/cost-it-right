@@ -196,7 +196,7 @@ class AddMachineRate extends Component {
   }
 
   componentWillUnmount() {
-    const { selectedPlants, machineType, selectedTechnology, isFormHide } = this.state;
+    const { selectedPlants, effectiveDate, machineType, selectedTechnology, isFormHide } = this.state;
     const { fieldsObj } = this.props;
     let data = {
       fieldsObj: fieldsObj,
@@ -204,6 +204,9 @@ class AddMachineRate extends Component {
       selectedPlants: selectedPlants,
       machineType: machineType,
     }
+    setTimeout(() => {
+      this.setState({ selectedPlants: selectedPlants, effectiveDate: effectiveDate })
+    }, 500);
     if (!isFormHide) {
       this.props.setData(data)
     } else {
@@ -992,7 +995,7 @@ class AddMachineRate extends Component {
         // EXECUTED WHEN:- EDIT MODE && MACHINE MORE DETAILED == TRUE
         let detailedRequestData = { ...machineData, MachineId: MachineID, Remark: remarks, Attachements: updatedFiles }
         this.props.updateMachineDetails(detailedRequestData, (res) => {
-          this.setState({ setDisable: false })
+          this.setState({ setDisable: false, selectedPlants: selectedPlants })
           if (res?.data?.Result) {
             Toaster.success(MESSAGES.UPDATE_MACHINE_SUCCESS);
             this.cancel();
@@ -1590,7 +1593,7 @@ class AddMachineRate extends Component {
                                 </button>
                               </>
                               :
-                              !this.state.IsDetailedEntry &&
+                              // !this.state.IsDetailedEntry &&
                               <>
                                 <button
                                   type="button"
