@@ -2459,6 +2459,7 @@ export const COMBINEDPROCESSSIMULATION = [
     { label: "CostingNumber", value: "CostingNumber" },
     { label: "Vendor Name", value: "VendorName" },
     { label: "Plant", value: "PlantName" },
+    { label: "PlantCode", value: "PlantCode" },
     { label: "Technology", value: "Technology" },
     //{ label: "Raw Material", value: "RMName" },
     //{ label: "RawMaterial Grade", value: "RMGrade" },
