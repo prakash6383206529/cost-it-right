@@ -83,7 +83,7 @@ class AddRMDomestic extends Component {
       IsVendor: false,
       files: [],
       errors: [],
-
+      nameDrawer: [],
 
       isRMDrawerOpen: false,
       isOpenGrade: false,
@@ -122,7 +122,6 @@ class AddRMDomestic extends Component {
    * @description Called before render the component
    */
   UNSAFE_componentWillMount() {
-    this.props.getRawMaterialNameChild(() => { })
     this.props.getUOMSelectList(() => { })
     if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
       this.props.getSupplierList(() => { })
@@ -234,7 +233,15 @@ class AddRMDomestic extends Component {
    * @description Use to handle technology change
   */
   handleTechnologyChange = (newValue) => {
-    this.setState({ Technology: newValue })
+    // this.setState({ isRMDrawerOpen: false })
+    if (newValue && newValue !== '') {
+      this.setState({ Technology: newValue, nameDrawer: true }, () => {
+        const { Technology } = this.state
+        this.setState({ RawMaterial: [] })
+        this.props.getRawMaterialNameChild(Technology.value, () => { })
+        this.setState({ nameDrawer: false })
+      })
+    }
   }
 
   /**
@@ -439,59 +446,59 @@ class AddRMDomestic extends Component {
           this.props.getRMGradeSelectListByRawMaterial(Data.RawMaterial, (res) => {
 
             this.props.fetchSpecificationDataAPI(Data.RMGrade, (res) => {
+              this.props.getRawMaterialNameChild(Data.TechnologyId, (res) => {
 
-              setTimeout(() => {
-                const { gradeSelectList, rmSpecification, cityList, categoryList, rawMaterialNameSelectList, UOMSelectList } = this.props
+                setTimeout(() => {
+                  const { gradeSelectList, rmSpecification, cityList, categoryList, rawMaterialNameSelectList, UOMSelectList } = this.props
 
 
-                const materialNameObj = rawMaterialNameSelectList && rawMaterialNameSelectList.find((item) => item.Value === Data.RawMaterial,)
-                const gradeObj = gradeSelectList && gradeSelectList.find((item) => item.Value === Data.RMGrade)
+                  const materialNameObj = rawMaterialNameSelectList && rawMaterialNameSelectList.find((item) => item.Value === Data.RawMaterial,)
+                  const gradeObj = gradeSelectList && gradeSelectList.find((item) => item.Value === Data.RMGrade)
 
-                const specObj = rmSpecification && rmSpecification.find((item) => item.Value === Data.RMSpec)
+                  const specObj = rmSpecification && rmSpecification.find((item) => item.Value === Data.RMSpec)
 
-                const categoryObj = categoryList && categoryList.find((item) => Number(item.Value) === Data.Category)
+                  const categoryObj = categoryList && categoryList.find((item) => Number(item.Value) === Data.Category)
 
-                const sourceLocationObj = cityList && cityList.find((item) => Number(item.Value) === Data.SourceLocation)
-                const UOMObj = UOMSelectList && UOMSelectList.find((item) => item.Value === Data.UOM)
-                this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : "")
-                this.setState({ minEffectiveDate: Data.EffectiveDate })
-
-                this.setState({
-                  IsFinancialDataChanged: false,
-                  isEditFlag: true,
-                  isShowForm: true,
-                  IsVendor: Data.IsVendor,
-                  RawMaterial: { label: materialNameObj.Text, value: materialNameObj.Value, },
-                  RMGrade: gradeObj !== undefined ? { label: gradeObj.Text, value: gradeObj.Value } : [],
-                  RMSpec: specObj !== undefined ? { label: specObj.Text, value: specObj.Value } : [],
-                  Category: categoryObj !== undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
-                  selectedPlants: [{ Text: Data.DestinationPlantName, Value: Data.DestinationPlantId }],
-                  Technology: Data.TechnologyName !== undefined ? { label: Data.TechnologyName, value: Data.TechnologyId } : [],
-                  vendorName: Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.Vendor } : [],
-                  HasDifferentSource: Data.HasDifferentSource,
-                  sourceLocation: sourceLocationObj !== undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value, } : [],
-                  UOM: UOMObj !== undefined ? { label: UOMObj.Display, value: UOMObj.Value } : [],
-                  effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
-                  oldDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
-                  remarks: Data.Remark,
-                  files: Data.FileList,
-                  singlePlantSelected: Data.DestinationPlantName !== undefined ? { label: Data.DestinationPlantName, value: Data.DestinationPlantId } : [],
-                  netLandedCost: Data.NetLandedCost ? Data.NetLandedCost : ''
-                }, () => this.setState({ isLoader: false }))
-                // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
-                let files = Data.FileList && Data.FileList.map((item) => {
-                  item.meta = {}
-                  item.meta.id = item.FileId
-                  item.meta.status = 'done'
-                  return item
-                })
-                if (this.dropzone.current !== null) {
-                  this.dropzone.current.files = files
-                }
-              }, 200)
+                  const sourceLocationObj = cityList && cityList.find((item) => Number(item.Value) === Data.SourceLocation)
+                  const UOMObj = UOMSelectList && UOMSelectList.find((item) => item.Value === Data.UOM)
+                  this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : "")
+                  this.setState({ minEffectiveDate: Data.EffectiveDate })
+                  this.setState({
+                    IsFinancialDataChanged: false,
+                    isEditFlag: true,
+                    isShowForm: true,
+                    IsVendor: Data.IsVendor,
+                    RawMaterial: { label: materialNameObj.Text, value: materialNameObj.Value, },
+                    RMGrade: gradeObj !== undefined ? { label: gradeObj.Text, value: gradeObj.Value } : [],
+                    RMSpec: specObj !== undefined ? { label: specObj.Text, value: specObj.Value } : [],
+                    Category: categoryObj !== undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
+                    selectedPlants: [{ Text: Data.DestinationPlantName, Value: Data.DestinationPlantId }],
+                    Technology: Data.TechnologyName !== undefined ? { label: Data.TechnologyName, value: Data.TechnologyId } : [],
+                    vendorName: Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.Vendor } : [],
+                    HasDifferentSource: Data.HasDifferentSource,
+                    sourceLocation: sourceLocationObj !== undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value, } : [],
+                    UOM: UOMObj !== undefined ? { label: UOMObj.Display, value: UOMObj.Value } : [],
+                    effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
+                    oldDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
+                    remarks: Data.Remark,
+                    files: Data.FileList,
+                    singlePlantSelected: Data.DestinationPlantName !== undefined ? { label: Data.DestinationPlantName, value: Data.DestinationPlantId } : [],
+                    netLandedCost: Data.NetLandedCost ? Data.NetLandedCost : ''
+                  }, () => this.setState({ isLoader: false }))
+                  // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
+                  let files = Data.FileList && Data.FileList.map((item) => {
+                    item.meta = {}
+                    item.meta.id = item.FileId
+                    item.meta.status = 'done'
+                    return item
+                  })
+                  if (this.dropzone.current !== null) {
+                    this.dropzone.current.files = files
+                  }
+                }, 200)
+              })
             })
           })
-
         }
       })
     } else {
@@ -544,7 +551,7 @@ class AddRMDomestic extends Component {
   closeRMDrawer = (e = '', data = {}) => {
     this.setState({ isRMDrawerOpen: false }, () => {
       /* FOR SHOWING RM ,GRADE AND SPECIFICATION SELECTED IN RM SPECIFICATION DRAWER*/
-      this.props.getRawMaterialNameChild(() => {
+      this.props.getRawMaterialNameChild(this.state.Technology, () => {
 
         if (Object.keys(data).length > 0) {
           this.props.getRMGradeSelectListByRawMaterial(data.RawMaterialId, (res) => {
@@ -1317,7 +1324,7 @@ class AddRMDomestic extends Component {
                                   disabled={isEditFlag || isViewFlag}
                                 />
                               </div>
-                              {!isEditFlag && (
+                              {(!isEditFlag && !this.state.nameDrawer) && (
                                 <div
                                   onClick={this.rmToggler}
                                   className={"plus-icon-square  right"}
@@ -1831,6 +1838,7 @@ class AddRMDomestic extends Component {
                 RawMaterial={""}
                 RMGrade={""}
                 isRMDomesticSpec={true}
+                Technology={this.state.Technology.value}
               />
             )
           }

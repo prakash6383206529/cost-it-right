@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import Drawer from '@material-ui/core/Drawer'
 import WeightCalculator from '../WeightCalculatorDrawer';
 import { useDispatch, useSelector } from 'react-redux';
-import { getRawMaterialCalculationByTechnology } from '../../actions/CostWorking';
 import Toaster from '../../../common/Toaster';
 import { checkForDecimalAndNull } from '../../../../helper';
 import { Container, Row, Col, Table } from 'reactstrap'

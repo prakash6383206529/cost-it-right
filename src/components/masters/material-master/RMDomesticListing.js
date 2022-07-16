@@ -215,6 +215,10 @@ function RMDomesticListing(props) {
                     }, 300);
 
                     setTimeout(() => {
+                        setWarningMessage(false)
+                    }, 330);
+
+                    setTimeout(() => {
                         setIsFilterButtonClicked(false)
                     }, 600);
                 }
