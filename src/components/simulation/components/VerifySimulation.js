@@ -9,9 +9,6 @@ import RunSimulationDrawer from './RunSimulationDrawer';
 import CostingSimulation from './CostingSimulation';
 import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../../../helper';
 import Toaster from '../../common/Toaster';
-import { getPlantSelectListByType } from '../../../actions/Common';
-import { ZBC } from '../../../config/constants';
-import { getRawMaterialNameChild } from '../../masters/actions/Material';
 import LoaderCustom from '../../common/LoaderCustom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -58,7 +55,7 @@ function VerifySimulation(props) {
         if (token) {
             verifyCostingList()
         }
-        dispatch(getRawMaterialNameChild(() => { }))
+
     }, [token])
 
     const verifyCostingList = (plantId = '', rawMatrialId = '') => {
