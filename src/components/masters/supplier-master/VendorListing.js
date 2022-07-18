@@ -30,7 +30,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import WarningMessage from '../../common/WarningMessage'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import ScrollToTop from '../../common/ScrollToTop';
-import { onPageSizeChanged, PaginationWrapper } from '../../common/commonPagination';
+import { onFloatingFilterChanged, onSearch, resetState, onBtPrevious, onBtNext, onPageSizeChanged, PaginationWrapper } from '../../common/commonPagination'
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -77,7 +77,7 @@ class VendorListing extends Component {
             isViewMode: false,
             isLoader: false,
             pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
-
+            globalTake: defaultPageSize,
         }
     }
 
@@ -105,74 +105,33 @@ class VendorListing extends Component {
 
 
     onFloatingFilterChanged = (value) => {
-        this.setState({ warningMessage: true })
-        const model = gridOptions?.api?.getFilterModel();
 
-        if (value?.filterInstance?.appliedModel === null || value?.filterInstance?.appliedModel?.filter === "") {
-            let isFilterEmpty = true
-            if (model !== undefined && model !== null) {
-                if (Object.keys(model).length > 0) {
-                    isFilterEmpty = false
-                    this.setState({ warningMessage: true })
-                }
-                if (isFilterEmpty) {
-                    this.setState({ warningMessage: false })
-                }
-            }
-            return false
-
-        } else {
-
-            this.setState({ floatingFilterData: { ...this.state.floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter } })
-        }
+        this.setState({ disableFilter: false })
+        onFloatingFilterChanged(value, gridOptions, this)   // COMMON FUNCTION
 
     }
 
 
-    onBtNext(data) {
-
-        if (data.state.currentRowIndex < (this.state.totalRecordCount - 10)) {
-
-            data.setState({ pageNo: data.state.pageNo + 1 })
-            const nextNo = data.state.currentRowIndex + 10;
-            data.getTableListData(nextNo, '', "", "", 100, this.state.floatingFilterData, true)
-            data.setState({ currentRowIndex: nextNo })
-
-        }
+    onSearch = () => {
+        onSearch(gridOptions, this, "Vendor", this.state.globalTake)  // COMMON PAGINATION FUNCTION
     }
 
-    onBtPrevious(data) {
-
-        if (data.state.currentRowIndex >= 10) {
-
-            data.setState({ pageNo: data.state.pageNo - 1 })
-            const previousNo = data.state.currentRowIndex - 10;
-            data.getTableListData(previousNo, '', "", "", 100, this.state.floatingFilterData, true)
-            data.setState({ currentRowIndex: previousNo })
-        }
-    }
-
-
-    onSearch(data) {
-
-        this.setState({ warningMessage: false })
-        this.setState({ pageNo: 1 })
-        data.setState({ currentRowIndex: 0 })
-        this.getTableListData(0, '', "", "", 100, data.state.floatingFilterData, true)
-        data.setState({ enableExitFilterSearchButton: true })
+    resetState = () => {
+        resetState(gridOptions, this, "Vendor")  //COMMON PAGINATION FUNCTION
 
     }
 
-    onSearchExit(data) {
-
-        this.setState({ floatingFilterData: { vendorType: "", vendorName: "", VendorCode: "", Country: "", State: "", City: "" } })
-        let emptyObj = { vendorType: "", vendorName: "", VendorCode: "", Country: "", State: "", City: "" }
-
-        this.getTableListData(0, '', "", "", 100, emptyObj, true)
-        data.setState({ pageNo: 1 })
-        gridOptions.columnApi.resetColumnState();
-        gridOptions.api.setFilterModel(null);
+    onBtPrevious = () => {
+        onBtPrevious(this, "Vendor")       //COMMON PAGINATION FUNCTION
     }
+
+    onBtNext = () => {
+        onBtNext(this, "Vendor")   // COMMON PAGINATION FUNCTION
+
+    };
+
+
+
     /**
     * @method applyPermission
     * @description ACCORDING TO PERMISSION HIDE AND SHOW, ACTION'S
@@ -213,6 +172,9 @@ class VendorListing extends Component {
             country: country,
         }
         this.setState({ isLoader: true })
+
+        let constantFilterData = this.state.filterModel
+        let object = { ...this.state.floatingFilterData }
         this.props.getSupplierDataList(skip, obj, take, isPagination, res => {
             this.setState({ isLoader: false })
             if (res.status === 202) {
@@ -231,8 +193,32 @@ class VendorListing extends Component {
                     totalRecordCount: Data[0].TotalRecordCount,
                 })
 
-            } else {
+            }
 
+            if (res) {
+                if (res && res.data && res.data.DataList.length > 0) {
+                    this.setState({ totalRecordCount: res.data.DataList[0].TotalRecordCount })
+                }
+                let isReset = true
+                setTimeout(() => {
+
+                    for (var prop in object) {
+                        if (prop !== "DepartmentCode" && object[prop] !== "") {
+                            isReset = false
+                        }
+                    }
+                    // Sets the filter model via the grid API
+                    isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(constantFilterData))
+
+                }, 300);
+
+                setTimeout(() => {
+                    this.setState({ warningMessage: false })
+                }, 335);
+
+                setTimeout(() => {
+                    this.setState({ isFilterButtonClicked: false })
+                }, 600);
             }
 
         });
@@ -534,7 +520,7 @@ class VendorListing extends Component {
     };
 
     onPageSizeChanged = (newPageSize) => {
-        onPageSizeChanged(this, newPageSize)    // COMMON PAGINATION FUNCTION
+        onPageSizeChanged(this, newPageSize, "Vendor", this.state.currentRowIndex)    // COMMON PAGINATION FUNCTION
     };
 
 
@@ -736,7 +722,7 @@ class VendorListing extends Component {
                                             </ExcelFile>
                                         </>
                                     }
-                                    <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.onSearchExit(this)}>
+                                    <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
                                         <div className="refresh mr-0"></div>
                                     </button>
                                 </div>
@@ -752,7 +738,7 @@ class VendorListing extends Component {
                             domLayout='autoHeight'
                             rowData={this.props.supplierDataList}
                             pagination={true}
-                            paginationPageSize={defaultPageSize}
+                            paginationPageSize={this.state.globalTake}
                             onGridReady={this.onGridReady}
                             onFilterModified={this.onFloatingFilterChanged}
                             gridOptions={gridOptions}
@@ -776,7 +762,7 @@ class VendorListing extends Component {
                         </AgGridReact>
                         <div className="button-wrapper">
 
-                            {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
+                            {!this.state.isLoader && <PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} globalTake={this.state.globalTake} />}
                             <div className="d-flex pagination-button-container">
                                 <p><button className="previous-btn" type="button" disabled={this.state.pageNo === 1 ? true : false} onClick={() => this.onBtPrevious(this)}> </button></p>
                                 {/* <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 10)}</p> */}

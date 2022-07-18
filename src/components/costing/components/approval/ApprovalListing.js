@@ -6,7 +6,7 @@ import { getApprovalList, } from '../../actions/Approval'
 import { loggedInUserId, userDetails } from '../../../../helper/auth'
 import ApprovalSummary from './ApprovalSummary'
 import NoContentFound from '../../../common/NoContentFound'
-import { defaultPageSize, DRAFT, EMPTY_DATA } from '../../../../config/constants'
+import { defaultPageSize, DRAFT, EMPTY_DATA, EMPTY_GUID } from '../../../../config/constants'
 import DayTime from '../../../common/DayTimeWrapper'
 import ApproveRejectDrawer from './ApproveRejectDrawer'
 import { allEqual, checkForDecimalAndNull, checkForNull, formViewData } from '../../../../helper'
@@ -35,8 +35,6 @@ const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 function ApprovalListing(props) {
   const { isDashboard } = props
   const loggedUser = loggedInUserId()
-  const [shown, setshown] = useState(false)
-
   const [tableData, setTableData] = useState([])
   const [loader, setloader] = useState(false);
   const [approvalData, setApprovalData] = useState('')
@@ -58,6 +56,7 @@ function ApprovalListing(props) {
   const approvalListDraft = useSelector(state => state.approval.approvalListDraft)
 
   //STATES BELOW ARE MADE FOR PAGINATION PURPOSE
+  const [disableFilter, setDisableFilter] = useState(true)
   const [warningMessage, setWarningMessage] = useState(false)
   const [globalTake, setGlobalTake] = useState(defaultPageSize)
   const [filterModel, setFilterModel] = useState({});
@@ -146,6 +145,10 @@ function ApprovalListing(props) {
             }, 300);
 
             setTimeout(() => {
+              setWarningMessage(false)
+            }, 330);
+
+            setTimeout(() => {
               setIsFilterButtonClicked(false)
             }, 600);
           }
@@ -159,6 +162,7 @@ function ApprovalListing(props) {
 
   const onFloatingFilterChanged = (value) => {
 
+    setDisableFilter(false)
     const model = gridOptions?.api?.getFilterModel();
     setFilterModel(model)
     if (!isFilterButtonClicked) {
@@ -170,9 +174,23 @@ function ApprovalListing(props) {
       if (model !== undefined && model !== null) {
         if (Object.keys(model).length > 0) {
           isFilterEmpty = false
+          for (var property in floatingFilterData) {
+
+            if (property === value.column.colId) {
+              floatingFilterData[property] = ""
+            }
+          }
+          setFloatingFilterData(floatingFilterData)
         }
 
         if (isFilterEmpty) {
+
+          for (var prop in floatingFilterData) {
+            if (prop !== "DepartmentCode") {
+              floatingFilterData[prop] = ""
+            }
+          }
+          setFloatingFilterData(floatingFilterData)
           setWarningMessage(false)
         }
       }
@@ -556,30 +574,32 @@ function ApprovalListing(props) {
             costingObj.yearImpact = variance !== '' ? (totalBudgetedQty - actualQty) * variance : 0
 
           }
-        })
-
-        )
+        }))
       }
       temp.push(costingObj)
       dispatch(setCostingApprovalData(temp))
     })
-    if (selectedRowData[0].Status === DRAFT) {
-      setOpenDraftDrawer(true)
-    } else {
-      let obj = {
-        DepartmentId: selectedRowData[0].DepartmentId,
-        UserId: loggedInUserId(),
-        TechnologyId: selectedRowData[0].TechnologyId,
-        Mode: 'costing'
-      }
-      dispatch(checkFinalUser(obj, res => {
-        if (res && res.data && res.data.Result) {
+    let obj = {
+      DepartmentId: selectedRowData[0].Status === DRAFT ? EMPTY_GUID : selectedRowData[0]?.DepartmentId,
+      UserId: loggedInUserId(),
+      TechnologyId: selectedRowData[0].TechnologyId,
+      Mode: 'costing'
+    }
+    dispatch(checkFinalUser(obj, res => {
+      if (res && res.data && res.data.Result) {
+        if (selectedRowData[0].Status === DRAFT) {
+          setOpenDraftDrawer(res.data.Data.IsFinalApprover ? false : true)
+          if (res.data.Data.IsFinalApprover) {
+            Toaster.warning("Final level aprrover can not send draft costing for aprroval")
+            gridApi.deselectAll()
+          }
+        }
+        else {
           setShowFinalLevelButton(res.data.Data.IsFinalApprover)
           setApproveDrawer(true)
         }
-      }),
-      )
-    }
+      }
+    }))
   }
 
   const closeDrawer = (e = '', type) => {
@@ -693,7 +713,7 @@ function ApprovalListing(props) {
                     <div className="d-flex justify-content-end bd-highlight w100">
                       <div className="warning-message d-flex align-items-center">
                         {warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
-                        <button disabled={!warningMessage} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
+                        <button disabled={disableFilter} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
                       </div>
                       <div>
                         <button type="button" className="user-btn mr-2" title="Reset Grid" onClick={() => resetState()}>

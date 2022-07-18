@@ -912,9 +912,9 @@ export function createRawMaterialNameChild(data, callback) {
  * @method getRawMaterialNameChild
  * @description get raw material name child
  */
-export function getRawMaterialNameChild(callback) {
+export function getRawMaterialNameChild(technologyId, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getRawMaterialNameChild}`, config());
+        const request = axios.get(`${API.getRawMaterialNameChild}/${technologyId}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -1318,7 +1318,7 @@ export function bulkUploadRMSpecification(data, callback) {
 export function getRawMaterialChildById(ID, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getRawMaterialChildById} /${ID}`, config());
+        const request = axios.get(`${API.getRawMaterialChildById}/${ID}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
