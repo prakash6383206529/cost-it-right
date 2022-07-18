@@ -72,6 +72,7 @@ class OperationListing extends Component {
             warningMessage: false,
             filterModel: {},
             pageNo: 1,
+            pageNoNew: 1,
             totalRecordCount: 0,
             isFilterButtonClicked: false,
             currentRowIndex: 0,

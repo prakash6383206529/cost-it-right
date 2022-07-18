@@ -58,6 +58,7 @@ class VendorListing extends Component {
             currentRowIndex: 0,
             totalRecordCount: 0,
             pageNo: 1,
+            pageNoNew: 1,
             floatingFilterData: { vendorType: "", vendorName: "", VendorCode: "", Country: "", State: "", City: "" },
             AddAccessibility: false,
             EditAccessibility: false,
@@ -78,6 +79,7 @@ class VendorListing extends Component {
             isLoader: false,
             pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
             globalTake: defaultPageSize,
+            disableFilter: true,
         }
     }
 
@@ -178,7 +180,6 @@ class VendorListing extends Component {
         this.props.getSupplierDataList(skip, obj, take, isPagination, res => {
             this.setState({ isLoader: false })
             if (res.status === 202) {
-                this.setState({ pageNo: 0 })
                 this.setState({ totalRecordCount: 0 })
 
                 return
@@ -687,7 +688,7 @@ class VendorListing extends Component {
                                     {this.state.warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                                 </div>
                                 <div>
-                                    <button title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch(this)} disabled={!this.state.warningMessage}><div class="filter mr-0"></div></button>
+                                    <button title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch(this)} disabled={this.state.disableFilter}><div class="filter mr-0"></div></button>
                                     {AddAccessibility && (
                                         <button
                                             type="button"
