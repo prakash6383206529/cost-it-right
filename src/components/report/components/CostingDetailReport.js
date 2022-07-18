@@ -48,6 +48,7 @@ function ReportListing(props) {
     const [isAssemblyCosting, setIsAssemblyCosting] = useState(false)
     const [rmMBDetail, setrmMBDetail] = useState({})
     const [pageNo, setPageNo] = useState(1)
+    const [pageNoNew, setPageNoNew] = useState(1)
     const [disableNextButtton, setDisableNextButtton] = useState(false)
     const [currentRowIndex, setCurrentRowIndex] = useState(0)
     const [floatingFilterData, setFloatingFilterData] = useState({ CostingNumber: "", TechnologyName: "", AmorizationQuantity: "", AnyOtherCost: "", CostingVersion: "", DisplayStatus: "", EffectiveDate: "", Currency: "", DepartmentCode: "", DepartmentName: "", DiscountCost: "", ECNNumber: "", FinalPOPrice: "", RawMaterialFinishWeight: "", FreightCost: "", FreightPercentage: "", FreightType: "", GrossWeight: "", HundiOrDiscountValue: "", ICCApplicability: "", ICCCost: "", ICCInterestRate: "", ICCOn: "", MasterBatchTotal: "", ModelTypeForOverheadAndProfit: "", ModifiedByName: "", ModifiedByUserName: "", ModifiedDate: "", NetBoughtOutPartCost: "", NetConversionCost: "", NetConvertedPOPrice: "", NetDiscountsCost: "", NetFreightPackaging: "", NetFreightPackagingCost: "", NetICCCost: "", NetOperationCost: "", NetOtherCost: "", NetOverheadAndProfitCost: "", NetPOPrice: "", NetPOPriceINR: "", NetPOPriceInCurrency: "", NetPOPriceOtherCurrency: "", NetProcessCost: "", NetRawMaterialsCost: "", NetSurfaceTreatmentCost: "", NetToolCost: "", NetTotalRMBOPCC: "", OtherCost: "", OtherCostPercentage: "", OverheadApplicability: "", OverheadCombinedCost: "", OverheadCost: "", OverheadOn: "", OverheadPercentage: "", PackagingCost: "", PackagingCostPercentage: "", PartName: "", PartNumber: "", PartType: "", PaymentTermCost: "", PaymentTermsOn: "", PlantCode: "", PlantName: "", ProfitApplicability: "", ProfitCost: "", ProfitOn: "", ProfitPercentage: "", RMGrade: "", RMSpecification: "", RawMaterialCode: "", RawMaterialGrossWeight: "", RawMaterialName: "", RawMaterialRate: "", RawMaterialScrapWeight: "", RawMaterialSpecification: "", RecordInsertedBy: "", RejectOn: "", RejectionApplicability: "", RejectionCost: "", RejectionPercentage: "", Remark: "", Rev: "", RevisionNumber: "", ScrapRate: "", ScrapWeight: "", SurfaceTreatmentCost: "", ToolCost: "", ToolLife: "", ToolMaintenaceCost: "", ToolPrice: "", ToolQuantity: "", TotalCost: "", TotalOtherCost: "", TotalRecordCount: "", TransportationCost: "", VendorCode: "", VendorName: "", Version: "", RawMaterialGrade: "", HundiOrDiscountPercentage: "", FromDate: "", ToDate: "" })
@@ -342,6 +343,7 @@ function ReportListing(props) {
         if (currentRowIndex < (totalRecordCount - 10)) {
 
             setPageNo(pageNo + 1)
+            setPageNoNew(pageNo + 1)
             const nextNo = currentRowIndex + 10;
 
             apiCall(nextNo, true)
@@ -355,6 +357,7 @@ function ReportListing(props) {
 
         if (currentRowIndex >= 10) {
             setPageNo(pageNo - 1)
+            setPageNoNew(pageNo - 1)
             const previousNo = currentRowIndex - 10;
             apiCall(previousNo)
             setCurrentRowIndex(previousNo)
@@ -423,6 +426,7 @@ function ReportListing(props) {
         setIsFilterButtonClicked(true)
         setWarningMessage(false)
         setPageNo(1)
+        setPageNoNew(1)
         setCurrentRowIndex(0)
         gridOptions?.columnApi?.resetColumnState();
         //gridOptions?.api?.setFilterModel(null);
@@ -487,14 +491,22 @@ function ReportListing(props) {
             setPageSize100(false)
             setDisableNextButtton(false)
             setGlobalTake(10)
+            setPageNo(pageNoNew)
 
         }
         else if (Number(newPageSize) === 50) {
-            getTableData(currentRowIndex, 20, true, floatingFilterData, false, true);
+            getTableData(currentRowIndex, 50, true, floatingFilterData, false, true);
             setPageSize10(false)
             setPageSize50(true)
             setPageSize100(false)
             setGlobalTake(50)
+
+            setPageNo(pageNoNew)
+            if (pageNo >= Math.ceil(totalRecordCount / 50)) {
+                setPageNo(Math.ceil(totalRecordCount / 50))
+                getTableData(0, 50, true, floatingFilterData, false, true);
+            }
+
             setTimeout(() => {
                 setWarningMessage(false)
             }, 1000);
@@ -506,11 +518,16 @@ function ReportListing(props) {
             setPageSize50(false)
             setPageSize100(true)
             setGlobalTake(100)
+
+            if (pageNo >= Math.ceil(totalRecordCount / 100)) {
+                setPageNo(Math.ceil(totalRecordCount / 100))
+                getTableData(0, 100, true, floatingFilterData, false, true);
+            }
+
             setTimeout(() => {
                 setWarningMessage(false)
             }, 1400);
         }
-
     };
 
     useEffect(() => {
@@ -552,6 +569,7 @@ function ReportListing(props) {
         setFloatingFilterData(floatingFilterData)
         setWarningMessage(false)
         setPageNo(1)
+        setPageNoNew(1)
         setCurrentRowIndex(0)
         getTableData(0, defaultPageSize, true, floatingFilterData, false, true);
         setGlobalTake(10)
