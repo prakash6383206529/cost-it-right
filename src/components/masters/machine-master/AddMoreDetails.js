@@ -1331,6 +1331,11 @@ class AddMoreDetails extends Component {
       return false;
     }
 
+    if (checkForNull(fieldsObj?.MachineCost) === 0) {
+      Toaster.warning('Please enter the machine cost');
+      return false;
+    }
+
     //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
     const isExist = processGrid.findIndex(el => (el.ProcessId === processName.value))
     if (isExist !== -1) {
