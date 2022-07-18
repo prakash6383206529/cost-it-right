@@ -910,11 +910,16 @@ class AddLabour extends Component {
                                   </tr>
                                 );
                               })}
+
                           </tbody>
+                          {this.state.gridTable.length === 0 && (<tbody className='border'>
+                            <tr>
+                              <td colSpan={"5"}>
+                                <NoContentFound title={EMPTY_DATA} />
+                              </td>
+                            </tr>
+                          </tbody>)}
                         </Table>
-                        {this.state.gridTable.length === 0 && (
-                          <NoContentFound title={EMPTY_DATA} />
-                        )}
                       </Col>
                     </Row>
                   </div>
