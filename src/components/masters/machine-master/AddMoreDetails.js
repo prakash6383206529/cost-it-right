@@ -250,7 +250,8 @@ class AddMoreDetails extends Component {
         isEditFlag: false,
         isLoader: true,
         MachineID: editDetails.Id,
-        isViewMode: editDetails.isViewMode
+        isViewMode: editDetails.isViewMode,
+        isViewFlag: editDetails.isViewMode
       })
 
       this.props.getMachineDetailsData(editDetails.Id, res => {
@@ -315,7 +316,7 @@ class AddMoreDetails extends Component {
             const depreciationObj = DepreciationTypeSelectList && DepreciationTypeSelectList.find(item => item.Value === Data.DepreciationType)
             const fuelObj = fuelComboSelectList && fuelComboSelectList.Fuels && fuelComboSelectList.Fuels.find(item => item.Value === Data.FuleId)
 
-            let LabourArray = Data && Data.MachineLabourRates.map(el => {
+            let LabourArray = Data && Data.MachineLabourRates?.map(el => {
               return {
                 labourTypeName: el.LabourTypeName,
                 labourTypeId: el.LabourTypeId,
@@ -3230,7 +3231,7 @@ class AddMoreDetails extends Component {
                                       )
                                     })
                                   }
-                                  {this.state.labourGrid.length > 0 &&
+                                  {this.state.labourGrid?.length > 0 &&
                                     <tr>
                                       <td>{''}</td>
                                       <td>{''}</td>
@@ -3241,7 +3242,7 @@ class AddMoreDetails extends Component {
                                   }
                                 </tbody>
                               </Table>
-                              {this.state.labourGrid.length === 0 && <NoContentFound title={EMPTY_DATA} />}
+                              {this.state.labourGrid?.length === 0 && <NoContentFound title={EMPTY_DATA} />}
                             </Col>
                           </div>
                         }
@@ -3279,7 +3280,7 @@ class AddMoreDetails extends Component {
                                     //required={true}
                                     handleChangeDescription={this.handleProcessName}
                                     valueDescription={this.state.processName}
-                                    disabled={false}
+                                    disabled={this.state.isViewMode}
                                   />
                                 </div>
                                 {!isEditFlag && <div
@@ -3301,7 +3302,7 @@ class AddMoreDetails extends Component {
                                 //required={true}
                                 handleChangeDescription={this.handleUOM}
                                 valueDescription={this.state.UOM}
-                                disabled={this.state.lockUOMAndRate}
+                                disabled={this.state.lockUOMAndRate || this.state.isViewMode}
                               />
                             </Col>
                             {/* COMMENT FOR NOW MAY BE USED LATER */}
@@ -3362,12 +3363,14 @@ class AddMoreDetails extends Component {
                                   <>
                                     <button
                                       type="button"
+                                      disabled={this.state.isViewMode}
                                       className={'btn btn-primary pull-left mr5'}
                                       onClick={this.updateProcessGrid}
                                     >Update</button>
 
                                     <button
                                       type="button"
+                                      disabled={this.state.isViewMode}
                                       className={'reset-btn pull-left'}
                                       onClick={this.resetProcessGridData}
                                     >Cancel</button>
@@ -3376,6 +3379,7 @@ class AddMoreDetails extends Component {
                                   <button
                                     type="button"
                                     className={'user-btn pull-left'}
+                                    disabled={this.state.isViewMode}
                                     onClick={this.processTableHandler}>
                                     <div className={'plus'}></div>ADD</button>}
                               </div>
@@ -3404,8 +3408,8 @@ class AddMoreDetails extends Component {
                                           <td>{checkForDecimalAndNull(item.OutputPerYear, initialConfiguration.NoOfDecimalForInputOutput)}</td> */}
                                           <td>{checkForDecimalAndNull(item.MachineRate, initialConfiguration.NoOfDecimalForPrice)}</td>
                                           <td>
-                                            <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(index)} />
-                                            <button className="Delete" type={'button'} onClick={() => this.deleteItem(index)} disabled={UniqueProcessId?.includes(item.ProcessId)} />
+                                            <button className="Edit mr-2" type={'button'} disabled={this.state.isViewMode} onClick={() => this.editItemDetails(index)} />
+                                            <button className="Delete" type={'button'} onClick={() => this.deleteItem(index)} disabled={UniqueProcessId?.includes(item.ProcessId) || this.state.isViewMode} />
                                           </td>
                                         </tr>
                                       )
@@ -3454,6 +3458,7 @@ class AddMoreDetails extends Component {
                             value={this.state.remarks}
                             className=""
                             customClassName=" textAreaWithBorder"
+                            disabled={this.state.isViewMode}
                             onChange={this.handleMessageChange}
                             validate={[maxLength512]}
                             // required={true}
@@ -3473,6 +3478,7 @@ class AddMoreDetails extends Component {
                               getUploadParams={this.getUploadParams}
                               onChangeStatus={this.handleChangeStatus}
                               PreviewComponent={this.Preview}
+                              disabled={this.state.isViewMode}
                               //onSubmit={this.handleSubmit}
                               accept="*"
                               initialFiles={this.state.initialFiles}
