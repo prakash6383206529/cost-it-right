@@ -54,7 +54,7 @@ class AddMachineRate extends Component {
       IsVendor: false,
       IsCopied: false,
       IsDetailedEntry: false,
-      isViewFlag: false,
+      isViewFlag: this.props?.data?.isViewMode ? true : false,
       approveDrawer: false,
       isViewMode: this.props?.editDetails?.isViewMode ? true : false,
       minEffectiveDate: '',
@@ -584,7 +584,7 @@ class AddMachineRate extends Component {
       isEditFlag: editFlag,
       Id: Id,
       isIncompleteMachine: (this.state.isEditFlag && !this.state.IsDetailedEntry) ? true : false,
-      isViewMode: this.state.isViewMode
+      isViewMode: this.state.isViewMode || this.state.isViewFlag
     }
     this.props.displayMoreDetailsForm(data)
   }
@@ -1382,7 +1382,7 @@ class AddMachineRate extends Component {
                               required={true}
                               handleChangeDescription={this.handlePlants}
                               valueDescription={this.state.selectedPlants}
-                              disabled={(isEditFlag || isViewMode) ? (IsCopied ? false : true) : this.state.isViewFlag ? true : false}
+                              disabled={(isEditFlag || isViewMode || isViewFlag) ? (IsCopied ? false : true) : this.state.isViewFlag ? true : false}
                             />
                           </Col>)}
 
@@ -1513,7 +1513,7 @@ class AddMachineRate extends Component {
                                     type="button"
                                     className={this.state.isViewFlag ? 'disabled-button user-btn' : 'user-btn'}
                                     disabled={this.state.isViewFlag ? true : false}
-                                    onClick={() => this.moreDetailsToggler(isEditFlag ? this.state.MachineID : '', false)}>
+                                    onClick={() => this.moreDetailsToggler(isEditFlag ? this.state.MachineID : '', isEditFlag ? true : false)}>
                                     <div className={'plus'}></div>ADD MORE MACHINE DETAILS</button>
                               }
 
