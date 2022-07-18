@@ -1369,8 +1369,8 @@ export default connect(mapStateToProps, {
   getCostingSpecificTechnology
 })(reduxForm({
   form: 'AddAssemblyPart',
+  touchOnChange: true,
   onSubmitFail: errors => {
-
     focusOnError(errors);
   },
   enableReinitialize: true,

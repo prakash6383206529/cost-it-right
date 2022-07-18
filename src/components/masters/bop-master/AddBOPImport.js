@@ -6,7 +6,7 @@ import {
   required, checkForNull, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter, maxLength20,
   maxLength10, positiveAndDecimalNumber, maxLength512, maxLength, decimalLengthsix, checkWhiteSpaces, checkSpacesInString
 } from "../../../helper/validation";
-import { renderText, searchableSelect, renderTextAreaField, renderDatePicker, renderNumberInputField } from "../../layout/FormInputs";
+import { renderText, searchableSelect, renderTextAreaField, renderDatePicker, renderNumberInputField, focusOnError } from "../../layout/FormInputs";
 import { fetchMaterialComboAPI, getPlantBySupplier, getUOMSelectList, getCurrencySelectList, getPlantSelectListByType, } from '../../../actions/Common';
 import {
   createBOPImport, updateBOPImport, getBOPCategorySelectList, getBOPImportById,
@@ -1469,5 +1469,9 @@ export default connect(mapStateToProps, {
   masterFinalLevelUser
 })(reduxForm({
   form: 'AddBOPImport',
+  touchOnChange: true,
+  onSubmitFail: (errors) => {
+    focusOnError(errors)
+  },
   enableReinitialize: true,
 })(AddBOPImport));
