@@ -49,6 +49,7 @@ class IndivisualPartListing extends Component {
             endIndexCurrentPage: 9,
             totalRecordCount: 0,
             pageNo: 1,
+            pageNoNew: 1,
             floatingFilterData: { Technology: "", PartNumber: "", PartName: "", ECNNumber: "", RevisionNumber: "", DrawingNumber: "", EffectiveDate: "" },
             currentRowIndex: 0,
             warningMessage: false,
@@ -59,10 +60,9 @@ class IndivisualPartListing extends Component {
             deletedId: '',
             globalTake: defaultPageSize,
             pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
+            disableFilter: true,
         }
     }
-
-
 
 
     ApiActionCreator(skip, take, obj, isPagination) {
@@ -355,7 +355,7 @@ class IndivisualPartListing extends Component {
 
     closeBulkUploadDrawer = () => {
         this.setState({ isBulkUpload: false })
-        this.onSearchExit(this)
+        this.resetState()
     }
 
     formToggle = () => {
@@ -494,7 +494,7 @@ class IndivisualPartListing extends Component {
                                     {this.state.warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                                 </div>
                                 <div>
-                                    <button title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch(this)} disabled={!this.state.warningMessage}><div class="filter mr-0"></div></button>
+                                    <button title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch(this)} disabled={this.state.disableFilter}><div class="filter mr-0"></div></button>
                                     {AddAccessibility && (
                                         <button
                                             type="button"

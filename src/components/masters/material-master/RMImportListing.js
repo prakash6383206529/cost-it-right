@@ -64,6 +64,7 @@ function RMImportListing(props) {
   const [globalTake, setGlobalTake] = useState(defaultPageSize)
   const [filterModel, setFilterModel] = useState({});
   const [pageNo, setPageNo] = useState(1)
+  const [pageNoNew, setPageNoNew] = useState(1)
   const [totalRecordCount, setTotalRecordCount] = useState(0)
   const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
   const [currentRowIndex, setCurrentRowIndex] = useState(0)
@@ -276,6 +277,7 @@ function RMImportListing(props) {
     setWarningMessage(false)
     setIsFilterButtonClicked(true)
     setPageNo(1)
+    setPageNoNew(1)
     setCurrentRowIndex(0)
     gridOptions?.columnApi?.resetColumnState();
     getDataList(null, null, null, null, null, 0, 0, globalTake, true, floatingFilterData)
@@ -285,6 +287,7 @@ function RMImportListing(props) {
   const onBtPrevious = () => {
     if (currentRowIndex >= 10) {
       setPageNo(pageNo - 1)
+      setPageNoNew(pageNo - 1)
       const previousNo = currentRowIndex - 10;
       getDataList(null, null, null, null, null, 0, previousNo, globalTake, true, floatingFilterData)
       setCurrentRowIndex(previousNo)
@@ -303,6 +306,7 @@ function RMImportListing(props) {
 
     if (currentRowIndex < (totalRecordCount - 10)) {
       setPageNo(pageNo + 1)
+      setPageNoNew(pageNo + 1)
       const nextNo = currentRowIndex + 10;
       getDataList(null, null, null, null, null, 0, nextNo, globalTake, true, floatingFilterData)
       setCurrentRowIndex(nextNo)
@@ -509,18 +513,28 @@ function RMImportListing(props) {
       getDataList(null, null, null, null, null, 0, 0, 10, true, floatingFilterData)
       setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
       setGlobalTake(10)
+      setPageNo(pageNoNew)
     }
     else if (Number(newPageSize) === 50) {
       getDataList(null, null, null, null, null, 0, 0, 50, true, floatingFilterData)
       setPageSize(prevState => ({ ...prevState, pageSize50: true, pageSize10: false, pageSize100: false }))
       setGlobalTake(50)
+      setPageNo(pageNoNew)
+      if (pageNo > Math.ceil(totalRecordCount / 50)) {
+        setPageNo(Math.ceil(totalRecordCount / 50))
+        getDataList(null, null, null, null, null, 0, 0, 50, true, floatingFilterData)
+      }
     }
     else if (Number(newPageSize) === 100) {
       getDataList(null, null, null, null, null, 0, 0, 100, true, floatingFilterData)
       setPageSize(prevState => ({ ...prevState, pageSize100: true, pageSize10: false, pageSize50: false }))
       setGlobalTake(100)
+      setGlobalTake(100)
+      if (pageNo > Math.ceil(totalRecordCount / 100)) {
+        setPageNo(Math.ceil(totalRecordCount / 100))
+        getDataList(null, null, null, null, null, 0, 0, 100, true, floatingFilterData)
+      }
     }
-
     gridApi.paginationSetPageSize(Number(newPageSize));
 
   };
@@ -577,6 +591,7 @@ function RMImportListing(props) {
     setFloatingFilterData(floatingFilterData)
     setWarningMessage(false)
     setPageNo(1)
+    setPageNoNew(1)
     setCurrentRowIndex(0)
     getDataList(null, null, null, null, null, 0, 0, 10, true, floatingFilterData)
     dispatch(setSelectedCostingListSimualtion([]))
