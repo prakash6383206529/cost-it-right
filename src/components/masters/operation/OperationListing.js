@@ -589,8 +589,12 @@ class OperationListing extends Component {
 
     onGridReady = (params) => {
         this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
-        window.screen.width >= 1600 && params.api.sizeColumnsToFit()
+        if (this.props.isSimulation) {
+            window.screen.width >= 1600 && params.api.sizeColumnsToFit()
+        }
+        window.screen.width >= 1921 && params.api.sizeColumnsToFit()
         params.api.paginationGoToPage(0);
+
     };
 
     onBtExport = () => {
