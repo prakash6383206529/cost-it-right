@@ -1399,7 +1399,7 @@ export const BOMUpload = [
     { label: "Quantity", value: "Quantity" }, //NOUI
     { label: "EffectiveDate", value: "EffectiveDate" },
     { label: "Remark", value: "Remark" },
-    { label: 'ProductGroupCode', value: "ProductGroupCode" }
+    { label: 'TechnologyName', value: "Technology" }
 ]
 
 export const BOMUploadTempData = [
