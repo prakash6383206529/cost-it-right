@@ -355,7 +355,7 @@ class IndivisualPartListing extends Component {
 
     closeBulkUploadDrawer = () => {
         this.setState({ isBulkUpload: false })
-        this.onSearchExit(this)
+        this.resetState()
     }
 
     formToggle = () => {
