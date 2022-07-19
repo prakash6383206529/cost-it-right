@@ -1615,7 +1615,7 @@ const CostingSummaryTable = (props) => {
                       </tr>
 
                       {(!viewMode) && (
-                        <tr class="background-light-blue">
+                        <tr class={`${pdfHead || drawerDetailPDF ? 'd-none' : 'background-light-blue'}`}>
                           <td className="text-center"></td>
 
                           {viewCostingData?.map((data, index) => {
