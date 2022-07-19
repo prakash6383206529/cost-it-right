@@ -182,10 +182,11 @@ export function getMachineDataList(data, skip, take, isPagination, obj, callback
         const queryParamsSecond = `CostingHead=${obj.CostingHeadNew !== undefined ? obj.CostingHeadNew : ""}&Technology=${obj.Technologies !== undefined ? obj.Technologies : ""}&Vendor=${obj.VendorName !== undefined ? obj.VendorName : ""}&Plant=${obj.Plants !== undefined ? obj.Plants : ""}&MachineNumber=${obj.MachineNumber !== undefined ? obj.MachineNumber : ""}&MachineName=${obj.MachineName !== undefined ? obj.MachineName : ""}&MachineType=${obj.MachineTypeName !== undefined ? obj.MachineTypeName : ""}&Tonnage=${obj.MachineTonnage !== undefined ? obj.MachineTonnage : ""}&ProcessName=${obj.ProcessName !== undefined ? obj.ProcessName : ""}&MachineRate=${obj.MachineRate !== undefined ? obj.MachineRate : ""}&EffectiveDate=${obj.newDate !== undefined ? obj.newDate : ""}&&applyPagination=${isPagination}&skip=${skip}&take=${take}`
         axios.get(`${API.getMachineDataList}?${queryParams}&${queryParamsSecond}`, config())
             .then((response) => {
-
-                const value = response.data.DataList.filter((item) => item.EffectiveDateNew = item.EffectiveDate)
-
-                if (response.data.Result === true || response.status === 204) {
+                let value = []
+                if (response?.status !== 204) {
+                    value = response.data.DataList.filter((item) => item.EffectiveDateNew = item.EffectiveDate)
+                }
+                if (response.data.Result === true || response?.status === 204) {
                     dispatch({
                         type: GET_MACHINE_DATALIST_SUCCESS,
                         payload: response.status === 204 ? [] : value,
@@ -240,10 +241,10 @@ export function getMachineDetailsData(ID, callback) {
         if (ID !== '') {
             axios.get(`${API.getMachineDetailsData}/${ID}`, config())
                 .then((response) => {
-                    if (response.data.Result === true) {
+                    if (response.data.Result === true || response.status === 204) {
                         dispatch({
                             type: GET_MACHINE_DATA_SUCCESS,
-                            payload: response.data.Data,
+                            payload: response.status === 204 ? [] : response.data.Data,
                         });
                         callback(response);
                     }

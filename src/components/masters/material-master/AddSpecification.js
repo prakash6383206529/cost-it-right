@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
 import { required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces, checkSpacesInString } from "../../../helper/validation";
-import { renderText, searchableSelect } from "../../layout/FormInputs";
+import { renderText, searchableSelect, focusOnError } from "../../layout/FormInputs";
 import {
   createRMSpecificationAPI, updateRMSpecificationAPI, getRMSpecificationDataAPI,
   getRawMaterialNameChild, getMaterialTypeDataAPI, getRMGradeSelectListByRawMaterial,
@@ -666,4 +666,8 @@ export default connect(mapStateToProps, {
 })(reduxForm({
   form: 'AddSpecification',
   enableReinitialize: true,
+  touchOnChange: true,
+  onSubmitFail: (errors) => {
+    focusOnError(errors)
+  },
 })(AddSpecification));
