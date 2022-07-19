@@ -2104,7 +2104,7 @@ class AddMoreDetails extends Component {
                             placeholder={'Enter'}
                             validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                             component={renderText}
-                            required={true}
+                            required={false}
                             disabled={this.state.isViewFlag ? true : false}
                             className=" "
                             customClassName="withBorder"
