@@ -141,12 +141,12 @@ function OperationCost(props) {
       Toaster.success('Remark saved successfully')
     }
     setGridData(tempArr)
-    var button = document.getElementById(`popUpTriggerss${index}`)
+    var button = document.getElementById(`popUpTriggerss${props.IsAssemblyCalculation}${index}`)
     button.click()
   }
 
   const onRemarkPopUpClose = (index) => {
-    var button = document.getElementById(`popUpTriggerss${index}`)
+    var button = document.getElementById(`popUpTriggerss${props.IsAssemblyCalculation}${index}`)
     button.click()
   }
 
@@ -412,8 +412,8 @@ function OperationCost(props) {
                               <div className='action-btn-wrapper'>
                                 {(!CostingViewMode && !IsLocked) && <button className="Edit mb-0 align-middle" type={'button'} onClick={() => editItem(index)} />}
                                 {(!CostingViewMode && !IsLocked) && <button className="Delete mb-0 align-middle" type={'button'} onClick={() => deleteItem(index, item.OperationId)} />}
-                                <Popup trigger={<button id={`popUpTriggerss${index}`} className="Comment-box align-middle" type={'button'} />}
-                                  position="top center">
+                                <Popup trigger={<button id={`popUpTriggerss${props.IsAssemblyCalculation}${index}`} className="Comment-box align-middle" type={'button'} />}
+                                  position={`${props.IsAssemblyCalculation ? 'top right' : 'top center'}`}>
                                   <TextAreaHookForm
                                     label="Remark:"
                                     name={`${OperationGridFields}.${index}.remarkPopUp`}
