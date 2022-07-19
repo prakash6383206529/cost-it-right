@@ -946,6 +946,7 @@ function TabRMCC(props) {
             let subAssemblyIndex = tempArrForCosting && tempArrForCosting.findIndex((x) => x.PartNumber === params.PartNumber && x.AssemblyPartNumber === item.AssemblyPartNumber)
             let tempArr = tempArrForCosting[subAssemblyIndex]
             tempArr.IsOpen = tempIsOpen
+            tempArr.CostingPartDetails = Data
             // tempArr[0].IsOpen = tempIsOpen
 
 
