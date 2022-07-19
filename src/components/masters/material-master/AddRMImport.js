@@ -137,6 +137,7 @@ class AddRMImport extends Component {
     this.getDetails(data);
     this.props.change('NetLandedCost', 0)
     this.props.fetchSupplierCityDataAPI(res => { });
+    this.props.getRawMaterialNameChild('', () => { })
     if (!(data.isEditFlag || data.isViewFlag)) {
       this.setState({ inputLoader: true })
       this.props.getRawMaterialCategory(res => { });
@@ -235,7 +236,6 @@ class AddRMImport extends Component {
 
     }
     this.setState({ RawMaterial: [] })
-    this.props.getRawMaterialNameChild(newValue.value, () => { })
     this.setState({ nameDrawer: false })
   }
 
@@ -449,8 +449,7 @@ class AddRMImport extends Component {
           this.setState({ minEffectiveDate: Data.EffectiveDate })
           this.props.getRMGradeSelectListByRawMaterial(Data.RawMaterial, res => {
             this.props.fetchSpecificationDataAPI(Data.RMGrade, res => {
-              this.props.getRawMaterialNameChild(Data.TechnologyId, (res) => {
-
+              this.props.getRawMaterialNameChild('', (res) => {
                 setTimeout(() => {
                   const { gradeSelectList, rmSpecification, cityList, categoryList, rawMaterialNameSelectList, UOMSelectList, currencySelectList } = this.props;
 
@@ -557,7 +556,7 @@ class AddRMImport extends Component {
   closeRMDrawer = (e = '', data = {}) => {
     this.setState({ isRMDrawerOpen: false }, () => {
       /* FOR SHOWING RM ,GRADE AND SPECIFICATION SELECTED IN RM SPECIFICATION DRAWER*/
-      this.props.getRawMaterialNameChild(this.state.Technology, () => {
+      this.props.getRawMaterialNameChild('', () => {
         if (Object.keys(data).length > 0) {
           this.props.getRMGradeSelectListByRawMaterial(data.RawMaterialId, (res) => {
             this.props.fetchSpecificationDataAPI(data.GradeId, (res) => {
@@ -1296,7 +1295,7 @@ class AddRMImport extends Component {
                                   disabled={isEditFlag || isViewFlag}
                                 />
                               </div>
-                              {(!isEditFlag && !this.state.nameDrawer) && (
+                              {(!isEditFlag) && (
                                 <div
                                   onClick={this.rmToggler}
                                   className={"plus-icon-square  right"}

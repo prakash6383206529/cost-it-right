@@ -136,6 +136,7 @@ class AddRMDomestic extends Component {
   componentDidMount() {
     const { data } = this.props
     this.getDetails(data)
+    this.props.getRawMaterialNameChild('', () => { })
     this.props.getRawMaterialCategory((res) => { })
     this.props.getAllCity(cityId => {
       this.props.getCityByCountry(cityId, 0, () => { })
@@ -239,7 +240,6 @@ class AddRMDomestic extends Component {
 
     }
     this.setState({ RawMaterial: [] })
-    this.props.getRawMaterialNameChild(newValue.value, () => { })
     this.setState({ nameDrawer: false })
   }
 
@@ -447,7 +447,7 @@ class AddRMDomestic extends Component {
           this.props.getRMGradeSelectListByRawMaterial(Data.RawMaterial, (res) => {
 
             this.props.fetchSpecificationDataAPI(Data.RMGrade, (res) => {
-              this.props.getRawMaterialNameChild(Data.TechnologyId, (res) => {
+              this.props.getRawMaterialNameChild('', (res) => {
 
                 setTimeout(() => {
                   const { gradeSelectList, rmSpecification, cityList, categoryList, rawMaterialNameSelectList, UOMSelectList } = this.props
@@ -554,7 +554,7 @@ class AddRMDomestic extends Component {
   closeRMDrawer = (e = '', data = {}) => {
     this.setState({ isRMDrawerOpen: false }, () => {
       /* FOR SHOWING RM ,GRADE AND SPECIFICATION SELECTED IN RM SPECIFICATION DRAWER*/
-      this.props.getRawMaterialNameChild(this.state.Technology, () => {
+      this.props.getRawMaterialNameChild('', () => {
 
         if (Object.keys(data).length > 0) {
           this.props.getRMGradeSelectListByRawMaterial(data.RawMaterialId, (res) => {
@@ -1332,7 +1332,7 @@ class AddRMDomestic extends Component {
                                   disabled={isEditFlag || isViewFlag}
                                 />
                               </div>
-                              {(!isEditFlag && !this.state.nameDrawer) && (
+                              {(!isEditFlag) && (
                                 <div
                                   onClick={this.rmToggler}
                                   className={"plus-icon-square  right"}
