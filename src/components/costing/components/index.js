@@ -65,11 +65,12 @@ function Costing(props) {
       SubAssemblyCostingId: value?.SubAssemblyCostingId,
       AssemblyCostingId: value?.AssemblyCostingId
     }
+    setCostingOptionsSelect(obj)
     dispatch(isDataChange(false))
     dispatch(setProcessGroupGrid([]))
     dispatch(savePartNumber(''))
-    setCostingOptionsSelect(obj)
     dispatch(saveBOMLevel(''))
+    dispatch(setPartNumberArrayAPICALL([]))
   }
 
   /**
