@@ -43,7 +43,7 @@ class AddSpecification extends Component {
   * @description Called before render the component
   */
   UNSAFE_componentWillMount() {
-    this.props.getRawMaterialNameChild(this.props.Technology, () => { })
+    this.props.getRawMaterialNameChild('', () => { })
     // this.props.getMaterialTypeSelectList(() => { })
     this.props.getRMGradeSelectListByRawMaterial('', res => { })
   }
@@ -231,7 +231,7 @@ class AddSpecification extends Component {
   closeRMDrawer = (e = '', formData = {}) => {
     this.setState({ isOpenRMDrawer: false, Id: '' }, () => {
       this.getDetails()
-      this.props.getRawMaterialNameChild(this.props.Technology, () => {
+      this.props.getRawMaterialNameChild('', () => {
         this.props.getRMGradeSelectListByRawMaterial('', res => { })
         /*FOR SHOWING DEFAULT VALUE FROM SELECTED FROM DRAWER*/
         const { rawMaterialNameSelectList } = this.props;
