@@ -1399,6 +1399,16 @@ sans-serif;
         }
       }
     }
+    .pdf-header {
+      @extend .header-name-button-container;
+      justify-content: flex-end;
+      .checkbox-text {
+        min-width: fit-content !important;
+      }
+      .sub-heading {
+        text-align: left !important;
+      }
+    }
    
   }
 }
@@ -8038,9 +8048,15 @@ body {
       .table-responsive {
         overflow: unset !important;
       }
-
+      
       table {
         min-width: 100%;
+      }
+      .header-name {
+        background-color: #ececec !important;
+      }
+      .header-name-left {
+        background-color: #ececec !important;
       }
     }
   }
@@ -8049,10 +8065,12 @@ body {
     .table-responsive {
       .header-name-left {
         border-right: none !important;
+        background-color: #ececec !important;
       }
 
       .header-name {
         border-left: none !important;
+        background-color: #ececec !important;
       }
     }
 
