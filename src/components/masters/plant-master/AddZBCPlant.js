@@ -4,7 +4,7 @@ import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
 import { required, maxLength6, maxLength80, checkWhiteSpaces, minLength10, alphaNumeric, maxLength71, maxLength5, acceptAllExceptSingleSpecialCharacter, maxLength4, postiveNumber, maxLength12, checkSpacesInString } from "../../../helper/validation";
 import { userDetails, loggedInUserId } from "../../../helper/auth";
-import { renderNumberInputField, renderText, searchableSelect } from "../../layout/FormInputs";
+import { focusOnError, renderNumberInputField, renderText, searchableSelect } from "../../layout/FormInputs";
 import { createPlantAPI, getPlantUnitAPI, updatePlantAPI, getComapanySelectList } from '../actions/Plant';
 import {
   fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, fetchSupplierCityDataAPI,
@@ -624,5 +624,9 @@ export default connect(mapStateToProps, {
   getComapanySelectList
 })(reduxForm({
   form: 'AddZBCPlant',
+  touchOnChange: true,
   enableReinitialize: true,
+  onSubmitFail: (errors) => {
+    focusOnError(errors)
+  },
 })(AddZBCPlant));
