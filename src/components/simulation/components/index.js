@@ -26,7 +26,7 @@ function SimulationTab(props) {
     }
 
     useEffect(() => {
-        if (reactLocalStorage.get('location') === '/simulation-history') {
+        if (reactLocalStorage.get('location') === '/simulation-history' || JSON.parse(localStorage.getItem('simulationAddPermission'))?.length === 0) {
             toggle("2");
         }
         else {
@@ -46,7 +46,7 @@ function SimulationTab(props) {
                 <div>
                     <h1>Simulation</h1>
                     <Nav tabs className="subtabs mt-0">
-                        <NavItem>
+                        {(JSON.parse(localStorage.getItem('simulationAddPermission')))?.length !== 0 && <NavItem>
                             <NavLink
                                 className={classnames({ active: activeTab === "1" })}
                                 onClick={() => {
@@ -56,8 +56,8 @@ function SimulationTab(props) {
                             >
                                 Simulation
                             </NavLink>
-                        </NavItem>
-                        <NavItem>
+                        </NavItem>}
+                        {(JSON.parse(localStorage.getItem('simulationViewPermission')))?.length !== 0 && <NavItem>
                             <NavLink
                                 className={classnames({ active: activeTab === "2" })}
                                 onClick={() => {
@@ -67,7 +67,7 @@ function SimulationTab(props) {
                             >
                                 Simulation History
                             </NavLink>
-                        </NavItem>
+                        </NavItem>}
                     </Nav>
                     <TabContent activeTab={activeTab}>
                         <TabPane tabId="1">
