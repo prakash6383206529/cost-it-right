@@ -78,7 +78,7 @@ class Login extends Component {
         let userDetail = formatLoginResult(res.data);
         let departmentList = ''
         const dept = userDetail && userDetail.Department.map((item) => {
-          if (item.Role === 'Group Category Head' || item.Role === 'SuperAdmin') {
+          if (userDetail.Role === 'Group Category Head' || userDetail.Role === 'SuperAdmin') {
             return ''
           } else {
             return item.DepartmentCode
