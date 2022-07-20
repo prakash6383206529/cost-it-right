@@ -914,7 +914,7 @@ export function createRawMaterialNameChild(data, callback) {
  */
 export function getRawMaterialNameChild(technologyId, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getRawMaterialNameChild}/${technologyId}`, config());
+        const request = axios.get(`${API.getRawMaterialNameChild}/${technologyId === '' ? null : technologyId}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
