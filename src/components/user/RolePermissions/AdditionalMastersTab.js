@@ -234,7 +234,7 @@ class AdditionalMastersTab extends Component {
                             <thead>
                                 <tr>
                                     <th>{`Module`}</th>
-                                    <th className=" pr-2">
+                                    <th className="select-all-block pr-2">
                                         <label className="custom-checkbox align-middle text-left">
                                             <input
                                                 type="checkbox"
