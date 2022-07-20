@@ -33,7 +33,6 @@ import NoContentFound from '../../common/NoContentFound';
 import { calculatePercentage, CheckApprovalApplicableMaster } from '../../../helper';
 import EfficiencyDrawer from './EfficiencyDrawer';
 import DayTime from '../../common/DayTimeWrapper'
-import { Loader } from '../../common/Loader';
 import { AcceptableMachineUOM } from '../../../config/masterData'
 import imgRedcross from '../../../assests/images/red-cross.png'
 import { masterFinalLevelUser } from '../actions/Material'
@@ -2008,7 +2007,7 @@ class AddMoreDetails extends Component {
 
     return (
       <>
-        {(loading || isLoader) && <Loader />}
+        {(isLoader) && <LoaderCustom />}
         <div className="container-fluid">
           <div className="login-container signup-form">
             <div className="row">
