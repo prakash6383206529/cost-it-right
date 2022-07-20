@@ -1689,6 +1689,7 @@ export const SIMULATION_APPROVAL_SUMMARY_PATH = '/simulation-approval-summary'
 export const DASHBOARDWITHGRAPH_PATH = '/dashboardWithGraph'
 export const SIMULATION_PATH = '/simulation'
 export const SIMULATION_HISTORY_PATH = '/simulation-history'
+export const USER_PATH = '/users'
 
 
 export const EMPTY_GUID = "00000000-0000-0000-0000-000000000000"
