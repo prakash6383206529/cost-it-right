@@ -1712,6 +1712,7 @@ export const DASHBOARD_PATH = '/'
 export const DASHBOARD_PATH_SECOND = '/dashboard'
 export const SIMULATION_PATH = '/simulation'
 export const SIMULATION_HISTORY_PATH = '/simulation-history'
+export const USER_PATH = '/users'
 
 
 export const EMPTY_GUID = "00000000-0000-0000-0000-000000000000"
