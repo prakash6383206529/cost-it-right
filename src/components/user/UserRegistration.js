@@ -486,6 +486,12 @@ class UserRegistration extends Component {
     let temp111 = data;
 
     let isParentChecked = temp111.findIndex(el => el.IsChecked === true)
+    temp111 && temp111.map((ele, index) => {
+      if (ele.IsChecked === false) {
+        isParentChecked = -1
+      }
+    })
+
     const isAvailable = Modules && Modules.findIndex(a => a.ModuleName === ModuleName)
     if (isAvailable !== -1 && Modules) {
       let tempArray = Object.assign([...Modules], { [isAvailable]: Object.assign({}, Modules[isAvailable], { IsChecked: isParentChecked !== -1 ? true : false, Pages: temp111, }) })
