@@ -30,10 +30,8 @@ import cirLogo from '../../assests/images/logo/CIRlogo.svg'
 import logoutImg from '../../assests/images/logout.svg'
 import activeReport from '../../assests/images/report-active.svg'
 import PopupMsgWrapper from "../common/PopupMsgWrapper";
-import { BOP_MASTER_ID, MACHINE_MASTER_ID, OPERATIONS_ID, RM_MASTER_ID, VERSION } from '../../config/constants';
-import { CheckApprovalApplicableMaster, getConfigurationKey } from '../../helper';
-import Calculator from "../common/Calculator/component/Calculator";
-import Draggable from 'react-draggable';
+import { SIMULATION, VERSION } from '../../config/constants';
+import _ from "lodash";
 
 class SideBar extends Component {
   constructor(props) {
@@ -89,7 +87,10 @@ class SideBar extends Component {
         this.setState({ isLoader: false });
       });
 
-      this.props.getTopAndLeftMenuData(() => { })
+      this.props.getTopAndLeftMenuData((res) => {
+        this.simulationPermission(res?.data?.Data, 1)
+        this.simulationPermission(res?.data?.Data, 0)
+      })
     }
 
     const loginUserId = loggedInUserId();
@@ -98,6 +99,29 @@ class SideBar extends Component {
       this.props.getMenuByUser(loginUserId, () => {
         this.setState({ isLoader: false });
       });
+    }
+  }
+
+  /**
+  * @method simulationPermission
+  * @description permission for add and view simulation
+  */
+  simulationPermission(Data, index) {
+    let tempArr1 = Data && Data.filter(item => item.ModuleName === SIMULATION)
+    if (tempArr1?.length !== 0) {
+      let subbAssemblyIndex = Data && Data.findIndex(item => item.ModuleName === SIMULATION)
+      let simulationPages = Data[subbAssemblyIndex].Pages && Data[subbAssemblyIndex].Pages.filter(item => item.Sequence !== 0 && item.IsChecked === true)
+      tempArr1 = simulationPages && simulationPages.filter((item) => {
+        if (item.Actions[index].IsChecked === true) return item.PageName;
+      })
+      // 1 IS FOR VIEW PERMISSION 
+      if (index === 1) {
+        localStorage.setItem('simulationViewPermission', JSON.stringify(_.map(tempArr1, 'PageName')))
+      }
+      // 0 IS FOR ADD PERMISSION 
+      else if (index === 0) {
+        localStorage.setItem('simulationAddPermission', JSON.stringify(_.map(tempArr1, 'PageName')))
+      }
     }
   }
 
