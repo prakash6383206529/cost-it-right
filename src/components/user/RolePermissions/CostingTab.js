@@ -8,7 +8,7 @@ import { Table, } from 'reactstrap';
 import NoContentFound from "../../common/NoContentFound";
 import { EMPTY_DATA } from "../../../config/constants";
 import { COSTING, } from "../../../config/constants";
-import Switch from "react-switch";
+import { renderActionCommon } from '../userUtil';
 
 class CostingTab extends Component {
   constructor(props) {
@@ -33,6 +33,12 @@ class CostingTab extends Component {
         actionData: actionData,
         Modules: data && data.sort((a, b) => a.Sequence - b.Sequence),
         actionSelectList: actionSelectList,
+      })
+
+      actionData && actionData.map((ele, index) => {
+        if (ele.ModuleName === 'Costing') {
+          this.setState({ checkBox: ele.IsChecked })
+        }
       })
     }
   }
@@ -61,49 +67,30 @@ class CostingTab extends Component {
   * @description used to add more permission for user
   */
   renderActionHeads = (actionHeads) => {
+
     const { actionData } = this.state;
-    let count = 0;
     let actionNames = actionData && actionData.find(el => el.ModuleName === COSTING)
     if (actionNames !== undefined) {
       return actionHeads && actionHeads.map((item, index) => {
         if (item.Value == 0) return false;
         if (actionNames.ActionItems && actionNames.ActionItems.includes(item.Text)) {
 
-          if (item.Text == "Reject" || item.Text == "Bulk Upload") { return false }
-          else {
-            if (item.Text == 'SOB') { count++; }
+          if (item.Text === 'Reject') {
+            return (
+              <th className="crud-label">
+                <div className={'CancelIcon'}></div>
+                {item.Text}
+              </th>
+            )
 
-            if (count > 0) {
-              return (
-                <>
-                  <th className="crud-label">
-                    <div className={item.Text}></div>
-                    {item.Text}
-                  </th>
+          } else {
 
-                  <th className="crud-label">
-                    <div className='Bulk Upload'></div>
-                    Bulk Upload
-                  </th>
-
-                  <th className="crud-label">
-                    <div className='CancelIcon'></div>
-                    Reject
-                  </th>
-                </>
-              )
-
-            }
-            else {
-              return (
-                <th className="crud-label">
-                  <div className={item.Text}></div>
-                  {item.Text}
-                </th>
-              )
-
-            }
-
+            return (
+              <th className="crud-label">
+                <div className={item.Text}></div>
+                {item.Text}
+              </th>
+            )
           }
         }
       })
@@ -228,92 +215,9 @@ class CostingTab extends Component {
   * @description used to render row of actions
   */
   renderAction = (actions, parentIndex) => {
-    const { actionSelectList } = this.state;
 
-    return actionSelectList && actionSelectList.map((el, i) => {
-      if (el.Value == 0) return false;
-      return actions && actions.map((item, index) => {
-        if (el.Value !== item.ActionId) return false;
+    return renderActionCommon(actions, parentIndex, this, COSTING)
 
-        if (item.ActionName == 'Reject') {
-
-          return (
-            <>
-              <td className="text-center">
-                {
-                  <label htmlFor="normal-switch" className="normal-switch">
-                    <Switch
-                      onChange={() => this.actionCheckHandler(parentIndex, index)}
-                      checked={item.IsChecked}
-                      value={item.ActionId}
-                      id="normal-switch"
-                      onColor="#4DC771"
-                      onHandleColor="#ffffff"
-                      offColor="#959CB6"
-                      checkedIcon={false}
-                      uncheckedIcon={false}
-                      height={18}
-                      width={40}
-                    />
-                  </label>
-                }
-              </td>
-            </>
-          )
-
-        }
-
-        if (item.ActionName == 'Bulk Upload') {
-
-          return (
-            <>
-              <td colSpan='7'></td>
-              <td className="text-center">
-                {
-                  <label htmlFor="normal-switch" className="normal-switch">
-                    <Switch
-                      onChange={() => this.actionCheckHandler(parentIndex, index)}
-                      checked={item.IsChecked}
-                      value={item.ActionId}
-                      id="normal-switch"
-                      onColor="#4DC771"
-                      onHandleColor="#ffffff"
-                      offColor="#959CB6"
-                      checkedIcon={false}
-                      uncheckedIcon={false}
-                      height={18}
-                      width={40}
-                    />
-                  </label>
-                }
-              </td>
-            </>
-          )
-        }
-
-        return (
-          <td className="text-center">
-            {
-              <label htmlFor="normal-switch" className="normal-switch">
-                <Switch
-                  onChange={() => this.actionCheckHandler(parentIndex, index)}
-                  checked={item.IsChecked}
-                  value={item.ActionId}
-                  id="normal-switch"
-                  onColor="#4DC771"
-                  onHandleColor="#ffffff"
-                  offColor="#959CB6"
-                  checkedIcon={false}
-                  uncheckedIcon={false}
-                  height={18}
-                  width={40}
-                />
-              </label>
-            }
-          </td>
-        )
-      })
-    })
   }
 
   /**
