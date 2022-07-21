@@ -102,7 +102,6 @@ function RMDomesticListing(props) {
 
     const callFilterApi = () => {
         if (isSimulation || shown) {
-            dispatch(getRawMaterialNameChild(() => { }))
             dispatch(getGradeSelectList(() => { }))
             dispatch(getVendorListByVendorType(false, () => { }))
             dispatch(getRawMaterialFilterSelectList(() => { }))

@@ -52,7 +52,6 @@ function OtherVerifySimulation(props) {
     useEffect(() => {
         verifyCostingList()
         dispatch(getPlantSelectListByType(ZBC, () => { }))
-        dispatch(getRawMaterialNameChild(() => { }))
     }, [])
 
     const verifyCostingList = () => {
@@ -77,8 +76,6 @@ function OtherVerifySimulation(props) {
 
 
     const verifyList = useSelector(state => state.simulation.simulationVerifyList)
-
-    const { rawMaterialNameSelectList } = useSelector(state => state.material)
 
     const buttonFormatter = (cell, row, enumObject, rowIndex) => {
         return (
