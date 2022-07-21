@@ -37,7 +37,9 @@ class BOMViewer extends Component {
       isLoader: false,
       zoomOutCount: 9,
       isHoverZoomInBtn: false,
-      isHoverZoomOutBtn: false
+      isHoverZoomOutBtn: false,
+      disableZoomInButton: true,
+      disableZoomOutButton: false
     }
   }
 
@@ -91,21 +93,27 @@ class BOMViewer extends Component {
   zoomOut = () => {
 
     if (this.state.zoomOutCount > 2) {
+      this.setState({ disableZoomInButton: false })
       document.getElementsByClassName("flowspace")[0].classList.remove(`zoomclass${this.state.zoomOutCount + 1}`)
       document.getElementsByClassName("flowspace")[0].classList.add(`zoomclass${this.state.zoomOutCount}`)
       this.setState({ zoomOutCount: this.state.zoomOutCount - 1 })
+    } else {
+      this.setState({ disableZoomOutButton: true })
     }
   }
 
   zoomIn = () => {
 
     if (this.state.zoomOutCount < 11) {
+      this.setState({ disableZoomOutButton: false })
       document.getElementsByClassName("flowspace")[0].classList.remove(`zoomclass${this.state.zoomOutCount + 1}`)
       document.getElementsByClassName("flowspace")[0].classList.remove(`zoomclass${this.state.zoomOutCount - 1}`)
       document.getElementsByClassName("flowspace")[0].classList.remove(`zoomclass${this.state.zoomOutCount}`)
       document.getElementsByClassName("flowspace")[0].classList.add(`zoomclass${this.state.zoomOutCount + 1}`)
       this.setState({ zoomOutCount: this.state.zoomOutCount + 1 })
 
+    } else {
+      this.setState({ disableZoomInButton: true })
     }
   }
 
@@ -413,8 +421,8 @@ class BOMViewer extends Component {
                     )}
                 </Row>
                 <div className='zoom-container'>
-                  <button title='Zoom in' type="button" onClick={this.zoomIn} onMouseOver={this.handleMouseZoomIn} onMouseOut={this.handleMouseOutZoomIn} className={"secondary-btn p-1 mb-1"}><div className={`${this.state.isHoverZoomInBtn ? 'zoom-in-hover' : 'zoom-in'}`}></div></button>
-                  <button title='Zoom out' type="button" onClick={this.zoomOut} onMouseOver={this.handleMouseZoomOut} onMouseOut={this.handleMouseOutZoomOut} className={"secondary-btn p-1"}><div className={`${this.state.isHoverZoomOutBtn ? 'zoom-out-hover' : 'zoom-out'}`}></div></button>
+                  <button title='Zoom in' type="button" disabled={this.state.disableZoomInButton} onClick={this.zoomIn} onMouseOver={this.handleMouseZoomIn} onMouseOut={this.handleMouseOutZoomIn} className={"secondary-btn p-1 mb-1"}><div className={`${this.state.isHoverZoomInBtn ? 'zoom-in-hover' : 'zoom-in'}`}></div></button>
+                  <button title='Zoom out' type="button" disabled={this.state.disableZoomOutButton} onClick={this.zoomOut} onMouseOver={this.handleMouseZoomOut} onMouseOut={this.handleMouseOutZoomOut} className={"secondary-btn p-1"}><div className={`${this.state.isHoverZoomOutBtn ? 'zoom-out-hover' : 'zoom-out'}`}></div></button>
                 </div>
                 <Row className="flowspace-row">
                   <Flowspace

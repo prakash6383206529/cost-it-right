@@ -48,6 +48,11 @@ class Role extends Component {
 
 	componentDidMount() {
 
+		const { data } = this.props;
+		if (data && data.isEditFlag) {
+		} else {
+			this.props.change("RoleName", "")
+		}
 	}
 
 	/**
@@ -96,11 +101,29 @@ class Role extends Component {
 	moduleDataHandler = (data, ModuleName) => {
 		const { Modules } = this.state;
 		let oldData = data;
+		let isSelectAll = true
 
 		let isParentChecked = oldData.findIndex(el => el.IsChecked === true)
+
+		if (ModuleName === "Costing" || ModuleName === "Simulation") {
+			oldData && oldData.map((ele, index) => {
+				if (ele.Sequence !== 0) {
+					if (ele.IsChecked === false) {
+						isSelectAll = false
+					}
+				}
+			})
+		} else {
+			oldData && oldData.map((ele, index) => {
+				if (ele.IsChecked === false) {
+					isSelectAll = false
+				}
+			})
+		}
+
 		const isAvailable = Modules && Modules.findIndex(a => a.ModuleName === ModuleName)
 		if (isAvailable !== -1 && Modules) {
-			let tempArray = Object.assign([...Modules], { [isAvailable]: Object.assign({}, Modules[isAvailable], { IsChecked: isParentChecked !== -1 ? true : false, Pages: oldData, }) })
+			let tempArray = Object.assign([...Modules], { [isAvailable]: Object.assign({}, Modules[isAvailable], { SelectAll: isSelectAll, IsChecked: isParentChecked !== -1 ? true : false, Pages: oldData, }) })
 			this.setState({ Modules: tempArray })
 		}
 	}
