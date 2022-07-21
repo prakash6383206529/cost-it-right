@@ -109,10 +109,10 @@ class SideBar extends Component {
   * @description permission for add and view simulation
   */
   simulationPermission(Data, index) {
-    let subbAssemblyIndexss = Data && Data.findIndex(item => item.ModuleName === SIMULATION)
+    let simulationIndex = Data && Data.findIndex(item => item.ModuleName === SIMULATION)
 
-    if (subbAssemblyIndexss !== -1) {
-      let simulationPages = Data[subbAssemblyIndexss].Pages && Data[subbAssemblyIndexss].Pages.filter(item => item.Sequence !== 0 && item.IsChecked === true)
+    if (simulationIndex !== -1) {
+      let simulationPages = Data[simulationIndex].Pages && Data[simulationIndex].Pages.filter(item => item.Sequence !== 0 && item.IsChecked === true)
       let simulationArray = simulationPages && simulationPages.filter((item) => {
         if (item.Actions[index].IsChecked === true) return item.PageName;
       })
