@@ -12,7 +12,7 @@ import { calculatePercentage, calculatePercentageValue, checkForDecimalAndNull, 
 import OpenWeightCalculator from '../../WeightCalculatorDrawer'
 import { getRawMaterialCalculationForCorrugatedBox, getRawMaterialCalculationForDieCasting, getRawMaterialCalculationForFerrous, getRawMaterialCalculationForForging, getRawMaterialCalculationForPlastic, getRawMaterialCalculationForRubber, getRawMaterialCalculationForSheetMetal, } from '../../../actions/CostWorking'
 import { CopyCostingContext, ViewCostingContext } from '../../CostingDetails'
-import { G, INR, KG, MG } from '../../../../../config/constants'
+import { DISPLAY_G, INR, DISPLAY_KG, DISPLAY_MG } from '../../../../../config/constants'
 import TooltipCustom from '../../../../common/Tooltip'
 import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
@@ -651,16 +651,16 @@ function RawMaterialCost(props) {
 
     // GROSS WEIGHT WILL ALWAYS BE KG ON THIS TAB, SO CONVERTING OTHER UNIT INTO KG
     if (Object.keys(weightData).length > 0) {
-      if (costData?.TechnologyId === SHEETMETAL && weightData.UOMForDimension === G) {
+      if (costData?.TechnologyId === SHEETMETAL && weightData.UOMForDimension === DISPLAY_G) {
         grossWeight = weightData.GrossWeight / 1000
         finishWeight = weightData.FinishWeight / 1000
         netLandedCost = weightData.RawMaterialCost / 1000
-      } else if (costData?.TechnologyId === SHEETMETAL && weightData.UOMForDimension === KG) {
+      } else if (costData?.TechnologyId === SHEETMETAL && weightData.UOMForDimension === DISPLAY_KG) {
         grossWeight = weightData.GrossWeight
         finishWeight = weightData.FinishWeight
         netLandedCost = weightData.RawMaterialCost
 
-      } else if (costData?.TechnologyId === SHEETMETAL && weightData.UOMForDimension === MG) {
+      } else if (costData?.TechnologyId === SHEETMETAL && weightData.UOMForDimension === DISPLAY_MG) {
         grossWeight = weightData.GrossWeight / 1000000
         finishWeight = weightData.FinishWeight / 1000000
         netLandedCost = weightData.RawMaterialCost / 1000000
