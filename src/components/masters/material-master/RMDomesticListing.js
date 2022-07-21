@@ -3,9 +3,7 @@ import { useState, useEffect, } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
 import {
-    deleteRawMaterialAPI, getRMDomesticDataList, getRawMaterialNameChild, getGradeSelectList, getVendorListByVendorType,
-    getRawMaterialFilterSelectList,
-    masterFinalLevelUser,
+    deleteRawMaterialAPI, getRMDomesticDataList, masterFinalLevelUser,
 } from '../actions/Material';
 import { checkForDecimalAndNull } from "../../../helper/validation";
 import { userDepartmetList } from "../../../helper/auth"
@@ -18,8 +16,7 @@ import DayTime from '../../common/DayTimeWrapper'
 import BulkUpload from '../../massUpload/BulkUpload';
 import LoaderCustom from '../../common/LoaderCustom';
 import { RMDOMESTIC_DOWNLOAD_EXCEl } from '../../../config/masterData';
-import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common'
-import { ZBC, RM_MASTER_ID, APPROVAL_ID } from '../../../config/constants'
+import { RM_MASTER_ID, APPROVAL_ID } from '../../../config/constants'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -42,7 +39,6 @@ function RMDomesticListing(props) {
     const [value, setvalue] = useState({ min: 0, max: 0 });
     const [maxRange, setmaxRange] = useState(0);
     const [isBulkUpload, setisBulkUpload] = useState(false);
-    const [shown, setshown] = useState(isSimulation ? true : false);
     const [gridApi, setgridApi] = useState(null);                      // DONT DELETE THIS STATE , IT IS USED BY AG GRID
     const [gridColumnApi, setgridColumnApi] = useState(null);          // DONT DELETE THIS STATE , IT IS USED BY AG GRID
     const [loader, setloader] = useState(false);
@@ -94,26 +90,6 @@ function RMDomesticListing(props) {
         browserDatePicker: true,
         minValidYear: 2000,
     };
-
-
-    /**
-    * @method FIRST RNDER COMPONENT
-    * @description Called after rendering the component
-    */
-
-    const callFilterApi = () => {
-        if (isSimulation || shown) {
-            dispatch(getGradeSelectList(() => { }))
-            dispatch(getVendorListByVendorType(false, () => { }))
-            dispatch(getRawMaterialFilterSelectList(() => { }))
-            dispatch(getTechnologySelectList(() => { }))
-        }
-    }
-
-    useEffect(() => {
-        callFilterApi()
-    }, [shown])
-
 
     useEffect(() => {
         if (rmDataList?.length > 0) {
