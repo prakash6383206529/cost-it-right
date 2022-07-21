@@ -96,13 +96,13 @@ function Coil(props) {
                         label: WeightCalculatorRequest.UOMForDimension,
                         value: WeightCalculatorRequest.UOMForDimensionId,
                     }
-                    : { label: kgObj.Text, value: kgObj.Value })
+                    : { label: kgObj.Display, value: kgObj.Value })
                 setUOMDimension(WeightCalculatorRequest && Object.keys(WeightCalculatorRequest).length !== 0
                     ? {
                         label: WeightCalculatorRequest.UOMForDimension,
                         value: WeightCalculatorRequest.UOMForDimensionId,
                     }
-                    : { label: kgObj.Text, value: kgObj.Value })
+                    : { label: kgObj.Display, value: kgObj.Value })
             }, 100);
 
         }))
@@ -183,7 +183,7 @@ function Coil(props) {
                     const accept = AcceptableSheetMetalUOM.includes(item.Text)
                     if (accept === false) return false
                     if (item.Value === '0') return false
-                    temp.push({ label: item.Text, value: item.Value })
+                    temp.push({ label: item.Display, value: item.Value })
                     return null
                 })
             return temp
@@ -259,7 +259,7 @@ function Coil(props) {
     }
 
     const UnitFormat = () => {
-        return <>Net Surface Area (cm<sup>2</sup>)</>
+        return <>Net Surface Area(cm<sup>2</sup>)</>
         // return (<sup>2</sup>)
     }
 

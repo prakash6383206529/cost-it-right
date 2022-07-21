@@ -5,8 +5,8 @@ import DayTime from '../components/common/DayTimeWrapper';
 import { reactLocalStorage } from 'reactjs-localstorage'
 import { checkForNull } from './validation'
 import {
-  G, KG, MG, PLASTIC, SHEET_METAL, WIRING_HARNESS, PLATING, SPRINGS, HARDWARE, NON_FERROUS_LPDDC, MACHINING,
-  ELECTRONICS, RIVET, NON_FERROUS_HPDC, RUBBER, NON_FERROUS_GDC, FORGING, FASTNERS, RIVETS, RMDOMESTIC, RMIMPORT, BOPDOMESTIC, BOPIMPORT, PROCESS, OPERATIONS, SURFACETREATMENT, MACHINERATE, OVERHEAD, PROFIT, EXCHNAGERATE,
+  PLASTIC, SHEET_METAL, WIRING_HARNESS, PLATING, SPRINGS, HARDWARE, NON_FERROUS_LPDDC, MACHINING,
+  ELECTRONICS, RIVET, NON_FERROUS_HPDC, RUBBER, NON_FERROUS_GDC, FORGING, FASTNERS, RIVETS, RMDOMESTIC, RMIMPORT, BOPDOMESTIC, BOPIMPORT, PROCESS, OPERATIONS, SURFACETREATMENT, MACHINERATE, OVERHEAD, PROFIT, EXCHNAGERATE, DISPLAY_G, DISPLAY_KG, DISPLAY_MG,
 } from '../config/constants'
 import { getConfigurationKey } from './auth'
 import { data } from 'react-dom-factories';
@@ -757,11 +757,11 @@ export function convertmmTocm(value) {
 /**g to kg,mg**/
 export function setValueAccToUOM(value, UOM) {
   switch (UOM) {
-    case G:
+    case DISPLAY_G:
       return checkForNull(value)
-    case KG:
+    case DISPLAY_KG:
       return checkForNull(value / 1000)
-    case MG:
+    case DISPLAY_MG:
       return checkForNull(value * 1000)
     default:
       break;

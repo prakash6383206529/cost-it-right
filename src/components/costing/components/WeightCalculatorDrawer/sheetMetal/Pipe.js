@@ -123,13 +123,13 @@ function Pipe(props) {
             label: WeightCalculatorRequest.UOMForDimension,
             value: WeightCalculatorRequest.UOMForDimensionId,
           }
-          : { label: kgObj.Text, value: kgObj.Value })
+          : { label: kgObj.Display, value: kgObj.Value })
         setUOMDimension(WeightCalculatorRequest && Object.keys(WeightCalculatorRequest).length !== 0
           ? {
             label: WeightCalculatorRequest.UOMForDimension,
             value: WeightCalculatorRequest.UOMForDimensionId,
           }
-          : { label: kgObj.Text, value: kgObj.Value })
+          : { label: kgObj.Display, value: kgObj.Value })
       }, 100);
 
     }))
@@ -375,7 +375,7 @@ function Pipe(props) {
           const accept = AcceptableSheetMetalUOM.includes(item.Text)
           if (accept === false) return false
           if (item.Value === '0') return false
-          temp.push({ label: item.Text, value: item.Value })
+          temp.push({ label: item.Display, value: item.Value })
           return null
         })
       return temp
@@ -457,7 +457,7 @@ function Pipe(props) {
   }
 
   const UnitFormat = () => {
-    return <>Net Surface Area (cm<sup>2</sup>)</>
+    return <>Net Surface Area(cm<sup>2</sup>)</>
   }
 
   const handleKeyDown = function (e) {
@@ -651,7 +651,7 @@ function Pipe(props) {
               <Row className={''}>
                 <Col md="3">
                   <NumberFieldHookForm
-                    label={`Weight of Sheet(gm)`}
+                    label={`Weight of Sheet(g)`}
                     name={'WeightofSheet'}
                     Controller={Controller}
                     control={control}
@@ -674,7 +674,7 @@ function Pipe(props) {
                 </Col>
                 <Col md="3">
                   <NumberFieldHookForm
-                    label={`Weight of Part(gm)`}
+                    label={`Weight of Part(g)`}
                     name={'WeightofPart'}
                     Controller={Controller}
                     control={control}
@@ -697,7 +697,7 @@ function Pipe(props) {
                 </Col>
                 <Col md="3">
                   <NumberFieldHookForm
-                    label={`Weight of Scrap(gm)`}
+                    label={`Weight of Scrap(g)`}
                     name={'WeightofScrap'}
                     Controller={Controller}
                     control={control}
