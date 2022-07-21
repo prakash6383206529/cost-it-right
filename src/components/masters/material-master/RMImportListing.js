@@ -1,10 +1,7 @@
 import React from 'react';
 import { Row, Col, } from 'reactstrap';
 import {
-  deleteRawMaterialAPI, getRMImportDataList, getRawMaterialNameChild, getGradeSelectList,
-  getRawMaterialFilterSelectList
-  , getVendorListByVendorType,
-  masterFinalLevelUser
+  deleteRawMaterialAPI, getRMImportDataList, masterFinalLevelUser
 } from '../actions/Material';
 import { checkForDecimalAndNull } from "../../../helper/validation";
 import { APPROVED_STATUS, defaultPageSize, EMPTY_DATA, RMIMPORT } from '../../../config/constants';
@@ -15,14 +12,13 @@ import 'react-input-range/lib/css/index.css';
 import DayTime from '../../common/DayTimeWrapper'
 import BulkUpload from '../../massUpload/BulkUpload';
 import LoaderCustom from '../../common/LoaderCustom';
-import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common'
-import { INR, ZBC, RM_MASTER_ID, APPROVAL_ID } from '../../../config/constants'
+import { INR, RM_MASTER_ID, APPROVAL_ID } from '../../../config/constants'
 import { RMIMPORT_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { CheckApprovalApplicableMaster, getConfigurationKey, getFilteredData, loggedInUserId, userDepartmetList, userDetails, } from '../../../helper';
+import { CheckApprovalApplicableMaster, getConfigurationKey, loggedInUserId, userDepartmetList, userDetails, } from '../../../helper';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
@@ -46,7 +42,6 @@ function RMImportListing(props) {
   const [value, setvalue] = useState({ min: 0, max: 0 });
   const [maxRange, setmaxRange] = useState(0);
   const [isBulkUpload, setisBulkUpload] = useState(false);
-  const [shown, setshown] = useState(isSimulation ? true : false);
   const [gridApi, setgridApi] = useState(null);   // DONT DELETE THIS STATE , IT IS USED BY AG GRID
   const [gridColumnApi, setgridColumnApi] = useState(null);   // DONT DELETE THIS STATE , IT IS USED BY AG GRID
   const [loader, setloader] = useState(false);
@@ -103,21 +98,6 @@ function RMImportListing(props) {
       setTotalRecordCount(rmImportDataList[0].TotalRecordCount)
     }
   }, [rmImportDataList])
-
-
-  const callFilterApi = () => {
-    if (isSimulation || shown) {
-      dispatch(getRawMaterialNameChild(() => { }))
-      dispatch(getGradeSelectList(() => { }))
-      dispatch(getVendorListByVendorType(false, () => { }))
-      dispatch(getRawMaterialFilterSelectList(() => { }))
-      dispatch(getTechnologySelectList(() => { }))
-    }
-  }
-
-  useEffect(() => {
-    callFilterApi()
-  }, [shown])
 
   useEffect(() => {
     let obj = {
@@ -691,15 +671,6 @@ function RMImportListing(props) {
                 {!isSimulation &&
                   <div className="d-flex justify-content-end bd-highlight w100">
                     <>
-                      {shown ? (
-                        <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => { setshown(!shown) }}>
-                          <div className="cancel-icon-white"></div>
-                        </button>
-                      ) : (
-                        <>
-                        </>
-                      )}
-
                       {
                         <div className="warning-message d-flex align-items-center">
                           {warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
