@@ -1768,6 +1768,9 @@ export const STROKE = "Stroke"
 export const SHOTS = "SHOT"
 export const MINUTES = 'Minutes'
 export const SECONDS = 'Seconds'
+export const DISPLAY_G = "g"
+export const DISPLAY_KG = "kg"
+export const DISPLAY_MG = "mg"
 
 // export const INR = "INR"
 
