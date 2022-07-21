@@ -490,7 +490,7 @@ class UserRegistration extends Component {
 
     if (ModuleName === "Costing" || ModuleName === "Simulation") {
       temp111 && temp111.map((ele, index) => {
-        if (index > 2) {
+        if (ele.Sequence !== 0) {
           if (ele.IsChecked === false) {
             isSelectAll = false
           }

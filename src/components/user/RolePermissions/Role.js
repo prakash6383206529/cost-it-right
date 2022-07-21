@@ -107,7 +107,7 @@ class Role extends Component {
 
 		if (ModuleName === "Costing" || ModuleName === "Simulation") {
 			oldData && oldData.map((ele, index) => {
-				if (index > 2) {
+				if (ele.Sequence !== 0) {
 					if (ele.IsChecked === false) {
 						isSelectAll = false
 					}
