@@ -26,7 +26,7 @@ export function renderActionCommon(actions, parentIndex, thisRef, moduleName) {
                 value = true          // MAKING VALUE TRUE IF A SWITCH BUTTON WILL BE RETURNED (OF GIVEN PERMISSION)
             }
             if (item.ActionId !== el && index === actions.length - 1 && value === false) {   // RETURN EMPTY DIV IF ACTION ID IS NOT EQUAL TO ELEMENT IN THE ACTIONHED ARRAY & INDEX IS THE LAST INDEX
-                return <div></div>
+                return <td></td>
             }
             if (item.ActionId !== el && index === actions.length - 1 && value === true) { return false }
 

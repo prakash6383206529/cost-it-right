@@ -34,6 +34,12 @@ class AdditionalMastersTab extends Component {
                 Modules: data && data.sort((a, b) => a.Sequence - b.Sequence),
                 actionSelectList: actionSelectList,
             })
+
+            actionData && actionData.map((ele, index) => {
+                if (ele.ModuleName === 'Additional Masters') {
+                    this.setState({ checkBox: ele.SelectAll })
+                }
+            })
         }
     }
 

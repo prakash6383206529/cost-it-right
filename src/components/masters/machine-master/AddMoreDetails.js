@@ -719,6 +719,7 @@ class AddMoreDetails extends Component {
     this.setState({
       DateOfPurchase: date,
     });
+
     setTimeout(() => {
       this.calculateDepreciation(date)
     }, 300);
@@ -983,7 +984,7 @@ class AddMoreDetails extends Component {
         depreciationAmount = this.state.DateOfPurchase !== '' ? (checkForNull((TotalCost - checkForNull(CastOfScrap)) * calculatePercentage(DepreciationRatePercentage))) : 0
       }
       else {
-        depreciationAmount = this.state.DateOfPurchase !== '' ? ((checkForNull((TotalCost - checkForNull(CastOfScrap)) * calculatePercentage(DepreciationRatePercentage)) * checkForNull(TotalDays)) / 365) : 0
+        depreciationAmount = this.state.DateOfPurchase !== '' ? ((checkForNull((TotalCost - checkForNull(CastOfScrap)) * calculatePercentage(DepreciationRatePercentage)) * checkForNull(TotalDays + 1)) / 365) : 0
       }
       //let rateOfDep = ((1 - checkForNull(CastOfScrap)) / (machinecost)) ^ i
     }
@@ -1330,6 +1331,11 @@ class AddMoreDetails extends Component {
       return false;
     }
 
+    if (checkForNull(fieldsObj?.MachineCost) === 0) {
+      Toaster.warning('Please enter the machine cost');
+      return false;
+    }
+
     //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
     const isExist = processGrid.findIndex(el => (el.ProcessId === processName.value))
     if (isExist !== -1) {
@@ -1637,6 +1643,7 @@ class AddMoreDetails extends Component {
     const data = {}
     // For cancel of mpre detail form to reset form in addMachine form
     data.cancelFlag = true
+    data.isFinalApprovar = this.state.isFinalApprovar
     /* IF CANCEL IS CLICKED AND MACHINE FORM IS IN EDIT FORM CONTAINING VALUE */
     if (editDetails.isIncompleteMachine || this.state.isEditFlag) {
 
@@ -1658,8 +1665,6 @@ class AddMoreDetails extends Component {
   */
   onSubmit = (values) => {
 
-
-
     const { isEditFlag, MachineID, selectedTechnology, selectedPlants, machineType, remarks, files, DateOfPurchase,
       IsAnnualMaintenanceFixed, IsAnnualConsumableFixed, IsInsuranceFixed, IsUsesFuel, IsUsesSolar, fuelType,
       labourGrid, processGrid, machineFullValue, effectiveDate, IsFinancialDataChanged } = this.state;
@@ -1670,7 +1675,7 @@ class AddMoreDetails extends Component {
       return false
     }
 
-    const { data, editDetails } = this.props;
+    const { data, editDetails, fieldsObj } = this.props;
 
     const userDetail = userDetails()
 
@@ -1692,7 +1697,7 @@ class AddMoreDetails extends Component {
       DepreciationRatePercentage: values.DepreciationRatePercentage,
       LifeOfAssetPerYear: values.LifeOfAssetPerYear,
       CastOfScrap: values.CastOfScrap,
-      DateOfPurchase: DateOfPurchase,
+      DateOfPurchase: DayTime(DateOfPurchase).format('YYYY-MM-DD HH:mm:ss'),
       DepreciationAmount: machineFullValue.depreciationAmount,
       WorkingShift: this.state.shiftType ? this.state.shiftType.value : '',
       WorkingHoursPerShift: values.WorkingHoursPerShift,
@@ -1739,12 +1744,13 @@ class AddMoreDetails extends Component {
       MachineName: values.MachineName,
       MachineTypeId: machineType ? machineType.value : '',
       TonnageCapacity: values.TonnageCapacity,
-      Description: data.fieldsObj.Description,
+      Description: fieldsObj.Description,
       Remark: remarks,
       LoggedInUserId: loggedInUserId(),
       MachineProcessRates: processGrid,
       Technology: (technologyArray.length > 0 && technologyArray[0]?.Technology !== undefined) ? technologyArray : [{ Technology: selectedTechnology.label ? selectedTechnology.label : selectedTechnology[0].label, TechnologyId: selectedTechnology.value ? selectedTechnology.value : selectedTechnology[0].value }],
       Plant: [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }],
+      selectedPlants: selectedPlants,
       Attachements: updatedFiles,
       VendorPlant: [],
       IsForcefulUpdated: true,
@@ -1756,16 +1762,38 @@ class AddMoreDetails extends Component {
     if (isEditFlag && this.state.isFinalApprovar) {               //editDetails.isIncompleteMachine &&
 
       // EXECUTED WHEN:- ADD MACHINE DONE AND ADD MORE DETAIL CALLED FROM ADDMACHINERATE.JS FILE
-      let MachineData = { ...requestData, MachineId: editDetails.Id }
-      this.props.reset()
-      this.props.updateMachineDetails(MachineData, (res) => {
-        if (res?.data?.Result) {
-          Toaster.success(MESSAGES.MACHINE_DETAILS_ADD_SUCCESS);
-          MachineData.isViewFlag = true
-          this.props.hideMoreDetailsForm(MachineData)
-          // this.cancel();
+
+
+      if (IsFinancialDataChanged && isEditFlag) {
+
+        if (this.state.isDateChange) {
+          let MachineData = { ...requestData, MachineId: editDetails.Id }
+          this.props.reset()
+          this.props.updateMachineDetails(MachineData, (res) => {
+            if (res?.data?.Result) {
+              Toaster.success(MESSAGES.MACHINE_DETAILS_ADD_SUCCESS);
+              MachineData.isViewFlag = true
+              this.props.hideMoreDetailsForm(MachineData)
+              //this.cancel();
+            }
+          })         //IF THE EFFECTIVE DATE IS NOT UPDATED THEN USER SHOULD NOT BE ABLE TO SEND IT FOR APPROVAL IN EDIT MODE
         }
-      })
+        else {
+          this.setState({ setDisable: false })
+          Toaster.warning('Please update the effective date')
+        }
+      } else {
+        let MachineData = { ...requestData, MachineId: editDetails.Id }
+        this.props.reset()
+        this.props.updateMachineDetails(MachineData, (res) => {
+          if (res?.data?.Result) {
+            Toaster.success(MESSAGES.MACHINE_DETAILS_ADD_SUCCESS);
+            MachineData.isViewFlag = true
+            this.props.hideMoreDetailsForm(MachineData)
+            //this.cancel();
+          }
+        })
+      }
 
     }
     //     else if (isEditFlag) {
@@ -1792,7 +1820,7 @@ class AddMoreDetails extends Component {
         DepreciationRatePercentage: values.DepreciationRatePercentage,
         LifeOfAssetPerYear: values.LifeOfAssetPerYear,
         CastOfScrap: values.CastOfScrap,
-        DateOfPurchase: DateOfPurchase,
+        DateOfPurchase: DayTime(DateOfPurchase).format('YYYY-MM-DD HH:mm:ss'),
         DepreciationAmount: machineFullValue.depreciationAmount,
         WorkingShift: this.state.shiftType ? this.state.shiftType.value : '',
         WorkingHoursPerShift: values.WorkingHoursPerShift,
@@ -1839,7 +1867,7 @@ class AddMoreDetails extends Component {
         MachineName: values.MachineName,
         MachineTypeId: machineType ? machineType.value : '',
         TonnageCapacity: values.TonnageCapacity,
-        Description: data.fieldsObj.Description,
+        Description: fieldsObj.Description,
         Remark: remarks,
         LoggedInUserId: loggedInUserId(),
         MachineProcessRates: processGrid,
@@ -1866,7 +1894,6 @@ class AddMoreDetails extends Component {
 
       }
 
-
       if (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) {
         if (IsFinancialDataChanged && isEditFlag) {
 
@@ -1884,7 +1911,6 @@ class AddMoreDetails extends Component {
 
         this.props.reset()
         this.props.createMachineDetails(formData, (res) => {
-
           if (res.data.Result) {
             formData.isViewFlag = true
             this.props.hideMoreDetailsForm(formData)
@@ -1895,7 +1921,6 @@ class AddMoreDetails extends Component {
       }
 
     }
-
   }
 
   handleYearChange = (year) => {
@@ -2072,7 +2097,7 @@ class AddMoreDetails extends Component {
                             handleChangeDescription={this.handlePlants}
                             valueDescription={this.state.selectedPlants}
                             // disabled={isEditFlag ? true : false}
-                            disabled={(this.state.isViewFlag) || (isEditFlag && isMachineAssociated)}
+                            disabled={(this.state.isViewFlag) || (isEditFlag)}
 
                           />
                         </Col>
@@ -2096,9 +2121,9 @@ class AddMoreDetails extends Component {
                             name={"MachineName"}
                             type="text"
                             placeholder={'Enter'}
-                            validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
+                            validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                             component={renderText}
-                            required={true}
+                            required={false}
                             disabled={this.state.isViewFlag ? true : false}
                             className=" "
                             customClassName="withBorder"
@@ -3614,7 +3639,7 @@ function mapStateToProps(state) {
     'BuildingCostPerSquareFeet', 'MachineFloorAreaPerSquareFeet', 'AnnualAreaCost', 'OtherYearlyCost', 'TotalMachineCostPerAnnum',
     'UtilizationFactorPercentage', 'PowerRatingPerKW', 'PowerCostPerUnit', 'TotalPowerCostPerYear',
     'FuelCostPerUnit', 'ConsumptionPerYear', 'TotalFuelCostPerYear',
-    'NumberOfLabour', 'LabourCost', 'OutputPerHours', 'OutputPerYear', 'MachineRate', 'DateOfPurchase');
+    'NumberOfLabour', 'LabourCost', 'OutputPerHours', 'OutputPerYear', 'MachineRate', 'DateOfPurchase', 'Description');
 
   const { technologySelectList, plantSelectList, UOMSelectList,
     ShiftTypeSelectList, DepreciationTypeSelectList, } = comman;

@@ -42,6 +42,12 @@ class ReportsTab extends Component {
         Modules: data && data.sort((a, b) => a.Sequence - b.Sequence),
         actionSelectList: actionSelectList,
       })
+
+      actionData && actionData.map((ele, index) => {
+        if (ele.ModuleName === 'Reports And Analytics') {
+          this.setState({ checkBox: ele.SelectAll })
+        }
+      })
     }
   }
 
