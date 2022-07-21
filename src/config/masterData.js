@@ -471,6 +471,7 @@ export const ZBCOperation = [
     { label: 'OperationName', value: 'OperationName', }, //*
     { label: 'OperationCode', value: 'OperationCode', },
     { label: 'Description', value: 'Description', },
+    { label: 'Plant', value: 'Plant', }, //*
     { label: 'PlantCode', value: 'PlantCode', }, //*
     { label: 'UOM', value: 'UOM', }, //*
     { label: 'Rate', value: 'Rate', }, //*
@@ -485,6 +486,7 @@ export const ZBCOperationTempData = [
         'OperationName': 'Crushing',
         'OperationCode': 'Crushing123',
         'Description': 'Description Text',
+        'Plant': 'Manesar',
         'PlantCode': 'Systematix01',
         'UOM': 'Litre',
         'Rate': 50,
@@ -1397,7 +1399,7 @@ export const BOMUpload = [
     { label: "Quantity", value: "Quantity" }, //NOUI
     { label: "EffectiveDate", value: "EffectiveDate" },
     { label: "Remark", value: "Remark" },
-    { label: 'ProductGroupCode', value: "ProductGroupCode" }
+    { label: 'TechnologyName', value: "Technology" }
 ]
 
 export const BOMUploadTempData = [
@@ -2463,7 +2465,6 @@ export const COMBINEDPROCESSSIMULATION = [
     { label: "Technology", value: "Technology" },
     //{ label: "Raw Material", value: "RMName" },
     //{ label: "RawMaterial Grade", value: "RMGrade" },
-    { label: "PlantCode", value: "PlantCode" },
     { label: "Part No", value: "PartNo" },
     { label: "Part Name", value: "PartName" },
     { label: "ECN Number", value: "ECNNumber" },

@@ -1,10 +1,7 @@
 import React from 'react';
 import { Row, Col, } from 'reactstrap';
 import {
-  deleteRawMaterialAPI, getRMImportDataList, getRawMaterialNameChild, getGradeSelectList,
-  getRawMaterialFilterSelectList
-  , getVendorListByVendorType,
-  masterFinalLevelUser
+  deleteRawMaterialAPI, getRMImportDataList, masterFinalLevelUser
 } from '../actions/Material';
 import { checkForDecimalAndNull } from "../../../helper/validation";
 import { APPROVED_STATUS, defaultPageSize, EMPTY_DATA, RMIMPORT } from '../../../config/constants';
@@ -15,14 +12,13 @@ import 'react-input-range/lib/css/index.css';
 import DayTime from '../../common/DayTimeWrapper'
 import BulkUpload from '../../massUpload/BulkUpload';
 import LoaderCustom from '../../common/LoaderCustom';
-import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common'
-import { INR, ZBC, RM_MASTER_ID, APPROVAL_ID } from '../../../config/constants'
+import { INR, RM_MASTER_ID, APPROVAL_ID } from '../../../config/constants'
 import { RMIMPORT_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { CheckApprovalApplicableMaster, getConfigurationKey, getFilteredData, loggedInUserId, userDepartmetList, userDetails, } from '../../../helper';
+import { CheckApprovalApplicableMaster, getConfigurationKey, loggedInUserId, userDepartmetList, userDetails, } from '../../../helper';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
@@ -46,7 +42,6 @@ function RMImportListing(props) {
   const [value, setvalue] = useState({ min: 0, max: 0 });
   const [maxRange, setmaxRange] = useState(0);
   const [isBulkUpload, setisBulkUpload] = useState(false);
-  const [shown, setshown] = useState(isSimulation ? true : false);
   const [gridApi, setgridApi] = useState(null);   // DONT DELETE THIS STATE , IT IS USED BY AG GRID
   const [gridColumnApi, setgridColumnApi] = useState(null);   // DONT DELETE THIS STATE , IT IS USED BY AG GRID
   const [loader, setloader] = useState(false);
@@ -64,6 +59,7 @@ function RMImportListing(props) {
   const [globalTake, setGlobalTake] = useState(defaultPageSize)
   const [filterModel, setFilterModel] = useState({});
   const [pageNo, setPageNo] = useState(1)
+  const [pageNoNew, setPageNoNew] = useState(1)
   const [totalRecordCount, setTotalRecordCount] = useState(0)
   const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
   const [currentRowIndex, setCurrentRowIndex] = useState(0)
@@ -102,21 +98,6 @@ function RMImportListing(props) {
       setTotalRecordCount(rmImportDataList[0].TotalRecordCount)
     }
   }, [rmImportDataList])
-
-
-  const callFilterApi = () => {
-    if (isSimulation || shown) {
-      dispatch(getRawMaterialNameChild(() => { }))
-      dispatch(getGradeSelectList(() => { }))
-      dispatch(getVendorListByVendorType(false, () => { }))
-      dispatch(getRawMaterialFilterSelectList(() => { }))
-      dispatch(getTechnologySelectList(() => { }))
-    }
-  }
-
-  useEffect(() => {
-    callFilterApi()
-  }, [shown])
 
   useEffect(() => {
     let obj = {
@@ -276,6 +257,7 @@ function RMImportListing(props) {
     setWarningMessage(false)
     setIsFilterButtonClicked(true)
     setPageNo(1)
+    setPageNoNew(1)
     setCurrentRowIndex(0)
     gridOptions?.columnApi?.resetColumnState();
     getDataList(null, null, null, null, null, 0, 0, globalTake, true, floatingFilterData)
@@ -285,6 +267,7 @@ function RMImportListing(props) {
   const onBtPrevious = () => {
     if (currentRowIndex >= 10) {
       setPageNo(pageNo - 1)
+      setPageNoNew(pageNo - 1)
       const previousNo = currentRowIndex - 10;
       getDataList(null, null, null, null, null, 0, previousNo, globalTake, true, floatingFilterData)
       setCurrentRowIndex(previousNo)
@@ -303,6 +286,7 @@ function RMImportListing(props) {
 
     if (currentRowIndex < (totalRecordCount - 10)) {
       setPageNo(pageNo + 1)
+      setPageNoNew(pageNo + 1)
       const nextNo = currentRowIndex + 10;
       getDataList(null, null, null, null, null, 0, nextNo, globalTake, true, floatingFilterData)
       setCurrentRowIndex(nextNo)
@@ -509,18 +493,28 @@ function RMImportListing(props) {
       getDataList(null, null, null, null, null, 0, 0, 10, true, floatingFilterData)
       setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
       setGlobalTake(10)
+      setPageNo(pageNoNew)
     }
     else if (Number(newPageSize) === 50) {
       getDataList(null, null, null, null, null, 0, 0, 50, true, floatingFilterData)
       setPageSize(prevState => ({ ...prevState, pageSize50: true, pageSize10: false, pageSize100: false }))
       setGlobalTake(50)
+      setPageNo(pageNoNew)
+      if (pageNo > Math.ceil(totalRecordCount / 50)) {
+        setPageNo(Math.ceil(totalRecordCount / 50))
+        getDataList(null, null, null, null, null, 0, 0, 50, true, floatingFilterData)
+      }
     }
     else if (Number(newPageSize) === 100) {
       getDataList(null, null, null, null, null, 0, 0, 100, true, floatingFilterData)
       setPageSize(prevState => ({ ...prevState, pageSize100: true, pageSize10: false, pageSize50: false }))
       setGlobalTake(100)
+      setGlobalTake(100)
+      if (pageNo > Math.ceil(totalRecordCount / 100)) {
+        setPageNo(Math.ceil(totalRecordCount / 100))
+        getDataList(null, null, null, null, null, 0, 0, 100, true, floatingFilterData)
+      }
     }
-
     gridApi.paginationSetPageSize(Number(newPageSize));
 
   };
@@ -577,6 +571,7 @@ function RMImportListing(props) {
     setFloatingFilterData(floatingFilterData)
     setWarningMessage(false)
     setPageNo(1)
+    setPageNoNew(1)
     setCurrentRowIndex(0)
     getDataList(null, null, null, null, null, 0, 0, 10, true, floatingFilterData)
     dispatch(setSelectedCostingListSimualtion([]))
@@ -676,15 +671,6 @@ function RMImportListing(props) {
                 {!isSimulation &&
                   <div className="d-flex justify-content-end bd-highlight w100">
                     <>
-                      {shown ? (
-                        <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => { setshown(!shown) }}>
-                          <div className="cancel-icon-white"></div>
-                        </button>
-                      ) : (
-                        <>
-                        </>
-                      )}
-
                       {
                         <div className="warning-message d-flex align-items-center">
                           {warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}

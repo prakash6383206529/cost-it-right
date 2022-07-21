@@ -398,7 +398,7 @@ export function getPowerDetailDataList(data, callback) {
             if (response.data.Result || response.status === 204) {
                 dispatch({
                     type: GET_POWER_DATA_LIST,
-                    payload: response.data.DataList
+                    payload: response.status === 204 ? [] : response.data.DataList
                 })
                 callback(response);
             }

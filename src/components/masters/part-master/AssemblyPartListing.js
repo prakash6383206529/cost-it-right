@@ -258,9 +258,12 @@ class AssemblyPartListing extends Component {
         this.setState({ isBulkUpload: true })
     }
 
-    closeBulkUploadDrawer = () => {
+    closeBulkUploadDrawer = (isCancel) => {
         this.setState({ isBulkUpload: false }, () => {
         })
+        if (!isCancel) {
+            this.getTableListData();
+        }
     }
 
     onGridReady = (params) => {

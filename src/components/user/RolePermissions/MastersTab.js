@@ -42,6 +42,12 @@ class MastersTab extends Component {
         Modules: data && data.sort((a, b) => a.Sequence - b.Sequence),
         actionSelectList: actionSelectList,
       })
+
+      actionData && actionData.map((ele, index) => {
+        if (ele.ModuleName === 'Master') {
+          this.setState({ checkBox: ele.IsChecked })
+        }
+      })
     }
   }
 
@@ -250,7 +256,7 @@ class MastersTab extends Component {
               <thead>
                 <tr>
                   <th>{`Module`}</th>
-                  <th className=" pr-2">
+                  <th className="select-all-block pr-2">
                     <label className="custom-checkbox align-middle text-left">
                       <input
                         type="checkbox"
@@ -267,6 +273,7 @@ class MastersTab extends Component {
                 </tr>
               </thead>
               <tbody>
+                { }
                 {this.state.Modules &&
                   this.state.Modules.map((item, index) => {
                     return (

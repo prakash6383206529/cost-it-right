@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
 import { required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces, checkSpacesInString } from "../../../helper/validation";
-import { renderText, searchableSelect } from "../../layout/FormInputs";
+import { renderText, searchableSelect, focusOnError } from "../../layout/FormInputs";
 import {
   createRMSpecificationAPI, updateRMSpecificationAPI, getRMSpecificationDataAPI,
   getRawMaterialNameChild, getMaterialTypeDataAPI, getRMGradeSelectListByRawMaterial,
@@ -43,7 +43,7 @@ class AddSpecification extends Component {
   * @description Called before render the component
   */
   UNSAFE_componentWillMount() {
-    this.props.getRawMaterialNameChild(this.props.Technology, () => { })
+    this.props.getRawMaterialNameChild('', () => { })
     // this.props.getMaterialTypeSelectList(() => { })
     this.props.getRMGradeSelectListByRawMaterial('', res => { })
   }
@@ -231,7 +231,7 @@ class AddSpecification extends Component {
   closeRMDrawer = (e = '', formData = {}) => {
     this.setState({ isOpenRMDrawer: false, Id: '' }, () => {
       this.getDetails()
-      this.props.getRawMaterialNameChild(this.props.Technology, () => {
+      this.props.getRawMaterialNameChild('', () => {
         this.props.getRMGradeSelectListByRawMaterial('', res => { })
         /*FOR SHOWING DEFAULT VALUE FROM SELECTED FROM DRAWER*/
         const { rawMaterialNameSelectList } = this.props;
@@ -666,4 +666,8 @@ export default connect(mapStateToProps, {
 })(reduxForm({
   form: 'AddSpecification',
   enableReinitialize: true,
+  touchOnChange: true,
+  onSubmitFail: (errors) => {
+    focusOnError(errors)
+  },
 })(AddSpecification));

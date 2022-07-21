@@ -62,6 +62,7 @@ class BOPDomesticListing extends Component {
             warningMessage: false,
             filterModel: {},
             pageNo: 1,
+            pageNoNew: 1,
             totalRecordCount: 0,
             isFilterButtonClicked: false,
             currentRowIndex: 0,
@@ -655,7 +656,7 @@ class BOPDomesticListing extends Component {
                                     <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams} ></AgGridColumn>
                                     {!this.props?.isSimulation && !this.props?.isMasterSummaryDrawer && <AgGridColumn field="BoughtOutPartId" width={160} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                 </AgGridReact>
-                                <div className='button-wrapper'>
+                                <div className={`button-wrapper ${this.props?.isMasterSummaryDrawer ? 'mb-5' : ''}`}>
                                     {!this.state.isLoader && <PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} globalTake={this.state.globalTake} />}
                                     {(this.props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) &&
                                         <div className="d-flex pagination-button-container">

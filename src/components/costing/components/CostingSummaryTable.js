@@ -897,9 +897,9 @@ const CostingSummaryTable = (props) => {
                           viewCostingData?.map((data, index) => {
                             const title = data?.zbc === 0 ? data?.plantName + "(SOB: " + data?.shareOfBusinessPercent + "%)" : (data?.zbc === 1 ? data?.vendorName : 'CBC') + "(SOB: " + data?.shareOfBusinessPercent + "%)"
                             return (
-                              <th scope="col" className={`header-name ${isLockedState && data?.status !== DRAFT && costingSummaryMainPage && !pdfHead ? 'pt-30' : ''}`}>
+                              <th scope="col" className={`header-name ${isLockedState && data?.status !== DRAFT && costingSummaryMainPage && !pdfHead && !drawerDetailPDF ? 'pt-30' : ''}`}>
                                 {data?.IsApprovalLocked && !pdfHead && !drawerDetailPDF && costingSummaryMainPage && data?.status === DRAFT && <WarningMessage title={data?.getApprovalLockedMessage} dClass={"costing-summary-warning-mesaage"} message={data?.getApprovalLockedMessage} />}    {/* ADD THIS CODE ONCE DEPLOYED FROM BACKEND{data.ApprovalLockedMessage}*/}
-                                <div className='header-name-button-container'>
+                                <div className={` ${drawerDetailPDF ? 'pdf-header' : 'header-name-button-container'}`}>
                                   <div class="element d-inline-flex align-items-center">
                                     {
                                       !isApproval && (data?.status === DRAFT) && <>
@@ -1626,7 +1626,7 @@ const CostingSummaryTable = (props) => {
                       </tr>
 
                       {(!viewMode) && (
-                        <tr class="background-light-blue">
+                        <tr class={`${pdfHead || drawerDetailPDF ? 'd-none' : 'background-light-blue'}`}>
                           <td className="text-center"></td>
 
                           {viewCostingData?.map((data, index) => {
