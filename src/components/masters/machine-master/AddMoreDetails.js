@@ -1761,16 +1761,38 @@ class AddMoreDetails extends Component {
     if (isEditFlag && this.state.isFinalApprovar) {               //editDetails.isIncompleteMachine &&
 
       // EXECUTED WHEN:- ADD MACHINE DONE AND ADD MORE DETAIL CALLED FROM ADDMACHINERATE.JS FILE
-      let MachineData = { ...requestData, MachineId: editDetails.Id }
-      this.props.reset()
-      this.props.updateMachineDetails(MachineData, (res) => {
-        if (res?.data?.Result) {
-          Toaster.success(MESSAGES.MACHINE_DETAILS_ADD_SUCCESS);
-          MachineData.isViewFlag = true
-          this.props.hideMoreDetailsForm(MachineData)
-          // this.cancel();
+
+
+      if (IsFinancialDataChanged && isEditFlag) {
+
+        if (this.state.isDateChange) {
+          let MachineData = { ...requestData, MachineId: editDetails.Id }
+          this.props.reset()
+          this.props.updateMachineDetails(MachineData, (res) => {
+            if (res?.data?.Result) {
+              Toaster.success(MESSAGES.MACHINE_DETAILS_ADD_SUCCESS);
+              MachineData.isViewFlag = true
+              this.props.hideMoreDetailsForm(MachineData)
+              //this.cancel();
+            }
+          })         //IF THE EFFECTIVE DATE IS NOT UPDATED THEN USER SHOULD NOT BE ABLE TO SEND IT FOR APPROVAL IN EDIT MODE
         }
-      })
+        else {
+          this.setState({ setDisable: false })
+          Toaster.warning('Please update the effective date')
+        }
+      } else {
+        let MachineData = { ...requestData, MachineId: editDetails.Id }
+        this.props.reset()
+        this.props.updateMachineDetails(MachineData, (res) => {
+          if (res?.data?.Result) {
+            Toaster.success(MESSAGES.MACHINE_DETAILS_ADD_SUCCESS);
+            MachineData.isViewFlag = true
+            this.props.hideMoreDetailsForm(MachineData)
+            //this.cancel();
+          }
+        })
+      }
 
     }
     //     else if (isEditFlag) {
