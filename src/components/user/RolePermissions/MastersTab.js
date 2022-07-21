@@ -45,7 +45,7 @@ class MastersTab extends Component {
 
       actionData && actionData.map((ele, index) => {
         if (ele.ModuleName === 'Master') {
-          this.setState({ checkBox: ele.IsChecked })
+          this.setState({ checkBox: ele.SelectAll })
         }
       })
     }

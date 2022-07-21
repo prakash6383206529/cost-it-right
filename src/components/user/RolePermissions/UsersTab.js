@@ -45,7 +45,7 @@ class UsersTab extends Component {
 
       actionData && actionData.map((ele, index) => {
         if (ele.ModuleName === 'Users') {
-          this.setState({ checkBox: ele.IsChecked })
+          this.setState({ checkBox: ele.SelectAll })
         }
       })
     }

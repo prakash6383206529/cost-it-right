@@ -33,7 +33,6 @@ import NoContentFound from '../../common/NoContentFound';
 import { calculatePercentage, CheckApprovalApplicableMaster } from '../../../helper';
 import EfficiencyDrawer from './EfficiencyDrawer';
 import DayTime from '../../common/DayTimeWrapper'
-import { Loader } from '../../common/Loader';
 import { AcceptableMachineUOM } from '../../../config/masterData'
 import imgRedcross from '../../../assests/images/red-cross.png'
 import { masterFinalLevelUser } from '../actions/Material'
@@ -720,6 +719,7 @@ class AddMoreDetails extends Component {
     this.setState({
       DateOfPurchase: date,
     });
+
     setTimeout(() => {
       this.calculateDepreciation(date)
     }, 300);
@@ -984,7 +984,7 @@ class AddMoreDetails extends Component {
         depreciationAmount = this.state.DateOfPurchase !== '' ? (checkForNull((TotalCost - checkForNull(CastOfScrap)) * calculatePercentage(DepreciationRatePercentage))) : 0
       }
       else {
-        depreciationAmount = this.state.DateOfPurchase !== '' ? ((checkForNull((TotalCost - checkForNull(CastOfScrap)) * calculatePercentage(DepreciationRatePercentage)) * checkForNull(TotalDays)) / 365) : 0
+        depreciationAmount = this.state.DateOfPurchase !== '' ? ((checkForNull((TotalCost - checkForNull(CastOfScrap)) * calculatePercentage(DepreciationRatePercentage)) * checkForNull(TotalDays + 1)) / 365) : 0
       }
       //let rateOfDep = ((1 - checkForNull(CastOfScrap)) / (machinecost)) ^ i
     }
@@ -1643,6 +1643,7 @@ class AddMoreDetails extends Component {
     const data = {}
     // For cancel of mpre detail form to reset form in addMachine form
     data.cancelFlag = true
+    data.isFinalApprovar = this.state.isFinalApprovar
     /* IF CANCEL IS CLICKED AND MACHINE FORM IS IN EDIT FORM CONTAINING VALUE */
     if (editDetails.isIncompleteMachine || this.state.isEditFlag) {
 
@@ -1664,8 +1665,6 @@ class AddMoreDetails extends Component {
   */
   onSubmit = (values) => {
 
-
-
     const { isEditFlag, MachineID, selectedTechnology, selectedPlants, machineType, remarks, files, DateOfPurchase,
       IsAnnualMaintenanceFixed, IsAnnualConsumableFixed, IsInsuranceFixed, IsUsesFuel, IsUsesSolar, fuelType,
       labourGrid, processGrid, machineFullValue, effectiveDate, IsFinancialDataChanged } = this.state;
@@ -1676,7 +1675,7 @@ class AddMoreDetails extends Component {
       return false
     }
 
-    const { data, editDetails } = this.props;
+    const { data, editDetails, fieldsObj } = this.props;
 
     const userDetail = userDetails()
 
@@ -1698,7 +1697,7 @@ class AddMoreDetails extends Component {
       DepreciationRatePercentage: values.DepreciationRatePercentage,
       LifeOfAssetPerYear: values.LifeOfAssetPerYear,
       CastOfScrap: values.CastOfScrap,
-      DateOfPurchase: DateOfPurchase,
+      DateOfPurchase: DayTime(DateOfPurchase).format('YYYY-MM-DD HH:mm:ss'),
       DepreciationAmount: machineFullValue.depreciationAmount,
       WorkingShift: this.state.shiftType ? this.state.shiftType.value : '',
       WorkingHoursPerShift: values.WorkingHoursPerShift,
@@ -1745,12 +1744,13 @@ class AddMoreDetails extends Component {
       MachineName: values.MachineName,
       MachineTypeId: machineType ? machineType.value : '',
       TonnageCapacity: values.TonnageCapacity,
-      Description: data.fieldsObj.Description,
+      Description: fieldsObj.Description,
       Remark: remarks,
       LoggedInUserId: loggedInUserId(),
       MachineProcessRates: processGrid,
       Technology: (technologyArray.length > 0 && technologyArray[0]?.Technology !== undefined) ? technologyArray : [{ Technology: selectedTechnology.label ? selectedTechnology.label : selectedTechnology[0].label, TechnologyId: selectedTechnology.value ? selectedTechnology.value : selectedTechnology[0].value }],
       Plant: [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }],
+      selectedPlants: selectedPlants,
       Attachements: updatedFiles,
       VendorPlant: [],
       IsForcefulUpdated: true,
@@ -1769,7 +1769,7 @@ class AddMoreDetails extends Component {
           Toaster.success(MESSAGES.MACHINE_DETAILS_ADD_SUCCESS);
           MachineData.isViewFlag = true
           this.props.hideMoreDetailsForm(MachineData)
-          // this.cancel();
+          //this.cancel();
         }
       })
 
@@ -1798,7 +1798,7 @@ class AddMoreDetails extends Component {
         DepreciationRatePercentage: values.DepreciationRatePercentage,
         LifeOfAssetPerYear: values.LifeOfAssetPerYear,
         CastOfScrap: values.CastOfScrap,
-        DateOfPurchase: DateOfPurchase,
+        DateOfPurchase: DayTime(DateOfPurchase).format('YYYY-MM-DD HH:mm:ss'),
         DepreciationAmount: machineFullValue.depreciationAmount,
         WorkingShift: this.state.shiftType ? this.state.shiftType.value : '',
         WorkingHoursPerShift: values.WorkingHoursPerShift,
@@ -1845,7 +1845,7 @@ class AddMoreDetails extends Component {
         MachineName: values.MachineName,
         MachineTypeId: machineType ? machineType.value : '',
         TonnageCapacity: values.TonnageCapacity,
-        Description: data.fieldsObj.Description,
+        Description: fieldsObj.Description,
         Remark: remarks,
         LoggedInUserId: loggedInUserId(),
         MachineProcessRates: processGrid,
@@ -1872,7 +1872,6 @@ class AddMoreDetails extends Component {
 
       }
 
-
       if (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) {
         if (IsFinancialDataChanged && isEditFlag) {
 
@@ -1890,7 +1889,6 @@ class AddMoreDetails extends Component {
 
         this.props.reset()
         this.props.createMachineDetails(formData, (res) => {
-
           if (res.data.Result) {
             formData.isViewFlag = true
             this.props.hideMoreDetailsForm(formData)
@@ -1901,7 +1899,6 @@ class AddMoreDetails extends Component {
       }
 
     }
-
   }
 
   handleYearChange = (year) => {
@@ -2013,7 +2010,7 @@ class AddMoreDetails extends Component {
 
     return (
       <>
-        {(loading || isLoader) && <Loader />}
+        {(isLoader) && <LoaderCustom />}
         <div className="container-fluid">
           <div className="login-container signup-form">
             <div className="row">
@@ -2078,7 +2075,7 @@ class AddMoreDetails extends Component {
                             handleChangeDescription={this.handlePlants}
                             valueDescription={this.state.selectedPlants}
                             // disabled={isEditFlag ? true : false}
-                            disabled={(this.state.isViewFlag) || (isEditFlag && isMachineAssociated)}
+                            disabled={(this.state.isViewFlag) || (isEditFlag)}
 
                           />
                         </Col>
@@ -3620,7 +3617,7 @@ function mapStateToProps(state) {
     'BuildingCostPerSquareFeet', 'MachineFloorAreaPerSquareFeet', 'AnnualAreaCost', 'OtherYearlyCost', 'TotalMachineCostPerAnnum',
     'UtilizationFactorPercentage', 'PowerRatingPerKW', 'PowerCostPerUnit', 'TotalPowerCostPerYear',
     'FuelCostPerUnit', 'ConsumptionPerYear', 'TotalFuelCostPerYear',
-    'NumberOfLabour', 'LabourCost', 'OutputPerHours', 'OutputPerYear', 'MachineRate', 'DateOfPurchase');
+    'NumberOfLabour', 'LabourCost', 'OutputPerHours', 'OutputPerYear', 'MachineRate', 'DateOfPurchase', 'Description');
 
   const { technologySelectList, plantSelectList, UOMSelectList,
     ShiftTypeSelectList, DepreciationTypeSelectList, } = comman;

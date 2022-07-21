@@ -484,17 +484,29 @@ class UserRegistration extends Component {
   moduleDataHandler = (data, ModuleName) => {
     const { Modules } = this.state;
     let temp111 = data;
+    let isSelectAll = true
 
     let isParentChecked = temp111.findIndex(el => el.IsChecked === true)
-    temp111 && temp111.map((ele, index) => {
-      if (ele.IsChecked === false) {
-        isParentChecked = -1
-      }
-    })
+
+    if (ModuleName === "Costing" || ModuleName === "Simulation") {
+      temp111 && temp111.map((ele, index) => {
+        if (index > 2) {
+          if (ele.IsChecked === false) {
+            isSelectAll = false
+          }
+        }
+      })
+    } else {
+      temp111 && temp111.map((ele, index) => {
+        if (ele.IsChecked === false) {
+          isSelectAll = false
+        }
+      })
+    }
 
     const isAvailable = Modules && Modules.findIndex(a => a.ModuleName === ModuleName)
     if (isAvailable !== -1 && Modules) {
-      let tempArray = Object.assign([...Modules], { [isAvailable]: Object.assign({}, Modules[isAvailable], { IsChecked: isParentChecked !== -1 ? true : false, Pages: temp111, }) })
+      let tempArray = Object.assign([...Modules], { [isAvailable]: Object.assign({}, Modules[isAvailable], { SelectAll: isSelectAll, IsChecked: isParentChecked !== -1 ? true : false, Pages: temp111, }) })
       this.setState({ Modules: tempArray })
     }
   }
