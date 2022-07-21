@@ -73,7 +73,7 @@ function TabPackagingFreight(props) {
       tempArr = arr && arr.map(i => {
 
         i.CostingPartDetails.PackagingNetCost = packageTotalCost(GridData);
-        i.CostingPartDetails.NetFreightPackagingCost = i.CostingPartDetails.FreightNetCost + packageTotalCost(GridData);
+        i.CostingPartDetails.NetFreightPackagingCost = i.CostingPartDetails?.FreightNetCost + packageTotalCost(GridData);
         i.CostingPartDetails.CostingPackagingDetail = GridData;
         i.IsChanged = IsChanged;
 
@@ -93,7 +93,7 @@ function TabPackagingFreight(props) {
   */
   const packageTotalCost = (item) => {
     let cost = 0;
-    cost = item && item.reduce((accummlator, el) => {
+    cost = item && item?.reduce((accummlator, el) => {
       return accummlator + checkForNull(el.PackagingCost);
     }, 0)
     return cost;
@@ -119,7 +119,7 @@ function TabPackagingFreight(props) {
       tempArr = arr && arr.map(i => {
 
         i.CostingPartDetails.FreightNetCost = freightTotalCost(GridData);
-        i.CostingPartDetails.NetFreightPackagingCost = i.CostingPartDetails.PackagingNetCost + freightTotalCost(GridData);
+        i.CostingPartDetails.NetFreightPackagingCost = i.CostingPartDetails?.PackagingNetCost + freightTotalCost(GridData);
         i.CostingPartDetails.CostingFreightDetail = GridData;
         i.IsChanged = IsChanged;
 
@@ -139,7 +139,7 @@ function TabPackagingFreight(props) {
   */
   const freightTotalCost = (item) => {
     let cost = 0;
-    cost = item && item.reduce((accummlator, el) => {
+    cost = item && item?.reduce((accummlator, el) => {
       return accummlator + checkForNull(el.FreightCost);
     }, 0)
     return cost;
@@ -233,9 +233,9 @@ function TabPackagingFreight(props) {
                           return (
                             <>
                               <tr class="accordian-row" key={index} >
-                                <td>{item.PartNumber}</td>
-                                <td>{item.CostingPartDetails.PackagingNetCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.PackagingNetCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
-                                <td>{item.CostingPartDetails.FreightNetCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.FreightNetCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+                                <td>{item?.PartNumber}</td>
+                                <td>{item?.CostingPartDetails?.PackagingNetCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.PackagingNetCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+                                <td>{item?.CostingPartDetails?.FreightNetCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.FreightNetCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
                               </tr>
                               <tr>
                                 <td colSpan={3} className="cr-innerwrap-td">

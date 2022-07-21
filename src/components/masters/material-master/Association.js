@@ -25,7 +25,7 @@ class Association extends Component {
     }
 
     UNSAFE_componentWillMount() {
-        this.props.getRawMaterialNameChild(() => { })
+        this.props.getRawMaterialNameChild('', () => { })
         this.props.getMaterialTypeSelectList(() => { })
         this.props.getUnassociatedRawMaterail(() => { })
     }
