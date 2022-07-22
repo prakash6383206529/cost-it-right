@@ -4,17 +4,14 @@ import { getMenuByUser } from "../../actions/auth/AuthActions";
 import { Col, Nav, NavItem, Row, NavLink, TabPane, TabContent } from "reactstrap";
 import ApprovalListing from '../costing/components/approval/ApprovalListing';
 import SimulationApprovalListing from '../simulation/components/SimulationApprovalListing';
-import RMApproval from "../masters/material-master/RMApproval";
 import { reduxForm } from "redux-form";
 import dashboardImg from '../../assests/images/dashboard-img.png';
-import BOPApproval from "../masters/bop-master/BOPApproval";
-import OperationApproval from "../masters/operation/OperationApproval";
-import MachineApproval from "../masters/machine-master/MachineApproval";
 import classnames from 'classnames';
 import { CheckApprovalApplicableMaster, getConfigurationKey } from "../../helper";
 import { checkPermission } from "../../helper/util";
 import { ADDITIONAL_MASTERS, BOP, BOP_MASTER_ID, COSTING, MACHINE, MACHINE_MASTER_ID, MASTERS, OPERATION, OPERATIONS_ID, RAW_MATERIAL, RM_MASTER_ID, SIMULATION } from "../../config/constants";
 import CalculatorWrapper from "../common/Calculator/CalculatorWrapper";
+import CommonApproval from "../masters/material-master/CommonApproval";
 
 
 function Dashboard(props) {
@@ -184,19 +181,19 @@ function Dashboard(props) {
                       <TabContent activeTab={activeTab}>
                         {(Number(activeTab) === 1 && viewMastersObj.RM) &&
                           <TabPane tabId="1">
-                            <RMApproval isApproval={true} />
+                            <CommonApproval isApproval={true} MasterId={RM_MASTER_ID} />
                           </TabPane>}
                         {(Number(activeTab) === 2 && viewMastersObj.BOP) &&
                           <TabPane tabId="2">
-                            <BOPApproval isApproval={true} />
+                            <CommonApproval isApproval={true} MasterId={BOP_MASTER_ID} />
                           </TabPane>}
                         {(Number(activeTab) === 3 && viewMastersObj.operation) &&
                           <TabPane tabId="3">
-                            <OperationApproval isApproval={true} />
+                            <CommonApproval isApproval={true} MasterId={OPERATIONS_ID} />
                           </TabPane>}
                         {(Number(activeTab) === 4 && viewMastersObj.machine) &&
                           <TabPane tabId="4">
-                            <MachineApproval isApproval={true} />
+                            <CommonApproval isApproval={true} MasterId={MACHINE_MASTER_ID} />
                           </TabPane>}
                       </TabContent>
                     </>}

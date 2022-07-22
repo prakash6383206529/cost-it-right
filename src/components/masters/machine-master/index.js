@@ -8,10 +8,10 @@ import AddMoreDetails from './AddMoreDetails';
 import ProcessListing from './ProcessListing';
 import { checkPermission } from '../../../helper/util';
 import { MACHINE, MACHINE_MASTER_ID, MASTERS, } from '../../../config/constants';
-import MachineApproval from './MachineApproval';
 import ScrollToTop from '../../common/ScrollToTop';
 import { getConfigurationKey } from '../../../helper';
 import { CheckApprovalApplicableMaster } from "../../../helper";
+import CommonApproval from '../material-master/CommonApproval';
 
 class MachineMaster extends Component {
     constructor(props) {
@@ -244,11 +244,12 @@ class MachineMaster extends Component {
                                         </TabPane>}
                                     {Number(this.state.activeTab) === 3 &&
                                         <TabPane tabId="3">
-                                            <MachineApproval
+                                            <CommonApproval
                                                 AddAccessibility={this.state.AddAccessibility}
                                                 EditAccessibility={this.state.EditAccessibility}
                                                 DeleteAccessibility={this.state.DeleteAccessibility}
                                                 DownloadAccessibility={this.state.DownloadAccessibility}
+                                                MasterId={MACHINE_MASTER_ID}
                                             />
                                         </TabPane>}
 
