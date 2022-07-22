@@ -34,6 +34,12 @@ class SimulationTab extends Component {
                 Modules: data && data.sort((a, b) => a.Sequence - b.Sequence),
                 actionSelectList: actionSelectList,
             })
+
+            actionData && actionData.map((ele, index) => {
+                if (ele.ModuleName === 'Simulation') {
+                    this.setState({ checkBox: ele.SelectAll })
+                }
+            })
         }
     }
 

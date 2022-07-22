@@ -1010,7 +1010,7 @@ export const MachineZBC = [
     { label: 'MachineSpecification', value: 'MachineSpecification', },
     { label: 'MachineName', value: 'MachineName', }, //*
     { label: 'MachineType', value: 'MachineType', },
-    { label: 'MachineTonnage', value: 'MachineTonnage', },
+    { label: 'MachineCapacityAndTonnage', value: 'MachineCapacityAndTonnage' },
     { label: 'ProcessName', value: 'ProcessName', }, //*
     { label: 'UOM', value: 'UOM', }, //*
     { label: 'MachineRate', value: 'MachineRate', }, //* 
@@ -1026,7 +1026,7 @@ export const MachineZBCTempData = [
         'MachineSpecification': 'Mechanical Power Press',
         'MachineName': 'Power Press',
         'MachineType': 'Mechanical',
-        'MachineTonnage': '40',
+        'MachineCapacityAndTonnage': '40',
         'ProcessName': 'Punching',
         'UOM': 'Stroke',
         'MachineRate': 55,

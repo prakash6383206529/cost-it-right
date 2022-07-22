@@ -107,20 +107,17 @@ class SideBar extends Component {
   * @description permission for add and view simulation
   */
   simulationPermission(Data, index) {
-    let tempArr1 = Data && Data.filter(item => item.ModuleName === SIMULATION)
-    if (tempArr1?.length !== 0) {
-      let subbAssemblyIndex = Data && Data.findIndex(item => item.ModuleName === SIMULATION)
-      let simulationPages = Data[subbAssemblyIndex].Pages && Data[subbAssemblyIndex].Pages.filter(item => item.Sequence !== 0 && item.IsChecked === true)
-      tempArr1 = simulationPages && simulationPages.filter((item) => {
+    let simulationIndex = Data && Data.findIndex(item => item.ModuleName === SIMULATION)
+
+    if (simulationIndex !== -1) {
+      let simulationPages = Data[simulationIndex].Pages && Data[simulationIndex].Pages.filter(item => item.Sequence !== 0 && item.IsChecked === true)
+      let simulationArray = simulationPages && simulationPages.filter((item) => {
         if (item.Actions[index].IsChecked === true) return item.PageName;
       })
-      // 1 IS FOR VIEW PERMISSION 
-      if (index === 1) {
-        localStorage.setItem('simulationViewPermission', JSON.stringify(_.map(tempArr1, 'PageName')))
-      }
-      // 0 IS FOR ADD PERMISSION 
-      else if (index === 0) {
-        localStorage.setItem('simulationAddPermission', JSON.stringify(_.map(tempArr1, 'PageName')))
+      if (index === 1) {                                 // 1 IS FOR VIEW PERMISSION 
+        localStorage.setItem('simulationViewPermission', JSON.stringify(_.map(simulationArray, 'PageName')))
+      } else if (index === 0) {                          // 0 IS FOR ADD PERMISSION 
+        localStorage.setItem('simulationAddPermission', JSON.stringify(_.map(simulationArray, 'PageName')))
       }
     }
   }

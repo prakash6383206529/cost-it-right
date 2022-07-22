@@ -131,12 +131,12 @@ class AddMachineRate extends Component {
     /*WHEN ADD MORE DETAIL FORM IS CANCELLED in ADD FORMAT*/
     if (data.cancelFlag) {
 
-
       this.props.checkAndGetMachineNumber('', res => {
         let Data = res.data.DynamicData;
         this.props.change('MachineNumber', Data.MachineNumber)
       })
 
+      this.setState({ isFinalApprovar: data?.isFinalApprovar })
       return true
     }
     this.props.getMachineTypeSelectList(() => { })
@@ -189,8 +189,6 @@ class AddMachineRate extends Component {
       }
 
     })
-
-
     //GET MACHINE VALUES IN EDIT MODE
     this.getDetails()
   }
@@ -223,15 +221,19 @@ class AddMachineRate extends Component {
     this.setState({
       selectedTechnology: data.selectedTechnology,
       machineType: data.machineType,
-      effectiveDate: data.EffectiveDate
+      effectiveDate: data.EffectiveDate,
+      remarks: data.Remark
     })
+
+
     this.props.change('MachineName', data && data.fieldsObj && data.fieldsObj.MachineName)
     this.props.change('MachineNumber', data && data.fieldsObj && data.fieldsObj.MachineNumber)
     this.props.change('TonnageCapacity', data && data.fieldsObj && data.fieldsObj.TonnageCapacity)
     this.props.change('Description', data && data.fieldsObj && data.fieldsObj.Description)
-    this.props.change('EffectiveDate', DayTime(data.EffectiveDate).isValid() ? DayTime(data.EffectiveDate) : '')
     setTimeout(() => {
       this.setState({ selectedPlants: data.selectedPlants })
+      this.props.change('EffectiveDate', DayTime(data.EffectiveDate).isValid() ? DayTime(data.EffectiveDate) : '')
+      this.props.change('Remark', data.Remark ? data.Remark : "")
     }, 200);
 
   }
@@ -250,6 +252,8 @@ class AddMachineRate extends Component {
   */
   getDetails = () => {
     const { editDetails } = this.props
+
+
     if (editDetails && editDetails.isEditFlag) {
       this.setState({
         isEditFlag: false,
@@ -329,6 +333,8 @@ class AddMachineRate extends Component {
             } else {
               plantObj = Data && Data.Plant.length > 0 ? { label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId } : []
             }
+
+
             this.setState({
               isEditFlag: true,
               IsFinancialDataChanged: false,
@@ -1761,7 +1767,6 @@ class AddMachineRate extends Component {
                               >
                                 <div className={"cancel-icon"}></div> {'Cancel'}
                               </button>
-
 
                               {
                                 (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) ?

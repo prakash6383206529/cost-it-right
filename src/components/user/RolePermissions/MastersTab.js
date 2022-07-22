@@ -42,6 +42,12 @@ class MastersTab extends Component {
         Modules: data && data.sort((a, b) => a.Sequence - b.Sequence),
         actionSelectList: actionSelectList,
       })
+
+      actionData && actionData.map((ele, index) => {
+        if (ele.ModuleName === 'Master') {
+          this.setState({ checkBox: ele.SelectAll })
+        }
+      })
     }
   }
 
@@ -267,6 +273,7 @@ class MastersTab extends Component {
                 </tr>
               </thead>
               <tbody>
+                { }
                 {this.state.Modules &&
                   this.state.Modules.map((item, index) => {
                     return (
