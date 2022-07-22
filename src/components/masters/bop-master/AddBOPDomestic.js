@@ -805,9 +805,7 @@ class AddBOPDomestic extends Component {
                     <div className="row">
                       <div className="col-md-6">
                         <h1>
-                          {isEditFlag
-                            ? `Update BOP (Domestic)`
-                            : `Add BOP (Domestic)`}
+                          {isViewMode ? "View" : isEditFlag ? "Update" : "Add"} BOP (Domestic)
                         </h1>
                       </div>
                     </div>
@@ -867,7 +865,7 @@ class AddBOPDomestic extends Component {
                               name={"BoughtOutPartName"}
                               type="text"
                               placeholder={"Enter"}
-                              validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
+                              validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString]}
                               component={renderText}
                               required={true}
                               disabled={isEditFlag ? true : false}
@@ -908,7 +906,7 @@ class AddBOPDomestic extends Component {
                               name={"Specification"}
                               type="text"
                               placeholder={"Enter"}
-                              validate={[acceptAllExceptSingleSpecialCharacter, maxLength(80)]}
+                              validate={[acceptAllExceptSingleSpecialCharacter, maxLength(80), checkSpacesInString]}
                               component={renderText}
                               //required={true}
                               disabled={isEditFlag ? true : false}

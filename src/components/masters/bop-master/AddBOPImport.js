@@ -899,9 +899,7 @@ class AddBOPImport extends Component {
                     <div className="row">
                       <div className="col-md-6">
                         <h1>
-                          {isEditFlag
-                            ? `Update BOP (Import)`
-                            : `Add BOP (Import)`}
+                          {isViewMode ? "View" : isEditFlag ? "Update" : "Add"} BOP (Import)
                         </h1>
                       </div>
                     </div>
@@ -961,7 +959,7 @@ class AddBOPImport extends Component {
                               name={"BoughtOutPartName"}
                               type="text"
                               placeholder={"Enter"}
-                              validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength(80), checkWhiteSpaces]}
+                              validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength(80), checkWhiteSpaces, checkSpacesInString]}
                               component={renderText}
                               required={true}
                               disabled={isEditFlag ? true : false}
@@ -1003,7 +1001,7 @@ class AddBOPImport extends Component {
                               name={"Specification"}
                               type="text"
                               placeholder={"Enter"}
-                              validate={[acceptAllExceptSingleSpecialCharacter, maxLength(80)]}
+                              validate={[acceptAllExceptSingleSpecialCharacter, maxLength(80), checkSpacesInString]}
                               component={renderText}
                               //required={true}
                               disabled={isEditFlag ? true : false}

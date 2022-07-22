@@ -141,6 +141,13 @@ class IndivisualProductListing extends Component {
         const cellValue = props?.value;
         return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
     }
+    /**
+    * @method groupCodeFormatter
+    */
+    groupCodeFormatter = (props) => {
+        const cellValue = props?.value;
+        return (cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
+    }
 
     handleChange = (cell, row, enumObject, rowIndex) => {
         let data = {
@@ -339,7 +346,8 @@ class IndivisualProductListing extends Component {
             customNoRowsOverlay: NoContentFound,
             hyphenFormatter: this.hyphenFormatter,
             effectiveDateFormatter: this.effectiveDateFormatter,
-            impactCalculationFormatter: this.impactCalculationFormatter
+            impactCalculationFormatter: this.impactCalculationFormatter,
+            groupCodeFormatter: this.groupCodeFormatter
         };
 
         return (
@@ -424,16 +432,17 @@ class IndivisualProductListing extends Component {
                             <AgGridColumn field="ProductNumber" headerName="Product No."></AgGridColumn>
                             <AgGridColumn field="ProductName" headerName="Name"></AgGridColumn>
                             <AgGridColumn field="Description" headerName="Description" ></AgGridColumn>
-                            <AgGridColumn field="ProductGroupCode" headerName="Group Code"></AgGridColumn>
+                            <AgGridColumn field="ProductGroupCode" headerName="Group Code" cellRenderer={"groupCodeFormatter"}></AgGridColumn>
+                            <AgGridColumn field="ECNNumber" headerName="ECN No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="IsConsideredForMBOM" headerName="Preferred for Impact Calculation" cellRenderer={'impactCalculationFormatter'}></AgGridColumn>
                             <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                             <AgGridColumn field="ProductId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
-                        </AgGridReact>
-                        {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
+                        </AgGridReact >
+                        {< PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
                     </div>
-                </div>
+                </div >
 
 
                 {isBulkUpload && <BulkUpload

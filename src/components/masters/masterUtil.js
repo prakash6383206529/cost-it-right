@@ -192,7 +192,7 @@ export const ProcessGroup = (props) => {
                             control={control}
                             register={register}
                             rules={{ required: false }}
-                            mandatory={false}
+                            mandatory={true}
                             handleChange={() => { }}
                             defaultValue={""}
                             className=""

@@ -481,7 +481,7 @@ class AddFuel extends Component {
                   <div className="shadow-lgg login-formg">
                     <div className="row">
                       <div className="col-md-6">
-                        <h1>{isEditFlag ? `Update Fuel` : `Add Fuel`}</h1>
+                        <h1>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Fuel</h1>
                       </div>
                     </div>
                     <form
@@ -571,6 +571,7 @@ class AddFuel extends Component {
                                   placeholder={"Select"}
                                   options={this.renderListing("state")}
                                   required={true}
+                                  validate={this.state.StateName === null || this.state.StateName.length === 0 ? [required] : []}
                                   handleChangeDescription={this.handleState}
                                   valueDescription={this.state.StateName}
                                   disabled={isViewMode}
@@ -584,7 +585,7 @@ class AddFuel extends Component {
                               name={"Rate"}
                               type="text"
                               placeholder={"Enter"}
-                              validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
+                              validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
                               component={renderNumberInputField}
                               required={true}
                               className=""
@@ -689,10 +690,15 @@ class AddFuel extends Component {
                                     );
                                   })}
                               </tbody>
+
+                              {this.state.rateGrid.length === 0 && (
+                                <tbody className='border'>
+                                  <tr>
+                                    <td colSpan={"4"}> <NoContentFound title={EMPTY_DATA} /></td>
+                                  </tr>
+                                </tbody>
+                              )}
                             </Table>
-                            {this.state.rateGrid.length === 0 && (
-                              <NoContentFound title={EMPTY_DATA} />
-                            )}
                           </Col>
                         </Row>
                       </div>

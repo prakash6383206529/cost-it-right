@@ -8050,10 +8050,8 @@ body {
       table {
         min-width: 100%;
       }
-      .header-name {
-        background-color: #ececec !important;
-      }
-      .header-name-left {
+      .approval-summary-headers,  .header-name, .header-name-left
+      {
         background-color: #ececec !important;
       }
     }
@@ -8061,15 +8059,11 @@ body {
 
   .remove-space-border {
     .table-responsive {
-      .header-name-left {
+      .header-name-left, .header-name {
         border-right: none !important;
         background-color: #ececec !important;
       }
 
-      .header-name {
-        border-left: none !important;
-        background-color: #ececec !important;
-      }
     }
 
     .background-light-blue {
@@ -8314,7 +8308,7 @@ body {
 }
 
 .process-group-wrapper {
-  margin-top: 1.8rem;
+  margin-top: 1.76rem;
   padding-left: 2rem;
 
   .process-group {
