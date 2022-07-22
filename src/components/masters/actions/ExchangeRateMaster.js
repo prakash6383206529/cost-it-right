@@ -43,10 +43,10 @@ export function getExchangeRateDataList(isAPICall, data, callback) {
             dispatch({ type: API_REQUEST });
             axios.get(`${API.getExchangeRateDataList}?currencyId=${data.currencyId}`, config())
                 .then((response) => {
-                    if (response.data.Result === true) {
+                    if (response.data.Result === true || response.status === 204) {
                         dispatch({
                             type: EXCHANGE_RATE_DATALIST,
-                            payload: response.data.DataList,
+                            payload: response.status === 204 ? [] : response.data.DataList,
                         });
                         callback(response);
                     }
