@@ -2410,7 +2410,7 @@ class AddMoreDetails extends Component {
 
                             <Col md="4">
                               <Field
-                                label={`Rate Of Interest (%)`}
+                                label={`Rate Of Interest (%) / Annum`}
                                 name={"RateOfInterestPercentage"}
                                 type="text"
                                 placeholder={'Enter'}
@@ -2454,7 +2454,7 @@ class AddMoreDetails extends Component {
 
                             <Col md="4">
                               <Field
-                                label={`Rate Of Interest Value`}
+                                label={`Interest Value`}
                                 name={"RateOfInterestValue"}
                                 type="text"
                                 placeholder={'Enter'}
@@ -2863,7 +2863,7 @@ class AddMoreDetails extends Component {
                             </Col>
                             <Col md="3">
                               <Field
-                                label={`Building Cost/Sq Ft`}
+                                label={`Building Cost/Sq Ft/Annum`}
                                 name={"BuildingCostPerSquareFeet"}
                                 type="text"
                                 placeholder={'Enter'}
