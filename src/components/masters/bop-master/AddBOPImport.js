@@ -899,9 +899,13 @@ class AddBOPImport extends Component {
                     <div className="row">
                       <div className="col-md-6">
                         <h1>
+<<<<<<< HEAD
                           {isEditFlag
                             ? `Update Insert (Import)`
                             : `Add Insert (Import)`}
+=======
+                          {isViewMode ? "View" : isEditFlag ? "Update" : "Add"} BOP (Import)
+>>>>>>> 67fc4e750 (CIR-I2169 | CIR-I2310 | CIR-I2337 error message inconsistency, dash issue fixed and update headers on view mode in all masters)
                         </h1>
                       </div>
                     </div>
@@ -961,7 +965,7 @@ class AddBOPImport extends Component {
                               name={"BoughtOutPartName"}
                               type="text"
                               placeholder={"Enter"}
-                              validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength(80), checkWhiteSpaces]}
+                              validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength(80), checkWhiteSpaces, checkSpacesInString]}
                               component={renderText}
                               required={true}
                               disabled={isEditFlag ? true : false}
@@ -1003,7 +1007,7 @@ class AddBOPImport extends Component {
                               name={"Specification"}
                               type="text"
                               placeholder={"Enter"}
-                              validate={[acceptAllExceptSingleSpecialCharacter, maxLength(80)]}
+                              validate={[acceptAllExceptSingleSpecialCharacter, maxLength(80), checkSpacesInString]}
                               component={renderText}
                               //required={true}
                               disabled={isEditFlag ? true : false}

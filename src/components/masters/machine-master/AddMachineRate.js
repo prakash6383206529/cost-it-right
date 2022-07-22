@@ -1290,7 +1290,7 @@ class AddMachineRate extends Component {
                   <div className="row">
                     <div className="col-md-6">
                       <div className="form-heading mb-0">
-                        <h2>{isEditFlag ? `Update Machine Rate` : `Add Machine Rate`}</h2>
+                        <h2> {isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Machine Rate</h2>
                       </div>
                     </div>
                   </div>
@@ -1408,7 +1408,7 @@ class AddMachineRate extends Component {
                             name={"Description"}
                             type="text"
                             placeholder={'Enter'}
-                            validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
+                            validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString]}
                             component={renderText}
                             // required={true}
                             onChange={this.handleMachineSpecification}
@@ -1424,7 +1424,7 @@ class AddMachineRate extends Component {
                             name={"MachineName"}
                             type="text"
                             placeholder={'Enter'}
-                            validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
+                            validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString]}
                             component={renderText}
                             required={false}
                             disabled={isViewMode ? true : false}
@@ -1463,7 +1463,7 @@ class AddMachineRate extends Component {
                             name={"TonnageCapacity"}
                             type="text"
                             placeholder={'Enter'}
-                            validate={[checkWhiteSpaces, postiveNumber, maxLength10]}
+                            validate={[checkWhiteSpaces, postiveNumber, maxLength10, checkSpacesInString]}
                             component={renderText}
                             required={false}
                             disabled={isViewMode ? true : false}

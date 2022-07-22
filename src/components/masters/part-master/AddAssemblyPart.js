@@ -887,9 +887,7 @@ class AddAssemblyPart extends Component {
                     <Col md="6">
                       <div className="form-heading mb-0">
                         <h1>
-                          {isEditFlag
-                            ? "Update Assembly Part"
-                            : "Add  Assembly Part"}
+                          {isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Assembly Part
                         </h1>
                       </div>
                     </Col>
@@ -986,7 +984,7 @@ class AddAssemblyPart extends Component {
                             name={"AssemblyPartName"}
                             type="text"
                             placeholder={""}
-                            validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength75]}
+                            validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength75, checkSpacesInString]}
                             component={renderText}
                             required={true}
                             className=""
@@ -1014,7 +1012,7 @@ class AddAssemblyPart extends Component {
                             name={"ECNNumber"}
                             type="text"
                             placeholder={""}
-                            validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces]}
+                            validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, checkSpacesInString]}
                             component={renderText}
                             className=""
                             customClassName={"withBorder"}
@@ -1029,7 +1027,7 @@ class AddAssemblyPart extends Component {
                             name={"RevisionNumber"}
                             type="text"
                             placeholder={""}
-                            validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces]}
+                            validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, checkSpacesInString]}
                             component={renderText}
                             className=""
                             customClassName={"withBorder"}
@@ -1043,7 +1041,7 @@ class AddAssemblyPart extends Component {
                             name={"DrawingNumber"}
                             type="text"
                             placeholder={""}
-                            validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces]}
+                            validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, checkSpacesInString]}
                             component={renderText}
                             className=""
                             customClassName={"withBorder"}

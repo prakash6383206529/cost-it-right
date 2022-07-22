@@ -448,6 +448,14 @@ function RMImportListing(props) {
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
     return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : '-';
   }
+  /**
+  * @method currencyFormatter
+  * @description Renders buttons
+  */
+  const currencyFormatter = (props) => {
+    const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+    return cell != null ? cell : '-';
+  }
 
 
   const checkBoxRenderer = (props) => {
@@ -656,10 +664,15 @@ function RMImportListing(props) {
     shearingCostFormatter: shearingCostFormatter,
     statusFormatter: statusFormatter,
     hyphenFormatter: hyphenFormatter,
+<<<<<<< HEAD
     companyFormatter: companyFormatter,
     checkBoxRenderer: checkBoxRenderer
   }
 
+=======
+    checkBoxRenderer: checkBoxRenderer,
+    currencyFormatter: currencyFormatter
+>>>>>>> 67fc4e750 (CIR-I2169 | CIR-I2310 | CIR-I2337 error message inconsistency, dash issue fixed and update headers on view mode in all masters)
 
 
   return (
@@ -781,6 +794,7 @@ function RMImportListing(props) {
                     <AgGridColumn field="DepartmentName" headerName="Company" cellRenderer='companyFormatter'></AgGridColumn>
 
                     <AgGridColumn field="UOM"></AgGridColumn>
+<<<<<<< HEAD
 
                     <AgGridColumn field="Currency"></AgGridColumn>
 
@@ -792,6 +806,13 @@ function RMImportListing(props) {
 
                     <AgGridColumn field="RMShearingCost" headerName="Shearing Cost(INR)" cellRenderer='shearingCostFormatter'></AgGridColumn>
 
+=======
+                    <AgGridColumn field="Currency" cellRenderer={"currencyFormatter"}></AgGridColumn>
+                    <AgGridColumn field="BasicRate"></AgGridColumn>
+                    <AgGridColumn field="ScrapRate"></AgGridColumn>
+                    <AgGridColumn field="RMFreightCost" headerName="Freight Cost" cellRenderer='freightCostFormatter'></AgGridColumn>
+                    <AgGridColumn field="RMShearingCost" headerName="Shearing Cost" cellRenderer='shearingCostFormatter'></AgGridColumn>
+>>>>>>> 67fc4e750 (CIR-I2169 | CIR-I2310 | CIR-I2337 error message inconsistency, dash issue fixed and update headers on view mode in all masters)
                     <AgGridColumn field="NetLandedCost" headerName="Net Cost (Currency)" cellRenderer='costFormatter'></AgGridColumn>
 
                     <AgGridColumn field="NetLandedCostConversion" headerName="Net Cost(INR)" cellRenderer='costFormatter'></AgGridColumn>

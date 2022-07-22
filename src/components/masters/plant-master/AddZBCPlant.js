@@ -336,8 +336,12 @@ class AddZBCPlant extends Component {
                 <Row className="drawer-heading">
                   <Col>
                     <div className={"header-wrapper left"}>
+<<<<<<< HEAD
                       <h3>
                         {isEditFlag ? "Update Plant" : "Add  Plant"}
+=======
+                      <h3>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} ZBC Plant
+>>>>>>> 67fc4e750 (CIR-I2169 | CIR-I2310 | CIR-I2337 error message inconsistency, dash issue fixed and update headers on view mode in all masters)
                       </h3>
                     </div>
                     <div
@@ -353,7 +357,7 @@ class AddZBCPlant extends Component {
                       name={"PlantName"}
                       type="text"
                       placeholder={""}
-                      validate={[required, alphaNumeric, maxLength71, checkWhiteSpaces]}
+                      validate={[required, alphaNumeric, maxLength71, checkWhiteSpaces, checkSpacesInString]}
                       component={renderText}
                       required={true}
                       className=""

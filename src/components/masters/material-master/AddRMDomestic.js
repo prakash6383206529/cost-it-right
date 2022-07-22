@@ -1250,9 +1250,7 @@ class AddRMDomestic extends Component {
                     <div className="row">
                       <div className="col-md-6">
                         <h1>
-                          {isEditFlag
-                            ? `Update Raw Material (Domestic)`
-                            : `Add Raw Material (Domestic)`}
+                          {isViewFlag ? 'View' : isEditFlag ? 'Update' : 'Add'} Raw Material (Domestic)
                         </h1>
                       </div>
                     </div>
@@ -1307,7 +1305,6 @@ class AddRMDomestic extends Component {
                                 this.handleTechnologyChange
                               }
                               valueDescription={this.state.Technology}
-
                               disabled={isEditFlag || isViewFlag}
                             />
                           </Col>
@@ -1321,13 +1318,10 @@ class AddRMDomestic extends Component {
                                   component={searchableSelect}
                                   placeholder={"Select"}
                                   options={this.renderListing("material")}
-                                  validate={
-                                    this.state.RawMaterial == null || this.state.RawMaterial.length === 0 ? [required] : []}
+                                  validate={this.state.RawMaterial == null || this.state.RawMaterial.length === 0 ? [required] : []}
                                   required={true}
                                   handleChangeDescription={this.handleRMChange}
                                   valueDescription={this.state.RawMaterial}
-
-
                                   className="fullinput-icon"
                                   disabled={isEditFlag || isViewFlag}
                                 />
@@ -1713,8 +1707,6 @@ class AddRMDomestic extends Component {
                                 }}
                                 component={renderDatePicker}
                                 className="form-control"
-
-
                                 disabled={isViewFlag || !this.state.IsFinancialDataChanged || (isEditFlag && isRMAssociated)}
 
                               />
@@ -2067,6 +2059,7 @@ export default connect(mapStateToProps, {
   reduxForm({
     form: 'AddRMDomestic',
     enableReinitialize: true,
+    touchOnChange: true,
     onSubmitFail: (errors) => {
       focusOnError(errors)
     },
