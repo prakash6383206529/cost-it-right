@@ -337,8 +337,7 @@ class AddZBCPlant extends Component {
                 <Row className="drawer-heading">
                   <Col>
                     <div className={"header-wrapper left"}>
-                      <h3>
-                        {isEditFlag ? "Update Plant" : "Add ZBC Plant"}
+                      <h3>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} ZBC Plant
                       </h3>
                     </div>
                     <div
@@ -354,7 +353,7 @@ class AddZBCPlant extends Component {
                       name={"PlantName"}
                       type="text"
                       placeholder={""}
-                      validate={[required, alphaNumeric, maxLength71, checkWhiteSpaces]}
+                      validate={[required, alphaNumeric, maxLength71, checkWhiteSpaces, checkSpacesInString]}
                       component={renderText}
                       required={true}
                       className=""

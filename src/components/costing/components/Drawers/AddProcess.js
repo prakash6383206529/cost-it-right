@@ -248,7 +248,10 @@ function AddProcess(props) {
     }
 
   }
-
+  const machineDashFormatter = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    return cellValue != null ? cellValue : '-'
+  }
   const frameworkComponents = {
     // totalValueRenderer: this.buttonFormatter,
     // effectiveDateRenderer: this.effectiveDateFormatter,
@@ -259,7 +262,8 @@ function AddProcess(props) {
     //  specificationFormat: specificationFormat,
     customLoadingOverlay: LoaderCustom,
     customNoRowsOverlay: NoContentFound,
-    checkBoxRenderer: checkBoxRenderer
+    checkBoxRenderer: checkBoxRenderer,
+    machineDashFormatter: machineDashFormatter
   };
 
   useEffect(() => {
@@ -384,9 +388,9 @@ function AddProcess(props) {
                                   <AgGridColumn cellClass="has-checkbox" field="ProcessName" headerName="Process Name" cellRenderer={checkBoxRenderer}  ></AgGridColumn>
                                   <AgGridColumn field='Technologies' headerName='Technology'></AgGridColumn>
                                   <AgGridColumn field="MachineNumber" headerName="Machine No."></AgGridColumn>
-                                  <AgGridColumn field="MachineName" headerName="Machine Name"></AgGridColumn>
+                                  <AgGridColumn field="MachineName" headerName="Machine Name" cellRenderer={"machineDashFormatter"}></AgGridColumn>
                                   <AgGridColumn field="MachineTypeName" headerName="Machine Type"></AgGridColumn>
-                                  <AgGridColumn field="Tonnage" headerName="Machine Tonnage"></AgGridColumn>
+                                  <AgGridColumn field="Tonnage" headerName="Machine Tonnage" cellRenderer={"machineDashFormatter"}></AgGridColumn>
                                   <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
                                   <AgGridColumn field="MachineRate" headerName={'Machine Rate'}></AgGridColumn>
 

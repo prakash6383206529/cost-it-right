@@ -141,6 +141,13 @@ class IndivisualProductListing extends Component {
         const cellValue = props?.value;
         return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
     }
+    /**
+    * @method groupCodeFormatter
+    */
+    groupCodeFormatter = (props) => {
+        const cellValue = props?.value;
+        return (cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
+    }
 
     handleChange = (cell, row, enumObject, rowIndex) => {
         let data = {
@@ -329,6 +336,7 @@ class IndivisualProductListing extends Component {
             customNoRowsOverlay: NoContentFound,
             hyphenFormatter: this.hyphenFormatter,
             effectiveDateFormatter: this.effectiveDateFormatter,
+            groupCodeFormatter: this.groupCodeFormatter
         };
 
         return (
@@ -412,7 +420,7 @@ class IndivisualProductListing extends Component {
 
                             <AgGridColumn field="ProductNumber" headerName="Product No."></AgGridColumn>
                             <AgGridColumn field="ProductName" headerName="Name"></AgGridColumn>
-                            <AgGridColumn field="ProductGroupCode" headerName="Group Code"></AgGridColumn>
+                            <AgGridColumn field="ProductGroupCode" headerName="Group Code" cellRenderer={"groupCodeFormatter"}></AgGridColumn>
                             <AgGridColumn field="ECNNumber" headerName="ECN No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={'hyphenFormatter'}></AgGridColumn>

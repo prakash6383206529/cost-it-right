@@ -376,9 +376,7 @@ class AddIndivisualProduct extends Component {
                                             <Col md="6">
                                                 <div className="form-heading mb-0">
                                                     <h1>
-                                                        {this.state.isEditFlag
-                                                            ? "Update Product"
-                                                            : "Add Product"}
+                                                        {this.state.isViewMode ? "View" : this.state.isEditFlag ? "Update" : "Add "} Product
                                                     </h1>
                                                 </div>
                                             </Col>
@@ -456,9 +454,6 @@ class AddIndivisualProduct extends Component {
                                                             </Col>
                                                         )}
 
-                                                </Row>
-
-                                                <Row>
                                                     <Col md="3">
                                                         <Field
                                                             label={`ECN No.`}
