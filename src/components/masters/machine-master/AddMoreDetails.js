@@ -2171,8 +2171,8 @@ class AddMoreDetails extends Component {
                                 placeholder={'--select--'}
                                 options={this.renderListing('MachineTypeList')}
                                 //onKeyUp={(e) => this.changeItemDesc(e)}
-                                validate={(this.state.machineType == null || this.state.machineType.length === 0) ? [] : []}
-                                //  required={true}
+                                validate={(this.state.machineType == null || this.state.machineType.length === 0) ? [required] : []}
+                                required={true}
                                 handleChangeDescription={this.handleMachineType}
                                 valueDescription={this.state.machineType}
                                 disabled={this.state.isViewFlag ? true : false}
