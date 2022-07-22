@@ -387,7 +387,7 @@ function MachiningStockTable(props) {
   }
 
   const UnitFormat = () => {
-    return <>Volume(mm<sup>3</sup>)</>
+    return <>Volume (mm<sup>3</sup>)</>
   }
 
   return (
