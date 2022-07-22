@@ -8,17 +8,14 @@ import classnames from 'classnames';
 import AddRMImport from './AddRMImport';
 import RMDomesticListing from './RMDomesticListing';
 import RMImportListing from './RMImportListing';
-
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { MASTERS, RAW_MATERIAL, RAW_MATERIAL_NAME_AND_GRADE, RM_MASTER_ID } from '../../../config/constants';
-import { getConfigurationKey } from '../../../helper';
-
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import RMApproval from './RMApproval';
 import ScrollToTop from '../../common/ScrollToTop';
 import { CheckApprovalApplicableMaster } from '../../../helper';
+import CommonApproval from './CommonApproval';
 
 
 
@@ -325,11 +322,12 @@ function RowMaterialMaster(props) {
                                     {/* <Link to="/raw-material-approval"></Link> */}
                                     {/* <Route path="/raw-material-approval">
                                         </Route> */}
-                                    <RMApproval
+                                    <CommonApproval
                                         AddAccessibility={AddAccessibility}
                                         EditAccessibility={EditAccessibility}
                                         DeleteAccessibility={DeleteAccessibility}
                                         DownloadAccessibility={DownloadAccessibility}
+                                        MasterId={RM_MASTER_ID}
                                     />
                                 </TabPane>}
 
