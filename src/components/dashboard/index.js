@@ -98,7 +98,7 @@ function Dashboard(props) {
             </Row>
             <form onSubmit={handleSubmit}>
 
-              {viewSimulation && JSON.parse(localStorage.getItem('simulationAddPermission'))?.length === 0 && <Row className="m-0">
+              {viewSimulation && JSON.parse(localStorage.getItem('simulationViewPermission'))?.length !== 0 && <Row className="m-0">
                 <div className="graph-box w-100">
                   <Row>
                     <Col md="8"><h3 className="mb-0">Amendments Approval Status</h3></Col>
