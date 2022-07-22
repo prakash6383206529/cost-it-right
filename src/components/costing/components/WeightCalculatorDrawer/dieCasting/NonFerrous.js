@@ -330,7 +330,7 @@ function NonFerrous(props) {
 
                                 <Col md="3">
                                     <NumberFieldHookForm
-                                        label={`Casting Weight(${activeTab === '3' ? `before machining` : `kg`})`}
+                                        label={`Casting Weight${activeTab === '3' ? ` (before machining)` : `(kg)`}`}
                                         name={'castingWeight'}
                                         Controller={Controller}
                                         control={control}
@@ -374,7 +374,7 @@ function NonFerrous(props) {
                             <Row className={'mt25'}>
                                 <Col md="3" >
                                     <NumberFieldHookForm
-                                        label={`Gross Weight (Kg)`}
+                                        label={`Gross Weight(Kg)`}
                                         name={'grossWeight'}
                                         Controller={Controller}
                                         control={control}
