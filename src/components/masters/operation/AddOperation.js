@@ -554,6 +554,11 @@ class AddOperation extends Component {
     }
     /** Update existing detail of supplier master **/
     // if (this.state.isEditFlag && this.state.isFinalApprovar) {
+    if (Number(DataToChange.Rate) === Number(values.Rate) && DataToChange.Remark === values.Remark && UOM.value === oldUOM.value
+      && DataToChange.Description === values.Description && uploadAttachements) {
+      Toaster.warning('Please change data to send operation for approval')
+      return false
+    }
 
     if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(OPERATIONS_ID) !== true)) {
 
@@ -598,11 +603,6 @@ class AddOperation extends Component {
 
       }
 
-      if (Number(DataToChange.Rate) === Number(values.Rate) && DataToChange.Remark === values.Remark && UOM.value === oldUOM.value
-        && DataToChange.Description === values.Description && uploadAttachements) {
-        this.cancel('Cancel')
-        return false
-      }
 
       if (isEditFlag) {
         this.setState({ showPopup: true, updatedObj: updateData })
