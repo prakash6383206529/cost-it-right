@@ -27,6 +27,7 @@ import cloudImg from '../../assests/images/uploadcloud.png';
 import _ from 'lodash';
 import { BOMBULKUPLOAD, BOPDOMESTICBULKUPLOAD, BOPIMPORTBULKUPLOAD, FUELBULKUPLOAD, INTERESTRATEBULKUPLOAD, LABOURBULKUPLOAD, MACHINEBULKUPLOAD, OPERAIONBULKUPLOAD, PARTCOMPONENTBULKUPLOAD, PRODUCTCOMPONENTBULKUPLOAD, RMDOMESTIC, RMDOMESTICBULKUPLOAD, RMIMPORTBULKUPLOAD, RMSPECIFICATION, VENDORBULKUPLOAD } from '../../config/constants';
 import { BOMUpload, BOP_VBC_DOMESTIC, BOP_VBC_IMPORT, BOP_ZBC_DOMESTIC, BOP_ZBC_IMPORT, Fuel, Labour, MachineVBC, MachineZBC, MHRMoreZBC, PartComponent, ProductComponent, RawMaterialDomesticFileHeadsVBC, RawMaterialDomesticFileHeadsZBC, RMDomesticVBC, RMDomesticVBCTempData, RMDomesticZBC, RMDomesticZBCTempData, RMImportVBC, RMImportZBC, RMSpecification, VBCInterestRate, VBCOperation, Vendor, ZBCOperation } from '../../config/masterData';
+import { checkForSameFileUpload } from '../../helper';
 
 class BulkUpload extends Component {
     constructor(props) {
@@ -116,118 +117,82 @@ class BulkUpload extends Component {
                     fileHeads = resp.rows[0];
                     let checkForFileHead
                     let bulkUploadArray = [];   //ARRAY FOR COMPARISON 
-                    let array = []
                     switch (String(this.props.fileName)) {
                         case String(RMDOMESTICBULKUPLOAD):
                             if (this.state.costingHead === 'ZBC') {
-                                array = _.map(RMDomesticZBC, 'label')
-                                bulkUploadArray = [...array]
+                                checkForFileHead = checkForSameFileUpload(RMDomesticZBC, fileHeads, bulkUploadArray)
                             }
                             else {
-                                array = _.map(RMDomesticVBC, 'label')
-                                bulkUploadArray = [...array]
+                                checkForFileHead = checkForSameFileUpload(RMDomesticVBC, fileHeads, bulkUploadArray)
                             }
-                            checkForFileHead = _.isEqual(fileHeads, bulkUploadArray) ? true : false
                             break;
                         case String(RMIMPORTBULKUPLOAD):
 
                             if (this.state.costingHead === 'ZBC') {
-                                array = _.map(RMImportZBC, 'label')
-                                bulkUploadArray = [...array]
+                                checkForFileHead = checkForSameFileUpload(RMImportZBC, fileHeads, bulkUploadArray)
                             }
                             else {
-                                array = _.map(RMImportVBC, 'label')
-                                bulkUploadArray = [...array]
+                                checkForFileHead = checkForSameFileUpload(RMImportVBC, fileHeads, bulkUploadArray)
                             }
-                            checkForFileHead = _.isEqual(fileHeads, bulkUploadArray) ? true : false
                             break;
                         case String(RMSPECIFICATION):
-                            array = _.map(RMSpecification, 'label')
-                            bulkUploadArray = [...array]
-                            checkForFileHead = _.isEqual(fileHeads, bulkUploadArray) ? true : false
+                            checkForFileHead = checkForSameFileUpload(RMSpecification, fileHeads, bulkUploadArray)
                             break;
                         case String(BOPDOMESTICBULKUPLOAD):
                             if (this.state.costingHead === 'VBC') {
-                                array = _.map(BOP_VBC_DOMESTIC, 'label')
-                                bulkUploadArray = [...array]
+                                checkForFileHead = checkForSameFileUpload(BOP_VBC_DOMESTIC, fileHeads, bulkUploadArray)
                             }
                             else {
-                                array = _.map(BOP_ZBC_DOMESTIC, 'label')
-                                bulkUploadArray = [...array]
+                                checkForFileHead = checkForSameFileUpload(BOP_ZBC_DOMESTIC, fileHeads, bulkUploadArray)
                             }
-                            checkForFileHead = _.isEqual(fileHeads, bulkUploadArray) ? true : false
                             break;
                         case String(BOPIMPORTBULKUPLOAD):
                             if (this.state.costingHead === 'ZBC') {
-                                array = _.map(BOP_ZBC_IMPORT, 'label')
-                                bulkUploadArray = [...array]
+                                checkForFileHead = checkForSameFileUpload(BOP_ZBC_IMPORT, fileHeads, bulkUploadArray)
                             }
                             else {
-                                array = _.map(BOP_VBC_IMPORT, 'label')
-                                bulkUploadArray = [...array]
+                                checkForFileHead = checkForSameFileUpload(BOP_VBC_IMPORT, fileHeads, bulkUploadArray)
                             }
-                            checkForFileHead = _.isEqual(fileHeads, bulkUploadArray) ? true : false
                             break;
                         case String(BOMBULKUPLOAD):
-                            array = _.map(BOMUpload, 'label')
-                            bulkUploadArray = [...array]
-                            checkForFileHead = _.isEqual(fileHeads, bulkUploadArray) ? true : false
+                            checkForFileHead = checkForSameFileUpload(BOMUpload, fileHeads, bulkUploadArray)
                             break;
                         case String(PARTCOMPONENTBULKUPLOAD):
-                            array = _.map(PartComponent, 'label')
-                            bulkUploadArray = [...array]
-                            checkForFileHead = _.isEqual(fileHeads, bulkUploadArray) ? true : false
+                            checkForFileHead = checkForSameFileUpload(PartComponent, fileHeads, bulkUploadArray)
                             break;
                         case String(PRODUCTCOMPONENTBULKUPLOAD):
-                            array = _.map(ProductComponent, 'label')
-                            bulkUploadArray = [...array]
-                            checkForFileHead = _.isEqual(fileHeads, bulkUploadArray) ? true : false
+                            checkForFileHead = checkForSameFileUpload(ProductComponent, fileHeads, bulkUploadArray)
                             break;
                         case String(MACHINEBULKUPLOAD):
                             if (this.state.costingHead === 'ZBC') {
-                                array = _.map(MachineZBC, 'label')
-                                bulkUploadArray = [...array]
+                                checkForFileHead = checkForSameFileUpload(MachineZBC, fileHeads, bulkUploadArray)
                             }
                             else if (this.state.costingHead === 'VBC') {
-                                array = _.map(MachineVBC, 'label')
-                                bulkUploadArray = [...array]
+                                checkForFileHead = checkForSameFileUpload(MachineVBC, fileHeads, bulkUploadArray)
                             }
                             else {
-                                array = _.map(MHRMoreZBC, 'label')
-                                bulkUploadArray = [...array]
+                                checkForFileHead = checkForSameFileUpload(MHRMoreZBC, fileHeads, bulkUploadArray)
                             }
-                            checkForFileHead = _.isEqual(fileHeads, bulkUploadArray) ? true : false
                             break;
                         case String(VENDORBULKUPLOAD):
-                            array = _.map(Vendor, 'label')
-                            bulkUploadArray = [...array]
-                            checkForFileHead = _.isEqual(fileHeads, bulkUploadArray) ? true : false
+                            checkForFileHead = checkForSameFileUpload(Vendor, fileHeads, bulkUploadArray)
                             break;
                         case String(LABOURBULKUPLOAD):
-                            array = _.map(Labour, 'label')
-                            bulkUploadArray = [...array]
-                            checkForFileHead = _.isEqual(fileHeads, bulkUploadArray) ? true : false
+                            checkForFileHead = checkForSameFileUpload(Labour, fileHeads, bulkUploadArray)
                             break;
                         case String(OPERAIONBULKUPLOAD):
                             if (this.state.costingHead === 'ZBC') {
-                                array = _.map(ZBCOperation, 'label')
-                                bulkUploadArray = [...array]
+                                checkForFileHead = checkForSameFileUpload(ZBCOperation, fileHeads, bulkUploadArray)
                             }
                             else {
-                                array = _.map(VBCOperation, 'label')
-                                bulkUploadArray = [...array]
+                                checkForFileHead = checkForSameFileUpload(VBCOperation, fileHeads, bulkUploadArray)
                             }
-                            checkForFileHead = _.isEqual(fileHeads, bulkUploadArray) ? true : false
                             break;
                         case String(FUELBULKUPLOAD):
-                            array = _.map(Fuel, 'label')
-                            bulkUploadArray = [...array]
-                            checkForFileHead = _.isEqual(fileHeads, bulkUploadArray) ? true : false
+                            checkForFileHead = checkForSameFileUpload(Fuel, fileHeads, bulkUploadArray)
                             break;
                         case String(INTERESTRATEBULKUPLOAD):
-                            array = _.map(VBCInterestRate, 'label')
-                            bulkUploadArray = [...array]
-                            checkForFileHead = _.isEqual(fileHeads, bulkUploadArray) ? true : false
+                            checkForFileHead = checkForSameFileUpload(VBCInterestRate, fileHeads, bulkUploadArray)
                             break;
                         default:
                             break;
