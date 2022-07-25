@@ -187,6 +187,7 @@ class AddMoreDetails extends Component {
       this.props.change('MachineNumber', fieldsObj.MachineNumber)
       this.props.change('TonnageCapacity', fieldsObj.TonnageCapacity)
       this.props.change('Description', fieldsObj.Description)
+      this.props.change('Specification', fieldsObj.Specification)
       this.props.change('EffectiveDate', fieldsObj.EffectiveDate ? fieldsObj.EffectiveDate : '')
 
       setTimeout(() => {
@@ -1675,7 +1676,7 @@ class AddMoreDetails extends Component {
       return false
     }
 
-    const { data, editDetails } = this.props;
+    const { data, editDetails, fieldsObj } = this.props;
 
     const userDetail = userDetails()
 
@@ -1744,7 +1745,8 @@ class AddMoreDetails extends Component {
       MachineName: values.MachineName,
       MachineTypeId: machineType ? machineType.value : '',
       TonnageCapacity: values.TonnageCapacity,
-      Description: data.fieldsObj.Description,
+      Description: fieldsObj.Description,
+      Specification: fieldsObj.Specification,
       Remark: remarks,
       LoggedInUserId: loggedInUserId(),
       MachineProcessRates: processGrid,
@@ -1866,7 +1868,8 @@ class AddMoreDetails extends Component {
         MachineName: values.MachineName,
         MachineTypeId: machineType ? machineType.value : '',
         TonnageCapacity: values.TonnageCapacity,
-        Description: data.fieldsObj.Description,
+        Description: fieldsObj.Description,
+        Specification: fieldsObj.Specification,
         Remark: remarks,
         LoggedInUserId: loggedInUserId(),
         MachineProcessRates: processGrid,
@@ -2134,7 +2137,7 @@ class AddMoreDetails extends Component {
                         <Col md="3">
                           <Field
                             label={`Machine Specification`}
-                            name={"Description"}
+                            name={"Specification"}
                             type="text"
                             placeholder={'Enter'}
                             validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString]}
@@ -3645,7 +3648,7 @@ function mapStateToProps(state) {
     'BuildingCostPerSquareFeet', 'MachineFloorAreaPerSquareFeet', 'AnnualAreaCost', 'OtherYearlyCost', 'TotalMachineCostPerAnnum',
     'UtilizationFactorPercentage', 'PowerRatingPerKW', 'PowerCostPerUnit', 'TotalPowerCostPerYear',
     'FuelCostPerUnit', 'ConsumptionPerYear', 'TotalFuelCostPerYear',
-    'NumberOfLabour', 'LabourCost', 'OutputPerHours', 'OutputPerYear', 'MachineRate', 'DateOfPurchase');
+    'NumberOfLabour', 'LabourCost', 'OutputPerHours', 'OutputPerYear', 'MachineRate', 'DateOfPurchase', 'Description', 'Specification');
 
   const { technologySelectList, plantSelectList, UOMSelectList,
     ShiftTypeSelectList, DepreciationTypeSelectList, } = comman;
@@ -3666,6 +3669,7 @@ function mapStateToProps(state) {
       AccessoriesCost: machineData.AccessoriesCost,
       InstallationCharges: machineData.InstallationCharges,
       Description: machineData.Description,
+      Specification: machineData.Specification,
       LabourCostPerAnnum: machineData.LabourCostPerAnnum,
       TotalCost: machineData.TotalCost,
       LoanPercentage: machineData.LoanPercentage,
