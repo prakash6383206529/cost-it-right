@@ -4,7 +4,7 @@ import { Field, reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import {
     required, email, minLength7, maxLength70, minLength10, acceptAllExceptSingleSpecialCharacter,
-    maxLength80, maxLength20, postiveNumber, maxLength10, maxLength5, maxLength12, checkWhiteSpaces
+    maxLength80, maxLength20, postiveNumber, maxLength5, maxLength12, checkWhiteSpaces, checkSpacesInString
 } from "../../../helper/validation";
 import { renderText, renderEmailInputField, searchableSelect, renderNumberInputField, } from "../../layout/FormInputs";
 import { createClient, updateClient, getClientData } from '../actions/Client';
@@ -287,7 +287,7 @@ class AddClient extends Component {
                                                     name={"CompanyName"}
                                                     type="text"
                                                     placeholder={''}
-                                                    validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces]}
+                                                    validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces, checkSpacesInString]}
                                                     component={renderText}
                                                     required={true}
                                                     className=""
@@ -301,7 +301,7 @@ class AddClient extends Component {
                                                     name={"ClientName"}
                                                     type="text"
                                                     placeholder={''}
-                                                    validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces]}
+                                                    validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, checkSpacesInString]}
                                                     component={renderText}
                                                     required={true}
                                                     className=""

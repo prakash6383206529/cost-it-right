@@ -457,9 +457,7 @@ class AddIndivisualPart extends Component {
                       <Col md="6">
                         <div className="form-heading mb-0">
                           <h1>
-                            {this.state.isEditFlag
-                              ? "Update Component/ Part"
-                              : "Add  Component/ Part"}
+                            {this.state.isViewMode ? "View" : this.state.isEditFlag ? "Update" : "Add"} Component/ Part
                           </h1>
                         </div>
                       </Col>
@@ -493,7 +491,7 @@ class AddIndivisualPart extends Component {
                               name={"PartName"}
                               type="text"
                               placeholder={""}
-                              validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength85]}
+                              validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength85, checkSpacesInString]}
                               component={renderText}
                               required={true}
                               className=""
@@ -563,7 +561,7 @@ class AddIndivisualPart extends Component {
                               name={"ECNNumber"}
                               type="text"
                               placeholder={""}
-                              validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces]}
+                              validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, checkSpacesInString]}
                               component={renderText}
                               className=""
                               customClassName={"withBorder"}
@@ -576,7 +574,7 @@ class AddIndivisualPart extends Component {
                               name={"RevisionNumber"}
                               type="text"
                               placeholder={""}
-                              validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces]}
+                              validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, checkSpacesInString]}
                               component={renderText}
                               className=""
                               customClassName={"withBorder"}
@@ -589,7 +587,7 @@ class AddIndivisualPart extends Component {
                               name={"DrawingNumber"}
                               type="text"
                               placeholder={""}
-                              validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces]}
+                              validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, checkSpacesInString]}
                               component={renderText}
                               className=""
                               customClassName={"withBorder"}

@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Field, reduxForm, reset, formValueSelector } from 'redux-form'
 import { Container, Row, Col } from 'reactstrap'
-import { acceptAllExceptSingleSpecialCharacter, maxLength80, required } from '../../../helper/validation'
+import { acceptAllExceptSingleSpecialCharacter, checkSpacesInString, checkWhiteSpaces, maxLength80, required } from '../../../helper/validation'
 import { renderText } from '../../layout/FormInputs'
 import { getMachineSelectList } from '../actions/MachineMaster'
 import { getProcessCode, createProcess, updateProcess, getProcessData, } from '../actions/Process'
@@ -13,8 +13,6 @@ import { loggedInUserId } from '../../../helper/auth'
 import Drawer from '@material-ui/core/Drawer'
 import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom'
-import saveImg from '../../../assests/images/check.png'
-import cancelImg from '../../../assests/images/times.png'
 import { debounce } from 'lodash'
 const selector = formValueSelector('AddProcessDrawer');
 
@@ -248,7 +246,7 @@ class AddProcessDrawer extends Component {
                       name={'ProcessName'}
                       type="text"
                       placeholder={'Enter'}
-                      validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80]}
+                      validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkSpacesInString, checkWhiteSpaces]}
                       component={renderText}
                       onBlur={this.checkProcessCode}
                       required={true}
@@ -263,7 +261,7 @@ class AddProcessDrawer extends Component {
                       name={'ProcessCode'}
                       type="text"
                       placeholder={'Enter'}
-                      validate={[required]}
+                      validate={[required, checkSpacesInString, checkWhiteSpaces]}
                       component={renderText}
                       required={true}
                       className=" "
@@ -403,5 +401,6 @@ export default connect(mapStateToProps, {
   reduxForm({
     form: 'AddProcessDrawer',
     enableReinitialize: true,
+    touchOnChange: true,
   })(AddProcessDrawer),
 )

@@ -192,7 +192,7 @@ export const ProcessGroup = (props) => {
                             control={control}
                             register={register}
                             rules={{ required: false }}
-                            mandatory={false}
+                            mandatory={true}
                             handleChange={() => { }}
                             defaultValue={""}
                             className=""
@@ -314,3 +314,7 @@ export const bopQueryParms = (isPagination, skip, take, obj) => {
 
 }
 
+export const hyphenFormatter = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    return cellValue != null ? cellValue : '-'
+}

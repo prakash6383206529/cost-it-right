@@ -438,6 +438,14 @@ function RMImportListing(props) {
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
     return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : '-';
   }
+  /**
+  * @method currencyFormatter
+  * @description Renders buttons
+  */
+  const currencyFormatter = (props) => {
+    const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+    return cell != null ? cell : '-';
+  }
 
 
   const checkBoxRenderer = (props) => {
@@ -646,7 +654,8 @@ function RMImportListing(props) {
     shearingCostFormatter: shearingCostFormatter,
     statusFormatter: statusFormatter,
     hyphenFormatter: hyphenFormatter,
-    checkBoxRenderer: checkBoxRenderer
+    checkBoxRenderer: checkBoxRenderer,
+    currencyFormatter: currencyFormatter
 
   };
 
@@ -761,7 +770,7 @@ function RMImportListing(props) {
                     <AgGridColumn field="Plant" headerName="Plant(Code)"></AgGridColumn>
                     <AgGridColumn field="VendorName" headerName="Vendor(Code)"></AgGridColumn>
                     <AgGridColumn field="UOM"></AgGridColumn>
-                    <AgGridColumn field="Currency"></AgGridColumn>
+                    <AgGridColumn field="Currency" cellRenderer={"currencyFormatter"}></AgGridColumn>
                     <AgGridColumn field="BasicRate"></AgGridColumn>
                     <AgGridColumn field="ScrapRate"></AgGridColumn>
                     <AgGridColumn field="RMFreightCost" headerName="Freight Cost" cellRenderer='freightCostFormatter'></AgGridColumn>
