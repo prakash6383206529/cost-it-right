@@ -844,7 +844,7 @@ export const VOLUME_ACTUAL_ZBC_TEMPDATA = [
         'PartNo': 'Screw01',
         // 'OldPartNo': 'Old Part 2',
         'PartName': 'Screw',
-        'Year': DayTime().format('YYYY'),
+        'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
         'Month': DayTime().format('MM'),
         'ActualQuantity': 100,
     }
@@ -875,7 +875,7 @@ export const VOLUME_ACTUAL_VBC_TEMPDATA = [
         'PartNo': 'Screw Jack',
         // 'OldPartNo': 'Old Part1',
         'PartName': 'Screw',
-        'Year': DayTime().format('YYYY'),
+        'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
         'Month': DayTime().format('MM'),
         'ActualQuantity': 50,
     }
@@ -900,7 +900,7 @@ export const VOLUME_BUDGETED_ZBC_TEMPDATA = [
         'PartNo': 'Screw01',
         // 'OldPartNo': 'Old Part1',
         'PartName': 'Screw',
-        'Year': DayTime().format('YYYY'),
+        'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
         'Month': DayTime().format('MM'),
         'BudgetedQuantity': 10,
     }
@@ -931,7 +931,7 @@ export const VOLUME_BUDGETED_VBC_TEMPDATA = [
         'PartNo': 'Screw01',
         // 'OldPartNo': 'OldPartNo',
         'PartName': 'Screw',
-        'Year': DayTime().format('YYYY'),
+        'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
         'Month': DayTime().format('MM'),
         'BudgetedQuantity': 25,
     }
