@@ -2041,7 +2041,7 @@ class AddMoreDetails extends Component {
                   <div className="row">
                     <div className="col-md-6">
                       <div className="form-heading mb-0">
-                        <h2>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"}More Details</h2>
+                        <h2>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} More Details</h2>
                       </div>
                     </div>
                   </div>
