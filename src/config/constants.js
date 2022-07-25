@@ -1870,9 +1870,25 @@ export const LEVEL0 = 'L0';
 export const LEVEL1 = 'L1';
 export const SUB_ASSEMBLY = 'Sub Assembly';
 
+//MASTER NAMES FOR BULK UPLOAD
+export const RMDOMESTICBULKUPLOAD = 'RMDomestic';
+export const RMIMPORTBULKUPLOAD = 'RMImport';
+export const RMSPECIFICATION = 'RMSpecification'
+export const BOPDOMESTICBULKUPLOAD = 'BOPDomestic';
+export const BOPIMPORTBULKUPLOAD = 'BOPImport';
+export const BOMBULKUPLOAD = 'BOM';
+export const PARTCOMPONENTBULKUPLOAD = 'PartComponent';
+export const PRODUCTCOMPONENTBULKUPLOAD = 'ProductComponent';
+export const MACHINEBULKUPLOAD = 'Machine';
+export const VENDORBULKUPLOAD = 'Vendor';
+export const LABOURBULKUPLOAD = 'Labour'
+export const OPERAIONBULKUPLOAD = 'Operation';
+export const FUELBULKUPLOAD = 'Fuel';
+export const INTERESTRATEBULKUPLOAD = 'InterestRate'
+
 // KEY AND IVgit
 export const KEY = 'gQUJ79YKYm22Cazw';
 export const IV = 'eTEFSa0PinFKTQNB'
 
 //VERSION 
-export const VERSION = "V1.2.387";
+export const VERSION = "V1.2.388";
