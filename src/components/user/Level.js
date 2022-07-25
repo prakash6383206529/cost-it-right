@@ -726,4 +726,5 @@ export default connect(mapStateToProps, {
 })(reduxForm({
   form: 'Level',
   enableReinitialize: true,
+  touchOnChange: true
 })(Level));

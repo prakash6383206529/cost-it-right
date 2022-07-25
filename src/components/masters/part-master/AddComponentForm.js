@@ -402,4 +402,5 @@ export default connect(mapStateToProps, {
 })(reduxForm({
   form: 'AddComponentForm',
   enableReinitialize: true,
+  touchOnChange: true
 })(AddComponentForm));

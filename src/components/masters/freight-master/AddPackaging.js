@@ -78,4 +78,5 @@ export default connect(mapStateToProps, {
 })(reduxForm({
     form: 'AddPackaging',
     enableReinitialize: true,
+    touchOnChange: true
 })(AddPackaging));

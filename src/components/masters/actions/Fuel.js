@@ -98,7 +98,8 @@ export function getFuelDetailDataList(isAPICall, data, callback) {
                 dispatch({ type: GET_FUEL_FAILURE });
                 callback(error);
             });
-        } else {
+        }
+        else {
             dispatch({
                 type: GET_FUEL_DATALIST_SUCCESS,
                 payload: [],

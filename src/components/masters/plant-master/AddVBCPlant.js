@@ -204,7 +204,7 @@ class AddVBCPlant extends Component {
   * @method cancel
   * @description used to Reset form
   */
-  cancel = () => {
+  cancel = (type) => {
     const { reset } = this.props;
     reset();
     this.setState({
@@ -214,7 +214,7 @@ class AddVBCPlant extends Component {
       PlantId: '',
     })
     this.props.getPlantUnitAPI('', res => { })
-    this.toggleDrawer('')
+    this.toggleDrawer('', type)
   }
 
   /**
@@ -246,7 +246,7 @@ class AddVBCPlant extends Component {
       this.props.updatePlantAPI(PlantId, updateData, (res) => {
         if (res.data.Result) {
           Toaster.success(MESSAGES.UPDATE_PLANT_SUCESS);
-          this.cancel()
+          this.cancel('submit')
         }
       });
     } else {
@@ -270,7 +270,7 @@ class AddVBCPlant extends Component {
       this.props.createPlantAPI(formData, (res) => {
         if (res.data.Result === true) {
           Toaster.success(MESSAGES.PLANT_ADDED_SUCCESS);
-          this.cancel()
+          this.cancel('submit')
         }
       });
     }
@@ -527,7 +527,7 @@ class AddVBCPlant extends Component {
                     <button
                       type={"button"}
                       className="mr15 cancel-btn"
-                      onClick={this.cancel}
+                      onClick={() => { this.cancel('cancel') }}
                     >
                       <div className={"cancel-icon"}></div>
                       {"Cancel"}
@@ -594,4 +594,5 @@ export default connect(mapStateToProps, {
 })(reduxForm({
   form: 'AddVBCPlant',
   enableReinitialize: true,
+  touchOnChange: true
 })(AddVBCPlant));

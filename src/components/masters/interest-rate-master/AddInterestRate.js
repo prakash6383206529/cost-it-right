@@ -129,7 +129,7 @@ class AddInterestRate extends Component {
     if (label === 'plant') {
       plantSelectList &&
         plantSelectList.map((item) => {
-          if (item.Value === '0') return false
+          if (item.PlantId === '0') return false
           temp.push({ label: item.PlantName, value: item.PlantId })
           return null
         })
@@ -301,7 +301,7 @@ class AddInterestRate extends Component {
   * @method cancel
   * @description used to Reset form
   */
-  cancel = () => {
+  cancel = (type) => {
     const { reset } = this.props;
     reset();
     this.setState({
@@ -309,7 +309,7 @@ class AddInterestRate extends Component {
       isEditFlag: false,
     })
     this.props.getInterestRateData('', () => { })
-    this.props.hideForm()
+    this.props.hideForm(type)
   }
 
   handleKeyDown = function (e) {
@@ -326,7 +326,7 @@ class AddInterestRate extends Component {
       if (res?.data?.Result) {
         Toaster.success(MESSAGES.UPDATE_INTEREST_RATE_SUCESS);
         this.setState({ showPopup: false })
-        this.cancel()
+        this.cancel('submit')
       }
     });
   }, 500)
@@ -359,7 +359,7 @@ class AddInterestRate extends Component {
         Data.PaymentTermPercent === values.PaymentTermPercent &&
         Data.RepaymentPeriod === values.RepaymentPeriod && DropdownChanged) {
 
-        this.cancel()
+        this.cancel('cancel')
         return false;
       }
       else {
@@ -430,7 +430,7 @@ class AddInterestRate extends Component {
         if (res?.data?.Result) {
           // toastr.success(MESSAGES.INTEREST_RATE_ADDED_SUCCESS);
           Toaster.success(MESSAGES.INTEREST_RATE_ADDED_SUCCESS)
-          this.cancel();
+          this.cancel('submit');
 
         }
       });
@@ -735,7 +735,7 @@ class AddInterestRate extends Component {
                       <button
                         type={"button"}
                         className=" mr15 cancel-btn"
-                        onClick={this.cancel}
+                        onClick={() => { this.cancel('cancel') }}
                         disabled={setDisable}
                       >
                         <div className={"cancel-icon"}></div>
@@ -812,5 +812,6 @@ export default connect(mapStateToProps, {
 })(reduxForm({
   form: 'AddInterestRate',
   enableReinitialize: true,
+  touchOnChange: true
 })(AddInterestRate));
 

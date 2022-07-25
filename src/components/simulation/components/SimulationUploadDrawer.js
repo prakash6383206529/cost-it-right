@@ -595,6 +595,7 @@ export default connect(mapStateToProps,
     })(reduxForm({
         form: 'SimulationUploadDrawer',
         enableReinitialize: true,
+        touchOnChange: true
     })(SimulationUploadDrawer));
 
 // export default SimulationUploadDrawer;

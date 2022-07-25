@@ -389,4 +389,5 @@ export default connect(mapStateToProps, {
 })(reduxForm({
     form: 'AddAssemblyForm',
     enableReinitialize: true,
+    touchOnChange: true
 })(AddAssemblyForm));

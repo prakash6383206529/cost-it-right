@@ -98,36 +98,40 @@ function RMDomesticListing(props) {
     }, [rmDataList])
 
     useEffect(() => {
-        if (isSimulation && selectionForListingMasterAPI === 'Combined') {
-            props?.changeSetLoader(true)
-            dispatch(getListingForSimulationCombined(objectForMultipleSimulation, RMDOMESTIC, (res) => {
-                props?.changeSetLoader(false)
-            }))
-        } else {
-            if (isSimulation) {
-                props?.changeTokenCheckBox(false)
+        if (!props.stopApiCallOnCancel) {
+            if (isSimulation && selectionForListingMasterAPI === 'Combined') {
+                props?.changeSetLoader(true)
+                dispatch(getListingForSimulationCombined(objectForMultipleSimulation, RMDOMESTIC, (res) => {
+                    props?.changeSetLoader(false)
+                }))
+            } else {
+                if (isSimulation) {
+                    props?.changeTokenCheckBox(false)
+                }
+                getDataList(null, null, null, null, null, 0, 0, defaultPageSize, true, floatingFilterData)
             }
-            getDataList(null, null, null, null, null, 0, 0, defaultPageSize, true, floatingFilterData)
+            setvalue({ min: 0, max: 0 });
         }
-        setvalue({ min: 0, max: 0 });
     }, [])
 
 
     useEffect(() => {
-        let obj = {
-            MasterId: RM_MASTER_ID,
-            DepartmentId: userDetails().DepartmentId,
-            LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
-            LoggedInUserId: loggedInUserId()
-        }
-        dispatch(masterFinalLevelUser(obj, (res) => {
-            if (res?.data?.Result) {
-                setIsFinalLevelUser(res.data.Data.IsFinalApprovar)
+        if (!props.stopApiCallOnCancel) {
+            let obj = {
+                MasterId: RM_MASTER_ID,
+                DepartmentId: userDetails().DepartmentId,
+                LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
+                LoggedInUserId: loggedInUserId()
             }
-        }))
+            dispatch(masterFinalLevelUser(obj, (res) => {
+                if (res?.data?.Result) {
+                    setIsFinalLevelUser(res.data.Data.IsFinalApprovar)
+                }
+            }))
 
-        return () => {
-            dispatch(setSelectedCostingListSimualtion([]))
+            return () => {
+                dispatch(setSelectedCostingListSimualtion([]))
+            }
         }
     }, [])
 
@@ -618,12 +622,6 @@ function RMDomesticListing(props) {
     const onFilterTextBoxChanged = (e) => {
         gridApi.setQuickFilter(e.target.value);
     }
-
-
-    /**
-    * @method render
-    * @description Renders the component
-    */
 
 
     const isFirstColumn = (params) => {

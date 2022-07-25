@@ -210,4 +210,5 @@ export default connect(mapStateToProps, {
 })(reduxForm({
     form: 'AddCategory',
     enableReinitialize: true,
+    touchOnChange: true
 })(AddCategory));

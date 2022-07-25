@@ -357,4 +357,5 @@ export default connect(mapStateToProps,
     })(reduxForm({
         form: 'CostingBulkUploadDrawer',
         enableReinitialize: true,
+        touchOnChange: true
     })(CostingBulkUploadDrawer));

@@ -248,13 +248,14 @@ class ClientListing extends Component {
         this.setState({ isOpenVendor: true, isViewMode: false })
     }
 
-    closeVendorDrawer = (e = '') => {
+    closeVendorDrawer = (e = '', type) => {
         this.setState({
             isOpenVendor: false,
             isEditFlag: false,
             ID: '',
         }, () => {
-            this.getTableListData(null, null)
+            if (type === 'submit')
+                this.getTableListData(null, null)
         })
     }
 
@@ -455,11 +456,10 @@ class ClientListing extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ comman, auth, client }) {
-    const { loading, } = comman;
+function mapStateToProps({ auth, client }) {
     const { leftMenuData, topAndLeftMenuData } = auth;
     const { clientDataList } = client;
-    return { loading, leftMenuData, clientDataList, topAndLeftMenuData };
+    return { leftMenuData, clientDataList, topAndLeftMenuData };
 }
 
 /**
@@ -477,4 +477,5 @@ export default connect(mapStateToProps, {
         focusOnError(errors);
     },
     enableReinitialize: true,
+    touchOnChange: true
 })(ClientListing));

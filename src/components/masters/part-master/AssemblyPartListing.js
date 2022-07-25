@@ -50,12 +50,18 @@ class AssemblyPartListing extends Component {
     }
 
     componentDidMount() {
-        this.getTableListData();
+        setTimeout(() => {
+            if (!this.props.stopApiCallOnCancel) {
+                this.getTableListData();
+            }
+        }, 300);
     }
 
     // Get updated user list after any action performed.
     getUpdatedData = () => {
-        this.getTableListData()
+        if (!this.props.stopApiCallOnCancel) {
+            this.getTableListData()
+        }
     }
 
     /**
@@ -92,8 +98,6 @@ class AssemblyPartListing extends Component {
         }
         this.props.getDetails(requestData)
     }
-
-
 
     /**
     * @method deleteItem

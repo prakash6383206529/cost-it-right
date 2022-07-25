@@ -493,4 +493,5 @@ export default connect(mapStateToProps, {
 })(reduxForm({
   form: 'AddVendorPlantDrawer',
   enableReinitialize: true,
+  touchOnChange: true
 })(AddVendorPlantDrawer));

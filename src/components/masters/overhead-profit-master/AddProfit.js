@@ -249,7 +249,7 @@ class AddProfit extends Component {
     }
     if (label === 'plant') {
       plantSelectList && plantSelectList.map((item) => {
-        if (item.Value === '0') return false
+        if (item.PlantId === '0') return false
         temp.push({ label: item.PlantName, value: item.PlantId })
         return null
       })
@@ -645,7 +645,7 @@ class AddProfit extends Component {
   * @method cancel
   * @description used to Cancel form
   */
-  cancel = () => {
+  cancel = (type) => {
     const { reset } = this.props;
     reset();
     this.setState({
@@ -657,7 +657,7 @@ class AddProfit extends Component {
       profitAppli: [],
     })
     this.props.getProfitData('', res => { })
-    this.props.hideForm()
+    this.props.hideForm(type)
   }
 
   /**
@@ -700,7 +700,7 @@ class AddProfit extends Component {
         && Number(DataToChange.ProfitPercentage) === Number(values.ProfitPercentage) && Number(DataToChange.ProfitRMPercentage) === Number(values.ProfitRMPercentage)
         && String(DataToChange.Remark) === String(values.Remark) && uploadAttachements) {
 
-        this.cancel()
+        this.cancel('cancel')
         return false
       }
       this.setState({ setDisable: true, disablePopup: false })
@@ -766,7 +766,7 @@ class AddProfit extends Component {
         this.setState({ setDisable: false })
         if (res?.data?.Result) {
           Toaster.success(MESSAGES.PROFIT_ADDED_SUCCESS);
-          this.cancel()
+          this.cancel('submit')
         }
       });
     }
@@ -777,7 +777,7 @@ class AddProfit extends Component {
       this.setState({ setDisable: false })
       if (res?.data?.Result) {
         Toaster.success(MESSAGES.PROFIT_UPDATE_SUCCESS);
-        this.cancel()
+        this.cancel('submit')
       }
     });
   }
@@ -1214,7 +1214,7 @@ class AddProfit extends Component {
                         <button
                           type={"button"}
                           className=" mr15 cancel-btn"
-                          onClick={this.cancel}
+                          onClick={() => { this.cancel('cancel') }}
                           disabled={setDisable}
                         >
                           <div className={"cancel-icon"}></div>

@@ -146,6 +146,7 @@ export default connect(mapStateToProps, {
 })(reduxForm({
     form: 'ImpactDrawer',
     enableReinitialize: true,
+    touchOnChange: true
 })(ImpactDrawer));
 
 // export default ImpactDrawer;

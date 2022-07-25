@@ -247,8 +247,7 @@ class AddMachineRate extends Component {
   closeApprovalDrawer = (e = '', type) => {
     this.setState({ approveDrawer: false, setDisable: false })
     if (type === 'submit') {
-
-      this.cancel()
+      this.cancel('submit')
     }
   }
   /**
@@ -864,7 +863,7 @@ class AddMachineRate extends Component {
   * @method cancel
   * @description used to Reset form
   */
-  cancel = () => {
+  cancel = (type) => {
     const { reset } = this.props;
     reset();
     this.setState({
@@ -872,7 +871,7 @@ class AddMachineRate extends Component {
       isFormHide: true,
       IsVendor: false,
       isEditFlag: false,
-    }, () => this.props.hideForm())
+    }, () => this.props.hideForm(type))
 
   }
 
@@ -1026,7 +1025,7 @@ class AddMachineRate extends Component {
           this.setState({ setDisable: false, selectedPlants: selectedPlants })
           if (res?.data?.Result) {
             Toaster.success(MESSAGES.UPDATE_MACHINE_SUCCESS);
-            this.cancel();
+            this.cancel('submit');
           }
         })
 
@@ -1170,7 +1169,7 @@ class AddMachineRate extends Component {
           if (res?.data?.Result) {
             Toaster.success(MESSAGES.MACHINE_ADD_SUCCESS)
             //this.clearForm()
-            this.cancel()
+            this.cancel('submit')
           }
         })
       }
@@ -1195,7 +1194,7 @@ class AddMachineRate extends Component {
       this.setState({ setDisable: false })
       if (res?.data?.Result) {
         Toaster.success(MESSAGES.UPDATE_MACHINE_DETAILS_SUCCESS);
-        this.cancel()
+        this.cancel('submit')
 
       }
     });

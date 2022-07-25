@@ -127,17 +127,10 @@ class AddOperation extends Component {
   * @description Used show listing of unit of measurement
   */
   renderListing = (label) => {
-    const { costingSpecifiTechnology, plantSelectList, vendorWithVendorCodeSelectList,
+    const { plantSelectList,
       UOMSelectList, } = this.props;
     const temp = [];
-    if (label === 'technology') {
-      costingSpecifiTechnology && costingSpecifiTechnology.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ Text: item.Text, Value: item.Value })
-        return null;
-      });
-      return temp;
-    }
+
     if (label === 'plant') {
       plantSelectList && plantSelectList.map(item => {
         if (item.PlantId === '0') return false;
@@ -153,14 +146,6 @@ class AddOperation extends Component {
         return null
       })
       return temp
-    }
-    if (label === 'VendorNameList') {
-      vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
-        return null;
-      });
-      return temp;
     }
     if (label === 'UOM') {
       UOMSelectList && UOMSelectList.map(item => {
@@ -507,7 +492,9 @@ class AddOperation extends Component {
       isShowForm: false,
       isEditFlag: false,
     })
-    this.props.getOperationDataAPI('', () => { })
+    if (type === 'submit') {
+      this.props.getOperationDataAPI('', () => { })
+    }
     this.props.hideForm(type)
   }
 
@@ -1226,13 +1213,11 @@ class AddOperation extends Component {
 * @param {*} state
 */
 function mapStateToProps(state) {
-  const { comman, otherOperation, supplier, auth, costing } = state;
+  const { comman, otherOperation, auth } = state;
   const filedObj = selector(state, 'OperationCode', 'text');
   const { plantSelectList, filterPlantList, UOMSelectList, } = comman;
   const { operationData } = otherOperation;
-  const { vendorWithVendorCodeSelectList } = supplier;
   const { initialConfiguration } = auth;
-  const { costingSpecifiTechnology } = costing
 
   let initialValues = {};
   if (operationData && operationData !== undefined) {
@@ -1248,8 +1233,8 @@ function mapStateToProps(state) {
 
   return {
     plantSelectList, UOMSelectList,
-    operationData, filterPlantList, vendorWithVendorCodeSelectList, filedObj,
-    initialValues, initialConfiguration, costingSpecifiTechnology
+    operationData, filterPlantList, filedObj,
+    initialValues, initialConfiguration
   }
 }
 
@@ -1279,5 +1264,6 @@ export default connect(mapStateToProps, {
     focusOnError(errors)
   },
   enableReinitialize: true,
+  touchOnChange: true,
 })(AddOperation));
 

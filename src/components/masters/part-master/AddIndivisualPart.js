@@ -6,7 +6,6 @@ import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialC
 import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
 import { focusOnError, renderDatePicker, renderMultiSelectField, renderText, renderTextAreaField } from "../../layout/FormInputs";
 import { createPart, updatePart, getPartData, fileUploadPart, fileDeletePart, getProductGroupSelectList, getPartDescription } from '../actions/Part';
-import { getPlantSelectList, } from '../../../actions/Common';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import Dropzone from 'react-dropzone-uploader';
@@ -285,7 +284,6 @@ class AddIndivisualPart extends Component {
  * @description used to Reset form
  */
   cancel = (type) => {
-
     const { reset } = this.props;
     reset();
     this.setState({
@@ -377,7 +375,7 @@ class AddIndivisualPart extends Component {
         this.setState({ setDisable: false })
         if (res?.data?.Result) {
           Toaster.success(MESSAGES.UPDATE_PART_SUCESS);
-          this.cancel()
+          this.cancel('submit')
         }
       });
 
@@ -405,7 +403,7 @@ class AddIndivisualPart extends Component {
         this.setState({ setDisable: false, isLoader: false })
         if (res?.data?.Result === true) {
           Toaster.success(MESSAGES.PART_ADD_SUCCESS);
-          this.cancel()
+          this.cancel('submit')
         }
       });
     }
@@ -416,7 +414,7 @@ class AddIndivisualPart extends Component {
       this.setState({ setDisable: false })
       if (res?.data?.Result) {
         Toaster.success(MESSAGES.UPDATE_PART_SUCESS);
-        this.cancel()
+        this.cancel('submit')
       }
     });
   }, 500)
@@ -791,7 +789,6 @@ function mapStateToProps({ comman, part, auth }) {
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
-  getPlantSelectList,
   createPart,
   updatePart,
   getPartData,

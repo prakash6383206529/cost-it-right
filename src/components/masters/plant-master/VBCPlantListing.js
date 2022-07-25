@@ -53,8 +53,9 @@ class VBCPlantListing extends Component {
     }
 
     componentDidMount() {
-        this.getTableListData();
-        this.props.fetchCountryDataAPI(() => { })
+        setTimeout(() => {
+            this.getTableListData();
+        }, 300);
     }
 
     /**
@@ -346,14 +347,17 @@ class VBCPlantListing extends Component {
         this.setState({ isOpenVendor: true, isViewMode: false })
     }
 
-    closeVendorDrawer = (e = '') => {
+    closeVendorDrawer = (e = '', type) => {
         this.setState({
             isOpenVendor: false,
             isEditFlag: false,
             ID: '',
         }, () => {
-            this.filterList()
-            //this.getTableListData()
+            if (type === 'submit') {
+                this.filterList()
+                this.getTableListData()
+            }
+
         })
     }
 
@@ -558,4 +562,5 @@ export default connect(mapStateToProps, {
         focusOnError(errors);
     },
     enableReinitialize: true,
+    touchOnChange: true
 })(VBCPlantListing));

@@ -65,12 +65,11 @@ class AddFuel extends Component {
       this.props.fetchStateDataAPI(countryId, () => { })
     })
     this.getDetails(data);
+    this.props.getFuelComboData(() => { })
     if (!(data.isEditFlag || data.isViewFlag)) {
       this.props.getFuelComboData(() => { })
       this.props.getUOMSelectList(() => { })
-      this.props.getFuelComboData(() => { })
     }
-
   }
 
   /**
@@ -436,7 +435,7 @@ class AddFuel extends Component {
   * @method cancel
   * @description used to Reset form
   */
-  cancel = () => {
+  cancel = (type) => {
     const { reset } = this.props;
     reset();
     this.setState({
@@ -448,8 +447,10 @@ class AddFuel extends Component {
       rateGrid: [],
       isEditFlag: false,
     })
-    this.props.getFuelDetailData('', res => { })
-    this.props.hideForm()
+    if (type === 'submit') {
+      this.props.getFuelDetailData('', res => { })
+    }
+    this.props.hideForm(type)
   }
 
   /**
@@ -493,7 +494,7 @@ class AddFuel extends Component {
       }
       // let sebGrid = DataToChangeZ.SEBChargesDetails[0]
       if (HandleChanged && addRow === 0 && count === rateGrid.length && DeleteChanged) {
-        this.cancel()
+        this.cancel('cancel')
         return false
       }
 
@@ -510,7 +511,7 @@ class AddFuel extends Component {
         this.setState({ setDisable: false })
         if (res?.data?.Result) {
           Toaster.success(MESSAGES.UPDATE_FUEL_DETAIL_SUCESS);
-          this.cancel();
+          this.cancel('submit');
         }
       })
 
@@ -528,7 +529,7 @@ class AddFuel extends Component {
         this.setState({ setDisable: false })
         if (res && res?.data && res?.data?.Result) {
           Toaster.success(MESSAGES.FUEL_ADD_SUCCESS);
-          this.cancel();
+          this.cancel('submit');
         }
       });
     }
@@ -801,7 +802,7 @@ class AddFuel extends Component {
                           <button
                             type={"button"}
                             className="mr15 cancel-btn"
-                            onClick={this.cancel}
+                            onClick={() => { this.cancel('cancel') }}
                             disabled={setDisable}
                           >
                             <div className={"cancel-icon"}></div>
@@ -875,6 +876,7 @@ export default connect(mapStateToProps, {
 })(reduxForm({
   form: 'AddFuel',
   enableReinitialize: true,
+  touchOnChange: true,
   onSubmitFail: errors => {
     focusOnError(errors);
   },

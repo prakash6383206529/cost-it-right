@@ -15,11 +15,11 @@ import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { ASSEMBLY, BOUGHTOUTPART, COMPONENT_PART, FILE_URL, SPACEBAR } from '../../../config/constants';
+import { ASSEMBLY, BOUGHTOUTPART, COMPONENT_PART, FILE_URL } from '../../../config/constants';
 import AddChildDrawer from './AddChildDrawer';
 import DayTime from '../../common/DayTimeWrapper'
 import BOMViewer from './BOMViewer';
-import { getRandomSixDigit, showDataOnHover } from '../../../helper/util';
+import { getRandomSixDigit } from '../../../helper/util';
 import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from "../../../assests/images/red-cross.png";
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
@@ -943,11 +943,7 @@ class AddAssemblyPart extends Component {
                                 onChange={(e) => this.handlePartNo(e)}
                                 value={this.state.vendorName}
                                 noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter part no" : "No results found"}
-                                onKeyDown={(onKeyDown) => {
-                                  if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
-                                }}
-                                isDisabled={(isEditFlag || this.state.inputLoader) ? true : false}
-                              />
+                                isDisabled={(isEditFlag || this.state.inputLoader) ? true : false} />
                             </div>
                           </Col>
                         }
@@ -1061,7 +1057,6 @@ class AddAssemblyPart extends Component {
                               label="Group Code"
                               name="ProductGroup"
                               placeholder={isViewMode ? '-' : "Select"}
-                              title={showDataOnHover(this.state.ProductGroup)}
                               selection={
                                 this.state.ProductGroup == null || this.state.ProductGroup.length === 0 ? [] : this.state.ProductGroup}
                               options={this.renderListing("ProductGroup")}
@@ -1367,8 +1362,6 @@ export default connect(mapStateToProps, {
   getPartDescription,
   getPartData,
   getCostingSpecificTechnology,
-  getProductGroupSelectList,
-  getPartSelectList
 })(reduxForm({
   form: 'AddAssemblyPart',
   touchOnChange: true,

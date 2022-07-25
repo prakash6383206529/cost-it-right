@@ -10,10 +10,9 @@ import $ from 'jquery';
 import NoContentFound from '../../common/NoContentFound';
 import {
     getSupplierDataList, activeInactiveVendorStatus, deleteSupplierAPI,
-    getVendorTypesSelectList, getVendorsByVendorTypeID, getAllVendorSelectList,
+    getVendorsByVendorTypeID,
     getVendorTypeByVendorSelectList
 } from '../actions/Supplier';
-import { fetchCountryDataAPI, } from '../../../actions/Common';
 import Switch from "react-switch";
 import BulkUpload from '../../massUpload/BulkUpload';
 import AddVendorDrawer from './AddVendorDrawer';
@@ -77,16 +76,6 @@ class VendorListing extends Component {
             disableFilter: true,
             disableDownload: false,
         }
-    }
-
-    /**
-    * @method componentWillMount
-    * @description called before render the component
-    */
-    UNSAFE_componentWillMount() {
-        this.props.getVendorTypesSelectList()
-        this.props.getAllVendorSelectList()
-        this.props.fetchCountryDataAPI(() => { })
     }
 
     componentDidMount() {
@@ -226,40 +215,6 @@ class VendorListing extends Component {
             }
 
         });
-    }
-
-    /**
-    * @method renderListing
-    * @description Used show listing of unit of measurement
-    */
-    renderListing = (label) => {
-        const { countryList, vendorTypeList, vendorSelectList } = this.props;
-
-        const temp = [];
-        if (label === 'country') {
-            countryList && countryList.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-                return null;
-            });
-            return temp;
-        }
-        if (label === 'vendorType') {
-            vendorTypeList && vendorTypeList.map((item, i) => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-                return null;
-            });
-            return temp;
-        }
-        if (label === 'vendorList') {
-            vendorSelectList && vendorSelectList.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-                return null;
-            });
-            return temp;
-        }
     }
 
     /**
@@ -482,8 +437,6 @@ class VendorListing extends Component {
             vendorName: [],
             country: [],
         }, () => {
-            this.props.getVendorTypesSelectList()
-            this.props.getAllVendorSelectList()
             this.getTableListData(null, null, null)
         })
     }
@@ -499,9 +452,11 @@ class VendorListing extends Component {
             isEditFlag: false,
             ID: '',
         }, () => {
-            this.filterList()
-
+            if (type === 'submit') {
+                this.filterList()
+            }
         })
+
     }
 
     /**
@@ -827,10 +782,7 @@ export default connect(mapStateToProps, {
     getSupplierDataList,
     activeInactiveVendorStatus,
     deleteSupplierAPI,
-    getVendorTypesSelectList,
-    fetchCountryDataAPI,
     getVendorsByVendorTypeID,
-    getAllVendorSelectList,
     getVendorTypeByVendorSelectList
 })(reduxForm({
     form: 'VendorListing',
@@ -838,4 +790,5 @@ export default connect(mapStateToProps, {
         focusOnError(errors);
     },
     enableReinitialize: true,
+    touchOnChange: true
 })(VendorListing));

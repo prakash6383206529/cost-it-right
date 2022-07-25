@@ -174,10 +174,10 @@ class AddBOPDomestic extends Component {
 
 
   closeApprovalDrawer = (e = '', type) => {
+
     this.setState({ approveDrawer: false, setDisable: false })
     if (type === 'submit') {
-
-      this.cancel()
+      this.cancel('submit')
     }
   }
 
@@ -568,7 +568,7 @@ class AddBOPDomestic extends Component {
   * @method cancel
   * @description used to Reset form
   */
-  cancel = () => {
+  cancel = (type) => {
     const { reset } = this.props;
     reset();
     this.setState({
@@ -580,9 +580,10 @@ class AddBOPDomestic extends Component {
       sourceLocation: [],
       UOM: [],
     })
-    this.props.hideForm()
-    this.getDetails()
-
+    this.props.hideForm(type)
+    if (type === 'submit') {
+      this.getDetails()
+    }
   }
 
   /**
@@ -783,7 +784,7 @@ class AddBOPDomestic extends Component {
           if (res?.data?.Result) {
             Toaster.success(MESSAGES.BOP_ADD_SUCCESS)
             //this.clearForm()
-            this.cancel()                                       //BOP APPROVAL IN PROGRESS DONT DELETE THIS CODE
+            this.cancel('submit')                                       //BOP APPROVAL IN PROGRESS DONT DELETE THIS CODE
           }
         })
       }
@@ -801,7 +802,7 @@ class AddBOPDomestic extends Component {
       this.setState({ setDisable: false })
       if (res?.data?.Result) {
         Toaster.success(MESSAGES.UPDATE_BOP_SUCESS);
-        this.cancel();
+        this.cancel('submit');
       }
     })
 

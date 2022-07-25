@@ -325,9 +325,6 @@ class AddTaxDetails extends Component {
                         }}
                         disabled={isEditFlag ? true : false}
                         component={renderDatePicker}
-                        disabled={isEditFlag ? true : false
-                        }
-                        required={true}
                         className="form-control"
                       //minDate={moment()}
                       />
@@ -401,4 +398,5 @@ export default connect(mapStateToProps, {
 })(reduxForm({
   form: 'AddTaxDetails',
   enableReinitialize: true,
+  touchOnChange: true
 })(AddTaxDetails));

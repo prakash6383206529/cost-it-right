@@ -79,31 +79,34 @@ class MachineRateListing extends Component {
     * @description Called after rendering the component
     */
     componentDidMount() {
+        setTimeout(() => {
+            if (!this.props.stopApiCallOnCancel) {
 
-        if (this.props.isSimulation) {
-            if (this.props.selectionForListingMasterAPI === 'Combined') {
-                this.props?.changeSetLoader(true)
-                this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, MACHINERATE, () => {
-                    this.props?.changeSetLoader(false)
+                if (this.props.isSimulation) {
+                    if (this.props.selectionForListingMasterAPI === 'Combined') {
+                        this.props?.changeSetLoader(true)
+                        this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, MACHINERATE, () => {
+                            this.props?.changeSetLoader(false)
 
+                        })
+                    }
+                }
+                if (this.props.selectionForListingMasterAPI === 'Master') {
+                    this.getDataList("", 0, "", 0, "", "", 0, defaultPageSize, true, this.state.floatingFilterData)
+                }
+                let obj = {
+                    MasterId: MACHINE_MASTER_ID,
+                    DepartmentId: userDetails().DepartmentId,
+                    LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
+                    LoggedInUserId: loggedInUserId()
+                }
+                this.props.masterFinalLevelUser(obj, (res) => {
+                    if (res?.data?.Result) {
+                        this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+                    }
                 })
             }
-        }
-        if (this.props.selectionForListingMasterAPI === 'Master') {
-            this.getDataList("", 0, "", 0, "", "", 0, defaultPageSize, true, this.state.floatingFilterData)
-        }
-        let obj = {
-            MasterId: MACHINE_MASTER_ID,
-            DepartmentId: userDetails().DepartmentId,
-            LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
-            LoggedInUserId: loggedInUserId()
-        }
-        this.props.masterFinalLevelUser(obj, (res) => {
-            if (res?.data?.Result) {
-                this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
-            }
-        })
-
+        }, 300);
     }
 
 
@@ -814,4 +817,5 @@ export default connect(mapStateToProps, {
 })(reduxForm({
     form: 'MachineRateListing',
     enableReinitialize: true,
+    touchOnChange: true
 })(MachineRateListing));

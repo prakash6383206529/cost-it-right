@@ -639,8 +639,8 @@ class AddRMDomestic extends Component {
   closeApprovalDrawer = (e = '', type) => {
     this.setState({ approveDrawer: false, setDisable: false })
     if (type === 'submit') {
-      this.clearForm()
-      this.cancel()
+      this.clearForm('submit')
+      this.cancel('submit')
     }
   }
 
@@ -824,8 +824,8 @@ class AddRMDomestic extends Component {
    * @method cancel
    * @description used to Reset form
    */
-  cancel = () => {
-    this.clearForm()
+  cancel = (type) => {
+    this.clearForm(type)
   }
 
   /**
@@ -974,9 +974,6 @@ class AddRMDomestic extends Component {
         return plantArray
       })
     }
-    let updatedFiles = files.map((file) => {
-      return { ...file, ContextId: RawMaterialID }
-    })
     let sourceLocationValue = (!IsVendor && !HasDifferentSource ? '' : sourceLocation.value)
     if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(RM_MASTER_ID) !== true)) {
       //this.setState({ updatedObj: requestData })
@@ -1153,8 +1150,8 @@ class AddRMDomestic extends Component {
           this.setState({ setDisable: false })
           if (res?.data?.Result) {
             Toaster.success(MESSAGES.MATERIAL_ADD_SUCCESS)
-            this.clearForm()
-            this.cancel()
+            this.clearForm('submit')
+            this.cancel('submit')
           }
         })
       }
@@ -1169,7 +1166,7 @@ class AddRMDomestic extends Component {
       this.setState({ setDisable: false })
       if (res?.data?.Result) {
         Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
-        this.clearForm()
+        this.clearForm('submit')
         // this.cancel()
       }
     })

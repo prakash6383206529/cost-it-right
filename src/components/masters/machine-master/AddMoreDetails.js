@@ -3936,4 +3936,5 @@ export default connect(mapStateToProps, {
     focusOnError(errors);
   },
   enableReinitialize: true,
+  touchOnChange: true
 })(AddMoreDetails));

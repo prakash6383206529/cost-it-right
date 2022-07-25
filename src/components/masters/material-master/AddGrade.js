@@ -212,4 +212,5 @@ export default connect(mapStateToProps,
   })(reduxForm({
     form: 'AddGrade',
     enableReinitialize: true,
+    touchOnChange: true
   })(AddGrade));

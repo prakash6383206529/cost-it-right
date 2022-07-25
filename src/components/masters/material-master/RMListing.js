@@ -50,7 +50,6 @@ class RMListing extends Component {
     componentDidMount() {
         this.getListData();
     }
-
     /**+-
     * @method getListData
     * @description Get list data
@@ -64,10 +63,12 @@ class RMListing extends Component {
     * @method closeDrawer
     * @description  used to cancel filter form
     */
-    closeDrawer = (e = '') => {
-        this.setState({ isLoader: true })
+    closeDrawer = (e = '', formData, type) => {
         this.setState({ isOpen: false }, () => {
-            this.getListData()
+            if (type === 'submit') {
+                this.setState({ isLoader: true })
+                this.getListData()
+            }
         })
     }
 
