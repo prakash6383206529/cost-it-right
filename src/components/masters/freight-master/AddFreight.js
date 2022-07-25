@@ -576,9 +576,7 @@ class AddFreight extends Component {
                       <div className="col-md-6">
                         <div className="form-heading mb-0">
                           <h1>
-                            {isEditFlag
-                              ? `Update Freight`
-                              : `Add Freight`}
+                            {isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Freight
                           </h1>
                         </div>
                       </div>
@@ -715,7 +713,7 @@ class AddFreight extends Component {
                         <Row className="mb27">
                           <Col md="12">
                             <label
-                              className={`custom-checkbox w-auto`}
+                              className={`custom-checkbox w-auto ${isViewMode ? "disabled" : ""}`}
                               onChange={this.onPressLoadUnload}
                             >
                               Loading/Unloading Charges
@@ -926,10 +924,12 @@ class AddFreight extends Component {
                                     );
                                   })}
                               </tbody>
+                              {this.state.gridTable.length === 0 && <tbody className="border">
+                                <tr>
+                                  <td colSpan={"5"}> <NoContentFound title={EMPTY_DATA} /></td>
+                                </tr>
+                              </tbody>}
                             </Table>
-                            {this.state.gridTable.length === 0 && (
-                              <NoContentFound title={EMPTY_DATA} />
-                            )}
                           </Col>
 
                         </Row>

@@ -42,6 +42,12 @@ class UsersTab extends Component {
         Modules: data && data.sort((a, b) => a.Sequence - b.Sequence),
         actionSelectList: actionSelectList,
       })
+
+      actionData && actionData.map((ele, index) => {
+        if (ele.ModuleName === 'Users') {
+          this.setState({ checkBox: ele.SelectAll })
+        }
+      })
     }
   }
 
@@ -245,7 +251,7 @@ class UsersTab extends Component {
               <thead>
                 <tr>
                   <th>{`Module`}</th>
-                  <th className=" pr-2">
+                  <th className="select-all-block pr-2">
                     <label className="custom-checkbox align-middle text-left">
                       <input
                         type="checkbox"

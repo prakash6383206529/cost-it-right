@@ -103,6 +103,9 @@ a:hover {
 .w-100 {
   width: 100%;
 }
+.min15 {
+  min-width: 15px !important;
+}
 .mtn1 {
   margin-top: -3px; //for invalid error message spacing
   padding-left: 5px;
@@ -931,7 +934,7 @@ a:hover {
         padding-left: 0;
       }
     }
-    td.select-all-block {
+    .select-all-block {
       background-color: #f1f4f7;
       white-space: nowrap;
       span {
@@ -2264,7 +2267,7 @@ input:disabled,
 .form-control:disabled,
 .form-control[readonly] {
   &::placeholder {
-    color: #616366;
+    color: #A4ABC5;
   }
 }
 .select--is-disabled {

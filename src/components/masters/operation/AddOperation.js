@@ -541,6 +541,11 @@ class AddOperation extends Component {
     }
     /** Update existing detail of supplier master **/
     // if (this.state.isEditFlag && this.state.isFinalApprovar) {
+    if (Number(DataToChange.Rate) === Number(values.Rate) && DataToChange.Remark === values.Remark && UOM.value === oldUOM.value
+      && DataToChange.Description === values.Description && uploadAttachements) {
+      Toaster.warning('Please change data to send operation for approval')
+      return false
+    }
 
     if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(OPERATIONS_ID) !== true)) {
 
@@ -585,11 +590,6 @@ class AddOperation extends Component {
 
       }
 
-      if (Number(DataToChange.Rate) === Number(values.Rate) && DataToChange.Remark === values.Remark && UOM.value === oldUOM.value
-        && DataToChange.Description === values.Description && uploadAttachements) {
-        this.cancel('Cancel')
-        return false
-      }
 
       if (isEditFlag) {
         this.setState({ showPopup: true, updatedObj: updateData })
@@ -741,10 +741,7 @@ class AddOperation extends Component {
               <div className="shadow-lgg login-formg">
                 <div className="row">
                   <div className="col-md-6">
-                    <h2>
-                      {this.state.isEditFlag
-                        ? "Update Operation"
-                        : "Add Operation"}
+                    <h2>{this.state.isViewMode ? "View" : this.state.isEditFlag ? "Update" : "Add"} Operation
                     </h2>
                   </div>
                 </div>

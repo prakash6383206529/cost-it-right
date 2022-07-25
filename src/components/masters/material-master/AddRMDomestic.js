@@ -864,7 +864,6 @@ class AddRMDomestic extends Component {
   // called every time a file's `status` changes
   handleChangeStatus = ({ meta, file }, status) => {
     const { files } = this.state
-
     this.setState({ uploadAttachements: false, setDisable: true })
 
     if (status === 'removed') {
@@ -972,7 +971,6 @@ class AddRMDomestic extends Component {
       VendorCode, HasDifferentSource, sourceLocation,
       UOM, remarks, RawMaterialID, isEditFlag, files, effectiveDate, netLandedCost, oldDate, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, isSourceChange, uploadAttachements, IsFinancialDataChanged } = this.state
     const { initialConfiguration, fieldsObj } = this.props
-    this.setState({ setDisable: true, disablePopup: false })
     if (vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
       return false
@@ -994,49 +992,46 @@ class AddRMDomestic extends Component {
         return plantArray
       })
     }
-    let updatedFiles = files.map((file) => {
-      return { ...file, ContextId: RawMaterialID }
-    })
-    let requestData = {
-      RawMaterialId: RawMaterialID,
-      IsVendor: IsVendor,
-      HasDifferentSource: HasDifferentSource,
-      Source: !IsVendor && !HasDifferentSource ? '' : values.Source,
-      SourceLocation: !IsVendor && !HasDifferentSource ? '' : sourceLocation.value,
-      Remark: remarks,
-      BasicRatePerUOM: values.BasicRate,
-      RMFreightCost: values.FrieghtCharge,
-      RMShearingCost: values.ShearingCost,
-      ScrapRate: values.ScrapRate,
-      NetLandedCost: netLandedCost,
-      LoggedInUserId: loggedInUserId(),
-      EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
-      Attachements: updatedFiles,
-      IsConvertIntoCopy: isDateChange ? true : false,
-      IsForcefulUpdated: isDateChange ? false : isSourceChange ? false : true,
-      CutOffPrice: values.cutOffPrice,
-      IsCutOffApplicable: values.cutOffPrice < values.NetLandedCost ? true : false,
-      RawMaterialCode: values.Code,
-      IsFinancialDataChanged: isDateChange ? true : false,
-      VendorPlant: []
+    let sourceLocationValue = (!IsVendor && !HasDifferentSource ? '' : sourceLocation.value)
+    if (uploadAttachements && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === values.BasicRate && Number(DataToChange.ScrapRate) === Number(values.ScrapRate)
+      && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCost) && String(DataToChange.Remark) === String(values.Remark)
+      && ((DataToChange.CutOffPrice ? Number(DataToChange.CutOffPrice) : '') === (values.cutOffPrice ? Number(values.cutOffPrice) : ''))
+      && String(DataToChange.RawMaterialCode) === String(values.Code)
+      && (DataToChange.Source === (!IsVendor && !HasDifferentSource ? '' : values.Source))
+      && ((DataToChange.SourceLocation ? String(DataToChange.SourceLocation) : '') === (sourceLocationValue ? String(sourceLocationValue) : ''))) {
+      Toaster.warning('Please change data to send RM for approval')
+      return false
     }
+    this.setState({ setDisable: true, disablePopup: false })
     if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(RM_MASTER_ID) !== true)) {
       //this.setState({ updatedObj: requestData })
-      let sourceLocationValue = (!IsVendor && !HasDifferentSource ? '' : sourceLocation.value)
-      //DONT DELETE COMMENTED CODE BELOW
 
-      if (uploadAttachements && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === values.BasicRate && Number(DataToChange.ScrapRate) === values.ScrapRate
-        && Number(DataToChange.NetLandedCost) === values.NetLandedCost && DataToChange.Remark === values.Remark
-        && ((DataToChange.CutOffPrice ? Number(DataToChange.CutOffPrice) : '') === (values.cutOffPrice ? Number(values.cutOffPrice) : ''))
-        && DataToChange.RawMaterialCode === values.Code
-        && ((DataToChange.Source ? DataToChange.Source : '') === (!IsVendor && !HasDifferentSource ? '' : values.Source))
-        && ((DataToChange.SourceLocation ? String(DataToChange.SourceLocation) : '') === (sourceLocationValue ? String(sourceLocationValue) : ''))) {
-        this.cancel('cancel')
-        return false
+      let updatedFiles = files.map((file) => {
+        return { ...file, ContextId: RawMaterialID }
+      })
+      let requestData = {
+        RawMaterialId: RawMaterialID,
+        IsVendor: IsVendor,
+        HasDifferentSource: HasDifferentSource,
+        Source: !IsVendor && !HasDifferentSource ? '' : values.Source,
+        SourceLocation: !IsVendor && !HasDifferentSource ? '' : sourceLocation.value,
+        Remark: remarks,
+        BasicRatePerUOM: values.BasicRate,
+        RMFreightCost: values.FrieghtCharge,
+        RMShearingCost: values.ShearingCost,
+        ScrapRate: values.ScrapRate,
+        NetLandedCost: netLandedCost,
+        LoggedInUserId: loggedInUserId(),
+        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
+        Attachements: updatedFiles,
+        IsConvertIntoCopy: isDateChange ? true : false,
+        IsForcefulUpdated: isDateChange ? false : isSourceChange ? false : true,
+        CutOffPrice: values.cutOffPrice,
+        IsCutOffApplicable: values.cutOffPrice < values.NetLandedCost ? true : false,
+        RawMaterialCode: values.Code,
+        IsFinancialDataChanged: isDateChange ? true : false,
+        VendorPlant: []
       }
-
-
-
       if (IsFinancialDataChanged) {
 
         if ((isDateChange) && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
@@ -1070,7 +1065,7 @@ class AddRMDomestic extends Component {
     }
 
     else {
-
+      this.setState({ setDisable: true })
       let formData = {}
       // const formData = {
       formData.RawMaterialId = RawMaterialID
@@ -1141,8 +1136,7 @@ class AddRMDomestic extends Component {
               && Number(DataToChange.NetLandedCost) === values.NetLandedCost && DataToChange.Remark === (values.Remark === '' ? null : values.Remark)
               && (Number(DataToChange.CutOffPrice) === values.cutOffPrice || values.cutOffPrice === undefined)
               && DataToChange.RawMaterialCode === values.Code) {
-
-              this.cancel('cancel')
+              Toaster.warning('Please change data to send RM for approval')
               return false
             }
 
@@ -1240,9 +1234,7 @@ class AddRMDomestic extends Component {
                     <div className="row">
                       <div className="col-md-6">
                         <h1>
-                          {isEditFlag
-                            ? `Update Raw Material (Domestic)`
-                            : `Add Raw Material (Domestic)`}
+                          {isViewFlag ? 'View' : isEditFlag ? 'Update' : 'Add'} Raw Material (Domestic)
                         </h1>
                       </div>
                     </div>
@@ -1297,7 +1289,6 @@ class AddRMDomestic extends Component {
                                 this.handleTechnologyChange
                               }
                               valueDescription={this.state.Technology}
-
                               disabled={isEditFlag || isViewFlag}
                             />
                           </Col>
@@ -1311,13 +1302,10 @@ class AddRMDomestic extends Component {
                                   component={searchableSelect}
                                   placeholder={"Select"}
                                   options={this.renderListing("material")}
-                                  validate={
-                                    this.state.RawMaterial == null || this.state.RawMaterial.length === 0 ? [required] : []}
+                                  validate={this.state.RawMaterial == null || this.state.RawMaterial.length === 0 ? [required] : []}
                                   required={true}
                                   handleChangeDescription={this.handleRMChange}
                                   valueDescription={this.state.RawMaterial}
-
-
                                   className="fullinput-icon"
                                   disabled={isEditFlag || isViewFlag}
                                 />
@@ -1666,8 +1654,6 @@ class AddRMDomestic extends Component {
                                 }}
                                 component={renderDatePicker}
                                 className="form-control"
-
-
                                 disabled={isViewFlag || !this.state.IsFinancialDataChanged || (isEditFlag && isRMAssociated)}
 
                               />

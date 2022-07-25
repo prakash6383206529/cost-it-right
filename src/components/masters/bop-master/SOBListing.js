@@ -170,8 +170,6 @@ class SOBListing extends Component {
   * @description Filter listing
   */
   closeDrawer = (e = '', type) => {
-    console.log('e: ', e);
-    console.log('type: ', type);
     this.setState({
       isOpen: false,
       isEditFlag: false,

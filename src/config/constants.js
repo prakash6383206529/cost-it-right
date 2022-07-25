@@ -1688,6 +1688,7 @@ export const DASHBOARD_PATH = '/'
 export const DASHBOARD_PATH_SECOND = '/dashboard'
 export const SIMULATION_PATH = '/simulation'
 export const SIMULATION_HISTORY_PATH = '/simulation-history'
+export const USER_PATH = '/users'
 
 
 export const EMPTY_GUID = "00000000-0000-0000-0000-000000000000"
@@ -1743,6 +1744,9 @@ export const STROKE = "Stroke"
 export const SHOTS = "SHOT"
 export const MINUTES = 'Minutes'
 export const SECONDS = 'Seconds'
+export const DISPLAY_G = "g"
+export const DISPLAY_KG = "kg"
+export const DISPLAY_MG = "mg"
 
 // export const INR = "INR"
 
@@ -1866,9 +1870,25 @@ export const LEVEL0 = 'L0';
 export const LEVEL1 = 'L1';
 export const SUB_ASSEMBLY = 'Sub Assembly';
 
+//MASTER NAMES FOR BULK UPLOAD
+export const RMDOMESTICBULKUPLOAD = 'RMDomestic';
+export const RMIMPORTBULKUPLOAD = 'RMImport';
+export const RMSPECIFICATION = 'RMSpecification'
+export const BOPDOMESTICBULKUPLOAD = 'BOPDomestic';
+export const BOPIMPORTBULKUPLOAD = 'BOPImport';
+export const BOMBULKUPLOAD = 'BOM';
+export const PARTCOMPONENTBULKUPLOAD = 'PartComponent';
+export const PRODUCTCOMPONENTBULKUPLOAD = 'ProductComponent';
+export const MACHINEBULKUPLOAD = 'Machine';
+export const VENDORBULKUPLOAD = 'Vendor';
+export const LABOURBULKUPLOAD = 'Labour'
+export const OPERAIONBULKUPLOAD = 'Operation';
+export const FUELBULKUPLOAD = 'Fuel';
+export const INTERESTRATEBULKUPLOAD = 'InterestRate'
+
 // KEY AND IVgit
 export const KEY = 'gQUJ79YKYm22Cazw';
 export const IV = 'eTEFSa0PinFKTQNB'
 
 //VERSION 
-export const VERSION = "V1.2.381";
+export const VERSION = "V1.2.388";

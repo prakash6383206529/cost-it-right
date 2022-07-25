@@ -181,7 +181,6 @@ function ManageSOBDrawer(props) {
   * @description used to Reset form
   */
   const cancel = (type) => {
-    console.log('type:incancel ', type);
     props.closeDrawer('', type)
   }
 
@@ -229,7 +228,6 @@ function ManageSOBDrawer(props) {
       if (res && res.data && res.data.Result) {
         Toaster.success('BOP Vendors SOB has been updated.')
         props.closeDrawer('a', 'submit')
-        // this.cancel('submit')
       }
     }))
   }

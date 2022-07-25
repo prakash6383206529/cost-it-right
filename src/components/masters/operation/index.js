@@ -7,10 +7,10 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
 import OperationListing from './OperationListing';
 import AddOperation from './AddOperation';
-import OperationApproval from './OperationApproval';
 import ScrollToTop from '../../common/ScrollToTop';
 import { CheckApprovalApplicableMaster } from '../../../helper';
 import { OPERATIONS_ID } from '../../../config/constants';
+import CommonApproval from '../material-master/CommonApproval';
 
 class OperationsMaster extends Component {
     constructor(props) {
@@ -127,11 +127,12 @@ class OperationsMaster extends Component {
 
                                     {Number(this.state.activeTab) === 2 &&
                                         <TabPane tabId="2">
-                                            <OperationApproval
+                                            <CommonApproval
                                                 AddAccessibility={this.state.AddAccessibility}
                                                 EditAccessibility={this.state.EditAccessibility}
                                                 DeleteAccessibility={this.state.DeleteAccessibility}
                                                 DownloadAccessibility={this.state.DownloadAccessibility}
+                                                MasterId={OPERATIONS_ID}
                                             />
                                         </TabPane>}
 

@@ -39,7 +39,7 @@ import {
   OVERHEAD_AND_PROFIT, PART, PLANT, RAW_MATERIAL, UOM, USER, VENDOR,
   REASON, VOLUME, CLIENT, EXCHANGE_RATE, TAX, COSTING_PATH, APPROVAL_LISTING_PATH, COSTING_DETAILS_REPORT, APPROVAL_APP,
   APPROVAL_SUMMARY_PATH, COSTING_BULK_UPLOAD, COSTING_SUMMARY_, COSTING_SUMMARY, Simulation_Page, Simulation_Upload, API,
-  DASHBOARDWITHGRAPH_PATH, SIMULATION_APPROVAL_SUMMARY_PATH, DASHBOARD_PATH, DASHBOARD_PATH_SECOND, SHEET_METAL, SIMULATION_PATH, SIMULATION_HISTORY_PATH
+  DASHBOARDWITHGRAPH_PATH, SIMULATION_APPROVAL_SUMMARY_PATH, DASHBOARD_PATH, DASHBOARD_PATH_SECOND, SHEET_METAL, SIMULATION_PATH, SIMULATION_HISTORY_PATH, USER_PATH
 } from '../config/constants'
 import ApprovalSummary from './costing/components/approval/ApprovalSummary'
 import CostingSummaryBulkUpload from './costing/components/CostingSummaryBulkUpload'
@@ -49,12 +49,12 @@ import { formatLoginResult } from '../helper/ApiResponse'
 import axios from 'axios';
 import CostingDetailReport from './report/components/CostingDetailReport'
 import SimulationApprovalSummary from './simulation/components/SimulationApprovalSummary'
-import RMApproval from './masters/material-master/RMApproval'
 import OperationsMaster from './masters/operation/index'
 import CostingBenchmarkReport from './report/components/CostingBenchmarkReport'
 import ToasterBoXWrapper from './common/ToasterBoXWrapper'
 import SimulationInsights from './report/components/SimulationInsights'
 import SimulationRoutes from './simulation/Routes'
+import CommonApproval from './masters/material-master/CommonApproval'
 const CustomHeader = {
   'Content-Type': 'application/x-www-form-urlencoded',
   'Access-Control-Allow-Origin': '*',
@@ -249,6 +249,7 @@ class Main extends Component {
                 location.pathname !== DASHBOARD_PATH_SECOND &&
                 location.pathname !== SIMULATION_PATH &&
                 location.pathname !== SIMULATION_HISTORY_PATH &&
+                location.pathname !== USER_PATH &&
                 (
                   <LeftMenu {...this.props} />
                 )}
@@ -282,7 +283,7 @@ class Main extends Component {
 
                     <Route path="/raw-material-master" exact component={AuthMiddleware(RowMaterialMaster, RAW_MATERIAL,)} />
 
-                    <Route path="/raw-material-master/raw-material-approval" component={AuthMiddleware(RMApproval, RAW_MATERIAL)} />
+                    <Route path="/raw-material-master/raw-material-approval" component={AuthMiddleware(CommonApproval, RAW_MATERIAL)} />
 
                     <Route path="/plant-master" component={AuthMiddleware(PlantMaster, PLANT)} />
 

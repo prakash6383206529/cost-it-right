@@ -6,7 +6,7 @@ import {
     required, upper, email, minLength7, maxLength70, maxLength80, minLength10, maxLength71, maxLength5, maxLength12, alphaNumeric, acceptAllExceptSingleSpecialCharacter,
     maxLength15, postiveNumber, maxLength10, maxLength6, checkWhiteSpaces, checkSpacesInString
 } from "../../../helper/validation";
-import { renderText, renderEmailInputField, renderMultiSelectField, searchableSelect, renderNumberInputField } from "../../layout/FormInputs";
+import { renderText, renderEmailInputField, renderMultiSelectField, searchableSelect, renderNumberInputField, focusOnError } from "../../layout/FormInputs";
 import { createSupplierAPI, updateSupplierAPI, getSupplierByIdAPI, getRadioButtonSupplierType, getVendorTypesSelectList, } from '../actions/Supplier';
 import { getVendorPlantSelectList, getAllCities, getCityByCountry, } from '../../../actions/Common';
 import Toaster from '../../common/Toaster';
@@ -437,7 +437,7 @@ class AddVendorDrawer extends Component {
                                 <Row className="drawer-heading">
                                     <Col>
                                         <div className={'header-wrapper left'}>
-                                            <h3>{isEditFlag ? 'Update Vendor' : 'Add Vendor'}</h3>
+                                            <h3>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Vendor</h3>
                                         </div>
                                         <div
                                             onClick={(e) => this.toggleDrawer(e)}
@@ -468,7 +468,7 @@ class AddVendorDrawer extends Component {
                                             name={"VendorName"}
                                             type="text"
                                             placeholder={''}
-                                            validate={[required, maxLength71, checkWhiteSpaces]}
+                                            validate={[required, maxLength71, checkWhiteSpaces, checkSpacesInString]}
                                             component={renderText}
                                             required={true}
                                             className=" "
@@ -742,5 +742,8 @@ export default connect(mapStateToProps, {
 })(reduxForm({
     form: 'AddVendorDrawer',
     enableReinitialize: true,
-    touchOnChange: true
+    touchOnChange: true,
+    onSubmitFail: (errors) => {
+        focusOnError(errors)
+    },
 })(AddVendorDrawer));

@@ -177,64 +177,47 @@ class OperationListing extends Component {
                 this.props?.changeTokenCheckBox(false)
             }
 
+            if (Number(this?.props?.isOperationST) === Number(SURFACETREATMENT)) {
+                filterData.OperationType = 'surfacetreatment'
+            } else if ((Number(this?.props?.isOperationST) === Number(OPERATIONS))) {
+                filterData.OperationType = 'operation'
+            } else {
+                filterData.OperationType = ''
+            }
+
             this.props.getOperationsDataList(filterData, skip, take, isPagination, dataObj, res => {
                 if (this.props.isSimulation) {
                     this.props?.changeTokenCheckBox(true)
                 }
                 this.setState({ isLoader: false })
                 if (res.status === 204 && res.data === '') {
-                    this.setState({ tableData: [], isLoader: false })
-                } else if (res && res.data && res.data.DataList && res.data.DataList.length > 0) {
-                    let Data = res.data.DataList;
-                    this.props.setOperationList(Data)
-                    // SURFACE TREATMENT SIMULATION LISTING
-                    if (Number(this.props.isOperationST) === Number(SURFACETREATMENT)) {
-                        let surfaceTreatmentOperationData = []
-                        Data && Data.map(item => {
-                            if (item.IsSurfaceTreatmentOperation === true) {
-                                surfaceTreatmentOperationData.push(item)
-                            }
-                        })
-                        this.setState({ tableData: surfaceTreatmentOperationData })
-                    }
-                    // OPERATION SIMULATION LISTING
-                    else if (Number(this.props.isOperationST) === Number(OPERATIONS)) {
-                        let OperationData = []
-                        Data && Data.map(item => {
-                            if (item.IsSurfaceTreatmentOperation === false) {
-                                OperationData.push(item)
-                            }
-                        })
-                        this.setState({ tableData: OperationData })
-                    }
-                    // MASTER LISTING
-                    else {
-                        this.setState({ tableData: Data })
-                    }
-
-                    // PAGINATION CODE
-                    let FloatingfilterData = this.state.filterModel
-                    let obj = { ...this.state.floatingFilterData }
-                    this.setState({ totalRecordCount: res.data.DataList[0].TotalRecordCount })
-                    let isReset = true
-                    setTimeout(() => {
-
-                        for (var prop in obj) {
-                            if (prop !== "DepartmentCode" && obj[prop] !== "") {
-                                isReset = false
-                            }
-                        }
-                        // SETS  THE FILTER MODEL VIA THE GRID API
-                        isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(FloatingfilterData))
-                    }, 300);
-
-                    setTimeout(() => {
-                        this.setState({ warningMessage: false })
-                    }, 335);
-                    setTimeout(() => {
-                        this.setState({ isFilterButtonClicked: false })
-                    }, 600);
+                    this.setState({ tableData: [] })
+                } else {
+                    this.setState({ tableData: res.data.DataList })
                 }
+
+                // PAGINATION CODE
+                let FloatingfilterData = this.state.filterModel
+                let obj = { ...this.state.floatingFilterData }
+                this.setState({ totalRecordCount: res.data.DataList[0].TotalRecordCount })
+                let isReset = true
+                setTimeout(() => {
+
+                    for (var prop in obj) {
+                        if (prop !== "DepartmentCode" && obj[prop] !== "") {
+                            isReset = false
+                        }
+                    }
+                    // SETS  THE FILTER MODEL VIA THE GRID API
+                    isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(FloatingfilterData))
+                }, 300);
+
+                setTimeout(() => {
+                    this.setState({ warningMessage: false })
+                }, 335);
+                setTimeout(() => {
+                    this.setState({ isFilterButtonClicked: false })
+                }, 600);
             });
         } else {
             setTimeout(() => {

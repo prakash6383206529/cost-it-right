@@ -131,12 +131,12 @@ class AddMachineRate extends Component {
     /*WHEN ADD MORE DETAIL FORM IS CANCELLED in ADD FORMAT*/
     if (data.cancelFlag) {
 
-
       this.props.checkAndGetMachineNumber('', res => {
         let Data = res.data.DynamicData;
         this.props.change('MachineNumber', Data.MachineNumber)
       })
 
+      this.setState({ isFinalApprovar: data?.isFinalApprovar })
       return true
     }
     this.props.getMachineTypeSelectList(() => { })
@@ -189,8 +189,6 @@ class AddMachineRate extends Component {
       }
 
     })
-
-
     //GET MACHINE VALUES IN EDIT MODE
     this.getDetails()
   }
@@ -223,15 +221,19 @@ class AddMachineRate extends Component {
     this.setState({
       selectedTechnology: data.selectedTechnology,
       machineType: data.machineType,
-      effectiveDate: data.EffectiveDate
+      effectiveDate: data.EffectiveDate,
+      remarks: data.Remark
     })
+
+
     this.props.change('MachineName', data && data.fieldsObj && data.fieldsObj.MachineName)
     this.props.change('MachineNumber', data && data.fieldsObj && data.fieldsObj.MachineNumber)
     this.props.change('TonnageCapacity', data && data.fieldsObj && data.fieldsObj.TonnageCapacity)
     this.props.change('Description', data && data.fieldsObj && data.fieldsObj.Description)
-    this.props.change('EffectiveDate', DayTime(data.EffectiveDate).isValid() ? DayTime(data.EffectiveDate) : '')
     setTimeout(() => {
       this.setState({ selectedPlants: data.selectedPlants })
+      this.props.change('EffectiveDate', DayTime(data.EffectiveDate).isValid() ? DayTime(data.EffectiveDate) : '')
+      this.props.change('Remark', data.Remark ? data.Remark : "")
     }, 200);
 
   }
@@ -249,6 +251,8 @@ class AddMachineRate extends Component {
   */
   getDetails = () => {
     const { editDetails } = this.props
+
+
     if (editDetails && editDetails.isEditFlag) {
       this.setState({
         isEditFlag: false,
@@ -328,6 +332,8 @@ class AddMachineRate extends Component {
             } else {
               plantObj = Data && Data.Plant.length > 0 ? { label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId } : []
             }
+
+
             this.setState({
               isEditFlag: true,
               IsFinancialDataChanged: false,
@@ -1048,7 +1054,7 @@ class AddMachineRate extends Component {
             (DataToChange?.MachineTypeId ? String(DataToChange?.MachineTypeId) : '-') === (machineType?.value ? String(machineType?.value) : '-') &&
             (DataToChange?.TonnageCapacity ? String(DataToChange?.TonnageCapacity) : '-') === (values?.TonnageCapacity ? String(values?.TonnageCapacity) : '-') &&
             DataToChange?.Remark === values?.Remark) {
-            this.cancel('cancel');
+            Toaster.warning('Please change data to send machine for approval')
             return false
           }
 
@@ -1067,7 +1073,7 @@ class AddMachineRate extends Component {
       }
 
       // EXECUTED WHEN:- NEW MACHINE WITH BASIC DETAILS
-      this.setState({ setDisable: true })
+      // this.setState({ setDisable: true })
       const formData = {
         IsSendForApproval: this.state.IsSendForApproval,
         IsFinancialDataChanged: isDateChange ? true : false,
@@ -1119,8 +1125,13 @@ class AddMachineRate extends Component {
         }
 
         if (isEditFlag) {
-          if (DropdownChange && uploadAttachements) {
-            this.cancel('cancel');
+          if (DropdownChange && uploadAttachements &&
+            (DataToChange.Description ? DataToChange.Description : '-') === (values.Description ? values.Description : '-') &&
+            (DataToChange.MachineName ? DataToChange.MachineName : '-') === (values.MachineName ? values.MachineName : '-') &&
+            (DataToChange?.MachineTypeId ? String(DataToChange?.MachineTypeId) : '-') === (machineType?.value ? String(machineType?.value) : '-') &&
+            (DataToChange?.TonnageCapacity ? String(DataToChange?.TonnageCapacity) : '-') === (values?.TonnageCapacity ? String(values?.TonnageCapacity) : '-') &&
+            DataToChange?.Remark === values?.Remark) {
+            Toaster.warning('Please change data to send machine for approval')
             return false
           } else {
 
@@ -1279,7 +1290,7 @@ class AddMachineRate extends Component {
                   <div className="row">
                     <div className="col-md-6">
                       <div className="form-heading mb-0">
-                        <h2>{isEditFlag ? `Update Machine Rate` : `Add Machine Rate`}</h2>
+                        <h2> {isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Machine Rate</h2>
                       </div>
                     </div>
                   </div>
@@ -1397,7 +1408,7 @@ class AddMachineRate extends Component {
                             name={"Description"}
                             type="text"
                             placeholder={'Enter'}
-                            validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
+                            validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString]}
                             component={renderText}
                             // required={true}
                             onChange={this.handleMachineSpecification}
@@ -1413,7 +1424,7 @@ class AddMachineRate extends Component {
                             name={"MachineName"}
                             type="text"
                             placeholder={'Enter'}
-                            validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
+                            validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString]}
                             component={renderText}
                             required={false}
                             disabled={isViewMode ? true : false}
@@ -1452,7 +1463,7 @@ class AddMachineRate extends Component {
                             name={"TonnageCapacity"}
                             type="text"
                             placeholder={'Enter'}
-                            validate={[checkWhiteSpaces, postiveNumber, maxLength10]}
+                            validate={[checkWhiteSpaces, postiveNumber, maxLength10, checkSpacesInString]}
                             component={renderText}
                             required={false}
                             disabled={isViewMode ? true : false}
@@ -1760,7 +1771,6 @@ class AddMachineRate extends Component {
                               >
                                 <div className={"cancel-icon"}></div> {'Cancel'}
                               </button>
-
 
                               {
                                 (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) ?
