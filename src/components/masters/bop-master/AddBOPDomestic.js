@@ -785,7 +785,7 @@ class AddBOPDomestic extends Component {
   */
   render() {
     const { handleSubmit, isBOPAssociated } = this.props;
-    const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, isViewMode, setDisable, disablePopup } = this.state;
+    const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, isViewMode, setDisable, disablePopup, DropdownChanged, DataToCheck, updatedObj } = this.state;
     const filterList = (inputValue) => {
       let tempArr = []
 
@@ -799,7 +799,9 @@ class AddBOPDomestic extends Component {
         return tempArr.slice(0, 100)
       }
     };
-
+    console.log('DropdownChange: ', DropdownChanged);
+    console.log('DataToChange: ', DataToCheck);
+    console.log(updatedObj, 'updatedObj');
     const promiseOptions = inputValue =>
       new Promise(resolve => {
         resolve(filterList(inputValue));
