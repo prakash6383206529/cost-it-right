@@ -229,7 +229,7 @@ class AddMachineRate extends Component {
     this.props.change('MachineName', data && data.fieldsObj && data.fieldsObj.MachineName)
     this.props.change('MachineNumber', data && data.fieldsObj && data.fieldsObj.MachineNumber)
     this.props.change('TonnageCapacity', data && data.fieldsObj && data.fieldsObj.TonnageCapacity)
-    this.props.change('Description', data && data.fieldsObj && data.fieldsObj.Description)
+    this.props.change('Specification', data && data.fieldsObj && data.fieldsObj.Specification)
     setTimeout(() => {
       this.setState({ selectedPlants: data.selectedPlants })
       this.props.change('EffectiveDate', DayTime(data.EffectiveDate).isValid() ? DayTime(data.EffectiveDate) : '')
@@ -312,7 +312,7 @@ class AddMachineRate extends Component {
             this.props.getPlantBySupplier(Data.VendorId, () => { })
           }
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
-          this.props.change('Description', Data.Description)
+          this.props.change('Specification', Data.Specification)
           this.setState({ minEffectiveDate: Data.EffectiveDate })
           setTimeout(() => {
             const { machineTypeSelectList } = this.props;
@@ -1021,7 +1021,7 @@ class AddMachineRate extends Component {
           MachineName: values.MachineName,
           MachineTypeId: machineType.value,
           TonnageCapacity: values.TonnageCapacity,
-          Description: values.Description,
+          Specification: values.Specification,
           LoggedInUserId: loggedInUserId(),
           MachineProcessRates: processGrid,
           Technology: [{ Technology: selectedTechnology.label ? selectedTechnology.label : selectedTechnology[0].label, TechnologyId: selectedTechnology.value ? selectedTechnology.value : selectedTechnology[0].value }],
@@ -1050,7 +1050,7 @@ class AddMachineRate extends Component {
         if (isEditFlag) {
 
           if (DropdownChange && uploadAttachements &&
-            (DataToChange.Description ? DataToChange.Description : '-') === (values.Description ? values.Description : '-') &&
+            (DataToChange.Specification ? DataToChange.Specification : '-') === (values.Specification ? values.Specification : '-') &&
             (DataToChange.MachineName ? DataToChange.MachineName : '-') === (values.MachineName ? values.MachineName : '-') &&
             (DataToChange?.MachineTypeId ? String(DataToChange?.MachineTypeId) : '-') === (machineType?.value ? String(machineType?.value) : '-') &&
             (DataToChange?.TonnageCapacity ? String(DataToChange?.TonnageCapacity) : '-') === (values?.TonnageCapacity ? String(values?.TonnageCapacity) : '-') &&
@@ -1086,7 +1086,7 @@ class AddMachineRate extends Component {
         MachineName: values.MachineName,
         MachineTypeId: machineType.value,
         TonnageCapacity: values.TonnageCapacity,
-        Description: values.Description,
+        Specification: values.Specification,
         LoggedInUserId: loggedInUserId(),
         MachineProcessRates: processGrid,
         Technology: (technologyArray.length > 0 && technologyArray[0]?.Technology !== undefined) ? technologyArray : [{ Technology: selectedTechnology.label ? selectedTechnology.label : selectedTechnology[0].label, TechnologyId: selectedTechnology.value ? selectedTechnology.value : selectedTechnology[0].value }],
@@ -1127,7 +1127,7 @@ class AddMachineRate extends Component {
 
         if (isEditFlag) {
           if (DropdownChange && uploadAttachements &&
-            (DataToChange.Description ? DataToChange.Description : '-') === (values.Description ? values.Description : '-') &&
+            (DataToChange.Specification ? DataToChange.Specification : '-') === (values.Specification ? values.Specification : '-') &&
             (DataToChange.MachineName ? DataToChange.MachineName : '-') === (values.MachineName ? values.MachineName : '-') &&
             (DataToChange?.MachineTypeId ? String(DataToChange?.MachineTypeId) : '-') === (machineType?.value ? String(machineType?.value) : '-') &&
             (DataToChange?.TonnageCapacity ? String(DataToChange?.TonnageCapacity) : '-') === (values?.TonnageCapacity ? String(values?.TonnageCapacity) : '-') &&
@@ -1210,7 +1210,7 @@ class AddMachineRate extends Component {
       this.props.change('MachineName', data.MachineName)
       this.props.change('MachineNumber', data.MachineNumber)
       this.props.change('TonnageCapacity', data.TonnageCapacity)
-      this.props.change('Description', data.Description)
+      this.props.change('Specification', data.Specification)
       const vendorObj = vendorListByVendorType && vendorListByVendorType.find(item => item.Value === data.VendorId)
       const plantObj = data.IsVendor === false && plantSelectList && plantSelectList.find(item => item.PlantId === data.Plant[0].PlantId)
 
@@ -1406,7 +1406,7 @@ class AddMachineRate extends Component {
                         <Col md="3">
                           <Field
                             label={`Machine Specification`}
-                            name={"Description"}
+                            name={"Specification"}
                             type="text"
                             placeholder={'Enter'}
                             validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString]}
@@ -1864,7 +1864,7 @@ class AddMachineRate extends Component {
 */
 function mapStateToProps(state) {
   const { comman, material, machine, auth, costing } = state;
-  const fieldsObj = selector(state, 'MachineNumber', 'MachineName', 'TonnageCapacity', 'MachineRate', 'Description', 'EffectiveDate');
+  const fieldsObj = selector(state, 'MachineNumber', 'MachineName', 'TonnageCapacity', 'MachineRate', 'Description', 'EffectiveDate', 'Specification');
 
   const { plantList, plantSelectList, filterPlantList, UOMSelectList, } = comman;
   const { machineTypeSelectList, processSelectList, machineData, loading, processGroupApiData } = machine;
@@ -1881,7 +1881,7 @@ function mapStateToProps(state) {
       MachineNumber: machineData.MachineNumber,
       MachineName: machineData.MachineName,
       TonnageCapacity: machineData.TonnageCapacity,
-      Description: machineData.Description,
+      Specification: machineData.Specification,
       Remark: machineData.Remark,
     }
   }
