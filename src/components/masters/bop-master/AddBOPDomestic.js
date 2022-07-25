@@ -592,7 +592,7 @@ class AddBOPDomestic extends Component {
     if (DropdownChanged && (DataToCheck.Remark) === (values.Remark) && uploadAttachements && Number(DataToCheck.BasicRate) === Number(values.BasicRate) &&
       ((DataToCheck.Source ? DataToCheck.Source : '-') === (values.Source ? values.Source : '-')) &&
       ((DataToCheck.SourceLocation ? DataToCheck.SourceLocation : '-') === (sourceLocation.value ? sourceLocation.value : '-'))) {
-      Toaster.warning('Please change data to send bop for approval')
+      Toaster.warning('Please change data to send BOP for approval')
       return false;
     }
 
@@ -710,14 +710,14 @@ class AddBOPDomestic extends Component {
             Number(DataToCheck.BasicRate) === Number(values.BasicRate) && DataToCheck.Remark === values.Remark && uploadAttachements &&
             ((DataToCheck.Source ? DataToCheck.Source : '-') === (values.Source ? values.Source : '-')) &&
             ((DataToCheck.SourceLocation ? DataToCheck.SourceLocation : '-') === (sourceLocation.value ? sourceLocation.value : '-'))) {
-            Toaster.warning('please change data to send bop for approval')
+            Toaster.warning('Please change data to send BOP for approval')
             // this.cancel()
             return false;
           }
         }
         if (Boolean(DataToCheck.IsVendor) === false) {
           if (Number(DataToCheck.BasicRate) === Number(values.BasicRate) && DataToCheck.Remark === values.Remark && uploadAttachements) {
-            Toaster.warning('please change data to send bop for approval')
+            Toaster.warning('Please change data to send BOP for approval')
             // this.cancel()
             return false;
           }
@@ -728,7 +728,7 @@ class AddBOPDomestic extends Component {
         }
 
         if ((DataToCheck.Remark) === (values.Remark) && uploadAttachements) {
-          Toaster.warning('Please change data to send bop for approval')
+          Toaster.warning('Please change data to send BOP for approval')
           return false;
         } else {
 

@@ -675,13 +675,13 @@ class AddBOPImport extends Component {
         Number(DataToChange.BasicRate) === Number(values.BasicRate) && DataToChange.Remark === values.Remark && uploadAttachements &&
         ((DataToChange.Source ? DataToChange.Source : '-') === (values.Source ? values.Source : '-')) &&
         ((DataToChange.SourceLocation ? DataToChange.SourceLocation : '-') === (sourceLocation.value ? sourceLocation.value : '-'))) {
-        Toaster.warning('Please change data to send bop for approval')
+        Toaster.warning('Please change data to send BOP for approval')
         return false;
       }
     }
     if (Boolean(DataToChange.IsVendor) === false) {
       if (Number(DataToChange.BasicRate) === Number(values.BasicRate) && DataToChange.Remark === values.Remark && uploadAttachements) {
-        Toaster.warning('Please change data to send bop for approval')
+        Toaster.warning('Please change data to send BOP for approval')
         return false;
       }
     }
@@ -794,14 +794,14 @@ class AddBOPImport extends Component {
             Number(DataToChange.BasicRate) === Number(values.BasicRate) && DataToChange.Remark === values.Remark && uploadAttachements &&
             ((DataToChange.Source ? DataToChange.Source : '-') === (values.Source ? values.Source : '-')) &&
             ((DataToChange.SourceLocation ? DataToChange.SourceLocation : '-') === (sourceLocation.value ? sourceLocation.value : '-'))) {
-            Toaster.warning('please change data to send bop for approval')
+            Toaster.warning('Please change data to send BOP for approval')
             // this.cancel()
             return false;
           }
         }
         if (Boolean(DataToChange.IsVendor) === false) {
           if (Number(DataToChange.BasicRate) === Number(values.BasicRate) && DataToChange.Remark === values.Remark && uploadAttachements) {
-            Toaster.warning('please change data to send bop for approval')
+            Toaster.warning('Please change data to send BOP for approval')
             // this.cancel()
             return false;
           }
