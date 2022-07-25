@@ -754,10 +754,7 @@ class AddOperation extends Component {
               <div className="shadow-lgg login-formg">
                 <div className="row">
                   <div className="col-md-6">
-                    <h2>
-                      {this.state.isEditFlag
-                        ? "Update Operation"
-                        : "Add Operation"}
+                    <h2>{this.state.isViewMode ? "View" : this.state.isEditFlag ? "Update" : "Add"} Operation
                     </h2>
                   </div>
                 </div>

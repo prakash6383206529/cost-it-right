@@ -192,7 +192,7 @@ export const ProcessGroup = (props) => {
                             control={control}
                             register={register}
                             rules={{ required: false }}
-                            mandatory={false}
+                            mandatory={true}
                             handleChange={() => { }}
                             defaultValue={""}
                             className=""
@@ -309,8 +309,12 @@ export const rmQueryParms = (isPagination, skip, take, obj) => {
 
 export const bopQueryParms = (isPagination, skip, take, obj) => {
 
-    let queryParamsSecond = `CostingHead=${obj.IsVendor !== undefined ? obj.IsVendor : ""}&BOPPartNumber	=${obj.BoughtOutPartNumber !== undefined ? obj.BoughtOutPartNumber : ""}&BOPPartName=${obj.BoughtOutPartName !== undefined ? obj.BoughtOutPartName : ""}&BOPCategory=${obj.BoughtOutPartCategory !== undefined ? obj.BoughtOutPartCategory : ""}&UOM=${obj.UOM !== undefined ? obj.UOM : ""}&Specification=${obj.Specification !== undefined ? obj.Specification : ""}&Plant=${obj.Plants !== undefined ? obj.Plants : ""}&Vendor=${obj.Vendor !== undefined ? obj.Vendor : ""}&BasicRate=${obj.BasicRate !== undefined ? obj.BasicRate : ""}&EffectiveDate=${obj.newDate !== undefined ? obj.newDate : ""}&applyPagination=${isPagination}&skip=${skip}&take=${take}`
+    let queryParamsSecond = `CostingHead=${obj.IsVendor !== undefined ? obj.IsVendor : ""}&BOPPartNumber=${obj.BoughtOutPartNumber !== undefined ? obj.BoughtOutPartNumber : ""}&BOPPartName=${obj.BoughtOutPartName !== undefined ? obj.BoughtOutPartName : ""}&BOPCategory=${obj.BoughtOutPartCategory !== undefined ? obj.BoughtOutPartCategory : ""}&UOM=${obj.UOM !== undefined ? obj.UOM : ""}&Specification=${obj.Specification !== undefined ? obj.Specification : ""}&Plant=${obj.Plants !== undefined ? obj.Plants : ""}&Vendor=${obj.Vendor !== undefined ? obj.Vendor : ""}&BasicRate=${obj.BasicRate !== undefined ? obj.BasicRate : ""}&EffectiveDate=${obj.newDate !== undefined ? obj.newDate : ""}&applyPagination=${isPagination}&skip=${skip}&take=${take}`
     return queryParamsSecond
 
 }
 
+export const hyphenFormatter = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    return cellValue != null ? cellValue : '-'
+}
