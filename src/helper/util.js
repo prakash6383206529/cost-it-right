@@ -10,6 +10,7 @@ import {
 } from '../config/constants'
 import { getConfigurationKey } from './auth'
 import { data } from 'react-dom-factories';
+import _ from 'lodash';
 
 
 
@@ -955,4 +956,13 @@ export const showTitleForActiveToggle = (props) => {
     const titleInactive = document.getElementsByClassName("inactive-switch")[props?.rowIndex];
     titleInactive?.setAttribute('title', 'Inactive');
   }, 500);
+}
+//COMMON FUNCTION FOR MASTERS BULKUPLOAD CHECK
+export const checkForSameFileUpload = (master, fileHeads) => {
+  let checkForFileHead, array = []
+  let bulkUploadArray = [];   //ARRAY FOR COMPARISON 
+  array = _.map(master, 'label')
+  bulkUploadArray = [...array]
+  checkForFileHead = _.isEqual(fileHeads, bulkUploadArray)
+  return checkForFileHead
 }
