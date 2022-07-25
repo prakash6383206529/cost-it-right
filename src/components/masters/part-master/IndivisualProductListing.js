@@ -22,6 +22,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
 import { PaginationWrapper } from '../../common/commonPagination';
+import { hyphenFormatter } from '../masterUtil';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -134,20 +135,7 @@ class IndivisualProductListing extends Component {
         )
     };
 
-    /**
-    * @method hyphenFormatter
-    */
-    hyphenFormatter = (props) => {
-        const cellValue = props?.value;
-        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
-    }
-    /**
-    * @method groupCodeFormatter
-    */
-    groupCodeFormatter = (props) => {
-        const cellValue = props?.value;
-        return (cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
-    }
+
 
     handleChange = (cell, row, enumObject, rowIndex) => {
         let data = {
@@ -344,10 +332,9 @@ class IndivisualProductListing extends Component {
         const frameworkComponents = {
             totalValueRenderer: this.buttonFormatter,
             customNoRowsOverlay: NoContentFound,
-            hyphenFormatter: this.hyphenFormatter,
             effectiveDateFormatter: this.effectiveDateFormatter,
             impactCalculationFormatter: this.impactCalculationFormatter,
-            groupCodeFormatter: this.groupCodeFormatter
+            hyphenFormatter: hyphenFormatter
         };
 
         return (
@@ -432,7 +419,7 @@ class IndivisualProductListing extends Component {
                             <AgGridColumn field="ProductNumber" headerName="Product No."></AgGridColumn>
                             <AgGridColumn field="ProductName" headerName="Name"></AgGridColumn>
                             <AgGridColumn field="Description" headerName="Description" ></AgGridColumn>
-                            <AgGridColumn field="ProductGroupCode" headerName="Group Code" cellRenderer={"groupCodeFormatter"}></AgGridColumn>
+                            <AgGridColumn field="ProductGroupCode" headerName="Group Code" cellRenderer={"hyphenFormatter"}></AgGridColumn>
                             <AgGridColumn field="ECNNumber" headerName="ECN No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="IsConsideredForMBOM" headerName="Preferred for Impact Calculation" cellRenderer={'impactCalculationFormatter'}></AgGridColumn>

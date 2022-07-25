@@ -18,6 +18,7 @@ import Toaster from '../../common/Toaster'
 import { masterFinalLevelUser } from '../actions/Material'
 import { PaginationWrapper } from '../../common/commonPagination';
 import { setSelectedCostingListSimualtion } from '../../simulation/actions/Simulation';
+import { hyphenFormatter } from '../masterUtil';
 import _ from 'lodash';
 
 const gridOptions = {};
@@ -342,14 +343,6 @@ function CommonApproval(props) {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cell != null ? cell : '-';
     }
-    /**
-    * @method dashFormatter
-    * @description showing dash when data is null
-    */
-    const dashFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cell != null ? cell : '-';
-    }
 
 
     const costFormatter = (props) => {
@@ -543,7 +536,7 @@ function CommonApproval(props) {
         effectiveDateFormatter: effectiveDateFormatter,
         linkableFormatter: linkableFormatter,
         effectiveDateRenderer: effectiveDateFormatter,
-        dashFormatter: dashFormatter
+        hyphenFormatter: hyphenFormatter
     };
 
     const isRowSelectable = (rowNode) => {
