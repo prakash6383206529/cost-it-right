@@ -30,12 +30,14 @@ class Downloadxls extends React.Component {
     * @description CONDITION TO CHECK:- TO AVOID VENDOR PLANT IF NOT CONFIGURABLE FROM INITIALIZER
     */
     checkVendorPlantConfig = (excelData) => {
+
         return excelData.filter((el) => {
             if (checkVendorPlantConfigurable() === false) {
                 if (el.value === 'VendorPlant') return false;
-                if (el.value === 'VendorName') return false;
-                if (el.value === 'LabourRate') return false;
-                if (el.value === 'VendorPlantCode') return false;
+                /**********************DON'T REMOVE NOW MAY BE USED LATER**********************************/
+                // if (el.value === 'LabourRate') return false;
+                // if (el.value === 'VendorName') return false;
+                // if (el.value === 'VendorPlantCode') return false;
                 // if (el.value === 'DestinationPlant') return false;
                 // if (el.value === 'DestinationPlantCode') return false;
                 return true;
@@ -114,7 +116,6 @@ class Downloadxls extends React.Component {
     * @description Switch case for different xls file head according to master
     */
     renderVBCSwitch = (master) => {
-
         switch (master) {
             case 'RMDomestic':
                 return this.returnExcelColumn(this.checkVendorPlantConfig(RMDomesticVBC), RMDomesticVBCTempData);
@@ -123,6 +124,7 @@ class Downloadxls extends React.Component {
             case 'Operation':
                 return this.returnExcelColumn(this.checkVendorPlantConfig(VBCOperation), VBCOperationTempData);
             case 'Machine':
+
                 return this.returnExcelColumn(this.checkVendorPlantConfig(MachineVBC), MachineVBCTempData);
             case 'BOPDomestic':
                 return this.returnExcelColumn(this.checkVendorPlantConfig(BOP_VBC_DOMESTIC), BOP_VBC_DOMESTIC_TempData);
@@ -144,6 +146,8 @@ class Downloadxls extends React.Component {
     * @description Used to get excel column names
     */
     returnExcelColumn = (data = [], TempData) => {
+
+
         const { fileName, failedData, isFailedFlag } = this.props;
 
         if (isFailedFlag) {
