@@ -10,6 +10,7 @@ import {
 } from '../config/constants'
 import { getConfigurationKey } from './auth'
 import { data } from 'react-dom-factories';
+import _ from 'lodash';
 
 
 
@@ -945,4 +946,15 @@ export const labelWithUOMAndCurrency = (label, UOM, currency) => {
   return <div>
     <span className='d-flex'>{label} ({currency ? currency : getConfigurationKey().BaseCurrency}/{UOM ? displayUOM(UOM) : 'UOM'})</span>
   </div>
+}
+
+
+//COMMON FUNCTION FOR MASTERS BULKUPLOAD CHECK
+export const checkForSameFileUpload = (master, fileHeads) => {
+  let checkForFileHead, array = []
+  let bulkUploadArray = [];   //ARRAY FOR COMPARISON 
+  array = _.map(master, 'label')
+  bulkUploadArray = [...array]
+  checkForFileHead = _.isEqual(fileHeads, bulkUploadArray)
+  return checkForFileHead
 }

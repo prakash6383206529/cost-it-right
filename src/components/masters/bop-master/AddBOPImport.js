@@ -668,23 +668,24 @@ class AddBOPImport extends Component {
     }
 
     // if (this.state.isFinalApprovar && isEditFlag) {
+
+    if (DataToChange.IsVendor) {
+      if (DropdownChange && String(DataToChange.Source) === String(values.Source) &&
+        Number(DataToChange.BasicRate) === Number(values.BasicRate) && DataToChange.Remark === values.Remark && uploadAttachements &&
+        ((DataToChange.Source ? DataToChange.Source : '-') === (values.Source ? values.Source : '-')) &&
+        ((DataToChange.SourceLocation ? DataToChange.SourceLocation : '-') === (sourceLocation.value ? sourceLocation.value : '-'))) {
+        Toaster.warning('Please change data to send BOP for approval')
+        return false;
+      }
+    }
+    if (Boolean(DataToChange.IsVendor) === false) {
+      if (Number(DataToChange.BasicRate) === Number(values.BasicRate) && DataToChange.Remark === values.Remark && uploadAttachements) {
+        Toaster.warning('Please change data to send BOP for approval')
+        return false;
+      }
+    }
     if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(BOP_MASTER_ID) !== true)) {
 
-      if (DataToChange.IsVendor) {
-        if (DropdownChange && String(DataToChange.Source) === String(values.Source) &&
-          Number(DataToChange.BasicRate) === Number(values.BasicRate) && DataToChange.Remark === values.Remark && uploadAttachements &&
-          ((DataToChange.Source ? DataToChange.Source : '-') === (values.Source ? values.Source : '-')) &&
-          ((DataToChange.SourceLocation ? DataToChange.SourceLocation : '-') === (sourceLocation.value ? sourceLocation.value : '-'))) {
-          this.cancel()
-          return false;
-        }
-      }
-      if (Boolean(DataToChange.IsVendor) === false) {
-        if (Number(DataToChange.BasicRate) === Number(values.BasicRate) && DataToChange.Remark === values.Remark && uploadAttachements) {
-          this.cancel()
-          return false;
-        }
-      }
       this.setState({ setDisable: true, disablePopup: false })
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: BOPID }
@@ -725,13 +726,10 @@ class AddBOPImport extends Component {
 
       }
 
-
       if (isEditFlag) {
         this.setState({ showPopup: true, updatedObj: requestData })
         return false
       }
-
-
 
     } else {
 
@@ -740,7 +738,6 @@ class AddBOPImport extends Component {
       } else {
         this.setState({ IsSendForApproval: false })
       }
-
       this.setState({ setDisable: true })
       const formData = {
         IsSendForApproval: this.state.IsSendForApproval,
@@ -796,13 +793,15 @@ class AddBOPImport extends Component {
             Number(DataToChange.BasicRate) === Number(values.BasicRate) && DataToChange.Remark === values.Remark && uploadAttachements &&
             ((DataToChange.Source ? DataToChange.Source : '-') === (values.Source ? values.Source : '-')) &&
             ((DataToChange.SourceLocation ? DataToChange.SourceLocation : '-') === (sourceLocation.value ? sourceLocation.value : '-'))) {
-            this.cancel()
+            Toaster.warning('Please change data to send BOP for approval')
+            // this.cancel()
             return false;
           }
         }
         if (Boolean(DataToChange.IsVendor) === false) {
           if (Number(DataToChange.BasicRate) === Number(values.BasicRate) && DataToChange.Remark === values.Remark && uploadAttachements) {
-            this.cancel()
+            Toaster.warning('Please change data to send BOP for approval')
+            // this.cancel()
             return false;
           }
         }
