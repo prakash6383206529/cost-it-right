@@ -1059,7 +1059,7 @@ class AddMachineRate extends Component {
             (DataToChange?.MachineTypeId ? String(DataToChange?.MachineTypeId) : '-') === (machineType?.value ? String(machineType?.value) : '-') &&
             (DataToChange?.TonnageCapacity ? String(DataToChange?.TonnageCapacity) : '-') === (values?.TonnageCapacity ? String(values?.TonnageCapacity) : '-') &&
             DataToChange?.Remark === values?.Remark) {
-            this.cancel();
+            Toaster.warning('Please change data to send machine for approval')
             return false
           }
 
@@ -1078,7 +1078,7 @@ class AddMachineRate extends Component {
       }
 
       // EXECUTED WHEN:- NEW MACHINE WITH BASIC DETAILS
-      this.setState({ setDisable: true })
+      // this.setState({ setDisable: true })
       const formData = {
         IsSendForApproval: this.state.IsSendForApproval,
         IsFinancialDataChanged: isDateChange ? true : false,
@@ -1130,8 +1130,13 @@ class AddMachineRate extends Component {
         }
 
         if (isEditFlag) {
-          if (DropdownChange && uploadAttachements) {
-            this.cancel();
+          if (DropdownChange && uploadAttachements &&
+            (DataToChange.Description ? DataToChange.Description : '-') === (values.Description ? values.Description : '-') &&
+            (DataToChange.MachineName ? DataToChange.MachineName : '-') === (values.MachineName ? values.MachineName : '-') &&
+            (DataToChange?.MachineTypeId ? String(DataToChange?.MachineTypeId) : '-') === (machineType?.value ? String(machineType?.value) : '-') &&
+            (DataToChange?.TonnageCapacity ? String(DataToChange?.TonnageCapacity) : '-') === (values?.TonnageCapacity ? String(values?.TonnageCapacity) : '-') &&
+            DataToChange?.Remark === values?.Remark) {
+            Toaster.warning('Please change data to send machine for approval')
             return false
           } else {
 
