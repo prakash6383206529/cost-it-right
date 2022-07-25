@@ -18,7 +18,7 @@ import { fetchCountryDataAPI, } from '../../../actions/Common';
 import Switch from "react-switch";
 import BulkUpload from '../../massUpload/BulkUpload';
 import AddVendorDrawer from './AddVendorDrawer';
-import { checkPermission } from '../../../helper/util';
+import { checkPermission, showTitleForActiveToggle } from '../../../helper/util';
 import { MASTERS, VENDOR, VendorMaster } from '../../../config/constants';
 import { loggedInUserId } from '../../../helper';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -398,10 +398,13 @@ class VendorListing extends Component {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
         const { ActivateAccessibility } = this.state;
+
+        showTitleForActiveToggle(props)
+
         if (ActivateAccessibility) {
             return (
                 <>
-                    <label htmlFor="normal-switch" className="normal-switch" >
+                    <label htmlFor="normal-switch" className={`normal-switch`}>
                         <Switch
                             onChange={() => this.handleChange(cellValue, rowData)}
                             checked={cellValue}
@@ -411,6 +414,7 @@ class VendorListing extends Component {
                             offColor="#FC5774"
                             id="normal-switch"
                             height={24}
+                            className={cellValue ? "active-switch" : "inactive-switch"}
                         />
                     </label>
                 </>
