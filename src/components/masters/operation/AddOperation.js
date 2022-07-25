@@ -751,14 +751,7 @@ class AddOperation extends Component {
               <div className="shadow-lgg login-formg">
                 <div className="row">
                   <div className="col-md-6">
-<<<<<<< HEAD
-                    <h2>
-                      {this.state.isEditFlag
-                        ? "Update Operation"
-                        : "Operation"}
-=======
                     <h2>{this.state.isViewMode ? "View" : this.state.isEditFlag ? "Update" : "Add"} Operation
->>>>>>> 67fc4e750 (CIR-I2169 | CIR-I2310 | CIR-I2337 error message inconsistency, dash issue fixed and update headers on view mode in all masters)
                     </h2>
                   </div>
                 </div>

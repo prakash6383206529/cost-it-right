@@ -336,12 +336,7 @@ class AddZBCPlant extends Component {
                 <Row className="drawer-heading">
                   <Col>
                     <div className={"header-wrapper left"}>
-<<<<<<< HEAD
-                      <h3>
-                        {isEditFlag ? "Update Plant" : "Add  Plant"}
-=======
                       <h3>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} ZBC Plant
->>>>>>> 67fc4e750 (CIR-I2169 | CIR-I2310 | CIR-I2337 error message inconsistency, dash issue fixed and update headers on view mode in all masters)
                       </h3>
                     </div>
                     <div

@@ -899,13 +899,7 @@ class AddBOPImport extends Component {
                     <div className="row">
                       <div className="col-md-6">
                         <h1>
-<<<<<<< HEAD
-                          {isEditFlag
-                            ? `Update Insert (Import)`
-                            : `Add Insert (Import)`}
-=======
                           {isViewMode ? "View" : isEditFlag ? "Update" : "Add"} BOP (Import)
->>>>>>> 67fc4e750 (CIR-I2169 | CIR-I2310 | CIR-I2337 error message inconsistency, dash issue fixed and update headers on view mode in all masters)
                         </h1>
                       </div>
                     </div>

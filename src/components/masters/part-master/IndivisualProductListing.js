@@ -335,12 +335,8 @@ class IndivisualProductListing extends Component {
             totalValueRenderer: this.buttonFormatter,
             customNoRowsOverlay: NoContentFound,
             hyphenFormatter: this.hyphenFormatter,
-<<<<<<< HEAD
-            effectiveDateFormatter: this.effectiveDateFormatter
-=======
             effectiveDateFormatter: this.effectiveDateFormatter,
             groupCodeFormatter: this.groupCodeFormatter
->>>>>>> 67fc4e750 (CIR-I2169 | CIR-I2310 | CIR-I2337 error message inconsistency, dash issue fixed and update headers on view mode in all masters)
         };
 
         return (
@@ -424,10 +420,6 @@ class IndivisualProductListing extends Component {
 
                             <AgGridColumn field="ProductNumber" headerName="Product No."></AgGridColumn>
                             <AgGridColumn field="ProductName" headerName="Name"></AgGridColumn>
-<<<<<<< HEAD
-=======
-                            <AgGridColumn field="ProductGroupCode" headerName="Group Code" cellRenderer={"groupCodeFormatter"}></AgGridColumn>
->>>>>>> 67fc4e750 (CIR-I2169 | CIR-I2310 | CIR-I2337 error message inconsistency, dash issue fixed and update headers on view mode in all masters)
                             <AgGridColumn field="ECNNumber" headerName="ECN No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
