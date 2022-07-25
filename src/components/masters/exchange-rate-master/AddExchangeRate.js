@@ -312,9 +312,7 @@ class AddExchangeRate extends Component {
                   <div className="col-md-6">
                     <div className="form-heading mb-0">
                       <h1>
-                        {isEditFlag
-                          ? "Update Exchange Rate"
-                          : "Add Exchange Rate"}
+                        {isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Exchange Rate
                       </h1>
                     </div>
                   </div>
