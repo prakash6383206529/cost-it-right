@@ -576,7 +576,7 @@ class AddBOPDomestic extends Component {
 
     const { IsVendor, BOPCategory, selectedPlants, vendorName,
 
-      sourceLocation, BOPID, isEditFlag, files, oldDate, effectiveDate, UOM, DataToCheck, uploadAttachements, isDateChange, IsFinancialDataChanged } = this.state;
+      sourceLocation, BOPID, isEditFlag, files, DropdownChanged, oldDate, effectiveDate, UOM, DataToCheck, uploadAttachements, isDateChange, IsFinancialDataChanged } = this.state;
 
     if (vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
@@ -587,6 +587,12 @@ class AddBOPDomestic extends Component {
     let plantArray = selectedPlants !== undefined ? { PlantName: selectedPlants.label, PlantId: selectedPlants.value, PlantCode: '' } : {}
 
     if (selectedPlants.length === 0 && !this.state.IsVendor) {
+      return false;
+    }
+    if (DropdownChanged && (DataToCheck.Remark) === (values.Remark) && uploadAttachements && Number(DataToCheck.BasicRate) === Number(values.BasicRate) &&
+      ((DataToCheck.Source ? DataToCheck.Source : '-') === (values.Source ? values.Source : '-')) &&
+      ((DataToCheck.SourceLocation ? DataToCheck.SourceLocation : '-') === (sourceLocation.value ? sourceLocation.value : '-'))) {
+      Toaster.warning('Please change data to send bop for approval')
       return false;
     }
 
@@ -638,20 +644,9 @@ class AddBOPDomestic extends Component {
           return false
         }
       }
-      if ((DataToCheck.Remark) === (values.Remark) && uploadAttachements &&
-        ((DataToCheck.Source ? DataToCheck.Source : '-') === (values.Source ? values.Source : '-')) &&
-        ((DataToCheck.SourceLocation ? DataToCheck.SourceLocation : '-') === (sourceLocation.value ? sourceLocation.value : '-'))) {
-        this.cancel()
-        return false;
-      } else {
-
-        this.setState({ showPopup: true, updatedObj: requestData })
-        return false
-      }
 
 
     } else {
-
 
       if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) {
         this.setState({ IsSendForApproval: true })
@@ -709,12 +704,31 @@ class AddBOPDomestic extends Component {
             Toaster.warning('Please update the effective date')
             return false
           }
-
+        }
+        if (DataToCheck.IsVendor) {
+          if (DropdownChanged &&
+            Number(DataToCheck.BasicRate) === Number(values.BasicRate) && DataToCheck.Remark === values.Remark && uploadAttachements &&
+            ((DataToCheck.Source ? DataToCheck.Source : '-') === (values.Source ? values.Source : '-')) &&
+            ((DataToCheck.SourceLocation ? DataToCheck.SourceLocation : '-') === (sourceLocation.value ? sourceLocation.value : '-'))) {
+            Toaster.warning('please change data to send bop for approval')
+            // this.cancel()
+            return false;
+          }
+        }
+        if (Boolean(DataToCheck.IsVendor) === false) {
+          if (Number(DataToCheck.BasicRate) === Number(values.BasicRate) && DataToCheck.Remark === values.Remark && uploadAttachements) {
+            Toaster.warning('please change data to send bop for approval')
+            // this.cancel()
+            return false;
+          }
+        }
+        if (isEditFlag) {
+          this.setState({ showPopup: true, updatedObj: formData })
+          return false
         }
 
-
         if ((DataToCheck.Remark) === (values.Remark) && uploadAttachements) {
-          this.cancel()
+          Toaster.warning('Please change data to send bop for approval')
           return false;
         } else {
 

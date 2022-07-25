@@ -928,7 +928,6 @@ class AddRMImport extends Component {
       effectiveDate, remarks, RawMaterialID, isEditFlag, files, Technology, netCost, oldDate, netCurrencyCost, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, isSourceChange, uploadAttachements, currencyValue, IsFinancialDataChanged } = this.state;
 
     const { initialConfiguration, fieldsObj } = this.props;
-    this.setState({ setDisable: true, disablePopup: false })
 
     if (vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
@@ -954,6 +953,21 @@ class AddRMImport extends Component {
         return plantArray
       })
     }
+
+    let sourceLocationValue = (!IsVendor && !HasDifferentSource ? '' : sourceLocation.value)
+
+    if (uploadAttachements && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === Number(values.BasicRate) &&
+      Number(DataToChange.ScrapRate) === Number(values.ScrapRate) && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCost) &&
+      String(DataToChange.Remark) === String(values.Remark) && (Number(DataToChange.CutOffPrice) === Number(values.cutOffPrice) ||
+        values.cutOffPrice === undefined) && String(DataToChange.RawMaterialCode) === String(values.Code)
+      && (DataToChange.Source === (!IsVendor && !HasDifferentSource ? '' : values.Source))
+      && ((DataToChange.SourceLocation !== null ? DataToChange.SourceLocation : '-') ===
+        (sourceLocationValue ? sourceLocationValue : '-'))) {
+      Toaster.warning('Please change data to send RM for approval')
+      return false
+    }
+    this.setState({ setDisable: true, disablePopup: false })
+
     if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(RM_MASTER_ID) !== true)) {
 
       let updatedFiles = files.map((file) => {
@@ -985,20 +999,6 @@ class AddRMImport extends Component {
         VendorPlant: []
       }
       //DONT DELETE COMMENTED CODE BELOW
-
-      let sourceLocationValue = (!IsVendor && !HasDifferentSource ? '' : sourceLocation.value)
-
-      if (uploadAttachements && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === Number(values.BasicRate) &&
-        Number(DataToChange.ScrapRate) === Number(values.ScrapRate) && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCost) &&
-        String(DataToChange.Remark) === String(values.Remark) && (Number(DataToChange.CutOffPrice) === Number(values.cutOffPrice) ||
-          values.cutOffPrice === undefined) && String(DataToChange.RawMaterialCode) === String(values.Code)
-        && (DataToChange.Source === (!IsVendor && !HasDifferentSource ? '' : values.Source))
-        && ((DataToChange.SourceLocation !== null ? DataToChange.SourceLocation : '-') ===
-          (sourceLocationValue ? sourceLocationValue : '-'))) {
-        this.cancel()
-        return false
-      }
-
 
       if (IsFinancialDataChanged) {
 
