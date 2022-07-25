@@ -116,83 +116,82 @@ class BulkUpload extends Component {
 
                     fileHeads = resp.rows[0];
                     let checkForFileHead
-                    let bulkUploadArray = [];   //ARRAY FOR COMPARISON 
                     switch (String(this.props.fileName)) {
                         case String(RMDOMESTICBULKUPLOAD):
                             if (this.state.costingHead === 'ZBC') {
-                                checkForFileHead = checkForSameFileUpload(RMDomesticZBC, fileHeads, bulkUploadArray)
+                                checkForFileHead = checkForSameFileUpload(RMDomesticZBC, fileHeads)
                             }
                             else {
-                                checkForFileHead = checkForSameFileUpload(RMDomesticVBC, fileHeads, bulkUploadArray)
+                                checkForFileHead = checkForSameFileUpload(RMDomesticVBC, fileHeads)
                             }
                             break;
                         case String(RMIMPORTBULKUPLOAD):
 
                             if (this.state.costingHead === 'ZBC') {
-                                checkForFileHead = checkForSameFileUpload(RMImportZBC, fileHeads, bulkUploadArray)
+                                checkForFileHead = checkForSameFileUpload(RMImportZBC, fileHeads)
                             }
                             else {
-                                checkForFileHead = checkForSameFileUpload(RMImportVBC, fileHeads, bulkUploadArray)
+                                checkForFileHead = checkForSameFileUpload(RMImportVBC, fileHeads)
                             }
                             break;
                         case String(RMSPECIFICATION):
-                            checkForFileHead = checkForSameFileUpload(RMSpecification, fileHeads, bulkUploadArray)
+                            checkForFileHead = checkForSameFileUpload(RMSpecification, fileHeads)
                             break;
                         case String(BOPDOMESTICBULKUPLOAD):
                             if (this.state.costingHead === 'VBC') {
-                                checkForFileHead = checkForSameFileUpload(BOP_VBC_DOMESTIC, fileHeads, bulkUploadArray)
+                                checkForFileHead = checkForSameFileUpload(BOP_VBC_DOMESTIC, fileHeads)
                             }
                             else {
-                                checkForFileHead = checkForSameFileUpload(BOP_ZBC_DOMESTIC, fileHeads, bulkUploadArray)
+                                checkForFileHead = checkForSameFileUpload(BOP_ZBC_DOMESTIC, fileHeads)
                             }
                             break;
                         case String(BOPIMPORTBULKUPLOAD):
                             if (this.state.costingHead === 'ZBC') {
-                                checkForFileHead = checkForSameFileUpload(BOP_ZBC_IMPORT, fileHeads, bulkUploadArray)
+                                checkForFileHead = checkForSameFileUpload(BOP_ZBC_IMPORT, fileHeads)
                             }
                             else {
-                                checkForFileHead = checkForSameFileUpload(BOP_VBC_IMPORT, fileHeads, bulkUploadArray)
+                                checkForFileHead = checkForSameFileUpload(BOP_VBC_IMPORT, fileHeads)
                             }
                             break;
                         case String(BOMBULKUPLOAD):
-                            checkForFileHead = checkForSameFileUpload(BOMUpload, fileHeads, bulkUploadArray)
+                            checkForFileHead = checkForSameFileUpload(BOMUpload, fileHeads)
                             break;
                         case String(PARTCOMPONENTBULKUPLOAD):
-                            checkForFileHead = checkForSameFileUpload(PartComponent, fileHeads, bulkUploadArray)
+                            checkForFileHead = checkForSameFileUpload(PartComponent, fileHeads)
                             break;
                         case String(PRODUCTCOMPONENTBULKUPLOAD):
-                            checkForFileHead = checkForSameFileUpload(ProductComponent, fileHeads, bulkUploadArray)
+                            checkForFileHead = checkForSameFileUpload(ProductComponent, fileHeads)
                             break;
                         case String(MACHINEBULKUPLOAD):
                             if (this.state.costingHead === 'ZBC') {
-                                checkForFileHead = checkForSameFileUpload(MachineZBC, fileHeads, bulkUploadArray)
+                                checkForFileHead = checkForSameFileUpload(MachineZBC, fileHeads)
                             }
                             else if (this.state.costingHead === 'VBC') {
-                                checkForFileHead = checkForSameFileUpload(MachineVBC, fileHeads, bulkUploadArray)
+                                checkForFileHead = checkForSameFileUpload(MachineVBC, fileHeads)
                             }
                             else {
-                                checkForFileHead = checkForSameFileUpload(MHRMoreZBC, fileHeads, bulkUploadArray)
+                                checkForFileHead = checkForSameFileUpload(MHRMoreZBC, fileHeads)
                             }
                             break;
                         case String(VENDORBULKUPLOAD):
-                            checkForFileHead = checkForSameFileUpload(Vendor, fileHeads, bulkUploadArray)
+                            checkForFileHead = checkForSameFileUpload(Vendor, fileHeads)
                             break;
                         case String(LABOURBULKUPLOAD):
-                            checkForFileHead = checkForSameFileUpload(Labour, fileHeads, bulkUploadArray)
+                            checkForFileHead = checkForSameFileUpload(Labour, fileHeads)
                             break;
                         case String(OPERAIONBULKUPLOAD):
                             if (this.state.costingHead === 'ZBC') {
-                                checkForFileHead = checkForSameFileUpload(ZBCOperation, fileHeads, bulkUploadArray)
+                                checkForFileHead = checkForSameFileUpload(ZBCOperation, fileHeads)
                             }
                             else {
-                                checkForFileHead = checkForSameFileUpload(VBCOperation, fileHeads, bulkUploadArray)
+                                checkForFileHead = checkForSameFileUpload(VBCOperation, fileHeads)
                             }
                             break;
                         case String(FUELBULKUPLOAD):
-                            checkForFileHead = checkForSameFileUpload(Fuel, fileHeads, bulkUploadArray)
+                            checkForFileHead = checkForSameFileUpload(Fuel, fileHeads)
                             break;
                         case String(INTERESTRATEBULKUPLOAD):
-                            checkForFileHead = checkForSameFileUpload(VBCInterestRate, fileHeads, bulkUploadArray)
+                            checkForFileHead = checkForSameFileUpload(VBCInterestRate, fileHeads)
                             break;
                         default:
                             break;

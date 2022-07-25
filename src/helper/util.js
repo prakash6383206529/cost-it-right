@@ -969,8 +969,9 @@ export const labelWithUOMAndCurrency = (label, UOM, currency) => {
 
 
 //COMMON FUNCTION FOR MASTERS BULKUPLOAD CHECK
-export const checkForSameFileUpload = (master, fileHeads, bulkUploadArray) => {
+export const checkForSameFileUpload = (master, fileHeads) => {
   let checkForFileHead, array = []
+  let bulkUploadArray = [];   //ARRAY FOR COMPARISON 
   array = _.map(master, 'label')
   bulkUploadArray = [...array]
   checkForFileHead = _.isEqual(fileHeads, bulkUploadArray)
