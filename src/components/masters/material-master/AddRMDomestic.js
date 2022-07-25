@@ -133,6 +133,7 @@ class AddRMDomestic extends Component {
    * @description Called after rendering the component
    */
   componentDidMount() {
+
     const { data } = this.props
     this.getDetails(data)
     this.props.getRawMaterialNameChild('', () => { })
@@ -1391,7 +1392,7 @@ class AddRMDomestic extends Component {
                               required={true}
                               className=" "
                               customClassName=" withBorder"
-                              disabled={true}
+                              disabled={initialConfiguration?.IsRawMaterialCodeConfigure}
                             />
                           </Col>
 
