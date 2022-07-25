@@ -1076,7 +1076,7 @@ class AddMoreDetails extends Component {
     })
 
     this.props.change('AnnualAreaCost', checkForDecimalAndNull(annualAreaCost, initialConfiguration.NoOfDecimalForPrice))
-    this.props.change('TotalMachineCostPerAnnum', checkForNull(TotalMachineCostPerAnnum, initialConfiguration.NoOfDecimalForPrice))
+    this.props.change('TotalMachineCostPerAnnum', checkForDecimalAndNull(TotalMachineCostPerAnnum, initialConfiguration.NoOfDecimalForPrice))
   }
 
   /**
@@ -1139,18 +1139,18 @@ class AddMoreDetails extends Component {
     const OutputPerHours = checkForNull(fieldsObj?.OutputPerHours)
     const NumberOfWorkingHoursPerYear = checkForNull(fieldsObj?.NumberOfWorkingHoursPerYear)
     // const TotalMachineCostPerAnnum = fieldsObj && fieldsObj.TotalMachineCostPerAnnum !== undefined ? checkForNull(fieldsObj.TotalMachineCostPerAnnum) : 0;
-    const TotalMachineCostPerAnnum = checkForNull(fieldsObj.TotalCost) + checkForNull(fieldsObj.RateOfInterestValue) + checkForNull(fieldsObj.DepreciationAmount) + checkForNull(fieldsObj.TotalMachineCostPerAnnum) + checkForNull(fieldsObj.TotalFuelCostPerYear) + checkForNull(fieldsObj.TotalPowerCostPerYear) + checkForNull(this.calculateTotalLabourCost())
+    const TotalMachineCostPerAnnum = checkForNull(fieldsObj.TotalCost) + checkForNull(fieldsObj.RateOfInterestValue) + checkForNull(fieldsObj.DepreciationAmount) + checkForDecimalAndNull(fieldsObj.TotalMachineCostPerAnnum) + checkForNull(fieldsObj.TotalFuelCostPerYear) + checkForNull(fieldsObj.TotalPowerCostPerYear) + checkForNull(this.calculateTotalLabourCost())
 
     if (UOM.type === TIME) {
 
-      MachineRate = checkForNull(TotalMachineCostPerAnnum / NumberOfWorkingHoursPerYear) // THIS IS FOR HOUR CALCUALTION
+      MachineRate = checkForDecimalAndNull(TotalMachineCostPerAnnum / NumberOfWorkingHoursPerYear) // THIS IS FOR HOUR CALCUALTION
 
       if (UOM.uom === "Minutes") {
 
-        MachineRate = checkForNull((TotalMachineCostPerAnnum / NumberOfWorkingHoursPerYear) / 60)   // THIS IS FOR MINUTES CALCUALTION
+        MachineRate = checkForDecimalAndNull((TotalMachineCostPerAnnum / NumberOfWorkingHoursPerYear) / 60)   // THIS IS FOR MINUTES CALCUALTION
       } else if (UOM.uom === "Seconds") {
 
-        MachineRate = checkForNull((TotalMachineCostPerAnnum / NumberOfWorkingHoursPerYear) / 3600)   // THIS IS FOR SECONDS CALCUALTION
+        MachineRate = checkForDecimalAndNull((TotalMachineCostPerAnnum / NumberOfWorkingHoursPerYear) / 3600)   // THIS IS FOR SECONDS CALCUALTION
       }
 
     } else {
@@ -1346,8 +1346,8 @@ class AddMoreDetails extends Component {
     // const NumberOfWorkingHoursPerYear = fieldsObj.NumberOfWorkingHoursPerYear
     // const TotalMachineCostPerAnnum = fieldsObj.TotalMachineCostPerAnnum
 
-    const NumberOfWorkingHoursPerYear = checkForNull(fieldsObj?.NumberOfWorkingHoursPerYear)
-    const TotalMachineCostPerAnnum = checkForNull(fieldsObj?.TotalMachineCostPerAnnum)
+    const NumberOfWorkingHoursPerYear = checkForDecimalAndNull(fieldsObj?.NumberOfWorkingHoursPerYear)
+    const TotalMachineCostPerAnnum = checkForDecimalAndNull(fieldsObj?.TotalMachineCostPerAnnum)
 
 
 
@@ -1432,9 +1432,9 @@ class AddMoreDetails extends Component {
     let MachineRate
     const OutputPerYear = checkForNull(OutputPerHours * NumberOfWorkingHoursPerYear);
     if (UOM.type === TIME) {
-      MachineRate = checkForNull(TotalMachineCostPerAnnum / NumberOfWorkingHoursPerYear) // THIS IS FOR HOUR CALCUALTION
+      MachineRate = checkForDecimalAndNull(TotalMachineCostPerAnnum / NumberOfWorkingHoursPerYear) // THIS IS FOR HOUR CALCUALTION
     } else {
-      MachineRate = checkForNull(TotalMachineCostPerAnnum / OutputPerYear); // THIS IS FOR ALL UOM EXCEPT HOUR
+      MachineRate = checkForDecimalAndNull(TotalMachineCostPerAnnum / OutputPerYear); // THIS IS FOR ALL UOM EXCEPT HOUR
     }
 
     this.setState({ IsFinancialDataChanged: true })
@@ -2029,7 +2029,7 @@ class AddMoreDetails extends Component {
   */
   render() {
     const { handleSubmit, loading, initialConfiguration, isMachineAssociated } = this.props;
-    const { isLoader, isOpenAvailability, isEditFlag, isViewMode, isOpenMachineType, isOpenProcessDrawer, manufactureYear,
+    const { isLoader, isOpenAvailability, isEditFlag, isViewMode, isViewFlag, isOpenMachineType, isOpenProcessDrawer, manufactureYear,
       isLoanOpen, isWorkingOpen, isDepreciationOpen, isVariableCostOpen, isPowerOpen, isLabourOpen, isProcessOpen, UniqueProcessId, isProcessGroupOpen, disableAllForm } = this.state;
 
     return (
@@ -2099,7 +2099,7 @@ class AddMoreDetails extends Component {
                             handleChangeDescription={this.handlePlants}
                             valueDescription={this.state.selectedPlants}
                             // disabled={isEditFlag ? true : false}
-                            disabled={(this.state.isViewFlag) || (isEditFlag && isMachineAssociated)}
+                            disabled={(isEditFlag || isViewFlag) || (isMachineAssociated)}
 
                           />
                         </Col>
@@ -2755,7 +2755,7 @@ class AddMoreDetails extends Component {
                                 type="text"
                                 placeholder={'Enter'}
                                 validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
-                                component={renderText}
+                                component={renderNumberInputField}
                                 //required={true}
                                 disabled={this.state.IsAnnualMaintenanceFixed ? true : (disableAllForm) ? true : false}
                                 className=" "
@@ -2854,7 +2854,7 @@ class AddMoreDetails extends Component {
                                 type="text"
                                 placeholder={'Enter'}
                                 validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
-                                component={renderText}
+                                component={renderNumberInputField}
                                 //required={true}
                                 disabled={this.state.IsInsuranceFixed ? true : (disableAllForm) ? true : false}
                                 className=" "
@@ -2867,8 +2867,8 @@ class AddMoreDetails extends Component {
                                 name={"BuildingCostPerSquareFeet"}
                                 type="text"
                                 placeholder={'Enter'}
-                                validate={[number, positiveAndDecimalNumber]}
-                                component={renderText}
+                                validate={[number, positiveAndDecimalNumber, decimalLengthFour]}
+                                component={renderNumberInputField}
                                 //required={true}
                                 disabled={disableAllForm}
                                 className=" "
@@ -2882,7 +2882,7 @@ class AddMoreDetails extends Component {
                                 type="text"
                                 placeholder={'Enter'}
                                 validate={[number, positiveAndDecimalNumber]}
-                                component={renderText}
+                                component={renderNumberInputField}
                                 //required={true}
                                 disabled={isEditFlag || disableAllForm ? true : false}
                                 className=" "
@@ -2910,7 +2910,7 @@ class AddMoreDetails extends Component {
                                 type="text"
                                 placeholder={'Enter'}
                                 validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
-                                component={renderText}
+                                component={renderNumberInputField}
                                 //required={true}
                                 disabled={disableAllForm}
                                 className=" "
