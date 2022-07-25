@@ -963,3 +963,13 @@ export const checkForSameFileUpload = (master, fileHeads) => {
   checkForFileHead = _.isEqual(fileHeads, bulkUploadArray)
   return checkForFileHead
 }
+
+// THIS FUNCTION SHOWING TITLE ON HOVER FOR ACTIVE AND INACTIVE STATUS IN GRID
+export const showTitleForActiveToggle = (props) => {
+  setTimeout(() => {
+    const titleActive = document.getElementsByClassName("active-switch")[props?.rowIndex];
+    titleActive?.setAttribute('title', 'Active');
+    const titleInactive = document.getElementsByClassName("inactive-switch")[props?.rowIndex];
+    titleInactive?.setAttribute('title', 'Inactive');
+  }, 500);
+}
