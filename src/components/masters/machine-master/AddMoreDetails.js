@@ -2169,8 +2169,8 @@ class AddMoreDetails extends Component {
                                 placeholder={'--select--'}
                                 options={this.renderListing('MachineTypeList')}
                                 //onKeyUp={(e) => this.changeItemDesc(e)}
-                                validate={(this.state.machineType == null || this.state.machineType.length === 0) ? [] : []}
-                                //  required={true}
+                                validate={(this.state.machineType == null || this.state.machineType.length === 0) ? [required] : []}
+                                required={true}
                                 handleChangeDescription={this.handleMachineType}
                                 valueDescription={this.state.machineType}
                                 disabled={this.state.isViewFlag ? true : false}
@@ -2408,7 +2408,7 @@ class AddMoreDetails extends Component {
 
                             <Col md="4">
                               <Field
-                                label={`Rate Of Interest (%)`}
+                                label={`Rate Of Interest (%) / Annum`}
                                 name={"RateOfInterestPercentage"}
                                 type="text"
                                 placeholder={'Enter'}
@@ -2452,7 +2452,7 @@ class AddMoreDetails extends Component {
 
                             <Col md="4">
                               <Field
-                                label={`Rate Of Interest Value`}
+                                label={`Interest Value`}
                                 name={"RateOfInterestValue"}
                                 type="text"
                                 placeholder={'Enter'}
@@ -2861,7 +2861,7 @@ class AddMoreDetails extends Component {
                             </Col>
                             <Col md="3">
                               <Field
-                                label={`Building Cost/Sq Ft`}
+                                label={`Building Cost/Sq Ft/Annum`}
                                 name={"BuildingCostPerSquareFeet"}
                                 type="text"
                                 placeholder={'Enter'}
