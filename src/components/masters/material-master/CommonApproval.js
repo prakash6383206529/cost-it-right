@@ -639,7 +639,7 @@ function CommonApproval(props) {
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="145" field="BoughtOutPartName" headerName='BOP Part Name'></AgGridColumn>}
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="145" field="BoughtOutPartCategory" headerName='BOP Category'></AgGridColumn>}
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="150" field="UOM" headerName='UOM'></AgGridColumn>}
-                                    {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="Specification" cellRenderer={"dashFormatter"} headerName='Specification'></AgGridColumn>}
+                                    {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="Specification" cellRenderer={"hyphenFormatter"} headerName='Specification'></AgGridColumn>}
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="Plants" headerName='Plant'></AgGridColumn>}
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn field="VendorName" headerName='Vendor'></AgGridColumn>}
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="BasicRate" headerName="Basic Rate(INR)"></AgGridColumn>}
@@ -658,7 +658,7 @@ function CommonApproval(props) {
                                     {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn width="145" field="Plants" headerName='Plant (Code)'></AgGridColumn>}
                                     {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn width="150" field="MachineNumber" headerName='Machine Number'></AgGridColumn>}
                                     {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn width="140" field="MachineTypeName" headerName='Machine Type'></AgGridColumn>}
-                                    {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn width="140" field="MachineTonnage" headerName='Machine Tonnage' cellRenderer={"dashFormatter"}></AgGridColumn>}
+                                    {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn width="140" field="MachineTonnage" headerName='Machine Tonnage' cellRenderer={"hyphenFormatter"}></AgGridColumn>}
                                     {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn field="ProcessName" headerName='Process Name'></AgGridColumn>}
                                     {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn field="BasicRate" headerName="Machine Rate"></AgGridColumn>}
                                     {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn width="140" field="EffectiveDate" headerName="Effective Date" cellRenderer='effectiveDateRenderer' ></AgGridColumn>}

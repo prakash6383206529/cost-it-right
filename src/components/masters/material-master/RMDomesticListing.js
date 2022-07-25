@@ -347,7 +347,7 @@ function RMDomesticListing(props) {
     const confirmDelete = (ID) => {
         dispatch(deleteRawMaterialAPI(ID, (res) => {
             if (res !== undefined && res.status === 417 && res.data.Result === false) {
-                Toaster.warning(res.data.Message)
+                Toaster.error(res.data.Message)
             } else if (res && res.data && res.data.Result === true) {
                 Toaster.success(MESSAGES.DELETE_RAW_MATERIAL_SUCCESS);
                 resetState()
