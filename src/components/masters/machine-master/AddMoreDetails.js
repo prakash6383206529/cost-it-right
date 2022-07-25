@@ -120,6 +120,7 @@ class AddMoreDetails extends Component {
       rowData: [],
       IsFinancialDataChanged: true,
       disableAllForm: false,
+      NoOfWorkingHours: 0
     }
   }
 
@@ -591,9 +592,9 @@ class AddMoreDetails extends Component {
    * @method closeAvailabilityDrawer
    * @description CLOSING CALCULATOR DRAWER AND SHOWING PRE FILLED VALUE
   */
-  closeAvailabilityDrawer = (e = '', calculatedEfficiency) => {
+  closeAvailabilityDrawer = (e = '', calculatedEfficiency, NoOfWorkingHours) => {
     const { initialConfiguration } = this.props
-    this.setState({ isOpenAvailability: false }, () => {
+    this.setState({ isOpenAvailability: false, NoOfWorkingHours: NoOfWorkingHours }, () => {
       if (calculatedEfficiency !== Infinity && calculatedEfficiency !== 'NaN') {
         this.props.change('EfficiencyPercentage', checkForDecimalAndNull(calculatedEfficiency, initialConfiguration.NoOfDecimalForInputOutput))
       }
@@ -3601,6 +3602,7 @@ class AddMoreDetails extends Component {
           isEditFlag={false}
           ID={''}
           anchor={'right'}
+          NoOfWorkingHours={this.state.NoOfWorkingHours}
           NumberOfWorkingHoursPerYear={this.state.WorkingHrPrYr}
         />}
         {isOpenProcessDrawer && <AddProcessDrawer
