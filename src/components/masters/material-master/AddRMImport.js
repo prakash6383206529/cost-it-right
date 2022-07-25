@@ -1363,7 +1363,7 @@ class AddRMImport extends Component {
                               required={true}
                               className=" "
                               customClassName=" withBorder"
-                              disabled={true}
+                              disabled={initialConfiguration?.IsRawMaterialCodeConfigure}
                             />
 
                           </Col>
