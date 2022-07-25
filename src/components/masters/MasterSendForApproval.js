@@ -36,7 +36,7 @@ function MasterSendForApproval(props) {
     const { deptList } = useSelector((state) => state.material)
     const Departments = userDetails().Department
 
-
+    const { initialConfiguration } = useSelector(state => state.auth)
 
     const toggleDrawer = (event, type = 'cancel') => {
         if (
@@ -438,7 +438,7 @@ function MasterSendForApproval(props) {
                                                         className=""
                                                         customClassName={'withBorder'}
                                                         errors={errors.basicRate}
-                                                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.BasicRatePerUOM, getConfigurationKey().NoOfDecimalForPrice) : ''}
+                                                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.BasicRatePerUOM, initialConfiguration.NoOfDecimalForPrice) : ''}
                                                         disabled={true}
                                                     />
 
@@ -454,7 +454,7 @@ function MasterSendForApproval(props) {
                                                         customClassName={'withBorder'}
                                                         errors={errors.basicRate}
                                                         disabled={true}
-                                                        defaultValue={Object.keys(approvalObj).length > 0 ? approvalObj.ScrapRate : ''}
+                                                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.ScrapRate, initialConfiguration.NoOfDecimalForPrice) : ''}
                                                     />
 
                                                 </div>
@@ -469,7 +469,7 @@ function MasterSendForApproval(props) {
                                                         customClassName={'withBorder'}
                                                         errors={errors.freightCost}
                                                         disabled={true}
-                                                        defaultValue={Object.keys(approvalObj).length > 0 ? approvalObj.RMFreightCost : ''}
+                                                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.RMFreightCost, initialConfiguration.NoOfDecimalForPrice) : ''}
                                                     />
 
                                                 </div>
@@ -484,7 +484,7 @@ function MasterSendForApproval(props) {
                                                         customClassName={'withBorder'}
                                                         errors={errors.shearingCost}
                                                         disabled={true}
-                                                        defaultValue={Object.keys(approvalObj).length > 0 ? approvalObj.RMShearingCost : ''}
+                                                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.RMShearingCost, initialConfiguration.NoOfDecimalForPrice) : ''}
                                                     />
 
                                                 </div>
@@ -499,7 +499,7 @@ function MasterSendForApproval(props) {
                                                         customClassName={'withBorder'}
                                                         errors={errors.netCost}
                                                         disabled={true}
-                                                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.NetLandedCost, getConfigurationKey().NoOfDecimalForPrice) : ''}
+                                                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.NetLandedCost, initialConfiguration.NoOfDecimalForPrice) : ''}
                                                     />
 
                                                 </div>
@@ -540,7 +540,7 @@ function MasterSendForApproval(props) {
                                                         className=""
                                                         customClassName={'withBorder'}
                                                         errors={errors.basicRate}
-                                                        defaultValue={Object.keys(approvalObj).length > 0 ? approvalObj.BasicRate : ''}
+                                                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.BasicRate, initialConfiguration.NoOfDecimalForPrice) : ''}
                                                         disabled={true}
                                                     />
 
@@ -559,7 +559,7 @@ function MasterSendForApproval(props) {
                                                         customClassName={'withBorder'}
                                                         errors={errors.netCost}
                                                         disabled={true}
-                                                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.NetLandedCost, getConfigurationKey().NoOfDecimalForPrice) : ''}
+                                                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.NetLandedCost, initialConfiguration.NoOfDecimalForPrice) : ''}
                                                     />
 
                                                 </div>
@@ -601,7 +601,7 @@ function MasterSendForApproval(props) {
                                                         className=""
                                                         customClassName={'withBorder'}
                                                         errors={errors.basicRate}
-                                                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.Rate, getConfigurationKey().NoOfDecimalForPrice) : ''}
+                                                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.Rate, initialConfiguration.NoOfDecimalForPrice) : ''}
                                                         disabled={true}
                                                     />
 
