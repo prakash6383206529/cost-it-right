@@ -365,4 +365,5 @@ export default connect(mapStateToProps, {
 })(reduxForm({
   form: 'AddBOPForm',
   enableReinitialize: true,
+  touchOnChange: true
 })(AddBOPForm));

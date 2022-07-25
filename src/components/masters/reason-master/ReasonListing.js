@@ -272,7 +272,7 @@ class ReasonListing extends Component {
     this.setState({ isOpenDrawer: true })
   }
 
-  closeVendorDrawer = (e = '') => {
+  closeVendorDrawer = (e = '', type) => {
     this.setState(
       {
         isOpenDrawer: false,
@@ -280,9 +280,13 @@ class ReasonListing extends Component {
         ID: '',
       },
       () => {
-        this.getTableListData()
+        if (type === 'submit') {
+          this.getTableListData()
+        }
+
       },
     )
+
   }
 
   onGridReady = (params) => {
@@ -505,5 +509,6 @@ export default connect(mapStateToProps, {
       focusOnError(errors)
     },
     enableReinitialize: true,
+    touchOnChange: true
   })(ReasonListing),
 )

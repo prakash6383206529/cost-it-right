@@ -442,7 +442,7 @@ class AddVolume extends Component {
    * @method cancel
    * @description used to Reset form
    */
-  cancel = () => {
+  cancel = (type) => {
     const { reset } = this.props
     const { tableData } = this.state
 
@@ -463,7 +463,7 @@ class AddVolume extends Component {
       },
       () => {
         this.props.getVolumeData('', () => { })
-        this.props.hideForm()
+        this.props.hideForm(type)
       },
     )
   }
@@ -547,7 +547,7 @@ class AddVolume extends Component {
     if (this.state.isEditFlag) {
 
       if (this.state.DataToChange) {
-        this.cancel()
+        this.cancel('cancel')
         return false
       }
       this.setState({ setDisable: true })
@@ -562,7 +562,7 @@ class AddVolume extends Component {
         this.setState({ setDisable: false })
         if (res?.data?.Result) {
           Toaster.success(MESSAGES.VOLUME_UPDATE_SUCCESS)
-          this.cancel()
+          this.cancel('submit')
         }
       })
     } else {
@@ -598,7 +598,7 @@ class AddVolume extends Component {
         this.setState({ setDisable: false })
         if (res?.data?.Result) {
           Toaster.success(MESSAGES.VOLUME_ADD_SUCCESS)
-          this.cancel()
+          this.cancel('submit')
         }
       })
     }
@@ -875,7 +875,7 @@ class AddVolume extends Component {
                           <button
                             type={"button"}
                             className="mr15 cancel-btn"
-                            onClick={this.cancel}
+                            onClick={() => { this.cancel('cancel') }}
                             disabled={setDisable}
                           >
                             <div className={"cancel-icon"}></div>{" "}
@@ -963,5 +963,6 @@ export default connect(mapStateToProps, {
   reduxForm({
     form: 'AddVolume',
     enableReinitialize: true,
+    touchOnChange: true
   })(AddVolume),
 )

@@ -4,11 +4,10 @@ import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { checkForDecimalAndNull } from "../../../helper/validation";
 import {
-  getPowerDetailDataList, getVendorPowerDetailDataList, getFuelComboData, getPlantListByState,
-  getZBCPlantList, getStateSelectList, deletePowerDetail, deleteVendorPowerDetail,
+  getPowerDetailDataList, getVendorPowerDetailDataList, getPlantListByState,
+  deletePowerDetail, deleteVendorPowerDetail,
 } from '../actions/Fuel';
 import { getPlantBySupplier } from '../../../actions/Common';
-import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
 import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
@@ -59,10 +58,12 @@ class PowerListing extends Component {
   * @description Called after rendering the component
   */
   componentDidMount() {
-    this.props.getZBCPlantList(() => { })
-    this.props.getStateSelectList(() => { })
-    this.props.getVendorWithVendorCodeSelectList(() => { });
-    this.getDataList()
+    setTimeout(() => {
+      if (!this.props.stopApiCallOnCancel) {
+        this.getDataList()
+      }
+    }, 300);
+
   }
 
   getDataList = () => {
@@ -513,15 +514,12 @@ function mapStateToProps({ fuel, comman, supplier, auth }) {
 export default connect(mapStateToProps, {
   getPowerDetailDataList,
   getVendorPowerDetailDataList,
-  getFuelComboData,
   getPlantListByState,
-  getZBCPlantList,
-  getStateSelectList,
-  getVendorWithVendorCodeSelectList,
   getPlantBySupplier,
   deletePowerDetail,
   deleteVendorPowerDetail,
 })(reduxForm({
   form: 'PowerListing',
   enableReinitialize: true,
+  touchOnChange: true
 })(PowerListing));

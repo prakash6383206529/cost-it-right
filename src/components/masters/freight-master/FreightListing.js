@@ -5,7 +5,6 @@ import { Row, Col, } from 'reactstrap';
 import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import { getFreightDataList, deleteFright, } from '../actions/Freight';
 import { getVendorListByVendorType, } from '../actions/Material';
-import { fetchSupplierCityDataAPI, getVendorWithVendorCodeSelectList } from '../../../actions/Common';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
@@ -47,12 +46,14 @@ class FreightListing extends Component {
   * @description Called after rendering the component
   */
   componentDidMount() {
-    this.setState({ isLoader: true })
     setTimeout(() => {
-      this.props.getVendorWithVendorCodeSelectList(() => { })
-      this.props.fetchSupplierCityDataAPI(res => { });
-      this.getDataList()
-    }, 500);
+      if (!this.props.stopApiCallOnCancel) {
+        this.setState({ isLoader: true })
+        setTimeout(() => {
+          this.getDataList()
+        }, 500);
+      }
+    }, 300);
   }
 
   /**
@@ -398,9 +399,8 @@ export default connect(mapStateToProps, {
   getFreightDataList,
   deleteFright,
   getVendorListByVendorType,
-  fetchSupplierCityDataAPI,
-  getVendorWithVendorCodeSelectList,
 })(reduxForm({
   form: 'FreightListing',
   enableReinitialize: true,
+  touchOnChange: true
 })(FreightListing));

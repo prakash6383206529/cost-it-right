@@ -8,7 +8,7 @@ import {
 } from "../../../helper/validation";
 import { renderText, renderEmailInputField, searchableSelect, renderNumberInputField, } from "../../layout/FormInputs";
 import { createClient, updateClient, getClientData } from '../actions/Client';
-import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI } from '../../../actions/Common';
+import { fetchStateDataAPI, fetchCityDataAPI } from '../../../actions/Common';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";
@@ -27,14 +27,6 @@ class AddClient extends Component {
             state: [],
             showStateCity: true,
         }
-    }
-
-    /**
-   * @method componentDidMount
-   * @description called after render the component
-   */
-    componentDidMount() {
-        this.props.fetchCountryDataAPI(() => { })
     }
 
     /**
@@ -149,9 +141,6 @@ class AddClient extends Component {
             this.props.getClientData(data.ID, (res) => {
                 if (res && res.data && res.data.Data) {
                     let Data = res.data.Data;
-
-                    this.props.fetchStateDataAPI(Data.CountryId, () => { })
-                    this.props.fetchCityDataAPI(Data.StateId, () => { })
 
                     setTimeout(() => {
                         this.setState({
@@ -505,7 +494,6 @@ function mapStateToProps({ comman, client }) {
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
-    fetchCountryDataAPI,
     fetchStateDataAPI,
     fetchCityDataAPI,
     createClient,
@@ -514,5 +502,6 @@ export default connect(mapStateToProps, {
 })(reduxForm({
     form: 'AddClient',
     enableReinitialize: true,
+    touchOnChange: true
 })(AddClient));
 

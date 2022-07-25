@@ -101,40 +101,65 @@ function RMImportListing(props) {
   }, [rmImportDataList])
 
   useEffect(() => {
-    let obj = {
-      MasterId: RM_MASTER_ID,
-      DepartmentId: userDetails().DepartmentId,
-      LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
-      LoggedInUserId: loggedInUserId()
-    }
-    dispatch(masterFinalLevelUser(obj, (res) => {
-      if (res?.data?.Result) {
-        setIsFinalLevelUser(res.data.Data.IsFinalApprovar)
-      }
-    }))
+    setTimeout(() => {
+      if (!props.stopApiCallOnCancel) {
+        let obj = {
+          MasterId: RM_MASTER_ID,
+          DepartmentId: userDetails().DepartmentId,
+          LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
+          LoggedInUserId: loggedInUserId()
+        }
+        dispatch(masterFinalLevelUser(obj, (res) => {
+          if (res?.data?.Result) {
+            setIsFinalLevelUser(res.data.Data.IsFinalApprovar)
+          }
+        }))
 
-    return () => {
-      dispatch(setSelectedCostingListSimualtion([]))
-    }
+        return () => {
+          dispatch(setSelectedCostingListSimualtion([]))
+        }
+      }
+    }, 300);
+
   }, [])
 
   useEffect(() => {
+    setTimeout(() => {
+      if (!props.stopApiCallOnCancel) {
+        if (isSimulation && selectionForListingMasterAPI === 'Combined') {
+          props?.changeSetLoader(true)
+          dispatch(getListingForSimulationCombined(objectForMultipleSimulation, RMIMPORT, (res) => {
+            props?.changeSetLoader(false)
 
-    if (isSimulation && selectionForListingMasterAPI === 'Combined') {
-      props?.changeSetLoader(true)
-      dispatch(getListingForSimulationCombined(objectForMultipleSimulation, RMIMPORT, (res) => {
-        props?.changeSetLoader(false)
+          }))
 
-      }))
+        } else {
+          if (isSimulation) {
+            props?.changeTokenCheckBox(false)
+          }
+          getDataList(null, null, null, null, null, 0, 0, defaultPageSize, true, floatingFilterData)
+        }
 
-    } else {
-      if (isSimulation) {
-        props?.changeTokenCheckBox(false)
+        setvalue({ min: 0, max: 0 });
       }
-      getDataList(null, null, null, null, null, 0, 0, defaultPageSize, true, floatingFilterData)
-    }
+    }, 300);
+    if (!props.stopApiCallOnCancel) {
+      if (isSimulation && selectionForListingMasterAPI === 'Combined') {
+        props?.changeSetLoader(true)
+        dispatch(getListingForSimulationCombined(objectForMultipleSimulation, RMIMPORT, (res) => {
+          props?.changeSetLoader(false)
 
-    setvalue({ min: 0, max: 0 });
+        }))
+
+      } else {
+        if (isSimulation) {
+          props?.changeTokenCheckBox(false)
+        }
+        getDataList(null, null, null, null, null, 0, 0, defaultPageSize, true, floatingFilterData)
+      }
+
+      setvalue({ min: 0, max: 0 });
+    }
   }, [])
 
 

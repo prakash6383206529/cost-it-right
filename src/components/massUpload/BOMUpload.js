@@ -258,4 +258,5 @@ export default connect(mapStateToProps, {
 })(reduxForm({
   form: 'BOMUpload',
   enableReinitialize: true,
+  touchOnChange: true
 })(BOMUpload));

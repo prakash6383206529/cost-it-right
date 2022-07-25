@@ -187,7 +187,7 @@ class AddBOPImport extends Component {
     this.setState({ approveDrawer: false, setDisable: false })
     if (type === 'submit') {
       //this.clearForm()
-      this.cancel()
+      this.cancel('submit')
     }
   }
 
@@ -715,7 +715,7 @@ class AddBOPImport extends Component {
         Currency: currency.label,
         BoughtOutPartId: BOPID,
         Source: values.Source,
-        SourceLocation: values.sourceLocation,
+        SourceLocation: sourceLocation.value ? sourceLocation.value : '',
         BasicRate: values.BasicRate,
         NetLandedCost: this.state.netLandedcost,
         Remark: values.Remark,
@@ -871,7 +871,7 @@ class AddBOPImport extends Component {
           if (res.data.Result) {
             Toaster.success(MESSAGES.BOP_ADD_SUCCESS)
             //this.clearForm()
-            this.cancel()
+            this.cancel('submit')
           }
         })
       }
@@ -886,7 +886,7 @@ class AddBOPImport extends Component {
       this.setState({ setDisable: false })
       if (res?.data?.Result) {
         Toaster.success(MESSAGES.UPDATE_BOP_SUCESS);
-        this.cancel()
+        this.cancel('submit')
       }
     });
   }, 500)
@@ -905,7 +905,7 @@ class AddBOPImport extends Component {
   */
   render() {
     const { handleSubmit, isBOPAssociated } = this.props;
-    const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, isViewMode, setDisable, disablePopup } = this.state;
+    const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, updatedObj, IsFinancialDataChanged, isViewMode, setDisable, disablePopup, DropdownChange, DataToChange } = this.state;
     const filterList = (inputValue) => {
       let tempArr = []
 
@@ -924,6 +924,10 @@ class AddBOPImport extends Component {
       new Promise(resolve => {
         resolve(filterList(inputValue));
       });
+    console.log('DropdownChange: ', DropdownChange);
+    console.log('DataToChange: ', DataToChange);
+    console.log(updatedObj, 'updatedObj');
+    console.log(this.state.IsFinancialDataChanged, 'IsFinancialDataChanged');
     return (
       <>
         {this.state.isLoader && <LoaderCustom />}
@@ -1516,4 +1520,5 @@ export default connect(mapStateToProps, {
     focusOnError(errors)
   },
   enableReinitialize: true,
+  touchOnChange: true
 })(AddBOPImport));

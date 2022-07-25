@@ -54,7 +54,9 @@ class ProcessListing extends Component {
   * @description Called after rendering the component
   */
   componentDidMount() {
-    this.getDataList()
+    setTimeout(() => {
+      this.getDataList()
+    }, 300);
   }
 
   getDataList = (plant_id = '', machine_id = '') => {
@@ -318,10 +320,12 @@ class ProcessListing extends Component {
     this.setState({ isOpenProcessDrawer: true, isEditFlag: false, Id: '' })
   }
 
-  closeProcessDrawer = (e = '') => {
+  closeProcessDrawer = (e = '', formData, type) => {
     this.setState({ isOpenProcessDrawer: false }, () => {
-      this.getDataList()
+      if (type === 'submit')
+        this.getDataList()
     })
+
   }
 
   /**
@@ -518,5 +522,6 @@ export default connect(mapStateToProps, {
   reduxForm({
     form: 'ProcessListing',
     enableReinitialize: true,
+    touchOnChange: true
   })(ProcessListing),
 )

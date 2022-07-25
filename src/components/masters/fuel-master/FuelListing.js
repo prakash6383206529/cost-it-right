@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import {
-    getFuelDetailDataList, getFuelComboData, deleteFuelDetailAPI, getStateListByFuel, getFuelListByState,
+    getFuelDetailDataList, deleteFuelDetailAPI, getStateListByFuel, getFuelListByState,
 } from '../actions/Fuel';
 import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
@@ -55,15 +55,14 @@ class FuelListing extends Component {
     * @description Called after rendering the component
     */
     componentDidMount() {
-        this.setState({ isLoader: true })
         setTimeout(() => {
-            this.getDataList(0, 0)
-            this.props.getFuelComboData(() => { })
-        }, 500);
-    }
-
-    componentWillUnmount() {
-        this.props.getFuelDetailDataList(false, {}, (res) => { })
+            if (!this.props.stopApiCallOnCancel) {
+                this.setState({ isLoader: true })
+                setTimeout(() => {
+                    this.getDataList(0, 0)
+                }, 500);
+            }
+        }, 300);
     }
 
     getDataList = (fuelName = 0, stateName = 0) => {
@@ -412,11 +411,11 @@ function mapStateToProps({ fuel, auth }) {
 */
 export default connect(mapStateToProps, {
     getFuelDetailDataList,
-    getFuelComboData,
     deleteFuelDetailAPI,
     getStateListByFuel,
     getFuelListByState,
 })(reduxForm({
     form: 'FuelListing',
     enableReinitialize: true,
+    touchOnChange: true
 })(FuelListing));

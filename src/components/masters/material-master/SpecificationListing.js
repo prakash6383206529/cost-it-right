@@ -85,29 +85,13 @@ class SpecificationListing extends Component {
     * @method closeDrawer
     * @description  used to cancel filter form
     */
-    closeDrawer = (e = '') => {
+    closeDrawer = (e = '', data, type) => {
         this.setState({ isOpen: false }, () => {
-            this.getSpecificationListData('', '');
+            if (type === 'submit')
+                this.getSpecificationListData('', '');
         })
+
     }
-
-    /**
-    * @method renderListing
-    * @description Used show listing of row material
-    */
-
-
-    /**
-    * @method handleGrade
-    * @description  used to handle type of listing change
-    */
-
-
-    /**
-    * @method handleMaterialChange
-    * @description  used to material change and get grade's
-    */
-
 
     /**
     * @method editItemDetails

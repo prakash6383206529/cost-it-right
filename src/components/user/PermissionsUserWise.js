@@ -783,4 +783,5 @@ export default connect(mapStateToProps, {
 })(reduxForm({
     form: 'PermissionsUserWise',
     enableReinitialize: true,
+    touchOnChange: true
 })(PermissionsUserWise));

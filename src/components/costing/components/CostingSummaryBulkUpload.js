@@ -299,6 +299,7 @@ export default connect(mapStateToProps, {
     //     focusOnError(errors);
     // },
     enableReinitialize: true,
+    touchOnChange: true
 })(CostingSummaryBulkUpload));
 
 // export default CostingSummaryBulkUpload;

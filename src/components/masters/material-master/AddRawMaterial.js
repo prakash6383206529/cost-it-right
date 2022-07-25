@@ -207,4 +207,5 @@ export default connect(mapStateToProps,
   })(reduxForm({
     form: 'AddRawMaterial',
     enableReinitialize: true,
+    touchOnChange: true
   })(AddRawMaterial));

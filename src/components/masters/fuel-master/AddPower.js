@@ -277,11 +277,10 @@ class AddPower extends Component {
       }
     }
   }
-
   /**
-  * @method getDetails
-  * @description Used to get Details
-  */
+   * @method getDetails
+   * @description Used to get Details
+   */
   getDetails = () => {
     const { data } = this.props;
 
@@ -328,7 +327,6 @@ class AddPower extends Component {
           const { powerGrid } = this.state;
           const Data = res.data.Data;
           this.setState({ DataToChangeZ: Data })
-          this.props.getPlantListByState(Data.StateId, () => { })
 
           let tempArray = [];
           if (Data.SEBChargesDetails.length > 0) {
@@ -357,6 +355,7 @@ class AddPower extends Component {
 
           setTimeout(() => {
             let plantArray = Data && Data.Plants.map((item) => ({ Text: item.PlantName, Value: item.PlantId }))
+            console.log('Data: ', Data);
 
             this.setState({
               isEditFlag: true,
@@ -495,6 +494,7 @@ class AddPower extends Component {
           return false
         }
 
+        console.log('StateName: ', StateName);
         let data = { StateID: StateName.value, UOMID: UOM.value }
         this.props.getDieselRateByStateAndUOM(data, (res) => {
           let DynamicData = res.data.DynamicData;
@@ -1074,7 +1074,7 @@ class AddPower extends Component {
   * @method cancel
   * @description used to Reset form
   */
-  cancel = () => {
+  cancel = (type) => {
     const { reset } = this.props;
     reset();
     this.setState({
@@ -1091,8 +1091,8 @@ class AddPower extends Component {
       isEditFlag: false,
       IsVendor: false,
     })
-    this.getDetails();
-    this.props.hideForm()
+    // this.getDetails();
+    this.props.hideForm(type)
   }
 
   /**
@@ -1144,7 +1144,7 @@ class AddPower extends Component {
           this.setState({ setDisable: false })
           if (res?.data?.Result) {
             Toaster.success(MESSAGES.UPDATE_POWER_DETAIL_SUCESS);
-            this.cancel();
+            this.cancel('submit');
           }
         })
 
@@ -1209,7 +1209,7 @@ class AddPower extends Component {
           this.setState({ setDisable: false })
           if (res?.data?.Result) {
             Toaster.success(MESSAGES.UPDATE_POWER_DETAIL_SUCESS);
-            this.cancel();
+            this.cancel('submit');
           }
         })
       }
@@ -1228,7 +1228,7 @@ class AddPower extends Component {
           this.setState({ setDisable: false })
           if (res?.data?.Result) {
             Toaster.success(MESSAGES.POWER_DETAIL_ADD_SUCCESS);
-            this.cancel();
+            this.cancel('submit');
           }
         });
 
@@ -1266,7 +1266,7 @@ class AddPower extends Component {
           this.setState({ setDisable: false })
           if (res?.data?.Result) {
             Toaster.success(MESSAGES.POWER_DETAIL_ADD_SUCCESS);
-            this.cancel();
+            this.cancel('submit');
           }
         });
       }
@@ -1991,7 +1991,7 @@ class AddPower extends Component {
                         <button
                           type={'button'}
                           className="mr15 cancel-btn"
-                          onClick={this.cancel}
+                          onClick={() => { this.cancel('cancel') }}
                           disabled={setDisable}
                         >
                           <div className={"cancel-icon"}></div> {'Cancel'}
@@ -2090,6 +2090,7 @@ export default connect(mapStateToProps, {
 })(reduxForm({
   form: 'AddPower',
   enableReinitialize: true,
+  touchOnChange: true,
   onSubmitFail: errors => {
     focusOnError(errors);
   },

@@ -242,4 +242,5 @@ export default connect(mapStateToProps, {
 })(reduxForm({
   form: 'AddMachineTypeDrawer',
   enableReinitialize: true,
+  touchOnChange: true
 })(AddMachineTypeDrawer));

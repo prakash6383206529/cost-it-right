@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { getPlantDataAPI, activeInactiveStatus, deletePlantAPI, getFilteredPlantList } from '../actions/Plant';
-import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, } from '../../../actions/Common';
+import { fetchStateDataAPI, fetchCityDataAPI, } from '../../../actions/Common';
 import { focusOnError, } from "../../layout/FormInputs";
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
@@ -54,10 +54,7 @@ class ZBCPlantListing extends Component {
     }
 
     componentDidMount() {
-
-        this.props.fetchCountryDataAPI(() => { })
         this.filterList()
-
     }
 
     /**
@@ -261,15 +258,17 @@ class ZBCPlantListing extends Component {
         this.setState({ isOpenVendor: true, isViewMode: false })
     }
 
-    closeVendorDrawer = (e = '') => {
+    closeVendorDrawer = (e = '', type) => {
         this.setState({
             isOpenVendor: false,
             isEditFlag: false,
             ID: '',
         }, () => {
-            //this.getTableListData()
-            this.filterList()
+            if (type === 'submit') {
+                this.filterList()
+            }
         })
+
     }
 
     /**
@@ -487,7 +486,6 @@ export default connect(mapStateToProps, {
     getPlantDataAPI,
     deletePlantAPI,
     activeInactiveStatus,
-    fetchCountryDataAPI,
     fetchStateDataAPI,
     fetchCityDataAPI,
     getFilteredPlantList,
@@ -497,4 +495,5 @@ export default connect(mapStateToProps, {
         focusOnError(errors);
     },
     enableReinitialize: true,
+    touchOnChange: true
 })(ZBCPlantListing));

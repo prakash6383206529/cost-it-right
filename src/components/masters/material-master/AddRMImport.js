@@ -146,7 +146,6 @@ class AddRMImport extends Component {
       this.props.getRawMaterialCategory(res => { });
       this.props.getRawMaterialNameChild('', () => { })
       this.setState({ inputLoader: true })
-      this.props.getRawMaterialCategory(res => { });
       this.props.getVendorListByVendorType(false, () => { this.setState({ inputLoader: false }) })
       this.props.getCostingSpecificTechnology(loggedInUserId(), () => { this.setState({ inputLoader: false }) })
       this.props.fetchSpecificationDataAPI(0, () => { })
@@ -633,8 +632,8 @@ class AddRMImport extends Component {
   closeApprovalDrawer = (e = '', type) => {
     this.setState({ approveDrawer: false, setDisable: false })
     if (type === 'submit') {
-      this.clearForm()
-      this.cancel()
+      this.clearForm('submit')
+      this.cancel('submit')
     }
   }
 
@@ -767,7 +766,7 @@ class AddRMImport extends Component {
   * @method cancel
   * @description used to Reset form
   */
-  clearForm = () => {
+  clearForm = (type) => {
     const { reset } = this.props;
     reset();
     this.setState({
@@ -790,15 +789,15 @@ class AddRMImport extends Component {
     })
     this.props.getRMImportDataById('', false, res => { })
     this.props.fetchSpecificationDataAPI(0, () => { })
-    this.props.hideForm()
+    this.props.hideForm(type)
   }
 
   /**
   * @method cancel
   * @description used to Reset form
   */
-  cancel = () => {
-    this.clearForm()
+  cancel = (type) => {
+    this.clearForm(type)
   }
 
   /**
@@ -1114,7 +1113,7 @@ class AddRMImport extends Component {
           this.setState({ setDisable: false })
           if (res?.data?.Result) {
             Toaster.success(MESSAGES.MATERIAL_ADD_SUCCESS);
-            this.clearForm();
+            this.clearForm('submit');
           }
         });
       }
@@ -1127,7 +1126,7 @@ class AddRMImport extends Component {
       this.setState({ setDisable: false })
       if (res?.data?.Result) {
         Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS);
-        this.clearForm();
+        this.clearForm('submit');
       }
     })
   }
@@ -1976,4 +1975,5 @@ export default connect(mapStateToProps, {
 })(reduxForm({
   form: 'AddRMImport',
   enableReinitialize: true,
+  touchOnChange: true
 })(AddRMImport));

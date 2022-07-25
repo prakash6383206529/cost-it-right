@@ -3,8 +3,7 @@ import { connect } from 'react-redux';
 import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import {
-    getProfitDataList, deleteProfit, activeInactiveProfit, fetchModelTypeAPI,
-    getVendorWithVendorCodeSelectList, getProfitVendorFilterByModelSelectList, getProfitModelFilterByVendorSelectList,
+    getProfitDataList, deleteProfit, activeInactiveProfit, getProfitVendorFilterByModelSelectList, getProfitModelFilterByVendorSelectList,
 } from '../actions/OverheadProfit';
 import { EMPTY_DATA } from '../../../config/constants';
 import { loggedInUserId, } from '../../../helper';
@@ -13,7 +12,6 @@ import Toaster from '../../common/Toaster';
 import Switch from "react-switch";
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { PROFIT_DOWNLOAD_EXCEl } from '../../../config/masterData';
-import { fetchCostingHeadsAPI, } from '../../../actions/Common';
 import LoaderCustom from '../../common/LoaderCustom';
 import DayTime from '../../common/DayTimeWrapper'
 import { ProfitMaster } from '../../../config/constants';
@@ -57,10 +55,11 @@ class ProfitListing extends Component {
     * @description Called after rendering the component
     */
     componentDidMount() {
-        this.props.fetchModelTypeAPI('--Model Types--', res => { });
-        this.props.fetchCostingHeadsAPI('--Costing Heads--', res => { });
-        this.props.getVendorWithVendorCodeSelectList()
-        this.getDataList()
+        setTimeout(() => {
+            if (!this.props.stopApiCallOnCancel) {
+                this.getDataList()
+            }
+        }, 300);
     }
 
     // Get updated Table data list after any action performed.
@@ -492,12 +491,10 @@ export default connect(mapStateToProps, {
     getProfitDataList,
     deleteProfit,
     activeInactiveProfit,
-    fetchModelTypeAPI,
-    getVendorWithVendorCodeSelectList,
     getProfitVendorFilterByModelSelectList,
     getProfitModelFilterByVendorSelectList,
-    fetchCostingHeadsAPI
 })(reduxForm({
     form: 'ProfitListing',
     enableReinitialize: true,
+    touchOnChange: true
 })(ProfitListing));

@@ -6,7 +6,6 @@ import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialC
 import { loggedInUserId } from "../../../helper/auth";
 import { renderDatePicker, renderText, renderTextAreaField, } from "../../layout/FormInputs";
 import { createProduct, updateProduct, getProductData, fileUploadProduct, fileDeletePart, } from '../actions/Part';
-import { getPlantSelectList, } from '../../../actions/Common';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import Dropzone from 'react-dropzone-uploader';
@@ -50,7 +49,6 @@ class AddIndivisualProduct extends Component {
     * @description 
     */
     componentDidMount() {
-        this.props.getPlantSelectList(() => { })
         this.getDetails()
     }
 
@@ -244,7 +242,7 @@ class AddIndivisualProduct extends Component {
    * @method cancel
    * @description used to Reset form
    */
-    cancel = () => {
+    cancel = (type) => {
         const { reset } = this.props;
         reset();
         this.setState({
@@ -253,7 +251,7 @@ class AddIndivisualProduct extends Component {
             isImpactCalculation: false,
         })
         this.props.getProductData('', res => { })
-        this.props.hideForm()
+        this.props.hideForm(type)
     }
 
     /**
@@ -266,7 +264,7 @@ class AddIndivisualProduct extends Component {
         if (isEditFlag) {
 
             if (DropdownChanged && uploadAttachements && (DataToCheck.Remark) === (values.Remark)) {
-                this.cancel()
+                this.cancel('cancel')
                 return false;
             }
             this.setState({ setDisable: true })
@@ -296,7 +294,7 @@ class AddIndivisualProduct extends Component {
                     this.setState({ setDisable: false })
                     if (res?.data?.Result) {
                         Toaster.success(MESSAGES.UPDATE_PRODUCT_SUCESS);
-                        this.cancel()
+                        this.cancel('submit')
                     }
                 });
             }
@@ -324,7 +322,7 @@ class AddIndivisualProduct extends Component {
                 this.setState({ setDisable: false, isLoader: false })
                 if (res?.data?.Result === true) {
                     Toaster.success(MESSAGES.PRODUCT_ADD_SUCCESS);
-                    this.cancel()
+                    this.cancel('submit')
                 }
             });
         }
@@ -649,7 +647,7 @@ class AddIndivisualProduct extends Component {
                                                     <button
                                                         type={"button"}
                                                         className="mr15 cancel-btn"
-                                                        onClick={this.cancel}
+                                                        onClick={() => { this.cancel('cancel') }}
                                                         disabled={setDisable}
                                                     >
                                                         <div className={"cancel-icon"}></div>
@@ -711,7 +709,6 @@ function mapStateToProps({ comman, part, auth }) {
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
-    getPlantSelectList,
     createProduct,
     updateProduct,
     getProductData,
@@ -720,4 +717,5 @@ export default connect(mapStateToProps, {
 })(reduxForm({
     form: 'AddIndivisualPart',
     enableReinitialize: true,
+    touchOnChange: true
 })(AddIndivisualProduct));
