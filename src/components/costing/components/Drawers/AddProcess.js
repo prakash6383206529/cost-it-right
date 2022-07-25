@@ -18,6 +18,7 @@ import GroupProcess from './GroupProcess';
 import _ from 'lodash'
 import { getConfigurationKey } from '../../../../helper';
 import { PaginationWrapper } from '../../../common/commonPagination';
+import { hyphenFormatter } from '../../../masters/masterUtil';
 
 const gridOptions = {};
 
@@ -248,10 +249,7 @@ function AddProcess(props) {
     }
 
   }
-  const machineDashFormatter = (props) => {
-    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return cellValue != null ? cellValue : '-'
-  }
+
   const frameworkComponents = {
     // totalValueRenderer: this.buttonFormatter,
     // effectiveDateRenderer: this.effectiveDateFormatter,
@@ -263,7 +261,7 @@ function AddProcess(props) {
     customLoadingOverlay: LoaderCustom,
     customNoRowsOverlay: NoContentFound,
     checkBoxRenderer: checkBoxRenderer,
-    machineDashFormatter: machineDashFormatter
+    hyphenFormatter: hyphenFormatter
   };
 
   useEffect(() => {
@@ -388,9 +386,9 @@ function AddProcess(props) {
                                   <AgGridColumn cellClass="has-checkbox" field="ProcessName" headerName="Process Name" cellRenderer={checkBoxRenderer}  ></AgGridColumn>
                                   <AgGridColumn field='Technologies' headerName='Technology'></AgGridColumn>
                                   <AgGridColumn field="MachineNumber" headerName="Machine No."></AgGridColumn>
-                                  <AgGridColumn field="MachineName" headerName="Machine Name" cellRenderer={"machineDashFormatter"}></AgGridColumn>
+                                  <AgGridColumn field="MachineName" headerName="Machine Name" cellRenderer={"hyphenFormatter"}></AgGridColumn>
                                   <AgGridColumn field="MachineTypeName" headerName="Machine Type"></AgGridColumn>
-                                  <AgGridColumn field="Tonnage" headerName="Machine Tonnage" cellRenderer={"machineDashFormatter"}></AgGridColumn>
+                                  <AgGridColumn field="Tonnage" headerName="Machine Tonnage" cellRenderer={"hyphenFormatter"}></AgGridColumn>
                                   <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
                                   <AgGridColumn field="MachineRate" headerName={'Machine Rate'}></AgGridColumn>
 
