@@ -109,7 +109,7 @@ class RMListing extends Component {
     confirmDelete = (ID) => {
         this.props.deleteMaterialTypeAPI(ID, (res) => {
             if (res.status === 417 && res.data.Result === false) {
-                Toaster.warning(res.data.Message)
+                Toaster.error(res.data.Message)
             } else if (res && res.data && res.data.Result === true) {
                 Toaster.success(MESSAGES.DELETE_MATERIAL_SUCCESS);
                 this.getListData();
