@@ -1169,7 +1169,7 @@ class AddRMDomestic extends Component {
               && Number(DataToChange.NetLandedCost) === values.NetLandedCost && DataToChange.Remark === (values.Remark === '' ? null : values.Remark)
               && (Number(DataToChange.CutOffPrice) === values.cutOffPrice || values.cutOffPrice === undefined)
               && DataToChange.RawMaterialCode === values.Code) {
-              Toaster.warning('Please change data to send rm for approval')
+              Toaster.warning('Please change data to send RM for approval')
               return false
             }
 
