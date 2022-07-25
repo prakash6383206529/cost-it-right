@@ -169,13 +169,17 @@ class SOBListing extends Component {
   * @method closeDrawer
   * @description Filter listing
   */
-  closeDrawer = (e = '') => {
+  closeDrawer = (e = '', type) => {
+    console.log('e: ', e);
+    console.log('type: ', type);
     this.setState({
       isOpen: false,
       isEditFlag: false,
       ID: '',
     }, () => {
-      this.getDataList()
+      if (type === 'submit') {
+        this.getDataList()
+      }
     })
   }
 

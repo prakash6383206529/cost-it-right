@@ -74,8 +74,6 @@ function MachineApproval(props) {
 
     const closeDrawer = (e = '') => {
         setShowApprovalSummary(false)
-        setLoader(true)
-        getTableData()
     }
 
 

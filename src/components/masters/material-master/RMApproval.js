@@ -222,13 +222,13 @@ function RMApproval(props) {
    */
     const closeDrawer = (e = '') => {
         setShowApprovalSummary(false)
-        setLoader(true)
-        getTableData()
+        // setLoader(true)
+        // getTableData()
     }
     const closeApprovalDrawer = (e = '') => {
         setApprovalDrawer(false)
-        setLoader(true)
-        getTableData()
+        // setLoader(true)
+        // getTableData()
     }
 
     const onRowSelect = () => {

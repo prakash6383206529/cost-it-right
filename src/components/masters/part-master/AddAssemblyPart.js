@@ -5,10 +5,9 @@ import { Row, Col } from 'reactstrap';
 import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength75, maxLength20, maxLength80, maxLength512, checkSpacesInString } from "../../../helper/validation";
 import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
 import { renderText, renderTextAreaField, focusOnError, renderDatePicker, renderMultiSelectField, searchableSelect } from "../../layout/FormInputs";
-import { getPlantSelectListByType, getPartSelectList } from '../../../actions/Common';
 import {
   createAssemblyPart, updateAssemblyPart, getAssemblyPartDetail, fileUploadPart, fileDeletePart,
-  getBOMViewerTreeDataByPartIdAndLevel, getProductGroupSelectList, getPartDescription, getPartData, convertPartToAssembly,
+  getBOMViewerTreeDataByPartIdAndLevel, getPartDescription, getPartData, convertPartToAssembly,
 } from '../actions/Part';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
@@ -74,7 +73,8 @@ class AddAssemblyPart extends Component {
       partListingData: [],
       warningMessageTechnology: false,
       inputLoader: false,
-      convertPartToAssemblyPartId: ""
+      convertPartToAssemblyPartId: "",
+      uploadAttachements: true
     }
   }
 
@@ -84,12 +84,7 @@ class AddAssemblyPart extends Component {
   */
   componentDidMount() {
     this.setState({ inputLoader: true })
-    this.props.getPlantSelectListByType(ZBC, () => { })
-    this.props.getProductGroupSelectList(() => { })
     this.props.getCostingSpecificTechnology(loggedInUserId(), () => { })
-    this.props.getPartSelectList((res) => {
-      this.setState({ partListingData: res?.data?.SelectList, inputLoader: false })
-    })
     this.getDetails()
   }
 
@@ -342,6 +337,7 @@ class AddAssemblyPart extends Component {
       if (!OldChildPartsArray.includes(el.PartId) && el.Level === 'L1') {
         return true;
       }
+
       return false;
     })
     this.setState({ NewAddedLevelOneChilds: NewAddedLevelOneChilds })
@@ -401,6 +397,7 @@ class AddAssemblyPart extends Component {
   checkIsFormFilled = () => {
     const { fieldsObj } = this.props;
     if ((fieldsObj.BOMNumber === undefined || fieldsObj.BOMNumber === '') || fieldsObj.AssemblyPartNumber === undefined || fieldsObj.AssemblyPartName === undefined || Object.keys(this.state.TechnologySelected).length === 0 || this.state.effectiveDate === "") {
+
       return false;
     } else {
       return true;
@@ -418,11 +415,13 @@ class AddAssemblyPart extends Component {
 
     if (this.checkIsFormFilled() === false) {
       Toaster.warning("Please fill the mandatory fields.")
+
       return false;
     }
 
     if (isEditFlag) {
       this.setState({ isOpenBOMViewerDrawer: true, })
+
       return false;
     }
 
@@ -480,6 +479,7 @@ class AddAssemblyPart extends Component {
     }
 
     if (isEqual) {
+
       return false
     } else {
       this.setState({ isDisableBomNo: true })
@@ -507,7 +507,7 @@ class AddAssemblyPart extends Component {
   // called every time a file's `status` changes
   handleChangeStatus = ({ meta, file }, status) => {
     const { files, } = this.state;
-    this.setState({ setDisable: true })
+    this.setState({ setDisable: true, uploadAttachements: false })
     if (status === 'removed') {
       const removedFileName = file.name;
       let tempArr = files.filter(item => item.OriginalFileName !== removedFileName)
@@ -592,7 +592,7 @@ class AddAssemblyPart extends Component {
   * @method cancel
   * @description used to Reset form
   */
-  cancel = () => {
+  cancel = (type) => {
     const { reset } = this.props;
     reset();
     this.setState({
@@ -603,7 +603,7 @@ class AddAssemblyPart extends Component {
       BOMViewerData: [],
     })
     this.props.getAssemblyPartDetail('', res => { })
-    this.props.hideForm()
+    this.props.hideForm(type)
   }
 
   /**
@@ -616,7 +616,7 @@ class AddAssemblyPart extends Component {
       this.setState({ setDisable: false })
       if (res.data.Result) {
         Toaster.success(MESSAGES.UPDATE_BOM_SUCCESS);
-        this.cancel()
+        this.cancel('submit')
       }
     });
     this.setState({ showPopupDraft: false })
@@ -627,7 +627,7 @@ class AddAssemblyPart extends Component {
   * @description Used to Submit the form
   */
   onSubmit = debounce((values) => {
-    const { PartId, isEditFlag, selectedPlants, BOMViewerData, files, avoidAPICall, DataToCheck, DropdownChanged, ProductGroup, BOMChanged, convertPartToAssembly } = this.state;
+    const { PartId, isEditFlag, selectedPlants, BOMViewerData, files, avoidAPICall, DataToCheck, DropdownChanged, ProductGroup, BOMChanged, convertPartToAssembly, uploadAttachements } = this.state;
     const { partData, initialConfiguration } = this.props;
 
     let plantArray = selectedPlants && selectedPlants.map((item) => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
@@ -637,6 +637,7 @@ class AddAssemblyPart extends Component {
     // CONDITION CHANGE FOR (BOMViewerData.length === 0 || BOMViewerData.length === 1)
     if (BOMViewerData && isEditFlag ? (BOMViewerData.length === 0) : (BOMViewerData.length === 0 || BOMViewerData.length === 1)) {
       Toaster.warning('Need to add Child parts');
+
       return false;
     }
 
@@ -664,11 +665,10 @@ class AddAssemblyPart extends Component {
 
     if (isEditFlag || convertPartToAssembly) {
       let isGroupCodeChange = this.checkGroupCodeChange(values)
-
       if (!DropdownChanged && String(DataToCheck.AssemblyPartName) === String(values.AssemblyPartName) && !isGroupCodeChange && String(DataToCheck.Description) === String(values.Description) &&
         String(DataToCheck.ECNNumber) === String(values.ECNNumber) && String(DataToCheck.RevisionNumber) === String(values.RevisionNumber) &&
-        String(DataToCheck.DrawingNumber) === String(values.DrawingNumber) && String(DataToCheck.Remark) === String(values.Remark) && BOMChanged === false && String(DataToCheck.Attachements) === String(values.Attachements)) {
-        this.cancel()
+        String(DataToCheck.DrawingNumber) === String(values.DrawingNumber) && String(DataToCheck.Remark) === String(values.Remark) && BOMChanged === false && uploadAttachements) {
+        this.cancel('cancel')
         return false;
       }
 
@@ -730,7 +730,7 @@ class AddAssemblyPart extends Component {
           this.setState({ setDisable: false, isLoader: false })
           if (res?.data?.Result) {
             Toaster.success(MESSAGES.UPDATE_BOM_SUCCESS);
-            this.cancel()
+            this.cancel('submit')
           }
         });
       }
@@ -740,7 +740,7 @@ class AddAssemblyPart extends Component {
           this.setState({ setDisable: false, isLoader: false })
           if (res?.data?.Result) {
             Toaster.success(MESSAGES.UPDATE_BOM_SUCCESS);
-            this.cancel()
+            this.cancel('submit')
           }
         });
       }
@@ -773,7 +773,7 @@ class AddAssemblyPart extends Component {
         this.setState({ setDisable: false, isLoader: false })
         if (res?.data?.Result === true) {
           Toaster.success(MESSAGES.ASSEMBLY_PART_ADD_SUCCESS);
-          this.cancel()
+          this.cancel('submit')
         }
       });
     }
@@ -790,7 +790,7 @@ class AddAssemblyPart extends Component {
       this.setState({ setDisable: false })
       if (res?.data?.Result) {
         Toaster.success(MESSAGES.UPDATE_BOM_SUCCESS);
-        this.cancel()
+        this.cancel('submit')
       }
     });
   }, 500)
@@ -1253,7 +1253,7 @@ class AddAssemblyPart extends Component {
                         <button
                           type={"button"}
                           className=" mr15 cancel-btn"
-                          onClick={this.cancel}
+                          onClick={() => { this.cancel('cancel') }}
                           disabled={setDisable}
                         >
                           <div className={"cancel-icon"}></div>
@@ -1354,16 +1354,13 @@ function mapStateToProps(state) {
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
-  getPlantSelectListByType,
   fileUploadPart,
   fileDeletePart,
-  getPartSelectList,
   createAssemblyPart,
   updateAssemblyPart,
   convertPartToAssembly,
   getAssemblyPartDetail,
   getBOMViewerTreeDataByPartIdAndLevel,
-  getProductGroupSelectList,
   getPartDescription,
   getPartData,
   getCostingSpecificTechnology
@@ -1374,4 +1371,5 @@ export default connect(mapStateToProps, {
     focusOnError(errors);
   },
   enableReinitialize: true,
+  touchOnChange: true
 })(AddAssemblyPart));

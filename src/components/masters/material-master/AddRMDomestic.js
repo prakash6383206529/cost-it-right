@@ -645,8 +645,8 @@ class AddRMDomestic extends Component {
   closeApprovalDrawer = (e = '', type) => {
     this.setState({ approveDrawer: false, setDisable: false })
     if (type === 'submit') {
-      this.clearForm()
-      this.cancel()
+      this.clearForm('submit')
+      this.cancel('submit')
     }
   }
 
@@ -800,7 +800,7 @@ class AddRMDomestic extends Component {
    * @method cancel
    * @description used to Reset form
    */
-  clearForm = () => {
+  clearForm = (type) => {
     const { reset } = this.props
     reset()
     this.setState({
@@ -821,17 +821,19 @@ class AddRMDomestic extends Component {
       showPopup: false,
       updatedObj: {}
     })
-    this.props.getRawMaterialDetailsAPI('', false, (res) => { })
-    this.props.fetchSpecificationDataAPI(0, () => { })
-    this.props.hideForm()
+    if (type === 'submit') {
+      this.props.getRawMaterialDetailsAPI('', false, (res) => { })
+      this.props.fetchSpecificationDataAPI(0, () => { })
+    }
+    this.props.hideForm(type)
   }
 
   /**
    * @method cancel
    * @description used to Reset form
    */
-  cancel = () => {
-    this.clearForm()
+  cancel = (type) => {
+    this.clearForm(type)
   }
 
   /**
@@ -1025,14 +1027,11 @@ class AddRMDomestic extends Component {
 
       if (uploadAttachements && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === values.BasicRate && Number(DataToChange.ScrapRate) === values.ScrapRate
         && Number(DataToChange.NetLandedCost) === values.NetLandedCost && DataToChange.Remark === values.Remark
-        && (Number(DataToChange.CutOffPrice) === values.cutOffPrice || values.cutOffPrice === undefined)
+        && ((DataToChange.CutOffPrice ? Number(DataToChange.CutOffPrice) : '') === (values.cutOffPrice ? Number(values.cutOffPrice) : ''))
         && DataToChange.RawMaterialCode === values.Code
-
-        && (DataToChange.Source === (!IsVendor && !HasDifferentSource ? '' : values.Source))
-        && ((DataToChange.SourceLocation !== null ? DataToChange.SourceLocation : '-') ===
-          (sourceLocationValue ? sourceLocationValue : '-'))) {
-
-        this.cancel()
+        && ((DataToChange.Source ? DataToChange.Source : '') === (!IsVendor && !HasDifferentSource ? '' : values.Source))
+        && ((DataToChange.SourceLocation ? String(DataToChange.SourceLocation) : '') === (sourceLocationValue ? String(sourceLocationValue) : ''))) {
+        this.cancel('cancel')
         return false
       }
 
@@ -1059,7 +1058,7 @@ class AddRMDomestic extends Component {
           this.setState({ setDisable: false })
           if (res?.data?.Result) {
             Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
-            this.clearForm()
+            this.clearForm('submit')
 
           }
         })
@@ -1143,7 +1142,7 @@ class AddRMDomestic extends Component {
               && (Number(DataToChange.CutOffPrice) === values.cutOffPrice || values.cutOffPrice === undefined)
               && DataToChange.RawMaterialCode === values.Code) {
 
-              this.cancel()
+              this.cancel('cancel')
               return false
             }
 
@@ -1157,8 +1156,8 @@ class AddRMDomestic extends Component {
           this.setState({ setDisable: false })
           if (res?.data?.Result) {
             Toaster.success(MESSAGES.MATERIAL_ADD_SUCCESS)
-            this.clearForm()
-            this.cancel()
+            this.clearForm('submit')
+            this.cancel('submit')
           }
         })
       }
@@ -1173,7 +1172,7 @@ class AddRMDomestic extends Component {
       this.setState({ setDisable: false })
       if (res?.data?.Result) {
         Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
-        this.clearForm()
+        this.clearForm('submit')
         // this.cancel()
       }
     })
@@ -1783,7 +1782,7 @@ class AddRMDomestic extends Component {
                           <button
                             type={"button"}
                             className="mr15 cancel-btn"
-                            onClick={this.cancel}
+                            onClick={() => { this.cancel('cancel') }}
                             disabled={setDisable}
                           >
                             <div className={"cancel-icon"}></div>
@@ -2014,6 +2013,7 @@ export default connect(mapStateToProps, {
   reduxForm({
     form: 'AddRMDomestic',
     enableReinitialize: true,
+    touchOnChange: true,
     onSubmitFail: (errors) => {
       focusOnError(errors)
     },

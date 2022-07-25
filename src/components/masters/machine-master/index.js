@@ -30,6 +30,7 @@ class MachineMaster extends Component {
             DeleteAccessibility: false,
             DownloadAccessibility: false,
             BulkUploadAccessibility: false,
+            stopApiCallOnCancel: false
         }
     }
 
@@ -77,7 +78,8 @@ class MachineMaster extends Component {
     toggle = (tab) => {
         if (this.state.activeTab !== tab) {
             this.setState({
-                activeTab: tab
+                activeTab: tab,
+                stopApiCallOnCancel: false
             });
         }
     }
@@ -119,8 +121,11 @@ class MachineMaster extends Component {
     * @method hideForm
     * @description HIDE MACHINE FORM
     */
-    hideForm = () => {
-        this.setState({ isMachineRateForm: false, data: {}, editDetails: {} })
+    hideForm = (type) => {
+        this.setState({ isMachineRateForm: false, data: {}, editDetails: {}, stopApiCallOnCancel: false })
+        if (type === 'cancel') {
+            this.setState({ stopApiCallOnCancel: true })
+        }
     }
 
     addMoreDetailsData = (data) => {
@@ -229,6 +234,7 @@ class MachineMaster extends Component {
                                                 DownloadAccessibility={this.state.DownloadAccessibility}
                                                 ViewAccessibility={this.state.ViewAccessibility}
                                                 isMasterSummaryDrawer={false}
+                                                stopApiCallOnCancel={this.state.stopApiCallOnCancel}
                                                 selectionForListingMasterAPI='Master'
                                             />
                                         </TabPane>}
@@ -240,6 +246,7 @@ class MachineMaster extends Component {
                                                 EditAccessibility={this.state.EditAccessibility}
                                                 DeleteAccessibility={this.state.DeleteAccessibility}
                                                 DownloadAccessibility={this.state.DownloadAccessibility}
+                                                stopApiCallOnCancel={this.state.stopApiCallOnCancel}
                                             />
                                         </TabPane>}
                                     {Number(this.state.activeTab) === 3 &&

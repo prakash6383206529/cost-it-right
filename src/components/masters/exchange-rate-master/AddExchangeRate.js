@@ -149,15 +149,15 @@ class AddExchangeRate extends Component {
   */
 
 
-  cancel = () => {
-
+  cancel = (type) => {
+    console.log('type: ', type);
     const { reset } = this.props;
     reset();
     this.setState({
       selectedTechnology: [],
       isEditFlag: false,
     })
-    this.props.hideForm()
+    this.props.hideForm(type)
 
   }
 
@@ -199,12 +199,11 @@ class AddExchangeRate extends Component {
 
     /** Update existing detail of exchange master **/
     if (isEditFlag) {
-
-      if (DataToChange.CurrencyExchangeRate == values.CurrencyExchangeRate &&
-        DataToChange.BankRate == values.BankRate && DataToChange.CustomRate == values.CustomRate &&
-        DataToChange.BankCommissionPercentage == values.BankCommissionPercentage && DropdownChanged
+      if (DataToChange.CurrencyExchangeRate === values.CurrencyExchangeRate &&
+        (DataToChange.BankRate === values.BankRate || values.BankRate === undefined || values.BankRate === '') && (DataToChange.CustomRate === values.CustomRate || values.CustomRate === undefined || values.CustomRate === '') &&
+        DropdownChanged && (DataToChange.BankCommissionPercentage === values.BankCommissionPercentage || values.BankCommissionPercentage === undefined || values.BankCommissionPercentage === '')
       ) {
-        this.cancel()
+        this.cancel('cancel')
         return false;
       }
 
@@ -239,7 +238,7 @@ class AddExchangeRate extends Component {
               this.setState({ setDisable: false })
               if (res?.data?.Result) {
                 Toaster.success(MESSAGES.EXCHANGE_UPDATE_SUCCESS);
-                this.cancel()
+                this.cancel('submit')
               }
             });
           },
@@ -268,7 +267,7 @@ class AddExchangeRate extends Component {
         if (res?.data?.Result) {
 
           Toaster.success(MESSAGES.EXCHANGE_ADD_SUCCESS);
-          this.cancel();
+          this.cancel('submit');
         }
       });
     }
@@ -281,7 +280,7 @@ class AddExchangeRate extends Component {
       this.setState({ setDisable: false })
       if (res?.data?.Result) {
         Toaster.success(MESSAGES.EXCHANGE_UPDATE_SUCCESS);
-        this.cancel()
+        this.cancel('submit')
       }
     });
   }, 500)
@@ -447,7 +446,7 @@ class AddExchangeRate extends Component {
                       <button
                         type={"button"}
                         className="mr15 cancel-btn"
-                        onClick={this.cancel}
+                        onClick={() => { this.cancel('cancel') }}
                         disabled={setDisable}
                       >
                         <div className={'cancel-icon'}></div>

@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { getPlantDataAPI, activeInactiveStatus, getFilteredPlantList, deletePlantAPI } from '../actions/Plant';
-import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI } from '../../../actions/Common';
+import { fetchStateDataAPI, fetchCityDataAPI } from '../../../actions/Common';
 import { focusOnError, searchableSelect } from "../../layout/FormInputs";
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
@@ -53,8 +53,9 @@ class VBCPlantListing extends Component {
     }
 
     componentDidMount() {
-        this.getTableListData();
-        this.props.fetchCountryDataAPI(() => { })
+        setTimeout(() => {
+            this.getTableListData();
+        }, 300);
     }
 
     /**
@@ -344,14 +345,17 @@ class VBCPlantListing extends Component {
         this.setState({ isOpenVendor: true, isViewMode: false })
     }
 
-    closeVendorDrawer = (e = '') => {
+    closeVendorDrawer = (e = '', type) => {
         this.setState({
             isOpenVendor: false,
             isEditFlag: false,
             ID: '',
         }, () => {
-            this.filterList()
-            //this.getTableListData()
+            if (type === 'submit') {
+                this.filterList()
+                this.getTableListData()
+            }
+
         })
     }
 
@@ -550,7 +554,6 @@ function mapStateToProps({ comman, auth, plant }) {
 export default connect(mapStateToProps, {
     getPlantDataAPI,
     activeInactiveStatus,
-    fetchCountryDataAPI,
     fetchStateDataAPI,
     fetchCityDataAPI,
     getFilteredPlantList,
@@ -561,4 +564,5 @@ export default connect(mapStateToProps, {
         focusOnError(errors);
     },
     enableReinitialize: true,
+    touchOnChange: true
 })(VBCPlantListing));

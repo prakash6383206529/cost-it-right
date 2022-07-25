@@ -178,4 +178,5 @@ export default connect(mapStateToProps, {
 })(reduxForm({
     form: 'EfficiencyDrawer',
     enableReinitialize: true,
+    touchOnChange: true
 })(EfficiencyDrawer));

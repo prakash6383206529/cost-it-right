@@ -64,19 +64,19 @@ class AddReason extends Component {
     }
   }
 
-  toggleDrawer = (event) => {
+  toggleDrawer = (event, type) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }
 
-    this.props.closeDrawer('')
+    this.props.closeDrawer('', type)
   };
 
   /**
   * @method cancel
   * @description used to Reset form
   */
-  cancel = () => {
+  cancel = (type) => {
     const { reset } = this.props;
     reset();
     this.setState({
@@ -84,7 +84,7 @@ class AddReason extends Component {
       isEditFlag: false,
     })
     this.props.setEmptyReason();
-    this.toggleDrawer('')
+    this.toggleDrawer('', type)
   }
 
   /**
@@ -99,7 +99,7 @@ class AddReason extends Component {
     if (isEditFlag) {
       if (DataToCheck.Reason == values.Reason) {
 
-        this.toggleDrawer('')
+        this.toggleDrawer('', 'cancel')
         return false
       }
       this.setState({ setDisable: true })
@@ -114,7 +114,7 @@ class AddReason extends Component {
         if (res?.Result === true) {
           Toaster.success(MESSAGES.UPDATE_REASON_SUCESS);
         }
-        this.cancel()
+        this.cancel('submit')
       });
     } else {
 
@@ -128,7 +128,7 @@ class AddReason extends Component {
         this.setState({ setDisable: false })
         if (res?.data?.Result === true) {
           Toaster.success(MESSAGES.REASON_ADD_SUCCESS);
-          this.cancel()
+          this.cancel('submit')
         }
       });
     }
@@ -216,7 +216,7 @@ class AddReason extends Component {
                   <button
                     type={"button"}
                     className=" mr15 cancel-btn"
-                    onClick={this.cancel}
+                    onClick={() => { this.cancel('cancel') }}
                     disabled={setDisable}
                   >
                     <div className={"cancel-icon"}></div>
@@ -273,4 +273,5 @@ export default connect(mapStateToProps, {
     focusOnError(errors);
   },
   enableReinitialize: true,
+  touchOnChange: true
 })(AddReason));

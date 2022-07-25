@@ -178,4 +178,5 @@ export default connect(mapStateToProps, {
 })(reduxForm({
   form: 'AddFuelNameDrawer',
   enableReinitialize: true,
+  touchOnChange: true
 })(AddFuelNameDrawer));

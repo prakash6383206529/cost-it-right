@@ -8,8 +8,7 @@ import { MESSAGES } from '../../../config/message';
 import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { getLabourDataList, deleteLabour, getLabourTypeByPlantSelectList } from '../actions/Labour';
-import { getPlantListByState, getZBCPlantList, getStateSelectList, } from '../actions/Fuel';
-import { getMachineTypeSelectList, } from '../actions/MachineMaster';
+import { getPlantListByState, } from '../actions/Fuel';
 import Switch from "react-switch";
 import AddLabour from './AddLabour';
 import BulkUpload from '../../massUpload/BulkUpload';
@@ -68,9 +67,6 @@ class LabourListing extends Component {
     this.applyPermission(this.props.topAndLeftMenuData)
     this.setState({ isLoader: true })
     setTimeout(() => {
-      this.props.getZBCPlantList(() => { })
-      this.props.getStateSelectList(() => { })
-      this.props.getMachineTypeSelectList(() => { })
       // this.getTableListData()
       this.filterList()
     }, 500);
@@ -321,16 +317,16 @@ class LabourListing extends Component {
    * @method hideForm
    * @description HIDE ADD FORM
    */
-  hideForm = () => {
+  hideForm = (type) => {
     this.setState(
       {
         toggleForm: false,
         data: { isEditFlag: false, ID: '' },
       },
       () => {
-        // this.getTableListData()
-        this.filterList()
-      },
+        if (type === 'submit')
+          this.filterList()
+      }
     )
   }
 
@@ -612,9 +608,6 @@ export default connect(mapStateToProps, {
   getLabourDataList,
   deleteLabour,
   getPlantListByState,
-  getZBCPlantList,
-  getStateSelectList,
-  getMachineTypeSelectList,
   getLabourTypeByPlantSelectList,
 })(
   reduxForm({
@@ -623,5 +616,6 @@ export default connect(mapStateToProps, {
       focusOnError(errors)
     },
     enableReinitialize: true,
+    touchOnChange: true
   })(LabourListing),
 )

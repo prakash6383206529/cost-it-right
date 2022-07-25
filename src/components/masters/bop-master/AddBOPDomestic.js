@@ -7,7 +7,7 @@ import {
   maxLength, maxLength10, positiveAndDecimalNumber, maxLength512, maxLength80, checkWhiteSpaces, decimalLengthsix, checkSpacesInString
 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker, renderNumberInputField } from "../../layout/FormInputs";
-import { fetchMaterialComboAPI, getCityBySupplier, getPlantBySupplier, getUOMSelectList, getPlantSelectListByType, getCityByCountry, getAllCity } from '../../../actions/Common';
+import { getCityBySupplier, getPlantBySupplier, getUOMSelectList, getPlantSelectListByType } from '../../../actions/Common';
 import { getVendorWithVendorCodeSelectList, getVendorTypeBOPSelectList, } from '../actions/Supplier';
 import { getPartSelectList } from '../actions/Part';
 import { masterFinalLevelUser } from '../actions/Material'
@@ -99,28 +99,27 @@ class AddBOPDomestic extends Component {
    * @description Called after rendering the component
    */
   componentDidMount() {
-    this.getDetails()
-    this.props.fetchMaterialComboAPI(res => { });
-    this.props.getAllCity(cityId => {
-      this.props.getCityByCountry(cityId, 0, () => { })
-    })
-    if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
-      this.setState({ inputLoader: true })
-      this.props.getVendorTypeBOPSelectList(() => { this.setState({ inputLoader: false }) })
-    }
-
-    let obj = {
-      MasterId: BOP_MASTER_ID,
-      DepartmentId: userDetails().DepartmentId,
-      LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
-      LoggedInUserId: loggedInUserId()
-    }
-    this.props.masterFinalLevelUser(obj, (res) => {
-      if (res.data.Result) {
-        this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+    setTimeout(() => {
+      this.getDetails()
+      if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
+        this.setState({ inputLoader: true })
+        this.props.getVendorTypeBOPSelectList(() => { this.setState({ inputLoader: false }) })
       }
 
-    })
+      let obj = {
+        MasterId: BOP_MASTER_ID,
+        DepartmentId: userDetails().DepartmentId,
+        LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
+        LoggedInUserId: loggedInUserId()
+      }
+      this.props.masterFinalLevelUser(obj, (res) => {
+        if (res.data.Result) {
+          this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+        }
+
+      })
+    }, 300);
+
   }
 
   componentDidUpdate(prevProps) {
@@ -165,10 +164,10 @@ class AddBOPDomestic extends Component {
 
 
   closeApprovalDrawer = (e = '', type) => {
+
     this.setState({ approveDrawer: false, setDisable: false })
     if (type === 'submit') {
-
-      this.cancel()
+      this.cancel('submit')
     }
   }
 
@@ -550,7 +549,7 @@ class AddBOPDomestic extends Component {
   * @method cancel
   * @description used to Reset form
   */
-  cancel = () => {
+  cancel = (type) => {
     const { reset } = this.props;
     reset();
     this.setState({
@@ -562,9 +561,10 @@ class AddBOPDomestic extends Component {
       sourceLocation: [],
       UOM: [],
     })
-    this.props.hideForm()
-    this.getDetails()
-
+    this.props.hideForm(type)
+    if (type === 'submit') {
+      this.getDetails()
+    }
   }
 
   /**
@@ -639,11 +639,10 @@ class AddBOPDomestic extends Component {
       }
       if ((DataToCheck.Remark) === (values.Remark) && uploadAttachements &&
         ((DataToCheck.Source ? DataToCheck.Source : '-') === (values.Source ? values.Source : '-')) &&
-        ((DataToCheck.SourceLocation ? DataToCheck.SourceLocation : '-') === (sourceLocation.value ? sourceLocation.value : '-'))) {
-        this.cancel()
+        ((DataToCheck.SourceLocation ? String(DataToCheck.SourceLocation) : '-') === (sourceLocation.value ? String(sourceLocation.value) : '-'))) {
+        this.cancel('cancel')
         return false;
       } else {
-
         this.setState({ showPopup: true, updatedObj: requestData })
         return false
       }
@@ -713,7 +712,7 @@ class AddBOPDomestic extends Component {
 
 
         if ((DataToCheck.Remark) === (values.Remark) && uploadAttachements) {
-          this.cancel()
+          this.cancel('cancel')
           return false;
         } else {
 
@@ -729,7 +728,7 @@ class AddBOPDomestic extends Component {
           if (res?.data?.Result) {
             Toaster.success(MESSAGES.BOP_ADD_SUCCESS)
             //this.clearForm()
-            this.cancel()                                       //BOP APPROVAL IN PROGRESS DONT DELETE THIS CODE
+            this.cancel('submit')                                       //BOP APPROVAL IN PROGRESS DONT DELETE THIS CODE
           }
         })
       }
@@ -746,7 +745,7 @@ class AddBOPDomestic extends Component {
       this.setState({ setDisable: false })
       if (res?.data?.Result) {
         Toaster.success(MESSAGES.UPDATE_BOP_SUCESS);
-        this.cancel();
+        this.cancel('submit');
       }
     })
 
@@ -1219,7 +1218,7 @@ class AddBOPDomestic extends Component {
                           <button
                             type={"button"}
                             className="mr15 cancel-btn"
-                            onClick={this.cancel}
+                            onClick={() => { this.cancel('cancel') }}
                             disabled={setDisable}
                           >
                             <div className={"cancel-icon"}></div>
@@ -1355,7 +1354,6 @@ export default connect(mapStateToProps, {
   getVendorTypeBOPSelectList,
   getPlantBySupplier,
   getCityBySupplier,
-  fetchMaterialComboAPI,
   getUOMSelectList,
   getBOPCategorySelectList,
   getBOPDomesticById,
@@ -1363,8 +1361,6 @@ export default connect(mapStateToProps, {
   fileUploadBOPDomestic,
   fileDeleteBOPDomestic,
   getPlantSelectListByType,
-  getCityByCountry,
-  getAllCity,
   masterFinalLevelUser
 })(reduxForm({
   form: 'AddBOPDomestic',

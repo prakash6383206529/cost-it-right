@@ -48,8 +48,11 @@ class IndivisualProductListing extends Component {
     }
 
     componentDidMount() {
-        this.getTableListData();
-
+        setTimeout(() => {
+            if (!this.props.stopApiCallOnCancel) {
+                this.getTableListData();
+            }
+        }, 300);
     }
 
     /**

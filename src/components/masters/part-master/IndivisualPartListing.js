@@ -67,8 +67,6 @@ class IndivisualPartListing extends Component {
 
     ApiActionCreator(skip, take, obj, isPagination) {
         this.setState({ isLoader: true })
-
-
         let constantFilterData = this.state.filterModel
         let object = { ...this.state.floatingFilterData }
         this.props.getPartDataList(skip, take, obj, isPagination, (res) => {
@@ -157,18 +155,24 @@ class IndivisualPartListing extends Component {
 
 
     componentDidMount() {
-        this.ApiActionCreator(0, defaultPageSize, this.state.floatingFilterData, true)
-
-
+        setTimeout(() => {
+            if (!this.props.stopApiCallOnCancel) {
+                this.ApiActionCreator(0, 100, this.state.floatingFilterData, true)
+            }
+        }, 200);
     }
 
 
 
     // Get updated list after any action performed.
     getUpdatedData = () => {
-        this.setState(() => {
-            this.getTableListData()
-        })
+        setTimeout(() => {
+            if (!this.props.stopApiCallOnCancel) {
+                this.setState(() => {
+                    this.getTableListData()
+                })
+            }
+        }, 200);
     }
 
     /**

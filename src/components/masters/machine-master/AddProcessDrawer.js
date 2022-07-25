@@ -28,6 +28,7 @@ class AddProcessDrawer extends Component {
       effectiveDate: '',
       isLoader: false,
       setDisable: false,
+      DataToChange: [],
 
     }
   }
@@ -55,6 +56,7 @@ class AddProcessDrawer extends Component {
       this.setState({ isLoader: true })
       this.props.getProcessData(ID, res => {
         let Data = res.data.Data
+        this.setState({ DataToChange: Data })
         this.setState({
           ProcessId: Data.ProcessId,
           effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : ''
@@ -66,14 +68,14 @@ class AddProcessDrawer extends Component {
     }
   }
 
-  toggleDrawer = (event, formData) => {
+  toggleDrawer = (event, formData, type) => {
     if (
       event.type === 'keydown' &&
       (event.key === 'Tab' || event.key === 'Shift')
     ) {
       return
     }
-    this.props.closeDrawer('', formData)
+    this.props.closeDrawer('', formData, type)
   }
 
   checkProcessCode = (e) => {
@@ -144,11 +146,11 @@ class AddProcessDrawer extends Component {
    * @method cancel
    * @description used to Reset form
    */
-  cancel = () => {
+  cancel = (type) => {
     const { reset } = this.props
     reset()
     // dispatch(reset('AddProcessDrawer'))
-    this.toggleDrawer('')
+    this.toggleDrawer('', '', type)
   }
 
   /**
@@ -156,7 +158,7 @@ class AddProcessDrawer extends Component {
    * @description Used to Submit the form
    */
   onSubmit = debounce((values) => {
-    const { selectedPlants, selectedMachine, effectiveDate } = this.state
+    const { selectedPlants, selectedMachine, effectiveDate, DataToChange } = this.state
     const { isEditFlag, isMachineShow, ID } = this.props
 
     let plantArray =
@@ -172,18 +174,21 @@ class AddProcessDrawer extends Component {
     this.setState({ setDisable: true })
     /** Update existing detail of supplier master **/
     if (isEditFlag) {
+      if (DataToChange.ProcessName === values.ProcessName) {
+        this.toggleDrawer('', '', 'cancel')
+        return false
+      }
       let formData = {
         ProcessId: ID,
         ProcessName: values.ProcessName,
         ProcessCode: values.ProcessCode,
         LoggedInUserId: loggedInUserId(),
       }
-
       this.props.updateProcess(formData, (res) => {
         this.setState({ setDisable: false })
         if (res?.data?.Result) {
           Toaster.success(MESSAGES.UPDATE_PROCESS_SUCCESS)
-          this.toggleDrawer('', formData)
+          this.toggleDrawer('', formData, 'submit')
         }
       })
     } else {
@@ -195,12 +200,11 @@ class AddProcessDrawer extends Component {
         EffectiveDate: DayTime(effectiveDate).format('YYYY/MM/DD'),
         LoggedInUserId: loggedInUserId(),
       }
-
       this.props.createProcess(formData, (res) => {
         this.setState({ setDisable: false })
         if (res?.data?.Result) {
           Toaster.success(MESSAGES.PROCESS_ADD_SUCCESS)
-          this.toggleDrawer('', formData)
+          this.toggleDrawer('', formData, 'submit')
         }
       })
     }
@@ -338,7 +342,7 @@ class AddProcessDrawer extends Component {
                     <button
                       type={'button'}
                       className="mr15 cancel-btn"
-                      onClick={this.cancel}
+                      onClick={() => { this.cancel('cancel') }}
                       disabled={setDisable}
                     >
                       <div className={"cancel-icon"}></div>
@@ -403,5 +407,6 @@ export default connect(mapStateToProps, {
   reduxForm({
     form: 'AddProcessDrawer',
     enableReinitialize: true,
+    touchOnChange: true
   })(AddProcessDrawer),
 )

@@ -26,7 +26,7 @@ function RowMaterialMaster(props) {
 
 
 
-    const [isRMOpen, setisRMOpen] = useState(false);
+    const [stopApiCallOnCancel, setStopApiCallOnCancel] = useState(false);
     const [isOpen, setisOpen] = useState(false);
     const [isEditFlag, setisEditFlag] = useState(false);
     const [isViewFlag, setisViewFlag] = useState(false);
@@ -119,6 +119,7 @@ function RowMaterialMaster(props) {
 
         if (activeTab !== tab) {
             setactiveTab(tab);
+            setStopApiCallOnCancel(false)
         }
     }
 
@@ -142,13 +143,14 @@ function RowMaterialMaster(props) {
     * @method hideForm
     * @description HIDE DOMESTIC, IMPORT FORMS
     */
-    const hideForm = () => {
-
+    const hideForm = (type) => {
+        setStopApiCallOnCancel(false)
         setisRMDomesticForm(false);
         setisRMImportForm(false);
         setdata({});
-
-
+        if (type === 'cancel') {
+            setStopApiCallOnCancel(true)
+        }
     }
 
     /**
@@ -157,11 +159,9 @@ function RowMaterialMaster(props) {
     * @param DATA CONTAINS ID AND EDIT FLAG
     */
     const getDetails = (data, IsRMAssociated) => {
-
         setisRMDomesticForm(true);
         setdata(data);
         setIsRMAssociated(IsRMAssociated)
-
     }
 
 
@@ -274,6 +274,7 @@ function RowMaterialMaster(props) {
                                         DeleteAccessibility={DeleteAccessibility}
                                         BulkUploadAccessibility={BulkUploadAccessibility}
                                         DownloadAccessibility={DownloadAccessibility}
+                                        stopApiCallOnCancel={stopApiCallOnCancel}
                                         selectionForListingMasterAPI='Master'
                                     />
                                 </TabPane>}
@@ -290,6 +291,7 @@ function RowMaterialMaster(props) {
                                         DeleteAccessibility={DeleteAccessibility}
                                         BulkUploadAccessibility={BulkUploadAccessibility}
                                         DownloadAccessibility={DownloadAccessibility}
+                                        stopApiCallOnCancel={stopApiCallOnCancel}
                                         selectionForListingMasterAPI='Master'
                                     />
                                 </TabPane>}
@@ -305,6 +307,8 @@ function RowMaterialMaster(props) {
                                         AddAccessibilityRMANDGRADE={AddAccessibilityRMANDGRADE}
                                         EditAccessibilityRMANDGRADE={EditAccessibilityRMANDGRADE}
                                         DownloadAccessibility={DownloadAccessibility}
+                                        stopApiCallOnCancel={stopApiCallOnCancel}
+
                                     />
                                 </TabPane>}
 
@@ -315,6 +319,8 @@ function RowMaterialMaster(props) {
                                         EditAccessibility={EditAccessibility}
                                         DeleteAccessibility={DeleteAccessibility}
                                         DownloadAccessibility={DownloadAccessibility}
+                                        stopApiCallOnCancel={stopApiCallOnCancel}
+
                                     />
                                 </TabPane>}
                             {Number(activeTab) === 5 &&

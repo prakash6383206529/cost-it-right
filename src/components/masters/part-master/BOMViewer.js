@@ -582,4 +582,5 @@ export default connect(mapStateToProps, {
 })(reduxForm({
   form: 'BOMViewer',
   enableReinitialize: true,
+  touchOnChange: true
 })(BOMViewer));

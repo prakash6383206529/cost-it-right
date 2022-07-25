@@ -438,7 +438,7 @@ class AddFreight extends Component {
    * @method cancel
    * @description used to Reset form
    */
-  cancel = () => {
+  cancel = (type) => {
     const { reset } = this.props;
     reset();
     this.setState({
@@ -448,7 +448,7 @@ class AddFreight extends Component {
       sourceLocation: [],
       destinationLocation: [],
     });
-    this.props.hideForm();
+    this.props.hideForm(type);
   };
   /**
    * @method onSubmit
@@ -479,7 +479,7 @@ class AddFreight extends Component {
         DeleteChanged
       ) {
 
-        this.cancel()
+        this.cancel('cancel')
         return false
       }
       this.setState({ setDisable: true })
@@ -498,7 +498,7 @@ class AddFreight extends Component {
         this.setState({ setDisable: false })
         if (res?.data?.Result) {
           Toaster.success(MESSAGES.UPDATE_FREIGHT_SUCCESSFULLY);
-          this.cancel();
+          this.cancel('submit');
         }
       });
       this.setState({ HandleChanged: true, AddUpdate: true, DeleteChanged: true })
@@ -522,7 +522,7 @@ class AddFreight extends Component {
         this.setState({ setDisable: false })
         if (res?.data?.Result) {
           Toaster.success(MESSAGES.ADD_FREIGHT_SUCCESSFULLY);
-          this.cancel();
+          this.cancel('submit');
         }
       });
     }
@@ -939,7 +939,7 @@ class AddFreight extends Component {
                           <button
                             type={"button"}
                             className="mr15 cancel-btn"
-                            onClick={this.cancel}
+                            onClick={() => { this.cancel('cancel') }}
                             disabled={setDisable}
                           >
                             <div className={"cancel-icon"}></div>
@@ -1034,5 +1034,6 @@ export default connect(mapStateToProps, {
   reduxForm({
     form: "AddFreight",
     enableReinitialize: true,
+    touchOnChange: true
   })(AddFreight)
 );

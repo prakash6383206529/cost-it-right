@@ -145,9 +145,6 @@ class AddClientDrawer extends Component {
                 if (res && res.data && res.data.Data) {
                     let Data = res.data.Data;
                     this.setState({ DataToCheck: Data })
-                    this.props.fetchStateDataAPI(Data.CountryId, () => { })
-                    this.props.fetchCityDataAPI(Data.StateId, () => { })
-
                     setTimeout(() => {
                         this.setState({
                             // isLoader: false,
@@ -164,18 +161,18 @@ class AddClientDrawer extends Component {
         }
     }
 
-    toggleDrawer = (event) => {
+    toggleDrawer = (event, type) => {
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
             return;
         }
-        this.props.closeDrawer('')
+        this.props.closeDrawer('', type)
     };
 
     /**
     * @method cancel
     * @description used to Reset form
     */
-    cancel = () => {
+    cancel = (type) => {
         const { reset } = this.props;
         reset();
         this.setState({
@@ -184,9 +181,12 @@ class AddClientDrawer extends Component {
             state: [],
             isViewMode: false
         })
-        this.props.getClientData('', () => { })
-        this.props.fetchStateDataAPI(0, () => { })
-        this.toggleDrawer('')
+        if (type === 'submit') {
+            this.props.getClientData('', () => { })
+            this.props.fetchStateDataAPI(0, () => { })
+        }
+
+        this.toggleDrawer('', type)
     }
 
     /**
@@ -225,7 +225,7 @@ class AddClientDrawer extends Component {
                 this.setState({ setDisable: false })
                 if (res?.data?.Result) {
                     Toaster.success(MESSAGES.CLIENT_UPDATE_SUCCESS);
-                    this.cancel();
+                    this.cancel('submit');
                 }
             });
 
@@ -284,7 +284,7 @@ class AddClientDrawer extends Component {
                                             <h3>{isEditFlag ? 'Update Client' : 'Add Client'}</h3>
                                         </div>
                                         <div
-                                            onClick={(e) => this.toggleDrawer(e)}
+                                            onClick={(e) => this.toggleDrawer(e, 'cancel')}
                                             className={'close-button right'}>
                                         </div>
                                     </Col>
@@ -457,7 +457,7 @@ class AddClientDrawer extends Component {
                                             <button
                                                 type={'button'}
                                                 className="mr15 cancel-btn"
-                                                onClick={this.cancel}
+                                                onClick={() => { this.cancel('cancel') }}
                                                 disabled={setDisable}
                                             >
                                                 <div className={'cancel-icon'}></div> {'Cancel'}
@@ -523,4 +523,5 @@ export default connect(mapStateToProps, {
 })(reduxForm({
     form: 'AddClientDrawer',
     enableReinitialize: true,
+    touchOnChange: true
 })(AddClientDrawer));

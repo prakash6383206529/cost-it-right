@@ -8,7 +8,7 @@ import {
 } from "../../../helper/validation";
 import { renderText, renderEmailInputField, renderMultiSelectField, searchableSelect, renderNumberInputField } from "../../layout/FormInputs";
 import { createSupplierAPI, updateSupplierAPI, getSupplierByIdAPI, getRadioButtonSupplierType, getVendorTypesSelectList, } from '../actions/Supplier';
-import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, getVendorPlantSelectList, getAllCities, getCityByCountry, } from '../../../actions/Common';
+import { getVendorPlantSelectList, getAllCities, getCityByCountry, } from '../../../actions/Common';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";
@@ -48,9 +48,6 @@ class AddVendorDrawer extends Component {
         if (!(this.props.isEditFlag || this.props.isViewFlag)) {
             this.props.getVendorTypesSelectList()
             this.props.getVendorPlantSelectList(() => { })
-            this.props.fetchCountryDataAPI(() => { })
-            this.props.fetchStateDataAPI(0, () => { })
-            this.props.fetchCityDataAPI(0, () => { })
         }
     }
 
@@ -270,8 +267,6 @@ class AddVendorDrawer extends Component {
                 if (res && res.data && res.data.Data) {
                     let Data = res.data.Data;
                     let tempArr = [];
-                    this.props.fetchStateDataAPI(Data.CountryId, () => { })
-                    this.props.fetchCityDataAPI(Data.StateId, () => { })
                     this.setState({ DataToCheck: Data })
                     Data && Data.VendorTypes.map((item) => {
                         tempArr.push({ Text: item.VendorType, Value: (item.VendorTypeId).toString() })
@@ -740,9 +735,6 @@ export default connect(mapStateToProps, {
     updateSupplierAPI,
     getSupplierByIdAPI,
     getRadioButtonSupplierType,
-    fetchCountryDataAPI,
-    fetchStateDataAPI,
-    fetchCityDataAPI,
     getAllCities,
     getCityByCountry,
     getVendorTypesSelectList,

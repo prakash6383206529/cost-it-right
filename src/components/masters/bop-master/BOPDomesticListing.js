@@ -4,8 +4,7 @@ import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { EMPTY_DATA, BOP_MASTER_ID, BOPDOMESTIC, defaultPageSize, APPROVED_STATUS } from '../../../config/constants';
 import {
-    getBOPDomesticDataList, deleteBOP, getBOPCategorySelectList, getAllVendorSelectList,
-    getPlantSelectList, getPlantSelectListByVendor,
+    getBOPDomesticDataList, deleteBOP, getAllVendorSelectList, getPlantSelectListByVendor,
 } from '../actions/BoughtOutParts';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
@@ -15,7 +14,6 @@ import DayTime from '../../common/DayTimeWrapper'
 import BulkUpload from '../../massUpload/BulkUpload';
 import { BOP_DOMESTIC_DOWNLOAD_EXCEl, } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
-import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
 import { loggedInUserId, userDepartmetList, userDetails } from '../../../helper';
 import { BopDomestic, } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
@@ -76,26 +74,30 @@ class BOPDomesticListing extends Component {
     * @description Called after rendering the component
     */
     componentDidMount() {
-
-        this.props.getBOPCategorySelectList(() => { })
-        this.props.getPlantSelectList(() => { })
-        this.props.getVendorWithVendorCodeSelectList(() => { })
-        this.getDataList("", 0, "", "", 0, defaultPageSize, true, this.state.floatingFilterData)
-        let obj = {
-            MasterId: BOP_MASTER_ID,
-            DepartmentId: userDetails().DepartmentId,
-            LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
-            LoggedInUserId: loggedInUserId()
-        }
-        this.props.masterFinalLevelUser(obj, (res) => {
-            if (res?.data?.Result) {
-                this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+        setTimeout(() => {
+            if (!this.props.stopApiCallOnCancel) {
+                this.getDataList("", 0, "", "", 0, defaultPageSize, true, this.state.floatingFilterData)
+                let obj = {
+                    MasterId: BOP_MASTER_ID,
+                    DepartmentId: userDetails().DepartmentId,
+                    LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
+                    LoggedInUserId: loggedInUserId()
+                }
+                this.props.masterFinalLevelUser(obj, (res) => {
+                    if (res?.data?.Result) {
+                        this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+                    }
+                })
             }
-        })
+        }, 300);
     }
 
     componentWillUnmount() {
-        this.props.setSelectedCostingListSimualtion([])
+        setTimeout(() => {
+            if (!this.props.stopApiCallOnCancel) {
+                this.props.setSelectedCostingListSimualtion([])
+            }
+        }, 300);
     }
 
     /**
@@ -697,12 +699,11 @@ class BOPDomesticListing extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ boughtOutparts, supplier, auth, material, simulation }) {
-    const { bopCategorySelectList, vendorAllSelectList, plantSelectList, bopDomesticList } = boughtOutparts;
-    const { vendorWithVendorCodeSelectList } = supplier;
+function mapStateToProps({ boughtOutparts, auth, simulation }) {
+    const { bopDomesticList } = boughtOutparts;
     const { initialConfiguration } = auth;
     const { selectedCostingListSimulation } = simulation;
-    return { bopCategorySelectList, plantSelectList, vendorAllSelectList, bopDomesticList, vendorWithVendorCodeSelectList, initialConfiguration, selectedCostingListSimulation }
+    return { bopDomesticList, initialConfiguration, selectedCostingListSimulation }
 }
 
 /**
@@ -714,15 +715,13 @@ function mapStateToProps({ boughtOutparts, supplier, auth, material, simulation 
 export default connect(mapStateToProps, {
     getBOPDomesticDataList,
     deleteBOP,
-    getBOPCategorySelectList,
-    getPlantSelectList,
     getAllVendorSelectList,
     getPlantSelectListByVendor,
-    getVendorWithVendorCodeSelectList,
     getListingForSimulationCombined,
     masterFinalLevelUser,
     setSelectedCostingListSimualtion
 })(reduxForm({
     form: 'BOPDomesticListing',
     enableReinitialize: true,
+    touchOnChange: true
 })(BOPDomesticListing));

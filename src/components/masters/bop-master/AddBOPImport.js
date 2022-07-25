@@ -7,7 +7,7 @@ import {
   maxLength10, positiveAndDecimalNumber, maxLength512, maxLength, decimalLengthsix, checkWhiteSpaces, checkSpacesInString
 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderTextAreaField, renderDatePicker, renderNumberInputField, focusOnError } from "../../layout/FormInputs";
-import { fetchMaterialComboAPI, getPlantBySupplier, getUOMSelectList, getCurrencySelectList, getPlantSelectListByType, } from '../../../actions/Common';
+import { fetchMaterialComboAPI, getPlantBySupplier, getUOMSelectList, getCurrencySelectList, getPlantSelectListByType, fetchSupplierCityDataAPI } from '../../../actions/Common';
 import {
   createBOPImport, updateBOPImport, getBOPCategorySelectList, getBOPImportById,
   fileUploadBOPDomestic, fileDeleteBOPDomestic,
@@ -114,13 +114,13 @@ class AddBOPImport extends Component {
    * @description Called after rendering the component
    */
   componentDidMount() {
-    this.props.fetchMaterialComboAPI(res => { });
+    this.props.fetchSupplierCityDataAPI(res => { });
+    this.getDetails()
     this.props.getCurrencySelectList(() => { })
     if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
       this.setState({ inputLoader: true })
       this.props.getVendorTypeBOPSelectList(() => { this.setState({ inputLoader: false }) })
     }
-    this.getDetails()
 
     let obj = {
       MasterId: BOP_MASTER_ID,
@@ -177,7 +177,7 @@ class AddBOPImport extends Component {
     this.setState({ approveDrawer: false, setDisable: false })
     if (type === 'submit') {
       //this.clearForm()
-      this.cancel()
+      this.cancel('submit')
     }
   }
 
@@ -632,7 +632,7 @@ class AddBOPImport extends Component {
   * @method cancel
   * @description used to Reset form
   */
-  cancel = () => {
+  cancel = (type) => {
     const { reset } = this.props;
     reset();
     this.setState({
@@ -643,8 +643,10 @@ class AddBOPImport extends Component {
       UOM: [],
     })
     this.props.getBOPImportById('', res => { })
-    this.getDetails()
-    this.props.hideForm()
+    if (type === 'submit') {
+      this.getDetails()
+    }
+    this.props.hideForm(type)
   }
 
   /**
@@ -674,14 +676,14 @@ class AddBOPImport extends Component {
         if (DropdownChange && String(DataToChange.Source) === String(values.Source) &&
           Number(DataToChange.BasicRate) === Number(values.BasicRate) && DataToChange.Remark === values.Remark && uploadAttachements &&
           ((DataToChange.Source ? DataToChange.Source : '-') === (values.Source ? values.Source : '-')) &&
-          ((DataToChange.SourceLocation ? DataToChange.SourceLocation : '-') === (sourceLocation.value ? sourceLocation.value : '-'))) {
-          this.cancel()
+          (Number(DataToChange.SourceLocation ? DataToChange.SourceLocation : '-') === Number(sourceLocation.value ? sourceLocation.value : '-'))) {
+          this.cancel('cancel')
           return false;
         }
       }
       if (Boolean(DataToChange.IsVendor) === false) {
         if (Number(DataToChange.BasicRate) === Number(values.BasicRate) && DataToChange.Remark === values.Remark && uploadAttachements) {
-          this.cancel()
+          this.cancel('cancel')
           return false;
         }
       }
@@ -694,7 +696,7 @@ class AddBOPImport extends Component {
         Currency: currency.label,
         BoughtOutPartId: BOPID,
         Source: values.Source,
-        SourceLocation: values.sourceLocation,
+        SourceLocation: sourceLocation.value ? sourceLocation.value : '',
         BasicRate: values.BasicRate,
         NetLandedCost: this.state.netLandedcost,
         Remark: values.Remark,
@@ -795,14 +797,14 @@ class AddBOPImport extends Component {
           if (DropdownChange &&
             Number(DataToChange.BasicRate) === Number(values.BasicRate) && DataToChange.Remark === values.Remark && uploadAttachements &&
             ((DataToChange.Source ? DataToChange.Source : '-') === (values.Source ? values.Source : '-')) &&
-            ((DataToChange.SourceLocation ? DataToChange.SourceLocation : '-') === (sourceLocation.value ? sourceLocation.value : '-'))) {
-            this.cancel()
+            (Number(DataToChange.SourceLocation ? DataToChange.SourceLocation : '-') === Number(sourceLocation.value ? sourceLocation.value : '-'))) {
+            this.cancel('cancel')
             return false;
           }
         }
         if (Boolean(DataToChange.IsVendor) === false) {
           if (Number(DataToChange.BasicRate) === Number(values.BasicRate) && DataToChange.Remark === values.Remark && uploadAttachements) {
-            this.cancel()
+            this.cancel('cancel')
             return false;
           }
         }
@@ -820,7 +822,7 @@ class AddBOPImport extends Component {
           if (res.data.Result) {
             Toaster.success(MESSAGES.BOP_ADD_SUCCESS)
             //this.clearForm()
-            this.cancel()
+            this.cancel('submit')
           }
         })
       }
@@ -846,7 +848,7 @@ class AddBOPImport extends Component {
       this.setState({ setDisable: false })
       if (res?.data?.Result) {
         Toaster.success(MESSAGES.UPDATE_BOP_SUCESS);
-        this.cancel()
+        this.cancel('submit')
       }
     });
   }, 500)
@@ -865,7 +867,7 @@ class AddBOPImport extends Component {
   */
   render() {
     const { handleSubmit, isBOPAssociated } = this.props;
-    const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, isViewMode, setDisable, disablePopup } = this.state;
+    const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, updatedObj, IsFinancialDataChanged, isViewMode, setDisable, disablePopup, DropdownChange, DataToChange } = this.state;
     const filterList = (inputValue) => {
       let tempArr = []
 
@@ -886,6 +888,10 @@ class AddBOPImport extends Component {
 
 
       });
+    console.log('DropdownChange: ', DropdownChange);
+    console.log('DataToChange: ', DataToChange);
+    console.log(updatedObj, 'updatedObj');
+    console.log(this.state.IsFinancialDataChanged, 'IsFinancialDataChanged');
     return (
       <>
         {this.state.isLoader && <LoaderCustom />}
@@ -1322,7 +1328,7 @@ class AddBOPImport extends Component {
                           <button
                             type={"button"}
                             className=" mr15 cancel-btn"
-                            onClick={this.cancel}
+                            onClick={() => { this.cancel('cancel') }}
                             disabled={setDisable}
                           >
                             <div className={"cancel-icon"}></div>
@@ -1454,7 +1460,6 @@ export default connect(mapStateToProps, {
   getVendorTypeBOPSelectList,
   getPlantBySupplier,
   getPartSelectList,
-  fetchMaterialComboAPI,
   getUOMSelectList,
   getCurrencySelectList,
   createBOPImport,
@@ -1465,6 +1470,7 @@ export default connect(mapStateToProps, {
   fileDeleteBOPDomestic,
   getPlantSelectListByType,
   getExchangeRateByCurrency,
+  fetchSupplierCityDataAPI,
   masterFinalLevelUser
 })(reduxForm({
   form: 'AddBOPImport',
@@ -1473,4 +1479,5 @@ export default connect(mapStateToProps, {
     focusOnError(errors)
   },
   enableReinitialize: true,
+  touchOnChange: true
 })(AddBOPImport));

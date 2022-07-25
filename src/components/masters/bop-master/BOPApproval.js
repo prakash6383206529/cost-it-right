@@ -30,7 +30,7 @@ function BOPApproval(props) {
     const [approvalData, setApprovalData] = useState('')
     const { approvalList } = useSelector((state) => state.material)
     const { BopApprovalList } = useSelector((state) => state.boughtOutparts)
-    const [loader, setLoader] = useState(true)
+    const [loader, setLoader] = useState(false)
     const [approvalDrawer, setApprovalDrawer] = useState(false)
     const [showApprovalSumary, setShowApprovalSummary] = useState(false)
     const [isFinalApprover, setIsFinalApprover] = useState(false)
@@ -62,7 +62,7 @@ function BOPApproval(props) {
 
     const getTableData = () => {
         //  API CALL FOR GETTING RM APPROVAL LIST
-
+        setLoader(true)
         dispatch(getBOPApprovalList((res) => {
             setLoader(false)
         }))
@@ -72,11 +72,13 @@ function BOPApproval(props) {
 
 
 
-    const closeApprovalDrawer = (e = '') => {
+    const closeApprovalDrawer = (e = '', type) => {
         setApprovalDrawer(false)
-        setLoader(true)
-        getTableData()
-
+        if (type === 'submit') {
+            setLoader(true)
+            getTableData()
+        }
+        setLoader(false)
     }
 
 
@@ -99,8 +101,7 @@ function BOPApproval(props) {
 
     const closeDrawer = (e = '') => {
         setShowApprovalSummary(false)
-        setLoader(true)
-        getTableData()
+        setLoader(false)
     }
 
     /**

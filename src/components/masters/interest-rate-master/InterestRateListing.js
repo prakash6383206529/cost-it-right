@@ -7,8 +7,7 @@ import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
-import { getVendorWithVendorCodeSelectList } from '../../../actions/Common';
-import { getInterestRateDataList, deleteInterestRate, getPaymentTermsAppliSelectList, getICCAppliSelectList, } from '../actions/InterestRateMaster';
+import { getInterestRateDataList, deleteInterestRate } from '../actions/InterestRateMaster';
 import { getVendorListByVendorType, } from '../actions/Material';
 import Switch from "react-switch";
 import DayTime from '../../common/DayTimeWrapper'
@@ -71,9 +70,6 @@ class InterestRateListing extends Component {
     this.applyPermission(this.props.topAndLeftMenuData)
     this.setState({ isLoader: true })
     setTimeout(() => {
-      this.props.getVendorWithVendorCodeSelectList(() => { })
-      this.props.getICCAppliSelectList(() => { })
-      this.props.getPaymentTermsAppliSelectList(() => { })
       this.getTableListData()
     }, 500);
   }
@@ -299,13 +295,15 @@ class InterestRateListing extends Component {
     this.setState({ toggleForm: true })
   }
 
-  hideForm = () => {
+  hideForm = (type) => {
     this.setState({
       toggleForm: false,
       data: { isEditFlag: false, ID: '' }
     }, () => {
-      this.getTableListData()
-    })
+      if (type === 'submit')
+        this.getTableListData()
+    }
+    )
   }
 
   bulkToggle = () => {
@@ -571,13 +569,11 @@ export default connect(mapStateToProps, {
   getInterestRateDataList,
   deleteInterestRate,
   getVendorListByVendorType,
-  getPaymentTermsAppliSelectList,
-  getICCAppliSelectList,
-  getVendorWithVendorCodeSelectList
 })(reduxForm({
   form: 'InterestRateListing',
   onSubmitFail: errors => {
     focusOnError(errors);
   },
   enableReinitialize: true,
+  touchOnChange: true
 })(InterestRateListing));
