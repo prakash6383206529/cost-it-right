@@ -218,8 +218,6 @@ class BulkUpload extends Component {
                                 bulkUploadArray = [...array]
                             }
                             checkForFileHead = _.isEqual(fileHeads, bulkUploadArray) ? true : false
-                            console.log('bulkUploadArray: ', bulkUploadArray);
-                            console.log('fileHeads: ', fileHeads);
                             break;
                         case String(FUELBULKUPLOAD):
                             array = _.map(Fuel, 'label')
