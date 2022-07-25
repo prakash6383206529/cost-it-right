@@ -24,6 +24,9 @@ import Drawer from '@material-ui/core/Drawer';
 import Downloadxls from './Downloadxls';
 import DayTime from '../common/DayTimeWrapper'
 import cloudImg from '../../assests/images/uploadcloud.png';
+import _ from 'lodash';
+import { BOMBULKUPLOAD, BOPDOMESTICBULKUPLOAD, BOPIMPORTBULKUPLOAD, FUELBULKUPLOAD, INTERESTRATEBULKUPLOAD, LABOURBULKUPLOAD, MACHINEBULKUPLOAD, OPERAIONBULKUPLOAD, PARTCOMPONENTBULKUPLOAD, PRODUCTCOMPONENTBULKUPLOAD, RMDOMESTIC, RMDOMESTICBULKUPLOAD, RMIMPORTBULKUPLOAD, RMSPECIFICATION, VENDORBULKUPLOAD } from '../../config/constants';
+import { BOMUpload, BOP_VBC_DOMESTIC, BOP_VBC_IMPORT, BOP_ZBC_DOMESTIC, BOP_ZBC_IMPORT, Fuel, Labour, MachineVBC, MachineZBC, MHRMoreZBC, PartComponent, ProductComponent, RawMaterialDomesticFileHeadsVBC, RawMaterialDomesticFileHeadsZBC, RMDomesticVBC, RMDomesticVBCTempData, RMDomesticZBC, RMDomesticZBCTempData, RMImportVBC, RMImportZBC, RMSpecification, VBCInterestRate, VBCOperation, Vendor, ZBCOperation } from '../../config/masterData';
 
 class BulkUpload extends Component {
     constructor(props) {
@@ -94,8 +97,8 @@ class BulkUpload extends Component {
 
         let fileObj = event.target.files[0];
         let fileHeads = [];
-        let uploadfileName = fileObj.name;
-        let fileType = uploadfileName.substr(uploadfileName.indexOf('.'));
+        let uploadfileName = fileObj?.name;
+        let fileType = uploadfileName?.substr(uploadfileName.indexOf('.'));
 
         //pass the fileObj as parameter
         if (fileType !== '.xls' && fileType !== '.xlsx') {
@@ -111,7 +114,130 @@ class BulkUpload extends Component {
                 } else {
 
                     fileHeads = resp.rows[0];
+                    let checkForFileHead
+                    let bulkUploadArray = [];   //ARRAY FOR COMPARISON 
+                    let array = []
+                    switch (String(this.props.fileName)) {
+                        case String(RMDOMESTICBULKUPLOAD):
+                            if (this.state.costingHead === 'ZBC') {
+                                array = _.map(RMDomesticZBC, 'label')
+                                bulkUploadArray = [...array]
+                            }
+                            else {
+                                array = _.map(RMDomesticVBC, 'label')
+                                bulkUploadArray = [...array]
+                            }
+                            checkForFileHead = _.isEqual(fileHeads, bulkUploadArray) ? true : false
+                            break;
+                        case String(RMIMPORTBULKUPLOAD):
 
+                            if (this.state.costingHead === 'ZBC') {
+                                array = _.map(RMImportZBC, 'label')
+                                bulkUploadArray = [...array]
+                            }
+                            else {
+                                array = _.map(RMImportVBC, 'label')
+                                bulkUploadArray = [...array]
+                            }
+                            checkForFileHead = _.isEqual(fileHeads, bulkUploadArray) ? true : false
+                            break;
+                        case String(RMSPECIFICATION):
+                            array = _.map(RMSpecification, 'label')
+                            bulkUploadArray = [...array]
+                            checkForFileHead = _.isEqual(fileHeads, bulkUploadArray) ? true : false
+                            break;
+                        case String(BOPDOMESTICBULKUPLOAD):
+                            if (this.state.costingHead === 'VBC') {
+                                array = _.map(BOP_VBC_DOMESTIC, 'label')
+                                bulkUploadArray = [...array]
+                            }
+                            else {
+                                array = _.map(BOP_ZBC_DOMESTIC, 'label')
+                                bulkUploadArray = [...array]
+                            }
+                            checkForFileHead = _.isEqual(fileHeads, bulkUploadArray) ? true : false
+                            break;
+                        case String(BOPIMPORTBULKUPLOAD):
+                            if (this.state.costingHead === 'ZBC') {
+                                array = _.map(BOP_ZBC_IMPORT, 'label')
+                                bulkUploadArray = [...array]
+                            }
+                            else {
+                                array = _.map(BOP_VBC_IMPORT, 'label')
+                                bulkUploadArray = [...array]
+                            }
+                            checkForFileHead = _.isEqual(fileHeads, bulkUploadArray) ? true : false
+                            break;
+                        case String(BOMBULKUPLOAD):
+                            array = _.map(BOMUpload, 'label')
+                            bulkUploadArray = [...array]
+                            checkForFileHead = _.isEqual(fileHeads, bulkUploadArray) ? true : false
+                            break;
+                        case String(PARTCOMPONENTBULKUPLOAD):
+                            array = _.map(PartComponent, 'label')
+                            bulkUploadArray = [...array]
+                            checkForFileHead = _.isEqual(fileHeads, bulkUploadArray) ? true : false
+                            break;
+                        case String(PRODUCTCOMPONENTBULKUPLOAD):
+                            array = _.map(ProductComponent, 'label')
+                            bulkUploadArray = [...array]
+                            checkForFileHead = _.isEqual(fileHeads, bulkUploadArray) ? true : false
+                            break;
+                        case String(MACHINEBULKUPLOAD):
+                            if (this.state.costingHead === 'ZBC') {
+                                array = _.map(MachineZBC, 'label')
+                                bulkUploadArray = [...array]
+                            }
+                            else if (this.state.costingHead === 'VBC') {
+                                array = _.map(MachineVBC, 'label')
+                                bulkUploadArray = [...array]
+                            }
+                            else {
+                                array = _.map(MHRMoreZBC, 'label')
+                                bulkUploadArray = [...array]
+                            }
+                            checkForFileHead = _.isEqual(fileHeads, bulkUploadArray) ? true : false
+                            break;
+                        case String(VENDORBULKUPLOAD):
+                            array = _.map(Vendor, 'label')
+                            bulkUploadArray = [...array]
+                            checkForFileHead = _.isEqual(fileHeads, bulkUploadArray) ? true : false
+                            break;
+                        case String(LABOURBULKUPLOAD):
+                            array = _.map(Labour, 'label')
+                            bulkUploadArray = [...array]
+                            checkForFileHead = _.isEqual(fileHeads, bulkUploadArray) ? true : false
+                            break;
+                        case String(OPERAIONBULKUPLOAD):
+                            if (this.state.costingHead === 'ZBC') {
+                                array = _.map(ZBCOperation, 'label')
+                                bulkUploadArray = [...array]
+                            }
+                            else {
+                                array = _.map(VBCOperation, 'label')
+                                bulkUploadArray = [...array]
+                            }
+                            checkForFileHead = _.isEqual(fileHeads, bulkUploadArray) ? true : false
+                            console.log('bulkUploadArray: ', bulkUploadArray);
+                            console.log('fileHeads: ', fileHeads);
+                            break;
+                        case String(FUELBULKUPLOAD):
+                            array = _.map(Fuel, 'label')
+                            bulkUploadArray = [...array]
+                            checkForFileHead = _.isEqual(fileHeads, bulkUploadArray) ? true : false
+                            break;
+                        case String(INTERESTRATEBULKUPLOAD):
+                            array = _.map(VBCInterestRate, 'label')
+                            bulkUploadArray = [...array]
+                            checkForFileHead = _.isEqual(fileHeads, bulkUploadArray) ? true : false
+                            break;
+                        default:
+                            break;
+                    }
+                    if (!checkForFileHead) {
+                        Toaster.warning('Please select file of same Master')
+                        return false
+                    }
                     //
                     // fileHeads = ["SerialNumber", "BillNumber"]
 
