@@ -526,7 +526,7 @@ export const VBCOperation = [
     { label: 'VendorCode', value: 'VendorCode', }, //*
     { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
-    { label: 'VendorPlantCode', value: 'VendorPlantCode', }, //NOUI
+    // { label: 'VendorPlantCode', value: 'VendorPlantCode', }, //NOUI
     { label: 'UOM', value: 'UOM', }, //*
     { label: 'Rate', value: 'Rate', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', }, //*
@@ -545,7 +545,7 @@ export const VBCOperationTempData = [
         'VendorCode': 'Vendor123',
         'DestinationPlant': 'Manesar',
         'DestinationPlantCode': "1032",
-        'VendorPlantCode': 'VP01',
+        // 'VendorPlantCode': 'VP01',
         'UOM': 'Litre',
         'Rate': 50,
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -711,7 +711,7 @@ export const BOP_VBC_DOMESTIC = [
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
     { label: 'VendorName', value: 'VendorName', },
     { label: 'VendorCode', value: 'VendorCode', }, //NOUI
-    { label: 'VendorPlantCode', value: 'VendorPlantCode', }, //NOUI
+    // { label: 'VendorPlantCode', value: 'VendorPlantCode', }, //NOUI
     { label: 'SourceVendorName', value: 'SourceVendorName', },
     { label: 'SourceVendorLocation', value: 'SourceVendorLocation', },
     { label: 'BasicRate', value: 'BasicRate', }, //*
@@ -791,8 +791,8 @@ export const BOP_VBC_IMPORT = [
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', },
     { label: 'VendorName', value: 'VendorName', },
     { label: 'VendorCode', value: 'VendorCode', }, //NOUI
-    { label: 'VendorPlant', value: 'VendorPlant' },
-    { label: 'VendorPlantCode', value: 'VendorPlantCode', }, //NOUI
+    // { label: 'VendorPlant', value: 'VendorPlant' },
+    // { label: 'VendorPlantCode', value: 'VendorPlantCode', }, //NOUI
     { label: 'SourceVendorName', value: 'SourceVendorName', },
     { label: 'SourceVendorLocation', value: 'SourceVendorLocation', },
     { label: 'Currency', value: 'Currency', }, //*
@@ -813,10 +813,10 @@ export const BOP_VBC_IMPORT_TempData = [
         'DestinationPlantCode': '1032',
         'VendorName': 'Systematix',
         'VendorCode': 'Sys01',
-        'VendorPlant': 'VPlant',
-        'VendorPlantCode': 'VPlant01',
-        'VendorSourceName': 'TATA Steel',
-        'VendorSourceLocation': 'Jamshedpur',
+        // 'VendorPlant': 'VPlant',
+        // 'VendorPlantCode': 'VPlant01',
+        'SourceVendorName': 'TATA Steel',
+        'SourceVendorLocation': 'Jamshedpur',
         'Currency': 'INR or USD',
         'MinimumOrderQuantity': '1',
         'BasicRate': '100',
@@ -1248,7 +1248,6 @@ export const MachineVBC = [
     { label: 'VendorCode', value: 'VendorCode', }, // not on UI
     { label: 'DestinationPlant', value: 'DestinationPlant', }, // not on UI
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, // not on UI
-    { label: 'VendorPlantCode', value: 'VendorPlantCode', }, // not on UI
     { label: 'MachineNo', value: 'MachineNo', }, //*
     { label: 'MachineSpecification', value: 'Description', },
     { label: 'MachineName', value: 'MachineName', }, //*
@@ -1268,7 +1267,6 @@ export const MachineVBCTempData = [
         'VendorCode': '10222',
         'DestinationPlant': 'Manesar',
         'DestinationPlantCode': '1032',
-        'VendorPlantCode': 'VPlant01',
         'MachineNo': 'SM101',
         'Description': 'Mechanical Power Press',
         'MachineName': 'Power Press',
