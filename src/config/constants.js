@@ -1917,6 +1917,8 @@ export const LABOURBULKUPLOAD = 'Labour'
 export const OPERAIONBULKUPLOAD = 'Operation';
 export const FUELBULKUPLOAD = 'Fuel';
 export const INTERESTRATEBULKUPLOAD = 'InterestRate'
+export const ACTUALVOLUMEBULKUPLOAD = 'ActualVolume'
+export const BUDGETEDVOLUMEBULKUPLOAD = 'BudgetedVolume'
 
 // KEY AND IV
 export const KEY = 'ewswymuinfzfskjz';
