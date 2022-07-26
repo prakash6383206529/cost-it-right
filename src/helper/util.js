@@ -28,6 +28,9 @@ export const apiErrors = (res) => {
     response && handleHTTPStatus(response)
   } else {
     if (navigator.userAgent.indexOf("Firefox") !== -1) {
+      setTimeout(() => {
+        toast.error('Something went wrong please try again.')
+      }, 600);
       return;
     }
     toast.error('Something went wrong please try again.')
