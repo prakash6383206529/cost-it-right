@@ -316,5 +316,5 @@ export const bopQueryParms = (isPagination, skip, take, obj) => {
 
 export const hyphenFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return cellValue != null ? cellValue : '-'
+    return cellValue != null && cellValue !== '' && cellValue !== undefined ? cellValue : '-'
 }
