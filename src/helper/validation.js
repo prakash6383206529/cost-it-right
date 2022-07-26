@@ -41,6 +41,7 @@ export const maxLength25 = maxLength(25);
 export const maxLength20 = maxLength(20);
 export const maxLength26 = maxLength(26);
 export const maxLength30 = maxLength(30);
+export const maxLength32 = maxLength(32);
 export const maxLength45 = maxLength(45);
 export const maxLength50 = maxLength(50);
 export const maxLength70 = maxLength(70);

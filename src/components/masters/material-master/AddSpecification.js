@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces, checkSpacesInString } from "../../../helper/validation";
+import { required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces, checkSpacesInString, maxLength32 } from "../../../helper/validation";
 import { renderText, searchableSelect, focusOnError } from "../../layout/FormInputs";
 import {
   createRMSpecificationAPI, updateRMSpecificationAPI, getRMSpecificationDataAPI,
@@ -556,7 +556,7 @@ class AddSpecification extends Component {
                         name={'Code'}
                         type="text"
                         placeholder={'Enter'}
-                        validate={[required, checkSpacesInString, checkWhiteSpaces]}
+                        validate={[required, checkSpacesInString, checkWhiteSpaces, maxLength32]}
                         component={renderText}
                         required={true}
                         className=" "
