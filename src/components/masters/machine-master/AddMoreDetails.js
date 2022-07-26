@@ -1943,6 +1943,13 @@ class AddMoreDetails extends Component {
   */
   loanToggle = () => {
     const { isLoanOpen } = this.state
+    const { fieldsObj } = this.props
+
+    if (checkForNull(fieldsObj?.MachineCost) === 0 && isLoanOpen === false) {
+      Toaster.warning('Please enter the machine cost');
+      return false;
+    }
+
     this.setState({
       isLoanOpen: !isLoanOpen
     })
@@ -1954,6 +1961,13 @@ class AddMoreDetails extends Component {
   */
   workingHourToggle = () => {
     const { isWorkingOpen } = this.state
+    const { fieldsObj } = this.props
+
+    if (checkForNull(fieldsObj?.MachineCost) === 0 && isWorkingOpen === false) {
+      Toaster.warning('Please enter the machine cost');
+      return false;
+    }
+
     this.setState({ isWorkingOpen: !isWorkingOpen })
   }
 
@@ -1963,6 +1977,12 @@ class AddMoreDetails extends Component {
   */
   depreciationToogle = () => {
     const { isDepreciationOpen } = this.state
+    const { fieldsObj } = this.props
+
+    if (checkForNull(fieldsObj?.MachineCost) === 0 && isDepreciationOpen === false) {
+      Toaster.warning('Please enter the machine cost');
+      return false;
+    }
     this.setState({ isDepreciationOpen: !isDepreciationOpen })
   }
 
@@ -1972,6 +1992,12 @@ class AddMoreDetails extends Component {
   */
   variableCostToggle = () => {
     const { isVariableCostOpen } = this.state
+    const { fieldsObj } = this.props
+
+    if (checkForNull(fieldsObj?.MachineCost) === 0 && isVariableCostOpen === false) {
+      Toaster.warning('Please enter the machine cost');
+      return false;
+    }
     this.setState({ isVariableCostOpen: !isVariableCostOpen })
   }
 
@@ -1981,6 +2007,12 @@ class AddMoreDetails extends Component {
   */
   powerToggle = () => {
     const { isPowerOpen } = this.state
+    const { fieldsObj } = this.props
+
+    if (checkForNull(fieldsObj?.MachineCost) === 0 && isPowerOpen === false) {
+      Toaster.warning('Please enter the machine cost');
+      return false;
+    }
     this.setState({ isPowerOpen: !isPowerOpen })
   }
 
@@ -1995,6 +2027,12 @@ class AddMoreDetails extends Component {
   */
   labourToggle = () => {
     const { isLabourOpen } = this.state
+    const { fieldsObj } = this.props
+
+    if (checkForNull(fieldsObj?.MachineCost) === 0 && isLabourOpen === false) {
+      Toaster.warning('Please enter the machine cost');
+      return false;
+    }
     this.setState({ isLabourOpen: !isLabourOpen })
   }
 
