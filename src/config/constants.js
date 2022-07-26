@@ -1885,6 +1885,8 @@ export const LABOURBULKUPLOAD = 'Labour'
 export const OPERAIONBULKUPLOAD = 'Operation';
 export const FUELBULKUPLOAD = 'Fuel';
 export const INTERESTRATEBULKUPLOAD = 'InterestRate'
+export const ACTUALVOLUMEBULKUPLOAD = 'ActualVolume'
+export const BUDGETEDVOLUMEBULKUPLOAD = 'BudgetedVolume'
 
 // KEY AND IVgit
 export const KEY = 'gQUJ79YKYm22Cazw';
