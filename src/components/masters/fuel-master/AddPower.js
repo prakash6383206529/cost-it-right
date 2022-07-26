@@ -1417,9 +1417,7 @@ class AddPower extends Component {
                                     name={"MinMonthlyCharge"}
                                     type="text"
                                     placeholder={'Enter'}
-                                    validate={isCostPerUnitConfigurable ? [] : []}
                                     component={renderNumberInputField}
-                                    required={!isCostPerUnitConfigurable ? true : false}
                                     className=""
                                     customClassName=" withBorder"
                                     disabled={true}
@@ -1489,9 +1487,7 @@ class AddPower extends Component {
                                     name={"SEBCostPerUnit"}
                                     type="text"
                                     placeholder={'Enter'}
-                                    validate={[required]}
                                     component={renderNumberInputField}
-                                    required={true}
                                     className=""
                                     customClassName=" withBorder"
                                     disabled={!isCostPerUnitConfigurable ? true : false}
