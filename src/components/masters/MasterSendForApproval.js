@@ -648,7 +648,7 @@ function MasterSendForApproval(props) {
                                                                 className=""
                                                                 customClassName={'withBorder'}
                                                                 errors={errors.basicRate}
-                                                                defaultValue={item.MachineRate}
+                                                                defaultValue={checkForDecimalAndNull(item.MachineRate, initialConfiguration.NoOfDecimalForPrice)}
                                                                 disabled={true}
 
                                                             />
