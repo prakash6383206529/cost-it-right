@@ -130,8 +130,13 @@ class ReasonListing extends Component {
    * @method editItemDetails
    * @description confirm edit item
    */
-  editItemDetails = (Id) => {
-    this.setState({ isEditFlag: true, isOpenDrawer: true, ID: Id })
+  editItemDetails = (cellValue, rowData) => {
+    if (rowData.IsActive === false) {
+      Toaster.warning('You can not edit inactive reason')
+    }
+    else {
+      this.setState({ isEditFlag: true, isOpenDrawer: true, ID: rowData.ReasonId })
+    }
   }
 
   /**

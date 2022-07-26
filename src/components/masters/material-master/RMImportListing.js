@@ -431,10 +431,10 @@ function RMImportListing(props) {
   }
 
   /**
-  * @method freightCostFormatter
+  * @method commonCostFormatter
   * @description Renders buttons
   */
-  const freightCostFormatter = (props) => {
+  const commonCostFormatter = (props) => {
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
     return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : '-';
   }
@@ -650,7 +650,7 @@ function RMImportListing(props) {
     costingHeadRenderer: costingHeadFormatter,
     customNoRowsOverlay: NoContentFound,
     costFormatter: costFormatter,
-    freightCostFormatter: freightCostFormatter,
+    commonCostFormatter: commonCostFormatter,
     shearingCostFormatter: shearingCostFormatter,
     statusFormatter: statusFormatter,
     hyphenFormatter: hyphenFormatter,
@@ -771,9 +771,9 @@ function RMImportListing(props) {
                     <AgGridColumn field="VendorName" headerName="Vendor(Code)"></AgGridColumn>
                     <AgGridColumn field="UOM"></AgGridColumn>
                     <AgGridColumn field="Currency" cellRenderer={"currencyFormatter"}></AgGridColumn>
-                    <AgGridColumn field="BasicRate"></AgGridColumn>
-                    <AgGridColumn field="ScrapRate"></AgGridColumn>
-                    <AgGridColumn field="RMFreightCost" headerName="Freight Cost" cellRenderer='freightCostFormatter'></AgGridColumn>
+                    <AgGridColumn field="BasicRate" cellRenderer='commonCostFormatter'></AgGridColumn>
+                    <AgGridColumn field="ScrapRate" cellRenderer='commonCostFormatter'></AgGridColumn>
+                    <AgGridColumn field="RMFreightCost" headerName="Freight Cost" cellRenderer='commonCostFormatter'></AgGridColumn>
                     <AgGridColumn field="RMShearingCost" headerName="Shearing Cost" cellRenderer='shearingCostFormatter'></AgGridColumn>
                     <AgGridColumn field="NetLandedCost" headerName="Net Cost (Currency)" cellRenderer='costFormatter'></AgGridColumn>
                     <AgGridColumn field="NetLandedCostConversion" headerName="Net Cost(INR)" cellRenderer='costFormatter'></AgGridColumn>
