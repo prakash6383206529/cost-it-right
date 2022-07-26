@@ -575,7 +575,6 @@ class AddFuel extends Component {
                                   //onKeyUp={(e) => this.changeItemDesc(e)}
                                   //validate={(this.state.StateName == null || this.state.StateName.length == 0) ? [required] : []}
                                   required={true}
-                                  validate={this.state.StateName === null || this.state.StateName.length === 0 ? [required] : []}
                                   handleChangeDescription={this.handleState}
                                   valueDescription={this.state.StateName}
                                   disabled={false}
@@ -589,7 +588,7 @@ class AddFuel extends Component {
                               name={"Rate"}
                               type="text"
                               placeholder={"Enter"}
-                              validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
+                              validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
                               component={renderNumberInputField}
                               required={true}
                               className=""
