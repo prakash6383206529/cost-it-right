@@ -377,7 +377,7 @@ function MasterSendForApproval(props) {
                                                 rules={{ required: false }}
                                                 register={register}
                                                 options={approvalDropDown}
-                                                mandatory={false}
+                                                mandatory={true}
                                                 handleChange={() => { }}
                                                 disabled={false}
                                                 errors={errors.approver}
@@ -648,7 +648,7 @@ function MasterSendForApproval(props) {
                                                                 className=""
                                                                 customClassName={'withBorder'}
                                                                 errors={errors.basicRate}
-                                                                defaultValue={item.MachineRate}
+                                                                defaultValue={checkForDecimalAndNull(item.MachineRate, initialConfiguration.NoOfDecimalForPrice)}
                                                                 disabled={true}
 
                                                             />

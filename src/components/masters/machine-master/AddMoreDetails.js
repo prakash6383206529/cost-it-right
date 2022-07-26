@@ -120,6 +120,7 @@ class AddMoreDetails extends Component {
       rowData: [],
       IsFinancialDataChanged: true,
       disableAllForm: false,
+      NoOfWorkingHours: 0
     }
   }
 
@@ -187,6 +188,7 @@ class AddMoreDetails extends Component {
       this.props.change('MachineNumber', fieldsObj.MachineNumber)
       this.props.change('TonnageCapacity', fieldsObj.TonnageCapacity)
       this.props.change('Description', fieldsObj.Description)
+      this.props.change('Specification', fieldsObj.Specification)
       this.props.change('EffectiveDate', fieldsObj.EffectiveDate ? fieldsObj.EffectiveDate : '')
 
       setTimeout(() => {
@@ -591,9 +593,9 @@ class AddMoreDetails extends Component {
    * @method closeAvailabilityDrawer
    * @description CLOSING CALCULATOR DRAWER AND SHOWING PRE FILLED VALUE
   */
-  closeAvailabilityDrawer = (e = '', calculatedEfficiency) => {
+  closeAvailabilityDrawer = (e = '', calculatedEfficiency, NoOfWorkingHours) => {
     const { initialConfiguration } = this.props
-    this.setState({ isOpenAvailability: false }, () => {
+    this.setState({ isOpenAvailability: false, NoOfWorkingHours: NoOfWorkingHours }, () => {
       if (calculatedEfficiency !== Infinity && calculatedEfficiency !== 'NaN') {
         this.props.change('EfficiencyPercentage', checkForDecimalAndNull(calculatedEfficiency, initialConfiguration.NoOfDecimalForInputOutput))
       }
@@ -1746,6 +1748,7 @@ class AddMoreDetails extends Component {
       MachineTypeId: machineType ? machineType.value : '',
       TonnageCapacity: values.TonnageCapacity,
       Description: fieldsObj.Description,
+      Specification: fieldsObj.Specification,
       Remark: remarks,
       LoggedInUserId: loggedInUserId(),
       MachineProcessRates: processGrid,
@@ -1869,6 +1872,7 @@ class AddMoreDetails extends Component {
         MachineTypeId: machineType ? machineType.value : '',
         TonnageCapacity: values.TonnageCapacity,
         Description: fieldsObj.Description,
+        Specification: fieldsObj.Specification,
         Remark: remarks,
         LoggedInUserId: loggedInUserId(),
         MachineProcessRates: processGrid,
@@ -1937,6 +1941,13 @@ class AddMoreDetails extends Component {
   */
   loanToggle = () => {
     const { isLoanOpen } = this.state
+    const { fieldsObj } = this.props
+
+    if (checkForNull(fieldsObj?.MachineCost) === 0 && isLoanOpen === false) {
+      Toaster.warning('Please enter the machine cost');
+      return false;
+    }
+
     this.setState({
       isLoanOpen: !isLoanOpen
     })
@@ -1948,6 +1959,13 @@ class AddMoreDetails extends Component {
   */
   workingHourToggle = () => {
     const { isWorkingOpen } = this.state
+    const { fieldsObj } = this.props
+
+    if (checkForNull(fieldsObj?.MachineCost) === 0 && isWorkingOpen === false) {
+      Toaster.warning('Please enter the machine cost');
+      return false;
+    }
+
     this.setState({ isWorkingOpen: !isWorkingOpen })
   }
 
@@ -1957,6 +1975,12 @@ class AddMoreDetails extends Component {
   */
   depreciationToogle = () => {
     const { isDepreciationOpen } = this.state
+    const { fieldsObj } = this.props
+
+    if (checkForNull(fieldsObj?.MachineCost) === 0 && isDepreciationOpen === false) {
+      Toaster.warning('Please enter the machine cost');
+      return false;
+    }
     this.setState({ isDepreciationOpen: !isDepreciationOpen })
   }
 
@@ -1966,6 +1990,12 @@ class AddMoreDetails extends Component {
   */
   variableCostToggle = () => {
     const { isVariableCostOpen } = this.state
+    const { fieldsObj } = this.props
+
+    if (checkForNull(fieldsObj?.MachineCost) === 0 && isVariableCostOpen === false) {
+      Toaster.warning('Please enter the machine cost');
+      return false;
+    }
     this.setState({ isVariableCostOpen: !isVariableCostOpen })
   }
 
@@ -1975,6 +2005,12 @@ class AddMoreDetails extends Component {
   */
   powerToggle = () => {
     const { isPowerOpen } = this.state
+    const { fieldsObj } = this.props
+
+    if (checkForNull(fieldsObj?.MachineCost) === 0 && isPowerOpen === false) {
+      Toaster.warning('Please enter the machine cost');
+      return false;
+    }
     this.setState({ isPowerOpen: !isPowerOpen })
   }
 
@@ -1989,6 +2025,12 @@ class AddMoreDetails extends Component {
   */
   labourToggle = () => {
     const { isLabourOpen } = this.state
+    const { fieldsObj } = this.props
+
+    if (checkForNull(fieldsObj?.MachineCost) === 0 && isLabourOpen === false) {
+      Toaster.warning('Please enter the machine cost');
+      return false;
+    }
     this.setState({ isLabourOpen: !isLabourOpen })
   }
 
@@ -2133,7 +2175,7 @@ class AddMoreDetails extends Component {
                         <Col md="3">
                           <Field
                             label={`Machine Specification`}
-                            name={"Description"}
+                            name={"Specification"}
                             type="text"
                             placeholder={'Enter'}
                             validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString]}
@@ -3593,6 +3635,7 @@ class AddMoreDetails extends Component {
           isEditFlag={false}
           ID={''}
           anchor={'right'}
+          NoOfWorkingHours={this.state.NoOfWorkingHours}
           NumberOfWorkingHoursPerYear={this.state.WorkingHrPrYr}
         />}
         {isOpenProcessDrawer && <AddProcessDrawer
@@ -3640,7 +3683,7 @@ function mapStateToProps(state) {
     'BuildingCostPerSquareFeet', 'MachineFloorAreaPerSquareFeet', 'AnnualAreaCost', 'OtherYearlyCost', 'TotalMachineCostPerAnnum',
     'UtilizationFactorPercentage', 'PowerRatingPerKW', 'PowerCostPerUnit', 'TotalPowerCostPerYear',
     'FuelCostPerUnit', 'ConsumptionPerYear', 'TotalFuelCostPerYear',
-    'NumberOfLabour', 'LabourCost', 'OutputPerHours', 'OutputPerYear', 'MachineRate', 'DateOfPurchase', 'Description');
+    'NumberOfLabour', 'LabourCost', 'OutputPerHours', 'OutputPerYear', 'MachineRate', 'DateOfPurchase', 'Description', 'Specification');
 
   const { technologySelectList, plantSelectList, UOMSelectList,
     ShiftTypeSelectList, DepreciationTypeSelectList, } = comman;
@@ -3661,6 +3704,7 @@ function mapStateToProps(state) {
       AccessoriesCost: machineData.AccessoriesCost,
       InstallationCharges: machineData.InstallationCharges,
       Description: machineData.Description,
+      Specification: machineData.Specification,
       LabourCostPerAnnum: machineData.LabourCostPerAnnum,
       TotalCost: machineData.TotalCost,
       LoanPercentage: machineData.LoanPercentage,
