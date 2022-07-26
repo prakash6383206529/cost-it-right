@@ -1443,6 +1443,7 @@ function TabRMCC(props) {
                                     setBOPHandlingCost={setBOPHandlingCost}
                                     setConversionCost={setConversionCost}
                                     setToolCost={setToolCost}
+                                    subAssembId={vbcExistingCosting.SubAssemblyCostingId ? vbcExistingCosting.SubAssemblyCostingId : costData.CostingId}
                                   />
                                 </>
                               )
@@ -1462,7 +1463,7 @@ function TabRMCC(props) {
                                     setToolCost={setToolCost}
                                     setAssemblyOperationCost={setAssemblyOperationCost}
                                     setAssemblyToolCost={setAssemblyToolCost}
-                                    subAssembId={item.CostingId}
+                                    subAssembId={vbcExistingCosting.SubAssemblyCostingId ? vbcExistingCosting.SubAssemblyCostingId : costData.CostingId}
                                     setBOPCostWithAsssembly={setBOPCostWithAsssembly}
                                   />
                                 </>
