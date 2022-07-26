@@ -4,10 +4,11 @@ import { Field, reduxForm, formValueSelector } from 'redux-form'
 import { Row, Col, Table } from 'reactstrap'
 import { required, checkForNull, positiveAndDecimalNumber, maxLength10, checkForDecimalAndNull, decimalLengthsix } from '../../../helper/validation'
 import { focusOnError, renderNumberInputField, searchableSelect } from '../../layout/FormInputs'
-import { getFuelComboData, getPlantListByState } from '../actions/Fuel'
+import { getPlantListByState } from '../actions/Fuel'
 import { createLabour, getLabourData, updateLabour, labourTypeVendorSelectList, getLabourTypeByMachineTypeSelectList, } from '../actions/Labour'
 import { getMachineTypeSelectList } from '../actions/MachineMaster'
 import Toaster from '../../common/Toaster'
+import { fetchStateDataAPI, getAllCity } from '../../../actions/Common';
 import { MESSAGES } from '../../../config/message'
 import { EMPTY_DATA } from '../../../config/constants'
 import { loggedInUserId, userDetails } from '../../../helper/auth'
@@ -60,8 +61,10 @@ class AddLabour extends Component {
   componentDidMount() {
     this.setState({ inputLoader: true })
     this.props.labourTypeVendorSelectList(() => { this.setState({ inputLoader: false }) })
-    this.props.getFuelComboData(() => { })
     if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
+      this.props.getAllCity(countryId => {
+        this.props.fetchStateDataAPI(countryId, () => { })
+      })
       this.props.getLabourTypeByMachineTypeSelectList('', () => { })
       this.props.getPlantListByState('', () => { })
       this.props.getMachineTypeSelectList(() => { })
@@ -132,21 +135,18 @@ class AddLabour extends Component {
     const {
       plantSelectList,
       VendorLabourTypeSelectList,
-      fuelComboSelectList,
+      stateList,
       machineTypeSelectList,
       labourTypeByMachineTypeSelectList,
     } = this.props
     const temp = []
 
     if (label === 'state') {
-      fuelComboSelectList &&
-        fuelComboSelectList.States &&
-        fuelComboSelectList.States.map((item) => {
-          if (item.Value === '0') return false
-          temp.push({ label: item.Text, value: item.Value })
-          return null
-        })
-      return temp
+      stateList && stateList.map(item => {
+        if (item.Value === '0') return false;
+        temp.push({ label: item.Text, value: item.Value })
+      });
+      return temp;
     }
 
     if (label === 'plant') {
@@ -226,6 +226,18 @@ class AddLabour extends Component {
    * @method handleState
    * @description called
    */
+  // handleState = (newValue, actionMeta) => {
+  //   if (newValue && newValue !== '') {
+  //     this.setState({ StateName: newValue }, () => {
+  //       const { StateName } = this.state
+  //       this.setState({ selectedPlants: [] })
+  //       this.props.getPlantListByState(StateName.value, () => { })
+  //     })
+  //   } else {
+  //     this.setState({ StateName: [] })
+  //     this.props.getPlantListByState('', () => { })
+  //   }
+  // }
   handleState = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
       this.setState({ StateName: newValue }, () => {
@@ -236,8 +248,9 @@ class AddLabour extends Component {
     } else {
       this.setState({ StateName: [] })
       this.props.getPlantListByState('', () => { })
+
     }
-  }
+  };
 
   /**
    * @method handlePlants
@@ -976,11 +989,13 @@ class AddLabour extends Component {
  */
 function mapStateToProps(state) {
   const fieldsObj = selector(state, 'LabourRate')
-  const { supplier, machine, fuel, labour, auth } = state
+  const { supplier, machine, fuel, labour, auth, comman } = state
   const {
     VendorLabourTypeSelectList,
     labourTypeByMachineTypeSelectList,
   } = labour
+  const { stateList } = comman;
+
   const { vendorWithVendorCodeSelectList } = supplier
   const { machineTypeSelectList } = machine
   const { fuelComboSelectList, plantSelectList } = fuel
@@ -996,7 +1011,8 @@ function mapStateToProps(state) {
     VendorLabourTypeSelectList,
     fieldsObj,
     initialValues,
-    initialConfiguration
+    initialConfiguration,
+    stateList
   }
 }
 
@@ -1012,7 +1028,8 @@ export default connect(mapStateToProps, {
   updateLabour,
   getMachineTypeSelectList,
   getLabourTypeByMachineTypeSelectList,
-  getFuelComboData,
+  fetchStateDataAPI,
+  getAllCity,
   getPlantListByState,
   labourTypeVendorSelectList,
 })(
