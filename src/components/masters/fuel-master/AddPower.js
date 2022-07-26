@@ -1809,7 +1809,7 @@ class AddPower extends Component {
                               </div>
                             </Col>
                             <Col md="12">
-                              <Table className="table" size="sm" >
+                              <Table className="table border" size="sm" >
                                 <thead>
                                   <tr>
                                     <th>{`Source`}</th>
@@ -1853,13 +1853,13 @@ class AddPower extends Component {
 
                                 </tfoot>
 
-                                <tbody>
+                                {this.state.powerGrid.length === 0 && <tbody>
                                   <tr>
                                     <td colSpan="5">
-                                      {this.state.powerGrid.length === 0 && <NoContentFound title={EMPTY_DATA} />}
+                                      <NoContentFound title={EMPTY_DATA} />
                                     </td>
                                   </tr>
-                                </tbody>
+                                </tbody>}
                               </Table>
 
                             </Col>
@@ -1867,7 +1867,7 @@ class AddPower extends Component {
                         </>
                       }
                     </div>
-                    <Row className="sf-btn-footer no-gutters justify-content-between">
+                    <Row className="sf-btn-footer no-gutters bottom-footer justify-content-between">
                       <div className="col-sm-12 text-right bluefooter-butn">
                         <button
                           type={'button'}
