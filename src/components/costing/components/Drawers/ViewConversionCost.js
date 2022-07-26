@@ -377,7 +377,8 @@ function ViewConversionCost(props) {
                 {/* make it configurable after deployment */}
                 {/* <th>{`Labour Rate`}</th>
                       <th>{`Labour Quantity`}</th> */}
-                <th className="costing-border-right">{`Net Cost`}</th>
+                <th>{`Net Cost`}</th>
+                <th className="costing-border-right">{`Remark`}</th>
               </tr>
             </thead>
             <tbody>
@@ -408,6 +409,9 @@ function ViewConversionCost(props) {
                       {/* <td>{netCost(item.OperationCost)}</td> */}
                       <td>
                         {item.OperationCost ? checkForDecimalAndNull(item.OperationCost, initialConfiguration.NoOfDecimalForPrice) : 0}
+                      </td>
+                      <td>
+                        {item.Remark !== null ? item.Remark : '-'}
                       </td>
                     </tr>
                   )
@@ -448,7 +452,8 @@ function ViewConversionCost(props) {
                 {/* make it configurable after deployment */}
                 {/* <th>{`Labour Rate`}</th>
                       <th>{`Labour Quantity`}</th> */}
-                <th className="costing-border-right">{`Net Cost`}</th>
+                <th>{`Net Cost`}</th>
+                <th className="costing-border-right">{`Remark`}</th>
               </tr>
             </thead>
             <tbody>
@@ -479,6 +484,9 @@ function ViewConversionCost(props) {
                       {/* <td>{netCost(item.OperationCost)}</td> */}
                       <td>
                         {item.OperationCost ? checkForDecimalAndNull(item.OperationCost, initialConfiguration.NoOfDecimalForPrice) : 0}
+                      </td>
+                      <td>
+                        {item.Remark !== null ? item.Remark : '-'}
                       </td>
                     </tr>
                   )
