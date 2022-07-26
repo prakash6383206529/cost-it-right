@@ -109,12 +109,12 @@ class SideBar extends Component {
   * @description permission for add and view simulation
   */
   simulationPermission(Data, index) {
-    let simulationIndex = Data && Data.findIndex(item => item.ModuleName === SIMULATION)
+    let simulationIndex = Data && Data?.findIndex(item => item?.ModuleName === SIMULATION)
 
-    if (simulationIndex !== -1) {
+    if (simulationIndex !== -1 && simulationIndex !== undefined) {
       let simulationPages = Data[simulationIndex].Pages && Data[simulationIndex].Pages.filter(item => item.Sequence !== 0 && item.IsChecked === true)
       let simulationArray = simulationPages && simulationPages.filter((item) => {
-        if (item.Actions[index].IsChecked === true) return item.PageName;
+        if (item?.Actions[index] && item?.Actions[index]?.IsChecked === true) return item.PageName;
       })
       if (index === 1) {                                 // 1 IS FOR VIEW PERMISSION 
         localStorage.setItem('simulationViewPermission', JSON.stringify(_.map(simulationArray, 'PageName')))
