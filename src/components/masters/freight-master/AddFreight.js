@@ -456,7 +456,7 @@ class AddFreight extends Component {
     const { fieldsObj } = this.props;
 
 
-    if (vendorName.length <= 0) {
+    if (IsVendor && vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
       return false
     }
@@ -464,7 +464,6 @@ class AddFreight extends Component {
 
     const userDetail = userDetails();
     if (isEditFlag) {
-
       if (
         DataToChange.LoadingUnloadingCharges == values.LoadingUnloadingCharges &&
         DataToChange.PartTruckLoadRatePerCubicFeet == values.PartTruckLoadRatePerCubicFeet &&
@@ -497,6 +496,7 @@ class AddFreight extends Component {
       });
       this.setState({ HandleChanged: true, AddUpdate: true, DeleteChanged: true })
     } else {
+      console.log('coming in else');
       this.setState({ setDisable: true })
       const formData = {
         IsVendor: IsVendor,
@@ -511,7 +511,6 @@ class AddFreight extends Component {
         FullTruckLoadDetails: gridTable,
         LoggedInUserId: loggedInUserId(),
       };
-
       this.props.createFreight(formData, (res) => {
         this.setState({ setDisable: false })
         if (res?.data?.Result) {
