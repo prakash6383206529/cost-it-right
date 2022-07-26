@@ -779,7 +779,6 @@ class AddLabour extends Component {
                               placeholder={"Select"}
                               options={this.renderListing("MachineTypeList")}
                               required={true}
-                              validate={this.state.machineType == null || this.state.machineType.length === 0 ? [required] : []}
                               handleChangeDescription={this.handleMachineType}
                               valueDescription={this.state.machineType}
                               disabled={isViewMode}
@@ -803,7 +802,6 @@ class AddLabour extends Component {
                             placeholder={"Select"}
                             options={this.renderListing("labourList")}
                             required={true}
-                            validate={[required]}
                             handleChangeDescription={this.labourHandler}
                             valueDescription={this.state.labourType}
                             disabled={isViewMode}
@@ -818,7 +816,7 @@ class AddLabour extends Component {
                             type="text"
                             placeholder={"Enter"}
                             disabled={isViewMode}
-                            validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
+                            validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
                             component={renderNumberInputField}
                             required={true}
                             className=" "

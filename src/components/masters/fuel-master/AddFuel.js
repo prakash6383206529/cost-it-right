@@ -571,7 +571,6 @@ class AddFuel extends Component {
                                   placeholder={"Select"}
                                   options={this.renderListing("state")}
                                   required={true}
-                                  validate={this.state.StateName === null || this.state.StateName.length === 0 ? [required] : []}
                                   handleChangeDescription={this.handleState}
                                   valueDescription={this.state.StateName}
                                   disabled={isViewMode}
@@ -585,7 +584,7 @@ class AddFuel extends Component {
                               name={"Rate"}
                               type="text"
                               placeholder={"Enter"}
-                              validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
+                              validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
                               component={renderNumberInputField}
                               required={true}
                               className=""
