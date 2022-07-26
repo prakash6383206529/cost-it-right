@@ -75,9 +75,12 @@ function TabDiscountOther(props) {
           DiscountsAndOtherCost: checkForNull(discountObj?.HundiOrDiscountValue),
           HundiOrDiscountPercentage: getValues('HundiOrDiscountPercentage'),
           AnyOtherCost: checkForNull(getValues('AnyOtherCost')),
-          DiscountCostType: checkForNull(discountObj !== undefined && discountObj.DiscountCostType),
+          DiscountCostType: discountObj !== undefined && discountObj.DiscountCostType,
           HundiOrDiscountValue: discountObj && checkForDecimalAndNull(discountObj.HundiOrDiscountValue !== null ? discountObj.HundiOrDiscountValue : '', initialConfiguration.NoOfDecimalForPrice),
-          DiscountApplicability: discountObj && discountObj.DiscountApplicability
+          DiscountApplicability: discountObj && discountObj.DiscountApplicability,
+          OtherCostType: otherCostType.label,
+          PercentageOtherCost: discountObj.OtherCostPercentage,
+          OtherCostApplicability: discountObj.OtherCostApplicability,
         }
         props.setHeaderCost(topHeaderData, headerCosts, costData)
       }
@@ -725,24 +728,16 @@ function TabDiscountOther(props) {
 
   const handleOherCostApplicabilityChange = (value) => {
     setOtherCostApplicability(value)
-    setValue('AnyOtherCost', 0)
-    setValue('PercentageOtherCost', 0)
     setDiscountObj({
       ...discountObj,
-      AnyOtherCost: 0,
-      OtherCostPercentage: 0,
       OtherCostApplicability: value.label
     })
   }
 
   const handleDiscountApplicabilityChange = (value) => {
     setDiscountCostApplicability(value)
-    setValue('HundiOrDiscountValue', 0)
-    setValue('HundiOrDiscountPercentage', 0)
     setDiscountObj({
       ...discountObj,
-      HundiOrDiscountPercentage: 0,
-      HundiOrDiscountValue: 0,
       DiscountApplicability: value.label
     })
   }
