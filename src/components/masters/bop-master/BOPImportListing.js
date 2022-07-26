@@ -642,8 +642,8 @@ class BOPImportListing extends Component {
                                 >
                                     {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
                                     <AgGridColumn field="IsVendor" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="BoughtOutPartNumber" headerName="BOP Part No."></AgGridColumn>
-                                    <AgGridColumn field="BoughtOutPartName" headerName="BOP Part Name"></AgGridColumn>
+                                    <AgGridColumn field="BoughtOutPartNumber" headerName="BOP No."></AgGridColumn>
+                                    <AgGridColumn field="BoughtOutPartName" headerName="BOP Name"></AgGridColumn>
                                     <AgGridColumn field="BoughtOutPartCategory" headerName="BOP Category"></AgGridColumn>
                                     <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
                                     <AgGridColumn field="Currency"></AgGridColumn>
