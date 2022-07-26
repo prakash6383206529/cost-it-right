@@ -13,7 +13,7 @@ import NoContentFound from '../common/NoContentFound';
 import Switch from "react-switch";
 import { loggedInUserId } from '../../helper/auth';
 import ViewUserDetails from './ViewUserDetails';
-import { checkPermission } from '../../helper/util';
+import { checkPermission, showTitleForActiveToggle } from '../../helper/util';
 import { GridTotalFormate } from '../common/TableGridFunctions';
 import ConfirmComponent from "../../helper/ConfirmComponent";
 import LoaderCustom from '../common/LoaderCustom';
@@ -361,7 +361,7 @@ class UsersListing extends Component {
 
 		const { ActivateAccessibility } = this.state;
 		if (rowData.UserId === loggedInUserId()) return null;
-
+		showTitleForActiveToggle(props)
 		return (
 			<>
 				<label htmlFor="normal-switch" className="normal-switch">
@@ -376,6 +376,7 @@ class UsersListing extends Component {
 						offColor="#FC5774"
 						id="normal-switch"
 						height={24}
+						className={cellValue ? "active-switch" : "inactive-switch"}
 					/>
 				</label>
 			</>

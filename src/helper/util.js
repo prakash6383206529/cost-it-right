@@ -948,7 +948,15 @@ export const labelWithUOMAndCurrency = (label, UOM, currency) => {
   </div>
 }
 
-
+// THIS FUNCTION SHOWING TITLE ON HOVER FOR ACTIVE AND INACTIVE STATUS IN GRID
+export const showTitleForActiveToggle = (props) => {
+  setTimeout(() => {
+    const titleActive = document.getElementsByClassName("active-switch")[props?.rowIndex];
+    titleActive?.setAttribute('title', 'Active');
+    const titleInactive = document.getElementsByClassName("inactive-switch")[props?.rowIndex];
+    titleInactive?.setAttribute('title', 'Inactive');
+  }, 500);
+}
 //COMMON FUNCTION FOR MASTERS BULKUPLOAD CHECK
 export const checkForSameFileUpload = (master, fileHeads) => {
   let checkForFileHead, array = []
