@@ -975,7 +975,7 @@ const CostingSummaryTable = (props) => {
                                     <span class="d-block">{data?.partNumber}</span>
                                     <span class="d-block">{data?.partName}</span>
                                     <span class="d-block">{data?.RevisionNumber}</span>
-                                    <span class="d-block">{data?.zbc === 0 ? `${data?.plantName} (${data?.plantCode})` : data?.destinationPlantName}</span>
+                                    <span class="d-block">{data?.zbc === 0 ? `${data?.plantName} (${data?.plantCode})` : `${data?.destinationPlantName} (${data?.destinationPlantCode})`}</span>
                                   </td>
                                 )
                               })}
