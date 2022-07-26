@@ -377,7 +377,7 @@ function MasterSendForApproval(props) {
                                                 rules={{ required: false }}
                                                 register={register}
                                                 options={approvalDropDown}
-                                                mandatory={false}
+                                                mandatory={true}
                                                 handleChange={() => { }}
                                                 disabled={false}
                                                 errors={errors.approver}
