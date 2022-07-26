@@ -2681,9 +2681,9 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADBOP = [
 
 export const BOP_DOMESTIC_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "IsVendor", },
-    { label: "BoughtOutPartNumber", value: "BoughtOutPartNumber", },
-    { label: "BoughtOutPartName", value: "BoughtOutPartName", },
-    { label: "BoughtOutPartCategory", value: "BoughtOutPartCategory", },
+    { label: "BOPNumber", value: "BoughtOutPartNumber", },
+    { label: "BOPName", value: "BoughtOutPartName", },
+    { label: "BOPCategory", value: "BoughtOutPartCategory", },
     { label: "UOM", value: "UOM", },
     { label: "Specification", value: "Specification", },
     { label: "Plant(Code)", value: "Plants", },
@@ -2695,9 +2695,9 @@ export const BOP_DOMESTIC_DOWNLOAD_EXCEl = [
 
 export const BOP_IMPORT_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "IsVendor" },
-    { label: "BoughtOutPartNumber", value: "BoughtOutPartNumber" },
-    { label: "BoughtOutPartName", value: "BoughtOutPartName" },
-    { label: "BoughtOutPartCategory", value: "BoughtOutPartCategory" },
+    { label: "BOPNumber", value: "BoughtOutPartNumber" },
+    { label: "BOPName", value: "BoughtOutPartName" },
+    { label: "BOPCategory", value: "BoughtOutPartCategory" },
     { label: "UOM", value: "UOM" },
     { label: "Currency", value: "Currency" },
     { label: "Specification", value: "Specification" },
@@ -2710,23 +2710,23 @@ export const BOP_IMPORT_DOWNLOAD_EXCEl = [
 ]
 
 export const BOP_SOBLISTING_DOWNLOAD_EXCEl = [
-    { label: "BoughtOutPartNumber", value: "BoughtOutPartNumber", },
-    { label: "BoughtOutPartName", value: "BoughtOutPartName", },
-    { label: "BoughtOutPartCategory", value: "BoughtOutPartCategory", },
+    { label: "BOPNumber", value: "BoughtOutPartNumber", },
+    { label: "BOPName", value: "BoughtOutPartName", },
+    { label: "BOPCategory", value: "BoughtOutPartCategory", },
     { label: "Specification", value: "Specification", },
     { label: "NoOfVendors", value: "NoOfVendors", },
     { label: "Plant", value: "Plant", },
-    { label: "ShareOfBusinessPercentage", value: "ShareOfBusinessPercentage", },
-    { label: "WeightedNetLandedCost", value: "WeightedNetLandedCost", },
+    { label: "SOBPercentage", value: "ShareOfBusinessPercentage", },
+    { label: "WeightedNetCost", value: "WeightedNetLandedCost", },
 ]
 
 export const EXCHANGERATE_DOWNLOAD_EXCEl = [
     { label: "Currency", value: "Currency", },
-    { label: "CurrencyExchangeRate", value: "CurrencyExchangeRate", },
-    { label: "BankRate", value: "BankRate", },
+    { label: "ExchangeRate(INR)", value: "CurrencyExchangeRate", },
+    { label: "BankRate(INR)", value: "BankRate", },
     { label: "BankCommissionPercentage", value: "BankCommissionPercentage", },
     { label: "CustomRate", value: "CustomRate", },
-    { label: "EffectiveDate", value: "EffectiveDate", },
+    { label: "EffectiveDate(INR)", value: "EffectiveDate", },
     { label: "DateOfModification", value: "DateOfModification", },
 ]
 
@@ -2739,12 +2739,12 @@ export const FREIGHT_DOWNLOAD_EXCEl = [
 ]
 
 export const FUELLISTING_DOWNLOAD_EXCEl = [
-    { label: "FuelName", value: "FuelName", },
-    { label: "UnitOfMeasurementName", value: "UnitOfMeasurementName", },
-    { label: "StateName", value: "StateName", },
-    { label: "Rate", value: "Rate", },
+    { label: "FueL", value: "FuelName", },
+    { label: "UnitOfMeasurement", value: "UnitOfMeasurementName", },
+    { label: "State", value: "StateName", },
+    { label: "Rate(INR)", value: "Rate", },
     { label: "EffectiveDate", value: "EffectiveDate", },
-    { label: "ModifiedDate", value: "ModifiedDate", },
+    { label: "DateOfModification", value: "ModifiedDate", },
 ]
 
 export const POWERLISTING_DOWNLOAD_EXCEl = [
@@ -2762,10 +2762,10 @@ export const INTERESTRATE_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "IsVendor", },
     { label: "VendorName", value: "VendorName", },
     { label: "ICCApplicability", value: "ICCApplicability", },
-    { label: "ICCPercent", value: "ICCPercent", },
+    { label: "AnnualICCPercent", value: "ICCPercent", },
     { label: "PaymentTermApplicability", value: "PaymentTermApplicability", },
-    { label: "RepaymentPeriod", value: "RepaymentPeriod", },
-    { label: "PaymentTermPercent", value: "PaymentTermPercent", },
+    { label: "RepaymentPeriod(Days)", value: "RepaymentPeriod", },
+    { label: "PaymentTermInterestRatePercent", value: "PaymentTermPercent", },
     { label: "EffectiveDate", value: "EffectiveDate", }
 ]
 
@@ -2782,11 +2782,12 @@ export const LABOUR_DOWNLOAD_EXCEl = [
 
 export const MACHINERATE_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "IsVendor", },
-    { label: "Technologies", value: "Technologies", },
+    { label: "Technology", value: "Technologies", },
     { label: "Vendor(Code)", value: "VendorName", },
     { label: "Plant(Code)", value: "Plants", },
+    { label: "MachineName", value: "MachineName" },
     { label: "MachineNumber", value: "MachineNumber", },
-    { label: "MachineTypeName", value: "MachineTypeName", },
+    { label: "MachineType", value: "MachineTypeName", },
     { label: "MachineTonnage", value: "MachineTonnage", },
     { label: "ProcessName", value: "ProcessName", },
     { label: "MachineRate", value: "MachineRate", },
@@ -2875,7 +2876,7 @@ export const OVERHEAD_DOWNLOAD_EXCEl = [
     { label: "Vendor(Code)", value: "VendorName", },
     { label: "ClientName", value: "ClientName", },
     { label: "ModelType", value: "ModelType", },
-    { label: "OverheadApplicabilityType", value: "OverheadApplicabilityType", },
+    { label: "OverheadApplicability", value: "OverheadApplicabilityType", },
     { label: "OverheadPercentage", value: "OverheadPercentage", },
     { label: "OverheadRMPercentage", value: "OverheadRMPercentage", },
     { label: "OverheadBOPPercentage", value: "OverheadBOPPercentage", },
@@ -2887,8 +2888,8 @@ export const ASSEMBLYPART_DOWNLOAD_EXCEl = [
     { label: "Technology", value: "Technology", },
     { label: "BOMNumber", value: "BOMNumber", },
     { label: "PartNumber", value: "PartNumber", },
-    { label: "PartName", value: "PartName", },
-    { label: "NumberOfParts", value: "NumberOfParts", },
+    { label: "Name", value: "PartName", },
+    { label: "NumberOfChildParts", value: "NumberOfParts", },
     { label: "BOMLevelCount", value: "BOMLevelCount", },
     { label: "ECNNumber", value: "ECNNumber", },
     { label: "RevisionNumber", value: "RevisionNumber", },
@@ -2899,7 +2900,7 @@ export const ASSEMBLYPART_DOWNLOAD_EXCEl = [
 export const INDIVIDUALPART_DOWNLOAD_EXCEl = [
     { label: "Technology", value: "Technology", },
     { label: "PartNumber", value: "PartNumber", },
-    { label: "PartName", value: "PartName", },
+    { label: "Name", value: "PartName", },
     { label: "ECNNumber", value: "ECNNumber", },
     { label: "RevisionNumber", value: "RevisionNumber", },
     { label: "DrawingNumber", value: "DrawingNumber", },
@@ -2921,9 +2922,9 @@ export const VBCPLANT_DOWNLOAD_EXCEl = [
     { label: "VendorName", value: "VendorName", },
     { label: "PlantName", value: "PlantName", },
     { label: "PlantCode", value: "PlantCode", },
-    { label: "CountryName", value: "CountryName", },
-    { label: "StateName", value: "StateName", },
-    { label: "CityName", value: "CityName", },
+    { label: "Country", value: "CountryName", },
+    { label: "State", value: "StateName", },
+    { label: "City", value: "CityName", },
 ]
 
 export const REASON_DOWNLOAD_EXCEl = [
@@ -2963,7 +2964,7 @@ export const PROFIT_DOWNLOAD_EXCEl = [
     { label: "Vendor(code)", value: "VendorName", },
     { label: "ClientName", value: "ClientName", },
     { label: "ModelType", value: "ModelType", },
-    { label: "ProfitApplicabilityType", value: "ProfitApplicabilityType", },
+    { label: "ProfitApplicability", value: "ProfitApplicabilityType", },
     { label: "ProfitPercentage", value: "ProfitPercentage", },
     { label: "ProfitRMPercentage", value: "ProfitRMPercentage", },
     { label: "ProfitBOPPercentage", value: "ProfitBOPPercentage", },
@@ -2974,9 +2975,9 @@ export const ZBCPLANT_DOWNLOAD_EXCEl = [
     { label: "PlantName", value: "PlantName", },
     { label: "PlantCode", value: "PlantCode", },
     { label: "CompanyName", value: "CompanyName", },
-    { label: "CountryName", value: "CountryName", },
-    { label: "StateName", value: "StateName", },
-    { label: "CityName", value: "CityName", },
+    { label: "Country", value: "CountryName", },
+    { label: "State", value: "StateName", },
+    { label: "City", value: "CityName", },
 ]
 export const REPORT_DOWNLOAD_EXCEl = [
     { label: "CostingNumber", value: "CostingNumber", },
