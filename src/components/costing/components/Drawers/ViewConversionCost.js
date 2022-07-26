@@ -298,7 +298,7 @@ function ViewConversionCost(props) {
                     <>
                       <tr key={index}>
                         {IsAssemblyCosting && partNumberList.length === 0 && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
-                        {processGroup && <td className={`${isPDFShow ? '' : 'text-overflow process-name'}`}>
+                        <td className={`${isPDFShow ? '' : 'text-overflow process-name'}`}>
                           {
                             (item?.GroupName === '' || item?.GroupName === null) ? '' :
                               <div onClick={() =>
@@ -308,7 +308,7 @@ function ViewConversionCost(props) {
                           }
                           <span title={item.ProcessName}>
                             {item?.GroupName === '' || item?.GroupName === null ? item.ProcessName : item.GroupName}</span>
-                        </td>}
+                        </td>
                         {processGroup && <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item.ProcessName}>{'-'}</span></td>}
                         <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item?.Technologies}>{item?.Technologies ? item?.Technologies : '-'}</span></td>
                         <td>{item.MachineName ? item.MachineName : '-'}</td>
