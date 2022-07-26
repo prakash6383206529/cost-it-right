@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Field, reduxForm } from "redux-form";
+import { Field, reduxForm, formValueSelector } from "redux-form";
 import { langs } from "../../config/localization";
 import Toaster from "../common/Toaster";
 import { connect } from "react-redux";
@@ -27,6 +27,7 @@ import PermissionsTabIndex from "./RolePermissions/PermissionsTabIndex";
 import { EMPTY_GUID } from "../../config/constants";
 import PopupMsgWrapper from "../common/PopupMsgWrapper";
 var CryptoJS = require('crypto-js')
+const selector = formValueSelector('UserRegistration');
 
 class UserRegistration extends Component {
   constructor(props) {
@@ -102,6 +103,11 @@ class UserRegistration extends Component {
     })
     this.props.getSimulationTechnologySelectList(() => { })
     this.props.getMastersSelectList(() => { })
+
+    setTimeout(() => {
+      this.props.change('UserName', "")
+      this.props.change('Password', "")
+    }, 400);
   }
 
   /**
@@ -1968,6 +1974,7 @@ const mapStateToProps = ({ auth, comman }) => {
   const { roleList, departmentList, registerUserData, actionSelectList, technologyList,
     initialConfiguration, loading, levelSelectList, simulationTechnologyList, simulationLevelSelectList, masterList, masterLevelSelectList } = auth;
   const { cityList } = comman;
+  const fieldsObj = selector('UserName', 'Password');
 
   let initialValues = {};
 
@@ -1991,7 +1998,7 @@ const mapStateToProps = ({ auth, comman }) => {
 
   return {
     roleList, departmentList, cityList, registerUserData, actionSelectList,
-    initialValues, technologyList, initialConfiguration, loading, levelSelectList, simulationTechnologyList, simulationLevelSelectList, masterList, masterLevelSelectList
+    initialValues, technologyList, initialConfiguration, loading, levelSelectList, simulationTechnologyList, simulationLevelSelectList, masterList, masterLevelSelectList, fieldsObj
   };
 };
 
