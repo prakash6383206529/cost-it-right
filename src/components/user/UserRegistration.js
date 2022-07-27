@@ -6,7 +6,7 @@ import { connect } from "react-redux";
 import { Loader } from "../common/Loader";
 import {
   minLength3, minLength6, minLength10, maxLength11, maxLength12, required, email, minLength7, maxLength18,
-  maxLength6, checkWhiteSpaces, maxLength15, postiveNumber, maxLength80, maxLength5, acceptAllExceptSingleSpecialCharacter, strongPassword,
+  maxLength6, checkWhiteSpaces, maxLength15, postiveNumber, maxLength80, maxLength5, acceptAllExceptSingleSpecialCharacter, strongPassword, maxLength25,
 } from "../../helper/validation";
 import { renderPasswordInputField, focusOnError, renderEmailInputField, renderText, searchableSelect, renderMultiSelectField, renderNumberInputField, } from "../layout/FormInputs";
 import {
@@ -1259,7 +1259,7 @@ class UserRegistration extends Component {
                           name={"FirstName"}
                           type="text"
                           placeholder={'Enter'}
-                          validate={[required, minLength3, maxLength15, checkWhiteSpaces]}
+                          validate={[required, minLength3, maxLength25, checkWhiteSpaces]}
                           component={renderText}
                           required={true}
                           // maxLength={26}
@@ -1273,7 +1273,7 @@ class UserRegistration extends Component {
                           name={"LastName"}
                           type="text"
                           placeholder={'Enter'}
-                          validate={[minLength3, maxLength15]}
+                          validate={[minLength3, maxLength25]}
                           component={renderText}
                           required={false}
                           // maxLength={26}
