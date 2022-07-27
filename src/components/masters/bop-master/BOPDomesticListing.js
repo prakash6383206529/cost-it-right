@@ -57,6 +57,7 @@ class BOPDomesticListing extends Component {
             isLoader: false,
             isFinalApprovar: false,
             disableFilter: true,
+            disableDownload: false,
 
             //states for pagination purpose
             floatingFilterData: { IsVendor: "", BoughtOutPartNumber: "", BoughtOutPartName: "", BoughtOutPartCategory: "", UOM: "", Specification: "", Plants: "", Vendor: "", BasicRate: "", NetLandedCost: "", EffectiveDateNew: "", DepartmentCode: this.props.isSimulation ? userDepartmetList() : "" },
@@ -125,7 +126,7 @@ class BOPDomesticListing extends Component {
             })
         } else {
 
-            this.setState({ isLoader: true })
+            this.setState({ isLoader: isPagination ? true : false })
             if (isMasterSummaryDrawer !== undefined && !isMasterSummaryDrawer) {
                 if (this.props.isSimulation) {
                     this.props?.changeTokenCheckBox(false)
@@ -145,6 +146,14 @@ class BOPDomesticListing extends Component {
                         this.setState({ tableData: [] })
                     } else {
                         this.setState({ tableData: [] })
+                    }
+
+                    if (res && isPagination === false) {
+                        this.setState({ disableDownload: false })
+                        setTimeout(() => {
+                            let button = document.getElementById('Excel-Downloads')
+                            button.click()
+                        }, 500);
                     }
 
                     if (res) {
@@ -387,16 +396,29 @@ class BOPDomesticListing extends Component {
         params.api.paginationGoToPage(0);
     };
 
+
+    onExcelDownload = () => {
+
+        this.setState({ disableDownload: true })
+
+        let tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+        if (tempArr?.length > 0) {
+            setTimeout(() => {
+                this.setState({ disableDownload: false })
+                let button = document.getElementById('Excel-Downloads')
+                button.click()
+            }, 400);
+
+        } else {
+
+            this.getDataList("", 0, "", "", 0, defaultPageSize, false, this.state.floatingFilterData)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
+        }
+    }
+
     onBtExport = () => {
         let tempArr = []
-        if (this.props.isSimulation === true) {
-            const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-            data && data.map((item => (
-                tempArr.push(item.data)
-            )))
-        } else {
-            tempArr = this.props.bopDomesticList && this.props.bopDomesticList
-        }
+        tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+        tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.allBopDataList ? this.props.allBopDataList : [])
         return this.returnExcelColumn(BOP_DOMESTIC_DOWNLOAD_EXCEl, tempArr)
     };
 
@@ -475,15 +497,10 @@ class BOPDomesticListing extends Component {
 
 
         const isFirstColumn = (params) => {
-            if (this.props.isSimulation) {
 
-                var displayedColumns = params.columnApi.getAllDisplayedColumns();
-                var thisIsFirstColumn = displayedColumns[0] === params.column;
-
-                return thisIsFirstColumn;
-            } else {
-                return false
-            }
+            var displayedColumns = params.columnApi.getAllDisplayedColumns();
+            var thisIsFirstColumn = displayedColumns[0] === params.column;
+            return thisIsFirstColumn;
 
         }
         const defaultColDef = {
@@ -597,14 +614,22 @@ class BOPDomesticListing extends Component {
                                     DownloadAccessibility &&
                                     <>
 
-                                        <ExcelFile filename={'BOP Domestic'} fileExtension={'.xls'} element={
-                                            <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-                                                {/* DOWNLOAD */}
-                                            </button>}>
+                                        {this.state.disableDownload ? <LoaderCustom customClass={"input-loader"} /> :
 
-                                            {this.onBtExport()}
-                                        </ExcelFile>
+                                            <>
+                                                <button type="button" onClick={this.onExcelDownload} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                                    {/* DOWNLOAD */}
+                                                </button>
 
+                                                <ExcelFile filename={'BOP Domestic'} fileExtension={'.xls'} element={
+                                                    <button id={'Excel-Downloads'} type="button" >
+                                                    </button>}>
+                                                    {this.onBtExport()}
+                                                </ExcelFile>
+
+                                            </>
+
+                                        }
                                     </>
                                 }
                                 <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
@@ -698,11 +723,11 @@ class BOPDomesticListing extends Component {
 * @param {*} state
 */
 function mapStateToProps({ boughtOutparts, supplier, auth, material, simulation }) {
-    const { bopCategorySelectList, vendorAllSelectList, plantSelectList, bopDomesticList } = boughtOutparts;
+    const { bopCategorySelectList, vendorAllSelectList, plantSelectList, bopDomesticList, allBopDataList } = boughtOutparts;
     const { vendorWithVendorCodeSelectList } = supplier;
     const { initialConfiguration } = auth;
     const { selectedCostingListSimulation } = simulation;
-    return { bopCategorySelectList, plantSelectList, vendorAllSelectList, bopDomesticList, vendorWithVendorCodeSelectList, initialConfiguration, selectedCostingListSimulation }
+    return { bopCategorySelectList, plantSelectList, vendorAllSelectList, bopDomesticList, allBopDataList, vendorWithVendorCodeSelectList, initialConfiguration, selectedCostingListSimulation }
 }
 
 /**

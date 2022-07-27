@@ -3,6 +3,7 @@ import {
     CREATE_SUPPLIER_SUCCESS,
     CREATE_SUPPLIER_FAILURE,
     GET_SUPPLIER_DATALIST_SUCCESS,
+    GET_ALL_SUPPLIER_DATALIST_SUCCESS,
     GET_SUPPLIER_FAILURE,
     GET_SUPPLIER_DATA_SUCCESS,
     GET_RADIO_SUPPLIER_TYPE_SUCCESS,
@@ -42,6 +43,13 @@ export default function supplierReducer(state = initialState, action) {
                 loading: false,
                 error: true,
                 supplierDataList: action.payload
+            };
+        case GET_ALL_SUPPLIER_DATALIST_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                allSupplierDataList: action.payload
             };
         case GET_SUPPLIER_FAILURE:
             return {
