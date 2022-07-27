@@ -536,7 +536,6 @@ class AddFreight extends Component {
       });
       this.setState({ HandleChanged: true, AddUpdate: true, DeleteChanged: true })
     } else {
-      console.log('coming in else');
       this.setState({ setDisable: true })
       const formData = {
         IsVendor: IsVendor,
