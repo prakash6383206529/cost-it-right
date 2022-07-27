@@ -7,6 +7,7 @@ import {
     GET_ALL_PARTS_SUCCESS,
     GET_UNIT_PART_DATA_SUCCESS,
     GET_ALL_NEW_PARTS_SUCCESS,
+    GET_ALL_NEW_PARTS_SUCCESS_PAGINATION,
     GET_PART_SELECTLIST_SUCCESS,
     GET_ASSEMBLY_PART_SELECTLIST,
     GET_COMPONENT_PART_SELECTLIST,
@@ -108,10 +109,19 @@ export function getPartDataList(skip, take, obj, isPagination, callback) {
         const request = axios.get(`${API.getPartDataList}?${queryParams}&${queryParams1}&${queryParams2}&${queryParams3}`, config());
         request.then((response) => {
             if (response?.data?.Result === true || response.status === 204) {
-                dispatch({
-                    type: GET_ALL_NEW_PARTS_SUCCESS,
-                    payload: response?.status === 204 ? [] : response.data.DataList,
-                });
+
+                if (isPagination === true) {
+                    dispatch({
+                        type: GET_ALL_NEW_PARTS_SUCCESS,
+                        payload: response?.status === 204 ? [] : response.data.DataList,
+                    });
+                } else {
+
+                    dispatch({
+                        type: GET_ALL_NEW_PARTS_SUCCESS_PAGINATION,
+                        payload: response?.status === 204 ? [] : response.data.DataList,
+                    });
+                }
             }
             callback(response);
         }).catch((error) => {

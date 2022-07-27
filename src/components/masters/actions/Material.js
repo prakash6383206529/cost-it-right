@@ -43,6 +43,7 @@ import {
     MACHINE_MASTER_ID,
     config,
     GET_RM_DOMESTIC_LIST,
+    GET_ALL_RM_DOMESTIC_LIST,
     GET_RM_IMPORT_LIST,
     GET_MANAGE_SPECIFICATION, GET_UNASSOCIATED_RM_NAME_SELECTLIST, SET_FILTERED_RM_DATA, VBC, ZBC, GET_RM_APPROVAL_LIST, GET_ALL_MASTER_APPROVAL_DEPARTMENT, GET_ALL_MASTER_APPROVAL_USERS_BY_DEPARTMENT
 } from '../../../config/constants';
@@ -1027,17 +1028,24 @@ export function getVendorWithVendorCodeSelectList(callback) {
  */
 export function getRMDomesticDataList(data, skip, take, isPagination, obj, callback) {
     return (dispatch) => {
-        dispatch({ type: GET_RM_DOMESTIC_LIST });
         const queryParams = `technology_id=${data.technologyId}&net_landed_min_range=${data.net_landed_min_range}&net_landed_max_range=${data.net_landed_max_range}&NetCost=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&ListFor=${data.ListFor ? data.ListFor : ''}&StatusId=${data.StatusId ? data.StatusId : ''}&DepartmentCode=${obj.DepartmentCode !== undefined ? obj.DepartmentCode : ""}`
         const queryParamsSecond = rmQueryParms(isPagination, skip, take, obj)
         const request = axios.get(`${API.getRMDomesticDataList}?${queryParams}&${queryParamsSecond}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 //
-                dispatch({
-                    type: GET_RM_DOMESTIC_LIST,
-                    payload: response.status === 204 ? [] : response.data.DataList
-                })
+                if (isPagination === true) {
+                    dispatch({
+                        type: GET_RM_DOMESTIC_LIST,
+                        payload: response.status === 204 ? [] : response.data.DataList
+                    })
+                } else {
+                    dispatch({
+                        type: GET_ALL_RM_DOMESTIC_LIST,
+                        payload: response.status === 204 ? [] : response.data.DataList
+                    })
+                }
+                callback(response);
             }
             callback(response);
         }).catch((error) => {
@@ -1146,10 +1154,18 @@ export function getRMImportDataList(data, skip, take, isPagination, obj, callbac
         const request = axios.get(`${API.getRMImportDataList}?${queryParams}& ${queryParamsSecond} `, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
-                dispatch({
-                    type: GET_RM_IMPORT_LIST,
-                    payload: response.status === 204 ? [] : response.data.DataList
-                })
+
+                if (isPagination === true) {
+                    dispatch({
+                        type: GET_RM_IMPORT_LIST,
+                        payload: response.status === 204 ? [] : response.data.DataList
+                    })
+                } else {
+                    dispatch({
+                        type: GET_ALL_RM_DOMESTIC_LIST,
+                        payload: response.status === 204 ? [] : response.data.DataList
+                    })
+                }
                 callback(response);
             }
         }).catch((error) => {

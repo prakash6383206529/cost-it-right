@@ -66,6 +66,7 @@ class OperationListing extends Component {
             isLoader: false,
             isFinalApprovar: false,
             disableFilter: true,
+            disableDownload: false,
 
             //states for pagination purpose
             floatingFilterData: { CostingHead: "", Technology: "", OperationName: "", OperationCode: "", Plants: "", VendorName: "", UnitOfMeasurement: "", Rate: "", EffectiveDate: "", DepartmentCode: this.props.isSimulation ? userDepartmetList() : "" },
@@ -159,7 +160,7 @@ class OperationListing extends Component {
     * @description Get user list data
     */
     getTableListData = (operation_for = null, operation_Name_id = null, technology_id = null, vendor_id = null, skip = 0, take = 100, isPagination = true, dataObj) => {
-        this.setState({ isLoader: true })
+        this.setState({ isLoader: isPagination ? true : false })
 
         const { isMasterSummaryDrawer } = this.props
         // TO HANDLE FUTURE CONDITIONS LIKE [APPROVED_STATUS, DRAFT_STATUS] FOR MULTIPLE STATUS
@@ -196,6 +197,15 @@ class OperationListing extends Component {
                     this.setState({ tableData: [] })
                 } else {
                     this.setState({ tableData: res.data.DataList })
+                }
+
+                // CODE FOR DOWNLOAD BUTTON LOGIC
+                if (res && isPagination === false) {
+                    this.setState({ disableDownload: false })
+                    setTimeout(() => {
+                        let button = document.getElementById('Excel-Downloads')
+                        button.click()
+                    }, 500);
                 }
 
                 // PAGINATION CODE
@@ -584,11 +594,29 @@ class OperationListing extends Component {
         }
         window.screen.width >= 1921 && params.api.sizeColumnsToFit()
         params.api.paginationGoToPage(0);
-
     };
 
+    onExcelDownload = () => {
+
+        this.setState({ disableDownload: true })
+
+        let tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+        if (tempArr?.length > 0) {
+            setTimeout(() => {
+                this.setState({ disableDownload: false })
+                let button = document.getElementById('Excel-Downloads')
+                button.click()
+            }, 400);
+
+        } else {
+            this.getTableListData(null, null, null, null, 0, defaultPageSize, false, this.state.floatingFilterData)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
+        }
+    }
+
     onBtExport = () => {
-        let tempArr = this.state.tableData && this.state.tableData
+        let tempArr = []
+        tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+        tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.allOperationList ? this.props.allOperationList : [])
         return this.returnExcelColumn(OPERATION_DOWNLOAD_EXCEl, tempArr)
     };
 
@@ -705,16 +733,9 @@ class OperationListing extends Component {
         }
 
         const isFirstColumn = (params) => {
-            if (isSimulation) {
-
-                var displayedColumns = params.columnApi.getAllDisplayedColumns();
-                var thisIsFirstColumn = displayedColumns[0] === params.column;
-
-                return thisIsFirstColumn;
-            } else {
-                return false
-            }
-
+            var displayedColumns = params.columnApi.getAllDisplayedColumns();
+            var thisIsFirstColumn = displayedColumns[0] === params.column;
+            return thisIsFirstColumn;
         }
 
         const defaultColDef = {
@@ -798,13 +819,20 @@ class OperationListing extends Component {
                                             DownloadAccessibility && !this.props?.isMasterSummaryDrawer &&
                                             <>
 
-                                                <ExcelFile filename={'Operation'} fileExtension={'.xls'} element={
-                                                    <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-                                                        {/* DOWNLOAD */}
-                                                    </button>}>
+                                                {this.state.disableDownload ? <LoaderCustom customClass={"input-loader"} /> :
+                                                    <>
+                                                        <button type="button" onClick={this.onExcelDownload} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                                            {/* DOWNLOAD */}
+                                                        </button>
 
-                                                    {this.onBtExport()}
-                                                </ExcelFile>
+                                                        <ExcelFile filename={'Operation'} fileExtension={'.xls'} element={
+                                                            <button id={'Excel-Downloads'} type="button" >
+                                                            </button>}>
+                                                            {this.onBtExport()}
+                                                        </ExcelFile>
+                                                    </>
+                                                }
+
                                             </>
                                         }
                                     </>
@@ -894,10 +922,10 @@ class OperationListing extends Component {
 * @param {*} state
                 */
 function mapStateToProps({ otherOperation, auth, simulation }) {
-    const { loading, filterOperation, operationList, operationSurfaceTreatmentList, operationIndividualList, setOperationData } = otherOperation;
+    const { loading, filterOperation, operationList, allOperationList, operationSurfaceTreatmentList, operationIndividualList, setOperationData } = otherOperation;
     const { leftMenuData, initialConfiguration, topAndLeftMenuData } = auth;
     const { selectedCostingListSimulation } = simulation;
-    return { loading, filterOperation, leftMenuData, operationList, initialConfiguration, topAndLeftMenuData, operationSurfaceTreatmentList, operationIndividualList, selectedCostingListSimulation, setOperationData };
+    return { loading, filterOperation, leftMenuData, operationList, allOperationList, initialConfiguration, topAndLeftMenuData, operationSurfaceTreatmentList, operationIndividualList, selectedCostingListSimulation, setOperationData };
 }
 
 /**

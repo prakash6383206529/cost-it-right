@@ -43,6 +43,7 @@ function RMDomesticListing(props) {
     const [loader, setloader] = useState(false);
     const dispatch = useDispatch();
     const rmDataList = useSelector((state) => state.material.rmDataList);
+    const allRmDataList = useSelector((state) => state.material.allRmDataList);
     const filteredRMData = useSelector((state) => state.material.filteredRMData);
     const { selectedCostingListSimulation } = useSelector((state => state.simulation))
     const [showPopup, setShowPopup] = useState(false)
@@ -51,6 +52,7 @@ function RMDomesticListing(props) {
     const [viewAction, setViewAction] = useState(ViewRMAccessibility)
     const [isFinalLevelUser, setIsFinalLevelUser] = useState(false)
     const [disableFilter, setDisableFilter] = useState(true) // STATE MADE FOR CHECKBOX IN SIMULATION
+    const [disableDownload, setDisableDownload] = useState(false)
     //STATES BELOW ARE MADE FOR PAGINATION PURPOSE
     const [warningMessage, setWarningMessage] = useState(false)
     const [globalTake, setGlobalTake] = useState(defaultPageSize)
@@ -156,7 +158,9 @@ function RMDomesticListing(props) {
             StatusId: statusString
         }
         //THIS CONDTION IS FOR IF THIS COMPONENT IS RENDER FROM MASTER APPROVAL SUMMARY IN THIS NO GET API
-        setloader(true)
+        if (isPagination === true) {
+            setloader(true)
+        }
         if (!props.isMasterSummaryDrawer) {
             dispatch(getRMDomesticDataList(filterData, skip, take, isPagination, dataObj, (res) => {
                 // apply(selectedCostingListSimulation, selectedCostingListSimulation.length)
@@ -176,6 +180,14 @@ function RMDomesticListing(props) {
                 } else {
                     setmaxRange(0);
                     setloader(false);
+                }
+
+                if (res && isPagination === false) {
+                    setDisableDownload(false)
+                    setTimeout(() => {
+                        let button = document.getElementById('Excel-Downloads')
+                        button.click()
+                    }, 500);
                 }
 
                 if (res) {
@@ -570,17 +582,32 @@ function RMDomesticListing(props) {
     }
 
 
-    const onBtExport = () => {
-        let tempArr = []
-        if (isSimulation === true) {
-            const data = gridApi && gridApi.getModel().rowsToDisplay
-            data && data.map((item => {
-                tempArr.push(item.data)
-            }))
+
+    const onExcelDownload = () => {
+        setDisableDownload(true)
+
+        let tempArr = gridApi && gridApi?.getSelectedRows()
+        if (tempArr?.length > 0) {
+            setTimeout(() => {
+                setDisableDownload(false)
+                let button = document.getElementById('Excel-Downloads')
+                button.click()
+            }, 400);
+
+
         } else {
-            tempArr = rmDataList
+
+            getDataList(null, null, null, null, null, 0, 0, defaultPageSize, false, floatingFilterData) // FOR EXCEL DOWNLOAD OF COMPLETE DATA
         }
 
+    }
+
+    const onBtExport = () => {
+        let tempArr = []
+        tempArr = gridApi && gridApi?.getSelectedRows()
+
+
+        tempArr = (tempArr && tempArr.length > 0) ? tempArr : (allRmDataList ? allRmDataList : [])
         return returnExcelColumn(RMDOMESTIC_DOWNLOAD_EXCEl, tempArr)
     };
 
@@ -596,15 +623,11 @@ function RMDomesticListing(props) {
 
 
     const isFirstColumn = (params) => {
-        if (isSimulation) {
 
-            var displayedColumns = params.columnApi.getAllDisplayedColumns();
-            var thisIsFirstColumn = displayedColumns[0] === params.column;
+        var displayedColumns = params.columnApi.getAllDisplayedColumns();
+        var thisIsFirstColumn = displayedColumns[0] === params.column;
+        return thisIsFirstColumn;
 
-            return thisIsFirstColumn;
-        } else {
-            return false
-        }
     }
 
     const onRowSelect = (event) => {
@@ -740,12 +763,24 @@ function RMDomesticListing(props) {
                                                 {
                                                     DownloadAccessibility &&
                                                     <>
-                                                        <ExcelFile filename={'RM Domestic'} fileExtension={'.xls'} element={
-                                                            <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-                                                                {/* DOWNLOAD */}
-                                                            </button>}>
-                                                            {onBtExport()}
-                                                        </ExcelFile>
+
+                                                        {disableDownload ? <LoaderCustom customClass={"input-loader"} /> :
+
+                                                            <>
+                                                                <button type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                                                    {/* DOWNLOAD */}
+                                                                </button>
+
+                                                                <ExcelFile filename={'RM Domestic'} fileExtension={'.xls'} element={
+                                                                    <button id={'Excel-Downloads'} type="button" >
+                                                                    </button>}>
+                                                                    {onBtExport()}
+                                                                </ExcelFile>
+
+                                                            </>
+
+                                                        }
+
                                                     </>
                                                 }
 
