@@ -46,7 +46,12 @@ class AddFuel extends Component {
       DeleteChanged: true,
       HandleChanged: true,
       RateChange: [],
-      setDisable: false
+      setDisable: false,
+      errorObj: {
+        state: false,
+        rate: false,
+        effectiveDate: false
+      }
     }
   }
 
@@ -166,6 +171,23 @@ class AddFuel extends Component {
     const { fieldsObj } = this.props;
     const Rate = fieldsObj && fieldsObj !== undefined ? fieldsObj : 0;
     const tempArray = [];
+    if (StateName.length === 0 && (fieldsObj === undefined || Number(fieldsObj) === 0) && effectiveDate === "") {
+      this.setState({ errorObj: { state: true, rate: true, effectiveDate: true } })
+      return false;
+    }
+    if (StateName.length === 0) {
+      this.setState({ errorObj: { state: true } })
+      return false;
+    }
+    if (fieldsObj === undefined || Number(fieldsObj) === 0) {
+      this.setState({ errorObj: { rate: true } })
+      return false;
+    }
+    if (effectiveDate === "") {
+      this.setState({ errorObj: { effectiveDate: true } })
+      return false;
+    }
+
     if (decimalLengthsix(Rate)) {
       Toaster.warning("Decimal value should not be more than 6")
       return false
@@ -197,7 +219,7 @@ class AddFuel extends Component {
       StateName: [],
       effectiveDate: new Date(),
     }, () => this.props.change('Rate', 0));
-    this.setState({ AddUpdate: false })
+    this.setState({ AddUpdate: false, errorObj: { state: false, rate: false, effectiveDate: false } })
   }
 
 
@@ -223,6 +245,10 @@ class AddFuel extends Component {
     const Rate = fieldsObj && fieldsObj !== undefined ? fieldsObj : 0;
     let tempArray = [];
 
+    if (fieldsObj === undefined || Number(fieldsObj) === 0) {
+      this.setState({ errorObj: { rate: true } })
+      return false;
+    }
     let tempData = rateGrid[rateGridEditIndex];
     tempData = {
       Id: tempData.Id,
@@ -242,7 +268,7 @@ class AddFuel extends Component {
       rateGridEditIndex: '',
       isEditIndex: false,
     }, () => this.props.change('Rate', 0));
-    this.setState({ AddUpdate: false })
+    this.setState({ AddUpdate: false, errorObj: { rate: false } })
   };
 
   /**
@@ -554,7 +580,7 @@ class AddFuel extends Component {
                           </Col>
                         </Row>
 
-                        <Row>
+                        <Row className='rate-form-container'>
                           <Col md="12" className="filter-block">
                             <div className=" flex-fills mb-2 pl-0">
                               <h5>{"Rate:"}</h5>
@@ -575,27 +601,30 @@ class AddFuel extends Component {
                                   valueDescription={this.state.StateName}
                                   disabled={isViewMode}
                                 />
+                                {this.state.errorObj.state && this.state.StateName.length === 0 && <div className='text-help p-absolute'>This field is required.</div>}
                               </div>
                             </div>
                           </Col>
                           <Col md="3">
-                            <Field
-                              label={`Rate (INR)`}
-                              name={"Rate"}
-                              type="text"
-                              placeholder={"Enter"}
-                              validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
-                              component={renderNumberInputField}
-                              required={true}
-                              className=""
-                              customClassName=" withBorder"
-                              disabled={isViewMode}
-                            />
+                            <div className='p-relative'>
+                              <Field
+                                label={`Rate (INR)`}
+                                name={"Rate"}
+                                type="text"
+                                placeholder={"Enter"}
+                                validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
+                                component={renderNumberInputField}
+                                required={true}
+                                className=""
+                                customClassName="mb-0 withBorder"
+                                disabled={isViewMode}
+                              />
+                              {this.state.errorObj.rate && (this.props.fieldsObj === undefined || Number(this.props.fieldsObj) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
+                            </div>
                           </Col>
                           <Col md="3">
                             <div className="form-group">
                               <label>Effective Date<span className="asterisk-required">*</span>
-                                {/* <span className="asterisk-required">*</span> */}
                               </label>
                               <div className="inputbox date-section">
                                 <DatePicker
@@ -614,11 +643,12 @@ class AddFuel extends Component {
                                   onChangeRaw={(e) => e.preventDefault()}
                                   disabled={isViewMode}
                                 />
+                                {this.state.errorObj.effectiveDate && this.state.effectiveDate === "" && <div className='text-help'>This field is required.</div>}
                               </div>
                             </div>
                           </Col>
                           <Col md="3">
-                            <div>
+                            <div className='pt-2 pr-0'>
                               {this.state.isEditIndex ? (
                                 <>
                                   <button type="button" className={"btn btn-primary mt30 pull-left mr5"} onClick={this.updateRateGrid}>Update</button>
@@ -635,7 +665,7 @@ class AddFuel extends Component {
                               )}
                               <button
                                 type="button"
-                                className={"mr15 ml-3 mt30 add-cancel-btn cancel-btn"}
+                                className={"mr15 ml-1 mt30 add-cancel-btn cancel-btn"}
                                 disabled={isViewMode}
                                 onClick={this.rateTableReset}
                               >

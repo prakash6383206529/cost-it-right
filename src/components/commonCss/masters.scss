@@ -1,0 +1,24 @@
+.sub-form-container {
+    .text-help.mb-2 {
+        position: absolute;
+    }
+}
+.p-absolute {
+    position: absolute;
+}
+.rate-form-container {
+    .p-absolute {
+        bottom: 7px;
+    }
+}
+.truck-load-form-container {
+    .p-absolute {
+        bottom: 22px;
+    } 
+    .bottom-7 {
+        bottom: 7px;
+    }
+}
+.machine-sub-form-container {
+    @extend .truck-load-form-container;
+}
