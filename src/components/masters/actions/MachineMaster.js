@@ -12,6 +12,7 @@ import {
     GET_MACHINE_TYPE_SELECTLIST,
     GET_PROCESSES_LIST_SUCCESS,
     GET_MACHINE_LIST_SUCCESS,
+    GET_ALL_MACHINE_DATALIST_SUCCESS,
     GET_MACHINE_APPROVAL_LIST,
     config,
     SET_PROCESS_GROUP_FOR_API,
@@ -187,12 +188,20 @@ export function getMachineDataList(data, skip, take, isPagination, obj, callback
                     value = response.data.DataList.filter((item) => item.EffectiveDateNew = item.EffectiveDate)
                 }
                 if (response.data.Result === true || response?.status === 204) {
-                    dispatch({
-                        type: GET_MACHINE_DATALIST_SUCCESS,
-                        payload: response.status === 204 ? [] : value,
-                    });
-                    callback(response);
 
+                    if (isPagination === true) {
+                        dispatch({
+                            type: GET_MACHINE_DATALIST_SUCCESS,
+                            payload: response.status === 204 ? [] : value,
+                        });
+                    }
+                    else {
+                        dispatch({
+                            type: GET_ALL_MACHINE_DATALIST_SUCCESS,
+                            payload: response.status === 204 ? [] : value,
+                        });
+                    }
+                    callback(response);
                 }
             }).catch((error) => {
                 dispatch({ type: API_FAILURE });

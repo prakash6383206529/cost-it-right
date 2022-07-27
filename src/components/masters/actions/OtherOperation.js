@@ -19,6 +19,7 @@ import {
     GET_INITIAL_TECHNOLOGY_SELECTLIST,
     config,
     GET_OPERATION_COMBINED_DATA_LIST,
+    GET_ALL_OPERATION_COMBINED_DATA_LIST,
     GET_OPERATION_APPROVAL_LIST,
     SET_OPERATION_DATA,
 } from '../../../config/constants';
@@ -268,11 +269,20 @@ export function getOperationsDataList(filterData, skip, take, isPagination, obj,
                     payload = []
                 }
                 else {
+
                     payload = response?.data?.DataList
-                    dispatch({
-                        type: GET_OPERATION_COMBINED_DATA_LIST,
-                        payload: payload
-                    })
+                    if (isPagination === true) {
+                        dispatch({
+                            type: GET_OPERATION_COMBINED_DATA_LIST,
+                            payload: payload
+                        })
+                    } else {
+
+                        dispatch({
+                            type: GET_ALL_OPERATION_COMBINED_DATA_LIST,
+                            payload: payload
+                        })
+                    }
                 }
                 callback(response);
             }).catch((error) => {

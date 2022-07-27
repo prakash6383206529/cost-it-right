@@ -61,13 +61,13 @@ class IndivisualPartListing extends Component {
             globalTake: defaultPageSize,
             pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
             disableFilter: true,
+            disableDownload: false
         }
     }
 
 
     ApiActionCreator(skip, take, obj, isPagination) {
-        this.setState({ isLoader: true })
-
+        this.setState({ isLoader: isPagination ? true : false })
 
         let constantFilterData = this.state.filterModel
         let object = { ...this.state.floatingFilterData }
@@ -91,6 +91,14 @@ class IndivisualPartListing extends Component {
                     totalRecordCount: Data[0].TotalRecordCount,
 
                 })
+            }
+
+            if (res && isPagination === false) {
+                this.setState({ disableDownload: false })
+                setTimeout(() => {
+                    let button = document.getElementById('Excel-Downloads')
+                    button.click()
+                }, 500);
             }
 
             if (res) {
@@ -383,24 +391,31 @@ class IndivisualPartListing extends Component {
         //if resolution greater than 1920 table listing fit to 100%
     };
 
-    // onPageSizeChanged = (newPageSize) => {
-    //     var value = document.getElementById('page-size').value;
-    //     this.state.gridApi.paginationSetPageSize(Number(value));
 
-    //     if (Number(newPageSize) === 10) {
-    //         this.setState({ pageSize10: true, pageSize50: false, pageSize100: false })
-    //     }
-    //     else if (Number(newPageSize) === 50) {
-    //         this.setState({ pageSize10: false, pageSize50: true, pageSize100: false })
-    //     }
-    //     else if (Number(newPageSize) === 100) {
-    //         this.setState({ pageSize10: false, pageSize50: false, pageSize100: true })
-    //     }
-    // };
+    onExcelDownload = () => {
+
+        this.setState({ disableDownload: true })
+
+        let tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+        if (tempArr?.length > 0) {
+            setTimeout(() => {
+                this.setState({ disableDownload: false })
+                let button = document.getElementById('Excel-Downloads')
+                button.click()
+            }, 400);
+
+        } else {
+
+            this.ApiActionCreator(0, defaultPageSize, this.state.floatingFilterData, false)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
+        }
+    }
+
 
     onBtExport = () => {
-        let tempArr = this.props.newPartsListing && this.props.newPartsListing
 
+        let tempArr = []
+        tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+        tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.allNewPartsListing ? this.props.allNewPartsListing : [])
         return this.returnExcelColumn(INDIVIDUALPART_DOWNLOAD_EXCEl, tempArr)
     };
 
@@ -425,8 +440,6 @@ class IndivisualPartListing extends Component {
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
-
-
 
 
     /**
@@ -469,11 +482,20 @@ class IndivisualPartListing extends Component {
 
         }
 
+        const isFirstColumn = (params) => {
+            var displayedColumns = params.columnApi.getAllDisplayedColumns();
+            var thisIsFirstColumn = displayedColumns[0] === params.column;
+            return thisIsFirstColumn;
+
+        }
 
         const defaultColDef = {
             resizable: true,
             filter: true,
             sortable: true,
+            headerCheckboxSelectionFilteredOnly: true,
+            headerCheckboxSelection: isFirstColumn,
+            checkboxSelection: isFirstColumn
         };
 
         const frameworkComponents = {
@@ -516,15 +538,20 @@ class IndivisualPartListing extends Component {
                                     {
                                         DownloadAccessibility &&
                                         <>
+                                            {this.state.disableDownload ? <LoaderCustom customClass={"input-loader"} /> :
 
-                                            <ExcelFile filename={'Component Part'} fileExtension={'.xls'} element={
-                                                <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-                                                    {/* DOWNLOAD */}
-                                                </button>}>
+                                                <>
+                                                    <button type="button" onClick={this.onExcelDownload} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                                        {/* DOWNLOAD */}
+                                                    </button>
 
-                                                {this.onBtExport()}
-                                            </ExcelFile>
-
+                                                    <ExcelFile filename={'Component Part'} fileExtension={'.xls'} element={
+                                                        <button id={'Excel-Downloads'} type="button" >
+                                                        </button>}>
+                                                        {this.onBtExport()}
+                                                    </ExcelFile>
+                                                </>
+                                            }
                                         </>
                                     }
                                     <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
@@ -550,6 +577,7 @@ class IndivisualPartListing extends Component {
                                 onGridReady={this.onGridReady}
                                 gridOptions={gridOptions}
                                 onFilterModified={this.onFloatingFilterChanged}
+                                rowSelection={'multiple'}
                                 noRowsOverlayComponent={'customNoRowsOverlay'}
                                 noRowsOverlayComponentParams={{
                                     title: EMPTY_DATA,
@@ -605,10 +633,10 @@ class IndivisualPartListing extends Component {
 * @param {*} state
 */
 function mapStateToProps({ part, auth }) {
-    const { newPartsListing } = part
+    const { newPartsListing, allNewPartsListing } = part
     const { initialConfiguration } = auth;
 
-    return { newPartsListing, initialConfiguration };
+    return { newPartsListing, allNewPartsListing, initialConfiguration };
 }
 
 /**
