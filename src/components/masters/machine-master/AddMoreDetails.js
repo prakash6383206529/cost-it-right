@@ -120,7 +120,15 @@ class AddMoreDetails extends Component {
       rowData: [],
       IsFinancialDataChanged: true,
       disableAllForm: false,
-      NoOfWorkingHours: 0
+      NoOfWorkingHours: 0,
+      errorObj: {
+        labourType: false,
+        peopleCount: false,
+        processName: false,
+        processUOM: false,
+        processMachineRate: false,
+        groupName: false
+      }
     }
   }
 
@@ -1172,8 +1180,16 @@ class AddMoreDetails extends Component {
     const { labourType, labourGrid } = this.state;
     const { fieldsObj } = this.props
 
-    if (labourType.length === 0 || fieldsObj.NumberOfLabour === "0") {
-      Toaster.warning('Fields should not be empty');
+    if (labourType.length === 0 && (fieldsObj.NumberOfLabour === undefined || Number(fieldsObj.NumberOfLabour) === 0)) {
+      this.setState({ errorObj: { labourType: true, peopleCount: true } })
+      return false;
+    }
+    if (labourType.length === 0) {
+      this.setState({ errorObj: { labourType: true } })
+      return false;
+    }
+    if (fieldsObj.NumberOfLabour === undefined || Number(fieldsObj.NumberOfLabour) === 0) {
+      this.setState({ errorObj: { peopleCount: true } })
       return false;
     }
 
@@ -1205,6 +1221,7 @@ class AddMoreDetails extends Component {
       this.props.change('NumberOfLabour', '')
       this.props.change('LabourCost', '')
     });
+    this.setState({ errorObj: { labourType: false, peopleCount: false } })
   }
 
   /**
@@ -1220,7 +1237,10 @@ class AddMoreDetails extends Component {
       if (i === labourGridEditIndex) return false;
       return true;
     })
-
+    if (fieldsObj.NumberOfLabour === undefined || Number(fieldsObj.NumberOfLabour) === 0) {
+      this.setState({ errorObj: { peopleCount: true } })
+      return false;
+    }
     //CONDITION TO CHECK DUPLICATE ENTRY EXCEPT EDITED RECORD
     const isExist = skipEditedItem.findIndex(el => (el.labourTypeId === labourType.value))
     if (isExist !== -1) {
@@ -1254,7 +1274,8 @@ class AddMoreDetails extends Component {
       this.props.change('LabourCostPerAnnum', '')
       this.props.change('NumberOfLabour', '')
       this.props.change('LabourCost', '')
-    });
+    },
+      { errorObj: { peopleCount: false } });
   }
 
   /**
@@ -1329,11 +1350,23 @@ class AddMoreDetails extends Component {
     const { fieldsObj } = this.props
     const OutputPerHours = this.state.UOM.label === HOUR ? 0 : fieldsObj.OutputPerHours
 
-    if (processName.length === 0 || UOM.length === 0 || fieldsObj.OutputPerHours === '') {
-      Toaster.warning('Fields should not be empty');
+    if (processName.length === 0 && UOM.length === 0 && (fieldsObj.OutputPerHours === '' || fieldsObj.OutputPerHours === undefined)) {
+      this.setState({ errorObj: { processName: true, processUOM: true, processMachineRate: true } })
       return false;
     }
-
+    if (processName.length === 0) {
+      this.setState({ errorObj: { processName: true } })
+      return false;
+    }
+    if (UOM.length === 0 === 0) {
+      this.setState({ errorObj: { processUOM: true } })
+      return false;
+    }
+    console.log(fieldsObj.OutputPerHours, "fieldsObj.OutputPerHours");
+    if (fieldsObj.OutputPerHours === '') {
+      this.setState({ errorObj: { processMachineRate: true } })
+      return false;
+    }
     if (checkForNull(fieldsObj?.MachineCost) === 0) {
       Toaster.warning('Please enter the machine cost');
       return false;
@@ -1396,6 +1429,7 @@ class AddMoreDetails extends Component {
       this.props.change('OutputPerYear', isProcessGroup ? OutputPerYear : 0)
       this.props.change('MachineRate', isProcessGroup ? checkForDecimalAndNull(MachineRate, this.props.initialConfiguration.NoOfDecimalForPrice) : 0)
     });
+    this.setState({ errorObj: { processName: false, processUOM: false, processMachineRate: false } })
   }
 
   /**
@@ -3161,7 +3195,7 @@ class AddMoreDetails extends Component {
                       </Row>
 
                       {/* LABOUR */}
-                      <Row className="mb-3 accordian-container">
+                      <Row className="mb-3 accordian-container machine-sub-form-container">
                         <Col md="6">
                           <HeaderTitle
                             title={'Labour:'}
@@ -3190,7 +3224,9 @@ class AddMoreDetails extends Component {
                                 disabled={disableAllForm}
                                 handleChangeDescription={this.labourHandler}
                                 valueDescription={this.state.labourType}
+                                required={true}
                               />
+                              {this.state.errorObj.labourType && this.state.labourType.length === 0 && <div className='text-help p-absolute'>This field is required.</div>}
                             </Col>
                             <Col md="2">
                               <Field
@@ -3220,7 +3256,9 @@ class AddMoreDetails extends Component {
                                 disabled={disableAllForm}
                                 className=" "
                                 customClassName="withBorder"
+                                required={true}
                               />
+                              {this.state.errorObj.peopleCount && (this.props.fieldsObj.NumberOfLabour === undefined || Number(this.props.fieldsObj.NumberOfLabour) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                             </Col>
                             <Col md="2">
                               <Field
@@ -3236,7 +3274,7 @@ class AddMoreDetails extends Component {
                                 customClassName="withBorder"
                               />
                             </Col>
-                            <Col md="3">
+                            <Col md="3" className='pt-2'>
                               {this.state.isEditLabourIndex ?
                                 <>
                                   <button
@@ -3270,7 +3308,7 @@ class AddMoreDetails extends Component {
                                 </>}
                             </Col>
                             <Col md="12">
-                              <Table className="table" size="sm" >
+                              <Table className="table border" size="sm" >
                                 <thead>
                                   <tr>
                                     <th>{`Labour Type`}</th>
@@ -3298,18 +3336,24 @@ class AddMoreDetails extends Component {
                                       )
                                     })
                                   }
-                                  {this.state.labourGrid?.length > 0 &&
-                                    <tr>
-                                      <td>{''}</td>
-                                      <td>{''}</td>
-                                      <td>{'Total Labour Cost/Annum(INR):'}</td>
-                                      <td>{this.calculateTotalLabourCost()}</td>
-                                      <td>{''}</td>
-                                    </tr>
-                                  }
                                 </tbody>
+                                {this.state.labourGrid?.length > 0 &&
+                                  <tfoot>
+                                    <tr className="bluefooter-butn">
+
+                                      <td colSpan={"3"} className="text-right">{'Total Labour Cost/Annum(INR):'}</td>
+                                      <td colSpan={"2"}>{this.calculateTotalLabourCost()}</td>
+                                    </tr>
+                                  </tfoot>}
+                                {this.state.labourGrid?.length === 0 &&
+                                  <tbody>
+                                    <tr>
+                                      <td colSpan={"5"}>
+                                        <NoContentFound title={EMPTY_DATA} />
+                                      </td>
+                                    </tr>
+                                  </tbody>}
                               </Table>
-                              {this.state.labourGrid?.length === 0 && <NoContentFound title={EMPTY_DATA} />}
                             </Col>
                           </div>
                         }
@@ -3317,7 +3361,7 @@ class AddMoreDetails extends Component {
 
                       {/* PROCEES */}
 
-                      <Row className="mb-3 accordian-container">
+                      <Row className="mb-3 accordian-container machine-sub-form-container">
                         <Col md="6">
                           <HeaderTitle
                             title={'Process:'}
@@ -3344,11 +3388,13 @@ class AddMoreDetails extends Component {
                                     options={this.renderListing('ProcessNameList')}
                                     //onKeyUp={(e) => this.changeItemDesc(e)}
                                     //validate={(this.state.processName == null || this.state.processName.length == 0) ? [required] : []}
-                                    //required={true}
+                                    required={true}
                                     handleChangeDescription={this.handleProcessName}
                                     valueDescription={this.state.processName}
                                     disabled={this.state.isViewMode}
                                   />
+                                  {this.state.errorObj.processName && this.state.processName.length === 0 && <div className='text-help p-absolute bottom-7'>This field is required.</div>}
+
                                 </div>
                                 {!isEditFlag && <div
                                   onClick={this.processToggler}
@@ -3366,11 +3412,13 @@ class AddMoreDetails extends Component {
                                 options={this.renderListing('UOM')}
                                 //onKeyUp={(e) => this.changeItemDesc(e)}
                                 //validate={(this.state.UOM == null || this.state.UOM.length == 0) ? [required] : []}
-                                //required={true}
+                                required={true}
                                 handleChangeDescription={this.handleUOM}
                                 valueDescription={this.state.UOM}
                                 disabled={this.state.lockUOMAndRate || this.state.isViewMode}
                               />
+                              {this.state.errorObj.processUOM && this.state.UOM.length === 0 && <div className='text-help p-absolute'>This field is required.</div>}
+
                             </Col>
                             {/* COMMENT FOR NOW MAY BE USED LATER */}
                             {/* {
@@ -3419,13 +3467,16 @@ class AddMoreDetails extends Component {
                                   validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
                                   component={renderText}
                                   // onChange={this.handleMachineRate}
-                                  //required={true}
+                                  required={true}
                                   disabled={this.state.UOM.type === TIME ? true : this.state.isViewMode || this.state.lockUOMAndRate || (isEditFlag && isMachineAssociated)}
                                   className=" "
                                   customClassName=" withBorder"
                                 />
+                                {console.log(this.props.fieldsObj.MachineRate, "this.props.fieldsObj.OutputPerHours")}
+                                {this.state.errorObj.processMachineRate && (this.props.fieldsObj.MachineRate === undefined || this.state.UOM.type === TIME ? true : Number(this.props.fieldsObj.MachineRate) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
+
                               </div>
-                              <div className="btn-mr-rate pr-0 col-auto">
+                              <div className="btn-mr-rate pt-2 pr-0 col-auto">
                                 {this.state.isEditIndex ?
                                   <>
                                     <button
@@ -3483,8 +3534,15 @@ class AddMoreDetails extends Component {
                                     })
                                   }
                                 </tbody>
+                                {this.state.processGrid.length === 0 && <tbody>
+                                  <tr>
+                                    <td colSpan={"4"}>
+                                      <NoContentFound title={EMPTY_DATA} />
+                                    </td>
+                                  </tr>
+                                </tbody>}
                               </Table>
-                              {this.state.processGrid.length === 0 && <NoContentFound title={EMPTY_DATA} />}
+
                             </Col>
                           </div>
                         }
