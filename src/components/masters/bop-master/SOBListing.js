@@ -290,6 +290,10 @@ class SOBListing extends Component {
       <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
     );
   }
+  commonCostFormatter = (props) => {
+    const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+    return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : '-';
+  }
 
 
   /**
@@ -332,7 +336,8 @@ class SOBListing extends Component {
       customNoRowsOverlay: NoContentFound,
       hyphenFormatter: this.hyphenFormatter,
       costingHeadFormatter: this.costingHeadFormatter,
-      effectiveDateFormatter: this.effectiveDateFormatter
+      effectiveDateFormatter: this.effectiveDateFormatter,
+      commonCostFormatter: this.commonCostFormatter
     };
 
     return (
@@ -405,7 +410,7 @@ class SOBListing extends Component {
                   <AgGridColumn field="NoOfVendors" headerName="No. of Vendors"></AgGridColumn>
                   <AgGridColumn field="Plant" headerName="Plant(Code)"></AgGridColumn>
                   <AgGridColumn field="ShareOfBusinessPercentage" headerName="Total SOB(%)"></AgGridColumn>
-                  <AgGridColumn width={205} field="WeightedNetLandedCost" headerName="Weighted Net Cost (INR)"></AgGridColumn>
+                  <AgGridColumn width={205} field="WeightedNetLandedCost" headerName="Weighted Net Cost (INR)" cellRenderer={'commonCostFormatter'}></AgGridColumn>
                   <AgGridColumn field="BoughtOutPartNumber" width={120} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                 </AgGridReact>
                 {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}

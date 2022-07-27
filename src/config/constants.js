@@ -1885,10 +1885,12 @@ export const LABOURBULKUPLOAD = 'Labour'
 export const OPERAIONBULKUPLOAD = 'Operation';
 export const FUELBULKUPLOAD = 'Fuel';
 export const INTERESTRATEBULKUPLOAD = 'InterestRate'
+export const ACTUALVOLUMEBULKUPLOAD = 'ActualVolume'
+export const BUDGETEDVOLUMEBULKUPLOAD = 'BudgetedVolume'
 
 // KEY AND IVgit
 export const KEY = 'gQUJ79YKYm22Cazw';
 export const IV = 'eTEFSa0PinFKTQNB'
 
 //VERSION 
-export const VERSION = "V1.2.388";
+export const VERSION = "V1.2.397";

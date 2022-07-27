@@ -23,6 +23,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { PaginationWrapper } from '../../common/commonPagination';
+import { showTitleForActiveToggle } from '../../../helper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -166,6 +167,7 @@ class VBCPlantListing extends Component {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
         const { ActivateAccessibility } = this.props;
+        showTitleForActiveToggle(props)
         if (ActivateAccessibility) {
             return (
                 <>
@@ -180,6 +182,7 @@ class VBCPlantListing extends Component {
                             offColor="#FC5774"
                             id="normal-switch"
                             height={24}
+                            className={cellValue ? "active-switch" : "inactive-switch"}
                         />
                     </label>
                 </>

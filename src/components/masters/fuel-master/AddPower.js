@@ -4,7 +4,7 @@ import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Table } from 'reactstrap';
 import { required, checkForNull, getVendorCode, checkForDecimalAndNull, positiveAndDecimalNumber, maxLength10, maxLength20, checkPercentageValue, decimalLength2, decimalLengthFour, decimalLengthThree } from "../../../helper/validation";
 import { renderNumberInputField, searchableSelect, renderMultiSelectField, focusOnError } from "../../layout/FormInputs";
-import { getPowerTypeSelectList, getUOMSelectList, getPlantBySupplier, } from '../../../actions/Common';
+import { getPowerTypeSelectList, getUOMSelectList, getPlantBySupplier, getAllCity, fetchStateDataAPI } from '../../../actions/Common';
 import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
 import {
   getFuelComboData, createPowerDetail, updatePowerDetail, getPlantListByState, createVendorPowerDetail, updateVendorPowerDetail, getDieselRateByStateAndUOM,
@@ -87,7 +87,9 @@ class AddPower extends Component {
     this.props.getPowerTypeSelectList(() => { })
     this.props.getUOMSelectList(() => { })
     if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
-      this.props.getFuelComboData(() => { })
+      this.props.getAllCity(countryId => {
+        this.props.fetchStateDataAPI(countryId, () => { })
+      })
       this.props.getPlantListByState('', () => { })
       this.props.getPlantBySupplier('', () => { })
     }
@@ -928,7 +930,7 @@ class AddPower extends Component {
   */
   renderListing = (label) => {
     const { powerTypeSelectList, vendorWithVendorCodeSelectList, filterPlantList,
-      UOMSelectList, plantSelectList, fuelComboSelectList } = this.props;
+      UOMSelectList, plantSelectList, stateList } = this.props;
     const temp = [];
 
     if (label === 'VendorNameList') {
@@ -940,7 +942,7 @@ class AddPower extends Component {
     }
 
     if (label === 'state') {
-      fuelComboSelectList && fuelComboSelectList.States && fuelComboSelectList.States.map(item => {
+      stateList && stateList.map(item => {
         if (item.Value === '0') return false;
         temp.push({ label: item.Text, value: item.Value })
       });
@@ -1408,9 +1410,7 @@ class AddPower extends Component {
                                     name={"MinMonthlyCharge"}
                                     type="text"
                                     placeholder={'Enter'}
-                                    validate={isCostPerUnitConfigurable ? [] : []}
                                     component={renderNumberInputField}
-                                    required={!isCostPerUnitConfigurable ? true : false}
                                     className=""
                                     customClassName=" withBorder"
                                     disabled={true}
@@ -1480,9 +1480,7 @@ class AddPower extends Component {
                                     name={"SEBCostPerUnit"}
                                     type="text"
                                     placeholder={'Enter'}
-                                    validate={[required]}
                                     component={renderNumberInputField}
-                                    required={true}
                                     className=""
                                     customClassName=" withBorder"
                                     disabled={!isCostPerUnitConfigurable || isViewMode ? true : false}
@@ -1732,7 +1730,7 @@ class AddPower extends Component {
                               <div className="d-flex justify-space-between align-items-center inputwith-icon">
                                 <div className="fullinput-icon">
                                   <Field
-                                    label={`Unit Generated/Annum`}
+                                    label={`Unit Generated/Annum (kW)`}
                                     name={"UnitGeneratedPerAnnum"}
                                     type="text"
                                     placeholder={'Enter'}
@@ -1809,7 +1807,7 @@ class AddPower extends Component {
                               </div>
                             </Col>
                             <Col md="12">
-                              <Table className="table" size="sm" >
+                              <Table className="table border" size="sm" >
                                 <thead>
                                   <tr>
                                     <th>{`Source`}</th>
@@ -1853,13 +1851,13 @@ class AddPower extends Component {
 
                                 </tfoot>
 
-                                <tbody>
+                                {this.state.powerGrid.length === 0 && <tbody>
                                   <tr>
                                     <td colSpan="5">
-                                      {this.state.powerGrid.length === 0 && <NoContentFound title={EMPTY_DATA} />}
+                                      <NoContentFound title={EMPTY_DATA} />
                                     </td>
                                   </tr>
-                                </tbody>
+                                </tbody>}
                               </Table>
 
                             </Col>
@@ -1867,7 +1865,7 @@ class AddPower extends Component {
                         </>
                       }
                     </div>
-                    <Row className="sf-btn-footer no-gutters justify-content-between">
+                    <Row className="sf-btn-footer no-gutters bottom-footer justify-content-between">
                       <div className="col-sm-12 text-right bluefooter-butn">
                         <button
                           type={'button'}
@@ -1918,7 +1916,7 @@ function mapStateToProps(state) {
     'CostPerUnitOfMeasurement', 'UnitGeneratedPerUnitOfFuel', 'UnitGeneratedPerAnnum', 'SelfGeneratedCostPerUnit',
     'SelfPowerContribution');
 
-  const { powerTypeSelectList, UOMSelectList, filterPlantList, } = comman;
+  const { powerTypeSelectList, UOMSelectList, filterPlantList, stateList } = comman;
   const { vendorWithVendorCodeSelectList } = supplier;
   const { fuelComboSelectList, plantSelectList, powerData } = fuel;
   const { initialConfiguration } = auth;
@@ -1942,7 +1940,7 @@ function mapStateToProps(state) {
 
   return {
     vendorWithVendorCodeSelectList, powerTypeSelectList, UOMSelectList, filterPlantList,
-    fuelComboSelectList, plantSelectList, powerData, initialValues, fieldsObj, initialConfiguration
+    fuelComboSelectList, plantSelectList, powerData, initialValues, fieldsObj, initialConfiguration, stateList
   }
 }
 
@@ -1966,6 +1964,8 @@ export default connect(mapStateToProps, {
   getVendorWithVendorCodeSelectList,
   getPowerDetailData,
   getVendorPowerDetailData,
+  getAllCity,
+  fetchStateDataAPI
 })(reduxForm({
   form: 'AddPower',
   enableReinitialize: true,

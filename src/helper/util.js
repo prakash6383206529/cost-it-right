@@ -27,6 +27,9 @@ export const apiErrors = (res) => {
     response && handleHTTPStatus(response)
   } else {
     if (navigator.userAgent.indexOf("Firefox") !== -1) {
+      setTimeout(() => {
+        toast.error('Something went wrong please try again.')
+      }, 600);
       return;
     }
     toast.error('Something went wrong please try again.')
@@ -948,7 +951,15 @@ export const labelWithUOMAndCurrency = (label, UOM, currency) => {
   </div>
 }
 
-
+// THIS FUNCTION SHOWING TITLE ON HOVER FOR ACTIVE AND INACTIVE STATUS IN GRID
+export const showTitleForActiveToggle = (props) => {
+  setTimeout(() => {
+    const titleActive = document.getElementsByClassName("active-switch")[props?.rowIndex];
+    titleActive?.setAttribute('title', 'Active');
+    const titleInactive = document.getElementsByClassName("inactive-switch")[props?.rowIndex];
+    titleInactive?.setAttribute('title', 'Inactive');
+  }, 500);
+}
 //COMMON FUNCTION FOR MASTERS BULKUPLOAD CHECK
 export const checkForSameFileUpload = (master, fileHeads) => {
   let checkForFileHead, array = []

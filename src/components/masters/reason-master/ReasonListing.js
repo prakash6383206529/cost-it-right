@@ -12,7 +12,7 @@ import NoContentFound from '../../common/NoContentFound';
 import Switch from "react-switch";
 import AddReason from './AddReason';
 import { ADDITIONAL_MASTERS, OperationMaster, REASON, Reasonmaster } from '../../../config/constants';
-import { checkPermission } from '../../../helper/util';
+import { checkPermission, showTitleForActiveToggle } from '../../../helper/util';
 import { loggedInUserId } from '../../../helper/auth';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import Row from 'reactstrap/lib/Row';
@@ -129,8 +129,13 @@ class ReasonListing extends Component {
    * @method editItemDetails
    * @description confirm edit item
    */
-  editItemDetails = (Id) => {
-    this.setState({ isEditFlag: true, isOpenDrawer: true, ID: Id })
+  editItemDetails = (cellValue, rowData) => {
+    if (rowData.IsActive === false) {
+      Toaster.warning('You can not edit inactive reason')
+    }
+    else {
+      this.setState({ isEditFlag: true, isOpenDrawer: true, ID: rowData.ReasonId })
+    }
   }
 
   /**
@@ -185,6 +190,7 @@ class ReasonListing extends Component {
   statusButtonFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+    showTitleForActiveToggle(props)
     return (
       <>
         <label htmlFor="normal-switch" className="normal-switch">
@@ -197,6 +203,7 @@ class ReasonListing extends Component {
             offColor="#FC5774"
             id="normal-switch"
             height={24}
+            className={cellValue ? "active-switch" : "inactive-switch"}
           />
         </label>
       </>

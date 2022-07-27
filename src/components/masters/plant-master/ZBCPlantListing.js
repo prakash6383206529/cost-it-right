@@ -23,6 +23,7 @@ import { ZBCPLANT_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import ReactExport from 'react-export-excel';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { PaginationWrapper } from '../../common/commonPagination';
+import { showTitleForActiveToggle } from '../../../helper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -174,6 +175,7 @@ class ZBCPlantListing extends Component {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
         const { ActivateAccessibility } = this.props;
+        showTitleForActiveToggle(props)
         if (ActivateAccessibility) {
             return (
                 <>
@@ -188,6 +190,7 @@ class ZBCPlantListing extends Component {
                             offColor="#FC5774"
                             id="normal-switch"
                             height={24}
+                            className={cellValue ? "active-switch" : "inactive-switch"}
                         />
                     </label>
                 </>

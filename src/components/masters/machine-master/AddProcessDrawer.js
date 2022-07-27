@@ -217,7 +217,7 @@ class AddProcessDrawer extends Component {
    * @description Renders the component
    */
   render() {
-    const { handleSubmit, isEditFlag, isMachineShow } = this.props
+    const { handleSubmit, isEditFlag, initialConfiguration } = this.props
     const { setDisable } = this.state
     return (
       <div>
@@ -270,7 +270,7 @@ class AddProcessDrawer extends Component {
                       required={true}
                       className=" "
                       customClassName=" withBorder"
-                      disabled={isEditFlag ? true : false}
+                      disabled={isEditFlag || initialConfiguration?.IsProcessCodeConfigure ? true : false}
                     />
                   </Col>
                   {/* <Col md="12">
@@ -371,10 +371,11 @@ class AddProcessDrawer extends Component {
  * @param {*} state
  */
 function mapStateToProps(state) {
-  const { comman, machine, process } = state
+  const { comman, machine, process, auth } = state
   const { plantSelectList } = comman
   const { machineSelectList } = machine
   const { processUnitData } = process
+  const { initialConfiguration } = auth;
   const fieldsObj = selector(state, 'ProcessCode')
 
   let initialValues = {}
@@ -385,7 +386,7 @@ function mapStateToProps(state) {
       ProcessCode: processUnitData.ProcessCode,
     }
   }
-  return { plantSelectList, machineSelectList, processUnitData, initialValues, fieldsObj }
+  return { plantSelectList, machineSelectList, processUnitData, initialValues, fieldsObj, initialConfiguration }
 }
 
 /**

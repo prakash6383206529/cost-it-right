@@ -133,7 +133,7 @@ class SpecificationListing extends Component {
         this.props.deleteRMSpecificationAPI(ID, (res) => {
             if (res.status === 417 && res.data.Result === false) {
                 //Toaster.warning(res.data.Message)
-                Toaster.warning('The specification is associated in the system. Please remove the association to delete')
+                Toaster.error('The specification is associated in the system. Please remove the association to delete')
             } else if (res && res.data && res.data.Result === true) {
                 Toaster.success(MESSAGES.DELETE_SPECIFICATION_SUCCESS);
                 this.getSpecificationListData('', '');

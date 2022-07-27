@@ -120,6 +120,7 @@ class AddMoreDetails extends Component {
       rowData: [],
       IsFinancialDataChanged: true,
       disableAllForm: false,
+      NoOfWorkingHours: 0
     }
   }
 
@@ -187,6 +188,7 @@ class AddMoreDetails extends Component {
       this.props.change('MachineNumber', fieldsObj.MachineNumber)
       this.props.change('TonnageCapacity', fieldsObj.TonnageCapacity)
       this.props.change('Description', fieldsObj.Description)
+      this.props.change('Specification', fieldsObj.Specification)
       this.props.change('EffectiveDate', fieldsObj.EffectiveDate ? fieldsObj.EffectiveDate : '')
 
       setTimeout(() => {
@@ -307,6 +309,7 @@ class AddMoreDetails extends Component {
             const { plantSelectList, machineTypeSelectList, ShiftTypeSelectList, DepreciationTypeSelectList,
               fuelComboSelectList, } = this.props;
             const uomDetail = this.findUOMType(Data.MachineProcessRates.UnitOfMeasurementId)
+
 
             // let technologyArray = Data && Data.Technology.map((item) => ({ Text: item.Technology, Value: item.TechnologyId }))
             const plantObj = Data.Plant && plantSelectList && plantSelectList.find(item => item.PlantId === Data.Plant[0].PlantId)
@@ -590,9 +593,9 @@ class AddMoreDetails extends Component {
    * @method closeAvailabilityDrawer
    * @description CLOSING CALCULATOR DRAWER AND SHOWING PRE FILLED VALUE
   */
-  closeAvailabilityDrawer = (e = '', calculatedEfficiency) => {
+  closeAvailabilityDrawer = (e = '', calculatedEfficiency, NoOfWorkingHours) => {
     const { initialConfiguration } = this.props
-    this.setState({ isOpenAvailability: false }, () => {
+    this.setState({ isOpenAvailability: false, NoOfWorkingHours: NoOfWorkingHours }, () => {
       if (calculatedEfficiency !== Infinity && calculatedEfficiency !== 'NaN') {
         this.props.change('EfficiencyPercentage', checkForDecimalAndNull(calculatedEfficiency, initialConfiguration.NoOfDecimalForInputOutput))
       }
@@ -1745,6 +1748,7 @@ class AddMoreDetails extends Component {
       MachineTypeId: machineType ? machineType.value : '',
       TonnageCapacity: values.TonnageCapacity,
       Description: fieldsObj.Description,
+      Specification: fieldsObj.Specification,
       Remark: remarks,
       LoggedInUserId: loggedInUserId(),
       MachineProcessRates: processGrid,
@@ -1868,6 +1872,7 @@ class AddMoreDetails extends Component {
         MachineTypeId: machineType ? machineType.value : '',
         TonnageCapacity: values.TonnageCapacity,
         Description: fieldsObj.Description,
+        Specification: fieldsObj.Specification,
         Remark: remarks,
         LoggedInUserId: loggedInUserId(),
         MachineProcessRates: processGrid,
@@ -1936,6 +1941,13 @@ class AddMoreDetails extends Component {
   */
   loanToggle = () => {
     const { isLoanOpen } = this.state
+    const { fieldsObj } = this.props
+
+    if (checkForNull(fieldsObj?.MachineCost) === 0 && isLoanOpen === false) {
+      Toaster.warning('Please enter the machine cost');
+      return false;
+    }
+
     this.setState({
       isLoanOpen: !isLoanOpen
     })
@@ -1947,6 +1959,13 @@ class AddMoreDetails extends Component {
   */
   workingHourToggle = () => {
     const { isWorkingOpen } = this.state
+    const { fieldsObj } = this.props
+
+    if (checkForNull(fieldsObj?.MachineCost) === 0 && isWorkingOpen === false) {
+      Toaster.warning('Please enter the machine cost');
+      return false;
+    }
+
     this.setState({ isWorkingOpen: !isWorkingOpen })
   }
 
@@ -1956,6 +1975,12 @@ class AddMoreDetails extends Component {
   */
   depreciationToogle = () => {
     const { isDepreciationOpen } = this.state
+    const { fieldsObj } = this.props
+
+    if (checkForNull(fieldsObj?.MachineCost) === 0 && isDepreciationOpen === false) {
+      Toaster.warning('Please enter the machine cost');
+      return false;
+    }
     this.setState({ isDepreciationOpen: !isDepreciationOpen })
   }
 
@@ -1965,6 +1990,12 @@ class AddMoreDetails extends Component {
   */
   variableCostToggle = () => {
     const { isVariableCostOpen } = this.state
+    const { fieldsObj } = this.props
+
+    if (checkForNull(fieldsObj?.MachineCost) === 0 && isVariableCostOpen === false) {
+      Toaster.warning('Please enter the machine cost');
+      return false;
+    }
     this.setState({ isVariableCostOpen: !isVariableCostOpen })
   }
 
@@ -1974,6 +2005,12 @@ class AddMoreDetails extends Component {
   */
   powerToggle = () => {
     const { isPowerOpen } = this.state
+    const { fieldsObj } = this.props
+
+    if (checkForNull(fieldsObj?.MachineCost) === 0 && isPowerOpen === false) {
+      Toaster.warning('Please enter the machine cost');
+      return false;
+    }
     this.setState({ isPowerOpen: !isPowerOpen })
   }
 
@@ -1988,6 +2025,12 @@ class AddMoreDetails extends Component {
   */
   labourToggle = () => {
     const { isLabourOpen } = this.state
+    const { fieldsObj } = this.props
+
+    if (checkForNull(fieldsObj?.MachineCost) === 0 && isLabourOpen === false) {
+      Toaster.warning('Please enter the machine cost');
+      return false;
+    }
     this.setState({ isLabourOpen: !isLabourOpen })
   }
 
@@ -2041,7 +2084,7 @@ class AddMoreDetails extends Component {
                   <div className="row">
                     <div className="col-md-6">
                       <div className="form-heading mb-0">
-                        <h2>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"}More Details</h2>
+                        <h2>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} More Details</h2>
                       </div>
                     </div>
                   </div>
@@ -2132,7 +2175,7 @@ class AddMoreDetails extends Component {
                         <Col md="3">
                           <Field
                             label={`Machine Specification`}
-                            name={"Description"}
+                            name={"Specification"}
                             type="text"
                             placeholder={'Enter'}
                             validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString]}
@@ -2282,7 +2325,7 @@ class AddMoreDetails extends Component {
 
                         <Col md="3">
                           <Field
-                            label={`Machine Cost (INR)`}
+                            label={`Machine Cost(INR)`}
                             name={"MachineCost"}
                             type="text"
                             placeholder={'Enter'}
@@ -2296,7 +2339,7 @@ class AddMoreDetails extends Component {
                         </Col>
                         <Col md="3">
                           <Field
-                            label={`Accessories Cost (INR)`}
+                            label={`Accessories Cost(INR)`}
                             name={"AccessoriesCost"}
                             type="text"
                             placeholder={'Enter'}
@@ -2310,7 +2353,7 @@ class AddMoreDetails extends Component {
                         </Col>
                         <Col md="3">
                           <Field
-                            label={`Installation Charges (INR)`}
+                            label={`Installation Charges(INR)`}
                             name={"InstallationCharges"}
                             type="text"
                             placeholder={'Enter'}
@@ -2324,7 +2367,7 @@ class AddMoreDetails extends Component {
                         </Col>
                         <Col md="3">
                           <Field
-                            label={`Total Cost (INR)`}
+                            label={`Total Cost(INR)`}
                             name={"TotalCost"}
                             type="text"
                             placeholder={'Enter'}
@@ -2379,7 +2422,7 @@ class AddMoreDetails extends Component {
                           <div className="accordian-content row mx-0 w-100">
                             <Col md="4">
                               <Field
-                                label={`Loan (%)`}
+                                label={`Loan(%)`}
                                 name={"LoanPercentage"}
                                 type="text"
                                 placeholder={'Enter'}
@@ -2408,7 +2451,7 @@ class AddMoreDetails extends Component {
 
                             <Col md="4">
                               <Field
-                                label={`Rate Of Interest (%) / Annum`}
+                                label={`Rate Of Interest(%) / Annum`}
                                 name={"RateOfInterestPercentage"}
                                 type="text"
                                 placeholder={'Enter'}
@@ -2533,7 +2576,7 @@ class AddMoreDetails extends Component {
                               <div className="d-flex justify-space-between align-items-center filled-icon-inside">
                                 <div className="fullinput-icon">
                                   <Field
-                                    label={`Availability (%)`}
+                                    label={`Availability(%)`}
                                     name={"EfficiencyPercentage"}
                                     type="text"
                                     placeholder={'Enter'}
@@ -2609,7 +2652,7 @@ class AddMoreDetails extends Component {
                               this.state.depreciationType.value !== SLM &&
                               <Col md="3">
                                 <Field
-                                  label={`Depreciation Rate (%)`}
+                                  label={`Depreciation Rate(%)`}
                                   name={"DepreciationRatePercentage"}
                                   type="text"
                                   placeholder={'Enter'}
@@ -2625,7 +2668,7 @@ class AddMoreDetails extends Component {
                             {this.state.depreciationType && this.state.depreciationType.value === SLM &&
                               <Col md="3">
                                 <Field
-                                  label={`Life Of Asset (Years)`}
+                                  label={`Life Of Asset(Years)`}
                                   name={"LifeOfAssetPerYear"}
                                   type="text"
                                   placeholder={'Enter'}
@@ -2639,7 +2682,7 @@ class AddMoreDetails extends Component {
                               </Col>}
                             <Col md="3">
                               <Field
-                                label={`Cost Of Scrap (INR)`}
+                                label={`Cost of Scrap(INR)`}
                                 name={"CastOfScrap"}
                                 type="text"
                                 placeholder={'Enter'}
@@ -2679,7 +2722,7 @@ class AddMoreDetails extends Component {
                             </Col>
                             <Col md="3">
                               <Field
-                                label={`Depreciation Amount (INR)`}
+                                label={`Depreciation Amount(INR)`}
                                 name={"DepreciationAmount"}
                                 type="text"
                                 placeholder={'Enter'}
@@ -2748,7 +2791,7 @@ class AddMoreDetails extends Component {
                               </Col>}
                             <Col md="3">
                               <Field
-                                label={`Annual Maintenance Amount (INR)`}
+                                label={`Annual Maintenance Amount(INR)`}
                                 name={"AnnualMaintanceAmount"}
                                 type="text"
                                 placeholder={'Enter'}
@@ -2797,7 +2840,7 @@ class AddMoreDetails extends Component {
                               </Col>}
                             <Col md="3">
                               <Field
-                                label={`Annual Consumable Amount (INR)`}
+                                label={`Annual Consumable Amount(INR)`}
                                 name={"AnnualConsumableAmount"}
                                 type="text"
                                 placeholder={'Enter'}
@@ -2847,7 +2890,7 @@ class AddMoreDetails extends Component {
                               </Col>}
                             <Col md="3">
                               <Field
-                                label={`Insurance Amount (INR)`}
+                                label={`Insurance Amount(INR)`}
                                 name={"AnnualInsuranceAmount"}
                                 type="text"
                                 placeholder={'Enter'}
@@ -2875,7 +2918,7 @@ class AddMoreDetails extends Component {
                             </Col>
                             <Col md="3">
                               <Field
-                                label={`Machine Floor Area (Sq Ft)`}
+                                label={`Machine Floor Area(Sq Ft)`}
                                 name={"MachineFloorAreaPerSquareFeet"}
                                 type="text"
                                 placeholder={'Enter'}
@@ -2889,7 +2932,7 @@ class AddMoreDetails extends Component {
                             </Col>
                             <Col md="3">
                               <Field
-                                label={`Annual Area Cost (INR)`}
+                                label={`Annual Area Cost(INR)`}
                                 name={"AnnualAreaCost"}
                                 type="text"
                                 placeholder={'Enter'}
@@ -2903,7 +2946,7 @@ class AddMoreDetails extends Component {
                             </Col>
                             <Col md="3">
                               <Field
-                                label={`Other Yearly Cost (INR)`}
+                                label={`Other Yearly Cost(INR)`}
                                 name={"OtherYearlyCost"}
                                 type="text"
                                 placeholder={'Enter'}
@@ -2917,7 +2960,7 @@ class AddMoreDetails extends Component {
                             </Col>
                             <Col md="3">
                               <Field
-                                label={`Total Machine Cost/Annum (INR)`}
+                                label={`Total Machine Cost/Annum(INR)`}
                                 name={"TotalMachineCostPerAnnum"}
                                 type="text"
                                 placeholder={'Enter'}
@@ -3019,7 +3062,7 @@ class AddMoreDetails extends Component {
                               </Col>
                               <Col md="3">
                                 <Field
-                                  label={`Total Power Cost/Annum (INR)`}
+                                  label={`Total Power Cost/Annum(INR)`}
                                   name={"TotalFuelCostPerYear"}
                                   type="text"
                                   placeholder={'Enter'}
@@ -3037,7 +3080,7 @@ class AddMoreDetails extends Component {
                             <>
                               <Col md="3">
                                 <Field
-                                  label={`Utilization (%)`}
+                                  label={`Utilization(%)`}
                                   name={"UtilizationFactorPercentage"}
                                   type="text"
                                   placeholder={'Enter'}
@@ -3051,7 +3094,7 @@ class AddMoreDetails extends Component {
                               </Col>
                               <Col md="3">
                                 <Field
-                                  label={`Power Rating (Kw)`}
+                                  label={`Power Rating(Kw)`}
                                   name={"PowerRatingPerKW"}
                                   type="text"
                                   placeholder={'Enter'}
@@ -3100,7 +3143,7 @@ class AddMoreDetails extends Component {
                               </Col>
                               <Col md="3">
                                 <Field
-                                  label={`Total Power Cost/Annum (INR)`}
+                                  label={`Total Power Cost/Annum(INR)`}
                                   name={"TotalPowerCostPerYear"}
                                   type="text"
                                   placeholder={'Enter'}
@@ -3151,7 +3194,7 @@ class AddMoreDetails extends Component {
                             </Col>
                             <Col md="2">
                               <Field
-                                label={`Cost/Annum (INR)`}
+                                label={`Cost/Annum(INR)`}
                                 name={"LabourCostPerAnnum"}
                                 type="text"
                                 placeholder={'Enter'}
@@ -3181,7 +3224,7 @@ class AddMoreDetails extends Component {
                             </Col>
                             <Col md="2">
                               <Field
-                                label={`Total Cost (INR)`}
+                                label={`Total Cost(INR)`}
                                 name={"LabourCost"}
                                 type="text"
                                 placeholder={'Enter'}
@@ -3231,7 +3274,7 @@ class AddMoreDetails extends Component {
                                 <thead>
                                   <tr>
                                     <th>{`Labour Type`}</th>
-                                    <th>{`Cost/Annum (INR)`}</th>
+                                    <th>{`Cost/Annum(INR)`}</th>
                                     <th>{`No. Of People`}</th>
                                     <th>{`Total Cost (INR)`}</th>
                                     <th>{`Action`}</th>
@@ -3259,7 +3302,7 @@ class AddMoreDetails extends Component {
                                     <tr>
                                       <td>{''}</td>
                                       <td>{''}</td>
-                                      <td>{'Total Labour Cost/Annum (INR):'}</td>
+                                      <td>{'Total Labour Cost/Annum(INR):'}</td>
                                       <td>{this.calculateTotalLabourCost()}</td>
                                       <td>{''}</td>
                                     </tr>
@@ -3369,7 +3412,7 @@ class AddMoreDetails extends Component {
                             <Col className="d-flex col-auto">
                               <div className="machine-rate-filed pr-3">
                                 <Field
-                                  label={`Machine Rate/Hr (INR)`}
+                                  label={`Machine Rate(INR)`}
                                   name={"MachineRate"}
                                   type="text"
                                   placeholder={''}
@@ -3416,7 +3459,7 @@ class AddMoreDetails extends Component {
                                     <th>{`UOM`}</th>
                                     {/* <th>{`Output/Hr`}</th>     COMMENTED FOR NOW MAY BE USED LATER
                                     <th>{`Output/Annum`}</th> */}
-                                    <th>{`Machine Rate/Hr (INR)`}</th>
+                                    <th>{`Machine Rate(INR)`}</th>
                                     <th>{`Action`}</th>
                                   </tr>
                                 </thead>
@@ -3592,6 +3635,7 @@ class AddMoreDetails extends Component {
           isEditFlag={false}
           ID={''}
           anchor={'right'}
+          NoOfWorkingHours={this.state.NoOfWorkingHours}
           NumberOfWorkingHoursPerYear={this.state.WorkingHrPrYr}
         />}
         {isOpenProcessDrawer && <AddProcessDrawer
@@ -3639,7 +3683,7 @@ function mapStateToProps(state) {
     'BuildingCostPerSquareFeet', 'MachineFloorAreaPerSquareFeet', 'AnnualAreaCost', 'OtherYearlyCost', 'TotalMachineCostPerAnnum',
     'UtilizationFactorPercentage', 'PowerRatingPerKW', 'PowerCostPerUnit', 'TotalPowerCostPerYear',
     'FuelCostPerUnit', 'ConsumptionPerYear', 'TotalFuelCostPerYear',
-    'NumberOfLabour', 'LabourCost', 'OutputPerHours', 'OutputPerYear', 'MachineRate', 'DateOfPurchase', 'Description');
+    'NumberOfLabour', 'LabourCost', 'OutputPerHours', 'OutputPerYear', 'MachineRate', 'DateOfPurchase', 'Description', 'Specification');
 
   const { technologySelectList, plantSelectList, UOMSelectList,
     ShiftTypeSelectList, DepreciationTypeSelectList, } = comman;
@@ -3660,6 +3704,7 @@ function mapStateToProps(state) {
       AccessoriesCost: machineData.AccessoriesCost,
       InstallationCharges: machineData.InstallationCharges,
       Description: machineData.Description,
+      Specification: machineData.Specification,
       LabourCostPerAnnum: machineData.LabourCostPerAnnum,
       TotalCost: machineData.TotalCost,
       LoanPercentage: machineData.LoanPercentage,

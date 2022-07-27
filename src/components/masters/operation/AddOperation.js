@@ -822,7 +822,7 @@ class AddOperation extends Component {
                           component={renderText}
                           required={true}
                           onBlur={this.checkUniqCode}
-                          disabled={(isEditFlag || isDisableCode) ? true : false}
+                          disabled={(isEditFlag || isDisableCode || initialConfiguration.IsOperationCodeConfigure) ? true : false}
                           className=" "
                           customClassName=" withBorder"
                         />
