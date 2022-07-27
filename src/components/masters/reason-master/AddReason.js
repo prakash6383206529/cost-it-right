@@ -167,7 +167,7 @@ class AddReason extends Component {
                     <h3>{isEditFlag ? "Update Reason" : "Add Reason"}</h3>
                   </div>
                   <div
-                    onClick={(e) => this.toggleDrawer(e)}
+                    onClick={this.cancel}
                     className={"close-button right"}
                   ></div>
                 </Col>
