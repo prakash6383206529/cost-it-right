@@ -19,7 +19,7 @@ import AddMachineTypeDrawer from '../machine-master/AddMachineTypeDrawer'
 import NoContentFound from '../../common/NoContentFound'
 import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom'
-import { debounce } from 'lodash'
+import _, { debounce } from 'lodash'
 import AsyncSelect from 'react-select/async';
 
 const selector = formValueSelector('AddLabour')
@@ -189,7 +189,9 @@ class AddLabour extends Component {
       labourTypeByMachineTypeSelectList &&
         labourTypeByMachineTypeSelectList.map((item) => {
           if (item.Value === '0') return false
+          if (this.findLabourtype(item.Value, this.state.gridTable)) return false;
           temp.push({ label: item.Text, value: item.Value })
+          return null;
         })
       return temp
     }
@@ -319,6 +321,16 @@ class AddLabour extends Component {
     } else {
       this.setState({ labourType: [] })
     }
+  }
+  findLabourtype = (clickedData, arr) => {
+    let isLabourType = _.find(arr, function (obj) {
+      if (obj.LabourTypeId === clickedData) {
+        return true;
+      } else {
+        return false
+      }
+    });
+    return isLabourType
   }
 
   /**

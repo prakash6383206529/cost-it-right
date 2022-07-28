@@ -217,7 +217,7 @@ class AddFuel extends Component {
     this.setState({
       rateGrid: tempArray,
       StateName: [],
-      effectiveDate: new Date(),
+      effectiveDate: '',
     }, () => this.props.change('Rate', 0));
     this.setState({ AddUpdate: false, errorObj: { state: false, rate: false, effectiveDate: false } })
   }
@@ -326,9 +326,16 @@ class AddFuel extends Component {
     this.setState({ isOpenFuelDrawer: true })
   }
 
-  closeFuelDrawer = (e = '') => {
+  closeFuelDrawer = (e = '', reqData = {}) => {
     this.setState({ isOpenFuelDrawer: false }, () => {
-      this.props.getFuelComboData(() => { })
+      this.props.getFuelComboData(() => {
+        const { fuelComboSelectList } = this.props;
+        /*TO SHOW FUEL NAME VALUE PRE FILLED FROM DRAWER*/
+        if (Object.keys(reqData).length > 0) {
+          let fuelObj = fuelComboSelectList && fuelComboSelectList.Fuels.find(item => item.Text === reqData.FuelName)
+          this.setState({ fuel: fuelObj && fuelObj !== undefined ? { label: fuelObj.Text, value: fuelObj.Value } : [] })
+        }
+      })
     })
   }
 
