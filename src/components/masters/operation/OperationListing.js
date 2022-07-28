@@ -203,8 +203,8 @@ class OperationListing extends Component {
                 if (res && isPagination === false) {
                     this.setState({ disableDownload: false })
                     setTimeout(() => {
-                        let button = document.getElementById('Excel-Downloads')
-                        button.click()
+                        let button = document.getElementById('Excel-Downloads-operation')
+                        button && button.click()
                     }, 500);
                 }
 
@@ -604,8 +604,8 @@ class OperationListing extends Component {
         if (tempArr?.length > 0) {
             setTimeout(() => {
                 this.setState({ disableDownload: false })
-                let button = document.getElementById('Excel-Downloads')
-                button.click()
+                let button = document.getElementById('Excel-Downloads-operation')
+                button && button.click()
             }, 400);
 
         } else {
@@ -819,14 +819,15 @@ class OperationListing extends Component {
                                             DownloadAccessibility && !this.props?.isMasterSummaryDrawer &&
                                             <>
 
-                                                {this.state.disableDownload ? <LoaderCustom customClass={"input-loader"} /> :
+                                                {this.state.disableDownload ? <div className='p-relative mr5'> <LoaderCustom customClass={"download-loader"} /> <button type="button" className={'user-btn'}><div className="download mr-0"></div>
+                                                </button></div> :
                                                     <>
                                                         <button type="button" onClick={this.onExcelDownload} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
                                                             {/* DOWNLOAD */}
                                                         </button>
 
                                                         <ExcelFile filename={'Operation'} fileExtension={'.xls'} element={
-                                                            <button id={'Excel-Downloads'} type="button" >
+                                                            <button id={'Excel-Downloads-operation'} className="p-absolute" type="button" >
                                                             </button>}>
                                                             {this.onBtExport()}
                                                         </ExcelFile>
