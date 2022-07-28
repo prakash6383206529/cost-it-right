@@ -169,11 +169,12 @@ function AddProcess(props) {
       processData = selectedProcessAndGroup && selectedProcessAndGroup.filter(el => el.MachineRateId !== rowData.MachineRateId && el.ProcessId !== rowData.ProcessId)
     }
 
-    dispatch(setSelectedDataOfCheckBox(processData))
-
     var selectedRows = gridApi.getSelectedRows();
-
-    // if (JSON.stringify(selectedRows) === JSON.stringify(props.Ids)) return false
+    if (selectedRows?.length === 0) {
+      dispatch(setSelectedDataOfCheckBox([]))
+    } else {
+      dispatch(setSelectedDataOfCheckBox(processData))
+    }
     setSelectedRowData(selectedRows)
   }
 
@@ -182,7 +183,7 @@ function AddProcess(props) {
   * @description ADD ROW IN TO RM COST GRID
   */
   const addRow = () => {
-    if (selectedProcessAndGroup.length === 0) {
+    if (selectedProcessAndGroup?.length === 0) {
       Toaster.warning('Please select row.')
       return false;
     }
