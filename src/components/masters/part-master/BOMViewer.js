@@ -153,7 +153,7 @@ class BOMViewer extends Component {
 
     let tempArray = [];
     let outputArray = [];
-    const posX = flowpoints.length > 0 ? 450 * Math.abs(flowpoints.filter(el => el.Level === 'L1').length - 1) : 50;
+    const posX = flowpoints.length > 0 ? 450 * Math.abs(flowpoints.filter(el => el.Level === 'L1').length) : 50;
 
     if (Object.keys(childData).length > 0 && childData.PartType === ASSEMBLY) {
 
@@ -448,8 +448,7 @@ class BOMViewer extends Component {
                             width={200}
                             height={120}
                             onClick={() => {
-                              var selected_point = this.state
-                                .selected_point;
+                              var selected_point = this.state.selected_point;
                               if (selected_point === el.PartNumber) {
                                 selected_point = null;
                               } else {
