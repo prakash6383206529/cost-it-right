@@ -24,7 +24,7 @@ import DayTime from '../../common/DayTimeWrapper'
 import { calculatePercentageValue } from '../../../helper';
 import { AcceptablePowerUOM } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
-import { debounce } from 'lodash';
+import _, { debounce } from 'lodash';
 import TooltipCustom from '../../common/Tooltip';
 import AsyncSelect from 'react-select/async';
 
@@ -466,7 +466,16 @@ class AddPower extends Component {
     }
     this.setState({ handleChange: false })
   };
-
+  findSourceType = (clickedData, arr) => {
+    let isSourceType = _.find(arr, function (obj) {
+      if (obj.SourcePowerType === clickedData) {
+        return true;
+      } else {
+        return false
+      }
+    });
+    return isSourceType
+  }
   /**
   * @method handleUOM
   * @description called
@@ -517,12 +526,10 @@ class AddPower extends Component {
       powerTotalT = Number(powerTotalT) + Number(fieldsObj.SEBPowerContributaion)
 
     }
-
     if (powerTotalT > 100) {
       Toaster.warning('Total Contribution should not be more than 100%');
       return false;
     }
-
 
 
     const TotalUnitCharges = power.TotalUnitCharges !== undefined ? power.TotalUnitCharges : 0
@@ -754,11 +761,12 @@ class AddPower extends Component {
     let powerTotalT = 0
     if (powerGrid) {
       this.state.powerGrid.map((item, index) => {
-        powerTotalT = Number(powerTotalT) + Number(item.PowerContributionPercentage)
+        if (index === powerGridEditIndex) {
+          powerTotalT = Number(powerTotalT) + Number(fieldsObj.SelfPowerContribution)
+        } else {
+          powerTotalT = Number(powerTotalT) + Number(item.PowerContributionPercentage)
+        }
       })
-
-      powerTotalT = Number(powerTotalT) + Number(fieldsObj.SelfPowerContribution)
-
     }
 
     if (powerTotalT > 100) {
@@ -967,11 +975,12 @@ class AddPower extends Component {
       });
       return temp;
     }
-
     if (label === 'Source') {
       powerTypeSelectList && powerTypeSelectList.map(item => {
         if (item.Value === '0') return false;
+        if (this.findSourceType(item.Value, this.state.powerGrid)) return false;
         temp.push({ label: item.Text, value: item.Value })
+        return null;
       });
       return temp;
     }
