@@ -86,7 +86,7 @@ export const TextFieldHookForm = (field) => {
           }
         />
         {errors && errors.type === 'required' ? <div className="text-help">This field is required</div>
-          : errors && errors.type !== 'required' ? <div className="text-help">{(errors.message || errors.type)}</div> : ''}
+          : errors && errors.type !== 'required' ? <div className="text-error-title"><div className="text-help">{(errors.message || errors.type)}</div><div className="error-overflow">{(errors.message || errors.type)}</div> </div> : ''}
       </div>
     </>
   )
@@ -135,7 +135,7 @@ export const NumberFieldHookForm = (field) => {
 
 
         {errors && errors.type === 'required' ? <div className="text-help">This field is required</div>
-          : errors && errors.type !== 'required' ? <div className="text-help">{(errors.message || errors.type)}</div> : ''}
+          : errors && errors.type !== 'required' ? <div className="text-error-title"><div className="text-help">{(errors.message || errors.type)}</div><div className="error-overflow">{(errors.message || errors.type)}</div> </div> : ''}
       </div>
     </>
   )
