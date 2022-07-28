@@ -7,7 +7,7 @@ import {
     GET_GRADE_SELECTLIST_BY_RAWMATERIAL, GET_GRADE_SELECTLIST_SUCCESS, GET_RAW_MATERIAL_FILTER_DYNAMIC_DATA, GET_GRADE_FILTER_BY_RAW_MATERIAL_SELECTLIST,
     GET_VENDOR_FILTER_BY_RAW_MATERIAL_SELECTLIST, GET_RAW_MATERIAL_FILTER_BY_GRADE_SELECTLIST, GET_VENDOR_FILTER_BY_GRADE_SELECTLIST, GET_RAWMATERIAL_FILTER_BY_VENDOR_SELECTLIST,
     GET_GRADE_FILTER_BY_VENDOR_SELECTLIST, GET_MATERIAL_DATA_SELECTLIST_SUCCESS, GET_RM_DOMESTIC_LIST, GET_RM_IMPORT_LIST,
-    GET_MANAGE_SPECIFICATION, GET_UNASSOCIATED_RM_NAME_SELECTLIST, SET_FILTERED_RM_DATA, GET_ALL_MASTER_APPROVAL_DEPARTMENT, GET_RM_APPROVAL_LIST
+    GET_MANAGE_SPECIFICATION, GET_UNASSOCIATED_RM_NAME_SELECTLIST, SET_FILTERED_RM_DATA, GET_ALL_MASTER_APPROVAL_DEPARTMENT, GET_RM_APPROVAL_LIST, GET_ALL_RM_DOMESTIC_LIST
 } from '../../../config/constants';
 import { userDetails } from '../../../helper';
 
@@ -269,6 +269,18 @@ export default function materialReducer(state = initialState, action) {
                 error: true,
                 rmDataList: arr
             }
+        case GET_ALL_RM_DOMESTIC_LIST:
+            let arry = [];
+            arry = action.payload && action.payload.filter((item) => {
+                return item.IsAVCCosting === false
+            }
+            )
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                allRmDataList: arry
+            }
         case GET_RM_IMPORT_LIST:
 
             let arr2 = [];
@@ -332,7 +344,7 @@ export default function materialReducer(state = initialState, action) {
                 })
             }
 
-            if (action.payload[0].OperationId !== undefined) {
+            if (action.payload[0].OperationId !== undefined && action.payload[0].OperationId !== null) {
                 array = action.payload && action.payload.filter((item) => {
                     return (item.TechnologyName = item.Technology,
                         item.UOM = item.UnitOfMeasurement,
@@ -342,7 +354,7 @@ export default function materialReducer(state = initialState, action) {
                 })
             }
 
-            if (action.payload[0].MachineId !== undefined || action.payload[0].MachineId !== null) {
+            if (action.payload[0].MachineId !== undefined && action.payload[0].MachineId !== null) {
                 array = action.payload && action.payload.filter((item) => {
                     return (
                         item.BasicRate = item.MachineRate
