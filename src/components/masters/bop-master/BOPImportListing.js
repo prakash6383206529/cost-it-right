@@ -162,8 +162,8 @@ class BOPImportListing extends Component {
             if (res && isPagination === false) {
                 this.setState({ disableDownload: false })
                 setTimeout(() => {
-                    let button = document.getElementById('Excel-Downloads')
-                    button.click()
+                    let button = document.getElementById('Excel-Downloads-bop-import')
+                    button && button.click()
                 }, 500);
             }
 
@@ -406,8 +406,8 @@ class BOPImportListing extends Component {
         if (tempArr?.length > 0) {
             setTimeout(() => {
                 this.setState({ disableDownload: false })
-                let button = document.getElementById('Excel-Downloads')
-                button.click()
+                let button = document.getElementById('Excel-Downloads-bop-import')
+                button && button.click()
             }, 400);
 
         } else {
@@ -608,7 +608,8 @@ class BOPImportListing extends Component {
                                 {
                                     DownloadAccessibility &&
                                     <>
-                                        {this.state.disableDownload ? <LoaderCustom customClass={"input-loader"} /> :
+                                        {this.state.disableDownload ? <div className='p-relative mr5'> <LoaderCustom customClass={"download-loader"} /> <button type="button" className={'user-btn'}><div className="download mr-0"></div>
+                                        </button></div> :
 
                                             <>
                                                 <button type="button" onClick={this.onExcelDownload} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
@@ -616,7 +617,7 @@ class BOPImportListing extends Component {
                                                 </button>
 
                                                 <ExcelFile filename={'BOP Import'} fileExtension={'.xls'} element={
-                                                    <button id={'Excel-Downloads'} type="button" >
+                                                    <button id={'Excel-Downloads-bop-import'} className="p-absolute" type="button" >
                                                     </button>}>
                                                     {this.onBtExport()}
                                                 </ExcelFile>
