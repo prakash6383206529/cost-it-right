@@ -66,20 +66,14 @@ function AddBOP(props) {
     return <GridTotalFormate start={start} to={to} total={total} />
   }
 
-  const onRowSelect = () => {
-
-    var selectedRows = gridApi.getSelectedRows();
-    if (JSON.stringify(selectedRows) === JSON.stringify(props.Ids)) return false
-    setSelectedRowData(selectedRows)
-    // if (isSelected) {
-    // } else {
-    //   const BoughtOutPartId = row.BoughtOutPartId;
-    //   let tempArr = selectedRowData && selectedRowData.filter(el => el.BoughtOutPartId !== BoughtOutPartId)
-    //   setSelectedRowData(tempArr)
-    // }
-
+  const onRowSelect = (event) => {
+    var selectedRows = gridApi && gridApi?.getSelectedRows();
+    if (selectedRows?.length === 0) {
+      setSelectedRowData([])
+    } else {
+      setSelectedRowData(selectedRows)
+    }
   }
-
 
   const netLandedFormat = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -108,7 +102,7 @@ function AddBOP(props) {
   * @description ADD ROW IN TO RM COST GRID
   */
   const addRow = () => {
-    if (selectedRowData.length === 0) {
+    if (selectedRowData?.length === 0) {
       Toaster.warning('Please select row.')
       return false;
     }
@@ -321,7 +315,7 @@ function AddBOP(props) {
                         suppressRowClickSelection={true}
                         rowSelection={'multiple'}
                         frameworkComponents={frameworkComponents}
-                        onSelectionChanged={onRowSelect}
+                        onRowSelected={onRowSelect}
                         isRowSelectable={isRowSelectable}
                       >
                         <AgGridColumn field="BoughtOutPartId" hide={true}></AgGridColumn>
