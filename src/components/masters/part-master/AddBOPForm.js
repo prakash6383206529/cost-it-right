@@ -277,7 +277,7 @@ class AddBOPForm extends Component {
                 name={"Quantity"}
                 type="text"
                 placeholder={""}
-                validate={[positiveAndDecimalNumber, maxLength5, required, minValueLessThan1]}
+                validate={[positiveAndDecimalNumber, required]}
                 component={renderText}
                 required={true}
                 className=""
