@@ -23,7 +23,7 @@ import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
 import LoaderCustom from '../../common/LoaderCustom';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
-import { setCostingViewData } from '../../costing/actions/Costing';
+import { checkFinalUser, setCostingViewData } from '../../costing/actions/Costing';
 import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { Redirect } from 'react-router';
@@ -133,6 +133,8 @@ function SimulationApprovalSummary(props) {
     const [toggleSeeData2, setToggleSeeData2] = useState(true)
     const [showSuccessMessage, setShowSuccessMessage] = useState(false)
     const [showErrorMessage, setShowErrorMessage] = useState(false)
+    const [toggleSeeData, setToggleSeeData] = useState(true)
+    const [finalLeveluser, setFinalLevelUser] = useState(false)
 
     const headerName = ['Revision No.', 'Name', 'Old Cost/Pc', 'New Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
 
@@ -241,6 +243,17 @@ function SimulationApprovalSummary(props) {
             }
         }))
 
+        let finalUserObj = {
+            DepartmentId: DepartmentId,
+            UserId: loggedInUserId(),
+            TechnologyId: SimulationTechnologyId,
+            Mode: 'simulation'
+        }
+        dispatch(checkFinalUser(finalUserObj, res => {
+            if (res && res.data && res.data.Result) {
+                setFinalLevelUser(res.data.Data.IsFinalApprover)
+            }
+        }))
     }
 
     useEffect(() => {
@@ -1597,53 +1610,59 @@ domLayout='autoHeight'
                 // <SimulationApprovalListing />
             }
 
-            {approveDrawer && <ApproveRejectDrawer
-                type={'Approve'}
-                isOpen={approveDrawer}
-                closeDrawer={closeApproveDrawer}
-                // tokenNo={approvalNumber}
-                approvalData={[]}
-                anchor={'right'}
-                isSimulation={true}
-                simulationDetail={simulationDetail}
-                costingList={costingList}
-                // reasonId={approvalDetails.ReasonId}
-                IsFinalLevel={showFinalLevelButtons}
-                IsPushDrawer={showPushDrawer}
-                showFinalLevelButtons={showFinalLevelButtons}
-                Attachements={simulationDetail.Attachements}
-                reasonId={simulationDetail.SenderReasonId}
-            // IsPushDrawer={showPushDrawer}
-            // dataSend={[approvalDetails, partDetail]}
-            />}
-
-            {rejectDrawer && <ApproveRejectDrawer
-                type={'Reject'}
-                isOpen={rejectDrawer}
-                simulationDetail={simulationDetail}
-                closeDrawer={closeApproveDrawer}
-                isSimulation={true}
-                //  tokenNo={approvalNumber}
-                anchor={'right'}
-                IsFinalLevel={!showFinalLevelButtons}
-                // reasonId={approvalDetails.ReasonId}
+            {
+                approveDrawer && <ApproveRejectDrawer
+                    type={'Approve'}
+                    isOpen={approveDrawer}
+                    closeDrawer={closeApproveDrawer}
+                    // tokenNo={approvalNumber}
+                    approvalData={[]}
+                    anchor={'right'}
+                    isSimulation={true}
+                    simulationDetail={simulationDetail}
+                    costingList={costingList}
+                    // reasonId={approvalDetails.ReasonId}
+                    IsPushDrawer={showPushDrawer}
+                    showFinalLevelButtons={showFinalLevelButtons}
+                    Attachements={simulationDetail.Attachements}
+                    reasonId={simulationDetail.SenderReasonId}
+                    IsFinalLevel={finalLeveluser}
                 // IsPushDrawer={showPushDrawer}
                 // dataSend={[approvalDetails, partDetail]}
-                Attachements={simulationDetail.Attachements}
-                reasonId={simulationDetail.SenderReasonId}
-            />}
+                />
+            }
 
-            {pushButton && <PushButtonDrawer
-                isOpen={pushButton}
-                closeDrawer={closePushButton}
-                approvalData={[approvalData ? approvalData : []]}
-                isSimulation={true}
-                simulationDetail={simulationDetail}
-                // dataSend={dataSend ? dataSend : []}
-                costingList={costingList}
-                anchor={'right'}
-            // approvalData={[approvalData]}
-            />}
+            {
+                rejectDrawer && <ApproveRejectDrawer
+                    type={'Reject'}
+                    isOpen={rejectDrawer}
+                    simulationDetail={simulationDetail}
+                    closeDrawer={closeApproveDrawer}
+                    isSimulation={true}
+                    //  tokenNo={approvalNumber}
+                    anchor={'right'}
+                    IsFinalLevel={!showFinalLevelButtons}
+                    // reasonId={approvalDetails.ReasonId}
+                    // IsPushDrawer={showPushDrawer}
+                    // dataSend={[approvalDetails, partDetail]}
+                    Attachements={simulationDetail.Attachements}
+                    reasonId={simulationDetail.SenderReasonId}
+                />
+            }
+
+            {
+                pushButton && <PushButtonDrawer
+                    isOpen={pushButton}
+                    closeDrawer={closePushButton}
+                    approvalData={[approvalData ? approvalData : []]}
+                    isSimulation={true}
+                    simulationDetail={simulationDetail}
+                    // dataSend={dataSend ? dataSend : []}
+                    costingList={costingList}
+                    anchor={'right'}
+                // approvalData={[approvalData]}
+                />
+            }
 
             {
                 viewButton && <ViewDrawer
