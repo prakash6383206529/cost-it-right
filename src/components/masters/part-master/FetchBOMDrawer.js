@@ -24,9 +24,8 @@ const FetchDrawer = (props) => {
 
         let temp = []
         plantSelectList && plantSelectList.map(item => {
-            if (item.Value === '0') return false;
-            let plantName = item.Text.split('(')[1]
-            temp.push({ label: plantName.split(')')[0], value: item.Value })
+            if (item.PlantId === '0') return false;
+            temp.push({ label: item.PlantCode, value: item.PlantId })
             return null;
         });
 
