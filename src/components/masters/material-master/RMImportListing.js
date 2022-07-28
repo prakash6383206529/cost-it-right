@@ -190,8 +190,8 @@ function RMImportListing(props) {
         if (res && isPagination === false) {
           setDisableDownload(false)
           setTimeout(() => {
-            let button = document.getElementById('Excel-Downloads')
-            button.click()
+            let button = document.getElementById('Excel-Downloads-rm-import')
+            button && button.click()
           }, 500);
         }
 
@@ -570,8 +570,8 @@ function RMImportListing(props) {
     if (tempArr?.length > 0) {
       setTimeout(() => {
         setDisableDownload(false)
-        let button = document.getElementById('Excel-Downloads')
-        button.click()
+        let button = document.getElementById('Excel-Downloads-rm-import')
+        button && button.click()
       }, 400);
 
     } else {
@@ -741,7 +741,8 @@ function RMImportListing(props) {
                       {
                         DownloadAccessibility &&
                         <>
-                          {disableDownload ? <LoaderCustom customClass={"input-loader"} /> :
+                          {disableDownload ? <div className='p-relative mr5'> <LoaderCustom customClass={"download-loader"} /> <button type="button" className={'user-btn'}><div className="download mr-0"></div>
+                          </button></div> :
 
                             <>
                               <button type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
@@ -749,7 +750,7 @@ function RMImportListing(props) {
                               </button>
 
                               <ExcelFile filename={'RM Import'} fileExtension={'.xls'} element={
-                                <button id={'Excel-Downloads'} type="button" >
+                                <button id={'Excel-Downloads-rm-import'} className="p-absolute" type="button" >
                                 </button>}>
                                 {onBtExport()}
                               </ExcelFile>
