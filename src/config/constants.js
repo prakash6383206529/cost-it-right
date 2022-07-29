@@ -1555,6 +1555,7 @@ export const GET_IMPACTED_MASTER_DATA = 'GET_IMPACTED_MASTER_DATA'
 
 // REPORT
 export const GET_REPORT_LIST = 'GET_REPORT_LIST'
+export const GET_ALL_REPORT_LIST = 'GET_ALL_REPORT_LIST'
 
 
 //COSTING STATUS
@@ -1899,4 +1900,4 @@ export const KEY = 'gQUJ79YKYm22Cazw';
 export const IV = 'eTEFSa0PinFKTQNB'
 
 //VERSION 
-export const VERSION = "V1.2.399";
+export const VERSION = "V1.2.401";
