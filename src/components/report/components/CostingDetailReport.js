@@ -56,6 +56,7 @@ function ReportListing(props) {
     const [reportListingDataStateArray, setReportListingDataStateArray] = useState([])
     const [globalTake, setGlobalTake] = useState(defaultPageSize)
     const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
+    const [disableDownload, setDisableDownload] = useState(false)
     const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
     var filterParams = {
         comparator: function (filterLocalDateAtMidnight, cellValue) {
@@ -91,6 +92,7 @@ function ReportListing(props) {
     })
 
     let reportListingData = useSelector((state) => state.report.reportListing)
+    let allReportListingData = useSelector((state) => state.report.allReportListing)
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
     const simulatedOnFormatter = (props) => {
@@ -287,7 +289,10 @@ function ReportListing(props) {
     }
 
     const getTableData = (skip, take, isPagination, data, isLastWeek, isCallApi) => {
-        setLoader(true)
+
+        if (isPagination === true) {
+            setLoader(true)
+        }
         let newData = {}
         if (isLastWeek) {
             let currentDate = new Date()
@@ -302,6 +307,7 @@ function ReportListing(props) {
             newData = data
         }
         dispatch(getCostingReport(skip, take, isPagination, newData, isLastWeek, isCallApi, (res) => {
+
             if (res) {
                 setLoader(false)
                 let isReset = true
@@ -323,6 +329,14 @@ function ReportListing(props) {
                 setTimeout(() => {
                     setIsFilterButtonClicked(false)
                 }, 600);
+            }
+
+            if (res && isPagination === false) {  // CODE WRITTEN FOR EXCEL DOWNLOAD
+                setTimeout(() => {
+                    setDisableDownload(false)
+                    let button = document.getElementById('Excel-Downloads')
+                    button.click()
+                }, 800);
             }
         }))
     }
@@ -587,16 +601,32 @@ function ReportListing(props) {
 
     }
 
+
+    const onExcelDownload = () => {
+        setDisableDownload(true)
+
+        let tempArr = gridApi && gridApi?.getSelectedRows()
+        if (tempArr?.length > 0) {
+            setTimeout(() => {
+                setDisableDownload(false)
+                let button = document.getElementById('Excel-Downloads')
+                button.click()
+            }, 400);
+
+        } else {
+            getTableData(0, defaultPageSize, false, floatingFilterData, false, true); // FOR EXCEL DOWNLOAD OF COMPLETE DATA
+        }
+
+    }
+
+
     const renderColumn = (fileName) => {
 
-        let tempData
-        if (selectedRowData.length === 0) {
-            tempData = reportListingData
-        }
-        else {
-            tempData = selectedRowData
-        }
-        return returnExcelColumn(REPORT_DOWNLOAD_EXCEl, tempData)
+        let tempArr = []
+        tempArr = gridApi && gridApi?.getSelectedRows()
+        tempArr = (tempArr && tempArr.length > 0) ? tempArr : (allReportListingData ? allReportListingData : [])
+
+        return returnExcelColumn(REPORT_DOWNLOAD_EXCEl, tempArr)
     }
 
     const returnExcelColumn = (data = [], TempData) => {
@@ -648,6 +678,24 @@ function ReportListing(props) {
                                 <ExcelFile filename={ReportMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
                                     {renderColumn(ReportMaster)}
                                 </ExcelFile>
+
+
+                                {disableDownload ? <LoaderCustom customClass={"input-loader"} /> :
+
+                                    <>
+                                        <button type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                            {/* DOWNLOAD */}
+                                        </button>
+
+                                        <ExcelFile filename={'ReportMaster'} fileExtension={'.xls'} element={
+                                            <button id={'Excel-Downloads'} type="button" >
+                                            </button>}>
+                                            {renderColumn(ReportMaster)}
+                                        </ExcelFile>
+
+                                    </>
+
+                                }
 
                             </div>
                         </div>
