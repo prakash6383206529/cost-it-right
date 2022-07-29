@@ -78,37 +78,7 @@ class AddVendorDrawer extends Component {
     * @description called
     */
     handleVendorType = (e) => {
-
-        const { supplierData, isEditFlag } = this.props;
-        if (isEditFlag) {
-
-            //DefaultIds Get in Edit Mode.
-            let DefaultVendorTypeIds = [];
-            supplierData && supplierData.VendorTypes && supplierData.VendorTypes.map((item, index) => {
-                DefaultVendorTypeIds.push(item.VendorTypeId)
-                return null;
-            })
-
-            //Selected Vendor Type IDs.
-            let SelectedVendorTypeIds = [];
-            e && e.map((item, index) => {
-                SelectedVendorTypeIds.push(Number(item.Value))
-                return null;
-            })
-
-            //Removed Vendor Type Id's
-            let removedVendorTypeIds = DefaultVendorTypeIds.filter(x => !SelectedVendorTypeIds.includes(x));
-
-            if (removedVendorTypeIds.length === 0) {
-                this.setState({ selectedVendorType: e });
-            } else {
-                Toaster.warning("You can not remove existing Vendor Type.");
-                return false;
-            }
-
-        } else {
-            this.setState({ selectedVendorType: e });
-        }
+        this.setState({ selectedVendorType: e });
         this.setState({ DropdownChanged: false })
     };
 
