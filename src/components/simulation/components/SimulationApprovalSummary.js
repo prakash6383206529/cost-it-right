@@ -224,7 +224,17 @@ function SimulationApprovalSummary(props) {
             // }
             setdataForAssemblyImpactForFg(SimulatedCostingList)
 
-
+            let finalUserObj = {
+                DepartmentId: DepartmentId,
+                UserId: loggedInUserId(),
+                TechnologyId: SimulationTechnologyId,
+                Mode: 'simulation'
+            }
+            dispatch(checkFinalUser(finalUserObj, res => {
+                if (res && res.data && res.data.Result) {
+                    setFinalLevelUser(res.data.Data.IsFinalApprover)
+                }
+            }))
         }))
 
         const obj = {
@@ -243,17 +253,7 @@ function SimulationApprovalSummary(props) {
             }
         }))
 
-        let finalUserObj = {
-            DepartmentId: DepartmentId,
-            UserId: loggedInUserId(),
-            TechnologyId: SimulationTechnologyId,
-            Mode: 'simulation'
-        }
-        dispatch(checkFinalUser(finalUserObj, res => {
-            if (res && res.data && res.data.Result) {
-                setFinalLevelUser(res.data.Data.IsFinalApprover)
-            }
-        }))
+
     }
 
     useEffect(() => {

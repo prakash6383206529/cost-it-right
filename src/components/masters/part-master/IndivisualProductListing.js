@@ -39,12 +39,12 @@ class IndivisualProductListing extends Component {
             isEditFlag: false,
             isOpen: false,
             tableData: [],
-
+            selectedRowData: false,
             isBulkUpload: false,
             ActivateAccessibility: true,
             showPopup: false,
             deletedId: '',
-            isLoader: false
+            isLoader: false,
         }
     }
 
@@ -268,13 +268,19 @@ class IndivisualProductListing extends Component {
     onPageSizeChanged = (newPageSize) => {
         this.state.gridApi.paginationSetPageSize(Number(newPageSize));
     };
-
+    onRowSelect = () => {
+        const selectedRows = this.state.gridApi?.getSelectedRows()
+        this.setState({ selectedRowData: selectedRows })
+    }
     onBtExport = () => {
-        return this.returnExcelColumn(INDIVIDUAL_PRODUCT_DOWNLOAD_EXCEl)
+        let tempArr = []
+        tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+        tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.productDataList ? this.props.productDataList : [])
+        return this.returnExcelColumn(INDIVIDUAL_PRODUCT_DOWNLOAD_EXCEl, tempArr)
     };
 
-    returnExcelColumn = (data = []) => {
-        let temp = this.props.productDataList
+    returnExcelColumn = (data = [], tempArr) => {
+        let temp = tempArr
         temp && temp.map((item) => {
             if (item.ECNNumber === null) {
                 item.ECNNumber = ' '
@@ -299,6 +305,7 @@ class IndivisualProductListing extends Component {
     }
 
     resetState() {
+        this.state.gridApi.deselectAll()
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
     }
@@ -312,11 +319,19 @@ class IndivisualProductListing extends Component {
         const { isBulkUpload } = this.state;
         const { AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
 
+        const isFirstColumn = (params) => {
+            var displayedColumns = params.columnApi.getAllDisplayedColumns();
+            var thisIsFirstColumn = displayedColumns[0] === params.column;
+            return thisIsFirstColumn;
+        }
 
         const defaultColDef = {
             resizable: true,
             filter: true,
             sortable: true,
+            headerCheckboxSelectionFilteredOnly: true,
+            headerCheckboxSelection: isFirstColumn,
+            checkboxSelection: isFirstColumn
         };
 
         const frameworkComponents = {
@@ -361,18 +376,12 @@ class IndivisualProductListing extends Component {
                                 {
                                     DownloadAccessibility &&
                                     <>
-
                                         <ExcelFile filename={'Product'} fileExtension={'.xls'} element={
                                             <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-                                                {/* DOWNLOAD */}
                                             </button>}>
-
                                             {this.onBtExport()}
                                         </ExcelFile>
-
                                     </>
-
-
                                 }
                                 <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
                                     <div className="refresh mr-0"></div>
@@ -402,6 +411,8 @@ class IndivisualProductListing extends Component {
                                 title: EMPTY_DATA,
                                 imagClass: 'imagClass'
                             }}
+                            rowSelection={'multiple'}
+                            onSelectionChanged={this.onRowSelect}
                             frameworkComponents={frameworkComponents}
                         >
 

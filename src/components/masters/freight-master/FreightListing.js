@@ -43,7 +43,8 @@ class FreightListing extends Component {
       vendor: [],
       isLoader: false,
       showPopup: false,
-      deletedId: ''
+      deletedId: '',
+      selectedRowData: false
     }
   }
 
@@ -241,8 +242,15 @@ class FreightListing extends Component {
     this.state.gridApi.paginationSetPageSize(Number(newPageSize));
   };
 
+  onRowSelect = () => {
+    const selectedRows = this.state.gridApi?.getSelectedRows()
+    this.setState({ selectedRowData: selectedRows })
+  }
+
   onBtExport = () => {
-    let tempArr = this.props.freightDetail && this.props.freightDetail
+    let tempArr = []
+    tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+    tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.freightDetail ? this.props.freightDetail : [])
     return this.returnExcelColumn(FREIGHT_DOWNLOAD_EXCEl, tempArr)
   };
 
@@ -251,14 +259,9 @@ class FreightListing extends Component {
   }
 
   resetState() {
+    this.state.gridApi.deselectAll()
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
-  }
-
-  createCustomExportCSVButton = (onClick) => {
-    // return (
-    //   <ExportCSVButton btnText='Download' onClick={() => this.handleExportCSVButtonClick(onClick)} />
-    // );
   }
 
   /**
@@ -268,24 +271,19 @@ class FreightListing extends Component {
   render() {
     const { handleSubmit, AddAccessibility, DownloadAccessibility } = this.props;
 
-    const options = {
-      clearSearch: true,
-      noDataText: (this.props.freightDetail === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
-      paginationShowsTotal: this.renderPaginationShowsTotal,
-      // exportCSVBtn: this.createCustomExportCSVButton,
-      prePage: <span className="prev-page-pg"></span>, // Previous page button text
-      nextPage: <span className="next-page-pg"></span>, // Next page button text
-      firstPage: <span className="first-page-pg"></span>, // First page button text
-      lastPage: <span className="last-page-pg"></span>,
-
-    };
-
+    const isFirstColumn = (params) => {
+      var displayedColumns = params.columnApi.getAllDisplayedColumns();
+      var thisIsFirstColumn = displayedColumns[0] === params.column;
+      return thisIsFirstColumn;
+    }
 
     const defaultColDef = {
       resizable: true,
       filter: true,
       sortable: true,
-
+      headerCheckboxSelectionFilteredOnly: true,
+      headerCheckboxSelection: isFirstColumn,
+      checkboxSelection: isFirstColumn
     };
 
     const frameworkComponents = {
@@ -364,6 +362,8 @@ class FreightListing extends Component {
                     title: EMPTY_DATA,
                     imagClass: 'imagClass'
                   }}
+                  rowSelection={'multiple'}
+                  onSelectionChanged={this.onRowSelect}
                   frameworkComponents={frameworkComponents}
                 >
                   <AgGridColumn field="IsVendor" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>

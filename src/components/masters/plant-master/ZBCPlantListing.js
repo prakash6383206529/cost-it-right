@@ -49,7 +49,8 @@ class ZBCPlantListing extends Component {
             cellValue: '',
             showPopupToggle: false,
             isViewMode: false,
-            isLoader: false
+            isLoader: false,
+            selectedRowData: false
         }
     }
 
@@ -388,13 +389,18 @@ class ZBCPlantListing extends Component {
         this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
         params.api.paginationGoToPage(0);
     };
-
     onPageSizeChanged = (newPageSize) => {
         this.state.gridApi.paginationSetPageSize(Number(newPageSize));
     };
 
+    onRowSelect = () => {
+        const selectedRows = this.state.gridApi?.getSelectedRows()
+        this.setState({ selectedRowData: selectedRows })
+    }
     onBtExport = () => {
-        let tempArr = this.props.plantDataList && this.props.plantDataList
+        let tempArr = []
+        tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+        tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.plantDataList ? this.props.plantDataList : [])
         return this.returnExcelColumn(ZBCPLANT_DOWNLOAD_EXCEl, tempArr)
     };
 
@@ -427,6 +433,7 @@ class ZBCPlantListing extends Component {
 
 
     resetState() {
+        this.state.gridApi.deselectAll()
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
     }
@@ -453,11 +460,20 @@ class ZBCPlantListing extends Component {
             lastPage: <span className="last-page-pg"></span>,
 
         };
+        const isFirstColumn = (params) => {
 
+            var displayedColumns = params.columnApi.getAllDisplayedColumns();
+            var thisIsFirstColumn = displayedColumns[0] === params.column;
+            return thisIsFirstColumn;
+
+        }
         const defaultColDef = {
             resizable: true,
             filter: true,
             sortable: true,
+            headerCheckboxSelectionFilteredOnly: true,
+            headerCheckboxSelection: isFirstColumn,
+            checkboxSelection: isFirstColumn
         };
 
         const frameworkComponents = {
@@ -533,6 +549,8 @@ class ZBCPlantListing extends Component {
                                 title: EMPTY_DATA,
                                 imagClass: 'imagClass'
                             }}
+                            rowSelection={'multiple'}
+                            onSelectionChanged={this.onRowSelect}
                             frameworkComponents={frameworkComponents}
                         >
                             <AgGridColumn field="PlantName" headerName="Plant Name"></AgGridColumn>
