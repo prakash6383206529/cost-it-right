@@ -45,7 +45,7 @@ class OverheadListing extends Component {
             showPopup: false,
             deletedId: '',
             selectedRowData: [],
-            isLoader: false
+            isLoader: false,
         }
     }
 
@@ -271,9 +271,14 @@ class OverheadListing extends Component {
     onPageSizeChanged = (newPageSize) => {
         this.state.gridApi.paginationSetPageSize(Number(newPageSize));
     };
-
+    onRowSelect = () => {
+        const selectedRows = this.state.gridApi?.getSelectedRows()
+        this.setState({ selectedRowData: selectedRows })
+    }
     onBtExport = () => {
-        let tempArr = this.props.overheadProfitList && this.props.overheadProfitList
+        let tempArr = []
+        tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+        tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.overheadProfitList ? this.props.overheadProfitList : [])
         return this.returnExcelColumn(OVERHEAD_DOWNLOAD_EXCEl, tempArr)
     };
 
@@ -320,6 +325,7 @@ class OverheadListing extends Component {
     }
 
     resetState() {
+        this.state.gridApi.deselectAll()
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
     }
@@ -332,29 +338,10 @@ class OverheadListing extends Component {
     render() {
         const { handleSubmit, AddAccessibility, DownloadAccessibility } = this.props;
 
-
-
-        const onRowSelect = () => {
-            var selectedRows = this.state.gridApi.getSelectedRows();
-            if (this.props.isSimulation) {
-                let length = this.state.gridApi.getSelectedRows().length
-                this.props.apply(selectedRows, length)
-            }
-
-            this.setState({ selectedRowData: selectedRows })
-
-        }
-
         const isFirstColumn = (params) => {
-            if (this.props.isSimulation) {
-
-                var displayedColumns = params.columnApi.getAllDisplayedColumns();
-                var thisIsFirstColumn = displayedColumns[0] === params.column;
-
-                return thisIsFirstColumn;
-            } else {
-                return false
-            }
+            var displayedColumns = params.columnApi.getAllDisplayedColumns();
+            var thisIsFirstColumn = displayedColumns[0] === params.column;
+            return thisIsFirstColumn;
 
         }
 
@@ -365,7 +352,6 @@ class OverheadListing extends Component {
             headerCheckboxSelectionFilteredOnly: true,
             headerCheckboxSelection: isFirstColumn,
             checkboxSelection: isFirstColumn
-
         };
 
         const frameworkComponents = {
@@ -451,7 +437,7 @@ class OverheadListing extends Component {
                                     }}
                                     frameworkComponents={frameworkComponents}
                                     rowSelection={'multiple'}
-                                    onSelectionChanged={onRowSelect}
+                                    onSelectionChanged={this.onRowSelect}
 
                                 >
                                     <AgGridColumn field="TypeOfHead" headerName="Costing Head"></AgGridColumn>

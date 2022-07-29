@@ -54,7 +54,8 @@ class ReasonListing extends Component {
       isLoader: false,
       renderState: true,
       showPopup: false,
-      deletedId: ''
+      deletedId: '',
+      selectedRowData: false
     }
   }
 
@@ -281,9 +282,14 @@ class ReasonListing extends Component {
   onPageSizeChanged = (newPageSize) => {
     this.state.gridApi.paginationSetPageSize(Number(newPageSize));
   };
-
+  onRowSelect = () => {
+    const selectedRows = this.state.gridApi?.getSelectedRows()
+    this.setState({ selectedRowData: selectedRows })
+  }
   onBtExport = () => {
-    let tempArr = this.props.reasonDataList && this.props.reasonDataList
+    let tempArr = []
+    tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+    tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.reasonDataList ? this.props.reasonDataList : [])
     return this.returnExcelColumn(REASON_DOWNLOAD_EXCEl, tempArr)
   };
 
@@ -314,6 +320,7 @@ class ReasonListing extends Component {
 
 
   resetState() {
+    this.state.gridApi.deselectAll()
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
   }
@@ -339,11 +346,20 @@ class ReasonListing extends Component {
       lastPage: <span className="last-page-pg"></span>,
 
     }
+    const isFirstColumn = (params) => {
 
+      var displayedColumns = params.columnApi.getAllDisplayedColumns();
+      var thisIsFirstColumn = displayedColumns[0] === params.column;
+      return thisIsFirstColumn;
+
+    }
     const defaultColDef = {
       resizable: true,
       filter: true,
       sortable: true,
+      headerCheckboxSelectionFilteredOnly: true,
+      headerCheckboxSelection: isFirstColumn,
+      checkboxSelection: isFirstColumn
     };
 
     const frameworkComponents = {
@@ -421,6 +437,8 @@ class ReasonListing extends Component {
                   title: EMPTY_DATA,
                   imagClass: 'imagClass pt-3'
                 }}
+                rowSelection={'multiple'}
+                onSelectionChanged={this.onRowSelect}
                 frameworkComponents={frameworkComponents}
               >
                 <AgGridColumn field="Reason" headerName="Reason"></AgGridColumn>
