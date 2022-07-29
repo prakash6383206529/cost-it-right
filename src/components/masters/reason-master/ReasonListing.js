@@ -45,6 +45,7 @@ class ReasonListing extends Component {
       EditAccessibility: false,
       DeleteAccessibility: false,
       DownloadAccessibility: false,
+      ActivateAccessibility: false,
       gridApi: null,
       gridColumnApi: null,
       rowData: null,
@@ -93,6 +94,7 @@ class ReasonListing extends Component {
           EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
           DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
           DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
+          ActivateAccessibility: permmisionData && permmisionData.Activate ? permmisionData.Activate : false,
         })
       }
 
@@ -191,13 +193,18 @@ class ReasonListing extends Component {
   statusButtonFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+
+    const { ActivateAccessibility } = this.state;
+    if (rowData.UserId === loggedInUserId()) return null;
     showTitleForActiveToggle(props)
     return (
       <>
         <label htmlFor="normal-switch" className="normal-switch">
+          {/* <span>Switch with default style</span> */}
           <Switch
             onChange={() => this.handleChange(cellValue, rowData)}
             checked={cellValue}
+            disabled={!ActivateAccessibility}
             background="#ff6600"
             onColor="#4DC771"
             onHandleColor="#ffffff"
