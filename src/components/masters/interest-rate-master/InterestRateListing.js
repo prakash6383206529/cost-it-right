@@ -40,7 +40,6 @@ class InterestRateListing extends Component {
     super(props);
     this.state = {
       tableData: [],
-
       vendorName: [],
       ICCApplicability: [],
       PaymentTermsApplicability: [],
@@ -48,7 +47,6 @@ class InterestRateListing extends Component {
       data: { isEditFlag: false, ID: '' },
       toggleForm: false,
       isBulkUpload: false,
-
       ViewAccessibility: false,
       AddAccessibility: false,
       EditAccessibility: false,
@@ -62,7 +60,8 @@ class InterestRateListing extends Component {
       showData: false,
       isLoader: false,
       showPopup: false,
-      deletedId: ''
+      deletedId: '',
+      selectedRowData: false
     }
   }
 
@@ -340,8 +339,15 @@ class InterestRateListing extends Component {
     this.state.gridApi.paginationSetPageSize(Number(newPageSize));
   };
 
+  onRowSelect = () => {
+    const selectedRows = this.state.gridApi?.getSelectedRows()
+    this.setState({ selectedRowData: selectedRows })
+  }
+
   onBtExport = () => {
-    let tempArr = this.props.interestRateDataList && this.props.interestRateDataList
+    let tempArr = []
+    tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+    tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.interestRateDataList ? this.props.interestRateDataList : [])
     return this.returnExcelColumn(INTERESTRATE_DOWNLOAD_EXCEl, tempArr)
   };
 
@@ -373,13 +379,10 @@ class InterestRateListing extends Component {
   }
 
   resetState() {
+    this.state.gridApi.deselectAll()
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
   }
-
-
-
-
 
   /**
   * @method render
@@ -398,11 +401,19 @@ class InterestRateListing extends Component {
         />
       )
     }
+    const isFirstColumn = (params) => {
+      var displayedColumns = params.columnApi.getAllDisplayedColumns();
+      var thisIsFirstColumn = displayedColumns[0] === params.column;
+      return thisIsFirstColumn;
+    }
+
     const defaultColDef = {
       resizable: true,
       filter: true,
       sortable: true,
-
+      headerCheckboxSelectionFilteredOnly: true,
+      headerCheckboxSelection: isFirstColumn,
+      checkboxSelection: isFirstColumn
     };
 
     const frameworkComponents = {
@@ -512,6 +523,8 @@ class InterestRateListing extends Component {
                   title: EMPTY_DATA,
                   imagClass: 'imagClass'
                 }}
+                rowSelection={'multiple'}
+                onSelectionChanged={this.onRowSelect}
                 frameworkComponents={frameworkComponents}
               >
                 <AgGridColumn width={140} field="IsVendor" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
