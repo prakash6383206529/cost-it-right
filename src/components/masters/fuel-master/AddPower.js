@@ -75,7 +75,18 @@ class AddPower extends Component {
       handleChange: true,
       AddChanged: true,
       setDisable: false,
-      inputLoader: false
+      inputLoader: false,
+      errorObj: {
+        minDemand: false,
+        demandCharge: false,
+        avgUnit: false,
+        maxDemand: false,
+        statePowerCont: false,
+        source: false,
+        unitGenerated: false,
+        selfPowerCont: false,
+        unitGeneratedDiesel: false
+      }
     }
   }
 
@@ -535,9 +546,30 @@ class AddPower extends Component {
     const TotalUnitCharges = power.TotalUnitCharges !== undefined ? power.TotalUnitCharges : 0
     const SEBPowerContributaion = fieldsObj && fieldsObj !== undefined ? fieldsObj.SEBPowerContributaion : 0
 
-    if (TotalUnitCharges === 'NaN' || SEBPowerContributaion === undefined || fieldsObj.MinDemandKWPerMonth === undefined || fieldsObj.DemandChargesPerKW === undefined
-      || fieldsObj.AvgUnitConsumptionPerMonth === undefined || fieldsObj.MaxDemandChargesKW === undefined) {
-      Toaster.warning('Fields should not be empty.')
+    if (TotalUnitCharges === 0 && SEBPowerContributaion === undefined && fieldsObj.MinDemandKWPerMonth === undefined && fieldsObj.DemandChargesPerKW === undefined
+      && fieldsObj.AvgUnitConsumptionPerMonth === undefined && fieldsObj.MaxDemandChargesKW === undefined) {
+      this.setState({ errorObj: { minDemand: true, demandCharge: true, avgUnit: true, maxDemand: true, statePowerCont: true } })
+      return false;
+    }
+    if (fieldsObj.MinDemandKWPerMonth === undefined || fieldsObj.MinDemandKWPerMonth === '0') {
+      this.setState({ errorObj: { minDemand: true } })
+      return false;
+    }
+
+    if (fieldsObj.DemandChargesPerKW === undefined || fieldsObj.DemandChargesPerKW === '0') {
+      this.setState({ errorObj: { demandCharge: true } })
+      return false;
+    }
+    if (fieldsObj.AvgUnitConsumptionPerMonth === undefined || fieldsObj.AvgUnitConsumptionPerMonth === '0') {
+      this.setState({ errorObj: { avgUnit: true } })
+      return false;
+    }
+    if (fieldsObj.MaxDemandChargesKW === undefined || fieldsObj.MaxDemandChargesKW === '0') {
+      this.setState({ errorObj: { maxDemand: true } })
+      return false;
+    }
+    if (SEBPowerContributaion === undefined || SEBPowerContributaion === '0') {
+      this.setState({ errorObj: { statePowerCont: true } })
       return false;
     }
     if (Number(fieldsObj.MinDemandKWPerMonth) < 0 || Number(fieldsObj.DemandChargesPerKW) < 0 || Number(fieldsObj.AvgUnitConsumptionPerMonth) < 0 ||
@@ -665,18 +697,28 @@ class AddPower extends Component {
       return false;
     }
 
-    if (source.length === 0 || (fieldsObj.UnitGeneratedPerAnnum === undefined ||
-      fieldsObj.SelfPowerContribution === undefined)) {
-      Toaster.warning('Fields should not be empty');
+    if (source.length === 0 && (fieldsObj.UnitGeneratedPerAnnum === undefined &&
+      fieldsObj.SelfPowerContribution === undefined) && fieldsObj.UnitGeneratedPerUnitOfFuel === undefined) {
+      this.setState({ errorObj: { source: true, unitGenerated: true, selfPowerCont: true, unitGeneratedDiesel: true } })
+      return false;
+    }
+    if (source.length === 0) {
+      this.setState({ errorObj: { source: true } })
+      return false;
+    }
+    if (!source.label === 'Generator Diesel' || (fieldsObj.UnitGeneratedPerUnitOfFuel === undefined || fieldsObj.UnitGeneratedPerUnitOfFuel === '0')) {
+      this.setState({ errorObj: { unitGeneratedDiesel: true } })
+      return false;
+    }
+    if (fieldsObj.UnitGeneratedPerAnnum === undefined || fieldsObj.UnitGeneratedPerAnnum === '0') {
+      this.setState({ errorObj: { unitGenerated: true } })
+      return false;
+    }
+    if (fieldsObj.SelfPowerContribution === undefined || fieldsObj.SelfPowerContribution === '0') {
+      this.setState({ errorObj: { selfPowerCont: true } })
       return false;
     }
 
-
-
-    if (source.label === 'Generator Diesel' && fieldsObj.UnitGeneratedPerUnitOfFuel === undefined) {
-      Toaster.warning('Fields should not be empty');
-      return false;
-    }
 
     if (maxLength10(fieldsObj.AssetCost) || maxLength10(fieldsObj.AnnualCost) || maxLength10(fieldsObj.UnitGeneratedPerAnnum)
       || maxLength10(fieldsObj.CostPerUnitOfMeasurement) || maxLength10(fieldsObj.UnitGeneratedPerUnitOfFuel)) {
@@ -746,7 +788,7 @@ class AddPower extends Component {
       this.props.change('UnitGeneratedPerUnitOfFuel', 0)
 
     });
-    this.setState({ AddChanged: false })
+    this.setState({ AddChanged: false, errorObj: { source: false, unitGenerated: false, selfPowerCont: false, unitGeneratedDiesel: false } })
     this.resetpowerKeyValue()
   }
 
@@ -768,7 +810,18 @@ class AddPower extends Component {
         }
       })
     }
-
+    if (fieldsObj.UnitGeneratedPerUnitOfFuel === undefined || fieldsObj.UnitGeneratedPerUnitOfFuel === '0') {
+      this.setState({ errorObj: { unitGeneratedDiesel: true } })
+      return false;
+    }
+    if (fieldsObj.UnitGeneratedPerAnnum === undefined || fieldsObj.UnitGeneratedPerAnnum === '0') {
+      this.setState({ errorObj: { unitGenerated: true } })
+      return false;
+    }
+    if (fieldsObj.SelfPowerContribution === undefined || fieldsObj.SelfPowerContribution === '0') {
+      this.setState({ errorObj: { selfPowerCont: true } })
+      return false;
+    }
     if (powerTotalT > 100) {
       Toaster.warning('Total Contribution should not be more than 100%');
       return false;
@@ -822,7 +875,7 @@ class AddPower extends Component {
       this.props.change('UnitGeneratedPerUnitOfFuel', 0)
 
     });
-    this.setState({ DropdownChanged: false })
+    this.setState({ DropdownChanged: false, errorObj: { unitGenerated: false, selfPowerCont: false, unitGeneratedDiesel: false } })
     this.resetpowerKeyValue()
   };
 
@@ -1369,7 +1422,7 @@ class AddPower extends Component {
 
                           </Row>
 
-                          <Row>
+                          <Row className='child-form-container'>
                             <Col md="12" className="filter-block">
                               <div className=" mb-2">
                                 <h5>{'State Electricity Board Power Charges:'}</h5>
@@ -1390,6 +1443,7 @@ class AddPower extends Component {
                                     customClassName=" withBorder"
                                     disabled={isEditFlagForStateElectricity || isViewMode ? true : false}
                                   />
+                                  {this.state.errorObj.minDemand && (this.props.fieldsObj.MinDemandKWPerMonth === undefined || Number(this.props.fieldsObj.MinDemandKWPerMonth) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                                 </div>
                               </div>
                             </Col>
@@ -1408,6 +1462,7 @@ class AddPower extends Component {
                                     customClassName=" withBorder"
                                     disabled={isEditFlagForStateElectricity || isViewMode ? true : false}
                                   />
+                                  {this.state.errorObj.demandCharge && (this.props.fieldsObj.DemandChargesPerKW === undefined || Number(this.props.fieldsObj.DemandChargesPerKW) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                                 </div>
                               </div>
                             </Col>
@@ -1442,6 +1497,7 @@ class AddPower extends Component {
                                     customClassName=" withBorder"
                                     disabled={isEditFlagForStateElectricity || isViewMode ? true : false}
                                   />
+                                  {this.state.errorObj.avgUnit && (this.props.fieldsObj.AvgUnitConsumptionPerMonth === undefined || Number(this.props.fieldsObj.AvgUnitConsumptionPerMonth) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                                 </div>
                               </div>
                             </Col>
@@ -1478,6 +1534,7 @@ class AddPower extends Component {
                                     customClassName=" withBorder"
                                     disabled={isEditFlagForStateElectricity || isViewMode ? true : false}
                                   />
+                                  {this.state.errorObj.maxDemand && (this.props.fieldsObj.MaxDemandChargesKW === undefined || Number(this.props.fieldsObj.MaxDemandChargesKW) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                                 </div>
                               </div>
                             </Col>
@@ -1591,8 +1648,9 @@ class AddPower extends Component {
                                   customClassName=" withBorder"
                                   disabled={this.state.isAddedSEB ? true : isEditFlagForStateElectricity || isViewMode ? true : false}
                                 />
+                                {this.state.errorObj.statePowerCont && (this.props.fieldsObj.SEBPowerContributaion === undefined || Number(this.props.fieldsObj.SEBPowerContributaion) === 0) && <div className='text-help p-absolute bottom-37'>This field is required.</div>}
                               </div>
-                              <div className="btn-mr-rate pr-0 col-auto">
+                              <div className="btn-mr-rate pr-0 col-auto mt30 pt-1">
                                 {this.state.isEditSEBIndex ?
                                   <>
                                     <button
@@ -1621,7 +1679,7 @@ class AddPower extends Component {
                             </Col>
                           </Row>
 
-                          <Row>
+                          <Row className='child-form-container'>
                             <Col md="12" className="filter-block">
                               <div className=" mb-2">
                                 <h5>{'Self Generated Power Charges:'}</h5>
@@ -1642,6 +1700,7 @@ class AddPower extends Component {
                                     valueDescription={this.state.source}
                                     disabled={isViewMode}
                                   />
+                                  {this.state.errorObj.source && (this.state.source.length === 0) && <div className='text-help p-absolute bottom-7'>This field is required.</div>}
                                 </div>
                               </div>
                             </Col>
@@ -1730,6 +1789,7 @@ class AddPower extends Component {
                                         customClassName=" withBorder"
                                         disabled={isViewMode}
                                       />
+                                      {this.state.errorObj.unitGeneratedDiesel && (this.props.fieldsObj.UnitGeneratedPerUnitOfFuel === undefined || Number(this.props.fieldsObj.UnitGeneratedPerUnitOfFuel) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                                     </div>
                                   </div>
                                 </Col>
@@ -1750,6 +1810,7 @@ class AddPower extends Component {
                                     customClassName=" withBorder"
                                     disabled={isViewMode}
                                   />
+                                  {this.state.errorObj.unitGenerated && (this.props.fieldsObj.UnitGeneratedPerAnnum === undefined || Number(this.props.fieldsObj.UnitGeneratedPerAnnum) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                                 </div>
                               </div>
                             </Col>
@@ -1785,11 +1846,12 @@ class AddPower extends Component {
                                     disabled={isViewMode}
 
                                   />
+                                  {this.state.errorObj.selfPowerCont && (this.props.fieldsObj.SelfPowerContribution === undefined || Number(this.props.fieldsObj.SelfPowerContribution) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                                 </div>
                               </div>
                             </Col>
                             <Col md="3">
-                              <div>
+                              <div className='mt-2'>
                                 {this.state.isEditIndex ?
                                   <>
                                     <button
