@@ -23,6 +23,7 @@ import redcrossImg from "../../../../assests/images/red-cross.png";
 import VerifyImpactDrawer from '../../../simulation/components/VerifyImpactDrawer';
 import PushSection from '../../../common/PushSection'
 import LoaderCustom from '../../../common/LoaderCustom'
+import TooltipCustom from '../../../common/Tooltip'
 
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
@@ -648,6 +649,7 @@ const SendForApproval = (props) => {
                           </Col>
                           <Col md="4">
                             <div className="form-group">
+                              <TooltipCustom tooltipText="The current impact is calculated based on the data present in the volume master." />
                               <label>Annual Impact</label>
                               <label className={data.oldPrice === 0 ? `form-control bg-grey input-form-control` : `form-control bg-grey input-form-control ${data.annualImpact < 0 ? 'green-value' : 'red-value'}`}>
                                 {data.annualImpact && data.annualImpact ? checkForDecimalAndNull(data.annualImpact, initialConfiguration.NoOfDecimalForPrice) : 0}

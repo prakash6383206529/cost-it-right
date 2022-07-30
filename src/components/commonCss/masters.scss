@@ -19,6 +19,9 @@
         bottom: 7px;
     }
 }
-.machine-sub-form-container {
+.child-form-container {
     @extend .truck-load-form-container;
+    .bottom-37 {
+        bottom: 37px;
+    }
 }

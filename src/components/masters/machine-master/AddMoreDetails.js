@@ -3197,7 +3197,7 @@ class AddMoreDetails extends Component {
                       </Row>
 
                       {/* LABOUR */}
-                      <Row className="mb-3 accordian-container machine-sub-form-container">
+                      <Row className="mb-3 accordian-container child-form-container">
                         <Col md="6">
                           <HeaderTitle
                             title={'Labour:'}
@@ -3363,7 +3363,7 @@ class AddMoreDetails extends Component {
 
                       {/* PROCEES */}
 
-                      <Row className="mb-3 accordian-container machine-sub-form-container">
+                      <Row className="mb-3 accordian-container child-form-container">
                         <Col md="6">
                           <HeaderTitle
                             title={'Process:'}
