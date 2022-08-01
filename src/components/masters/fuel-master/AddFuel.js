@@ -46,7 +46,12 @@ class AddFuel extends Component {
       DeleteChanged: true,
       HandleChanged: true,
       RateChange: [],
-      setDisable: false
+      setDisable: false,
+      errorObj: {
+        state: false,
+        rate: false,
+        effectiveDate: false
+      }
     }
   }
 
@@ -166,38 +171,59 @@ class AddFuel extends Component {
     const { fieldsObj } = this.props;
     const Rate = fieldsObj && fieldsObj !== undefined ? fieldsObj : 0;
     const tempArray = [];
-    if (decimalLengthsix(Rate)) {
-      Toaster.warning("Decimal value should not be more than 6")
-      return false
-    }
-    if (positiveAndDecimalNumber(Rate)) {
-      Toaster.warning("Enter valid value")
-      return false
 
-    } else {
-      if (StateName.length === 0 || effectiveDate === '' || Rate === 0) {
-        Toaster.warning('Fields should not be empty');
-        return false;
+    let count = 0;
+    setTimeout(() => {
+
+      if (StateName.length === 0) {
+        this.setState({ errorObj: { ...this.state.errorObj, state: true } })
+        count++
       }
-    }
+      if (fieldsObj === undefined || Number(fieldsObj) === 0) {
+        this.setState({ errorObj: { ...this.state.errorObj, rate: true } })
+        count++
+      }
+      if (effectiveDate === "") {
+        this.setState({ errorObj: { ...this.state.errorObj, effectiveDate: true } })
+        count++
+      }
+      if (count > 0) {
+        return false
+      }
+
+      if (decimalLengthsix(Rate)) {
+        Toaster.warning("Decimal value should not be more than 6")
+        return false
+      }
+      if (positiveAndDecimalNumber(Rate)) {
+        Toaster.warning("Enter valid value")
+        return false
+
+      } else {
+        if (StateName.length === 0 || effectiveDate === '' || Rate === 0) {
+          Toaster.warning('Fields should not be empty');
+          return false;
+        }
+      }
 
 
 
-    tempArray.push(...rateGrid, {
-      Id: '',
-      StateLabel: StateName ? StateName.label : '',
-      StateId: StateName ? StateName.value : '',
-      //effectiveDate: moment(effectiveDate).format('DD/MM/YYYY'),
-      effectiveDate: effectiveDate,
-      Rate: Rate,
-    })
+      tempArray.push(...rateGrid, {
+        Id: '',
+        StateLabel: StateName ? StateName.label : '',
+        StateId: StateName ? StateName.value : '',
+        //effectiveDate: moment(effectiveDate).format('DD/MM/YYYY'),
+        effectiveDate: effectiveDate,
+        Rate: Rate,
+      })
 
-    this.setState({
-      rateGrid: tempArray,
-      StateName: [],
-      effectiveDate: '',
-    }, () => this.props.change('Rate', 0));
-    this.setState({ AddUpdate: false })
+      this.setState({
+        rateGrid: tempArray,
+        StateName: [],
+        effectiveDate: '',
+      }, () => this.props.change('Rate', 0));
+      this.setState({ AddUpdate: false, errorObj: { state: false, rate: false, effectiveDate: false } })
+    }, 200);
   }
 
 
@@ -209,7 +235,6 @@ class AddFuel extends Component {
       effectiveDate: "",
     }, () => this.props.change('Rate', 0));
     this.setState({ AddUpdate: false })
-
 
   }
 
@@ -223,6 +248,10 @@ class AddFuel extends Component {
     const Rate = fieldsObj && fieldsObj !== undefined ? fieldsObj : 0;
     let tempArray = [];
 
+    if (fieldsObj === undefined || Number(fieldsObj) === 0) {
+      this.setState({ errorObj: { rate: true } })
+      return false;
+    }
     let tempData = rateGrid[rateGridEditIndex];
     tempData = {
       Id: tempData.Id,
@@ -242,7 +271,7 @@ class AddFuel extends Component {
       rateGridEditIndex: '',
       isEditIndex: false,
     }, () => this.props.change('Rate', 0));
-    this.setState({ AddUpdate: false })
+    this.setState({ AddUpdate: false, errorObj: { rate: false } })
   };
 
   /**
@@ -563,7 +592,7 @@ class AddFuel extends Component {
                           </Col>
                         </Row>
 
-                        <Row>
+                        <Row className='rate-form-container'>
                           <Col md="12" className="filter-block">
                             <div className=" flex-fills mb-2 pl-0">
                               <h5>{"Rate:"}</h5>
@@ -584,27 +613,30 @@ class AddFuel extends Component {
                                   valueDescription={this.state.StateName}
                                   disabled={isViewMode}
                                 />
+                                {this.state.errorObj.state && this.state.StateName.length === 0 && <div className='text-help p-absolute'>This field is required.</div>}
                               </div>
                             </div>
                           </Col>
                           <Col md="3">
-                            <Field
-                              label={`Rate (INR)`}
-                              name={"Rate"}
-                              type="text"
-                              placeholder={"Enter"}
-                              validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
-                              component={renderNumberInputField}
-                              required={true}
-                              className=""
-                              customClassName=" withBorder"
-                              disabled={isViewMode}
-                            />
+                            <div className='p-relative'>
+                              <Field
+                                label={`Rate (INR)`}
+                                name={"Rate"}
+                                type="text"
+                                placeholder={"Enter"}
+                                validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
+                                component={renderNumberInputField}
+                                required={true}
+                                className=""
+                                customClassName="mb-0 withBorder"
+                                disabled={isViewMode}
+                              />
+                              {this.state.errorObj.rate && (this.props.fieldsObj === undefined || Number(this.props.fieldsObj) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
+                            </div>
                           </Col>
                           <Col md="3">
                             <div className="form-group">
                               <label>Effective Date<span className="asterisk-required">*</span>
-                                {/* <span className="asterisk-required">*</span> */}
                               </label>
                               <div className="inputbox date-section">
                                 <DatePicker
@@ -623,11 +655,12 @@ class AddFuel extends Component {
                                   onChangeRaw={(e) => e.preventDefault()}
                                   disabled={isViewMode}
                                 />
+                                {this.state.errorObj.effectiveDate && this.state.effectiveDate === "" && <div className='text-help'>This field is required.</div>}
                               </div>
                             </div>
                           </Col>
                           <Col md="3">
-                            <div>
+                            <div className='pt-2 pr-0'>
                               {this.state.isEditIndex ? (
                                 <>
                                   <button type="button" className={"btn btn-primary mt30 pull-left mr5"} onClick={this.updateRateGrid}>Update</button>
@@ -644,7 +677,7 @@ class AddFuel extends Component {
                               )}
                               <button
                                 type="button"
-                                className={"mr15 ml-3 mt30 add-cancel-btn cancel-btn"}
+                                className={"mr15 ml-1 mt30 add-cancel-btn cancel-btn"}
                                 disabled={isViewMode}
                                 onClick={this.rateTableReset}
                               >

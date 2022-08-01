@@ -8556,3 +8556,44 @@ padding-bottom: 3px;
     }
   }
 }
+.costing-process-cost-section {
+  .text-help {
+    position:absolute;
+  }
+}
+.text-error-title {
+  position: relative;
+ .text-help {
+   max-width: 100%;
+   overflow: hidden;
+   text-overflow: ellipsis;
+   position: absolute;
+   white-space: nowrap;
+   margin-top: 0px;
+   height: 2em;
+   
+ }
+ .error-overflow {
+   visibility: hidden;
+   position: absolute;
+   // top: 6px;
+ }
+ &:hover {
+   color: transparent;
+   transition-delay: 0.6s;
+   overflow: visible;
+   .error-overflow {
+   transition-delay: 0.6s;
+   visibility: visible;
+   min-width: fit-content;
+   position: absolute;
+   background: white;
+   border: 1px solid #dc35457a;
+   padding: 4px 7px;
+   z-index: 4;
+   color: #dc3545;
+   font-size: 12px;
+   top: 2px;
+  }
+ }
+}
