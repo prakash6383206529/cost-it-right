@@ -1028,7 +1028,6 @@ export function getVendorWithVendorCodeSelectList(callback) {
  */
 export function getRMDomesticDataList(data, skip, take, isPagination, obj, callback) {
     return (dispatch) => {
-
         const queryParams = `technology_id=${data.technologyId}&net_landed_min_range=${data.net_landed_min_range}&net_landed_max_range=${data.net_landed_max_range}&NetCost=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&ListFor=${data.ListFor ? data.ListFor : ''}&StatusId=${data.StatusId ? data.StatusId : ''}&DepartmentCode=`
         const queryParamsSecond = rmQueryParms(isPagination, skip, take, obj)
         const request = axios.get(`${API.getRMDomesticDataList}?${queryParams}&${queryParamsSecond}`, config());
