@@ -827,14 +827,6 @@ class AddPower extends Component {
       }
       if (fieldsObj.SelfPowerContribution === undefined || Number(fieldsObj.SelfPowerContribution) === 0) {
         this.setState({ errorObj: { ...this.state.errorObj, selfPowerCont: true } })
-        count++;
-      }
-      if (source.label === 'Generator Diesel' && (fieldsObj.UnitGeneratedPerUnitOfFuel === undefined || Number(fieldsObj.UnitGeneratedPerUnitOfFuel) === 0)) {
-        this.setState({ errorObj: { ...this.state.errorObj, unitGeneratedDiesel: true } })
-        count++;
-      }
-      if (count > 0) {
-        return false;
       }
 
       if (powerTotalT > 100) {

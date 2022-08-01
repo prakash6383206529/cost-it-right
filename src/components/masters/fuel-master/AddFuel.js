@@ -171,6 +171,7 @@ class AddFuel extends Component {
     const Rate = fieldsObj && fieldsObj !== undefined ? fieldsObj : 0;
     const tempArray = [];
 
+
     if (decimalLengthsix(Rate)) {
       Toaster.warning("Decimal value should not be more than 6")
       return false
