@@ -171,55 +171,59 @@ class AddFuel extends Component {
     const { fieldsObj } = this.props;
     const Rate = fieldsObj && fieldsObj !== undefined ? fieldsObj : 0;
     const tempArray = [];
-    if (StateName.length === 0 && (fieldsObj === undefined || Number(fieldsObj) === 0) && effectiveDate === "") {
-      this.setState({ errorObj: { state: true, rate: true, effectiveDate: true } })
-      return false;
-    }
-    if (StateName.length === 0) {
-      this.setState({ errorObj: { state: true } })
-      return false;
-    }
-    if (fieldsObj === undefined || Number(fieldsObj) === 0) {
-      this.setState({ errorObj: { rate: true } })
-      return false;
-    }
-    if (effectiveDate === "") {
-      this.setState({ errorObj: { effectiveDate: true } })
-      return false;
-    }
 
-    if (decimalLengthsix(Rate)) {
-      Toaster.warning("Decimal value should not be more than 6")
-      return false
-    }
-    if (positiveAndDecimalNumber(Rate)) {
-      Toaster.warning("Enter valid value")
-      return false
+    let count = 0;
+    setTimeout(() => {
 
-    } else {
-      if (StateName.length === 0 || effectiveDate === '' || Rate === 0) {
-        Toaster.warning('Fields should not be empty');
-        return false;
+      if (StateName.length === 0) {
+        this.setState({ errorObj: { ...this.state.errorObj, state: true } })
+        count++
       }
-    }
+      if (fieldsObj === undefined || Number(fieldsObj) === 0) {
+        this.setState({ errorObj: { ...this.state.errorObj, rate: true } })
+        count++
+      }
+      if (effectiveDate === "") {
+        this.setState({ errorObj: { ...this.state.errorObj, effectiveDate: true } })
+        count++
+      }
+      if (count > 0) {
+        return false
+      }
+
+      if (decimalLengthsix(Rate)) {
+        Toaster.warning("Decimal value should not be more than 6")
+        return false
+      }
+      if (positiveAndDecimalNumber(Rate)) {
+        Toaster.warning("Enter valid value")
+        return false
+
+      } else {
+        if (StateName.length === 0 || effectiveDate === '' || Rate === 0) {
+          Toaster.warning('Fields should not be empty');
+          return false;
+        }
+      }
 
 
 
-    tempArray.push(...rateGrid, {
-      Id: '',
-      StateLabel: StateName ? StateName.label : '',
-      StateId: StateName ? StateName.value : '',
-      //effectiveDate: moment(effectiveDate).format('DD/MM/YYYY'),
-      effectiveDate: effectiveDate,
-      Rate: Rate,
-    })
+      tempArray.push(...rateGrid, {
+        Id: '',
+        StateLabel: StateName ? StateName.label : '',
+        StateId: StateName ? StateName.value : '',
+        //effectiveDate: moment(effectiveDate).format('DD/MM/YYYY'),
+        effectiveDate: effectiveDate,
+        Rate: Rate,
+      })
 
-    this.setState({
-      rateGrid: tempArray,
-      StateName: [],
-      effectiveDate: '',
-    }, () => this.props.change('Rate', 0));
-    this.setState({ AddUpdate: false, errorObj: { state: false, rate: false, effectiveDate: false } })
+      this.setState({
+        rateGrid: tempArray,
+        StateName: [],
+        effectiveDate: '',
+      }, () => this.props.change('Rate', 0));
+      this.setState({ AddUpdate: false, errorObj: { state: false, rate: false, effectiveDate: false } })
+    }, 200);
   }
 
 
@@ -231,7 +235,6 @@ class AddFuel extends Component {
       effectiveDate: "",
     }, () => this.props.change('Rate', 0));
     this.setState({ AddUpdate: false })
-
 
   }
 
