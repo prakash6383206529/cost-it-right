@@ -568,7 +568,6 @@ class AddPower extends Component {
         this.setState({ errorObj: { ...this.state.errorObj, statePowerCont: true } })
         count++
       }
-      console.log(count, "count");
       if (count > 0) {
         return false
       }
@@ -824,17 +823,14 @@ class AddPower extends Component {
 
       if (fieldsObj.UnitGeneratedPerAnnum === undefined || Number(fieldsObj.UnitGeneratedPerAnnum) === 0) {
         this.setState({ errorObj: { ...this.state.errorObj, unitGenerated: true } })
-        console.log("first");
         count++;
       }
       if (fieldsObj.SelfPowerContribution === undefined || Number(fieldsObj.SelfPowerContribution) === 0) {
         this.setState({ errorObj: { ...this.state.errorObj, selfPowerCont: true } })
-        console.log("second");
         count++;
       }
       if (source.label === 'Generator Diesel' && (fieldsObj.UnitGeneratedPerUnitOfFuel === undefined || Number(fieldsObj.UnitGeneratedPerUnitOfFuel) === 0)) {
         this.setState({ errorObj: { ...this.state.errorObj, unitGeneratedDiesel: true } })
-        console.log("third");
         count++;
       }
       if (count > 0) {
