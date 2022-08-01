@@ -422,7 +422,7 @@ class AssemblyPartListing extends Component {
                             frameworkComponents={frameworkComponents}
                         >
                             <AgGridColumn cellClass="has-checkbox" field="Technology" headerName="Technology" cellRenderer={'checkBoxRenderer'}></AgGridColumn>
-                            <AgGridColumn field="BOMNumber" headerName="BOM NO."></AgGridColumn>
+                            <AgGridColumn field="BOMNumber" headerName="BOM No."></AgGridColumn>
                             <AgGridColumn field="PartNumber" headerName="Part No."></AgGridColumn>
                             <AgGridColumn field="PartName" headerName="Name"></AgGridColumn>
                             <AgGridColumn field="NumberOfParts" headerName="No. of Child Parts"></AgGridColumn>
