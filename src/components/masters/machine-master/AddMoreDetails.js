@@ -5,7 +5,7 @@ import { Row, Col, Table } from 'reactstrap';
 import {
   required, checkForNull, number, acceptAllExceptSingleSpecialCharacter, maxLength10,
   maxLength80, checkWhiteSpaces, checkForDecimalAndNull, postiveNumber, positiveAndDecimalNumber, maxLength20, maxLength3,
-  maxLength512, checkPercentageValue, decimalLengthFour, decimalLengthThree, decimalLength2, decimalLengthsix, checkSpacesInString
+  maxLength512, checkPercentageValue, decimalLengthFour, decimalLengthThree, decimalLength2, decimalLengthsix, checkSpacesInString, maxValue366
 } from "../../../helper/validation";
 import { renderText, renderNumberInputField, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker } from "../../layout/FormInputs";
 import { getTechnologySelectList, getPlantSelectListByType, getPlantBySupplier, getUOMSelectList, getShiftTypeSelectList, getDepreciationTypeSelectList, } from '../../../actions/Common';
@@ -2598,7 +2598,7 @@ class AddMoreDetails extends Component {
                                 name={"NumberOfWorkingDaysPerYear"}
                                 type="text"
                                 placeholder={'Enter'}
-                                validate={[positiveAndDecimalNumber, maxLength3, decimalLength2]}
+                                validate={[positiveAndDecimalNumber, maxLength3, decimalLength2, maxValue366]}
                                 component={renderText}
                                 required={false}
                                 disabled={disableAllForm}
