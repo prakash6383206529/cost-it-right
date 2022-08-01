@@ -659,56 +659,61 @@ class AddMachineRate extends Component {
     const { fieldsObj } = this.props;
     const tempArray = [];
 
-    if (processName.length === 0 && UOM === undefined && fieldsObj.MachineRate === undefined) {
-      this.setState({ errorObj: { processName: true, processUOM: true, machineRate: true } })
-      return false;
-    }
-    if (processName.length === 0) {
-      this.setState({ errorObj: { processName: true } })
-      return false;
-    }
-    if (UOM === undefined) {
-      this.setState({ errorObj: { processUOM: true } })
-      return false;
-    }
-    if (fieldsObj.MachineRate === undefined || Number(fieldsObj.MachineRate) === 0) {
-      this.setState({ errorObj: { machineRate: true } })
-      return false;
-    }
 
-    //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
-    const isExist = processGrid.findIndex(el => (el.ProcessId === processName.value))
-    if (isExist !== -1) {
-      Toaster.warning('Already added, Please check the values.')
-      return false;
-    }
+    let count = 0;
+    setTimeout(() => {
 
-    // const MachineRate = fieldsObj && fieldsObj.MachineRate !== undefined ? checkForNull(fieldsObj.MachineRate) : 0;
+      if (processName.length === 0) {
+        this.setState({ errorObj: { ...this.state.errorObj, processName: true } })
+        count++;
+      }
+      if (UOM === undefined || (UOM && UOM.length === 0)) {
+        this.setState({ errorObj: { ...this.state.errorObj, processUOM: true } })
+        count++;
+      }
+      if (fieldsObj.MachineRate === undefined || Number(fieldsObj.MachineRate) === 0) {
+        this.setState({ errorObj: { ...this.state.errorObj, machineRate: true } })
+        count++;
+      }
 
-    const MachineRate = fieldsObj.MachineRate
+      if (count > 0) {
+        return false;
+      }
 
-    // CONDITION TO CHECK MACHINE RATE IS NEGATIVE OR NOT A NUMBER
-    if (MachineRate < 0 || isNaN(MachineRate)) {
-      return false;
-    }
+      //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
+      const isExist = processGrid.findIndex(el => (el.ProcessId === processName.value))
+      if (isExist !== -1) {
+        Toaster.warning('Already added, Please check the values.')
+        return false;
+      }
 
-    tempArray.push(...processGrid, {
-      processName: processName.label,
-      ProcessId: processName.value,
-      UnitOfMeasurement: UOM.label,
-      UnitOfMeasurementId: UOM.value,
-      MachineRate: MachineRate,
-    })
+      // const MachineRate = fieldsObj && fieldsObj.MachineRate !== undefined ? checkForNull(fieldsObj.MachineRate) : 0;
+
+      const MachineRate = fieldsObj.MachineRate
+
+      // CONDITION TO CHECK MACHINE RATE IS NEGATIVE OR NOT A NUMBER
+      if (MachineRate < 0 || isNaN(MachineRate)) {
+        return false;
+      }
+
+      tempArray.push(...processGrid, {
+        processName: processName.label,
+        ProcessId: processName.value,
+        UnitOfMeasurement: UOM.label,
+        UnitOfMeasurementId: UOM.value,
+        MachineRate: MachineRate,
+      })
 
 
-    this.setState({ IsFinancialDataChanged: true })
-    this.setState({
-      processGrid: tempArray,
-      processName: [],
-      UOM: isProcessGroup ? UOM : [],
-      lockUOMAndRate: isProcessGroup
-    }, () => this.props.change('MachineRate', isProcessGroup ? MachineRate : 0));
-    this.setState({ DropdownChange: false, errorObj: { processName: false, processUOM: false, machineRate: false } })
+      this.setState({ IsFinancialDataChanged: true })
+      this.setState({
+        processGrid: tempArray,
+        processName: [],
+        UOM: isProcessGroup ? UOM : [],
+        lockUOMAndRate: isProcessGroup
+      }, () => this.props.change('MachineRate', isProcessGroup ? MachineRate : 0));
+      this.setState({ DropdownChange: false, errorObj: { processName: false, processUOM: false, machineRate: false } })
+    }, 200);
   }
 
   /**

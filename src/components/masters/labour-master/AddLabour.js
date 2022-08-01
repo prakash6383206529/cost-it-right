@@ -350,84 +350,79 @@ class AddLabour extends Component {
       Toaster.warning('First fill upper detail')
       return false
     }
-    if (machineType.length === 0 && labourType.length === 0 && (fieldsObj === undefined || Number(fieldsObj) === 0) && effectiveDate === '') {
-      this.setState({ errorObj: { machineType: true, labourType: true, labourRate: true, effectiveDate: true } })
-      return false
-    }
-    if (labourType.length === 0 && (fieldsObj === undefined || Number(fieldsObj) === 0) && effectiveDate === '') {
-      this.setState({ errorObj: { labourType: true, labourRate: true, effectiveDate: true } })
-      return false
-    }
-    if ((fieldsObj === undefined || Number(fieldsObj) === 0) && effectiveDate === '') {
-      this.setState({ errorObj: { labourRate: true, effectiveDate: true } })
-      return false
-    }
-    if (machineType.length === 0) {
-      this.setState({ errorObj: { machineType: true } })
-      return
-    }
-    if (labourType.length === 0) {
-      this.setState({ errorObj: { labourType: true } })
-      return false
-    }
-    if (fieldsObj === undefined || Number(fieldsObj) === 0) {
-      this.setState({ errorObj: { labourRate: true } })
-      return false
-    }
-    if (effectiveDate === undefined) {
-      this.setState({ errorObj: { effectiveDate: true } })
-      return false
-    }
+    let count = 0;
+    setTimeout(() => {
 
-    if (fieldsObj != undefined && isNaN(Number(fieldsObj))) {
-      Toaster.warning('Please enter valid value.')
-      return false;
-    }
-    if (maxLength10(fieldsObj)) {
-      return false;
-    }
+      if (machineType.length === 0) {
+        this.setState({ errorObj: { ...this.state.errorObj, machineType: true } })
+        count++;
+      }
+      if (labourType.length === 0) {
+        this.setState({ errorObj: { ...this.state.errorObj, labourType: true } })
+        count++;
+      }
+      if (fieldsObj === undefined || Number(fieldsObj) === 0) {
+        this.setState({ errorObj: { ...this.state.errorObj, labourRate: true } })
+        count++;
+      }
+      if (effectiveDate === undefined || effectiveDate === '') {
+        this.setState({ errorObj: { ...this.state.errorObj, effectiveDate: true } })
+        count++;
+      }
+      if (count > 0) {
+        return false
+      }
 
-    if (decimalLengthsix(Number(fieldsObj))) {
-      Toaster.warning('Decimal value should not be more than 6')
-      return false;
-    }
+      if (fieldsObj != undefined && isNaN(Number(fieldsObj))) {
+        Toaster.warning('Please enter valid value.')
+        return false;
+      }
+      if (maxLength10(fieldsObj)) {
+        return false;
+      }
+
+      if (decimalLengthsix(Number(fieldsObj))) {
+        Toaster.warning('Decimal value should not be more than 6')
+        return false;
+      }
 
 
 
-    //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
-    const isExist = gridTable.findIndex((el) =>
-      el.MachineTypeId === machineType.value &&
-      el.LabourTypeId === labourType.value,
-    )
-    if (isExist !== -1) {
-      Toaster.warning('Already added, Please check the values.')
-      return false
-    }
+      //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
+      const isExist = gridTable.findIndex((el) =>
+        el.MachineTypeId === machineType.value &&
+        el.LabourTypeId === labourType.value,
+      )
+      if (isExist !== -1) {
+        Toaster.warning('Already added, Please check the values.')
+        return false
+      }
 
-    const LabourRate = fieldsObj && fieldsObj !== undefined ? checkForNull(fieldsObj) : 0
-    const tempArray = []
+      const LabourRate = fieldsObj && fieldsObj !== undefined ? checkForNull(fieldsObj) : 0
+      const tempArray = []
 
 
-    tempArray.push(...gridTable, {
-      LabourDetailId: '',
-      MachineTypeId: machineType.value,
-      MachineType: machineType.label,
-      LabourTypeId: labourType.value,
-      LabourType: labourType.label,
-      EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm'),
-      LabourRate: LabourRate,
-    })
+      tempArray.push(...gridTable, {
+        LabourDetailId: '',
+        MachineTypeId: machineType.value,
+        MachineType: machineType.label,
+        LabourTypeId: labourType.value,
+        LabourType: labourType.label,
+        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm'),
+        LabourRate: LabourRate,
+      })
 
-    this.setState(
-      {
-        gridTable: tempArray,
-        machineType: [],
-        labourType: [],
-        effectiveDate: '',
-      },
-      () => this.props.change('LabourRate', 0),
-    )
-    this.setState({ DropdownChanged: false, errorObj: { machineType: false, labourType: false, labourRate: false } })
+      this.setState(
+        {
+          gridTable: tempArray,
+          machineType: [],
+          labourType: [],
+          effectiveDate: '',
+        },
+        () => this.props.change('LabourRate', 0),
+      )
+      this.setState({ DropdownChanged: false, errorObj: { machineType: false, labourType: false, labourRate: false } })
+    }, 200);
   }
 
   /**

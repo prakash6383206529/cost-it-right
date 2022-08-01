@@ -543,83 +543,86 @@ class AddPower extends Component {
     }
     const TotalUnitCharges = power.TotalUnitCharges !== undefined ? power.TotalUnitCharges : 0
     const SEBPowerContributaion = fieldsObj && fieldsObj !== undefined ? fieldsObj.SEBPowerContributaion : 0
+    let count = 0;
 
-    if (TotalUnitCharges === 0 && SEBPowerContributaion === undefined && fieldsObj.MinDemandKWPerMonth === undefined && fieldsObj.DemandChargesPerKW === undefined
-      && fieldsObj.AvgUnitConsumptionPerMonth === undefined && fieldsObj.MaxDemandChargesKW === undefined) {
-      this.setState({ errorObj: { minDemand: true, demandCharge: true, avgUnit: true, maxDemand: true, statePowerCont: true } })
-      return false;
-    }
-    if (fieldsObj.MinDemandKWPerMonth === undefined || fieldsObj.MinDemandKWPerMonth === '0') {
-      this.setState({ errorObj: { minDemand: true } })
-      return false;
-    }
+    setTimeout(() => {
 
-    if (fieldsObj.DemandChargesPerKW === undefined || fieldsObj.DemandChargesPerKW === '0') {
-      this.setState({ errorObj: { demandCharge: true } })
-      return false;
-    }
-    if (fieldsObj.AvgUnitConsumptionPerMonth === undefined || fieldsObj.AvgUnitConsumptionPerMonth === '0') {
-      this.setState({ errorObj: { avgUnit: true } })
-      return false;
-    }
-    if (fieldsObj.MaxDemandChargesKW === undefined || fieldsObj.MaxDemandChargesKW === '0') {
-      this.setState({ errorObj: { maxDemand: true } })
-      return false;
-    }
-    if (SEBPowerContributaion === undefined || SEBPowerContributaion === '0') {
-      this.setState({ errorObj: { statePowerCont: true } })
-      return false;
-    }
-    if (Number(fieldsObj.MinDemandKWPerMonth) < 0 || Number(fieldsObj.DemandChargesPerKW) < 0 || Number(fieldsObj.AvgUnitConsumptionPerMonth) < 0 ||
-      Number(fieldsObj.MaxDemandChargesKW) < 0 || Number(fieldsObj.MeterRentAndOtherChargesPerAnnum) < 0 || Number(fieldsObj.DutyChargesAndFCA) < 0 ||
-      Number(fieldsObj.SEBPowerContributaion) < 0) {
-      Toaster.warning('Fields should not be negative');
-      return false;
-    }
-    if (maxLength10(fieldsObj.MinDemandKWPerMonth) || maxLength10(fieldsObj.DemandChargesPerKW) || maxLength10(fieldsObj.AvgUnitConsumptionPerMonth) ||
-      maxLength10(fieldsObj.MaxDemandChargesKW) || maxLength10(fieldsObj.MeterRentAndOtherChargesPerAnnum) || maxLength10(fieldsObj.DutyChargesAndFCA)) {
-      Toaster.warning('Fields value should not be more than 10');
-      return false;
-    }
-    if (decimalLengthFour(fieldsObj.MinDemandKWPerMonth) || decimalLengthFour(fieldsObj.DemandChargesPerKW) || decimalLengthFour(fieldsObj.AvgUnitConsumptionPerMonth) ||
-      decimalLengthFour(fieldsObj.MaxDemandChargesKW) || decimalLengthFour(fieldsObj.MeterRentAndOtherChargesPerAnnum) || decimalLengthFour(fieldsObj.DutyChargesAndFCA)) {
-      Toaster.warning('Decimal value should not be more than 4');
-      return false;
-    }
-    if (decimalLengthThree(SEBPowerContributaion)) {
-      Toaster.warning('Decimal value should not be more than 3');
-      return false;
-    }
-    const tempArray = [];
+      if (fieldsObj.MinDemandKWPerMonth === undefined || Number(fieldsObj.MinDemandKWPerMonth) === 0) {
+        this.setState({ errorObj: { ...this.state.errorObj, minDemand: true } })
+        count++
+      }
 
-    tempArray.push(...powerGrid, {
-      PowerSEBPCId: '',
-      PowerSGPCId: '',
-      SourcePowerType: 'SEB',
-      AssetCost: '',
-      AnnualCost: '',
-      UnitGeneratedPerAnnum: '',
-      CostPerUnit: TotalUnitCharges,
-      PowerContributionPercentage: SEBPowerContributaion,
-      UnitOfMeasurementId: '',
-      UnitOfMeasurementName: '',
-      CostPerUnitOfMeasurement: 0,
-      UnitGeneratedPerUnitOfFuel: 0,
-      OtherCharges: 0,
-      isSelfPowerGenerator: isSelfGenerator,
-    })
-    const NetPowerCostPerUnit = tempArray && tempArray.reduce((accummlator, el) => {
-      return accummlator + checkForNull(el.CostPerUnit * el.PowerContributionPercentage / 100);
-    }, 0)
+      if (fieldsObj.DemandChargesPerKW === undefined || Number(fieldsObj.DemandChargesPerKW) === 0) {
+        this.setState({ errorObj: { ...this.state.errorObj, demandCharge: true } })
+        count++
+      }
+      if (fieldsObj.AvgUnitConsumptionPerMonth === undefined || Number(fieldsObj.AvgUnitConsumptionPerMonth) === 0) {
+        this.setState({ errorObj: { ...this.state.errorObj, avgUnit: true } })
+        count++
+      }
+      if (fieldsObj.MaxDemandChargesKW === undefined || Number(fieldsObj.MaxDemandChargesKW) === 0) {
+        this.setState({ errorObj: { ...this.state.errorObj, maxDemand: true } })
+        count++
+      }
+      if (SEBPowerContributaion === undefined || SEBPowerContributaion === 0) {
+        this.setState({ errorObj: { ...this.state.errorObj, statePowerCont: true } })
+        count++
+      }
+      console.log(count, "count");
+      if (count > 0) {
+        return false
+      }
+      if (Number(fieldsObj.MinDemandKWPerMonth) < 0 || Number(fieldsObj.DemandChargesPerKW) < 0 || Number(fieldsObj.AvgUnitConsumptionPerMonth) < 0 ||
+        Number(fieldsObj.MaxDemandChargesKW) < 0 || Number(fieldsObj.MeterRentAndOtherChargesPerAnnum) < 0 || Number(fieldsObj.DutyChargesAndFCA) < 0 ||
+        Number(fieldsObj.SEBPowerContributaion) < 0) {
+        Toaster.warning('Fields should not be negative');
+        return false;
+      }
+      if (maxLength10(fieldsObj.MinDemandKWPerMonth) || maxLength10(fieldsObj.DemandChargesPerKW) || maxLength10(fieldsObj.AvgUnitConsumptionPerMonth) ||
+        maxLength10(fieldsObj.MaxDemandChargesKW) || maxLength10(fieldsObj.MeterRentAndOtherChargesPerAnnum) || maxLength10(fieldsObj.DutyChargesAndFCA)) {
+        Toaster.warning('Fields value should not be more than 10');
+        return false;
+      }
+      if (decimalLengthFour(fieldsObj.MinDemandKWPerMonth) || decimalLengthFour(fieldsObj.DemandChargesPerKW) || decimalLengthFour(fieldsObj.AvgUnitConsumptionPerMonth) ||
+        decimalLengthFour(fieldsObj.MaxDemandChargesKW) || decimalLengthFour(fieldsObj.MeterRentAndOtherChargesPerAnnum) || decimalLengthFour(fieldsObj.DutyChargesAndFCA)) {
+        Toaster.warning('Decimal value should not be more than 4');
+        return false;
+      }
+      if (decimalLengthThree(SEBPowerContributaion)) {
+        Toaster.warning('Decimal value should not be more than 3');
+        return false;
+      }
+      const tempArray = [];
 
-    this.setState({
-      isEditFlagForStateElectricity: true,
-      powerGrid: tempArray,
-      netContributionValue: NetPowerCostPerUnit,
-      isAddedSEB: true,
-    });
-    this.setState({ AddChanged: false })
-    this.resetpowerKeyValue()
+      tempArray.push(...powerGrid, {
+        PowerSEBPCId: '',
+        PowerSGPCId: '',
+        SourcePowerType: 'SEB',
+        AssetCost: '',
+        AnnualCost: '',
+        UnitGeneratedPerAnnum: '',
+        CostPerUnit: TotalUnitCharges,
+        PowerContributionPercentage: SEBPowerContributaion,
+        UnitOfMeasurementId: '',
+        UnitOfMeasurementName: '',
+        CostPerUnitOfMeasurement: 0,
+        UnitGeneratedPerUnitOfFuel: 0,
+        OtherCharges: 0,
+        isSelfPowerGenerator: isSelfGenerator,
+      })
+      const NetPowerCostPerUnit = tempArray && tempArray.reduce((accummlator, el) => {
+        return accummlator + checkForNull(el.CostPerUnit * el.PowerContributionPercentage / 100);
+      }, 0)
+
+      this.setState({
+        isEditFlagForStateElectricity: true,
+        powerGrid: tempArray,
+        netContributionValue: NetPowerCostPerUnit,
+        isAddedSEB: true,
+      });
+      this.setState({ AddChanged: false })
+      this.resetpowerKeyValue()
+    }, 200);
   }
 
   /**
@@ -680,7 +683,7 @@ class AddPower extends Component {
   };
 
   powerTableHandler = (isSelfGenerator) => {
-    const { source, UOM, powerGrid, power } = this.state;
+    const { source, UOM, powerGrid } = this.state;
     const { fieldsObj } = this.props;
 
     let powerTotalT = 0
@@ -698,98 +701,103 @@ class AddPower extends Component {
       return false;
     }
 
-    if (source.length === 0 && (fieldsObj.UnitGeneratedPerAnnum === undefined &&
-      fieldsObj.SelfPowerContribution === undefined) && fieldsObj.UnitGeneratedPerUnitOfFuel === undefined) {
-      this.setState({ errorObj: { source: true, unitGenerated: true, selfPowerCont: true, unitGeneratedDiesel: true } })
-      return false;
-    }
-    if (source.length === 0) {
-      this.setState({ errorObj: { source: true } })
-      return false;
-    }
-    if (!source.label === 'Generator Diesel' || (fieldsObj.UnitGeneratedPerUnitOfFuel === undefined || fieldsObj.UnitGeneratedPerUnitOfFuel === '0')) {
-      this.setState({ errorObj: { unitGeneratedDiesel: true } })
-      return false;
-    }
-    if (fieldsObj.UnitGeneratedPerAnnum === undefined || fieldsObj.UnitGeneratedPerAnnum === '0') {
-      this.setState({ errorObj: { unitGenerated: true } })
-      return false;
-    }
-    if (fieldsObj.SelfPowerContribution === undefined || fieldsObj.SelfPowerContribution === '0') {
-      this.setState({ errorObj: { selfPowerCont: true } })
-      return false;
-    }
+    let count = 0;
+
+    setTimeout(() => {
+      if (source.length === 0) {
+        this.setState({ errorObj: { ...this.state.errorObj, source: true } })
+        count++;
+      }
+      if (fieldsObj.UnitGeneratedPerAnnum === undefined || Number(fieldsObj.UnitGeneratedPerAnnum) === 0) {
+        this.setState({ errorObj: { ...this.state.errorObj, unitGenerated: true } })
+        count++;
+      }
+      if (fieldsObj.SelfPowerContribution === undefined || Number(fieldsObj.SelfPowerContribution) === 0) {
+        this.setState({ errorObj: { ...this.state.errorObj, selfPowerCont: true } })
+        count++;
+      }
+      if (source.label === 'Generator Diesel' && (fieldsObj.UnitGeneratedPerUnitOfFuel === undefined || Number(fieldsObj.UnitGeneratedPerUnitOfFuel) === 0)) {
+        this.setState({ errorObj: { ...this.state.errorObj, unitGeneratedDiesel: true } })
+        count++;
+      }
+      if (count > 0) {
+        return false;
+      }
 
 
-    if (maxLength10(fieldsObj.AssetCost) || maxLength10(fieldsObj.AnnualCost) || maxLength10(fieldsObj.UnitGeneratedPerAnnum)
-      || maxLength10(fieldsObj.CostPerUnitOfMeasurement) || maxLength10(fieldsObj.UnitGeneratedPerUnitOfFuel)) {
-      Toaster.warning('Fields value should not be more than 10');
-      return false;
-    }
-
-    if (Number(fieldsObj.AssetCost) < 0 || Number(fieldsObj.AnnualCost) < 0 || Number(fieldsObj.UnitGeneratedPerAnnum) < 0 ||
-      Number(fieldsObj.SelfPowerContribution) < 0 || Number(fieldsObj.CostPerUnitOfMeasurement) < 0 || Number(fieldsObj.UnitGeneratedPerUnitOfFuel) < 0) {
-      Toaster.warning('Fields should not be negative');
-      return false;
-    }
-    if (decimalLengthFour(fieldsObj.AssetCost) || decimalLengthFour(fieldsObj.AnnualCost)) {
-      Toaster.warning('Decimal value should not be more than 4');
-      return false;
-    }
-    if (decimalLengthThree(fieldsObj.SelfPowerContribution) || decimalLengthThree(fieldsObj.UnitGeneratedPerUnitOfFuel) ||
-      decimalLengthThree(fieldsObj.CostPerUnitOfMeasurement) || decimalLengthThree(fieldsObj.UnitGeneratedPerAnnum)) {
-      Toaster.warning('Decimal value should not be more than 3');
-      return false;
-    }
-
-    const AssetCost = fieldsObj && fieldsObj.AssetCost !== undefined ? fieldsObj.AssetCost : 0;
-    const AnnualCost = fieldsObj && fieldsObj.AnnualCost !== undefined ? fieldsObj.AnnualCost : 0;
-    const UnitGeneratedPerAnnum = fieldsObj && fieldsObj.UnitGeneratedPerAnnum !== undefined ? fieldsObj.UnitGeneratedPerAnnum : 0;
-    const SelfGeneratedCostPerUnit = fieldsObj && fieldsObj.SelfGeneratedCostPerUnit !== undefined ? fieldsObj.SelfGeneratedCostPerUnit : 0;
-    const SelfPowerContribution = fieldsObj && fieldsObj.SelfPowerContribution !== undefined ? fieldsObj.SelfPowerContribution : 0;
-    const CostPerUnitOfMeasurement = fieldsObj && fieldsObj.CostPerUnitOfMeasurement !== undefined ? fieldsObj.CostPerUnitOfMeasurement : 0;
-    const UnitGeneratedPerUnitOfFuel = fieldsObj && fieldsObj.UnitGeneratedPerUnitOfFuel !== undefined ? fieldsObj.UnitGeneratedPerUnitOfFuel : 0;
-
-    const tempArray = [];
-
-    tempArray.push(...powerGrid, {
-      PowerSGPCId: '',
-      SourcePowerType: source.value,
-      AssetCost: AssetCost,
-      AnnualCost: AnnualCost,
-      UnitGeneratedPerAnnum: UnitGeneratedPerAnnum,
-      CostPerUnit: SelfGeneratedCostPerUnit,
-      PowerContributionPercentage: SelfPowerContribution,
-
-      //DIESEL
-      UnitOfMeasurementId: source && source.value === GENERATOR_DIESEL ? UOM.value : '',
-      UnitOfMeasurementName: source && source.value === GENERATOR_DIESEL ? UOM.label : '',
-      CostPerUnitOfMeasurement: source && source.value === GENERATOR_DIESEL ? CostPerUnitOfMeasurement : 0,
-      UnitGeneratedPerUnitOfFuel: source && source.value === GENERATOR_DIESEL ? UnitGeneratedPerUnitOfFuel : 0,
-      OtherCharges: 0,
-      isSelfPowerGenerator: isSelfGenerator,
-    })
-    const NetPowerCostPerUnit = tempArray && tempArray.reduce((accummlator, el) => {
-      return accummlator + checkForNull(el.CostPerUnit * el.PowerContributionPercentage / 100);
-    }, 0)
 
 
-    this.setState({
-      powerGrid: tempArray,
-      netContributionValue: NetPowerCostPerUnit,
-      source: [],
-      UOM: [],
-    }, () => {
-      this.props.change('AssetCost', 0)
-      this.props.change('AnnualCost', 0)
-      this.props.change('UnitGeneratedPerAnnum', 0)
-      this.props.change('SelfGeneratedCostPerUnit', 0)
-      this.props.change('SelfPowerContribution', 0)
-      this.props.change('CostPerUnitOfMeasurement', 0)
-      this.props.change('UnitGeneratedPerUnitOfFuel', 0)
+      if (maxLength10(fieldsObj.AssetCost) || maxLength10(fieldsObj.AnnualCost) || maxLength10(fieldsObj.UnitGeneratedPerAnnum)
+        || maxLength10(fieldsObj.CostPerUnitOfMeasurement) || maxLength10(fieldsObj.UnitGeneratedPerUnitOfFuel)) {
+        Toaster.warning('Fields value should not be more than 10');
+        return false;
+      }
 
-    });
-    this.setState({ AddChanged: false, errorObj: { source: false, unitGenerated: false, selfPowerCont: false, unitGeneratedDiesel: false } })
+      if (Number(fieldsObj.AssetCost) < 0 || Number(fieldsObj.AnnualCost) < 0 || Number(fieldsObj.UnitGeneratedPerAnnum) < 0 ||
+        Number(fieldsObj.SelfPowerContribution) < 0 || Number(fieldsObj.CostPerUnitOfMeasurement) < 0 || Number(fieldsObj.UnitGeneratedPerUnitOfFuel) < 0) {
+        Toaster.warning('Fields should not be negative');
+        return false;
+      }
+      if (decimalLengthFour(fieldsObj.AssetCost) || decimalLengthFour(fieldsObj.AnnualCost)) {
+        Toaster.warning('Decimal value should not be more than 4');
+        return false;
+      }
+      if (decimalLengthThree(fieldsObj.SelfPowerContribution) || decimalLengthThree(fieldsObj.UnitGeneratedPerUnitOfFuel) ||
+        decimalLengthThree(fieldsObj.CostPerUnitOfMeasurement) || decimalLengthThree(fieldsObj.UnitGeneratedPerAnnum)) {
+        Toaster.warning('Decimal value should not be more than 3');
+        return false;
+      }
+
+      const AssetCost = fieldsObj && fieldsObj.AssetCost !== undefined ? fieldsObj.AssetCost : 0;
+      const AnnualCost = fieldsObj && fieldsObj.AnnualCost !== undefined ? fieldsObj.AnnualCost : 0;
+      const UnitGeneratedPerAnnum = fieldsObj && fieldsObj.UnitGeneratedPerAnnum !== undefined ? fieldsObj.UnitGeneratedPerAnnum : 0;
+      const SelfGeneratedCostPerUnit = fieldsObj && fieldsObj.SelfGeneratedCostPerUnit !== undefined ? fieldsObj.SelfGeneratedCostPerUnit : 0;
+      const SelfPowerContribution = fieldsObj && fieldsObj.SelfPowerContribution !== undefined ? fieldsObj.SelfPowerContribution : 0;
+      const CostPerUnitOfMeasurement = fieldsObj && fieldsObj.CostPerUnitOfMeasurement !== undefined ? fieldsObj.CostPerUnitOfMeasurement : 0;
+      const UnitGeneratedPerUnitOfFuel = fieldsObj && fieldsObj.UnitGeneratedPerUnitOfFuel !== undefined ? fieldsObj.UnitGeneratedPerUnitOfFuel : 0;
+
+      const tempArray = [];
+
+      tempArray.push(...powerGrid, {
+        PowerSGPCId: '',
+        SourcePowerType: source.value,
+        AssetCost: AssetCost,
+        AnnualCost: AnnualCost,
+        UnitGeneratedPerAnnum: UnitGeneratedPerAnnum,
+        CostPerUnit: SelfGeneratedCostPerUnit,
+        PowerContributionPercentage: SelfPowerContribution,
+
+        //DIESEL
+        UnitOfMeasurementId: source && source.value === GENERATOR_DIESEL ? UOM.value : '',
+        UnitOfMeasurementName: source && source.value === GENERATOR_DIESEL ? UOM.label : '',
+        CostPerUnitOfMeasurement: source && source.value === GENERATOR_DIESEL ? CostPerUnitOfMeasurement : 0,
+        UnitGeneratedPerUnitOfFuel: source && source.value === GENERATOR_DIESEL ? UnitGeneratedPerUnitOfFuel : 0,
+        OtherCharges: 0,
+        isSelfPowerGenerator: isSelfGenerator,
+      })
+      const NetPowerCostPerUnit = tempArray && tempArray.reduce((accummlator, el) => {
+        return accummlator + checkForNull(el.CostPerUnit * el.PowerContributionPercentage / 100);
+      }, 0)
+
+
+      this.setState({
+        powerGrid: tempArray,
+        netContributionValue: NetPowerCostPerUnit,
+        source: [],
+        UOM: [],
+      }, () => {
+        this.props.change('AssetCost', 0)
+        this.props.change('AnnualCost', 0)
+        this.props.change('UnitGeneratedPerAnnum', 0)
+        this.props.change('SelfGeneratedCostPerUnit', 0)
+        this.props.change('SelfPowerContribution', 0)
+        this.props.change('CostPerUnitOfMeasurement', 0)
+        this.props.change('UnitGeneratedPerUnitOfFuel', 0)
+
+      });
+      count = 0;
+      this.setState({ AddChanged: false, errorObj: { ...this.state.errorObj, source: false, unitGenerated: false, selfPowerCont: false, unitGeneratedDiesel: false } })
+    }, 100);
     this.resetpowerKeyValue()
   }
 
@@ -811,72 +819,83 @@ class AddPower extends Component {
         }
       })
     }
-    if (fieldsObj.UnitGeneratedPerUnitOfFuel === undefined || fieldsObj.UnitGeneratedPerUnitOfFuel === '0') {
-      this.setState({ errorObj: { unitGeneratedDiesel: true } })
-      return false;
-    }
-    if (fieldsObj.UnitGeneratedPerAnnum === undefined || fieldsObj.UnitGeneratedPerAnnum === '0') {
-      this.setState({ errorObj: { unitGenerated: true } })
-      return false;
-    }
-    if (fieldsObj.SelfPowerContribution === undefined || fieldsObj.SelfPowerContribution === '0') {
-      this.setState({ errorObj: { selfPowerCont: true } })
-      return false;
-    }
-    if (powerTotalT > 100) {
-      Toaster.warning('Total Contribution should not be more than 100%');
-      return false;
-    }
+    let count = 0;
+    setTimeout(() => {
 
-    const AssetCost = fieldsObj && fieldsObj !== undefined ? fieldsObj.AssetCost : 0;
-    const AnnualCost = fieldsObj && fieldsObj !== undefined ? fieldsObj.AnnualCost : 0;
-    const UnitGeneratedPerAnnum = fieldsObj && fieldsObj !== undefined ? fieldsObj.UnitGeneratedPerAnnum : 0;
-    const SelfGeneratedCostPerUnit = fieldsObj && fieldsObj !== undefined ? fieldsObj.SelfGeneratedCostPerUnit : 0;
-    const SelfPowerContribution = fieldsObj && fieldsObj !== undefined ? fieldsObj.SelfPowerContribution : 0;
-    const CostPerUnitOfMeasurement = fieldsObj && fieldsObj.CostPerUnitOfMeasurement !== undefined ? fieldsObj.CostPerUnitOfMeasurement : 0;
-    const UnitGeneratedPerUnitOfFuel = fieldsObj && fieldsObj !== undefined ? fieldsObj.UnitGeneratedPerUnitOfFuel : 0;
+      if (fieldsObj.UnitGeneratedPerAnnum === undefined || Number(fieldsObj.UnitGeneratedPerAnnum) === 0) {
+        this.setState({ errorObj: { ...this.state.errorObj, unitGenerated: true } })
+        console.log("first");
+        count++;
+      }
+      if (fieldsObj.SelfPowerContribution === undefined || Number(fieldsObj.SelfPowerContribution) === 0) {
+        this.setState({ errorObj: { ...this.state.errorObj, selfPowerCont: true } })
+        console.log("second");
+        count++;
+      }
+      if (source.label === 'Generator Diesel' && (fieldsObj.UnitGeneratedPerUnitOfFuel === undefined || Number(fieldsObj.UnitGeneratedPerUnitOfFuel) === 0)) {
+        this.setState({ errorObj: { ...this.state.errorObj, unitGeneratedDiesel: true } })
+        console.log("third");
+        count++;
+      }
+      if (count > 0) {
+        return false;
+      }
 
-    let tempArray = [];
+      if (powerTotalT > 100) {
+        Toaster.warning('Total Contribution should not be more than 100%');
+        return false;
+      }
 
-    let tempData = powerGrid[powerGridEditIndex];
-    tempData = {
-      PowerSGPCId: '',
-      SourcePowerType: source.value,
-      AssetCost: AssetCost,
-      AnnualCost: AnnualCost,
-      UnitGeneratedPerAnnum: UnitGeneratedPerAnnum,
-      CostPerUnit: SelfGeneratedCostPerUnit,
-      PowerContributionPercentage: SelfPowerContribution,
-      UnitOfMeasurementId: source && source.value === GENERATOR_DIESEL ? UOM.value : '',
-      UnitOfMeasurementName: source && source.value === GENERATOR_DIESEL ? UOM.label : '',
-      CostPerUnitOfMeasurement: source && source.value === GENERATOR_DIESEL ? CostPerUnitOfMeasurement : 0,
-      UnitGeneratedPerUnitOfFuel: source && source.value === GENERATOR_DIESEL ? UnitGeneratedPerUnitOfFuel : 0,
-      OtherCharges: 0
-    }
+      const AssetCost = fieldsObj && fieldsObj !== undefined ? fieldsObj.AssetCost : 0;
+      const AnnualCost = fieldsObj && fieldsObj !== undefined ? fieldsObj.AnnualCost : 0;
+      const UnitGeneratedPerAnnum = fieldsObj && fieldsObj !== undefined ? fieldsObj.UnitGeneratedPerAnnum : 0;
+      const SelfGeneratedCostPerUnit = fieldsObj && fieldsObj !== undefined ? fieldsObj.SelfGeneratedCostPerUnit : 0;
+      const SelfPowerContribution = fieldsObj && fieldsObj !== undefined ? fieldsObj.SelfPowerContribution : 0;
+      const CostPerUnitOfMeasurement = fieldsObj && fieldsObj.CostPerUnitOfMeasurement !== undefined ? fieldsObj.CostPerUnitOfMeasurement : 0;
+      const UnitGeneratedPerUnitOfFuel = fieldsObj && fieldsObj !== undefined ? fieldsObj.UnitGeneratedPerUnitOfFuel : 0;
 
-    tempArray = Object.assign([...powerGrid], { [powerGridEditIndex]: tempData })
-    const NetPowerCostPerUnit = tempArray && tempArray.reduce((accummlator, el) => {
-      return accummlator + checkForNull(el.CostPerUnit * el.PowerContributionPercentage / 100);
-    }, 0)
+      let tempArray = [];
 
-    this.setState({
-      powerGrid: tempArray,
-      source: [],
-      UOM: [],
-      netContributionValue: NetPowerCostPerUnit,
-      powerGridEditIndex: '',
-      isEditIndex: false,
-    }, () => {
-      this.props.change('AssetCost', 0)
-      this.props.change('AnnualCost', 0)
-      this.props.change('UnitGeneratedPerAnnum', 0)
-      this.props.change('SelfGeneratedCostPerUnit', 0)
-      this.props.change('SelfPowerContribution', 0)
-      this.props.change('CostPerUnitOfMeasurement', 0)
-      this.props.change('UnitGeneratedPerUnitOfFuel', 0)
+      let tempData = powerGrid[powerGridEditIndex];
+      tempData = {
+        PowerSGPCId: '',
+        SourcePowerType: source.value,
+        AssetCost: AssetCost,
+        AnnualCost: AnnualCost,
+        UnitGeneratedPerAnnum: UnitGeneratedPerAnnum,
+        CostPerUnit: SelfGeneratedCostPerUnit,
+        PowerContributionPercentage: SelfPowerContribution,
+        UnitOfMeasurementId: source && source.value === GENERATOR_DIESEL ? UOM.value : '',
+        UnitOfMeasurementName: source && source.value === GENERATOR_DIESEL ? UOM.label : '',
+        CostPerUnitOfMeasurement: source && source.value === GENERATOR_DIESEL ? CostPerUnitOfMeasurement : 0,
+        UnitGeneratedPerUnitOfFuel: source && source.value === GENERATOR_DIESEL ? UnitGeneratedPerUnitOfFuel : 0,
+        OtherCharges: 0
+      }
 
-    });
-    this.setState({ DropdownChanged: false, errorObj: { unitGenerated: false, selfPowerCont: false, unitGeneratedDiesel: false } })
+      tempArray = Object.assign([...powerGrid], { [powerGridEditIndex]: tempData })
+      const NetPowerCostPerUnit = tempArray && tempArray.reduce((accummlator, el) => {
+        return accummlator + checkForNull(el.CostPerUnit * el.PowerContributionPercentage / 100);
+      }, 0)
+
+      this.setState({
+        powerGrid: tempArray,
+        source: [],
+        UOM: [],
+        netContributionValue: NetPowerCostPerUnit,
+        powerGridEditIndex: '',
+        isEditIndex: false,
+      }, () => {
+        this.props.change('AssetCost', 0)
+        this.props.change('AnnualCost', 0)
+        this.props.change('UnitGeneratedPerAnnum', 0)
+        this.props.change('SelfGeneratedCostPerUnit', 0)
+        this.props.change('SelfPowerContribution', 0)
+        this.props.change('CostPerUnitOfMeasurement', 0)
+        this.props.change('UnitGeneratedPerUnitOfFuel', 0)
+
+      });
+      this.setState({ DropdownChanged: false, errorObj: { unitGenerated: false, selfPowerCont: false, unitGeneratedDiesel: false } })
+    }, 200);
     this.resetpowerKeyValue()
   };
 

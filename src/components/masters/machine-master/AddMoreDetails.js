@@ -1348,87 +1348,85 @@ class AddMoreDetails extends Component {
 
     const { fieldsObj } = this.props
     const OutputPerHours = this.state.UOM.label === HOUR ? 0 : fieldsObj.OutputPerHours
+    setTimeout(() => {
 
-    if (processName.length === 0 && UOM.length === 0 && (fieldsObj.OutputPerHours === '' || fieldsObj.OutputPerHours === undefined)) {
-      this.setState({ errorObj: { processName: true, processUOM: true, processMachineRate: true } })
-      return false;
-    }
-    if (processName.length === 0) {
-      this.setState({ errorObj: { processName: true } })
-      return false;
-    }
-    if (UOM.length === 0 === 0) {
-      this.setState({ errorObj: { processUOM: true } })
-      return false;
-    }
-    console.log(fieldsObj.OutputPerHours, "fieldsObj.OutputPerHours");
-    if (fieldsObj.OutputPerHours === '') {
-      this.setState({ errorObj: { processMachineRate: true } })
-      return false;
-    }
-    if (checkForNull(fieldsObj?.MachineCost) === 0) {
-      Toaster.warning('Please enter the machine cost');
-      return false;
-    }
+      let count = 0;
+      if (processName.length === 0) {
+        this.setState({ errorObj: { ...this.state.errorObj, processName: true } })
+        count++;
+      }
+      if (UOM.length === 0) {
+        this.setState({ errorObj: { ...this.state.errorObj, processUOM: true } })
+        count++;
+      }
+      if (!this.state.UOM.label === HOUR && (fieldsObj.MachineRate === 0 || fieldsObj.MachineRate === undefined)) {
+        this.setState({ errorObj: { ...this.state.errorObj, processMachineRate: true } })
+        count++;
+      }
+      if (count > 0) {
+        return false
+      }
+      if (checkForNull(fieldsObj?.MachineCost) === 0) {
+        Toaster.warning('Please enter the machine cost');
+        return false;
+      }
 
-    //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
-    const isExist = processGrid.findIndex(el => (el.ProcessId === processName.value))
-    if (isExist !== -1) {
-      Toaster.warning('Already added, Please check the values.')
-      return false;
-    }
+      //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
+      const isExist = processGrid.findIndex(el => (el.ProcessId === processName.value))
+      if (isExist !== -1) {
+        Toaster.warning('Already added, Please check the values.')
+        return false;
+      }
 
-    // const OutputPerHours = fieldsObj && fieldsObj.OutputPerHours !== undefined ? fieldsObj.OutputPerHours : 0;
-    // const NumberOfWorkingHoursPerYear = fieldsObj.NumberOfWorkingHoursPerYear
-    // const TotalMachineCostPerAnnum = fieldsObj.TotalMachineCostPerAnnum
 
-    const NumberOfWorkingHoursPerYear = checkForDecimalAndNull(fieldsObj?.NumberOfWorkingHoursPerYear)
-    const TotalMachineCostPerAnnum = checkForDecimalAndNull(fieldsObj?.TotalMachineCostPerAnnum)
+      const NumberOfWorkingHoursPerYear = checkForDecimalAndNull(fieldsObj?.NumberOfWorkingHoursPerYear)
+      const TotalMachineCostPerAnnum = checkForDecimalAndNull(fieldsObj?.TotalMachineCostPerAnnum)
 
 
 
-    // CONDITION TO CHECK OUTPUT PER HOUR, NUMBER OF WORKING HOUR AND TOTAL MACHINE MACHINE COST IS NEGATIVE OR NOT A NUMBER
-    if (NumberOfWorkingHoursPerYear < 0 || isNaN(NumberOfWorkingHoursPerYear) || TotalMachineCostPerAnnum < 0 || isNaN(TotalMachineCostPerAnnum) || fieldsObj?.MachineRate <= 0 || isNaN(fieldsObj?.MachineRate)) {
-      Toaster.warning('Machine Rate can not be zero or negative')
-      return false;
-    }
+      // CONDITION TO CHECK OUTPUT PER HOUR, NUMBER OF WORKING HOUR AND TOTAL MACHINE MACHINE COST IS NEGATIVE OR NOT A NUMBER
+      if (NumberOfWorkingHoursPerYear < 0 || isNaN(NumberOfWorkingHoursPerYear) || TotalMachineCostPerAnnum < 0 || isNaN(TotalMachineCostPerAnnum) || fieldsObj?.MachineRate <= 0 || isNaN(fieldsObj?.MachineRate)) {
+        Toaster.warning('Machine Rate can not be zero or negative')
+        return false;
+      }
 
-    let MachineRate
-    const OutputPerYear = checkForNull(OutputPerHours * NumberOfWorkingHoursPerYear);
+      let MachineRate
+      const OutputPerYear = checkForNull(OutputPerHours * NumberOfWorkingHoursPerYear);
 
-    MachineRate = fieldsObj.MachineRate // THIS IS FOR ALL UOM EXCEPT HOUR
+      MachineRate = fieldsObj.MachineRate // THIS IS FOR ALL UOM EXCEPT HOUR
 
-    const tempArray = [];
+      const tempArray = [];
 
-    tempArray.push(...processGrid, {
-      processName: processName.label,
-      ProcessId: processName.value,
-      UnitOfMeasurement: UOM.label,
-      UnitOfMeasurementId: UOM.value,
-      OutputPerHours: OutputPerHours,
-      OutputPerYear: OutputPerYear,
-      MachineRate: MachineRate,
-    })
+      tempArray.push(...processGrid, {
+        processName: processName.label,
+        ProcessId: processName.value,
+        UnitOfMeasurement: UOM.label,
+        UnitOfMeasurementId: UOM.value,
+        OutputPerHours: OutputPerHours,
+        OutputPerYear: OutputPerYear,
+        MachineRate: MachineRate,
+      })
 
-    this.setState({ IsFinancialDataChanged: true })
-    if (tempArray?.length > 0) {
-      this.setState({ disableAllForm: true })
-    } else {
-      this.setState({ disableAllForm: false })
+      this.setState({ IsFinancialDataChanged: true })
+      if (tempArray?.length > 0) {
+        this.setState({ disableAllForm: true })
+      } else {
+        this.setState({ disableAllForm: false })
 
-    }
+      }
 
-    this.setState({
-      processGrid: tempArray,
-      processName: [],
-      UOM: isProcessGroup ? UOM : [],
-      lockUOMAndRate: isProcessGroup
-    }, () => {
-      this.props.change('OutputPerHours', isProcessGroup ? OutputPerHours : 0)
-      this.props.change('OutputPerYear', isProcessGroup ? OutputPerYear : 0)
-      this.props.change('MachineRate', isProcessGroup ? checkForDecimalAndNull(MachineRate, this.props.initialConfiguration.NoOfDecimalForPrice) : 0)
-    });
-    this.setState({ errorObj: { processName: false, processUOM: false, processMachineRate: false } })
+      this.setState({
+        processGrid: tempArray,
+        processName: [],
+        UOM: isProcessGroup ? UOM : [],
+        lockUOMAndRate: isProcessGroup
+      }, () => {
+        this.props.change('OutputPerHours', isProcessGroup ? OutputPerHours : 0)
+        this.props.change('OutputPerYear', isProcessGroup ? OutputPerYear : 0)
+        this.props.change('MachineRate', isProcessGroup ? checkForDecimalAndNull(MachineRate, this.props.initialConfiguration.NoOfDecimalForPrice) : 0)
+      });
+      this.setState({ errorObj: { processName: false, processUOM: false, processMachineRate: false } })
+    }, 200);
   }
 
   /**
@@ -3474,7 +3472,6 @@ class AddMoreDetails extends Component {
                                   className=" "
                                   customClassName=" withBorder"
                                 />
-                                {console.log(this.props.fieldsObj.MachineRate, "this.props.fieldsObj.OutputPerHours")}
                                 {this.state.errorObj.processMachineRate && (this.props.fieldsObj.MachineRate === undefined || this.state.UOM.type === TIME ? true : Number(this.props.fieldsObj.MachineRate) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
 
                               </div>

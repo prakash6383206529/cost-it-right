@@ -303,64 +303,59 @@ class AddFreight extends Component {
     } = this.state;
     const { fieldsObj } = this.props;
 
-    if (FullTruckCapacity.length === 0 && RateCriteria.length === 0 && (fieldsObj === undefined || Number(fieldsObj) === 0) && effectiveDate === '') {
-      this.setState({ errorObj: { capacity: true, criteria: true, rate: true, effectiveDate: true } })
-      return false
-    }
-    if (RateCriteria.length === 0 && (fieldsObj === undefined || Number(fieldsObj) === 0) && effectiveDate === '') {
-      this.setState({ errorObj: { criteria: true, rate: true, effectiveDate: true } })
-      return false
-    }
-    if ((fieldsObj === undefined || Number(fieldsObj) === 0) && effectiveDate === '') {
-      this.setState({ errorObj: { rate: true, effectiveDate: true } })
-      return false
-    }
-    if (FullTruckCapacity.length === 0) {
-      this.setState({ errorObj: { capacity: true } })
-      return
-    }
-    if (RateCriteria.length === 0) {
-      this.setState({ errorObj: { criteria: true } })
-      return false
-    }
-    if (fieldsObj === undefined || Number(fieldsObj) === 0) {
-      this.setState({ errorObj: { rate: true } })
-      return false
-    }
-    if (effectiveDate === undefined) {
-      this.setState({ errorObj: { effectiveDate: true } })
-      return false
-    }
-    //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
-    const isExist = gridTable.findIndex(
-      (el) =>
-        el.CapacityId === FullTruckCapacity.value &&
-        el.RateCriteriaId === RateCriteria.value
-    );
-    if (isExist !== -1) {
-      Toaster.warning("Already added, Please check the values.");
-      return false;
-    }
-    const Rate =
-      fieldsObj && fieldsObj !== undefined ? checkForNull(fieldsObj) : 0;
-    const tempArray = [];
-    tempArray.push(...gridTable, {
-      FullTruckLoadId: "",
-      Capacity: FullTruckCapacity.label,
-      RateCriteria: RateCriteria.label,
-      EffectiveDate: effectiveDate,
-      Rate: Rate,
-    });
-    this.setState(
-      {
-        gridTable: tempArray,
-        FullTruckCapacity: [],
-        RateCriteria: [],
-        effectiveDate: '',
-      },
-      () => this.props.change("Rate", 0)
-    );
-    this.setState({ AddUpdate: false, errorObj: { capacity: false, criteria: false, rate: false, effectiveDate: false } })
+    let count = 0;
+    setTimeout(() => {
+
+      if (FullTruckCapacity.length === 0) {
+        this.setState({ errorObj: { ...this.state.errorObj, capacity: true } })
+        count++
+      }
+      if (RateCriteria.length === 0) {
+        this.setState({ errorObj: { ...this.state.errorObj, criteria: true } })
+        count++
+      }
+      if (fieldsObj === undefined || Number(fieldsObj) === 0) {
+        this.setState({ errorObj: { ...this.state.errorObj, rate: true } })
+        count++
+      }
+      if (effectiveDate === undefined || effectiveDate === '') {
+        this.setState({ errorObj: { ...this.state.errorObj, effectiveDate: true } })
+        count++
+      }
+      if (count > 0) {
+        return false
+      }
+      //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
+      const isExist = gridTable.findIndex(
+        (el) =>
+          el.CapacityId === FullTruckCapacity.value &&
+          el.RateCriteriaId === RateCriteria.value
+      );
+      if (isExist !== -1) {
+        Toaster.warning("Already added, Please check the values.");
+        return false;
+      }
+      const Rate =
+        fieldsObj && fieldsObj !== undefined ? checkForNull(fieldsObj) : 0;
+      const tempArray = [];
+      tempArray.push(...gridTable, {
+        FullTruckLoadId: "",
+        Capacity: FullTruckCapacity.label,
+        RateCriteria: RateCriteria.label,
+        EffectiveDate: effectiveDate,
+        Rate: Rate,
+      });
+      this.setState(
+        {
+          gridTable: tempArray,
+          FullTruckCapacity: [],
+          RateCriteria: [],
+          effectiveDate: '',
+        },
+        () => this.props.change("Rate", 0)
+      );
+      this.setState({ AddUpdate: false, errorObj: { capacity: false, criteria: false, rate: false, effectiveDate: false } })
+    }, 200);
   };
   /**
    * @method updateGrid
