@@ -610,6 +610,13 @@ class AddMoreDetails extends Component {
   handleDereciationType = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
       this.setState({ depreciationType: newValue });
+      setTimeout(() => {
+        this.props.change('DepreciationAmount', 0)
+        this.props.change('DepreciationRatePercentage', 0)
+        this.props.change('LifeOfAssetPerYear', 0)
+        this.props.change('CastOfScrap', 0)
+      }, 400);
+
     } else {
       this.setState({ depreciationType: [], })
     }
