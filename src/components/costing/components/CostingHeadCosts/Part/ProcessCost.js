@@ -998,53 +998,61 @@ function ProcessCost(props) {
   const ProcessGridFields = 'ProcessGridFields'
   const SingleProcessGridField = 'SingleProcessGridField'
 
-
   const renderSingleProcess = (process, parentIndex) => {
     return (
       process.ProcessList && process.ProcessList.map((item, index) => {
         return (
           <tr>
-            <td>-</td>
+            <td>{'-'}</td>
             <td className='text-overflow'><span title={item.ProcessName}>{item.ProcessName}</span></td>
             <td>{item.Tonnage}</td>
             <td>{item.MHR}</td>
             <td>{item.UOM}</td>
             <td>{(item?.ProductionPerHour === '-' || item?.ProductionPerHour === 0 || item?.ProductionPerHour === null || item?.ProductionPerHour === undefined) ? '-' : Math.round(item.ProductionPerHour)}</td>
-            <td style={{ width: 150 }}>
-              <span className="d-inline-block w90px mr-2">
-                {
-                  <NumberFieldHookForm
-                    label=""
-                    name={`${SingleProcessGridField}.${index}.${parentIndex}.Quantity`}
-                    Controller={Controller}
-                    control={control}
-                    register={register}
-                    mandatory={false}
-                    rules={{
-                      //required: true,
-                      pattern: {
-                        value: /^[0-9]\d*(\.\d+)?$/i,
-                        message: 'Invalid Number.',
-                      },
-                    }}
-                    defaultValue={item.Quantity ? checkForDecimalAndNull(item.Quantity, trimForMeasurment,) : '1'}
-                    className=""
-                    customClassName={'withBorder'}
-                    handleChange={(e) => {
-                      e.preventDefault()
-                      handleQuantityChangeOfGroupProcess(e, index, process.ProcessList, parentIndex)
-                    }}
+            <td style={{ width: 350 }}>
+              <div className='d-flex align-items-center'>
+                <span className="d-inline-block  mr-2">
+                  {console.log(errors.SingleProcessGridField, "rtest")}
 
-                    // errors={}
-                    disabled={(CostingViewMode || IsLocked) ? true : false}
+                  {
+                    <NumberFieldHookForm
+                      label=""
+                      name={`${SingleProcessGridField}.${index}.${parentIndex}.Quantity`}
+                      Controller={Controller}
+                      control={control}
+                      register={register}
+                      mandatory={false}
+                      rules={{
+                        required: true,
+                        pattern: {
+                          value: /^\d{0,6}(\.\d{0,4})?$/i,
+                          message: 'Max. length for interger is 6 and for decimal is 4',
+                        },
+                      }}
+                      errors={errors && errors.SingleProcessGridField ? errors.SingleProcessGridField[index] && errors.SingleProcessGridField[index][parentIndex] && errors.SingleProcessGridField[index][parentIndex].Quantity : ''}
+                      defaultValue={item.Quantity ? checkForDecimalAndNull(item.Quantity, getConfigurationKey().NoOfDecimalForInputOutput) : '1'}
+                      className=""
+                      customClassName={'withBorder'}
+                      handleChange={(e) => {
+                        e.preventDefault()
+                        handleQuantityChangeOfGroupProcess(e, index, process.ProcessList, parentIndex)
+                      }}
+
+                      // errors={}
+                      disabled={(CostingViewMode || IsLocked) ? true : false}
+                    />
+
+                  }
+
+                </span>
+                <div className='min15'>
+                  <button
+                    className="CalculatorIcon cr-cl-icon calc-icon-middle"
+                    type={'button'}
+                    onClick={() => toggleWeightCalculator(index, process.ProcessList, parentIndex)}
                   />
-                }
-              </span>
-              <button
-                className="CalculatorIcon cr-cl-icon calc-icon-middle"
-                type={'button'}
-                onClick={() => toggleWeightCalculator(index, process.ProcessList, parentIndex)}
-              />
+                </div>
+              </div>
             </td>
             <td style={{ width: 100 }}>
               {
@@ -1088,7 +1096,7 @@ function ProcessCost(props) {
                     defaultValue={item.Remark ?? item.Remark}
                     className=""
                     customClassName={"withBorder"}
-                    errors={errors && errors.SingleProcessGridField && errors.SingleProcessGridField[index][parentIndex] !== undefined ? errors.SingleProcessGridField[index][parentIndex].remarkPopUp : ''}
+                    errors={errors && errors.ProcessGridFields && errors.ProcessGridFields[index] !== undefined ? errors.ProcessGridFields[index].remarkPopUp : ''}
                     //errors={errors && errors.remarkPopUp && errors.remarkPopUp[index] !== undefined ? errors.remarkPopUp[index] : ''}                        
                     disabled={(CostingViewMode || IsLocked) ? true : false}
                     hidden={false}
@@ -1157,8 +1165,8 @@ function ProcessCost(props) {
                     <th style={{ width: "170px" }}>{`Machine Tonnage`}</th>
                     <th style={{ width: "220px" }}>{`Machine Rate`}</th>
                     <th style={{ width: "220px" }}>{`UOM`}</th>
-                    <th style={{ width: "220px" }}>{`Parts/Hour`}</th>
-                    <th style={{ width: "220px" }}><span>Quantity  <div class="tooltip-n ml-1"><i className="fa fa-info-circle text-primary tooltip-icon"></i><span class="tooltiptext process-tooltip">{tooltipText}</span></div></span></th>
+                    <th style={{ width: "160px" }}>{`Parts/Hour`}</th>
+                    <th style={{ width: "330px" }}><span>Quantity  <div class="tooltip-n ml-1"><i className="fa fa-info-circle text-primary tooltip-icon"></i><span class="tooltiptext process-tooltip">{tooltipText}</span></div></span></th>
                     <th style={{ width: "220px" }} >{`Net Cost`}</th>
                     <th style={{ width: "145px", textAlign: "right" }}>{`Action`}</th>
                   </tr>
@@ -1166,7 +1174,6 @@ function ProcessCost(props) {
                 <tbody>
                   {processGroupGrid &&
                     processGroupGrid.map((item, index) => {
-
                       return (
                         <>
                           <tr key={index}>
@@ -1187,11 +1194,11 @@ function ProcessCost(props) {
                             <td>{item.MHR}</td>
                             <td>{item.UOM}</td>
                             <td>{(item?.ProductionPerHour === '-' || item?.ProductionPerHour === 0 || item?.ProductionPerHour === null || item?.ProductionPerHour === undefined) ? '-' : Math.round(item.ProductionPerHour)}</td>
-                            <td style={{ width: 150 }}>
+                            <td style={{ width: 350 }}>
                               {
 
-                                <>
-                                  <span className="d-inline-block w90px mr-2">
+                                <div className='d-flex align-items-center'>
+                                  <span className="d-inline-block mr-2">
                                     {
                                       <NumberFieldHookForm
                                         label=""
@@ -1201,12 +1208,13 @@ function ProcessCost(props) {
                                         register={register}
                                         mandatory={false}
                                         rules={{
-                                          //required: true,
+                                          required: true,
                                           pattern: {
-                                            value: /^[0-9]\d*(\.\d+)?$/i,
-                                            message: 'Invalid Number.',
+                                            value: /^\d{0,6}(\.\d{0,4})?$/i,
+                                            message: 'Max. length for interger is 6 and for decimal is 4',
                                           },
                                         }}
+                                        errors={errors && errors.ProcessGridFields && errors.ProcessGridFields[index] !== undefined ? errors.ProcessGridFields[index].Quantity : ''}
                                         defaultValue={item.Quantity ? checkForDecimalAndNull(item.Quantity, getConfigurationKey().NoOfDecimalForInputOutput) : '1'}
                                         className=""
                                         customClassName={'withBorder'}
@@ -1215,20 +1223,22 @@ function ProcessCost(props) {
                                           handleQuantityChange(e, index)
                                         }}
 
-                                        // errors={}
                                         disabled={(CostingViewMode || IsLocked || (item.GroupName !== '' && item.GroupName !== null)) ? true : false}
                                       />
                                     }
+
                                   </span>
-                                  {
-                                    (item.GroupName === '' || item.GroupName === null) &&
-                                    <button
-                                      className="CalculatorIcon cr-cl-icon calc-icon-middle"
-                                      type={'button'}
-                                      onClick={() => toggleWeightCalculator(index)}
-                                    />
-                                  }
-                                </>
+                                  <div className='min15'>
+                                    {
+                                      (item.GroupName === '' || item.GroupName === null) &&
+                                      <button
+                                        className="CalculatorIcon cr-cl-icon calc-icon-middle"
+                                        type={'button'}
+                                        onClick={() => toggleWeightCalculator(index)}
+                                      />
+                                    }
+                                  </div>
+                                </div>
 
 
                               }

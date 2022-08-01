@@ -51,6 +51,13 @@ class AddLabour extends Component {
       DropdownChanged: true,
       setDisable: false,
       inputLoader: false,
+      labourRate: '',
+      errorObj: {
+        machineType: false,
+        labourType: false,
+        labourRate: false,
+        effectiveDate: false
+      }
     }
   }
 
@@ -339,70 +346,83 @@ class AddLabour extends Component {
   gridHandler = () => {
     const { machineType, labourType, gridTable, effectiveDate, vendorName, selectedPlants, StateName, IsEmployeContractual } = this.state
     const { fieldsObj, error } = this.props
-
     if ((IsEmployeContractual ? vendorName.length == 0 : false) || selectedPlants.length == 0 || StateName == 0) {
       Toaster.warning('First fill upper detail')
       return false
     }
+    let count = 0;
+    setTimeout(() => {
 
-    if (machineType.length === 0 || labourType.length === 0 || fieldsObj === undefined) {
-      Toaster.warning('Fields should not be empty')
-      return false
-    }
-    if (Number(fieldsObj) === 0 || Number(fieldsObj) === '') {
-      Toaster.warning('Please enter value.')
-      return false;
-    }
+      if (machineType.length === 0) {
+        this.setState({ errorObj: { ...this.state.errorObj, machineType: true } })
+        count++;
+      }
+      if (labourType.length === 0) {
+        this.setState({ errorObj: { ...this.state.errorObj, labourType: true } })
+        count++;
+      }
+      if (fieldsObj === undefined || Number(fieldsObj) === 0) {
+        this.setState({ errorObj: { ...this.state.errorObj, labourRate: true } })
+        count++;
+      }
+      if (effectiveDate === undefined || effectiveDate === '') {
+        this.setState({ errorObj: { ...this.state.errorObj, effectiveDate: true } })
+        count++;
+      }
+      if (count > 0) {
+        return false
+      }
 
-    if (fieldsObj != undefined && isNaN(Number(fieldsObj))) {
-      Toaster.warning('Please enter valid value.')
-      return false;
-    }
-    if (maxLength10(fieldsObj)) {
-      return false;
-    }
+      if (fieldsObj != undefined && isNaN(Number(fieldsObj))) {
+        Toaster.warning('Please enter valid value.')
+        return false;
+      }
+      if (maxLength10(fieldsObj)) {
+        return false;
+      }
 
-    if (decimalLengthsix(Number(fieldsObj))) {
-      Toaster.warning('Decimal value should not be more than 6')
-      return false;
-    }
-
-
-
-    //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
-    const isExist = gridTable.findIndex((el) =>
-      el.MachineTypeId === machineType.value &&
-      el.LabourTypeId === labourType.value,
-    )
-    if (isExist !== -1) {
-      Toaster.warning('Already added, Please check the values.')
-      return false
-    }
-
-    const LabourRate = fieldsObj && fieldsObj !== undefined ? checkForNull(fieldsObj) : 0
-    const tempArray = []
+      if (decimalLengthsix(Number(fieldsObj))) {
+        Toaster.warning('Decimal value should not be more than 6')
+        return false;
+      }
 
 
-    tempArray.push(...gridTable, {
-      LabourDetailId: '',
-      MachineTypeId: machineType.value,
-      MachineType: machineType.label,
-      LabourTypeId: labourType.value,
-      LabourType: labourType.label,
-      EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm'),
-      LabourRate: LabourRate,
-    })
 
-    this.setState(
-      {
-        gridTable: tempArray,
-        machineType: [],
-        labourType: [],
-        effectiveDate: '',
-      },
-      () => this.props.change('LabourRate', 0),
-    )
-    this.setState({ DropdownChanged: false })
+      //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
+      const isExist = gridTable.findIndex((el) =>
+        el.MachineTypeId === machineType.value &&
+        el.LabourTypeId === labourType.value,
+      )
+      if (isExist !== -1) {
+        Toaster.warning('Already added, Please check the values.')
+        return false
+      }
+
+      const LabourRate = fieldsObj && fieldsObj !== undefined ? checkForNull(fieldsObj) : 0
+      const tempArray = []
+
+
+      tempArray.push(...gridTable, {
+        LabourDetailId: '',
+        MachineTypeId: machineType.value,
+        MachineType: machineType.label,
+        LabourTypeId: labourType.value,
+        LabourType: labourType.label,
+        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm'),
+        LabourRate: LabourRate,
+      })
+
+      this.setState(
+        {
+          gridTable: tempArray,
+          machineType: [],
+          labourType: [],
+          effectiveDate: '',
+        },
+        () => this.props.change('LabourRate', 0),
+      )
+      this.setState({ DropdownChanged: false, errorObj: { machineType: false, labourType: false, labourRate: false } })
+    }, 200);
   }
 
   /**
@@ -420,7 +440,10 @@ class AddLabour extends Component {
       if (i === gridEditIndex) return false
       return true
     })
-
+    if (fieldsObj === undefined || Number(fieldsObj) === 0) {
+      this.setState({ errorObj: { labourRate: true } })
+      return false
+    }
     //CONDITION TO CHECK DUPLICATE ENTRY EXCEPT EDITED RECORD
     const isExist = skipEditedItem.findIndex(
       (el) =>
@@ -457,7 +480,7 @@ class AddLabour extends Component {
       },
       () => this.props.change('LabourRate', 0),
     )
-    this.setState({ DropdownChanged: false })
+    this.setState({ DropdownChanged: false, errorObj: { machineType: false, labourType: false, labourRate: false } })
   }
 
   /**
@@ -767,7 +790,7 @@ class AddLabour extends Component {
                       </Col>
                     </Row>
 
-                    <Row>
+                    <Row className='sub-form-container'>
                       <Col md="12" className="filter-block">
                         <div className=" flex-fills mb-2 w-100 pl-0">
                           <h5>{"Rate Per Person:"}</h5>
@@ -775,7 +798,7 @@ class AddLabour extends Component {
                       </Col>
 
                       <Col md="3" className="col">
-                        <div className="d-flex justify-space-between align-items-center inputwith-icon form-group">
+                        <div className="d-flex justify-space-between inputwith-icon form-group">
                           <div className="fullinput-icon">
                             <Field
                               name="MachineType"
@@ -789,11 +812,12 @@ class AddLabour extends Component {
                               valueDescription={this.state.machineType}
                               disabled={isViewMode}
                             />
+                            {this.state.errorObj.machineType && this.state.machineType.length === 0 && <div className='text-help p-absolute'>This field is required.</div>}
                           </div>
                           {!isEditFlag && (
                             <div
                               onClick={this.machineTypeToggler}
-                              className={"plus-icon-square right"}
+                              className={"plus-icon-square right mt30"}
                             ></div>
                           )}
                         </div>
@@ -812,6 +836,7 @@ class AddLabour extends Component {
                             valueDescription={this.state.labourType}
                             disabled={isViewMode}
                           />
+                          {this.state.errorObj.labourType && this.state.labourType.length === 0 && <div className='text-help'>This field is required.</div>}
                         </div>
                       </Col>
                       <Col md="auto">
@@ -827,15 +852,13 @@ class AddLabour extends Component {
                             required={true}
                             className=" "
                             customClassName="withBorder"
-
-                          /></div>
+                          />
+                          {this.state.errorObj.labourRate && (this.props.fieldsObj === undefined || Number(this.props.fieldsObj) === 0) && <div className='text-help'>This field is required.</div>}
+                        </div>
                       </Col>
                       <Col md="auto" className="d-flex">
                         <div className="form-group date-filed pr-3">
-                          <label>
-                            Effective Date
-
-                          </label>
+                          <label>Effective Date<span className="asterisk-required">*</span></label>
                           <div className="inputbox date-section">
                             <DatePicker
                               name="EffectiveDate"
@@ -853,18 +876,16 @@ class AddLabour extends Component {
                               disabled={isViewMode}
                               valueDescription={this.state.effectiveDate}
                             />
+                            {this.state.errorObj.effectiveDate && this.state.effectiveDate === "" && <div className='text-help'>This field is required.</div>}
                           </div>
                         </div>
-                        <div className="btn-mr-rate pr-0 col-auto">
+                        <div className="btn-mr-rate mt30 pt-1 pr-0 col-auto">
                           {this.state.isEditIndex ? (
                             <>
                               <button type="button"
-                                className={
-                                  "btn btn-primary pull-left mr5"
-                                }
+                                className={"btn btn-primary pull-left mr5"}
                                 onClick={this.updateGrid}
-                              >
-                                Update
+                              > Update
                               </button>
 
                               <button
