@@ -41,7 +41,7 @@ class ClientListing extends Component {
             tableData: [],
             ID: '',
             isViewMode: false,
-
+            ViewAccessibility: false,
             AddAccessibility: false,
             EditAccessibility: false,
             DeleteAccessibility: false,
@@ -53,8 +53,8 @@ class ClientListing extends Component {
             showData: false,
             showPopup: false,
             deletedId: '',
-            isLoader: false
-
+            isLoader: false,
+            selectedRowData: false
         }
     }
 
@@ -83,8 +83,10 @@ class ClientListing extends Component {
             const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
 
             if (permmisionData !== undefined) {
+                console.log('permmisionData: ', permmisionData);
                 this.setState({
                     AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
+                    ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
                     EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
                     DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
                     DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
@@ -170,10 +172,10 @@ class ClientListing extends Component {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
-        const { EditAccessibility, DeleteAccessibility, } = this.state;
+        const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.state;
         return (
             <>
-                {<button title='View' className="View" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
+                {ViewAccessibility && <button title='View' className="View" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
                 {EditAccessibility && <button title='Edit' className="Edit" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
                 {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
@@ -266,14 +268,15 @@ class ClientListing extends Component {
         this.state.gridApi.paginationSetPageSize(Number(newPageSize));
     };
 
+    onRowSelect = () => {
+        const selectedRows = this.state.gridApi?.getSelectedRows()
+        this.setState({ selectedRowData: selectedRows })
+    }
     onBtExport = () => {
         let tempArr = []
-        const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-        data && data.map((item => {
-            tempArr.push(item.data)
-        }))
-
-        return this.returnExcelColumn(CLIENT_DOWNLOAD_EXCEl, this.props.clientDataList)
+        tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+        tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.clientDataList ? this.props.clientDataList : [])
+        return this.returnExcelColumn(CLIENT_DOWNLOAD_EXCEl, tempArr)
     };
 
     returnExcelColumn = (data = [], TempData) => {
@@ -297,6 +300,7 @@ class ClientListing extends Component {
 
 
     resetState() {
+        this.state.gridApi.deselectAll()
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
     }
@@ -324,12 +328,20 @@ class ClientListing extends Component {
             lastPage: <span className="last-page-pg"></span>,
 
         };
+        const isFirstColumn = (params) => {
 
+            var displayedColumns = params.columnApi.getAllDisplayedColumns();
+            var thisIsFirstColumn = displayedColumns[0] === params.column;
+            return thisIsFirstColumn;
+
+        }
         const defaultColDef = {
             resizable: true,
             filter: true,
             sortable: true,
-
+            headerCheckboxSelectionFilteredOnly: true,
+            headerCheckboxSelection: isFirstColumn,
+            checkboxSelection: isFirstColumn
         };
 
         const frameworkComponents = {
@@ -364,9 +376,12 @@ class ClientListing extends Component {
                                     {
                                         DownloadAccessibility &&
                                         <>
-                                            <ExcelFile filename={Clientmaster} fileExtension={'.xls'} element={<button type="button" title="Download" className={'user-btn mr5'}><div className="download mr-0"></div></button>}>
-                                                {this.onBtExport()}
-                                            </ExcelFile>
+                                            <>
+                                                <ExcelFile filename={Clientmaster} fileExtension={'.xls'} element={<button type="button" title="Download" className={'user-btn mr5'}><div className="download mr-0"></div></button>}>
+                                                    {this.onBtExport()}
+                                                </ExcelFile>
+                                            </>
+
                                         </>
 
                                     }
@@ -405,6 +420,8 @@ class ClientListing extends Component {
                                     title: EMPTY_DATA,
                                     imagClass: 'imagClass'
                                 }}
+                                rowSelection={'multiple'}
+                                onSelectionChanged={this.onRowSelect}
                                 frameworkComponents={frameworkComponents}
                             >
                                 <AgGridColumn field="CompanyName" headerName="Company Name"></AgGridColumn>

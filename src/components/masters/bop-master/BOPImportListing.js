@@ -54,6 +54,7 @@ class BOPImportListing extends Component {
             deletedId: '',
             isFinalApprovar: false,
             disableFilter: true,
+            disableDownload: false,
 
             //states for pagination purpose
             floatingFilterData: { IsVendor: "", BoughtOutPartNumber: "", BoughtOutPartName: "", BoughtOutPartCategory: "", UOM: "", Specification: "", Plants: "", Vendor: "", BasicRate: "", NetLandedCost: "", EffectiveDateNew: "", Currency: "", DepartmentCode: this.props.isSimulation ? userDepartmetList() : "" },
@@ -140,7 +141,7 @@ class BOPImportListing extends Component {
             ListFor: this.props.ListFor,
             StatusId: statusString
         }
-        this.setState({ isLoader: true })
+        this.setState({ isLoader: isPagination ? true : false })
 
         let FloatingfilterData = this.state.filterModel
         let obj = { ...this.state.floatingFilterData }
@@ -156,6 +157,14 @@ class BOPImportListing extends Component {
                 this.setState({ tableData: [] })
             } else {
                 this.setState({ tableData: [] })
+            }
+
+            if (res && isPagination === false) {
+                this.setState({ disableDownload: false })
+                setTimeout(() => {
+                    let button = document.getElementById('Excel-Downloads-bop-import')
+                    button && button.click()
+                }, 500);
             }
 
             if (res) {
@@ -389,17 +398,29 @@ class BOPImportListing extends Component {
     };
 
 
+    onExcelDownload = () => {
+
+        this.setState({ disableDownload: true })
+
+        let tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+        if (tempArr?.length > 0) {
+            setTimeout(() => {
+                this.setState({ disableDownload: false })
+                let button = document.getElementById('Excel-Downloads-bop-import')
+                button && button.click()
+            }, 400);
+
+        } else {
+
+            this.getDataList("", 0, "", "", 0, defaultPageSize, false, this.state.floatingFilterData)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
+        }
+    }
+
+
     onBtExport = () => {
         let tempArr = []
-        if (this.props.isSimulation === true) {
-            const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-            data && data.map((item => {
-                tempArr.push(item.data)
-                return null
-            }))
-        } else {
-            tempArr = this.props.bopImportList && this.props.bopImportList
-        }
+        tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+        tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.allBopDataList ? this.props.allBopDataList : [])
         return this.returnExcelColumn(BOP_IMPORT_DOWNLOAD_EXCEl, tempArr)
     };
 
@@ -475,15 +496,9 @@ class BOPImportListing extends Component {
         }
 
         const isFirstColumn = (params) => {
-            if (this.props.isSimulation) {
-
-                var displayedColumns = params.columnApi.getAllDisplayedColumns();
-                var thisIsFirstColumn = displayedColumns[0] === params.column;
-
-                return thisIsFirstColumn;
-            } else {
-                return false
-            }
+            var displayedColumns = params.columnApi.getAllDisplayedColumns();
+            var thisIsFirstColumn = displayedColumns[0] === params.column;
+            return thisIsFirstColumn;
         }
 
 
@@ -594,15 +609,23 @@ class BOPImportListing extends Component {
                                 {
                                     DownloadAccessibility &&
                                     <>
+                                        {this.state.disableDownload ? <div className='p-relative mr5'> <LoaderCustom customClass={"download-loader"} /> <button type="button" className={'user-btn'}><div className="download mr-0"></div>
+                                        </button></div> :
 
-                                        <ExcelFile filename={'BOP Import'} fileExtension={'.xls'} element={
-                                            <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-                                                {/* DOWNLOAD */}
-                                            </button>}>
+                                            <>
+                                                <button type="button" onClick={this.onExcelDownload} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                                    {/* DOWNLOAD */}
+                                                </button>
 
-                                            {this.onBtExport()}
-                                        </ExcelFile>
+                                                <ExcelFile filename={'BOP Import'} fileExtension={'.xls'} element={
+                                                    <button id={'Excel-Downloads-bop-import'} className="p-absolute" type="button" >
+                                                    </button>}>
+                                                    {this.onBtExport()}
+                                                </ExcelFile>
 
+                                            </>
+
+                                        }
                                     </>
                                 }
                                 <button type="button" className="user-btn" title="Reset Grid" onClick={() => { this.resetState(); }}>
@@ -645,8 +668,8 @@ class BOPImportListing extends Component {
                                 >
                                     {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
                                     <AgGridColumn field="IsVendor" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="BoughtOutPartNumber" headerName="BOP Part No."></AgGridColumn>
-                                    <AgGridColumn field="BoughtOutPartName" headerName="BOP Part Name"></AgGridColumn>
+                                    <AgGridColumn field="BoughtOutPartNumber" headerName="BOP No."></AgGridColumn>
+                                    <AgGridColumn field="BoughtOutPartName" headerName="BOP Name"></AgGridColumn>
                                     <AgGridColumn field="BoughtOutPartCategory" headerName="BOP Category"></AgGridColumn>
                                     <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
                                     <AgGridColumn field="Currency"></AgGridColumn>
@@ -700,12 +723,14 @@ class BOPImportListing extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ boughtOutparts, auth, simulation }) {
-    const { bopImportList } = boughtOutparts;
+function mapStateToProps({ boughtOutparts, comman, supplier, auth, simulation }) {
+    const { bopCategorySelectList, vendorAllSelectList, bopImportList, allBopDataList } = boughtOutparts;
+    const { plantSelectList, } = comman;
+    const { vendorWithVendorCodeSelectList } = supplier;
     const { initialConfiguration } = auth;
     const { selectedCostingListSimulation } = simulation;
 
-    return { bopImportList, initialConfiguration, selectedCostingListSimulation }
+    return { bopCategorySelectList, plantSelectList, vendorAllSelectList, bopImportList, allBopDataList, vendorWithVendorCodeSelectList, initialConfiguration, selectedCostingListSimulation }
 }
 
 /**

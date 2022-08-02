@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
+import { getLabourTypeByMachineTypeSelectList, } from '../actions/Labour'
 import { required, checkWhiteSpaces } from "../../../helper/validation";
 import { renderText, renderMultiSelectField, } from "../../layout/FormInputs";
 import { createMachineType } from '../actions/MachineMaster';
@@ -10,8 +11,6 @@ import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
-import saveImg from '../../../assests/images/check.png'
-import cancelImg from '../../../assests/images/times.png'
 
 class AddMachineTypeDrawer extends Component {
   constructor(props) {
@@ -80,7 +79,6 @@ class AddMachineTypeDrawer extends Component {
   */
   onSubmit = (values) => {
     const { labourType } = this.state;
-
     let labourTypeIds = labourType && labourType.map(el => el.Value)
 
     /** Update existing detail of supplier master **/
@@ -102,6 +100,7 @@ class AddMachineTypeDrawer extends Component {
       this.props.reset()
       this.props.createMachineType(formData, (res) => {
         if (res.data.Result) {
+          this.props.getLabourTypeByMachineTypeSelectList(res?.data?.Identity, () => { })
           Toaster.success(MESSAGES.MACHINE_TYPE_ADD_SUCCESS);
           this.toggleDrawer('', formData)
         }
@@ -237,6 +236,7 @@ function mapStateToProps({ comman }) {
 export default connect(mapStateToProps, {
   createMachineType,
   getLabourTypeSelectList,
+  getLabourTypeByMachineTypeSelectList
 })(reduxForm({
   form: 'AddMachineTypeDrawer',
   enableReinitialize: true,

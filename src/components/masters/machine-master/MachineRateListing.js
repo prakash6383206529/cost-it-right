@@ -125,7 +125,7 @@ class MachineRateListing extends Component {
             if (this.props.isSimulation) {
                 this.props?.changeTokenCheckBox(false)
             }
-            this.setState({ isLoader: true })
+            this.setState({ isLoader: isPagination ? true : false })
             let FloatingfilterData = this.state.filterModel
             let obj = { ...this.state.floatingFilterData }
             this.props.getMachineDataList(filterData, skip, take, isPagination, dataObj, (res) => {
@@ -133,6 +133,14 @@ class MachineRateListing extends Component {
                     this.props?.changeTokenCheckBox(true)
                 }
                 this.setState({ isLoader: false })
+
+                if (res && isPagination === false) {
+                    this.setState({ disableDownload: false })
+                    setTimeout(() => {
+                        let button = document.getElementById('Excel-Downloads-machine')
+                        button && button.click()
+                    }, 500);
+                }
 
                 if (res) {
                     if (res && res.data && res.data.DataList.length > 0) {
@@ -428,17 +436,28 @@ class MachineRateListing extends Component {
         params.api.paginationGoToPage(0);
     };
 
+    onExcelDownload = () => {
+
+        this.setState({ disableDownload: true })
+
+        let tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+        if (tempArr?.length > 0) {
+            setTimeout(() => {
+                this.setState({ disableDownload: false })
+                let button = document.getElementById('Excel-Downloads-machine')
+                button && button.click()
+            }, 400);
+
+        } else {
+
+            this.getDataList("", 0, "", 0, "", "", 0, defaultPageSize, false, this.state.floatingFilterData)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
+        }
+    }
 
     onBtExport = () => {
         let tempArr = []
-        if (this.props.isSimulation === true) {
-            const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-            data && data.map((item => (
-                tempArr.push(item.data)
-            )))
-        } else {
-            tempArr = this.props.machineDatalist && this.props.machineDatalist
-        }
+        tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+        tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.allMachineDataList ? this.props.allMachineDataList : [])
         return this.returnExcelColumn(MACHINERATE_DOWNLOAD_EXCEl, tempArr)
     };
 
@@ -493,15 +512,9 @@ class MachineRateListing extends Component {
 
 
         const isFirstColumn = (params) => {
-            if (isSimulation) {
-
-                var displayedColumns = params.columnApi.getAllDisplayedColumns();
-                var thisIsFirstColumn = displayedColumns[0] === params.column;
-
-                return thisIsFirstColumn;
-            } else {
-                return false
-            }
+            var displayedColumns = params.columnApi.getAllDisplayedColumns();
+            var thisIsFirstColumn = displayedColumns[0] === params.column;
+            return thisIsFirstColumn;
         }
         const defaultColDef = {
             resizable: true,
@@ -582,17 +595,21 @@ class MachineRateListing extends Component {
                                 {
                                     DownloadAccessibility &&
                                     <>
+                                        {this.state.disableDownload ? <div className='p-relative mr5'> <LoaderCustom customClass={"download-loader"} /> <button type="button" className={'user-btn'}><div className="download mr-0"></div>
+                                        </button></div> :
+                                            <>
+                                                <button type="button" onClick={this.onExcelDownload} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                                    {/* DOWNLOAD */}
+                                                </button>
 
-                                        <ExcelFile filename={'Machine Rate'} fileExtension={'.xls'} element={
-                                            <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-                                                {/* DOWNLOAD */}
-                                            </button>}>
-
-                                            {this.onBtExport()}
-                                        </ExcelFile>
-
+                                                <ExcelFile filename={'Machine Rate'} fileExtension={'.xls'} element={
+                                                    <button id={'Excel-Downloads-machine'} className="p-absolute" type="button" >
+                                                    </button>}>
+                                                    {this.onBtExport()}
+                                                </ExcelFile>
+                                            </>
+                                        }
                                     </>
-
                                 }
                                 <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
                                     <div className="refresh mr-0"></div>
@@ -692,12 +709,12 @@ function mapStateToProps(state) {
     const { comman, process, machine, } = state;
     const { technologySelectList, } = comman;
     const { filterSelectList } = process;
-    const { machineDatalist } = machine
+    const { machineDatalist, allMachineDataList } = machine
 
     const { auth } = state;
     const { initialConfiguration } = auth;
 
-    return { technologySelectList, filterSelectList, machineDatalist, initialConfiguration }
+    return { technologySelectList, filterSelectList, machineDatalist, allMachineDataList, initialConfiguration }
 }
 
 /**

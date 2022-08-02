@@ -50,7 +50,8 @@ class PowerListing extends Component {
       vendorPlant: [],
       showPopup: false,
       deletedId: '',
-      isLoader: false
+      isLoader: false,
+      selectedRowData: false
     }
   }
 
@@ -289,24 +290,20 @@ class PowerListing extends Component {
   onPageSizeChanged = (newPageSize) => {
     this.state.gridApi.paginationSetPageSize(Number(newPageSize));
   };
-
+  onRowSelect = () => {
+    const selectedRows = this.state.gridApi?.getSelectedRows()
+    this.setState({ selectedRowData: selectedRows })
+  }
   onBtExport = () => {
     let tempArr = []
-    // const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-    // data && data.map((item => {
-    //   tempArr.push(item.data)
-    // }))
-
-    let listing = []
-    let downloadTemp = ''
+    tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
     if (this.state.IsVendor) {
-      listing = this.props.vendorPowerDataList && this.props.vendorPowerDataList
-      downloadTemp = POWERLISTING_VENDOR_DOWNLOAD_EXCEL
+      tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.vendorPowerDataList ? this.props.vendorPowerDataList : [])
+      return this.returnExcelColumn(POWERLISTING_VENDOR_DOWNLOAD_EXCEL, tempArr)
     } else {
-      listing = this.props.powerDataList && this.props.powerDataList
-      downloadTemp = POWERLISTING_DOWNLOAD_EXCEl
+      tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.powerDataList ? this.props.powerDataList : [])
+      return this.returnExcelColumn(POWERLISTING_DOWNLOAD_EXCEl, tempArr)
     }
-    return this.returnExcelColumn(downloadTemp, listing)
   };
 
   onFilterTextBoxChanged(e) {
@@ -314,6 +311,7 @@ class PowerListing extends Component {
   }
 
   resetState() {
+    this.state.gridApi.deselectAll()
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
   }
@@ -338,13 +336,21 @@ class PowerListing extends Component {
       lastPage: <span className="last-page-pg"></span>,
     };
 
+    const isFirstColumn = (params) => {
+
+      var displayedColumns = params.columnApi.getAllDisplayedColumns();
+      var thisIsFirstColumn = displayedColumns[0] === params.column;
+      return thisIsFirstColumn;
+
+    }
     const defaultColDef = {
       resizable: true,
       filter: true,
       sortable: true,
-
+      headerCheckboxSelectionFilteredOnly: true,
+      headerCheckboxSelection: isFirstColumn,
+      checkboxSelection: isFirstColumn
     };
-
     const frameworkComponents = {
       totalValueRenderer: this.buttonFormatter,
       customNoRowsOverlay: NoContentFound,
@@ -454,6 +460,8 @@ class PowerListing extends Component {
                       title: EMPTY_DATA,
                       imagClass: 'imagClass power-listing'
                     }}
+                    rowSelection={'multiple'}
+                    onSelectionChanged={this.onRowSelect}
                     frameworkComponents={frameworkComponents}
                   >
                     <AgGridColumn field="StateName"></AgGridColumn>

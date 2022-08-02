@@ -33,12 +33,12 @@ class AddFuelNameDrawer extends Component {
     this.props.onCancel();
   }
 
-  toggleDrawer = (event) => {
+  toggleDrawer = (event, reqData) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }
 
-    this.props.closeDrawer('')
+    this.props.closeDrawer('', reqData)
   };
 
 
@@ -64,13 +64,13 @@ class AddFuelNameDrawer extends Component {
     } else {
       /** Add detail for creating new UOM  */
       let reqData = {
-        FuelName: values.FuelName.trim(),
+        FuelName: values.FuelName,
       }
-      this.props.reset()
+      // this.props.reset()
       this.props.createFuel(reqData, (res) => {
         if (res.data.Result === true) {
           Toaster.success(MESSAGES.FUEL_ADD_SUCCESS);
-          this.toggleDrawer('');
+          this.toggleDrawer('', reqData);
         }
       });
     }

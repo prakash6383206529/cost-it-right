@@ -99,7 +99,12 @@ class AddMachineRate extends Component {
       // isProcessGroup: false,// UNCOMMENT IT AFTER DONE FROM BACKEND AND REMOVE BELOW CODE
       UniqueProcessId: [],
       attachmentLoader: false,
-      rowData: []
+      rowData: [],
+      errorObj: {
+        processName: false,
+        processUOM: false,
+        machineRate: false
+      }
     }
   }
 
@@ -645,44 +650,61 @@ class AddMachineRate extends Component {
     const { fieldsObj } = this.props;
     const tempArray = [];
 
-    if (processName.length === 0 || UOM === undefined || UOM.length === 0 || fieldsObj.MachineRate === undefined) {
-      Toaster.warning('Fields should not be empty');
-      return false;
-    }
 
-    //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
-    const isExist = processGrid.findIndex(el => (el.ProcessId === processName.value))
-    if (isExist !== -1) {
-      Toaster.warning('Already added, Please check the values.')
-      return false;
-    }
+    let count = 0;
+    setTimeout(() => {
 
-    // const MachineRate = fieldsObj && fieldsObj.MachineRate !== undefined ? checkForNull(fieldsObj.MachineRate) : 0;
+      if (processName.length === 0) {
+        this.setState({ errorObj: { ...this.state.errorObj, processName: true } })
+        count++;
+      }
+      if (UOM === undefined || (UOM && UOM.length === 0)) {
+        this.setState({ errorObj: { ...this.state.errorObj, processUOM: true } })
+        count++;
+      }
+      if (fieldsObj.MachineRate === undefined || Number(fieldsObj.MachineRate) === 0) {
+        this.setState({ errorObj: { ...this.state.errorObj, machineRate: true } })
+        count++;
+      }
 
-    const MachineRate = fieldsObj.MachineRate
+      if (count > 0) {
+        return false;
+      }
 
-    // CONDITION TO CHECK MACHINE RATE IS NEGATIVE OR NOT A NUMBER
-    if (MachineRate < 0 || isNaN(MachineRate)) {
-      return false;
-    }
+      //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
+      const isExist = processGrid.findIndex(el => (el.ProcessId === processName.value))
+      if (isExist !== -1) {
+        Toaster.warning('Already added, Please check the values.')
+        return false;
+      }
 
-    tempArray.push(...processGrid, {
-      processName: processName.label,
-      ProcessId: processName.value,
-      UnitOfMeasurement: UOM.label,
-      UnitOfMeasurementId: UOM.value,
-      MachineRate: MachineRate,
-    })
+      // const MachineRate = fieldsObj && fieldsObj.MachineRate !== undefined ? checkForNull(fieldsObj.MachineRate) : 0;
+
+      const MachineRate = fieldsObj.MachineRate
+
+      // CONDITION TO CHECK MACHINE RATE IS NEGATIVE OR NOT A NUMBER
+      if (MachineRate < 0 || isNaN(MachineRate)) {
+        return false;
+      }
+
+      tempArray.push(...processGrid, {
+        processName: processName.label,
+        ProcessId: processName.value,
+        UnitOfMeasurement: UOM.label,
+        UnitOfMeasurementId: UOM.value,
+        MachineRate: MachineRate,
+      })
 
 
-    this.setState({ IsFinancialDataChanged: true })
-    this.setState({
-      processGrid: tempArray,
-      processName: [],
-      UOM: isProcessGroup ? UOM : [],
-      lockUOMAndRate: isProcessGroup
-    }, () => this.props.change('MachineRate', isProcessGroup ? MachineRate : 0));
-    this.setState({ DropdownChange: false })
+      this.setState({ IsFinancialDataChanged: true })
+      this.setState({
+        processGrid: tempArray,
+        processName: [],
+        UOM: isProcessGroup ? UOM : [],
+        lockUOMAndRate: isProcessGroup
+      }, () => this.props.change('MachineRate', isProcessGroup ? MachineRate : 0));
+      this.setState({ DropdownChange: false, errorObj: { processName: false, processUOM: false, machineRate: false } })
+    }, 200);
   }
 
   /**
@@ -1519,7 +1541,7 @@ class AddMachineRate extends Component {
                         <Col md="12"><hr /></Col>
                       </Row>
 
-                      <Row>
+                      <Row className='child-form-container'>
                         <Col md="12">
                           <HeaderTitle
                             title={'Process:'}
@@ -1537,12 +1559,13 @@ class AddMachineRate extends Component {
                                 options={this.renderListing('ProcessNameList')}
                                 //onKeyUp={(e) => this.changeItemDesc(e)}
                                 //validate={(this.state.processName == null || this.state.processName.length == 0) ? [required] : []}
-                                //required={true}
+                                required={true}
                                 validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                                 handleChangeDescription={this.handleProcessName}
                                 valueDescription={this.state.processName}
                                 disabled={isViewMode || (isEditFlag && isMachineAssociated)}
                               />
+                              {this.state.errorObj.processName && (this.state.processName && this.state.processName.length === 0) && <div className='text-help p-absolute bottom-7'>This field is required.</div>}
                             </div>
                             {(!isEditFlag || this.state.isViewFlag) && <div
                               onClick={this.processToggler}
@@ -1559,11 +1582,12 @@ class AddMachineRate extends Component {
                             placeholder={'Select'}
                             options={this.renderListing('UOM')}
                             //onKeyUp={(e) => this.changeItemDesc(e)}
-                            //required={true}
+                            required={true}
                             handleChangeDescription={this.handleUOM}
                             valueDescription={this.state.UOM}
                             disabled={isViewMode || lockUOMAndRate || (isEditFlag && isMachineAssociated)}
                           />
+                          {this.state.errorObj.processUOM && (this.state.UOM === undefined) && <div className='text-help p-absolute'>This field is required.</div>}
                         </Col>
                         <Col md="3">
                           <Field
@@ -1574,11 +1598,12 @@ class AddMachineRate extends Component {
                             validate={[positiveAndDecimalNumber, maxLength80]}
                             component={renderText}
                             onChange={this.handleMachineRate}
-                            //required={true}
+                            required={true}
                             disabled={isViewMode || lockUOMAndRate || (isEditFlag && isMachineAssociated)}
                             className=" "
                             customClassName=" withBorder"
                           />
+                          {this.state.errorObj.machineRate && (this.props.fieldsObj.MachineRate === undefined || Number(this.props.fieldsObj.MachineRate) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                         </Col>
                         <Col md="3" className='mb-2 d-flex align-items-center'>
                           <div>
@@ -1812,22 +1837,25 @@ class AddMachineRate extends Component {
               </div>
             </div>
           </div>
-        </div>
+        </div >
         {isOpenMachineType && <AddMachineTypeDrawer
           isOpen={isOpenMachineType}
           closeDrawer={this.closeMachineTypeDrawer}
           isEditFlag={false}
           ID={''}
           anchor={'right'}
-        />}
-        {isOpenProcessDrawer && <AddProcessDrawer
-          isOpen={isOpenProcessDrawer}
-          closeDrawer={this.closeProcessDrawer}
-          isEditFlag={false}
-          isMachineShow={false}
-          ID={''}
-          anchor={'right'}
-        />}
+        />
+        }
+        {
+          isOpenProcessDrawer && <AddProcessDrawer
+            isOpen={isOpenProcessDrawer}
+            closeDrawer={this.closeProcessDrawer}
+            isEditFlag={false}
+            isMachineShow={false}
+            ID={''}
+            anchor={'right'}
+          />
+        }
 
 
         {
