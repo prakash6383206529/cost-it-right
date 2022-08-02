@@ -8,8 +8,7 @@ import {
   maxLength512, checkPercentageValue, decimalLengthFour, decimalLengthThree, decimalLength2, decimalLengthsix, checkSpacesInString
 } from "../../../helper/validation";
 import { renderText, renderNumberInputField, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker } from "../../layout/FormInputs";
-import { getTechnologySelectList, getPlantSelectListByType, getPlantBySupplier, getUOMSelectList, getShiftTypeSelectList, getDepreciationTypeSelectList, } from '../../../actions/Common';
-import { getVendorListByVendorType, } from '../actions/Material';
+import { getPlantSelectListByType, getPlantBySupplier, getUOMSelectList, getShiftTypeSelectList, getDepreciationTypeSelectList, } from '../../../actions/Common';
 import {
   createMachineDetails, updateMachineDetails, getMachineDetailsData, getMachineTypeSelectList, getProcessesSelectList,
   getFuelUnitCost, getLabourCost, getPowerCostUnit, fileUploadMachine, fileDeleteMachine, getProcessGroupByMachineId, setGroupProcessList, setProcessList
@@ -130,15 +129,14 @@ class AddMoreDetails extends Component {
    * @description Called after rendering the component
    */
   componentDidMount() {
-    this.props.getTechnologySelectList(() => { })
-    this.props.getVendorListByVendorType(true, () => { })
+    // this.props.getTechnologySelectList(() => { })
     this.props.getPlantSelectListByType(ZBC, () => { })
     this.props.getMachineTypeSelectList(() => { })
     this.props.getUOMSelectList(() => { })
     this.props.getProcessesSelectList(() => { })
     this.props.getShiftTypeSelectList(() => { })
     this.props.getDepreciationTypeSelectList(() => { })
-    this.props.getLabourTypeByMachineTypeSelectList(0, () => { })
+    // this.props.getLabourTypeByMachineTypeSelectList(0, () => { })
     this.props.getFuelComboData(() => { })
     if (!this.props?.editDetails?.isEditFlag) {
 
@@ -201,9 +199,9 @@ class AddMoreDetails extends Component {
         machineType: machineType,
         effectiveDate: fieldsObj.EffectiveDate
       }, () => {
-        if (machineType && machineType.value) {
-          this.props.getLabourTypeByMachineTypeSelectList(machineType.value ? machineType.value : 0, () => { })
-        }
+        // if (machineType && machineType.value) {
+        //   this.props.getLabourTypeByMachineTypeSelectList(machineType.value ? machineType.value : 0, () => { })
+        // }
       })
     }
 
@@ -3758,8 +3756,6 @@ function mapStateToProps(state) {
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
-  getTechnologySelectList,
-  getVendorListByVendorType,
   getPlantSelectListByType,
   getPlantBySupplier,
   getUOMSelectList,

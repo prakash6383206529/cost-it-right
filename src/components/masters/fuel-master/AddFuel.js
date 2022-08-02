@@ -60,8 +60,8 @@ class AddFuel extends Component {
       this.props.fetchStateDataAPI(countryId, () => { })
     })
     this.getDetails(data);
-    this.props.getFuelComboData(() => { })
     if (!(data.isEditFlag || data.isViewFlag)) {
+      this.props.getFuelComboData(() => { })
       this.props.getUOMSelectList(() => { })
     }
   }
@@ -83,8 +83,6 @@ class AddFuel extends Component {
           const Data = res.data.Data;
           this.setState({ RateChange: Data })
           setTimeout(() => {
-            const { fuelComboSelectList } = this.props;
-            const UOMObj = fuelComboSelectList && fuelComboSelectList.UnitOfMeasurements.find(item => item.Value === Data.UnitOfMeasurementId)
             let rateGridArray = Data && Data.FuelDetatils.map((item) => {
               return {
                 Id: item.Id,
@@ -98,8 +96,7 @@ class AddFuel extends Component {
             this.setState({
               isEditFlag: true,
               fuel: Data.FuelName && Data.FuelName !== undefined ? { label: Data.FuelName, value: Data.FuelId } : [],
-              UOM: { label: UOMObj?.Display, value: UOMObj?.Value },
-              // UOM: Data.UnitOfMeasurementId,
+              UOM: Data.UnitOfMeasurement !== undefined ? { label: Data.UnitOfMeasurement, value: Data.UnitOfMeasurementId } : [],
               rateGrid: rateGridArray,
             }, () => this.setState({ isLoader: false }))
           }, 200)

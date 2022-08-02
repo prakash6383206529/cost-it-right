@@ -195,7 +195,7 @@ class OperationListing extends Component {
                 } else {
                     this.setState({ tableData: res.data.DataList })
                 }
-
+                this.props.setOperationList(res.data.DataList)
                 // PAGINATION CODE
                 let FloatingfilterData = this.state.filterModel
                 let obj = { ...this.state.floatingFilterData }

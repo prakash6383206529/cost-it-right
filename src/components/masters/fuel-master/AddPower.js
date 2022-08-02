@@ -345,12 +345,7 @@ class AddPower extends Component {
           }
 
           setTimeout(() => {
-            const { fuelComboSelectList, } = this.props;
-
-            const stateObj = fuelComboSelectList && fuelComboSelectList.States && fuelComboSelectList.States.find(item => Number(item.Value) === Data.StateId)
-
             let plantArray = Data && Data.Plants.map((item) => ({ Text: item.PlantName, Value: item.PlantId }))
-            console.log('Data: ', Data);
 
             this.setState({
               isEditFlag: true,
@@ -480,7 +475,6 @@ class AddPower extends Component {
           return false
         }
 
-        console.log('StateName: ', StateName);
         let data = { StateID: StateName.value, UOMID: UOM.value }
         this.props.getDieselRateByStateAndUOM(data, (res) => {
           let DynamicData = res.data.DynamicData;

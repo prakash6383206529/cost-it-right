@@ -87,7 +87,9 @@ class AddOperation extends Component {
   * @description called before render the component
   */
   UNSAFE_componentWillMount() {
-    this.props.getUOMSelectList(() => { })
+    if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
+      this.props.getUOMSelectList(() => { })
+    }
   }
 
   /**
@@ -126,10 +128,17 @@ class AddOperation extends Component {
   * @description Used show listing of unit of measurement
   */
   renderListing = (label) => {
-    const { plantSelectList,
+    const { costingSpecifiTechnology, plantSelectList, vendorWithVendorCodeSelectList,
       UOMSelectList, } = this.props;
     const temp = [];
-
+    if (label === 'technology') {
+      costingSpecifiTechnology && costingSpecifiTechnology.map(item => {
+        if (item.Value === '0') return false;
+        temp.push({ Text: item.Text, Value: item.Value })
+        return null;
+      });
+      return temp;
+    }
     if (label === 'plant') {
       plantSelectList && plantSelectList.map(item => {
         if (item.PlantId === '0') return false;
@@ -145,6 +154,14 @@ class AddOperation extends Component {
         return null
       })
       return temp
+    }
+    if (label === 'VendorNameList') {
+      vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.map(item => {
+        if (item.Value === '0') return false;
+        temp.push({ label: item.Text, value: item.Value })
+        return null;
+      });
+      return temp;
     }
     if (label === 'UOM') {
       UOMSelectList && UOMSelectList.map(item => {
@@ -310,11 +327,7 @@ class AddOperation extends Component {
             return technologyArray;
           })
 
-
           setTimeout(() => {
-            const { UOMSelectList } = this.props;
-            const UOMObj = UOMSelectList && UOMSelectList.find(item => item.Value === Data.UnitOfMeasurementId)
-
             this.setState({
               isEditFlag: true,
               IsFinancialDataChanged: false,
@@ -323,8 +336,8 @@ class AddOperation extends Component {
               selectedTechnology: technologyArray,
               selectedPlants: [{ Text: Data.DestinationPlantName, Value: Data.DestinationPlantId }],
               vendorName: Data.VendorName && Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.VendorId } : [],
-              UOM: UOMObj && UOMObj !== undefined ? { label: UOMObj.Display, value: UOMObj.Value } : [],
-              oldUOM: UOMObj && UOMObj !== undefined ? { label: UOMObj.Display, value: UOMObj.Value } : [],
+              UOM: Data.UnitOfMeasurement !== undefined ? { label: Data.UnitOfMeasurement, value: Data.UnitOfMeasurementId } : [],
+              oldUOM: Data.UnitOfMeasurement !== undefined ? { label: Data.UnitOfMeasurement, value: Data.UnitOfMeasurementId } : [],
               isSurfaceTreatment: Data.IsSurfaceTreatmentOperation,
               remarks: Data.Remark,
               files: Data.Attachements,
@@ -500,9 +513,7 @@ class AddOperation extends Component {
       isShowForm: false,
       isEditFlag: false,
     })
-    if (type === 'submit') {
-      this.props.getOperationDataAPI('', () => { })
-    }
+    this.props.getOperationDataAPI('', () => { })
     this.props.hideForm(type)
   }
 
@@ -1168,11 +1179,13 @@ class AddOperation extends Component {
 * @param {*} state
 */
 function mapStateToProps(state) {
-  const { comman, otherOperation, auth } = state;
+  const { comman, otherOperation, supplier, auth, costing } = state;
   const filedObj = selector(state, 'OperationCode', 'text');
   const { plantSelectList, filterPlantList, UOMSelectList, } = comman;
   const { operationData } = otherOperation;
+  const { vendorWithVendorCodeSelectList } = supplier;
   const { initialConfiguration } = auth;
+  const { costingSpecifiTechnology } = costing
 
   let initialValues = {};
   if (operationData && operationData !== undefined) {
@@ -1188,8 +1201,8 @@ function mapStateToProps(state) {
 
   return {
     plantSelectList, UOMSelectList,
-    operationData, filterPlantList, filedObj,
-    initialValues, initialConfiguration
+    operationData, filterPlantList, vendorWithVendorCodeSelectList, filedObj,
+    initialValues, initialConfiguration, costingSpecifiTechnology
   }
 }
 
@@ -1219,6 +1232,5 @@ export default connect(mapStateToProps, {
     focusOnError(errors)
   },
   enableReinitialize: true,
-  touchOnChange: true,
 })(AddOperation));
 

@@ -395,13 +395,10 @@ function CommonApproval(props) {
     */
     const closeDrawer = (e = '') => {
         setShowApprovalSummary(false)
-        setLoader(true)
-        getTableData(0, 10, true, floatingFilterData)
     }
     const closeApprovalDrawer = (e = '') => {
         setApprovalDrawer(false)
-        setLoader(true)
-        getTableData(0, 10, true, floatingFilterData)
+        gridApi.deselectAll()
     }
 
     // const onRowSelect = () => {

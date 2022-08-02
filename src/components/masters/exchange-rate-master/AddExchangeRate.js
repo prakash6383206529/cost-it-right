@@ -150,7 +150,6 @@ class AddExchangeRate extends Component {
 
 
   cancel = (type) => {
-    console.log('type: ', type);
     const { reset } = this.props;
     reset();
     this.setState({
