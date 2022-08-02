@@ -144,10 +144,10 @@ class AddMachineRate extends Component {
 
       return true
     }
-    this.props.getMachineTypeSelectList(() => { })
     this.props.getProcessesSelectList(() => { })
-    this.props.getUOMSelectList(() => { })
     if (!(editDetails.isEditFlag || editDetails.isViewFlag)) {
+      this.props.getMachineTypeSelectList(() => { })
+      this.props.getUOMSelectList(() => { })
       this.props.getCostingSpecificTechnology(loggedInUserId(), () => { })
       this.props.getVendorListByVendorType(true, () => { })
       this.props.getPlantSelectListByType(ZBC, () => { })
@@ -317,7 +317,6 @@ class AddMachineRate extends Component {
           this.props.change('Specification', Data.Specification)
           this.setState({ minEffectiveDate: Data.EffectiveDate })
           setTimeout(() => {
-            const { machineTypeSelectList } = this.props;
             let plantObj;
             let MachineProcessArray = Data && Data.MachineProcessRates.map(el => {
               return {
@@ -329,7 +328,6 @@ class AddMachineRate extends Component {
               }
             })
 
-            const machineTypeObj = machineTypeSelectList && machineTypeSelectList.find(item => Number(item.Value) === Data.MachineTypeId)
             if (getConfigurationKey().IsDestinationPlantConfigure && Data.IsVendor) {
               plantObj = Data.DestinationPlantName !== undefined ? { label: Data.DestinationPlantName, value: Data.DestinationPlantId } : []
             } else {
@@ -344,7 +342,7 @@ class AddMachineRate extends Component {
               selectedTechnology: Data.Technology[0].Technology !== undefined ? { label: Data.Technology[0].Technology, value: Data.Technology[0].TechnologyId } : [],
               selectedPlants: plantObj,
               vendorName: Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.VendorId } : [],
-              machineType: machineTypeObj && machineTypeObj !== undefined ? { label: machineTypeObj.Text, value: machineTypeObj.Value } : [],
+              machineType: Data.MachineType !== undefined ? { label: Data.MachineType, value: Data.MachineTypeId } : [],
               processGrid: MachineProcessArray,
               remarks: Data.Remark,
               files: Data.Attachements,

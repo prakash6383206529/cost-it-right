@@ -149,15 +149,14 @@ class AddExchangeRate extends Component {
   */
 
 
-  cancel = () => {
-
+  cancel = (type) => {
     const { reset } = this.props;
     reset();
     this.setState({
       selectedTechnology: [],
       isEditFlag: false,
     })
-    this.props.hideForm()
+    this.props.hideForm(type)
 
   }
 

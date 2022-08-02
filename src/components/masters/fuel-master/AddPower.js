@@ -358,10 +358,6 @@ class AddPower extends Component {
           }
 
           setTimeout(() => {
-            const { fuelComboSelectList, } = this.props;
-
-            const stateObj = fuelComboSelectList && fuelComboSelectList.States && fuelComboSelectList.States.find(item => Number(item.Value) === Data.StateId)
-
             let plantArray = Data && Data.Plants.map((item) => ({ Text: item.PlantName, Value: item.PlantId }))
 
             this.setState({
@@ -371,7 +367,7 @@ class AddPower extends Component {
               netContributionValue: Data.NetPowerCostPerUnit,
               isAddedSEB: Data.SEBChargesDetails && Data.SEBChargesDetails.length > 0 ? true : false,
               selectedPlants: plantArray,
-              StateName: stateObj && stateObj !== undefined ? { label: stateObj.Text, value: stateObj.Value } : [],
+              StateName: Data.StateName !== undefined ? { label: Data.StateName, value: Data.StateId } : [],
               effectiveDate: DayTime(Data.SEBChargesDetails[0].EffectiveDate),
               powerGrid: tempArray,
             }, () => this.setState({ isLoader: false }))
