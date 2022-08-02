@@ -245,15 +245,15 @@ class ExchangeRateListing extends Component {
         this.setState({ toggleForm: true })
     }
 
-    hideForm = () => {
-
-        // this.props.getExchangeRateData('', (res) => { })
+    hideForm = (type) => {
         this.setState({
             currency: [],
             data: { isEditFlag: false, ID: '' },
             toggleForm: false,
         }, () => {
-            this.getTableListData()
+            if (type === 'submit') {
+                this.getTableListData()
+            }
         })
     }
 

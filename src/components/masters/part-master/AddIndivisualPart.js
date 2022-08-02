@@ -57,7 +57,6 @@ class AddIndivisualPart extends Component {
   * @description 
   */
   componentDidMount() {
-    this.props.getPlantSelectList(() => { })
     this.props.getProductGroupSelectList(() => { })
     this.getDetails()
   }
@@ -291,7 +290,8 @@ class AddIndivisualPart extends Component {
  * @method cancel
  * @description used to Reset form
  */
-  cancel = () => {
+  cancel = (type) => {
+
     const { reset } = this.props;
     reset();
     this.setState({
@@ -299,7 +299,7 @@ class AddIndivisualPart extends Component {
       selectedPlants: [],
     })
     this.props.getPartData('', res => { })
-    this.props.hideForm()
+    this.props.hideForm(type)
   }
 
   /**
@@ -325,7 +325,7 @@ class AddIndivisualPart extends Component {
       }
       //THIS CONDITION TO CHECK IF ALL VALUES ARE SAME (IF YES, THEN NO NEED TO CALL UPDATE API JUST SEND IT TO LISTING PAGE)
       if (DropdownChanged && String(DataToCheck.PartName) === String(values.PartName) && String(DataToCheck.Description) === String(values.Description) &&
-        String(DataToCheck.GroupCode) === String(values.GroupCode) && String(DataToCheck.ECNNumber) === String(values.ECNNumber) &&
+        String(DataToCheck.GroupCodeList[0].GroupCode) === String(values.GroupCode) && String(DataToCheck.ECNNumber) === String(values.ECNNumber) &&
         String(DataToCheck.RevisionNumber) === String(values.RevisionNumber) && String(DataToCheck.DrawingNumber) === String(values.DrawingNumber)
         && String(DataToCheck.Remark) === String(values.Remark) && !isGroupCodeChange && uploadAttachements) {
         this.cancel()

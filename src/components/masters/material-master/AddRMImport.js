@@ -120,9 +120,9 @@ class AddRMImport extends Component {
   * @description Called before render the component
   */
   UNSAFE_componentWillMount() {
-    this.props.getCurrencySelectList(() => { })
-    this.props.getUOMSelectList(() => { })
     if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
+      this.props.getCurrencySelectList(() => { })
+      this.props.getUOMSelectList(() => { })
       this.props.getSupplierList(() => { })
       this.props.fetchPlantDataAPI(() => { })
     }
@@ -136,9 +136,9 @@ class AddRMImport extends Component {
     const { data } = this.props;
     this.getDetails(data);
     this.props.change('NetLandedCost', 0)
-    this.props.fetchSupplierCityDataAPI(res => { });
-    this.props.getRawMaterialNameChild('', () => { })
+    // this.props.fetchSupplierCityDataAPI(res => { });
     if (!(data.isEditFlag || data.isViewFlag)) {
+      this.props.getRawMaterialCategory(res => { });
       this.setState({ inputLoader: true })
       this.props.getRawMaterialCategory(res => { });
       this.props.getVendorListByVendorType(false, () => { this.setState({ inputLoader: false }) })
@@ -441,76 +441,57 @@ class AddRMImport extends Component {
         isShowForm: true,
         RawMaterialID: data.Id,
       })
-      this.props.getRMImportDataById(data, true, res => {
+      this.props.getRMImportDataById(data, true, (res) => {
         if (res && res.data && res.data.Result) {
-          const Data = res.data.Data;
-          this.setState({ DataToChange: Data })
-          this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
+          const Data = res.data.Data
+          this.setState({ DataToChange: Data }, () => { })
+          this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : "")
           this.setState({ minEffectiveDate: Data.EffectiveDate })
-          this.props.getRMGradeSelectListByRawMaterial(Data.RawMaterial, res => {
-            this.props.fetchSpecificationDataAPI(Data.RMGrade, res => {
-              this.props.getRawMaterialNameChild('', (res) => {
-                setTimeout(() => {
-                  const { gradeSelectList, rmSpecification, cityList, categoryList, rawMaterialNameSelectList, UOMSelectList, currencySelectList } = this.props;
-
-                  const materialNameObj = res.data.SelectList && res.data.SelectList.find(item => item.Value === Data.RawMaterial)
-                  const gradeObj = gradeSelectList && gradeSelectList.find(item => item.Value === Data.RMGrade)
-                  const specObj = rmSpecification && rmSpecification.find(item => item.Value === Data.RMSpec)
-                  const categoryObj = categoryList && categoryList.find(item => Number(item.Value) === Data.Category)
-                  const currencyObj = currencySelectList && currencySelectList.find(item => item.Text === Data.Currency)
-                  this.props.change('FreightCharge', Data.RMFreightCost ? Data.RMFreightCost : '')
-                  this.props.change('ShearingCost', Data.RMShearingCost ? Data.RMShearingCost : '')
-                  this.handleCurrency(currencyObj ? { label: currencyObj.Text, value: currencyObj.Value } : '')
-                  this.props.change('NetLandedCostCurrency', Data.NetLandedCostConversion ? Data.NetLandedCostConversion : '')
-                  this.props.change('JaliScrapCost', Data.ScrapRate ? Data.ScrapRate : '')
-                  this.props.change('CircleScrapCost', Data.JaliScrapCost)
-
-                  this.props.change('cutOffPrice', Data.CutOffPrice ? Data.CutOffPrice : '')
-                  this.props.change('Code', Data.RawMaterialCode ? Data.RawMaterialCode : '')
-
-                  const sourceLocationObj = cityList && cityList.find(item => Number(item.Value) === Data.SourceLocation)
-                  const UOMObj = UOMSelectList && UOMSelectList.find(item => item.Value === Data.UOM)
-
-                  this.setState({
-                    IsFinancialDataChanged: false,
-                    isEditFlag: true,
-                    isShowForm: true,
-                    IsVendor: Data.IsVendor,
-                    RawMaterial: materialNameObj !== undefined ? { label: materialNameObj.Text, value: materialNameObj.Value } : [],
-                    RMGrade: gradeObj !== undefined ? { label: gradeObj.Text, value: gradeObj.Value } : [],
-                    RMSpec: specObj !== undefined ? { label: specObj.Text, value: specObj.Value } : [],
-                    Category: categoryObj !== undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
-                    Technology: Data.TechnologyName !== undefined ? { label: Data.TechnologyName, value: Data.TechnologyId } : [],
-                    selectedPlants: [{ Text: Data.DestinationPlantName, Value: Data.DestinationPlantId }],
-                    vendorName: Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.Vendor } : [],
-                    HasDifferentSource: Data.HasDifferentSource,
-                    sourceLocation: sourceLocationObj !== undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value } : [],
-                    UOM: UOMObj !== undefined ? { label: UOMObj.Display, value: UOMObj.Value } : [],
-                    effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
-                    oldDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
-                    currency: currencyObj !== undefined ? { label: currencyObj.Text, value: currencyObj.Value } : [],
-                    remarks: Data.Remark,
-                    files: Data.FileList,
-                    singlePlantSelected: Data.DestinationPlantName !== undefined ? { label: Data.DestinationPlantName, value: Data.DestinationPlantId } : [],
-                    // FreightCharge:Data.FreightCharge
-                    netCurrencyCost: Data.NetLandedCostConversion ? Data.NetLandedCostConversion : '',
-                    showExtraCost: Data.TechnologyName === SHEET_METAL ? true : false,
-                  }, () => this.setState({ isLoader: false }))
-                  // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
-                  let files = Data.FileList && Data.FileList.map((item) => {
-                    item.meta = {}
-                    item.meta.id = item.FileId
-                    item.meta.status = 'done'
-                    return item
-                  })
-                  if (this.dropzone.current !== null) {
-                    this.dropzone.current.files = files
-                  }
-                }, 200);
-              })
-            });
-          })
           this.props.getPlantBySupplier(Data.Vendor, () => { })
+          this.props.change('FrieghtCharge', Data.RMFreightCost ? Data.RMFreightCost : '')
+          this.props.change('ShearingCost', Data.RMShearingCost ? Data.RMShearingCost : '')
+          this.props.change('NetLandedCostCurrency', Data.NetLandedCostConversion ? Data.NetLandedCostConversion : '')
+          this.props.change('cutOffPrice', Data.CutOffPrice ? Data.CutOffPrice : '')
+          this.props.change('Code', Data.RawMaterialCode ? Data.RawMaterialCode : '')
+          this.props.change('JaliScrapCost', Data.ScrapRate)            // THIS KEY FOR CIRCLE SCRAP COST
+          this.props.change('CircleScrapCost', Data.JaliScrapCost ? Data.JaliScrapCost : '')  //THIS KEY FOR JALI SCRAP COST AND SCRAP COST
+          setTimeout(() => {
+            this.setState({
+              IsFinancialDataChanged: false,
+              isEditFlag: true,
+              isShowForm: true,
+              IsVendor: Data.IsVendor,
+              RawMaterial: Data.RawMaterialName !== undefined ? { label: Data.RawMaterialName, value: Data.RawMaterialId } : [],
+              RMGrade: Data.RawMaterialGradeName !== undefined ? { label: Data.RawMaterialGradeName, value: Data.RMGrade } : [],
+              RMSpec: Data.RawMaterialSpecificationName !== undefined ? { label: Data.RawMaterialSpecificationName, value: Data.RMSpec } : [],
+              Category: Data.RawMaterialCategoryName !== undefined ? { label: Data.RawMaterialCategoryName, value: Data.Category } : [],
+              Technology: Data.TechnologyName !== undefined ? { label: Data.TechnologyName, value: Data.TechnologyId } : [],
+              selectedPlants: [{ Text: Data.DestinationPlantName, Value: Data.DestinationPlantId }],
+              vendorName: Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.Vendor } : [],
+              HasDifferentSource: Data.HasDifferentSource,
+              sourceLocation: Data.SourceSupplierLocationName !== undefined ? { label: Data.SourceSupplierLocationName, value: Data.SourceLocation } : [],
+              UOM: Data.UnitOfMeasurementName !== undefined ? { label: Data.UnitOfMeasurementName, value: Data.UOM } : [],
+              effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
+              oldDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
+              currency: Data.Currency !== undefined ? { label: Data.Currency, value: Data.CurrencyId } : [],
+              remarks: Data.Remark,
+              files: Data.FileList,
+              netLandedCost: Data.NetLandedCost ? Data.NetLandedCost : '',
+              showExtraCost: Data.TechnologyName === SHEET_METAL ? true : false,
+              singlePlantSelected: Data.DestinationPlantName !== undefined ? { label: Data.DestinationPlantName, value: Data.DestinationPlantId } : [],
+              netCurrencyCost: Data.NetLandedCostConversion ? Data.NetLandedCostConversion : '',
+            }, () => this.setState({ isLoader: false }))
+            // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
+            let files = Data.FileList && Data.FileList.map((item) => {
+              item.meta = {}
+              item.meta.id = item.FileId
+              item.meta.status = 'done'
+              return item
+            })
+            if (this.dropzone.current !== null) {
+              this.dropzone.current.files = files
+            }
+          }, 200)
         }
       })
     } else {

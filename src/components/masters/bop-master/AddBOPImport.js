@@ -102,8 +102,8 @@ class AddBOPImport extends Component {
   * @description Called before render the component
   */
   UNSAFE_componentWillMount() {
-    this.props.getUOMSelectList(() => { })
     if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
+      this.props.getUOMSelectList(() => { })
       this.props.getBOPCategorySelectList(() => { })
       this.props.getPartSelectList(() => { })
       this.props.getPlantSelectListByType(ZBC, () => { })
@@ -115,9 +115,10 @@ class AddBOPImport extends Component {
    * @description Called after rendering the component
    */
   componentDidMount() {
-    this.props.fetchMaterialComboAPI(res => { });
-    this.props.getCurrencySelectList(() => { })
+    this.props.fetchSupplierCityDataAPI(res => { });
+    this.getDetails()
     if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
+      this.props.getCurrencySelectList(() => { })
       this.setState({ inputLoader: true })
       this.props.getVendorTypeBOPSelectList(() => { this.setState({ inputLoader: false }) })
     }
@@ -206,12 +207,9 @@ class AddBOPImport extends Component {
           this.props.getPlantBySupplier(Data.Vendor, () => { })
 
           setTimeout(() => {
-            const { cityList, currencySelectList, UOMSelectList } = this.props;
+            const { cityList } = this.props;
             let plantObj;
-            let currencyObj = currencySelectList && currencySelectList.find(item => item.Text === Data.Currency)
             let sourceLocationObj = cityList && cityList.find(item => Number(item.Value) === Data.SourceLocation)
-            let uomObject = UOMSelectList && UOMSelectList.find(item => item.Value === Data.UnitOfMeasurementId)
-            this.handleCurrency({ label: currencyObj?.Text, value: currencyObj?.Value })
             this.handleEffectiveDateChange(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
 
             if (getConfigurationKey().IsDestinationPlantConfigure) {
@@ -226,12 +224,12 @@ class AddBOPImport extends Component {
               BOPCategory: Data.CategoryName !== undefined ? { label: Data.CategoryName, value: Data.CategoryId } : [],
               selectedPlants: plantObj,
               vendorName: Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.Vendor } : [],
-              currency: currencyObj && currencyObj !== undefined ? { label: currencyObj.Text, value: currencyObj.Value } : [],
+              currency: Data.Currency !== undefined ? { label: Data.Currency, value: Data.CurrencyId } : [],
               sourceLocation: sourceLocationObj && sourceLocationObj !== undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value } : [],
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
               oldDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
               files: Data.Attachements,
-              UOM: uomObject && uomObject !== undefined ? { label: uomObject.Display, value: uomObject.Value } : [],
+              UOM: Data.UnitOfMeasurement !== undefined ? { label: Data.UnitOfMeasurement, value: Data.UnitOfMeasurementId } : [],
               isLoader: false,
             }, () => this.setState({ isLoader: false }))
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
@@ -883,8 +881,6 @@ class AddBOPImport extends Component {
     const promiseOptions = inputValue =>
       new Promise(resolve => {
         resolve(filterList(inputValue));
-
-
       });
     return (
       <>

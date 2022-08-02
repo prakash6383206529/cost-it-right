@@ -88,9 +88,9 @@ class AddBOPDomestic extends Component {
   * @description Called before render the component
   */
   UNSAFE_componentWillMount() {
-    this.props.getUOMSelectList(() => { })
     this.props.getPartSelectList(() => { })
     if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
+      this.props.getUOMSelectList(() => { })
       this.props.getBOPCategorySelectList(() => { })
       this.props.getPlantSelectListByType(ZBC, () => { })
     }
@@ -802,7 +802,6 @@ class AddBOPDomestic extends Component {
         return tempArr.slice(0, 100)
       }
     };
-
     const promiseOptions = inputValue =>
       new Promise(resolve => {
         resolve(filterList(inputValue));

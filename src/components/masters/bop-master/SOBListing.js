@@ -4,8 +4,7 @@ import { Field, reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { checkForDecimalAndNull, required } from "../../../helper/validation";
 import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
-import { getManageBOPSOBDataList, getInitialFilterData, getBOPCategorySelectList, getAllVendorSelectList, } from '../actions/BoughtOutParts';
-import { getPlantSelectList, } from '../../../actions/Common';
+import { getManageBOPSOBDataList, getInitialFilterData } from '../actions/BoughtOutParts';
 import NoContentFound from '../../common/NoContentFound';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { BOP_SOBLISTING_DOWNLOAD_EXCEl, costingHeadObj } from '../../../config/masterData';
@@ -53,10 +52,6 @@ class SOBListing extends Component {
   * @description Called after rendering the component
   */
   componentDidMount() {
-    this.props.getBOPCategorySelectList(() => { })
-    this.props.getPlantSelectList(() => { })
-    this.props.getAllVendorSelectList(() => { })
-    // this.props.getInitialFilterData('', () => { })
     this.getDataList()
   }
 
@@ -509,9 +504,6 @@ function mapStateToProps({ boughtOutparts, comman }) {
 */
 export default connect(mapStateToProps, {
   getManageBOPSOBDataList,
-  getBOPCategorySelectList,
-  getPlantSelectList,
-  getAllVendorSelectList,
   getInitialFilterData,
 })(reduxForm({
   form: 'SOBListing',
