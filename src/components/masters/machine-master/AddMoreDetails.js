@@ -29,7 +29,7 @@ import HeaderTitle from '../../common/HeaderTitle';
 import AddMachineTypeDrawer from './AddMachineTypeDrawer';
 import AddProcessDrawer from './AddProcessDrawer';
 import NoContentFound from '../../common/NoContentFound';
-import { calculatePercentage, CheckApprovalApplicableMaster } from '../../../helper';
+import { calculatePercentage, CheckApprovalApplicableMaster, displayUOM } from '../../../helper';
 import EfficiencyDrawer from './EfficiencyDrawer';
 import DayTime from '../../common/DayTimeWrapper'
 import { AcceptableMachineUOM } from '../../../config/masterData'
@@ -2102,6 +2102,14 @@ class AddMoreDetails extends Component {
       this.setState({ UniqueProcessId: [...uniqueProcessId] })
     }
   }
+  /**
+* @method DisplayMachineRateLabel
+* @description for machine rate label with dynamic uom change
+*/
+
+  DisplayMachineRateLabel = () => {
+    return <>Machine Rate{this.state.UOM.label && '/'}{this.state.UOM && displayUOM(this.state.UOM.label)} (INR)</>
+  }
 
   /**
   * @method render
@@ -2111,7 +2119,6 @@ class AddMoreDetails extends Component {
     const { handleSubmit, loading, initialConfiguration, isMachineAssociated } = this.props;
     const { isLoader, isOpenAvailability, isEditFlag, isViewMode, isOpenMachineType, isOpenProcessDrawer, manufactureYear,
       isLoanOpen, isWorkingOpen, isDepreciationOpen, isVariableCostOpen, isViewFlag, isPowerOpen, isLabourOpen, isProcessOpen, UniqueProcessId, isProcessGroupOpen, disableAllForm } = this.state;
-
     return (
       <>
         {(isLoader) && <LoaderCustom />}
@@ -3462,10 +3469,10 @@ class AddMoreDetails extends Component {
 
                             } */}
 
-                            <Col className="d-flex col-auto">
+                            <Col className="d-flex col-auto UOM-label-container">
                               <div className="machine-rate-filed pr-3">
                                 <Field
-                                  label={`Machine Rate(INR)`}
+                                  label={this.DisplayMachineRateLabel()}
                                   name={"MachineRate"}
                                   type="text"
                                   placeholder={''}
@@ -3525,7 +3532,7 @@ class AddMoreDetails extends Component {
                                       return (
                                         <tr key={index}>
                                           <td>{item.processName}</td>
-                                          <td>{item.UnitOfMeasurement}</td>
+                                          <td className='UOM-label-container'>{displayUOM(item.UnitOfMeasurement)}</td>
                                           {/* <td>{item.OutputPerHours}</td>    COMMENTED FOR NOW MAY BE USED LATER
                                           <td>{checkForDecimalAndNull(item.OutputPerYear, initialConfiguration.NoOfDecimalForInputOutput)}</td> */}
                                           <td>{checkForDecimalAndNull(item.MachineRate, initialConfiguration.NoOfDecimalForPrice)}</td>
