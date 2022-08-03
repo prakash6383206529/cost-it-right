@@ -111,7 +111,7 @@ class OperationListing extends Component {
             })
 
             if (this.props.stopAPICall === true) {
-                this.setState({ tableData: this.props.setOperationData })
+                this.setState({ tableData: this.props.operationDataHold })
             }
         }, 300);
     }
@@ -197,8 +197,8 @@ class OperationListing extends Component {
                     this.setState({ tableData: [] })
                 } else {
                     this.setState({ tableData: res.data.DataList })
+                    this.props.setOperationList(res.data.DataList)
                 }
-
                 // CODE FOR DOWNLOAD BUTTON LOGIC
                 if (res && isPagination === false) {
                     this.setState({ disableDownload: false })
@@ -929,10 +929,10 @@ class OperationListing extends Component {
 * @param {*} state
                 */
 function mapStateToProps({ otherOperation, auth, simulation }) {
-    const { loading, filterOperation, operationList, allOperationList, operationSurfaceTreatmentList, operationIndividualList, setOperationData } = otherOperation;
+    const { loading, filterOperation, operationList, allOperationList, operationSurfaceTreatmentList, operationIndividualList, setOperationData, operationDataHold } = otherOperation;
     const { leftMenuData, initialConfiguration, topAndLeftMenuData } = auth;
     const { selectedCostingListSimulation } = simulation;
-    return { loading, filterOperation, leftMenuData, operationList, allOperationList, initialConfiguration, topAndLeftMenuData, operationSurfaceTreatmentList, operationIndividualList, selectedCostingListSimulation, setOperationData };
+    return { loading, filterOperation, leftMenuData, operationList, allOperationList, initialConfiguration, topAndLeftMenuData, operationSurfaceTreatmentList, operationIndividualList, selectedCostingListSimulation, setOperationData, operationDataHold };
 }
 
 /**

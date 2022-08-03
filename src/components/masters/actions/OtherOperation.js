@@ -763,6 +763,7 @@ export function getOperationApprovalList(callback) {
  * @description setOperationList
  */
 export function setOperationList(data) {
+
     return (dispatch) => {
         dispatch({
             type: SET_OPERATION_DATA,
