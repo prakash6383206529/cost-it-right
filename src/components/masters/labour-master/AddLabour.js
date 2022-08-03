@@ -67,14 +67,16 @@ class AddLabour extends Component {
    */
   componentDidMount() {
     this.setState({ inputLoader: true })
-    this.props.labourTypeVendorSelectList(() => { this.setState({ inputLoader: false }) })
-    if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
+    if (!this.state.isViewMode) {
+      this.props.labourTypeVendorSelectList(() => { this.setState({ inputLoader: false }) })
+      this.props.getMachineTypeSelectList(() => { })
+    }
+    if (!(this.props.data.isEditFlag || this.state.isViewMode)) {
       this.props.getAllCity(countryId => {
         this.props.fetchStateDataAPI(countryId, () => { })
       })
       this.props.getLabourTypeByMachineTypeSelectList('', () => { })
       this.props.getPlantListByState('', () => { })
-      this.props.getMachineTypeSelectList(() => { })
     }
     this.getDetail()
   }

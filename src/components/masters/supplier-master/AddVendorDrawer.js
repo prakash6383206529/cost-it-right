@@ -8,7 +8,7 @@ import {
 } from "../../../helper/validation";
 import { renderText, renderEmailInputField, renderMultiSelectField, searchableSelect, renderNumberInputField, focusOnError } from "../../layout/FormInputs";
 import { createSupplierAPI, updateSupplierAPI, getSupplierByIdAPI, getRadioButtonSupplierType, getVendorTypesSelectList, } from '../actions/Supplier';
-import { getVendorPlantSelectList, getAllCities, getCityByCountry, } from '../../../actions/Common';
+import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, getVendorPlantSelectList, getAllCities, getCityByCountry, } from '../../../actions/Common';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";
@@ -48,6 +48,9 @@ class AddVendorDrawer extends Component {
         if (!(this.props.isEditFlag || this.props.isViewFlag)) {
             this.props.getVendorTypesSelectList()
             this.props.getVendorPlantSelectList(() => { })
+            this.props.fetchCountryDataAPI(() => { })
+            this.props.fetchStateDataAPI(0, () => { })
+            this.props.fetchCityDataAPI(0, () => { })
         }
     }
 
@@ -706,6 +709,9 @@ export default connect(mapStateToProps, {
     getSupplierByIdAPI,
     getRadioButtonSupplierType,
     getAllCities,
+    fetchCountryDataAPI,
+    fetchStateDataAPI,
+    fetchCityDataAPI,
     getCityByCountry,
     getVendorTypesSelectList,
     getVendorPlantSelectList,

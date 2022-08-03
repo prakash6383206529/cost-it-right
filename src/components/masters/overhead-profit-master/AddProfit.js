@@ -74,14 +74,17 @@ class AddProfit extends Component {
     }
   }
 
+
   /**
    * @method componentDidMount
    * @description Called after rendering the component
    */
   componentDidMount() {
-    this.props.fetchCostingHeadsAPI('--Costing Heads--', res => { });
-    if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
+    if (!this.state.isViewMode) {
+      this.props.fetchCostingHeadsAPI('--Costing Heads--', res => { });
       this.props.fetchModelTypeAPI('--Model Types--', res => { });
+    }
+    if (!(this.props.data.isEditFlag || this.state.isViewMode)) {
       this.props.getClientSelectList(() => { })
     }
     this.getDetails();

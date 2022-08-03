@@ -41,18 +41,19 @@ class AddZBCPlant extends Component {
   * @description Used to cancel modal
   */
   componentDidMount() {
-    if (!(this.props.isEditFlag || this.props.isViewFlag)) {
+    if (!this.props.isViewMode) {
       this.props.fetchCountryDataAPI(() => { })
+    }
+    if (this.props.initialConfiguration.IsCompanyConfigureOnPlant) {
       this.props.getComapanySelectList(() => { })
     }
-
     this.getDetails()
 
   }
 
   UNSAFE_componentWillMount() {
     this.props.fetchCityDataAPI(0, () => { })
-    if (!(this.props.isEditFlag || this.props.isViewFlag)) {
+    if (!(this.props.isEditFlag || this.props.isViewMode)) {
       this.props.fetchStateDataAPI(0, () => { })
     }
   }
@@ -73,6 +74,10 @@ class AddZBCPlant extends Component {
 
           const Data = res.data.Data;
           this.setState({ DataToCheck: Data })
+          if (!this.state.isViewMode) {
+            this.props.fetchStateDataAPI(Data.CountryId, () => { })
+            this.props.fetchCityDataAPI(Data.StateId, () => { })
+          }
           setTimeout(() => {
             this.setState({
               isEditFlag: true,
@@ -620,7 +625,6 @@ export default connect(mapStateToProps, {
   getComapanySelectList
 })(reduxForm({
   form: 'AddZBCPlant',
-  touchOnChange: true,
   enableReinitialize: true,
   onSubmitFail: (errors) => {
     focusOnError(errors)

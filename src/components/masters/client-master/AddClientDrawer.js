@@ -38,7 +38,7 @@ class AddClientDrawer extends Component {
     * @description called after render the component
     */
     componentDidMount() {
-        if (!(this.props.isEditFlag || this.props.isViewFlag)) {
+        if (!this.state.isViewMode) {
             this.props.fetchCountryDataAPI(() => { })
         }
         this.getDetail()
@@ -145,6 +145,10 @@ class AddClientDrawer extends Component {
                 if (res && res.data && res.data.Data) {
                     let Data = res.data.Data;
                     this.setState({ DataToCheck: Data })
+                    if (!this.state.isViewMode) {
+                        this.props.fetchStateDataAPI(Data.CountryId, () => { })
+                        this.props.fetchCityDataAPI(Data.StateId, () => { })
+                    }
                     setTimeout(() => {
                         this.setState({
                             // isLoader: false,

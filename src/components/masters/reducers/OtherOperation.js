@@ -152,7 +152,7 @@ export default function OtherOperationReducer(state = initialState, action) {
             return {
                 ...state,
                 loading: false,
-                setOperationData: action.payload
+                operationDataHold: action.payload
             }
 
         default:
