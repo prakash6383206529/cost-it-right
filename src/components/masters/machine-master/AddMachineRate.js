@@ -777,10 +777,10 @@ class AddMachineRate extends Component {
     const MachineRate = fieldsObj.MachineRate
     this.setState({
       processName: [],
-      UOM: isProcessGroup ? UOM : [],
+      UOM: isProcessGroup && this.state.processGrid.length !== 0 ? UOM : [],
       processGridEditIndex: '',
       isEditIndex: false,
-    }, () => this.props.change('MachineRate', isProcessGroup ? MachineRate : ''));
+    }, () => this.props.change('MachineRate', isProcessGroup && this.state.processGrid.length !== 0 ? MachineRate : ''));
   };
 
   /**
@@ -1283,7 +1283,7 @@ class AddMachineRate extends Component {
   */
 
   DisplayMachineRateLabel = () => {
-    return <>Machine Rate{this.state.UOM && '/'}{this.state.UOM && displayUOM(this.state.UOM.label)} (INR)</>
+    return <>Machine Rate/{this.state.UOM && this.state.UOM.length !== 0 ? displayUOM(this.state.UOM.label) : "UOM"} (INR)</>
   }
 
 
