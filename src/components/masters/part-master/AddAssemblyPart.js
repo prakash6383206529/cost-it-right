@@ -7,14 +7,14 @@ import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
 import { renderText, renderTextAreaField, focusOnError, renderDatePicker, renderMultiSelectField, searchableSelect } from "../../layout/FormInputs";
 import {
   createAssemblyPart, updateAssemblyPart, getAssemblyPartDetail, fileUploadPart, fileDeletePart,
-  getBOMViewerTreeDataByPartIdAndLevel, getPartDescription, getPartData, convertPartToAssembly,
+  getBOMViewerTreeDataByPartIdAndLevel, getPartDescription, getPartData, convertPartToAssembly, getProductGroupSelectList
 } from '../actions/Part';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import "react-datepicker/dist/react-datepicker.css";
-import { ASSEMBLY, BOUGHTOUTPART, COMPONENT_PART, FILE_URL, ZBC, } from '../../../config/constants';
+import { ASSEMBLY, BOUGHTOUTPART, COMPONENT_PART, FILE_URL } from '../../../config/constants';
 import AddChildDrawer from './AddChildDrawer';
 import DayTime from '../../common/DayTimeWrapper'
 import BOMViewer from './BOMViewer';
@@ -27,6 +27,7 @@ import WarningMessage from '../../common/WarningMessage'
 import Switch from "react-switch";
 import AsyncSelect from 'react-select/async';
 import { getCostingSpecificTechnology } from '../../costing/actions/Costing'
+import { getPartSelectList } from '../../../actions/Common';
 
 const selector = formValueSelector('AddAssemblyPart')
 export const PartEffectiveDate = React.createContext()
@@ -85,6 +86,10 @@ class AddAssemblyPart extends Component {
   componentDidMount() {
     this.setState({ inputLoader: true })
     this.props.getCostingSpecificTechnology(loggedInUserId(), () => { })
+    this.props.getProductGroupSelectList(() => { })
+    this.props.getPartSelectList((res) => {
+      this.setState({ partListingData: res?.data?.SelectList, inputLoader: false })
+    })
     this.getDetails()
   }
 
@@ -1361,7 +1366,9 @@ export default connect(mapStateToProps, {
   getBOMViewerTreeDataByPartIdAndLevel,
   getPartDescription,
   getPartData,
-  getCostingSpecificTechnology
+  getCostingSpecificTechnology,
+  getProductGroupSelectList,
+  getPartSelectList
 })(reduxForm({
   form: 'AddAssemblyPart',
   touchOnChange: true,
@@ -1369,5 +1376,4 @@ export default connect(mapStateToProps, {
     focusOnError(errors);
   },
   enableReinitialize: true,
-  touchOnChange: true
 })(AddAssemblyPart));
