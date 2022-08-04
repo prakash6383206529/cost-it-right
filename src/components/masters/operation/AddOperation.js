@@ -87,7 +87,9 @@ class AddOperation extends Component {
   * @description called before render the component
   */
   UNSAFE_componentWillMount() {
-    this.props.getUOMSelectList(() => { })
+    if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
+      this.props.getUOMSelectList(() => { })
+    }
   }
 
   /**
@@ -325,11 +327,7 @@ class AddOperation extends Component {
             return technologyArray;
           })
 
-
           setTimeout(() => {
-            const { UOMSelectList } = this.props;
-            const UOMObj = UOMSelectList && UOMSelectList.find(item => item.Value === Data.UnitOfMeasurementId)
-
             this.setState({
               isEditFlag: true,
               IsFinancialDataChanged: false,
@@ -338,8 +336,8 @@ class AddOperation extends Component {
               selectedTechnology: technologyArray,
               selectedPlants: [{ Text: Data.DestinationPlantName, Value: Data.DestinationPlantId }],
               vendorName: Data.VendorName && Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.VendorId } : [],
-              UOM: UOMObj && UOMObj !== undefined ? { label: UOMObj.Display, value: UOMObj.Value } : [],
-              oldUOM: UOMObj && UOMObj !== undefined ? { label: UOMObj.Display, value: UOMObj.Value } : [],
+              UOM: Data.UnitOfMeasurement !== undefined ? { label: Data.UnitOfMeasurement, value: Data.UnitOfMeasurementId } : [],
+              oldUOM: Data.UnitOfMeasurement !== undefined ? { label: Data.UnitOfMeasurement, value: Data.UnitOfMeasurementId } : [],
               isSurfaceTreatment: Data.IsSurfaceTreatmentOperation,
               remarks: Data.Remark,
               files: Data.Attachements,

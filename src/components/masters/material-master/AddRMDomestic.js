@@ -120,8 +120,8 @@ class AddRMDomestic extends Component {
    * @description Called before render the component
    */
   UNSAFE_componentWillMount() {
-    this.props.getUOMSelectList(() => { })
     if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
+      this.props.getUOMSelectList(() => { })
       this.props.getSupplierList(() => { })
       this.props.fetchPlantDataAPI(() => { })
       this.props.getRMGradeSelectListByRawMaterial('', (res) => { })
@@ -137,13 +137,13 @@ class AddRMDomestic extends Component {
     const { data } = this.props
     this.getDetails(data)
     this.props.getRawMaterialNameChild('', () => { })
-    this.props.getRawMaterialCategory((res) => { })
     this.props.getAllCity(cityId => {
       this.props.getCityByCountry(cityId, 0, () => { })
     })
     if (!(data.isEditFlag || data.isViewFlag)) {
       this.setState({ inputLoader: true })
-      this.props.fetchSpecificationDataAPI(0, () => { })
+      // this.props.fetchSpecificationDataAPI(0, () => { })
+      this.props.getRawMaterialCategory((res) => { })
       this.props.getVendorListByVendorType(false, () => { this.setState({ inputLoader: false }) })
       this.props.getCostingSpecificTechnology(loggedInUserId(), () => { this.setState({ inputLoader: false }) })
       this.props.getPlantSelectListByType(ZBC, () => { })
@@ -440,61 +440,50 @@ class AddRMDomestic extends Component {
           this.props.change('ShearingCost', Data.RMShearingCost ? Data.RMShearingCost : '')
           this.props.change('cutOffPrice', Data.CutOffPrice ? Data.CutOffPrice : '')
           this.props.change('Code', Data.RawMaterialCode ? Data.RawMaterialCode : '')
-          this.props.getRMGradeSelectListByRawMaterial(Data.RawMaterial, (res) => {
+          // this.props.getRMGradeSelectListByRawMaterial(Data.RawMaterial, (res) => {
 
-            this.props.fetchSpecificationDataAPI(Data.RMGrade, (res) => {
-              this.props.getRawMaterialNameChild('', (res) => {
+          // this.props.fetchSpecificationDataAPI(Data.RMGrade, (res) => {
+          this.props.getRawMaterialNameChild('', (res) => {
 
-                setTimeout(() => {
-                  const { gradeSelectList, rmSpecification, cityList, categoryList, rawMaterialNameSelectList, UOMSelectList } = this.props
-
-
-                  const materialNameObj = rawMaterialNameSelectList && rawMaterialNameSelectList.find((item) => item.Value === Data.RawMaterial,)
-                  const gradeObj = gradeSelectList && gradeSelectList.find((item) => item.Value === Data.RMGrade)
-
-                  const specObj = rmSpecification && rmSpecification.find((item) => item.Value === Data.RMSpec)
-
-                  const categoryObj = categoryList && categoryList.find((item) => Number(item.Value) === Data.Category)
-
-                  const sourceLocationObj = cityList && cityList.find((item) => Number(item.Value) === Data.SourceLocation)
-                  const UOMObj = UOMSelectList && UOMSelectList.find((item) => item.Value === Data.UOM)
-                  this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : "")
-                  this.setState({ minEffectiveDate: Data.EffectiveDate })
-                  this.setState({
-                    IsFinancialDataChanged: false,
-                    isEditFlag: true,
-                    isShowForm: true,
-                    IsVendor: Data.IsVendor,
-                    RawMaterial: { label: materialNameObj.Text, value: materialNameObj.Value, },
-                    RMGrade: gradeObj !== undefined ? { label: gradeObj.Text, value: gradeObj.Value } : [],
-                    RMSpec: specObj !== undefined ? { label: specObj.Text, value: specObj.Value } : [],
-                    Category: categoryObj !== undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
-                    selectedPlants: [{ Text: Data.DestinationPlantName, Value: Data.DestinationPlantId }],
-                    Technology: Data.TechnologyName !== undefined ? { label: Data.TechnologyName, value: Data.TechnologyId } : [],
-                    vendorName: Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.Vendor } : [],
-                    HasDifferentSource: Data.HasDifferentSource,
-                    sourceLocation: sourceLocationObj !== undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value, } : [],
-                    UOM: UOMObj !== undefined ? { label: UOMObj.Display, value: UOMObj.Value } : [],
-                    effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
-                    oldDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
-                    remarks: Data.Remark,
-                    files: Data.FileList,
-                    singlePlantSelected: Data.DestinationPlantName !== undefined ? { label: Data.DestinationPlantName, value: Data.DestinationPlantId } : [],
-                    netLandedCost: Data.NetLandedCost ? Data.NetLandedCost : ''
-                  }, () => this.setState({ isLoader: false }))
-                  // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
-                  let files = Data.FileList && Data.FileList.map((item) => {
-                    item.meta = {}
-                    item.meta.id = item.FileId
-                    item.meta.status = 'done'
-                    return item
-                  })
-                  if (this.dropzone.current !== null) {
-                    this.dropzone.current.files = files
-                  }
-                }, 200)
+            setTimeout(() => {
+              const { cityList, rawMaterialNameSelectList } = this.props
+              const materialNameObj = rawMaterialNameSelectList && rawMaterialNameSelectList.find((item) => item.Value === Data.RawMaterial,)
+              const sourceLocationObj = cityList && cityList.find((item) => Number(item.Value) === Data.SourceLocation)
+              this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : "")
+              this.setState({ minEffectiveDate: Data.EffectiveDate })
+              this.setState({
+                IsFinancialDataChanged: false,
+                isEditFlag: true,
+                isShowForm: true,
+                IsVendor: Data.IsVendor,
+                RawMaterial: { label: materialNameObj.Text, value: materialNameObj.Value, },
+                RMGrade: Data.RawMaterialGradeName !== undefined ? { label: Data.RawMaterialGradeName, value: Data.RMGrade } : [],
+                RMSpec: Data.RawMaterialSpecificationName !== undefined ? { label: Data.RawMaterialSpecificationName, value: Data.RMSpec } : [],
+                Category: Data.RawMaterialCategoryName !== undefined ? { label: Data.RawMaterialCategoryName, value: Data.Category } : [],
+                selectedPlants: [{ Text: Data.DestinationPlantName, Value: Data.DestinationPlantId }],
+                Technology: Data.TechnologyName !== undefined ? { label: Data.TechnologyName, value: Data.TechnologyId } : [],
+                vendorName: Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.Vendor } : [],
+                HasDifferentSource: Data.HasDifferentSource,
+                sourceLocation: sourceLocationObj !== undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value, } : [],
+                UOM: Data.UnitOfMeasurementName !== undefined ? { label: Data.UnitOfMeasurementName, value: Data.UOM } : [],
+                effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
+                oldDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
+                remarks: Data.Remark,
+                files: Data.FileList,
+                singlePlantSelected: Data.DestinationPlantName !== undefined ? { label: Data.DestinationPlantName, value: Data.DestinationPlantId } : [],
+                netLandedCost: Data.NetLandedCost ? Data.NetLandedCost : ''
+              }, () => this.setState({ isLoader: false }))
+              // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
+              let files = Data.FileList && Data.FileList.map((item) => {
+                item.meta = {}
+                item.meta.id = item.FileId
+                item.meta.status = 'done'
+                return item
               })
-            })
+              if (this.dropzone.current !== null) {
+                this.dropzone.current.files = files
+              }
+            }, 200)
           })
         }
       })
@@ -646,8 +635,8 @@ class AddRMDomestic extends Component {
   closeApprovalDrawer = (e = '', type) => {
     this.setState({ approveDrawer: false, setDisable: false })
     if (type === 'submit') {
-      this.clearForm()
-      this.cancel()
+      this.clearForm('submit')
+      this.cancel('submit')
     }
   }
 
@@ -801,7 +790,7 @@ class AddRMDomestic extends Component {
    * @method cancel
    * @description used to Reset form
    */
-  clearForm = () => {
+  clearForm = (type) => {
     const { reset } = this.props
     reset()
     this.setState({
@@ -822,17 +811,19 @@ class AddRMDomestic extends Component {
       showPopup: false,
       updatedObj: {}
     })
-    this.props.getRawMaterialDetailsAPI('', false, (res) => { })
-    this.props.fetchSpecificationDataAPI(0, () => { })
-    this.props.hideForm()
+    if (type === 'submit') {
+      this.props.getRawMaterialDetailsAPI('', false, (res) => { })
+      this.props.fetchSpecificationDataAPI(0, () => { })
+    }
+    this.props.hideForm(type)
   }
 
   /**
    * @method cancel
    * @description used to Reset form
    */
-  cancel = () => {
-    this.clearForm()
+  cancel = (type) => {
+    this.clearForm(type)
   }
 
   /**
@@ -1052,7 +1043,7 @@ class AddRMDomestic extends Component {
           this.setState({ setDisable: false })
           if (res?.data?.Result) {
             Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
-            this.clearForm()
+            this.clearForm('submit')
 
           }
         })
@@ -1149,8 +1140,8 @@ class AddRMDomestic extends Component {
           this.setState({ setDisable: false })
           if (res?.data?.Result) {
             Toaster.success(MESSAGES.MATERIAL_ADD_SUCCESS)
-            this.clearForm()
-            this.cancel()
+            this.clearForm('submit')
+            this.cancel('submit')
           }
         })
       }
@@ -1165,7 +1156,7 @@ class AddRMDomestic extends Component {
       this.setState({ setDisable: false })
       if (res?.data?.Result) {
         Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
-        this.clearForm()
+        this.clearForm('submit')
         // this.cancel()
       }
     })
@@ -1767,7 +1758,7 @@ class AddRMDomestic extends Component {
                           <button
                             type={"button"}
                             className="mr15 cancel-btn"
-                            onClick={this.cancel}
+                            onClick={() => { this.cancel('cancel') }}
                             disabled={setDisable}
                           >
                             <div className={"cancel-icon"}></div>

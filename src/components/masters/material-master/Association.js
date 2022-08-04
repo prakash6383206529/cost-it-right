@@ -286,4 +286,5 @@ export default connect(mapStateToProps, {
 })(reduxForm({
     form: 'Association',
     enableReinitialize: true,
+    touchOnChange: true
 })(Association));

@@ -29,6 +29,7 @@ class FuelMaster extends Component {
             DeleteAccessibility: false,
             BulkUploadAccessibility: false,
             DownloadAccessibility: false,
+            stopApiCallOnCancel: false
         }
     }
 
@@ -73,7 +74,8 @@ class FuelMaster extends Component {
     toggle = (tab) => {
         if (this.state.activeTab !== tab) {
             this.setState({
-                activeTab: tab
+                activeTab: tab,
+                stopApiCallOnCancel: false
             });
         }
     }
@@ -86,8 +88,12 @@ class FuelMaster extends Component {
         this.setState({ isPowerForm: true, isFuelForm: false, data: {} })
     }
 
-    hideForm = () => {
-        this.setState({ isFuelForm: false, isPowerForm: false, data: {} })
+    hideForm = (type) => {
+        this.setState({ isFuelForm: false, isPowerForm: false, data: {}, stopApiCallOnCancel: false })
+        if (type === 'cancel') {
+            this.setState({ stopApiCallOnCancel: true })
+
+        }
     }
 
     getDetails = (data) => {
@@ -116,6 +122,7 @@ class FuelMaster extends Component {
             return <AddPower
                 data={data}
                 hideForm={this.hideForm}
+                stopApiCallOnCancel={this.state.stopApiCallOnCancel}
             />
         }
 
@@ -160,6 +167,7 @@ class FuelMaster extends Component {
                                                 BulkUploadAccessibility={this.state.BulkUploadAccessibility}
                                                 DownloadAccessibility={this.state.DownloadAccessibility}
                                                 ViewAccessibility={this.state.ViewAccessibility}
+                                                stopApiCallOnCancel={this.state.stopApiCallOnCancel}
                                             />
                                         </TabPane>}
 
@@ -174,6 +182,7 @@ class FuelMaster extends Component {
                                                 BulkUploadAccessibility={this.state.BulkUploadAccessibility}
                                                 DownloadAccessibility={this.state.DownloadAccessibility}
                                                 ViewAccessibility={this.state.ViewAccessibility}
+                                                stopApiCallOnCancel={this.state.stopApiCallOnCancel}
                                             />
                                         </TabPane>}
 

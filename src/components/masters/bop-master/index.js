@@ -27,7 +27,8 @@ class BOPMaster extends Component {
       EditAccessibility: false,
       DeleteAccessibility: false,
       BulkUploadAccessibility: false,
-      isBOPAssociated: false
+      isBOPAssociated: false,
+      stopApiCallOnCancel: false
     }
   }
 
@@ -71,7 +72,8 @@ class BOPMaster extends Component {
   toggle = (tab) => {
     if (this.state.activeTab !== tab) {
       this.setState({
-        activeTab: tab
+        activeTab: tab,
+        stopApiCallOnCancel: false
       });
     }
   }
@@ -96,8 +98,11 @@ class BOPMaster extends Component {
   * @method hideForm
   * @description HIDE DOMESTIC AND IMPORT FORMS
   */
-  hideForm = () => {
-    this.setState({ isBOPDomesticForm: false, isBOPImportForm: false, data: {} })
+  hideForm = (type) => {
+    this.setState({ isBOPDomesticForm: false, isBOPImportForm: false, data: {}, stopApiCallOnCancel: false })
+    if (type === 'cancel') {
+      this.setState({ stopApiCallOnCancel: true })
+    }
   }
 
   /**
@@ -130,6 +135,7 @@ class BOPMaster extends Component {
         data={data}
         hideForm={this.hideForm}
         isBOPAssociated={this.state.isBOPAssociated}
+        stopApiCallOnCancel={this.state.stopApiCallOnCancel}
       />
     }
 
@@ -138,6 +144,7 @@ class BOPMaster extends Component {
         data={data}
         hideForm={this.hideForm}
         isBOPAssociated={this.state.isBOPAssociated}
+        stopApiCallOnCancel={this.state.stopApiCallOnCancel}
       />
     }
 
@@ -214,6 +221,7 @@ class BOPMaster extends Component {
                       DownloadAccessibility={this.state.DownloadAccessibility}
                       isMasterSummaryDrawer={false}
                       selectionForListingMasterAPI='Master'
+                      stopApiCallOnCancel={this.state.stopApiCallOnCancel}
                     />
                   </TabPane>
                 )}
@@ -229,6 +237,7 @@ class BOPMaster extends Component {
                       DeleteAccessibility={this.state.DeleteAccessibility}
                       BulkUploadAccessibility={this.state.BulkUploadAccessibility}
                       DownloadAccessibility={this.state.DownloadAccessibility}
+                      stopApiCallOnCancel={this.state.stopApiCallOnCancel}
                       selectionForListingMasterAPI='Master'
                     />
                   </TabPane>

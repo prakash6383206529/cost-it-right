@@ -648,4 +648,5 @@ export default connect(mapStateToProps, {
 })(reduxForm({
     form: 'BulkUpload',
     enableReinitialize: true,
+    touchOnChange: true
 })(BulkUpload));

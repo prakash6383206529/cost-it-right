@@ -232,4 +232,5 @@ export default connect(mapStateToProps, {
 })(reduxForm({
   form: 'Dashboard',
   enableReinitialize: true,
+  touchOnChange: true
 })(Dashboard));

@@ -67,17 +67,20 @@ class AddLabour extends Component {
    */
   componentDidMount() {
     this.setState({ inputLoader: true })
-    this.props.labourTypeVendorSelectList(() => { this.setState({ inputLoader: false }) })
-    if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
+    if (!this.state.isViewMode) {
+      this.props.labourTypeVendorSelectList(() => { this.setState({ inputLoader: false }) })
+      this.props.getMachineTypeSelectList(() => { })
+    }
+    if (!(this.props.data.isEditFlag || this.state.isViewMode)) {
       this.props.getAllCity(countryId => {
         this.props.fetchStateDataAPI(countryId, () => { })
       })
       this.props.getLabourTypeByMachineTypeSelectList('', () => { })
       this.props.getPlantListByState('', () => { })
-      this.props.getMachineTypeSelectList(() => { })
     }
     this.getDetail()
   }
+
 
   componentDidUpdate(prevProps) { }
 
@@ -96,7 +99,6 @@ class AddLabour extends Component {
       this.props.getLabourData(data.ID, (res) => {
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data
-          this.props.getPlantListByState(Data.StateId, () => { })
 
           setTimeout(() => {
             let GridArray =
@@ -556,7 +558,7 @@ class AddLabour extends Component {
    * @method cancel
    * @description used to Reset form
    */
-  cancel = () => {
+  cancel = (type) => {
     const { reset } = this.props
     reset()
     this.setState({
@@ -567,7 +569,7 @@ class AddLabour extends Component {
     })
     this.props.getLabourData('', () => { })
 
-    this.props.hideForm()
+    this.props.hideForm(type)
   }
 
   /**
@@ -593,7 +595,7 @@ class AddLabour extends Component {
     if (this.state.isEditFlag) {
 
       if (DropdownChanged) {
-        this.cancel()
+        this.cancel('cancel')
         return false
       }
 
@@ -616,7 +618,7 @@ class AddLabour extends Component {
         this.setState({ setDisable: false })
         if (res?.data?.Result) {
           Toaster.success(MESSAGES.UPDATE_LABOUR_SUCCESS)
-          this.cancel()
+          this.cancel('submit')
         }
       })
       this.setState({ DropdownChanged: true })
@@ -641,7 +643,7 @@ class AddLabour extends Component {
         this.setState({ setDisable: false })
         if (res?.data?.Result) {
           Toaster.success(MESSAGES.LABOUR_ADDED_SUCCESS)
-          this.cancel()
+          this.cancel('submit')
         }
       })
     }
@@ -972,7 +974,7 @@ class AddLabour extends Component {
                       <button
                         type={"button"}
                         className="reset mr15 cancel-btn"
-                        onClick={this.cancel}
+                        onClick={() => { this.cancel('cancel') }}
                         disabled={setDisable}
                       >
                         <div className={"cancel-icon"}></div>

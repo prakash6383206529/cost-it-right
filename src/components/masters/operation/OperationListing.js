@@ -81,37 +81,35 @@ class OperationListing extends Component {
             globalTake: defaultPageSize
         }
     }
-
     componentDidMount() {
+
         this.applyPermission(this.props.topAndLeftMenuData)
         setTimeout(() => {
-
-            this.props.getTechnologySelectList(() => { })
-            this.props.getOperationSelectList(() => { })
-            this.props.getVendorWithVendorCodeSelectList()
-            if (this.props.isSimulation && this.props?.selectionForListingMasterAPI === 'Combined') {
-                this.props?.changeSetLoader(true)
-                this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, OPERATIONS, (res) => {
-                    this.props?.changeSetLoader(false)
-                    this.setState({ tableData: res.data.DataList })
-                })
-            } else {
-                this.getTableListData(null, null, null, null, 0, defaultPageSize, true, this.state.floatingFilterData)
-            }
-            let obj = {
-                MasterId: OPERATIONS_ID,
-                DepartmentId: userDetails().DepartmentId,
-                LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
-                LoggedInUserId: loggedInUserId()
-            }
-            this.props.masterFinalLevelUser(obj, (res) => {
-                if (res?.data?.Result) {
-                    this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+            if (!this.props.stopAPICall) {
+                if (this.props.isSimulation && this.props?.selectionForListingMasterAPI === 'Combined') {
+                    this.props?.changeSetLoader(true)
+                    this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, OPERATIONS, (res) => {
+                        this.props?.changeSetLoader(false)
+                        this.setState({ tableData: res.data.DataList })
+                    })
+                } else {
+                    this.getTableListData(null, null, null, null, 0, defaultPageSize, true, this.state.floatingFilterData)
                 }
-            })
+                let obj = {
+                    MasterId: OPERATIONS_ID,
+                    DepartmentId: userDetails().DepartmentId,
+                    LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
+                    LoggedInUserId: loggedInUserId()
+                }
+                this.props.masterFinalLevelUser(obj, (res) => {
+                    if (res?.data?.Result) {
+                        this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+                    }
+                })
+            }
 
             if (this.props.stopAPICall === true) {
-                this.setState({ tableData: this.props.setOperationData })
+                this.setState({ tableData: this.props.operationDataHold })
             }
         }, 300);
     }
@@ -197,8 +195,8 @@ class OperationListing extends Component {
                     this.setState({ tableData: [] })
                 } else {
                     this.setState({ tableData: res.data.DataList })
+                    this.props.setOperationList(res.data.DataList)
                 }
-
                 // CODE FOR DOWNLOAD BUTTON LOGIC
                 if (res && isPagination === false) {
                     this.setState({ disableDownload: false })
@@ -921,10 +919,10 @@ class OperationListing extends Component {
 * @param {*} state
                 */
 function mapStateToProps({ otherOperation, auth, simulation }) {
-    const { loading, filterOperation, operationList, allOperationList, operationSurfaceTreatmentList, operationIndividualList, setOperationData } = otherOperation;
+    const { loading, filterOperation, operationList, allOperationList, operationSurfaceTreatmentList, operationIndividualList, setOperationData, operationDataHold } = otherOperation;
     const { leftMenuData, initialConfiguration, topAndLeftMenuData } = auth;
     const { selectedCostingListSimulation } = simulation;
-    return { loading, filterOperation, leftMenuData, operationList, allOperationList, initialConfiguration, topAndLeftMenuData, operationSurfaceTreatmentList, operationIndividualList, selectedCostingListSimulation, setOperationData };
+    return { loading, filterOperation, leftMenuData, operationList, allOperationList, initialConfiguration, topAndLeftMenuData, operationSurfaceTreatmentList, operationIndividualList, selectedCostingListSimulation, setOperationData, operationDataHold };
 }
 
 /**
