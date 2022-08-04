@@ -7,8 +7,7 @@ import Toaster from '../../common/Toaster'
 import { MESSAGES } from '../../../config/message'
 import { defaultPageSize, EMPTY_DATA } from '../../../config/constants'
 import NoContentFound from '../../common/NoContentFound'
-import { getVolumeDataList, deleteVolume, getFinancialYearSelectList, } from '../actions/Volume'
-import { getPlantSelectList, getVendorWithVendorCodeSelectList } from '../../../actions/Common'
+import { getVolumeDataList, deleteVolume, } from '../actions/Volume'
 import { getVendorListByVendorType } from '../actions/Material'
 import { VOLUME_DOWNLOAD_EXCEl } from '../../../config/masterData'
 import AddVolume from './AddVolume'
@@ -135,15 +134,13 @@ class VolumeListing extends Component {
       deletedId: '',
       isLoader: false,
       limit: false,
+      selectedRowData: false
     }
   }
 
   componentDidMount() {
     this.applyPermission(this.props.topAndLeftMenuData)
-    this.props.getPlantSelectList(() => { })
-    this.props.getFinancialYearSelectList(() => { })
     // this.props.getVendorListByVendorType(true, () => { })
-    this.props.getVendorWithVendorCodeSelectList(() => { })
     this.getTableListData()
   }
 
@@ -353,13 +350,15 @@ class VolumeListing extends Component {
    * @method hideForm
    * @description HIDE FORM
    */
-  hideForm = () => {
+  hideForm = (type) => {
     this.setState(
       { showVolumeForm: false, data: { isEditFlag: false, ID: '' } },
       () => {
-        this.getTableListData()
+        if (type === 'submit')
+          this.getTableListData()
       },
     )
+
   }
 
   /**
@@ -379,8 +378,16 @@ class VolumeListing extends Component {
     this.state.gridApi.paginationSetPageSize(Number(newPageSize));
   };
 
+  onRowSelect = () => {
+    const selectedRows = this.state.gridApi?.getSelectedRows()
+    this.setState({ selectedRowData: selectedRows })
+  }
+
   onBtExport = () => {
-    return this.returnExcelColumn(VOLUME_DOWNLOAD_EXCEl, this.props.volumeDataList)
+    let tempArr = []
+    tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+    tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.volumeDataList ? this.props.volumeDataList : [])
+    return this.returnExcelColumn(VOLUME_DOWNLOAD_EXCEl, tempArr)
   };
 
   returnExcelColumn = (data = [], TempData) => {
@@ -409,6 +416,7 @@ class VolumeListing extends Component {
   }
 
   resetState() {
+    this.state.gridApi.deselectAll()
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
   }
@@ -449,14 +457,21 @@ class VolumeListing extends Component {
     } = this.state
     const ExcelFile = ReactExport.ExcelFile;
 
-
+    const isFirstColumn = (params) => {
+      var displayedColumns = params.columnApi.getAllDisplayedColumns();
+      var thisIsFirstColumn = displayedColumns[0] === params.column;
+      return thisIsFirstColumn;
+    }
 
     const defaultColDef = {
       resizable: true,
       filter: true,
       sortable: true,
-
+      headerCheckboxSelectionFilteredOnly: true,
+      headerCheckboxSelection: isFirstColumn,
+      checkboxSelection: isFirstColumn
     };
+
 
     const frameworkComponents = {
       totalValueRenderer: this.buttonFormatter,
@@ -585,6 +600,8 @@ class VolumeListing extends Component {
                   title: EMPTY_DATA,
                   imagClass: 'imagClass'
                 }}
+                rowSelection={'multiple'}
+                onSelectionChanged={this.onRowSelect}
                 frameworkComponents={frameworkComponents}
               >
                 <AgGridColumn field="IsVendor" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
@@ -650,7 +667,7 @@ class VolumeListing extends Component {
  * @param {*} state
  */
 function mapStateToProps({ comman, material, volume, auth }) {
-  const { loading, plantSelectList, vendorWithVendorCodeSelectList } = comman
+  const { loading, plantSelectList } = comman
   const { vendorListByVendorType, } = material
   const { financialYearSelectList, volumeDataList } = volume
   const { leftMenuData, topAndLeftMenuData } = auth
@@ -661,7 +678,6 @@ function mapStateToProps({ comman, material, volume, auth }) {
     financialYearSelectList,
     leftMenuData,
     volumeDataList,
-    vendorWithVendorCodeSelectList,
     topAndLeftMenuData,
   }
 }
@@ -673,12 +689,9 @@ function mapStateToProps({ comman, material, volume, auth }) {
  * @param {function} mapDispatchToProps
  */
 export default connect(mapStateToProps, {
-  getPlantSelectList,
   getVendorListByVendorType,
   getVolumeDataList,
   deleteVolume,
-  getFinancialYearSelectList,
-  getVendorWithVendorCodeSelectList
 })(
   reduxForm({
     form: 'VolumeListing',
@@ -686,5 +699,6 @@ export default connect(mapStateToProps, {
       focusOnError(errors)
     },
     enableReinitialize: true,
+    touchOnChange: true
   })(VolumeListing),
 )

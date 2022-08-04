@@ -80,8 +80,8 @@ class AddOverhead extends Component {
    */
   componentDidMount() {
     this.props.fetchModelTypeAPI('--Model Types--', res => { });
+    this.props.fetchCostingHeadsAPI('--Costing Heads--', res => { });
     if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
-      this.props.fetchCostingHeadsAPI('--Costing Heads--', res => { });
       this.props.getClientSelectList(() => { })
     }
     this.getDetails();
@@ -660,7 +660,7 @@ class AddOverhead extends Component {
   * @method cancel
   * @description used to Reset form
   */
-  cancel = () => {
+  cancel = (type) => {
     const { reset } = this.props;
     reset();
     this.setState({
@@ -671,7 +671,7 @@ class AddOverhead extends Component {
       overheadAppli: [],
     })
     this.props.getOverheadData('', res => { })
-    this.props.hideForm()
+    this.props.hideForm(type)
   }
 
 
@@ -717,8 +717,7 @@ class AddOverhead extends Component {
         DropdownChanged && Number(DataToChange.OverheadPercentage) === Number(values.OverheadPercentage) && Number(DataToChange.OverheadRMPercentage) === Number(values.OverheadRMPercentage)
         && Number(DataToChange.OverheadMachiningCCPercentage) === Number(values.OverheadMachiningCCPercentage) && Number(DataToChange.OverheadBOPPercentage) === Number(values.OverheadBOPPercentage)
         && String(DataToChange.Remark) === String(values.Remark) && uploadAttachements) {
-
-        this.cancel()
+        this.cancel('cancel')
         return false
       }
       this.setState({ setDisable: true, disablePopup: false })
@@ -784,7 +783,7 @@ class AddOverhead extends Component {
         this.setState({ setDisable: false })
         if (res?.data?.Result) {
           Toaster.success(MESSAGES.OVERHEAD_ADDED_SUCCESS);
-          this.cancel();
+          this.cancel('submit');
         }
       });
     }
@@ -795,7 +794,7 @@ class AddOverhead extends Component {
       this.setState({ setDisable: false })
       if (res?.data?.Result) {
         Toaster.success(MESSAGES.OVERHEAD_UPDATE_SUCCESS);
-        this.cancel()
+        this.cancel('submit')
       }
     });
   }
@@ -1194,7 +1193,7 @@ class AddOverhead extends Component {
                         <button
                           type={"button"}
                           className=" mr15 cancel-btn"
-                          onClick={this.cancel}
+                          onClick={() => { this.cancel('cancel') }}
                           disabled={setDisable}
                         >
                           <div className={"cancel-icon"}></div>

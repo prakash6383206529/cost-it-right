@@ -48,8 +48,8 @@ class SpecificationListing extends Component {
             showPopup: false,
             showPopup2: false,
             deletedId: '',
-            isLoader: false
-
+            isLoader: false,
+            selectedRowData: false
         }
     }
 
@@ -86,29 +86,13 @@ class SpecificationListing extends Component {
     * @method closeDrawer
     * @description  used to cancel filter form
     */
-    closeDrawer = (e = '') => {
+    closeDrawer = (e = '', data, type) => {
         this.setState({ isOpen: false }, () => {
-            this.getSpecificationListData('', '');
+            if (type === 'submit')
+                this.getSpecificationListData('', '');
         })
+
     }
-
-    /**
-    * @method renderListing
-    * @description Used show listing of row material
-    */
-
-
-    /**
-    * @method handleGrade
-    * @description  used to handle type of listing change
-    */
-
-
-    /**
-    * @method handleMaterialChange
-    * @description  used to material change and get grade's
-    */
-
 
     /**
     * @method editItemDetails
@@ -271,7 +255,10 @@ class SpecificationListing extends Component {
     };
 
     onBtExport = () => {
-        let tempArr = this.props.rmSpecificationList && this.props.rmSpecificationList
+        let tempArr = []
+        tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+
+        tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.rmSpecificationList ? this.props.rmSpecificationList : [])
         return this.returnExcelColumn(SPECIFICATIONLISTING_DOWNLOAD_EXCEl, tempArr)
     };
 
@@ -298,6 +285,7 @@ class SpecificationListing extends Component {
 
 
     resetState() {
+        this.state.gridApi.deselectAll()
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
     }
@@ -305,6 +293,12 @@ class SpecificationListing extends Component {
         const cellValue = props?.value;
         return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
     }
+    onRowSelect = () => {
+        const selectedRows = this.state.gridApi?.getSelectedRows()
+        this.setState({ selectedRowData: selectedRows })
+    }
+
+
     /**
     * @method render
     * @description Renders the component
@@ -323,11 +317,20 @@ class SpecificationListing extends Component {
             firstPage: <span className="first-page-pg"></span>, // First page button text
             lastPage: <span className="last-page-pg"></span>,
         };
+        const isFirstColumn = (params) => {
 
+            var displayedColumns = params.columnApi.getAllDisplayedColumns();
+            var thisIsFirstColumn = displayedColumns[0] === params.column;
+            return thisIsFirstColumn;
+
+        }
         const defaultColDef = {
             resizable: true,
             filter: true,
             sortable: true,
+            headerCheckboxSelectionFilteredOnly: true,
+            headerCheckboxSelection: isFirstColumn,
+            checkboxSelection: isFirstColumn
         };
 
         const frameworkComponents = {
@@ -370,13 +373,14 @@ class SpecificationListing extends Component {
                                 DownloadAccessibility &&
                                 <>
 
-                                    <ExcelFile filename={RmSpecification} fileExtension={'.xls'} element={
-                                        <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-                                            {/* DOWNLOAD */}
-                                        </button>}>
+                                    <>
 
-                                        {this.onBtExport()}
-                                    </ExcelFile>
+                                        <ExcelFile filename={'RMSpecification'} fileExtension={'.xls'} element={
+                                            <button title="Download" type="button" className={'user-btn mr5'} ><div className="download mr-0"></div></button>}>
+                                            {this.onBtExport()}
+                                        </ExcelFile>
+
+                                    </>
 
                                 </>
 
@@ -408,11 +412,13 @@ class SpecificationListing extends Component {
                                     paginationPageSize={defaultPageSize}
                                     onGridReady={this.onGridReady}
                                     gridOptions={gridOptions}
+                                    rowSelection={'multiple'}
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                     noRowsOverlayComponentParams={{
                                         title: EMPTY_DATA,
                                         imagClass: 'imagClass'
                                     }}
+                                    onSelectionChanged={this.onRowSelect}
                                     frameworkComponents={frameworkComponents}
                                 >
                                     <AgGridColumn field="RMName"></AgGridColumn>

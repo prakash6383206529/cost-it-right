@@ -41,18 +41,19 @@ class AddZBCPlant extends Component {
   * @description Used to cancel modal
   */
   componentDidMount() {
-    if (!(this.props.isEditFlag || this.props.isViewFlag)) {
+    if (!this.props.isViewMode) {
       this.props.fetchCountryDataAPI(() => { })
+    }
+    if (this.props.initialConfiguration.IsCompanyConfigureOnPlant) {
       this.props.getComapanySelectList(() => { })
     }
-
     this.getDetails()
 
   }
 
   UNSAFE_componentWillMount() {
     this.props.fetchCityDataAPI(0, () => { })
-    if (!(this.props.isEditFlag || this.props.isViewFlag)) {
+    if (!(this.props.isEditFlag || this.props.isViewMode)) {
       this.props.fetchStateDataAPI(0, () => { })
     }
   }
@@ -73,9 +74,10 @@ class AddZBCPlant extends Component {
 
           const Data = res.data.Data;
           this.setState({ DataToCheck: Data })
-          this.props.fetchStateDataAPI(Data.CountryId, () => { })
-          this.props.fetchCityDataAPI(Data.StateId, () => { })
-
+          if (!this.state.isViewMode) {
+            this.props.fetchStateDataAPI(Data.CountryId, () => { })
+            this.props.fetchCityDataAPI(Data.StateId, () => { })
+          }
           setTimeout(() => {
             this.setState({
               isEditFlag: true,
@@ -202,7 +204,7 @@ class AddZBCPlant extends Component {
  * @method cancel
  * @description used to Reset form
  */
-  cancel = () => {
+  cancel = (type) => {
     const { reset } = this.props;
     reset();
     this.setState({
@@ -212,14 +214,14 @@ class AddZBCPlant extends Component {
       PlantId: '',
     })
     this.props.getPlantUnitAPI('', res => { })
-    this.toggleDrawer('')
+    this.toggleDrawer('', type)
   }
 
-  toggleDrawer = (event) => {
+  toggleDrawer = (event, type) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }
-    this.props.closeDrawer('')
+    this.props.closeDrawer('', type)
   };
 
   /**
@@ -237,7 +239,7 @@ class AddZBCPlant extends Component {
         DataToCheck.Extension === values.Extension && DataToCheck.AddressLine1 === values.AddressLine1 &&
         DataToCheck.AddressLine2 === values.AddressLine2 && DataToCheck.ZipCode === values.ZipCode) {
 
-        this.toggleDrawer('')
+        this.toggleDrawer('', 'cancel')
         return false
       }
 
@@ -266,7 +268,7 @@ class AddZBCPlant extends Component {
         this.setState({ setDisable: false })
         if (res?.data?.Result) {
           Toaster.success(MESSAGES.UPDATE_PLANT_SUCESS);
-          this.cancel()
+          this.cancel('submit')
         }
       });
 
@@ -293,7 +295,7 @@ class AddZBCPlant extends Component {
         this.setState({ setDisable: false })
         if (res?.data?.Result === true) {
           Toaster.success(MESSAGES.PLANT_ADDED_SUCCESS);
-          this.cancel()
+          this.cancel('submit')
         }
       });
     }
@@ -554,7 +556,7 @@ class AddZBCPlant extends Component {
                     <button
                       type={"button"}
                       className=" mr15 cancel-btn"
-                      onClick={this.cancel}
+                      onClick={() => { this.cancel('cancel') }}
                       disabled={setDisable}
                     >
                       <div className={"cancel-icon"}></div>
@@ -623,7 +625,6 @@ export default connect(mapStateToProps, {
   getComapanySelectList
 })(reduxForm({
   form: 'AddZBCPlant',
-  touchOnChange: true,
   enableReinitialize: true,
   onSubmitFail: (errors) => {
     focusOnError(errors)

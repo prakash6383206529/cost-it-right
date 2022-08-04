@@ -31,7 +31,8 @@ class PartMaster extends Component {
             BulkUploadAccessibility: false,
             DownloadAccessibility: false,
             openDrawer: false,
-            isHover: false
+            isHover: false,
+            stopApiCallOnCancel: false
         }
     }
 
@@ -48,7 +49,7 @@ class PartMaster extends Component {
     toggleFetchDrawer = () => {
 
         this.setState({
-            openDrawer: false
+            openDrawer: false,
         });
     }
 
@@ -82,7 +83,8 @@ class PartMaster extends Component {
     toggle = (tab) => {
         if (this.state.activeTab !== tab) {
             this.setState({
-                activeTab: tab
+                activeTab: tab,
+                stopApiCallOnCancel: false
             });
         }
     }
@@ -98,8 +100,11 @@ class PartMaster extends Component {
     }
 
     //HIDE BOM & PART INDIVIDUAL FORM
-    hideForm = () => {
-        this.setState({ isAddBOMForm: false, isPartForm: false, isProductForm: false, getDetails: {}, })
+    hideForm = (type) => {
+        this.setState({ isAddBOMForm: false, isPartForm: false, isProductForm: false, getDetails: {}, stopApiCallOnCancel: false })
+        if (type === 'cancel') {
+            this.setState({ stopApiCallOnCancel: true })
+        }
     }
 
     //DISPLAY INDIVIDUAL PART FORM
@@ -155,6 +160,7 @@ class PartMaster extends Component {
                 hideForm={this.hideForm}
                 data={this.state.getDetails}
                 displayBOMViewer={this.displayBOMViewer}
+                stopApiCallOnCancel={this.state.stopApiCallOnCancel}
             />
         }
 
@@ -162,6 +168,7 @@ class PartMaster extends Component {
             return <AddIndivisualPart
                 hideForm={this.hideForm}
                 data={this.state.getDetails}
+                stopApiCallOnCancel={this.state.stopApiCallOnCancel}
             />
         }
 
@@ -169,6 +176,8 @@ class PartMaster extends Component {
             return <AddIndivisualProduct
                 hideForm={this.hideForm}
                 data={this.state.getDetails}
+                stopApiCallOnCancel={this.state.stopApiCallOnCancel}
+
             />
         }
 
@@ -223,6 +232,7 @@ class PartMaster extends Component {
                                             BulkUploadAccessibility={this.state.BulkUploadAccessibility}
                                             DownloadAccessibility={this.state.DownloadAccessibility}
                                             ViewAccessibility={this.state.ViewAccessibility}
+                                            stopApiCallOnCancel={this.state.stopApiCallOnCancel}
                                         />
                                     </TabPane>}
                                 {this.state.activeTab === '2' &&
@@ -236,6 +246,7 @@ class PartMaster extends Component {
                                             BulkUploadAccessibility={this.state.BulkUploadAccessibility}
                                             DownloadAccessibility={this.state.DownloadAccessibility}
                                             ViewAccessibility={this.state.ViewAccessibility}
+                                            stopApiCallOnCancel={this.state.stopApiCallOnCancel}
                                         />
                                     </TabPane>}
                                 {this.state.activeTab === '3' &&
@@ -249,6 +260,8 @@ class PartMaster extends Component {
                                             BulkUploadAccessibility={this.state.BulkUploadAccessibility}
                                             DownloadAccessibility={this.state.DownloadAccessibility}
                                             ViewAccessibility={this.state.ViewAccessibility}
+                                            stopApiCallOnCancel={this.state.stopApiCallOnCancel}
+
                                         />
                                     </TabPane>}
                             </TabContent>

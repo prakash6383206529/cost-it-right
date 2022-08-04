@@ -4,8 +4,7 @@ import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { checkForDecimalAndNull } from "../../../helper/validation";
 import { BOPIMPORT, EMPTY_DATA, defaultPageSize, APPROVED_STATUS } from '../../../config/constants';
-import { getBOPImportDataList, deleteBOP, getBOPCategorySelectList, getAllVendorSelectList, } from '../actions/BoughtOutParts';
-import { getPlantSelectList, } from '../../../actions/Common';
+import { getBOPImportDataList, deleteBOP, getAllVendorSelectList, } from '../actions/BoughtOutParts';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import { onFloatingFilterChanged, onSearch, resetState, onBtPrevious, onBtNext, onPageSizeChanged, PaginationWrapper } from '../../common/commonPagination'
@@ -15,7 +14,6 @@ import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { BOP_IMPORT_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
-import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
 import { BopImport, INR, BOP_MASTER_ID } from '../../../config/constants';
 import { getConfigurationKey, loggedInUserId, userDepartmetList, userDetails } from '../../../helper';
 import ReactExport from 'react-export-excel';
@@ -83,41 +81,44 @@ class BOPImportListing extends Component {
     * @description Called after rendering the component
     */
     componentDidMount() {
+        setTimeout(() => {
+            if (!this.props.stopApiCallOnCancel) {
 
-        this.props.getBOPCategorySelectList(() => { })
-        this.props.getPlantSelectList(() => { })
-        this.props.getVendorWithVendorCodeSelectList(() => { })
+                if (this.props.isSimulation) {
+                    if (this.props.selectionForListingMasterAPI === 'Combined') {
+                        this.props?.changeSetLoader(true)
+                        this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, BOPIMPORT, () => {
+                            this.props?.changeSetLoader(false)
 
-        if (this.props.isSimulation) {
-            if (this.props.selectionForListingMasterAPI === 'Combined') {
-                this.props?.changeSetLoader(true)
-                this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, BOPIMPORT, () => {
-                    this.props?.changeSetLoader(false)
-
+                        })
+                    } else {
+                        this.getDataList("", 0, "", "", 0, defaultPageSize, true, this.state.floatingFilterData)
+                    }
+                }
+                else {
+                    this.getDataList("", 0, "", "", 0, defaultPageSize, true, this.state.floatingFilterData)
+                }
+                let obj = {
+                    MasterId: BOP_MASTER_ID,
+                    DepartmentId: userDetails().DepartmentId,
+                    LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
+                    LoggedInUserId: loggedInUserId()
+                }
+                this.props.masterFinalLevelUser(obj, (res) => {
+                    if (res?.data?.Result) {
+                        this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+                    }
                 })
-            } else {
-                this.getDataList("", 0, "", "", 0, defaultPageSize, true, this.state.floatingFilterData)
             }
-        }
-        else {
-            this.getDataList("", 0, "", "", 0, defaultPageSize, true, this.state.floatingFilterData)
-        }
-        let obj = {
-            MasterId: BOP_MASTER_ID,
-            DepartmentId: userDetails().DepartmentId,
-            LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
-            LoggedInUserId: loggedInUserId()
-        }
-        this.props.masterFinalLevelUser(obj, (res) => {
-            if (res?.data?.Result) {
-                this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
-            }
-        })
-
+        }, 300);
     }
 
     componentWillUnmount() {
-        this.props.setSelectedCostingListSimualtion([])
+        setTimeout(() => {
+            if (!this.props.stopApiCallOnCancel) {
+                this.props.setSelectedCostingListSimualtion([])
+            }
+        }, 300);
     }
 
     /**
@@ -161,8 +162,8 @@ class BOPImportListing extends Component {
             if (res && isPagination === false) {
                 this.setState({ disableDownload: false })
                 setTimeout(() => {
-                    let button = document.getElementById('Excel-Downloads')
-                    button.click()
+                    let button = document.getElementById('Excel-Downloads-bop-import')
+                    button && button.click()
                 }, 500);
             }
 
@@ -405,8 +406,8 @@ class BOPImportListing extends Component {
         if (tempArr?.length > 0) {
             setTimeout(() => {
                 this.setState({ disableDownload: false })
-                let button = document.getElementById('Excel-Downloads')
-                button.click()
+                let button = document.getElementById('Excel-Downloads-bop-import')
+                button && button.click()
             }, 400);
 
         } else {
@@ -608,7 +609,8 @@ class BOPImportListing extends Component {
                                 {
                                     DownloadAccessibility &&
                                     <>
-                                        {this.state.disableDownload ? <LoaderCustom customClass={"input-loader"} /> :
+                                        {this.state.disableDownload ? <div className='p-relative mr5'> <LoaderCustom customClass={"download-loader"} /> <button type="button" className={'user-btn'}><div className="download mr-0"></div>
+                                        </button></div> :
 
                                             <>
                                                 <button type="button" onClick={this.onExcelDownload} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
@@ -616,7 +618,7 @@ class BOPImportListing extends Component {
                                                 </button>
 
                                                 <ExcelFile filename={'BOP Import'} fileExtension={'.xls'} element={
-                                                    <button id={'Excel-Downloads'} type="button" >
+                                                    <button id={'Excel-Downloads-bop-import'} className="p-absolute" type="button" >
                                                     </button>}>
                                                     {this.onBtExport()}
                                                 </ExcelFile>
@@ -666,8 +668,8 @@ class BOPImportListing extends Component {
                                 >
                                     {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
                                     <AgGridColumn field="IsVendor" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="BoughtOutPartNumber" headerName="BOP Part No."></AgGridColumn>
-                                    <AgGridColumn field="BoughtOutPartName" headerName="BOP Part Name"></AgGridColumn>
+                                    <AgGridColumn field="BoughtOutPartNumber" headerName="BOP No."></AgGridColumn>
+                                    <AgGridColumn field="BoughtOutPartName" headerName="BOP Name"></AgGridColumn>
                                     <AgGridColumn field="BoughtOutPartCategory" headerName="BOP Category"></AgGridColumn>
                                     <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
                                     <AgGridColumn field="Currency"></AgGridColumn>
@@ -740,14 +742,12 @@ function mapStateToProps({ boughtOutparts, comman, supplier, auth, simulation })
 export default connect(mapStateToProps, {
     getBOPImportDataList,
     deleteBOP,
-    getBOPCategorySelectList,
-    getPlantSelectList,
     getAllVendorSelectList,
-    getVendorWithVendorCodeSelectList,
     getListingForSimulationCombined,
     masterFinalLevelUser,
     setSelectedCostingListSimualtion
 })(reduxForm({
     form: 'BOPImportListing',
     enableReinitialize: true,
+    touchOnChange: true
 })(BOPImportListing));

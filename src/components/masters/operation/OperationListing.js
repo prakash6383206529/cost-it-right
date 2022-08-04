@@ -81,37 +81,35 @@ class OperationListing extends Component {
             globalTake: defaultPageSize
         }
     }
-
     componentDidMount() {
+
         this.applyPermission(this.props.topAndLeftMenuData)
         setTimeout(() => {
-
-            this.props.getTechnologySelectList(() => { })
-            this.props.getOperationSelectList(() => { })
-            this.props.getVendorWithVendorCodeSelectList()
-            if (this.props.isSimulation && this.props?.selectionForListingMasterAPI === 'Combined') {
-                this.props?.changeSetLoader(true)
-                this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, OPERATIONS, (res) => {
-                    this.props?.changeSetLoader(false)
-                    this.setState({ tableData: res.data.DataList })
-                })
-            } else {
-                this.getTableListData(null, null, null, null, 0, defaultPageSize, true, this.state.floatingFilterData)
-            }
-            let obj = {
-                MasterId: OPERATIONS_ID,
-                DepartmentId: userDetails().DepartmentId,
-                LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
-                LoggedInUserId: loggedInUserId()
-            }
-            this.props.masterFinalLevelUser(obj, (res) => {
-                if (res?.data?.Result) {
-                    this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+            if (!this.props.stopAPICall) {
+                if (this.props.isSimulation && this.props?.selectionForListingMasterAPI === 'Combined') {
+                    this.props?.changeSetLoader(true)
+                    this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, OPERATIONS, (res) => {
+                        this.props?.changeSetLoader(false)
+                        this.setState({ tableData: res.data.DataList })
+                    })
+                } else {
+                    this.getTableListData(null, null, null, null, 0, defaultPageSize, true, this.state.floatingFilterData)
                 }
-            })
+                let obj = {
+                    MasterId: OPERATIONS_ID,
+                    DepartmentId: userDetails().DepartmentId,
+                    LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
+                    LoggedInUserId: loggedInUserId()
+                }
+                this.props.masterFinalLevelUser(obj, (res) => {
+                    if (res?.data?.Result) {
+                        this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+                    }
+                })
+            }
 
             if (this.props.stopAPICall === true) {
-                this.setState({ tableData: this.props.setOperationData })
+                this.setState({ tableData: this.props.operationDataHold })
             }
         }, 300);
     }
@@ -197,14 +195,14 @@ class OperationListing extends Component {
                     this.setState({ tableData: [] })
                 } else {
                     this.setState({ tableData: res.data.DataList })
+                    this.props.setOperationList(res.data.DataList)
                 }
-
                 // CODE FOR DOWNLOAD BUTTON LOGIC
                 if (res && isPagination === false) {
                     this.setState({ disableDownload: false })
                     setTimeout(() => {
-                        let button = document.getElementById('Excel-Downloads')
-                        button.click()
+                        let button = document.getElementById('Excel-Downloads-operation')
+                        button && button.click()
                     }, 500);
                 }
 
@@ -603,8 +601,8 @@ class OperationListing extends Component {
         if (tempArr?.length > 0) {
             setTimeout(() => {
                 this.setState({ disableDownload: false })
-                let button = document.getElementById('Excel-Downloads')
-                button.click()
+                let button = document.getElementById('Excel-Downloads-operation')
+                button && button.click()
             }, 400);
 
         } else {
@@ -817,14 +815,15 @@ class OperationListing extends Component {
                                             DownloadAccessibility && !this.props?.isMasterSummaryDrawer &&
                                             <>
 
-                                                {this.state.disableDownload ? <LoaderCustom customClass={"input-loader"} /> :
+                                                {this.state.disableDownload ? <div className='p-relative mr5'> <LoaderCustom customClass={"download-loader"} /> <button type="button" className={'user-btn'}><div className="download mr-0"></div>
+                                                </button></div> :
                                                     <>
                                                         <button type="button" onClick={this.onExcelDownload} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
                                                             {/* DOWNLOAD */}
                                                         </button>
 
                                                         <ExcelFile filename={'Operation'} fileExtension={'.xls'} element={
-                                                            <button id={'Excel-Downloads'} type="button" >
+                                                            <button id={'Excel-Downloads-operation'} className="p-absolute" type="button" >
                                                             </button>}>
                                                             {this.onBtExport()}
                                                         </ExcelFile>
@@ -919,10 +918,10 @@ class OperationListing extends Component {
 * @param {*} state
                 */
 function mapStateToProps({ otherOperation, auth, simulation }) {
-    const { loading, filterOperation, operationList, allOperationList, operationSurfaceTreatmentList, operationIndividualList, setOperationData } = otherOperation;
+    const { loading, filterOperation, operationList, allOperationList, operationSurfaceTreatmentList, operationIndividualList, setOperationData, operationDataHold } = otherOperation;
     const { leftMenuData, initialConfiguration, topAndLeftMenuData } = auth;
     const { selectedCostingListSimulation } = simulation;
-    return { loading, filterOperation, leftMenuData, operationList, allOperationList, initialConfiguration, topAndLeftMenuData, operationSurfaceTreatmentList, operationIndividualList, selectedCostingListSimulation, setOperationData };
+    return { loading, filterOperation, leftMenuData, operationList, allOperationList, initialConfiguration, topAndLeftMenuData, operationSurfaceTreatmentList, operationIndividualList, selectedCostingListSimulation, setOperationData, operationDataHold };
 }
 
 /**

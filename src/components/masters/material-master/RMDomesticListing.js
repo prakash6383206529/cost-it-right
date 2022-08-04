@@ -50,7 +50,6 @@ function RMDomesticListing(props) {
     const [showPopup, setShowPopup] = useState(false)
     const [deletedId, setDeletedId] = useState('')
     const [showPopupBulk, setShowPopupBulk] = useState(false)
-    const [viewAction, setViewAction] = useState(ViewRMAccessibility)
     const [isFinalLevelUser, setIsFinalLevelUser] = useState(false)
     const [disableFilter, setDisableFilter] = useState(true) // STATE MADE FOR CHECKBOX IN SIMULATION
     const [disableDownload, setDisableDownload] = useState(false)
@@ -101,36 +100,40 @@ function RMDomesticListing(props) {
     }, [rmDataList])
 
     useEffect(() => {
-        if (isSimulation && selectionForListingMasterAPI === 'Combined') {
-            props?.changeSetLoader(true)
-            dispatch(getListingForSimulationCombined(objectForMultipleSimulation, RMDOMESTIC, (res) => {
-                props?.changeSetLoader(false)
-            }))
-        } else {
-            if (isSimulation) {
-                props?.changeTokenCheckBox(false)
+        if (!props.stopApiCallOnCancel) {
+            if (isSimulation && selectionForListingMasterAPI === 'Combined') {
+                props?.changeSetLoader(true)
+                dispatch(getListingForSimulationCombined(objectForMultipleSimulation, RMDOMESTIC, (res) => {
+                    props?.changeSetLoader(false)
+                }))
+            } else {
+                if (isSimulation) {
+                    props?.changeTokenCheckBox(false)
+                }
+                getDataList(null, null, null, null, null, 0, 0, defaultPageSize, true, floatingFilterData)
             }
-            getDataList(null, null, null, null, null, 0, 0, defaultPageSize, true, floatingFilterData)
+            setvalue({ min: 0, max: 0 });
         }
-        setvalue({ min: 0, max: 0 });
     }, [])
 
 
     useEffect(() => {
-        let obj = {
-            MasterId: RM_MASTER_ID,
-            DepartmentId: userDetails().DepartmentId,
-            LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
-            LoggedInUserId: loggedInUserId()
-        }
-        dispatch(masterFinalLevelUser(obj, (res) => {
-            if (res?.data?.Result) {
-                setIsFinalLevelUser(res.data.Data.IsFinalApprovar)
+        if (!props.stopApiCallOnCancel) {
+            let obj = {
+                MasterId: RM_MASTER_ID,
+                DepartmentId: userDetails().DepartmentId,
+                LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
+                LoggedInUserId: loggedInUserId()
             }
-        }))
+            dispatch(masterFinalLevelUser(obj, (res) => {
+                if (res?.data?.Result) {
+                    setIsFinalLevelUser(res.data.Data.IsFinalApprovar)
+                }
+            }))
 
-        return () => {
-            dispatch(setSelectedCostingListSimualtion([]))
+            return () => {
+                dispatch(setSelectedCostingListSimualtion([]))
+            }
         }
     }, [])
 
@@ -185,8 +188,8 @@ function RMDomesticListing(props) {
                 if (res && isPagination === false) {
                     setDisableDownload(false)
                     setTimeout(() => {
-                        let button = document.getElementById('Excel-Downloads')
-                        button.click()
+                        let button = document.getElementById('Excel-Downloads-rm-import')
+                        button && button.click()
                     }, 500);
                 }
 
@@ -404,7 +407,7 @@ function RMDomesticListing(props) {
 
         return (
             <>
-                {viewAction && < button title='View' className="View" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
+                {ViewRMAccessibility && < button title='View' className="View" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
                 {isEditbale && <button title='Edit' className="Edit align-middle" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
                 {isDeleteButton && <button title='Delete' className="Delete align-middle" type={'button'} onClick={() => deleteItem(cellValue)} />}
             </>
@@ -577,8 +580,8 @@ function RMDomesticListing(props) {
         if (tempArr?.length > 0) {
             setTimeout(() => {
                 setDisableDownload(false)
-                let button = document.getElementById('Excel-Downloads')
-                button.click()
+                let button = document.getElementById('Excel-Downloads-rm-import')
+                button && button.click()
             }, 400);
 
 
@@ -601,12 +604,6 @@ function RMDomesticListing(props) {
     const onFilterTextBoxChanged = (e) => {
         gridApi.setQuickFilter(e.target.value);
     }
-
-
-    /**
-    * @method render
-    * @description Renders the component
-    */
 
 
     const isFirstColumn = (params) => {
@@ -749,7 +746,8 @@ function RMDomesticListing(props) {
                                                     DownloadAccessibility &&
                                                     <>
 
-                                                        {disableDownload ? <LoaderCustom customClass={"input-loader"} /> :
+                                                        {disableDownload ? <div className='p-relative mr5'> <LoaderCustom customClass={"download-loader"} /> <button type="button" className={'user-btn'}><div className="download mr-0"></div>
+                                                        </button></div> :
 
                                                             <>
                                                                 <button type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
@@ -757,7 +755,7 @@ function RMDomesticListing(props) {
                                                                 </button>
 
                                                                 <ExcelFile filename={'RM Domestic'} fileExtension={'.xls'} element={
-                                                                    <button id={'Excel-Downloads'} type="button" >
+                                                                    <button id={'Excel-Downloads-rm-import'} className="p-absolute" type="button" >
                                                                     </button>}>
                                                                     {onBtExport()}
                                                                 </ExcelFile>

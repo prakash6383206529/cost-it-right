@@ -75,31 +75,34 @@ class MachineRateListing extends Component {
     * @description Called after rendering the component
     */
     componentDidMount() {
+        setTimeout(() => {
+            if (!this.props.stopApiCallOnCancel) {
 
-        if (this.props.isSimulation) {
-            if (this.props.selectionForListingMasterAPI === 'Combined') {
-                this.props?.changeSetLoader(true)
-                this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, MACHINERATE, () => {
-                    this.props?.changeSetLoader(false)
+                if (this.props.isSimulation) {
+                    if (this.props.selectionForListingMasterAPI === 'Combined') {
+                        this.props?.changeSetLoader(true)
+                        this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, MACHINERATE, () => {
+                            this.props?.changeSetLoader(false)
 
+                        })
+                    }
+                }
+                if (this.props.selectionForListingMasterAPI === 'Master') {
+                    this.getDataList("", 0, "", 0, "", "", 0, defaultPageSize, true, this.state.floatingFilterData)
+                }
+                let obj = {
+                    MasterId: MACHINE_MASTER_ID,
+                    DepartmentId: userDetails().DepartmentId,
+                    LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
+                    LoggedInUserId: loggedInUserId()
+                }
+                this.props.masterFinalLevelUser(obj, (res) => {
+                    if (res?.data?.Result) {
+                        this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+                    }
                 })
             }
-        }
-        if (this.props.selectionForListingMasterAPI === 'Master') {
-            this.getDataList("", 0, "", 0, "", "", 0, defaultPageSize, true, this.state.floatingFilterData)
-        }
-        let obj = {
-            MasterId: MACHINE_MASTER_ID,
-            DepartmentId: userDetails().DepartmentId,
-            LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
-            LoggedInUserId: loggedInUserId()
-        }
-        this.props.masterFinalLevelUser(obj, (res) => {
-            if (res?.data?.Result) {
-                this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
-            }
-        })
-
+        }, 300);
     }
 
 
@@ -134,8 +137,8 @@ class MachineRateListing extends Component {
                 if (res && isPagination === false) {
                     this.setState({ disableDownload: false })
                     setTimeout(() => {
-                        let button = document.getElementById('Excel-Downloads')
-                        button.click()
+                        let button = document.getElementById('Excel-Downloads-machine')
+                        button && button.click()
                     }, 500);
                 }
 
@@ -441,8 +444,8 @@ class MachineRateListing extends Component {
         if (tempArr?.length > 0) {
             setTimeout(() => {
                 this.setState({ disableDownload: false })
-                let button = document.getElementById('Excel-Downloads')
-                button.click()
+                let button = document.getElementById('Excel-Downloads-machine')
+                button && button.click()
             }, 400);
 
         } else {
@@ -592,14 +595,15 @@ class MachineRateListing extends Component {
                                 {
                                     DownloadAccessibility &&
                                     <>
-                                        {this.state.disableDownload ? <LoaderCustom customClass={"input-loader"} /> :
+                                        {this.state.disableDownload ? <div className='p-relative mr5'> <LoaderCustom customClass={"download-loader"} /> <button type="button" className={'user-btn'}><div className="download mr-0"></div>
+                                        </button></div> :
                                             <>
                                                 <button type="button" onClick={this.onExcelDownload} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
                                                     {/* DOWNLOAD */}
                                                 </button>
 
                                                 <ExcelFile filename={'Machine Rate'} fileExtension={'.xls'} element={
-                                                    <button id={'Excel-Downloads'} type="button" >
+                                                    <button id={'Excel-Downloads-machine'} className="p-absolute" type="button" >
                                                     </button>}>
                                                     {this.onBtExport()}
                                                 </ExcelFile>
@@ -730,4 +734,5 @@ export default connect(mapStateToProps, {
 })(reduxForm({
     form: 'MachineRateListing',
     enableReinitialize: true,
+    touchOnChange: true
 })(MachineRateListing));

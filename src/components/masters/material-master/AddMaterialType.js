@@ -42,18 +42,18 @@ class AddMaterialType extends Component {
   * @method cancel
   * @description used to Reset form
   */
-  cancel = () => {
+  cancel = (type) => {
     const { reset } = this.props;
     reset();
     this.props.getMaterialTypeDataAPI('', res => { });
-    this.toggleDrawer('')
+    this.toggleDrawer('', '', type)
   }
 
-  toggleDrawer = (event, formData) => {
+  toggleDrawer = (event, formData, type) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }
-    this.props.closeDrawer('', formData)
+    this.props.closeDrawer('', formData, type)
   };
 
   /**
@@ -68,7 +68,7 @@ class AddMaterialType extends Component {
 
 
       if (initialValues.CalculatedDensityValue == values.CalculatedDensityValue && initialValues.MaterialType == values.MaterialType) {
-        this.cancel()
+        this.cancel('cancel')
         return false
       }
       this.setState({ setDisable: true })
@@ -87,7 +87,7 @@ class AddMaterialType extends Component {
           Toaster.success(MESSAGES.MATERIAL_UPDATE_SUCCESS);
           this.props.getMaterialTypeDataAPI('', res => { });
           reset();
-          this.toggleDrawer('', updateData)
+          this.toggleDrawer('', updateData, 'submit')
         }
       })
 
@@ -106,7 +106,7 @@ class AddMaterialType extends Component {
           Toaster.success(MESSAGES.MATERIAL_ADDED_SUCCESS);
           this.props.getMaterialTypeDataAPI('', res => { });
           reset();
-          this.toggleDrawer('', formData)
+          this.toggleDrawer('', formData, 'submit')
         }
       });
     }
@@ -202,7 +202,7 @@ class AddMaterialType extends Component {
                                                 className="submit-button mr5 save-btn"
                                             /> */}
                       <button
-                        onClick={this.cancel}
+                        onClick={() => { this.cancel('cancel') }}
                         type="submit"
                         value="CANCEL"
                         className="mr15 cancel-btn"
@@ -264,4 +264,5 @@ export default connect(mapStateToProps, {
 })(reduxForm({
   form: 'AddMaterialType',
   enableReinitialize: true,
+  touchOnChange: true
 })(AddMaterialType));

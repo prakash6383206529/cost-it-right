@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import {
-    getFuelDetailDataList, getFuelComboData, deleteFuelDetailAPI, getStateListByFuel, getFuelListByState,
+    getFuelDetailDataList, deleteFuelDetailAPI, getStateListByFuel, getFuelListByState,
 } from '../actions/Fuel';
 import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
@@ -45,7 +45,8 @@ class FuelListing extends Component {
             rowData: null,
             isLoader: false,
             showPopup: false,
-            deletedId: ''
+            deletedId: '',
+            selectedRowData: false
 
         }
     }
@@ -55,15 +56,14 @@ class FuelListing extends Component {
     * @description Called after rendering the component
     */
     componentDidMount() {
-        this.setState({ isLoader: true })
         setTimeout(() => {
-            this.getDataList(0, 0)
-            this.props.getFuelComboData(() => { })
-        }, 500);
-    }
-
-    componentWillUnmount() {
-        this.props.getFuelDetailDataList(false, {}, (res) => { })
+            if (!this.props.stopApiCallOnCancel) {
+                this.setState({ isLoader: true })
+                setTimeout(() => {
+                    this.getDataList(0, 0)
+                }, 500);
+            }
+        }, 300);
     }
 
     getDataList = (fuelName = 0, stateName = 0) => {
@@ -230,9 +230,14 @@ class FuelListing extends Component {
     onPageSizeChanged = (newPageSize) => {
         this.state.gridApi.paginationSetPageSize(Number(newPageSize));
     };
-
+    onRowSelect = () => {
+        const selectedRows = this.state.gridApi?.getSelectedRows()
+        this.setState({ selectedRowData: selectedRows })
+    }
     onBtExport = () => {
-        let tempArr = this.props.fuelDataList && this.props.fuelDataList
+        let tempArr = []
+        tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+        tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.fuelDataList ? this.props.fuelDataList : [])
         return this.returnExcelColumn(FUELLISTING_DOWNLOAD_EXCEl, tempArr)
     };
 
@@ -241,6 +246,7 @@ class FuelListing extends Component {
     }
 
     resetState() {
+        this.state.gridApi.deselectAll()
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
     }
@@ -280,11 +286,20 @@ class FuelListing extends Component {
         };
 
 
+        const isFirstColumn = (params) => {
+
+            var displayedColumns = params.columnApi.getAllDisplayedColumns();
+            var thisIsFirstColumn = displayedColumns[0] === params.column;
+            return thisIsFirstColumn;
+
+        }
         const defaultColDef = {
             resizable: true,
             filter: true,
             sortable: true,
-
+            headerCheckboxSelectionFilteredOnly: true,
+            headerCheckboxSelection: isFirstColumn,
+            checkboxSelection: isFirstColumn
         };
 
         const frameworkComponents = {
@@ -379,6 +394,8 @@ class FuelListing extends Component {
                                         title: EMPTY_DATA,
                                         imagClass: 'imagClass'
                                     }}
+                                    rowSelection={'multiple'}
+                                    onSelectionChanged={this.onRowSelect}
                                     frameworkComponents={frameworkComponents}
                                 >
                                     <AgGridColumn field="FuelName" headerName="Fuel" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
@@ -430,11 +447,11 @@ function mapStateToProps({ fuel, auth }) {
 */
 export default connect(mapStateToProps, {
     getFuelDetailDataList,
-    getFuelComboData,
     deleteFuelDetailAPI,
     getStateListByFuel,
     getFuelListByState,
 })(reduxForm({
     form: 'FuelListing',
     enableReinitialize: true,
+    touchOnChange: true
 })(FuelListing));

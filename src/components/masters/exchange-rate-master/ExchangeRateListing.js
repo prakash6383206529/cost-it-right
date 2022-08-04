@@ -3,12 +3,12 @@ import { connect } from 'react-redux';
 import { reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { focusOnError } from "../../layout/FormInputs";
-import { checkForDecimalAndNull, required } from "../../../helper/validation";
+import { checkForDecimalAndNull } from "../../../helper/validation";
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { defaultPageSize, EMPTY_DATA, EXCHNAGERATE, GET_FINANCIAL_YEAR_SELECTLIST } from '../../../config/constants';
+import { defaultPageSize, EMPTY_DATA, EXCHNAGERATE } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
-import { getExchangeRateDataList, deleteExchangeRate, getCurrencySelectList, getExchangeRateData } from '../actions/ExchangeRateMaster';
+import { getExchangeRateDataList, deleteExchangeRate } from '../actions/ExchangeRateMaster';
 import AddExchangeRate from './AddExchangeRate';
 import { ADDITIONAL_MASTERS, ExchangeMaster, EXCHANGE_RATE } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
@@ -55,6 +55,7 @@ class ExchangeRateListing extends Component {
             isLoader: false,
             showPopup: false,
             deletedId: '',
+            selectedRowData: false
         }
     }
 
@@ -62,7 +63,6 @@ class ExchangeRateListing extends Component {
         this.applyPermission(this.props.topAndLeftMenuData)
         this.setState({ isLoader: true })
         setTimeout(() => {
-            this.props.getCurrencySelectList(() => { })
             if (this.props.isSimulation) {
                 if (this.props.selectionForListingMasterAPI === 'Combined') {
                     this.props?.changeSetLoader(true)
@@ -104,17 +104,11 @@ class ExchangeRateListing extends Component {
                     DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
                     BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
                     DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
-                }, () => {
-                    setTimeout(() => {
-                        this.props.getCurrencySelectList(() => { })
-                        this.getTableListData()
-                    }, 500);
-                })
+                },
+                )
             }
-
         }
     }
-
 
 
     /**
@@ -244,15 +238,15 @@ class ExchangeRateListing extends Component {
         this.setState({ toggleForm: true })
     }
 
-    hideForm = () => {
-
-        // this.props.getExchangeRateData('', (res) => { })
+    hideForm = (type) => {
         this.setState({
             currency: [],
             data: { isEditFlag: false, ID: '' },
             toggleForm: false,
         }, () => {
-            this.getTableListData()
+            if (type === 'submit') {
+                this.getTableListData()
+            }
         })
     }
 
@@ -282,10 +276,18 @@ class ExchangeRateListing extends Component {
         this.state.gridApi.paginationSetPageSize(Number(newPageSize));
     };
 
+    onRowSelect = () => {
+        const selectedRows = this.state.gridApi?.getSelectedRows()
+        this.setState({ selectedRowData: selectedRows })
+    }
+
     onBtExport = () => {
-        let tempArr = this.props.exchangeRateDataList && this.props.exchangeRateDataList
+        let tempArr = []
+        tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+        tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.exchangeRateDataList ? this.props.exchangeRateDataList : [])
         return this.returnExcelColumn(EXCHANGERATE_DOWNLOAD_EXCEl, tempArr)
     };
+
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
@@ -311,6 +313,7 @@ class ExchangeRateListing extends Component {
     }
 
     resetState() {
+        this.state.gridApi.deselectAll()
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
     }
@@ -339,12 +342,20 @@ class ExchangeRateListing extends Component {
                 />
             )
         }
+        const isFirstColumn = (params) => {
+            var displayedColumns = params.columnApi.getAllDisplayedColumns();
+            var thisIsFirstColumn = displayedColumns[0] === params.column;
+            return thisIsFirstColumn;
+        }
+
         const defaultColDef = {
             resizable: true,
             filter: true,
             sortable: true,
+            headerCheckboxSelectionFilteredOnly: true,
+            headerCheckboxSelection: isFirstColumn,
+            checkboxSelection: isFirstColumn
         };
-
 
 
         const options = {
@@ -433,6 +444,8 @@ class ExchangeRateListing extends Component {
                                         title: EMPTY_DATA,
                                         imagClass: 'imagClass'
                                     }}
+                                    rowSelection={'multiple'}
+                                    onSelectionChanged={this.onRowSelect}
                                     frameworkComponents={this.frameworkComponents}
                                 >
                                     <AgGridColumn field="Currency" headerName="Currency" minWidth={135}></AgGridColumn>
@@ -477,8 +490,6 @@ function mapStateToProps({ exchangeRate, auth }) {
 export default connect(mapStateToProps, {
     getExchangeRateDataList,
     deleteExchangeRate,
-    getCurrencySelectList,
-    getExchangeRateData,
     getListingForSimulationCombined
 })(reduxForm({
     form: 'ExchangeRateListing',
@@ -486,4 +497,5 @@ export default connect(mapStateToProps, {
         focusOnError(errors);
     },
     enableReinitialize: true,
+    touchOnChange: true
 })(ExchangeRateListing));

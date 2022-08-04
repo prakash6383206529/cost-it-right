@@ -4,8 +4,7 @@ import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { EMPTY_DATA, BOP_MASTER_ID, BOPDOMESTIC, defaultPageSize, APPROVED_STATUS } from '../../../config/constants';
 import {
-    getBOPDomesticDataList, deleteBOP, getBOPCategorySelectList, getAllVendorSelectList,
-    getPlantSelectList, getPlantSelectListByVendor,
+    getBOPDomesticDataList, deleteBOP, getAllVendorSelectList, getPlantSelectListByVendor,
 } from '../actions/BoughtOutParts';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
@@ -78,26 +77,30 @@ class BOPDomesticListing extends Component {
     * @description Called after rendering the component
     */
     componentDidMount() {
-
-        this.props.getBOPCategorySelectList(() => { })
-        this.props.getPlantSelectList(() => { })
-        this.props.getVendorWithVendorCodeSelectList(() => { })
-        this.getDataList("", 0, "", "", 0, defaultPageSize, true, this.state.floatingFilterData)
-        let obj = {
-            MasterId: BOP_MASTER_ID,
-            DepartmentId: userDetails().DepartmentId,
-            LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
-            LoggedInUserId: loggedInUserId()
-        }
-        this.props.masterFinalLevelUser(obj, (res) => {
-            if (res?.data?.Result) {
-                this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+        setTimeout(() => {
+            if (!this.props.stopApiCallOnCancel) {
+                this.getDataList("", 0, "", "", 0, defaultPageSize, true, this.state.floatingFilterData)
+                let obj = {
+                    MasterId: BOP_MASTER_ID,
+                    DepartmentId: userDetails().DepartmentId,
+                    LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
+                    LoggedInUserId: loggedInUserId()
+                }
+                this.props.masterFinalLevelUser(obj, (res) => {
+                    if (res?.data?.Result) {
+                        this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+                    }
+                })
             }
-        })
+        }, 300);
     }
 
     componentWillUnmount() {
-        this.props.setSelectedCostingListSimualtion([])
+        setTimeout(() => {
+            if (!this.props.stopApiCallOnCancel) {
+                this.props.setSelectedCostingListSimualtion([])
+            }
+        }, 300);
     }
 
     /**
@@ -151,8 +154,8 @@ class BOPDomesticListing extends Component {
                     if (res && isPagination === false) {
                         this.setState({ disableDownload: false })
                         setTimeout(() => {
-                            let button = document.getElementById('Excel-Downloads')
-                            button.click()
+                            let button = document.getElementById('Excel-Downloads-bop-domestic')
+                            button && button.click()
                         }, 500);
                     }
 
@@ -405,8 +408,8 @@ class BOPDomesticListing extends Component {
         if (tempArr?.length > 0) {
             setTimeout(() => {
                 this.setState({ disableDownload: false })
-                let button = document.getElementById('Excel-Downloads')
-                button.click()
+                let button = document.getElementById('Excel-Downloads-bop-domestic')
+                button && button.click()
             }, 400);
 
         } else {
@@ -614,7 +617,8 @@ class BOPDomesticListing extends Component {
                                     DownloadAccessibility &&
                                     <>
 
-                                        {this.state.disableDownload ? <LoaderCustom customClass={"input-loader"} /> :
+                                        {this.state.disableDownload ? <div className='p-relative mr5'> <LoaderCustom customClass={"download-loader"} /> <button type="button" className={'user-btn'}><div className="download mr-0"></div>
+                                        </button></div> :
 
                                             <>
                                                 <button type="button" onClick={this.onExcelDownload} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
@@ -622,7 +626,7 @@ class BOPDomesticListing extends Component {
                                                 </button>
 
                                                 <ExcelFile filename={'BOP Domestic'} fileExtension={'.xls'} element={
-                                                    <button id={'Excel-Downloads'} type="button" >
+                                                    <button id={'Excel-Downloads-bop-domestic'} className="p-absolute" type="button" >
                                                     </button>}>
                                                     {this.onBtExport()}
                                                 </ExcelFile>
@@ -739,15 +743,13 @@ function mapStateToProps({ boughtOutparts, supplier, auth, material, simulation 
 export default connect(mapStateToProps, {
     getBOPDomesticDataList,
     deleteBOP,
-    getBOPCategorySelectList,
-    getPlantSelectList,
     getAllVendorSelectList,
     getPlantSelectListByVendor,
-    getVendorWithVendorCodeSelectList,
     getListingForSimulationCombined,
     masterFinalLevelUser,
     setSelectedCostingListSimualtion
 })(reduxForm({
     form: 'BOPDomesticListing',
     enableReinitialize: true,
+    touchOnChange: true
 })(BOPDomesticListing));

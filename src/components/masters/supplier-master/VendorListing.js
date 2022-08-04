@@ -11,10 +11,9 @@ import $ from 'jquery';
 import NoContentFound from '../../common/NoContentFound';
 import {
     getSupplierDataList, activeInactiveVendorStatus, deleteSupplierAPI,
-    getVendorTypesSelectList, getVendorsByVendorTypeID, getAllVendorSelectList,
+    getVendorsByVendorTypeID,
     getVendorTypeByVendorSelectList
 } from '../actions/Supplier';
-import { fetchCountryDataAPI, } from '../../../actions/Common';
 import Switch from "react-switch";
 import BulkUpload from '../../massUpload/BulkUpload';
 import AddVendorDrawer from './AddVendorDrawer';
@@ -82,16 +81,6 @@ class VendorListing extends Component {
             disableFilter: true,
             disableDownload: false,
         }
-    }
-
-    /**
-    * @method componentWillMount
-    * @description called before render the component
-    */
-    UNSAFE_componentWillMount() {
-        this.props.getVendorTypesSelectList()
-        this.props.getAllVendorSelectList()
-        this.props.fetchCountryDataAPI(() => { })
     }
 
     componentDidMount() {
@@ -200,8 +189,8 @@ class VendorListing extends Component {
             if (res && isPagination === false) {
                 this.setState({ disableDownload: false })
                 setTimeout(() => {
-                    let button = document.getElementById('Excel-Downloads')
-                    button.click()
+                    let button = document.getElementById('Excel-Downloads-vendor')
+                    button && button.click()
                 }, 500);
             }
 
@@ -232,40 +221,6 @@ class VendorListing extends Component {
             }
 
         });
-    }
-
-    /**
-    * @method renderListing
-    * @description Used show listing of unit of measurement
-    */
-    renderListing = (label) => {
-        const { countryList, vendorTypeList, vendorSelectList } = this.props;
-
-        const temp = [];
-        if (label === 'country') {
-            countryList && countryList.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-                return null;
-            });
-            return temp;
-        }
-        if (label === 'vendorType') {
-            vendorTypeList && vendorTypeList.map((item, i) => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-                return null;
-            });
-            return temp;
-        }
-        if (label === 'vendorList') {
-            vendorSelectList && vendorSelectList.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-                return null;
-            });
-            return temp;
-        }
     }
 
     /**
@@ -406,42 +361,30 @@ class VendorListing extends Component {
     statusButtonFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+
         const { ActivateAccessibility } = this.state;
-
+        if (rowData.UserId === loggedInUserId()) return null;
         showTitleForActiveToggle(props)
-
-        if (ActivateAccessibility) {
-            return (
-                <>
-                    <label htmlFor="normal-switch" className={`normal-switch`}>
-                        <Switch
-                            onChange={() => this.handleChange(cellValue, rowData)}
-                            checked={cellValue}
-                            background="#ff6600"
-                            onColor="#4DC771"
-                            onHandleColor="#ffffff"
-                            offColor="#FC5774"
-                            id="normal-switch"
-                            height={24}
-                            className={cellValue ? "active-switch" : "inactive-switch"}
-                        />
-                    </label>
-                </>
-            )
-        } else {
-            return (
-                <>
-                    {
-                        cellValue ?
-                            <div className={'Activated'}> {'Active'}</div>
-                            :
-                            <div className={'Deactivated'}>{'Deactive'}</div>
-                    }
-                </>
-            )
-        }
+        return (
+            <>
+                <label htmlFor="normal-switch" className="normal-switch">
+                    {/* <span>Switch with default style</span> */}
+                    <Switch
+                        onChange={() => this.handleChange(cellValue, rowData)}
+                        checked={cellValue}
+                        disabled={!ActivateAccessibility}
+                        background="#ff6600"
+                        onColor="#4DC771"
+                        onHandleColor="#ffffff"
+                        offColor="#FC5774"
+                        id="normal-switch"
+                        height={24}
+                        className={cellValue ? "active-switch" : "inactive-switch"}
+                    />
+                </label>
+            </>
+        )
     }
-
 
     /**
     * @method indexFormatter
@@ -495,8 +438,6 @@ class VendorListing extends Component {
             vendorName: [],
             country: [],
         }, () => {
-            this.props.getVendorTypesSelectList()
-            this.props.getAllVendorSelectList()
             this.getTableListData(null, null, null)
         })
     }
@@ -505,15 +446,18 @@ class VendorListing extends Component {
         this.setState({ isOpenVendor: true, isViewMode: false })
     }
 
-    closeVendorDrawer = (e = '') => {
+    closeVendorDrawer = (e = '', formData, type) => {
+
         this.setState({
             isOpenVendor: false,
             isEditFlag: false,
             ID: '',
         }, () => {
-            this.filterList()
-
+            if (type === 'submit') {
+                this.filterList()
+            }
         })
+
     }
 
     /**
@@ -546,8 +490,8 @@ class VendorListing extends Component {
         if (tempArr?.length > 0) {
             setTimeout(() => {
                 this.setState({ disableDownload: false })
-                let button = document.getElementById('Excel-Downloads')
-                button.click()
+                let button = document.getElementById('Excel-Downloads-vendor')
+                button && button.click()
             }, 400);
 
         } else {
@@ -644,48 +588,6 @@ class VendorListing extends Component {
                                     <div className="flex-fills">
                                         <h5>{`Filter By:`}</h5>
                                     </div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="VendorType"
-                                            type="text"
-                                            label=""
-                                            component={searchableSelect}
-                                            placeholder={"Vendor Type"}
-                                            options={this.renderListing("vendorType")}
-
-                                            validate={
-                                                this.state.vendorType == null ||
-                                                    this.state.vendorType.length === 0
-                                                    ? [required]
-                                                    : []
-                                            }
-                                            required={true}
-                                            handleChangeDescription={this.handleVendorType}
-                                            valueDescription={this.state.vendorType}
-                                            disabled={this.state.isEditFlag ? true : false}
-                                        />
-                                    </div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="Vendors"
-                                            type="text"
-                                            label=""
-                                            component={searchableSelect}
-                                            placeholder={"Vendor Name"}
-                                            options={this.renderListing("vendorList")}
-
-                                            validate={
-                                                this.state.vendorName == null ||
-                                                    this.state.vendorName.length === 0
-                                                    ? [required]
-                                                    : []
-                                            }
-                                            required={true}
-                                            handleChangeDescription={this.handleVendorName}
-                                            valueDescription={this.state.vendorName}
-                                            disabled={this.state.isEditFlag ? true : false}
-                                        />
-                                    </div>
 
                                     <div className="flex-fill">
                                         <button
@@ -714,7 +616,7 @@ class VendorListing extends Component {
                                 <div className="warning-message d-flex align-items-center">
                                     {this.state.warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                                 </div>
-                                <div>
+                                <div className='d-flex'>
                                     <button title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch(this)} disabled={this.state.disableFilter}><div class="filter mr-0"></div></button>
                                     {AddAccessibility && (
                                         <button
@@ -741,14 +643,14 @@ class VendorListing extends Component {
                                     {
                                         DownloadAccessibility &&
                                         <>
-                                            {this.state.disableDownload ? <LoaderCustom customClass={"input-loader"} /> :
+                                            {this.state.disableDownload ? <div className='p-relative mr5'> <LoaderCustom customClass={"download-loader"} /> <button type="button" className={'user-btn'}><div className="download mr-0"></div>
+                                            </button></div> :
                                                 <>
                                                     <button type="button" onClick={this.onExcelDownload} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-                                                        {/* DOWNLOAD */}
                                                     </button>
 
                                                     <ExcelFile filename={'Vendor'} fileExtension={'.xls'} element={
-                                                        <button id={'Excel-Downloads'} type="button" >
+                                                        <button id={'Excel-Downloads-vendor'} className="p-absolute" type="button" >
                                                         </button>}>
                                                         {this.onBtExport()}
                                                     </ExcelFile>
@@ -869,10 +771,7 @@ export default connect(mapStateToProps, {
     getSupplierDataList,
     activeInactiveVendorStatus,
     deleteSupplierAPI,
-    getVendorTypesSelectList,
-    fetchCountryDataAPI,
     getVendorsByVendorTypeID,
-    getAllVendorSelectList,
     getVendorTypeByVendorSelectList
 })(reduxForm({
     form: 'VendorListing',
@@ -880,4 +779,5 @@ export default connect(mapStateToProps, {
         focusOnError(errors);
     },
     enableReinitialize: true,
+    touchOnChange: true
 })(VendorListing));

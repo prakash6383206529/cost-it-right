@@ -102,40 +102,65 @@ function RMImportListing(props) {
   }, [rmImportDataList])
 
   useEffect(() => {
-    let obj = {
-      MasterId: RM_MASTER_ID,
-      DepartmentId: userDetails().DepartmentId,
-      LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
-      LoggedInUserId: loggedInUserId()
-    }
-    dispatch(masterFinalLevelUser(obj, (res) => {
-      if (res?.data?.Result) {
-        setIsFinalLevelUser(res.data.Data.IsFinalApprovar)
-      }
-    }))
+    setTimeout(() => {
+      if (!props.stopApiCallOnCancel) {
+        let obj = {
+          MasterId: RM_MASTER_ID,
+          DepartmentId: userDetails().DepartmentId,
+          LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
+          LoggedInUserId: loggedInUserId()
+        }
+        dispatch(masterFinalLevelUser(obj, (res) => {
+          if (res?.data?.Result) {
+            setIsFinalLevelUser(res.data.Data.IsFinalApprovar)
+          }
+        }))
 
-    return () => {
-      dispatch(setSelectedCostingListSimualtion([]))
-    }
+        return () => {
+          dispatch(setSelectedCostingListSimualtion([]))
+        }
+      }
+    }, 300);
+
   }, [])
 
   useEffect(() => {
+    setTimeout(() => {
+      if (!props.stopApiCallOnCancel) {
+        if (isSimulation && selectionForListingMasterAPI === 'Combined') {
+          props?.changeSetLoader(true)
+          dispatch(getListingForSimulationCombined(objectForMultipleSimulation, RMIMPORT, (res) => {
+            props?.changeSetLoader(false)
 
-    if (isSimulation && selectionForListingMasterAPI === 'Combined') {
-      props?.changeSetLoader(true)
-      dispatch(getListingForSimulationCombined(objectForMultipleSimulation, RMIMPORT, (res) => {
-        props?.changeSetLoader(false)
+          }))
 
-      }))
+        } else {
+          if (isSimulation) {
+            props?.changeTokenCheckBox(false)
+          }
+          getDataList(null, null, null, null, null, 0, 0, defaultPageSize, true, floatingFilterData)
+        }
 
-    } else {
-      if (isSimulation) {
-        props?.changeTokenCheckBox(false)
+        setvalue({ min: 0, max: 0 });
       }
-      getDataList(null, null, null, null, null, 0, 0, defaultPageSize, true, floatingFilterData)
-    }
+    }, 300);
+    if (!props.stopApiCallOnCancel) {
+      if (isSimulation && selectionForListingMasterAPI === 'Combined') {
+        props?.changeSetLoader(true)
+        dispatch(getListingForSimulationCombined(objectForMultipleSimulation, RMIMPORT, (res) => {
+          props?.changeSetLoader(false)
 
-    setvalue({ min: 0, max: 0 });
+        }))
+
+      } else {
+        if (isSimulation) {
+          props?.changeTokenCheckBox(false)
+        }
+        getDataList(null, null, null, null, null, 0, 0, defaultPageSize, true, floatingFilterData)
+      }
+
+      setvalue({ min: 0, max: 0 });
+    }
   }, [])
 
 
@@ -190,8 +215,8 @@ function RMImportListing(props) {
         if (res && isPagination === false) {
           setDisableDownload(false)
           setTimeout(() => {
-            let button = document.getElementById('Excel-Downloads')
-            button.click()
+            let button = document.getElementById('Excel-Downloads-rm-import')
+            button && button.click()
           }, 500);
         }
 
@@ -570,8 +595,8 @@ function RMImportListing(props) {
     if (tempArr?.length > 0) {
       setTimeout(() => {
         setDisableDownload(false)
-        let button = document.getElementById('Excel-Downloads')
-        button.click()
+        let button = document.getElementById('Excel-Downloads-rm-import')
+        button && button.click()
       }, 400);
 
     } else {
@@ -741,7 +766,8 @@ function RMImportListing(props) {
                       {
                         DownloadAccessibility &&
                         <>
-                          {disableDownload ? <LoaderCustom customClass={"input-loader"} /> :
+                          {disableDownload ? <div className='p-relative mr5'> <LoaderCustom customClass={"download-loader"} /> <button type="button" className={'user-btn'}><div className="download mr-0"></div>
+                          </button></div> :
 
                             <>
                               <button type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
@@ -749,7 +775,7 @@ function RMImportListing(props) {
                               </button>
 
                               <ExcelFile filename={'RM Import'} fileExtension={'.xls'} element={
-                                <button id={'Excel-Downloads'} type="button" >
+                                <button id={'Excel-Downloads-rm-import'} className="p-absolute" type="button" >
                                 </button>}>
                                 {onBtExport()}
                               </ExcelFile>
