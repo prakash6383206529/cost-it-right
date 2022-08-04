@@ -8,14 +8,14 @@ import { renderText, renderTextAreaField, focusOnError, renderDatePicker, render
 import { getPlantSelectListByType, getPartSelectList } from '../../../actions/Common';
 import {
   createAssemblyPart, updateAssemblyPart, getAssemblyPartDetail, fileUploadPart, fileDeletePart,
-  getBOMViewerTreeDataByPartIdAndLevel, getProductGroupSelectList, getPartDescription, getPartData, convertPartToAssembly,
+  getBOMViewerTreeDataByPartIdAndLevel, getPartDescription, getPartData, convertPartToAssembly, getProductGroupSelectList
 } from '../actions/Part';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import "react-datepicker/dist/react-datepicker.css";
-import { ASSEMBLY, BOUGHTOUTPART, COMPONENT_PART, FILE_URL, ZBC, } from '../../../config/constants';
+import { ASSEMBLY, BOUGHTOUTPART, COMPONENT_PART, FILE_URL, ZBC } from '../../../config/constants';
 import AddChildDrawer from './AddChildDrawer';
 import DayTime from '../../common/DayTimeWrapper'
 import BOMViewer from './BOMViewer';
@@ -1361,10 +1361,11 @@ export default connect(mapStateToProps, {
   convertPartToAssembly,
   getAssemblyPartDetail,
   getBOMViewerTreeDataByPartIdAndLevel,
-  getProductGroupSelectList,
   getPartDescription,
   getPartData,
-  getCostingSpecificTechnology
+  getCostingSpecificTechnology,
+  getProductGroupSelectList,
+  getPartSelectList
 })(reduxForm({
   form: 'AddAssemblyPart',
   touchOnChange: true,

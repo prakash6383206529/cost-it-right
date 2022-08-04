@@ -138,6 +138,7 @@ class AddRMImport extends Component {
     // this.props.fetchSupplierCityDataAPI(res => { });
     if (!(data.isEditFlag || data.isViewFlag)) {
       this.props.getRawMaterialCategory(res => { });
+      this.props.getRawMaterialNameChild('', () => { })
       this.setState({ inputLoader: true })
       this.props.getRawMaterialCategory(res => { });
       this.props.getVendorListByVendorType(false, () => { this.setState({ inputLoader: false }) })
