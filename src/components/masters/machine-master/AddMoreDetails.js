@@ -1517,13 +1517,13 @@ class AddMoreDetails extends Component {
 
     this.setState({
       processName: [],
-      UOM: isProcessGroup ? UOM : [],
+      UOM: isProcessGroup && this.state.processGrid.length !== 0 ? UOM : [],
       processGridEditIndex: '',
       isEditIndex: false,
     }, () => {
       this.props.change('OutputPerHours', isProcessGroup ? fieldsObj.OutputPerHours : 0)
       this.props.change('OutputPerYear', isProcessGroup ? fieldsObj.OutputPerYear : 0)
-      this.props.change('MachineRate', isProcessGroup ? checkForDecimalAndNull(fieldsObj.MachineRate, this.props.initialConfiguration.NoOfDecimalForPrice) : 0)
+      this.props.change('MachineRate', isProcessGroup && this.state.processGrid.length !== 0 ? checkForDecimalAndNull(fieldsObj.MachineRate, this.props.initialConfiguration.NoOfDecimalForPrice) : 0)
     });
   };
 
@@ -2108,7 +2108,7 @@ class AddMoreDetails extends Component {
 */
 
   DisplayMachineRateLabel = () => {
-    return <>Machine Rate{this.state.UOM.label && '/'}{this.state.UOM && displayUOM(this.state.UOM.label)} (INR)</>
+    return <>Machine Rate/{(this.state.UOM && this.state.UOM.length !== 0) ? displayUOM(this.state.UOM.label) : "UOM"} (INR)</>
   }
 
   /**
@@ -3505,12 +3505,19 @@ class AddMoreDetails extends Component {
                                     >Cancel</button>
                                   </>
                                   :
-                                  <button
-                                    type="button"
-                                    className={'user-btn pull-left'}
-                                    disabled={this.state.isViewMode}
-                                    onClick={this.processTableHandler}>
-                                    <div className={'plus'}></div>ADD</button>}
+                                  <>
+                                    <button
+                                      type="button"
+                                      className={'user-btn pull-left'}
+                                      disabled={this.state.isViewMode}
+                                      onClick={this.processTableHandler}>
+                                      <div className={'plus'}></div>ADD</button>
+                                    <button
+                                      type="button"
+                                      disabled={this.state.isViewMode}
+                                      className={'reset-btn pull-left ml5'}
+                                      onClick={this.resetProcessGridData}
+                                    >Reset</button> </>}
                               </div>
                             </Col>
                             <Col md="12">
