@@ -144,10 +144,10 @@ class AddMachineRate extends Component {
       this.setState({ isFinalApprovar: data?.isFinalApprovar })
       return true
     }
-    this.props.getMachineTypeSelectList(() => { })
     this.props.getProcessesSelectList(() => { })
-    this.props.getUOMSelectList(() => { })
     if (!(editDetails.isEditFlag || editDetails.isViewFlag)) {
+      this.props.getMachineTypeSelectList(() => { })
+      this.props.getUOMSelectList(() => { })
       this.props.getCostingSpecificTechnology(loggedInUserId(), () => { })
       this.props.getVendorListByVendorType(true, () => { })
       this.props.getPlantSelectListByType(ZBC, () => { })
@@ -247,8 +247,7 @@ class AddMachineRate extends Component {
   closeApprovalDrawer = (e = '', type) => {
     this.setState({ approveDrawer: false, setDisable: false })
     if (type === 'submit') {
-
-      this.cancel()
+      this.cancel('submit')
     }
   }
   /**
@@ -320,7 +319,6 @@ class AddMachineRate extends Component {
           this.props.change('Specification', Data.Specification)
           this.setState({ minEffectiveDate: Data.EffectiveDate })
           setTimeout(() => {
-            const { machineTypeSelectList } = this.props;
             let plantObj;
             let MachineProcessArray = Data && Data.MachineProcessRates.map(el => {
               return {
@@ -332,13 +330,11 @@ class AddMachineRate extends Component {
               }
             })
 
-            const machineTypeObj = machineTypeSelectList && machineTypeSelectList.find(item => Number(item.Value) === Data.MachineTypeId)
             if (getConfigurationKey().IsDestinationPlantConfigure && Data.IsVendor) {
               plantObj = Data.DestinationPlantName !== undefined ? { label: Data.DestinationPlantName, value: Data.DestinationPlantId } : []
             } else {
               plantObj = Data && Data.Plant.length > 0 ? { label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId } : []
             }
-
 
             this.setState({
               isEditFlag: true,
@@ -349,7 +345,7 @@ class AddMachineRate extends Component {
               selectedTechnology: Data.Technology[0].Technology !== undefined ? { label: Data.Technology[0].Technology, value: Data.Technology[0].TechnologyId } : [],
               selectedPlants: plantObj,
               vendorName: Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.VendorId } : [],
-              machineType: machineTypeObj && machineTypeObj !== undefined ? { label: machineTypeObj.Text, value: machineTypeObj.Value } : [],
+              machineType: Data.MachineType !== undefined ? { label: Data.MachineType, value: Data.MachineTypeId } : [],
               processGrid: MachineProcessArray,
               remarks: Data.Remark,
               files: Data.Attachements,
@@ -859,7 +855,7 @@ class AddMachineRate extends Component {
   * @method cancel
   * @description used to Reset form
   */
-  cancel = () => {
+  cancel = (type) => {
     const { reset } = this.props;
     reset();
     this.setState({
@@ -867,7 +863,7 @@ class AddMachineRate extends Component {
       isFormHide: true,
       IsVendor: false,
       isEditFlag: false,
-    }, () => this.props.hideForm())
+    }, () => this.props.hideForm(type))
 
   }
 
@@ -996,7 +992,7 @@ class AddMachineRate extends Component {
     this.setState({ isVendorNameNotSelected: false })
 
     if (isViewFlag) {
-      this.cancel();
+      this.cancel('cancel');
       return false
     }
     const { machineData } = this.props;
@@ -1026,7 +1022,7 @@ class AddMachineRate extends Component {
           this.setState({ setDisable: false, selectedPlants: selectedPlants })
           if (res?.data?.Result) {
             Toaster.success(MESSAGES.UPDATE_MACHINE_SUCCESS);
-            this.cancel();
+            this.cancel('submit');
           }
         })
 
@@ -1170,7 +1166,7 @@ class AddMachineRate extends Component {
           if (res?.data?.Result) {
             Toaster.success(MESSAGES.MACHINE_ADD_SUCCESS)
             //this.clearForm()
-            this.cancel()
+            this.cancel('submit')
           }
         })
       }
@@ -1195,7 +1191,7 @@ class AddMachineRate extends Component {
       this.setState({ setDisable: false })
       if (res?.data?.Result) {
         Toaster.success(MESSAGES.UPDATE_MACHINE_DETAILS_SUCCESS);
-        this.cancel()
+        this.cancel('submit')
 
       }
     });
@@ -1792,7 +1788,7 @@ class AddMachineRate extends Component {
                               <button
                                 type={'button'}
                                 className=" mr15 cancel-btn"
-                                onClick={this.cancel}
+                                onClick={() => { this.cancel('cancel') }}
                                 disabled={setDisable}
                               >
                                 <div className={"cancel-icon"}></div> {'Cancel'}

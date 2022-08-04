@@ -393,15 +393,19 @@ function CommonApproval(props) {
     * @method closeDrawer
     * @description HIDE RM DRAWER
     */
-    const closeDrawer = (e = '') => {
+    const closeDrawer = (e = '', type) => {
         setShowApprovalSummary(false)
-        setLoader(true)
-        getTableData(0, 10, true, floatingFilterData)
+        if (type === 'submit') {
+            setLoader(true)
+            getTableData(0, 10, true, floatingFilterData)
+        }
     }
-    const closeApprovalDrawer = (e = '') => {
+    const closeApprovalDrawer = (e = '', type) => {
         setApprovalDrawer(false)
-        setLoader(true)
-        getTableData(0, 10, true, floatingFilterData)
+        if (type === 'submit') {
+            setLoader(true)
+            getTableData(0, 10, true, floatingFilterData)
+        }
     }
 
     // const onRowSelect = () => {

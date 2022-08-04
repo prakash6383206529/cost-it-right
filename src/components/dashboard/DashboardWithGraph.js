@@ -147,4 +147,5 @@ export default connect(mapStateToProps, {
 })(reduxForm({
     form: 'Dashboardwithgraph',
     enableReinitialize: true,
+    touchOnChange: true
 })(Dashboardwithgraph));
