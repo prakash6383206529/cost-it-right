@@ -133,11 +133,13 @@ class AddVolume extends Component {
         duplicateTableData: this.props.initialTableData,
       })
     }, 100)
-    if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
-      this.props.getPlantSelectListByType(ZBC, () => { })
+    setTimeout(() => {
       this.props.getFinancialYearSelectList(() => { })
-      this.props.getPartSelectList(() => { })
-    }
+      if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
+        this.props.getPlantSelectListByType(ZBC, () => { })
+        this.props.getPartSelectList(() => { })
+      }
+    }, 300);
     this.getDetail()
   }
 

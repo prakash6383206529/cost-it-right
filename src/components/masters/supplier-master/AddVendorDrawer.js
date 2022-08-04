@@ -264,18 +264,18 @@ class AddVendorDrawer extends Component {
         }
     }
 
-    toggleDrawer = (event, formData) => {
+    toggleDrawer = (event, type) => {
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
             return;
         }
-        this.props.closeDrawer('', formData)
+        this.props.closeDrawer('', type)
     };
 
     /**
     * @method cancel
     * @description used to Reset form
     */
-    cancel = (formData = {}) => {
+    cancel = (formData = {}, type) => {
         const { reset } = this.props;
         reset();
         this.setState({
@@ -288,7 +288,7 @@ class AddVendorDrawer extends Component {
             isEditFlag: false,
         })
         this.props.getSupplierByIdAPI('', false, () => { })
-        this.toggleDrawer('', formData)
+        this.toggleDrawer('', type)
     }
 
     /**
@@ -328,7 +328,7 @@ class AddVendorDrawer extends Component {
                 DataToCheck.ZipCode == values.ZipCode && DataToCheck.AddressLine1 == values.AddressLine1 &&
                 DataToCheck.AddressLine2 == values.AddressLine2) {
 
-                this.toggleDrawer('')
+                this.toggleDrawer('', 'cancel')
                 return false
             }
             this.setState({ setDisable: true })
@@ -351,7 +351,7 @@ class AddVendorDrawer extends Component {
                 this.setState({ setDisable: false })
                 if (res?.data?.Result) {
                     Toaster.success(MESSAGES.UPDATE_SUPPLIER_SUCESS);
-                    this.cancel(formData)
+                    this.cancel(formData, 'submit')
                 }
             });
         } else {/** Add new detail for creating supplier master **/
@@ -377,7 +377,7 @@ class AddVendorDrawer extends Component {
                 this.setState({ setDisable: false })
                 if (res?.data?.Result) {
                     Toaster.success(MESSAGES.SUPPLIER_ADDED_SUCCESS);
-                    this.cancel(formData);
+                    this.cancel(formData, 'submit');
                 }
             })
         }
@@ -415,7 +415,7 @@ class AddVendorDrawer extends Component {
                                             <h3>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Vendor</h3>
                                         </div>
                                         <div
-                                            onClick={(e) => this.toggleDrawer(e)}
+                                            onClick={(e) => this.toggleDrawer(e, 'cancel')}
                                             className={'close-button right'}>
                                         </div>
                                     </Col>

@@ -5,7 +5,6 @@ import { Row, Col } from 'reactstrap';
 import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength75, maxLength20, maxLength80, maxLength512, checkSpacesInString } from "../../../helper/validation";
 import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
 import { renderText, renderTextAreaField, focusOnError, renderDatePicker, renderMultiSelectField, searchableSelect } from "../../layout/FormInputs";
-import { getPlantSelectListByType, getPartSelectList } from '../../../actions/Common';
 import {
   createAssemblyPart, updateAssemblyPart, getAssemblyPartDetail, fileUploadPart, fileDeletePart,
   getBOMViewerTreeDataByPartIdAndLevel, getProductGroupSelectList, getPartDescription, getPartData, convertPartToAssembly,
@@ -16,7 +15,7 @@ import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { ASSEMBLY, BOUGHTOUTPART, COMPONENT_PART, FILE_URL, ZBC, } from '../../../config/constants';
+import { ASSEMBLY, BOUGHTOUTPART, COMPONENT_PART, FILE_URL } from '../../../config/constants';
 import AddChildDrawer from './AddChildDrawer';
 import DayTime from '../../common/DayTimeWrapper'
 import BOMViewer from './BOMViewer';
@@ -29,6 +28,7 @@ import WarningMessage from '../../common/WarningMessage'
 import Switch from "react-switch";
 import AsyncSelect from 'react-select/async';
 import { getCostingSpecificTechnology } from '../../costing/actions/Costing'
+import { getPartSelectList } from '../../../actions/Common';
 
 const selector = formValueSelector('AddAssemblyPart')
 export const PartEffectiveDate = React.createContext()
@@ -85,9 +85,9 @@ class AddAssemblyPart extends Component {
   */
   componentDidMount() {
     this.setState({ inputLoader: true })
-    this.props.getPlantSelectListByType(ZBC, () => { })
     this.props.getProductGroupSelectList(() => { })
     this.props.getCostingSpecificTechnology(loggedInUserId(), () => { })
+    this.props.getProductGroupSelectList(() => { })
     this.props.getPartSelectList((res) => {
       this.setState({ partListingData: res?.data?.SelectList, inputLoader: false })
     })
@@ -1352,7 +1352,6 @@ function mapStateToProps(state) {
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
-  getPlantSelectListByType,
   fileUploadPart,
   fileDeletePart,
   getPartSelectList,
@@ -1364,7 +1363,9 @@ export default connect(mapStateToProps, {
   getProductGroupSelectList,
   getPartDescription,
   getPartData,
-  getCostingSpecificTechnology
+  getCostingSpecificTechnology,
+  getProductGroupSelectList,
+  getPartSelectList
 })(reduxForm({
   form: 'AddAssemblyPart',
   touchOnChange: true,
