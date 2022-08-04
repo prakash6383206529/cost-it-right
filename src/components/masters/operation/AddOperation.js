@@ -723,7 +723,7 @@ class AddOperation extends Component {
   */
   render() {
     const { handleSubmit, initialConfiguration, isOperationAssociated } = this.props;
-    const { isEditFlag, isOpenVendor, isOpenUOM, isDisableCode, isViewMode, setDisable, disablePopup } = this.state;
+    const { isEditFlag, isOpenVendor, isOpenUOM, isDisableCode, isViewMode, setDisable, disablePopup, selectedTechnology } = this.state;
     const filterList = (inputValue) => {
       let tempArr = []
 
@@ -744,7 +744,12 @@ class AddOperation extends Component {
 
 
       });
-
+    let temp = [];
+    selectedTechnology && selectedTechnology.map(item => {
+      temp.push(item.Text)
+    }
+    )
+    const technologyTitle = temp.join(",")
     return (
       <div className="container-fluid">
         {/* {isLoader && <Loader />} */}
@@ -790,6 +795,7 @@ class AddOperation extends Component {
                     <Row>
                       <Col md="3">
                         <Field
+                          title={isEditFlag && technologyTitle}
                           label="Technology"
                           name="technology"
                           placeholder="Select"
