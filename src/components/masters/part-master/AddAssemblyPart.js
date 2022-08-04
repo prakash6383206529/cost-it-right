@@ -87,9 +87,11 @@ class AddAssemblyPart extends Component {
     this.setState({ inputLoader: true })
     this.props.getCostingSpecificTechnology(loggedInUserId(), () => { })
     this.props.getProductGroupSelectList(() => { })
-    this.props.getPartSelectList((res) => {
-      this.setState({ partListingData: res?.data?.SelectList, inputLoader: false })
-    })
+    if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
+      this.props.getPartSelectList((res) => {
+        this.setState({ partListingData: res?.data?.SelectList, inputLoader: false })
+      })
+    }
     this.getDetails()
   }
 
