@@ -280,6 +280,10 @@ export function saveSimulationForRawMaterial(data, callback) {
 
 export function getApprovalSimulatedCostingSummary(params, callback) {
     return (dispatch) => {
+        dispatch({
+            type: GET_KEYS_FOR_DOWNLOAD_SUMMARY,
+            payload: [],
+        })
         const queryParameter = `${params.approvalTokenNumber}/${params.approvalId}/${params.loggedInUserId}`;
         const request = axios.get(`${API.getApprovalSimulatedCostingSummary}/${queryParameter}`, config())
         request.then((response) => {
