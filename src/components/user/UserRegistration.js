@@ -367,7 +367,7 @@ class UserRegistration extends Component {
               role: RoleObj !== undefined ? { label: RoleObj.RoleName, value: RoleObj.RoleId } : [],
               city: { label: this.props.registerUserData.CityName, value: this.props.registerUserData.CityId }
             })
-
+            this.props.change('UserName', Data?.UserName)
             if (Data.IsAdditionalAccess) {
               this.getUserPermission(data.UserId)
             }
@@ -1353,7 +1353,6 @@ class UserRegistration extends Component {
                             type="text"
                             placeholder={'Enter'}
                             component={renderText}
-                            isDisabled={false}
                             validate={[required, minLength3, maxLength15]}
                             required={true}
                             maxLength={70}

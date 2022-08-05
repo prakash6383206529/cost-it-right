@@ -446,7 +446,7 @@ class VendorListing extends Component {
         this.setState({ isOpenVendor: true, isViewMode: false })
     }
 
-    closeVendorDrawer = (e = '', formData, type) => {
+    closeVendorDrawer = (e = '', type) => {
 
         this.setState({
             isOpenVendor: false,

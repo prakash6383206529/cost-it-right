@@ -340,6 +340,7 @@ export const API = {
   getStateListByFuel: `${BASE_URL}/masters-fuel/get-state-by-fuel-select-list`,
   getFuelListByState: `${BASE_URL}/masters-fuel/get-fuel-by-state-select-list`,
   fuelBulkUpload: `${BASE_URL}/masters-fuel/bulk-upload-for-fuel-details-json`,
+  getUOMByFuelId: `${BASE_URL}/masters-fuel/get-uom-by-fuel-id`,
 
   //POWER MASTER
   createPowerDetail: `${BASE_URL}/masters-power/create-power-detail`,
