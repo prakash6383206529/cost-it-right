@@ -712,7 +712,7 @@ class AddVolume extends Component {
                                 type="text"
                                 label="Plant"
                                 component={searchableSelect}
-                                placeholder={"Select"}
+                                placeholder={isEditFlag ? '-' : "Select"}
                                 options={this.renderListing("plant")}
                                 //onKeyUp={(e) => this.changeItemDesc(e)}
                                 validate={
@@ -761,7 +761,7 @@ class AddVolume extends Component {
                               <Field
                                 label={'Destination Plant'}
                                 name="DestinationPlant"
-                                placeholder={"Select"}
+                                placeholder={isEditFlag ? '-' : "Select"}
                                 // selection={
                                 //   this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants}
                                 options={this.renderListing("plant")}
@@ -784,7 +784,7 @@ class AddVolume extends Component {
                               type="text"
                               label="Part No."
                               component={searchableSelect}
-                              placeholder={"Select"}
+                              placeholder={isEditFlag ? '-' : "Select"}
                               options={this.renderListing("PartList")}
                               //onKeyUp={(e) => this.changeItemDesc(e)}
                               validate={
@@ -805,7 +805,7 @@ class AddVolume extends Component {
                               type="text"
                               label="Year"
                               component={searchableSelect}
-                              placeholder={"Select"}
+                              placeholder={isEditFlag ? '-' : "Select"}
                               options={this.renderListing("yearList")}
                               //onKeyUp={(e) => this.changeItemDesc(e)}
                               validate={

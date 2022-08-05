@@ -993,7 +993,7 @@ class AddBOPImport extends Component {
                               label={`Specification`}
                               name={"Specification"}
                               type="text"
-                              placeholder={"Enter"}
+                              placeholder={isEditFlag ? '-' : "Enter"}
                               validate={[acceptAllExceptSingleSpecialCharacter, maxLength(80), checkSpacesInString]}
                               component={renderText}
                               //required={true}
@@ -1013,7 +1013,7 @@ class AddBOPImport extends Component {
                               type="text"
                               label="UOM"
                               component={searchableSelect}
-                              placeholder={"Select"}
+                              placeholder={isEditFlag ? '-' : "Select"}
                               options={this.renderListing("uom")}
                               //onKeyUp={(e) => this.changeItemDesc(e)}
                               validate={
@@ -1029,7 +1029,7 @@ class AddBOPImport extends Component {
                               <Field
                                 label={this.state.IsVendor ? 'Destination Plant' : 'Plant'}
                                 name="Plant"
-                                placeholder={"Select"}
+                                placeholder={isEditFlag ? '-' : "Select"}
                                 //   selection={ this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants} 
                                 options={this.renderListing("plant")}
                                 handleChangeDescription={this.handlePlant}
@@ -1083,7 +1083,7 @@ class AddBOPImport extends Component {
                                   label={`Source`}
                                   name={"Source"}
                                   type="text"
-                                  placeholder={"Enter"}
+                                  placeholder={isEditFlag ? '-' : "Enter"}
                                   validate={[acceptAllExceptSingleSpecialCharacter, maxLength(80)]}
                                   component={renderText}
                                   // required={true}
@@ -1098,7 +1098,7 @@ class AddBOPImport extends Component {
                                   type="text"
                                   label="Source Location"
                                   component={searchableSelect}
-                                  placeholder={"Select"}
+                                  placeholder={isEditFlag ? '-' : "Select"}
                                   options={this.renderListing("SourceLocation")}
                                   disabled={isViewMode}
 
@@ -1120,7 +1120,7 @@ class AddBOPImport extends Component {
                               type="text"
                               label="Currency"
                               component={searchableSelect}
-                              placeholder={"Select"}
+                              placeholder={isEditFlag ? '-' : "Select"}
                               options={this.renderListing("currency")}
                               validate={
                                 this.state.currency == null ||
@@ -1152,7 +1152,7 @@ class AddBOPImport extends Component {
                                 component={renderDatePicker}
                                 className="form-control"
                                 disabled={isViewMode || !this.state.IsFinancialDataChanged || (isEditFlag && isBOPAssociated)}
-                              //minDate={moment()}
+                                placeholder={isEditFlag ? '-' : "Select Date"}
                               />
                             </div>
 
@@ -1162,7 +1162,7 @@ class AddBOPImport extends Component {
                               label={`Basic Rate (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
                               name={"BasicRate"}
                               type="text"
-                              placeholder={"Enter"}
+                              placeholder={isEditFlag || (isEditFlag && isBOPAssociated) ? '-' : "Enter"}
                               validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
                               component={renderNumberInputField}
                               required={true}
@@ -1174,9 +1174,9 @@ class AddBOPImport extends Component {
                           <Col md="3">
                             <Field
                               label={`Net Cost (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
-                              name={"NetLandedCost"}
+                              name={this.state.netLandedcost === 0 ? '' : "NetLandedCost"}
                               type="text"
-                              placeholder={""}
+                              placeholder={"-"}
                               validate={[]}
                               component={renderNumberInputField}
                               required={false}
@@ -1190,9 +1190,9 @@ class AddBOPImport extends Component {
                             <Col md="3">
                               <Field
                                 label={`Net Cost (INR)`}
-                                name={"NetLandedCostCurrency"}
+                                name={this.state.netLandedConverionCost === 0 ? '' : "NetLandedCostCurrency"}
                                 type="text"
-                                placeholder={""}
+                                placeholder={"-"}
                                 validate={[]}
                                 component={renderNumberInputField}
                                 required={false}
@@ -1218,7 +1218,7 @@ class AddBOPImport extends Component {
                             <Field
                               label={"Remarks"}
                               name={`Remark`}
-                              placeholder="Type here..."
+                              placeholder={isViewMode ? '-' : "Type here..."}
                               className=""
                               customClassName=" textAreaWithBorder"
                               validate={[maxLength512]}

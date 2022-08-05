@@ -139,7 +139,7 @@ class AddPower extends Component {
         ...power, minMonthlyCharge: power.minMonthlyCharge
       }
     })
-    this.props.change('MinMonthlyCharge', checkForDecimalAndNull(minMonthlyCharge, initialConfiguration.NoOfDecimalForPrice))
+    this.props.change('MinMonthlyCharge', minMonthlyCharge === 0 ? '' : checkForDecimalAndNull(minMonthlyCharge, initialConfiguration.NoOfDecimalForPrice))
   }
 
   /**
@@ -175,7 +175,7 @@ class AddPower extends Component {
         this.setState({
           power: { ...power, SEBCostPerUnit: power.SEBCostPerUnit }
         })
-        this.props.change('SEBCostPerUnit', checkForDecimalAndNull(SEBCostPerUnit, initialConfiguration.NoOfDecimalForPrice))
+        this.props.change('SEBCostPerUnit', SEBCostPerUnit === 0 ? '' : checkForDecimalAndNull(SEBCostPerUnit, initialConfiguration.NoOfDecimalForPrice))
       } else {
         const SEBCostPerUnit = checkForNull(((MinDemandKWPerMonth * DemandChargesPerKW) + ((AvgUnitConsumptionPerMonth - MinDemandKWPerMonth) * MaxDemandChargesKW)) / AvgUnitConsumptionPerMonth);
 
@@ -183,7 +183,7 @@ class AddPower extends Component {
         this.setState({
           power: { ...power, SEBCostPerUnit: power.SEBCostPerUnit }
         })
-        this.props.change('SEBCostPerUnit', checkForDecimalAndNull(SEBCostPerUnit, initialConfiguration.NoOfDecimalForPrice))
+        this.props.change('SEBCostPerUnit', SEBCostPerUnit === 0 ? '' : checkForDecimalAndNull(SEBCostPerUnit, initialConfiguration.NoOfDecimalForPrice))
       }
 
     }
@@ -562,7 +562,7 @@ class AddPower extends Component {
         this.setState({ errorObj: { ...this.state.errorObj, maxDemand: true } })
         count++
       }
-      if (SEBPowerContributaion === undefined || SEBPowerContributaion === 0) {
+      if (SEBPowerContributaion === undefined || Number(SEBPowerContributaion) === 0) {
         this.setState({ errorObj: { ...this.state.errorObj, statePowerCont: true } })
         count++
       }
@@ -1369,7 +1369,7 @@ class AddPower extends Component {
                                     label={`Net Cost/Unit (INR)`}
                                     name={"NetPowerCostPerUnit"}
                                     type="text"
-                                    placeholder={'Enter'}
+                                    placeholder={isViewMode ? '-' : 'Enter'}
                                     validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
                                     component={renderNumberInputField}
                                     required={true}
@@ -1399,7 +1399,7 @@ class AddPower extends Component {
                                     type="text"
                                     label="State"
                                     component={searchableSelect}
-                                    placeholder={'Select'}
+                                    placeholder={isEditFlag ? '-' : 'Select'}
                                     options={this.renderListing('state')}
                                     validate={(this.state.StateName == null || this.state.StateName.length === 0) ? [required] : []}
                                     required={true}
@@ -1446,7 +1446,7 @@ class AddPower extends Component {
                                     label={`Min Demand kW/Month`}
                                     name={"MinDemandKWPerMonth"}
                                     type="text"
-                                    placeholder={'Enter'}
+                                    placeholder={isEditFlagForStateElectricity || isViewMode ? '-' : 'Enter'}
                                     validate={isCostPerUnitConfigurable ? [] : [required, positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
                                     component={renderNumberInputField}
                                     required={!isCostPerUnitConfigurable ? true : false}
@@ -1465,7 +1465,7 @@ class AddPower extends Component {
                                     label={`Demand Charges/kW (INR)`}
                                     name={"DemandChargesPerKW"}
                                     type="text"
-                                    placeholder={'Enter'}
+                                    placeholder={isEditFlagForStateElectricity || isViewMode ? '-' : 'Enter'}
                                     validate={isCostPerUnitConfigurable ? [] : [required, positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
                                     component={renderNumberInputField}
                                     required={!isCostPerUnitConfigurable ? true : false}
@@ -1484,13 +1484,14 @@ class AddPower extends Component {
                                     label={`Min Monthly Charge`}
                                     name={"MinMonthlyCharge"}
                                     type="text"
-                                    placeholder={'Enter'}
+                                    placeholder={'-'}
                                     component={renderNumberInputField}
                                     className=""
                                     customClassName=" withBorder"
                                     disabled={true}
                                   />
                                 </div>
+                                {console.log(this.props.fieldsObj.MinMonthlyCharge, "this.props.fieldsObj.MinMonthlyCharge")}
                               </div>
                             </Col>
                             <Col md="3">
@@ -1500,7 +1501,7 @@ class AddPower extends Component {
                                     label={`Avg. Unit Consumption/Month`}
                                     name={"AvgUnitConsumptionPerMonth"}
                                     type="text"
-                                    placeholder={'Enter'}
+                                    placeholder={isEditFlagForStateElectricity || isViewMode ? '-' : 'Enter'}
                                     validate={isCostPerUnitConfigurable ? [] : [required, positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
                                     component={renderNumberInputField}
                                     required={!isCostPerUnitConfigurable ? true : false}
@@ -1519,7 +1520,7 @@ class AddPower extends Component {
                                     label={`Unit Consumption/Annum`}
                                     name={"UnitConsumptionPerAnnum"}
                                     type="text"
-                                    placeholder={'Enter'}
+                                    placeholder={'-'}
                                     validate={[]}
                                     component={renderNumberInputField}
                                     required={false}
@@ -1537,7 +1538,7 @@ class AddPower extends Component {
                                     label={`Max Demand Charges/kW (INR)`}
                                     name={"MaxDemandChargesKW"}
                                     type="text"
-                                    placeholder={'Enter'}
+                                    placeholder={isEditFlagForStateElectricity || isViewMode ? '-' : 'Enter'}
                                     validate={isCostPerUnitConfigurable ? [] : [required, positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
                                     component={renderNumberInputField}
                                     required={!isCostPerUnitConfigurable ? true : false}
@@ -1556,7 +1557,7 @@ class AddPower extends Component {
                                     label={`Cost/Unit`}
                                     name={"SEBCostPerUnit"}
                                     type="text"
-                                    placeholder={'Enter'}
+                                    placeholder={!isCostPerUnitConfigurable || isViewMode ? '-' : 'Enter'}
                                     component={renderNumberInputField}
                                     className=""
                                     customClassName=" withBorder"
@@ -1572,7 +1573,7 @@ class AddPower extends Component {
                                     label={`Meter Rent & Other Charges/Yr`}
                                     name={"MeterRentAndOtherChargesPerAnnum"}
                                     type="text"
-                                    placeholder={'Enter'}
+                                    placeholder={isEditFlagForStateElectricity || isViewMode ? '-' : 'Enter'}
                                     validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
                                     component={renderNumberInputField}
                                     className=""
@@ -1589,7 +1590,7 @@ class AddPower extends Component {
                                     label={`Duty charges & FCA`}
                                     name={"DutyChargesAndFCA"}
                                     type="text"
-                                    placeholder={'Enter'}
+                                    placeholder={isEditFlagForStateElectricity || isViewMode ? '-' : 'Enter'}
                                     validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
                                     component={renderNumberInputField}
                                     className=""
@@ -1604,9 +1605,9 @@ class AddPower extends Component {
                                 <div className="fullinput-icon">
                                   <Field
                                     label={`Total Charge/Unit`}
-                                    name={"TotalUnitCharges"}
+                                    name={this.state.power.TotalUnitCharges === 0 ? '' : "TotalUnitCharges"}
                                     type="text"
-                                    placeholder={'Enter'}
+                                    placeholder={'-'}
                                     validate={[positiveAndDecimalNumber, maxLength10]}
                                     component={renderNumberInputField}
                                     required={false}
@@ -1651,7 +1652,7 @@ class AddPower extends Component {
                                   label={`Power Contribution %`}
                                   name={"SEBPowerContributaion"}
                                   type="text"
-                                  placeholder={'Enter'}
+                                  placeholder={isViewMode ? '-' : 'Enter'}
                                   validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthThree]}
                                   component={renderNumberInputField}
                                   required={true}
@@ -1704,7 +1705,7 @@ class AddPower extends Component {
                                     type="text"
                                     label="Source"
                                     component={searchableSelect}
-                                    placeholder={'Select'}
+                                    placeholder={isViewMode ? '-' : 'Select'}
                                     options={this.renderListing('Source')}
                                     required={true}
                                     handleChangeDescription={this.handleSource}
@@ -1722,7 +1723,7 @@ class AddPower extends Component {
                                     label={`Asset Cost (INR)`}
                                     name={"AssetCost"}
                                     type="text"
-                                    placeholder={'Enter'}
+                                    placeholder={isViewMode ? '-' : 'Enter'}
                                     validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
                                     component={renderNumberInputField}
                                     className=""
@@ -1739,7 +1740,7 @@ class AddPower extends Component {
                                     label={`Annual Cost (INR)`}
                                     name={"AnnualCost"}
                                     type="text"
-                                    placeholder={'Enter'}
+                                    placeholder={isViewMode ? '-' : 'Enter'}
                                     validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
                                     component={renderNumberInputField}
                                     className=""
@@ -1775,7 +1776,7 @@ class AddPower extends Component {
                                         label={`Cost/UOM `}
                                         name={"CostPerUnitOfMeasurement"}
                                         type="text"
-                                        placeholder={'Enter'}
+                                        placeholder={isViewMode ? '-' : 'Enter'}
                                         validate={[positiveAndDecimalNumber, maxLength10, decimalLengthThree]}
                                         component={renderNumberInputField}
                                         className=""
@@ -1792,7 +1793,7 @@ class AddPower extends Component {
                                         label={`Unit Generated/Unit Of fuel `}
                                         name={"UnitGeneratedPerUnitOfFuel"}
                                         type="text"
-                                        placeholder={'Enter'}
+                                        placeholder={isViewMode ? '-' : 'Enter'}
                                         validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthThree]}
                                         component={renderNumberInputField}
                                         required={true}
@@ -1813,7 +1814,7 @@ class AddPower extends Component {
                                     label={`Unit Generated/Annum (kW)`}
                                     name={"UnitGeneratedPerAnnum"}
                                     type="text"
-                                    placeholder={'Enter'}
+                                    placeholder={isViewMode ? '-' : 'Enter'}
                                     validate={[positiveAndDecimalNumber, maxLength10, decimalLengthThree]}
                                     component={renderNumberInputField}
                                     required={true}
@@ -1830,9 +1831,9 @@ class AddPower extends Component {
                                 <div className="fullinput-icon">
                                   <Field
                                     label={`Cost/Unit`}
-                                    name={"SelfGeneratedCostPerUnit"}
+                                    name={this.state.power.SelfGeneratedCostPerUnit === 0 ? '' : "SelfGeneratedCostPerUnit"}
                                     type="text"
-                                    placeholder={'Enter'}
+                                    placeholder={'-'}
                                     component={renderNumberInputField}
                                     className=""
                                     customClassName=" withBorder"
@@ -1848,7 +1849,7 @@ class AddPower extends Component {
                                     label={`Power contribution`}
                                     name={"SelfPowerContribution"}
                                     type="text"
-                                    placeholder={'Enter'}
+                                    placeholder={isViewMode ? '-' : 'Enter'}
                                     validate={[positiveAndDecimalNumber, maxLength10, decimalLengthThree]}
                                     component={renderNumberInputField}
                                     required={true}

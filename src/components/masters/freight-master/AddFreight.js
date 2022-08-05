@@ -353,7 +353,7 @@ class AddFreight extends Component {
           RateCriteria: [],
           effectiveDate: '',
         },
-        () => this.props.change("Rate", 0)
+        () => this.props.change("Rate", '')
       );
       this.setState({ AddUpdate: false, errorObj: { capacity: false, criteria: false, rate: false, effectiveDate: false } })
     }, 200);
@@ -645,7 +645,7 @@ class AddFreight extends Component {
                                   type="text"
                                   label="Mode"
                                   component={searchableSelect}
-                                  placeholder={"Select"}
+                                  placeholder={isEditFlag ? '-' : "Select"}
                                   options={this.renderListing("FREIGHT_MODE")}
                                   //onKeyUp={(e) => this.changeItemDesc(e)}
                                   validate={
@@ -696,7 +696,7 @@ class AddFreight extends Component {
                               type="text"
                               label="Source City"
                               component={searchableSelect}
-                              placeholder={"Select"}
+                              placeholder={isViewMode ? '-' : 'Select'}
                               options={this.renderListing("SourceLocation")}
                               //onKeyUp={(e) => this.changeItemDesc(e)}
                               validate={
@@ -717,7 +717,7 @@ class AddFreight extends Component {
                               type="text"
                               label="Destination City"
                               component={searchableSelect}
-                              placeholder={"Select"}
+                              placeholder={isViewMode ? '-' : 'Select'}
                               options={this.renderListing("DestinationLocation")}
                               //onKeyUp={(e) => this.changeItemDesc(e)}
                               validate={
@@ -758,7 +758,7 @@ class AddFreight extends Component {
                               label={``}
                               name={"LoadingUnloadingCharges"}
                               type="text"
-                              placeholder={"Enter"}
+                              placeholder={isViewMode ? '-' : 'Enter'}
                               validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
                               component={renderNumberInputField}
                               disabled={isViewMode}
@@ -779,7 +779,7 @@ class AddFreight extends Component {
                               label={`Rate (INR/Kg)`}
                               name={"PartTruckLoadRatePerKilogram"}
                               type="text"
-                              placeholder={"Enter"}
+                              placeholder={isViewMode ? '-' : 'Enter'}
                               validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
                               component={renderNumberInputField}
                               disabled={isViewMode}
@@ -792,7 +792,7 @@ class AddFreight extends Component {
                               label={`Rate (INR/Cubic Feet)`}
                               name={"PartTruckLoadRatePerCubicFeet"}
                               type="text"
-                              placeholder={"Enter"}
+                              placeholder={isViewMode ? '-' : 'Enter'}
                               validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
                               component={renderNumberInputField}
                               disabled={isViewMode}
@@ -815,7 +815,7 @@ class AddFreight extends Component {
                                   type="text"
                                   label="Capacity"
                                   component={searchableSelect}
-                                  placeholder={"Select"}
+                                  placeholder={isViewMode ? '-' : 'Select'}
                                   options={this.renderListing(
                                     "FULL_TRUCK_CAPACITY"
                                   )}
@@ -835,7 +835,7 @@ class AddFreight extends Component {
                               type="text"
                               label="Criteria"
                               component={searchableSelect}
-                              placeholder={"Select"}
+                              placeholder={isViewMode ? '-' : 'Select'}
                               options={this.renderListing(
                                 "FREIGHT_RATE_CRITERIA"
                               )}
@@ -851,7 +851,7 @@ class AddFreight extends Component {
                               label={`Rate (INR)`}
                               name={"Rate"}
                               type="text"
-                              placeholder={"Enter"}
+                              placeholder={isViewMode ? '-' : 'Enter'}
                               validate={[positiveAndDecimalNumber, maxLength10]}
                               component={renderNumberInputField}
                               required={true}
@@ -873,7 +873,7 @@ class AddFreight extends Component {
                                   showYearDropdown
                                   dateFormat="dd/MM/yyyy"
                                   dropdownMode="select"
-                                  placeholderText="Select date"
+                                  placeholderText={isViewMode ? '-' : "Select Date"}
                                   className="withBorder"
                                   autoComplete={"off"}
                                   disabledKeyboardNavigation
