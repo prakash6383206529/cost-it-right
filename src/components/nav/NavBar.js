@@ -92,6 +92,7 @@ class SideBar extends Component {
       this.props.getTopAndLeftMenuData((res) => {
         this.simulationPermission(res?.data?.Data, 1)
         this.simulationPermission(res?.data?.Data, 0)
+        this.simulationPermission(res?.data?.Data, 2)
       })
     }
 
@@ -120,6 +121,8 @@ class SideBar extends Component {
         localStorage.setItem('simulationViewPermission', JSON.stringify(_.map(simulationArray, 'PageName')))
       } else if (index === 0) {                          // 0 IS FOR ADD PERMISSION 
         localStorage.setItem('simulationAddPermission', JSON.stringify(_.map(simulationArray, 'PageName')))
+      } else if (index === 2) {                          // 2 IS FOR Run PERMISSION 
+        localStorage.setItem('simulationRunPermission', JSON.stringify(_.map(simulationArray, 'PageName')))
       }
     }
   }
@@ -480,6 +483,14 @@ class SideBar extends Component {
                     PageURL: el.LandingPageURL,
                   },
                 }}
+              // to={{
+              //   pathname: el.LandingPageURL,
+              //   state: {
+              //     ModuleId: el.ModuleId,
+              //     PageName: "Reports And Analytics",
+              //     PageURL: el.LandingPageURL,
+              //   },
+              // }}       // WHEN DONE FROM BACKEND UNCOMMENT THIS AND TEST
               >
                 <img
                   className=""
