@@ -2419,6 +2419,8 @@ export const CostingSimulationDownloadRM = [
     { label: "New RM Cost/Pc", value: "NewRMPrice" },
     { label: "RM Variance", value: "RMCVariance" },
 
+    { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
+
     { label: "OldOverheadCost", value: "OldOverheadCost" },
     { label: "NewOverheadCost", value: "NewOverheadCost" },
     { label: "OldProfitCost", value: "OldProfitCost" },
@@ -2452,7 +2454,8 @@ export const EXCHANGESIMULATIONDOWNLOAD = [
     { label: "Old Exchange Rate", value: "OldExchangeRate" },
     { label: "NewExchangeRate", value: "NewExchangeRate" },
     { label: "PO Price", value: "OldPOPrice" },
-    { label: "Variance", value: "Variance" }
+    { label: "Variance", value: "Variance" },
+    { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
 ]
 export const COMBINEDPROCESSSIMULATION = [
     { label: "Costing Head", value: "CostingHead" },
@@ -2474,6 +2477,8 @@ export const COMBINEDPROCESSSIMULATION = [
     { label: 'Old Net CC', value: 'OldNetCC' },
     { label: "New Net CC", value: "NewNetCC" },
     { label: "Variance", value: "CPVariance" },
+
+    { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
 
     { label: "OldOverheadCost", value: "OldOverheadCost" },
     { label: "NewOverheadCost", value: "NewOverheadCost" },
@@ -2523,6 +2528,8 @@ export const CostingSimulationDownloadST = [
     { label: "NewNetSurfaceTreatmentCost", value: "NewNetSurfaceTreatmentCost" },
     { label: "STVariance", value: "STVariance" },
 
+    { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
+
     { label: "OldOverheadCost", value: "OldOverheadCost" },
     { label: "NewOverheadCost", value: "NewOverheadCost" },
     { label: "OldProfitCost", value: "OldProfitCost" },
@@ -2569,6 +2576,8 @@ export const CostingSimulationDownloadOperation = [
     { label: "OldNetOperationCost", value: "OldNetOperationCost" },
     { label: "NewNetOperationCost", value: "NewNetOperationCost" },
     { label: "OperationCostVariance", value: "OperationCostVariance" },
+
+    { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
 
     { label: "OldOverheadCost", value: "OldOverheadCost" },
     { label: "NewOverheadCost", value: "NewOverheadCost" },
@@ -2617,6 +2626,8 @@ export const CostingSimulationDownloadBOP = [
     { label: "NewNetBoughtOutPartCost", value: "NewNetBoughtOutPartCost" },
     { label: "NetBoughtOutPartCostVariance", value: "NetBoughtOutPartCostVariance" },
 
+    { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
+
     { label: "OldOverheadCost", value: "OldOverheadCost" },
     { label: "NewOverheadCost", value: "NewOverheadCost" },
     { label: "OldProfitCost", value: "OldProfitCost" },
@@ -2656,6 +2667,7 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADRM = [
     { label: "Old RM Cost", value: "OldRMPrice" },
     { label: "New RM Cost", value: "NewRMPrice" },
     { label: "RM Variance", value: "RMVariance" },
+    { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
 
 ]
 
@@ -2681,6 +2693,7 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADST = [
     { label: "New PO Price", value: "NewPOPrice" },
     { label: "PO Variance", value: "POVariance" },
 
+    { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
 
 ]
 export const SIMULATIONAPPROVALSUMMARYDOWNLOADCP = [
@@ -2698,6 +2711,7 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADCP = [
     { label: "Old CC", value: "OldNetCC" },
     { label: "New CC", value: "NewNetCC" },
     { label: "CC Variance", value: "Variance" },
+    { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
 
 ]
 
@@ -2722,6 +2736,7 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADOPERATION = [
     { label: "New PO Price", value: "NewPOPrice" },
     { label: "PO Variance", value: "POVariance" },
 
+    { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
 
 ]
 
@@ -2746,6 +2761,7 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADBOP = [
     { label: "New PO Price", value: "NewPOPrice" },
     { label: "PO Variance", value: "POVariance" },
 
+    { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
 
 ]
 
@@ -3255,6 +3271,7 @@ export const InitialGridForToken = [
 ]
 
 export const LastGridForToken = [
+    { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
     { label: "OldOverheadCost", value: "OldOverheadCost" },
     { label: "NewOverheadCost", value: "NewOverheadCost" },
     { label: "OldProfitCost", value: "OldProfitCost" },
@@ -3287,6 +3304,7 @@ export const InitialGridForTokenSummary = [
 ]
 
 export const LastGridForTokenSummary = [
+    { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
     { label: "Old PO Price", value: "OldPOPrice" },
     { label: "New PO Price", value: "NewPOPrice" },
     { label: "PO Variance", value: "POVariance" },
