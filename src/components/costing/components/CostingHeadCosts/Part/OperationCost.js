@@ -222,27 +222,21 @@ function OperationCost(props) {
   const handleLabourQuantityChange = (event, index) => {
     let tempArr = [];
     let tempData = gridData[index];
-
-    if (!isNaN(event.target.value) && event.target.value !== '') {
+    if (!isNaN(event?.target?.value) && event?.target?.value !== '') {
       const WithLaboutCost = checkForNull(tempData.Rate) * checkForNull(tempData.Quantity);
       const WithOutLabourCost = tempData.IsLabourRateExist ? checkForNull(tempData.LabourRate) * event.target.value : 0;
       const OperationCost = WithLaboutCost + WithOutLabourCost;
       tempData = { ...tempData, LabourQuantity: event.target.value, OperationCost: OperationCost }
       tempArr = Object.assign([...gridData], { [index]: tempData })
       setGridData(tempArr)
-
     } else {
-
       const WithLaboutCost = checkForNull(tempData.Rate) * checkForNull(tempData.Quantity);
-      const WithOutLabourCost = tempData.IsLabourRateExist ? checkForNull(tempData.LabourRate) * 0 : 0;
+      const WithOutLabourCost = 0;                                                              // WHEN INVALID INPUT WithOutLabourCost IS 0
       const OperationCost = WithLaboutCost + WithOutLabourCost;
       tempData = { ...tempData, LabourQuantity: 0, OperationCost: OperationCost }
       tempArr = Object.assign([...gridData], { [index]: tempData })
       setGridData(tempArr)
       //Toaster.warning('Please enter valid number.')
-      setTimeout(() => {
-        setValue(`${OperationGridFields}.${index}.LabourQuantity`, 0)
-      }, 200)
     }
   }
 
