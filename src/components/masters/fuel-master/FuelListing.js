@@ -92,7 +92,7 @@ class FuelListing extends Component {
     viewOrEditItemDetails = (Id, rowData, isViewMode) => {
         let data = {
             isEditFlag: true,
-            Id: Id,
+            Id: rowData?.FuelGroupEntryId,
             isViewMode: isViewMode
         }
         this.props.getDetails(data);
