@@ -32,7 +32,7 @@ import attachClose from '../../../assests/images/red-cross.png'
 import MasterSendForApproval from '../MasterSendForApproval'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { debounce } from 'lodash';
-import { CheckApprovalApplicableMaster } from '../../../helper'
+import { CheckApprovalApplicableMaster, displayUOM } from '../../../helper'
 import AsyncSelect from 'react-select/async';
 import { ProcessGroup } from '../masterUtil';
 import _ from 'lodash'
@@ -773,10 +773,10 @@ class AddMachineRate extends Component {
     const MachineRate = fieldsObj.MachineRate
     this.setState({
       processName: [],
-      UOM: isProcessGroup ? UOM : [],
+      UOM: isProcessGroup && this.state.processGrid.length !== 0 ? UOM : [],
       processGridEditIndex: '',
       isEditIndex: false,
-    }, () => this.props.change('MachineRate', isProcessGroup ? MachineRate : ''));
+    }, () => this.props.change('MachineRate', isProcessGroup && this.state.processGrid.length !== 0 ? MachineRate : ''));
   };
 
   /**
@@ -970,6 +970,7 @@ class AddMachineRate extends Component {
       </span>
     )
   }
+
 
 
 
@@ -1273,6 +1274,16 @@ class AddMachineRate extends Component {
   }
 
   /**
+  * @method DisplayMachineRateLabel
+  * @description for machine rate label with dynamic uom change
+  */
+
+  DisplayMachineRateLabel = () => {
+    return <>Machine Rate/{this.state.UOM && this.state.UOM.length !== 0 ? displayUOM(this.state.UOM.label) : "UOM"} (INR)</>
+  }
+
+
+  /**
   * @method render
   * @description Renders the component
   */
@@ -1297,7 +1308,6 @@ class AddMachineRate extends Component {
       new Promise(resolve => {
         resolve(filterList(inputValue));
       });
-
     return (
       <>
         {this.state.isLoader && <LoaderCustom />}
@@ -1589,9 +1599,9 @@ class AddMachineRate extends Component {
                           />
                           {this.state.errorObj.processUOM && (this.state.UOM === undefined) && <div className='text-help p-absolute'>This field is required.</div>}
                         </Col>
-                        <Col md="3">
+                        <Col md="3" className='UOM-label-container'>
                           <Field
-                            label={`Machine Rate (INR)`}
+                            label={this.DisplayMachineRateLabel()}
                             name={"MachineRate"}
                             type="text"
                             placeholder={'Enter'}
@@ -1659,7 +1669,7 @@ class AddMachineRate extends Component {
                                   return (
                                     <tr key={index}>
                                       <td>{item.processName}</td>
-                                      <td>{item.UnitOfMeasurement}</td>
+                                      <td className='UOM-label-container'>{displayUOM(item.UnitOfMeasurement)}</td>
                                       <td>{checkForDecimalAndNull(item.MachineRate, initialConfiguration.NoOfDecimalForPrice)}</td>
                                       <td>
                                         {/* {!this.state.IsDetailedEntry && */}
