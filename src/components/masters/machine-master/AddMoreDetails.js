@@ -622,7 +622,7 @@ class AddMoreDetails extends Component {
   }
 
   handleFuelType = (newValue, actionMeta) => {
-    const { machineFullValue } = this.state;
+    const { machineFullValue, effectiveDate } = this.state;
     const { initialConfiguration } = this.props
     if (newValue && newValue !== '') {
       this.setState({ fuelType: newValue }, () => {
@@ -630,22 +630,26 @@ class AddMoreDetails extends Component {
 
         if (selectedPlants) {
 
-          const data = { fuelId: fuelType.value, plantId: selectedPlants.value }
+          const data = {
+            fuelId: fuelType.value,
+            plantId: selectedPlants.value,
+            effectiveDate: DayTime(effectiveDate).isValid() ? DayTime(effectiveDate).format('DD/MM/YYYY') : ''
+          }
           this.props.getFuelUnitCost(data, res => {
-            let Data = res.data.DynamicData;
-            if (res && res.data && res.data.Message !== '') {
+            let Data = res?.data?.Data;
+            if (res && res?.data && res?.data?.Message !== '') {
               Toaster.warning(res.data.Message)
-              machineFullValue.FuelCostPerUnit = Data.FuelRatePerUnit
+              machineFullValue.FuelCostPerUnit = (Data.UnitCost ? Data.UnitCost : 0)
               this.setState({
                 machineFullValue: { ...machineFullValue, FuelCostPerUnit: machineFullValue.FuelCostPerUnit }
               })
-              this.props.change('FuelCostPerUnit', checkForDecimalAndNull(Data.FuelRatePerUnit, this.props.initialConfiguration.NoOfDecimalForPrice))
+              this.props.change('FuelCostPerUnit', checkForDecimalAndNull(Data.UnitCost, this.props.initialConfiguration.NoOfDecimalForPrice))
             } else {
-              machineFullValue.FuelCostPerUnit = Data.FuelRatePerUnit
+              machineFullValue.FuelCostPerUnit = (Data.UnitCost ? Data.UnitCost : 0)
               this.setState({
                 machineFullValue: { ...machineFullValue, FuelCostPerUnit: machineFullValue.FuelCostPerUnit }
               })
-              this.props.change('FuelCostPerUnit', checkForDecimalAndNull(Data.FuelRatePerUnit, this.props.initialConfiguration.NoOfDecimalForPrice))
+              this.props.change('FuelCostPerUnit', checkForDecimalAndNull(Data.UnitCost, this.props.initialConfiguration.NoOfDecimalForPrice))
             }
           })
 
