@@ -27,7 +27,8 @@ import {
 
 const initialState = {
     selectedCostingListSimulation: [],
-    costingSimulationList: []
+    costingSimulationList: [],
+    keysForDownloadSummary: []
 };
 
 export default function SimulationReducer(state = initialState, action) {
