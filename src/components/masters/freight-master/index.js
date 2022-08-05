@@ -26,7 +26,8 @@ class FreightMaster extends Component {
             EditAccessibility: false,
             DeleteAccessibility: false,
             BulkUploadAccessibility: false,
-            DownloadAccessibility: false
+            DownloadAccessibility: false,
+            stopApiCallOnCancel: false
         }
     }
 
@@ -70,7 +71,8 @@ class FreightMaster extends Component {
     toggle = (tab) => {
         if (this.state.activeTab !== tab) {
             this.setState({
-                activeTab: tab
+                activeTab: tab,
+                stopApiCallOnCancel: false
             });
         }
     }
@@ -95,8 +97,12 @@ class FreightMaster extends Component {
     * @method hideForm
     * @description HIDE FREIGHT AND PACKAGING FORMS
     */
-    hideForm = () => {
-        this.setState({ isFreightForm: false, isPackageForm: false, data: {} })
+    hideForm = (type) => {
+        this.setState({ isFreightForm: false, isPackageForm: false, data: {}, stopApiCallOnCancel: false })
+        if (type === 'cancel') {
+            this.setState({ stopApiCallOnCancel: true })
+
+        }
     }
 
     /**
@@ -175,6 +181,7 @@ class FreightMaster extends Component {
                                             DeleteAccessibility={this.state.DeleteAccessibility}
                                             DownloadAccessibility={this.state.DownloadAccessibility}
                                             ViewAccessibility={this.state.ViewAccessibility}
+                                            stopApiCallOnCancel={this.state.stopApiCallOnCancel}
                                         />
                                     </TabPane>}
 

@@ -66,10 +66,9 @@ class AddFuel extends Component {
     })
     this.getDetails(data);
     if (!(data.isEditFlag || data.isViewFlag)) {
-      this.props.getUOMSelectList(() => { })
       this.props.getFuelComboData(() => { })
+      this.props.getUOMSelectList(() => { })
     }
-
   }
 
   /**
@@ -89,9 +88,6 @@ class AddFuel extends Component {
           const Data = res.data.Data;
           this.setState({ RateChange: Data })
           setTimeout(() => {
-            const { fuelComboSelectList } = this.props;
-            const UOMObj = fuelComboSelectList && fuelComboSelectList.UnitOfMeasurements.find(item => item.Value === Data.UnitOfMeasurementId)
-
             let rateGridArray = Data && Data.FuelDetatils.map((item) => {
               return {
                 Id: item.Id,
@@ -105,7 +101,7 @@ class AddFuel extends Component {
             this.setState({
               isEditFlag: true,
               fuel: Data.FuelName && Data.FuelName !== undefined ? { label: Data.FuelName, value: Data.FuelId } : [],
-              UOM: UOMObj && UOMObj !== undefined ? { label: UOMObj.Display, value: UOMObj.Value } : [],
+              UOM: Data.UnitOfMeasurement !== undefined ? { label: Data.UnitOfMeasurement, value: Data.UnitOfMeasurementId } : [],
               rateGrid: rateGridArray,
             }, () => this.setState({ isLoader: false }))
           }, 200)
@@ -396,7 +392,7 @@ class AddFuel extends Component {
   * @method cancel
   * @description used to Reset form
   */
-  cancel = () => {
+  cancel = (type) => {
     const { reset } = this.props;
     reset();
     this.setState({
@@ -408,8 +404,10 @@ class AddFuel extends Component {
       rateGrid: [],
       isEditFlag: false,
     })
-    this.props.getFuelDetailData('', res => { })
-    this.props.hideForm()
+    if (type === 'submit') {
+      this.props.getFuelDetailData('', res => { })
+    }
+    this.props.hideForm(type)
   }
 
   /**
@@ -453,7 +451,7 @@ class AddFuel extends Component {
       }
       // let sebGrid = DataToChangeZ.SEBChargesDetails[0]
       if (HandleChanged && addRow === 0 && count === rateGrid.length && DeleteChanged) {
-        this.cancel()
+        this.cancel('cancel')
         return false
       }
 
@@ -470,7 +468,7 @@ class AddFuel extends Component {
         this.setState({ setDisable: false })
         if (res?.data?.Result) {
           Toaster.success(MESSAGES.UPDATE_FUEL_DETAIL_SUCESS);
-          this.cancel();
+          this.cancel('submit');
         }
       })
 
@@ -488,7 +486,7 @@ class AddFuel extends Component {
         this.setState({ setDisable: false })
         if (res && res?.data && res?.data?.Result) {
           Toaster.success(MESSAGES.FUEL_ADD_SUCCESS);
-          this.cancel();
+          this.cancel('submit');
         }
       });
     }
@@ -749,7 +747,7 @@ class AddFuel extends Component {
                           <button
                             type={"button"}
                             className="mr15 cancel-btn"
-                            onClick={this.cancel}
+                            onClick={() => { this.cancel('cancel') }}
                             disabled={setDisable}
                           >
                             <div className={"cancel-icon"}></div>
@@ -822,6 +820,7 @@ export default connect(mapStateToProps, {
 })(reduxForm({
   form: 'AddFuel',
   enableReinitialize: true,
+  touchOnChange: true,
   onSubmitFail: errors => {
     focusOnError(errors);
   },

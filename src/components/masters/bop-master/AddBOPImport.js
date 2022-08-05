@@ -7,7 +7,7 @@ import {
   maxLength10, positiveAndDecimalNumber, maxLength512, maxLength, decimalLengthsix, checkWhiteSpaces, checkSpacesInString
 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderTextAreaField, renderDatePicker, renderNumberInputField, focusOnError } from "../../layout/FormInputs";
-import { fetchMaterialComboAPI, getPlantBySupplier, getUOMSelectList, getCurrencySelectList, getPlantSelectListByType, } from '../../../actions/Common';
+import { fetchMaterialComboAPI, getPlantBySupplier, getUOMSelectList, getCurrencySelectList, getPlantSelectListByType, fetchSupplierCityDataAPI } from '../../../actions/Common';
 import {
   createBOPImport, updateBOPImport, getBOPCategorySelectList, getBOPImportById,
   fileUploadBOPDomestic, fileDeleteBOPDomestic,
@@ -101,8 +101,8 @@ class AddBOPImport extends Component {
   * @description Called before render the component
   */
   UNSAFE_componentWillMount() {
-    this.props.getUOMSelectList(() => { })
     if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
+      this.props.getUOMSelectList(() => { })
       this.props.getBOPCategorySelectList(() => { })
       this.props.getPartSelectList(() => { })
       this.props.getPlantSelectListByType(ZBC, () => { })
@@ -114,13 +114,13 @@ class AddBOPImport extends Component {
    * @description Called after rendering the component
    */
   componentDidMount() {
-    this.props.fetchMaterialComboAPI(res => { });
-    this.props.getCurrencySelectList(() => { })
+    this.props.fetchSupplierCityDataAPI(res => { });
+    this.getDetails()
     if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
+      this.props.getCurrencySelectList(() => { })
       this.setState({ inputLoader: true })
       this.props.getVendorTypeBOPSelectList(() => { this.setState({ inputLoader: false }) })
     }
-    this.getDetails()
 
     let obj = {
       MasterId: BOP_MASTER_ID,
@@ -177,7 +177,7 @@ class AddBOPImport extends Component {
     this.setState({ approveDrawer: false, setDisable: false })
     if (type === 'submit') {
       //this.clearForm()
-      this.cancel()
+      this.cancel('submit')
     }
   }
 
@@ -205,12 +205,9 @@ class AddBOPImport extends Component {
           this.props.getPlantBySupplier(Data.Vendor, () => { })
 
           setTimeout(() => {
-            const { cityList, currencySelectList, UOMSelectList } = this.props;
+            const { cityList } = this.props;
             let plantObj;
-            let currencyObj = currencySelectList && currencySelectList.find(item => item.Text === Data.Currency)
             let sourceLocationObj = cityList && cityList.find(item => Number(item.Value) === Data.SourceLocation)
-            let uomObject = UOMSelectList && UOMSelectList.find(item => item.Value === Data.UnitOfMeasurementId)
-            this.handleCurrency({ label: currencyObj?.Text, value: currencyObj?.Value })
             this.handleEffectiveDateChange(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
 
             if (getConfigurationKey().IsDestinationPlantConfigure) {
@@ -225,12 +222,12 @@ class AddBOPImport extends Component {
               BOPCategory: Data.CategoryName !== undefined ? { label: Data.CategoryName, value: Data.CategoryId } : [],
               selectedPlants: plantObj,
               vendorName: Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.Vendor } : [],
-              currency: currencyObj && currencyObj !== undefined ? { label: currencyObj.Text, value: currencyObj.Value } : [],
+              currency: Data.Currency !== undefined ? { label: Data.Currency, value: Data.CurrencyId } : [],
               sourceLocation: sourceLocationObj && sourceLocationObj !== undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value } : [],
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
               oldDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
               files: Data.Attachements,
-              UOM: uomObject && uomObject !== undefined ? { label: uomObject.Display, value: uomObject.Value } : [],
+              UOM: Data.UnitOfMeasurement !== undefined ? { label: Data.UnitOfMeasurement, value: Data.UnitOfMeasurementId } : [],
               isLoader: false,
             }, () => this.setState({ isLoader: false }))
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
@@ -632,7 +629,7 @@ class AddBOPImport extends Component {
   * @method cancel
   * @description used to Reset form
   */
-  cancel = () => {
+  cancel = (type) => {
     const { reset } = this.props;
     reset();
     this.setState({
@@ -643,8 +640,10 @@ class AddBOPImport extends Component {
       UOM: [],
     })
     this.props.getBOPImportById('', res => { })
-    this.getDetails()
-    this.props.hideForm()
+    if (type === 'submit') {
+      this.getDetails()
+    }
+    this.props.hideForm(type)
   }
 
   /**
@@ -695,7 +694,7 @@ class AddBOPImport extends Component {
         Currency: currency.label,
         BoughtOutPartId: BOPID,
         Source: values.Source,
-        SourceLocation: values.sourceLocation,
+        SourceLocation: sourceLocation.value ? sourceLocation.value : '',
         BasicRate: values.BasicRate,
         NetLandedCost: this.state.netLandedcost,
         Remark: values.Remark,
@@ -819,7 +818,7 @@ class AddBOPImport extends Component {
           if (res.data.Result) {
             Toaster.success(MESSAGES.BOP_ADD_SUCCESS)
             //this.clearForm()
-            this.cancel()
+            this.cancel('submit')
           }
         })
       }
@@ -845,7 +844,7 @@ class AddBOPImport extends Component {
       this.setState({ setDisable: false })
       if (res?.data?.Result) {
         Toaster.success(MESSAGES.UPDATE_BOP_SUCESS);
-        this.cancel()
+        this.cancel('submit')
       }
     });
   }, 500)
@@ -864,7 +863,7 @@ class AddBOPImport extends Component {
   */
   render() {
     const { handleSubmit, isBOPAssociated } = this.props;
-    const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, isViewMode, setDisable, disablePopup } = this.state;
+    const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, updatedObj, IsFinancialDataChanged, isViewMode, setDisable, disablePopup, DropdownChange, DataToChange } = this.state;
     const filterList = (inputValue) => {
       let tempArr = []
 
@@ -882,8 +881,6 @@ class AddBOPImport extends Component {
     const promiseOptions = inputValue =>
       new Promise(resolve => {
         resolve(filterList(inputValue));
-
-
       });
     return (
       <>
@@ -1319,7 +1316,7 @@ class AddBOPImport extends Component {
                           <button
                             type={"button"}
                             className=" mr15 cancel-btn"
-                            onClick={this.cancel}
+                            onClick={() => { this.cancel('cancel') }}
                             disabled={setDisable}
                           >
                             <div className={"cancel-icon"}></div>
@@ -1451,7 +1448,6 @@ export default connect(mapStateToProps, {
   getVendorTypeBOPSelectList,
   getPlantBySupplier,
   getPartSelectList,
-  fetchMaterialComboAPI,
   getUOMSelectList,
   getCurrencySelectList,
   createBOPImport,
@@ -1462,6 +1458,7 @@ export default connect(mapStateToProps, {
   fileDeleteBOPDomestic,
   getPlantSelectListByType,
   getExchangeRateByCurrency,
+  fetchSupplierCityDataAPI,
   masterFinalLevelUser
 })(reduxForm({
   form: 'AddBOPImport',
@@ -1470,4 +1467,5 @@ export default connect(mapStateToProps, {
     focusOnError(errors)
   },
   enableReinitialize: true,
+  touchOnChange: true
 })(AddBOPImport));

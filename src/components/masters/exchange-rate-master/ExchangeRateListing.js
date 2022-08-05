@@ -3,12 +3,12 @@ import { connect } from 'react-redux';
 import { reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { focusOnError } from "../../layout/FormInputs";
-import { checkForDecimalAndNull, required } from "../../../helper/validation";
+import { checkForDecimalAndNull } from "../../../helper/validation";
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { defaultPageSize, EMPTY_DATA, EXCHNAGERATE, GET_FINANCIAL_YEAR_SELECTLIST } from '../../../config/constants';
+import { defaultPageSize, EMPTY_DATA, EXCHNAGERATE } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
-import { getExchangeRateDataList, deleteExchangeRate, getCurrencySelectList, getExchangeRateData } from '../actions/ExchangeRateMaster';
+import { getExchangeRateDataList, deleteExchangeRate } from '../actions/ExchangeRateMaster';
 import AddExchangeRate from './AddExchangeRate';
 import { ADDITIONAL_MASTERS, ExchangeMaster, EXCHANGE_RATE } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
@@ -63,7 +63,6 @@ class ExchangeRateListing extends Component {
         this.applyPermission(this.props.topAndLeftMenuData)
         this.setState({ isLoader: true })
         setTimeout(() => {
-            this.props.getCurrencySelectList(() => { })
             if (this.props.isSimulation) {
                 if (this.props.selectionForListingMasterAPI === 'Combined') {
                     this.props?.changeSetLoader(true)
@@ -105,17 +104,11 @@ class ExchangeRateListing extends Component {
                     DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
                     BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
                     DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
-                }, () => {
-                    setTimeout(() => {
-                        this.props.getCurrencySelectList(() => { })
-                        this.getTableListData()
-                    }, 500);
-                })
+                },
+                )
             }
-
         }
     }
-
 
 
     /**
@@ -245,15 +238,15 @@ class ExchangeRateListing extends Component {
         this.setState({ toggleForm: true })
     }
 
-    hideForm = () => {
-
-        // this.props.getExchangeRateData('', (res) => { })
+    hideForm = (type) => {
         this.setState({
             currency: [],
             data: { isEditFlag: false, ID: '' },
             toggleForm: false,
         }, () => {
-            this.getTableListData()
+            if (type === 'submit') {
+                this.getTableListData()
+            }
         })
     }
 
@@ -497,8 +490,6 @@ function mapStateToProps({ exchangeRate, auth }) {
 export default connect(mapStateToProps, {
     getExchangeRateDataList,
     deleteExchangeRate,
-    getCurrencySelectList,
-    getExchangeRateData,
     getListingForSimulationCombined
 })(reduxForm({
     form: 'ExchangeRateListing',
@@ -506,4 +497,5 @@ export default connect(mapStateToProps, {
         focusOnError(errors);
     },
     enableReinitialize: true,
+    touchOnChange: true
 })(ExchangeRateListing));
