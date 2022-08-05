@@ -1394,7 +1394,7 @@ class AddRMDomestic extends Component {
                               label={`Code`}
                               name={'Code'}
                               type="text"
-                              placeholder={'Enter'}
+                              placeholder={'-'}
                               validate={[required]}
                               component={renderText}
                               required={true}
@@ -1527,7 +1527,7 @@ class AddRMDomestic extends Component {
                                     type="text"
                                     label="Source Location"
                                     component={searchableSelect}
-                                    placeholder={"Select"}
+                                    placeholder={isViewFlag ? '-' : "Select"}
                                     options={this.renderListing("SourceLocation")}
                                     handleChangeDescription={this.handleSourceSupplierCity}
                                     valueDescription={this.state.sourceLocation}
@@ -1565,7 +1565,7 @@ class AddRMDomestic extends Component {
                               label={labelWithUOMAndCurrency("Cut Off Price", this.state.UOM.label)}
                               name={"cutOffPrice"}
                               type="text"
-                              placeholder={""}
+                              placeholder={isViewFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
                               validate={[positiveAndDecimalNumber]}
                               component={renderNumberInputField}
                               required={false}
@@ -1580,7 +1580,7 @@ class AddRMDomestic extends Component {
                               label={labelWithUOMAndCurrency("Basic Rate", this.state.UOM.label)}
                               name={"BasicRate"}
                               type="text"
-                              placeholder={"Enter"}
+                              placeholder={isViewFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
                               validate={[required, positiveAndDecimalNumber, maxLength15, decimalLengthsix]}
                               component={renderNumberInputField}
                               onChange={this.handleBasicRate}
@@ -1598,7 +1598,7 @@ class AddRMDomestic extends Component {
                                 label={labelWithUOMAndCurrency("Scrap Rate", this.state.UOM.label)}
                                 name={"ScrapRate"}
                                 type="text"
-                                placeholder={"Enter"}
+                                placeholder={isViewFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
                                 validate={[required, positiveAndDecimalNumber, maxLength15, decimalLengthsix]}
                                 component={renderNumberInputField}
                                 required={true}
@@ -1615,7 +1615,7 @@ class AddRMDomestic extends Component {
                               label={labelWithUOMAndCurrency("Freight Cost", this.state.UOM.label)}
                               name={"FrieghtCharge"}
                               type="text"
-                              placeholder={"Enter"}
+                              placeholder={isViewFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
                               // onChange={this.handleFreightCharges}
                               validate={[positiveAndDecimalNumber, maxLength15, decimalLengthsix]}
                               component={renderNumberInputField}
@@ -1631,7 +1631,7 @@ class AddRMDomestic extends Component {
                               label={labelWithUOMAndCurrency("Shearing Cost", this.state.UOM.label)}
                               name={"ShearingCost"}
                               type="text"
-                              placeholder={"Enter"}
+                              placeholder={isViewFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
                               validate={[positiveAndDecimalNumber, maxLength15, decimalLengthsix]}
                               component={renderNumberInputField}
                               required={false}
@@ -1679,9 +1679,9 @@ class AddRMDomestic extends Component {
                           <Col md="3">
                             <Field
                               label={labelWithUOMAndCurrency("Net Cost", this.state.UOM.label)}
-                              name={"NetLandedCost"}
+                              name={`${this.state.netLandedCost === 0 ? '-' : "NetLandedCost"}`}
                               type="text"
-                              placeholder={""}
+                              placeholder={"-"}
                               validate={[required]}
                               component={renderText}
                               required={false}
@@ -1708,7 +1708,7 @@ class AddRMDomestic extends Component {
                                 component={renderDatePicker}
                                 className="form-control"
                                 disabled={isViewFlag || !this.state.IsFinancialDataChanged || (isEditFlag && isRMAssociated)}
-
+                                placeholder={isViewFlag || !this.state.IsFinancialDataChanged || (isEditFlag && isRMAssociated) ? '-' : "Select Date"}
                               />
                             </div>
 
@@ -1726,7 +1726,7 @@ class AddRMDomestic extends Component {
                             <Field
                               label={"Remarks"}
                               name={`Remark`}
-                              placeholder="Type here..."
+                              placeholder={isViewFlag ? '-' : "Type here..."}
                               value={this.state.remarks}
                               className=""
                               customClassName=" textAreaWithBorder"

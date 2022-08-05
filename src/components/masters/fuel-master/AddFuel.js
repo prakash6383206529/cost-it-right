@@ -227,7 +227,7 @@ class AddFuel extends Component {
         rateGrid: tempArray,
         StateName: [],
         effectiveDate: '',
-      }, () => this.props.change('Rate', 0));
+      }, () => this.props.change('Rate', ''));
       this.setState({ AddUpdate: false, errorObj: { state: false, rate: false, effectiveDate: false } })
     }, 200);
   }
@@ -580,7 +580,7 @@ class AddFuel extends Component {
                                   type="text"
                                   label="UOM"
                                   component={searchableSelect}
-                                  placeholder={"Select"}
+                                  placeholder={isEditFlag ? '-' : "Select"}
                                   options={this.renderListing("uom")}
                                   //onKeyUp={(e) => this.changeItemDesc(e)}
                                   validate={
@@ -613,7 +613,7 @@ class AddFuel extends Component {
                                   type="text"
                                   label="State"
                                   component={searchableSelect}
-                                  placeholder={"Select"}
+                                  placeholder={isViewMode ? '-' : "Select"}
                                   options={this.renderListing("state")}
                                   //onKeyUp={(e) => this.changeItemDesc(e)}
                                   //validate={(this.state.StateName == null || this.state.StateName.length == 0) ? [required] : []}
@@ -632,7 +632,7 @@ class AddFuel extends Component {
                                 label={`Rate (INR)`}
                                 name={"Rate"}
                                 type="text"
-                                placeholder={"Enter"}
+                                placeholder={isViewMode ? '-' : 'Enter'}
                                 validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
                                 component={renderNumberInputField}
                                 required={true}
@@ -657,7 +657,7 @@ class AddFuel extends Component {
                                   showYearDropdown
                                   dateFormat="dd/MM/yyyy"
                                   dropdownMode="select"
-                                  placeholderText="Select date"
+                                  placeholderText={isViewMode ? '-' : "Select Date"}
                                   className="withBorder"
                                   autoComplete={"off"}
                                   disabledKeyboardNavigation

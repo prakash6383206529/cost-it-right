@@ -475,7 +475,7 @@ class AddIndivisualPart extends Component {
                               label={`Part No.`}
                               name={"PartNumber"}
                               type="text"
-                              placeholder={""}
+                              placeholder={isEditFlag ? '-' : "Enter"}
                               validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20, checkSpacesInString]}
                               component={renderText}
                               required={true}
@@ -490,7 +490,7 @@ class AddIndivisualPart extends Component {
                               label={`Part Name`}
                               name={"PartName"}
                               type="text"
-                              placeholder={""}
+                              placeholder={isViewMode || (!isEditFlag && this.state.disablePartName) || isEditFlag ? '-' : "Enter"}
                               validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength85, checkSpacesInString]}
                               component={renderText}
                               required={true}
@@ -506,7 +506,7 @@ class AddIndivisualPart extends Component {
                                 label={`Part Description`}
                                 name={"Description"}
                                 type="text"
-                                placeholder={""}
+                                placeholder={isEditFlag ? '-' : "Enter"}
                                 validate={[maxLength80, checkWhiteSpaces]}
                                 component={renderText}
                                 required={false}
@@ -523,7 +523,7 @@ class AddIndivisualPart extends Component {
                                 label="Group Code"
                                 name="ProductGroup"
                                 type="text"
-                                placeholder={"Select"}
+                                placeholder={isViewMode ? '-' : "Select"}
                                 selection={
                                   this.state.ProductGroup == null || this.state.ProductGroup.length === 0 ? [] : this.state.ProductGroup}
                                 options={this.renderListing("ProductGroup")}
@@ -542,7 +542,7 @@ class AddIndivisualPart extends Component {
                                 label={`Group Code`}
                                 name={"GroupCode"}
                                 type="text"
-                                placeholder={""}
+                                placeholder={isEditFlag ? '-' : "Enter"}
                                 validate={[checkWhiteSpaces, alphaNumeric, maxLength20]}
                                 component={renderText}
                                 required={false}
@@ -560,7 +560,7 @@ class AddIndivisualPart extends Component {
                               label={`ECN No.`}
                               name={"ECNNumber"}
                               type="text"
-                              placeholder={""}
+                              placeholder={isEditFlag ? '-' : "Enter"}
                               validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, checkSpacesInString]}
                               component={renderText}
                               className=""
@@ -573,7 +573,7 @@ class AddIndivisualPart extends Component {
                               label={`Revision No.`}
                               name={"RevisionNumber"}
                               type="text"
-                              placeholder={""}
+                              placeholder={isEditFlag ? '-' : "Enter"}
                               validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, checkSpacesInString]}
                               component={renderText}
                               className=""
@@ -586,7 +586,7 @@ class AddIndivisualPart extends Component {
                               label={`Drawing No.`}
                               name={"DrawingNumber"}
                               type="text"
-                              placeholder={""}
+                              placeholder={isEditFlag ? '-' : "Enter"}
                               validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, checkSpacesInString]}
                               component={renderText}
                               className=""
@@ -603,6 +603,7 @@ class AddIndivisualPart extends Component {
                                 <Field
                                   label="Effective Date"
                                   name="EffectiveDate"
+                                  placeholder={isEditFlag && !isViewMode ? getConfigurationKey().IsBOMEditable ? "Enter" : '-' : (isViewMode) ? '-' : "Enter"}
                                   selected={this.state.effectiveDate}
                                   onChange={this.handleEffectiveDateChange}
                                   type="text"
@@ -631,7 +632,7 @@ class AddIndivisualPart extends Component {
                             <Field
                               label={"Remarks"}
                               name={`Remark`}
-                              placeholder="Type here..."
+                              placeholder={isEditFlag ? '-' : "Type here..."}
                               className=""
                               customClassName=" textAreaWithBorder"
                               validate={[maxLength512, checkWhiteSpaces]}

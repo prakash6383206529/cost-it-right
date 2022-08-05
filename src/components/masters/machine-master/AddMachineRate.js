@@ -1370,7 +1370,7 @@ class AddMachineRate extends Component {
                           <Field
                             label="Technology"
                             name="technology"
-                            placeholder="Select"
+                            placeholder={isViewFlag || isEditFlag ? '-' : "Select"}
                             // selection={(this.state.selectedTechnology == null || this.state.selectedTechnology.length === 0) ? [] : this.state.selectedTechnology}
                             options={this.renderListing('technology')}
                             handleChangeDescription={this.handleTechnology}
@@ -1411,7 +1411,7 @@ class AddMachineRate extends Component {
                               type="text"
                               label={this.state.IsVendor ? 'Destination Plant' : 'Plant'}
                               component={searchableSelect}
-                              placeholder={'Select'}
+                              placeholder={(isEditFlag || isViewMode || isViewFlag) ? '-' : 'Select'}
                               options={this.renderListing('plant')}
                               //onKeyUp={(e) => this.changeItemDesc(e)}
                               validate={(this.state.selectedPlants == null || this.state.selectedPlants.length === 0) ? [required] : []}
@@ -1427,7 +1427,7 @@ class AddMachineRate extends Component {
                             label={`Machine No.`}
                             name={"MachineNumber"}
                             type="text"
-                            placeholder={'Enter'}
+                            placeholder={isEditFlag ? '-' : 'Enter'}
                             validate={initialConfiguration.IsMachineNumberConfigure ? [] : [required, checkSpacesInString]}
                             component={renderText}
                             required={initialConfiguration.IsMachineNumberConfigure ? false : true}
@@ -1443,7 +1443,7 @@ class AddMachineRate extends Component {
                             label={`Machine Specification`}
                             name={"Specification"}
                             type="text"
-                            placeholder={'Enter'}
+                            placeholder={isViewMode ? '-' : 'Enter'}
                             validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString]}
                             component={renderText}
                             // required={true}
@@ -1459,7 +1459,7 @@ class AddMachineRate extends Component {
                             label={`Machine Name`}
                             name={"MachineName"}
                             type="text"
-                            placeholder={'Enter'}
+                            placeholder={isViewMode ? '-' : 'Enter'}
                             validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString]}
                             component={renderText}
                             required={false}
@@ -1476,7 +1476,7 @@ class AddMachineRate extends Component {
                                 type="text"
                                 label="Machine Type"
                                 component={searchableSelect}
-                                placeholder={'Select'}
+                                placeholder={isEditFlag ? '-' : 'Select'}
                                 options={this.renderListing('MachineTypeList')}
                                 //onKeyUp={(e) => this.changeItemDesc(e)}
                                 validate={(this.state.machineType == null || this.state.machineType.length === 0) ? [] : []}
@@ -1498,7 +1498,7 @@ class AddMachineRate extends Component {
                             label={`Machine Tonnage(Ton)`}
                             name={"TonnageCapacity"}
                             type="text"
-                            placeholder={'Enter'}
+                            placeholder={isViewMode ? '-' : 'Enter'}
                             validate={[checkWhiteSpaces, postiveNumber, maxLength10, checkSpacesInString]}
                             component={renderText}
                             required={false}
@@ -1524,6 +1524,7 @@ class AddMachineRate extends Component {
                                   //e.preventDefault()
                                 }}
                                 component={renderDatePicker}
+                                placeholder={isViewMode || !this.state.IsFinancialDataChanged ? '-' : "Enter"}
                                 className="form-control"
                                 disabled={isViewMode || !this.state.IsFinancialDataChanged}
                               />
@@ -1542,7 +1543,7 @@ class AddMachineRate extends Component {
                                     type="button"
                                     className={'user-btn'}
                                     onClick={() => this.moreDetailsToggler(this.state.MachineID, true)}>
-                                    <div className={'edit_pencil_icon d-inline-block mr5'}></div>EDIT MORE MACHINE DETAILS</button>
+                                    <div className={`${isViewMode ? 'fa fa-eye' : 'edit_pencil_icon'}  d-inline-block mr5`}></div> {isViewMode ? "View" : "Edit"} MORE MACHINE DETAILS</button>
                                   :
                                   AddAccessibility &&
                                   <button
@@ -1572,7 +1573,7 @@ class AddMachineRate extends Component {
                                 type="text"
                                 label="Process Name"
                                 component={searchableSelect}
-                                placeholder={'Select'}
+                                placeholder={isEditFlag ? '-' : 'Select'}
                                 options={this.renderListing('ProcessNameList')}
                                 //onKeyUp={(e) => this.changeItemDesc(e)}
                                 //validate={(this.state.processName == null || this.state.processName.length == 0) ? [required] : []}
@@ -1596,7 +1597,7 @@ class AddMachineRate extends Component {
                             type="text"
                             label="UOM"
                             component={searchableSelect}
-                            placeholder={'Select'}
+                            placeholder={isEditFlag || lockUOMAndRate || (isEditFlag && isMachineAssociated) ? '-' : 'Select'}
                             options={this.renderListing('UOM')}
                             //onKeyUp={(e) => this.changeItemDesc(e)}
                             required={true}
@@ -1611,7 +1612,7 @@ class AddMachineRate extends Component {
                             label={this.DisplayMachineRateLabel()}
                             name={"MachineRate"}
                             type="text"
-                            placeholder={'Enter'}
+                            placeholder={isViewMode || lockUOMAndRate || (isEditFlag && isMachineAssociated) ? '-' : 'Enter'}
                             validate={[positiveAndDecimalNumber, maxLength80]}
                             component={renderText}
                             onChange={this.handleMachineRate}
@@ -1723,7 +1724,7 @@ class AddMachineRate extends Component {
                           <Field
                             label={'Remarks'}
                             name={`Remark`}
-                            placeholder="Type here..."
+                            placeholder={isViewMode ? '-' : "Type here..."}
                             value={this.state.remarks}
                             className=""
                             customClassName=" textAreaWithBorder"

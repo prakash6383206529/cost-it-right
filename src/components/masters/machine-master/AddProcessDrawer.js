@@ -260,7 +260,7 @@ class AddProcessDrawer extends Component {
                       label={`Process Code`}
                       name={'ProcessCode'}
                       type="text"
-                      placeholder={'Enter'}
+                      placeholder={isEditFlag || initialConfiguration?.IsProcessCodeConfigure ? '-' : 'Enter'}
                       validate={[required, checkSpacesInString, checkWhiteSpaces]}
                       component={renderText}
                       required={true}

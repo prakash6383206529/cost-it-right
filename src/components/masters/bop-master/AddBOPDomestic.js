@@ -862,7 +862,7 @@ class AddBOPDomestic extends Component {
                               label={`Insert Part No`}
                               name={"BoughtOutPartNumber"}
                               type="text"
-                              placeholder={"Enter"}
+                              placeholder={isEditFlag ? '-' : "Enter"}
                               validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, checkSpacesInString]}
                               component={renderText}
                               required={true}
@@ -876,7 +876,7 @@ class AddBOPDomestic extends Component {
                               label={`Insert Part Name`}
                               name={"BoughtOutPartName"}
                               type="text"
-                              placeholder={"Enter"}
+                              placeholder={isEditFlag ? '-' : "Enter"}
                               validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString]}
                               component={renderText}
                               required={true}
@@ -893,7 +893,7 @@ class AddBOPDomestic extends Component {
                                   type="text"
                                   label="Insert Category"
                                   component={searchableSelect}
-                                  placeholder={"Select"}
+                                  placeholder={isEditFlag ? '-' : "Select"}
                                   options={this.renderListing("BOPCategory")}
                                   //onKeyUp={(e) => this.changeItemDesc(e)}
                                   validate={
@@ -917,7 +917,7 @@ class AddBOPDomestic extends Component {
                               label={`Specification`}
                               name={"Specification"}
                               type="text"
-                              placeholder={"Enter"}
+                              placeholder={isViewMode ? "-" : "Enter"}
                               validate={[acceptAllExceptSingleSpecialCharacter, maxLength(80), checkSpacesInString]}
                               component={renderText}
                               //required={true}
@@ -1023,7 +1023,7 @@ class AddBOPDomestic extends Component {
                                   label={`Source`}
                                   name={"Source"}
                                   type="text"
-                                  placeholder={"Enter"}
+                                  placeholder={isViewMode ? "-" : "Enter"}
                                   validate={[acceptAllExceptSingleSpecialCharacter, maxLength(80)]}
                                   component={renderText}
                                   // required={true}
@@ -1038,7 +1038,7 @@ class AddBOPDomestic extends Component {
                                   type="text"
                                   label="Source Location"
                                   component={searchableSelect}
-                                  placeholder={"Select"}
+                                  placeholder={isViewMode ? "-" : "Select"}
                                   options={this.renderListing(
                                     "SourceLocation"
                                   )}
@@ -1081,7 +1081,7 @@ class AddBOPDomestic extends Component {
                                 component={renderDatePicker}
                                 className="form-control"
                                 disabled={isViewMode || !this.state.IsFinancialDataChanged}
-                              //minDate={moment()}
+                                placeholder={isViewMode || !this.state.IsFinancialDataChanged ? '-' : 'Select Date'}
                               />
                             </div>
                           </Col>
@@ -1091,7 +1091,7 @@ class AddBOPDomestic extends Component {
                               label={this.labelWithUOM(this.state.UOM.label ? this.state.UOM.label : 'UOM')}
                               name={"BasicRate"}
                               type="text"
-                              placeholder={"Enter"}
+                              placeholder={isEditFlag || (isEditFlag && isBOPAssociated) ? '-' : "Enter"}
                               validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
                               component={renderNumberInputField}
                               required={true}
@@ -1103,9 +1103,9 @@ class AddBOPDomestic extends Component {
                           <Col md="3">
                             <Field
                               label={`Net Cost (INR)`}
-                              name={"NetLandedCost"}
+                              name={`${this.state.NetLandedCost === 0 ? '' : "NetLandedCost"}`}
                               type="text"
-                              placeholder={""}
+                              placeholder={"-"}
                               validate={[number]}
                               component={renderNumberInputField}
                               required={false}
@@ -1127,7 +1127,7 @@ class AddBOPDomestic extends Component {
                             <Field
                               label={"Remarks"}
                               name={`Remark`}
-                              placeholder="Type here..."
+                              placeholder={isViewMode ? '-' : "Type here..."}
                               className=""
                               customClassName=" textAreaWithBorder"
                               validate={[maxLength512]}

@@ -793,7 +793,7 @@ class AddOperation extends Component {
                           title={isEditFlag && technologyTitle}
                           label="Technology"
                           name="technology"
-                          placeholder="Select"
+                          placeholder={isEditFlag ? '-' : 'Select'}
                           selection={
                             this.state.selectedTechnology == null ||
                               this.state.selectedTechnology.length === 0
@@ -816,7 +816,7 @@ class AddOperation extends Component {
                           label={`Operation Name`}
                           name={"OperationName"}
                           type="text"
-                          placeholder={"Enter"}
+                          placeholder={isEditFlag ? '-' : "Select"}
                           validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces]}
                           onBlur={this.checkUniqCodeByName}
                           component={renderText}
@@ -831,7 +831,7 @@ class AddOperation extends Component {
                           label={`Operation Code`}
                           name={"OperationCode"}
                           type="text"
-                          placeholder={"Enter"}
+                          placeholder={(isEditFlag || isDisableCode || initialConfiguration.IsOperationCodeConfigure) ? '-' : "Select"}
                           validate={[acceptAllExceptSingleSpecialCharacter, maxLength15, checkWhiteSpaces, required, checkSpacesInString]}
                           component={renderText}
                           required={true}
@@ -846,7 +846,7 @@ class AddOperation extends Component {
                           label={`Description`}
                           name={"Description"}
                           type="text"
-                          placeholder={"Enter"}
+                          placeholder={isViewMode ? '-' : "Select"}
                           validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                           component={renderText}
                           disabled={isViewMode ? true : false}
@@ -862,7 +862,7 @@ class AddOperation extends Component {
                           <Field
                             label="Plant"
                             name="Plant"
-                            placeholder="Select"
+                            placeholder={isEditFlag ? '-' : 'Select'}
                             selection={this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants}
                             options={this.renderListing("plant")}
                             selectionChanged={this.handlePlants}
@@ -908,9 +908,7 @@ class AddOperation extends Component {
                           <Field
                             label={'Destination Plant'}
                             name="DestinationPlant"
-                            placeholder={"Select"}
-                            // selection={
-                            //   this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants}
+                            placeholder={isEditFlag ? '-' : "Select"}
                             options={this.renderListing("singlePlant")}
                             handleChangeDescription={this.handleDestinationPlant}
                             validate={this.state.destinationPlant == null || this.state.destinationPlant.length === 0 ? [required] : []}
@@ -931,7 +929,7 @@ class AddOperation extends Component {
                           type="text"
                           label="UOM"
                           component={searchableSelect}
-                          placeholder={"Select"}
+                          placeholder={isViewMode || (isEditFlag && isOperationAssociated) ? '-' : "Select"}
                           options={this.renderListing("UOM")}
                           //onKeyUp={(e) => this.changeItemDesc(e)}
                           validate={this.state.UOM == null || this.state.UOM.length === 0 ? [required] : []}
@@ -946,7 +944,7 @@ class AddOperation extends Component {
                           label={`Rate (INR)`}
                           name={"Rate"}
                           type="text"
-                          placeholder={"Enter"}
+                          placeholder={isViewMode || (isEditFlag && isOperationAssociated) ? '-' : "Select"}
                           validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
                           component={renderNumberInputField}
                           required={true}
@@ -961,7 +959,7 @@ class AddOperation extends Component {
                           label={`Labour Rate/${this.state.UOM.label ? this.state.UOM.label : 'UOM'}`}
                           name={"LabourRatePerUOM"}
                           type="text"
-                          placeholder={"Enter"}
+                          placeholder={isViewMode ? '-' : "Select"}
                           validate={[positiveAndDecimalNumber, maxLength10]}
                           component={renderNumberInputField}
                           disabled={isEditFlag ? true : false}
@@ -988,13 +986,11 @@ class AddOperation extends Component {
                             className=" "
                             disabled={isViewMode || !this.state.IsFinancialDataChanged}
                             customClassName=" withBorder"
-                          //minDate={moment()}
+                            placeholder={isViewMode || !this.state.IsFinancialDataChanged ? '-' : "Select Date"}
                           />
                         </div>
                       </Col>
-
                     </Row>
-
                     <Row>
                       <Col md="4" className="mb-5 pb-1 st-operation">
                         <label
@@ -1043,7 +1039,7 @@ class AddOperation extends Component {
                         <Field
                           label={'Remarks'}
                           name={`Remark`}
-                          placeholder="Type here..."
+                          placeholder={isViewMode ? '-' : "Type here..."}
                           value={this.state.remarks}
                           className=""
                           customClassName=" textAreaWithBorder"

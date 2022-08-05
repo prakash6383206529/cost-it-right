@@ -931,7 +931,7 @@ class AddOverhead extends Component {
                             type="text"
                             label="Model Type"
                             component={searchableSelect}
-                            placeholder={"Select"}
+                            placeholder={isEditFlag ? '-' : "Select"}
                             options={this.renderListing("ModelType")}
                             validate={
                               this.state.ModelType == null ||
@@ -993,7 +993,7 @@ class AddOverhead extends Component {
                               type="text"
                               label={"Client Name"}
                               component={searchableSelect}
-                              placeholder={"Select"}
+                              placeholder={isEditFlag ? '-' : "Select"}
                               options={this.renderListing("ClientList")}
                               //onKeyUp={(e) => this.changeItemDesc(e)}
                               validate={
@@ -1016,7 +1016,7 @@ class AddOverhead extends Component {
                             type="text"
                             label="Overhead Applicability"
                             component={searchableSelect}
-                            placeholder={"Select"}
+                            placeholder={isEditFlag ? '-' : "Select"}
                             options={this.renderListing(
                               "OverheadApplicability"
                             )}
@@ -1040,9 +1040,7 @@ class AddOverhead extends Component {
                               label={`Overhead (%)`}
                               name={"OverheadPercentage"}
                               type="text"
-                              placeholder={
-                                !isOverheadPercent ? "Enter" : ""
-                              }
+                              placeholder={isOverheadPercent || isViewMode ? "-" : "Enter"}
                               validate={
                                 !isOverheadPercent ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []
                               }
@@ -1063,7 +1061,7 @@ class AddOverhead extends Component {
                               label={`Overhead on RM (%)`}
                               name={"OverheadRMPercentage"}
                               type="text"
-                              placeholder={!isRM ? "Enter" : ""}
+                              placeholder={isRM || isViewMode ? "-" : "Enter"}
                               validate={!isRM ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []}
                               component={renderNumberInputField}
                               required={!isRM ? true : false}
@@ -1080,7 +1078,7 @@ class AddOverhead extends Component {
                               label={`Overhead on CC (%)`}
                               name={"OverheadMachiningCCPercentage"}
                               type="text"
-                              placeholder={!isCC ? "Enter" : ""}
+                              placeholder={isCC || isViewMode ? "-" : "Enter"}
                               validate={!isCC ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []}
                               component={renderNumberInputField}
                               required={!isCC ? true : false}
@@ -1097,7 +1095,7 @@ class AddOverhead extends Component {
                               label={`Overhead on BOP (%)`}
                               name={"OverheadBOPPercentage"}
                               type="text"
-                              placeholder={!isBOP ? "Enter" : ""}
+                              placeholder={isBOP || isViewMode ? "-" : "Enter"}
                               validate={!isBOP ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []}
                               component={renderNumberInputField}
                               required={!isBOP ? true : false}
@@ -1126,7 +1124,7 @@ class AddOverhead extends Component {
                               component={renderDatePicker}
                               className="form-control"
                               disabled={isViewMode || isDataChanged}
-
+                              placeholder={isViewMode || isDataChanged ? '-' : "Select Date"}
                             />
                           </div>
                         </Col>
@@ -1142,7 +1140,7 @@ class AddOverhead extends Component {
                           <Field
                             label={"Remarks"}
                             name={`Remark`}
-                            placeholder="Type here..."
+                            placeholder={isViewMode ? '-' : "Type here..."}
                             value={this.state.remarks}
                             className=""
                             customClassName=" textAreaWithBorder"

@@ -344,7 +344,7 @@ class AddVBCPlant extends Component {
                       label={`Plant Name`}
                       name={"PlantName"}
                       type="text"
-                      placeholder={""}
+                      placeholder={isViewMode ? '-' : "Enter"}
                       validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces, checkSpacesInString]}
                       component={renderText}
                       required={true}
@@ -360,7 +360,7 @@ class AddVBCPlant extends Component {
                       label={`Plant Code`}
                       name={"PlantCode"}
                       type="text"
-                      placeholder={""}
+                      placeholder={(isEditFlag || isViewMode) ? '-' : "Enter"}
                       validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength15, checkSpacesInString]}
                       component={renderText}
                       //required={true}
@@ -376,7 +376,7 @@ class AddVBCPlant extends Component {
                           label="Phone Number"
                           name={"PhoneNumber"}
                           type="text"
-                          placeholder={""}
+                          placeholder={isViewMode ? '-' : "Enter"}
                           validate={[postiveNumber, minLength10, maxLength12, checkWhiteSpaces]}
                           component={renderNumberInputField}
                           //    required={true}
@@ -391,7 +391,7 @@ class AddVBCPlant extends Component {
                           label="Ext."
                           name={"Extension"}
                           type="text"
-                          placeholder={""}
+                          placeholder={isViewMode ? '-' : "Enter"}
                           validate={[postiveNumber, maxLength3, checkWhiteSpaces]}
                           component={renderText}
                           // required={true}
@@ -410,7 +410,7 @@ class AddVBCPlant extends Component {
                       label="Address 1"
                       name={"AddressLine1"}
                       type="text"
-                      placeholder={""}
+                      placeholder={isViewMode ? '-' : "Enter"}
                       validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                       component={renderText}
                       //     required={true}
@@ -425,7 +425,7 @@ class AddVBCPlant extends Component {
                       label="Address 2"
                       name={"AddressLine2"}
                       type="text"
-                      placeholder={""}
+                      placeholder={isViewMode ? '-' : "Enter"}
                       validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                       component={renderText}
                       //   required={true}
@@ -443,7 +443,7 @@ class AddVBCPlant extends Component {
                       type="text"
                       label="Country"
                       component={searchableSelect}
-                      placeholder={"Select"}
+                      placeholder={isViewMode ? '-' : "Select"}
                       options={this.selectType("country")}
                       //onKeyUp={(e) => this.changeItemDesc(e)}
                       validate={
@@ -465,7 +465,7 @@ class AddVBCPlant extends Component {
                         type="text"
                         label="State"
                         component={searchableSelect}
-                        placeholder={"Select"}
+                        placeholder={isViewMode ? '-' : "Select"}
                         options={this.selectType("state")}
                         //onKeyUp={(e) => this.changeItemDesc(e)}
                         validate={
@@ -490,7 +490,7 @@ class AddVBCPlant extends Component {
                       type="text"
                       label="City"
                       component={searchableSelect}
-                      placeholder={"Select"}
+                      placeholder={isViewMode ? '-' : "Select"}
                       options={this.selectType("city")}
                       //onKeyUp={(e) => this.changeItemDesc(e)}
                       validate={
@@ -510,7 +510,7 @@ class AddVBCPlant extends Component {
                       label="ZipCode"
                       name={"ZipCode"}
                       type="text"
-                      placeholder={""}
+                      placeholder={isViewMode ? '-' : "Enter"}
                       validate={[required, number, maxLength6]}
                       component={renderText}
                       required={true}

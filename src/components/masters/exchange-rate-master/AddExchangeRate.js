@@ -329,7 +329,7 @@ class AddExchangeRate extends Component {
                           type="text"
                           label="Currency"
                           component={searchableSelect}
-                          placeholder={"Select"}
+                          placeholder={isEditFlag ? '-' : "Select"}
                           onChange={this.onFinancialDataChange}
                           options={this.renderListing("currency")}
                           //onKeyUp={(e) => this.changeItemDesc(e)}
@@ -350,7 +350,7 @@ class AddExchangeRate extends Component {
                           label={`Currency Exchange Rate(INR)`}
                           name={"CurrencyExchangeRate"}
                           type="text"
-                          placeholder={"Enter"}
+                          placeholder={isViewMode ? '-' : 'Enter'}
                           validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
                           component={renderNumberInputField}
                           required={true}
@@ -365,7 +365,7 @@ class AddExchangeRate extends Component {
                           label={`Bank Rate(INR)`}
                           name={"BankRate"}
                           type="text"
-                          placeholder={"Enter"}
+                          placeholder={isViewMode ? '-' : 'Enter'}
                           validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
                           component={renderNumberInputField}
                           disabled={isViewMode}
@@ -379,7 +379,7 @@ class AddExchangeRate extends Component {
                           label={`Bank Commission(%)`}
                           name={"BankCommissionPercentage"}
                           type="text"
-                          placeholder={"Enter"}
+                          placeholder={isViewMode ? '-' : 'Enter'}
                           validate={[positiveAndDecimalNumber, maxLength10, decimalLengthThree]}
                           component={renderNumberInputField}
                           max={100}
@@ -395,7 +395,7 @@ class AddExchangeRate extends Component {
                           label={`Custom Rate(INR)`}
                           name={"CustomRate"}
                           type="text"
-                          placeholder={"Enter"}
+                          placeholder={isViewMode ? '-' : 'Enter'}
                           validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
                           component={renderNumberInputField}
                           disabled={isViewMode}
@@ -422,7 +422,7 @@ class AddExchangeRate extends Component {
                               dateFormat="dd/MM/yyyy"
                               //maxDate={new Date()}
                               dropdownMode="select"
-                              placeholderText="Select date"
+                              placeholderText={isViewMode || (!this.state.isFinancialDataChange && isEditFlag) ? '-' : "Select Date"}
                               className="withBorder"
                               autoComplete={"off"}
                               minDate={new Date(this.state.minEffectiveDate)}
