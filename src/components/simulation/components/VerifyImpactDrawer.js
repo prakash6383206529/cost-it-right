@@ -125,6 +125,12 @@ function VerifyImpactDrawer(props) {
                       <span class="grey-text d-block">Effective Date:</span>
                       <span>{DayTime(amendmentDetails.EffectiveDate).format('DD-MM-YYYY')}</span>
                     </span>
+
+                    <span class=" mr-2 pl-3">
+                      <span class="grey-text d-block">Impact for Quarter(INR):</span>
+                      <span>{amendmentDetails.TotalImpactPerQuarter === '' ? '-' : amendmentDetails.TotalImpactPerQuarter}</span>
+                    </span>
+
                   </div>
                 </Col>
               </Row>
