@@ -221,6 +221,7 @@ export const ProcessGroup = (props) => {
                             label="Group Name"
                             name={"groupName"}
                             Controller={Controller}
+                            placeholder={props.isViewFlag ? '-' : "Enter"}
                             control={control}
                             register={register}
                             rules={{ required: false }}
@@ -238,7 +239,7 @@ export const ProcessGroup = (props) => {
                         <SearchableSelectHookForm
                             label={"Process"}
                             name={"process"}
-                            placeholder={"Select"}
+                            placeholder={props.isViewFlag ? '-' : "Select"}
                             Controller={Controller}
                             control={control}
                             rules={{ required: false }}

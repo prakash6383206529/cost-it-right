@@ -876,7 +876,7 @@ class AddProfit extends Component {
                             type="text"
                             label="Model Type"
                             component={searchableSelect}
-                            placeholder={"Select"}
+                            placeholder={isViewMode ? '-' : "Select"}
                             options={this.renderListing("ModelType")}
                             //onKeyUp={(e) => this.changeItemDesc(e)}
                             validate={
@@ -918,7 +918,7 @@ class AddProfit extends Component {
                               type="text"
                               label={"Client Name"}
                               component={searchableSelect}
-                              placeholder={"Select"}
+                              placeholder={isViewMode ? '-' : "Select"}
                               options={this.renderListing("ClientList")}
                               //onKeyUp={(e) => this.changeItemDesc(e)}
                               validate={
@@ -941,7 +941,7 @@ class AddProfit extends Component {
                             type="text"
                             label="Profit Applicability"
                             component={searchableSelect}
-                            placeholder={"Select"}
+                            placeholder={isViewMode ? '-' : "Select"}
                             options={this.renderListing(
                               "ProfitApplicability"
                             )}
@@ -967,7 +967,7 @@ class AddProfit extends Component {
                               name={"ProfitPercentage"}
                               type="text"
                               placeholder={
-                                !isProfitPercent ? "Enter" : ""
+                                isProfitPercent || isViewMode ? "-" : "Enter"
                               }
                               validate={
                                 !isProfitPercent ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []
@@ -989,7 +989,7 @@ class AddProfit extends Component {
                               label={`Profit on RM (%)`}
                               name={"ProfitRMPercentage"}
                               type="text"
-                              placeholder={!isRM ? "Enter" : ""}
+                              placeholder={isRM || isViewMode ? "-" : "Enter"}
                               validate={!isRM ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []}
                               onChange={(event) => this.handleChangeProfitPercentageRM(event.target.value)}
                               component={renderNumberInputField}
@@ -1006,7 +1006,7 @@ class AddProfit extends Component {
                               label={`Profit on CC (%)`}
                               name={"ProfitMachiningCCPercentage"}
                               type="text"
-                              placeholder={!isCC ? "Enter" : ""}
+                              placeholder={isCC || isViewMode ? "-" : "Enter"}
                               validate={!isCC ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []}
                               onChange={(event) => this.handleChangeProfitPercentageCC(event.target.value)}
                               component={renderNumberInputField}
@@ -1024,7 +1024,7 @@ class AddProfit extends Component {
                               label={`Profit on BOP (%)`}
                               name={"ProfitBOPPercentage"}
                               type="text"
-                              placeholder={!isBOP ? "Enter" : ""}
+                              placeholder={isBOP || isViewMode ? "-" : "Enter"}
                               validate={!isBOP ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []}
                               onChange={(event) => this.handleChangeProfitPercentageBOP(event.target.value)}
                               component={renderNumberInputField}
@@ -1054,6 +1054,7 @@ class AddProfit extends Component {
                               component={renderDatePicker}
                               className="form-control"
                               disabled={isViewMode || isDataChanged}
+                              placeholder={isViewMode || isDataChanged ? '-' : 'Enter'}
                             />
                           </div>
                         </Col>
@@ -1069,7 +1070,7 @@ class AddProfit extends Component {
                           <Field
                             label={"Remarks"}
                             name={`Remark`}
-                            placeholder="Type here..."
+                            placeholder={isViewMode ? '-' : "Type here..."}
                             value={this.state.remarks}
                             className=""
                             customClassName=" textAreaWithBorder"

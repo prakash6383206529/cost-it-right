@@ -954,7 +954,7 @@ class AddAssemblyPart extends Component {
                             label={`BOM No.`}
                             name={"BOMNumber"}
                             type="text"
-                            placeholder={""}
+                            placeholder={(isEditFlag && this.state.isDisableBomNo === false) ? '-' : "Enter"}
                             validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20, checkSpacesInString]}
                             component={renderText}
                             required={true}
@@ -968,7 +968,7 @@ class AddAssemblyPart extends Component {
                             label={`Assembly Part No.`}
                             name={"AssemblyPartNumber"}
                             type="text"
-                            placeholder={""}
+                            placeholder={isEditFlag || convertPartToAssembly ? '-' : "Enter"}
                             validate={[this.isRequired(), acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20, checkSpacesInString]}
                             component={renderText}
                             required={true}
@@ -983,7 +983,7 @@ class AddAssemblyPart extends Component {
                             label={`Assembly Name`}
                             name={"AssemblyPartName"}
                             type="text"
-                            placeholder={""}
+                            placeholder={isViewMode || (!isEditFlag && this.state.disablePartName) || convertPartToAssembly ? '-' : "Enter"}
                             validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength75, checkSpacesInString]}
                             component={renderText}
                             required={true}
@@ -997,7 +997,7 @@ class AddAssemblyPart extends Component {
                             label={`Description`}
                             name={"Description"}
                             type="text"
-                            placeholder={""}
+                            placeholder={isViewMode ? '-' : "Enter"}
                             validate={[maxLength80, checkWhiteSpaces]}
                             component={renderText}
                             required={false}
@@ -1011,7 +1011,7 @@ class AddAssemblyPart extends Component {
                             label={`ECN No.`}
                             name={"ECNNumber"}
                             type="text"
-                            placeholder={""}
+                            placeholder={isViewMode ? '-' : "Enter"}
                             validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, checkSpacesInString]}
                             component={renderText}
                             className=""
@@ -1026,7 +1026,7 @@ class AddAssemblyPart extends Component {
                             label={`Revision No.`}
                             name={"RevisionNumber"}
                             type="text"
-                            placeholder={""}
+                            placeholder={isViewMode ? '-' : "Enter"}
                             validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, checkSpacesInString]}
                             component={renderText}
                             className=""
@@ -1040,7 +1040,7 @@ class AddAssemblyPart extends Component {
                             label={`Drawing No.`}
                             name={"DrawingNumber"}
                             type="text"
-                            placeholder={""}
+                            placeholder={isViewMode ? '-' : "Enter"}
                             validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, checkSpacesInString]}
                             component={renderText}
                             className=""
@@ -1058,7 +1058,7 @@ class AddAssemblyPart extends Component {
                             <Field
                               label="Group Code"
                               name="ProductGroup"
-                              placeholder={"Select"}
+                              placeholder={isViewMode ? '-' : "Select"}
                               selection={
                                 this.state.ProductGroup == null || this.state.ProductGroup.length === 0 ? [] : this.state.ProductGroup}
                               options={this.renderListing("ProductGroup")}
@@ -1076,7 +1076,7 @@ class AddAssemblyPart extends Component {
                               label={`Group Code`}
                               name={"GroupCode"}
                               type="text"
-                              placeholder={""}
+                              placeholder={isViewMode ? '-' : "Select Date"}
                               validate={[checkWhiteSpaces, alphaNumeric, maxLength20]}
                               component={renderText}
                               className=""
@@ -1095,7 +1095,7 @@ class AddAssemblyPart extends Component {
                             type="text"
                             name="TechnologyId"
                             component={searchableSelect}
-                            placeholder={"Technology"}
+                            placeholder={isViewMode ? '-' : "Select"}
                             options={this.renderListing("technology")}
                             validate={
                               this.state.TechnologySelected == null || Object.keys(this.state.TechnologySelected).length === 0 ? [required] : []}
@@ -1114,6 +1114,7 @@ class AddAssemblyPart extends Component {
                             <div className="inputbox date-section">
                               <Field
                                 label="Effective Date"
+                                placeholder={isEditFlag && !isViewMode ? getConfigurationKey().IsBOMEditable ? "Enter" : '-' : (isViewMode) ? '-' : "Enter"}
                                 name="EffectiveDate"
                                 selected={this.state.effectiveDate}
                                 onChange={this.handleEffectiveDateChange}
@@ -1155,7 +1156,7 @@ class AddAssemblyPart extends Component {
                           <Field
                             label={"Remarks"}
                             name={`Remark`}
-                            placeholder="Type here..."
+                            placeholder={isViewMode ? '-' : "Type here..."}
                             className=""
                             customClassName=" textAreaWithBorder"
                             validate={[maxLength512, checkWhiteSpaces]}

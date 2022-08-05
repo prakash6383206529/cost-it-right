@@ -354,7 +354,7 @@ class AddZBCPlant extends Component {
                       label={`Plant Name`}
                       name={"PlantName"}
                       type="text"
-                      placeholder={""}
+                      placeholder={isViewMode ? '-' : "Enter"}
                       validate={[required, alphaNumeric, maxLength71, checkWhiteSpaces, checkSpacesInString]}
                       component={renderText}
                       required={true}
@@ -368,7 +368,7 @@ class AddZBCPlant extends Component {
                       label={`Plant Code`}
                       name={"PlantCode"}
                       type="text"
-                      placeholder={""}
+                      placeholder={isEditFlag ? '-' : "Enter"}
                       validate={[required, postiveNumber, checkWhiteSpaces, maxLength4, checkSpacesInString]}
                       component={renderText}
                       required={true}
@@ -387,7 +387,7 @@ class AddZBCPlant extends Component {
                         type="text"
                         label="Company Name"
                         component={searchableSelect}
-                        placeholder={"Select"}
+                        placeholder={isViewMode ? '-' : "Select"}
                         options={this.selectType("Company")}
                         //onKeyUp={(e) => this.changeItemDesc(e)}
                         disabled={isViewMode}
@@ -410,7 +410,7 @@ class AddZBCPlant extends Component {
                           label="Phone Number"
                           name={"PhoneNumber"}
                           type="text"
-                          placeholder={""}
+                          placeholder={isViewMode ? '-' : "Enter"}
                           validate={[postiveNumber, minLength10, maxLength12, checkWhiteSpaces]}
                           component={renderNumberInputField}
                           maxLength={12}
@@ -424,7 +424,7 @@ class AddZBCPlant extends Component {
                           label="Ext."
                           name={"Extension"}
                           type="text"
-                          placeholder={""}
+                          placeholder={isViewMode ? '-' : "Enter"}
                           validate={[postiveNumber, maxLength5, checkWhiteSpaces]}
                           component={renderNumberInputField}
                           maxLength={5}
@@ -442,7 +442,7 @@ class AddZBCPlant extends Component {
                       label="Address 1"
                       name={"AddressLine1"}
                       type="text"
-                      placeholder={""}
+                      placeholder={isViewMode ? '-' : "Enter"}
                       validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                       component={renderText}
                       maxLength={26}
@@ -456,7 +456,7 @@ class AddZBCPlant extends Component {
                       label="Address 2"
                       name={"AddressLine2"}
                       type="text"
-                      placeholder={""}
+                      placeholder={isViewMode ? '-' : "Enter"}
                       validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                       component={renderText}
                       //required={true}
@@ -495,7 +495,7 @@ class AddZBCPlant extends Component {
                         type="text"
                         label="State"
                         component={searchableSelect}
-                        placeholder={"Select"}
+                        placeholder={isViewMode ? '-' : "Select"}
                         options={this.selectType("state")}
                         disabled={isViewMode}
                         validate={
@@ -519,7 +519,7 @@ class AddZBCPlant extends Component {
                       type="text"
                       label="City"
                       component={searchableSelect}
-                      placeholder={"Select"}
+                      placeholder={isViewMode ? '-' : "Select"}
                       options={this.selectType("city")}
                       disabled={isViewMode}
                       //onKeyUp={(e) => this.changeItemDesc(e)}
@@ -539,7 +539,7 @@ class AddZBCPlant extends Component {
                       label="ZipCode"
                       name={"ZipCode"}
                       type="text"
-                      placeholder={""}
+                      placeholder={isViewMode ? '-' : "Enter"}
                       validate={[required, postiveNumber, maxLength6]}
                       component={renderText}
                       required={true}

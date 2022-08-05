@@ -180,7 +180,7 @@ class AddReason extends Component {
                     label={`Reason`}
                     name={"Reason"}
                     type="text"
-                    placeholder={""}
+                    placeholder={this.state.isEditFlag ? '-' : "Enter"}
                     validate={[required, checkWhiteSpaces, maxLength80, acceptAllExceptSingleSpecialCharacter, checkSpacesInString]}
                     component={renderText}
                     required={true}
