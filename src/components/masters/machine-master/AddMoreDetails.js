@@ -29,7 +29,7 @@ import HeaderTitle from '../../common/HeaderTitle';
 import AddMachineTypeDrawer from './AddMachineTypeDrawer';
 import AddProcessDrawer from './AddProcessDrawer';
 import NoContentFound from '../../common/NoContentFound';
-import { calculatePercentage, CheckApprovalApplicableMaster } from '../../../helper';
+import { calculatePercentage, CheckApprovalApplicableMaster, displayUOM } from '../../../helper';
 import EfficiencyDrawer from './EfficiencyDrawer';
 import DayTime from '../../common/DayTimeWrapper'
 import { AcceptableMachineUOM } from '../../../config/masterData'
@@ -1515,13 +1515,13 @@ class AddMoreDetails extends Component {
 
     this.setState({
       processName: [],
-      UOM: isProcessGroup ? UOM : [],
+      UOM: isProcessGroup && this.state.processGrid.length !== 0 ? UOM : [],
       processGridEditIndex: '',
       isEditIndex: false,
     }, () => {
       this.props.change('OutputPerHours', isProcessGroup ? fieldsObj.OutputPerHours : 0)
       this.props.change('OutputPerYear', isProcessGroup ? fieldsObj.OutputPerYear : 0)
-      this.props.change('MachineRate', isProcessGroup ? checkForDecimalAndNull(fieldsObj.MachineRate, this.props.initialConfiguration.NoOfDecimalForPrice) : 0)
+      this.props.change('MachineRate', isProcessGroup && this.state.processGrid.length !== 0 ? checkForDecimalAndNull(fieldsObj.MachineRate, this.props.initialConfiguration.NoOfDecimalForPrice) : 0)
     });
   };
 
@@ -2097,6 +2097,14 @@ class AddMoreDetails extends Component {
       this.setState({ UniqueProcessId: [...uniqueProcessId] })
     }
   }
+  /**
+* @method DisplayMachineRateLabel
+* @description for machine rate label with dynamic uom change
+*/
+
+  DisplayMachineRateLabel = () => {
+    return <>Machine Rate/{(this.state.UOM && this.state.UOM.length !== 0) ? displayUOM(this.state.UOM.label) : "UOM"} (INR)</>
+  }
 
   /**
   * @method render
@@ -2106,7 +2114,6 @@ class AddMoreDetails extends Component {
     const { handleSubmit, loading, initialConfiguration, isMachineAssociated } = this.props;
     const { isLoader, isOpenAvailability, isEditFlag, isViewMode, isOpenMachineType, isOpenProcessDrawer, manufactureYear,
       isLoanOpen, isWorkingOpen, isDepreciationOpen, isVariableCostOpen, isViewFlag, isPowerOpen, isLabourOpen, isProcessOpen, UniqueProcessId, isProcessGroupOpen, disableAllForm } = this.state;
-
     return (
       <>
         {(isLoader) && <LoaderCustom />}
@@ -3114,7 +3121,7 @@ class AddMoreDetails extends Component {
                             <>
                               <Col md="3">
                                 <Field
-                                  label={`Utilization(%)`}
+                                  label={`Efficiency(%)`}
                                   name={"UtilizationFactorPercentage"}
                                   type="text"
                                   placeholder={'Enter'}
@@ -3457,10 +3464,10 @@ class AddMoreDetails extends Component {
 
                             } */}
 
-                            <Col className="d-flex col-auto">
+                            <Col className="d-flex col-auto UOM-label-container">
                               <div className="machine-rate-filed pr-3">
                                 <Field
-                                  label={`Machine Rate(INR)`}
+                                  label={this.DisplayMachineRateLabel()}
                                   name={"MachineRate"}
                                   type="text"
                                   placeholder={''}
@@ -3493,12 +3500,19 @@ class AddMoreDetails extends Component {
                                     >Cancel</button>
                                   </>
                                   :
-                                  <button
-                                    type="button"
-                                    className={'user-btn pull-left'}
-                                    disabled={this.state.isViewMode}
-                                    onClick={this.processTableHandler}>
-                                    <div className={'plus'}></div>ADD</button>}
+                                  <>
+                                    <button
+                                      type="button"
+                                      className={'user-btn pull-left'}
+                                      disabled={this.state.isViewMode}
+                                      onClick={this.processTableHandler}>
+                                      <div className={'plus'}></div>ADD</button>
+                                    <button
+                                      type="button"
+                                      disabled={this.state.isViewMode}
+                                      className={'reset-btn pull-left ml5'}
+                                      onClick={this.resetProcessGridData}
+                                    >Reset</button> </>}
                               </div>
                             </Col>
                             <Col md="12">
@@ -3520,7 +3534,7 @@ class AddMoreDetails extends Component {
                                       return (
                                         <tr key={index}>
                                           <td>{item.processName}</td>
-                                          <td>{item.UnitOfMeasurement}</td>
+                                          <td className='UOM-label-container'>{displayUOM(item.UnitOfMeasurement)}</td>
                                           {/* <td>{item.OutputPerHours}</td>    COMMENTED FOR NOW MAY BE USED LATER
                                           <td>{checkForDecimalAndNull(item.OutputPerYear, initialConfiguration.NoOfDecimalForInputOutput)}</td> */}
                                           <td>{checkForDecimalAndNull(item.MachineRate, initialConfiguration.NoOfDecimalForPrice)}</td>

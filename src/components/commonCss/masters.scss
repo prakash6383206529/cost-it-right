@@ -25,3 +25,13 @@
         bottom: 37px;
     }
 }
+.table {
+    .UOM-label-container {
+        span {
+            &:last-child {
+                position:absolute;
+                top: -5px;
+            }
+        }
+    }
+}
