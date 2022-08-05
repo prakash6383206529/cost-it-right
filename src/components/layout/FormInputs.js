@@ -248,7 +248,7 @@ export function renderMultiSelectField(field) {
           ""
         )}
       </label>
-      <div className={inputbox} onClick={field.onTouched} title={field && field.title && field.title}>
+      <div className={inputbox} onClick={field.onTouched} title={field && field?.title}>
         <Select
           className={InputClassName}
           getOptionLabel={optionLabel}
