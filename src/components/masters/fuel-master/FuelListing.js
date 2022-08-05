@@ -89,10 +89,11 @@ class FuelListing extends Component {
     * @method editItemDetails
     * @description Edit Fuel
     */
-    editItemDetails = (Id, rowData) => {
+    editItemDetails = (Id, rowData, isViewMode) => {
         let data = {
             isEditFlag: true,
-            Id: Id,
+            Id: rowData?.FuelGroupEntryId,
+            isViewMode: isViewMode
         }
         this.props.getDetails(data);
     }
