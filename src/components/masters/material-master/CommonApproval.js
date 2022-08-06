@@ -64,6 +64,9 @@ function CommonApproval(props) {
                 setIsFinalApprover(res.data.Data.IsFinalApprovar)
             }
         }))
+
+        dispatch(setSelectedCostingListSimualtion([]))
+        setSelectedRowData([])
     }, [])
 
     var filterParams = {
@@ -114,8 +117,6 @@ function CommonApproval(props) {
             if (res) {
                 let isReset = true
                 setTimeout(() => {
-
-
 
                     for (var prop in obj) {
                         if (prop !== "DepartmentCode" && obj[prop] !== "") {
@@ -217,6 +218,8 @@ function CommonApproval(props) {
         setPageNoNew(1)
         setCurrentRowIndex(0)
         getTableData(0, 10, true, floatingFilterData)
+        dispatch(setSelectedCostingListSimualtion([]))
+        setSelectedRowData([])
         setGlobalTake(10)
         setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
     }
@@ -424,9 +427,48 @@ function CommonApproval(props) {
             if (event.node.isSelected() === false) {    // CHECKING IF CURRENT CHECKBOX IS UNSELECTED
 
                 for (let i = 0; i < selectedCostingListSimulation.length; i++) {
-                    if (selectedCostingListSimulation[i].RawMaterialId === event.data.RawMaterialId) {   // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
-                        continue;
+
+
+                    switch (props?.MasterId) {
+                        case 1:
+
+                            if (selectedCostingListSimulation[i]?.RawMaterialId === event?.data?.RawMaterialId) {   // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
+                                continue;
+                            }
+
+                            break;
+                        case 2:
+
+                            if (selectedCostingListSimulation[i]?.BoughtOutPartId === event?.data?.BoughtOutPartId) {   // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
+                                continue;
+                            }
+
+
+                            break;
+                        case 3:
+
+                            if (selectedCostingListSimulation[i]?.OperationId === event?.data?.OperationId) {   // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
+                                continue;
+                            }
+
+                            break;
+                        case 4:
+
+
+                            if (selectedCostingListSimulation[i]?.MachineId === event?.data?.MachineId) {   // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
+                                continue;
+                            }
+
+                            break;
+                        default:
+                            // code block
+
+                            if (selectedCostingListSimulation[i]?.ApprovalProcessId === event?.data?.ApprovalProcessId) {   // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
+                                continue;
+                            }
+
                     }
+
                     finalData.push(selectedCostingListSimulation[i])
                 }
 
@@ -436,9 +478,48 @@ function CommonApproval(props) {
             selectedRows = [...selectedRows, ...finalData]
         }
 
-        let uniqeArray = _.uniqBy(selectedRows, "ApprovalProcessId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
-        dispatch(setSelectedCostingListSimualtion(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
-        setSelectedRowData(uniqeArray)
+
+
+        let uniqeArray = []
+        switch (props?.MasterId) {
+            case 1:
+
+                uniqeArray = _.uniqBy(selectedRows, "RawMaterialId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
+                dispatch(setSelectedCostingListSimualtion(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
+                setSelectedRowData(uniqeArray)
+
+                break;
+            case 2:
+
+                uniqeArray = _.uniqBy(selectedRows, "BoughtOutPartId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
+                dispatch(setSelectedCostingListSimualtion(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
+                setSelectedRowData(uniqeArray)
+
+
+                break;
+            case 3:
+
+                uniqeArray = _.uniqBy(selectedRows, "OperationId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
+                dispatch(setSelectedCostingListSimualtion(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
+                setSelectedRowData(uniqeArray)
+
+                break;
+            case 4:
+
+                uniqeArray = _.uniqBy(selectedRows, "MachineId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
+                dispatch(setSelectedCostingListSimualtion(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
+                setSelectedRowData(uniqeArray)
+
+                break;
+            default:
+                // code block
+                uniqeArray = _.uniqBy(selectedRows, "ApprovalProcessId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
+                dispatch(setSelectedCostingListSimualtion(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
+                setSelectedRowData(uniqeArray)
+        }
+
+
+
     }
 
 
@@ -457,7 +538,10 @@ function CommonApproval(props) {
     // }, 500)
 
     const sendForApproval = () => {
-        if (selectedRowData.length > 0) {
+
+
+
+        if (selectedRowData?.length > 0) {
             setApprovalDrawer(true)
         }
         else {
@@ -720,6 +804,7 @@ function CommonApproval(props) {
                     masterId={props?.MasterId}
                 />
             }
+
             {
                 approvalDrawer &&
                 <MasterSendForApproval
