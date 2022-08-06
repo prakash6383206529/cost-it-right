@@ -1590,6 +1590,7 @@ export function getRMApprovalList(masterId, skip, take, isPagination, obj, callb
                 callback(response);
             }
         }).catch((error) => {
+
             dispatch({ type: API_FAILURE, });
             callback(error);
             apiErrors(error)
