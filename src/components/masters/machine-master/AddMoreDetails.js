@@ -1686,6 +1686,8 @@ class AddMoreDetails extends Component {
     const data = {}
     // For cancel of mpre detail form to reset form in addMachine form
     data.cancelFlag = true
+    data.isFinalApprovar = this.state.isFinalApprovar
+    data.isViewFlag = this.state.isViewFlag
     /* IF CANCEL IS CLICKED AND MACHINE FORM IS IN EDIT FORM CONTAINING VALUE */
     if (editDetails.isIncompleteMachine || this.state.isEditFlag) {
 
@@ -2083,10 +2085,22 @@ class AddMoreDetails extends Component {
   */
   processToggle = () => {
     const { isProcessOpen } = this.state
+    const { fieldsObj } = this.props
+
+    if (checkForNull(fieldsObj?.MachineCost) === 0 && isProcessOpen === false) {
+      Toaster.warning('Please enter the machine cost');
+      return false;
+    }
     this.setState({ isProcessOpen: !isProcessOpen })
   }
   processGroupToggle = () => {
     const { isProcessGroupOpen } = this.state
+    const { fieldsObj } = this.props
+
+    if (checkForNull(fieldsObj?.MachineCost) === 0 && isProcessGroupOpen === false) {
+      Toaster.warning('Please enter the machine cost');
+      return false;
+    }
     this.setState({ isProcessGroupOpen: !isProcessGroupOpen })
   }
   handleKeyDown = function (e) {
