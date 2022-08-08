@@ -415,7 +415,7 @@ class AddVolume extends Component {
               // isLoader: false,
               IsVendor: Data.IsVendor,
               selectedPlants: plantArray,
-              vendorName: Data.VendorName && Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.VendorId } : [],
+              vendorName: Data.VendorName && Data.VendorName !== undefined ? { label: `${Data.VendorName}(${Data.VendorCode})`, value: Data.VendorId } : [],
               year: yearObj && yearObj !== undefined ? { label: yearObj.Text, value: yearObj.Value } : [],
               part: Data?.PartId ? { label: Data?.PartNumber, value: Data?.PartId } : [],
               destinationPlant: Data.DestinationPlant !== undefined ? { label: Data.DestinationPlant, value: Data.DestinationPlantId } : [],
