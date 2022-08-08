@@ -536,7 +536,7 @@ function HotForging(props) {
               </Col>
               <Col md="3">
                 <NumberFieldHookForm
-                  label={`Billet Length(mm)`}
+                  label={`Input Bar Length(mm)`}
                   name={'BilletLength'}
                   Controller={Controller}
                   control={control}
