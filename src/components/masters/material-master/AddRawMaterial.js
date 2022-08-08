@@ -132,7 +132,7 @@ class AddRawMaterial extends Component {
                       label={`Name`}
                       name={"RawMaterialName"}
                       type="text"
-                      placeholder={""}
+                      placeholder={"Enter"}
                       validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces]}
                       component={renderText}
                       required={true}

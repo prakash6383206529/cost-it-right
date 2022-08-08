@@ -311,6 +311,11 @@ class ReasonListing extends Component {
       } else if (item.Technology === '-') {
         item.Technology = ' '
       }
+      if (item.IsActive === true) {
+        item.IsActive = 'Active'
+      } else if (item.IsActive === false) {
+        item.IsActive = 'In Active'
+      }
       return item
     })
     return (

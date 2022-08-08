@@ -255,7 +255,7 @@ export const ProcessGroup = (props) => {
                     </Col>
 
                     <Col md="4" className='process-group-wrapper'>
-                        <div className='border process-group'>
+                        <div className={`border process-group ${props.isViewFlag ? 'disabled' : ''}`}>
                             {
                                 selectedProcess && selectedProcess.map(item =>
                                     <span className='process-name'>{item.ProcessName}</span>
