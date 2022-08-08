@@ -362,13 +362,15 @@ class AddSpecification extends Component {
     }
   };
 
-  checkUniqCode = (e) => {
+  checkUniqCode = debounce((e) => {
+
     this.props.checkAndGetRawMaterialCode(e.target.value, res => {
       if (res && res.data && res.data.Result === false) {
         Toaster.warning(res.data.Message);
+        this.props.change('Code', "")
       }
     })
-  }
+  }, 600)
 
   /**
   * @method render
@@ -561,7 +563,8 @@ class AddSpecification extends Component {
                         required={true}
                         className=" "
                         customClassName=" withBorder"
-                        onBlur={this.checkUniqCode}
+                        //onBlur={this.checkUniqCode}
+                        onChange={this.checkUniqCode}
                         disabled={isEditFlag ? true : false}
                       />
                     </Col>
