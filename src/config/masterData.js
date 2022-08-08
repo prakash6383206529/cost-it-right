@@ -2937,7 +2937,7 @@ export const VBCPLANT_DOWNLOAD_EXCEl = [
 
 export const REASON_DOWNLOAD_EXCEl = [
     { label: "Reason", value: "Reason", },
-    { label: "Is Active", value: "IsActive", }
+    { label: "Status", value: "IsActive", }
 
 ]
 
@@ -2948,7 +2948,7 @@ export const VENDOR_DOWNLOAD_EXCEl = [
     { label: "Country", value: "Country", },
     { label: "State", value: "State", },
     { label: "City", value: "City", },
-    { label: "Is Active", value: "IsActive", }
+    { label: "Status", value: "IsActive", }
 ]
 
 export const UOM_DOWNLOAD_EXCEl = [
@@ -2989,7 +2989,7 @@ export const ZBCPLANT_DOWNLOAD_EXCEl = [
     { label: "Country", value: "CountryName", },
     { label: "State", value: "StateName", },
     { label: "City", value: "CityName", },
-    { label: "Is Active", value: "IsActive", },
+    { label: "Status", value: "IsActive", },
 ]
 export const REPORT_DOWNLOAD_EXCEl = [
     { label: "Costing Version", value: "CostingNumber", },
@@ -3089,7 +3089,7 @@ export const USER_LISTING_DOWNLOAD_EXCEl = [
     { label: "Phone No", value: "PhoneNumber", },
     { label: "Department", value: "DepartmentName", },
     { label: "Role", value: "RoleName", },
-    { label: "Is Active", value: "IsActive", }
+    { label: "Status", value: "IsActive", }
 
 ]
 
