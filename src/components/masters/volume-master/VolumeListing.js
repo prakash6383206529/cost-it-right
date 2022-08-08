@@ -610,10 +610,10 @@ class VolumeListing extends Component {
                 <AgGridColumn field="IsVendor" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
                 <AgGridColumn field="Year" headerName="Year"></AgGridColumn>
                 <AgGridColumn field="Month" headerName="Month"></AgGridColumn>
-                <AgGridColumn field="VendorName" headerName="Vendor Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                <AgGridColumn field="VendorName" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                <AgGridColumn field="Plant" headerName="Plant (Code)" cellRenderer={'plantFormatter'}></AgGridColumn>
                 <AgGridColumn field="PartNumber" headerName="Part Number"></AgGridColumn>
                 <AgGridColumn field="PartName" headerName="Part Name"></AgGridColumn>
-                <AgGridColumn field="Plant" headerName="Plant" cellRenderer={'plantFormatter'}></AgGridColumn>
                 <AgGridColumn field="BudgetedQuantity" headerName="Budgeted Quantity"></AgGridColumn>
                 <AgGridColumn field="ApprovedQuantity" headerName="Approved Quantity"></AgGridColumn>
                 <AgGridColumn field="VolumeId" width={120} headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
