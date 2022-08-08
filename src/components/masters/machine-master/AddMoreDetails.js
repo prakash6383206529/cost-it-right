@@ -5,7 +5,7 @@ import { Row, Col, Table } from 'reactstrap';
 import {
   required, checkForNull, number, acceptAllExceptSingleSpecialCharacter, maxLength10,
   maxLength80, checkWhiteSpaces, checkForDecimalAndNull, postiveNumber, positiveAndDecimalNumber, maxLength20, maxLength3,
-  maxLength512, checkPercentageValue, decimalLengthFour, decimalLengthThree, decimalLength2, decimalLengthsix, checkSpacesInString
+  maxLength512, checkPercentageValue, decimalLengthFour, decimalLengthThree, decimalLength2, decimalLengthsix, checkSpacesInString, maxValue366
 } from "../../../helper/validation";
 import { renderText, renderNumberInputField, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker } from "../../layout/FormInputs";
 import { getPlantSelectListByType, getPlantBySupplier, getUOMSelectList, getShiftTypeSelectList, getDepreciationTypeSelectList, } from '../../../actions/Common';
@@ -616,6 +616,13 @@ class AddMoreDetails extends Component {
   handleDereciationType = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
       this.setState({ depreciationType: newValue });
+      setTimeout(() => {
+        this.props.change('DepreciationAmount', 0)
+        this.props.change('DepreciationRatePercentage', 0)
+        this.props.change('LifeOfAssetPerYear', 0)
+        this.props.change('CastOfScrap', 0)
+      }, 400);
+
     } else {
       this.setState({ depreciationType: [], })
     }
@@ -1681,6 +1688,7 @@ class AddMoreDetails extends Component {
     // For cancel of mpre detail form to reset form in addMachine form
     data.cancelFlag = true
     data.isFinalApprovar = this.state.isFinalApprovar
+    data.isViewFlag = this.state.isViewFlag
     /* IF CANCEL IS CLICKED AND MACHINE FORM IS IN EDIT FORM CONTAINING VALUE */
     if (editDetails.isIncompleteMachine || this.state.isEditFlag) {
 
@@ -2074,10 +2082,22 @@ class AddMoreDetails extends Component {
   */
   processToggle = () => {
     const { isProcessOpen } = this.state
+    const { fieldsObj } = this.props
+
+    if (checkForNull(fieldsObj?.MachineCost) === 0 && isProcessOpen === false) {
+      Toaster.warning('Please enter the machine cost');
+      return false;
+    }
     this.setState({ isProcessOpen: !isProcessOpen })
   }
   processGroupToggle = () => {
     const { isProcessGroupOpen } = this.state
+    const { fieldsObj } = this.props
+
+    if (checkForNull(fieldsObj?.MachineCost) === 0 && isProcessGroupOpen === false) {
+      Toaster.warning('Please enter the machine cost');
+      return false;
+    }
     this.setState({ isProcessGroupOpen: !isProcessGroupOpen })
   }
   handleKeyDown = function (e) {
@@ -2605,7 +2625,7 @@ class AddMoreDetails extends Component {
                                 name={"NumberOfWorkingDaysPerYear"}
                                 type="text"
                                 placeholder={disableAllForm ? '-' : 'Enter'}
-                                validate={[positiveAndDecimalNumber, maxLength3, decimalLength2]}
+                                validate={[positiveAndDecimalNumber, maxLength3, decimalLength2, maxValue366]}
                                 component={renderText}
                                 required={false}
                                 disabled={disableAllForm}

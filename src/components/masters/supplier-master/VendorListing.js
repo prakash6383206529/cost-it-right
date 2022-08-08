@@ -84,7 +84,7 @@ class VendorListing extends Component {
     }
 
     componentDidMount() {
-        this.getTableListData(0, '', "", "", 100, this.state.floatingFilterData, true)
+        this.getTableListData(0, '', "", "", defaultPageSize, this.state.floatingFilterData, true)
 
         this.applyPermission(this.props.topAndLeftMenuData)
     }

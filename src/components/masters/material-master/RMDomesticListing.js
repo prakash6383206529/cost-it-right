@@ -576,7 +576,8 @@ function RMDomesticListing(props) {
     const onExcelDownload = () => {
         setDisableDownload(true)
 
-        let tempArr = gridApi && gridApi?.getSelectedRows()
+        //let tempArr = gridApi && gridApi?.getSelectedRows()
+        let tempArr = selectedCostingListSimulation
         if (tempArr?.length > 0) {
             setTimeout(() => {
                 setDisableDownload(false)
@@ -594,7 +595,8 @@ function RMDomesticListing(props) {
 
     const onBtExport = () => {
         let tempArr = []
-        tempArr = gridApi && gridApi?.getSelectedRows()
+        //tempArr = gridApi && gridApi?.getSelectedRows()
+        tempArr = selectedCostingListSimulation
 
 
         tempArr = (tempArr && tempArr.length > 0) ? tempArr : (allRmDataList ? allRmDataList : [])
@@ -638,12 +640,15 @@ function RMDomesticListing(props) {
 
         }
 
+
+        let uniqeArray = _.uniqBy(selectedRows, "RawMaterialId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
+        dispatch(setSelectedCostingListSimualtion(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
+        let finalArr = selectedRows
+        let length = finalArr?.length
+        let uniqueArray = _.uniqBy(finalArr, "RawMaterialId")
+
+
         if (isSimulation) {
-            let uniqeArray = _.uniqBy(selectedRows, "RawMaterialId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
-            dispatch(setSelectedCostingListSimualtion(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
-            let finalArr = selectedRows
-            let length = finalArr?.length
-            let uniqueArray = _.uniqBy(finalArr, "RawMaterialId")
             apply(uniqueArray, length)
         }
     }
