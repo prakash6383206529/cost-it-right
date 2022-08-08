@@ -7427,6 +7427,9 @@ body {
     line-height: calc(14px * 80 / 100) !important;
     height: calc(32px * 80 / 100) !important;
     width: auto !important;
+    &.pull-right.w-100 {
+      width: 100% !important;
+    }
   }
 
   .edit-icon,
