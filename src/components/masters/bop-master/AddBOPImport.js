@@ -13,7 +13,6 @@ import {
   fileUploadBOPDomestic, fileDeleteBOPDomestic,
 } from '../actions/BoughtOutParts';
 import { getVendorWithVendorCodeSelectList, getVendorTypeBOPSelectList, } from '../actions/Supplier';
-import { getPartSelectList } from '../actions/Part';
 import { masterFinalLevelUser } from '../actions/Material'
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
@@ -104,7 +103,6 @@ class AddBOPImport extends Component {
     if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
       this.props.getUOMSelectList(() => { })
       this.props.getBOPCategorySelectList(() => { })
-      this.props.getPartSelectList(() => { })
       this.props.getPlantSelectListByType(ZBC, () => { })
     }
   }
@@ -1447,7 +1445,6 @@ export default connect(mapStateToProps, {
   getVendorWithVendorCodeSelectList,
   getVendorTypeBOPSelectList,
   getPlantBySupplier,
-  getPartSelectList,
   getUOMSelectList,
   getCurrencySelectList,
   createBOPImport,

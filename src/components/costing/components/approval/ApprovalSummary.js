@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, Table } from 'reactstrap'
 import { checkForDecimalAndNull, checkVendorPlantConfigurable, formViewData, getConfigurationKey, loggedInUserId } from '../../../../helper'
 import { getApprovalSummary } from '../../actions/Approval'
-import { getSingleCostingDetails, setCostingViewData, storePartNumber } from '../../actions/Costing'
+import { checkFinalUser, getSingleCostingDetails, setCostingViewData, storePartNumber } from '../../actions/Costing'
 import ApprovalWorkFlow from './ApprovalWorkFlow'
 import ApproveRejectDrawer from './ApproveRejectDrawer'
 import CostingSummaryTable from '../CostingSummaryTable'
@@ -47,6 +47,7 @@ function ApprovalSummary(props) {
   const [fgWiseAcc, setFgWiseAcc] = useState(false)
   const [lastRevisionDataAcc, setLastRevisionDataAcc] = useState(false)
   const [editWarning, setEditWarning] = useState(false)
+  const [finalLevelUser, setFinalLevelUser] = useState(false)
   const [impactedMasterDataListForLastRevisionData, setImpactedMasterDataListForLastRevisionData] = useState([])
   const [masterIdForLastRevision, setMasterIdForLastRevision] = useState('')
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
@@ -130,6 +131,18 @@ function ApprovalSummary(props) {
         EffectiveDate: ApprovalDetails[0].EffectiveDate,
         VendorId: VendorId
       })
+
+      let obj = {
+        DepartmentId: DepartmentId,
+        UserId: loggedInUserId(),
+        TechnologyId: technologyId,
+        Mode: 'costing'
+      }
+      dispatch(checkFinalUser(obj, res => {
+        if (res && res.data && res.data.Result) {
+          setFinalLevelUser(res.data.Data.IsFinalApprover)
+        }
+      }))
     }),
 
     )
@@ -556,7 +569,7 @@ function ApprovalSummary(props) {
           approvalData={[approvalData]}
           anchor={'right'}
           reasonId={approvalDetails.ReasonId}
-          IsFinalLevel={!showFinalLevelButtons}
+          IsFinalLevel={!finalLevelUser}
           IsPushDrawer={showPushDrawer}
           dataSend={[approvalDetails, partDetail]}
         />
