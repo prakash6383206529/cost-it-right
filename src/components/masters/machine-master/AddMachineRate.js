@@ -117,7 +117,7 @@ class AddMachineRate extends Component {
 
 
     // For Showing form in view mode if data is added in add more detail form
-    if (data.isViewFlag === true) {
+    if (data.isViewFlag === true || editDetails.isViewFlag === true) {
       this.setState({
         isViewMode: true,
         isViewFlag: true,
