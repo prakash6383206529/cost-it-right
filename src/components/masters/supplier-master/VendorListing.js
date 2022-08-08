@@ -562,6 +562,12 @@ class VendorListing extends Component {
             } else if (String(item.City) === 'NA') {
                 item.City = ' '
             }
+            if (item.IsActive === true) {
+                item.IsActive = 'Active'
+            }
+            else if (item.IsActive === false) {
+                item.IsActive = 'In Active'
+            }
             return item
         })
         return (

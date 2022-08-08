@@ -4793,6 +4793,7 @@ body {
   display: inline-block;
   vertical-align: middle;
   height: 24px;
+  width: fit-content;
 }
 
 .surface-treatment-btn {
@@ -8376,7 +8377,9 @@ body {
     display: flex;
     flex-wrap: wrap;
     grid-gap: 3px;
-
+    &.disabled {
+      background-color: #e6e6e6;
+    }
     .process-name {
       background-color: rgb(224, 224, 224);
       border-radius: 3px;
