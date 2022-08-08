@@ -1368,10 +1368,10 @@ class AddRMDomestic extends Component {
                               label={`Code`}
                               name={'Code'}
                               type="text"
-                              placeholder={'-'}
-                              validate={[required]}
+                              placeholder={initialConfiguration?.IsRawMaterialCodeConfigure ? '-' : "Enter"}
+                              validate={initialConfiguration?.IsRawMaterialCodeConfigure ? [] : [required]}
                               component={renderText}
-                              required={true}
+                              required={!initialConfiguration?.IsRawMaterialCodeConfigure}
                               className=" "
                               customClassName=" withBorder"
                               disabled={initialConfiguration?.IsRawMaterialCodeConfigure}

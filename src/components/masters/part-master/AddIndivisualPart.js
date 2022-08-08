@@ -505,7 +505,7 @@ class AddIndivisualPart extends Component {
                                 label={`Part Description`}
                                 name={"Description"}
                                 type="text"
-                                placeholder={isEditFlag ? '-' : "Enter"}
+                                placeholder={isViewMode ? '-' : "Enter"}
                                 validate={[maxLength80, checkWhiteSpaces]}
                                 component={renderText}
                                 required={false}
@@ -541,7 +541,7 @@ class AddIndivisualPart extends Component {
                                 label={`Group Code`}
                                 name={"GroupCode"}
                                 type="text"
-                                placeholder={isEditFlag ? '-' : "Enter"}
+                                placeholder={isViewMode ? '-' : "Enter"}
                                 validate={[checkWhiteSpaces, alphaNumeric, maxLength20]}
                                 component={renderText}
                                 required={false}
@@ -559,7 +559,7 @@ class AddIndivisualPart extends Component {
                               label={`ECN No.`}
                               name={"ECNNumber"}
                               type="text"
-                              placeholder={isEditFlag ? '-' : "Enter"}
+                              placeholder={isViewMode ? '-' : "Enter"}
                               validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, checkSpacesInString]}
                               component={renderText}
                               className=""
@@ -572,7 +572,7 @@ class AddIndivisualPart extends Component {
                               label={`Revision No.`}
                               name={"RevisionNumber"}
                               type="text"
-                              placeholder={isEditFlag ? '-' : "Enter"}
+                              placeholder={isViewMode ? '-' : "Enter"}
                               validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, checkSpacesInString]}
                               component={renderText}
                               className=""
@@ -585,7 +585,7 @@ class AddIndivisualPart extends Component {
                               label={`Drawing No.`}
                               name={"DrawingNumber"}
                               type="text"
-                              placeholder={isEditFlag ? '-' : "Enter"}
+                              placeholder={isViewMode ? '-' : "Enter"}
                               validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, checkSpacesInString]}
                               component={renderText}
                               className=""
@@ -631,7 +631,7 @@ class AddIndivisualPart extends Component {
                             <Field
                               label={"Remarks"}
                               name={`Remark`}
-                              placeholder={isEditFlag ? '-' : "Type here..."}
+                              placeholder={isViewMode ? '-' : "Type here..."}
                               className=""
                               customClassName=" textAreaWithBorder"
                               validate={[maxLength512, checkWhiteSpaces]}

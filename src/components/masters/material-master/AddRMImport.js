@@ -2,7 +2,7 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required, getVendorCode, positiveAndDecimalNumber, acceptAllExceptSingleSpecialCharacter, maxLength512, checkForNull, checkForDecimalAndNull, decimalLengthsix, maxLength70 } from "../../../helper/validation";
+import { required, getVendorCode, positiveAndDecimalNumber, acceptAllExceptSingleSpecialCharacter, maxLength512, checkForNull, checkForDecimalAndNull, decimalLengthsix, maxLength70, maxLength15 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField, renderDatePicker, renderNumberInputField } from "../../layout/FormInputs";
 import {
   getRawMaterialCategory, fetchGradeDataAPI, fetchSpecificationDataAPI, getCityBySupplier, getPlantByCity,
@@ -134,7 +134,7 @@ class AddRMImport extends Component {
   componentDidMount() {
     const { data } = this.props;
     this.getDetails(data);
-    this.props.change('NetLandedCost', 0)
+    this.props.change('NetLandedCost', '')
     // this.props.fetchSupplierCityDataAPI(res => { });
     if (!(data.isEditFlag || data.isViewFlag)) {
       this.props.getRawMaterialCategory(res => { });
@@ -1347,9 +1347,9 @@ class AddRMImport extends Component {
                               name={'Code'}
                               type="text"
                               placeholder={'-'}
-                              validate={[required]}
+                              validate={initialConfiguration?.IsRawMaterialCodeConfigure ? [] : [required]}
                               component={renderText}
-                              required={true}
+                              required={!initialConfiguration?.IsRawMaterialCodeConfigure}
                               className=" "
                               customClassName=" withBorder"
                               disabled={initialConfiguration?.IsRawMaterialCodeConfigure}
@@ -1554,7 +1554,7 @@ class AddRMImport extends Component {
                               name={"cutOffPrice"}
                               type="text"
                               placeholder={(isViewFlag || !this.state.IsFinancialDataChanged) ? '-' : "Enter"}
-                              validate={[positiveAndDecimalNumber]}
+                              validate={[positiveAndDecimalNumber, maxLength15]}
                               component={renderNumberInputField}
                               required={false}
                               disabled={isViewFlag || (isEditFlag && isRMAssociated)}
