@@ -1510,7 +1510,7 @@ class AddRMDomestic extends Component {
                                     label={`Source`}
                                     name={"Source"}
                                     type="text"
-                                    placeholder={"Enter"}
+                                    placeholder={isViewFlag ? '-' : "Enter"}
                                     validate={[acceptAllExceptSingleSpecialCharacter, maxLength70]}
                                     component={renderText}
                                     onChange={this.handleSource}
@@ -1566,7 +1566,7 @@ class AddRMDomestic extends Component {
                               name={"cutOffPrice"}
                               type="text"
                               placeholder={isViewFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
-                              validate={[positiveAndDecimalNumber]}
+                              validate={[positiveAndDecimalNumber, maxLength15]}
                               component={renderNumberInputField}
                               required={false}
                               disabled={isViewFlag || (isEditFlag && isRMAssociated)}
