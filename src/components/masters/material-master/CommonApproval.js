@@ -375,7 +375,7 @@ function CommonApproval(props) {
 
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        console.log(selectedCostingListSimulation, "selectedCostingListSimulation")
+
 
         if (selectedCostingListSimulation?.length > 0) {
             selectedCostingListSimulation.map((item) => {
