@@ -368,6 +368,7 @@ class AddOperation extends Component {
     this.props.checkAndGetOperationCode(e.target.value, '', res => {
       if (res && res.data && res.data.Result === false) {
         Toaster.warning(res.data.Message);
+        this.props.change('OperationCode', "")
       }
     })
   }
