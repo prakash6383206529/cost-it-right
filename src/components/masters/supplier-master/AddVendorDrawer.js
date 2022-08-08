@@ -440,7 +440,7 @@ class AddVendorDrawer extends Component {
                                             label={`Vendor Name`}
                                             name={"VendorName"}
                                             type="text"
-                                            placeholder={''}
+                                            placeholder={this.state.isEditFlag ? '-' : 'Enter'}
                                             validate={[required, maxLength71, checkWhiteSpaces, checkSpacesInString]}
                                             component={renderText}
                                             required={true}
@@ -456,7 +456,7 @@ class AddVendorDrawer extends Component {
                                             label={`Vendor Code`}
                                             name={"VendorCode"}
                                             type="text"
-                                            placeholder={''}
+                                            placeholder={this.state.isEditFlag ? '-' : 'Enter'}
                                             validate={[required, alphaNumeric, maxLength71, checkWhiteSpaces, checkSpacesInString]}
                                             component={renderText}
                                             required={true}
@@ -472,7 +472,7 @@ class AddVendorDrawer extends Component {
                                             label={`Email Id`}
                                             name={"Email"}
                                             type="email"
-
+                                            placeholder={isViewMode ? '-' : 'Enter'}
                                             validate={[email, minLength7, maxLength70]}
                                             component={renderEmailInputField}
                                             required={false}
@@ -491,7 +491,7 @@ class AddVendorDrawer extends Component {
                                                     label="Phone Number"
                                                     name={"PhoneNumber"}
                                                     type="text"
-                                                    placeholder={''}
+                                                    placeholder={isViewMode ? '-' : 'Enter'}
                                                     validate={[postiveNumber, minLength10, maxLength12, checkWhiteSpaces]}
                                                     component={renderNumberInputField}
                                                     //required={true}
@@ -505,7 +505,7 @@ class AddVendorDrawer extends Component {
                                                     label="Ext."
                                                     name={"Extension"}
                                                     type="text"
-                                                    placeholder={'Ext'}
+                                                    placeholder={isViewMode ? '-' : 'Ext'}
                                                     validate={[postiveNumber, maxLength5, checkWhiteSpaces]}
                                                     component={renderNumberInputField}
                                                     //required={true}
@@ -520,7 +520,7 @@ class AddVendorDrawer extends Component {
                                             name="MobileNumber"
                                             label="Mobile Number"
                                             type="text"
-                                            placeholder={''}
+                                            placeholder={isViewMode ? '-' : 'Enter'}
                                             component={renderNumberInputField}
                                             isDisabled={false}
                                             validate={[postiveNumber, minLength10, maxLength12, checkWhiteSpaces]}
@@ -587,7 +587,7 @@ class AddVendorDrawer extends Component {
                                             label="ZipCode"
                                             name={"ZipCode"}
                                             type="text"
-                                            placeholder={''}
+                                            placeholder={isViewMode ? '-' : 'Enter'}
                                             validate={[required, postiveNumber, maxLength6]}
                                             component={renderNumberInputField}
                                             required={true}
@@ -604,7 +604,7 @@ class AddVendorDrawer extends Component {
                                             label="Address 1"
                                             name={"AddressLine1"}
                                             type="text"
-                                            placeholder={''}
+                                            placeholder={isViewMode ? '-' : 'Enter'}
                                             validate={[acceptAllExceptSingleSpecialCharacter, maxLength80]}
                                             component={renderText}
                                             //  required={true}
@@ -619,7 +619,7 @@ class AddVendorDrawer extends Component {
                                             label="Address 2"
                                             name={"AddressLine2"}
                                             type="text"
-                                            placeholder={''}
+                                            placeholder={isViewMode ? '-' : 'Enter'}
                                             validate={[acceptAllExceptSingleSpecialCharacter, maxLength80]}
                                             component={renderText}
                                             //required={true}

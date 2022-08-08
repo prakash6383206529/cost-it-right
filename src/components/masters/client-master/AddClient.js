@@ -275,7 +275,7 @@ class AddClient extends Component {
                                                     label={`Company Name`}
                                                     name={"CompanyName"}
                                                     type="text"
-                                                    placeholder={''}
+                                                    placeholder={isEditFlag ? '-' : "Enter"}
                                                     validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces, checkSpacesInString]}
                                                     component={renderText}
                                                     required={true}
@@ -289,7 +289,7 @@ class AddClient extends Component {
                                                     label={`Client Name`}
                                                     name={"ClientName"}
                                                     type="text"
-                                                    placeholder={''}
+                                                    placeholder={isEditFlag ? '-' : "Enter"}
                                                     validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, checkSpacesInString]}
                                                     component={renderText}
                                                     required={true}
@@ -302,7 +302,7 @@ class AddClient extends Component {
                                                     name="ClientEmailId"
                                                     label="Email Id"
                                                     component={renderEmailInputField}
-                                                    placeholder={'Enter'}
+                                                    placeholder={isEditFlag ? '-' : "Enter"}
                                                     validate={[required, email, minLength7, maxLength70]}
                                                     required={true}
                                                     maxLength={70}
@@ -318,7 +318,7 @@ class AddClient extends Component {
                                                             label="Phone No."
                                                             name={"PhoneNumber"}
                                                             type="text"
-                                                            placeholder={''}
+                                                            placeholder={isEditFlag ? '-' : "Enter"}
                                                             validate={[required, postiveNumber, minLength10, maxLength12, checkWhiteSpaces]}
                                                             component={renderNumberInputField}
                                                             required={true}
@@ -332,7 +332,7 @@ class AddClient extends Component {
                                                             label="Extension"
                                                             name={"Extension"}
                                                             type="text"
-                                                            placeholder={''}
+                                                            placeholder={isEditFlag ? '-' : "Enter"}
                                                             validate={[required, postiveNumber, maxLength5, checkWhiteSpaces]}
                                                             component={renderNumberInputField}
                                                             required={true}
@@ -351,7 +351,7 @@ class AddClient extends Component {
                                                     name="MobileNumber"
                                                     label="Mobile No."
                                                     type="text"
-                                                    placeholder={''}
+                                                    placeholder={isEditFlag ? '-' : "Enter"}
                                                     component={renderNumberInputField}
                                                     isDisabled={false}
                                                     validate={[required, postiveNumber, minLength10, maxLength12, checkWhiteSpaces]}
@@ -416,7 +416,7 @@ class AddClient extends Component {
                                                     label="ZipCode"
                                                     name={"ZipCode"}
                                                     type="text"
-                                                    placeholder={''}
+                                                    placeholder={isEditFlag ? '-' : "Enter"}
                                                     validate={[required, postiveNumber]}
                                                     component={renderText}
                                                     required={true}

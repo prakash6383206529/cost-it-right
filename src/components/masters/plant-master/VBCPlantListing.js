@@ -389,6 +389,15 @@ class VBCPlantListing extends Component {
 
 
     returnExcelColumn = (data = [], TempData) => {
+        let temp = []
+        temp = TempData && TempData.map((item) => {
+            if (item.IsActive === true) {
+                item.IsActive = 'Active'
+            } else if (item.IsActive === false) {
+                item.IsActive = 'In Active'
+            }
+            return temp;
+        })
         return (
             <ExcelSheet data={TempData} name={PlantVbc}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}

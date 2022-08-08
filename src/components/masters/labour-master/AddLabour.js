@@ -421,7 +421,7 @@ class AddLabour extends Component {
           labourType: [],
           effectiveDate: '',
         },
-        () => this.props.change('LabourRate', 0),
+        () => this.props.change('LabourRate', ''),
       )
       this.setState({ DropdownChanged: false, errorObj: { machineType: false, labourType: false, labourRate: false } })
     }, 200);
@@ -762,7 +762,7 @@ class AddLabour extends Component {
                             type="text"
                             label="State"
                             component={searchableSelect}
-                            placeholder={"Select"}
+                            placeholder={(isEditFlag && gridTable.length !== 0) ? '-' : "Select"}
                             options={this.renderListing("state")}
                             validate={
                               this.state.StateName == null || this.state.StateName.length === 0 ? [required] : []}
@@ -780,7 +780,7 @@ class AddLabour extends Component {
                             type="text"
                             label="Plant"
                             component={searchableSelect}
-                            placeholder={"Select"}
+                            placeholder={(isEditFlag && gridTable.length !== 0) ? '-' : "Select"}
                             options={this.renderListing("plant")}
                             validate={
                               this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [required] : []}
@@ -807,7 +807,7 @@ class AddLabour extends Component {
                               type="text"
                               label="Machine Type"
                               component={searchableSelect}
-                              placeholder={"Select"}
+                              placeholder={isViewMode ? '-' : "Select"}
                               options={this.renderListing("MachineTypeList")}
                               required={true}
                               handleChangeDescription={this.handleMachineType}
@@ -831,7 +831,7 @@ class AddLabour extends Component {
                             type="text"
                             label="Labour Type"
                             component={searchableSelect}
-                            placeholder={"Select"}
+                            placeholder={isViewMode ? '-' : "Select"}
                             options={this.renderListing("labourList")}
                             required={true}
                             handleChangeDescription={this.labourHandler}
@@ -847,7 +847,7 @@ class AddLabour extends Component {
                             label={`Rate Per Person/Annum (INR)`}
                             name={"LabourRate"}
                             type="text"
-                            placeholder={"Enter"}
+                            placeholder={isViewMode ? "-" : "Enter"}
                             disabled={isViewMode}
                             validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
                             component={renderNumberInputField}
@@ -870,7 +870,7 @@ class AddLabour extends Component {
                               showYearDropdown
                               dateFormat="dd/MM/yyyy"
                               dropdownMode="select"
-                              placeholderText="Select date"
+                              placeholderText={isViewMode ? '-' : "Select Date"}
                               className="withBorder"
                               autoComplete={"off"}
                               disabledKeyboardNavigation

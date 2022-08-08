@@ -299,7 +299,7 @@ class AddClientDrawer extends Component {
                                             label={`Company Name`}
                                             name={"CompanyName"}
                                             type="text"
-                                            placeholder={''}
+                                            placeholder={isViewMode ? '-' : "Enter"}
                                             validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces]}
                                             component={renderText}
                                             required={true}
@@ -313,7 +313,7 @@ class AddClientDrawer extends Component {
                                             label={`Contact Name`}
                                             name={"ClientName"}
                                             type="text"
-                                            placeholder={''}
+                                            placeholder={isViewMode ? '-' : "Enter"}
                                             validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces]}
                                             component={renderText}
                                             required={false}
@@ -327,7 +327,7 @@ class AddClientDrawer extends Component {
                                             name="ClientEmailId"
                                             label="Email Id"
                                             component={renderEmailInputField}
-                                            placeholder={'Enter'}
+                                            placeholder={isEditFlag ? '-' : "Enter"}
                                             validate={[required, email, minLength7, maxLength70]}
                                             required={true}
                                             maxLength={70}
@@ -343,7 +343,7 @@ class AddClientDrawer extends Component {
                                                     label="Phone No."
                                                     name={"PhoneNumber"}
                                                     type="text"
-                                                    placeholder={''}
+                                                    placeholder={isViewMode ? '-' : "Enter"}
                                                     validate={[postiveNumber, minLength10, maxLength12, checkWhiteSpaces]}
                                                     component={renderNumberInputField}
                                                     // required={true}
@@ -358,7 +358,7 @@ class AddClientDrawer extends Component {
                                                     label="Ext."
                                                     name={"Extension"}
                                                     type="text"
-                                                    placeholder={''}
+                                                    placeholder={isViewMode ? '-' : "Enter"}
                                                     validate={[postiveNumber, maxLength5, checkWhiteSpaces]}
                                                     component={renderNumberInputField}
                                                     // required={true}
@@ -378,7 +378,7 @@ class AddClientDrawer extends Component {
                                             name="MobileNumber"
                                             label="Mobile No."
                                             type="text"
-                                            placeholder={''}
+                                            placeholder={isViewMode ? '-' : "Enter"}
                                             component={renderNumberInputField}
                                             disabled={isViewMode}
                                             validate={[postiveNumber, maxLength12, minLength10, checkWhiteSpaces]}
@@ -444,7 +444,7 @@ class AddClientDrawer extends Component {
                                             label="ZipCode"
                                             name={"ZipCode"}
                                             type="text"
-                                            placeholder={''}
+                                            placeholder={isViewMode ? '-' : "Enter"}
                                             validate={[postiveNumber]}
                                             component={renderNumberInputField}
                                             // required={true}

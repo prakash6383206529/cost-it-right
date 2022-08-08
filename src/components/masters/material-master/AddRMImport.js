@@ -2,7 +2,7 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required, getVendorCode, positiveAndDecimalNumber, acceptAllExceptSingleSpecialCharacter, maxLength512, checkForNull, checkForDecimalAndNull, decimalLengthsix, maxLength70 } from "../../../helper/validation";
+import { required, getVendorCode, positiveAndDecimalNumber, acceptAllExceptSingleSpecialCharacter, maxLength512, checkForNull, checkForDecimalAndNull, decimalLengthsix, maxLength70, maxLength15 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField, renderDatePicker, renderNumberInputField } from "../../layout/FormInputs";
 import {
   getRawMaterialCategory, fetchGradeDataAPI, fetchSpecificationDataAPI, getCityBySupplier, getPlantByCity,
@@ -134,7 +134,7 @@ class AddRMImport extends Component {
   componentDidMount() {
     const { data } = this.props;
     this.getDetails(data);
-    this.props.change('NetLandedCost', 0)
+    this.props.change('NetLandedCost', '')
     // this.props.fetchSupplierCityDataAPI(res => { });
     if (!(data.isEditFlag || data.isViewFlag)) {
       this.props.getRawMaterialCategory(res => { });
@@ -1346,10 +1346,10 @@ class AddRMImport extends Component {
                               label={`Code`}
                               name={'Code'}
                               type="text"
-                              placeholder={'Enter'}
-                              validate={[required]}
+                              placeholder={'-'}
+                              validate={initialConfiguration?.IsRawMaterialCodeConfigure ? [] : [required]}
                               component={renderText}
-                              required={true}
+                              required={!initialConfiguration?.IsRawMaterialCodeConfigure}
                               className=" "
                               customClassName=" withBorder"
                               disabled={initialConfiguration?.IsRawMaterialCodeConfigure}
@@ -1438,6 +1438,7 @@ class AddRMImport extends Component {
                                   loadOptions={promiseOptions}
                                   onChange={(e) => this.handleVendorName(e)}
                                   value={this.state.vendorName}
+                                  placeholder={(isEditFlag || isViewFlag || this.state.inputLoader) ? '-' : "Select"}
                                   noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
                                   isDisabled={isEditFlag || isViewFlag || this.state.inputLoader} />
 
@@ -1454,7 +1455,7 @@ class AddRMImport extends Component {
                                     label={`Source`}
                                     name={"Source"}
                                     type="text"
-                                    placeholder={"Enter"}
+                                    placeholder={isViewFlag ? "-" : "Enter"}
                                     validate={[acceptAllExceptSingleSpecialCharacter, maxLength70]}
                                     component={renderText}
                                     disabled={isViewFlag}
@@ -1470,7 +1471,7 @@ class AddRMImport extends Component {
                                     type="text"
                                     label="Source Location"
                                     component={searchableSelect}
-                                    placeholder={"Select"}
+                                    placeholder={isViewFlag ? "-" : "Select"}
                                     options={this.renderListing("SourceLocation")}
                                     handleChangeDescription={this.handleSourceSupplierCity}
                                     valueDescription={this.state.sourceLocation}
@@ -1541,6 +1542,7 @@ class AddRMImport extends Component {
                                   component={renderDatePicker}
                                   className="form-control"
                                   disabled={isViewFlag || !this.state.IsFinancialDataChanged}
+                                  placeholder="Select Date"
 
                                 />
                               </div>
@@ -1551,8 +1553,8 @@ class AddRMImport extends Component {
                               label={labelWithUOMAndCurrency("Cut Off Price", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
                               name={"cutOffPrice"}
                               type="text"
-                              placeholder={""}
-                              validate={[positiveAndDecimalNumber]}
+                              placeholder={(isViewFlag || !this.state.IsFinancialDataChanged) ? '-' : "Enter"}
+                              validate={[positiveAndDecimalNumber, maxLength15]}
                               component={renderNumberInputField}
                               required={false}
                               disabled={isViewFlag || (isEditFlag && isRMAssociated)}
@@ -1566,7 +1568,7 @@ class AddRMImport extends Component {
                               label={labelWithUOMAndCurrency("Basic Rate", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
                               name={"BasicRate"}
                               type="text"
-                              placeholder={"Enter"}
+                              placeholder={isViewFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
                               validate={[required, positiveAndDecimalNumber, decimalLengthsix]}
                               component={renderNumberInputField}
                               required={true}
@@ -1581,7 +1583,7 @@ class AddRMImport extends Component {
                               label={labelWithUOMAndCurrency("Scrap Rate", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
                               name={"ScrapRate"}
                               type="text"
-                              placeholder={"Enter"}
+                              placeholder={isViewFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
                               validate={[required, positiveAndDecimalNumber, decimalLengthsix]}
                               component={renderNumberInputField}
                               required={true}
@@ -1597,7 +1599,7 @@ class AddRMImport extends Component {
                               label={labelWithUOMAndCurrency("Freight Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
                               name={"FreightCharge"}
                               type="text"
-                              placeholder={"Enter"}
+                              placeholder={isViewFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
                               validate={[positiveAndDecimalNumber, decimalLengthsix]}
                               component={renderNumberInputField}
                               required={false}
@@ -1612,7 +1614,7 @@ class AddRMImport extends Component {
                               label={labelWithUOMAndCurrency("Shearing Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
                               name={"ShearingCost"}
                               type="text"
-                              placeholder={"Enter"}
+                              placeholder={isViewFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
                               validate={[positiveAndDecimalNumber, decimalLengthsix]}
                               component={renderNumberInputField}
                               required={false}
@@ -1627,7 +1629,7 @@ class AddRMImport extends Component {
                               label={labelWithUOMAndCurrency("Net Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
                               name={"NetLandedCost"}
                               type="text"
-                              placeholder={""}
+                              placeholder={"-"}
                               validate={[]}
                               component={renderNumberInputField}
                               required={false}
@@ -1644,7 +1646,7 @@ class AddRMImport extends Component {
                                 label={labelWithUOMAndCurrency("Net Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label)}
                                 name={"NetLandedCostCurrency"}
                                 type="text"
-                                placeholder={""}
+                                placeholder={"-"}
                                 validate={[]}
                                 component={renderNumberInputField}
                                 required={false}
@@ -1668,7 +1670,7 @@ class AddRMImport extends Component {
                             <Field
                               label={"Remarks"}
                               name={`Remark`}
-                              placeholder="Type here..."
+                              placeholder={isViewFlag ? '-' : "Type here..."}
                               value={this.state.remarks}
                               className=""
                               customClassName=" textAreaWithBorder"

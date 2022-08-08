@@ -137,7 +137,7 @@ class AddGrade extends Component {
                     label={`RM Grade`}
                     name={"Grade"}
                     type="text"
-                    placeholder={""}
+                    placeholder={"Enter"}
                     validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces]}
                     component={renderText}
                     required={true}
