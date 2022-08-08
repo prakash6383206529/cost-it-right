@@ -258,6 +258,7 @@ function CostingSimulation(props) {
             tempObj.SimulationAppliedOn = Data.SimulationAppliedOn
             tempObj.Technology = Data.SimulatedCostingList[0].Technology
             tempObj.Vendor = Data.SimulatedCostingList[0].VendorName
+            tempObj.TotalImpactPerQuarter = Data.TotalImpactPerQuarter
             setAmendmentDetails(tempObj)
 
             //LISTING
@@ -726,6 +727,11 @@ function CostingSimulation(props) {
         return `${props.value}(${props.data.PlantCode})`
     }
 
+    const impactPerQuarterFormatter = (props) => {
+        const cell = props?.value;
+        return cell != null ? cell : ''
+    }
+
     const hideColumn = (props) => {
         setHideDataColumn({
             hideOverhead: costingList && costingList.length > 0 && (costingList[0].NewOverheadCost === 0 || costingList[0].OldOverheadCost === costingList[0].NewOverheadCost) ? true : false,
@@ -980,7 +986,8 @@ function CostingSimulation(props) {
         netBOPPartCostFormatter: netBOPPartCostFormatter,
         operVarianceFormatter: operVarianceFormatter,
         BOPVarianceFormatter: BOPVarianceFormatter,
-        plantFormatter: plantFormatter
+        plantFormatter: plantFormatter,
+        impactPerQuarterFormatter: impactPerQuarterFormatter
     };
 
     const isRowSelectable = rowNode => statusForLinkedToken === true ? false : true;
@@ -1150,6 +1157,7 @@ function CostingSimulation(props) {
                                                     {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={170} field="NewExchangeRate" headerName='New Exchange Rate' cellRenderer='newExchangeFormatter'></AgGridColumn>}
                                                     {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={140} field="ERVariance" headerName='Variance' cellRenderer='ERVarianceFormatter'></AgGridColumn>}
 
+                                                    <AgGridColumn width={140} field="ImpactPerQuarter" headerName='Impact for Quarter(INR)' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>
 
                                                     {!(isExchangeRate) && <AgGridColumn width={140} field="OldOverheadCost" hide={hideDataColumn.hideOverhead} cellRenderer='overheadFormatter' headerName='Old Overhead'></AgGridColumn>}
                                                     {!(isExchangeRate) && <AgGridColumn width={140} field="NewOverheadCost" hide={hideDataColumn.hideOverhead} cellRenderer='overheadFormatter' headerName='New Overhead'></AgGridColumn>}

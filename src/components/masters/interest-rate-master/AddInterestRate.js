@@ -498,7 +498,7 @@ class AddInterestRate extends Component {
                           type="text"
                           label="ICC Applicability"
                           component={searchableSelect}
-                          placeholder={"Select"}
+                          placeholder={isViewMode ? '-' : "Select"}
                           options={this.renderListing("ICC")}
                           validate={
                             this.state.ICCApplicability == null ||
@@ -522,7 +522,7 @@ class AddInterestRate extends Component {
                             label={`Annual ICC (%)`}
                             name={"ICCPercent"}
                             type="text"
-                            placeholder={"Enter"}
+                            placeholder={isViewMode ? '-' : "Enter"}
                             validate={[required, positiveAndDecimalNumber, decimalLengthThree]}
                             max={100}
                             component={renderNumberInputField}
@@ -547,7 +547,7 @@ class AddInterestRate extends Component {
                           type="text"
                           label="Payment Terms Applicability"
                           component={searchableSelect}
-                          placeholder={"Select"}
+                          placeholder={isViewMode ? '-' : "Select"}
                           options={this.renderListing("PaymentTerms")}
                           validate={
                             this.state.PaymentTermsApplicability == null ||
@@ -574,7 +574,7 @@ class AddInterestRate extends Component {
                               label={`Repayment Period (Days)`}
                               name={"RepaymentPeriod"}
                               type="text"
-                              placeholder={"Enter"}
+                              placeholder={isViewMode ? '-' : "Enter"}
                               validate={[postiveNumber, maxLength10]}
                               component={renderNumberInputField}
                               required={false}
@@ -589,7 +589,7 @@ class AddInterestRate extends Component {
                               label={`Payment Term (%)`}
                               name={"PaymentTermPercent"}
                               type="text"
-                              placeholder={"Enter"}
+                              placeholder={isViewMode ? '-' : "Enter"}
                               validate={[positiveAndDecimalNumber, decimalLengthThree]}
                               component={renderNumberInputField}
                               max={100}

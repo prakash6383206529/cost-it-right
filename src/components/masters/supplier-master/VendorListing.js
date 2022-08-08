@@ -446,7 +446,7 @@ class VendorListing extends Component {
         this.setState({ isOpenVendor: true, isViewMode: false })
     }
 
-    closeVendorDrawer = (e = '', formData, type) => {
+    closeVendorDrawer = (e = '', type) => {
 
         this.setState({
             isOpenVendor: false,
@@ -516,6 +516,12 @@ class VendorListing extends Component {
                 item.State = ' '
             } else if (String(item.City) === 'NA') {
                 item.City = ' '
+            }
+            if (item.IsActive === true) {
+                item.IsActive = 'Active'
+            }
+            else if (item.IsActive === false) {
+                item.IsActive = 'In Active'
             }
             return item
         })

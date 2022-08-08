@@ -221,6 +221,7 @@ export const ProcessGroup = (props) => {
                             label="Group Name"
                             name={"groupName"}
                             Controller={Controller}
+                            placeholder={props.isViewFlag ? '-' : "Enter"}
                             control={control}
                             register={register}
                             rules={{ required: false }}
@@ -238,7 +239,7 @@ export const ProcessGroup = (props) => {
                         <SearchableSelectHookForm
                             label={"Process"}
                             name={"process"}
-                            placeholder={"Select"}
+                            placeholder={props.isViewFlag ? '-' : "Select"}
                             Controller={Controller}
                             control={control}
                             rules={{ required: false }}
@@ -254,7 +255,7 @@ export const ProcessGroup = (props) => {
                     </Col>
 
                     <Col md="4" className='process-group-wrapper'>
-                        <div className='border process-group'>
+                        <div className={`border process-group ${props.isViewFlag ? 'disabled' : ''}`}>
                             {
                                 selectedProcess && selectedProcess.map(item =>
                                     <span className='process-name'>{item.ProcessName}</span>

@@ -7,7 +7,7 @@ import {
   searchableSelect, focusOnError, renderNumberInputField,
 } from "../../layout/FormInputs";
 import { getUOMSelectList, fetchStateDataAPI, getAllCity } from '../../../actions/Common';
-import { getFuelComboData, createFuelDetail, updateFuelDetail, getFuelDetailData, } from '../actions/Fuel';
+import { getFuelComboData, createFuelDetail, updateFuelDetail, getFuelDetailData, getUOMByFuelId } from '../actions/Fuel';
 import { MESSAGES } from '../../../config/message';
 import { EMPTY_DATA } from '../../../config/constants'
 import { loggedInUserId } from "../../../helper/auth";
@@ -124,6 +124,10 @@ class AddFuel extends Component {
   handleFuel = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
       this.setState({ fuel: newValue, })
+      this.props.getUOMByFuelId(newValue.value, (res) => {
+        let Data = res.data.DynamicData
+        this.setState({ UOM: { label: Data?.UnitOfMeasurementName, value: Data?.UnitOfMeasurementId } })
+      })
     } else {
       this.setState({ fuel: [] })
     }
@@ -217,7 +221,7 @@ class AddFuel extends Component {
         rateGrid: tempArray,
         StateName: [],
         effectiveDate: '',
-      }, () => this.props.change('Rate', 0));
+      }, () => this.props.change('Rate', ''));
       this.setState({ AddUpdate: false, errorObj: { state: false, rate: false, effectiveDate: false } })
     }, 200);
   }
@@ -263,7 +267,7 @@ class AddFuel extends Component {
     this.setState({
       rateGrid: tempArray,
       StateName: [],
-      effectiveDate: new Date(),
+      effectiveDate: '',
       rateGridEditIndex: '',
       isEditIndex: false,
     }, () => this.props.change('Rate', 0));
@@ -332,6 +336,11 @@ class AddFuel extends Component {
         /*TO SHOW FUEL NAME VALUE PRE FILLED FROM DRAWER*/
         if (Object.keys(reqData).length > 0) {
           let fuelObj = fuelComboSelectList && fuelComboSelectList.Fuels.find(item => item.Text === reqData.FuelName)
+
+          this.props.getUOMByFuelId(fuelObj.Value, (res) => {
+            let Data = res.data.DynamicData
+            this.setState({ UOM: { label: Data?.UnitOfMeasurementName, value: Data?.UnitOfMeasurementId } })
+          })
           this.setState({ fuel: fuelObj && fuelObj !== undefined ? { label: fuelObj.Text, value: fuelObj.Value } : [] })
         }
       })
@@ -426,7 +435,7 @@ class AddFuel extends Component {
       return {
         Id: item.Id,
         Rate: item.Rate,
-        EffectiveDate: item.effectiveDate,
+        EffectiveDate: DayTime(item.effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
         StateId: item.StateId
       }
     })
@@ -457,7 +466,7 @@ class AddFuel extends Component {
 
       this.setState({ setDisable: true })
       let requestData = {
-        FuelDetailId: FuelDetailId,
+        FuelGroupEntryId: FuelDetailId,
         LoggedInUserId: loggedInUserId(),
         FuelId: fuel.value,
         UnitOfMeasurementId: UOM.value,
@@ -571,7 +580,7 @@ class AddFuel extends Component {
                                   type="text"
                                   label="UOM"
                                   component={searchableSelect}
-                                  placeholder={"Select"}
+                                  placeholder={isEditFlag ? '-' : "Select"}
                                   options={this.renderListing("uom")}
                                   //onKeyUp={(e) => this.changeItemDesc(e)}
                                   validate={
@@ -583,7 +592,7 @@ class AddFuel extends Component {
                                   required={true}
                                   handleChangeDescription={this.handleUOM}
                                   valueDescription={this.state.UOM}
-                                  disabled={isEditFlag ? true : false}
+                                  disabled={true}
                                 />
                               </div>
                             </div>
@@ -604,7 +613,7 @@ class AddFuel extends Component {
                                   type="text"
                                   label="State"
                                   component={searchableSelect}
-                                  placeholder={"Select"}
+                                  placeholder={isViewMode ? '-' : "Select"}
                                   options={this.renderListing("state")}
                                   required={true}
                                   handleChangeDescription={this.handleState}
@@ -621,7 +630,7 @@ class AddFuel extends Component {
                                 label={`Rate (INR)`}
                                 name={"Rate"}
                                 type="text"
-                                placeholder={"Enter"}
+                                placeholder={isViewMode ? '-' : 'Enter'}
                                 validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
                                 component={renderNumberInputField}
                                 required={true}
@@ -646,7 +655,7 @@ class AddFuel extends Component {
                                   showYearDropdown
                                   dateFormat="dd/MM/yyyy"
                                   dropdownMode="select"
-                                  placeholderText="Select date"
+                                  placeholderText={isViewMode ? '-' : "Select Date"}
                                   className="withBorder"
                                   autoComplete={"off"}
                                   disabledKeyboardNavigation
@@ -711,7 +720,7 @@ class AddFuel extends Component {
                                           <button
                                             className="Edit mr-2"
                                             type={"button"}
-                                            disabled={isViewMode}
+                                            disabled={isViewMode || item?.IsAssociated}
                                             onClick={() =>
                                               this.editItemDetails(index)
                                             }
@@ -719,7 +728,7 @@ class AddFuel extends Component {
                                           <button
                                             className="Delete"
                                             type={"button"}
-                                            disabled={isViewMode}
+                                            disabled={isViewMode || item?.IsAssociated}
                                             onClick={() =>
                                               this.deleteItem(index)
                                             }
@@ -816,7 +825,8 @@ export default connect(mapStateToProps, {
   getFuelDetailData,
   getUOMSelectList,
   fetchStateDataAPI,
-  getAllCity
+  getAllCity,
+  getUOMByFuelId
 })(reduxForm({
   form: 'AddFuel',
   enableReinitialize: true,
