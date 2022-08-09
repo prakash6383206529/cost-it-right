@@ -137,6 +137,7 @@ class AddRMDomestic extends Component {
     const { data } = this.props
     this.getDetails(data)
     if (!this.state.isViewFlag) {
+      this.props.getRawMaterialNameChild('', () => { })
       this.props.getAllCity(cityId => {
         this.props.getCityByCountry(cityId, 0, () => { })
       })
@@ -1906,6 +1907,7 @@ class AddRMDomestic extends Component {
                 masterId={RM_MASTER_ID}
                 type={'Sender'}
                 anchor={"right"}
+                UOM={this.state.UOM}
                 approvalObj={this.state.approvalObj}
                 isBulkUpload={false}
                 IsImportEntery={false}

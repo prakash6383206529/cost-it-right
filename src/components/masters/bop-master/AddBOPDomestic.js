@@ -1306,6 +1306,7 @@ class AddBOPDomestic extends Component {
                 approvalObj={this.state.approvalObj}
                 isBulkUpload={false}
                 IsImportEntery={false}
+                UOM={this.state.UOM}
               />
             )
           }
