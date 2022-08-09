@@ -485,9 +485,9 @@ function SimulationApprovalListing(props) {
                                     <AgGridColumn width={170} field="ImpactCosting" headerName="Impacted Costing" ></AgGridColumn>
                                     <AgGridColumn width={154} field="ImpactParts" headerName="Impacted Parts"></AgGridColumn>
                                     <AgGridColumn width={170} field="Reason" headerName="Reason" cellRenderer='reasonFormatter'></AgGridColumn>
-                                    <AgGridColumn width={140} field="SimulatedByName" headerName='Initiated On' cellRenderer='requestedByFormatter'></AgGridColumn>
+                                    <AgGridColumn width={140} field="SimulatedByName" headerName='Initiated By' cellRenderer='requestedByFormatter'></AgGridColumn>
                                     <AgGridColumn width={140} field="SimulatedOn" headerName='Last Approved On' cellRenderer='requestedOnFormatter'></AgGridColumn>
-                                    <AgGridColumn width={142} field="LastApprovedBy" headerName='Last Approver' cellRenderer='requestedByFormatter'></AgGridColumn>
+                                    <AgGridColumn width={142} field="LastApprovedBy" headerName='Last Approval / Reject' cellRenderer='requestedByFormatter'></AgGridColumn>
                                     <AgGridColumn width={145} field="RequestedOn" headerName='Requested On' cellRenderer='requestedOnFormatter'></AgGridColumn>
 
                                     {!isSmApprovalListing && <AgGridColumn pinned="right" field="Status" headerClass="justify-content-center" cellClass="text-center" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>}
