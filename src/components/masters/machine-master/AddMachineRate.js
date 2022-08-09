@@ -145,6 +145,7 @@ class AddMachineRate extends Component {
       return true
     }
     if (!editDetails.isViewMode) {
+      this.props.getUOMSelectList(() => { })
       let obj = {
         MasterId: MACHINE_MASTER_ID,
         DepartmentId: userDetails().DepartmentId,
@@ -157,7 +158,6 @@ class AddMachineRate extends Component {
         }
 
       })
-      this.props.getUOMSelectList(() => { })
     }
     if (!(editDetails.isEditFlag || editDetails.isViewMode)) {
       this.props.getMachineTypeSelectList(() => { })
