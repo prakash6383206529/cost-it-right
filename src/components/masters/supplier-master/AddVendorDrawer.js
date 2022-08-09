@@ -45,8 +45,10 @@ class AddVendorDrawer extends Component {
     * @description called before render the component
     */
     UNSAFE_componentWillMount() {
-        if (!(this.props.isEditFlag || this.props.isViewFlag)) {
+        if (!this.props.isViewMode) {
             this.props.getVendorTypesSelectList()
+        }
+        if (!(this.props.isEditFlag || this.props.isViewMode)) {
             this.props.getVendorPlantSelectList(() => { })
             this.props.fetchCountryDataAPI(() => { })
             this.props.fetchStateDataAPI(0, () => { })

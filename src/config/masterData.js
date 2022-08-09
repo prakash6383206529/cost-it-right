@@ -712,7 +712,7 @@ export const BOP_VBC_DOMESTIC_TempData = [
         'SourceVendorName': 'VPlant01',
         'VendorSourceName': 'TATA Steel',
         'SourceVendorLocation': 'Jamshedpur',
-        'MinimumOrderQuantity': '1',
+        // 'MinimumOrderQuantity': '1',
         'BasicRate(INR)': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -732,7 +732,7 @@ export const BOP_ZBC_IMPORT = [
     { label: 'VendorName', value: 'VendorName', },
     { label: 'VendorCode', value: 'VendorCode', }, //*
     { label: 'Currency', value: 'Currency', }, //*
-    { label: 'MinimumOrderQuantity', value: 'MinimumOrderQuantity', }, //*
+    // { label: 'MinimumOrderQuantity', value: 'MinimumOrderQuantity', }, 
     { label: 'BasicRate', value: 'BasicRate', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', },
     { label: 'Remark', value: 'Remark' },
@@ -749,7 +749,7 @@ export const BOP_ZBC_IMPORT_TempData = [
         'VendorName': 'Systematix',
         'VendorCode': 'VC1',
         'Currency': 'INR or USD',
-        'MinimumOrderQuantity': '1',
+        // 'MinimumOrderQuantity': '1',
         'BasicRate': '100',
         'EffectiveDate': DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -774,7 +774,7 @@ export const BOP_VBC_IMPORT = [
     { label: 'SourceVendorName', value: 'SourceVendorName', },
     { label: 'SourceVendorLocation', value: 'SourceVendorLocation', },
     { label: 'Currency', value: 'Currency', }, //*
-    { label: 'MinimumOrderQuantity', value: 'MinimumOrderQuantity', }, //*
+    // { label: 'MinimumOrderQuantity', value: 'MinimumOrderQuantity', }, //*
     { label: 'BasicRate', value: 'BasicRate', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', },
     { label: 'Remark', value: 'Remark' }
@@ -796,7 +796,7 @@ export const BOP_VBC_IMPORT_TempData = [
         'SourceVendorName': 'TATA Steel',
         'SourceVendorLocation': 'Jamshedpur',
         'Currency': 'INR or USD',
-        'MinimumOrderQuantity': '1',
+        // 'MinimumOrderQuantity': '1',
         'BasicRate': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'

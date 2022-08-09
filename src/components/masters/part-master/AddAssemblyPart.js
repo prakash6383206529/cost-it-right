@@ -84,9 +84,13 @@ class AddAssemblyPart extends Component {
   * @description 
   */
   componentDidMount() {
+    if (!(this.props.data.isEditFlag || this.state.isViewMode)) {
+      this.props.getCostingSpecificTechnology(loggedInUserId(), () => { })
+    }
     this.setState({ inputLoader: true })
-    this.props.getCostingSpecificTechnology(loggedInUserId(), () => { })
-    this.props.getProductGroupSelectList(() => { })
+    if (!this.state.isViewMode) {
+      this.props.getProductGroupSelectList(() => { })
+    }
     if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
       this.props.getPartSelectList((res) => {
         this.setState({ partListingData: res?.data?.SelectList, inputLoader: false })
