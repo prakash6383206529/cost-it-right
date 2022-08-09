@@ -232,7 +232,7 @@ class BulkUpload extends Component {
                             let obj = {}
                             val.map((el, i) => {
                                 if (fileHeads[i] === 'EffectiveDate' && typeof el === 'string') {
-                                    el = DayTime(Date(el)).format('YYYY-MM-DD HH:mm:ss')
+                                    el = DayTime(el).format('YYYY-MM-DD HH:mm:ss')
                                 }
                                 if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
                                     el = getJsDateFromExcel(el)
