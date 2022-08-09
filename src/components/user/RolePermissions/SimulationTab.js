@@ -207,16 +207,54 @@ class SimulationTab extends Component {
     * @method actionCheckHandler
     * @description Used to check/uncheck action's checkbox
     */
-    actionCheckHandler = (parentIndex, childIndex) => {
+    actionCheckHandler = (parentIndex, childIndex, actions) => {
         const { Modules } = this.state;
+        let runActionIndex;
+        let addActionIndex;
+        let boolean = false
+
+        actions && actions.map((item, index) => {
+            if (item.ActionName === 'Run') {
+                runActionIndex = index
+            }
+            if (item.ActionName === 'Add') {
+                addActionIndex = index
+            }
+        })
 
         let actionRow = (Modules && Modules !== undefined) ? Modules[parentIndex].Actions : [];
         let actionArray = actionRow && actionRow.map((el, index) => {
             if (childIndex === index) {
+                boolean = !el.IsChecked
                 el.IsChecked = !el.IsChecked
             }
             return el;
         })
+
+
+        if (childIndex === runActionIndex) {
+            actionArray = actionRow && actionRow.map((el, index) => {              // IF RUN ACTION TOGGLE IS TRUE THEN ADD ACTION TOGGLE WILL ALSO BE MADE TRUE
+                if (addActionIndex === index) {
+
+                    if (boolean === true) {
+                        el.IsChecked = true
+                    }
+                }
+                return el;
+            })
+        }
+
+        if (childIndex === addActionIndex) {
+            actionArray = actionRow && actionRow.map((el, index) => {        // IF ADD ACTION TOGGLE IS FALSE THEN RUN ACTION TOGGLE WILL ALSO BE MADE FALSE
+                if (runActionIndex === index) {
+                    if (boolean === false) {
+                        el.IsChecked = false
+                    }
+                }
+                return el;
+            })
+        }
+
         let tempArray = Object.assign([...Modules], { [parentIndex]: Object.assign({}, Modules[parentIndex], { Actions: actionArray }) })
         this.setState({ Modules: tempArray }, () => {
             const { Modules } = this.state;
@@ -312,7 +350,7 @@ class SimulationTab extends Component {
                                                     <span className=" before-box">Select All</span>
                                                 </label>
                                                 </td>
-
+                                                { }
                                                 {this.renderAction(item.Actions, index)}
                                             </tr>
                                         );

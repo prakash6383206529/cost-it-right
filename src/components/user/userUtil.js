@@ -35,7 +35,7 @@ export function renderActionCommon(actions, parentIndex, thisRef, moduleName) {
                     {
                         <label htmlFor="normal-switch" className="normal-switch">
                             <Switch
-                                onChange={() => thisRef.actionCheckHandler(parentIndex, index)}
+                                onChange={() => thisRef.actionCheckHandler(parentIndex, index, actions)}
                                 checked={item.IsChecked}
                                 value={item.ActionId}
                                 id="normal-switch"
