@@ -116,7 +116,7 @@ class AddMachineRate extends Component {
 
 
     // For Showing form in view mode if data is added in add more detail form
-    if (data.isViewFlag === true || editDetails.isViewFlag === true) {
+    if (data.isViewFlag === true) {
       this.setState({
         isViewMode: true,
         isViewFlag: true,
@@ -145,6 +145,19 @@ class AddMachineRate extends Component {
     }
     if (!editDetails.isViewMode) {
       this.props.getUOMSelectList(() => { })
+
+      let obj = {
+        MasterId: MACHINE_MASTER_ID,
+        DepartmentId: userDetails().DepartmentId,
+        LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
+        LoggedInUserId: loggedInUserId()
+      }
+      this.props.masterFinalLevelUser(obj, (res) => {
+        if (res.data.Result) {
+          this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+        }
+
+      })
     }
     if (!(editDetails.isEditFlag || editDetails.isViewMode)) {
       this.props.getMachineTypeSelectList(() => { })
@@ -181,20 +194,6 @@ class AddMachineRate extends Component {
     // } else if (Object.keys(data).length > 0 && data.constructor === Object) {
     //     this.showFormData()
     // }
-
-
-    let obj = {
-      MasterId: MACHINE_MASTER_ID,
-      DepartmentId: userDetails().DepartmentId,
-      LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
-      LoggedInUserId: loggedInUserId()
-    }
-    this.props.masterFinalLevelUser(obj, (res) => {
-      if (res.data.Result) {
-        this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
-      }
-
-    })
 
 
     //GET MACHINE VALUES IN EDIT MODE
@@ -267,47 +266,47 @@ class AddMachineRate extends Component {
         if (res && res.data && res.data.Result) {
 
           const Data = res.data.Data;
-          // this.props.getProcessGroupByMachineId(Data.MachineId, res => {
-          // this.props.setGroupProcessList(res?.data?.DataList)
-          // SET GET API STRUCTURE IN THE FORM OF SAVE API STRUCTURE BY DEFAULT
-          let updateArrayList = []
-          let tempArray = []
-          let singleRecordObject = {}
-          res?.data?.DataList && res?.data?.DataList.map((item) => {
-            singleRecordObject = {}
-            let ProcessIdListTemp = []
-            tempArray = item.GroupName
+          this.props.getProcessGroupByMachineId(Data.MachineId, res => {
+            this.props.setGroupProcessList(res?.data?.DataList)
+            // SET GET API STRUCTURE IN THE FORM OF SAVE API STRUCTURE BY DEFAULT
+            let updateArrayList = []
+            let tempArray = []
+            let singleRecordObject = {}
+            res?.data?.DataList && res?.data?.DataList.map((item) => {
+              singleRecordObject = {}
+              let ProcessIdListTemp = []
+              tempArray = item.GroupName
 
-            item.ProcessList && item.ProcessList.map((item1) => {
-              ProcessIdListTemp.push(item1.ProcessId)
+              item.ProcessList && item.ProcessList.map((item1) => {
+                ProcessIdListTemp.push(item1.ProcessId)
+                return null
+              })
+              singleRecordObject.ProcessGroupName = tempArray
+              singleRecordObject.ProcessIdList = ProcessIdListTemp
+              updateArrayList.push(singleRecordObject)
               return null
             })
-            singleRecordObject.ProcessGroupName = tempArray
-            singleRecordObject.ProcessIdList = ProcessIdListTemp
-            updateArrayList.push(singleRecordObject)
-            return null
-          })
-          this.props.setGroupProcessList(updateArrayList)
-          // TO DISABLE DELETE BUTTON WHEN GET DATA API CALLED (IN EDIT)
-          let uniqueProcessId = []
-          _.uniqBy(res?.data?.DataList, function (o) {
-            uniqueProcessId.push(o?.ProcessId)
-          });
-          let allProcessId = []
-          res?.data?.DataList && res?.data?.DataList.map((item) => {
-            let ProcessIdListTemp = []
-            item.ProcessList && item.ProcessList.map((item1) => {
-              ProcessIdListTemp.push(item1.ProcessId)
+            this.props.setGroupProcessList(updateArrayList)
+            // TO DISABLE DELETE BUTTON WHEN GET DATA API CALLED (IN EDIT)
+            let uniqueProcessId = []
+            _.uniqBy(res?.data?.DataList, function (o) {
+              uniqueProcessId.push(o?.ProcessId)
+            });
+            let allProcessId = []
+            res?.data?.DataList && res?.data?.DataList.map((item) => {
+              let ProcessIdListTemp = []
+              item.ProcessList && item.ProcessList.map((item1) => {
+                ProcessIdListTemp.push(item1.ProcessId)
+                return null
+              })
+
+              allProcessId = [...allProcessId, ...ProcessIdListTemp]
               return null
             })
-
-            allProcessId = [...allProcessId, ...ProcessIdListTemp]
-            return null
+            let uniqueSet = [...new Set(allProcessId)]
+            this.props.setProcessList(uniqueSet)
+            this.setState({ UniqueProcessId: uniqueSet })
           })
-          let uniqueSet = [...new Set(allProcessId)]
-          this.props.setProcessList(uniqueSet)
-          this.setState({ UniqueProcessId: uniqueSet })
-          // })
 
           this.setState({ DataToChange: Data })
           // this.props.getVendorListByVendorType(Data.IsVendor, () => { this.setState({ inputLoader: false }) })

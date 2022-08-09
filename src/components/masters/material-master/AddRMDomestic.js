@@ -138,6 +138,7 @@ class AddRMDomestic extends Component {
     const { data } = this.props
     this.getDetails(data)
     if (!this.state.isViewFlag) {
+      this.props.getRawMaterialNameChild('', () => { })
       this.props.getAllCity(cityId => {
         this.props.getCityByCountry(cityId, 0, () => { })
       })
