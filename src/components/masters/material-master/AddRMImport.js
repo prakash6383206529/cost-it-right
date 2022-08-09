@@ -1884,6 +1884,7 @@ class AddRMImport extends Component {
                 approvalObj={this.state.approvalObj}
                 isBulkUpload={false}
                 IsImportEntery={true}
+                UOM={this.state.UOM}
               />
             )
           }
