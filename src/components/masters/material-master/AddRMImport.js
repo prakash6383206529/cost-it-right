@@ -7,7 +7,7 @@ import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaFie
 import {
   getRawMaterialCategory, fetchGradeDataAPI, fetchSpecificationDataAPI, getCityBySupplier, getPlantByCity,
   getPlantByCityAndSupplier, fetchRMGradeAPI, getSupplierList, getPlantBySupplier, getUOMSelectList,
-  getCurrencySelectList, fetchSupplierCityDataAPI, fetchPlantDataAPI, getPlantSelectListByType
+  getCurrencySelectList, fetchSupplierCityDataAPI, fetchPlantDataAPI, getPlantSelectListByType, getCityByCountry, getAllCity
 } from '../../../actions/Common';
 import {
   createRMImport, getRMImportDataById, updateRMImportAPI, getRawMaterialNameChild,
@@ -120,10 +120,10 @@ class AddRMImport extends Component {
   * @description Called before render the component
   */
   UNSAFE_componentWillMount() {
-    if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
+    if (!(this.props.data.isEditFlag || this.state.isViewFlag)) {
+      this.props.getSupplierList(() => { })
       this.props.getCurrencySelectList(() => { })
       this.props.getUOMSelectList(() => { })
-      this.props.getSupplierList(() => { })
       this.props.fetchPlantDataAPI(() => { })
     }
   }
@@ -135,8 +135,12 @@ class AddRMImport extends Component {
   componentDidMount() {
     const { data } = this.props;
     this.getDetails(data);
-    this.props.change('NetLandedCost', '')
-    // this.props.fetchSupplierCityDataAPI(res => { });
+    this.props.change('NetLandedCost', 0)
+    if (!this.state.isViewFlag) {
+      this.props.getAllCity(cityId => {
+        this.props.getCityByCountry(cityId, 0, () => { })
+      })
+    }
     if (!(data.isEditFlag || data.isViewFlag)) {
       this.props.getRawMaterialCategory(res => { });
       this.props.getRawMaterialNameChild('', () => { })
@@ -147,25 +151,26 @@ class AddRMImport extends Component {
       this.props.fetchSpecificationDataAPI(0, () => { })
       this.props.getPlantSelectListByType(ZBC, () => { })
     }
-
-    let obj = {
-      MasterId: RM_MASTER_ID,
-      DepartmentId: userDetails().DepartmentId,
-      LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
-      LoggedInUserId: loggedInUserId()
-    }
-    this.props.masterFinalLevelUser(obj, (res) => {
-      if (res.data.Result) {
-        this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+    if (!this.state.isViewFlag) {
+      let obj = {
+        MasterId: RM_MASTER_ID,
+        DepartmentId: userDetails().DepartmentId,
+        LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
+        LoggedInUserId: loggedInUserId()
       }
-    })
+      this.props.masterFinalLevelUser(obj, (res) => {
+        if (res.data.Result) {
+          this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+        }
+      })
+    }
   }
 
   componentDidUpdate(prevProps) {
-
-    if (this.props.fieldsObj !== prevProps.fieldsObj) {
-
-      this.handleNetCost()
+    if (!this.state.isViewFlag) {
+      if (this.props.fieldsObj !== prevProps.fieldsObj) {
+        this.handleNetCost()
+      }
     }
   }
 
@@ -448,15 +453,14 @@ class AddRMImport extends Component {
           this.setState({ DataToChange: Data }, () => { })
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : "")
           this.setState({ minEffectiveDate: Data.EffectiveDate })
-          this.props.getPlantBySupplier(Data.Vendor, () => { })
-          this.props.change('FrieghtCharge', Data.RMFreightCost ? Data.RMFreightCost : '')
-          this.props.change('ShearingCost', Data.RMShearingCost ? Data.RMShearingCost : '')
-          this.props.change('NetLandedCostCurrency', Data.NetLandedCostConversion ? Data.NetLandedCostConversion : '')
-          this.props.change('cutOffPrice', Data.CutOffPrice ? Data.CutOffPrice : '')
-          this.props.change('Code', Data.RawMaterialCode ? Data.RawMaterialCode : '')
-          this.props.change('JaliScrapCost', Data.ScrapRate)            // THIS KEY FOR CIRCLE SCRAP COST
-          this.props.change('CircleScrapCost', Data.JaliScrapCost ? Data.JaliScrapCost : '')  //THIS KEY FOR JALI SCRAP COST AND SCRAP COST
           setTimeout(() => {
+            this.props.change('FreightCharge', Data.RMFreightCost ? Data.RMFreightCost : '')
+            this.props.change('ShearingCost', Data.RMShearingCost ? Data.RMShearingCost : '')
+            this.props.change('NetLandedCostCurrency', Data.NetLandedCostConversion ? Data.NetLandedCostConversion : '')
+            this.props.change('cutOffPrice', Data.CutOffPrice ? Data.CutOffPrice : '')
+            this.props.change('Code', Data.RawMaterialCode ? Data.RawMaterialCode : '')
+            this.props.change('JaliScrapCost', Data.ScrapRate)            // THIS KEY FOR CIRCLE SCRAP COST
+            this.props.change('CircleScrapCost', Data.JaliScrapCost ? Data.JaliScrapCost : '')  //THIS KEY FOR JALI SCRAP COST AND SCRAP COST
             this.setState({
               IsFinancialDataChanged: false,
               isEditFlag: true,
@@ -492,7 +496,8 @@ class AddRMImport extends Component {
             if (this.dropzone.current !== null) {
               this.dropzone.current.files = files
             }
-          }, 200)
+          }, 200);
+          // this.props.getPlantBySupplier(Data.Vendor, () => { })
         }
       })
     } else {
@@ -2023,7 +2028,9 @@ export default connect(mapStateToProps, {
   getVendorWithVendorCodeSelectList,
   checkAndGetRawMaterialCode,
   masterFinalLevelUser,
-  getCostingSpecificTechnology
+  getCityByCountry,
+  getAllCity,
+  getCostingSpecificTechnology,
 })(reduxForm({
   form: 'AddRMImport',
   enableReinitialize: true,
