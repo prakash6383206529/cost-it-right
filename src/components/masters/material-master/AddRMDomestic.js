@@ -985,40 +985,6 @@ class AddRMDomestic extends Component {
       return { ...file, ContextId: RawMaterialID }
     })
     let sourceLocationValue = (!IsVendor && !HasDifferentSource ? '' : sourceLocation.value)
-    if (uploadAttachements && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === values.BasicRate && Number(DataToChange.ScrapRate) === Number(values.ScrapRate)
-      && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCost) && String(DataToChange.Remark) === String(values.Remark)
-      && ((DataToChange.CutOffPrice ? Number(DataToChange.CutOffPrice) : '') === (values.cutOffPrice ? Number(values.cutOffPrice) : ''))
-      && String(DataToChange.RawMaterialCode) === String(values.Code)
-      && (DataToChange.Source === (!IsVendor && !HasDifferentSource ? '' : values.Source))
-      && ((DataToChange.SourceLocation ? String(DataToChange.SourceLocation) : '') === (sourceLocationValue ? String(sourceLocationValue) : ''))) {
-      Toaster.warning('Please change data to send RM for approval')
-      return false
-    }
-    let requestData = {
-      RawMaterialId: RawMaterialID,
-      IsVendor: IsVendor,
-      HasDifferentSource: HasDifferentSource,
-      Source: !IsVendor && !HasDifferentSource ? '' : values.Source,
-      SourceLocation: !IsVendor && !HasDifferentSource ? '' : sourceLocation.value,
-      Remark: remarks,
-      BasicRatePerUOM: values.BasicRate,
-      RMFreightCost: values.FrieghtCharge,
-      RMShearingCost: values.ShearingCost,
-      ScrapRate: this.state.showExtraCost ? values.JaliScrapCost : values.ScrapRate, //THIS KEY FOR JALI SCRAP COST AND SCRAP COST
-      NetLandedCost: netLandedCost,
-      LoggedInUserId: loggedInUserId(),
-      EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD'),
-      Attachements: updatedFiles,
-      IsConvertIntoCopy: isDateChange ? true : false,
-      IsForcefulUpdated: isDateChange ? false : isSourceChange ? false : true,
-      CutOffPrice: values.cutOffPrice,
-      IsCutOffApplicable: values.cutOffPrice < values.NetLandedCost ? true : false,
-      RawMaterialCode: values.Code,
-      JaliScrapCost: values.CircleScrapCost ? values.CircleScrapCost : '',// THIS KEY FOR CIRCLE SCRAP COST
-      IsFinancialDataChanged: isDateChange ? true : false,
-      VendorPlant: []
-    }
-    this.setState({ setDisable: true, disablePopup: false })
     if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(RM_MASTER_ID) !== true)) {
       //this.setState({ updatedObj: requestData })
 
@@ -1035,16 +1001,17 @@ class AddRMDomestic extends Component {
         BasicRatePerUOM: values.BasicRate,
         RMFreightCost: values.FrieghtCharge,
         RMShearingCost: values.ShearingCost,
-        ScrapRate: values.ScrapRate,
+        ScrapRate: this.state.showExtraCost ? values.JaliScrapCost : values.ScrapRate, //THIS KEY FOR JALI SCRAP COST AND SCRAP COST
         NetLandedCost: netLandedCost,
         LoggedInUserId: loggedInUserId(),
-        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
+        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD'),
         Attachements: updatedFiles,
         IsConvertIntoCopy: isDateChange ? true : false,
         IsForcefulUpdated: isDateChange ? false : isSourceChange ? false : true,
         CutOffPrice: values.cutOffPrice,
         IsCutOffApplicable: values.cutOffPrice < values.NetLandedCost ? true : false,
         RawMaterialCode: values.Code,
+        JaliScrapCost: values.CircleScrapCost ? values.CircleScrapCost : '',// THIS KEY FOR CIRCLE SCRAP COST
         IsFinancialDataChanged: isDateChange ? true : false,
         VendorPlant: []
       }
@@ -1062,26 +1029,42 @@ class AddRMDomestic extends Component {
         }
 
       }
-
-
-      if (isSourceChange) {
-        this.props.updateRMDomesticAPI(requestData, (res) => {
-          this.setState({ setDisable: false })
-          if (res?.data?.Result) {
-            Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
-            this.clearForm()
-
-          }
-        })
-      }
       else {
-        this.setState({ showPopup: true, updatedObj: requestData })
+        if (uploadAttachements && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === values.BasicRate && Number(DataToChange.ScrapRate) === Number(values.ScrapRate)
+          && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCost) && ((DataToChange.Remark ? DataToChange.Remark : '') === (values.Remark ? values.Remark : ''))
+          && ((DataToChange.CutOffPrice ? Number(DataToChange.CutOffPrice) : '') === (values.cutOffPrice ? Number(values.cutOffPrice) : ''))
+          && String(DataToChange.RawMaterialCode) === String(values.Code)
+          && (DataToChange.Source === (!IsVendor && !HasDifferentSource ? '' : values.Source))
+          && ((DataToChange.SourceLocation ? String(DataToChange.SourceLocation) : '') === (sourceLocationValue ? String(sourceLocationValue) : ''))) {
+          this.cancel()
+          return false
+        }
+        else {
+          // this.setState({ showPopup: true, updatedObj: requestData })
+
+          if (isSourceChange) {
+            this.props.updateRMDomesticAPI(requestData, (res) => {
+              this.setState({ setDisable: false })
+              if (res?.data?.Result) {
+                Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
+                this.clearForm('submit')
+
+              }
+            })
+          }
+          else {
+            this.setState({ showPopup: true, updatedObj: requestData })
+          }
+          return false
+
+        }
+
       }
 
     }
 
     else {
-      this.setState({ setDisable: true })
+      // this.setState({ setDisable: true })
       let formData = {}
       // const formData = {
       formData.RawMaterialId = RawMaterialID
@@ -1121,10 +1104,21 @@ class AddRMDomestic extends Component {
         formData.IsSendForApproval = false
       }
       // }
+      console.log('values.Remark: ', values.Remark);
+      console.log('DataToChange.Remark: ', DataToChange.Remark);
 
       // THIS CONDITION TO CHECK IF IT IS FOR MASTER APPROVAL THEN WE WILL SEND DATA FOR APPROVAL ELSE CREATE API WILL BE CALLED
       if (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !this.state.isFinalApprovar) {
-
+        if (uploadAttachements && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === values.BasicRate && Number(DataToChange.ScrapRate) === Number(values.ScrapRate)
+          && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCost) && ((DataToChange.Remark ? DataToChange.Remark : '') === (values.Remark ? values.Remark : ''))
+          && ((DataToChange.CutOffPrice ? Number(DataToChange.CutOffPrice) : '') === (values.cutOffPrice ? Number(values.cutOffPrice) : ''))
+          && String(DataToChange.RawMaterialCode) === String(values.Code)
+          && (DataToChange.Source === (!IsVendor && !HasDifferentSource ? '' : values.Source))
+          && ((DataToChange.SourceLocation ? String(DataToChange.SourceLocation) : '') === (sourceLocationValue ? String(sourceLocationValue) : ''))) {
+          Toaster.warning('Please change data to send RM for approval')
+          return false
+        }
+        this.setState({ setDisable: true, disablePopup: false })
 
         if (IsFinancialDataChanged) {
 
@@ -1150,7 +1144,7 @@ class AddRMDomestic extends Component {
 
           if (isEditFlag) {
             if (uploadAttachements && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === values.BasicRate && Number(DataToChange.ScrapRate) === values.ScrapRate
-              && Number(DataToChange.NetLandedCost) === values.NetLandedCost && DataToChange.Remark === (values.Remark === '' ? null : values.Remark)
+              && Number(DataToChange.NetLandedCost) === values.NetLandedCost && (DataToChange.Remark ? DataToChange.Remark : '') === (values.Remark ? values.Remark : '')
               && (Number(DataToChange.CutOffPrice) === values.cutOffPrice || values.cutOffPrice === undefined)
               && DataToChange.RawMaterialCode === values.Code) {
               Toaster.warning('Please change data to send RM for approval')

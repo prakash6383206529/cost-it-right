@@ -155,7 +155,6 @@ class OverheadListing extends Component {
         )
     };
 
-
     /**
     * @method effectiveDateFormatter
     * @description Renders buttons
