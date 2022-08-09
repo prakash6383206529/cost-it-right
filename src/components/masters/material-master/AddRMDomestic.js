@@ -1957,6 +1957,7 @@ class AddRMDomestic extends Component {
                 masterId={RM_MASTER_ID}
                 type={'Sender'}
                 anchor={"right"}
+                UOM={this.state.UOM}
                 approvalObj={this.state.approvalObj}
                 isBulkUpload={false}
                 IsImportEntery={false}
