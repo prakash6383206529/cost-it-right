@@ -144,10 +144,12 @@ class AddMachineRate extends Component {
 
       return true
     }
-    this.props.getProcessesSelectList(() => { })
-    if (!(editDetails.isEditFlag || editDetails.isViewFlag)) {
-      this.props.getMachineTypeSelectList(() => { })
+    if (!editDetails.isViewMode) {
       this.props.getUOMSelectList(() => { })
+    }
+    if (!(editDetails.isEditFlag || editDetails.isViewMode)) {
+      this.props.getMachineTypeSelectList(() => { })
+      this.props.getProcessesSelectList(() => { })
       this.props.getCostingSpecificTechnology(loggedInUserId(), () => { })
       this.props.getVendorListByVendorType(true, () => { })
       this.props.getPlantSelectListByType(ZBC, () => { })
@@ -266,53 +268,53 @@ class AddMachineRate extends Component {
         if (res && res.data && res.data.Result) {
 
           const Data = res.data.Data;
-          this.props.getProcessGroupByMachineId(Data.MachineId, res => {
-            // this.props.setGroupProcessList(res?.data?.DataList)
-            // SET GET API STRUCTURE IN THE FORM OF SAVE API STRUCTURE BY DEFAULT
-            let updateArrayList = []
-            let tempArray = []
-            let singleRecordObject = {}
-            res?.data?.DataList && res?.data?.DataList.map((item) => {
-              singleRecordObject = {}
-              let ProcessIdListTemp = []
-              tempArray = item.GroupName
+          // this.props.getProcessGroupByMachineId(Data.MachineId, res => {
+          // this.props.setGroupProcessList(res?.data?.DataList)
+          // SET GET API STRUCTURE IN THE FORM OF SAVE API STRUCTURE BY DEFAULT
+          let updateArrayList = []
+          let tempArray = []
+          let singleRecordObject = {}
+          res?.data?.DataList && res?.data?.DataList.map((item) => {
+            singleRecordObject = {}
+            let ProcessIdListTemp = []
+            tempArray = item.GroupName
 
-              item.ProcessList && item.ProcessList.map((item1) => {
-                ProcessIdListTemp.push(item1.ProcessId)
-                return null
-              })
-              singleRecordObject.ProcessGroupName = tempArray
-              singleRecordObject.ProcessIdList = ProcessIdListTemp
-              updateArrayList.push(singleRecordObject)
+            item.ProcessList && item.ProcessList.map((item1) => {
+              ProcessIdListTemp.push(item1.ProcessId)
               return null
             })
-            this.props.setGroupProcessList(updateArrayList)
-            // TO DISABLE DELETE BUTTON WHEN GET DATA API CALLED (IN EDIT)
-            let uniqueProcessId = []
-            _.uniqBy(res?.data?.DataList, function (o) {
-              uniqueProcessId.push(o?.ProcessId)
-            });
-            let allProcessId = []
-            res?.data?.DataList && res?.data?.DataList.map((item) => {
-              let ProcessIdListTemp = []
-              item.ProcessList && item.ProcessList.map((item1) => {
-                ProcessIdListTemp.push(item1.ProcessId)
-                return null
-              })
-
-              allProcessId = [...allProcessId, ...ProcessIdListTemp]
-              return null
-            })
-            let uniqueSet = [...new Set(allProcessId)]
-            this.props.setProcessList(uniqueSet)
-            this.setState({ UniqueProcessId: uniqueSet })
+            singleRecordObject.ProcessGroupName = tempArray
+            singleRecordObject.ProcessIdList = ProcessIdListTemp
+            updateArrayList.push(singleRecordObject)
+            return null
           })
+          this.props.setGroupProcessList(updateArrayList)
+          // TO DISABLE DELETE BUTTON WHEN GET DATA API CALLED (IN EDIT)
+          let uniqueProcessId = []
+          _.uniqBy(res?.data?.DataList, function (o) {
+            uniqueProcessId.push(o?.ProcessId)
+          });
+          let allProcessId = []
+          res?.data?.DataList && res?.data?.DataList.map((item) => {
+            let ProcessIdListTemp = []
+            item.ProcessList && item.ProcessList.map((item1) => {
+              ProcessIdListTemp.push(item1.ProcessId)
+              return null
+            })
+
+            allProcessId = [...allProcessId, ...ProcessIdListTemp]
+            return null
+          })
+          let uniqueSet = [...new Set(allProcessId)]
+          this.props.setProcessList(uniqueSet)
+          this.setState({ UniqueProcessId: uniqueSet })
+          // })
 
           this.setState({ DataToChange: Data })
-          this.props.getVendorListByVendorType(Data.IsVendor, () => { this.setState({ inputLoader: false }) })
-          if (Data.IsVendor) {
-            this.props.getPlantBySupplier(Data.VendorId, () => { })
-          }
+          // this.props.getVendorListByVendorType(Data.IsVendor, () => { this.setState({ inputLoader: false }) })
+          // if (Data.IsVendor) {
+          //   this.props.getPlantBySupplier(Data.VendorId, () => { })
+          // }
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           this.props.change('Specification', Data.Specification)
           this.setState({ minEffectiveDate: Data.EffectiveDate })
