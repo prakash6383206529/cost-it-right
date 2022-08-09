@@ -422,8 +422,9 @@ class AddFreight extends Component {
         RateCriteria: [],
         gridEditIndex: "",
         isEditIndex: false,
+        effectiveDate: ''
       },
-      () => this.props.change("Rate", 0)
+      () => this.props.change("Rate", '')
     );
   };
   /**
@@ -911,15 +912,24 @@ class AddFreight extends Component {
                                   </button>
                                 </>
                               ) : (
-                                <button
-                                  type="button"
-                                  disabled={isViewMode}
-                                  className={"user-btn mt30 pull-left"}
-                                  onClick={this.gridHandler}
-                                >
-                                  <div className={"plus"}></div>
-                                  ADD
-                                </button>
+                                <>
+                                  <button
+                                    type="button"
+                                    disabled={isViewMode}
+                                    className={"user-btn mt30 pull-left"}
+                                    onClick={this.gridHandler}
+                                  >
+                                    <div className={"plus"}></div>
+                                    ADD
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className={"reset-btn mt30 ml5 pull-left"}
+                                    onClick={this.resetGridData}
+                                  >
+                                    Reset
+                                  </button>
+                                </>
                               )}
                             </div>
                           </Col>
