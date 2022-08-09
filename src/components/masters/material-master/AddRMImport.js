@@ -944,18 +944,6 @@ class AddRMImport extends Component {
 
     let sourceLocationValue = (!IsVendor && !HasDifferentSource ? '' : sourceLocation.value)
 
-    if (uploadAttachements && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === Number(values.BasicRate) &&
-      Number(DataToChange.ScrapRate) === Number(values.ScrapRate) && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCost) &&
-      String(DataToChange.Remark) === String(values.Remark) && (Number(DataToChange.CutOffPrice) === Number(values.cutOffPrice) ||
-        values.cutOffPrice === undefined) && String(DataToChange.RawMaterialCode) === String(values.Code)
-      && (DataToChange.Source === (!IsVendor && !HasDifferentSource ? '' : values.Source))
-      && ((DataToChange.SourceLocation !== null ? DataToChange.SourceLocation : '-') ===
-        (sourceLocationValue ? sourceLocationValue : '-'))) {
-      Toaster.warning('Please change data to send RM for approval')
-      return false
-    }
-    this.setState({ setDisable: true, disablePopup: false })
-
     if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(RM_MASTER_ID) !== true)) {
 
       let updatedFiles = files.map((file) => {
@@ -1002,555 +990,594 @@ class AddRMImport extends Component {
         }
 
       }
+      else {
+        if (uploadAttachements && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === Number(values.BasicRate) &&
+          Number(DataToChange.ScrapRate) === Number(values.ScrapRate) && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCost) &&
+          ((DataToChange.Remark ? DataToChange.Remark : '') === (values.Remark ? values.Remark : '')) && ((DataToChange.CutOffPrice ? Number(DataToChange.CutOffPrice) : '') === (values.cutOffPrice ? Number(values.cutOffPrice) : '')) && String(DataToChange.RawMaterialCode) === String(values.Code)
+          && (DataToChange.Source ? DataToChange.Source : '' === (!IsVendor && !HasDifferentSource ? '' : values.Source))
+          && ((DataToChange.SourceLocation ? String(DataToChange.SourceLocation) : '') === (sourceLocationValue ? String(sourceLocationValue) : ''))) {
+          this.cancel()
+          return false
+        }
+        else {
+          if (isSourceChange) {
+            this.props.updateRMImportAPI(requestData, (res) => {
+              this.setState({ setDisable: false })
+              if (res?.data?.Result) {
+                Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
+                this.clearForm('submit')
 
+              }
+            })
+          }
+          else {
+            this.setState({ showPopup: true, updatedObj: requestData })
+          }
+          return false
 
+        }
+
+      }
+      return false
+
+<<<<<<< HEAD
       if (isSourceChange) {
         this.props.updateRMImportAPI(requestData, (res) => {
           this.setState({ setDisable: false })
           if (res?.data?.Result) {
             Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
             this.clearForm()
+=======
+        }
+>>>>>>> eb440ad49 (merge conflict resolved)
 
           }
-        })
-      }
-      else {
-        this.setState({ showPopup: true, updatedObj: requestData })
-      }
-
-
-      // else {
-      //   if (uploadAttachements && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === Number(values.BasicRate) &&
-      //     Number(DataToChange.ScrapRate) === Number(values.ScrapRate) && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCost) &&
-      //     String(DataToChange.Remark) === String(values.Remark) && (Number(DataToChange.CutOffPrice) === Number(values.cutOffPrice) ||
-      //       values.cutOffPrice === undefined) && String(DataToChange.RawMaterialCode) === String(values.Code)) {
-      //     this.cancel()
-      //     return false
-      //   }
-      //   if ((Number(DataToChange.BasicRatePerUOM) !== values.BasicRate || Number(DataToChange.ScrapRate) !== values.ScrapRate ||
-      //     Number(DataToChange.NetLandedCost) !== values.NetLandedCost || (Number(DataToChange.CutOffPrice) !== values.cutOffPrice ||
-      //       values.cutOffPrice === undefined) || uploadAttachements === false)) {
-      //     this.setState({ showPopup: true, updatedObj: requestData })
-      //   }
 
 
 
-    } else {
 
-      this.setState({ setDisable: true })
-      const formData = {
-        RawMaterialId: RawMaterialID,
-        IsFinancialDataChanged: isDateChange ? true : false,
-        IsVendor: IsVendor,
-        RawMaterial: RawMaterial.value,
-        RMGrade: RMGrade.value,
-        RMSpec: RMSpec.value,
-        Category: Category.value,
-        TechnologyId: Technology.value,// NEED TO UNCOMMENT AFTER KEY ADDED IN BACKEND
-        Vendor: vendorName.value,
-        HasDifferentSource: HasDifferentSource,
-        Source: (!IsVendor && !HasDifferentSource) ? '' : values.Source,
-        SourceLocation: (!IsVendor && !HasDifferentSource) ? '' : sourceLocation.value,
-        UOM: UOM.value,
-        BasicRatePerUOM: values.BasicRate,
-        ScrapRate: values.ScrapRate,
-        ScrapRateInINR: currency === INR ? values.ScrapRate : (values.ScrapRate * currencyValue),
-        NetLandedCost: netCost,
-        Remark: remarks,
-        LoggedInUserId: loggedInUserId(),
-        plant: plantArray,
-        VendorCode: VendorCode,
-        Attachements: files,
-        Currency: currency.label,
-        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
-        NetLandedCostConversion: netCurrencyCost,
-        RMFreightCost: values.FreightCharge,
-        RMShearingCost: values.ShearingCost,
-        CutOffPrice: values.cutOffPrice,
-        IsCutOffApplicable: false,
-        RawMaterialCode: values.Code,
-        IsSendForApproval: false,
-        VendorPlant: []
-      }
+          // else {
+          //   if (uploadAttachements && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === Number(values.BasicRate) &&
+          //     Number(DataToChange.ScrapRate) === Number(values.ScrapRate) && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCost) &&
+          //     String(DataToChange.Remark) === String(values.Remark) && (Number(DataToChange.CutOffPrice) === Number(values.cutOffPrice) ||
+          //       values.cutOffPrice === undefined) && String(DataToChange.RawMaterialCode) === String(values.Code)) {
+          //     this.cancel()
+          //     return false
+          //   }
+          //   if ((Number(DataToChange.BasicRatePerUOM) !== values.BasicRate || Number(DataToChange.ScrapRate) !== values.ScrapRate ||
+          //     Number(DataToChange.NetLandedCost) !== values.NetLandedCost || (Number(DataToChange.CutOffPrice) !== values.cutOffPrice ||
+          //       values.cutOffPrice === undefined) || uploadAttachements === false)) {
+          //     this.setState({ showPopup: true, updatedObj: requestData })
+          //   }
+
+
+
+        } else {
+
+          // this.setState({ setDisable: true })
+          const formData = {
+            RawMaterialId: RawMaterialID,
+            IsFinancialDataChanged: isDateChange ? true : false,
+            IsVendor: IsVendor,
+            RawMaterial: RawMaterial.value,
+            RMGrade: RMGrade.value,
+            RMSpec: RMSpec.value,
+            Category: Category.value,
+            TechnologyId: Technology.value,// NEED TO UNCOMMENT AFTER KEY ADDED IN BACKEND
+            Vendor: vendorName.value,
+            HasDifferentSource: HasDifferentSource,
+            Source: (!IsVendor && !HasDifferentSource) ? '' : values.Source,
+            SourceLocation: (!IsVendor && !HasDifferentSource) ? '' : sourceLocation.value,
+            UOM: UOM.value,
+            BasicRatePerUOM: values.BasicRate,
+            ScrapRate: values.ScrapRate,
+            ScrapRateInINR: currency === INR ? values.ScrapRate : (values.ScrapRate * currencyValue),
+            NetLandedCost: netCost,
+            Remark: remarks,
+            LoggedInUserId: loggedInUserId(),
+            plant: plantArray,
+            VendorCode: VendorCode,
+            Attachements: files,
+            Currency: currency.label,
+            EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
+            NetLandedCostConversion: netCurrencyCost,
+            RMFreightCost: values.FreightCharge,
+            RMShearingCost: values.ShearingCost,
+            CutOffPrice: values.cutOffPrice,
+            IsCutOffApplicable: false,
+            RawMaterialCode: values.Code,
+            IsSendForApproval: false,
+            VendorPlant: []
+          }
       // let obj
       // if(CheckApprovalApplicableMaster(RM_MASTER_ID) === true){
       //   obj = {...formData,IsSendForApproval:true}
       // }
       // THIS CONDITION TO CHECK IF IT IS FOR MASTER APPROVAL THEN WE WILL SEND DATA FOR APPROVAL ELSE CREATE API WILL BE CALLED
-      if (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !this.state.isFinalApprovar) {
+      if(CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !this.state.isFinalApprovar) {
+          if (uploadAttachements && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === Number(values.BasicRate) &&
+            Number(DataToChange.ScrapRate) === Number(values.ScrapRate) && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCost) &&
+            String(DataToChange.Remark ? DataToChange.Remark : '') === String(values.Remark ? values.Remark : '') && (Number(DataToChange.CutOffPrice) === Number(values.cutOffPrice) ||
+              values.cutOffPrice === undefined) && String(DataToChange.RawMaterialCode) === String(values.Code)
+            && (DataToChange.Source ? DataToChange.Source : '' === (!IsVendor && !HasDifferentSource ? '' : values.Source))
+            && ((DataToChange.SourceLocation ? String(DataToChange.SourceLocation) : '') === (sourceLocationValue ? String(sourceLocationValue) : ''))) {
+            Toaster.warning('Please change data to send RM for approval')
+            return false
+          }
+          // this.setState({ setDisable: true, disablePopup: false })
 
 
-        if (IsFinancialDataChanged) {
+          if (IsFinancialDataChanged) {
 
-          if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
+            if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
+              this.setState({ approveDrawer: true, approvalObj: { ...formData, IsSendForApproval: true } })
+              return
+
+            } else {
+
+              this.setState({ setDisable: false })
+              Toaster.warning('Please update the effective date')
+              return false
+            }
+
+          }
+
+          if (isSourceChange) {
             this.setState({ approveDrawer: true, approvalObj: { ...formData, IsSendForApproval: true } })
-            return
+            this.setState({ setDisable: false })
 
           } else {
 
-            this.setState({ setDisable: false })
-            Toaster.warning('Please update the effective date')
-            return false
+            if (isEditFlag) {
+
+
+              if (uploadAttachements && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === Number(values.BasicRate) &&
+                Number(DataToChange.ScrapRate) === Number(values.ScrapRate) && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCost) &&
+                String(DataToChange.Remark) === String(values.Remark) && (Number(DataToChange.CutOffPrice) === Number(values.cutOffPrice) ||
+                  values.cutOffPrice === undefined) && String(DataToChange.RawMaterialCode) === String(values.Code)) {
+                this.cancel()
+                return false
+              }
+            }
+
+            this.setState({ approveDrawer: true, approvalObj: { ...formData, IsSendForApproval: true } })
+
           }
 
-        }
-
-        if (isSourceChange) {
-          this.setState({ approveDrawer: true, approvalObj: { ...formData, IsSendForApproval: true } })
-          this.setState({ setDisable: false })
 
         } else {
 
-          if (isEditFlag) {
-
-
-            if (uploadAttachements && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === Number(values.BasicRate) &&
-              Number(DataToChange.ScrapRate) === Number(values.ScrapRate) && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCost) &&
-              String(DataToChange.Remark) === String(values.Remark) && (Number(DataToChange.CutOffPrice) === Number(values.cutOffPrice) ||
-                values.cutOffPrice === undefined) && String(DataToChange.RawMaterialCode) === String(values.Code)) {
-              this.cancel()
-              return false
+          this.props.createRMImport(formData, (res) => {
+            this.setState({ setDisable: false })
+            if (res?.data?.Result) {
+              Toaster.success(MESSAGES.MATERIAL_ADD_SUCCESS);
+              this.clearForm();
             }
-          }
-
-          this.setState({ approveDrawer: true, approvalObj: { ...formData, IsSendForApproval: true } })
-
+          });
         }
-
-
-      } else {
-
-        this.props.createRMImport(formData, (res) => {
-          this.setState({ setDisable: false })
-          if (res?.data?.Result) {
-            Toaster.success(MESSAGES.MATERIAL_ADD_SUCCESS);
-            this.clearForm();
-          }
-        });
       }
     }
-  }
 
 
-  onPopupConfirm = () => {
-    this.setState({ disablePopup: true })
-    this.props.updateRMImportAPI(this.state.updatedObj, (res) => {
-      this.setState({ setDisable: false })
-      if (res?.data?.Result) {
-        Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS);
-        this.clearForm();
-      }
-    })
-  }
-  closePopUp = () => {
-    this.setState({ showPopup: false, setDisable: false })
-  }
-
-
-  handleKeyDown = function (e) {
-    if (e.key === 'Enter' && e.shiftKey === false) {
-      e.preventDefault();
+    onPopupConfirm = () => {
+      this.setState({ disablePopup: true })
+      this.props.updateRMImportAPI(this.state.updatedObj, (res) => {
+        this.setState({ setDisable: false })
+        if (res?.data?.Result) {
+          Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS);
+          this.clearForm();
+        }
+      })
     }
-  };
+    closePopUp = () => {
+      this.setState({ showPopup: false, setDisable: false })
+    }
 
-  handleSinglePlant = (newValue) => {
-    this.setState({ singlePlantSelected: newValue })
-  }
-  /**
-  * @method render
-  * @description Renders the component
-  */
-  render() {
-    const { handleSubmit, initialConfiguration, isRMAssociated } = this.props;
-    const { isRMDrawerOpen, isOpenGrade, isOpenSpecification,
-      isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isViewFlag, setDisable, disablePopup } = this.state;
 
-    const filterList = (inputValue) => {
-      let tempArr = []
-
-      tempArr = this.renderListing("VendorNameList").filter(i =>
-        i.label !== null && i.label.toLowerCase().includes(inputValue.toLowerCase())
-      );
-
-      if (tempArr.length <= 100) {
-        return tempArr
-      } else {
-        return tempArr.slice(0, 100)
+    handleKeyDown = function (e) {
+      if (e.key === 'Enter' && e.shiftKey === false) {
+        e.preventDefault();
       }
     };
 
-    const promiseOptions = inputValue =>
-      new Promise(resolve => {
-        resolve(filterList(inputValue));
+    handleSinglePlant = (newValue) => {
+      this.setState({ singlePlantSelected: newValue })
+    }
+    /**
+    * @method render
+    * @description Renders the component
+    */
+    render() {
+      const { handleSubmit, initialConfiguration, isRMAssociated } = this.props;
+      const { isRMDrawerOpen, isOpenGrade, isOpenSpecification,
+        isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isViewFlag, setDisable, disablePopup } = this.state;
+
+      const filterList = (inputValue) => {
+        let tempArr = []
+
+        tempArr = this.renderListing("VendorNameList").filter(i =>
+          i.label !== null && i.label.toLowerCase().includes(inputValue.toLowerCase())
+        );
+
+        if (tempArr.length <= 100) {
+          return tempArr
+        } else {
+          return tempArr.slice(0, 100)
+        }
+      };
+
+      const promiseOptions = inputValue =>
+        new Promise(resolve => {
+          resolve(filterList(inputValue));
 
 
-      });
+        });
 
-    return (
-      <>
-        {this.state.isLoader && <LoaderCustom customClass="add-page-loader" />}
-        <div className="container-fluid">
-          <div>
-            <div className="login-container signup-form">
-              <div className="row">
-                <div className="col-md-12">
-                  <div className="shadow-lgg login-formg">
-                    <div className="row">
-                      <div className="col-md-6">
-                        <h2>
-                          {isViewFlag ? "View" : isEditFlag ? "Update" : "Add"} Raw Material (Import)
-                        </h2>
+      return (
+        <>
+          {this.state.isLoader && <LoaderCustom customClass="add-page-loader" />}
+          <div className="container-fluid">
+            <div>
+              <div className="login-container signup-form">
+                <div className="row">
+                  <div className="col-md-12">
+                    <div className="shadow-lgg login-formg">
+                      <div className="row">
+                        <div className="col-md-6">
+                          <h2>
+                            {isViewFlag ? "View" : isEditFlag ? "Update" : "Add"} Raw Material (Import)
+                          </h2>
+                        </div>
                       </div>
-                    </div>
-                    <form
-                      noValidate
-                      className="form"
-                      onSubmit={handleSubmit(this.onSubmit.bind(this))}
-                      onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
-                    >
-                      <div className="add-min-height">
-                        <Row>
-                          <Col md="4" className="switch mb15">
-                            <label className="switch-level">
-                              <div className={"left-title"}>Zero Based</div>
-                              <Switch
-                                onChange={this.onPressVendor}
-                                checked={this.state.IsVendor}
-                                id="normal-switch"
-                                disabled={isEditFlag ? true : false}
-                                background="#4DC771"
-                                onColor="#4DC771"
-                                onHandleColor="#ffffff"
-                                offColor="#4DC771"
-                                uncheckedIcon={false}
-                                checkedIcon={false}
-                                height={20}
-                                width={46}
-                              />
-                              <div className={"right-title"}>
-                                Vendor Based
-                              </div>
-                            </label>
-                          </Col>
-                        </Row>
-                        <Row>
-                          <Col md="12" className="filter-block">
-                            <div className=" flex-fills mb-2 pl-0">
-                              <h5>{"Raw Material:"}</h5>
-                            </div>
-                          </Col>
-                          <Col md="3">
-                            <Field
-                              label="Technology"
-                              type="text"
-                              name="TechnologyId"
-                              component={searchableSelect}
-                              placeholder={"Technology"}
-                              options={this.renderListing("technology")}
-                              validate={this.state.Technology == null || this.state.Technology.length === 0 ? [required] : []}
-                              required={true}
-                              handleChangeDescription={this.handleTechnologyChange}
-                              valueDescription={this.state.Technology}
-                              disabled={isEditFlag || isViewFlag}
-                            />
-                          </Col>
-                          <Col md="3">
-                            <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                              <div className="fullinput-icon">
-                                <Field
-                                  name="RawMaterialId"
-                                  type="text"
-                                  label="Name"
-                                  component={searchableSelect}
-                                  placeholder={"Select"}
-                                  options={this.renderListing("material")}
-                                  validate={this.state.RawMaterial == null || this.state.RawMaterial.length === 0 ? [required] : []}
-                                  required={true}
-                                  handleChangeDescription={this.handleRMChange}
-                                  valueDescription={this.state.RawMaterial}
-                                  disabled={isEditFlag || isViewFlag}
+                      <form
+                        noValidate
+                        className="form"
+                        onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                        onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
+                      >
+                        <div className="add-min-height">
+                          <Row>
+                            <Col md="4" className="switch mb15">
+                              <label className="switch-level">
+                                <div className={"left-title"}>Zero Based</div>
+                                <Switch
+                                  onChange={this.onPressVendor}
+                                  checked={this.state.IsVendor}
+                                  id="normal-switch"
+                                  disabled={isEditFlag ? true : false}
+                                  background="#4DC771"
+                                  onColor="#4DC771"
+                                  onHandleColor="#ffffff"
+                                  offColor="#4DC771"
+                                  uncheckedIcon={false}
+                                  checkedIcon={false}
+                                  height={20}
+                                  width={46}
                                 />
+                                <div className={"right-title"}>
+                                  Vendor Based
+                                </div>
+                              </label>
+                            </Col>
+                          </Row>
+                          <Row>
+                            <Col md="12" className="filter-block">
+                              <div className=" flex-fills mb-2 pl-0">
+                                <h5>{"Raw Material:"}</h5>
                               </div>
-                              {(!isEditFlag) && (
-                                <div
-                                  onClick={this.rmToggler}
-                                  className={"plus-icon-square  right"}
-                                ></div>
-                              )}
-                            </div>
-                          </Col>
-                          <Col md="3">
-                            <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                              <div className="fullinput-icon">
-                                <Field
-                                  name="RawMaterialGradeId"
-                                  type="text"
-                                  label="Grade"
-                                  component={searchableSelect}
-                                  placeholder={"Select"}
-                                  options={this.renderListing("grade")}
-                                  validate={
-                                    this.state.RMGrade == null || this.state.RMGrade.length === 0 ? [required] : []}
-                                  required={true}
-                                  handleChangeDescription={this.handleGradeChange}
-                                  valueDescription={this.state.RMGrade}
-                                  disabled={isEditFlag || isViewFlag}
-                                />
-                              </div>
-
-                            </div>
-                          </Col>
-                          <Col md="3">
-                            <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                              <div className="fullinput-icon">
-                                <Field
-                                  name="RawMaterialSpecificationId"
-                                  type="text"
-                                  label="Specification"
-                                  component={searchableSelect}
-                                  placeholder={"Select"}
-                                  options={this.renderListing("specification")}
-                                  validate={this.state.RMSpec == null || this.state.RMSpec.length === 0 ? [required] : []}
-                                  required={true}
-                                  handleChangeDescription={this.handleSpecChange}
-                                  valueDescription={this.state.RMSpec}
-                                  disabled={isEditFlag || isViewFlag}
-                                />
-                              </div>
-
-                            </div>
-                          </Col>
-                          <Col md="3">
-                            <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                              <div className="fullinput-icon">
-                                <TooltipCustom tooltipText="RM category will come here like CutToFit, CutToLength." />
-                                <Field
-                                  name="CategoryId"
-                                  type="text"
-                                  label="Category"
-                                  component={searchableSelect}
-                                  placeholder={"Select"}
-                                  options={this.renderListing("category")}
-                                  validate={this.state.Category == null || this.state.Category.length === 0 ? [required] : []}
-                                  required={true}
-                                  handleChangeDescription={this.handleCategoryChange}
-                                  valueDescription={this.state.Category}
-                                  disabled={isEditFlag || isViewFlag}
-                                />
-                              </div>
-                            </div>
-                          </Col>
-                          <Col md="3">
-                            <Field
-                              label={`Code`}
-                              name={'Code'}
-                              type="text"
-                              placeholder={'-'}
-                              validate={initialConfiguration?.IsRawMaterialCodeConfigure ? [] : [required]}
-                              component={renderText}
-                              required={!initialConfiguration?.IsRawMaterialCodeConfigure}
-                              className=" "
-                              customClassName=" withBorder"
-                              disabled={initialConfiguration?.IsRawMaterialCodeConfigure}
-                            />
-
-                          </Col>
-
-                          {(this.state.IsVendor === false && (
+                            </Col>
                             <Col md="3">
                               <Field
-                                label="Plant"
-                                name="SourceSupplierPlantId"
-                                placeholder={"Select"}
-                                selection={
-                                  this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants}
-                                options={this.renderListing("plant")}
-                                selectionChanged={this.handleSourceSupplierPlant}
-                                validate={
-                                  this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [required] : []}
-                                required={true}
-                                optionValue={(option) => option.Value}
-                                optionLabel={(option) => option.Text}
-                                component={renderMultiSelectField}
-                                mendatory={true}
-                                disabled={isEditFlag || isViewFlag}
-                                className="multiselect-with-border"
-
-                              // disabled={this.state.IsVendor || isEditFlag ? true : false}
-                              />
-                            </Col>)
-                          )}
-                          {
-                            (this.state.IsVendor === true && getConfigurationKey().IsDestinationPlantConfigure) &&
-                            <Col md="3">
-                              <Field
-                                label={'Destination Plant'}
-                                name="DestinationPlant"
-                                placeholder={"Select"}
-                                options={this.renderListing("singlePlant")}
-                                handleChangeDescription={this.handleSinglePlant}
-                                validate={this.state.singlePlantSelected == null || this.state.singlePlantSelected.length === 0 ? [required] : []}
-                                required={true}
+                                label="Technology"
+                                type="text"
+                                name="TechnologyId"
                                 component={searchableSelect}
-                                valueDescription={this.state.singlePlantSelected}
-                                mendatory={true}
-                                className="multiselect-with-border"
+                                placeholder={"Technology"}
+                                options={this.renderListing("technology")}
+                                validate={this.state.Technology == null || this.state.Technology.length === 0 ? [required] : []}
+                                required={true}
+                                handleChangeDescription={this.handleTechnologyChange}
+                                valueDescription={this.state.Technology}
                                 disabled={isEditFlag || isViewFlag}
                               />
                             </Col>
-                          }
-                        </Row>
-
-
-                        <Row>
-                          <Col md="12" className="filter-block">
-                            <div className=" flex-fills mb-2 pl-0 d-flex justify-content-between align-items-center">
-                              <h5>{"Vendor:"}</h5>
-                              {!this.state.IsVendor && (
-                                <label
-                                  className={`custom-checkbox w-auto mb-0 ${this.state.IsVendor ? "disabled" : ""
-                                    }`}
-                                  onChange={this.onPressDifferentSource}
-                                >
-                                  Has Difference Source?
-                                  <input
-                                    type="checkbox"
-                                    checked={this.state.HasDifferentSource}
-                                    disabled={this.state.IsVendor ? true : false}
-                                  />
-                                  <span
-                                    className=" before-box"
-                                    checked={this.state.HasDifferentSource}
-                                    onChange={this.onPressDifferentSource}
-                                  />
-                                </label>
-                              )}
-                            </div>
-                          </Col>
-                          <Col md="3" className='mb-4'>
-                            <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                            <div className="d-flex justify-space-between align-items-center async-select">
-                              <div className="fullinput-icon p-relative">
-                                {!this.state.isLoader && this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
-                                <AsyncSelect
-                                  name="DestinationSupplierId"
-                                  ref={this.myRef}
-                                  key={this.state.updateAsyncDropdown}
-                                  loadOptions={promiseOptions}
-                                  onChange={(e) => this.handleVendorName(e)}
-                                  value={this.state.vendorName}
-                                  placeholder={(isEditFlag || isViewFlag || this.state.inputLoader) ? '-' : "Select"}
-                                  noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
-                                  isDisabled={isEditFlag || isViewFlag || this.state.inputLoader} />
-
-                              </div>
-                              {!isEditFlag && (<div onClick={this.vendorToggler} className={"plus-icon-square  right"}   ></div>)}
-                            </div>
-                            {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
-                          </Col>
-                          {(this.state.HasDifferentSource ||
-                            this.state.IsVendor) && (
-                              <>
-                                <Col md="3">
+                            <Col md="3">
+                              <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                <div className="fullinput-icon">
                                   <Field
-                                    label={`Source`}
-                                    name={"Source"}
+                                    name="RawMaterialId"
                                     type="text"
-                                    placeholder={isViewFlag ? "-" : "Enter"}
-                                    validate={[acceptAllExceptSingleSpecialCharacter, maxLength70]}
-                                    component={renderText}
-                                    disabled={isViewFlag}
-                                    onChange={this.handleSource}
-                                    valueDescription={this.state.source}
-                                    className=" "
-                                    customClassName=" withBorder"
-                                  />
-                                </Col>
-                                <Col md="3">
-                                  <Field
-                                    name="SourceSupplierCityId"
-                                    type="text"
-                                    label="Source Location"
+                                    label="Name"
                                     component={searchableSelect}
-                                    placeholder={isViewFlag ? "-" : "Select"}
-                                    options={this.renderListing("SourceLocation")}
-                                    handleChangeDescription={this.handleSourceSupplierCity}
-                                    valueDescription={this.state.sourceLocation}
-                                    disabled={isViewFlag}
+                                    placeholder={"Select"}
+                                    options={this.renderListing("material")}
+                                    validate={this.state.RawMaterial == null || this.state.RawMaterial.length === 0 ? [required] : []}
+                                    required={true}
+                                    handleChangeDescription={this.handleRMChange}
+                                    valueDescription={this.state.RawMaterial}
+                                    disabled={isEditFlag || isViewFlag}
                                   />
-                                </Col>
-                              </>
-                            )}
-                        </Row>
-
-
-
-
-                        <Row className='UOM-label-container'>
-                          <Col md="12" className="filter-block">
-                            <div className=" flex-fills mb-2 pl-0">
-                              <h5>{"Cost:"}</h5>
-                            </div>
-                          </Col>
-                          <Col md="3" className='dropdown-flex'>
-                            <Field
-                              name="UnitOfMeasurementId"
-                              type="text"
-                              label="UOM"
-                              component={searchableSelect}
-                              placeholder={"Select"}
-                              options={this.renderListing("uom")}
-                              validate={this.state.UOM == null || this.state.UOM.length === 0 ? [required] : []}
-                              required={true}
-                              handleChangeDescription={this.handleUOM}
-                              valueDescription={this.state.UOM}
-                              disabled={isEditFlag || isViewFlag}
-                            />
-                          </Col>
-                          <Col md="3" className='dropdown-flex'>
-                            <Field
-                              name="Currency"
-                              type="text"
-                              label="Currency"
-                              component={searchableSelect}
-                              placeholder={"Select"}
-                              options={this.renderListing("currency")}
-                              validate={this.state.currency == null || this.state.currency.length === 0 ? [required] : []}
-                              required={true}
-                              handleChangeDescription={this.handleCurrency}
-                              valueDescription={this.state.currency}
-                              disabled={isEditFlag || isViewFlag}
-                            >
-                              {this.state.showWarning && <WarningMessage dClass="mt-1" message={`${this.state.currency.label} rate is not present in the Exchange Master`} />}
-                            </Field>
-                          </Col>
-                          <Col md="3">
-                            <div className="form-group">
-                              <div className="inputbox date-section">
-                                <Field
-                                  label="Effective Date"
-                                  name="EffectiveDate"
-                                  selected={this.state.effectiveDate}
-                                  onChange={this.handleEffectiveDateChange}
-                                  type="text"
-                                  validate={[required]}
-                                  minDate={this.state.minEffectiveDate}
-                                  autoComplete={'off'}
-                                  required={true}
-                                  changeHandler={(e) => {
-
-                                  }}
-                                  component={renderDatePicker}
-                                  className="form-control"
-                                  disabled={isViewFlag || !this.state.IsFinancialDataChanged}
-                                  placeholder="Select Date"
-
-                                />
+                                </div>
+                                {(!isEditFlag) && (
+                                  <div
+                                    onClick={this.rmToggler}
+                                    className={"plus-icon-square  right"}
+                                  ></div>
+                                )}
                               </div>
-                            </div>
-                          </Col>
-                          {/* NOT APPLICABLE FOR RE */}
-                          {/* <Col md="3">
+                            </Col>
+                            <Col md="3">
+                              <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                <div className="fullinput-icon">
+                                  <Field
+                                    name="RawMaterialGradeId"
+                                    type="text"
+                                    label="Grade"
+                                    component={searchableSelect}
+                                    placeholder={"Select"}
+                                    options={this.renderListing("grade")}
+                                    validate={
+                                      this.state.RMGrade == null || this.state.RMGrade.length === 0 ? [required] : []}
+                                    required={true}
+                                    handleChangeDescription={this.handleGradeChange}
+                                    valueDescription={this.state.RMGrade}
+                                    disabled={isEditFlag || isViewFlag}
+                                  />
+                                </div>
+
+                              </div>
+                            </Col>
+                            <Col md="3">
+                              <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                <div className="fullinput-icon">
+                                  <Field
+                                    name="RawMaterialSpecificationId"
+                                    type="text"
+                                    label="Specification"
+                                    component={searchableSelect}
+                                    placeholder={"Select"}
+                                    options={this.renderListing("specification")}
+                                    validate={this.state.RMSpec == null || this.state.RMSpec.length === 0 ? [required] : []}
+                                    required={true}
+                                    handleChangeDescription={this.handleSpecChange}
+                                    valueDescription={this.state.RMSpec}
+                                    disabled={isEditFlag || isViewFlag}
+                                  />
+                                </div>
+
+                              </div>
+                            </Col>
+                            <Col md="3">
+                              <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                <div className="fullinput-icon">
+                                  <TooltipCustom tooltipText="RM category will come here like CutToFit, CutToLength." />
+                                  <Field
+                                    name="CategoryId"
+                                    type="text"
+                                    label="Category"
+                                    component={searchableSelect}
+                                    placeholder={"Select"}
+                                    options={this.renderListing("category")}
+                                    validate={this.state.Category == null || this.state.Category.length === 0 ? [required] : []}
+                                    required={true}
+                                    handleChangeDescription={this.handleCategoryChange}
+                                    valueDescription={this.state.Category}
+                                    disabled={isEditFlag || isViewFlag}
+                                  />
+                                </div>
+                              </div>
+                            </Col>
+                            <Col md="3">
+                              <Field
+                                label={`Code`}
+                                name={'Code'}
+                                type="text"
+                                placeholder={'-'}
+                                validate={initialConfiguration?.IsRawMaterialCodeConfigure ? [] : [required]}
+                                component={renderText}
+                                required={!initialConfiguration?.IsRawMaterialCodeConfigure}
+                                className=" "
+                                customClassName=" withBorder"
+                                disabled={initialConfiguration?.IsRawMaterialCodeConfigure}
+                              />
+
+                            </Col>
+
+                            {(this.state.IsVendor === false && (
+                              <Col md="3">
+                                <Field
+                                  label="Plant"
+                                  name="SourceSupplierPlantId"
+                                  placeholder={"Select"}
+                                  selection={
+                                    this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants}
+                                  options={this.renderListing("plant")}
+                                  selectionChanged={this.handleSourceSupplierPlant}
+                                  validate={
+                                    this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [required] : []}
+                                  required={true}
+                                  optionValue={(option) => option.Value}
+                                  optionLabel={(option) => option.Text}
+                                  component={renderMultiSelectField}
+                                  mendatory={true}
+                                  disabled={isEditFlag || isViewFlag}
+                                  className="multiselect-with-border"
+
+                                // disabled={this.state.IsVendor || isEditFlag ? true : false}
+                                />
+                              </Col>)
+                            )}
+                            {
+                              (this.state.IsVendor === true && getConfigurationKey().IsDestinationPlantConfigure) &&
+                              <Col md="3">
+                                <Field
+                                  label={'Destination Plant'}
+                                  name="DestinationPlant"
+                                  placeholder={"Select"}
+                                  options={this.renderListing("singlePlant")}
+                                  handleChangeDescription={this.handleSinglePlant}
+                                  validate={this.state.singlePlantSelected == null || this.state.singlePlantSelected.length === 0 ? [required] : []}
+                                  required={true}
+                                  component={searchableSelect}
+                                  valueDescription={this.state.singlePlantSelected}
+                                  mendatory={true}
+                                  className="multiselect-with-border"
+                                  disabled={isEditFlag || isViewFlag}
+                                />
+                              </Col>
+                            }
+                          </Row>
+
+
+                          <Row>
+                            <Col md="12" className="filter-block">
+                              <div className=" flex-fills mb-2 pl-0 d-flex justify-content-between align-items-center">
+                                <h5>{"Vendor:"}</h5>
+                                {!this.state.IsVendor && (
+                                  <label
+                                    className={`custom-checkbox w-auto mb-0 ${this.state.IsVendor ? "disabled" : ""
+                                      }`}
+                                    onChange={this.onPressDifferentSource}
+                                  >
+                                    Has Difference Source?
+                                    <input
+                                      type="checkbox"
+                                      checked={this.state.HasDifferentSource}
+                                      disabled={this.state.IsVendor ? true : false}
+                                    />
+                                    <span
+                                      className=" before-box"
+                                      checked={this.state.HasDifferentSource}
+                                      onChange={this.onPressDifferentSource}
+                                    />
+                                  </label>
+                                )}
+                              </div>
+                            </Col>
+                            <Col md="3" className='mb-4'>
+                              <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
+                              <div className="d-flex justify-space-between align-items-center async-select">
+                                <div className="fullinput-icon p-relative">
+                                  {!this.state.isLoader && this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
+                                  <AsyncSelect
+                                    name="DestinationSupplierId"
+                                    ref={this.myRef}
+                                    key={this.state.updateAsyncDropdown}
+                                    loadOptions={promiseOptions}
+                                    onChange={(e) => this.handleVendorName(e)}
+                                    value={this.state.vendorName}
+                                    placeholder={(isEditFlag || isViewFlag || this.state.inputLoader) ? '-' : "Select"}
+                                    noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
+                                    isDisabled={isEditFlag || isViewFlag || this.state.inputLoader} />
+
+                                </div>
+                                {!isEditFlag && (<div onClick={this.vendorToggler} className={"plus-icon-square  right"}   ></div>)}
+                              </div>
+                              {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
+                            </Col>
+                            {(this.state.HasDifferentSource ||
+                              this.state.IsVendor) && (
+                                <>
+                                  <Col md="3">
+                                    <Field
+                                      label={`Source`}
+                                      name={"Source"}
+                                      type="text"
+                                      placeholder={isViewFlag ? "-" : "Enter"}
+                                      validate={[acceptAllExceptSingleSpecialCharacter, maxLength70]}
+                                      component={renderText}
+                                      disabled={isViewFlag}
+                                      onChange={this.handleSource}
+                                      valueDescription={this.state.source}
+                                      className=" "
+                                      customClassName=" withBorder"
+                                    />
+                                  </Col>
+                                  <Col md="3">
+                                    <Field
+                                      name="SourceSupplierCityId"
+                                      type="text"
+                                      label="Source Location"
+                                      component={searchableSelect}
+                                      placeholder={isViewFlag ? "-" : "Select"}
+                                      options={this.renderListing("SourceLocation")}
+                                      handleChangeDescription={this.handleSourceSupplierCity}
+                                      valueDescription={this.state.sourceLocation}
+                                      disabled={isViewFlag}
+                                    />
+                                  </Col>
+                                </>
+                              )}
+                          </Row>
+
+
+
+
+                          <Row className='UOM-label-container'>
+                            <Col md="12" className="filter-block">
+                              <div className=" flex-fills mb-2 pl-0">
+                                <h5>{"Cost:"}</h5>
+                              </div>
+                            </Col>
+                            <Col md="3" className='dropdown-flex'>
+                              <Field
+                                name="UnitOfMeasurementId"
+                                type="text"
+                                label="UOM"
+                                component={searchableSelect}
+                                placeholder={"Select"}
+                                options={this.renderListing("uom")}
+                                validate={this.state.UOM == null || this.state.UOM.length === 0 ? [required] : []}
+                                required={true}
+                                handleChangeDescription={this.handleUOM}
+                                valueDescription={this.state.UOM}
+                                disabled={isEditFlag || isViewFlag}
+                              />
+                            </Col>
+                            <Col md="3" className='dropdown-flex'>
+                              <Field
+                                name="Currency"
+                                type="text"
+                                label="Currency"
+                                component={searchableSelect}
+                                placeholder={"Select"}
+                                options={this.renderListing("currency")}
+                                validate={this.state.currency == null || this.state.currency.length === 0 ? [required] : []}
+                                required={true}
+                                handleChangeDescription={this.handleCurrency}
+                                valueDescription={this.state.currency}
+                                disabled={isEditFlag || isViewFlag}
+                              >
+                                {this.state.showWarning && <WarningMessage dClass="mt-1" message={`${this.state.currency.label} rate is not present in the Exchange Master`} />}
+                              </Field>
+                            </Col>
+                            <Col md="3">
+                              <div className="form-group">
+                                <div className="inputbox date-section">
+                                  <Field
+                                    label="Effective Date"
+                                    name="EffectiveDate"
+                                    selected={this.state.effectiveDate}
+                                    onChange={this.handleEffectiveDateChange}
+                                    type="text"
+                                    validate={[required]}
+                                    minDate={this.state.minEffectiveDate}
+                                    autoComplete={'off'}
+                                    required={true}
+                                    changeHandler={(e) => {
+
+                                    }}
+                                    component={renderDatePicker}
+                                    className="form-control"
+                                    disabled={isViewFlag || !this.state.IsFinancialDataChanged}
+                                    placeholder="Select Date"
+
+                                  />
+                                </div>
+                              </div>
+                            </Col>
+                            {/* NOT APPLICABLE FOR RE */}
+                            {/* <Col md="3">
                             <Field
                               label={labelWithUOMAndCurrency("Cut Off Price", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
                               name={"cutOffPrice"}
@@ -1565,38 +1592,38 @@ class AddRMImport extends Component {
                               onChange={this.handleCutOfChange}
                             />
                           </Col> */}
-                          <Col md="3">
-                            <Field
-                              label={labelWithUOMAndCurrency("Basic Rate", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
-                              name={"BasicRate"}
-                              type="text"
-                              placeholder={isViewFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
-                              validate={[required, positiveAndDecimalNumber, decimalLengthsix]}
-                              component={renderNumberInputField}
-                              required={true}
-                              disabled={isViewFlag || (isEditFlag && isRMAssociated) ? true : false}
-                              maxLength="15"
-                              className=" "
-                              customClassName=" withBorder"
-                            />
-                          </Col>
-                          <Col md="3">
-                            <Field
-                              label={labelWithUOMAndCurrency("Scrap Rate", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
-                              name={"ScrapRate"}
-                              type="text"
-                              placeholder={isViewFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
-                              validate={[required, positiveAndDecimalNumber, decimalLengthsix]}
-                              component={renderNumberInputField}
-                              required={true}
-                              className=""
-                              maxLength="15"
-                              customClassName=" withBorder"
-                              onChange={this.handleScrapRate}
-                              disabled={isViewFlag || (isEditFlag && isRMAssociated)}
-                            />
-                          </Col>
-                          {/* <Col md="3">
+                            <Col md="3">
+                              <Field
+                                label={labelWithUOMAndCurrency("Basic Rate", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
+                                name={"BasicRate"}
+                                type="text"
+                                placeholder={isViewFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
+                                validate={[required, positiveAndDecimalNumber, decimalLengthsix]}
+                                component={renderNumberInputField}
+                                required={true}
+                                disabled={isViewFlag || (isEditFlag && isRMAssociated) ? true : false}
+                                maxLength="15"
+                                className=" "
+                                customClassName=" withBorder"
+                              />
+                            </Col>
+                            <Col md="3">
+                              <Field
+                                label={labelWithUOMAndCurrency("Scrap Rate", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
+                                name={"ScrapRate"}
+                                type="text"
+                                placeholder={isViewFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
+                                validate={[required, positiveAndDecimalNumber, decimalLengthsix]}
+                                component={renderNumberInputField}
+                                required={true}
+                                className=""
+                                maxLength="15"
+                                customClassName=" withBorder"
+                                onChange={this.handleScrapRate}
+                                disabled={isViewFlag || (isEditFlag && isRMAssociated)}
+                              />
+                            </Col>
+                            {/* <Col md="3">
                             <Field
                               label={labelWithUOMAndCurrency("Freight Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
                               name={"FreightCharge"}
@@ -1626,27 +1653,10 @@ class AddRMImport extends Component {
                               disabled={isViewFlag || (isEditFlag && isRMAssociated)}
                             />
                           </Col> */}
-                          <Col md="3">
-                            <Field
-                              label={labelWithUOMAndCurrency("Net Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
-                              name={"NetLandedCost"}
-                              type="text"
-                              placeholder={"-"}
-                              validate={[]}
-                              component={renderNumberInputField}
-                              required={false}
-
-                              className=" "
-                              customClassName=" withBorder mb-0"
-                              disabled={true}
-                            />
-                          </Col>
-                          {
-                            this.state.showCurrency &&
                             <Col md="3">
                               <Field
-                                label={labelWithUOMAndCurrency("Net Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label)}
-                                name={"NetLandedCostCurrency"}
+                                label={labelWithUOMAndCurrency("Net Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
+                                name={"NetLandedCost"}
                                 type="text"
                                 placeholder={"-"}
                                 validate={[]}
@@ -1658,247 +1668,264 @@ class AddRMImport extends Component {
                                 disabled={true}
                               />
                             </Col>
-                          }
+                            {
+                              this.state.showCurrency &&
+                              <Col md="3">
+                                <Field
+                                  label={labelWithUOMAndCurrency("Net Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label)}
+                                  name={"NetLandedCostCurrency"}
+                                  type="text"
+                                  placeholder={"-"}
+                                  validate={[]}
+                                  component={renderNumberInputField}
+                                  required={false}
 
-                        </Row>
+                                  className=" "
+                                  customClassName=" withBorder mb-0"
+                                  disabled={true}
+                                />
+                              </Col>
+                            }
 
-                        <Row>
-                          <Col md="12" className="filter-block">
-                            <div className=" flex-fills mb-2 pl-0">
-                              <h5>{"Remarks & Attachments:"}</h5>
-                            </div>
-                          </Col>
-                          <Col md="6">
-                            <Field
-                              label={"Remarks"}
-                              name={`Remark`}
-                              placeholder={isViewFlag ? '-' : "Type here..."}
-                              value={this.state.remarks}
-                              className=""
-                              customClassName=" textAreaWithBorder"
-                              onChange={this.handleMessageChange}
-                              validate={[maxLength512]}
-                              component={renderTextAreaField}
-                              maxLength="512"
-                              rows="10"
-                              disabled={isViewFlag}
+                          </Row>
 
-                            />
-                          </Col>
-                          <Col md="3">
-                            <label>
-                              Upload Files (Upload up to 3 files)
-                            </label>
-                            <div className={`alert alert-danger mt-2 ${this.state.files.length === 3 ? '' : 'd-none'}`} role="alert">
-                              Maximum file upload limit has been reached.
-                            </div>
-                            <div className={`${this.state.files.length >= 3 ? 'd-none' : ''}`}>
-                              <Dropzone
-                                ref={this.dropzone}
-                                getUploadParams={this.getUploadParams}
-                                onChangeStatus={this.handleChangeStatus}
-                                PreviewComponent={this.Preview}
-                                accept="*"
-                                initialFiles={this.state.initialFiles}
-                                maxFiles={3}
-                                maxSizeBytes={2000000}
-                                inputContent={(files, extra) =>
-                                  extra.reject ? (
-                                    "Image, audio and video files only"
-                                  ) : (
-                                    <div className="text-center">
-                                      <i className="text-primary fa fa-cloud-upload"></i>
-                                      <span className="d-block">
-                                        Drag and Drop or{" "}
-                                        <span className="text-primary">
-                                          Browse
-                                        </span>
-                                        <br />
-                                        file to upload
-                                      </span>
-                                    </div>
-                                  )
-                                }
-                                styles={{
-                                  dropzoneReject: {
-                                    borderColor: "red",
-                                    backgroundColor: "#DAA",
-                                  },
-                                  inputLabel: (files, extra) =>
-                                    extra.reject ? { color: "red" } : {},
-                                }}
-                                classNames="draper-drop"
+                          <Row>
+                            <Col md="12" className="filter-block">
+                              <div className=" flex-fills mb-2 pl-0">
+                                <h5>{"Remarks & Attachments:"}</h5>
+                              </div>
+                            </Col>
+                            <Col md="6">
+                              <Field
+                                label={"Remarks"}
+                                name={`Remark`}
+                                placeholder={isViewFlag ? '-' : "Type here..."}
+                                value={this.state.remarks}
+                                className=""
+                                customClassName=" textAreaWithBorder"
+                                onChange={this.handleMessageChange}
+                                validate={[maxLength512]}
+                                component={renderTextAreaField}
+                                maxLength="512"
+                                rows="10"
                                 disabled={isViewFlag}
+
                               />
-                            </div>
-                          </Col>
-                          <Col md="3">
-                            <div className={"attachment-wrapper"}>
-                              {this.state.attachmentLoader && <LoaderCustom customClass="attachment-loader" />}
-                              {this.state.files &&
-                                this.state.files.map((f) => {
-                                  const withOutTild = f.FileURL.replace(
-                                    "~",
-                                    ""
-                                  );
-                                  const fileURL = `${FILE_URL}${withOutTild}`;
-                                  return (
-                                    <div className={"attachment images"}>
-                                      <a href={fileURL} target="_blank">
-                                        {f.OriginalFileName}
-                                      </a>
+                            </Col>
+                            <Col md="3">
+                              <label>
+                                Upload Files (Upload up to 3 files)
+                              </label>
+                              <div className={`alert alert-danger mt-2 ${this.state.files.length === 3 ? '' : 'd-none'}`} role="alert">
+                                Maximum file upload limit has been reached.
+                              </div>
+                              <div className={`${this.state.files.length >= 3 ? 'd-none' : ''}`}>
+                                <Dropzone
+                                  ref={this.dropzone}
+                                  getUploadParams={this.getUploadParams}
+                                  onChangeStatus={this.handleChangeStatus}
+                                  PreviewComponent={this.Preview}
+                                  accept="*"
+                                  initialFiles={this.state.initialFiles}
+                                  maxFiles={3}
+                                  maxSizeBytes={2000000}
+                                  inputContent={(files, extra) =>
+                                    extra.reject ? (
+                                      "Image, audio and video files only"
+                                    ) : (
+                                      <div className="text-center">
+                                        <i className="text-primary fa fa-cloud-upload"></i>
+                                        <span className="d-block">
+                                          Drag and Drop or{" "}
+                                          <span className="text-primary">
+                                            Browse
+                                          </span>
+                                          <br />
+                                          file to upload
+                                        </span>
+                                      </div>
+                                    )
+                                  }
+                                  styles={{
+                                    dropzoneReject: {
+                                      borderColor: "red",
+                                      backgroundColor: "#DAA",
+                                    },
+                                    inputLabel: (files, extra) =>
+                                      extra.reject ? { color: "red" } : {},
+                                  }}
+                                  classNames="draper-drop"
+                                  disabled={isViewFlag}
+                                />
+                              </div>
+                            </Col>
+                            <Col md="3">
+                              <div className={"attachment-wrapper"}>
+                                {this.state.attachmentLoader && <LoaderCustom customClass="attachment-loader" />}
+                                {this.state.files &&
+                                  this.state.files.map((f) => {
+                                    const withOutTild = f.FileURL.replace(
+                                      "~",
+                                      ""
+                                    );
+                                    const fileURL = `${FILE_URL}${withOutTild}`;
+                                    return (
+                                      <div className={"attachment images"}>
+                                        <a href={fileURL} target="_blank">
+                                          {f.OriginalFileName}
+                                        </a>
 
-                                      {!isViewFlag && <img
-                                        className="float-right"
-                                        alt={""}
-                                        onClick={() =>
-                                          this.deleteFile(
-                                            f.FileId,
-                                            f.FileName
-                                          )
-                                        }
-                                        src={imgRedcross}
-                                      ></img>}
-                                    </div>
-                                  );
-                                })}
+                                        {!isViewFlag && <img
+                                          className="float-right"
+                                          alt={""}
+                                          onClick={() =>
+                                            this.deleteFile(
+                                              f.FileId,
+                                              f.FileName
+                                            )
+                                          }
+                                          src={imgRedcross}
+                                        ></img>}
+                                      </div>
+                                    );
+                                  })}
 
-                            </div>
-                          </Col>
-                        </Row>
-                      </div>
-                      <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
-                        <div className="col-sm-12 text-right bluefooter-butn">
-                          <button
-                            type={"button"}
-                            className="mr15 cancel-btn"
-                            onClick={this.cancel}
-                            disabled={setDisable}
-                          >
-                            <div className={"cancel-icon"}></div>
-                            {"Cancel"}
-                          </button>
-                          {
-                            (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !this.state.isFinalApprovar) ?
-                              <button type="submit"
-                                class="user-btn approval-btn save-btn mr5"
-                                onClick={() => scroll.scrollToTop()}
-                                disabled={isViewFlag || setDisable}
-                              >
-                                <div className="send-for-approval"></div>
-                                {'Send For Approval'}
-                              </button>
-                              :
-                              <button
-                                type="submit"
-                                className="user-btn mr5 save-btn"
-                                disabled={isViewFlag || setDisable}
-                              >
-                                <div className={"save-icon"}></div>
-                                {isEditFlag ? "Update" : "Save"}
-                              </button>
-                          }
+                              </div>
+                            </Col>
+                          </Row>
                         </div>
-                      </Row>
-                    </form>
+                        <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
+                          <div className="col-sm-12 text-right bluefooter-butn">
+                            <button
+                              type={"button"}
+                              className="mr15 cancel-btn"
+                              onClick={this.cancel}
+                              disabled={setDisable}
+                            >
+                              <div className={"cancel-icon"}></div>
+                              {"Cancel"}
+                            </button>
+                            {
+                              (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !this.state.isFinalApprovar) ?
+                                <button type="submit"
+                                  class="user-btn approval-btn save-btn mr5"
+                                  onClick={() => scroll.scrollToTop()}
+                                  disabled={isViewFlag || setDisable}
+                                >
+                                  <div className="send-for-approval"></div>
+                                  {'Send For Approval'}
+                                </button>
+                                :
+                                <button
+                                  type="submit"
+                                  className="user-btn mr5 save-btn"
+                                  disabled={isViewFlag || setDisable}
+                                >
+                                  <div className={"save-icon"}></div>
+                                  {isEditFlag ? "Update" : "Save"}
+                                </button>
+                            }
+                          </div>
+                        </Row>
+                      </form>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          {isRMDrawerOpen && (
-            <AddSpecification
-              isOpen={isRMDrawerOpen}
-              closeDrawer={this.closeRMDrawer}
-              isEditFlag={false}
-              ID={""}
-              anchor={"right"}
-              AddAccessibilityRMANDGRADE={
-                this.props.AddAccessibilityRMANDGRADE
-              }
-              EditAccessibilityRMANDGRADE={
-                this.props.EditAccessibilityRMANDGRADE
-              }
-            />
-          )}
-          {isOpenGrade && (
-            <AddGrade
-              isOpen={isOpenGrade}
-              closeDrawer={this.closeGradeDrawer}
-              isEditFlag={false}
-              RawMaterial={this.state.RawMaterial}
-              anchor={"right"}
-            />
-          )}
-          {isOpenSpecification && (
-            <AddSpecification
-              isOpen={isOpenSpecification}
-              closeDrawer={this.closeSpecDrawer}
-              isEditFlag={false}
-              ID={""}
-              anchor={"right"}
-              AddAccessibilityRMANDGRADE={
-                this.props.AddAccessibilityRMANDGRADE
-              }
-              EditAccessibilityRMANDGRADE={
-                this.props.EditAccessibilityRMANDGRADE
-              }
-              Technology={this.state.Technology.value}
-            />
-          )}
-          {isOpenCategory && (
-            <AddCategory
-              isOpen={isOpenCategory}
-              closeDrawer={this.closeCategoryDrawer}
-              isEditFlag={false}
-              ID={""}
-              anchor={"right"}
-            />
-          )}
-          {isOpenVendor && (
-            <AddVendorDrawer
-              isOpen={isOpenVendor}
-              closeDrawer={this.closeVendorDrawer}
-              isEditFlag={false}
-              isRM={true}
-              IsVendor={this.state.IsVendor}
-              ID={""}
-              anchor={"right"}
-            />
-          )}
-          {isOpenUOM && (
-            <AddUOM
-              isOpen={isOpenUOM}
-              closeDrawer={this.closeUOMDrawer}
-              isEditFlag={false}
-              ID={""}
-              anchor={"right"}
-            />
-          )}
-          {
-            this.state.approveDrawer && (
-              <MasterSendForApproval
-                isOpen={this.state.approveDrawer}
-                closeDrawer={this.closeApprovalDrawer}
+            {isRMDrawerOpen && (
+              <AddSpecification
+                isOpen={isRMDrawerOpen}
+                closeDrawer={this.closeRMDrawer}
                 isEditFlag={false}
-                masterId={RM_MASTER_ID}
-                type={'Sender'}
+                ID={""}
                 anchor={"right"}
-                approvalObj={this.state.approvalObj}
-                isBulkUpload={false}
-                IsImportEntery={true}
+                AddAccessibilityRMANDGRADE={
+                  this.props.AddAccessibilityRMANDGRADE
+                }
+                EditAccessibilityRMANDGRADE={
+                  this.props.EditAccessibilityRMANDGRADE
+                }
               />
-            )
-          }
-          {
-            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} disablePopup={disablePopup} />
-          }
-        </div>
-      </>
-    );
+            )}
+            {isOpenGrade && (
+              <AddGrade
+                isOpen={isOpenGrade}
+                closeDrawer={this.closeGradeDrawer}
+                isEditFlag={false}
+                RawMaterial={this.state.RawMaterial}
+                anchor={"right"}
+              />
+            )}
+            {isOpenSpecification && (
+              <AddSpecification
+                isOpen={isOpenSpecification}
+                closeDrawer={this.closeSpecDrawer}
+                isEditFlag={false}
+                ID={""}
+                anchor={"right"}
+                AddAccessibilityRMANDGRADE={
+                  this.props.AddAccessibilityRMANDGRADE
+                }
+                EditAccessibilityRMANDGRADE={
+                  this.props.EditAccessibilityRMANDGRADE
+                }
+                Technology={this.state.Technology.value}
+              />
+            )}
+            {isOpenCategory && (
+              <AddCategory
+                isOpen={isOpenCategory}
+                closeDrawer={this.closeCategoryDrawer}
+                isEditFlag={false}
+                ID={""}
+                anchor={"right"}
+              />
+            )}
+            {isOpenVendor && (
+              <AddVendorDrawer
+                isOpen={isOpenVendor}
+                closeDrawer={this.closeVendorDrawer}
+                isEditFlag={false}
+                isRM={true}
+                IsVendor={this.state.IsVendor}
+                ID={""}
+                anchor={"right"}
+              />
+            )}
+            {isOpenUOM && (
+              <AddUOM
+                isOpen={isOpenUOM}
+                closeDrawer={this.closeUOMDrawer}
+                isEditFlag={false}
+                ID={""}
+                anchor={"right"}
+              />
+            )}
+            {
+              this.state.approveDrawer && (
+                <MasterSendForApproval
+                  isOpen={this.state.approveDrawer}
+                  closeDrawer={this.closeApprovalDrawer}
+                  isEditFlag={false}
+                  masterId={RM_MASTER_ID}
+                  type={'Sender'}
+                  anchor={"right"}
+                  approvalObj={this.state.approvalObj}
+                  isBulkUpload={false}
+                  IsImportEntery={true}
+                />
+              )
+            }
+            {
+              this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} disablePopup={disablePopup} />
+            }
+          </div>
+        </>
+      );
+    }
   }
-}
 
 /**
 * @method mapStateToProps
