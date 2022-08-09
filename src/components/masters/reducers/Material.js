@@ -338,13 +338,13 @@ export default function materialReducer(state = initialState, action) {
             // })
 
             let array = []
-            if (action.payload[0].Plant !== undefined) {
+            if (action?.payload[0]?.Plant !== undefined) {
                 array = action.payload && action.payload.filter((item) => {
                     return item.Plants = item.Plant
                 })
             }
 
-            if (action.payload[0].OperationId !== undefined && action.payload[0].OperationId !== null) {
+            if (action?.payload[0]?.OperationId !== undefined && action?.payload[0]?.OperationId !== null) {
                 array = action.payload && action.payload.filter((item) => {
                     return (item.TechnologyName = item.Technology,
                         item.UOM = item.UnitOfMeasurement,
@@ -354,7 +354,7 @@ export default function materialReducer(state = initialState, action) {
                 })
             }
 
-            if (action.payload[0].MachineId !== undefined && action.payload[0].MachineId !== null) {
+            if (action?.payload[0]?.MachineId !== undefined && action?.payload[0]?.MachineId !== null) {
                 array = action.payload && action.payload.filter((item) => {
                     return (
                         item.BasicRate = item.MachineRate

@@ -50,8 +50,11 @@ function CommonApproval(props) {
     const [floatingFilterData, setFloatingFilterData] = useState({ ApprovalProcessId: "", ApprovalNumber: "", CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", Category: "", MaterialType: "", Plant: "", VendorName: "", UOM: "", BasicRate: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDate: "", RequestedBy: "", CreatedByName: "", LastApprovedBy: "", Status: "", BoughtOutPartNumber: "", BoughtOutPartName: "", BoughtOutPartCategory: "", Specification: "", Plants: "", MachineNumber: "", MachineTypeName: "", MachineTonnage: "", MachineRate: "", Technology: "", OperationName: "", OperationCode: "", UnitOfMeasurement: "", Rate: "", })
     const dispatch = useDispatch()
     const { selectedCostingListSimulation } = useSelector((state => state.simulation))
+    let master = props?.MasterId
 
     useEffect(() => {
+        dispatch(setSelectedCostingListSimualtion([]))
+        setSelectedRowData([])
         getTableData(0, 10, true, floatingFilterData)
         let obj = {
             MasterId: props?.MasterId,
@@ -64,6 +67,13 @@ function CommonApproval(props) {
                 setIsFinalApprover(res.data.Data.IsFinalApprovar)
             }
         }))
+
+        return () => {
+            // Cleanup function
+            dispatch(setSelectedCostingListSimualtion([]))
+            setSelectedRowData([])
+        }
+
     }, [])
 
     var filterParams = {
@@ -114,8 +124,6 @@ function CommonApproval(props) {
             if (res) {
                 let isReset = true
                 setTimeout(() => {
-
-
 
                     for (var prop in obj) {
                         if (prop !== "DepartmentCode" && obj[prop] !== "") {
@@ -217,6 +225,8 @@ function CommonApproval(props) {
         setPageNoNew(1)
         setCurrentRowIndex(0)
         getTableData(0, 10, true, floatingFilterData)
+        dispatch(setSelectedCostingListSimualtion([]))
+        setSelectedRowData([])
         setGlobalTake(10)
         setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
     }
@@ -366,11 +376,36 @@ function CommonApproval(props) {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
 
+
         if (selectedCostingListSimulation?.length > 0) {
             selectedCostingListSimulation.map((item) => {
 
-                if (item.ApprovalProcessId == props.node.data.ApprovalProcessId) {
-                    props.node.setSelected(true)
+                switch (master) {
+                    case 1:
+                        if (item?.RawMaterialId === props?.node?.data?.RawMaterialId) {
+                            props.node.setSelected(true)
+                        }
+                        break;
+                    case 2:
+                        if (item?.BoughtOutPartId === props?.node?.data?.BoughtOutPartId) {
+                            props.node.setSelected(true)
+                        }
+                        break;
+                    case 3:
+                        if (item?.OperationId === props?.node?.data?.OperationId) {
+                            props.node.setSelected(true)
+                        }
+                        break;
+                    case 4:
+                        if (item?.MachineId === props?.node?.data?.MachineId) {
+                            props.node.setSelected(true)
+                        }
+                        break;
+                    default:
+                        // code block
+                        if (item?.ApprovalProcessId === props?.node?.data?.ApprovalProcessId) {
+                            props.node.setSelected(true)
+                        }
                 }
             })
         }
@@ -424,8 +459,33 @@ function CommonApproval(props) {
             if (event.node.isSelected() === false) {    // CHECKING IF CURRENT CHECKBOX IS UNSELECTED
 
                 for (let i = 0; i < selectedCostingListSimulation.length; i++) {
-                    if (selectedCostingListSimulation[i].RawMaterialId === event.data.RawMaterialId) {   // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
-                        continue;
+
+                    switch (props?.MasterId) {
+                        case 1:
+                            if (selectedCostingListSimulation[i]?.RawMaterialId === event?.data?.RawMaterialId) {   // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
+                                continue;
+                            }
+                            break;
+                        case 2:
+                            if (selectedCostingListSimulation[i]?.BoughtOutPartId === event?.data?.BoughtOutPartId) {   // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
+                                continue;
+                            }
+                            break;
+                        case 3:
+                            if (selectedCostingListSimulation[i]?.OperationId === event?.data?.OperationId) {   // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
+                                continue;
+                            }
+                            break;
+                        case 4:
+                            if (selectedCostingListSimulation[i]?.MachineId === event?.data?.MachineId) {   // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
+                                continue;
+                            }
+                            break;
+                        default:
+                            // code block
+                            if (selectedCostingListSimulation[i]?.ApprovalProcessId === event?.data?.ApprovalProcessId) {   // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
+                                continue;
+                            }
                     }
                     finalData.push(selectedCostingListSimulation[i])
                 }
@@ -436,9 +496,35 @@ function CommonApproval(props) {
             selectedRows = [...selectedRows, ...finalData]
         }
 
-        let uniqeArray = _.uniqBy(selectedRows, "ApprovalProcessId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
-        dispatch(setSelectedCostingListSimualtion(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
-        setSelectedRowData(uniqeArray)
+
+        let uniqeArray = []
+        switch (props?.MasterId) {
+            case 1:
+                uniqeArray = _.uniqBy(selectedRows, "RawMaterialId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
+                dispatch(setSelectedCostingListSimualtion(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
+                setSelectedRowData(uniqeArray)
+                break;
+            case 2:
+                uniqeArray = _.uniqBy(selectedRows, "BoughtOutPartId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
+                dispatch(setSelectedCostingListSimualtion(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
+                setSelectedRowData(uniqeArray)
+                break;
+            case 3:
+                uniqeArray = _.uniqBy(selectedRows, "OperationId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
+                dispatch(setSelectedCostingListSimualtion(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
+                setSelectedRowData(uniqeArray)
+                break;
+            case 4:
+                uniqeArray = _.uniqBy(selectedRows, "MachineId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
+                dispatch(setSelectedCostingListSimualtion(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
+                setSelectedRowData(uniqeArray)
+                break;
+            default:
+                // code block
+                uniqeArray = _.uniqBy(selectedRows, "ApprovalProcessId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
+                dispatch(setSelectedCostingListSimualtion(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
+                setSelectedRowData(uniqeArray)
+        }
     }
 
 
@@ -457,7 +543,8 @@ function CommonApproval(props) {
     // }, 500)
 
     const sendForApproval = () => {
-        if (selectedRowData.length > 0) {
+
+        if (selectedRowData?.length > 0) {
             setApprovalDrawer(true)
         }
         else {
@@ -633,7 +720,7 @@ function CommonApproval(props) {
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="150" field="RequestedBy" cellRenderer='createdOnFormatter' headerName="Initiated By"></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="150" field="CreatedByName" cellRenderer='createdOnFormatter' headerName="Created By"></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="160" field="LastApprovedBy" cellRenderer='requestedOnFormatter' headerName="Last Approved by"></AgGridColumn>}
-                                    {props?.MasterId === RM_MASTER_ID && !props?.isApproval && <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="Status" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>}
+                                    {props?.MasterId === RM_MASTER_ID && !props?.isApproval && <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="DisplayStatus" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>}
 
 
 
@@ -651,7 +738,7 @@ function CommonApproval(props) {
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="BasicRate" headerName="Basic Rate(INR)"></AgGridColumn>}
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="NetLandedCost" headerName="Net Cost(INR)"></AgGridColumn>}
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="EffectiveDate" cellRenderer='effectiveDateRenderer' headerName="Effective Date"></AgGridColumn>}
-                                    {props?.MasterId === BOP_MASTER_ID && !props?.isApproval && <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="Status" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>}
+                                    {props?.MasterId === BOP_MASTER_ID && !props?.isApproval && <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="DisplayStatus" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>}
 
 
 
@@ -669,7 +756,7 @@ function CommonApproval(props) {
                                     {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn field="ProcessName" headerName='Process Name'></AgGridColumn>}
                                     {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn field="BasicRate" headerName="Machine Rate"></AgGridColumn>}
                                     {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn width="140" field="EffectiveDate" headerName="Effective Date" cellRenderer='effectiveDateRenderer' ></AgGridColumn>}
-                                    {props?.MasterId === MACHINE_MASTER_ID && !props?.isApproval && <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="Status" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>}
+                                    {props?.MasterId === MACHINE_MASTER_ID && !props?.isApproval && <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="DisplayStatus" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>}
 
 
 
@@ -686,7 +773,7 @@ function CommonApproval(props) {
                                     {props?.MasterId === OPERATIONS_ID && <AgGridColumn width="140" field="UOM" headerName='UOM'></AgGridColumn>}
                                     {props?.MasterId === OPERATIONS_ID && <AgGridColumn field="BasicRate" headerName='Rate'></AgGridColumn>}
                                     {props?.MasterId === OPERATIONS_ID && <AgGridColumn field="EffectiveDate" headerName="EffectiveDate" cellRenderer='effectiveDateRenderer'></AgGridColumn>}
-                                    {props?.MasterId === OPERATIONS_ID && !props?.isApproval && <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="Status" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>}
+                                    {props?.MasterId === OPERATIONS_ID && !props?.isApproval && <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="DisplayStatus" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>}
 
                                 </AgGridReact>
                                 <div className='button-wrapper'>
@@ -720,6 +807,7 @@ function CommonApproval(props) {
                     masterId={props?.MasterId}
                 />
             }
+
             {
                 approvalDrawer &&
                 <MasterSendForApproval

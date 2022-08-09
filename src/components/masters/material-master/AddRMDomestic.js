@@ -120,7 +120,7 @@ class AddRMDomestic extends Component {
    * @description Called before render the component
    */
   UNSAFE_componentWillMount() {
-    if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
+    if (!(this.props.data.isEditFlag || this.state.isViewFlag)) {
       this.props.getUOMSelectList(() => { })
       this.props.getSupplierList(() => { })
       this.props.fetchPlantDataAPI(() => { })
@@ -136,29 +136,32 @@ class AddRMDomestic extends Component {
 
     const { data } = this.props
     this.getDetails(data)
-    this.props.getRawMaterialNameChild('', () => { })
-    this.props.getAllCity(cityId => {
-      this.props.getCityByCountry(cityId, 0, () => { })
-    })
-    if (!(data.isEditFlag || data.isViewFlag)) {
+    if (!this.state.isViewFlag) {
+      this.props.getRawMaterialNameChild('', () => { })
+      this.props.getAllCity(cityId => {
+        this.props.getCityByCountry(cityId, 0, () => { })
+      })
+    }
+    if (!(this.props.data.isEditFlag || this.state.isViewFlag)) {
       this.setState({ inputLoader: true })
-      // this.props.fetchSpecificationDataAPI(0, () => { })
       this.props.getRawMaterialCategory((res) => { })
       this.props.getVendorListByVendorType(false, () => { this.setState({ inputLoader: false }) })
       this.props.getCostingSpecificTechnology(loggedInUserId(), () => { this.setState({ inputLoader: false }) })
       this.props.getPlantSelectListByType(ZBC, () => { })
     }
-    let obj = {
-      MasterId: RM_MASTER_ID,
-      DepartmentId: userDetails().DepartmentId,
-      LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
-      LoggedInUserId: loggedInUserId()
-    }
-    this.props.masterFinalLevelUser(obj, (res) => {
-      if (res.data.Result) {
-        this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+    if (!this.state.isViewFlag) {
+      let obj = {
+        MasterId: RM_MASTER_ID,
+        DepartmentId: userDetails().DepartmentId,
+        LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
+        LoggedInUserId: loggedInUserId()
       }
-    })
+      this.props.masterFinalLevelUser(obj, (res) => {
+        if (res.data.Result) {
+          this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+        }
+      })
+    }
   }
 
   componentDidUpdate(prevProps) {
@@ -435,7 +438,7 @@ class AddRMDomestic extends Component {
         if (res && res.data && res.data.Result) {
           const Data = res.data.Data
           this.setState({ DataToChange: Data }, () => { })
-          this.props.getPlantBySupplier(Data.Vendor, () => { })
+          // this.props.getPlantBySupplier(Data.Vendor, () => { })
           this.props.change('FrieghtCharge', Data.RMFreightCost ? Data.RMFreightCost : '')
           this.props.change('ShearingCost', Data.RMShearingCost ? Data.RMShearingCost : '')
           this.props.change('cutOffPrice', Data.CutOffPrice ? Data.CutOffPrice : '')
@@ -443,48 +446,42 @@ class AddRMDomestic extends Component {
           // this.props.getRMGradeSelectListByRawMaterial(Data.RawMaterial, (res) => {
 
           // this.props.fetchSpecificationDataAPI(Data.RMGrade, (res) => {
-          this.props.getRawMaterialNameChild('', (res) => {
-
-            setTimeout(() => {
-              const { cityList, rawMaterialNameSelectList } = this.props
-              const materialNameObj = rawMaterialNameSelectList && rawMaterialNameSelectList.find((item) => item.Value === Data.RawMaterial,)
-              const sourceLocationObj = cityList && cityList.find((item) => Number(item.Value) === Data.SourceLocation)
-              this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : "")
-              this.setState({ minEffectiveDate: Data.EffectiveDate })
-              this.setState({
-                IsFinancialDataChanged: false,
-                isEditFlag: true,
-                isShowForm: true,
-                IsVendor: Data.IsVendor,
-                RawMaterial: { label: materialNameObj.Text, value: materialNameObj.Value, },
-                RMGrade: Data.RawMaterialGradeName !== undefined ? { label: Data.RawMaterialGradeName, value: Data.RMGrade } : [],
-                RMSpec: Data.RawMaterialSpecificationName !== undefined ? { label: Data.RawMaterialSpecificationName, value: Data.RMSpec } : [],
-                Category: Data.RawMaterialCategoryName !== undefined ? { label: Data.RawMaterialCategoryName, value: Data.Category } : [],
-                selectedPlants: [{ Text: Data.DestinationPlantName, Value: Data.DestinationPlantId }],
-                Technology: Data.TechnologyName !== undefined ? { label: Data.TechnologyName, value: Data.TechnologyId } : [],
-                vendorName: Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.Vendor } : [],
-                HasDifferentSource: Data.HasDifferentSource,
-                sourceLocation: sourceLocationObj !== undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value, } : [],
-                UOM: Data.UnitOfMeasurementName !== undefined ? { label: Data.UnitOfMeasurementName, value: Data.UOM } : [],
-                effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
-                oldDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
-                remarks: Data.Remark,
-                files: Data.FileList,
-                singlePlantSelected: Data.DestinationPlantName !== undefined ? { label: Data.DestinationPlantName, value: Data.DestinationPlantId } : [],
-                netLandedCost: Data.NetLandedCost ? Data.NetLandedCost : ''
-              }, () => this.setState({ isLoader: false }))
-              // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
-              let files = Data.FileList && Data.FileList.map((item) => {
-                item.meta = {}
-                item.meta.id = item.FileId
-                item.meta.status = 'done'
-                return item
-              })
-              if (this.dropzone.current !== null) {
-                this.dropzone.current.files = files
-              }
-            }, 200)
-          })
+          setTimeout(() => {
+            this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : "")
+            this.setState({ minEffectiveDate: Data.EffectiveDate })
+            this.setState({
+              IsFinancialDataChanged: false,
+              isEditFlag: true,
+              isShowForm: true,
+              IsVendor: Data.IsVendor,
+              RawMaterial: Data.RawMaterialName !== undefined ? { label: Data.RawMaterialName, value: Data.RawMaterialId } : [],
+              RMGrade: Data.RawMaterialGradeName !== undefined ? { label: Data.RawMaterialGradeName, value: Data.RMGrade } : [],
+              RMSpec: Data.RawMaterialSpecificationName !== undefined ? { label: Data.RawMaterialSpecificationName, value: Data.RMSpec } : [],
+              Category: Data.RawMaterialCategoryName !== undefined ? { label: Data.RawMaterialCategoryName, value: Data.Category } : [],
+              selectedPlants: [{ Text: Data.DestinationPlantName, Value: Data.DestinationPlantId }],
+              Technology: Data.TechnologyName !== undefined ? { label: Data.TechnologyName, value: Data.TechnologyId } : [],
+              vendorName: Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.Vendor } : [],
+              HasDifferentSource: Data.HasDifferentSource,
+              sourceLocation: Data.SourceSupplierLocationName !== undefined ? { label: Data.SourceSupplierLocationName, value: Data.SourceLocation } : [],
+              UOM: Data.UnitOfMeasurementName !== undefined ? { label: Data.UnitOfMeasurementName, value: Data.UOM } : [],
+              effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
+              oldDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
+              remarks: Data.Remark,
+              files: Data.FileList,
+              singlePlantSelected: Data.DestinationPlantName !== undefined ? { label: Data.DestinationPlantName, value: Data.DestinationPlantId } : [],
+              netLandedCost: Data.NetLandedCost ? Data.NetLandedCost : ''
+            }, () => this.setState({ isLoader: false }))
+            // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
+            let files = Data.FileList && Data.FileList.map((item) => {
+              item.meta = {}
+              item.meta.id = item.FileId
+              item.meta.status = 'done'
+              return item
+            })
+            if (this.dropzone.current !== null) {
+              this.dropzone.current.files = files
+            }
+          }, 200)
         }
       })
     } else {
@@ -1892,6 +1889,7 @@ class AddRMDomestic extends Component {
                 masterId={RM_MASTER_ID}
                 type={'Sender'}
                 anchor={"right"}
+                UOM={this.state.UOM}
                 approvalObj={this.state.approvalObj}
                 isBulkUpload={false}
                 IsImportEntery={false}

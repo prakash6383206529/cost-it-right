@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { connect, useSelector } from "react-redux";
+import { connect, useSelector, useDispatch } from "react-redux";
 import { getMenuByUser } from "../../actions/auth/AuthActions";
 import { Col, Nav, NavItem, Row, NavLink, TabPane, TabContent } from "reactstrap";
 import ApprovalListing from '../costing/components/approval/ApprovalListing';
@@ -12,6 +12,7 @@ import { checkPermission } from "../../helper/util";
 import { ADDITIONAL_MASTERS, BOP, BOP_MASTER_ID, COSTING, MACHINE, MACHINE_MASTER_ID, MASTERS, OPERATION, OPERATIONS_ID, RAW_MATERIAL, RM_MASTER_ID, SIMULATION } from "../../config/constants";
 import CalculatorWrapper from "../common/Calculator/CalculatorWrapper";
 import CommonApproval from "../masters/material-master/CommonApproval";
+import { setSelectedCostingListSimualtion } from "../simulation/actions/Simulation";
 
 
 function Dashboard(props) {
@@ -33,6 +34,7 @@ function Dashboard(props) {
   })
   const topAndLeftMenuData = useSelector((state) => state.auth.topAndLeftMenuData)
 
+  const dispatch = useDispatch()
 
   const closeDashboard = () => {
     setShowHideDash(true)
@@ -80,7 +82,10 @@ function Dashboard(props) {
   const toggle = (tab) => {
 
     if (activeTab !== tab) {
-      setactiveTab(tab);
+      dispatch(setSelectedCostingListSimualtion([]))
+      setTimeout(() => {
+        setactiveTab(tab);
+      }, 300);
     }
   }
 

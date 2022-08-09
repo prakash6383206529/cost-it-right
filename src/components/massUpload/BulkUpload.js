@@ -221,8 +221,7 @@ class BulkUpload extends Component {
 
                     let fileData = [];
                     resp.rows.map((val, index) => {
-                        if (index > 0) {
-
+                        if (index > 0 && val?.length > 0) {
                             // BELOW CODE FOR HANDLE EMPTY CELL VALUE
                             const i = val.findIndex(e => e === undefined);
                             if (i !== -1) {
@@ -232,7 +231,7 @@ class BulkUpload extends Component {
                             let obj = {}
                             val.map((el, i) => {
                                 if (fileHeads[i] === 'EffectiveDate' && typeof el === 'string') {
-                                    el = DayTime(Date(el)).format('YYYY-MM-DD HH:mm:ss')
+                                    el = DayTime(el).format('YYYY-MM-DD HH:mm:ss')
                                 }
                                 if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
                                     el = getJsDateFromExcel(el)

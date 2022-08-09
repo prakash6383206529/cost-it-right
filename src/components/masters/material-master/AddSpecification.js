@@ -225,25 +225,27 @@ class AddSpecification extends Component {
   }
 
   /**
-  * @method closeGradeDrawer
+  * @method closeRMDrawer
   * @description  used to toggle RM Drawer Popup/Drawer
   */
-  closeRMDrawer = (e = '', formData = {}) => {
+  closeRMDrawer = (e = '', formData = {}, type) => {
     this.setState({ isOpenRMDrawer: false, Id: '' }, () => {
-      this.getDetails()
-      this.props.getRawMaterialNameChild('', () => {
-        this.props.getRMGradeSelectListByRawMaterial('', res => { })
-        /*FOR SHOWING DEFAULT VALUE FROM SELECTED FROM DRAWER*/
-        const { rawMaterialNameSelectList } = this.props;
-        if (Object.keys(formData).length > 0) {
-          let tempObj1 = rawMaterialNameSelectList && rawMaterialNameSelectList.find(item => item.Text === formData.RawMaterialName)
-          this.setState({
-            RawMaterial: tempObj1 && tempObj1 !== undefined ? { label: tempObj1.Text, value: tempObj1.Value } : [],
-            RMGrade: []
-          })
+      if (type === 'submit') {
+        this.getDetails()
+        this.props.getRawMaterialNameChild('', () => {
+          this.props.getRMGradeSelectListByRawMaterial('', res => { })
+          /*FOR SHOWING DEFAULT VALUE FROM SELECTED FROM DRAWER*/
+          const { rawMaterialNameSelectList } = this.props;
+          if (Object.keys(formData).length > 0) {
+            let tempObj1 = rawMaterialNameSelectList && rawMaterialNameSelectList.find(item => item.Text === formData.RawMaterialName)
+            this.setState({
+              RawMaterial: tempObj1 && tempObj1 !== undefined ? { label: tempObj1.Text, value: tempObj1.Value } : [],
+              RMGrade: []
+            })
 
-        }
-      })
+          }
+        })
+      }
     })
   }
 
@@ -256,21 +258,22 @@ class AddSpecification extends Component {
   * @method closeGradeDrawer
   * @description  used to toggle grade Popup/Drawer
   */
-  closeGradeDrawer = (e = '', formData = {}) => {
+  closeGradeDrawer = (e = '', formData = {}, type) => {
     this.setState({ isOpenGrade: false, Id: '' }, () => {
-      this.getDetails()
-      const { RawMaterial } = this.state;
-      this.props.getRMGradeSelectListByRawMaterial(RawMaterial.value, res => {
-        /* FOR SHOWING DEFAULT VALUE SELECTED FROM DRAWER*/
-        const { gradeSelectList } = this.props;
-        if (Object.keys(formData).length > 0) {
-          let tempObj3 = gradeSelectList && gradeSelectList.find(item => item.Text === formData.Grade)
-          this.setState({
-            RMGrade: tempObj3 && tempObj3 !== undefined ? { label: tempObj3.Text, value: tempObj3.Value } : [],
-          })
-        }
-      });
-
+      if (type === 'submit') {
+        this.getDetails()
+        const { RawMaterial } = this.state;
+        this.props.getRMGradeSelectListByRawMaterial(RawMaterial.value, res => {
+          /* FOR SHOWING DEFAULT VALUE SELECTED FROM DRAWER*/
+          const { gradeSelectList } = this.props;
+          if (Object.keys(formData).length > 0) {
+            let tempObj3 = gradeSelectList && gradeSelectList.find(item => item.Text === formData.Grade)
+            this.setState({
+              RMGrade: tempObj3 && tempObj3 !== undefined ? { label: tempObj3.Text, value: tempObj3.Value } : [],
+            })
+          }
+        });
+      }
     })
   }
 
@@ -362,13 +365,15 @@ class AddSpecification extends Component {
     }
   };
 
-  checkUniqCode = (e) => {
+  checkUniqCode = debounce((e) => {
+
     this.props.checkAndGetRawMaterialCode(e.target.value, res => {
       if (res && res.data && res.data.Result === false) {
         Toaster.warning(res.data.Message);
+        this.props.change('Code', "")
       }
     })
-  }
+  }, 600)
 
   /**
   * @method render
@@ -561,7 +566,8 @@ class AddSpecification extends Component {
                         required={true}
                         className=" "
                         customClassName=" withBorder"
-                        onBlur={this.checkUniqCode}
+                        //onBlur={this.checkUniqCode}
+                        onChange={this.checkUniqCode}
                         disabled={isEditFlag ? true : false}
                       />
                     </Col>

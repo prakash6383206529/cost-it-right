@@ -144,10 +144,25 @@ class AddMachineRate extends Component {
       this.setState({ isFinalApprovar: data?.isFinalApprovar })
       return true
     }
-    this.props.getProcessesSelectList(() => { })
-    if (!(editDetails.isEditFlag || editDetails.isViewFlag)) {
-      this.props.getMachineTypeSelectList(() => { })
+    if (!editDetails.isViewMode) {
       this.props.getUOMSelectList(() => { })
+
+      let obj = {
+        MasterId: MACHINE_MASTER_ID,
+        DepartmentId: userDetails().DepartmentId,
+        LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
+        LoggedInUserId: loggedInUserId()
+      }
+      this.props.masterFinalLevelUser(obj, (res) => {
+        if (res.data.Result) {
+          this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+        }
+
+      })
+    }
+    if (!(editDetails.isEditFlag || editDetails.isViewMode)) {
+      this.props.getMachineTypeSelectList(() => { })
+      this.props.getProcessesSelectList(() => { })
       this.props.getCostingSpecificTechnology(loggedInUserId(), () => { })
       this.props.getVendorListByVendorType(true, () => { })
       this.props.getPlantSelectListByType(ZBC, () => { })
@@ -182,18 +197,6 @@ class AddMachineRate extends Component {
     // }
 
 
-    let obj = {
-      MasterId: MACHINE_MASTER_ID,
-      DepartmentId: userDetails().DepartmentId,
-      LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
-      LoggedInUserId: loggedInUserId()
-    }
-    this.props.masterFinalLevelUser(obj, (res) => {
-      if (res.data.Result) {
-        this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
-      }
-
-    })
     //GET MACHINE VALUES IN EDIT MODE
     this.getDetails()
   }
@@ -269,7 +272,7 @@ class AddMachineRate extends Component {
 
           const Data = res.data.Data;
           this.props.getProcessGroupByMachineId(Data.MachineId, res => {
-            // this.props.setGroupProcessList(res?.data?.DataList)
+            this.props.setGroupProcessList(res?.data?.DataList)
             // SET GET API STRUCTURE IN THE FORM OF SAVE API STRUCTURE BY DEFAULT
             let updateArrayList = []
             let tempArray = []
@@ -311,10 +314,10 @@ class AddMachineRate extends Component {
           })
 
           this.setState({ DataToChange: Data })
-          this.props.getVendorListByVendorType(Data.IsVendor, () => { this.setState({ inputLoader: false }) })
-          if (Data.IsVendor) {
-            this.props.getPlantBySupplier(Data.VendorId, () => { })
-          }
+          // this.props.getVendorListByVendorType(Data.IsVendor, () => { this.setState({ inputLoader: false }) })
+          // if (Data.IsVendor) {
+          //   this.props.getPlantBySupplier(Data.VendorId, () => { })
+          // }
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           this.props.change('Specification', Data.Specification)
           this.setState({ minEffectiveDate: Data.EffectiveDate })

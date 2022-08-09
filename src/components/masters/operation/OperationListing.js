@@ -209,7 +209,7 @@ class OperationListing extends Component {
                 // PAGINATION CODE
                 let FloatingfilterData = this.state.filterModel
                 let obj = { ...this.state.floatingFilterData }
-                this.setState({ totalRecordCount: res.data.DataList[0].TotalRecordCount })
+                this.setState({ totalRecordCount: res?.data?.DataList && res?.data?.DataList[0]?.TotalRecordCount })
                 let isReset = true
                 setTimeout(() => {
 
@@ -597,7 +597,8 @@ class OperationListing extends Component {
 
         this.setState({ disableDownload: true })
 
-        let tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+        //let tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+        let tempArr = this.props.selectedCostingListSimulation
         if (tempArr?.length > 0) {
             setTimeout(() => {
                 this.setState({ disableDownload: false })
@@ -612,7 +613,8 @@ class OperationListing extends Component {
 
     onBtExport = () => {
         let tempArr = []
-        tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+        //tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+        tempArr = this.props.selectedCostingListSimulation
         tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.allOperationList ? this.props.allOperationList : [])
         return this.returnExcelColumn(OPERATION_DOWNLOAD_EXCEl, tempArr)
     };
@@ -717,12 +719,15 @@ class OperationListing extends Component {
                 selectedRows = [...selectedRows, ...finalData]
             }
 
+
+            let uniqeArray = _.uniqBy(selectedRows, "OperationId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
+            this.props.setSelectedCostingListSimualtion(uniqeArray)                //SETTING CHECKBOX STATE DATA IN REDUCER
+            let finalArr = selectedRows
+            let length = finalArr?.length
+            let uniqueArray = _.uniqBy(finalArr, "OperationId")
+
             if (this.props.isSimulation) {
-                let uniqeArray = _.uniqBy(selectedRows, "OperationId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
-                this.props.setSelectedCostingListSimualtion(uniqeArray)                //SETTING CHECKBOX STATE DATA IN REDUCER
-                let finalArr = selectedRows
-                let length = finalArr?.length
-                let uniqueArray = _.uniqBy(finalArr, "OperationId")
+
                 this.props.apply(uniqueArray, length)
             }
 

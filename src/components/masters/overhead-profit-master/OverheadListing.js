@@ -155,22 +155,6 @@ class OverheadListing extends Component {
         )
     };
 
-    /**
-    * @method costingHeadFormatter
-    * @description Renders Costing head
-    */
-    costingHeadFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        let headText = '';
-        if (cellValue === 'ZBC') {
-            headText = 'Zero Based';
-        } if (cellValue === 'VBC') {
-            headText = 'Vendor Based';
-        } if (cellValue === 'CBC') {
-            headText = 'Client Based';
-        }
-        return headText;
-    }
 
     /**
     * @method effectiveDateFormatter
@@ -299,12 +283,6 @@ class OverheadListing extends Component {
                 item.VendorName = ' '
             } if (item.ClientName === '-') {
                 item.ClientName = ' '
-            } if (item.TypeOfHead === 'VBC') {
-                item.TypeOfHead = 'Vendor Based'
-            } if (item.TypeOfHead === 'ZBC') {
-                item.TypeOfHead = 'Zero Based'
-            } if (item.TypeOfHead === 'CBC') {
-                item.TypeOfHead = 'Client Based'
             }
             if (item.EffectiveDate.includes('T')) {
                 item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
@@ -356,7 +334,6 @@ class OverheadListing extends Component {
 
         const frameworkComponents = {
             totalValueRenderer: this.buttonFormatter,
-            costingHeadFormatter: this.costingHeadFormatter,
             effectiveDateFormatter: this.effectiveDateFormatter,
             statusButtonFormatter: this.statusButtonFormatter,
             hyphenFormatter: this.hyphenFormatter,

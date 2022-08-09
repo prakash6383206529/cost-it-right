@@ -87,7 +87,7 @@ class AddOperation extends Component {
   * @description called before render the component
   */
   UNSAFE_componentWillMount() {
-    if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
+    if (!this.state.isViewMode) {
       this.props.getUOMSelectList(() => { })
     }
   }
@@ -313,7 +313,7 @@ class AddOperation extends Component {
         isEditFlag: true,
         OperationId: data.ID,
       })
-      this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
+      // this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
       this.props.getOperationDataAPI(data.ID, (res) => {
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data;
@@ -368,6 +368,7 @@ class AddOperation extends Component {
     this.props.checkAndGetOperationCode(e.target.value, '', res => {
       if (res && res.data && res.data.Result === false) {
         Toaster.warning(res.data.Message);
+        this.props.change('OperationCode', "")
       }
     })
   }

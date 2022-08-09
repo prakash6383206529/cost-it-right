@@ -95,8 +95,10 @@ class AddPower extends Component {
    * @description Called after rendering the component
    */
   componentDidMount() {
-    this.props.getPowerTypeSelectList(() => { })
-    this.props.getUOMSelectList(() => { })
+    if (!this.state.isViewMode) {
+      this.props.getPowerTypeSelectList(() => { })
+      this.props.getUOMSelectList(() => { })
+    }
     if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
       this.props.getAllCity(countryId => {
         this.props.fetchStateDataAPI(countryId, () => { })

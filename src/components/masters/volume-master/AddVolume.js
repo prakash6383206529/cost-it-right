@@ -487,6 +487,11 @@ class AddVolume extends Component {
     //     return plantArray;
     // })
 
+    if (IsVendor && vendorName.length <= 0) {
+      this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY 
+      return false
+    }
+    this.setState({ isVendorNameNotSelected: false })
     // CONDITION TO CHECK WHETHER TABLE DATA ONLY CONTAIN 0 VALUE
     const filteredArray = tableData.filter(item => Number(item.BudgetedQuantity) === 0 && Number(item.ApprovedQuantity) === 0)
     if (filteredArray.length === 12) {
