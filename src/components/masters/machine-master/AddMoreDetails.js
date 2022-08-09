@@ -127,7 +127,8 @@ class AddMoreDetails extends Component {
         processUOM: false,
         processMachineRate: false,
         groupName: false
-      }
+      },
+      UOMName: 'UOM'
     }
   }
 
@@ -648,13 +649,15 @@ class AddMoreDetails extends Component {
               Toaster.warning(res.data.Message)
               machineFullValue.FuelCostPerUnit = (Data.UnitCost ? Data.UnitCost : 0)
               this.setState({
-                machineFullValue: { ...machineFullValue, FuelCostPerUnit: machineFullValue.FuelCostPerUnit }
+                machineFullValue: { ...machineFullValue, FuelCostPerUnit: machineFullValue.FuelCostPerUnit },
+                UOMName: Data?.UOMName ? Data?.UOMName : 'UOM'
               })
               this.props.change('FuelCostPerUnit', checkForDecimalAndNull(Data.UnitCost, this.props.initialConfiguration.NoOfDecimalForPrice))
             } else {
               machineFullValue.FuelCostPerUnit = (Data.UnitCost ? Data.UnitCost : 0)
               this.setState({
-                machineFullValue: { ...machineFullValue, FuelCostPerUnit: machineFullValue.FuelCostPerUnit }
+                machineFullValue: { ...machineFullValue, FuelCostPerUnit: machineFullValue.FuelCostPerUnit },
+                UOMName: Data?.UOMName ? Data?.UOMName : 'UOM'
               })
               this.props.change('FuelCostPerUnit', checkForDecimalAndNull(Data.UnitCost, this.props.initialConfiguration.NoOfDecimalForPrice))
             }
@@ -2136,7 +2139,7 @@ class AddMoreDetails extends Component {
   render() {
     const { handleSubmit, loading, initialConfiguration, isMachineAssociated } = this.props;
     const { isLoader, isOpenAvailability, isEditFlag, isViewMode, isOpenMachineType, isOpenProcessDrawer, manufactureYear,
-      isLoanOpen, isWorkingOpen, isDepreciationOpen, isVariableCostOpen, isViewFlag, isPowerOpen, isLabourOpen, isProcessOpen, UniqueProcessId, isProcessGroupOpen, disableAllForm } = this.state;
+      isLoanOpen, isWorkingOpen, isDepreciationOpen, isVariableCostOpen, isViewFlag, isPowerOpen, isLabourOpen, isProcessOpen, UniqueProcessId, isProcessGroupOpen, disableAllForm, UOMName } = this.state;
     return (
       <>
         {(isLoader) && <LoaderCustom />}
@@ -3098,7 +3101,7 @@ class AddMoreDetails extends Component {
                               </Col>
                               <Col md="3">
                                 <Field
-                                  label={`Fuel Cost/UOM`}
+                                  label={`Fuel Cost/${UOMName}`}
                                   name={this.props.fieldsObj.FuelCostPerUnit === 0 ? '-' : "FuelCostPerUnit"}
                                   type="text"
                                   placeholder={'-'}
