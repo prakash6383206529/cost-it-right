@@ -487,18 +487,19 @@ function SimulationApprovalListing(props) {
                                     <AgGridColumn width={170} field="Reason" headerName="Reason" cellRenderer='reasonFormatter'></AgGridColumn>
                                     <AgGridColumn width={140} field="SimulatedByName" headerName='Initiated By' cellRenderer='requestedByFormatter'></AgGridColumn>
                                     <AgGridColumn width={140} field="SimulatedOn" headerName='Last Approved On' cellRenderer='requestedOnFormatter'></AgGridColumn>
-                                    <AgGridColumn width={142} field="LastApprovedBy" headerName='Last Approval / Reject' cellRenderer='requestedByFormatter'></AgGridColumn>
+                                    <AgGridColumn width={142} field="LastApprovedBy" headerName='Last Approved / Rejected By' cellRenderer='requestedByFormatter'></AgGridColumn>
                                     <AgGridColumn width={145} field="RequestedOn" headerName='Requested On' cellRenderer='requestedOnFormatter'></AgGridColumn>
 
                                     {!isSmApprovalListing && <AgGridColumn pinned="right" field="Status" headerClass="justify-content-center" cellClass="text-center" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>}
                                     <AgGridColumn width={115} field="SimulationId" headerName='Actions' type="rightAligned" floatingFilter={false} cellRenderer='buttonFormatter'></AgGridColumn>
 
-                                </AgGridReact>
-                                {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
+                                </AgGridReact >
+                                {< PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                                 <div className="text-right pb-3">
                                     <WarningMessage message="It may take up to 5 minutes for the status to be updated." />
                                 </div>
-                                {approveDrawer &&
+                                {
+                                    approveDrawer &&
                                     <ApproveRejectDrawer
                                         isOpen={isApprovalDrawer}
                                         anchor={'right'}
@@ -515,11 +516,11 @@ function SimulationApprovalListing(props) {
                                         IsFinalLevel={showFinalLevelButtons}
                                     />
                                 }
-                            </div>
-                        </div>
-                    </div>
+                            </div >
+                        </div >
+                    </div >
 
-                </div>
+                </div >
                 // :
                 // <SimulationApprovalSummary
                 //     approvalNumber={approvalData.approvalNumber}
@@ -529,7 +530,7 @@ function SimulationApprovalListing(props) {
             {
                 showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.DELETE_SIMULATION_DRAFT_TOKEN}`} />
             }
-        </Fragment>
+        </Fragment >
     )
 }
 
