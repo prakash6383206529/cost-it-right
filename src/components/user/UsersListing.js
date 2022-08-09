@@ -7,13 +7,13 @@ import $ from 'jquery';
 import { focusOnError, searchableSelect } from "../layout/FormInputs";
 import Toaster from '../common/Toaster';
 import { MESSAGES } from '../../config/message';
-import { EMPTY_DATA } from '../../config/constants';
+import { defaultPageSize, EMPTY_DATA } from '../../config/constants';
 import { USER } from '../../config/constants';
 import NoContentFound from '../common/NoContentFound';
 import Switch from "react-switch";
 import { getConfigurationKey, loggedInUserId } from '../../helper/auth';
 import ViewUserDetails from './ViewUserDetails';
-import { checkPermission } from '../../helper/util';
+import { checkPermission, showTitleForActiveToggle } from '../../helper/util';
 import { GridTotalFormate } from '../common/TableGridFunctions';
 import ConfirmComponent from "../../helper/ConfirmComponent";
 import LoaderCustom from '../common/LoaderCustom';
@@ -24,6 +24,7 @@ import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import ReactExport from 'react-export-excel';
 import { USER_LISTING_DOWNLOAD_EXCEl } from '../../config/masterData';
 import { UserListing } from '../../config/constants';
+import { PaginationWrapper } from '../common/commonPagination';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -122,7 +123,15 @@ class UsersListing extends Component {
 	};
 
 	returnExcelColumn = (data = [], TempData) => {
-
+		let temp = []
+		temp = TempData && TempData.map((item) => {
+			if (item.IsActive === true) {
+				item.IsActive = 'Active'
+			} else if (item.IsActive === false) {
+				item.IsActive = 'In Active'
+			}
+			return temp;
+		})
 		return (
 			<ExcelSheet data={TempData} name={UserListing}>
 				{data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
@@ -291,7 +300,7 @@ class UsersListing extends Component {
 		if (cellValue === loggedInUserId()) return null;
 		return (
 			<div className="">
-				{EditAccessibility && <button className="Edit " type={'button'} onClick={() => this.editItemDetails(cellValue, false)} />}
+				{EditAccessibility && <button title='Edit' className="Edit " type={'button'} onClick={() => this.editItemDetails(cellValue, false)} />}
 				{/* <Button className="btn btn-danger" onClick={() => this.deleteItem(cell)}><i className="far fa-trash-alt"></i></Button> */}
 			</div>
 		)
@@ -362,44 +371,32 @@ class UsersListing extends Component {
 
 		const { ActivateAccessibility } = this.state;
 		if (rowData.UserId === loggedInUserId()) return null;
-		if (ActivateAccessibility) {
-			return (
-				<>
-					<label htmlFor="normal-switch" className="normal-switch">
-						{/* <span>Switch with default style</span> */}
-						<Switch
-							onChange={() => this.handleChange(cellValue, rowData)}
-							checked={cellValue}
-							background="#ff6600"
-							onColor="#4DC771"
-							onHandleColor="#ffffff"
-							offColor="#FC5774"
-							id="normal-switch"
-							height={24}
-						/>
-					</label>
-				</>
-			)
-		} else {
-			return (
-				<>
-					{
-						cellValue ?
-							<div className={'Activated'}> {'Active'}</div>
-							:
-							<div className={'Deactivated'}>{'Deactive'}</div>
-					}
-				</>
-			)
-		}
-
+		showTitleForActiveToggle(props)
+		return (
+			<>
+				<label htmlFor="normal-switch" className="normal-switch">
+					{/* <span>Switch with default style</span> */}
+					<Switch
+						onChange={() => this.handleChange(cellValue, rowData)}
+						checked={cellValue}
+						disabled={!ActivateAccessibility}
+						background="#ff6600"
+						onColor="#4DC771"
+						onHandleColor="#ffffff"
+						offColor="#FC5774"
+						id="normal-switch"
+						height={24}
+						className={cellValue ? "active-switch" : "inactive-switch"}
+					/>
+				</label>
+			</>
+		)
 	}
 
 	/**
 	* @method linkableFormatter
 	* @description Renders Name link
 	*/
-
 
 
 	linkableFormatter = (props) => {
@@ -500,8 +497,7 @@ class UsersListing extends Component {
 	}
 
 	onPageSizeChanged = (newPageSize) => {
-		var value = document.getElementById('page-size').value;
-		this.state.gridApi.paginationSetPageSize(Number(value));
+		this.state.gridApi.paginationSetPageSize(Number(newPageSize));
 	};
 
 	onFilterTextBoxChanged = (e) => {
@@ -659,7 +655,7 @@ class UsersListing extends Component {
 								// columnDefs={c}
 								rowData={this.props.userDataList}
 								pagination={true}
-								paginationPageSize={10}
+								paginationPageSize={defaultPageSize}
 								onGridReady={this.onGridReady}
 								gridOptions={gridOptions}
 								noRowsOverlayComponent={'customNoRowsOverlay'}
@@ -684,13 +680,7 @@ class UsersListing extends Component {
 								<AgGridColumn pinned="right" field="IsActive" width={120} headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
 								<AgGridColumn field="UserId" width={120} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
 							</AgGridReact>
-							<div className="paging-container d-inline-block float-right">
-								<select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
-									<option value="10" selected={true}>10</option>
-									<option value="50">50</option>
-									<option value="100">100</option>
-								</select>
-							</div>
+							{<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
 						</div>
 					</div>
 

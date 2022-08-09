@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Row, Col } from 'reactstrap';
-import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength20, maxLength80, maxLength512 } from "../../../helper/validation";
+import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength20, maxLength80, maxLength512, checkSpacesInString } from "../../../helper/validation";
 import { loggedInUserId } from "../../../helper/auth";
 import { renderDatePicker, renderText, renderTextAreaField, } from "../../layout/FormInputs";
 import { createProduct, updateProduct, getProductData, fileUploadProduct, fileDeletePart, } from '../actions/Part';
@@ -38,7 +38,8 @@ class AddIndivisualProduct extends Component {
             DropdownChanged: true,
             uploadAttachements: true,
             isImpactCalculation: false,
-            setDisable: false
+            setDisable: false,
+            attachmentLoader: false
         }
     }
 
@@ -142,6 +143,7 @@ class AddIndivisualProduct extends Component {
 
     // specify upload params and url for your files
     getUploadParams = ({ file, meta }) => {
+        this.setState({ attachmentLoader: true })
         return { url: 'https://httpbin.org/post', }
 
     }
@@ -153,7 +155,7 @@ class AddIndivisualProduct extends Component {
     setDisableFalseFunction = () => {
         const loop = Number(this.dropzone.current.files.length) - Number(this.state.files.length)
         if (Number(loop) === 1) {
-            this.setState({ setDisable: false })
+            this.setState({ setDisable: false, attachmentLoader: false })
         }
     }
 
@@ -263,14 +265,14 @@ class AddIndivisualProduct extends Component {
     * @description Used to Submit the form
     */
     onSubmit = debounce((values) => {
-        const { ProductId, selectedPlants, effectiveDate, isEditFlag, files, DropdownChanged, isImpactCalculation, uploadAttachements } = this.state;
+        const { ProductId, selectedPlants, effectiveDate, isEditFlag, files, DropdownChanged, isImpactCalculation, DataToCheck, uploadAttachements } = this.state;
 
         let plantArray = selectedPlants && selectedPlants.map((item) => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
 
         if (isEditFlag) {
 
 
-            if (DropdownChanged && uploadAttachements) {
+            if (DropdownChanged && uploadAttachements && (DataToCheck.Remark) === (values.Remark)) {
                 this.cancel()
                 return false;
             }
@@ -310,7 +312,7 @@ class AddIndivisualProduct extends Component {
 
         } else {
 
-            this.setState({ setDisable: true })
+            this.setState({ setDisable: true, isLoader: true })
             let formData = {
                 LoggedInUserId: loggedInUserId(),
                 Remark: values.Remark,
@@ -327,7 +329,7 @@ class AddIndivisualProduct extends Component {
             }
 
             this.props.createProduct(formData, (res) => {
-                this.setState({ setDisable: false })
+                this.setState({ setDisable: false, isLoader: false })
                 if (res?.data?.Result === true) {
                     Toaster.success(MESSAGES.PRODUCT_ADD_SUCCESS);
                     this.cancel()
@@ -362,9 +364,7 @@ class AddIndivisualProduct extends Component {
                                             <Col md="6">
                                                 <div className="form-heading mb-0">
                                                     <h1>
-                                                        {this.state.isEditFlag
-                                                            ? "Update Product"
-                                                            : "Add Product"}
+                                                        {this.state.isViewMode ? "View" : this.state.isEditFlag ? "Update" : "Add "} Product
                                                     </h1>
                                                 </div>
                                             </Col>
@@ -382,7 +382,7 @@ class AddIndivisualProduct extends Component {
                                                             label={`Product Name`}
                                                             name={"ProductName"}
                                                             type="text"
-                                                            placeholder={""}
+                                                            placeholder={isEditFlag ? '-' : "Enter"}
                                                             validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20]}
                                                             component={renderText}
                                                             required={true}
@@ -396,8 +396,8 @@ class AddIndivisualProduct extends Component {
                                                             label={`Product Number`}
                                                             name={"ProductNumber"}
                                                             type="text"
-                                                            placeholder={""}
-                                                            validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20]}
+                                                            placeholder={isEditFlag ? '-' : "Enter"}
+                                                            validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20, checkSpacesInString]}
                                                             component={renderText}
                                                             required={true}
                                                             className=""
@@ -411,7 +411,7 @@ class AddIndivisualProduct extends Component {
                                                             label={`Description`}
                                                             name={"Description"}
                                                             type="text"
-                                                            placeholder={""}
+                                                            placeholder={isEditFlag ? '-' : "Enter"}
                                                             validate={[maxLength80, checkWhiteSpaces]}
                                                             component={renderText}
                                                             required={false}
@@ -428,7 +428,7 @@ class AddIndivisualProduct extends Component {
                                                                     label={`Group Code`}
                                                                     name={"ProductGroupCode"}
                                                                     type="text"
-                                                                    placeholder={""}
+                                                                    placeholder={isViewMode ? '-' : "Enter"}
                                                                     validate={[checkWhiteSpaces, alphaNumeric, maxLength20]}
                                                                     component={renderText}
                                                                     onChange={
@@ -442,15 +442,12 @@ class AddIndivisualProduct extends Component {
                                                             </Col>
                                                         )}
 
-                                                </Row>
-
-                                                <Row>
                                                     <Col md="3">
                                                         <Field
                                                             label={`ECN No.`}
                                                             name={"ECNNumber"}
                                                             type="text"
-                                                            placeholder={""}
+                                                            placeholder={isEditFlag ? '-' : "Enter"}
                                                             validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces]}
                                                             component={renderText}
                                                             //required={true}
@@ -464,7 +461,7 @@ class AddIndivisualProduct extends Component {
                                                             label={`Revision No.`}
                                                             name={"RevisionNumber"}
                                                             type="text"
-                                                            placeholder={""}
+                                                            placeholder={isEditFlag ? '-' : "Enter"}
                                                             validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces]}
                                                             component={renderText}
                                                             //required={true}
@@ -478,7 +475,7 @@ class AddIndivisualProduct extends Component {
                                                             label={`Drawing No.`}
                                                             name={"DrawingNumber"}
                                                             type="text"
-                                                            placeholder={""}
+                                                            placeholder={isEditFlag ? '-' : "Enter"}
                                                             validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces]}
                                                             component={renderText}
                                                             //required={true}
@@ -496,6 +493,7 @@ class AddIndivisualProduct extends Component {
                                                                 <Field
                                                                     label="Effective Date"
                                                                     name="EffectiveDate"
+                                                                    placeholder={isViewMode ? '-' : "Select Date"}
                                                                     selected={this.state.effectiveDate}
                                                                     onChange={this.handleEffectiveDateChange}
                                                                     type="text"
@@ -532,14 +530,14 @@ class AddIndivisualProduct extends Component {
                                                         <Field
                                                             label={"Remarks"}
                                                             name={`Remark`}
-                                                            placeholder="Type here..."
+                                                            placeholder={isViewMode ? "-" : "Type here..."}
                                                             className=""
                                                             customClassName=" textAreaWithBorder"
                                                             validate={[maxLength512, checkWhiteSpaces]}
                                                             //required={true}
                                                             component={renderTextAreaField}
                                                             maxLength="5000"
-                                                            disabled={isEditFlag ? true : false}
+                                                            disabled={isViewMode ? true : false}
                                                         />
                                                     </Col>
                                                     <Col md="3">
@@ -592,6 +590,7 @@ class AddIndivisualProduct extends Component {
                                                     </Col>
                                                     <Col md="3">
                                                         <div className={"attachment-wrapper"}>
+                                                            {this.state.attachmentLoader && <LoaderCustom customClass="attachment-loader" />}
                                                             {this.state.files &&
                                                                 this.state.files.map((f) => {
                                                                     const withOutTild = f.FileURL.replace(

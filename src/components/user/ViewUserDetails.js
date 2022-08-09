@@ -1,14 +1,15 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Container, Row, Col, Table } from 'reactstrap';
-import { getUserDataAPI, getPermissionByUser, getActionHeadsSelectList, getUsersTechnologyLevelAPI, } from "../../actions/auth/AuthActions";
+import { getUserDataAPI, getPermissionByUser, getActionHeadsSelectList, getUsersTechnologyLevelAPI, getUsersSimulationTechnologyLevelAPI, getUsersMasterLevelAPI } from "../../actions/auth/AuthActions";
 import { Loader } from '../common/Loader';
 import { EMPTY_DATA } from '../../config/constants'
 import NoContentFound from '../common/NoContentFound';
 import Drawer from '@material-ui/core/Drawer';
 import HeaderTitle from '../common/HeaderTitle';
-import { loggedInUserId } from '../../helper/auth';
+import { loggedInUserId, getConfigurationKey } from '../../helper/auth';
 import LoaderCustom from '../common/LoaderCustom';
+import { COSTING, SIMULATION, MASTERS } from '../../config/constants'
 
 class ViewUserDetails extends Component {
   constructor(props) {
@@ -21,6 +22,10 @@ class ViewUserDetails extends Component {
       TechnologyLevelGrid: [],
       department: '',
       loader: false,
+      isSimulationOpen: false,
+      isMasterOpen: false,
+      SimulationLevelGrid: [],
+      MasterLevelGrid: []
     }
   }
 
@@ -39,6 +44,8 @@ class ViewUserDetails extends Component {
     this.props.getActionHeadsSelectList(() => { })
     this.getUserPermission(this.props.UserId)
     this.getUsersTechnologyLevelData(this.props.UserId)
+    this.getUsersSimulationTechnologyLevelData(this.props.UserId)
+    getConfigurationKey().IsMasterApprovalAppliedConfigure && this.getUsersMasterLevelData(this.props.UserId)
   }
 
   changeDepartment() {
@@ -85,7 +92,29 @@ class ViewUserDetails extends Component {
       }
     })
   }
-
+  getUsersSimulationTechnologyLevelData = (UserId) => {
+    this.props.getUsersSimulationTechnologyLevelAPI(UserId, (res) => {
+      if (res && res.data && res.data.Data) {
+        let Data = res.data.Data;
+        let simulationLevel = Data.TechnologyLevels;
+        this.setState({
+          SimulationLevelGrid: simulationLevel,
+        })
+      }
+    })
+  }
+  getUsersMasterLevelData = (UserId) => {
+    this.props.getUsersMasterLevelAPI(UserId, (res) => {
+      if (res && res.data && res.data.Data) {
+        let Data = res.data.Data;
+        console.log(Data, "data");
+        let masterLevel = Data.MasterLevels;
+        this.setState({
+          MasterLevelGrid: masterLevel,
+        })
+      }
+    })
+  }
   /**
   * @method renderAction
   * @description used to render row of actions
@@ -148,17 +177,36 @@ class ViewUserDetails extends Component {
    * @method permissionToggle
    * @description used to render row of actions
    */
-  technologyToggle = () => {
-    this.setState({
-      isTechnologyOpen: !this.state.isTechnologyOpen,
-    }, () => {
-      const { isTechnologyOpen, } = this.state;
-      if (isTechnologyOpen === false) {
-        this.setState({ isPermissionOpen: true })
-      } else {
-        this.setState({ isPermissionOpen: false })
-      }
-    })
+  technologyToggle = (value) => {
+    const { isTechnologyOpen, isSimulationOpen, isMasterOpen } = this.state;
+    switch (value) {
+      case COSTING:
+        this.setState({ isTechnologyOpen: !this.state.isTechnologyOpen })
+        if (isTechnologyOpen === false) {
+          this.setState({ isPermissionOpen: true })
+        } else {
+          this.setState({ isPermissionOpen: false })
+        }
+        break;
+      case SIMULATION:
+        this.setState({ isSimulationOpen: !this.state.isSimulationOpen })
+        if (isSimulationOpen === false) {
+          this.setState({ isPermissionOpen: true })
+        } else {
+          this.setState({ isPermissionOpen: false })
+        }
+        break;
+      case MASTERS:
+        this.setState({ isMasterOpen: !this.state.isMasterOpen })
+        if (isMasterOpen === false) {
+          this.setState({ isPermissionOpen: true })
+        } else {
+          this.setState({ isPermissionOpen: false })
+        }
+        break;
+      default:
+        break;
+    }
   }
 
 
@@ -168,11 +216,10 @@ class ViewUserDetails extends Component {
   */
   render() {
     const { UserId, registerUserData, EditAccessibility, IsLoginEmailConfigure } = this.props;
-    const { isTechnologyOpen, department } = this.state;
+    const { isTechnologyOpen, department, isMasterOpen, isSimulationOpen } = this.state;
 
     const address = registerUserData ? `${registerUserData.AddressLine1 ? registerUserData.AddressLine1 : "-"}, ${registerUserData.AddressLine2 ? registerUserData.AddressLine2 : "-"}, 
     ${registerUserData.CityName ? registerUserData.CityName : "-"},  ${registerUserData.ZipCode ? registerUserData.ZipCode : "-"}` : '';
-
     return (
       <>
         {(this.props.loading) && <Loader />}
@@ -239,10 +286,10 @@ class ViewUserDetails extends Component {
                     < Col md={'12'}>
                       <div className={'left-details'}>Password</div>
                       <div className={'right-details'}>
-                        <a
-                          href="javascript:void(0)"
+                        {!EditAccessibility ? <span className='encrpt-pwd'>•••••••</span> : <span className='link'
                           onClick={() => this.props.editItemDetails(UserId, true)}
-                        >Change Password</a></div>
+                        >Change Password</span>}
+                      </div>
                     </Col>
                   }
                 </Row>
@@ -294,16 +341,20 @@ class ViewUserDetails extends Component {
 
                 <Row className="pt-3 ">
                   <Col md="12">
-                    <div className={'left-details'}>
-                      <HeaderTitle
-                        title={'Technology & Level:'}
-                        customClass={'technology-level-details'} />
-                    </div>
-                    <div className={'right-details'}>
-                      <a
-                        onClick={this.technologyToggle}
-                        className={`${isTechnologyOpen ? 'minus-icon' : 'plus-icon'} pull-right`}></a>
-                    </div>
+                    <Row>
+                      <Col md="10">
+                        <HeaderTitle
+                          title={'Costing Approval Level:'}
+                          customClass={'technology-level-details'} />
+                      </Col>
+                      <Col md="2" className='text-right'>
+                        <button onClick={() => this.technologyToggle(COSTING)} className={`btn btn-small-primary-circle ml-1`}>{isTechnologyOpen ? (
+                          <i className="fa fa-minus" ></i>
+                        ) : (
+                          <i className="fa fa-plus"></i>
+                        )}</button>
+                      </Col>
+                    </Row>
                   </Col>
                   {isTechnologyOpen &&
                     <Col md="12">
@@ -332,9 +383,99 @@ class ViewUserDetails extends Component {
                     </Col>}
 
                 </Row>
-                <Row className="pt-3 drawer-table-sm">
-                  <Col md="12">&nbsp;</Col>
+                <Row className="pt-3 ">
+                  <Col md="12">
+                    <Row>
+                      <Col md="10">
+                        <HeaderTitle
+                          title={'Simulation Approval Level:'}
+                          customClass={'technology-level-details'} />
+                      </Col>
+                      <Col md="2" className='text-right'>
+                        <button onClick={() => this.technologyToggle(SIMULATION)} className={`btn btn-small-primary-circle ml-1`}>{isSimulationOpen ? (
+                          <i className="fa fa-minus" ></i>
+                        ) : (
+                          <i className="fa fa-plus"></i>
+                        )}</button>
+                      </Col>
+                    </Row>
+                  </Col>
+                  {isSimulationOpen && <Col md="12">
+                    <Table className="table border table table-sm" size="sm" >
+                      <thead>
+                        <tr>
+                          <th className="text-left" >{`Technology`}</th>
+                          <th className="text-left">{`Level`}</th>
+                        </tr>
+                      </thead>
+                      <tbody >
+                        {
+                          this.state.SimulationLevelGrid &&
+                          this.state.SimulationLevelGrid.map((item, index) => {
+                            return (
+                              <tr key={index}>
+                                <td>{item.Technology}</td>
+                                <td>{item.Level}</td>
+                              </tr>
+                            )
+                          })
+                        }
+                      </tbody>
+                    </Table>
+                    {this.state.SimulationLevelGrid.length === 0 && <NoContentFound title={EMPTY_DATA} />}
+                  </Col>}
+
                 </Row>
+                {getConfigurationKey().IsMasterApprovalAppliedConfigure &&
+                  <Row className="pt-3 ">
+                    <Col md="12">
+                      <Row>
+                        <Col md="10">
+                          <HeaderTitle
+                            title={'Master Approval Level:'}
+                            customClass={'technology-level-details'} />
+                        </Col>
+                        <Col md="2" className='text-right'>
+                          <button onClick={() => this.technologyToggle(MASTERS)} className={`btn btn-small-primary-circle ml-1`}>{isMasterOpen ? (
+                            <i className="fa fa-minus" ></i>
+                          ) : (
+                            <i className="fa fa-plus"></i>
+                          )}</button>
+                          {/* <a
+                          onClick={() => this.technologyToggle("Master")}
+                          className={`${isSimulationOpen ? 'minus-icon' : 'plus-icon'} pull-right`}></a> */}
+                        </Col>
+                      </Row>
+                    </Col>
+                    {isMasterOpen && <Col md="12">
+                      <Table className="table border table table-sm" size="sm" >
+                        <thead>
+                          <tr>
+                            <th className="text-left" >{`Technology`}</th>
+                            <th className="text-left">{`Level`}</th>
+                          </tr>
+                        </thead>
+                        <tbody >
+                          {
+                            this.state.MasterLevelGrid &&
+                            this.state.MasterLevelGrid.map((item, index) => {
+                              return (
+                                <tr key={index}>
+                                  <td>{item.Master}</td>
+                                  <td>{item.Level}</td>
+                                </tr>
+                              )
+                            })
+                          }
+                        </tbody>
+                      </Table>
+                      {this.state.MasterLevelGrid.length === 0 && <NoContentFound title={EMPTY_DATA} />}
+                    </Col>}
+
+                  </Row>}
+                {/* <Row className="pt-3 drawer-table-sm">
+                  <Col md="12">&nbsp;</Col>
+                </Row> */}
               </div>
             </div>
           </Container>
@@ -362,5 +503,7 @@ export default connect(mapStateToProps,
     getPermissionByUser,
     getActionHeadsSelectList,
     getUsersTechnologyLevelAPI,
+    getUsersSimulationTechnologyLevelAPI,
+    getUsersMasterLevelAPI
   })(ViewUserDetails);
 

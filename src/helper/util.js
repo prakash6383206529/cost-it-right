@@ -1,13 +1,16 @@
 import { toast } from 'react-toastify';
+import React from 'react';
 import 'react-toastify/dist/ReactToastify.css';
 import DayTime from '../components/common/DayTimeWrapper';
 import { reactLocalStorage } from 'reactjs-localstorage'
 import { checkForDecimalAndNull, checkForNull } from './validation'
 import {
-  G, KG, MG, PLASTIC, SHEET_METAL, WIRING_HARNESS, PLATING, SPRINGS, HARDWARE, NON_FERROUS_LPDDC, MACHINING,
-  ELECTRONICS, RIVET, NON_FERROUS_HPDC, RUBBER, NON_FERROUS_GDC, FORGING, FASTNERS, RIVETS, RMDOMESTIC, RMIMPORT, BOPDOMESTIC, BOPIMPORT, PROCESS, OPERATIONS, SURFACETREATMENT, MACHINERATE, OVERHEAD, PROFIT, EXCHNAGERATE,
+  PLASTIC, SHEET_METAL, WIRING_HARNESS, PLATING, SPRINGS, HARDWARE, NON_FERROUS_LPDDC, MACHINING,
+  ELECTRONICS, RIVET, NON_FERROUS_HPDC, RUBBER, NON_FERROUS_GDC, FORGING, FASTNERS, RIVETS, RMDOMESTIC, RMIMPORT, BOPDOMESTIC, BOPIMPORT, PROCESS, OPERATIONS, SURFACETREATMENT, MACHINERATE, OVERHEAD, PROFIT, EXCHNAGERATE, DISPLAY_G, DISPLAY_KG, DISPLAY_MG,
 } from '../config/constants'
 import { getConfigurationKey } from './auth'
+import { data } from 'react-dom-factories';
+import _ from 'lodash';
 
 
 
@@ -24,6 +27,9 @@ export const apiErrors = (res) => {
     response && handleHTTPStatus(response)
   } else {
     if (navigator.userAgent.indexOf("Firefox") !== -1) {
+      setTimeout(() => {
+        toast.error('Something went wrong please try again.')
+      }, 600);
       return;
     }
     toast.error('Something went wrong please try again.')
@@ -546,7 +552,7 @@ export function getNetSurfaceAreaBothSide(data) {
   return checkForNull(value)
 }
 
-export function formViewData(costingSummary) {
+export function formViewData(costingSummary, header = '') {
   let temp = []
   let dataFromAPI = costingSummary
   let obj = {}
@@ -571,7 +577,6 @@ export function formViewData(costingSummary) {
   obj.nConvCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetConversionCost ? dataFromAPI.CostingPartDetails.NetConversionCost : 0
   obj.nTotalRMBOPCC = dataFromAPI.CostingPartDetails && dataFromAPI.NetTotalRMBOPCC ? dataFromAPI.NetTotalRMBOPCC : 0
   obj.netSurfaceTreatmentCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetSurfaceTreatmentCost ? dataFromAPI.CostingPartDetails.NetSurfaceTreatmentCost : 0
-  obj.EtechnologyType = dataFromAPI.ETechnology && dataFromAPI.ETechnology ? dataFromAPI.ETechnology : 0
   obj.RawMaterialCalculatorId = dataFromAPI.RawMaterialCalculatorId && dataFromAPI.RawMaterialCalculatorId ? dataFromAPI.RawMaterialCalculatorId : 0
   obj.modelType = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.ModelType ? dataFromAPI.CostingPartDetails.ModelType : '-'
   obj.aValue = { applicability: 'Applicability', value: 'Value', }
@@ -668,7 +673,10 @@ export function formViewData(costingSummary) {
   obj.totalTabSum = checkForNull(obj.nTotalRMBOPCC) + checkForNull(obj.nsTreamnt) + checkForNull(obj.nOverheadProfit) + checkForNull(obj.nPackagingAndFreight) + checkForNull(obj.totalToolCost)
 
   // //For Drawer Edit
-  obj.partId = dataFromAPI.PartNumber ? dataFromAPI.PartNumber : '-'
+  obj.partId = dataFromAPI && dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.PartId ? dataFromAPI.CostingPartDetails.PartId : '-' // PART NUMBER KEY NAME
+  obj.partNumber = dataFromAPI && dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.PartNumber ? dataFromAPI.CostingPartDetails.PartNumber : '-'
+
+  // ADD PARTID KEY HERE AND BIND IT WITH PART ID
   obj.plantId = dataFromAPI.PlantId ? dataFromAPI.PlantId : '-'
   obj.plantName = dataFromAPI.PlantName ? dataFromAPI.PlantName : '-'
   obj.plantCode = dataFromAPI.PlantCode ? dataFromAPI.PlantCode : '-'
@@ -686,7 +694,7 @@ export function formViewData(costingSummary) {
   obj.destinationPlantCode = dataFromAPI.DestinationPlantCode ? dataFromAPI.DestinationPlantCode : '-'
   obj.destinationPlantName = dataFromAPI.DestinationPlantName ? dataFromAPI.DestinationPlantName : '-'
   obj.destinationPlantId = dataFromAPI.DestinationPlantId ? dataFromAPI.DestinationPlantId : '-'
-  obj.CostingHeading = dataFromAPI.CostingHeading ? dataFromAPI.CostingHeading : '-'
+  obj.CostingHeading = header
   obj.partName = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.PartName ? dataFromAPI.CostingPartDetails.PartName : '-'
   obj.netOtherOperationCost = dataFromAPI && dataFromAPI.NetOtherOperationCost ? dataFromAPI.NetOtherOperationCost : 0
   obj.masterBatchTotal = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.MasterBatchTotal ? dataFromAPI.CostingPartDetails.MasterBatchTotal : 0
@@ -697,9 +705,14 @@ export function formViewData(costingSummary) {
   obj.childPartBOPHandlingCharges = dataFromAPI.CostingPartDetails?.ChildPartBOPHandlingCharges ? dataFromAPI.CostingPartDetails.ChildPartBOPHandlingCharges : []
   obj.masterBatchRMName = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.MasterBatchRMName ? dataFromAPI.CostingPartDetails.MasterBatchRMName : '-'
 
+  // GETTING WARNING MESSAGE WITH APPROVER NAME AND LEVEL WHEN COSTING IS UNDER APPROVAL 
+  obj.getApprovalLockedMessage = dataFromAPI.ApprovalLockedMessage && dataFromAPI.ApprovalLockedMessage !== null ? dataFromAPI.ApprovalLockedMessage : '';
+
   //MASTER BATCH OBJECT
   obj.CostingMasterBatchRawMaterialCostResponse = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingMasterBatchRawMaterialCostResponse ? dataFromAPI.CostingPartDetails.CostingMasterBatchRawMaterialCostResponse : []
-
+  obj.RevisionNumber = dataFromAPI.RevisionNumber ? dataFromAPI.RevisionNumber : '-'
+  obj.AssemblyCostingId = dataFromAPI.AssemblyCostingId && dataFromAPI.AssemblyCostingId !== null ? dataFromAPI.AssemblyCostingId : '';
+  obj.SubAssemblyCostingId = dataFromAPI.SubAssemblyCostingId && dataFromAPI.SubAssemblyCostingId !== null ? dataFromAPI.SubAssemblyCostingId : '';
 
   // temp = [...temp, obj]
   temp.push(obj)
@@ -748,11 +761,11 @@ export function convertmmTocm(value) {
 /**g to kg,mg**/
 export function setValueAccToUOM(value, UOM) {
   switch (UOM) {
-    case G:
+    case DISPLAY_G:
       return checkForNull(value)
-    case KG:
+    case DISPLAY_KG:
       return checkForNull(value / 1000)
-    case MG:
+    case DISPLAY_MG:
       return checkForNull(value * 1000)
     default:
       break;
@@ -909,4 +922,70 @@ export function getPOPriceAfterDecimal(decimalValue, PoPrice = 0) {
     quantity = 100
     return { netPo, quantity }
   }
+}
+export const allEqual = arr => arr.every(val => val === arr[0]);
+
+// FOR SHOWING CURRENCY SYMBOL 
+export const getCurrencySymbol = (value) => {
+  switch (value) {
+    case "USD":
+      return "$"
+    case "EUR":
+      return "€"
+    case "GBP":
+      return "£"
+    case "IDR":
+      return "Rp"
+    case "JPY":
+      return "¥"
+    case "VND":
+      return "₫"
+    case "INR":
+      return "₹"
+    case "THB":
+      return "฿"
+    default:
+      break;
+  }
+}
+//FOR SHOWING SUPER VALUE FOR UOM
+export const displayUOM = (value) => {
+  let temp = []
+  if (value && value.includes('^')) {
+    for (let i = 0; i < value.length; i++) {
+      temp.push(value.charAt(i))
+    }
+    temp.splice(temp.length - 2, 1);
+    const UOMValue = <div className='p-relative'>{temp.map(item => {
+      return <span className='unit-text'>{item}</span>
+    })}
+    </div>
+    return UOMValue
+  }
+  return value
+}
+export const labelWithUOMAndCurrency = (label, UOM, currency) => {
+  return <div>
+    <span className='d-flex'>{label} ({currency ? currency : getConfigurationKey().BaseCurrency}/{UOM ? displayUOM(UOM) : 'UOM'})</span>
+  </div>
+}
+
+
+//COMMON FUNCTION FOR MASTERS BULKUPLOAD CHECK
+export const checkForSameFileUpload = (master, fileHeads) => {
+  let checkForFileHead, array = []
+  let bulkUploadArray = [];   //ARRAY FOR COMPARISON 
+  array = _.map(master, 'label')
+  bulkUploadArray = [...array]
+  checkForFileHead = _.isEqual(fileHeads, bulkUploadArray)
+  return checkForFileHead
+}
+// THIS FUNCTION SHOWING TITLE ON HOVER FOR ACTIVE AND INACTIVE STATUS IN GRID
+export const showTitleForActiveToggle = (props) => {
+  setTimeout(() => {
+    const titleActive = document.getElementsByClassName("active-switch")[props?.rowIndex];
+    titleActive?.setAttribute('title', 'Active');
+    const titleInactive = document.getElementsByClassName("inactive-switch")[props?.rowIndex];
+    titleInactive?.setAttribute('title', 'Inactive');
+  }, 500);
 }

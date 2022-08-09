@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { required, } from "../../../helper/validation";
+import { getLabourTypeByMachineTypeSelectList, } from '../actions/Labour'
+import { required, checkWhiteSpaces } from "../../../helper/validation";
 import { renderText, renderMultiSelectField, } from "../../layout/FormInputs";
 import { createMachineType } from '../actions/MachineMaster';
 import { getLabourTypeSelectList } from '../../../actions/Common';
@@ -78,7 +79,6 @@ class AddMachineTypeDrawer extends Component {
   */
   onSubmit = (values) => {
     const { labourType } = this.state;
-
     let labourTypeIds = labourType && labourType.map(el => el.Value)
 
     /** Update existing detail of supplier master **/
@@ -100,6 +100,7 @@ class AddMachineTypeDrawer extends Component {
       this.props.reset()
       this.props.createMachineType(formData, (res) => {
         if (res.data.Result) {
+          this.props.getLabourTypeByMachineTypeSelectList(res?.data?.Identity, () => { })
           Toaster.success(MESSAGES.MACHINE_TYPE_ADD_SUCCESS);
           this.toggleDrawer('', formData)
         }
@@ -155,7 +156,7 @@ class AddMachineTypeDrawer extends Component {
                       name={"MachineType"}
                       type="text"
                       placeholder={""}
-                      validate={[required]}
+                      validate={[required, checkWhiteSpaces]}
                       component={renderText}
                       required={true}
                       className=" "
@@ -235,6 +236,7 @@ function mapStateToProps({ comman }) {
 export default connect(mapStateToProps, {
   createMachineType,
   getLabourTypeSelectList,
+  getLabourTypeByMachineTypeSelectList
 })(reduxForm({
   form: 'AddMachineTypeDrawer',
   enableReinitialize: true,

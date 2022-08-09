@@ -7,7 +7,7 @@ import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI } from '../../
 import { focusOnError, searchableSelect } from "../../layout/FormInputs";
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { EMPTY_DATA } from '../../../config/constants';
+import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import Switch from "react-switch";
 import { loggedInUserId } from '../../../helper/auth';
@@ -22,6 +22,8 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { PaginationWrapper } from '../../common/commonPagination';
+import { showTitleForActiveToggle } from '../../../helper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -41,11 +43,12 @@ class VBCPlantListing extends Component {
             city: [],
             country: [],
             state: [],
-            showPopup:false,
-            deletedId:'',
-            cellData:{},
-            cellValue:'',
-            showPopupToggle:false
+            showPopup: false,
+            deletedId: '',
+            cellData: {},
+            cellValue: '',
+            showPopupToggle: false,
+            isViewMode: false,
 
         }
     }
@@ -69,23 +72,11 @@ class VBCPlantListing extends Component {
     }
 
     /**
-    * @method editItemDetails
-    * @description confirm edit item
-    */
-    editItemDetails = (Id) => {
-        this.setState({
-            isOpenVendor: true,
-            isEditFlag: true,
-            ID: Id,
-        })
-    }
-
-    /**
     * @method deleteItem
     * @description confirm delete part
     */
     deleteItem = (Id) => {
-        this.setState({showPopup:true, deletedId:Id })
+        this.setState({ showPopup: true, deletedId: Id })
     }
 
     /**
@@ -100,29 +91,45 @@ class VBCPlantListing extends Component {
                 this.filterList()
             }
         });
-        this.setState({showPopup:false})
+        this.setState({ showPopup: false })
     }
-    onPopupConfirm =() => {        
-        this.confirmDeleteItem(this.state.deletedId);         
-}
-closePopUp= () =>{
-    this.setState({showPopup:false})
-    this.setState({showPopupToggle:false})
-  }
-  onPopupConfirmToggle =() => {        
-    this.confirmDeactivateItem(this.state.cellData, this.state.cellValue)      
- }
+    onPopupConfirm = () => {
+        this.confirmDeleteItem(this.state.deletedId);
+    }
+    closePopUp = () => {
+        this.setState({ showPopup: false })
+        this.setState({ showPopupToggle: false })
+    }
+    onPopupConfirmToggle = () => {
+        this.confirmDeactivateItem(this.state.cellData, this.state.cellValue)
+    }
 
+    /**
+      * @method viewOrEditItemDetails
+      * @description confirm edit item
+      */
+    viewOrEditItemDetails = (Id, isViewMode) => {
+        this.setState({
+            isOpenVendor: true,
+            isEditFlag: true,
+            ID: Id,
+            isViewMode: isViewMode
+        })
+
+    }
     /**
     * @method buttonFormatter
     * @description Renders buttons
     */
-    buttonFormatter = (cell, row, enumObject, rowIndex) => {
-        const { EditAccessibility, DeleteAccessibility } = this.props;
+    buttonFormatter = (cell, row, props) => {
+        const cellValue = cell.value;
+
+        const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.props;
         return (
             <>
-                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cell)} />}
-                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />}
+                {ViewAccessibility && <button title='View' className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
+                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
+                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
     }
@@ -133,20 +140,22 @@ closePopUp= () =>{
             ModifiedBy: loggedInUserId(),
             IsActive: !cell, //Status of the user.
         }
+        this.setState({ showPopupToggle: true, cellData: data, cellValue: cell })
     }
 
     confirmDeactivateItem = (data, cell) => {
         this.props.activeInactiveStatus(data, res => {
             if (res && res.data && res.data.Result) {
-                // if (cell == true) {
-                //     Toaster.success(MESSAGES.PLANT_INACTIVE_SUCCESSFULLY)
-                // } else {
-                //     Toaster.success(MESSAGES.PLANT_ACTIVE_SUCCESSFULLY)
-                // }
-                //this.getTableListData()
+                if (cell == true) {
+                    Toaster.success(MESSAGES.PLANT_INACTIVE_SUCCESSFULLY)
+                } else {
+                    Toaster.success(MESSAGES.PLANT_ACTIVE_SUCCESSFULLY)
+                }
+                // this.getTableListData()
                 this.filterList()
             }
         })
+        this.setState({ showPopupToggle: false })
     }
 
     /**
@@ -154,37 +163,41 @@ closePopUp= () =>{
     * @description Renders buttons
     */
     statusButtonFormatter = (props) => {
-        // const { ActivateAccessibility } = this.props;
-        // if (ActivateAccessibility) {
-        //     return (
-        //         <>
-        //             <label htmlFor="normal-switch"  className="normal-switch">
-        //                 {/* <span>Switch with default style</span> */}
-        //                 <Switch
-        //                     onChange={() => this.handleChange(cell, row, enumObject, rowIndex)}
-        //                     checked={cell}
-        //                     background="#ff6600"
-        //                     onColor="#4DC771"
-        //                     onHandleColor="#ffffff"
-        //                     offColor="#FC5774"
-        //                     id="normal-switch"
-        //                     height={24}
-        //                 />
-        //             </label>
-        //         </>
-        //     )
-        // } else {
-        //     return (
-        //         <>
-        //             {
-        //                 cell ?
-        //                     <div className={'Activated'}> {'Active'}</div>
-        //                     :
-        //                     <div className={'Deactivated'}>{'Deactive'}</div>
-        //             }
-        //         </>
-        //     )
-        // }
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const { ActivateAccessibility } = this.props;
+        showTitleForActiveToggle(props)
+        if (ActivateAccessibility) {
+            return (
+                <>
+                    <label htmlFor="normal-switch" className="normal-switch">
+                        {/* <span>Switch with default style</span> */}
+                        <Switch
+                            onChange={() => this.handleChange(cellValue, rowData)}
+                            checked={cellValue}
+                            background="#ff6600"
+                            onColor="#4DC771"
+                            onHandleColor="#ffffff"
+                            offColor="#FC5774"
+                            id="normal-switch"
+                            height={24}
+                            className={cellValue ? "active-switch" : "inactive-switch"}
+                        />
+                    </label>
+                </>
+            )
+        } else {
+            return (
+                <>
+                    {
+                        cellValue ?
+                            <div className={'Activated'}> {'Active'}</div>
+                            :
+                            <div className={'Deactivated'}>{'Deactive'}</div>
+                    }
+                </>
+            )
+        }
     }
 
     /**
@@ -305,11 +318,12 @@ closePopUp= () =>{
         }
         this.props.getFilteredPlantList(filterData, (res) => {
             if (res.status === 204 && res.data === '') {
-                this.setState({ tableData: [], })
+                this.setState({ tableData: [], isLoader: false })
             } else if (res && res.data && res.data.DataList) {
                 let Data = res.data.DataList;
                 this.setState({
                     tableData: Data,
+                    isLoader: false
                 })
             } else {
 
@@ -330,7 +344,7 @@ closePopUp= () =>{
     }
 
     formToggle = () => {
-        this.setState({ isOpenVendor: true })
+        this.setState({ isOpenVendor: true, isViewMode: false })
     }
 
     closeVendorDrawer = (e = '') => {
@@ -361,38 +375,26 @@ closePopUp= () =>{
     };
 
     onPageSizeChanged = (newPageSize) => {
-        var value = document.getElementById('page-size').value;
-        this.state.gridApi.paginationSetPageSize(Number(value));
-    };
+        this.state.gridApi.paginationSetPageSize(Number(newPageSize));
+    }
 
     onBtExport = () => {
-        let tempArr = []
-        const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-        data && data.map((item => {
-            tempArr.push(item.data)
-        }))
-
+        let tempArr = this.props.plantDataList && this.props.plantDataList
         return this.returnExcelColumn(VBCPLANT_DOWNLOAD_EXCEl, tempArr)
     };
 
-    returnExcelColumn = (data = [], TempData) => {
-        // let temp = []
-        // TempData.map((item) => {
-        //     if (item.ECNNumber === null) {
-        //         item.ECNNumber = ' '
-        //     } else if (item.RevisionNumber === null) {
-        //         item.RevisionNumber = ' '
-        //     } else if (item.DrawingNumber === null) {
-        //         item.DrawingNumber = ' '
-        //     } else if (item.Technology === '-') {
-        //         item.Technology = ' '
-        //     } else {
-        //         return false
-        //     }
-        //     return item
-        // })
-        return (
 
+    returnExcelColumn = (data = [], TempData) => {
+        let temp = []
+        temp = TempData && TempData.map((item) => {
+            if (item.IsActive === true) {
+                item.IsActive = 'Active'
+            } else if (item.IsActive === false) {
+                item.IsActive = 'In Active'
+            }
+            return temp;
+        })
+        return (
             <ExcelSheet data={TempData} name={PlantVbc}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
@@ -421,9 +423,6 @@ closePopUp= () =>{
         const options = {
             clearSearch: true,
             noDataText: (this.props.plantDataList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
-            //exportCSVText: 'Download Excel',
-            //onExportToCSV: this.onExportToCSV,
-            //paginationShowsTotal: true,
             exportCSVBtn: this.createCustomExportCSVButton,
             paginationShowsTotal: this.renderPaginationShowsTotal,
             prePage: <span className="prev-page-pg"></span>, // Previous page button text
@@ -446,112 +445,45 @@ closePopUp= () =>{
             statusButtonFormatter: this.statusButtonFormatter
         };
 
+
         return (
             <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
                 {/* {this.props.loading && <Loader />} */}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-4">
-                        {this.state.shown && (
-                            <Col md="8" className="filter-block">
-                                <div className="d-inline-flex justify-content-start align-items-top w100">
-                                    <div className="flex-fills">
-                                        <h5>{`Filter By:`}</h5>
-                                    </div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="CountryId"
-                                            type="text"
-                                            label=""
-                                            component={searchableSelect}
-                                            placeholder={"Country"}
-                                            options={this.selectType("country")}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            //validate={(this.state.country == null || this.state.country.length == 0) ? [required] : []}
-                                            //required={true}
-                                            handleChangeDescription={this.countryHandler}
-                                            valueDescription={this.state.country}
-                                        />
-                                    </div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="StateId"
-                                            type="text"
-                                            label=""
-                                            component={searchableSelect}
-                                            placeholder={"State"}
-                                            options={this.selectType("state")}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            //validate={(this.state.state == null || this.state.state.length == 0) ? [required] : []}
-                                            //required={true}
-                                            handleChangeDescription={this.stateHandler}
-                                            valueDescription={this.state.state}
-                                        />
-                                    </div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="CityId"
-                                            type="text"
-                                            label=""
-                                            component={searchableSelect}
-                                            placeholder={"City"}
-                                            options={this.selectType("city")}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            //validate={(this.state.city == null || this.state.city.length == 0) ? [required] : []}
-                                            //required={true}
-                                            handleChangeDescription={this.cityHandler}
-                                            valueDescription={this.state.city}
-                                        />
-                                    </div>
 
-                                    <div className="flex-fill">
-                                        <button
-                                            type="button"
-                                            //disabled={pristine || submitting}
-                                            onClick={this.resetFilter}
-                                            className="reset mr10"
-                                        >
-                                            {"Reset"}
-                                        </button>
-
-                                        <button
-                                            type="button"
-                                            //disabled={pristine || submitting}
-                                            onClick={this.filterList}
-                                            className="user-btn mr5"
-                                        >
-                                            {"Apply"}
-                                        </button>
-                                    </div>
-                                </div>
-                            </Col>
-                        )}
                         <Col md="6" className="search-user-block mb-3">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
-                                    {this.state.shown ? (
-                                        <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
-                                            <div className="cancel-icon-white"></div></button>
-                                    ) : (
-                                        <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
-                                            <div className="filter mr-0"></div>
-                                        </button>
-                                    )}
+
                                     {AddAccessibility && (
                                         <button
                                             type="button"
-                                            className={"user-btn"}
+                                            className={"user-btn mr5"}
                                             onClick={this.formToggle}
                                             title="Add"
                                         >
                                             <div className={"plus mr-0"}></div>
                                         </button>
                                     )}
+                                    {
+                                        DownloadAccessibility &&
+                                        <>
+                                            <ExcelFile filename={PlantVbc} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'} title="Download"><div className="download mr-0"></div></button>}>
+                                                {this.onBtExport()}
+                                            </ExcelFile>
+                                        </>
+                                    }
+
+                                    <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+                                        <div className="refresh mr-0"></div>
+                                    </button>
                                 </div>
                             </div>
                         </Col>
                     </Row>
                 </form>
-                <div className={`ag-grid-wrapper height-width-wrapper ${this.props.plantDataList && this.props.plantDataList?.length <=0 ?"overlay-contain": ""}`}>
+                <div className={`ag-grid-wrapper height-width-wrapper ${this.props.plantDataList && this.props.plantDataList?.length <= 0 ? "overlay-contain" : ""}`}>
                     <div className="ag-grid-header">
                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                     </div>
@@ -563,7 +495,7 @@ closePopUp= () =>{
                             // columnDefs={c}
                             rowData={this.props.plantDataList}
                             pagination={true}
-                            paginationPageSize={10}
+                            paginationPageSize={defaultPageSize}
                             onGridReady={this.onGridReady}
                             gridOptions={gridOptions}
                             loadingOverlayComponent={'customLoadingOverlay'}
@@ -583,13 +515,7 @@ closePopUp= () =>{
                             <AgGridColumn width="100" pinned="right" field="IsActive" headerName="Status" cellRenderer={'statusButtonFormatter'}></AgGridColumn>
                             <AgGridColumn field="PlantId" headerName="Action" type="rightAligned" width={"150px"} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                         </AgGridReact>
-                        <div className="paging-container d-inline-block float-right">
-                            <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
-                                <option value="10" selected={true}>10</option>
-                                <option value="50">50</option>
-                                <option value="100">100</option>
-                            </select>
-                        </div>
+                        {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
                     </div>
                 </div>
 
@@ -597,15 +523,17 @@ closePopUp= () =>{
                     isOpen={isOpenVendor}
                     closeDrawer={this.closeVendorDrawer}
                     isEditFlag={isEditFlag}
+                    isViewMode={this.state.isViewMode}
                     ID={this.state.ID}
                     anchor={'right'}
+
                 />}
-            {
-           this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.PLANT_DELETE_ALERT}`}  />
-        }
-        {
-            this.state.showPopupToggle && <PopupMsgWrapper isOpen={this.state.showPopupToggle} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirmToggle} message={`${this.state.cellValue ? MESSAGES.PLANT_DEACTIVE_ALERT : MESSAGES.PLANT_ACTIVE_ALERT}`}  />
-        }
+                {
+                    this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.PLANT_DELETE_ALERT}`} />
+                }
+                {
+                    this.state.showPopupToggle && <PopupMsgWrapper isOpen={this.state.showPopupToggle} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirmToggle} message={`${this.state.cellValue ? MESSAGES.PLANT_DEACTIVE_ALERT : MESSAGES.PLANT_ACTIVE_ALERT}`} />
+                }
             </div>
         );
     }

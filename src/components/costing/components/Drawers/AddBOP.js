@@ -5,7 +5,7 @@ import { useForm, Controller } from 'react-hook-form'
 import Drawer from '@material-ui/core/Drawer';
 import { getBOPDrawerDataList, getBOPDrawerVBCDataList } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
-import { EMPTY_GUID, ZBC } from '../../../../config/constants';
+import { defaultPageSize, EMPTY_GUID, ZBC } from '../../../../config/constants';
 import { GridTotalFormate } from '../../../common/TableGridFunctions';
 import NoContentFound from '../../../common/NoContentFound';
 import { EMPTY_DATA } from '../../../../config/constants';
@@ -17,6 +17,7 @@ import LoaderCustom from '../../../common/LoaderCustom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import { PaginationWrapper } from '../../../common/commonPagination';
 const gridOptions = {};
 
 function AddBOP(props) {
@@ -65,20 +66,14 @@ function AddBOP(props) {
     return <GridTotalFormate start={start} to={to} total={total} />
   }
 
-  const onRowSelect = () => {
-
-    var selectedRows = gridApi.getSelectedRows();
-    if (JSON.stringify(selectedRows) === JSON.stringify(props.Ids)) return false
-    setSelectedRowData(selectedRows)
-    // if (isSelected) {
-    // } else {
-    //   const BoughtOutPartId = row.BoughtOutPartId;
-    //   let tempArr = selectedRowData && selectedRowData.filter(el => el.BoughtOutPartId !== BoughtOutPartId)
-    //   setSelectedRowData(tempArr)
-    // }
-
+  const onRowSelect = (event) => {
+    var selectedRows = gridApi && gridApi?.getSelectedRows();
+    if (selectedRows?.length === 0) {
+      setSelectedRowData([])
+    } else {
+      setSelectedRowData(selectedRows)
+    }
   }
-
 
   const netLandedFormat = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -107,7 +102,7 @@ function AddBOP(props) {
   * @description ADD ROW IN TO RM COST GRID
   */
   const addRow = () => {
-    if (selectedRowData.length === 0) {
+    if (selectedRowData?.length === 0) {
       Toaster.warning('Please select row.')
       return false;
     }
@@ -214,6 +209,7 @@ function AddBOP(props) {
     resizable: true,
     filter: true,
     sortable: true,
+    headerCheckboxSelectionFilteredOnly: true,
     headerCheckboxSelection: isFirstColumn,
     checkboxSelection: isFirstColumn
   };
@@ -286,39 +282,6 @@ function AddBOP(props) {
                 </Col>
               </Row>
 
-              < form onSubmit={handleSubmit(onSubmit)} noValidate >
-
-                <div className="filter-row">
-                  <Col md="12" lg="11" className="filter-block zindex-12 pt-2 mb-1">
-                    <div className="d-inline-flex justify-content-start align-items-top w100 rm-domestic-filter">
-                      <div className="flex-fills mb-0">
-                        <h5 className="left-border">{`Filter By:`}</h5>
-                      </div>
-
-                      <div className="flex-fills hide-label mb-0">
-                        <SearchableSelectHookForm
-                          label={''}
-                          name={'Category'}
-                          placeholder={'Category'}
-                          Controller={Controller}
-                          control={control}
-                          register={register}
-                          options={renderListing("category")}
-                          customClassName="mn-height-auto mb-0"
-                          handleChange={() => { }}
-                        />
-                      </div>
-
-
-                      <div className="flex-fills mb-0">
-                        <button type="button" onClick={resetFilter} className="reset mr10" > {"Reset"}</button>
-                        <button type="button" onClick={filterList} className="user-btn" > {"Apply"} </button>
-                      </div>
-                    </div>
-                  </Col>
-                </div>
-
-              </form >
               <Row className="mx-0">
                 <Col className="hidepage-size">
                   <div className={`ag-grid-wrapper min-height-auto height-width-wrapper ${bopDrawerList && bopDrawerList?.length <= 0 ? "overlay-contain" : ""}`}>
@@ -340,7 +303,7 @@ function AddBOP(props) {
                         // columnDefs={c}
                         rowData={bopDrawerList}
                         pagination={true}
-                        paginationPageSize={10}
+                        paginationPageSize={defaultPageSize}
                         onGridReady={onGridReady}
                         gridOptions={gridOptions}
                         loadingOverlayComponent={'customLoadingOverlay'}
@@ -352,7 +315,7 @@ function AddBOP(props) {
                         suppressRowClickSelection={true}
                         rowSelection={'multiple'}
                         frameworkComponents={frameworkComponents}
-                        onSelectionChanged={onRowSelect}
+                        onRowSelected={onRowSelect}
                         isRowSelectable={isRowSelectable}
                       >
                         <AgGridColumn field="BoughtOutPartId" hide={true}></AgGridColumn>
@@ -368,13 +331,7 @@ function AddBOP(props) {
                         <AgGridColumn field="NetLandedCostConversion" headerName={'Net Cost Currency/UOM'} cellRenderer={'netLandedConversionFormat'}></AgGridColumn>
 
                       </AgGridReact>
-                      <div className="paging-container d-inline-block float-right">
-                        <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
-                          <option value="10" selected={true}>10</option>
-                          <option value="50">50</option>
-                          <option value="100">100</option>
-                        </select>
-                      </div>
+                      {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                     </div>
                   </div>
                 </Col>

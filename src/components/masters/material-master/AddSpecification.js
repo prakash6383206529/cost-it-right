@@ -2,11 +2,11 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { required, acceptAllExceptSingleSpecialCharacter, maxLength80 } from "../../../helper/validation";
-import { renderText, searchableSelect } from "../../layout/FormInputs";
+import { required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces, checkSpacesInString, maxLength32 } from "../../../helper/validation";
+import { renderText, searchableSelect, focusOnError } from "../../layout/FormInputs";
 import {
   createRMSpecificationAPI, updateRMSpecificationAPI, getRMSpecificationDataAPI,
-  getRowMaterialDataAPI, getRawMaterialNameChild, getMaterialTypeDataAPI, getRMGradeSelectListByRawMaterial,
+  getRawMaterialNameChild, getMaterialTypeDataAPI, getRMGradeSelectListByRawMaterial,
   getMaterialTypeSelectList, checkAndGetRawMaterialCode
 } from '../actions/Material';
 import { fetchRMGradeAPI } from '../../../actions/Common';
@@ -43,7 +43,7 @@ class AddSpecification extends Component {
   * @description Called before render the component
   */
   UNSAFE_componentWillMount() {
-    this.props.getRawMaterialNameChild(() => { })
+    this.props.getRawMaterialNameChild('', () => { })
     // this.props.getMaterialTypeSelectList(() => { })
     this.props.getRMGradeSelectListByRawMaterial('', res => { })
   }
@@ -85,17 +85,12 @@ class AddSpecification extends Component {
           this.props.getRMGradeSelectListByRawMaterial(Data.RawMaterialId, res => { })
 
           setTimeout(() => {
-            const { rawMaterialNameSelectList, MaterialSelectList, gradeSelectList } = this.props;
+            const { rawMaterialNameSelectList } = this.props;
             this.props.change('Code', Data?.RawMaterialCode)
             let tempObj1 = rawMaterialNameSelectList && rawMaterialNameSelectList.find(item => item.Value === Data.RawMaterialId)
-            // let tempObj2 = MaterialSelectList && MaterialSelectList.find(item => item.Value === Data.MaterialId)
-            let tempObj3 = gradeSelectList && gradeSelectList.find(item => item.Value === Data.GradeId)
-
-            // this.setDensity(Data.MaterialId);
             this.setState({
               RawMaterial: tempObj1 && tempObj1 !== undefined ? { label: tempObj1.Text, value: tempObj1.Value } : [],
-              // material: tempObj2 && tempObj2 !== undefined ? { label: tempObj2.Text, value: tempObj2.Value } : [],
-              RMGrade: tempObj3 && tempObj3 !== undefined ? { label: tempObj3.Text, value: tempObj3.Value } : [],
+              RMGrade: Data.GradeName !== undefined ? { label: Data.GradeName, value: Data.GradeId } : [],
             })
           }, 500)
 
@@ -230,25 +225,27 @@ class AddSpecification extends Component {
   }
 
   /**
-  * @method closeGradeDrawer
+  * @method closeRMDrawer
   * @description  used to toggle RM Drawer Popup/Drawer
   */
-  closeRMDrawer = (e = '', formData = {}) => {
+  closeRMDrawer = (e = '', formData = {}, type) => {
     this.setState({ isOpenRMDrawer: false, Id: '' }, () => {
-      this.getDetails()
-      this.props.getRawMaterialNameChild(() => {
-        this.props.getRMGradeSelectListByRawMaterial('', res => { })
-        /*FOR SHOWING DEFAULT VALUE FROM SELECTED FROM DRAWER*/
-        const { rawMaterialNameSelectList } = this.props;
-        if (Object.keys(formData).length > 0) {
-          let tempObj1 = rawMaterialNameSelectList && rawMaterialNameSelectList.find(item => item.Text === formData.RawMaterialName)
-          this.setState({
-            RawMaterial: tempObj1 && tempObj1 !== undefined ? { label: tempObj1.Text, value: tempObj1.Value } : [],
-            RMGrade: []
-          })
+      if (type === 'submit') {
+        this.getDetails()
+        this.props.getRawMaterialNameChild('', () => {
+          this.props.getRMGradeSelectListByRawMaterial('', res => { })
+          /*FOR SHOWING DEFAULT VALUE FROM SELECTED FROM DRAWER*/
+          const { rawMaterialNameSelectList } = this.props;
+          if (Object.keys(formData).length > 0) {
+            let tempObj1 = rawMaterialNameSelectList && rawMaterialNameSelectList.find(item => item.Text === formData.RawMaterialName)
+            this.setState({
+              RawMaterial: tempObj1 && tempObj1 !== undefined ? { label: tempObj1.Text, value: tempObj1.Value } : [],
+              RMGrade: []
+            })
 
-        }
-      })
+          }
+        })
+      }
     })
   }
 
@@ -261,21 +258,22 @@ class AddSpecification extends Component {
   * @method closeGradeDrawer
   * @description  used to toggle grade Popup/Drawer
   */
-  closeGradeDrawer = (e = '', formData = {}) => {
+  closeGradeDrawer = (e = '', formData = {}, type) => {
     this.setState({ isOpenGrade: false, Id: '' }, () => {
-      this.getDetails()
-      const { RawMaterial } = this.state;
-      this.props.getRMGradeSelectListByRawMaterial(RawMaterial.value, res => {
-        /* FOR SHOWING DEFAULT VALUE SELECTED FROM DRAWER*/
-        const { gradeSelectList } = this.props;
-        if (Object.keys(formData).length > 0) {
-          let tempObj3 = gradeSelectList && gradeSelectList.find(item => item.Text === formData.Grade)
-          this.setState({
-            RMGrade: tempObj3 && tempObj3 !== undefined ? { label: tempObj3.Text, value: tempObj3.Value } : [],
-          })
-        }
-      });
-
+      if (type === 'submit') {
+        this.getDetails()
+        const { RawMaterial } = this.state;
+        this.props.getRMGradeSelectListByRawMaterial(RawMaterial.value, res => {
+          /* FOR SHOWING DEFAULT VALUE SELECTED FROM DRAWER*/
+          const { gradeSelectList } = this.props;
+          if (Object.keys(formData).length > 0) {
+            let tempObj3 = gradeSelectList && gradeSelectList.find(item => item.Text === formData.Grade)
+            this.setState({
+              RMGrade: tempObj3 && tempObj3 !== undefined ? { label: tempObj3.Text, value: tempObj3.Value } : [],
+            })
+          }
+        });
+      }
     })
   }
 
@@ -367,13 +365,15 @@ class AddSpecification extends Component {
     }
   };
 
-  checkUniqCode = (e) => {
+  checkUniqCode = debounce((e) => {
+
     this.props.checkAndGetRawMaterialCode(e.target.value, res => {
       if (res && res.data && res.data.Result === false) {
         Toaster.warning(res.data.Message);
+        this.props.change('Code', "")
       }
     })
-  }
+  }, 600)
 
   /**
   * @method render
@@ -545,7 +545,7 @@ class AddSpecification extends Component {
                         name={"Specification"}
                         type="text"
                         placeholder={"Enter"}
-                        validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80]}
+                        validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces]}
                         component={renderText}
                         required={true}
                         className=" "
@@ -561,12 +561,13 @@ class AddSpecification extends Component {
                         name={'Code'}
                         type="text"
                         placeholder={'Enter'}
-                        validate={[required]}
+                        validate={[required, checkSpacesInString, checkWhiteSpaces, maxLength32]}
                         component={renderText}
                         required={true}
                         className=" "
                         customClassName=" withBorder"
-                        onBlur={this.checkUniqCode}
+                        //onBlur={this.checkUniqCode}
+                        onChange={this.checkUniqCode}
                         disabled={isEditFlag ? true : false}
                       />
                     </Col>
@@ -664,7 +665,6 @@ export default connect(mapStateToProps, {
   getMaterialTypeSelectList,
   updateRMSpecificationAPI,
   getRMSpecificationDataAPI,
-  getRowMaterialDataAPI,
   getRawMaterialNameChild,
   getMaterialTypeDataAPI,
   getRMGradeSelectListByRawMaterial,
@@ -672,4 +672,8 @@ export default connect(mapStateToProps, {
 })(reduxForm({
   form: 'AddSpecification',
   enableReinitialize: true,
+  touchOnChange: true,
+  onSubmitFail: (errors) => {
+    focusOnError(errors)
+  },
 })(AddSpecification));

@@ -7,6 +7,7 @@ import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper'
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
 import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, OPERATIONS, RAW_MATERIAL, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
+import LoaderCustom from '../../common/LoaderCustom';
 
 
 
@@ -21,7 +22,7 @@ function CostingDetailSimulationDrawer(props) {
     };
 
     // table code starts here
-    const { simulationDetail, pricesDetail, selectedRowData, costingArr, master, isReport, isSimulation } = props
+    const { simulationDetail, pricesDetail, selectedRowData, costingArr, master, isReport, isSimulation, isReportLoader } = props
 
     const dispatch = useDispatch()
 
@@ -185,19 +186,9 @@ function CostingDetailSimulationDrawer(props) {
                                         }
                                     </Row>
                                 }
-                                <CostingSummaryTable customClass="ml-0" simulationDrawer={true} simulationMode={true} viewMode={true} master={master} isSimulationDone={isSimulation} />
+                                {isReportLoader && <LoaderCustom customClass={"report-costing"} />}
+                                <CostingSummaryTable customClass="ml-0" simulationDrawer={props.simulationDrawer} simulationMode={true} viewMode={true} master={master} isSimulationDone={isSimulation} drawerViewMode={true} />
                             </form>
-                            <Row className="sf-btn-footer no-gutters justify-content-between">
-                                <div className="col-md-12 px-3">
-                                    <div className="text-right px-3">
-
-                                        <button type={"button"} className="cancel-btn" onClick={cancel}>
-                                            <div className={"cancel-icon"}></div>{" "}
-                                            {"CANCEL"}
-                                        </button>
-                                    </div>
-                                </div>
-                            </Row>
                         </div>
                     </Container>
                 </Drawer>

@@ -32,12 +32,12 @@ class BOMUpload extends Component {
     this.props.onCancel();
   }
 
-  toggleDrawer = (event) => {
+  toggleDrawer = (event, isCancel) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }
 
-    this.props.closeDrawer('')
+    this.props.closeDrawer(isCancel)
   };
 
   /**
@@ -47,7 +47,7 @@ class BOMUpload extends Component {
   cancel = () => {
     const { reset } = this.props;
     reset();
-    this.toggleDrawer('')
+    this.toggleDrawer(true)
   }
 
   /**
@@ -119,7 +119,7 @@ class BOMUpload extends Component {
     if (res && res.data.Result === true) {
       Toaster.success(`BOM uploaded successfully.`)
     }
-    this.toggleDrawer('')
+    this.toggleDrawer(false)
   }
 
   /**
@@ -179,7 +179,7 @@ class BOMUpload extends Component {
                     <h3>{`${messageLabel} Upload `}</h3>
                   </div>
                   <div
-                    onClick={(e) => this.toggleDrawer(e)}
+                    onClick={(e) => this.toggleDrawer(true)}
                     className={'close-button right'}>
                   </div>
                 </Col>

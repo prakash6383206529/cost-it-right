@@ -30,106 +30,104 @@ function ViewPackagingAndFreight(props) {
     }
     props.closeDrawer('')
   }
+  
+  const packageTableData = ()=> {
+       return <>
+               <Row>
+                <Col md="12">
+                  <div className="left-border">{'Packaging:'}</div>
+                </Col>
+              </Row>
+              <Row>
+                {/*Packaging COST GRID */}
 
-  const packageTableData = () => {
-    return <>
-      <Row>
-        <Col md="12">
-          <div className="left-border">{'Packaging:'}</div>
-        </Col>
-      </Row>
-      <Row>
-        {/*Packaging COST GRID */}
-
-        <Col md="12">
-          <Table className="table cr-brdr-main" size="sm">
-            <thead>
-              <tr>
-                <th>{`Packaging Description`}</th>
-                <th>{`Criteria/Applicability`}</th>
-                <th>{`Packaging Type/Percentage`}</th>
-                <th className="costing-border-right">{`Cost`}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {viewPackaging &&
-                viewPackaging.map((item, index) => {
-                  return (
-                    <tr key={index}>
-                      <td>
-                        {item.PackagingDescription ? item.PackagingDescription : '-'}
-                      </td>
-                      <td>{item.Applicability ? item.Applicability : '-'}</td>
-                      <td>
-                        {item.IsPackagingCostFixed && item.IsPackagingCostFixed ? item.PackagingCostPercentage : 'Fixed'}
-                      </td>
-                      <td>
-                        {item.PackagingCost ? checkForDecimalAndNull(item.PackagingCost, initialConfiguration.NoOfDecimalForPrice) : '-'}
-                      </td>
-                    </tr>
-                  )
-                })}
-              {viewPackaging && viewPackaging.length === 0 && (
-                <tr>
-                  <td colSpan={12}>
-                    <NoContentFound title={EMPTY_DATA} />
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </Table>
-        </Col>
-      </Row>
-    </>
+                <Col md="12">
+                  <Table className="table cr-brdr-main" size="sm">
+                    <thead>
+                      <tr>
+                        <th>{`Packaging Description`}</th>
+                        <th>{`Packaging Type/Percentage`}</th>
+                        <th className="costing-border-right">{`Cost`}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {viewPackaging &&
+                        viewPackaging.map((item, index) => {
+                          return (
+                            <tr key={index}>
+                              <td>
+                                {item.PackagingDescription ? item.PackagingDescription : '-'}
+                              </td>
+                              <td>
+                                {item.IsPackagingCostFixed && item.IsPackagingCostFixed ? item.PackagingCostPercentage : 'Fixed'}
+                              </td>
+                              <td>
+                                {item.PackagingCost ? checkForDecimalAndNull(item.PackagingCost, initialConfiguration.NoOfDecimalForPrice) : '-'}
+                              </td>
+                            </tr>
+                          )
+                        })}
+                      {viewPackaging && viewPackaging.length === 0 && (
+                        <tr>
+                          <td colSpan={12}>
+                            <NoContentFound title={EMPTY_DATA} />
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </Table>
+                </Col>
+              </Row>
+        </>
   }
-  const freightTableData = () => {
+  const freightTableData = ()=> {
     return <>
-      <Row>
-        <Col md="8">
-          <div className="left-border">{'Freight:'}</div>
-        </Col>
-      </Row>
-      <Row>
-        {/*Freight COST GRID */}
+              <Row>
+                  <Col md="8">
+                    <div className="left-border">{'Freight:'}</div>
+                  </Col>
+                </Row>
+                <Row>
+                  {/*Freight COST GRID */}
 
-        <Col md="12">
-          <Table className="table cr-brdr-main" size="sm">
-            <thead>
-              <tr>
-                <th>{`Freight Type`}</th>
-                <th>{`Criteria`}</th>
-                <th>{`Rate`}</th>
-                <th>{`Quantity`}</th>
-                <th className="costing-border-right">{`Cost`}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {viewFrieght &&
-                viewFrieght.map((item, index) => {
-                  return (
-                    <tr key={index}>
-                      <td>{item.FreightType ? item.FreightType : '-'}</td>
-                      <td>{item.Criteria ? item.Criteria : '-'}</td>
-                      <td>{item.Rate ? checkForDecimalAndNull(item.Rate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
-                      <td>{item.Quantity ? item.Quantity : '-'}</td>
-                      <td>
-                        {item.FreightCost ? checkForDecimalAndNull(item.FreightCost, initialConfiguration.NoOfDecimalForPrice) : '-'}
-                      </td>
-                    </tr>
-                  )
-                })}
-              {viewFrieght?.length === 0 && (
-                <tr>
-                  <td colSpan={9}>
-                    <NoContentFound title={EMPTY_DATA} />
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </Table>
-        </Col>
-      </Row>
-    </>
+                  <Col md="12">
+                    <Table className="table cr-brdr-main" size="sm">
+                      <thead>
+                        <tr>
+                          <th>{`Freight Type`}</th>
+                          <th>{`Criteria`}</th>
+                          <th>{`Rate`}</th>
+                          <th>{`Quantity`}</th>
+                          <th className="costing-border-right">{`Cost`}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {viewFrieght &&
+                          viewFrieght.map((item, index) => {
+                            return (
+                              <tr key={index}>
+                                <td>{item.FreightType ? item.FreightType : '-'}</td>
+                                <td>{item.Criteria ? item.Criteria : '-'}</td>
+                                <td>{item.Rate ? checkForDecimalAndNull(item.Rate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                                <td>{item.Quantity ? item.Quantity : '-'}</td>
+                                <td>
+                                  {item.FreightCost ? checkForDecimalAndNull(item.FreightCost, initialConfiguration.NoOfDecimalForPrice) : '-'}
+                                </td>
+                              </tr>
+                            )
+                          })}
+                        {viewFrieght?.length === 0 && (
+                          <tr>
+                            <td colSpan={9}>
+                              <NoContentFound title={EMPTY_DATA} />
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </Table>
+                  </Col>
+                </Row>
+        </>
   }
 
   return (
@@ -156,14 +154,14 @@ function ViewPackagingAndFreight(props) {
             <div className="px-3">
               {packageTableData()}
               <div>
-                {freightTableData()}
+               {freightTableData()}
               </div>
             </div>
           </div>
         </Container>
-      </Drawer> : <>
-        <div>{freightData?.length !== 0 && freightTableData()}</div>
-        <div>{viewPackaging?.length !== 0 && packageTableData()}</div>
+      </Drawer>: <>
+      <div>{ freightData?.length !== 0 && freightTableData()}</div> 
+      <div>{viewPackaging?.length !== 0 && packageTableData()}</div>
       </>}
     </>
   )

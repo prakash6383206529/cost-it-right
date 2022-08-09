@@ -10,7 +10,7 @@ import {
   config,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
-const headers = config
+// const config() = config
 
 /**
  * @method createVolume
@@ -19,7 +19,7 @@ const headers = config
 export function createVolume(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.post(API.createVolume, data, headers)
+    const request = axios.post(API.createVolume, data, config())
     request
       .then((response) => {
         if (response.data.Result === true) {
@@ -42,7 +42,7 @@ export function updateVolume(requestData, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
     axios
-      .put(`${API.updateVolume}`, requestData, headers)
+      .put(`${API.updateVolume}`, requestData, config())
       .then((response) => {
         callback(response)
       })
@@ -64,7 +64,7 @@ export function getVolumeData(VolumeId, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST })
     if (VolumeId !== '') {
-      axios.get(`${API.getVolumeData}/${VolumeId}`, headers)
+      axios.get(`${API.getVolumeData}/${VolumeId}`, config())
         .then((response) => {
           if (response.data.Result === true) {
             dispatch({
@@ -97,7 +97,7 @@ export function getVolumeDataList(filterData, callback) {
     //dispatch({ type: API_REQUEST });
     const QueryParams = `year=${filterData.year}&month=${filterData.month}&vendor_id=${filterData.vendor_id}&plant_id=${filterData.plant_id}&CostingHead=${filterData.costing_head}`
     axios
-      .get(`${API.getVolumeDataList}?${QueryParams}`, headers)
+      .get(`${API.getVolumeDataList}?${QueryParams}`, config())
       .then((response) => {
         if (response.data.Result || response.status === 204) {
           dispatch({
@@ -123,7 +123,7 @@ export function deleteVolume(ID, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST })
     axios
-      .delete(`${API.deleteVolume}/${ID}`, headers)
+      .delete(`${API.deleteVolume}/${ID}`, config())
       .then((response) => {
         callback(response)
       })
@@ -141,7 +141,7 @@ export function deleteVolume(ID, callback) {
 export function getFinancialYearSelectList(callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST })
-    const request = axios.get(`${API.getFinancialYearSelectList}`, headers)
+    const request = axios.get(`${API.getFinancialYearSelectList}`, config())
     request
       .then((response) => {
         if (response.data.Result) {
@@ -165,7 +165,7 @@ export function getFinancialYearSelectList(callback) {
  */
 export function bulkUploadVolumeActualZBC(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.bulkUploadVolumeActualZBC, data, headers)
+    const request = axios.post(API.bulkUploadVolumeActualZBC, data, config())
     request
       .then((response) => {
         if (response.status === 200) {
@@ -186,7 +186,7 @@ export function bulkUploadVolumeActualZBC(data, callback) {
  */
 export function bulkUploadVolumeActualVBC(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.bulkUploadVolumeActualVBC, data, headers)
+    const request = axios.post(API.bulkUploadVolumeActualVBC, data, config())
     request
       .then((response) => {
         if (response.status === 200) {
@@ -207,7 +207,7 @@ export function bulkUploadVolumeActualVBC(data, callback) {
  */
 export function bulkUploadVolumeBudgetedZBC(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.bulkUploadVolumeBudgetedZBC, data, headers)
+    const request = axios.post(API.bulkUploadVolumeBudgetedZBC, data, config())
     request
       .then((response) => {
         if (response.status === 200) {
@@ -228,7 +228,7 @@ export function bulkUploadVolumeBudgetedZBC(data, callback) {
  */
 export function bulkUploadVolumeBudgetedVBC(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.bulkUploadVolumeBudgetedVBC, data, headers);
+    const request = axios.post(API.bulkUploadVolumeBudgetedVBC, data, config());
     request.then((response) => {
       if (response.status === 200) {
         callback(response);
@@ -248,7 +248,7 @@ export function bulkUploadVolumeBudgetedVBC(data, callback) {
 export function getVolumeDataByPartAndYear(partNumber, financialYear, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
-    axios.get(`${API.getVolumeData}/${partNumber}/${financialYear}/0`, headers)
+    axios.get(`${API.getVolumeData}/${partNumber}/${financialYear}/0`, config())
       .then((response) => {
         if (response.data.Result === true || response.status === 202) {
           dispatch({

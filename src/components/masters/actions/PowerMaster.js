@@ -10,7 +10,7 @@ import {
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 
-const headers = config
+// const config() = config
 
 /**
  * @method createUnitOfMeasurementAPI
@@ -18,7 +18,7 @@ const headers = config
  */
 export function createPowerAPI(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createPowerAPI, data, headers);
+        const request = axios.post(API.createPowerAPI, data, config());
         request.then((response) => {
             if (response.data.Result === true) {
                 dispatch({ type: CREATE_SUCCESS, });
@@ -38,7 +38,7 @@ export function createPowerAPI(data, callback) {
 export function getPowerDataListAPI(callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.get(API.getPowerDataListAPI, headers)
+        axios.get(API.getPowerDataListAPI, config())
             .then((response) => {
                 dispatch({
                     type: GET_POWER_DATALIST_SUCCESS,
@@ -61,7 +61,7 @@ export function getPowerDataAPI(PowerId, callback) {
     return (dispatch) => {
         if (PowerId !== '') {
             //dispatch({ type: API_REQUEST });
-            axios.get(`${API.getPowerDataAPI}/${PowerId}`, headers)
+            axios.get(`${API.getPowerDataAPI}/${PowerId}`, config())
                 .then((response) => {
                     if (response.data.Result === true) {
                         dispatch({
@@ -92,7 +92,7 @@ export function getPowerDataAPI(PowerId, callback) {
 export function updatePowerAPI(requestData, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.put(`${API.updatePowerAPI}`, requestData, headers)
+        axios.put(`${API.updatePowerAPI}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -109,7 +109,7 @@ export function updatePowerAPI(requestData, callback) {
 export function deletePowerAPI(PowerId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deletePowerAPI}/${PowerId}`, headers)
+        axios.delete(`${API.deletePowerAPI}/${PowerId}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {

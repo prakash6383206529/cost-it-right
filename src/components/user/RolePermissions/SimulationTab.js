@@ -8,7 +8,7 @@ import { Table, } from 'reactstrap';
 import NoContentFound from "../../common/NoContentFound";
 import { EMPTY_DATA } from "../../../config/constants";
 import { SIMULATION, } from "../../../config/constants";
-import Switch from "react-switch";
+import { renderActionCommon } from "../userUtil"
 
 class SimulationTab extends Component {
     constructor(props) {
@@ -21,17 +21,9 @@ class SimulationTab extends Component {
             Modules: [],
             actionData: [],
             actionSelectList: [],
-            checkBox: true
+            checkBox: false
 
         }
-    }
-
-    /**
-    * @method componentDidMount
-    * @description used to called after mounting component
-    */
-    componentDidMount() {
-
     }
 
     UNSAFE_componentWillReceiveProps(nextProps) {
@@ -41,6 +33,12 @@ class SimulationTab extends Component {
                 actionData: actionData,
                 Modules: data && data.sort((a, b) => a.Sequence - b.Sequence),
                 actionSelectList: actionSelectList,
+            })
+
+            actionData && actionData.map((ele, index) => {
+                if (ele.ModuleName === 'Simulation') {
+                    this.setState({ checkBox: ele.IsChecked })
+                }
             })
         }
     }
@@ -91,8 +89,7 @@ class SimulationTab extends Component {
     * @description used to checked module
     */
     moduleHandler = (index) => {
-        //alert('hi')
-        const { Modules, checkedAll } = this.state;
+        const { Modules } = this.state;
         const isModuleChecked = Modules[index].IsChecked;
 
         let actionArray = [];
@@ -107,7 +104,7 @@ class SimulationTab extends Component {
 
             tempArray = Object.assign([...Modules], { [index]: Object.assign({}, Modules[index], { IsChecked: false, Actions: actionArray }) })
 
-            this.setState({ Modules: tempArray })
+            this.setState({ Modules: tempArray, checkBox: false })
         } else {
             actionArray = actionRow && actionRow.map((item, index) => {
                 item.IsChecked = true;
@@ -116,7 +113,7 @@ class SimulationTab extends Component {
 
             tempArray = Object.assign([...Modules], { [index]: Object.assign({}, Modules[index], { IsChecked: true, Actions: actionArray }) })
 
-            this.setState({ Modules: tempArray })
+            this.setState({ Modules: tempArray, checkBox: false })
         }
     }
 
@@ -136,7 +133,7 @@ class SimulationTab extends Component {
     * @description used to select module's action row (Horizontally)
     */
     isCheckAll = (parentIndex, actionData) => {
-        const { Modules, actionSelectList } = this.state;
+        const { Modules } = this.state;
 
         let tempArray = actionData && actionData.filter(item => item.IsChecked === true)
         if (actionData && actionData !== undefined) {
@@ -145,9 +142,7 @@ class SimulationTab extends Component {
     }
 
     selectAllHandler = (parentIndex, actionRows) => {
-        const { Modules, actionSelectList } = this.state;
-        //const { actionSelectList } = this.props;
-
+        const { Modules } = this.state;
         let checkedActions = actionRows.filter(item => item.IsChecked === true)
 
         let tempArray = [];
@@ -159,14 +154,14 @@ class SimulationTab extends Component {
                 return item;
             })
             tempArray = Object.assign([...Modules], { [parentIndex]: Object.assign({}, Modules[parentIndex], { IsChecked: false, Actions: actionArray }) })
-            this.setState({ Modules: tempArray, })
+            this.setState({ Modules: tempArray, checkBox: false })
         } else {
             let actionArray = actionRows && actionRows.map((item, index) => {
                 item.IsChecked = true;
                 return item;
             })
             tempArray = Object.assign([...Modules], { [parentIndex]: Object.assign({}, Modules[parentIndex], { IsChecked: true, Actions: actionArray }) })
-            this.setState({ Modules: tempArray, })
+            this.setState({ Modules: tempArray, checkBox: false })
         }
     }
 
@@ -174,8 +169,8 @@ class SimulationTab extends Component {
         const { Modules, checkBox } = this.state;
         let booleanVal = this.state.checkBox
         this.setState({ checkBox: !booleanVal })
-        let tempArray = [];
-        let isCheckedSelectAll = checkBox
+        let isCheckedSelectAll = !booleanVal
+
         let actionRows
         let actionArray = Modules && Modules.map((item, index) => {
             if (item.Sequence === 0) {
@@ -188,9 +183,12 @@ class SimulationTab extends Component {
                 } else {
                     item1.IsChecked = isCheckedSelectAll;
                 }
-                // console.log('item1: ', item1);
-
             })
+            if (item?.Sequence === 0) {
+                item.IsChecked = false
+            } else {
+                item.IsChecked = isCheckedSelectAll
+            }
             return actionRows;
         })
         this.setState({ Modules: actionArray, })
@@ -201,35 +199,8 @@ class SimulationTab extends Component {
     * @description used to render row of actions
     */
     renderAction = (actions, parentIndex) => {
-        const { actionSelectList } = this.state;
 
-        return actionSelectList && actionSelectList.map((el, i) => {
-            if (el.Value == 0) return false;
-            return actions && actions.map((item, index) => {
-                if (el.Value !== item.ActionId) return false;
-                return (
-                    <td className="text-center">
-                        {
-                            <label htmlFor="normal-switch" className="normal-switch">
-                                <Switch
-                                    onChange={() => this.actionCheckHandler(parentIndex, index)}
-                                    checked={item.IsChecked}
-                                    value={item.ActionId}
-                                    id="normal-switch"
-                                    onColor="#4DC771"
-                                    onHandleColor="#ffffff"
-                                    offColor="#959CB6"
-                                    checkedIcon={false}
-                                    uncheckedIcon={false}
-                                    height={18}
-                                    width={40}
-                                />
-                            </label>
-                        }
-                    </td>
-                )
-            })
-        })
+        return renderActionCommon(actions, parentIndex, this, SIMULATION)
     }
 
     /**
@@ -268,17 +239,6 @@ class SimulationTab extends Component {
         this.props.permissions(Modules, SIMULATION)
     }
 
-    /**
-    * @method cancel
-    * @description used to cancel role edit
-    */
-    cancel = () => {
-
-    }
-
-    clearForm = () => {
-
-    }
 
     render() {
         const { actionSelectList } = this.state;
@@ -290,20 +250,12 @@ class SimulationTab extends Component {
                             <thead>
                                 <tr>
                                     <th>{`Module`}</th>
-                                    <th className=" pr-2">
+                                    <th className="select-all-block pr-2">
                                         <label className="custom-checkbox align-middle text-left">
                                             <input
                                                 type="checkbox"
                                                 value={"All"}
-                                                // className={
-                                                //     this.isCheckAll(item, item)
-                                                //         ? "selected-box"
-                                                //         : "not-selected-box"
-                                                // }
-                                                // checked={this.isCheckAll(
-                                                //     index,
-                                                //     item.Actions
-                                                // )}
+                                                checked={this.state.checkBox}
                                                 onClick={() =>
                                                     this.selectAllHandlerEvery()
                                                 }

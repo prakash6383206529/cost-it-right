@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { required, email, minLength7, maxLength70, acceptAllExceptSingleSpecialCharacter,maxLength12,minLength10, maxLength80, checkWhiteSpaces, maxLength20, postiveNumber, maxLength10, maxLength5 } from "../../../helper/validation";
-import { renderText, renderEmailInputField, searchableSelect } from "../../layout/FormInputs";
+import { required, email, minLength7, maxLength70, acceptAllExceptSingleSpecialCharacter, maxLength12, minLength10, maxLength80, checkWhiteSpaces, maxLength20, postiveNumber, maxLength10, maxLength5 } from "../../../helper/validation";
+import { renderText, renderEmailInputField, searchableSelect, renderNumberInputField } from "../../layout/FormInputs";
 import { createClient, updateClient, getClientData } from '../actions/Client';
 import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, getCityByCountry, } from '../../../actions/Common';
 import Toaster from '../../common/Toaster';
@@ -38,7 +38,9 @@ class AddClientDrawer extends Component {
     * @description called after render the component
     */
     componentDidMount() {
-        this.props.fetchCountryDataAPI(() => { })
+        if (!this.state.isViewMode) {
+            this.props.fetchCountryDataAPI(() => { })
+        }
         this.getDetail()
 
     }
@@ -143,21 +145,16 @@ class AddClientDrawer extends Component {
                 if (res && res.data && res.data.Data) {
                     let Data = res.data.Data;
                     this.setState({ DataToCheck: Data })
-                    this.props.fetchStateDataAPI(Data.CountryId, () => { })
-                    this.props.fetchCityDataAPI(Data.StateId, () => { })
-
+                    if (!this.state.isViewMode) {
+                        this.props.fetchStateDataAPI(Data.CountryId, () => { })
+                        this.props.fetchCityDataAPI(Data.StateId, () => { })
+                    }
                     setTimeout(() => {
-                        const { countryList, stateList, cityList } = this.props;
-
-                        const CountryObj = countryList && countryList.find(item => Number(item.Value) === Data.CountryId)
-                        const StateObj = stateList && stateList.find(item => Number(item.Value) === Data.StateId)
-                        const CityObj = cityList && cityList.find(item => Number(item.Value) === Data.CityId)
-
                         this.setState({
                             // isLoader: false,
-                            country: CountryObj && CountryObj !== undefined ? { label: CountryObj.Text, value: CountryObj.Value } : [],
-                            state: StateObj && StateObj !== undefined ? { label: StateObj.Text, value: StateObj.Value } : [],
-                            city: CityObj && CityObj !== undefined ? { label: CityObj.Text, value: CityObj.Value } : [],
+                            country: Data.CountryName !== undefined ? { label: Data.CountryName, value: Data.CountryId } : [],
+                            state: Data.StateName !== undefined ? { label: Data.StateName, value: Data.StateId } : [],
+                            city: Data.CityName !== undefined ? { label: Data.CityName, value: Data.CityId } : [],
                         }, () => this.setState({ isLoader: false }))
                     }, 500)
 
@@ -285,7 +282,7 @@ class AddClientDrawer extends Component {
                                 <Row className="drawer-heading">
                                     <Col>
                                         <div className={'header-wrapper left'}>
-                                            <h3>{isEditFlag ? 'Update Client' : 'Add Client'}</h3>
+                                            <h3>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Client</h3>
                                         </div>
                                         <div
                                             onClick={(e) => this.toggleDrawer(e)}
@@ -299,7 +296,7 @@ class AddClientDrawer extends Component {
                                             label={`Company Name`}
                                             name={"CompanyName"}
                                             type="text"
-                                            placeholder={''}
+                                            placeholder={isViewMode ? '-' : "Enter"}
                                             validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces]}
                                             component={renderText}
                                             required={true}
@@ -313,7 +310,7 @@ class AddClientDrawer extends Component {
                                             label={`Contact Name`}
                                             name={"ClientName"}
                                             type="text"
-                                            placeholder={''}
+                                            placeholder={isViewMode ? '-' : "Enter"}
                                             validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces]}
                                             component={renderText}
                                             required={false}
@@ -327,7 +324,7 @@ class AddClientDrawer extends Component {
                                             name="ClientEmailId"
                                             label="Email Id"
                                             component={renderEmailInputField}
-                                            placeholder={'Enter'}
+                                            placeholder={isEditFlag ? '-' : "Enter"}
                                             validate={[required, email, minLength7, maxLength70]}
                                             required={true}
                                             maxLength={70}
@@ -343,9 +340,9 @@ class AddClientDrawer extends Component {
                                                     label="Phone No."
                                                     name={"PhoneNumber"}
                                                     type="text"
-                                                    placeholder={''}
+                                                    placeholder={isViewMode ? '-' : "Enter"}
                                                     validate={[postiveNumber, minLength10, maxLength12, checkWhiteSpaces]}
-                                                    component={renderText}
+                                                    component={renderNumberInputField}
                                                     // required={true}
                                                     // maxLength={12}
                                                     className=""
@@ -358,9 +355,9 @@ class AddClientDrawer extends Component {
                                                     label="Ext."
                                                     name={"Extension"}
                                                     type="text"
-                                                    placeholder={''}
+                                                    placeholder={isViewMode ? '-' : "Enter"}
                                                     validate={[postiveNumber, maxLength5, checkWhiteSpaces]}
-                                                    component={renderText}
+                                                    component={renderNumberInputField}
                                                     // required={true}
                                                     maxLength={5}
                                                     className=""
@@ -378,10 +375,10 @@ class AddClientDrawer extends Component {
                                             name="MobileNumber"
                                             label="Mobile No."
                                             type="text"
-                                            placeholder={''}
-                                            component={renderText}
+                                            placeholder={isViewMode ? '-' : "Enter"}
+                                            component={renderNumberInputField}
                                             disabled={isViewMode}
-                                            validate={[postiveNumber, maxLength12,minLength10, checkWhiteSpaces]}
+                                            validate={[postiveNumber, maxLength12, minLength10, checkWhiteSpaces]}
                                             // required={true}
                                             maxLength={10}
                                             customClassName={'withBorder'}
@@ -444,9 +441,9 @@ class AddClientDrawer extends Component {
                                             label="ZipCode"
                                             name={"ZipCode"}
                                             type="text"
-                                            placeholder={''}
+                                            placeholder={isViewMode ? '-' : "Enter"}
                                             validate={[postiveNumber]}
-                                            component={renderText}
+                                            component={renderNumberInputField}
                                             // required={true}
                                             maxLength={6}
                                             customClassName={'withBorder'}
@@ -471,7 +468,7 @@ class AddClientDrawer extends Component {
                                                 disabled={isViewMode || setDisable}
                                                 className="user-btn save-btn" >
                                                 <div className={"save-icon"}></div>
-                                                 {this.props.isEditFlag ? 'Update' : 'Save'}
+                                                {this.props.isEditFlag ? 'Update' : 'Save'}
                                             </button>
                                         </div>
                                     </div>

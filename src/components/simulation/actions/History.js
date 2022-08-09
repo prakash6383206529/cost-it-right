@@ -4,7 +4,8 @@ import {
     API_REQUEST,
     API_FAILURE,
     GET_BULKUPLOAD_COSTING_LIST,
-    GET_SIMULATION_HISTORY
+    GET_SIMULATION_HISTORY,
+    config
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
@@ -67,7 +68,7 @@ export function getSimulationHistory(callback) {
 
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getSimulationHistory}`, headers);
+        const request = axios.get(`${API.getSimulationHistory}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({

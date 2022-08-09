@@ -30,12 +30,14 @@ class Downloadxls extends React.Component {
     * @description CONDITION TO CHECK:- TO AVOID VENDOR PLANT IF NOT CONFIGURABLE FROM INITIALIZER
     */
     checkVendorPlantConfig = (excelData) => {
+
         return excelData.filter((el) => {
             if (checkVendorPlantConfigurable() === false) {
                 if (el.value === 'VendorPlant') return false;
-                if (el.value === 'VendorName') return false;
-                if (el.value === 'LabourRate') return false;
-                if (el.value === 'VendorPlantCode') return false;
+                /**********************DON'T REMOVE NOW MAY BE USED LATER**********************************/
+                // if (el.value === 'LabourRate') return false;
+                // if (el.value === 'VendorName') return false;
+                // if (el.value === 'VendorPlantCode') return false;
                 // if (el.value === 'DestinationPlant') return false;
                 // if (el.value === 'DestinationPlantCode') return false;
                 return true;
@@ -114,7 +116,6 @@ class Downloadxls extends React.Component {
     * @description Switch case for different xls file head according to master
     */
     renderVBCSwitch = (master) => {
-
         switch (master) {
             case 'RMDomestic':
                 return this.returnExcelColumn(this.checkVendorPlantConfig(RMDomesticVBC), RMDomesticVBCTempData);
@@ -123,6 +124,7 @@ class Downloadxls extends React.Component {
             case 'Operation':
                 return this.returnExcelColumn(this.checkVendorPlantConfig(VBCOperation), VBCOperationTempData);
             case 'Machine':
+
                 return this.returnExcelColumn(this.checkVendorPlantConfig(MachineVBC), MachineVBCTempData);
             case 'BOPDomestic':
                 return this.returnExcelColumn(this.checkVendorPlantConfig(BOP_VBC_DOMESTIC), BOP_VBC_DOMESTIC_TempData);
@@ -144,6 +146,8 @@ class Downloadxls extends React.Component {
     * @description Used to get excel column names
     */
     returnExcelColumn = (data = [], TempData) => {
+
+
         const { fileName, failedData, isFailedFlag } = this.props;
 
         if (isFailedFlag) {
@@ -201,18 +205,18 @@ class Downloadxls extends React.Component {
             return (
                 <>
                     {costingHead === 'ZBC' &&
-                        <ExcelFile filename={`${fileName}ZBC`} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right'}><img alt={''} src={require('../../assests/images/download.png')}></img> Download ZBC</button>}>
+                        <ExcelFile filename={`${fileName}ZBC`} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right w-100'}><div class="download"></div> Download ZBC</button>}>
                             {fileName ? this.renderZBCSwitch(fileName) : ''}
                         </ExcelFile>}
 
                     {costingHead === 'VBC' &&
-                        <ExcelFile filename={`${fileName}VBC`} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right'}><img alt={''} src={require('../../assests/images/download.png')}></img> Download VBC</button>}>
+                        <ExcelFile filename={`${fileName}VBC`} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right w-100'}><div class="download"></div> Download VBC</button>}>
                             {fileName ? this.renderVBCSwitch(fileName) : ''}
                         </ExcelFile>}
 
                     {/* ZBC_MACHINE_MORE THIS IS ADDITIONAL CONDITION ONLY FOR MACHINE MORE DETAIL FROM MACHINE MASTER */}
                     {costingHead === 'ZBC_MACHINE_MORE' &&
-                        <ExcelFile filename={`MACHINE_MORE_ZBC`} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right'}><img alt={''} src={require('../../assests/images/download.png')}></img> Download ZBC DETAIL</button>}>
+                        <ExcelFile filename={`MACHINE_MORE_ZBC`} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right w-100'}><div class="download"></div> Download ZBC DETAIL</button>}>
                             {fileName ? this.renderZBCSwitch(costingHead) : ''}
 
                         </ExcelFile>}
@@ -222,7 +226,7 @@ class Downloadxls extends React.Component {
 
         // DISPLAY DOWNLOAD FILE BUTTON EXCEPT ZBC AND VBC TEMPLATES
         return (
-            <ExcelFile filename={fileName} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right'}><img className="pr-2" alt={''} src={require('../../assests/images/download.png')}></img> Download File</button>}>
+            <ExcelFile filename={fileName} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right w-100'}><div class="download"></div> Download File</button>}>
                 {fileName ? this.renderSwitch(fileName) : ''}
             </ExcelFile>
         );

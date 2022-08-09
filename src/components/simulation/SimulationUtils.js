@@ -1,5 +1,10 @@
+import React, { useEffect, useState } from "react";
 import { BOPImpactDownloadArray, ERImpactDownloadArray, OperationImpactDownloadArray, RMImpactedDownloadArray } from "../../config/masterData";
-
+import { Errorbox } from "../common/ErrorBox";
+import { useDispatch } from 'react-redux';
+import { getAmmendentStatus } from './actions/Simulation'
+import imgRedcross from '../../assests/images/red-cross.png';
+import imgGreencross from '../../assests/images/greenCross.png';
 
 export const SimulationUtils = (TempData) => {
 
@@ -28,6 +33,22 @@ export const SimulationUtils = (TempData) => {
     });
 
     return TempData
+}
+
+
+export const getMaxDate = (arr) => {
+
+    // ✅ Get Max date
+    let maxDate = new Date(
+        Math.max(
+            ...arr.map(element => {
+                return new Date(element.EffectiveDate);
+            }),
+        ),
+    );
+
+    return maxDate
+
 }
 
 export const checkForChangeInOverheadProfit1Values = (item) => {
@@ -189,3 +210,109 @@ export const impactmasterDownload = (impactedMasterData) => {
     ];
     return multiDataSet
 }
+
+
+// **START** SHOWING STATUS BOX ON THE TOP FOR ERROR AND SUCCESS RESPONSE
+export const ErrorMessage = (props) => {
+    const [recordInsertStatusBox, setRecordInsertStatusBox] = useState(true);
+    const [amendmentStatusBox, setAmendmentStatusBox] = useState(true);
+    const [ammendmentStatus, setAmmendmentStatus] = useState('');
+    const [noContent, setNoContent] = useState(false)
+    const [status, setStatus] = useState('')
+    const [isSuccessfullyInsert, setIsSuccessfullyInsert] = useState(true)
+    const [showbutton, setShowButton] = useState(false)
+    const [ammendentButton, setAmmendmentButton] = useState(false)
+    const [amendentStatus, setAmendentstatus] = useState('')
+    const [toggleSeeData, setToggleSeeData] = useState(true)
+    const [toggleAmmendmentData, setToggleAmmendmentStatus] = useState(true)
+    const { approvalNumber } = props
+    const dispatch = useDispatch()
+
+    const funcForErrorBoxButton = () => {
+
+        const statusWithButton = <><p className={`${toggleSeeData ? 'status-overflow' : ''} `}><span>{status}</span></p>{<button className='see-data-btn' onClick={() => { setToggleSeeData(!toggleSeeData) }}>Show {toggleSeeData ? 'all' : 'less'} data</button>}</>
+        return statusWithButton
+    }
+    const funcForErrorBoxButtonForAmmendment = () => {
+
+        const statusWithButton = <><p className={`${toggleAmmendmentData ? 'status-overflow' : ''} `}><span>{amendentStatus}</span></p>{<button className='see-data-btn' onClick={() => { setToggleAmmendmentStatus(!toggleAmmendmentData) }}>Show {toggleAmmendmentData ? 'all' : 'less'} data</button>}</>
+        return statusWithButton
+    }
+    useEffect(() => {
+        const obj = {
+            approvalTokenNumber: approvalNumber
+        }
+        dispatch(getAmmendentStatus(obj, res => {
+            setNoContent(res?.status === 204 ? true : false)
+
+            if (res?.status !== 204) {
+                const { RecordInsertStatus, IsSuccessfullyInsert, AmmendentStatus, IsAmmendentDone, AmmendentNumber } = res?.data?.DataList[0]
+                setStatus(RecordInsertStatus)
+                setIsSuccessfullyInsert(IsSuccessfullyInsert)
+                setAmmendmentStatus(AmmendentStatus);
+                setShowButton(RecordInsertStatus?.length > 245 ? true : false)
+                if (IsAmmendentDone) {
+                    setAmendentstatus(`Amendment Number: ${AmmendentNumber},\u00A0 ${AmmendentStatus}`)
+                } else {
+                    setAmendentstatus(`Amendment Status: \u00A0 ${(AmmendentStatus && AmmendentStatus !== null && AmmendentStatus !== "") ? AmmendentStatus : "-"
+                        } `)
+                }
+                setAmmendmentButton(amendentStatus.length > 245 ? true : false)
+            }
+        }))
+    }, [])
+    const deleteInsertStatusBox = () => {
+        setRecordInsertStatusBox(false)
+    }
+    const deleteAmendmentStatusBox = () => {
+        setAmendmentStatusBox(false)
+    }
+
+    const errorBoxClassForAmmendent = () => {
+        let temp
+        if (ammendmentStatus.startsWith('E')) {
+            temp = 'error';
+        }
+        else if (ammendmentStatus.startsWith('S')) {
+            temp = 'success';
+        }
+        else {
+            temp = 'd-none'
+        }
+        return temp
+    }
+    const errorBoxClassForStatus = () => {
+        let temp;
+
+        temp = (noContent || status === null || status === '' || status === undefined) ? 'd-none' : isSuccessfullyInsert ? 'success' : 'error';
+
+        return temp
+    }
+    return (<>
+        {recordInsertStatusBox &&
+            <div className="error-box-container">
+                <Errorbox customClass={errorBoxClassForStatus()} errorText={showbutton ? funcForErrorBoxButton() : status} />
+                <img
+                    className="float-right"
+                    alt={""}
+                    onClick={deleteInsertStatusBox}
+                    src={errorBoxClassForStatus() === 'd-none' ? '' : errorBoxClassForStatus() === "success" ? imgGreencross : imgRedcross}
+                ></img>
+            </div>
+        }
+
+        {amendmentStatusBox &&
+            <div className="error-box-container">
+                <Errorbox customClass={errorBoxClassForAmmendent()} errorText={ammendentButton ? funcForErrorBoxButtonForAmmendment() : amendentStatus} />
+                <img
+                    className="float-right"
+                    alt={""}
+                    onClick={deleteAmendmentStatusBox}
+                    src={errorBoxClassForAmmendent() === 'd-none' ? '' : errorBoxClassForAmmendent() === "success" ? imgGreencross : imgRedcross}
+                ></img>
+            </div>
+
+        }
+    </>)
+}
+// **END** SHOWING STATUS BOX ON THE TOP FOR ERROR AND SUCCESS RESPONSE

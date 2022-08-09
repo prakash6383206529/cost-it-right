@@ -3,20 +3,20 @@ import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector, isDirty } from "redux-form";
 import { Row, Col, Table } from 'reactstrap';
 import {
-  required, checkForNull, number, postiveNumber, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter,
-  checkWhiteSpaces, maxLength80, maxLength10, positiveAndDecimalNumber, maxLength512
+  required, checkForNull, postiveNumber, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter,
+  checkWhiteSpaces, maxLength80, maxLength10, positiveAndDecimalNumber, maxLength512, checkSpacesInString
 } from "../../../helper/validation";
-import { renderText, searchableSelect, renderTextAreaField, renderMultiSelectField, focusOnError, renderDatePicker } from "../../layout/FormInputs";
-import { getTechnologySelectList, getPlantSelectListByType, getPlantBySupplier, getUOMSelectList } from '../../../actions/Common';
+import { renderText, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker } from "../../layout/FormInputs";
+import { getPlantSelectListByType, getPlantBySupplier, getUOMSelectList } from '../../../actions/Common';
 import { getVendorListByVendorType, masterFinalLevelUser } from '../actions/Material';
 import {
   createMachine, updateMachine, updateMachineDetails, getMachineTypeSelectList, getProcessesSelectList, fileUploadMachine, fileDeleteMachine,
-  checkAndGetMachineNumber, getMachineData, getProcessGroupByMachineId, setGroupProcessList,
+  checkAndGetMachineNumber, getMachineData, getProcessGroupByMachineId, setGroupProcessList, setProcessList
 } from '../actions/MachineMaster';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { EMPTY_DATA, EMPTY_GUID, UOM } from '../../../config/constants'
-import { checkVendorPlantConfigurable, getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
+import { EMPTY_DATA, EMPTY_GUID, } from '../../../config/constants'
+import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
 import Switch from "react-switch";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
@@ -32,10 +32,11 @@ import attachClose from '../../../assests/images/red-cross.png'
 import MasterSendForApproval from '../MasterSendForApproval'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { debounce } from 'lodash';
-import { CheckApprovalApplicableMaster } from '../../../helper'
+import { CheckApprovalApplicableMaster, displayUOM } from '../../../helper'
 import AsyncSelect from 'react-select/async';
 import { ProcessGroup } from '../masterUtil';
 import _ from 'lodash'
+import { getCostingSpecificTechnology } from '../../costing/actions/Costing'
 
 
 const selector = formValueSelector('AddMachineRate');
@@ -53,7 +54,7 @@ class AddMachineRate extends Component {
       IsVendor: false,
       IsCopied: false,
       IsDetailedEntry: false,
-      isViewFlag: false,
+      isViewFlag: this.props?.data?.isViewMode ? true : false,
       approveDrawer: false,
       isViewMode: this.props?.editDetails?.isViewMode ? true : false,
       minEffectiveDate: '',
@@ -63,7 +64,6 @@ class AddMachineRate extends Component {
       selectedTechnology: [],
       isVendorNameNotSelected: false,
       vendorName: [],
-      selectedVendorPlants: [],
       selectedPlants: [],
       isFinalApprovar: false,
       approvalObj: {},
@@ -96,7 +96,14 @@ class AddMachineRate extends Component {
       lockUOMAndRate: false,
       isProcessGroup: getConfigurationKey().IsMachineProcessGroup,// UNCOMMENT IT AFTER DONE FROM BACKEND AND REMOVE BELOW CODE
       // isProcessGroup: false,// UNCOMMENT IT AFTER DONE FROM BACKEND AND REMOVE BELOW CODE
-      UniqueProcessId: []
+      UniqueProcessId: [],
+      attachmentLoader: false,
+      rowData: [],
+      errorObj: {
+        processName: false,
+        processUOM: false,
+        machineRate: false
+      }
     }
   }
 
@@ -109,10 +116,19 @@ class AddMachineRate extends Component {
 
 
     // For Showing form in view mode if data is added in add more detail form
-    if (data.isViewFlag === true) {
+    if (data.isViewFlag === true || editDetails.isViewFlag === true) {
       this.setState({
-        isViewFlag: true
+        isViewMode: true,
+        isViewFlag: true,
+        rowData: data?.rowData
       })
+
+      setTimeout(() => {
+        this.setState({
+          processGrid: data?.MachineProcessRates
+        })
+
+      }, 600);
 
     }
 
@@ -127,13 +143,16 @@ class AddMachineRate extends Component {
 
       return true
     }
-
-    this.props.getTechnologySelectList(() => { })
-    this.props.getVendorListByVendorType(true, () => { })
-    this.props.getPlantSelectListByType(ZBC, () => { })
-    this.props.getMachineTypeSelectList(() => { })
-    this.props.getUOMSelectList(() => { })
-    this.props.getProcessesSelectList(() => { })
+    if (!editDetails.isViewMode) {
+      this.props.getUOMSelectList(() => { })
+    }
+    if (!(editDetails.isEditFlag || editDetails.isViewMode)) {
+      this.props.getMachineTypeSelectList(() => { })
+      this.props.getProcessesSelectList(() => { })
+      this.props.getCostingSpecificTechnology(loggedInUserId(), () => { })
+      this.props.getVendorListByVendorType(true, () => { })
+      this.props.getPlantSelectListByType(ZBC, () => { })
+    }
 
     if (initialConfiguration.IsMachineNumberConfigure && editDetails && editDetails.isEditFlag === false) {
       this.props.checkAndGetMachineNumber('', res => {
@@ -141,8 +160,6 @@ class AddMachineRate extends Component {
         this.props.change('MachineNumber', Data.MachineNumber)
       })
     }
-
-
 
     // For reseting form  if cancel the add more detail form
     // if (data.cancelFlag) {
@@ -180,14 +197,12 @@ class AddMachineRate extends Component {
     })
 
 
-
-
     //GET MACHINE VALUES IN EDIT MODE
     this.getDetails()
   }
 
   componentWillUnmount() {
-    const { selectedPlants, machineType, selectedTechnology, isFormHide } = this.state;
+    const { selectedPlants, effectiveDate, machineType, selectedTechnology, isFormHide } = this.state;
     const { fieldsObj } = this.props;
     let data = {
       fieldsObj: fieldsObj,
@@ -195,6 +210,9 @@ class AddMachineRate extends Component {
       selectedPlants: selectedPlants,
       machineType: machineType,
     }
+    setTimeout(() => {
+      this.setState({ selectedPlants: selectedPlants, effectiveDate: effectiveDate })
+    }, 500);
     if (!isFormHide) {
       this.props.setData(data)
     } else {
@@ -210,13 +228,19 @@ class AddMachineRate extends Component {
 
     this.setState({
       selectedTechnology: data.selectedTechnology,
-      selectedPlants: data.selectedPlants,
       machineType: data.machineType,
+      effectiveDate: data.EffectiveDate
     })
     this.props.change('MachineName', data && data.fieldsObj && data.fieldsObj.MachineName)
     this.props.change('MachineNumber', data && data.fieldsObj && data.fieldsObj.MachineNumber)
     this.props.change('TonnageCapacity', data && data.fieldsObj && data.fieldsObj.TonnageCapacity)
     this.props.change('Description', data && data.fieldsObj && data.fieldsObj.Description)
+    this.props.change('EffectiveDate', DayTime(data.EffectiveDate).isValid() ? DayTime(data.EffectiveDate) : '')
+    this.props.change('Specification', data && data.fieldsObj && data.fieldsObj.Specification)
+    setTimeout(() => {
+      this.setState({ selectedPlants: data.selectedPlants })
+    }, 200);
+
   }
 
 
@@ -243,61 +267,58 @@ class AddMachineRate extends Component {
         if (res && res.data && res.data.Result) {
 
           const Data = res.data.Data;
-          this.props.getProcessGroupByMachineId(Data.MachineId, res => {
-            // this.props.setGroupProcessList(res?.data?.DataList)
-            // SET GET API STRUCTURE IN THE FORM OF SAVE API STRUCTURE BY DEFAULT
-            let updateArrayList = []
-            let tempArray = []
-            let singleRecordObject = {}
-            res?.data?.DataList && res?.data?.DataList.map((item) => {
-              singleRecordObject = {}
-              let ProcessIdListTemp = []
-              tempArray = item.GroupName
+          // this.props.getProcessGroupByMachineId(Data.MachineId, res => {
+          // this.props.setGroupProcessList(res?.data?.DataList)
+          // SET GET API STRUCTURE IN THE FORM OF SAVE API STRUCTURE BY DEFAULT
+          let updateArrayList = []
+          let tempArray = []
+          let singleRecordObject = {}
+          res?.data?.DataList && res?.data?.DataList.map((item) => {
+            singleRecordObject = {}
+            let ProcessIdListTemp = []
+            tempArray = item.GroupName
 
-              item.ProcessList && item.ProcessList.map((item1) => {
-                ProcessIdListTemp.push(item1.ProcessId)
-                return null
-              })
-              singleRecordObject.ProcessGroupName = tempArray
-              singleRecordObject.ProcessIdList = ProcessIdListTemp
-              updateArrayList.push(singleRecordObject)
+            item.ProcessList && item.ProcessList.map((item1) => {
+              ProcessIdListTemp.push(item1.ProcessId)
               return null
             })
-            this.props.setGroupProcessList(updateArrayList)
-            // TO DISABLE DELETE BUTTON WHEN GET DATA API CALLED (IN EDIT)
-            let uniqueProcessId = []
-            _.uniqBy(res?.data?.DataList, function (o) {
-              uniqueProcessId.push(o?.ProcessId)
-            });
-            let allProcessId = []
-            res?.data?.DataList && res?.data?.DataList.map((item) => {
-              let ProcessIdListTemp = []
-              item.ProcessList && item.ProcessList.map((item1) => {
-                ProcessIdListTemp.push(item1.ProcessId)
-                return null
-              })
-
-              allProcessId = [...allProcessId, ...ProcessIdListTemp]
-              return null
-            })
-            let uniqueSet = [...new Set(allProcessId)]
-            this.setState({ UniqueProcessId: uniqueSet })
+            singleRecordObject.ProcessGroupName = tempArray
+            singleRecordObject.ProcessIdList = ProcessIdListTemp
+            updateArrayList.push(singleRecordObject)
+            return null
           })
+          this.props.setGroupProcessList(updateArrayList)
+          // TO DISABLE DELETE BUTTON WHEN GET DATA API CALLED (IN EDIT)
+          let uniqueProcessId = []
+          _.uniqBy(res?.data?.DataList, function (o) {
+            uniqueProcessId.push(o?.ProcessId)
+          });
+          let allProcessId = []
+          res?.data?.DataList && res?.data?.DataList.map((item) => {
+            let ProcessIdListTemp = []
+            item.ProcessList && item.ProcessList.map((item1) => {
+              ProcessIdListTemp.push(item1.ProcessId)
+              return null
+            })
+
+            allProcessId = [...allProcessId, ...ProcessIdListTemp]
+            return null
+          })
+          let uniqueSet = [...new Set(allProcessId)]
+          this.props.setProcessList(uniqueSet)
+          this.setState({ UniqueProcessId: uniqueSet })
+          // })
 
           this.setState({ DataToChange: Data })
-          this.props.getVendorListByVendorType(Data.IsVendor, () => { this.setState({ inputLoader: false }) })
-          if (Data.IsVendor) {
-            this.props.getPlantBySupplier(Data.VendorId, () => { })
-          }
+          // this.props.getVendorListByVendorType(Data.IsVendor, () => { this.setState({ inputLoader: false }) })
+          // if (Data.IsVendor) {
+          //   this.props.getPlantBySupplier(Data.VendorId, () => { })
+          // }
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
-          this.props.change('Description', Data.Description)
+          this.props.change('Specification', Data.Specification)
           this.setState({ minEffectiveDate: Data.EffectiveDate })
           setTimeout(() => {
-            const { vendorListByVendorType, machineTypeSelectList, plantSelectList, } = this.props;
-
-
-            // let technologyArray = Data && Data.Technology.map((item) => ({ label: item.Technology, value: item.TechnologyId }))
-
+            let plantObj;
             let MachineProcessArray = Data && Data.MachineProcessRates.map(el => {
               return {
                 processName: el.ProcessName,
@@ -308,35 +329,31 @@ class AddMachineRate extends Component {
               }
             })
 
-            const vendorObj = vendorListByVendorType && vendorListByVendorType.find(item => item.Value === Data.VendorId)
-            const plantObj = Data.IsVendor === false && plantSelectList && plantSelectList.find(item => item.Value === Data.Plant[0].PlantId)
-            let vendorPlantArray = Data && Data.VendorPlant.map((item) => ({ Text: item.PlantName, Value: item.PlantId }))
-            const destinationPlantObj = plantSelectList && plantSelectList.find((item) => item.Value === Data.DestinationPlantId)
-            const machineTypeObj = machineTypeSelectList && machineTypeSelectList.find(item => Number(item.Value) === Data.MachineTypeId)
-
+            if (getConfigurationKey().IsDestinationPlantConfigure && Data.IsVendor) {
+              plantObj = Data.DestinationPlantName !== undefined ? { label: Data.DestinationPlantName, value: Data.DestinationPlantId } : []
+            } else {
+              plantObj = Data && Data.Plant.length > 0 ? { label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId } : []
+            }
             this.setState({
               isEditFlag: true,
               IsFinancialDataChanged: false,
-              // isLoader: false,
               IsVendor: Data.IsVendor,
               IsCopied: Data.IsCopied,
               IsDetailedEntry: Data.IsDetailedEntry,
-              selectedTechnology: [{ label: Data.Technology && Data.Technology[0].Technology, value: Data.Technology && Data.Technology[0].TechnologyId }],
-              selectedPlants: plantObj && plantObj !== undefined ? { label: plantObj.Text, value: plantObj.Value } : destinationPlantObj ? { label: destinationPlantObj.Text, value: destinationPlantObj.Value } : [],
-              vendorName: vendorObj && vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
-              selectedVendorPlants: vendorPlantArray,
-              machineType: machineTypeObj && machineTypeObj !== undefined ? { label: machineTypeObj.Text, value: machineTypeObj.Value } : [],
+              selectedTechnology: Data.Technology[0].Technology !== undefined ? { label: Data.Technology[0].Technology, value: Data.Technology[0].TechnologyId } : [],
+              selectedPlants: plantObj,
+              vendorName: Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.VendorId } : [],
+              machineType: Data.MachineType !== undefined ? { label: Data.MachineType, value: Data.MachineTypeId } : [],
               processGrid: MachineProcessArray,
               remarks: Data.Remark,
-              // Description: Data.Description,
               files: Data.Attachements,
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
               oldDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
-              UOM: this.state.isProcessGroup ? { label: Data.MachineProcessRates[0].UnitOfMeasurement, value: Data.MachineProcessRates.UnitOfMeasurementId } : [],
-              lockUOMAndRate: this.state.isProcessGroup
+              UOM: (this.state.isProcessGroup && !this.state.isViewMode) ? { label: Data.MachineProcessRates[0].UnitOfMeasurement, value: Data.MachineProcessRates.UnitOfMeasurementId } : [],
+              lockUOMAndRate: (this.state.isProcessGroup && !this.state.isViewMode)
             }, () => {
               this.setState({ isLoader: false })
-              this.props.change('MachineRate', this.state.isProcessGroup ? Data.MachineProcessRates[0].MachineRate : '')
+              this.props.change('MachineRate', (this.state.isProcessGroup && !this.state.isViewMode) ? Data.MachineProcessRates[0].MachineRate : '')
             })
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
             let files = Data.Attachements && Data.Attachements.map((item) => {
@@ -356,6 +373,10 @@ class AddMachineRate extends Component {
     }
   }
 
+  setRowdata = (array = []) => {
+    this.setState({ rowData: array })
+  }
+
   /**
   * @method onPressVendor
   * @description Used for Vendor checked
@@ -364,7 +385,6 @@ class AddMachineRate extends Component {
     this.setState({
       IsVendor: !this.state.IsVendor,
       vendorName: [],
-      selectedVendorPlants: [],
       vendorLocation: [],
       selectedPlants: [],
       inputLoader: true,
@@ -382,6 +402,9 @@ class AddMachineRate extends Component {
     this.setState({ DropdownChange: false })
   }
 
+  handleMachineSpecification = () => {
+    this.setState({ DropdownChange: false })
+  }
   /**
   * @method handleMessageChange
   * @description used remarks handler
@@ -420,11 +443,11 @@ class AddMachineRate extends Component {
   * @description Used to show type of listing
   */
   renderListing = (label) => {
-    const { technologySelectList, vendorListByVendorType, plantSelectList, filterPlantList,
-      UOMSelectList, machineTypeSelectList, processSelectList, } = this.props;
+    const { vendorListByVendorType, plantSelectList,
+      UOMSelectList, machineTypeSelectList, processSelectList, costingSpecifiTechnology } = this.props;
     const temp = [];
     if (label === 'technology') {
-      technologySelectList && technologySelectList.map(item => {
+      costingSpecifiTechnology && costingSpecifiTechnology.map(item => {
         if (item.Value === '0') return false;
         temp.push({ label: item.Text, value: item.Value })
         return null;
@@ -439,18 +462,10 @@ class AddMachineRate extends Component {
       });
       return temp;
     }
-    if (label === 'VendorPlant') {
-      filterPlantList && filterPlantList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ Text: item.Text, Value: item.Value })
-        return null;
-      });
-      return temp;
-    }
     if (label === 'plant') {
       plantSelectList && plantSelectList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
+        if (item.PlantId === '0') return false;
+        temp.push({ label: item.PlantNameCode, value: item.PlantId })
         return null;
       });
       return temp;
@@ -506,22 +521,14 @@ class AddMachineRate extends Component {
   */
   handleVendorName = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ vendorName: newValue, isVendorNameNotSelected: false, selectedVendorPlants: [], vendorLocation: [] }, () => {
+      this.setState({ vendorName: newValue, isVendorNameNotSelected: false, vendorLocation: [] }, () => {
         const { vendorName } = this.state;
         this.props.getPlantBySupplier(vendorName.value, () => { })
       });
     } else {
-      this.setState({ vendorName: [], selectedVendorPlants: [], vendorLocation: [] })
+      this.setState({ vendorName: [], vendorLocation: [] })
       this.props.getPlantBySupplier('', () => { })
     }
-  };
-
-  /**
-   * @method handleVendorPlant
-   * @description called
-   */
-  handleVendorPlant = (e) => {
-    this.setState({ selectedVendorPlants: e })
   };
 
   /**
@@ -529,6 +536,7 @@ class AddMachineRate extends Component {
   * @description called
   */
   handlePlants = (newValue, actionMeta) => {
+
     if (newValue && newValue !== '') {
       this.setState({ selectedPlants: newValue, })
     } else {
@@ -582,7 +590,7 @@ class AddMachineRate extends Component {
       isEditFlag: editFlag,
       Id: Id,
       isIncompleteMachine: (this.state.isEditFlag && !this.state.IsDetailedEntry) ? true : false,
-      isViewMode: this.state.isViewMode
+      isViewMode: this.state.isViewMode || this.state.isViewFlag
     }
     this.props.displayMoreDetailsForm(data)
   }
@@ -651,44 +659,61 @@ class AddMachineRate extends Component {
     const { fieldsObj } = this.props;
     const tempArray = [];
 
-    if (processName.length === 0 || UOM === undefined || UOM.length === 0 || fieldsObj.MachineRate === undefined) {
-      Toaster.warning('Fields should not be empty');
-      return false;
-    }
 
-    //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
-    const isExist = processGrid.findIndex(el => (el.ProcessId === processName.value))
-    if (isExist !== -1) {
-      Toaster.warning('Already added, Please check the values.')
-      return false;
-    }
+    let count = 0;
+    setTimeout(() => {
 
-    // const MachineRate = fieldsObj && fieldsObj.MachineRate !== undefined ? checkForNull(fieldsObj.MachineRate) : 0;
+      if (processName.length === 0) {
+        this.setState({ errorObj: { ...this.state.errorObj, processName: true } })
+        count++;
+      }
+      if (UOM === undefined || (UOM && UOM.length === 0)) {
+        this.setState({ errorObj: { ...this.state.errorObj, processUOM: true } })
+        count++;
+      }
+      if (fieldsObj.MachineRate === undefined || Number(fieldsObj.MachineRate) === 0) {
+        this.setState({ errorObj: { ...this.state.errorObj, machineRate: true } })
+        count++;
+      }
 
-    const MachineRate = fieldsObj.MachineRate
+      if (count > 0) {
+        return false;
+      }
 
-    // CONDITION TO CHECK MACHINE RATE IS NEGATIVE OR NOT A NUMBER
-    if (MachineRate < 0 || isNaN(MachineRate)) {
-      return false;
-    }
+      //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
+      const isExist = processGrid.findIndex(el => (el.ProcessId === processName.value))
+      if (isExist !== -1) {
+        Toaster.warning('Already added, Please check the values.')
+        return false;
+      }
 
-    tempArray.push(...processGrid, {
-      processName: processName.label,
-      ProcessId: processName.value,
-      UnitOfMeasurement: UOM.label,
-      UnitOfMeasurementId: UOM.value,
-      MachineRate: MachineRate,
-    })
+      // const MachineRate = fieldsObj && fieldsObj.MachineRate !== undefined ? checkForNull(fieldsObj.MachineRate) : 0;
+
+      const MachineRate = fieldsObj.MachineRate
+
+      // CONDITION TO CHECK MACHINE RATE IS NEGATIVE OR NOT A NUMBER
+      if (MachineRate < 0 || isNaN(MachineRate)) {
+        return false;
+      }
+
+      tempArray.push(...processGrid, {
+        processName: processName.label,
+        ProcessId: processName.value,
+        UnitOfMeasurement: UOM.label,
+        UnitOfMeasurementId: UOM.value,
+        MachineRate: MachineRate,
+      })
 
 
-    this.setState({ IsFinancialDataChanged: true })
-    this.setState({
-      processGrid: tempArray,
-      processName: [],
-      UOM: isProcessGroup ? UOM : [],
-      lockUOMAndRate: isProcessGroup
-    }, () => this.props.change('MachineRate', isProcessGroup ? MachineRate : 0));
-    this.setState({ DropdownChange: false })
+      this.setState({ IsFinancialDataChanged: true })
+      this.setState({
+        processGrid: tempArray,
+        processName: [],
+        UOM: isProcessGroup ? UOM : [],
+        lockUOMAndRate: isProcessGroup
+      }, () => this.props.change('MachineRate', isProcessGroup ? MachineRate : 0));
+      this.setState({ DropdownChange: false, errorObj: { processName: false, processUOM: false, machineRate: false } })
+    }, 200);
   }
 
   /**
@@ -696,7 +721,7 @@ class AddMachineRate extends Component {
 * @description Used to handle updateProcessGrid
 */
   updateProcessGrid = () => {
-    const { processName, UOM, processGrid, processGridEditIndex } = this.state;
+    const { processName, UOM, processGrid, processGridEditIndex, isProcessGroup } = this.state;
     const { fieldsObj } = this.props;
     let tempArray = [];
 
@@ -738,11 +763,12 @@ class AddMachineRate extends Component {
     this.setState({
       processGrid: tempArray,
       processName: [],
-      UOM: [],
+      UOM: isProcessGroup ? UOM : [],
+      lockUOMAndRate: isProcessGroup,
       processGridEditIndex: '',
       isEditIndex: false,
 
-    }, () => this.props.change('MachineRate', 0));
+    }, () => this.props.change('MachineRate', isProcessGroup ? MachineRate : 0));
   };
 
   /**
@@ -751,18 +777,15 @@ class AddMachineRate extends Component {
 */
   resetProcessGridData = () => {
     const { isProcessGroup, UOM } = this.state
-    console.log('isProcessGroup: ', isProcessGroup);
+
     const { fieldsObj } = this.props;
     const MachineRate = fieldsObj.MachineRate
-    console.log('MachineRate: ', MachineRate);
-    let machineRate =
-      console.log(isProcessGroup ? MachineRate : '', "isProcessGroup ? MachineRate : ''");
     this.setState({
       processName: [],
-      UOM: isProcessGroup ? UOM : [],
+      UOM: isProcessGroup && this.state.processGrid.length !== 0 ? UOM : [],
       processGridEditIndex: '',
       isEditIndex: false,
-    }, () => this.props.change('MachineRate', isProcessGroup ? MachineRate : ''));
+    }, () => this.props.change('MachineRate', isProcessGroup && this.state.processGrid.length !== 0 ? MachineRate : ''));
   };
 
   /**
@@ -799,7 +822,9 @@ class AddMachineRate extends Component {
     this.setState({
       processGrid: tempData,
       lockUOMAndRate: tempData.length === 0 ? false : true,
-      UOM: tempData.length === 0 ? [] : UOM
+      UOM: tempData.length === 0 ? [] : !this.state.lockUOMAndRate ? [] : UOM,
+      isEditIndex: false,
+      processName: [],
     }, () => this.props.change('MachineRate', tempData.length === 0 ? 0 : this.props.fieldsObj.MachineRate))
     this.setState({ DropdownChange: false })
   }
@@ -853,6 +878,7 @@ class AddMachineRate extends Component {
 
   // specify upload params and url for your files
   getUploadParams = ({ file, meta }) => {
+    this.setState({ attachmentLoader: true })
     return { url: 'https://httpbin.org/post', }
 
   }
@@ -864,7 +890,7 @@ class AddMachineRate extends Component {
   setDisableFalseFunction = () => {
     const loop = Number(this.dropzone.current.files.length) - Number(this.state.files.length)
     if (Number(loop) === 1) {
-      this.setState({ setDisable: false })
+      this.setState({ setDisable: false, attachmentLoader: false })
     }
   }
 
@@ -956,12 +982,13 @@ class AddMachineRate extends Component {
 
 
 
+
   /**
   * @method onSubmit
   * @description Used to Submit the form
   */
   onSubmit = debounce((values) => {
-    const { IsVendor, MachineID, isEditFlag, IsDetailedEntry, vendorName, selectedTechnology, selectedPlants, selectedVendorPlants,
+    const { IsVendor, MachineID, isEditFlag, IsDetailedEntry, vendorName, selectedTechnology, selectedPlants,
       remarks, machineType, files, processGrid, isViewFlag, DropdownChange, effectiveDate, oldDate, uploadAttachements, isDateChange, IsFinancialDataChanged, DataToChange } = this.state;
 
 
@@ -987,7 +1014,6 @@ class AddMachineRate extends Component {
     }
 
     let technologyArray = [{ Technology: selectedTechnology.label, TechnologyId: selectedTechnology.value }]
-    let vendorPlantArray = selectedVendorPlants && selectedVendorPlants.map((item) => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
     let updatedFiles = files.map((file) => ({ ...file, ContextId: MachineID }))
 
 
@@ -1003,7 +1029,7 @@ class AddMachineRate extends Component {
         // EXECUTED WHEN:- EDIT MODE && MACHINE MORE DETAILED == TRUE
         let detailedRequestData = { ...machineData, MachineId: MachineID, Remark: remarks, Attachements: updatedFiles }
         this.props.updateMachineDetails(detailedRequestData, (res) => {
-          this.setState({ setDisable: false })
+          this.setState({ setDisable: false, selectedPlants: selectedPlants })
           if (res?.data?.Result) {
             Toaster.success(MESSAGES.UPDATE_MACHINE_SUCCESS);
             this.cancel();
@@ -1023,22 +1049,20 @@ class AddMachineRate extends Component {
           MachineName: values.MachineName,
           MachineTypeId: machineType.value,
           TonnageCapacity: values.TonnageCapacity,
-          Description: values.Description,
+          Specification: values.Specification,
           LoggedInUserId: loggedInUserId(),
           MachineProcessRates: processGrid,
           Technology: [{ Technology: selectedTechnology.label ? selectedTechnology.label : selectedTechnology[0].label, TechnologyId: selectedTechnology.value ? selectedTechnology.value : selectedTechnology[0].value }],
           Plant: !IsVendor ? [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }] : [],
-          VendorPlant: vendorPlantArray,
           Remark: remarks,
           Attachements: updatedFiles,
           IsForcefulUpdated: true,
           EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD'),
-          MachineProcessGroup: this.props.processGroupApiData
+          MachineProcessGroup: this.props.processGroupApiData,
+          VendorPlant: [],
         }
 
-
         if (IsFinancialDataChanged) {
-
           if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
             this.setState({ showPopup: true, updatedObj: requestData })
             return false
@@ -1049,35 +1073,17 @@ class AddMachineRate extends Component {
             Toaster.warning('Please update the effective date')
             return false
           }
-
         }
-
-
-        if (IsFinancialDataChanged) {
-
-          if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
-            this.setState({ showPopup: true, updatedObj: requestData })
-            return false
-
-          } else {
-
-            this.setState({ setDisable: false })
-            Toaster.warning('Please update the effective date')
-            return false
-          }
-
-        }
-
 
         if (isEditFlag) {
 
           if (DropdownChange && uploadAttachements &&
-            (DataToChange.Description ? DataToChange.Description : '-') === (values.Description ? values.Description : '-') &&
+            (DataToChange.Specification ? DataToChange.Specification : '-') === (values.Specification ? values.Specification : '-') &&
             (DataToChange.MachineName ? DataToChange.MachineName : '-') === (values.MachineName ? values.MachineName : '-') &&
             (DataToChange?.MachineTypeId ? String(DataToChange?.MachineTypeId) : '-') === (machineType?.value ? String(machineType?.value) : '-') &&
             (DataToChange?.TonnageCapacity ? String(DataToChange?.TonnageCapacity) : '-') === (values?.TonnageCapacity ? String(values?.TonnageCapacity) : '-') &&
             DataToChange?.Remark === values?.Remark) {
-            this.cancel();
+            Toaster.warning('Please change data to send machine for approval')
             return false
           }
 
@@ -1089,7 +1095,6 @@ class AddMachineRate extends Component {
       }
     } else {
 
-
       if (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) {
         this.setState({ IsSendForApproval: true })
       } else {
@@ -1097,7 +1102,7 @@ class AddMachineRate extends Component {
       }
 
       // EXECUTED WHEN:- NEW MACHINE WITH BASIC DETAILS
-      this.setState({ setDisable: true })
+      // this.setState({ setDisable: true })
       const formData = {
         IsSendForApproval: this.state.IsSendForApproval,
         IsFinancialDataChanged: isDateChange ? true : false,
@@ -1109,20 +1114,18 @@ class AddMachineRate extends Component {
         MachineName: values.MachineName,
         MachineTypeId: machineType.value,
         TonnageCapacity: values.TonnageCapacity,
-        Description: values.Description,
+        Specification: values.Specification,
         LoggedInUserId: loggedInUserId(),
         MachineProcessRates: processGrid,
         Technology: (technologyArray.length > 0 && technologyArray[0]?.Technology !== undefined) ? technologyArray : [{ Technology: selectedTechnology.label ? selectedTechnology.label : selectedTechnology[0].label, TechnologyId: selectedTechnology.value ? selectedTechnology.value : selectedTechnology[0].value }],
         Plant: !IsVendor ? [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }] : [],
         DestinationPlantId: getConfigurationKey().IsDestinationPlantConfigure ? selectedPlants.value : '',
-        VendorPlant: vendorPlantArray,
         Remark: remarks,
         Attachements: files,
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
-        MachineProcessGroup: this.props.processGroupApiData
+        MachineProcessGroup: this.props.processGroupApiData,
+        VendorPlant: [],
       }
-
-
 
       let obj = {}
       let finalObj = {
@@ -1136,8 +1139,6 @@ class AddMachineRate extends Component {
 
       }
 
-
-
       if (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) {
 
         if (IsFinancialDataChanged) {
@@ -1145,27 +1146,28 @@ class AddMachineRate extends Component {
           if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
             this.setState({ approveDrawer: true, approvalObj: finalObj })
             return false
-
           } else {
-
             this.setState({ setDisable: false })
             Toaster.warning('Please update the effective date')
             return false
           }
-
         }
-
 
         if (isEditFlag) {
-          if (DropdownChange && uploadAttachements) {
-            this.cancel();
+          if (DropdownChange && uploadAttachements &&
+            (DataToChange.Specification ? DataToChange.Specification : '-') === (values.Specification ? values.Specification : '-') &&
+            (DataToChange.MachineName ? DataToChange.MachineName : '-') === (values.MachineName ? values.MachineName : '-') &&
+            (DataToChange?.MachineTypeId ? String(DataToChange?.MachineTypeId) : '-') === (machineType?.value ? String(machineType?.value) : '-') &&
+            (DataToChange?.TonnageCapacity ? String(DataToChange?.TonnageCapacity) : '-') === (values?.TonnageCapacity ? String(values?.TonnageCapacity) : '-') &&
+            DataToChange?.Remark === values?.Remark) {
+            Toaster.warning('Please change data to send machine for approval')
             return false
+          } else {
+
+            this.setState({ setDisable: true })
+            this.setState({ approveDrawer: true, approvalObj: finalObj })
           }
-          this.setState({ setDisable: true })
-          this.setState({ approveDrawer: true, approvalObj: finalObj })
         }
-
-
 
       } else {
 
@@ -1214,19 +1216,15 @@ class AddMachineRate extends Component {
   */
   showFormData = () => {
     const { data } = this.props
-
     this.props.getVendorListByVendorType(data.IsVendor, () => { })
     if (data.IsVendor) {
       this.props.getPlantBySupplier(data.VendorId, () => { })
     }
-
-    this.props.change('EffectiveDate', DayTime(data.EffectiveDate).isValid() ? DayTime(data.EffectiveDate) : '')
+    let technologyArray = [{ label: data.Technology && data.Technology[0].Technology, value: data.Technology && data.Technology[0].TechnologyId }]
     setTimeout(() => {
       const { vendorListByVendorType, machineTypeSelectList, plantSelectList, } = this.props;
 
       // let technologyArray = data && data.Technology.map((item) => ({ Text: item.Technology, Value: item.TechnologyId }))
-      let technologyArray = [{ label: data.Technology && data.Technology[0].Technology, value: data.Technology && data.Technology[0].TechnologyId }]
-
 
       let MachineProcessArray = data && data.MachineProcessRates && data.MachineProcessRates.map(el => {
         return {
@@ -1240,10 +1238,9 @@ class AddMachineRate extends Component {
       this.props.change('MachineName', data.MachineName)
       this.props.change('MachineNumber', data.MachineNumber)
       this.props.change('TonnageCapacity', data.TonnageCapacity)
-      this.props.change('Description', data.Description)
+      this.props.change('Specification', data.Specification)
       const vendorObj = vendorListByVendorType && vendorListByVendorType.find(item => item.Value === data.VendorId)
-      const plantObj = data.IsVendor === false && plantSelectList && plantSelectList.find(item => item.Value === data.Plant[0].PlantId)
-      let vendorPlantArray = data && data.VendorPlant.map((item) => ({ Text: item.PlantName, Value: item.PlantId }))
+      const plantObj = data.IsVendor === false && plantSelectList && plantSelectList.find(item => item.PlantId === data.Plant[0].PlantId)
 
       const machineTypeObj = machineTypeSelectList && machineTypeSelectList.find(item => item.Value === data.MachineTypeId)
 
@@ -1257,11 +1254,11 @@ class AddMachineRate extends Component {
         selectedTechnology: technologyArray,
         selectedPlants: plantObj && plantObj !== undefined ? { label: plantObj.Text, value: plantObj.Value } : [],
         vendorName: vendorObj && vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
-        selectedVendorPlants: vendorPlantArray,
         machineType: machineTypeObj && machineTypeObj !== undefined ? { label: machineTypeObj.Text, value: machineTypeObj.Value } : [],
         processGrid: MachineProcessArray,
         remarks: data.Remark,
         files: data.Attachements,
+        effectiveDate: data.EffectiveDate
       }, () => this.setState({ isLoader: false }))
     }, 100)
   }
@@ -1284,6 +1281,16 @@ class AddMachineRate extends Component {
       this.setState({ UniqueProcessId: [...uniqueProcessId] })
     }
   }
+
+  /**
+  * @method DisplayMachineRateLabel
+  * @description for machine rate label with dynamic uom change
+  */
+
+  DisplayMachineRateLabel = () => {
+    return <>Machine Rate/{this.state.UOM && this.state.UOM.length !== 0 ? displayUOM(this.state.UOM.label) : "UOM"} (INR)</>
+  }
+
 
   /**
   * @method render
@@ -1310,7 +1317,6 @@ class AddMachineRate extends Component {
       new Promise(resolve => {
         resolve(filterList(inputValue));
       });
-
     return (
       <>
         {this.state.isLoader && <LoaderCustom />}
@@ -1322,7 +1328,7 @@ class AddMachineRate extends Component {
                   <div className="row">
                     <div className="col-md-6">
                       <div className="form-heading mb-0">
-                        <h2>{isEditFlag ? `Update Machine Rate` : `Add Machine Rate`}</h2>
+                        <h2> {isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Machine Rate</h2>
                       </div>
                     </div>
                   </div>
@@ -1366,7 +1372,7 @@ class AddMachineRate extends Component {
                           <Field
                             label="Technology"
                             name="technology"
-                            placeholder="Select"
+                            placeholder={isViewFlag || isEditFlag ? '-' : "Select"}
                             // selection={(this.state.selectedTechnology == null || this.state.selectedTechnology.length === 0) ? [] : this.state.selectedTechnology}
                             options={this.renderListing('technology')}
                             handleChangeDescription={this.handleTechnology}
@@ -1385,37 +1391,21 @@ class AddMachineRate extends Component {
                         {this.state.IsVendor &&
                           <Col md="3">
                             <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                            {this.state.inputLoader && <LoaderCustom customClass={`vendor-input-loader-second-col`} />}
-                            <AsyncSelect
-                              name="vendorName"
-                              ref={this.myRef}
-                              key={this.state.updateAsyncDropdown}
-                              loadOptions={promiseOptions}
-                              onChange={(e) => this.handleVendorName(e)}
-                              noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
-                              value={this.state.vendorName}
-                              isDisabled={(isEditFlag || this.state.inputLoader || isViewFlag) ? true : false} />
-                            {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
+                            <div className='p-relative'>
+                              {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
+                              <AsyncSelect
+                                name="vendorName"
+                                ref={this.myRef}
+                                key={this.state.updateAsyncDropdown}
+                                loadOptions={promiseOptions}
+                                onChange={(e) => this.handleVendorName(e)}
+                                noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
+                                value={this.state.vendorName}
+                                isDisabled={(isEditFlag || this.state.inputLoader || isViewFlag) ? true : false} />
+                              {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
+                            </div>
+                          </Col>}
 
-                          </Col>}
-                        {this.state.IsVendor &&
-                          checkVendorPlantConfigurable() &&
-                          <Col md="3">
-                            <Field
-                              label="Vendor Plant"
-                              name="VendorPlant"
-                              placeholder="--- Plant ---"
-                              selection={(this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length === 0) ? [] : this.state.selectedVendorPlants}
-                              options={this.renderListing('VendorPlant')}
-                              selectionChanged={this.handleVendorPlant}
-                              optionValue={option => option.Value}
-                              optionLabel={option => option.Text}
-                              component={renderMultiSelectField}
-                              mendatory={true}
-                              className="multiselect-with-border"
-                              disabled={isEditFlag || isViewFlag ? true : false}
-                            />
-                          </Col>}
                         {(this.state.IsVendor === false || getConfigurationKey().IsDestinationPlantConfigure) && (
                           <Col md="3">
                             <Field
@@ -1423,14 +1413,14 @@ class AddMachineRate extends Component {
                               type="text"
                               label={this.state.IsVendor ? 'Destination Plant' : 'Plant'}
                               component={searchableSelect}
-                              placeholder={'Select'}
+                              placeholder={(isEditFlag || isViewMode || isViewFlag) ? '-' : 'Select'}
                               options={this.renderListing('plant')}
                               //onKeyUp={(e) => this.changeItemDesc(e)}
                               validate={(this.state.selectedPlants == null || this.state.selectedPlants.length === 0) ? [required] : []}
                               required={true}
                               handleChangeDescription={this.handlePlants}
                               valueDescription={this.state.selectedPlants}
-                              disabled={isEditFlag ? (IsCopied ? false : true) : this.state.isViewFlag ? true : false}
+                              disabled={(isEditFlag || isViewMode || isViewFlag) ? (IsCopied ? false : true) : this.state.isViewFlag ? true : false}
                             />
                           </Col>)}
 
@@ -1439,8 +1429,8 @@ class AddMachineRate extends Component {
                             label={`Machine No.`}
                             name={"MachineNumber"}
                             type="text"
-                            placeholder={'Enter'}
-                            validate={initialConfiguration.IsMachineNumberConfigure ? [] : [required]}
+                            placeholder={isEditFlag ? '-' : 'Enter'}
+                            validate={initialConfiguration.IsMachineNumberConfigure ? [] : [required, checkSpacesInString]}
                             component={renderText}
                             required={initialConfiguration.IsMachineNumberConfigure ? false : true}
                             onBlur={this.checkUniqNumber}
@@ -1453,12 +1443,13 @@ class AddMachineRate extends Component {
                         <Col md="3">
                           <Field
                             label={`Machine Specification`}
-                            name={"Description"}
+                            name={"Specification"}
                             type="text"
-                            placeholder={'Enter'}
-                            validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
+                            placeholder={isViewMode ? '-' : 'Enter'}
+                            validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString]}
                             component={renderText}
                             // required={true}
+                            onChange={this.handleMachineSpecification}
                             disabled={isViewMode ? true : false}
                             className=" "
                             customClassName="withBorder"
@@ -1470,8 +1461,8 @@ class AddMachineRate extends Component {
                             label={`Machine Name`}
                             name={"MachineName"}
                             type="text"
-                            placeholder={'Enter'}
-                            validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
+                            placeholder={isViewMode ? '-' : 'Enter'}
+                            validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString]}
                             component={renderText}
                             required={false}
                             disabled={isViewMode ? true : false}
@@ -1487,7 +1478,7 @@ class AddMachineRate extends Component {
                                 type="text"
                                 label="Machine Type"
                                 component={searchableSelect}
-                                placeholder={'Select'}
+                                placeholder={isEditFlag ? '-' : 'Select'}
                                 options={this.renderListing('MachineTypeList')}
                                 //onKeyUp={(e) => this.changeItemDesc(e)}
                                 validate={(this.state.machineType == null || this.state.machineType.length === 0) ? [] : []}
@@ -1509,8 +1500,8 @@ class AddMachineRate extends Component {
                             label={`Machine Tonnage(Ton)`}
                             name={"TonnageCapacity"}
                             type="text"
-                            placeholder={'Enter'}
-                            validate={[checkWhiteSpaces, postiveNumber, maxLength10]}
+                            placeholder={isViewMode ? '-' : 'Enter'}
+                            validate={[checkWhiteSpaces, postiveNumber, maxLength10, checkSpacesInString]}
                             component={renderText}
                             required={false}
                             disabled={isViewMode ? true : false}
@@ -1535,6 +1526,7 @@ class AddMachineRate extends Component {
                                   //e.preventDefault()
                                 }}
                                 component={renderDatePicker}
+                                placeholder={isViewMode || !this.state.IsFinancialDataChanged ? '-' : "Enter"}
                                 className="form-control"
                                 disabled={isViewMode || !this.state.IsFinancialDataChanged}
                               />
@@ -1553,14 +1545,14 @@ class AddMachineRate extends Component {
                                     type="button"
                                     className={'user-btn'}
                                     onClick={() => this.moreDetailsToggler(this.state.MachineID, true)}>
-                                    <div className={'edit_pencil_icon d-inline-block mr5'}></div>EDIT MORE MACHINE DETAILS</button>
+                                    <div className={`${isViewMode ? 'fa fa-eye' : 'edit_pencil_icon'}  d-inline-block mr5`}></div> {isViewMode ? "View" : "Edit"} MORE MACHINE DETAILS</button>
                                   :
                                   AddAccessibility &&
                                   <button
                                     type="button"
                                     className={this.state.isViewFlag ? 'disabled-button user-btn' : 'user-btn'}
                                     disabled={this.state.isViewFlag ? true : false}
-                                    onClick={() => this.moreDetailsToggler(isEditFlag ? this.state.MachineID : '', false)}>
+                                    onClick={() => this.moreDetailsToggler(isEditFlag ? this.state.MachineID : '', isEditFlag ? true : false)}>
                                     <div className={'plus'}></div>ADD MORE MACHINE DETAILS</button>
                               }
 
@@ -1569,7 +1561,7 @@ class AddMachineRate extends Component {
                         <Col md="12"><hr /></Col>
                       </Row>
 
-                      <Row>
+                      <Row className='child-form-container'>
                         <Col md="12">
                           <HeaderTitle
                             title={'Process:'}
@@ -1583,16 +1575,17 @@ class AddMachineRate extends Component {
                                 type="text"
                                 label="Process Name"
                                 component={searchableSelect}
-                                placeholder={'Select'}
+                                placeholder={isEditFlag ? '-' : 'Select'}
                                 options={this.renderListing('ProcessNameList')}
                                 //onKeyUp={(e) => this.changeItemDesc(e)}
                                 //validate={(this.state.processName == null || this.state.processName.length == 0) ? [required] : []}
-                                //required={true}
+                                required={true}
                                 validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                                 handleChangeDescription={this.handleProcessName}
                                 valueDescription={this.state.processName}
                                 disabled={isViewMode || (isEditFlag && isMachineAssociated)}
                               />
+                              {this.state.errorObj.processName && (this.state.processName && this.state.processName.length === 0) && <div className='text-help p-absolute bottom-7'>This field is required.</div>}
                             </div>
                             {(!isEditFlag || this.state.isViewFlag) && <div
                               onClick={this.processToggler}
@@ -1606,29 +1599,31 @@ class AddMachineRate extends Component {
                             type="text"
                             label="UOM"
                             component={searchableSelect}
-                            placeholder={'Select'}
+                            placeholder={isEditFlag || lockUOMAndRate || (isEditFlag && isMachineAssociated) ? '-' : 'Select'}
                             options={this.renderListing('UOM')}
                             //onKeyUp={(e) => this.changeItemDesc(e)}
-                            //required={true}
+                            required={true}
                             handleChangeDescription={this.handleUOM}
                             valueDescription={this.state.UOM}
                             disabled={isViewMode || lockUOMAndRate || (isEditFlag && isMachineAssociated)}
                           />
+                          {this.state.errorObj.processUOM && (this.state.UOM === undefined) && <div className='text-help p-absolute'>This field is required.</div>}
                         </Col>
-                        <Col md="3">
+                        <Col md="3" className='UOM-label-container'>
                           <Field
-                            label={`Machine Rate (INR)`}
+                            label={this.DisplayMachineRateLabel()}
                             name={"MachineRate"}
                             type="text"
-                            placeholder={'Enter'}
+                            placeholder={isViewMode || lockUOMAndRate || (isEditFlag && isMachineAssociated) ? '-' : 'Enter'}
                             validate={[positiveAndDecimalNumber, maxLength80]}
                             component={renderText}
                             onChange={this.handleMachineRate}
-                            //required={true}
+                            required={true}
                             disabled={isViewMode || lockUOMAndRate || (isEditFlag && isMachineAssociated)}
                             className=" "
                             customClassName=" withBorder"
                           />
+                          {this.state.errorObj.machineRate && (this.props.fieldsObj.MachineRate === undefined || Number(this.props.fieldsObj.MachineRate) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                         </Col>
                         <Col md="3" className='mb-2 d-flex align-items-center'>
                           <div>
@@ -1649,12 +1644,12 @@ class AddMachineRate extends Component {
                                 </button>
                               </>
                               :
-                              !this.state.IsDetailedEntry &&
+                              // !this.state.IsDetailedEntry &&
                               <>
                                 <button
                                   type="button"
                                   className={`${isViewFlag ? 'disabled-button user-btn' : 'user-btn'} pull-left mr5`}
-                                  disabled={(this.state.isViewFlag || (isEditFlag && isMachineAssociated)) ? true : false}
+                                  disabled={(this.state.isViewFlag || (isEditFlag && isMachineAssociated) || isViewMode) ? true : false}
                                   onClick={this.processTableHandler}>
                                   <div className={'plus'}></div>ADD</button>
                                 <button
@@ -1684,7 +1679,7 @@ class AddMachineRate extends Component {
                                   return (
                                     <tr key={index}>
                                       <td>{item.processName}</td>
-                                      <td>{item.UnitOfMeasurement}</td>
+                                      <td className='UOM-label-container'>{displayUOM(item.UnitOfMeasurement)}</td>
                                       <td>{checkForDecimalAndNull(item.MachineRate, initialConfiguration.NoOfDecimalForPrice)}</td>
                                       <td>
                                         {/* {!this.state.IsDetailedEntry && */}
@@ -1698,7 +1693,7 @@ class AddMachineRate extends Component {
                                 })
                               }
                               <tr>
-                                {this.state.processGrid.length === 0 && <td colSpan={"6"}>
+                                {this.state.processGrid?.length === 0 && <td colSpan={"6"}>
                                   <NoContentFound title={EMPTY_DATA} />
                                 </td>}
                               </tr>
@@ -1716,7 +1711,7 @@ class AddMachineRate extends Component {
                               title={'Process Group:'} />
                           </Col>
                           <Col md="12">
-                            <ProcessGroup isEditFlag={isEditFlag} processListing={this.state.processGrid} isListing={false} isViewFlag={isViewMode} changeDropdownValue={this.changeDropdownValue} showDelete={this.showDelete} />
+                            <ProcessGroup isEditFlag={isEditFlag} processListing={this.state.processGrid} isListing={false} isViewFlag={isViewMode} changeDropdownValue={this.changeDropdownValue} showDelete={this.showDelete} rowData={this.state.rowData} setRowData={this.setRowdata} />
                           </Col>
                         </Row>
                       }
@@ -1731,7 +1726,7 @@ class AddMachineRate extends Component {
                           <Field
                             label={'Remarks'}
                             name={`Remark`}
-                            placeholder="Type here..."
+                            placeholder={isViewMode ? '-' : "Type here..."}
                             value={this.state.remarks}
                             className=""
                             customClassName=" textAreaWithBorder"
@@ -1781,6 +1776,7 @@ class AddMachineRate extends Component {
                         </Col>
                         <Col md="3">
                           <div className={'attachment-wrapper'}>
+                            {this.state.attachmentLoader && <LoaderCustom customClass="attachment-loader" />}
                             {
                               this.state.files && this.state.files.map(f => {
                                 const withOutTild = f.FileURL.replace('~', '')
@@ -1804,7 +1800,7 @@ class AddMachineRate extends Component {
                         </Col>
                       </Row>
                     </div>
-                    <Row className="sf-btn-footer no-gutters justify-content-between">
+                    <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                       <div className="col-sm-12 text-right bluefooter-butn">
                         {
                           !isViewFlag ?
@@ -1824,7 +1820,7 @@ class AddMachineRate extends Component {
                                   <button type="submit"
                                     class="user-btn approval-btn save-btn mr5"
 
-                                    disabled={isViewMode}
+                                    disabled={isViewMode || setDisable}
                                   >
                                     <div className="send-for-approval"></div>
                                     {'Send For Approval'}
@@ -1862,22 +1858,25 @@ class AddMachineRate extends Component {
               </div>
             </div>
           </div>
-        </div>
+        </div >
         {isOpenMachineType && <AddMachineTypeDrawer
           isOpen={isOpenMachineType}
           closeDrawer={this.closeMachineTypeDrawer}
           isEditFlag={false}
           ID={''}
           anchor={'right'}
-        />}
-        {isOpenProcessDrawer && <AddProcessDrawer
-          isOpen={isOpenProcessDrawer}
-          closeDrawer={this.closeProcessDrawer}
-          isEditFlag={false}
-          isMachineShow={false}
-          ID={''}
-          anchor={'right'}
-        />}
+        />
+        }
+        {
+          isOpenProcessDrawer && <AddProcessDrawer
+            isOpen={isOpenProcessDrawer}
+            closeDrawer={this.closeProcessDrawer}
+            isEditFlag={false}
+            isMachineShow={false}
+            ID={''}
+            anchor={'right'}
+          />
+        }
 
 
         {
@@ -1909,13 +1908,14 @@ class AddMachineRate extends Component {
 * @param {*} state
 */
 function mapStateToProps(state) {
-  const { comman, material, machine, auth } = state;
-  const fieldsObj = selector(state, 'MachineNumber', 'MachineName', 'TonnageCapacity', 'MachineRate', 'Description');
+  const { comman, material, machine, auth, costing } = state;
+  const fieldsObj = selector(state, 'MachineNumber', 'MachineName', 'TonnageCapacity', 'MachineRate', 'Description', 'EffectiveDate', 'Specification');
 
-  const { plantList, technologySelectList, plantSelectList, filterPlantList, UOMSelectList, } = comman;
+  const { plantList, plantSelectList, filterPlantList, UOMSelectList, } = comman;
   const { machineTypeSelectList, processSelectList, machineData, loading, processGroupApiData } = machine;
   const { vendorListByVendorType } = material;
   const { initialConfiguration, } = auth;
+  const { costingSpecifiTechnology } = costing
 
 
 
@@ -1926,14 +1926,14 @@ function mapStateToProps(state) {
       MachineNumber: machineData.MachineNumber,
       MachineName: machineData.MachineName,
       TonnageCapacity: machineData.TonnageCapacity,
-      Description: machineData.Description,
+      Specification: machineData.Specification,
       Remark: machineData.Remark,
     }
   }
 
   return {
-    vendorListByVendorType, plantList, technologySelectList, plantSelectList, filterPlantList, UOMSelectList,
-    machineTypeSelectList, processSelectList, fieldsObj, machineData, initialValues, loading, initialConfiguration, processGroupApiData
+    vendorListByVendorType, plantList, plantSelectList, filterPlantList, UOMSelectList,
+    machineTypeSelectList, processSelectList, fieldsObj, machineData, initialValues, loading, initialConfiguration, processGroupApiData, costingSpecifiTechnology
   }
 
 }
@@ -1946,7 +1946,6 @@ function mapStateToProps(state) {
 */
 export default connect(mapStateToProps, {
   dirty: isDirty('AddMachineRate'),
-  getTechnologySelectList,
   getVendorListByVendorType,
   getPlantSelectListByType,
   getPlantBySupplier,
@@ -1963,6 +1962,8 @@ export default connect(mapStateToProps, {
   getMachineData,
   getProcessGroupByMachineId,
   setGroupProcessList,
+  setProcessList,
+  getCostingSpecificTechnology
 })(reduxForm({
   form: 'AddMachineRate',
   enableReinitialize: true,

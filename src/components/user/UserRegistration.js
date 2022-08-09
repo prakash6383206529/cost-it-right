@@ -1,14 +1,14 @@
 import React, { Component } from "react";
-import { Field, reduxForm } from "redux-form";
+import { Field, reduxForm, formValueSelector } from "redux-form";
 import { langs } from "../../config/localization";
 import Toaster from "../common/Toaster";
 import { connect } from "react-redux";
 import { Loader } from "../common/Loader";
 import {
   minLength3, minLength6, minLength10, maxLength11, maxLength12, required, email, minLength7, maxLength18,
-  maxLength6, checkWhiteSpaces, maxLength15, postiveNumber, maxLength80, maxLength5, acceptAllExceptSingleSpecialCharacter
+  maxLength6, checkWhiteSpaces, maxLength15, postiveNumber, maxLength80, maxLength5, acceptAllExceptSingleSpecialCharacter, strongPassword, maxLength25,
 } from "../../helper/validation";
-import { renderPasswordInputField, focusOnError, renderEmailInputField, renderText, searchableSelect, renderMultiSelectField, } from "../layout/FormInputs";
+import { renderPasswordInputField, focusOnError, renderEmailInputField, renderText, searchableSelect, renderMultiSelectField, renderNumberInputField, } from "../layout/FormInputs";
 import {
   registerUserAPI, getAllRoleAPI, getAllDepartmentAPI, getUserDataAPI, getAllUserDataAPI, updateUserAPI, setEmptyUserDataAPI, getRoleDataAPI, getAllTechnologyAPI,
   getPermissionByUser, getUsersTechnologyLevelAPI, setUserAdditionalPermission, setUserTechnologyLevelForCosting, updateUserTechnologyLevelForCosting,
@@ -20,13 +20,14 @@ import { reactLocalStorage } from "reactjs-localstorage";
 import { getConfigurationKey, loggedInUserId } from "../../helper/auth";
 import { Table, Button, Row, Col } from 'reactstrap';
 import "./UserRegistration.scss";
-import { EMPTY_DATA } from "../../config/constants";
+import { EMPTY_DATA, IV, KEY } from "../../config/constants";
 import NoContentFound from "../common/NoContentFound";
 import HeaderTitle from "../common/HeaderTitle";
 import PermissionsTabIndex from "./RolePermissions/PermissionsTabIndex";
 import { EMPTY_GUID } from "../../config/constants";
 import PopupMsgWrapper from "../common/PopupMsgWrapper";
 var CryptoJS = require('crypto-js')
+const selector = formValueSelector('UserRegistration');
 
 class UserRegistration extends Component {
   constructor(props) {
@@ -102,6 +103,11 @@ class UserRegistration extends Component {
     })
     this.props.getSimulationTechnologySelectList(() => { })
     this.props.getMastersSelectList(() => { })
+
+    setTimeout(() => {
+      this.props.change('UserName', "")
+      this.props.change('Password', "")
+    }, 400);
   }
 
   /**
@@ -361,7 +367,7 @@ class UserRegistration extends Component {
               role: RoleObj !== undefined ? { label: RoleObj.RoleName, value: RoleObj.RoleId } : [],
               city: { label: this.props.registerUserData.CityName, value: this.props.registerUserData.CityId }
             })
-
+            this.props.change('UserName', Data?.UserName)
             if (Data.IsAdditionalAccess) {
               this.getUserPermission(data.UserId)
             }
@@ -484,11 +490,28 @@ class UserRegistration extends Component {
   moduleDataHandler = (data, ModuleName) => {
     const { Modules } = this.state;
     let temp111 = data;
-
+    let isSelectAll = true
     let isParentChecked = temp111.findIndex(el => el.IsChecked === true)
+
+    if (ModuleName === "Costing" || ModuleName === "Simulation") {
+      temp111 && temp111.map((ele, index) => {
+        if (ele.Sequence !== 0) {
+          if (ele.IsChecked === false) {
+            isSelectAll = false
+          }
+        }
+      })
+    } else {
+      temp111 && temp111.map((ele, index) => {
+        if (ele.IsChecked === false) {
+          isSelectAll = false
+        }
+      })
+    }
+
     const isAvailable = Modules && Modules.findIndex(a => a.ModuleName === ModuleName)
     if (isAvailable !== -1 && Modules) {
-      let tempArray = Object.assign([...Modules], { [isAvailable]: Object.assign({}, Modules[isAvailable], { IsChecked: isParentChecked !== -1 ? true : false, Pages: temp111, }) })
+      let tempArray = Object.assign([...Modules], { [isAvailable]: Object.assign({}, Modules[isAvailable], { SelectAll: isSelectAll, IsChecked: isParentChecked !== -1 ? true : false, Pages: temp111, }) })
       this.setState({ Modules: tempArray })
     }
   }
@@ -1004,10 +1027,10 @@ class UserRegistration extends Component {
     const { reset, registerUserData, initialConfiguration } = this.props;
     const { department, role, city, isEditFlag, Modules, oldModules, TechnologyLevelGrid,
       oldTechnologyLevelGrid, UserId, HeadLevelGrid, masterLevelGrid } = this.state;
-    const userDetails = reactLocalStorage.getObject("userDetail")
+    const userDetails = JSON.parse(localStorage.getItem('userDetail'))
 
-    var key = CryptoJS.enc.Utf8.parse('gQUJ79YKYm22Cazw');
-    var iv = CryptoJS.enc.Utf8.parse('eTEFSa0PinFKTQNB');
+    var key = CryptoJS.enc.Utf8.parse(KEY);
+    var iv = CryptoJS.enc.Utf8.parse(IV);
 
     var encryptedpassword = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse(values.Password), key,
       {
@@ -1017,11 +1040,6 @@ class UserRegistration extends Component {
         padding: CryptoJS.pad.Pkcs7
       });
 
-
-    if (TechnologyLevelGrid && TechnologyLevelGrid.length === 0) {
-      Toaster.warning('Users technology level should not be empty.')
-      return false;
-    }
 
     let tempTechnologyLevelArray = []
 
@@ -1241,7 +1259,7 @@ class UserRegistration extends Component {
                           name={"FirstName"}
                           type="text"
                           placeholder={'Enter'}
-                          validate={[required, minLength3, maxLength15]}
+                          validate={[required, minLength3, maxLength25, checkWhiteSpaces]}
                           component={renderText}
                           required={true}
                           // maxLength={26}
@@ -1255,7 +1273,7 @@ class UserRegistration extends Component {
                           name={"LastName"}
                           type="text"
                           placeholder={'Enter'}
-                          validate={[minLength3, maxLength15]}
+                          validate={[minLength3, maxLength25]}
                           component={renderText}
                           required={false}
                           // maxLength={26}
@@ -1268,7 +1286,7 @@ class UserRegistration extends Component {
                           label="Mobile"
                           type="text"
                           placeholder={'Enter'}
-                          component={renderText}
+                          component={renderNumberInputField}
                           isDisabled={false}
                           validate={[postiveNumber, minLength10, maxLength12, checkWhiteSpaces]}
                           required={false}
@@ -1285,7 +1303,7 @@ class UserRegistration extends Component {
                               type="text"
                               placeholder={'Enter'}
                               validate={[postiveNumber, minLength10, maxLength12]}
-                              component={renderText}
+                              component={renderNumberInputField}
                               //required={true}
                               maxLength={12}
                               customClassName={'withBorder'}
@@ -1298,7 +1316,7 @@ class UserRegistration extends Component {
                               type="text"
                               placeholder={'Ext'}
                               validate={[postiveNumber, maxLength5]}
-                              component={renderText}
+                              component={renderNumberInputField}
                               //required={true}
                               maxLength={5}
                               customClassName={'withBorder w100'}
@@ -1334,7 +1352,6 @@ class UserRegistration extends Component {
                             type="text"
                             placeholder={'Enter'}
                             component={renderText}
-                            isDisabled={false}
                             validate={[required, minLength3, maxLength15]}
                             required={true}
                             maxLength={70}
@@ -1351,7 +1368,7 @@ class UserRegistration extends Component {
                               placeholder="Enter"
                               component={renderPasswordInputField}
                               onChange={this.passwordPatternHandler}
-                              validate={[required, minLength6, maxLength18, checkWhiteSpaces]}
+                              validate={[required, minLength6, maxLength18, checkWhiteSpaces, strongPassword]}
 
                               isShowHide={this.state.isShowHidePassword}
                               showHide={this.showHidePasswordHandler}
@@ -1627,12 +1644,12 @@ class UserRegistration extends Component {
 
                         <div className="row form-group">
                           <div className="col-md-12">
-                            <Table className="table" size="sm" >
+                            <Table className="table border" size="sm" >
                               <thead>
                                 <tr>
-                                  <th>{`Technology`}</th>
-                                  <th>{`Level`}</th>
-                                  <th className="text-right">{`Action`}</th>
+                                  <th className="border-bottom-none">{`Technology`}</th>
+                                  <th className="border-bottom-none">{`Level`}</th>
+                                  <th className="text-right border-bottom-none">{`Action`}</th>
                                 </tr>
                               </thead>
                               <tbody >
@@ -1651,9 +1668,14 @@ class UserRegistration extends Component {
                                     )
                                   })
                                 }
+                                {this.state.TechnologyLevelGrid.length === 0 && <tr>
+                                  <td colSpan={3}>
+                                    <NoContentFound title={EMPTY_DATA} />
+                                  </td>
+                                </tr>}
                               </tbody>
                             </Table>
-                            {this.state.TechnologyLevelGrid.length === 0 && <NoContentFound title={EMPTY_DATA} />}
+
                           </div>
                         </div>
                       </>
@@ -1733,12 +1755,12 @@ class UserRegistration extends Component {
 
                         <div className="row form-group">
                           <div className="col-md-12">
-                            <Table className="table" size="sm" >
+                            <Table className="table border" size="sm" >
                               <thead>
                                 <tr>
-                                  <th>{`Head`}</th>
-                                  <th>{`Level`}</th>
-                                  <th className="text-right">{`Action`}</th>
+                                  <th className="border-bottom-none">{`Head`}</th>
+                                  <th className="border-bottom-none">{`Level`}</th>
+                                  <th className="text-right border-bottom-none">{`Action`}</th>
                                 </tr>
                               </thead>
                               <tbody >
@@ -1757,9 +1779,13 @@ class UserRegistration extends Component {
                                     )
                                   })
                                 }
+                                {this.state.HeadLevelGrid.length === 0 && <tr>
+                                  <td colSpan={3}>
+                                    <NoContentFound title={EMPTY_DATA} />
+                                  </td>
+                                </tr>}
                               </tbody>
                             </Table>
-                            {this.state.HeadLevelGrid.length === 0 && <NoContentFound title={EMPTY_DATA} />}
                           </div>
                         </div>
                       </>
@@ -1833,15 +1859,15 @@ class UserRegistration extends Component {
 
                             <div className="row form-group">
                               <div className="col-md-12">
-                                <Table className="table" size="sm" >
+                                <Table className="table border" size="sm" >
                                   <thead>
                                     <tr>
-                                      <th>{`Master`}</th>
-                                      <th>{`Level`}</th>
-                                      <th className="text-right">{`Action`}</th>
+                                      <th className="border-bottom-none">{`Master`}</th>
+                                      <th className="border-bottom-none">{`Level`}</th>
+                                      <th className="text-right border-bottom-none">{`Action`}</th>
                                     </tr>
                                   </thead>
-                                  <tbody >
+                                  <tbody>
                                     {
                                       this.state.masterLevelGrid &&
                                       this.state.masterLevelGrid.map((item, index) => {
@@ -1857,9 +1883,15 @@ class UserRegistration extends Component {
                                         )
                                       })
                                     }
+                                    {this.state.masterLevelGrid.length === 0 && <tr>
+                                      <td colSpan={3}>
+                                        <NoContentFound title={EMPTY_DATA} />
+                                      </td>
+                                    </tr>
+                                    }
                                   </tbody>
                                 </Table>
-                                {this.state.masterLevelGrid.length === 0 && <NoContentFound title={EMPTY_DATA} />}
+
                               </div>
                             </div>
                           </>
@@ -1941,6 +1973,7 @@ const mapStateToProps = ({ auth, comman }) => {
   const { roleList, departmentList, registerUserData, actionSelectList, technologyList,
     initialConfiguration, loading, levelSelectList, simulationTechnologyList, simulationLevelSelectList, masterList, masterLevelSelectList } = auth;
   const { cityList } = comman;
+  const fieldsObj = selector('UserName', 'Password');
 
   let initialValues = {};
 
@@ -1964,7 +1997,7 @@ const mapStateToProps = ({ auth, comman }) => {
 
   return {
     roleList, departmentList, cityList, registerUserData, actionSelectList,
-    initialValues, technologyList, initialConfiguration, loading, levelSelectList, simulationTechnologyList, simulationLevelSelectList, masterList, masterLevelSelectList
+    initialValues, technologyList, initialConfiguration, loading, levelSelectList, simulationTechnologyList, simulationLevelSelectList, masterList, masterLevelSelectList, fieldsObj
   };
 };
 

@@ -9,6 +9,7 @@ import NoContentFound from "../../common/NoContentFound";
 import { EMPTY_DATA } from "../../../config/constants";
 import { MASTERS, } from "../../../config/constants";
 import Switch from "react-switch";
+import { renderActionCommon } from "../userUtil"
 
 class MastersTab extends Component {
   constructor(props) {
@@ -21,7 +22,7 @@ class MastersTab extends Component {
       Modules: [],
       actionData: [],
       actionSelectList: [],
-      checkBox: true
+      checkBox: false
     }
   }
 
@@ -40,6 +41,12 @@ class MastersTab extends Component {
         actionData: actionData,
         Modules: data && data.sort((a, b) => a.Sequence - b.Sequence),
         actionSelectList: actionSelectList,
+      })
+
+      actionData && actionData.map((ele, index) => {
+        if (ele.ModuleName === 'Master') {
+          this.setState({ checkBox: ele.IsChecked })
+        }
       })
     }
   }
@@ -105,7 +112,7 @@ class MastersTab extends Component {
 
       tempArray = Object.assign([...Modules], { [index]: Object.assign({}, Modules[index], { IsChecked: false, Actions: actionArray }) })
 
-      this.setState({ Modules: tempArray })
+      this.setState({ Modules: tempArray, checkBox: false })
     } else {
       actionArray = actionRow && actionRow.map((item, index) => {
         item.IsChecked = true;
@@ -114,7 +121,7 @@ class MastersTab extends Component {
 
       tempArray = Object.assign([...Modules], { [index]: Object.assign({}, Modules[index], { IsChecked: true, Actions: actionArray }) })
 
-      this.setState({ Modules: tempArray })
+      this.setState({ Modules: tempArray, checkBox: false })
     }
   }
 
@@ -156,29 +163,31 @@ class MastersTab extends Component {
         return item;
       })
       tempArray = Object.assign([...Modules], { [parentIndex]: Object.assign({}, Modules[parentIndex], { IsChecked: false, Actions: actionArray }) })
-      this.setState({ Modules: tempArray, })
+      this.setState({ Modules: tempArray, checkBox: false })
     } else {
       let actionArray = actionRows && actionRows.map((item, index) => {
         item.IsChecked = true;
         return item;
       })
       tempArray = Object.assign([...Modules], { [parentIndex]: Object.assign({}, Modules[parentIndex], { IsChecked: true, Actions: actionArray }) })
-      this.setState({ Modules: tempArray, })
+      this.setState({ Modules: tempArray, checkBox: false })
     }
   }
 
   selectAllHandlerEvery = () => {
     const { Modules, checkBox } = this.state;
+
     let booleanVal = this.state.checkBox
     this.setState({ checkBox: !booleanVal })
-    let tempArray = [];
-    let isCheckedSelectAll = checkBox
+    let isCheckedSelectAll = !booleanVal
+
     let actionRows
     let actionArray = Modules && Modules.map((item, index) => {
       actionRows = item
       item.Actions && item.Actions.map((item1, index) => {
         item1.IsChecked = isCheckedSelectAll;
       })
+      item.IsChecked = isCheckedSelectAll
       return actionRows;
     })
     this.setState({ Modules: actionArray, })
@@ -189,35 +198,8 @@ class MastersTab extends Component {
   * @description used to render row of actions
   */
   renderAction = (actions, parentIndex) => {
-    const { actionSelectList } = this.state;
 
-    return actionSelectList && actionSelectList.map((el, i) => {
-      if (el.Value === 0) return false;
-      return actions && actions.map((item, index) => {
-        if (el.Value !== item.ActionId) return false;
-        return (
-          <td className="text-center">
-            {
-              <label htmlFor="normal-switch" className="normal-switch">
-                <Switch
-                  onChange={() => this.actionCheckHandler(parentIndex, index)}
-                  checked={item.IsChecked}
-                  value={item.ActionId}
-                  id="normal-switch"
-                  onColor="#4DC771"
-                  onHandleColor="#ffffff"
-                  offColor="#959CB6"
-                  checkedIcon={false}
-                  uncheckedIcon={false}
-                  height={18}
-                  width={40}
-                />
-              </label>
-            }
-          </td>
-        )
-      })
-    })
+    return renderActionCommon(actions, parentIndex, this, MASTERS)
   }
 
   /**
@@ -265,7 +247,6 @@ class MastersTab extends Component {
   clearForm = () => { }
 
   render() {
-    let array = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
     const { actionSelectList } = this.state;
     return (
       <div>
@@ -275,20 +256,12 @@ class MastersTab extends Component {
               <thead>
                 <tr>
                   <th>{`Module`}</th>
-                  <th className=" pr-2">
+                  <th className="select-all-block pr-2">
                     <label className="custom-checkbox align-middle text-left">
                       <input
                         type="checkbox"
                         value={"All"}
-                        // className={
-                        //     this.isCheckAll(item, item)
-                        //         ? "selected-box"
-                        //         : "not-selected-box"
-                        // }
-                        // checked={this.isCheckAll(
-                        //     index,
-                        //     item.Actions
-                        // )}
+                        checked={this.state.checkBox}
                         onClick={() =>
                           this.selectAllHandlerEvery()
                         }
@@ -300,6 +273,7 @@ class MastersTab extends Component {
                 </tr>
               </thead>
               <tbody>
+                { }
                 {this.state.Modules &&
                   this.state.Modules.map((item, index) => {
                     return (

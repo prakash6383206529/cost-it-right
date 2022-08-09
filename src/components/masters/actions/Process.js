@@ -21,7 +21,7 @@ import {
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 
-const headers = config
+// const config() = config
 
 /**
  * @method createProcess
@@ -29,7 +29,7 @@ const headers = config
  */
 export function createProcess(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createProcess, data, headers);
+        const request = axios.post(API.createProcess, data, config());
         request.then((response) => {
             if (response.data.Result === true) {
                 callback(response);
@@ -48,7 +48,7 @@ export function createProcess(data, callback) {
  */
 export function getProcessCode(value, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getProcessCode}?processName=${value}`, headers);
+        const request = axios.get(`${API.getProcessCode}?processName=${value}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -68,13 +68,15 @@ export function getProcessCode(value, callback) {
  */
 export function getProcessDataList(data, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getProcessDataList}?plant_id=${data.plant_id}&machine_id=${data.machine_id}`, headers);
+        const request = axios.get(`${API.getProcessDataList}?plant_id=${data.plant_id}&machine_id=${data.machine_id}`, config());
         request.then((response) => {
-            dispatch({
-                type: GET_PROCESS_LIST_SUCCESS,
-                payload: response.data.DataList,
-            });
-            callback(response)
+            if (response.data.Result || response.status === 204) {
+                dispatch({
+                    type: GET_PROCESS_LIST_SUCCESS,
+                    payload: response.status === 204 ? [] : response.data.DataList,
+                });
+                callback(response)
+            }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
@@ -89,7 +91,7 @@ export function getProcessDataList(data, callback) {
 export function deleteProcess(Id, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteProcess}/${Id}`, headers)
+        axios.delete(`${API.deleteProcess}/${Id}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -107,7 +109,7 @@ export function getProcessData(processId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         if (processId !== '') {
-            axios.get(`${API.getProcessData}/${processId}`, headers)
+            axios.get(`${API.getProcessData}/${processId}`, config())
                 .then((response) => {
                     if (response.data.Result === true) {
                         dispatch({
@@ -138,7 +140,7 @@ export function getProcessData(processId, callback) {
 export function updateProcess(request, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateProcess}`, request, headers)
+        axios.put(`${API.updateProcess}`, request, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -156,7 +158,7 @@ export function updateProcess(request, callback) {
 export function getInitialPlantSelectList(callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getPlantSelectList}`, headers);
+        const request = axios.get(`${API.getPlantSelectList}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -178,7 +180,7 @@ export function getInitialPlantSelectList(callback) {
  */
 export function getInitialVendorWithVendorCodeSelectList() {
     return (dispatch) => {
-        const request = axios.get(API.getVendorWithVendorCodeSelectList, headers);
+        const request = axios.get(API.getVendorWithVendorCodeSelectList, config());
         request.then((response) => {
             dispatch({
                 type: GET_INITIAL_VENDOR_WITH_VENDOR_CODE_SELECTLIST,
@@ -198,7 +200,7 @@ export function getInitialVendorWithVendorCodeSelectList() {
 export function getInitialMachineTypeSelectList(callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getMachineTypeSelectList}`, headers);
+        const request = axios.get(`${API.getMachineTypeSelectList}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -222,7 +224,7 @@ export function getInitialMachineSelectList(callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
         const id = '802da383-4745-420d-9186-2dbe42f00f5b';
-        const request = axios.get(`${API.getMachineSelectList}/${id}`, headers);
+        const request = axios.get(`${API.getMachineSelectList}/${id}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -246,7 +248,7 @@ export function getInitialMachineSelectList(callback) {
 export function getInitialProcessesSelectList(callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getProcessesSelectList}`, headers);
+        const request = axios.get(`${API.getProcessesSelectList}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -270,7 +272,7 @@ export function getInitialProcessesSelectList(callback) {
 export function getMachineSelectListByPlant(Id, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getMachineSelectListByPlant}/${Id}`, headers);
+        const request = axios.get(`${API.getMachineSelectListByPlant}/${Id}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -294,7 +296,7 @@ export function getMachineSelectListByPlant(Id, callback) {
 export function getPlantSelectListByMachine(Id, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getPlantSelectListByMachine}/${Id}`, headers);
+        const request = axios.get(`${API.getPlantSelectListByMachine}/${Id}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -318,7 +320,7 @@ export function getPlantSelectListByMachine(Id, callback) {
 export function getMachineTypeSelectListByPlant(Id, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getMachineTypeSelectListByPlant}/${Id}`, headers);
+        const request = axios.get(`${API.getMachineTypeSelectListByPlant}/${Id}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -342,7 +344,7 @@ export function getMachineTypeSelectListByPlant(Id, callback) {
 export function getVendorSelectListByTechnology(Id, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getVendorSelectListByTechnology}/${Id}`, headers);
+        const request = axios.get(`${API.getVendorSelectListByTechnology}/${Id}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -366,7 +368,7 @@ export function getVendorSelectListByTechnology(Id, callback) {
 export function getMachineTypeSelectListByTechnology(Id, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getMachineTypeSelectListByTechnology}/${Id}`, headers);
+        const request = axios.get(`${API.getMachineTypeSelectListByTechnology}/${Id}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -390,7 +392,7 @@ export function getMachineTypeSelectListByTechnology(Id, callback) {
 export function getMachineTypeSelectListByVendor(Id, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getMachineTypeSelectListByVendor}/${Id}`, headers);
+        const request = axios.get(`${API.getMachineTypeSelectListByVendor}/${Id}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -414,7 +416,7 @@ export function getMachineTypeSelectListByVendor(Id, callback) {
 export function getProcessSelectListByMachineType(Id, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getProcessSelectListByMachineType}/${Id}`, headers);
+        const request = axios.get(`${API.getProcessSelectListByMachineType}/${Id}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({

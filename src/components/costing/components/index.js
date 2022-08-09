@@ -4,9 +4,10 @@ import { TabContent, TabPane, Nav, NavItem, NavLink, } from 'reactstrap';
 import classnames from 'classnames';
 import CostingDetails from './CostingDetails';
 import CostingSummary from './CostingSummary';
-import {  storePartNumber } from '../actions/Costing';
+import { isDataChange, saveBOMLevel, savePartNumber, setPartNumberArrayAPICALL, setProcessGroupGrid, storePartNumber } from '../actions/Costing';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { useHistory } from "react-router-dom";
+import ApprovalListing from './approval/ApprovalListing';
 
 
 
@@ -16,6 +17,7 @@ function Costing(props) {
   const [activeTab, setActiveTab] = useState('1');
   const [partInfoStepTwo, setPartInfo] = useState({});
   const [costingData, setCostingData] = useState({});
+  const [costingOptionsSelect, setCostingOptionsSelect] = useState({});
 
   /**
   * @method toggle
@@ -25,6 +27,10 @@ function Costing(props) {
     if (activeTab !== tab) {
       setActiveTab(tab);
     }
+    dispatch(isDataChange(false))
+    dispatch(setPartNumberArrayAPICALL([]))
+    dispatch(savePartNumber(''))
+    dispatch(saveBOMLevel(''))
   }
 
   const dispatch = useDispatch();
@@ -32,19 +38,39 @@ function Costing(props) {
     dispatch(storePartNumber(''))
     if (reactLocalStorage.get('location') === '/costing-summary') {
       toggle("2");
-    } else {
+    }
+    else if (reactLocalStorage.get('location') === '/approval-listing') {
+      toggle("3");
+    }
+    else {
       toggle("1");
     }
   }, [])
 
   const showDetail = (partInfo, costingInfo) => {
-    
     setPartInfo(partInfo)
     setCostingData(costingInfo)
-    if(costingInfo && costingInfo.length>0){
+    setTimeout(() => {
+      if (costingInfo && Object.keys(costingInfo).length > 0) {
 
-      toggle("1");
+        toggle("1");
+      }
+
+    }, 500);
+  }
+
+
+  const setcostingOptionsSelectFromSummary = (value) => {
+    let obj = {
+      SubAssemblyCostingId: value?.SubAssemblyCostingId,
+      AssemblyCostingId: value?.AssemblyCostingId
     }
+    setCostingOptionsSelect(obj)
+    dispatch(isDataChange(false))
+    dispatch(setProcessGroupGrid([]))
+    dispatch(savePartNumber(''))
+    dispatch(saveBOMLevel(''))
+    dispatch(setPartNumberArrayAPICALL([]))
   }
 
   /**
@@ -80,6 +106,17 @@ function Costing(props) {
                 Costing Summary
               </NavLink>
             </NavItem>
+            <NavItem>
+              <NavLink
+                className={classnames({ active: activeTab === "3" })}
+                onClick={() => {
+                  toggle("3");
+                  history.push("/approval-listing");
+                }}
+              >
+                Approval Status
+              </NavLink>
+            </NavItem>
           </Nav>
           <TabContent activeTab={activeTab}>
             <TabPane tabId="1">
@@ -87,10 +124,14 @@ function Costing(props) {
                 partInfoStepTwo={partInfoStepTwo}
                 costingData={costingData}
                 toggle={toggle}
+                costingOptionsSelect={costingOptionsSelect}
               />
             </TabPane>
             <TabPane tabId="2">
-              <CostingSummary activeTab={activeTab} showDetail={showDetail} />
+              <CostingSummary activeTab={activeTab} showDetail={showDetail} setcostingOptionsSelectFromSummary={setcostingOptionsSelectFromSummary} />
+            </TabPane>
+            <TabPane tabId="3">
+              <ApprovalListing activeTab={activeTab} />
             </TabPane>
           </TabContent>
         </div>

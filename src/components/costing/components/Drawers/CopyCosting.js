@@ -13,13 +13,14 @@ import DatePicker from "react-datepicker";
 import DayTime from '../../../common/DayTimeWrapper'
 import Toaster from '../../../common/Toaster';
 import PopupMsgWrapper from '../../../common/PopupMsgWrapper';
-import { debounce } from 'lodash';
+import _, { debounce } from 'lodash';
 
 function CopyCosting(props) {
   const loggedIn = isUserLoggedIn()
   const loggedUserId = loggedInUserId()
 
   const { copyCostingData, partNo, type, zbcPlantGrid, vbcVendorGrid, selectedCostingId, } = props
+
 
 
   const { register, control, formState: { errors }, handleSubmit, setValue } = useForm({
@@ -29,10 +30,10 @@ function CopyCosting(props) {
       fromPlant: type === ZBC ? { label: `${copyCostingData.PlantName}(${copyCostingData.PlantCode})`, value: copyCostingData.PlantId, } : '',
       fromVendorName: type === VBC ? { label: `${copyCostingData.VendorName}(${copyCostingData.VendorCode})`, value: copyCostingData.VendorId, } : '',
       // fromVendorPlant: type === VBC ? {label:`${copyCostingData.VendorPlantName}(${copyCostingData.VendorPlantCode})`,value: copyCostingData.VendorPlantId} : ''
-      fromDestinationPlant: type === VBC ? { label: `${copyCostingData.DestinationPlantName}`, value: copyCostingData.DestinationPlantId } : '',
+      fromDestinationPlant: type === VBC ? { label: `${copyCostingData.DestinationPlantName}(${copyCostingData.DestinationPlantCode})`, value: copyCostingData.DestinationPlantId } : '',
       fromcostingId: selectedCostingId.zbcCosting,
       fromVbccostingId: selectedCostingId.vbcCosting,
-      toVendorName: type === VBC ? { label: `${copyCostingData.VendorName}(${copyCostingData.VendorCode})`, value: copyCostingData.DestinationPlantId, vendorId: copyCostingData.VendorId } : '',
+      toVendorName: type === VBC ? { label: `${copyCostingData.VendorName}(${copyCostingData.VendorCode})`, value: copyCostingData.VendorId } : '',
     },
   })
 
@@ -82,8 +83,7 @@ function CopyCosting(props) {
         vbcVendorGrid.map((item) => (
           VbcTemp.push({
             label: `${item.VendorName}(${item.VendorCode})`,
-            value: item.DestinationPlantId,
-            vendorId: item.VendorId
+            value: item.VendorId
           })
         ))
     } else {
@@ -91,13 +91,16 @@ function CopyCosting(props) {
         vbcVendorGrid.map((item) => (
           VbcTemp.push({
             label: `${item.VendorName}(${item.VendorCode})`,
-            value: item.VendorId,
-            vendorId: item.VendorId
+            value: item.VendorId
             // destPlant: item.DestinationPlantId ? item.DestinationPlantId : ''
           })
         ))
     }
-    setVendorName(VbcTemp)
+
+
+    let uniqueArray = _.uniqBy(VbcTemp, "value")
+
+    setVendorName(uniqueArray)
 
     if (type === ZBC) {
       getCostingDropDown(copyCostingData.PlantId, ZBC)
@@ -260,11 +263,12 @@ function CopyCosting(props) {
 
     vbcVendorGrid && vbcVendorGrid.filter(item => {
 
-      temp.push({ label: item.DestinationPlantName, value: item.DestinationPlantId })     // ALL PLANTS LIST SHOULD BE VISIBLE IN THE DROPDOWN IN COPY COSTING DRAWER
+      temp.push({ label: `${item.DestinationPlantName}(${item.DestinationPlantCode})`, value: item.DestinationPlantId, destinationPlantCode: item.DestinationPlantCode })     // ALL PLANTS LIST SHOULD BE VISIBLE IN THE DROPDOWN IN COPY COSTING DRAWER
       return temp
 
     })
-    setDestinationPlant(temp)
+    let uniqueArray = _.uniqBy(temp, "value")
+    setDestinationPlant(uniqueArray)
 
   }
 
@@ -285,7 +289,7 @@ function CopyCosting(props) {
    */
   const submitForm = debounce(handleSubmit((value) => {
     setIsDisable(true)
-    const destination = value.toDestinationPlant && value.toDestinationPlant.label.split('(')
+
     const tovendorCode = value.toVendorName && value.toVendorName.label.split('(')
 
     let obj = {}
@@ -329,7 +333,7 @@ function CopyCosting(props) {
     //COPY TO VBC
     if (isToVbc) {
 
-      obj.ToVendorId = value.toVendorName && value.toVendorName.vendorId
+      obj.ToVendorId = value.toVendorName && value.toVendorName.value
       obj.ToVendorname = value.toVendorName && value.toVendorName.label
       obj.ToVendorCode = tovendorCode && tovendorCode[1] && tovendorCode[1].split(')')[0]
       obj.ToVendorPlantId = value.toVendorPlant && value.toVendorPlant.value
@@ -354,7 +358,7 @@ function CopyCosting(props) {
 
     obj.ToDestinationPlantId = value.toDestinationPlant && value.toDestinationPlant.value
     obj.ToDestinationPlantName = value.toDestinationPlant && value.toDestinationPlant.label
-    obj.ToDestinationPlantCode = destination && destination[1].split(')')[0]
+    obj.ToDestinationPlantCode = value.toDestinationPlant && value.toDestinationPlant.destinationPlantCode
     obj.EffectiveDate = DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
     // obj.
 
@@ -391,6 +395,7 @@ function CopyCosting(props) {
   }), 500)
 
   const onPopupConfirm = () => {
+    props.setCostingOptionSelect()
     setDisablePopup(true)
     dispatch(
       saveCopyCosting(updatedObj, (res) => {

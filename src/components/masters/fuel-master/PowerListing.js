@@ -9,8 +9,7 @@ import {
 } from '../actions/Fuel';
 import { getPlantBySupplier } from '../../../actions/Common';
 import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
-import { searchableSelect } from "../../layout/FormInputs";
-import { EMPTY_DATA } from '../../../config/constants';
+import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
@@ -28,6 +27,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { li } from 'react-dom-factories';
 import { getConfigurationKey } from '../../../helper';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { PaginationWrapper } from '../../common/commonPagination';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -52,7 +52,8 @@ class PowerListing extends Component {
       vendorPlant: [],
       showPopup: false,
       deletedId: '',
-      isLoader: false
+      isLoader: false,
+      selectedRowData: false
     }
   }
 
@@ -79,11 +80,11 @@ class PowerListing extends Component {
         this.setState({ isLoader: false })
         if (res && res.status === 200) {
           let Data = res.data.DataList;
-          this.setState({ tableData: Data })
+          this.setState({ tableData: Data, isLoader: false })
         } else if (res && res.response && res.response.status === 412) {
-          this.setState({ tableData: [] })
+          this.setState({ tableData: [], isLoader: false })
         } else {
-          this.setState({ tableData: [] })
+          this.setState({ tableData: [], isLoader: false })
         }
       })
 
@@ -174,11 +175,12 @@ class PowerListing extends Component {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
-    const { EditAccessibility, DeleteAccessibility } = this.props;
+    const { EditAccessibility, ViewAccessibility, DeleteAccessibility } = this.props;
     return (
       <>
-        {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
-        {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+        {ViewAccessibility && <button title='View' className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
+        {EditAccessibility && <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
+        {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
       </>
     )
   };
@@ -286,27 +288,22 @@ class PowerListing extends Component {
     params.api.paginationGoToPage(0);
   };
   onPageSizeChanged = (newPageSize) => {
-    var value = document.getElementById('page-size').value;
-    this.state.gridApi.paginationSetPageSize(Number(value));
+    this.state.gridApi.paginationSetPageSize(Number(newPageSize));
   };
-
+  onRowSelect = () => {
+    const selectedRows = this.state.gridApi?.getSelectedRows()
+    this.setState({ selectedRowData: selectedRows })
+  }
   onBtExport = () => {
     let tempArr = []
-    // const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-    // data && data.map((item => {
-    //   tempArr.push(item.data)
-    // }))
-
-    let listing = []
-    let downloadTemp = ''
+    tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
     if (this.state.IsVendor) {
-      listing = this.props.vendorPowerDataList && this.props.vendorPowerDataList
-      downloadTemp = POWERLISTING_VENDOR_DOWNLOAD_EXCEL
+      tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.vendorPowerDataList ? this.props.vendorPowerDataList : [])
+      return this.returnExcelColumn(POWERLISTING_VENDOR_DOWNLOAD_EXCEL, tempArr)
     } else {
-      listing = this.props.powerDataList && this.props.powerDataList
-      downloadTemp = POWERLISTING_DOWNLOAD_EXCEl
+      tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.powerDataList ? this.props.powerDataList : [])
+      return this.returnExcelColumn(POWERLISTING_DOWNLOAD_EXCEl, tempArr)
     }
-    return this.returnExcelColumn(downloadTemp, listing)
   };
 
   onFilterTextBoxChanged(e) {
@@ -314,6 +311,7 @@ class PowerListing extends Component {
   }
 
   resetState() {
+    this.state.gridApi.deselectAll()
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
   }
@@ -337,13 +335,21 @@ class PowerListing extends Component {
 
     };
 
+    const isFirstColumn = (params) => {
+
+      var displayedColumns = params.columnApi.getAllDisplayedColumns();
+      var thisIsFirstColumn = displayedColumns[0] === params.column;
+      return thisIsFirstColumn;
+
+    }
     const defaultColDef = {
       resizable: true,
       filter: true,
       sortable: true,
-
+      headerCheckboxSelectionFilteredOnly: true,
+      headerCheckboxSelection: isFirstColumn,
+      checkboxSelection: isFirstColumn
     };
-
     const frameworkComponents = {
       totalValueRenderer: this.buttonFormatter,
       // effectiveDateRenderer: this.effectiveDateFormatter,
@@ -458,6 +464,8 @@ class PowerListing extends Component {
                       title: EMPTY_DATA,
                       imagClass: 'imagClass power-listing'
                     }}
+                    rowSelection={'multiple'}
+                    onSelectionChanged={this.onRowSelect}
                     frameworkComponents={frameworkComponents}
                   >
                     <AgGridColumn field="StateName"></AgGridColumn>
@@ -475,7 +483,7 @@ class PowerListing extends Component {
                     // columnDefs={c}
                     rowData={this.props.vendorPowerDataList}
                     pagination={true}
-                    paginationPageSize={10}
+                    paginationPageSize={defaultPageSize}
                     onGridReady={this.onGridReady}
                     gridOptions={gridOptions}
                     loadingOverlayComponent={'customLoadingOverlay'}
@@ -491,13 +499,7 @@ class PowerListing extends Component {
                     <AgGridColumn field="NetPowerCostPerUnit" cellRenderer={'costFormatterForVBC'}></AgGridColumn>
                     <AgGridColumn field="PowerDetailId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                   </AgGridReact>}
-                <div className="paging-container d-inline-block float-right">
-                  <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
-                    <option value="10" selected={true}>10</option>
-                    <option value="50">50</option>
-                    <option value="100">100</option>
-                  </select>
-                </div>
+                {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
               </div>
             </div>
           </Col>

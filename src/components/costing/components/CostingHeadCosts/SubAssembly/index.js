@@ -3,14 +3,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { costingInfoContext } from '../../CostingDetailStepTwo';
 import BoughtOutPart from '../BOP';
 import PartCompoment from '../Part';
-import { getRMCCTabData, saveAssemblyBOPHandlingCharge, setAllCostingInArray, } from '../../../actions/Costing';
+import { getRMCCTabData, saveAssemblyBOPHandlingCharge } from '../../../actions/Costing';
 import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, } from '../../../../../helper';
 import AddAssemblyOperation from '../../Drawers/AddAssemblyOperation';
 import { ViewCostingContext } from '../../CostingDetails';
 import { EMPTY_GUID } from '../../../../../config/constants';
 import _ from 'lodash'
-import DayTime from '../../../../common/DayTimeWrapper';
 import AddBOPHandling from '../../Drawers/AddBOPHandling';
+import Toaster from '../../../../common/Toaster';
 
 function AssemblyPart(props) {
   const { children, item, index } = props;
@@ -19,15 +19,22 @@ function AssemblyPart(props) {
   const [Count, setCount] = useState(0);
   const [IsDrawerOpen, setDrawerOpen] = useState(false)
   const [isOpenBOPDrawer, setIsOpenBOPDrawer] = useState(false)
+  const { partNumberAssembly } = useSelector(state => state.costing)
+
+  const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
 
   const CostingViewMode = useContext(ViewCostingContext);
   const costData = useContext(costingInfoContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { CostingEffectiveDate, setArrayForCosting } = useSelector(state => state.costing)
+  const { CostingEffectiveDate, bomLevel } = useSelector(state => state.costing)
   const dispatch = useDispatch()
-
   const toggle = (BOMLevel, PartNumber) => {
     if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
+    if ((partNumberAssembly !== '' && partNumberAssembly !== PartNumber) ||
+      (partNumberAssembly !== '' && partNumberAssembly === PartNumber && bomLevel !== BOMLevel)) {
+      Toaster.warning('Close Accordian first.')
+      return false
+    }
 
     setIsOpen(!IsOpen)
     setCount(Count + 1)
@@ -35,7 +42,7 @@ function AssemblyPart(props) {
       const data = {
         CostingId: item.CostingId !== null ? item.CostingId : "00000000-0000-0000-0000-000000000000",
         PartId: item.PartId,
-        AssemCostingId: costData.CostingId,
+        AssemCostingId: item.AssemblyCostingId,
         subAsmCostingId: props.subAssembId !== null ? props.subAssembId : EMPTY_GUID,
         EffectiveDate: CostingEffectiveDate
       }
@@ -77,6 +84,9 @@ function AssemblyPart(props) {
   */
   const DrawerToggle = () => {
     if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
+    setTimeout(() => {
+      document.getElementsByClassName('MuiPaper-elevation16')[0].removeAttribute('tabIndex');
+    }, 500);
     setDrawerOpen(true)
   }
 
@@ -156,7 +166,9 @@ function AssemblyPart(props) {
   * @description Renders the component
   */
   return (
+
     <>
+
       <tr className="costing-highlight-row accordian-row" key={item.PartId}>
         <div style={{ display: 'contents' }} >
           <td className='part-overflow' onClick={() => toggle(item.BOMLevel, item.PartNumber)}>
@@ -200,13 +212,15 @@ function AssemblyPart(props) {
           </td>
         } */}
         <td>
+
           <div className='d-flex justify-content-end align-items-center'>
             <div className='d-flex'>
+
               <button
                 type="button"
                 className={'user-btn add-oprn-btn mr-1'}
                 onClick={bopHandlingDrawer}>
-                <div className={`${item?.CostingPartDetails?.IsApplyBOPHandlingCharges !== null && item?.CostingPartDetails?.IsApplyBOPHandlingCharges ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`Insert H`}</button>
+                <div className={`${(item?.CostingPartDetails?.IsApplyBOPHandlingCharges || CostingViewMode || IsLocked) ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`Insert H`}</button>
 
               {checkForNull(item?.CostingPartDetails?.TotalOperationCostPerAssembly) !== 0 ?
                 <button
@@ -219,12 +233,13 @@ function AssemblyPart(props) {
                   type="button"
                   className={'user-btn add-oprn-btn'}
                   onClick={DrawerToggle}>
-                  <div className={`${CostingViewMode ? 'fa fa-eye pr-1' : 'plus'}`}></div>{'OPER'}</button>}
+                  <div className={`${(CostingViewMode || IsLocked) ? 'fa fa-eye pr-1' : 'plus'}`}></div>{'OPER'}</button>}
             </div>
-            <div className={`${(item.IsLocked || item.IsPartLocked) ? 'lock_icon ml-3' : ''}`}>{''}</div>
+            {/*WHEN COSTING OF THAT PART IS  APPROVED SO COSTING COMES AUTOMATICALLY FROM BACKEND AND THIS KEY WILL COME TRUE (WORK LIKE VIEW MODE)*/}
+            <div className={`${(item.IsLocked || item.IsPartLocked) ? 'lock_icon ml-3 tooltip-n' : ''}`}>{(item.IsLocked || item.IsPartLocked) && <span class="tooltiptext">{`${item.IsLocked ? "Child assemblies costing are coming from individual costing, please edit there if want to change costing" : "This sub-assembly is already present at multiple level in this BOM. Please go to the lowest level to enter the data."}`}</span>}</div>
           </div>
         </td>
-        {/*WHEN COSTING OF THAT PART IS  APPROVED SO COSTING COMES AUTOMATICALLY FROM BACKEND AND THIS KEY WILL COME TRUE (WORK LIKE VIEW MODE)*/}
+
         {/* <td className="text-right"></td> */}
       </tr>
 

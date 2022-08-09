@@ -6,7 +6,7 @@ import { focusOnError, searchableSelect } from "../../layout/FormInputs";
 import { required } from "../../../helper/validation";
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { EMPTY_DATA } from '../../../config/constants';
+import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import $ from 'jquery';
 import NoContentFound from '../../common/NoContentFound';
 import {
@@ -18,7 +18,7 @@ import { fetchCountryDataAPI, } from '../../../actions/Common';
 import Switch from "react-switch";
 import BulkUpload from '../../massUpload/BulkUpload';
 import AddVendorDrawer from './AddVendorDrawer';
-import { checkPermission } from '../../../helper/util';
+import { checkPermission, showTitleForActiveToggle } from '../../../helper/util';
 import { MASTERS, VENDOR, VendorMaster } from '../../../config/constants';
 import { loggedInUserId } from '../../../helper';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -30,14 +30,13 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import WarningMessage from '../../common/WarningMessage'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import ScrollToTop from '../../common/ScrollToTop';
-
+import { onFloatingFilterChanged, onSearch, resetState, onBtPrevious, onBtNext, onPageSizeChanged, PaginationWrapper } from '../../common/commonPagination'
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
-
 
 function enumFormatter(cell, row, enumObject) {
     return enumObject[cell];
@@ -59,6 +58,7 @@ class VendorListing extends Component {
             currentRowIndex: 0,
             totalRecordCount: 0,
             pageNo: 1,
+            pageNoNew: 1,
             floatingFilterData: { vendorType: "", vendorName: "", VendorCode: "", Country: "", State: "", City: "" },
             AddAccessibility: false,
             EditAccessibility: false,
@@ -76,8 +76,11 @@ class VendorListing extends Component {
             showPopup: false,
             deletedId: '',
             isViewMode: false,
-            isLoader: false
-
+            isLoader: false,
+            pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
+            globalTake: defaultPageSize,
+            disableFilter: true,
+            disableDownload: false,
         }
     }
 
@@ -92,7 +95,7 @@ class VendorListing extends Component {
     }
 
     componentDidMount() {
-        this.getTableListData(0, '', "", "", 100, this.state.floatingFilterData, true)
+        this.getTableListData(0, '', "", "", defaultPageSize, this.state.floatingFilterData, true)
 
         this.applyPermission(this.props.topAndLeftMenuData)
     }
@@ -105,83 +108,33 @@ class VendorListing extends Component {
 
 
     onFloatingFilterChanged = (value) => {
-        this.setState({ enableSearchFilterSearchButton: true })
-        this.setState({ warningMessage: true })
 
-
-        if (value?.filterInstance?.appliedModel === null || value?.filterInstance?.appliedModel?.filter === "") {
-            this.setState({ warningMessage: false })
-            return false
-        } else {
-
-            if (value.column.colId === 'VendorType') { this.setState({ floatingFilterData: { ...this.state.floatingFilterData, vendorType: value.filterInstance.appliedModel.filter } }) }
-            if (value.column.colId === 'VendorName') { this.setState({ floatingFilterData: { ...this.state.floatingFilterData, vendorName: value.filterInstance.appliedModel.filter } }) }
-
-            if (value.column.colId === 'VendorCode') { this.setState({ floatingFilterData: { ...this.state.floatingFilterData, VendorCode: value.filterInstance.appliedModel.filter } }) }
-            if (value.column.colId === 'Country') { this.setState({ floatingFilterData: { ...this.state.floatingFilterData, Country: value.filterInstance.appliedModel.filter } }) }
-
-            if (value.column.colId === 'State') { this.setState({ floatingFilterData: { ...this.state.floatingFilterData, State: value.filterInstance.appliedModel.filter } }) }
-
-            if (value.column.colId === 'City') { this.setState({ floatingFilterData: { ...this.state.floatingFilterData, City: value.filterInstance.appliedModel.filter } }) }
-
-
-        }
+        this.setState({ disableFilter: false })
+        onFloatingFilterChanged(value, gridOptions, this)   // COMMON FUNCTION
 
     }
 
 
-    onBtNext(data) {
+    onSearch = () => {
+        onSearch(gridOptions, this, "Vendor", this.state.globalTake)  // COMMON PAGINATION FUNCTION
+    }
 
-        if (data.state.currentRowIndex < (this.state.totalRecordCount - 10)) {
-
-            data.setState({ pageNo: data.state.pageNo + 1 })
-            const nextNo = data.state.currentRowIndex + 10;
-
-            //     //gridApi.paginationGoToNextPage();
-            data.getTableListData(nextNo, '', "", "", 100, this.state.floatingFilterData, true)
-            data.setState({ currentRowIndex: nextNo })
-
-        }
+    resetState = () => {
+        resetState(gridOptions, this, "Vendor")  //COMMON PAGINATION FUNCTION
 
     }
 
-    onBtPrevious(data) {
-
-        if (data.state.currentRowIndex >= 10) {
-
-            data.setState({ pageNo: data.state.pageNo - 1 })
-            const previousNo = data.state.currentRowIndex - 10;
-
-
-            data.getTableListData(previousNo, '', "", "", 100, this.state.floatingFilterData, true)
-            data.setState({ currentRowIndex: previousNo })
-
-        }
-        //  gridApi.paginationGoToPreviousPage();
-
+    onBtPrevious = () => {
+        onBtPrevious(this, "Vendor")       //COMMON PAGINATION FUNCTION
     }
 
+    onBtNext = () => {
+        onBtNext(this, "Vendor")   // COMMON PAGINATION FUNCTION
 
-    onSearch(data) {
+    };
 
-        this.setState({ warningMessage: false })
-        this.setState({ pageNo: 1 })
-        data.setState({ currentRowIndex: 0 })
-        this.getTableListData(0, '', "", "", 100, data.state.floatingFilterData, true)
-        data.setState({ enableExitFilterSearchButton: true })
 
-    }
 
-    onSearchExit(data) {
-
-        this.setState({ floatingFilterData: { vendorType: "", vendorName: "", VendorCode: "", Country: "", State: "", City: "" } })
-        let emptyObj = { vendorType: "", vendorName: "", VendorCode: "", Country: "", State: "", City: "" }
-
-        this.getTableListData(0, '', "", "", 100, emptyObj, true)
-        data.setState({ pageNo: 1 })
-        gridOptions.columnApi.resetColumnState();
-        gridOptions.api.setFilterModel(null);
-    }
     /**
     * @method applyPermission
     * @description ACCORDING TO PERMISSION HIDE AND SHOW, ACTION'S
@@ -221,11 +174,13 @@ class VendorListing extends Component {
             vendorName: vendorName,
             country: country,
         }
-        this.setState({ isLoader: true })
+        this.setState({ isLoader: isPagination ? true : false })
+
+        let constantFilterData = this.state.filterModel
+        let object = { ...this.state.floatingFilterData }
         this.props.getSupplierDataList(skip, obj, take, isPagination, res => {
             this.setState({ isLoader: false })
             if (res.status === 202) {
-                this.setState({ pageNo: 0 })
                 this.setState({ totalRecordCount: 0 })
 
                 return
@@ -240,8 +195,40 @@ class VendorListing extends Component {
                     totalRecordCount: Data[0].TotalRecordCount,
                 })
 
-            } else {
+            }
 
+            if (res && isPagination === false) {
+                this.setState({ disableDownload: false })
+                setTimeout(() => {
+                    let button = document.getElementById('Excel-Downloads-vendor')
+                    button && button.click()
+                }, 500);
+            }
+
+            if (res) {
+                if (res && res.data && res.data.DataList.length > 0) {
+                    this.setState({ totalRecordCount: res.data.DataList[0].TotalRecordCount })
+                }
+                let isReset = true
+                setTimeout(() => {
+
+                    for (var prop in object) {
+                        if (prop !== "DepartmentCode" && object[prop] !== "") {
+                            isReset = false
+                        }
+                    }
+                    // Sets the filter model via the grid API
+                    isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(constantFilterData))
+
+                }, 300);
+
+                setTimeout(() => {
+                    this.setState({ warningMessage: false })
+                }, 335);
+
+                setTimeout(() => {
+                    this.setState({ isFilterButtonClicked: false })
+                }, 600);
             }
 
         });
@@ -334,9 +321,9 @@ class VendorListing extends Component {
         const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.state;
         return (
             <>
-                {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
-                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
-                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+                {ViewAccessibility && <button title='View' className="View" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
+                {EditAccessibility && <button title='Edit' className="Edit" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
+                {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
     };
@@ -419,38 +406,30 @@ class VendorListing extends Component {
     statusButtonFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const { ActivateAccessibility } = this.state;
-        if (ActivateAccessibility) {
-            return (
-                <>
-                    <label htmlFor="normal-switch" className="normal-switch" >
-                        <Switch
-                            onChange={() => this.handleChange(cellValue, rowData)}
-                            checked={cellValue}
-                            background="#ff6600"
-                            onColor="#4DC771"
-                            onHandleColor="#ffffff"
-                            offColor="#FC5774"
-                            id="normal-switch"
-                            height={24}
-                        />
-                    </label>
-                </>
-            )
-        } else {
-            return (
-                <>
-                    {
-                        cellValue ?
-                            <div className={'Activated'}> {'Active'}</div>
-                            :
-                            <div className={'Deactivated'}>{'Deactive'}</div>
-                    }
-                </>
-            )
-        }
-    }
 
+        const { ActivateAccessibility } = this.state;
+        if (rowData.UserId === loggedInUserId()) return null;
+        showTitleForActiveToggle(props)
+        return (
+            <>
+                <label htmlFor="normal-switch" className="normal-switch">
+                    {/* <span>Switch with default style</span> */}
+                    <Switch
+                        onChange={() => this.handleChange(cellValue, rowData)}
+                        checked={cellValue}
+                        disabled={!ActivateAccessibility}
+                        background="#ff6600"
+                        onColor="#4DC771"
+                        onHandleColor="#ffffff"
+                        offColor="#FC5774"
+                        id="normal-switch"
+                        height={24}
+                        className={cellValue ? "active-switch" : "inactive-switch"}
+                    />
+                </label>
+            </>
+        )
+    }
 
     /**
     * @method indexFormatter
@@ -489,14 +468,9 @@ class VendorListing extends Component {
     * @description Filter user listing on the basis of role and department
     */
     filterList = () => {
-        const { vendorType, vendorName, country } = this.state;
-        const vType = vendorType && vendorType != null ? vendorType.value : null;
-        const vName = vendorName && vendorName != null ? vendorName.value : null;
-        const Country = country && country != null ? country.value : null;
-
 
         this.getTableListData(this.state.currentRowIndex, '', "", "", 100, this.state.floatingFilterData, true)
-        //this.getTableListData(vType, vName, Country)
+
     }
 
     /**
@@ -519,7 +493,8 @@ class VendorListing extends Component {
         this.setState({ isOpenVendor: true, isViewMode: false })
     }
 
-    closeVendorDrawer = (e = '') => {
+    closeVendorDrawer = (e = '', type) => {
+
         this.setState({
             isOpenVendor: false,
             isEditFlag: false,
@@ -548,12 +523,32 @@ class VendorListing extends Component {
     };
 
     onPageSizeChanged = (newPageSize) => {
-        var value = document.getElementById('page-size').value;
-        this.state.gridApi.paginationSetPageSize(Number(value));
+        onPageSizeChanged(this, newPageSize, "Vendor", this.state.currentRowIndex)    // COMMON PAGINATION FUNCTION
     };
 
+
+    onExcelDownload = () => {
+
+        this.setState({ disableDownload: true })
+
+        let tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+        if (tempArr?.length > 0) {
+            setTimeout(() => {
+                this.setState({ disableDownload: false })
+                let button = document.getElementById('Excel-Downloads-vendor')
+                button && button.click()
+            }, 400);
+
+        } else {
+
+            this.getTableListData(0, '', "", "", 100, this.state.floatingFilterData, false)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
+        }
+    }
+
     onBtExport = () => {
-        let tempArr = this.props.supplierDataList && this.props.supplierDataList
+        let tempArr = []
+        tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+        tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.allSupplierDataList ? this.props.allSupplierDataList : [])
         return this.returnExcelColumn(VENDOR_DOWNLOAD_EXCEl, tempArr)
     };
 
@@ -566,6 +561,12 @@ class VendorListing extends Component {
                 item.State = ' '
             } else if (String(item.City) === 'NA') {
                 item.City = ' '
+            }
+            if (item.IsActive === true) {
+                item.IsActive = 'Active'
+            }
+            else if (item.IsActive === false) {
+                item.IsActive = 'In Active'
             }
             return item
         })
@@ -582,7 +583,6 @@ class VendorListing extends Component {
     }
 
 
-
     /**
     * @method render
     * @description Renders the component
@@ -592,26 +592,21 @@ class VendorListing extends Component {
         const { isOpenVendor, isEditFlag, isBulkUpload, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.state;
         const ExcelFile = ReactExport.ExcelFile;
 
-        const options = {
-            clearSearch: true,
-            noDataText: (this.props.supplierDataList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
 
-            exportCSVBtn: this.createCustomExportCSVButton,
-            onExportToCSV: this.handleExportCSVButtonClick,
+        const isFirstColumn = (params) => {
 
-            paginationShowsTotal: this.renderPaginationShowsTotal,
-            prePage: <span className="prev-page-pg"></span>, // Previous page button text
-            nextPage: <span className="next-page-pg"></span>, // Next page button text
-            firstPage: <span className="first-page-pg"></span>, // First page button text
-            lastPage: <span className="last-page-pg"></span>,
-
-        };
+            var displayedColumns = params.columnApi.getAllDisplayedColumns();
+            var thisIsFirstColumn = displayedColumns[0] === params.column;
+            return thisIsFirstColumn;
+        }
 
         const defaultColDef = {
             resizable: true,
             filter: true,
             sortable: true,
-
+            headerCheckboxSelectionFilteredOnly: true,
+            headerCheckboxSelection: isFirstColumn,
+            checkboxSelection: isFirstColumn
         };
 
         const frameworkComponents = {
@@ -623,7 +618,7 @@ class VendorListing extends Component {
         };
 
         return (
-            <div className={`ag-grid-react container-fluid blue-before-inside part-manage-component ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
+            <div className={`ag-grid-react container-fluid blue-before-inside custom-pagination ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
 
                 <ScrollToTop pointProp="go-to-top" />
                 <form
@@ -714,8 +709,8 @@ class VendorListing extends Component {
                                 <div className="warning-message d-flex align-items-center">
                                     {this.state.warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                                 </div>
-                                <div>
-                                    <button title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch(this)}><div class="filter mr-0"></div></button>
+                                <div className='d-flex'>
+                                    <button title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch(this)} disabled={this.state.disableFilter}><div class="filter mr-0"></div></button>
                                     {AddAccessibility && (
                                         <button
                                             type="button"
@@ -741,16 +736,22 @@ class VendorListing extends Component {
                                     {
                                         DownloadAccessibility &&
                                         <>
-                                            <ExcelFile filename={'Vendor'} fileExtension={'.xls'} element={
-                                                <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-                                                    {/* DOWNLOAD */}
-                                                </button>}>
+                                            {this.state.disableDownload ? <div className='p-relative mr5'> <LoaderCustom customClass={"download-loader"} /> <button type="button" className={'user-btn'}><div className="download mr-0"></div>
+                                            </button></div> :
+                                                <>
+                                                    <button type="button" onClick={this.onExcelDownload} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                                    </button>
 
-                                                {this.onBtExport()}
-                                            </ExcelFile>
+                                                    <ExcelFile filename={'Vendor'} fileExtension={'.xls'} element={
+                                                        <button id={'Excel-Downloads-vendor'} className="p-absolute" type="button" >
+                                                        </button>}>
+                                                        {this.onBtExport()}
+                                                    </ExcelFile>
+                                                </>
+                                            }
                                         </>
                                     }
-                                    <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.onSearchExit(this)}>
+                                    <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
                                         <div className="refresh mr-0"></div>
                                     </button>
                                 </div>
@@ -766,12 +767,13 @@ class VendorListing extends Component {
                             domLayout='autoHeight'
                             rowData={this.props.supplierDataList}
                             pagination={true}
-                            paginationPageSize={10}
+                            paginationPageSize={this.state.globalTake}
                             onGridReady={this.onGridReady}
                             onFilterModified={this.onFloatingFilterChanged}
                             gridOptions={gridOptions}
                             suppressRowClickSelection={true}
                             noRowsOverlayComponent={'customNoRowsOverlay'}
+                            rowSelection={'multiple'}
                             noRowsOverlayComponentParams={{
                                 title: EMPTY_DATA,
                                 imagClass: 'imagClass'
@@ -786,21 +788,22 @@ class VendorListing extends Component {
                             <AgGridColumn field="State" headerName="State" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="City" headerName="City" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn width="130" pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
-                            <AgGridColumn field="VendorId" width={"230px"} headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                            <AgGridColumn field="VendorId" width={"230px"} cellClass="actions-wrapper" headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                         </AgGridReact>
                         <div className="button-wrapper">
-                            <div className="paging-container d-inline-block float-right">
-                                <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
-                                    <option value="10" selected={true}>10</option>
-                                    <option value="50">50</option>
-                                    <option value="100">100</option>
-                                </select>
-                            </div>
+
+                            {!this.state.isLoader && <PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} globalTake={this.state.globalTake} />}
                             <div className="d-flex pagination-button-container">
                                 <p><button className="previous-btn" type="button" disabled={this.state.pageNo === 1 ? true : false} onClick={() => this.onBtPrevious(this)}> </button></p>
-                                <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 10)}</p>
+                                {/* <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 10)}</p> */}
+                                {this.state.pageSize.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 10)}</p>}
+                                {this.state.pageSize.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 50)}</p>}
+                                {this.state.pageSize.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 100)}</p>}
                                 <p><button className="next-btn" type="button" onClick={() => this.onBtNext(this)}> </button></p>
                             </div>
+                        </div>
+                        <div className="text-right pb-3">
+                            <WarningMessage message="All the above details of supplier is entered through SAP." />
                         </div>
                     </div>
                 </div>
@@ -846,11 +849,11 @@ class VendorListing extends Component {
 * @param {*} state
 */
 function mapStateToProps({ comman, supplier, auth, }) {
-    const { loading, vendorTypeList, vendorSelectList, vendorTypeByVendorSelectList, supplierDataList } = supplier;
+    const { loading, vendorTypeList, vendorSelectList, vendorTypeByVendorSelectList, supplierDataList, allSupplierDataList } = supplier;
     const { countryList } = comman;
     const { leftMenuData, topAndLeftMenuData } = auth;
 
-    return { loading, vendorTypeList, countryList, leftMenuData, vendorSelectList, vendorTypeByVendorSelectList, supplierDataList, topAndLeftMenuData };
+    return { loading, vendorTypeList, countryList, leftMenuData, vendorSelectList, vendorTypeByVendorSelectList, supplierDataList, allSupplierDataList, topAndLeftMenuData };
 }
 
 /**

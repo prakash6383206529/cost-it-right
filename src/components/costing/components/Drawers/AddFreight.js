@@ -173,7 +173,7 @@ function AddFreight(props) {
   const handleApplicabilityChange = (newValue) => {
     if (newValue && newValue !== '') {
       setApplicability(newValue)
-      calculateCost(newValue.value)
+      calculateCost(newValue.label)
     } else {
       setApplicability([])
     }
@@ -190,8 +190,8 @@ function AddFreight(props) {
     const ConversionCostForCalculation = costData.IsAssemblyPart ? checkForNull(headCostData.NetConversionCost) - checkForNull(headCostData.TotalOtherOperationCostPerAssembly) : headCostData.ProcessCostTotal + headCostData.OperationCostTotal
     const RMBOPCC = checkForNull(NetRawMaterialsCost) + checkForNull(NetBoughtOutPartCost) + ConversionCostForCalculation
     const RMBOP = checkForNull(NetRawMaterialsCost) + checkForNull(NetBoughtOutPartCost);
-    const RMCC = checkForNull(NetRawMaterialsCost) + ConversionCostForCalculation;
-    const BOPCC = checkForNull(NetBoughtOutPartCost) + ConversionCostForCalculation
+    const RMCC = checkForNull(NetRawMaterialsCost) + checkForNull(ConversionCostForCalculation);
+    const BOPCC = checkForNull(NetBoughtOutPartCost) + checkForNull(ConversionCostForCalculation)
     const RateAsPercentage = getValues('Rate');
     let dataList = CostingDataList && CostingDataList.length > 0 ? CostingDataList[0] : {}
     const totalTabCost = checkForNull(dataList.NetTotalRMBOPCC) + checkForNull(dataList.NetSurfaceTreatmentCost) + checkForNull(dataList.NetOverheadAndProfitCost)
@@ -222,8 +222,8 @@ function AddFreight(props) {
         setFreightCost(totalFreightCost)
         break;
       case 'CC':
-        totalFreightCost = (RMCC) * calculatePercentage(RateAsPercentage)
-        setValue('FreightCost', checkForDecimalAndNull((ProcessCostTotal + OperationCostTotal) * calculatePercentage(RateAsPercentage), getConfigurationKey().NoOfDecimalForPrice))
+        totalFreightCost = (ConversionCostForCalculation) * calculatePercentage(RateAsPercentage)
+        setValue('FreightCost', checkForDecimalAndNull((totalFreightCost), getConfigurationKey().NoOfDecimalForPrice))
         setFreightCost(totalFreightCost)
         break;
 
@@ -536,13 +536,11 @@ function AddFreight(props) {
                       Controller={Controller}
                       control={control}
                       register={register}
-                      mandatory={true}
                       rules={{
-                        required: true,
                         pattern: {
                           value: /^[0-9]\d*(\.\d+)?$/i,
                           message: 'Invalid Number.'
-                        },
+                        }
                       }}
                       handleChange={() => { }}
                       defaultValue={''}

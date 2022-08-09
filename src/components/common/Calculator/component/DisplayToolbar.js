@@ -23,7 +23,7 @@ const DisplayToolbar = (props) => {
         <textarea className="display-input" id="display" rows="1" onChange={onTextareaChanged} value={props.input}></textarea>
       </form>
       <div className="toolbar">
-        <div className="toolbar-item" id="view-history" onClick={props.onHistory}><img src={props.isShowHistory ? Keypad : History} /></div>
+        <div className="toolbar-item" id="view-history" onClick={props.onHistory}><img src={props.isShowHistory ? Keypad : History} alt={props.isShowHistory ? 'Keypad' : 'History'} /></div>
         <div>
           <span className="toolbar-item" onClick={props.onBackspace} id="backspace"><img src={Backspace} alt='backspace' /></span>
         </div>

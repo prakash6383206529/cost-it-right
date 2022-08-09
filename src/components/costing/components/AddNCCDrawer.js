@@ -12,7 +12,7 @@ import { getVendorWithVendorCodeSelectList } from '../../../actions/Common';
 
 function AddNCCDrawer(props) {
 
-  const { register, handleSubmit, formState: { errors }, control, reset,setValue } =useForm({
+  const { register, handleSubmit, formState: { errors }, control, reset, setValue } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   });
@@ -45,13 +45,13 @@ function AddNCCDrawer(props) {
       return;
     }
     props.closeDrawer('', {
-             ...data,
-            VendorCode: Object.keys(vendor).length>0 ? getVendorCode(vendor.label):'',
-            VendorId:  Object.keys(vendor).length>0 ? vendor.value:EMPTY_GUID_0,
-            VendorName:  Object.keys(vendor).length>0 ?vendor.label:'',
-            Vendor: vendor,
-          })
-  
+      ...data,
+      VendorCode: Object.keys(vendor).length > 0 ? getVendorCode(vendor.label) : '',
+      VendorId: Object.keys(vendor).length > 0 ? vendor.value : EMPTY_GUID_0,
+      VendorName: Object.keys(vendor).length > 0 ? vendor.label : '',
+      Vendor: vendor,
+    })
+
   };
 
   /**
@@ -63,8 +63,8 @@ function AddNCCDrawer(props) {
 
     if (label === 'Plant') {
       plantSelectList && plantSelectList.map(item => {
-        if (item.Value === '0' || selectedPlants.includes(item.Value)) return false;
-        temp.push({ label: item.Text, value: item.Value })
+        if (item.PlantId === '0' || selectedPlants.includes(item.PlantId)) return false;
+        temp.push({ label: item.PlantNameCode, value: item.PlantId })
         return null;
       });
       return temp;
@@ -87,7 +87,7 @@ function AddNCCDrawer(props) {
   const handlePlantChange = (newValue) => {
     if (newValue && newValue !== '') {
       setPlant(newValue)
-      setValue('Plant',{label:newValue.label,value:newValue.value})
+      setValue('Plant', { label: newValue.label, value: newValue.value })
       dispatch(getZBCDetailByPlantId(newValue.value, (res) => {
         if (res && res.data && res.data.Data) {
           setPlantData(res.data.Data)
@@ -105,7 +105,7 @@ function AddNCCDrawer(props) {
   const handleVendorChange = (newValue) => {
     if (newValue && newValue !== '') {
       setVendor(newValue)
-   
+
     } else {
       setVendor([])
     }
@@ -142,7 +142,7 @@ function AddNCCDrawer(props) {
                   <h3>{"Add Vendor/Plant"}</h3>
                 </div>
                 <div
-                  onClick={(e) => toggleDrawer(e)}
+                  onClick={cancel}
                   className={"close-button right"}
                 ></div>
               </Col>

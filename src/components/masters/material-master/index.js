@@ -8,17 +8,14 @@ import classnames from 'classnames';
 import AddRMImport from './AddRMImport';
 import RMDomesticListing from './RMDomesticListing';
 import RMImportListing from './RMImportListing';
-
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { MASTERS, RAW_MATERIAL, RAW_MATERIAL_NAME_AND_GRADE, RM_MASTER_ID } from '../../../config/constants';
-import { getConfigurationKey } from '../../../helper';
-
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import RMApproval from './RMApproval';
 import ScrollToTop from '../../common/ScrollToTop';
 import { CheckApprovalApplicableMaster } from '../../../helper';
+import CommonApproval from './CommonApproval';
 
 
 
@@ -98,7 +95,6 @@ function RowMaterialMaster(props) {
             const permmisionDataRMANDGRADE = accessDataRMANDGRADE && accessDataRMANDGRADE.Actions && checkPermission(accessDataRMANDGRADE.Actions)
 
             if (permmisionData !== undefined) {
-
                 setViewRMAccessibility(permmisionData && permmisionData.View ? permmisionData.View : false);
                 setAddAccessibility(permmisionData && permmisionData.Add ? permmisionData.Add : false);
                 setEditAccessibility(permmisionData && permmisionData.Edit ? permmisionData.Edit : false);
@@ -212,7 +208,7 @@ function RowMaterialMaster(props) {
     return (
         <Container fluid>
             <Row id="go-top-top">
-                {ViewRMAccessibility && <Col sm="4">
+                {<Col sm="4">
                     <h1>{`Raw Material Master`}</h1>
                 </Col>}
                 <ScrollToTop pointProp={"go-top-top"} />
@@ -224,29 +220,29 @@ function RowMaterialMaster(props) {
 
 
 
-                            {ViewRMAccessibility && <NavItem>
+                            {<NavItem>
                                 <NavLink className={classnames({ active: activeTab === '1' })} onClick={() => { toggle('1'); }}>
                                     Manage Raw Material (Domestic)
                                 </NavLink>
                             </NavItem>}
-                            {ViewRMAccessibility && <NavItem>
+                            {<NavItem>
                                 <NavLink className={classnames({ active: activeTab === '2' })} onClick={() => { toggle('2'); }}>
                                     Manage Raw Material (Import)
                                 </NavLink>
                             </NavItem>}
-                            {ViewRMAccessibility && <NavItem>
+                            {<NavItem>
                                 <NavLink className={classnames({ active: activeTab === '3' })} onClick={() => { toggle('3'); }}>
                                     Manage Specification
                                 </NavLink>
                             </NavItem>}
-                            {ViewRMAccessibility && <NavItem>
+                            {<NavItem>
                                 <NavLink className={classnames({ active: activeTab === '4' })} onClick={() => { toggle('4'); }}>
                                     Manage Material
                                 </NavLink>
                             </NavItem>}
                             {/* SHOW THIS TAB IF KEY IS COMING TRUE FROM CONFIGURATION (CONNDITIONAL TAB) */}
                             {/* uncomment below line after cherry-pick to Minda  TODO */}
-                            {(ViewRMAccessibility && CheckApprovalApplicableMaster(RM_MASTER_ID)) && <NavItem>
+                            {(CheckApprovalApplicableMaster(RM_MASTER_ID)) && <NavItem>
                                 {/* {ViewRMAccessibility && <NavItem> */}
                                 <NavLink className={classnames({ active: activeTab === '5' })} onClick={() => {
                                     toggle('5');
@@ -261,7 +257,7 @@ function RowMaterialMaster(props) {
 
 
 
-                            {Number(activeTab) === 1 && ViewRMAccessibility &&
+                            {Number(activeTab) === 1 &&
                                 <TabPane tabId="1">
                                     <RMDomesticListing
                                         formToggle={displayDomesticForm}
@@ -325,11 +321,12 @@ function RowMaterialMaster(props) {
                                     {/* <Link to="/raw-material-approval"></Link> */}
                                     {/* <Route path="/raw-material-approval">
                                         </Route> */}
-                                    <RMApproval
+                                    <CommonApproval
                                         AddAccessibility={AddAccessibility}
                                         EditAccessibility={EditAccessibility}
                                         DeleteAccessibility={DeleteAccessibility}
                                         DownloadAccessibility={DownloadAccessibility}
+                                        MasterId={RM_MASTER_ID}
                                     />
                                 </TabPane>}
 

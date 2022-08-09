@@ -248,7 +248,7 @@ export function renderMultiSelectField(field) {
           ""
         )}
       </label>
-      <div className={inputbox} onClick={field.onTouched}>
+      <div className={inputbox} onClick={field.onTouched} title={field && field?.title}>
         <Select
           className={InputClassName}
           getOptionLabel={optionLabel}
@@ -453,7 +453,7 @@ export function renderNumberInputField(field) {
       <div className="input-group">
         <input
           {...others}
-          type="number"
+          type={'number'}
           className={InputClassName}
           maxLength={field.maxLength}
           value={field.Value}
@@ -677,7 +677,6 @@ export const searchableSelect = ({
 }) => {
   const { name, value, onBlur, onChange, onFocus } = input;
   let isDisable = disabled && disabled === true ? true : false;
-  //let isClear = (isClearable === undefined) ? true : false;
   return (
     <div className="w-100 form-group-searchable-select">
       {label && (
@@ -691,10 +690,10 @@ export const searchableSelect = ({
         </label>
       )}
       <Select
+        {...input}
         isClearable={false}
         options={options}
         onChange={handleChangeDescription}
-        //onCreateOption={handleCreate}
         value={valueDescription}
         isDisabled={isDisable}
         placeholder={placeholder}
@@ -702,7 +701,7 @@ export const searchableSelect = ({
         className={"searchable"}
       />
       {children}
-      <div className="text-help mb-2 mb-2">{touched ? error : ""}</div>
+      <div className="text-help mb-2 mb-2">{touched && error ? error : ""}</div>
     </div>
   );
 };

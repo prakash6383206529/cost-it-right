@@ -10,7 +10,7 @@ import {
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 
-const headers = config;
+// const config() = config;
 
 
 /**
@@ -20,7 +20,7 @@ const headers = config;
 export function createExchangeRate(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.post(API.createExchangeRate, data, headers);
+        const request = axios.post(API.createExchangeRate, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -41,12 +41,12 @@ export function getExchangeRateDataList(isAPICall, data, callback) {
     return (dispatch) => {
         if (isAPICall) {
             dispatch({ type: API_REQUEST });
-            axios.get(`${API.getExchangeRateDataList}?currencyId=${data.currencyId}`, headers)
+            axios.get(`${API.getExchangeRateDataList}?currencyId=${data.currencyId}`, config())
                 .then((response) => {
-                    if (response.data.Result === true) {
+                    if (response.data.Result === true || response.status === 204) {
                         dispatch({
                             type: EXCHANGE_RATE_DATALIST,
-                            payload: response.data.DataList,
+                            payload: response.status === 204 ? [] : response.data.DataList,
                         });
                         callback(response);
                     }
@@ -73,7 +73,7 @@ export function getExchangeRateData(ID, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         if (ID !== '') {
-            axios.get(`${API.getExchangeRateData}/${ID}`, headers)
+            axios.get(`${API.getExchangeRateData}/${ID}`, config())
                 .then((response) => {
                     if (response.data.Result) {
                         dispatch({
@@ -104,7 +104,7 @@ export function getExchangeRateData(ID, callback) {
 export function deleteExchangeRate(Id, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteExchangeRate}/${Id}`, headers)
+        axios.delete(`${API.deleteExchangeRate}/${Id}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -121,7 +121,7 @@ export function deleteExchangeRate(Id, callback) {
 export function updateExchangeRate(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateExchangeRate}`, requestData, headers)
+        axios.put(`${API.updateExchangeRate}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -139,7 +139,7 @@ export function updateExchangeRate(requestData, callback) {
 export function getCurrencySelectList(callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getCurrencySelectList}`, headers);
+        const request = axios.get(`${API.getCurrencySelectList}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({

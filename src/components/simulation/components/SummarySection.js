@@ -4,7 +4,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import DayTime from '../../common/DayTimeWrapper'
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { EMPTY_DATA } from '../../../config/constants';
+import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId } from '../../../helper';
 import { useDispatch, useSelector } from 'react-redux';
 import { getApprovalSimulatedCostingSummary, getComparisionSimulationData } from '../actions/Simulation';
@@ -13,6 +13,7 @@ import LoaderCustom from '../../common/LoaderCustom';
 import NoContentFound from '../../common/NoContentFound';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common';
 import { ZBC } from '../../../config/constants';
+import { PaginationWrapper } from '../../common/commonPagination';
 const gridOptions = {};
 
 export function Summarysection(props) {
@@ -45,13 +46,6 @@ export function Summarysection(props) {
 
     const dispatch = useDispatch()
 
-    const partSelectList = useSelector((state) => state.costing.partSelectList)
-    const statusSelectList = useSelector((state) => state.approval.costingStatusList)
-    const approvalSimulatedCostingSummary = useSelector((state) => state.approval.approvalSimulatedCostingSummary)
-    const userList = useSelector(state => state.auth.userList)
-    const { technologySelectList, plantSelectList } = useSelector(state => state.comman)
-
-
     const defaultColDef = {
         resizable: true,
         filter: true,
@@ -66,8 +60,7 @@ export function Summarysection(props) {
     };
 
     const onPageSizeChanged = (newPageSize) => {
-        var value = document.getElementById('page-size').value;
-        gridApi.paginationSetPageSize(Number(value));
+        gridApi.paginationSetPageSize(Number(newPageSize));
     };
 
     const onFilterTextBoxChanged = (e) => {
@@ -160,7 +153,7 @@ export function Summarysection(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (
             <>
-                <button className="Balance mb-0" type={'button'} onClick={() => DisplayCompareCosting(cell, row)} />
+                <button title='Compare' className="Balance mb-0" type={'button'} onClick={() => DisplayCompareCosting(cell, row)} />
             </>
         )
     }
@@ -274,7 +267,7 @@ export function Summarysection(props) {
                             <Col md="12">
                                 <Row>
                                     <Col>
-                                        <div className={`ag-grid-wrapper height-width-wrapper ${costingList && costingList?.length <=0 ?"overlay-contain": ""}`}>
+                                        <div className={`ag-grid-wrapper height-width-wrapper ${costingList && costingList?.length <= 0 ? "overlay-contain" : ""}`}>
                                             <div className="ag-grid-header">
                                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                                                 <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
@@ -293,7 +286,7 @@ export function Summarysection(props) {
                                                     // columnDefs={c}
                                                     rowData={costingList}
                                                     pagination={true}
-                                                    paginationPageSize={10}
+                                                    paginationPageSize={defaultPageSize}
                                                     onGridReady={onGridReady}
                                                     gridOptions={gridOptions}
                                                     loadingOverlayComponent={'customLoadingOverlay'}
@@ -320,13 +313,7 @@ export function Summarysection(props) {
                                                     <AgGridColumn field="SimulationId" headerName='Actions'   type="rightAligned" cellRenderer='buttonFormatter'></AgGridColumn> */}
 
                                                 </AgGridReact>
-                                                <div className="paging-container d-inline-block float-right">
-                                                    <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
-                                                        <option value="10" selected={true}>10</option>
-                                                        <option value="50">50</option>
-                                                        <option value="100">100</option>
-                                                    </select>
-                                                </div>
+                                                {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                                             </div>
                                         </div>
                                     </Col>

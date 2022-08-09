@@ -13,6 +13,7 @@ import { createToprowObjAndSave, findSurfaceTreatmentData } from '../../CostingU
 function AddAssemblyOperation(props) {
   const { item, CostingViewMode } = props;
   const [IsOpenTool, setIsOpenTool] = useState(false);
+  const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
 
   const dispatch = useDispatch()
 
@@ -60,10 +61,10 @@ function AddAssemblyOperation(props) {
   */
   const saveData = () => {
     let stCostingData = findSurfaceTreatmentData(item)
+
     let requestData = {
       "CostingId": item.CostingId,
       "CostingNumber": item.CostingNumber,
-
       "CostingDetailId": "00000000-0000-0000-0000-000000000000",
       "PartId": item.PartId,
       "PartNumber": item.PartNumber,
@@ -227,7 +228,7 @@ function AddAssemblyOperation(props) {
                   <div className={'cancel-icon'}></div> {'Cancel'}
                 </button>
                 <button
-                  disabled={CostingViewMode}
+                  disabled={(CostingViewMode || IsLocked)}
                   type={'button'}
                   className="submit-button mr15 save-btn"
                   onClick={saveData} >

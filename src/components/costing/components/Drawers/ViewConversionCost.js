@@ -131,38 +131,20 @@ function ViewConversionCost(props) {
 
 
   const setCalculatorData = (data, list, id, parentId) => {
-
-
     if (parentId === '') {
-      let tempArr = []
       let tempData = viewCostingData[props.index].netConversionCostView.CostingProcessCostResponse[id]
-      // 
       setCalculatorTechnology(viewCostingData[props.index].netConversionCostView.CostingProcessCostResponse[id].ProcessTechnologyId)
       tempData = { ...tempData, WeightCalculatorRequest: data, }
-
       setCalciData(tempData)
-      tempArr = Object.assign([...viewCostingData[props.index].netConversionCostView.CostingProcessCostResponse], { [id]: tempData })
       setTimeout(() => {
-        // setGridData(tempArr)
         setWeightCalculatorDrawer(true)
       }, 100)
     } else {
-      let parentTempArr = []
-      let parentTempData = viewCostingData[props.index].netConversionCostView.CostingProcessCostResponse[parentId]
-
-      let tempArr = []
       let tempData = list[id]
-
-
       setCalculatorTechnology(tempData.ProcessTechnologyId)
       tempData = { ...tempData, WeightCalculatorRequest: data, }
-
       setCalciData(tempData)
-      tempArr = Object.assign([...list], { [id]: tempData })
-      parentTempData = { ...parentTempData, ProcessList: tempArr }
-      // parentTempArr = Object.assign([...viewCostingData[props.index].netConversionCostView.CostingProcessCostResponse[id], { [parentId]: parentTempData }])
       setTimeout(() => {
-        // setGridData(parentTempArr)
         setWeightCalculatorDrawer(true)
       }, 100);
     }
@@ -170,32 +152,22 @@ function ViewConversionCost(props) {
 
 
   const getWeightData = (index, list = [], parentCalciIndex = '') => {
-    // const tempData = viewCostingData[props.index]
     let tempData
     let processCalciId = ''
     let technologyId = ''
     let UOMType = ''
     if (parentCalciIndex === '') {
       tempData = viewCostingData[props.index]
-      if (tempData?.netConversionCostView?.CostingProcessCostResponse[index].ProcessCalculatorId === 0) {
-        Toaster.warning('Data is not avaliabe for calculator')
-        return false
-      }
-      else {
-        processCalciId = tempData?.netConversionCostView?.CostingProcessCostResponse[index].ProcessCalculatorId
-        technologyId = tempData?.netConversionCostView?.CostingProcessCostResponse[index].ProcessTechnologyId
-        UOMType = tempData.netConversionCostView.CostingProcessCostResponse[index].UOMType
-      }
+      processCalciId = tempData?.netConversionCostView?.CostingProcessCostResponse[index]?.ProcessCalculatorId
+      technologyId = tempData?.netConversionCostView?.CostingProcessCostResponse[index]?.ProcessTechnologyId
+      UOMType = tempData?.netConversionCostView?.CostingProcessCostResponse[index]?.UOMType
+
     } else {
       tempData = list[index]
-      if (tempData.ProcessCalculatorId === 0 || tempData.ProcessCalculatorId === null) {
-        Toaster.warning('Data is not avaliabe for calculator')
-        return false
-      } else {
-        processCalciId = tempData.ProcessCalculatorId
-        technologyId = tempData?.ProcessTechnologyId
-        UOMType = tempData.UOMType
-      }
+      processCalciId = tempData?.ProcessCalculatorId
+      technologyId = tempData?.ProcessTechnologyId
+      UOMType = tempData?.UOMType
+
     }
     setIndexForProcessCalculator(index)
     setParentIndex(parentCalciIndex)
@@ -205,7 +177,7 @@ function ViewConversionCost(props) {
 
           if ((res && res.data && res.data.Data) || (res && res.status === 204)) {
             const data = res.status === 204 ? {} : res.data.Data
-            setCalculatorData(data, list, index, parentIndex)
+            setCalculatorData(data, list, index, parentCalciIndex)
           }
 
         }
@@ -236,6 +208,10 @@ function ViewConversionCost(props) {
 
   const closeWeightDrawer = (e = "") => {
     setWeightCalculatorDrawer(false)
+    setIndexForProcessCalculator('')
+    setParentIndex('')
+    setCalciData({})
+    setCalculatorTechnology('')
   }
 
 
@@ -278,7 +254,7 @@ function ViewConversionCost(props) {
             <td>{item.MachineName ? item.MachineName : '-'}</td>
             <td>{item.Tonnage ? item.Tonnage : '-'}</td>
             <td>{item.UOM ? item.UOM : '-'}</td>
-            <td>{(item?.ProductionPerHour === '-' || item?.ProductionPerHour === 0 || item?.ProductionPerHour === null) ? '-' : checkForDecimalAndNull(item.ProductionPerHour, initialConfiguration.NoOfDecimalForInputOutput)}</td>
+            <td>{(item?.ProductionPerHour === '-' || item?.ProductionPerHour === 0 || item?.ProductionPerHour === null) ? '-' : Math.round(item.ProductionPerHour)}</td>
             <td>{item.MHR ? item.MHR : '-'}</td>
             {!isPDFShow && <td><button
               className="CalculatorIcon cr-cl-icon mr-auto ml-0"
@@ -289,6 +265,7 @@ function ViewConversionCost(props) {
             <td>{item.Quantity ? checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForInputOutput) : '-'}</td>
             <td>{item.ProcessCost ? checkForDecimalAndNull(item.ProcessCost, initialConfiguration.NoOfDecimalForPrice) : 0}
             </td>
+            <td>{item.Remark ?? item.Remark}</td>
           </tr>
         )
       })
@@ -296,6 +273,7 @@ function ViewConversionCost(props) {
   }
 
   const processTableData = () => {
+    const tooltipText = <div><div>If UOM is in hours/minutes/seconds, quantity is in seconds.</div> <div>For all others UOMs, quantity is actual.</div></div>;
     return <>
       <Row>
         <Col md="12" className='mt-1'>
@@ -309,17 +287,18 @@ function ViewConversionCost(props) {
             <thead>
               <tr>
                 {partNumberList.length === 0 && (IsAssemblyCosting && isPDFShow) && <th>{`Part No`}</th>}
-                {processGroup && <th>{`Group Name`}</th>}
-                <th>{`Process Name`}</th>
+                <th style={{ width: "150px" }}>{`Process`}</th>
+                {processGroup && <th>{`Sub Process`}</th>}
                 <th>{`Technology`}</th>
                 <th>{`Machine Name`}</th>
                 <th>{`Tonnage`}</th>
                 <th>{`UOM`}</th>
-                <th>{`Part/Hour`}</th>
+                <th>{`Parts/Hour`}</th>
                 <th>{`MHR`}</th>
                 {!isPDFShow && <th>{`Calculator`}</th>}
-                <th>{`Quantity`}</th>
-                <th className="costing-border-right">{`Net Cost`}</th>
+                <th width="125px"><span>Quantity  {!isPDFShow && <div class="tooltip-n ml-1"><i className="fa fa-info-circle text-primary tooltip-icon"></i><span class="tooltiptext process-tooltip">{tooltipText}</span></div>}</span></th>
+                <th>{`Net Cost`}</th>
+                <th className="costing-border-right">{`Remark`}</th>
               </tr>
             </thead>
             <tbody>
@@ -330,7 +309,7 @@ function ViewConversionCost(props) {
                     <>
                       <tr key={index}>
                         {IsAssemblyCosting && partNumberList.length === 0 && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
-                        {processGroup && <td className={`${isPDFShow ? '' : 'text-overflow process-name'}`}>
+                        <td className={`${isPDFShow ? '' : 'text-overflow process-name'}`}>
                           {
                             (item?.GroupName === '' || item?.GroupName === null) ? '' :
                               <div onClick={() =>
@@ -339,14 +318,14 @@ function ViewConversionCost(props) {
                                 className={`${isPDFShow ? '' : processAccObj[index] ? 'Open' : 'Close'}`}></div>
                           }
                           <span title={item.ProcessName}>
-                            {item?.GroupName === '' || item?.GroupName === null ? '-' : item.GroupName}</span>
-                        </td>}
-                        <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item.ProcessName}>{item.ProcessName ? item.ProcessName : '-'}</span></td>
+                            {item?.GroupName === '' || item?.GroupName === null ? item.ProcessName : item.GroupName}</span>
+                        </td>
+                        {processGroup && <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item.ProcessName}>{'-'}</span></td>}
                         <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item?.Technologies}>{item?.Technologies ? item?.Technologies : '-'}</span></td>
                         <td>{item.MachineName ? item.MachineName : '-'}</td>
                         <td>{item.Tonnage ? item.Tonnage : '-'}</td>
                         <td>{item.UOM ? item.UOM : '-'}</td>
-                        <td>{(item?.ProductionPerHour === '-' || item?.ProductionPerHour === 0 || item?.ProductionPerHour === null) ? '-' : checkForDecimalAndNull(item.ProductionPerHour, initialConfiguration.NoOfDecimalForInputOutput)}</td>
+                        <td>{(item?.ProductionPerHour === '-' || item?.ProductionPerHour === 0 || item?.ProductionPerHour === null) ? '-' : Math.round(item.ProductionPerHour)}</td>
                         <td>{item.MHR ? item.MHR : '-'}</td>
                         {(!isPDFShow) && <td>
                           {
@@ -362,6 +341,7 @@ function ViewConversionCost(props) {
                         <td>{item.Quantity ? checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForInputOutput) : '-'}</td>
                         <td>{item.ProcessCost ? checkForDecimalAndNull(item.ProcessCost, initialConfiguration.NoOfDecimalForPrice) : 0}
                         </td>
+                        <td className='remark-overflow'><span title={item.Remark ?? item.Remark}>{item.Remark ?? item.Remark}</span></td>
                       </tr>
                       {isPDFShow && renderSingleProcess(item, index)}
                       {processAccObj[index] && <>
@@ -410,7 +390,8 @@ function ViewConversionCost(props) {
                 {/* make it configurable after deployment */}
                 {/* <th>{`Labour Rate`}</th>
                       <th>{`Labour Quantity`}</th> */}
-                <th className="costing-border-right">{`Net Cost`}</th>
+                <th>{`Net Cost`}</th>
+                <th className="costing-border-right">{`Remark`}</th>
               </tr>
             </thead>
             <tbody>
@@ -441,6 +422,9 @@ function ViewConversionCost(props) {
                       {/* <td>{netCost(item.OperationCost)}</td> */}
                       <td>
                         {item.OperationCost ? checkForDecimalAndNull(item.OperationCost, initialConfiguration.NoOfDecimalForPrice) : 0}
+                      </td>
+                      <td>
+                        {item.Remark !== null ? item.Remark : '-'}
                       </td>
                     </tr>
                   )
@@ -481,7 +465,8 @@ function ViewConversionCost(props) {
                 {/* make it configurable after deployment */}
                 {/* <th>{`Labour Rate`}</th>
                       <th>{`Labour Quantity`}</th> */}
-                <th className="costing-border-right">{`Net Cost`}</th>
+                <th>{`Net Cost`}</th>
+                <th className="costing-border-right">{`Remark`}</th>
               </tr>
             </thead>
             <tbody>
@@ -512,6 +497,9 @@ function ViewConversionCost(props) {
                       {/* <td>{netCost(item.OperationCost)}</td> */}
                       <td>
                         {item.OperationCost ? checkForDecimalAndNull(item.OperationCost, initialConfiguration.NoOfDecimalForPrice) : 0}
+                      </td>
+                      <td>
+                        {item.Remark !== null ? item.Remark : '-'}
                       </td>
                     </tr>
                   )
@@ -639,7 +627,7 @@ function ViewConversionCost(props) {
       </Row>
       <Row>
         {/*TRANSPORTATION COST GRID */}
-        <Col md="12">
+        <Col md="12" className='mb-3'>
           <Table className="table cr-brdr-main mb-0" size="sm">
             <thead>
               <tr>
@@ -684,7 +672,7 @@ function ViewConversionCost(props) {
       {!isPDFShow ? <Drawer
         anchor={props.anchor}
         open={props.isOpen}
-      // onClose={(e) => toggleDrawer(e)}
+        className="conversion-cost"
       >
         <Container className="view-conversion-cost-drawer">
           <div className={'drawer-wrapper drawer-1500px'}>

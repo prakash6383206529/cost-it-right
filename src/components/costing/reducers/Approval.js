@@ -9,7 +9,8 @@ import {
   GET_APPROVAL_LIST,
   GET_APPROVAL_SUMMARY,
   GET_SELECTED_COSTING_STATUS,
-  SET_SAP_DATA
+  SET_SAP_DATA,
+  GET_APPROVAL_LIST_DRAFT
 } from '../../../config/constants'
 import { userDetails } from '../../../helper'
 
@@ -73,6 +74,12 @@ export default function ApprovalReducer(state = initialState, action) {
         ...state,
         loading: false,
         approvalList: action.payload,
+      }
+    case GET_APPROVAL_LIST_DRAFT:
+      return {
+        ...state,
+        loading: false,
+        approvalListDraft: action.payload,
       }
     case GET_APPROVAL_SUMMARY:
       return {

@@ -8,6 +8,7 @@ import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUser
 import LossStandardTable from './LossStandardTable'
 import { saveRawMaterialCalculationForFerrous } from '../../actions/CostWorking'
 import Toaster from '../../../common/Toaster'
+import { debounce } from 'lodash'
 
 function Ferrous(props) {
     const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest
@@ -30,6 +31,7 @@ function Ferrous(props) {
     const [tableVal, setTableVal] = useState(WeightCalculatorRequest && WeightCalculatorRequest.LossOfTypeDetails !== null ? WeightCalculatorRequest.LossOfTypeDetails : [])
     const [lostWeight, setLostWeight] = useState(WeightCalculatorRequest && WeightCalculatorRequest.NetLossWeight ? WeightCalculatorRequest.NetLossWeight : 0)
     const [dataToSend, setDataToSend] = useState(WeightCalculatorRequest)
+    const [isDisable, setIsDisable] = useState(false)
     const { rmRowData, rmData, CostingViewMode, item } = props
 
     const rmGridFields = 'rmGridFields';
@@ -170,7 +172,7 @@ function Ferrous(props) {
         setLostWeight(lostSum)
     }
 
-    const onSubmit = () => {
+    const onSubmit = debounce(handleSubmit((values) => {
         let obj = {}
         obj.FerrousCastingWeightCalculatorId = WeightCalculatorRequest && WeightCalculatorRequest.ForgingWeightCalculatorId ? WeightCalculatorRequest.ForgingWeightCalculatorId : "0"
         obj.CostingRawMaterialDetailsIdRef = rmRowData.RawMaterialDetailId
@@ -205,21 +207,26 @@ function Ferrous(props) {
                 props.toggleDrawer('', obj)
             }
         }))
-    }
+    }), 500);
 
     const onCancel = () => {
         props.toggleDrawer('')
     }
 
+    const handleKeyDown = function (e) {
+        if (e.key === 'Enter' && e.shiftKey === false) {
+            e.preventDefault();
+        }
+    };
+
     return (
         <Fragment>
             <Row>
-                <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}>
+                <form noValidate className="form"
+                    onKeyDown={(e) => { handleKeyDown(e, onSubmit.bind(this)); }}>
 
                     <Col md="12">
-
                         <Col md="12">
-
                             <tbody className='rm-table-body'></tbody>
                         </Col>
                         <div className="costing-border px-4">
@@ -310,7 +317,7 @@ function Ferrous(props) {
                                 </Col>
                                 <Col md="3">
                                     <NumberFieldHookForm
-                                        label={`Casting Weight (kg)`}
+                                        label={`Casting Weight(kg)`}
                                         name={'castingWeight'}
                                         Controller={Controller}
                                         control={control}
@@ -351,7 +358,7 @@ function Ferrous(props) {
                             <Row className={'mt25'}>
                                 <Col md="3" >
                                     <NumberFieldHookForm
-                                        label={`Gross Weight (Kg)`}
+                                        label={`Gross Weight(Kg)`}
                                         name={'grossWeight'}
                                         Controller={Controller}
                                         control={control}
@@ -376,7 +383,7 @@ function Ferrous(props) {
                                 </Col>
                                 <Col md="3" >
                                     <NumberFieldHookForm
-                                        label={`Finished Weight (Kg)`}
+                                        label={`Finished Weight(Kg)`}
                                         name={'finishedWeight'}
                                         Controller={Controller}
                                         control={control}
@@ -401,7 +408,7 @@ function Ferrous(props) {
 
                                 <Col md="3">
                                     <NumberFieldHookForm
-                                        label={`Scrap Weight (Kg)`}
+                                        label={`Scrap Weight(Kg)`}
                                         name={'scrapWeight'}
                                         Controller={Controller}
                                         control={control}
@@ -420,7 +427,7 @@ function Ferrous(props) {
                                 </Col>
                                 <Col md="3">
                                     <NumberFieldHookForm
-                                        label={`Recovery (%)`}
+                                        label={`Recovery(%)`}
                                         name={'recovery'}
                                         Controller={Controller}
                                         control={control}
@@ -498,8 +505,9 @@ function Ferrous(props) {
                             CANCEL
                         </button>
                         <button
-                            type="submit"
-                            disabled={props.CostingViewMode ? props.CostingViewMode : false}
+                            type="button"
+                            onClick={onSubmit}
+                            disabled={props.CostingViewMode || isDisable ? true : false}
                             className="btn-primary save-btn"
                         >
                             <div className={'check-icon'}>

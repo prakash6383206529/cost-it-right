@@ -15,7 +15,7 @@ import { formatLoginResult } from '../../helper/ApiResponse';
 import logo from '../../assests/images/logo/company-logo.png'
 import secondLogo from '../../assests/images/logo/CIRlogo.svg'
 import errorImg from '../../assests/images/box.png'
-import { VERSION } from '../../config/constants'
+import { IV, KEY, VERSION } from '../../config/constants'
 import LoaderCustom from "../common/LoaderCustom";
 var CryptoJS = require('crypto-js')
 
@@ -53,8 +53,8 @@ class Login extends Component {
    */
   onSubmit(values) {
 
-    var key = CryptoJS.enc.Utf8.parse('awvmhujtecmcecmj');
-    var iv = CryptoJS.enc.Utf8.parse('vuqqsafvwouoqtgh');
+    var key = CryptoJS.enc.Utf8.parse(KEY);
+    var iv = CryptoJS.enc.Utf8.parse(IV);
     var encryptedpassword = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse(values.Password), key,
       {
         keySize: 128 / 8,
@@ -85,7 +85,7 @@ class Login extends Component {
 
         })
         departmentList = dept.join(',')
-        reactLocalStorage.setObject("userDetail", userDetail);
+        localStorage.setItem("userDetail", JSON.stringify(userDetail))
         reactLocalStorage.setObject("departmentList", departmentList);
         setTimeout(() => {
           this.setState({ inputLoader: false })

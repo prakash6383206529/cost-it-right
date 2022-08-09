@@ -2,13 +2,12 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col } from 'reactstrap';
-import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength75, maxLength20, maxLength80, maxLength512 } from "../../../helper/validation";
+import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength75, maxLength20, maxLength80, maxLength512, checkSpacesInString } from "../../../helper/validation";
 import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
 import { renderText, renderTextAreaField, focusOnError, renderDatePicker, renderMultiSelectField, searchableSelect } from "../../layout/FormInputs";
-import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common';
 import {
   createAssemblyPart, updateAssemblyPart, getAssemblyPartDetail, fileUploadPart, fileDeletePart,
-  getBOMViewerTreeDataByPartIdAndLevel, getProductGroupSelectList
+  getBOMViewerTreeDataByPartIdAndLevel, getProductGroupSelectList, getPartDescription, getPartData, convertPartToAssembly,
 } from '../actions/Part';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
@@ -16,18 +15,23 @@ import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { ASSEMBLY, BOUGHTOUTPART, COMPONENT_PART, FILE_URL, ZBC, } from '../../../config/constants';
+import { ASSEMBLY, BOUGHTOUTPART, COMPONENT_PART, FILE_URL } from '../../../config/constants';
 import AddChildDrawer from './AddChildDrawer';
 import DayTime from '../../common/DayTimeWrapper'
 import BOMViewer from './BOMViewer';
-import ConfirmComponent from '../../../helper/ConfirmComponent';
 import { getRandomSixDigit } from '../../../helper/util';
 import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from "../../../assests/images/red-cross.png";
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import _, { debounce } from 'lodash';
+import WarningMessage from '../../common/WarningMessage'
+import Switch from "react-switch";
+import AsyncSelect from 'react-select/async';
+import { getCostingSpecificTechnology } from '../../costing/actions/Costing'
+import { getPartSelectList } from '../../../actions/Common';
 
 const selector = formValueSelector('AddAssemblyPart')
+export const PartEffectiveDate = React.createContext()
 
 class AddAssemblyPart extends Component {
   constructor(props) {
@@ -65,6 +69,13 @@ class AddAssemblyPart extends Component {
       isBomEditable: false,
       isDisableBomNo: false,
       minEffectiveDate: '',
+      warningMessage: false,
+      attachmentLoader: false,
+      convertPartToAssembly: false,
+      partListingData: [],
+      warningMessageTechnology: false,
+      inputLoader: false,
+      convertPartToAssemblyPartId: ""
     }
   }
 
@@ -73,9 +84,18 @@ class AddAssemblyPart extends Component {
   * @description 
   */
   componentDidMount() {
-    this.props.getPlantSelectListByType(ZBC, () => { })
-    this.props.getProductGroupSelectList(() => { })
-    this.props.getTechnologySelectList(() => { })
+    if (!(this.props.data.isEditFlag || this.state.isViewMode)) {
+      this.props.getCostingSpecificTechnology(loggedInUserId(), () => { })
+    }
+    this.setState({ inputLoader: true })
+    if (!this.state.isViewMode) {
+      this.props.getProductGroupSelectList(() => { })
+    }
+    if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
+      this.props.getPartSelectList((res) => {
+        this.setState({ partListingData: res?.data?.SelectList, inputLoader: false })
+      })
+    }
     this.getDetails()
   }
 
@@ -100,10 +120,9 @@ class AddAssemblyPart extends Component {
             return productArray
           })
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
-          this.setState({ minEffectiveDate: Data.EffectiveDate })
+          this.setState({ minEffectiveDate: Data.LatestEffectiveDate })
 
           this.setState({ DataToCheck: Data })
-
           setTimeout(() => {
             this.setState({
               isEditFlag: true,
@@ -115,7 +134,9 @@ class AddAssemblyPart extends Component {
               BOMViewerData: Data.ChildParts,
               ProductGroup: productArray,
               oldProductGroup: productArray,
-              isBomEditable: Data.IsBOMEditable
+              isBomEditable: Data.IsBOMEditable,
+              warningMessage: true,
+              warningMessageTechnology: Data.IsBOMEditable ? true : false,
             }, () => this.setState({ isLoader: false }))
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
             let files = Data.Attachements && Data.Attachements.map((item) => {
@@ -138,6 +159,84 @@ class AddAssemblyPart extends Component {
       this.props.getAssemblyPartDetail('', res => { })
     }
   }
+
+
+  onSwitchChange = () => {
+
+    setTimeout(() => {
+      this.setState({ convertPartToAssembly: !this.state.convertPartToAssembly })
+    }, 200);
+
+    this.props.change("EffectiveDate", "")
+    this.props.change("ECNNumber", "")
+    this.props.change("DrawingNumber", "")
+    this.props.change("RevisionNumber", "")
+    this.props.change("AssemblyPartNumber", "")
+    this.props.change("AssemblyPartName", "")
+    this.props.change("BOMNumber", "")
+    this.props.change("Description", "")
+    this.props.change("Remark", "")
+    this.setState({ ProductGroup: [], BOMViewerData: [] })
+    this.setState({ minEffectiveDate: "", warningMessage: false, warningMessageTechnology: false, TechnologySelected: [] })
+  }
+
+  isRequired = () => {
+    if (this.state.convertPartToAssembly) {
+      return maxLength20
+    } else {
+      return required
+    }
+  }
+
+  onPartNoChange = debounce((e) => {
+
+    if (!this.state.isEditFlag) {
+      this.props.getPartDescription(e?.target?.value, 1, (res) => {
+        if (res?.data?.Data) {
+          let finalData = res.data.Data
+          this.props.change("Description", finalData.Description)
+          this.props.change("AssemblyPartName", finalData.PartName)
+          this.setState({ disablePartName: true, minEffectiveDate: finalData.EffectiveDate })
+        } else {
+          this.props.change("Description", "")
+          this.props.change("AssemblyPartName", "")
+          this.setState({ disablePartName: false, minEffectiveDate: "" })
+        }
+      })
+    }
+  }, 600)
+
+
+  handlePartNo = (newValue, actionMeta) => {
+    this.setState({ partAssembly: newValue })
+    if (newValue && newValue !== '') {
+
+      this.props.getPartData(newValue.value, res => {
+        if (res && res.data && res.data.Result) {
+          const Data = res.data.Data;
+          let productArray = []
+
+          Data && Data.GroupCodeList.map((item) => {
+            productArray.push({ Text: item.GroupCode, Value: item.GroupCode, })
+            return productArray
+          })
+          this.setState({ DataToCheck: Data, convertPartToAssemblyPartId: newValue.value })
+          this.props.change("EffectiveDate", DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
+          this.props.change("ECNNumber", Data?.ECNNumber)
+          this.props.change("DrawingNumber", Data?.DrawingNumber)
+          this.props.change("RevisionNumber", Data?.RevisionNumber)
+          this.props.change("AssemblyPartNumber", Data?.PartNumber)
+          this.props.change("AssemblyPartName", Data?.PartName)
+          this.props.change("BOMNumber", '')
+          this.props.change("Description", Data?.Description)
+          this.props.change("Remark", Data?.Remark)
+          this.setState({ ProductGroup: productArray, })
+          this.setState({ effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '' })
+        }
+      })
+    }
+  };
+
 
   /**
   * @method handlePlant
@@ -229,7 +328,6 @@ class AddAssemblyPart extends Component {
       })
       this.setState({ BOMViewerData: tempArray }, () => this.getLevelOneNewAddedChild())
     }
-
   }
 
   /**
@@ -260,13 +358,13 @@ class AddAssemblyPart extends Component {
   * @description Used show listing of unit of measurement
   */
   renderListing = (label) => {
-    const { plantSelectList, productGroupSelectList, technologySelectList } = this.props;
+    const { plantSelectList, productGroupSelectList, costingSpecifiTechnology } = this.props;
     const temp = [];
 
     if (label === 'plant') {
       plantSelectList && plantSelectList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ Text: item.Text, Value: item.Value })
+        if (item.PlantId === '0') return false;
+        temp.push({ Text: item.PlantNameCode, Value: item.PlantId })
         return null;
       });
       return temp;
@@ -283,8 +381,8 @@ class AddAssemblyPart extends Component {
 
 
     if (label === 'technology') {
-      technologySelectList &&
-        technologySelectList.map((item) => {
+      costingSpecifiTechnology &&
+        costingSpecifiTechnology.map((item) => {
 
           if (item.Value === '0') return false
           temp.push({ label: item.Text, value: item.Value })
@@ -293,7 +391,13 @@ class AddAssemblyPart extends Component {
       return temp
     }
 
-
+    if (label === 'partNo') {
+      this.state.partListingData.length > 0 && this.state.partListingData.map((item) => {
+        temp.push({ label: item.Text, value: item.Value })
+        return null
+      })
+      return temp
+    }
   }
 
   /**
@@ -302,7 +406,7 @@ class AddAssemblyPart extends Component {
   */
   checkIsFormFilled = () => {
     const { fieldsObj } = this.props;
-    if (fieldsObj.BOMNumber === undefined || fieldsObj.AssemblyPartNumber === undefined || fieldsObj.AssemblyPartName === undefined || Object.keys(this.state.TechnologySelected).length === 0) {
+    if ((fieldsObj.BOMNumber === undefined || fieldsObj.BOMNumber === '') || fieldsObj.AssemblyPartNumber === undefined || fieldsObj.AssemblyPartName === undefined || Object.keys(this.state.TechnologySelected).length === 0 || this.state.effectiveDate === "") {
       return false;
     } else {
       return true;
@@ -373,10 +477,23 @@ class AddAssemblyPart extends Component {
 
   closeBOMViewerDrawer = (e = '', drawerData, isSaved, isEqual) => {
     this.setState({ isOpenBOMViewerDrawer: false, BOMViewerData: drawerData, avoidAPICall: isSaved, BOMChanged: isEqual ? false : true })
+
+    if (drawerData.length !== 1) {
+      this.setState({ minEffectiveDate: this.state.effectiveDate, warningMessage: true, warningMessageTechnology: this.state.isEditFlag ? (this.state.isBomEditable ? true : false) : true })
+    } else if (drawerData.length === 1) {
+      this.setState({ minEffectiveDate: "", warningMessage: false, warningMessageTechnology: false })
+    }
+
+    if (isEqual) {
+      return false
+    } else {
+      this.setState({ isDisableBomNo: true })
+    }
   }
 
   // specify upload params and url for your files
   getUploadParams = ({ file, meta }) => {
+    this.setState({ attachmentLoader: true })
     return { url: 'https://httpbin.org/post', }
 
   }
@@ -388,7 +505,7 @@ class AddAssemblyPart extends Component {
   setDisableFalseFunction = () => {
     const loop = Number(this.dropzone.current.files.length) - Number(this.state.files.length)
     if (Number(loop) === 1) {
-      this.setState({ setDisable: false })
+      this.setState({ setDisable: false, attachmentLoader: false })
     }
   }
 
@@ -477,9 +594,9 @@ class AddAssemblyPart extends Component {
   }
 
   /**
- * @method cancel
- * @description used to Reset form
- */
+  * @method cancel
+  * @description used to Reset form
+  */
   cancel = () => {
     const { reset } = this.props;
     reset();
@@ -515,9 +632,8 @@ class AddAssemblyPart extends Component {
   * @description Used to Submit the form
   */
   onSubmit = debounce((values) => {
-    const { PartId, isEditFlag, selectedPlants, BOMViewerData, files, avoidAPICall, DataToCheck, DropdownChanged, ProductGroup, BOMChanged } = this.state;
-    const { partData } = this.props;
-    const { initialConfiguration } = this.props;
+    const { PartId, isEditFlag, selectedPlants, BOMViewerData, files, avoidAPICall, DataToCheck, DropdownChanged, ProductGroup, BOMChanged, convertPartToAssembly } = this.state;
+    const { partData, initialConfiguration } = this.props;
 
     let plantArray = selectedPlants && selectedPlants.map((item) => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
     let productArray = (initialConfiguration?.IsProductMasterConfigurable) ? ProductGroup && ProductGroup.map((item) => ({ GroupCode: item.Text })) : [{ GroupCode: values.GroupCode }]
@@ -541,7 +657,7 @@ class AddAssemblyPart extends Component {
         childPartArray.push({
           PartId: item.PartType && (item.PartType === ASSEMBLY || item.PartType === COMPONENT_PART) ? item.PartId : '',
           ParentPartId: isEditFlag ? PartId : '',
-          BoughtOutPartId: item.PartType && item.PartType === BOUGHTOUTPART ? item.PartId : '',
+          BoughtOutPartId: item.PartType && item.PartType === BOUGHTOUTPART ? ((item.BoughtOutPartId !== undefined && item.BoughtOutPartId !== null) ? item.BoughtOutPartId : item.PartId) : '',
           PartTypeId: item.PartTypeId ? item.PartTypeId : '',
           PartType: item.PartType ? item.PartType : '',
           BOMLevel: 1,
@@ -551,48 +667,48 @@ class AddAssemblyPart extends Component {
       return childPartArray;
     })
 
-    if (isEditFlag) {
+    if (isEditFlag || convertPartToAssembly) {
       let isGroupCodeChange = this.checkGroupCodeChange(values)
 
       if (!DropdownChanged && String(DataToCheck.AssemblyPartName) === String(values.AssemblyPartName) && !isGroupCodeChange && String(DataToCheck.Description) === String(values.Description) &&
         String(DataToCheck.ECNNumber) === String(values.ECNNumber) && String(DataToCheck.RevisionNumber) === String(values.RevisionNumber) &&
-        String(DataToCheck.DrawingNumber) === String(values.DrawingNumber) && BOMChanged === false) {
+        String(DataToCheck.DrawingNumber) === String(values.DrawingNumber) && String(DataToCheck.Remark) === String(values.Remark) && BOMChanged === false && String(DataToCheck.Attachements) === String(values.Attachements)) {
         this.cancel()
         return false;
       }
 
+      if (!convertPartToAssembly) {
+        //THIS CONDITION IS TO CHECK IF IsBomEditable KEY FROM API IS FALSE AND THERE IS CHANGE ON ONLY PART DESCRIPTION ,PART NAME AND ATTACHMENT(TO UPDATE EXISTING RECORD)
+        if (this.state.isBomEditable === false && !isGroupCodeChange && String(DataToCheck.ECNNumber) === String(values.ECNNumber) &&
+          String(DataToCheck.RevisionNumber) === String(values.RevisionNumber) && String(DataToCheck.DrawingNumber) === String(values.DrawingNumber) && !BOMChanged) {
+          isStructureChanges = false
+        }
 
-      //THIS CONDITION IS TO CHECK IF IsBomEditable KEY FROM API IS FALSE AND THERE IS CHANGE ON ONLY PART DESCRIPTION ,PART NAME AND ATTACHMENT(TO UPDATE EXISTING RECORD)
-      if (this.state.isBomEditable === false && !isGroupCodeChange && String(DataToCheck.ECNNumber) === String(values.ECNNumber) &&
-        String(DataToCheck.RevisionNumber) === String(values.RevisionNumber) && String(DataToCheck.DrawingNumber) === String(values.DrawingNumber) && !BOMChanged) {
-        isStructureChanges = false
-      }
-
-      //THIS CONDITION IS TO CHECK IF IsBomEditable KEY FROM API IS FALSE AND TEHRE IS CHANGE IN OTHER FIELD ALSO APART FROM PART DESCRIPTION,NAME AND ATTACHMENT (TO CREATE NEW RECORD)
-      else if (this.state.isBomEditable === false && (isGroupCodeChange || String(DataToCheck.ECNNumber) !== String(values.ECNNumber) ||
-        String(DataToCheck.RevisionNumber) !== String(values.RevisionNumber) || String(DataToCheck.DrawingNumber) !== String(values.DrawingNumber)
-        || BOMChanged)) {
-        // IF THERE ARE CHANGES ,THEN REVISION NO SHOULD BE CHANGED
-        if (String(DataToCheck.RevisionNumber) === String(values.RevisionNumber) || String(DataToCheck.BOMNumber) === String(values.BOMNumber) || DayTime(DataToCheck.EffectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(this.state.effectiveDate).format('YYYY-MM-DD HH:mm:ss')) {
-          Toaster.warning('Please edit Revision no , BOM no and Effective date')
-          return false
-        } else {
-          isStructureChanges = true
+        //THIS CONDITION IS TO CHECK IF IsBomEditable KEY FROM API IS FALSE AND TEHRE IS CHANGE IN OTHER FIELD ALSO APART FROM PART DESCRIPTION,NAME AND ATTACHMENT (TO CREATE NEW RECORD)
+        else if (this.state.isBomEditable === false && (isGroupCodeChange || String(DataToCheck.ECNNumber) !== String(values.ECNNumber) ||
+          String(DataToCheck.RevisionNumber) !== String(values.RevisionNumber) || String(DataToCheck.DrawingNumber) !== String(values.DrawingNumber)
+          || BOMChanged)) {
+          // IF THERE ARE CHANGES ,THEN REVISION NO SHOULD BE CHANGED
+          if (String(DataToCheck.RevisionNumber) === String(values.RevisionNumber) || String(DataToCheck.BOMNumber) === String(values.BOMNumber) || DayTime(DataToCheck.EffectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(this.state.effectiveDate).format('YYYY-MM-DD HH:mm:ss')) {
+            Toaster.warning('Please edit Revision no, ECN no, BOM no and Effective date')
+            return false
+          } else {
+            isStructureChanges = true
+          }
+        }
+        // THIS CONDITION IS WHEN IsBomEditable KEY FROM API IS TRUE (WHATEVER USER CHANGE OLD RECORD WILL GET UPDATE)
+        else {
+          isStructureChanges = false
         }
       }
-      // THIS CONDITION IS WHEN IsBomEditable KEY FROM API IS TRUE (WHATEVER USER CHANGE OLD RECORD WILL GET UPDATE)
-      else {
-        isStructureChanges = false
-      }
-
-      this.setState({ setDisable: true, disablePopup: false })
+      this.setState({ setDisable: true, disablePopup: false, isLoader: true })
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: PartId }
       })
       let updateData = {
         BOMNumber: values.BOMNumber,
         LoggedInUserId: loggedInUserId(),
-        AssemblyPartId: PartId,
+        AssemblyPartId: convertPartToAssembly ? this.state.convertPartToAssemblyPartId : PartId,
         AssemblyPartName: values.AssemblyPartName,
         AssemblyPartNumber: values.AssemblyPartNumber,
         TechnologyIdRef: this.state.TechnologySelected.value ? this.state.TechnologySelected.value : "",
@@ -610,18 +726,33 @@ class AddAssemblyPart extends Component {
         IsForcefulUpdated: false,
         BOMLevelCount: BOMLevelCount,
         GroupCodeList: productArray,
-        IsStructureChanges: isStructureChanges
+        IsStructureChanges: isStructureChanges,
+        IsConvertedToAssembly: convertPartToAssembly ? true : false
       }
-      this.props.updateAssemblyPart(updateData, (res) => {
-        this.setState({ setDisable: false })
-        if (res?.data?.Result) {
-          Toaster.success(MESSAGES.UPDATE_BOM_SUCCESS);
-          this.cancel()
-        }
-      });
+
+      if (convertPartToAssembly) {
+        this.props.convertPartToAssembly(updateData, (res) => {
+          this.setState({ setDisable: false, isLoader: false })
+          if (res?.data?.Result) {
+            Toaster.success(MESSAGES.UPDATE_BOM_SUCCESS);
+            this.cancel()
+          }
+        });
+      }
+
+      else {
+        this.props.updateAssemblyPart(updateData, (res) => {
+          this.setState({ setDisable: false, isLoader: false })
+          if (res?.data?.Result) {
+            Toaster.success(MESSAGES.UPDATE_BOM_SUCCESS);
+            this.cancel()
+          }
+        });
+      }
+
 
     } else {
-      this.setState({ setDisable: true })
+      this.setState({ setDisable: true, isLoader: true })
       let formData = {
         AssemblyPartNumber: values.AssemblyPartNumber,
         AssemblyPartName: values.AssemblyPartName,
@@ -644,7 +775,7 @@ class AddAssemblyPart extends Component {
         GroupCodeList: productArray
       }
       this.props.createAssemblyPart(formData, (res) => {
-        this.setState({ setDisable: false })
+        this.setState({ setDisable: false, isLoader: false })
         if (res?.data?.Result === true) {
           Toaster.success(MESSAGES.ASSEMBLY_PART_ADD_SUCCESS);
           this.cancel()
@@ -731,11 +862,28 @@ class AddAssemblyPart extends Component {
   */
   render() {
     const { handleSubmit, initialConfiguration } = this.props;
-    const { isEditFlag, isOpenChildDrawer, isOpenBOMViewerDrawer, isViewMode, setDisable, disablePopup } = this.state;
+    const { isEditFlag, isOpenChildDrawer, isOpenBOMViewerDrawer, isViewMode, setDisable, disablePopup, convertPartToAssembly, BOMViewerData } = this.state;
+
+    const filterList = (inputValue) => {
+      let tempArr = []
+      tempArr = this.renderListing("partNo").filter(i =>
+        i.label !== null && i.label.toLowerCase().includes(inputValue.toLowerCase())
+      );
+
+      if (tempArr.length <= 100) {
+        return tempArr
+      } else {
+        return tempArr.slice(0, 100)
+      }
+    };
+    const promiseOptions = inputValue =>
+      new Promise(resolve => {
+        resolve(filterList(inputValue));
+      });
     return (
       <>
-        {this.state.isLoader && <LoaderCustom />}
         <div className="container-fluid">
+          {this.state.isLoader && <LoaderCustom />}
           <div className="login-container signup-form">
             <Row>
               <Col md="12">
@@ -744,9 +892,7 @@ class AddAssemblyPart extends Component {
                     <Col md="6">
                       <div className="form-heading mb-0">
                         <h1>
-                          {isEditFlag
-                            ? "Update Assembly Part"
-                            : "Add  Assembly Part"}
+                          {isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Assembly Part
                         </h1>
                       </div>
                     </Col>
@@ -759,18 +905,62 @@ class AddAssemblyPart extends Component {
                   >
                     <div className="add-min-height">
                       <Row>
+                        {!isEditFlag &&
+                          <Col md="4" className="switch mb15">
+                            <label className="switch-level">
+                              <div className={"left-title"}>Add assembly</div>
+                              <Switch
+                                onChange={this.onSwitchChange}
+                                checked={this.state.convertPartToAssembly}
+                                id="normal-switch"
+                                disabled={isEditFlag ? true : false}
+                                background="#4DC771"
+                                onColor="#4DC771"
+                                onHandleColor="#ffffff"
+                                offColor="#4DC771"
+                                uncheckedIcon={false}
+                                checkedIcon={false}
+                                height={20}
+                                width={46}
+                              />
+                              <div className={"right-title"}>
+                                Convert part to assembly
+                              </div>
+                            </label>
+                          </Col>
+                        }
+                      </Row>
+                      <Row>
                         <Col md="12">
                           <div className="left-border">
                             {"Assembly Details:"}
                           </div>
                         </Col>
+
+                        {this.state.convertPartToAssembly &&
+                          <Col md="3" className='mb-4'>
+                            <label>{"Part No"}<span className="asterisk-required">*</span></label>
+                            <div className="fullinput-icon w-100 p-relative">
+                              {this.state.inputLoader && <LoaderCustom customClass="input-loader" />}
+                              <AsyncSelect
+                                name="partNo"
+                                ref={this.myRef}
+                                key={this.state.updateAsyncDropdown}
+                                loadOptions={promiseOptions}
+                                onChange={(e) => this.handlePartNo(e)}
+                                value={this.state.vendorName}
+                                noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter part no" : "No results found"}
+                                isDisabled={(isEditFlag || this.state.inputLoader) ? true : false} />
+                            </div>
+                          </Col>
+                        }
                         <Col md="3">
                           <Field
                             label={`BOM No.`}
                             name={"BOMNumber"}
                             type="text"
-                            placeholder={""}
-                            validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20]}
+                            placeholder={(isEditFlag && this.state.isDisableBomNo === false) ? '-' : "Enter"}
+                            validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20, checkSpacesInString]}
                             component={renderText}
                             required={true}
                             className=""
@@ -783,13 +973,14 @@ class AddAssemblyPart extends Component {
                             label={`Assembly Part No.`}
                             name={"AssemblyPartNumber"}
                             type="text"
-                            placeholder={""}
-                            validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20]}
+                            placeholder={isEditFlag || convertPartToAssembly ? '-' : "Enter"}
+                            validate={[this.isRequired(), acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20, checkSpacesInString]}
                             component={renderText}
                             required={true}
+                            onChange={this.onPartNoChange}
                             className=""
                             customClassName={"withBorder"}
-                            disabled={isEditFlag ? true : false}
+                            disabled={isEditFlag || convertPartToAssembly ? true : false}
                           />
                         </Col>
                         <Col md="3">
@@ -797,13 +988,13 @@ class AddAssemblyPart extends Component {
                             label={`Assembly Name`}
                             name={"AssemblyPartName"}
                             type="text"
-                            placeholder={""}
-                            validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength75]}
+                            placeholder={isViewMode || (!isEditFlag && this.state.disablePartName) || convertPartToAssembly ? '-' : "Enter"}
+                            validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength75, checkSpacesInString]}
                             component={renderText}
                             required={true}
                             className=""
                             customClassName={"withBorder"}
-                            disabled={isViewMode}
+                            disabled={isViewMode || (!isEditFlag && this.state.disablePartName) || convertPartToAssembly}
                           />
                         </Col>
                         <Col md="3">
@@ -811,7 +1002,7 @@ class AddAssemblyPart extends Component {
                             label={`Description`}
                             name={"Description"}
                             type="text"
-                            placeholder={""}
+                            placeholder={isViewMode ? '-' : "Enter"}
                             validate={[maxLength80, checkWhiteSpaces]}
                             component={renderText}
                             required={false}
@@ -820,16 +1011,13 @@ class AddAssemblyPart extends Component {
                             disabled={isViewMode}
                           />
                         </Col>
-                      </Row>
-
-                      <Row>
                         <Col md="3">
                           <Field
                             label={`ECN No.`}
                             name={"ECNNumber"}
                             type="text"
-                            placeholder={""}
-                            validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces]}
+                            placeholder={isViewMode ? '-' : "Enter"}
+                            validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, checkSpacesInString]}
                             component={renderText}
                             className=""
                             customClassName={"withBorder"}
@@ -843,8 +1031,8 @@ class AddAssemblyPart extends Component {
                             label={`Revision No.`}
                             name={"RevisionNumber"}
                             type="text"
-                            placeholder={""}
-                            validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces]}
+                            placeholder={isViewMode ? '-' : "Enter"}
+                            validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, checkSpacesInString]}
                             component={renderText}
                             className=""
                             customClassName={"withBorder"}
@@ -857,8 +1045,8 @@ class AddAssemblyPart extends Component {
                             label={`Drawing No.`}
                             name={"DrawingNumber"}
                             type="text"
-                            placeholder={""}
-                            validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces]}
+                            placeholder={isViewMode ? '-' : "Enter"}
+                            validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, checkSpacesInString]}
                             component={renderText}
                             className=""
                             customClassName={"withBorder"}
@@ -875,7 +1063,7 @@ class AddAssemblyPart extends Component {
                             <Field
                               label="Group Code"
                               name="ProductGroup"
-                              placeholder={"Select"}
+                              placeholder={isViewMode ? '-' : "Select"}
                               selection={
                                 this.state.ProductGroup == null || this.state.ProductGroup.length === 0 ? [] : this.state.ProductGroup}
                               options={this.renderListing("ProductGroup")}
@@ -893,7 +1081,7 @@ class AddAssemblyPart extends Component {
                               label={`Group Code`}
                               name={"GroupCode"}
                               type="text"
-                              placeholder={""}
+                              placeholder={isViewMode ? '-' : "Select Date"}
                               validate={[checkWhiteSpaces, alphaNumeric, maxLength20]}
                               component={renderText}
                               className=""
@@ -912,7 +1100,7 @@ class AddAssemblyPart extends Component {
                             type="text"
                             name="TechnologyId"
                             component={searchableSelect}
-                            placeholder={"Technology"}
+                            placeholder={isViewMode ? '-' : "Select"}
                             options={this.renderListing("technology")}
                             validate={
                               this.state.TechnologySelected == null || Object.keys(this.state.TechnologySelected).length === 0 ? [required] : []}
@@ -921,16 +1109,17 @@ class AddAssemblyPart extends Component {
                               this.handleTechnologyChange
                             }
                             valueDescription={this.state.TechnologySelected}
-                            disabled={isEditFlag || isViewMode}
+                            disabled={isViewMode || this.state.warningMessageTechnology || (isEditFlag && !this.state.isBomEditable)}
                           />
+                          {this.state.warningMessageTechnology && !isViewMode && <WarningMessage dClass="assembly-view-bom-wrapper" message={`Please reset the BOM to change the technology`} />}
                         </Col>
-
 
                         <Col md="3">
                           <div className="form-group">
                             <div className="inputbox date-section">
                               <Field
                                 label="Effective Date"
+                                placeholder={isEditFlag && !isViewMode ? getConfigurationKey().IsBOMEditable ? "Enter" : '-' : (isViewMode) ? '-' : "Enter"}
                                 name="EffectiveDate"
                                 selected={this.state.effectiveDate}
                                 onChange={this.handleEffectiveDateChange}
@@ -947,16 +1136,17 @@ class AddAssemblyPart extends Component {
                               />
                             </div>
                           </div>
+                          {this.state.warningMessage && !isViewMode && <WarningMessage dClass="assembly-view-bom-wrapper date" message={`Revised date is ${DayTime(this.state?.minEffectiveDate).format('DD/MM/YYYY')} please reset the BOM to select the previous date`} />}
                         </Col>
 
 
-                        <Col md="3">
+                        <Col md="3" className='pt-2'>
                           <button
                             type="button"
                             disabled={false}
                             onClick={this.toggleBOMViewer}
                             className={"user-btn pull-left mt30"}>
-                            <div className={"plus"}></div>VIEW BOM
+                            <div className={`${!isViewMode && BOMViewerData?.length <= 0 ? 'plus' : 'fa fa-eye pr-1'}`}></div> BOM
                           </button>
                         </Col>
                       </Row>
@@ -971,7 +1161,7 @@ class AddAssemblyPart extends Component {
                           <Field
                             label={"Remarks"}
                             name={`Remark`}
-                            placeholder="Type here..."
+                            placeholder={isViewMode ? '-' : "Type here..."}
                             className=""
                             customClassName=" textAreaWithBorder"
                             validate={[maxLength512, checkWhiteSpaces]}
@@ -1027,6 +1217,7 @@ class AddAssemblyPart extends Component {
                         </Col>
                         <Col md="3">
                           <div className={"attachment-wrapper"}>
+                            {this.state.attachmentLoader && <LoaderCustom customClass="attachment-loader" />}
                             {this.state.files &&
                               this.state.files.map((f) => {
                                 const withOutTild = f.FileURL.replace(
@@ -1102,25 +1293,26 @@ class AddAssemblyPart extends Component {
           )}
 
           {isOpenBOMViewerDrawer && (
-            <BOMViewer
-              isOpen={isOpenBOMViewerDrawer}
-              closeDrawer={this.closeBOMViewerDrawer}
-              TechnologySelected={this.state.TechnologySelected}
-              isEditFlag={this.state.isEditFlag}
-              PartId={this.state.PartId}
-              anchor={"right"}
-              BOMViewerData={this.state.BOMViewerData}
-              NewAddedLevelOneChilds={this.state.NewAddedLevelOneChilds}
-              isFromVishualAd={isViewMode}
-              avoidAPICall={this.state.avoidAPICall}
-            />
+            <PartEffectiveDate.Provider value={DayTime(this.state.effectiveDate).format('DD-MM-YYYY')}>
+              <BOMViewer
+                isOpen={isOpenBOMViewerDrawer}
+                closeDrawer={this.closeBOMViewerDrawer}
+                TechnologySelected={this.state.TechnologySelected}
+                isEditFlag={this.state.isEditFlag}
+                PartId={this.state.PartId}
+                anchor={"right"}
+                BOMViewerData={this.state.BOMViewerData}
+                NewAddedLevelOneChilds={this.state.NewAddedLevelOneChilds}
+                isFromVishualAd={isViewMode}
+                avoidAPICall={this.state.avoidAPICall}
+                partAssembly={this.state.partAssembly}
+              />
+            </PartEffectiveDate.Provider>
           )}
           {
             this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} disablePopup={disablePopup} />
           }
-          {/* {
-            this.state.showPopupDraft && <PopupMsgWrapper isOpen={this.state.showPopupDraft} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirmDraft} message={`${MESSAGES.COSTING_REJECT_ALERT}`} />
-          } */}
+
         </div>
       </>
     );
@@ -1135,10 +1327,11 @@ class AddAssemblyPart extends Component {
 function mapStateToProps(state) {
   const fieldsObj = selector(state, 'BOMNumber', 'AssemblyPartNumber', 'AssemblyPartName', 'ECNNumber', 'RevisionNumber',
     'Description', 'DrawingNumber', 'GroupCode', 'Remark', 'TechnologyId')
-  const { comman, part, auth } = state;
-  const { plantSelectList, technologySelectList } = comman;
+  const { comman, part, auth, costing } = state;
+  const { plantSelectList } = comman;
   const { partData, actualBOMTreeData, productGroupSelectList } = part;
   const { initialConfiguration } = auth;
+  const { costingSpecifiTechnology } = costing
   let initialValues = {};
   if (partData && Object.keys(partData).length > 0) {
     initialValues = {
@@ -1154,7 +1347,7 @@ function mapStateToProps(state) {
     }
   }
 
-  return { plantSelectList, partData, actualBOMTreeData, fieldsObj, initialValues, initialConfiguration, productGroupSelectList, technologySelectList }
+  return { plantSelectList, partData, actualBOMTreeData, fieldsObj, initialValues, initialConfiguration, productGroupSelectList, costingSpecifiTechnology }
 
 }
 
@@ -1165,19 +1358,24 @@ function mapStateToProps(state) {
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
-  getPlantSelectListByType,
   fileUploadPart,
   fileDeletePart,
-  getTechnologySelectList,
+  getPartSelectList,
   createAssemblyPart,
   updateAssemblyPart,
+  convertPartToAssembly,
   getAssemblyPartDetail,
   getBOMViewerTreeDataByPartIdAndLevel,
-  getProductGroupSelectList
+  getProductGroupSelectList,
+  getPartDescription,
+  getPartData,
+  getCostingSpecificTechnology,
+  getProductGroupSelectList,
+  getPartSelectList
 })(reduxForm({
   form: 'AddAssemblyPart',
+  touchOnChange: true,
   onSubmitFail: errors => {
-
     focusOnError(errors);
   },
   enableReinitialize: true,

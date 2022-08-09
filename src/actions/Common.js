@@ -56,7 +56,7 @@ import { apiErrors } from '../helper/util';
 import { MESSAGES } from '../config/message';
 import Toaster from '../components/common/Toaster';
 
-const headers = config;
+// const config() = config;
 
 /**
  * @method fetchCountryDataAPI
@@ -65,7 +65,7 @@ const headers = config;
 export function fetchCountryDataAPI(callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getCountry}`, headers);
+    const request = axios.get(`${API.getCountry}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -102,7 +102,7 @@ export function fetchStateDataAPI(countryId, callback) {
       });
       callback([]);
     } else {
-      const request = axios.get(`${API.getState}/${countryId}`, headers);
+      const request = axios.get(`${API.getState}/${countryId}`, config());
       request.then((response) => {
         if (response.data.Result) {
           dispatch({
@@ -136,7 +136,7 @@ export function fetchCityDataAPI(stateId, callback) {
       });
       callback([]);
     } else {
-      const request = axios.get(`${API.getCity}/${stateId}`, headers);
+      const request = axios.get(`${API.getCity}/${stateId}`, config());
       request.then((response) => {
         if (response.data.Result) {
           dispatch({
@@ -161,7 +161,7 @@ export function fetchCityDataAPI(stateId, callback) {
 export function fetchPlantDataAPI(callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getPlant}`, headers);
+    const request = axios.get(`${API.getPlant}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -185,7 +185,7 @@ export function fetchPlantDataAPI(callback) {
 export function getRawMaterialSelectList(callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getRawMaterialSelectList}`, headers);
+    const request = axios.get(`${API.getRawMaterialSelectList}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -215,7 +215,7 @@ export function fetchRMGradeAPI(Id, callback) {
         payload: []
       });
     } else {
-      const request = axios.get(`${API.getRowGrade}/${Id}`, headers);
+      const request = axios.get(`${API.getRowGrade}/${Id}`, config());
       request.then((response) => {
         if (response.data.Result) {
           dispatch({
@@ -242,7 +242,7 @@ export function fetchRMGradeAPI(Id, callback) {
 export function fetchRMCategoryAPI(callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getRawMaterialSelectList}`, headers);
+    const request = axios.get(`${API.getRawMaterialSelectList}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -275,7 +275,7 @@ export function fetchCategoryAPI(Id, callback) {
       });
     }
     else {
-      const request = axios.get(`${API.getCategory}/${Id}`, headers);
+      const request = axios.get(`${API.getCategory}/${Id}`, config());
       request.then((response) => {
         if (response.data.Result) {
           dispatch({
@@ -302,7 +302,7 @@ export function fetchCategoryAPI(Id, callback) {
 export function getOtherOperationData(callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getOtherOperationsFormDataAPI}`, headers);
+    const request = axios.get(`${API.getOtherOperationsFormDataAPI}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -328,7 +328,7 @@ export function getOtherOperationData(callback) {
 export function getCEDOtherOperationComboData(callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getCEDotherOperationsComboDataAPI}`, headers);
+    const request = axios.get(`${API.getCEDotherOperationsComboDataAPI}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -354,7 +354,7 @@ export function getCEDOtherOperationComboData(callback) {
 export function fetchPartComboAPI(callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getPartComboAPI}`, headers);
+    const request = axios.get(`${API.getPartComboAPI}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -388,7 +388,7 @@ export function fetchPartComboAPI(callback) {
 export function fetchBOPComboAPI(callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getBOPComboAPI}`, headers);
+    const request = axios.get(`${API.getBOPComboAPI}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -447,7 +447,7 @@ export function fetchBOPComboAPI(callback) {
 export function fetchBOMComboAPI(callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getBOMComboAPI}`, headers);
+    const request = axios.get(`${API.getBOMComboAPI}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -481,7 +481,7 @@ export function fetchBOMComboAPI(callback) {
 export function fetchMaterialComboAPI(callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getRMComboAPI}`, headers);
+    const request = axios.get(`${API.getRMComboAPI}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -550,7 +550,7 @@ export function fetchGradeDataAPI(rowMaterialId, callback) {
       });
       callback([]);
     } else {
-      const request = axios.get(`${API.getRowGrade}/${rowMaterialId}`, headers);
+      const request = axios.get(`${API.getRowGrade}/${rowMaterialId}`, config());
       request.then((response) => {
         if (response.data.Result) {
           dispatch({
@@ -584,7 +584,7 @@ export function fetchSpecificationDataAPI(rmGradeId, callback) {
       });
       callback([]);
     } else {
-      const request = axios.get(`${API.getRowMaterialSpecification}/${rmGradeId}`, headers);
+      const request = axios.get(`${API.getRowMaterialSpecification}/${rmGradeId}`, config());
       request.then((response) => {
         if (response.data.Result) {
           dispatch({
@@ -610,7 +610,7 @@ export function fetchSpecificationDataAPI(rmGradeId, callback) {
  */
 export function fetchFreightComboAPI(callback) {
   return (dispatch) => {
-    const request = axios.get(`${API.getFreightComboAPI}`, headers);
+    const request = axios.get(`${API.getFreightComboAPI}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -647,7 +647,7 @@ export function fetchFreightComboAPI(callback) {
  */
 export function fetchLabourComboAPI(callback) {
   return (dispatch) => {
-    const request = axios.get(`${API.getLabourComboAPI}`, headers);
+    const request = axios.get(`${API.getLabourComboAPI}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -682,7 +682,7 @@ export function fetchLabourComboAPI(callback) {
 export function getMHRMasterComboData(callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getMHRComboDataAPI}`, headers);
+    const request = axios.get(`${API.getMHRComboDataAPI}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -708,7 +708,7 @@ export function getMHRMasterComboData(callback) {
 export function fetchSupplierCityDataAPI(callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getSupplierCity}`, headers);
+    const request = axios.get(`${API.getSupplierCity}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -734,7 +734,7 @@ export function fetchSupplierCityDataAPI(callback) {
 export function fetchCostingHeadsAPI(costingHeads, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getCostingHeads}?text=${costingHeads}`, headers);
+    const request = axios.get(`${API.getCostingHeads}?text=${costingHeads}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -758,7 +758,7 @@ export function fetchCostingHeadsAPI(costingHeads, callback) {
 export function getSupplierList(callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getSupplierLists}`, headers);
+    const request = axios.get(`${API.getSupplierLists}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -782,7 +782,7 @@ export function getSupplierList(callback) {
 export function fetchModelTypeAPI(modelTypeHeading, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getModelTypes}?text=${modelTypeHeading}`, headers);
+    const request = axios.get(`${API.getModelTypes}?text=${modelTypeHeading}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -807,7 +807,7 @@ export function getPlantBySupplier(supplierId, callback) {
   return (dispatch) => {
     if (supplierId !== '') {
       dispatch({ type: API_REQUEST });
-      const request = axios.get(`${API.getPlantBySupplier}/${supplierId}`, headers);
+      const request = axios.get(`${API.getPlantBySupplier}/${supplierId}`, config());
       request.then((response) => {
         if (response.data.Result) {
           dispatch({
@@ -839,7 +839,7 @@ export function getCityBySupplier(SupplierId, callback) {
   return (dispatch) => {
     if (SupplierId !== 0) {
       dispatch({ type: API_REQUEST });
-      const request = axios.get(`${API.getCityBySupplier}/${SupplierId}`, headers);
+      const request = axios.get(`${API.getCityBySupplier}/${SupplierId}`, config());
       request.then((response) => {
         if (response.data.Result) {
           dispatch({
@@ -871,7 +871,7 @@ export function getPlantByCity(CityId, callback) {
   return (dispatch) => {
     if (CityId !== 0) {
       dispatch({ type: API_REQUEST });
-      const request = axios.get(`${API.getPlantByCity}/${CityId}`, headers);
+      const request = axios.get(`${API.getPlantByCity}/${CityId}`, config());
       request.then((response) => {
         if (response.data.Result) {
           dispatch({
@@ -902,7 +902,7 @@ export function getPlantByCity(CityId, callback) {
 export function getPlantByCityAndSupplier(SupplierID, CityId, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getPlantByCityAndSupplier}/${SupplierID}/${CityId}`, headers);
+    const request = axios.get(`${API.getPlantByCityAndSupplier}/${SupplierID}/${CityId}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -926,7 +926,7 @@ export function getPlantByCityAndSupplier(SupplierID, CityId, callback) {
 export function getLabourTypeSelectList(callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getLabourTypeSelectList}`, headers);
+    const request = axios.get(`${API.getLabourTypeSelectList}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -950,7 +950,7 @@ export function getLabourTypeSelectList(callback) {
 export function getPowerTypeSelectList(callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getPowerTypeSelectList}`, headers);
+    const request = axios.get(`${API.getPowerTypeSelectList}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -974,7 +974,7 @@ export function getPowerTypeSelectList(callback) {
 export function getChargeTypeSelectList(callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getChargeTypeSelectList}`, headers);
+    const request = axios.get(`${API.getChargeTypeSelectList}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -1000,7 +1000,7 @@ export function getChargeTypeSelectList(callback) {
 export function getPowerSupplierTypeSelectList(callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getPowerSupplierTypeSelectList}`, headers);
+    const request = axios.get(`${API.getPowerSupplierTypeSelectList}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -1026,7 +1026,7 @@ export function getPowerSupplierTypeSelectList(callback) {
 export function getUOMSelectList(callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getUOMSelectList}`, headers);
+    const request = axios.get(`${API.getUOMSelectList}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -1050,7 +1050,7 @@ export function getUOMSelectList(callback) {
 export function getMachineTypeSelectList(callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getMachineTypeSelectList}`, headers);
+    const request = axios.get(`${API.getMachineTypeSelectList}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -1074,7 +1074,7 @@ export function getMachineTypeSelectList(callback) {
 export function getDepreciationTypeSelectList(callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getDepreciationTypeSelectList}`, headers);
+    const request = axios.get(`${API.getDepreciationTypeSelectList}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -1098,7 +1098,7 @@ export function getDepreciationTypeSelectList(callback) {
 export function getDepreciationSelectList(callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getDepreciationSelectList}`, headers);
+    const request = axios.get(`${API.getDepreciationSelectList}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -1122,7 +1122,7 @@ export function getDepreciationSelectList(callback) {
 export function getShiftTypeSelectList(callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getShiftTypeSelectList}`, headers);
+    const request = axios.get(`${API.getShiftTypeSelectList}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -1147,7 +1147,7 @@ export function getMachineSelectListByMachineType(MachineClassId, callback) {
   return (dispatch) => {
     if (MachineClassId !== '') {
       //dispatch({ type: API_REQUEST });
-      const request = axios.get(`${API.getMachineSelectListByMachineType}/${MachineClassId}`, headers);
+      const request = axios.get(`${API.getMachineSelectListByMachineType}/${MachineClassId}`, config());
       request.then((response) => {
         if (response.data.Result) {
           dispatch({
@@ -1179,7 +1179,7 @@ export function getMachineSelectListByMachineType(MachineClassId, callback) {
 export function getCurrencySelectList(callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getCurrencySelectList}`, headers);
+    const request = axios.get(`${API.getCurrencySelectList}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -1203,7 +1203,7 @@ export function getTechnologySelectList(callback) {
 
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getTechnologySelectList}`, headers);
+    const request = axios.get(`${API.getTechnologySelectList}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -1226,7 +1226,7 @@ export function getTechnologySelectList(callback) {
 export function getPlantSelectList(callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getPlantSelectList}`, headers);
+    const request = axios.get(`${API.getPlantSelectList}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -1249,7 +1249,7 @@ export function getPlantSelectList(callback) {
 export function getVendorPlantSelectList(callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getVendorPlantSelectList}`, headers);
+    const request = axios.get(`${API.getVendorPlantSelectList}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -1273,7 +1273,7 @@ export function getVendorPlantSelectList(callback) {
 export function getAllCities(callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getAllCities}`, headers);
+    const request = axios.get(`${API.getAllCities}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -1297,7 +1297,7 @@ export function getAllCities(callback) {
 export function getCityByCountry(CountryId, StateId, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getCityByCountry}/${CountryId}/${StateId}`, headers);
+    const request = axios.get(`${API.getCityByCountry}/${CountryId}/${StateId}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -1321,7 +1321,7 @@ export function getCityByCountry(CountryId, StateId, callback) {
 export function getRawMaterialCategory(callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getRawMaterialCategory}`, headers);
+    const request = axios.get(`${API.getRawMaterialCategory}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -1346,12 +1346,12 @@ export function getPlantSelectListByType(TYPE, callback) {
 
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getPlantSelectListByType}?type=${TYPE}`, headers);
+    const request = axios.get(`${API.getPlantSelectListByType}?type=${TYPE}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
           type: GET_PLANT_SELECTLIST_BY_TYPE,
-          payload: response.data.SelectList,
+          payload: response.data.DataList,
         });
         callback(response);
       }
@@ -1368,7 +1368,7 @@ export function getPlantSelectListByType(TYPE, callback) {
  */
 export function getVendorWithVendorCodeSelectList(callback) {
   return (dispatch) => {
-    const request = axios.get(API.getVendorWithVendorCodeSelectList, headers);
+    const request = axios.get(API.getVendorWithVendorCodeSelectList, config());
     request.then((response) => {
       dispatch({
         type: GET_VENDOR_WITH_VENDOR_CODE_SELECTLIST,
@@ -1388,7 +1388,7 @@ export function getVendorWithVendorCodeSelectList(callback) {
  */
 export function getUOMListByUnitType(UnitTypeId, callback) {
   return (dispatch) => {
-    const request = axios.get(`${API.getUOMListByUnitType}/${UnitTypeId}`, headers);
+    const request = axios.get(`${API.getUOMListByUnitType}/${UnitTypeId}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -1412,7 +1412,7 @@ export function getUOMListByUnitType(UnitTypeId, callback) {
 export function getICCAppliSelectList(callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getICCAppliSelectList}`, headers);
+    const request = axios.get(`${API.getICCAppliSelectList}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -1436,7 +1436,7 @@ export function getICCAppliSelectList(callback) {
 export function getICCAppliSelectListKeyValue(callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getICCAppliSelectListKeyValue}`, headers);
+    const request = axios.get(`${API.getICCAppliSelectListKeyValue}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -1460,7 +1460,7 @@ export function getICCAppliSelectListKeyValue(callback) {
 export function getPaymentTermsAppliSelectList(callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getPaymentTermsAppliSelectList}`, headers);
+    const request = axios.get(`${API.getPaymentTermsAppliSelectList}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -1484,7 +1484,7 @@ export function getPaymentTermsAppliSelectList(callback) {
 export function getPaymentTermsAppliSelectListKeyValue(callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getPaymentTermsAppliSelectListKeyValue}`, headers);
+    const request = axios.get(`${API.getPaymentTermsAppliSelectListKeyValue}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -1503,7 +1503,7 @@ export function getPaymentTermsAppliSelectListKeyValue(callback) {
 
 export function getAllCity(callback) {
   return (dispatch) => {
-    const request = axios.get(`${API.getCountry}`, headers);
+    const request = axios.get(`${API.getCountry}`, config());
     request.then((response) => {
       if (response.data.Result) {
         let city
@@ -1523,4 +1523,21 @@ export function getAllCity(callback) {
       apiErrors(error);
     })
   }
+}
+
+
+export function getPartSelectList(callback) {
+
+  return (dispatch) => {
+    dispatch({ type: API_REQUEST });
+    const request = axios.get(`${API.getPartSelectLists}`, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: FETCH_MATER_DATA_FAILURE, });
+      apiErrors(error);
+    });
+  };
 }

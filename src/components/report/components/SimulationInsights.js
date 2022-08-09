@@ -5,14 +5,15 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
-import {ReportMaster, EMPTY_DATA } from '../../../config/constants';
+import { ReportMaster, EMPTY_DATA, defaultPageSize } from '../../../config/constants';
 import LoaderCustom from '../../common/LoaderCustom';
+import { PaginationWrapper } from '../../common/commonPagination';
 
 
 const ExcelFile = ReactExport.ExcelFile;
 
 function SimulationInsights(props) {
-    const simulationInsights = []
+  const simulationInsights = []
   const [gridApi, setGridApi] = useState(null);
   const [gridColumnApi, setGridColumnApi] = useState(null);
 
@@ -36,41 +37,40 @@ function SimulationInsights(props) {
   const resetState = () => {
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
-}
+  }
   const frameworkComponents = {
     customLoadingOverlay: LoaderCustom,
     customNoRowsOverlay: NoContentFound,
   };
   const onPageSizeChanged = (newPageSize) => {
-    var value = document.getElementById('page-size').value;
-    gridApi.paginationSetPageSize(Number(value));
+    gridApi.paginationSetPageSize(Number(newPageSize));
   };
   useEffect(() => {
-   
+
   }, [])
   const onFilterTextBoxChanged = (e) => {
     gridApi.setQuickFilter(e.target.value);
-}
+  }
 
-    return (
-        <div className="container-fluid report-listing-page ag-grid-react">
-                <h1 className="mb-0">Report</h1>
-                <Row className="pt-4 blue-before ">
-                    <Col md="6" lg="6" className="search-user-block mb-3">
-                        <div className="d-flex justify-content-end bd-highlight excel-btn w100">
-                            <div>
-                               <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => resetState()}>
-                                    <div className="refresh mr-0"></div>
-                                </button>
-                                <ExcelFile filename={ReportMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
-                                    {/* {renderColumn(ReportMaster)} */}
-                                </ExcelFile>
-                            </div>
-                        </div>
-                    </Col>
-                </Row>
-            <div className="ag-grid-react">
-        <div className={`ag-grid-wrapper height-width-wrapper ${simulationInsights && simulationInsights?.length <=0 ?"overlay-contain": ""}`}>
+  return (
+    <div className="container-fluid report-listing-page ag-grid-react">
+      <h1 className="mb-0">Report</h1>
+      <Row className="pt-4 blue-before ">
+        <Col md="6" lg="6" className="search-user-block mb-3">
+          <div className="d-flex justify-content-end bd-highlight excel-btn w100">
+            <div>
+              <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => resetState()}>
+                <div className="refresh mr-0"></div>
+              </button>
+              <ExcelFile filename={ReportMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                {/* {renderColumn(ReportMaster)} */}
+              </ExcelFile>
+            </div>
+          </div>
+        </Col>
+      </Row>
+      <div className="ag-grid-react">
+        <div className={`ag-grid-wrapper height-width-wrapper ${simulationInsights && simulationInsights?.length <= 0 ? "overlay-contain" : ""}`}>
           <div className="ag-grid-header">
             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => onFilterTextBoxChanged(e)} />
           </div>
@@ -83,7 +83,7 @@ function SimulationInsights(props) {
               // columnDefs={c}
               rowData={simulationInsights}
               pagination={true}
-              paginationPageSize={10}
+              paginationPageSize={defaultPageSize}
               onGridReady={onGridReady}
               gridOptions={gridOptions}
               loadingOverlayComponent={'customLoadingOverlay'}
@@ -110,18 +110,12 @@ function SimulationInsights(props) {
               <AgGridColumn field="CostingStatus" headerName="Status"></AgGridColumn>
               <AgGridColumn field="SimulationId" headerName="Actions"></AgGridColumn>
             </AgGridReact>
-            <div className="paging-container d-inline-block float-right">
-              <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
-                <option value="10" selected={true}>10</option>
-                <option value="50">50</option>
-                <option value="100">100</option>
-              </select>
-            </div>
+            {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
           </div>
         </div>
       </div>
-        </div>
-    );
+    </div>
+  );
 }
 
 

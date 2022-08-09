@@ -24,7 +24,7 @@ function OperationCost(props) {
 
   const dispatch = useDispatch()
   const [gridData, setGridData] = useState(props.data ? props.data : [])
-  const [OldGridData, setOldGridData] = useState(props.data)
+  const [OldGridData, setOldGridData] = useState(props.data ? props.data : [])
   const [rowObjData, setRowObjData] = useState({})
   const [editIndex, setEditIndex] = useState('')
   const [Ids, setIds] = useState([])
@@ -93,6 +93,10 @@ function OperationCost(props) {
         }
       })
       let tempArr = [...GridArray, ...rowArray]
+      tempArr && tempArr.map((el, index) => {
+        setValue(`${OperationGridFields}.${index}.Quantity`, el.Quantity)
+        return null
+      })
       setGridData(tempArr)
       selectedIds(tempArr)
       dispatch(gridDataAdded(true))
@@ -137,12 +141,12 @@ function OperationCost(props) {
       Toaster.success('Remark saved successfully')
     }
     setGridData(tempArr)
-    var button = document.getElementById(`popUpTriggerss${index}`)
+    var button = document.getElementById(`popUpTriggerss${props.IsAssemblyCalculation}${index}`)
     button.click()
   }
 
   const onRemarkPopUpClose = (index) => {
-    var button = document.getElementById(`popUpTriggerss${index}`)
+    var button = document.getElementById(`popUpTriggerss${props.IsAssemblyCalculation}${index}`)
     button.click()
   }
 
@@ -208,9 +212,9 @@ function OperationCost(props) {
       tempData = { ...tempData, Quantity: 0, OperationCost: OperationCost }
       tempArr = Object.assign([...gridData], { [index]: tempData })
       setGridData(tempArr)
-      Toaster.warning('Please enter valid number.')
+      // Toaster.warning('Please enter valid number.')
       setTimeout(() => {
-        setValue(`${OperationGridFields}.${index}.Quantity`, 0)
+        setValue(`${OperationGridFields}.${index}.Quantity`, '')
       }, 200)
     }
   }
@@ -218,27 +222,21 @@ function OperationCost(props) {
   const handleLabourQuantityChange = (event, index) => {
     let tempArr = [];
     let tempData = gridData[index];
-
-    if (!isNaN(event.target.value) && event.target.value !== '') {
+    if (!isNaN(event?.target?.value) && event?.target?.value !== '') {
       const WithLaboutCost = checkForNull(tempData.Rate) * checkForNull(tempData.Quantity);
       const WithOutLabourCost = tempData.IsLabourRateExist ? checkForNull(tempData.LabourRate) * event.target.value : 0;
       const OperationCost = WithLaboutCost + WithOutLabourCost;
       tempData = { ...tempData, LabourQuantity: event.target.value, OperationCost: OperationCost }
       tempArr = Object.assign([...gridData], { [index]: tempData })
       setGridData(tempArr)
-
     } else {
-
       const WithLaboutCost = checkForNull(tempData.Rate) * checkForNull(tempData.Quantity);
-      const WithOutLabourCost = tempData.IsLabourRateExist ? checkForNull(tempData.LabourRate) * 0 : 0;
+      const WithOutLabourCost = 0;                                                              // WHEN INVALID INPUT WithOutLabourCost IS 0
       const OperationCost = WithLaboutCost + WithOutLabourCost;
       tempData = { ...tempData, LabourQuantity: 0, OperationCost: OperationCost }
       tempArr = Object.assign([...gridData], { [index]: tempData })
       setGridData(tempArr)
       //Toaster.warning('Please enter valid number.')
-      setTimeout(() => {
-        setValue(`${OperationGridFields}.${index}.LabourQuantity`, 0)
-      }, 200)
     }
   }
 
@@ -408,8 +406,8 @@ function OperationCost(props) {
                               <div className='action-btn-wrapper'>
                                 {(!CostingViewMode && !IsLocked) && <button className="Edit mb-0 align-middle" type={'button'} onClick={() => editItem(index)} />}
                                 {(!CostingViewMode && !IsLocked) && <button className="Delete mb-0 align-middle" type={'button'} onClick={() => deleteItem(index, item.OperationId)} />}
-                                <Popup trigger={<button id={`popUpTriggerss${index}`} className="Comment-box align-middle" type={'button'} />}
-                                  position="top center">
+                                <Popup trigger={<button id={`popUpTriggerss${props.IsAssemblyCalculation}${index}`} className="Comment-box align-middle" type={'button'} />}
+                                  position={`${props.IsAssemblyCalculation ? 'top right' : 'top center'}`}>
                                   <TextAreaHookForm
                                     label="Remark:"
                                     name={`${OperationGridFields}.${index}.remarkPopUp`}

@@ -85,7 +85,7 @@ const AddLimit = (props) => {
         //     setDeviation,
         // }
         // axios.post(``, postData).then(res => {
-        //     console.log(res);
+        //     
         // });
     };
 

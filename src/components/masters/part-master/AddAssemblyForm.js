@@ -2,21 +2,29 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required, number, postiveNumber, maxLength5, minValue1, acceptAllExceptSingleSpecialCharacter } from "../../../helper/validation";
+import { required, postiveNumber, maxLength5, minValue1, acceptAllExceptSingleSpecialCharacter } from "../../../helper/validation";
 import { renderText, searchableSelect } from "../../layout/FormInputs";
 import { getAssemblyPartSelectList, getDrawerAssemblyPartDetail, } from '../actions/Part';
 import { ASSEMBLY } from '../../../config/constants';
 import { getRandomSixDigit } from '../../../helper/util';
+import LoaderCustom from '../../common/LoaderCustom';
+import { PartEffectiveDate } from './AddAssemblyPart';
+import AsyncSelect from 'react-select/async';
 
 class AddAssemblyForm extends Component {
+
+    static contextType = PartEffectiveDate
     constructor(props) {
         super(props);
+        this.myRef = React.createRef();
         this.state = {
             assemblyPart: [],
             parentPart: [],
             isAddMore: false,
             childData: [],
-            selectedParts: [],
+            isLoader: false,
+            updateAsyncDropdown: false,
+            issubAssembyNoNotSelected: false
         }
     }
 
@@ -25,18 +33,12 @@ class AddAssemblyForm extends Component {
    * @description called after render the component
    */
     componentDidMount() {
-        const { BOMViewerData } = this.props;
-        this.props.getAssemblyPartSelectList(this.props?.TechnologySelected.value, () => { })
-
-        let tempArr = [];
-        BOMViewerData && BOMViewerData.map(el => {
-            if (el.PartType === ASSEMBLY) {
-                tempArr.push(el.PartId)
-            }
-            return null;
-        })
-
-        this.setState({ selectedParts: tempArr })
+        let obj = {
+            technologyId: this.props?.TechnologySelected.value,
+            date: this.context
+        }
+        this.setState({ isLoader: true })
+        this.props.getAssemblyPartSelectList(obj, () => { this.setState({ isLoader: false }) })
 
     }
 
@@ -51,7 +53,7 @@ class AddAssemblyForm extends Component {
     */
     handleAssemblyPartChange = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
-            this.setState({ assemblyPart: newValue }, () => {
+            this.setState({ assemblyPart: newValue, issubAssembyNoNotSelected: false }, () => {
                 const { assemblyPart } = this.state;
                 this.props.getDrawerAssemblyPartDetail(assemblyPart.value, res => { })
             });
@@ -78,13 +80,22 @@ class AddAssemblyForm extends Component {
     * @description Used show listing of unit of measurement
     */
     renderListing = (label) => {
+        const { BOMViewerData } = this.props;
+
         const { assemblyPartSelectList } = this.props;
-        const { selectedParts } = this.state;
+
+        let tempArr = [];
+        BOMViewerData && BOMViewerData.map(el => {
+            if (el.PartType === ASSEMBLY) {
+                tempArr.push(el.PartId)
+            }
+            return null;
+        })
 
         const temp = [];
         if (label === 'assemblyPart') {
             assemblyPartSelectList && assemblyPartSelectList.map(item => {
-                if (item.Value === '0' || selectedParts.includes(item.Value)) return false;
+                if (item.Value === '0' || tempArr.includes(item.Value)) return false;
                 temp.push({ label: item.Text, value: item.Value })
                 return null;
             });
@@ -111,7 +122,11 @@ class AddAssemblyForm extends Component {
     onSubmit = (values) => {
         const { isAddMore, assemblyPart } = this.state;
         const { DrawerPartData } = this.props;
-
+        if (assemblyPart.length <= 0) {
+            this.setState({ issubAssembyNoNotSelected: true })
+            return false
+        }
+        this.setState({ issubAssembyNoNotSelected: false })
         let childData = {
             PartNumber: assemblyPart ? assemblyPart : [],
             Position: { "x": 600, "y": 50 },
@@ -130,13 +145,18 @@ class AddAssemblyForm extends Component {
         this.props.getDrawerAssemblyPartDetail('', res => { })
 
         if (isAddMore) {
-            this.setState({
-                assemblyPart: []
-            })
+
             this.props.setChildParts(childData)
+            // this.setState({
+            //     assemblyPart: []
+            // })
+            this.setState({ updateAsyncDropdown: !this.state.updateAsyncDropdown })       //UPDATING RANDOM STATE FOR RERENDERING OF COMPONENT AFTER CLICKING ON ADD MORE BUTTON
         } else {
             this.props.toggleDrawer('', childData)
         }
+        setTimeout(() => {
+            this.setState({ updateAsyncDropdown: !this.state.updateAsyncDropdown })      // UPDATING RANDOM STATE AFTER 1 SECOND FOR REFRESHING THE ASYNC SELECT DROPDOWN AFTER CLICKING ON  ADD MORE BUTTON
+        }, 1000);
 
     }
     handleKeyDown = function (e) {
@@ -150,6 +170,23 @@ class AddAssemblyForm extends Component {
     */
     render() {
         const { handleSubmit, isEditFlag, } = this.props;
+        const filterList = (inputValue) => {
+            let tempArr = []
+            tempArr = this.renderListing("assemblyPart").filter(i =>
+                i.label !== null && i.label.toLowerCase().includes(inputValue.toLowerCase())
+            );
+            if (tempArr.length <= 100) {
+                return tempArr
+            } else {
+                return tempArr.slice(0, 100)
+            }
+        };
+
+        const promiseOptions = inputValue =>
+            new Promise(resolve => {
+                resolve(filterList(inputValue));
+
+            });
         return (
             <>
 
@@ -160,20 +197,23 @@ class AddAssemblyForm extends Component {
                     onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
                 >
                     <Row>
+
                         <Col md='6'>
-                            <Field
-                                name="AssemblyPart"
-                                type="text"
-                                label={'Assembly Part No.'}
-                                component={searchableSelect}
-                                placeholder={'Assembly Part'}
-                                options={this.renderListing('assemblyPart')}
-                                //onKeyUp={(e) => this.changeItemDesc(e)}
-                                validate={(this.state.assemblyPart == null || this.state.assemblyPart.length === 0) ? [required] : []}
-                                required={true}
-                                handleChangeDescription={this.handleAssemblyPartChange}
-                                valueDescription={this.state.assemblyPart}
-                            />
+                            <label>{"Assembly Part No."}<span className="asterisk-required">*</span></label>
+                            <div className='p-relative'>
+                                {this.state.isLoader && <LoaderCustom customClass="input-loader" />}
+                                <AsyncSelect
+                                    name="AssemblyPart"
+                                    ref={this.myRef}
+                                    key={this.state.updateAsyncDropdown}
+                                    cacheOptions defaultOptions
+                                    options={this.renderListing('assemblyPart')}
+                                    loadOptions={promiseOptions}
+                                    onChange={(e) => this.handleAssemblyPartChange(e)}
+                                    noOptionsMessage={({ inputValue }) => !inputValue ? 'Please enter first few digits to see the assembly numbers' : "No results found"}
+                                />
+                                {this.state.issubAssembyNoNotSelected && <div className='text-help'>This field is required.</div>}
+                            </div>
                         </Col>
                         <Col md="6">
                             <Field

@@ -118,6 +118,7 @@ class PlantMaster extends Component {
                                         BulkUploadAccessibility={this.state.BulkUploadAccessibility}
                                         ActivateAccessibility={this.state.ActivateAccessibility}
                                         DownloadAccessibility={this.state.DownloadAccessibility}
+                                        ViewAccessibility={this.state.ViewAccessibility}
                                     />
                                 </TabPane>}
                         </TabContent>

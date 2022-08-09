@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Field, reduxForm, reset, formValueSelector } from 'redux-form'
 import { Container, Row, Col } from 'reactstrap'
-import { acceptAllExceptSingleSpecialCharacter, maxLength80, required } from '../../../helper/validation'
+import { acceptAllExceptSingleSpecialCharacter, checkSpacesInString, checkWhiteSpaces, maxLength80, required } from '../../../helper/validation'
 import { renderText } from '../../layout/FormInputs'
 import { getMachineSelectList } from '../actions/MachineMaster'
 import { getProcessCode, createProcess, updateProcess, getProcessData, } from '../actions/Process'
@@ -13,8 +13,6 @@ import { loggedInUserId } from '../../../helper/auth'
 import Drawer from '@material-ui/core/Drawer'
 import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom'
-import saveImg from '../../../assests/images/check.png'
-import cancelImg from '../../../assests/images/times.png'
 import { debounce } from 'lodash'
 const selector = formValueSelector('AddProcessDrawer');
 
@@ -37,8 +35,10 @@ class AddProcessDrawer extends Component {
    * @description called after render the component
    */
   componentDidMount() {
-    this.props.getPlantSelectList(() => { })
-    this.props.getMachineSelectList(() => { })
+    if (!(this.props.isEditFlag || this.props.isViewFlag)) {
+      this.props.getMachineSelectList(() => { })
+      this.props.getPlantSelectList(() => { })
+    }
     this.getData()
   }
 
@@ -213,7 +213,7 @@ class AddProcessDrawer extends Component {
    * @description Renders the component
    */
   render() {
-    const { handleSubmit, isEditFlag, isMachineShow } = this.props
+    const { handleSubmit, isEditFlag, initialConfiguration } = this.props
     const { setDisable } = this.state
     return (
       <div>
@@ -246,7 +246,7 @@ class AddProcessDrawer extends Component {
                       name={'ProcessName'}
                       type="text"
                       placeholder={'Enter'}
-                      validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80]}
+                      validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkSpacesInString, checkWhiteSpaces]}
                       component={renderText}
                       onBlur={this.checkProcessCode}
                       required={true}
@@ -260,13 +260,13 @@ class AddProcessDrawer extends Component {
                       label={`Process Code`}
                       name={'ProcessCode'}
                       type="text"
-                      placeholder={'Enter'}
-                      validate={[required]}
+                      placeholder={isEditFlag || initialConfiguration?.IsProcessCodeConfigure ? '-' : 'Enter'}
+                      validate={[required, checkSpacesInString, checkWhiteSpaces]}
                       component={renderText}
                       required={true}
                       className=" "
                       customClassName=" withBorder"
-                      disabled={isEditFlag ? true : false}
+                      disabled={isEditFlag || initialConfiguration?.IsProcessCodeConfigure ? true : false}
                     />
                   </Col>
                   {/* <Col md="12">
@@ -367,10 +367,11 @@ class AddProcessDrawer extends Component {
  * @param {*} state
  */
 function mapStateToProps(state) {
-  const { comman, machine, process } = state
+  const { comman, machine, process, auth } = state
   const { plantSelectList } = comman
   const { machineSelectList } = machine
   const { processUnitData } = process
+  const { initialConfiguration } = auth;
   const fieldsObj = selector(state, 'ProcessCode')
 
   let initialValues = {}
@@ -381,7 +382,7 @@ function mapStateToProps(state) {
       ProcessCode: processUnitData.ProcessCode,
     }
   }
-  return { plantSelectList, machineSelectList, processUnitData, initialValues, fieldsObj }
+  return { plantSelectList, machineSelectList, processUnitData, initialValues, fieldsObj, initialConfiguration }
 }
 
 /**
@@ -401,5 +402,6 @@ export default connect(mapStateToProps, {
   reduxForm({
     form: 'AddProcessDrawer',
     enableReinitialize: true,
+    touchOnChange: true,
   })(AddProcessDrawer),
 )

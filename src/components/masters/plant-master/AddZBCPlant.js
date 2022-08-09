@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { required, maxLength6, maxLength80, checkWhiteSpaces,minLength10,alphaNumeric,vlidatePhoneNumber,maxLength71,maxLength7 ,maxLength5, acceptAllExceptSingleSpecialCharacter, maxLength4, postiveNumber, maxLength10, maxLength12, } from "../../../helper/validation";
+import { required, maxLength6, maxLength80, checkWhiteSpaces, minLength10, alphaNumeric, maxLength71, maxLength5, acceptAllExceptSingleSpecialCharacter, maxLength4, postiveNumber, maxLength12, checkSpacesInString } from "../../../helper/validation";
 import { userDetails, loggedInUserId } from "../../../helper/auth";
-import { renderText, searchableSelect } from "../../layout/FormInputs";
+import { focusOnError, renderNumberInputField, renderText, searchableSelect } from "../../layout/FormInputs";
 import { createPlantAPI, getPlantUnitAPI, updatePlantAPI, getComapanySelectList } from '../actions/Plant';
 import {
   fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, fetchSupplierCityDataAPI,
@@ -40,16 +40,21 @@ class AddZBCPlant extends Component {
   * @description Used to cancel modal
   */
   componentDidMount() {
-    this.props.fetchCountryDataAPI(() => { })
-    this.props.getComapanySelectList(() => { })
-
+    if (!this.props.isViewMode) {
+      this.props.fetchCountryDataAPI(() => { })
+    }
+    if (this.props.initialConfiguration.IsCompanyConfigureOnPlant) {
+      this.props.getComapanySelectList(() => { })
+    }
     this.getDetails()
 
   }
 
   UNSAFE_componentWillMount() {
-    this.props.fetchStateDataAPI(0, () => { })
     this.props.fetchCityDataAPI(0, () => { })
+    if (!(this.props.isEditFlag || this.props.isViewMode)) {
+      this.props.fetchStateDataAPI(0, () => { })
+    }
   }
 
   /**
@@ -68,24 +73,18 @@ class AddZBCPlant extends Component {
 
           const Data = res.data.Data;
           this.setState({ DataToCheck: Data })
-          this.props.fetchStateDataAPI(Data.CountryId, () => { })
-          this.props.fetchCityDataAPI(Data.StateId, () => { })
-
+          if (!this.state.isViewMode) {
+            this.props.fetchStateDataAPI(Data.CountryId, () => { })
+            this.props.fetchCityDataAPI(Data.StateId, () => { })
+          }
           setTimeout(() => {
-            const { countryList, stateList, cityList, companySelectList } = this.props;
-
-            const CountryObj = countryList && countryList.find(item => Number(item.Value) === Data.CountryId)
-            const StateObj = stateList && stateList.find(item => Number(item.Value) === Data.StateId)
-            const CityObj = cityList && cityList.find(item => Number(item.Value) === Data.CityIdRef)
-            const CompanyObj = companySelectList && companySelectList.find(item => Number(item.Value) === Data.CompanyId)
-
             this.setState({
               isEditFlag: true,
               // isLoader: false,
-              country: CountryObj && CountryObj !== undefined ? { label: CountryObj.Text, value: CountryObj.Value } : [],
-              state: StateObj && StateObj !== undefined ? { label: StateObj.Text, value: StateObj.Value } : [],
-              city: CityObj && CityObj !== undefined ? { label: CityObj.Text, value: CityObj.Value } : [],
-              company: CompanyObj && CompanyObj !== undefined ? { label: CompanyObj.Text, value: CompanyObj.Value } : []
+              country: Data.CountryName !== undefined ? { label: Data.CountryName, value: Data.CountryId } : [],
+              state: Data.StateName !== undefined ? { label: Data.StateName, value: Data.StateId } : [],
+              city: Data.CityName !== undefined ? { label: Data.CityName, value: Data.CityIdRef } : [],
+              company: Data.CompanyName !== undefined ? { label: Data.CompanyName, value: Data.CompanyId } : []
             }, () => this.setState({ isLoader: false }))
           }, 500)
         }
@@ -132,6 +131,7 @@ class AddZBCPlant extends Component {
       companySelectList && companySelectList.map(item => {
         if (item.Value === '0') return false;
         temp.push({ label: item.Text, value: item.Value })
+        return null
       });
       return temp
     }
@@ -154,10 +154,12 @@ class AddZBCPlant extends Component {
   countryHandler = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
       this.setState({ country: newValue, state: [], city: [] }, () => {
+        this.props.change('ZipCode', '')
         this.getAllCityData()
       });
     } else {
       this.setState({ country: [], state: [], city: [] })
+      this.props.change('ZipCode', '')
       this.props.fetchStateDataAPI(0, () => { })
     }
     this.setState({ DropdownChanged: false })
@@ -170,11 +172,13 @@ class AddZBCPlant extends Component {
   stateHandler = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
       this.setState({ state: newValue, city: [], }, () => {
+        this.props.change('ZipCode', '')
         const { state } = this.state;
         this.props.fetchCityDataAPI(state.value, () => { })
       });
     } else {
       this.setState({ state: [], city: [] });
+      this.props.change('ZipCode', '')
       this.props.fetchCityDataAPI(0, () => { })
     }
 
@@ -187,8 +191,10 @@ class AddZBCPlant extends Component {
   cityHandler = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
       this.setState({ city: newValue });
+      this.props.change('ZipCode', '')
     } else {
       this.setState({ city: [] });
+      this.props.change('ZipCode', '')
     }
     this.setState({ DropdownChanged: false })
   };
@@ -221,7 +227,7 @@ class AddZBCPlant extends Component {
   * @method onSubmit
   * @description Used to Submit the form
   */
-  onSubmit = debounce((values) => {
+  onSubmit = debounce(this.props.handleSubmit((values) => {
     const { city, PlantId, company, DataToCheck, DropdownChanged } = this.state;
     const { isEditFlag, } = this.props;
     const userDetail = userDetails();
@@ -292,7 +298,7 @@ class AddZBCPlant extends Component {
         }
       });
     }
-  }, 500)
+  }), 500)
 
   handleCompanyChange = (value) => {
     if (value && value !== '') {
@@ -327,14 +333,12 @@ class AddZBCPlant extends Component {
               <form
                 noValidate
                 className="form"
-                onSubmit={handleSubmit(this.onSubmit.bind(this))}
                 onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
               >
                 <Row className="drawer-heading">
                   <Col>
                     <div className={"header-wrapper left"}>
-                      <h3>
-                        {isEditFlag ? "Update Plant" : "Add  Plant"}
+                      <h3>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} ZBC Plant
                       </h3>
                     </div>
                     <div
@@ -349,8 +353,8 @@ class AddZBCPlant extends Component {
                       label={`Plant Name`}
                       name={"PlantName"}
                       type="text"
-                      placeholder={""}
-                      validate={[required, alphaNumeric, maxLength71, checkWhiteSpaces]}
+                      placeholder={isViewMode ? '-' : "Enter"}
+                      validate={[required, alphaNumeric, maxLength71, checkWhiteSpaces, checkSpacesInString]}
                       component={renderText}
                       required={true}
                       className=""
@@ -363,8 +367,8 @@ class AddZBCPlant extends Component {
                       label={`Plant Code`}
                       name={"PlantCode"}
                       type="text"
-                      placeholder={""}
-                      validate={[required, postiveNumber, checkWhiteSpaces, maxLength4]}
+                      placeholder={isEditFlag ? '-' : "Enter"}
+                      validate={[required, postiveNumber, checkWhiteSpaces, maxLength4, checkSpacesInString]}
                       component={renderText}
                       required={true}
                       className=""
@@ -382,7 +386,7 @@ class AddZBCPlant extends Component {
                         type="text"
                         label="Company Name"
                         component={searchableSelect}
-                        placeholder={"Select"}
+                        placeholder={isViewMode ? '-' : "Select"}
                         options={this.selectType("Company")}
                         //onKeyUp={(e) => this.changeItemDesc(e)}
                         disabled={isViewMode}
@@ -405,9 +409,9 @@ class AddZBCPlant extends Component {
                           label="Phone Number"
                           name={"PhoneNumber"}
                           type="text"
-                          placeholder={""}
+                          placeholder={isViewMode ? '-' : "Enter"}
                           validate={[postiveNumber, minLength10, maxLength12, checkWhiteSpaces]}
-                          component={renderText}
+                          component={renderNumberInputField}
                           maxLength={12}
                           className=""
                           customClassName={"withBorder"}
@@ -419,9 +423,9 @@ class AddZBCPlant extends Component {
                           label="Ext."
                           name={"Extension"}
                           type="text"
-                          placeholder={""}
-                          validate={[postiveNumber, maxLength5 , checkWhiteSpaces]}
-                          component={renderText}
+                          placeholder={isViewMode ? '-' : "Enter"}
+                          validate={[postiveNumber, maxLength5, checkWhiteSpaces]}
+                          component={renderNumberInputField}
                           maxLength={5}
                           className=""
                           customClassName={"withBorder"}
@@ -437,7 +441,7 @@ class AddZBCPlant extends Component {
                       label="Address 1"
                       name={"AddressLine1"}
                       type="text"
-                      placeholder={""}
+                      placeholder={isViewMode ? '-' : "Enter"}
                       validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                       component={renderText}
                       maxLength={26}
@@ -451,7 +455,7 @@ class AddZBCPlant extends Component {
                       label="Address 2"
                       name={"AddressLine2"}
                       type="text"
-                      placeholder={""}
+                      placeholder={isViewMode ? '-' : "Enter"}
                       validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                       component={renderText}
                       //required={true}
@@ -490,7 +494,7 @@ class AddZBCPlant extends Component {
                         type="text"
                         label="State"
                         component={searchableSelect}
-                        placeholder={"Select"}
+                        placeholder={isViewMode ? '-' : "Select"}
                         options={this.selectType("state")}
                         disabled={isViewMode}
                         validate={
@@ -514,7 +518,7 @@ class AddZBCPlant extends Component {
                       type="text"
                       label="City"
                       component={searchableSelect}
-                      placeholder={"Select"}
+                      placeholder={isViewMode ? '-' : "Select"}
                       options={this.selectType("city")}
                       disabled={isViewMode}
                       //onKeyUp={(e) => this.changeItemDesc(e)}
@@ -534,8 +538,8 @@ class AddZBCPlant extends Component {
                       label="ZipCode"
                       name={"ZipCode"}
                       type="text"
-                      placeholder={""}
-                      validate={[required, postiveNumber, maxLength6, checkWhiteSpaces]}
+                      placeholder={isViewMode ? '-' : "Enter"}
+                      validate={[required, postiveNumber, maxLength6]}
                       component={renderText}
                       required={true}
                       maxLength={6}
@@ -558,7 +562,8 @@ class AddZBCPlant extends Component {
                       {"Cancel"}
                     </button>
                     <button
-                      type="submit"
+                      type="button"
+                      onClick={this.onSubmit}
                       className="user-btn save-btn"
                       disabled={isViewMode || setDisable}
                     >
@@ -620,4 +625,7 @@ export default connect(mapStateToProps, {
 })(reduxForm({
   form: 'AddZBCPlant',
   enableReinitialize: true,
+  onSubmitFail: (errors) => {
+    focusOnError(errors)
+  },
 })(AddZBCPlant));

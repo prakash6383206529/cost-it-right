@@ -15,6 +15,7 @@ import {
 } from '../../../../../helper'
 import MachiningStockTable from '../MachiningStockTable'
 import LossStandardTable from '../LossStandardTable'
+import { debounce } from 'lodash'
 
 function ColdForging(props) {
   const { rmRowData, CostingViewMode, item } = props
@@ -106,7 +107,7 @@ function ColdForging(props) {
   const [dataSend, setDataSend] = useState({})
   const [totalMachiningStock, setTotalMachiningStock] = useState(WeightCalculatorRequest && WeightCalculatorRequest.TotalMachiningStock ? WeightCalculatorRequest.TotalMachiningStock : 0)
   const [disableAll, setDisableAll] = useState(Object.keys(WeightCalculatorRequest).length > 0 && WeightCalculatorRequest && WeightCalculatorRequest.finishedWeight !== null ? false : true)
-
+  const [isDisable, setIsDisable] = useState(false)
   const costData = useContext(costingInfoContext)
   useEffect(() => {
     if (!CostingViewMode) {
@@ -270,7 +271,8 @@ function ColdForging(props) {
    * @method onSubmit
    * @description Form submission Function
    */
-  const onSubmit = (values) => {
+  const onSubmit = debounce(handleSubmit((values) => {
+    setIsDisable(true)
     let obj = {}
     obj.LayoutType = 'Cold'
     obj.ForgingWeightCalculatorId = WeightCalculatorRequest && WeightCalculatorRequest.ForgingWeightCalculatorId ? WeightCalculatorRequest.ForgingWeightCalculatorId : "0"
@@ -312,13 +314,14 @@ function ColdForging(props) {
 
 
     dispatch(saveRawMaterialCalculationForForging(obj, res => {
+      setIsDisable(false)
       if (res.data.Result) {
         obj.WeightCalculationId = res.data.Identity
         Toaster.success("Calculation saved successfully")
         props.toggleDrawer('', obj)
       }
     }))
-  }
+  }), 500)
   const TotalMachiningStock = (value) => {
     setTotalMachiningStock(value)
   }
@@ -401,12 +404,18 @@ function ColdForging(props) {
     }
   }
 
+  const handleKeyDown = function (e) {
+    if (e.key === 'Enter' && e.shiftKey === false) {
+      e.preventDefault();
+    }
+  };
 
   return (
     <Fragment>
       <Row>
         <Col>
-          <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}>
+          <form noValidate className="form"
+            onKeyDown={(e) => { handleKeyDown(e, onSubmit.bind(this)); }}>
             <Col md="12" className='px-0'>
               <div className="border px-3 pt-3">
                 <Row>
@@ -414,7 +423,7 @@ function ColdForging(props) {
                     <Row>
                       <Col md="3">
                         <NumberFieldHookForm
-                          label={`Finished Weight (kg)`}
+                          label={`Finished Weight(kg)`}
                           name={'finishedWeight'}
                           Controller={Controller}
                           control={control}
@@ -455,7 +464,7 @@ function ColdForging(props) {
 
                 <Col md="3" className='mt10 px-0'>
                   <NumberFieldHookForm
-                    label={`Forged Weight (Kg)`}
+                    label={`Forged Weight(Kg)`}
                     name={'forgedWeight'}
                     Controller={Controller}
                     control={control}
@@ -490,7 +499,7 @@ function ColdForging(props) {
             <Row className='mt20'>
               <Col md="3">
                 <NumberFieldHookForm
-                  label={`Billet Diameter (mm)`}
+                  label={`Billet Diameter(mm)`}
                   name={'BilletDiameter'}
                   Controller={Controller}
                   control={control}
@@ -514,7 +523,7 @@ function ColdForging(props) {
               </Col>
               <Col md="3">
                 <NumberFieldHookForm
-                  label={`Billet Length (mm)`}
+                  label={`Input Bar Length(mm)`}
                   name={'BilletLength'}
                   Controller={Controller}
                   control={control}
@@ -538,7 +547,7 @@ function ColdForging(props) {
               </Col>
               <Col md="3">
                 <NumberFieldHookForm
-                  label={`Input Length (mm)`}
+                  label={`Input Length(mm)`}
                   name={'InputLength'}
                   Controller={Controller}
                   control={control}
@@ -554,7 +563,7 @@ function ColdForging(props) {
               </Col>
               <Col md="3">
                 <NumberFieldHookForm
-                  label={`No Of Parts Per Length`}
+                  label={`No. of Parts per Length`}
                   name={'NoOfPartsPerLength'}
                   Controller={Controller}
                   control={control}
@@ -587,7 +596,7 @@ function ColdForging(props) {
 
               <Col md="3">
                 <NumberFieldHookForm
-                  label={`End Bit Loss (Kg)`}
+                  label={`End Bit Loss(Kg)`}
                   name={'EndBitLoss'}
                   Controller={Controller}
                   control={control}
@@ -604,7 +613,7 @@ function ColdForging(props) {
 
               <Col md="3">
                 <NumberFieldHookForm
-                  label={`Total Input Weight (Kg)`}
+                  label={`Total Input Weight(Kg)`}
                   name={'TotalInputWeight'}
                   Controller={Controller}
                   control={control}
@@ -620,7 +629,7 @@ function ColdForging(props) {
               </Col>
               <Col md="3">
                 <NumberFieldHookForm
-                  label={`Scrap Weight (Kg)`}
+                  label={`Scrap Weight(Kg)`}
                   name={'ScrapWeight'}
                   Controller={Controller}
                   control={control}
@@ -636,7 +645,7 @@ function ColdForging(props) {
               </Col>
               <Col md="3">
                 <NumberFieldHookForm
-                  label={`Scrap Recovery Percentage`}
+                  label={`Scrap Recovery(%)`}
                   name={'ScrapRecoveryPercentage'}
                   Controller={Controller}
                   control={control}
@@ -680,7 +689,7 @@ function ColdForging(props) {
 
               <Col md="3">
                 <NumberFieldHookForm
-                  label={`Net RM Cost/ Component`}
+                  label={`Net RM Cost/Component`}
                   name={'NetRMCostComponent'}
                   Controller={Controller}
                   control={control}
@@ -707,14 +716,12 @@ function ColdForging(props) {
                 CANCEL
               </button>
               <button
-                type="submit"
-                // onClick={(e)=>{handleSubmit(onSubmit)}}
-                disabled={props.CostingViewMode ? props.CostingViewMode : false}
+                type="button"
+                onClick={onSubmit}
+                disabled={props.CostingViewMode || isDisable ? true : false}
                 className="btn-primary save-btn"
               >
-                <div className={'check-icon'}>
-                  <i class="fa fa-check" aria-hidden="true"></i>
-                </div>
+                <div className={'save-icon'}></div>
                 {'SAVE'}
               </button>
             </div>

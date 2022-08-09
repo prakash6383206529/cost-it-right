@@ -41,7 +41,7 @@ class ImpactDrawer extends Component {
         return (
             <div>
                 {/* {isLoader && <Loader />} */}
-                <Drawer className="add-update-level-drawer" anchor={this.props.anchor} open={this.props.isOpen} 
+                <Drawer className="add-update-level-drawer" anchor={this.props.anchor} open={this.props.isOpen}
                 // onClose={(e) => this.toggleDrawer(e)}
                 >
                     <Container>
@@ -103,33 +103,11 @@ class ImpactDrawer extends Component {
                                             />
                                         </div>
                                         <div className="text-right mt-0 col-md-12">
-                                            {/* <input
-                                //disabled={pristine || submitting}
-                                onClick={this.cancel}
-                                type="button"
-                                value="Cancel"
-                                className="reset mr15 cancel-btn"
-                              /> */}
-                                            <button
-                                                //disabled={pristine || submitting}
-                                                onClick={this.cancel}
-                                                type="button"
-                                                value="CANCEL"
-                                                className="reset mr15 cancel-btn">
-                                                <div className={"cancel-icon"}></div> CANCEL</button>
-                                            {/* <input
-                                disabled={isSubmitted ? true : false}
-                                type="submit"
-                                value={isEditFlag ? 'Update' : 'Save'}
-                                className="submit-button mr5 save-btn"
-                              /> */}
-
                                             <button
                                                 type="submit"
                                                 disabled={false}
-                                                className="btn-primary save-btn"
-                                            >	
-                                            <div className={"save-icon"}></div>
+                                                className="btn-primary save-btn">
+                                                <div className={"save-icon"}></div>
                                                 {'Save'}
                                             </button>
                                         </div>

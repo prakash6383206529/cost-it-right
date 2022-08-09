@@ -93,6 +93,10 @@ function OperationCostExcludedOverhead(props) {
         }
       })
       let tempArr = [...GridArray, ...rowArray]
+      tempArr && tempArr.map((el, index) => {
+        setValue(`${OperationGridFields}.${index}.Quantity`, el.Quantity)
+        return null
+      })
       setGridData(tempArr)
       selectedIds(tempArr)
       dispatch(gridDataAdded(true))
@@ -165,6 +169,18 @@ function OperationCostExcludedOverhead(props) {
   }
 
   const SaveItem = (index) => {
+
+    let operationGridData = gridData[index]
+    if (operationGridData.UOM === 'Number') {
+      let isValid = Number.isInteger(Number(operationGridData.Quantity));
+      if (!isValid) {
+        Toaster.warning('Please enter numeric value')
+        setTimeout(() => {
+          setValue(`${OperationGridFields}[${index}].Quantity`, '')
+        }, 200)
+        return false
+      }
+    }
     setEditIndex('')
   }
 
@@ -194,9 +210,9 @@ function OperationCostExcludedOverhead(props) {
       tempData = { ...tempData, Quantity: 0, OperationCost: OperationCost }
       tempArr = Object.assign([...gridData], { [index]: tempData })
       setGridData(tempArr)
-      Toaster.warning('Please enter valid number.')
+      //Toaster.warning('Please enter valid number.')
       setTimeout(() => {
-        setValue(`${OperationGridFields}[${index}]Quantity`, 0)
+        setValue(`${OperationGridFields}[${index}].Quantity`, '')
       }, 200)
     }
   }
@@ -307,7 +323,7 @@ function OperationCostExcludedOverhead(props) {
                               {
                                 <NumberFieldHookForm
                                   label=""
-                                  name={`${OperationGridFields}[${index}]Quantity`}
+                                  name={`${OperationGridFields}[${index}].Quantity`}
                                   Controller={Controller}
                                   control={control}
                                   register={register}
@@ -316,7 +332,7 @@ function OperationCostExcludedOverhead(props) {
                                     //required: true,
                                     pattern: {
                                       //value: /^[0-9]*$/i,
-                                      value: /^\d*\.?\d*$/,
+                                      value: item.UOM === "Number" ? /^[1-9]\d*$/ : /^\d*\.?\d*$/,
                                       message: 'Invalid Number.'
                                     },
                                   }}

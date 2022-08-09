@@ -19,6 +19,8 @@ function PartSurfaceTreatment(props) {
   const CostingViewMode = useContext(ViewCostingContext);
   const dispatch = useDispatch()
 
+  const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
+
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
   const toggle = (BOMLevel, PartNumber) => {
@@ -106,9 +108,9 @@ function PartSurfaceTreatment(props) {
                 //onClick={DrawerToggle}
                 onClick={() => toggle(item.BOMLevel, item.PartNumber)}
               >
-                <div className={`${CostingViewMode ? 'fa fa-eye pr-1' : 'plus'}`}></div>Surface T.</button>
+                <div className={`${(CostingViewMode || IsLocked) ? 'fa fa-eye pr-1' : 'plus'}`}></div>Surface T.</button>
             }
-            <div className={`lock-width ${(item.IsLocked || item.IsPartLocked) ? 'lock_icon' : ''}`}>{''}</div>
+            <div className={`lock-width ${(item.IsLocked || item.IsPartLocked) ? 'lock_icon tooltip-n' : ''}`}>{(item.IsLocked || item.IsPartLocked) && <span class="tooltiptext">{`${item.IsLocked ? "Child parts costing are coming from individual costing, please edit there if want to change costing" : "This part is already present at multiple level in this BOM. Please go to the lowest level to enter the data."}`}</span>}</div>
           </div>
         </td>
         {/*WHEN COSTING OF THAT PART IS  APPROVED SO COSTING COMES AUTOMATICALLY FROM BACKEND AND THIS KEY WILL COME TRUE (WORK LIKE VIEW MODE)*/}

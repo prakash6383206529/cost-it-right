@@ -6,13 +6,12 @@ import AddBOPDomestic from './AddBOPDomestic';
 import AddBOPImport from './AddBOPImport';
 import BOPDomesticListing from './BOPDomesticListing';
 import BOPImportListing from './BOPImportListing';
-import BOPApproval from './BOPApproval';
-
 import { BOP, BOP_MASTER_ID, MASTERS } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
 import SOBListing from './SOBListing';
 import ScrollToTop from '../../common/ScrollToTop';
 import { CheckApprovalApplicableMaster } from "../../../helper";
+import CommonApproval from '../material-master/CommonApproval';
 
 class BOPMaster extends Component {
   constructor(props) {
@@ -252,11 +251,12 @@ class BOPMaster extends Component {
 
                 {Number(this.state.activeTab) === 4 &&
                   <TabPane tabId="4">
-                    <BOPApproval
+                    <CommonApproval
                       AddAccessibility={this.state.AddAccessibility}
                       EditAccessibility={this.state.EditAccessibility}
                       DeleteAccessibility={this.state.DeleteAccessibility}
                       DownloadAccessibility={this.state.DownloadAccessibility}
+                      MasterId={BOP_MASTER_ID}
                     />
                   </TabPane>}
 

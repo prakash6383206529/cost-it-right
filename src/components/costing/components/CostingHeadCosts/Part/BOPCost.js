@@ -109,6 +109,10 @@ function BOPCost(props) {
       })
 
       let tempArr = [...gridData, ...rowArray]
+      tempArr && tempArr.map((el, index) => {
+        setValue(`${bopGridFields}.${index}.Quantity`, el.Quantity)
+        return null
+      })
       setGridData(tempArr)
       selectedIds(tempArr)
       dispatch(gridDataAdded(true))
@@ -193,7 +197,7 @@ function BOPCost(props) {
       tempArr = Object.assign([...gridData], { [index]: tempData })
       setGridData(tempArr)
       setTimeout(() => {
-        setValue(`${bopGridFields}.${index}.Quantity`, 0)
+        setValue(`${bopGridFields}.${index}.Quantity`, '')
       }, 200)
       //Toaster.warning('Please enter valid number.')
     }
@@ -359,7 +363,7 @@ function BOPCost(props) {
                           editIndex === index ?
                             <tr key={index}>
                               <td className='text-overflow'><span title={item.BOPPartNumber}>{item.BOPPartNumber}</span></td>
-                              <td>{item.BOPPartName}</td>
+                              <td className='text-overflow'><span title={item.BOPPartName}>{item.BOPPartName}</span></td>
                               <td>{item.BoughtOutPartUOM}</td>
                               <td>{checkForDecimalAndNull(item.LandedCostINR, initialConfiguration.NoOfDecimalForPrice)}</td>
                               <td style={{ width: 200 }}>
@@ -429,7 +433,7 @@ function BOPCost(props) {
                             :
                             <tr key={index}>
                               <td className='text-overflow'><span title={item.BOPPartNumber}>{item.BOPPartNumber}</span> </td>
-                              <td>{item.BOPPartName}</td>
+                              <td className='text-overflow'><span title={item.BOPPartName}>{item.BOPPartName}</span></td>
                               <td>{item.BoughtOutPartUOM}</td>
                               <td>{item.LandedCostINR ? checkForDecimalAndNull(item.LandedCostINR, initialConfiguration.NoOfDecimalForPrice) : ''}</td>
                               <td style={{ width: 200 }}>{checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForInputOutput)}</td>

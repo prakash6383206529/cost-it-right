@@ -5,10 +5,14 @@ import { Row, Col, } from 'reactstrap';
 import { required, maxLength5, minValue1, minValueLessThan1, positiveAndDecimalNumber, } from "../../../helper/validation";
 import { renderText, searchableSelect } from "../../layout/FormInputs";
 import { getBoughtOutPartSelectList, getDrawerBOPData } from '../actions/Part';
-import { } from '../../../actions/Common';
 import { BOUGHTOUTPART } from '../../../config/constants';
+import LoaderCustom from '../../common/LoaderCustom';
+import { PartEffectiveDate } from './AddAssemblyPart';
+import AsyncSelect from 'react-select/async';
 
 class AddBOPForm extends Component {
+  static contextType = PartEffectiveDate
+
   constructor(props) {
     super(props);
     this.state = {
@@ -16,8 +20,10 @@ class AddBOPForm extends Component {
       parentPart: [],
       BOPPart: [],
       isAddMore: false,
-      selectedParts: [],
-      titleObj: {}
+      titleObj: {},
+      isLoader: false,
+      updateAsyncDropdown: false,
+      isBOPNoNotSelected: false
     }
   }
 
@@ -26,19 +32,10 @@ class AddBOPForm extends Component {
  * @description called after render the component
  */
   componentDidMount() {
-    const { BOMViewerData } = this.props;
-    let tempArr = [];
+    this.setState({ isLoader: true })
+    const date = this.context
+    this.props.getBoughtOutPartSelectList(date, () => { this.setState({ isLoader: false }) })
 
-    this.props.getBoughtOutPartSelectList(() => { })
-
-    BOMViewerData && BOMViewerData.map(el => {
-      if (el.PartType === BOUGHTOUTPART) {
-        tempArr.push(el.PartId)
-      }
-      return null;
-    })
-
-    this.setState({ selectedParts: tempArr })
   }
 
   checkRadio = (radioType) => {
@@ -51,7 +48,7 @@ class AddBOPForm extends Component {
   */
   handleBOPPartChange = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ BOPPart: newValue }, () => {
+      this.setState({ BOPPart: newValue, isPartNoNotSelected: false }, () => {
         const { BOPPart } = this.state;
         this.props.getDrawerBOPData(BOPPart.value, () => { })
       });
@@ -79,7 +76,6 @@ class AddBOPForm extends Component {
   */
   renderListing = (label) => {
     const { boughtOutPartSelectList } = this.props;
-    const { selectedParts } = this.state;
     const temp = [];
     const { BOMViewerData } = this.props;                    //UPDATING BOMVIEWER DATA ON EVERY RENDERING OF DROPDOWN
     let tempArr = [];
@@ -94,7 +90,7 @@ class AddBOPForm extends Component {
 
     if (label === 'BOPPart') {
       boughtOutPartSelectList && boughtOutPartSelectList.map(item => {
-        if (item.Value === '0' || selectedParts.includes(item.Value)) return false;
+        if (item.Value === '0' || tempArr.includes(item.Value)) return false;
         temp.push({ label: item.Text, value: item.Value })
         return null;
       });
@@ -122,6 +118,12 @@ class AddBOPForm extends Component {
     const { isAddMore, BOPPart } = this.state;
     const { DrawerPartData } = this.props;
 
+
+    if (BOPPart.length <= 0) {
+      this.setState({ isBOPNoNotSelected: true })      // IF PART NO IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY
+      return false
+    }
+    this.setState({ isBOPNoNotSelected: false })
     /** Update existing detail of supplier master **/
     let childData = {
       PartNumber: BOPPart ? BOPPart : [],
@@ -141,13 +143,15 @@ class AddBOPForm extends Component {
     this.props.getDrawerBOPData('', () => { })
 
     if (isAddMore) {
-      this.setState({
-        BOPPart: []
-      })
       this.props.setChildParts(childData)
+      this.setState({ updateAsyncDropdown: !this.state.updateAsyncDropdown })
+      return false
     } else {
       this.props.toggleDrawer('', childData)
     }
+    setTimeout(() => {
+      this.setState({ updateAsyncDropdown: !this.state.updateAsyncDropdown })      // UPDATING RANDOM STATE AFTER 1 SECOND FOR REFRESHING THE ASYNC SELECT DROPDOWN AFTER CLICKING ON  ADD MORE BUTTON
+    }, 1000);
 
   }
 
@@ -163,6 +167,25 @@ class AddBOPForm extends Component {
   */
   render() {
     const { handleSubmit, isEditFlag, } = this.props;
+
+    const filterList = (inputValue) => {
+      let tempArr = []
+      tempArr = this.renderListing("BOPPart").filter(i =>
+        i.label !== null && i.label.toLowerCase().includes(inputValue.toLowerCase())
+      );
+      if (tempArr.length <= 100) {
+        return tempArr
+      } else {
+        return tempArr.slice(0, 100)
+      }
+    };
+
+    const promiseOptions = inputValue =>
+      new Promise(resolve => {
+        resolve(filterList(inputValue));
+
+      });
+
     return (
       <>
         <form
@@ -172,29 +195,26 @@ class AddBOPForm extends Component {
           onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
         >
           <Row>
+
             <Col md="6">
-              <Field
-                name="BOPPartNumber"
-                type="text"
-                label={"Insert Part No."}
-                component={searchableSelect}
-                placeholder={"Insert Part"}
-                options={this.renderListing("BOPPart")}
-                //onKeyUp={(e) => this.changeItemDesc(e)}
-                validate={
-                  this.state.BOPPart == null ||
-                    this.state.BOPPart.length === 0
-                    ? [required]
-                    : []
-                }
-                required={true}
-                handleChangeDescription={this.handleBOPPartChange}
-                valueDescription={this.state.BOPPart}
-              />
+              <label>{"BOP Part No."}<span className="asterisk-required">*</span></label>
+              <div className='p-relative'>
+                {this.state.isLoader && <LoaderCustom customClass="input-loader" />}
+                <AsyncSelect
+                  name="BOPPartNumber"
+                  ref={this.myRef}
+                  key={this.state.updateAsyncDropdown}
+                  cacheOptions
+                  loadOptions={promiseOptions}
+                  onChange={(e) => this.handleBOPPartChange(e)}
+                  noOptionsMessage={({ inputValue }) => !inputValue ? 'Please enter first few digits to see the BOP numbers' : "No results found"}
+                />
+                {this.state.isBOPNoNotSelected && <div className='text-help'>This field is required.</div>}
+              </div>
             </Col>
             <Col md="6">
               <Field
-                label={`Insert Part Name`}
+                label={`BOP Part Name`}
                 name={"BOPPartName"}
                 type="text"
                 placeholder={""}
@@ -209,7 +229,7 @@ class AddBOPForm extends Component {
 
             <Col md="6">
               <Field
-                label={`Insert Category`}
+                label={`BOP Category`}
                 name={"BOPCategory"}
                 type="text"
                 placeholder={""}
@@ -243,7 +263,7 @@ class AddBOPForm extends Component {
                 name={"Quantity"}
                 type="text"
                 placeholder={""}
-                validate={[positiveAndDecimalNumber, maxLength5, required, minValueLessThan1]}
+                validate={[positiveAndDecimalNumber, required]}
                 component={renderText}
                 required={true}
                 className=""

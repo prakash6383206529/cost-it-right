@@ -2,20 +2,20 @@ import React, { Fragment, useState, useEffect, useContext } from 'react';
 // import React, { Fragment, useState, useEffect, } from 'react'
 import { Row, Col } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { costingInfoContext } from '../../CostingDetailStepTwo';
-import { TextFieldHookForm, } from '../../../../layout/HookFormInputs'
+import { NumberFieldHookForm, } from '../../../../layout/HookFormInputs'
 import { checkForDecimalAndNull, checkForNull, checkPercentageValue, getConfigurationKey, loggedInUserId } from '../../../../../helper'
 import { AREA, DIMENSIONLESS, MASS, TIME, VOLUMETYPE } from '../../../../../config/constants';
 import { saveDefaultProcessCostCalculationData } from '../../../actions/CostWorking';
 import Toaster from '../../../../common/Toaster';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import { findProcessCost } from '../../../CostingUtil';
+import { debounce } from 'lodash';
 
 function SheetMetalBaicDrawer(props) {
-  /*******************************************************************************************************************************************************************/
 
-  const { rmFinishWeight, item } = props
-
+  const { rmFinishWeight } = props
   const costData = useContext(costingInfoContext);
   const WeightCalculatorRequest = props.calculatorData.WeightCalculatorRequest
   const localStorage = reactLocalStorage.getObject('InitialConfiguration');
@@ -41,22 +41,15 @@ function SheetMetalBaicDrawer(props) {
   const [processCost, setProcessCost] = useState(Object.keys(WeightCalculatorRequest).length > 0 ? WeightCalculatorRequest.ProcessCost ? WeightCalculatorRequest.ProcessCost : '' : '')
   const [disable, setDisabled] = useState(false)
   const [hide, setHide] = useState(false)
-  const [cavity, setCavity] = useState(Object.keys(WeightCalculatorRequest).length > 0 ? WeightCalculatorRequest.Cavity !== null ? WeightCalculatorRequest.Cavity : 1 : 1)
   const [prodHr, setProdHr] = useState('')
   const [quantityState, setQuantityState] = useState(Object.keys(WeightCalculatorRequest).length > 0 || WeightCalculatorRequest.Quantity !== undefined ? checkForNull(WeightCalculatorRequest.Quantity) : 1)
+  const [isDisable, setIsDisable] = useState(false)
 
   const tempProcessObj = Object.keys(WeightCalculatorRequest).length > 0 ? WeightCalculatorRequest.ProcessCost !== null ? WeightCalculatorRequest.ProcessCost : '' : ''
-
   const fieldValues = useWatch({
     control,
     name: ['Efficiency', 'Cavity', 'CycleTime'],
   })
-
-  useEffect(() => {
-    if (props.calculatorData.UOMType === TIME) {
-      // setValue('Quantity', props?.calculatorData?.WeightCalculatorRequest?.Quantity !== null ? checkForNull(props?.calculatorData?.WeightCalculatorRequest?.Quantity) : 1)
-    }
-  }, [defaultValues])
 
   useEffect(() => {
     handleProductionPerHour()
@@ -77,7 +70,6 @@ function SheetMetalBaicDrawer(props) {
 
 
   useEffect(() => {
-    //setValue('ProcessCost', checkForDecimalAndNull(WeightCalculatorRequest && WeightCalculatorRequest.ProcessCost ? WeightCalculatorRequest.ProcessCost : '', getConfigurationKey().NoOfDecimalForPrice))
 
     if (!props.CostingViewMode && props.calculatorData.UOMType === MASS) {
 
@@ -87,7 +79,7 @@ function SheetMetalBaicDrawer(props) {
         && (rmFinishWeight === undefined || rmFinishWeight === null || rmFinishWeight === '')) {
         quantityValue = 1
       } else if ((WeightCalculatorRequest.Quantity !== null && WeightCalculatorRequest.Quantity !== undefined
-        && WeightCalculatorRequest.Quantity !== '') && (rmFinishWeight === undefined || rmFinishWeight === null || rmFinishWeight === '')) {
+        && WeightCalculatorRequest.Quantity !== '')) {
         quantityValue = WeightCalculatorRequest.Quantity
       } else {
         quantityValue = rmFinishWeight
@@ -102,12 +94,13 @@ function SheetMetalBaicDrawer(props) {
       setHide(true)
     } else {
       setQuantityState(Object.keys(WeightCalculatorRequest).length > 0 || WeightCalculatorRequest.Quantity !== undefined ? WeightCalculatorRequest.Quantity : 1)
-      setValue('Quantity', Object.keys(WeightCalculatorRequest).length > 0 || WeightCalculatorRequest.Quantity !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.Quantity, getConfigurationKey().NoOfDecimalForInputOutput) : 1)
+
+      setTimeout(() => {
+        setValue('Quantity', Object.keys(WeightCalculatorRequest).length > 0 || WeightCalculatorRequest.Quantity !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.Quantity, getConfigurationKey().NoOfDecimalForInputOutput) : 1)
+      }, 200);
 
     }
-    // if (props.calculatorData.UOMType === DIMENSIONLESS) {
-    //   setValue('Cavity', props.WeightCalculatorRequest.Cavity ? props.WeightCalculatorRequest.Cavity : 1)
-    // }
+
 
   }, [])
 
@@ -115,7 +108,8 @@ function SheetMetalBaicDrawer(props) {
 
   }, [prodHr])
 
-  const onSubmit = (value) => {
+  const onSubmit = debounce(handleSubmit((value) => {
+    setIsDisable(true)
     let obj = {}
     obj.ProcessDefaultCalculatorId = props.calculatorData.ProcessDefaultCalculatorId ? props.calculatorData.ProcessDefaultCalculatorId : "00000000-0000-0000-0000-000000000000"
     obj.CostingProcessDetailsIdRef = WeightCalculatorRequest && WeightCalculatorRequest.CostingProcessDetailsIdRef ? WeightCalculatorRequest.CostingProcessDetailsIdRef : "00000000-0000-0000-0000-000000000000"
@@ -137,13 +131,14 @@ function SheetMetalBaicDrawer(props) {
     obj.UnitType = props.calculatorData.UOMType
     obj.PartPerHour = props.calculatorData.UOMType === TIME ? checkForNull(quantityState) : '-'
     dispatch(saveDefaultProcessCostCalculationData(obj, res => {
+      setIsDisable(false)
       if (res.data.Result) {
         obj.ProcessCalculationId = res.data.Identity
         Toaster.success('Calculation saved sucessfully.')
         calculateMachineTime('0.00', obj)
       }
     }))
-  }
+  }), 500);
   /**
    * @method calculateProcessCost
    * @description FOR CALCULATING PROCESS COST 
@@ -156,9 +151,6 @@ function SheetMetalBaicDrawer(props) {
     const cavity = checkForNull(getValues('Cavity'))
     let cost
 
-    // const prodPerHrs
-    // const cavity = getValues('Cavity')
-    // 
     const rate = props.calculatorData.MHR
     if (!props.CostingViewMode) {
 
@@ -178,15 +170,16 @@ function SheetMetalBaicDrawer(props) {
         case TIME:
 
           //This need to be done later
-          cost = rate / (quantity === 0 ? 1 : quantity);
+          // cost = rate / (quantity === 0 ? 1 : quantity);
 
-
+          cost = findProcessCost(props.calculatorData.UOM, rate, quantity === 0 ? 1 : quantity)
           setProcessCost(cost)
           setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
           return;
         case DIMENSIONLESS:
+          let updatedQuantity = quantity === 0 ? 1 : quantity
           setDisabled(true)
-          cost = ((100 / efficiency) * (rate)) / cavity
+          cost = ((100 / efficiency) * (updatedQuantity) * (rate)) / cavity
 
           setProcessCost(cost)
           setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
@@ -197,7 +190,7 @@ function SheetMetalBaicDrawer(props) {
           setProcessCost(cost)
           setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
           return true
-        // case SHOTS:
+        // case SHOTS:    MAY BE USED LATER
         //   setDisabled(true)
         //   cost = (1 / efficiency) * (rate / quantity)
         //   setProcessCost(cost)
@@ -208,12 +201,9 @@ function SheetMetalBaicDrawer(props) {
           break;
       }
     }
-
-
   }
 
   const onCancel = () => {
-
     calculateMachineTime('0.00')
   }
 
@@ -228,8 +218,6 @@ function SheetMetalBaicDrawer(props) {
       setValue('Quantity', checkForDecimalAndNull(prodPerHrs, getConfigurationKey().NoOfDecimalForInputOutput))
       setQuantityState(prodPerHrs)
       setProdHr(prodPerHrs)
-
-
     }
   }
 
@@ -246,26 +234,28 @@ function SheetMetalBaicDrawer(props) {
         }, 100);
       }
     }
-    // setValue('Efficiency', checkPercentageValue(e.target.value, "Efficiency can not be more than 100%.") ? e.target.value : 100)
+
   }
 
-  // const quantity = (e) => {
-  //   setQuantity(e.target.value)
-  // }
+
+  const handleKeyDown = function (e) {
+    if (e.key === 'Enter' && e.shiftKey === false) {
+      e.preventDefault();
+    }
+  };
+
   return (
     <Fragment>
       <Row>
         <Col>
-          <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}>
-            <Col md="12" className={'mt25'}>
+          <form noValidate className="form"
+            onKeyDown={(e) => { handleKeyDown(e, onSubmit.bind(this)); }}>
+            <Col md="12" className={''}>
               <div className="border pl-3 pr-3 pt-3">
-                {/* <Col md="10">
-                  <div className="left-border">{'Distance:'}</div>
-                </Col> */}
 
                 <Row className={'mt15'}>
-                  <Col md="3">
-                    <TextFieldHookForm
+                  <Col md="4">
+                    <NumberFieldHookForm
                       label={`Tonnage(T)`}
                       name={'MachineTonnage'}
                       Controller={Controller}
@@ -282,8 +272,8 @@ function SheetMetalBaicDrawer(props) {
                   </Col>
                   {
                     hide &&
-                    <Col md="3">
-                      <TextFieldHookForm
+                    <Col md="4">
+                      <NumberFieldHookForm
                         label={`Cycle Time(sec)`}
                         name={'CycleTime'}
                         Controller={Controller}
@@ -293,11 +283,9 @@ function SheetMetalBaicDrawer(props) {
                         rules={{
                           required: !disable,
                           pattern: {
-                            //  value: /^[0-9\b]+$/i,
                             value: /^[0-9]\d*(\.\d+)?$/i,
                             message: 'Invalid Number.',
                           },
-                          // maxLength: 4,
                         }}
                         handleChange={() => { }}
                         defaultValue={''}
@@ -308,10 +296,9 @@ function SheetMetalBaicDrawer(props) {
                       />
                     </Col>
                   }
-                  {/* {
-                      props.calculatorData.UOMType === DIMENSIONLESS && */}
-                  <Col md="3">
-                    <TextFieldHookForm
+
+                  <Col md="4">
+                    <NumberFieldHookForm
                       label={`Cavity`}
                       name={'Cavity'}
                       Controller={Controller}
@@ -321,24 +308,21 @@ function SheetMetalBaicDrawer(props) {
                       rules={{
                         required: !disable,
                         pattern: {
-                          //  value: /^[0-9\b]+$/i,
                           value: /^[0-9]\d*(\.\d+)?$/i,
                           message: 'Invalid Number.',
                         },
-                        // maxLength: 4,
                       }}
                       handleChange={() => { }}
                       defaultValue={''}
                       className=""
                       customClassName={'withBorder'}
                       errors={errors.Cavity}
-                      // disabled={props.calculatorData.UOMType === DIMENSIONLESS ? false : disable}
                       disabled={props.CostingViewMode ? true : false}
                     />
                   </Col>
 
-                  <Col md="3">
-                    <TextFieldHookForm
+                  <Col md="4">
+                    <NumberFieldHookForm
                       label={`Efficiency(%)`}
                       name={'Efficiency'}
                       Controller={Controller}
@@ -362,9 +346,9 @@ function SheetMetalBaicDrawer(props) {
                       disabled={props.CostingViewMode ? true : false}
                     />
                   </Col>
-                  <Col md="3">
-                    <TextFieldHookForm
-                      label={props.calculatorData.UOMType === MASS ? `Weight` : props.calculatorData.UOMType === TIME ? `Part / Hour` : `Quantity`}
+                  <Col md="4">
+                    <NumberFieldHookForm
+                      label={props.calculatorData.UOMType === MASS ? `Weight` : props.calculatorData.UOMType === TIME ? `Parts/Hour` : `Quantity`}
                       name={'Quantity'}
                       Controller={Controller}
                       control={control}
@@ -373,11 +357,9 @@ function SheetMetalBaicDrawer(props) {
                       rules={{
                         required: true,
                         pattern: {
-                          // value: /^[0-9\b]+$/i,
-                          //value: /^[0-9]\d*(\.\d+)?$/i,
-                          //message: 'Invalid Number.',
+                          value: /^\d{0,6}(\.\d{0,4})?$/i,
+                          message: 'Maximum length for interger is 6 and for decimal is 4',
                         },
-                        // maxLength: 4,
                       }}
                       handleChange={calculateProcessCost}
                       defaultValue={defaultValues.Quantity}
@@ -387,8 +369,8 @@ function SheetMetalBaicDrawer(props) {
                       disabled={(props.calculatorData.UOMType === TIME || props.CostingViewMode) ? true : false}
                     />
                   </Col>
-                  <Col md="3">
-                    <TextFieldHookForm
+                  <Col md="4">
+                    <NumberFieldHookForm
                       label={`Process Cost`}
                       name={'ProcessCost'}
                       Controller={Controller}
@@ -397,12 +379,6 @@ function SheetMetalBaicDrawer(props) {
                       mandatory={false}
                       rules={{
                         required: false,
-                        // pattern: {
-                        //   value: /^[0-9\b]+$/i,
-                        //   //value: /^[0-9]\d*(\.\d+)?$/i,
-                        //   message: 'Invalid Number.',
-                        // },
-                        // maxLength: 4,
                       }}
                       handleChange={() => { }}
                       defaultValue={''}
@@ -415,15 +391,6 @@ function SheetMetalBaicDrawer(props) {
                 </Row>
 
 
-                {/* <div className="bluefooter-butn border row">
-                  <div className="col-sm-8">Total Machining Time </div>
-                  <span className="col-sm-4 text-right">
-                    {totalMachiningTime === '0.00'
-                      ? totalMachiningTime
-                      : checkForDecimalAndNull(totalMachiningTime, trim)}{' '}
-                    min
-                  </span>
-                </div> */}
               </div>
             </Col>
             <div className="mt25 col-md-12 text-right">
@@ -437,9 +404,9 @@ function SheetMetalBaicDrawer(props) {
                 CANCEL
               </button>
               <button
-                type="submit"
-                // disabled={isSubmitted ? true : false}
-                disabled={props.CostingViewMode ? true : false}
+                type="button"
+                onClick={onSubmit}
+                disabled={props.CostingViewMode || isDisable ? true : false}
                 className="btn-primary save-btn"
               >
                 <div className={"save-icon"}></div>

@@ -16,9 +16,10 @@ import Switch from 'react-switch'
 import { Fragment } from 'react';
 import { debounce } from 'lodash';
 import WarningMessage from '../../common/WarningMessage';
+import DatePicker from "react-datepicker";
 
 function RunSimulationDrawer(props) {
-    const { objs, masterId, simulationTechnologyId, vendorId, tokenNo } = props
+    const { objs, masterId, simulationTechnologyId, vendorId, tokenNo, date } = props
 
 
     const { register, control, formState: { errors }, handleSubmit, setValue, getValues, reset, } = useForm({
@@ -34,7 +35,7 @@ function RunSimulationDrawer(props) {
 
     const [multipleHeads, setMultipleHeads] = useState([])
     const [opposite, setIsOpposite] = useState(false)
-    const [selectedDate, setSelectedDate] = useState('')
+    const [selectedDate, setSelectedDate] = useState(date !== null ? date : "")
     const [selectedData, setSelectedData] = useState([])
     const [provisionalCheck, setProvisionalCheck] = useState(false)
     const [inputOtherCost, setInputOtherCost] = useState(false)
@@ -598,43 +599,25 @@ function RunSimulationDrawer(props) {
 
                                             <Row>
                                                 <Col md="12" className="inputbox date-section">
-                                                    <DatePickerHookForm
-                                                        name={`EffectiveDate`}
-                                                        label={'Effective Date'}
-                                                        selected={selectedDate}
-                                                        handleChange={(date) => {
-                                                            handleEffectiveDateChange(date);
-                                                        }}
-                                                        //defaultValue={data.effectiveDate != "" ? moment(data.effectiveDate).format('DD/MM/YYYY') : ""}
-                                                        rules={{ required: true }}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        register={register}
+                                                    <DatePicker
+                                                        selected={DayTime(date).isValid() ? new Date(date) : ''}
+                                                        dateFormat="dd/MM/yyyy"
                                                         showMonthDropdown
                                                         showYearDropdown
-                                                        dateFormat="aa/MM/yyyy"
-                                                        //maxDate={new Date()}
-                                                        dropdownMode="select"
-                                                        placeholderText="Select date"
-                                                        customClassName="withBorder"
-                                                        className="withBorder"
-                                                        autoComplete={"off"}
+                                                        readonly="readonly"
+                                                        onBlur={() => null}
+                                                        autoComplete={'off'}
                                                         disabledKeyboardNavigation
-                                                        onChangeRaw={(e) => e.preventDefault()}
-                                                        disabled={false}
-                                                        mandatory={true}
-                                                        errors={errors.EffectiveDate}
+                                                        disabled={true}
                                                     />
                                                 </Col>
-                                                <Col md="12" className="mt-4 pt-1 warning-text-container">
+                                                <Col md="12" className="mt-n1 warning-text-container">
                                                     <div className="warning-text">
-                                                        <WarningMessage dClass="mr-3 pt-2" message={"Unselected norms won't be applied in future revisions"} />
+                                                        <WarningMessage dClass="mr-3 " message={"Unselected norms won't be applied in future revisions"} />
                                                     </div>
                                                 </Col>
                                             </Row>
-
                                         </Col>
-
                                     </Row>
 
 

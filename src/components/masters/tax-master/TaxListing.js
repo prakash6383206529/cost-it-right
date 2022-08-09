@@ -4,7 +4,7 @@ import { Row, Col, } from 'reactstrap';
 import { getTaxDetailsDataList, deleteTaxDetails, } from '../actions/TaxMaster';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { EMPTY_DATA } from '../../../config/constants';
+import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { TAX } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
@@ -20,6 +20,7 @@ import { AgGridColumn } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { PaginationWrapper } from '../../common/commonPagination';
 
 const gridOptions = {};
 class TaxListing extends Component {
@@ -184,8 +185,7 @@ class TaxListing extends Component {
     params.api.paginationGoToPage(0);
   };
   onPageSizeChanged = (newPageSize) => {
-    var value = document.getElementById('page-size').value;
-    this.state.gridApi.paginationSetPageSize(Number(value));
+    this.state.gridApi.paginationSetPageSize(Number(newPageSize));
   };
   renderPaginationShowsTotal(start, to, total) {
     return <GridTotalFormate start={start} to={to} total={total} />
@@ -256,7 +256,7 @@ class TaxListing extends Component {
           <Row>
             <Col>
               <div className="ag-grid-react">
-                <div className={`ag-grid-wrapper height-width-wrapper  ${this.props.taxDataList && this.props.taxDataList?.length <=0 ?"overlay-contain": ""}`}>
+                <div className={`ag-grid-wrapper height-width-wrapper  ${this.props.taxDataList && this.props.taxDataList?.length <= 0 ? "overlay-contain" : ""}`}>
                   <div className="ag-grid-header">
                     <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                   </div>
@@ -269,7 +269,7 @@ class TaxListing extends Component {
                       // columnDefs={c}
                       rowData={this.props.taxDataList}
                       pagination={true}
-                      paginationPageSize={10}
+                      paginationPageSize={defaultPageSize}
                       onGridReady={this.onGridReady}
                       gridOptions={this.gridOptions}
                       loadingOverlayComponent={'customLoadingOverlay'}
@@ -290,13 +290,7 @@ class TaxListing extends Component {
                       <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer='effectiveDateFormatter'></AgGridColumn>
                       <AgGridColumn field="TaxDetailId" headerName="Actions" cellRenderer='buttonFormatter'></AgGridColumn>
                     </AgGridReact>
-                    <div className="paging-container d-inline-block float-right">
-                      <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
-                        <option value="10" selected={true}>10</option>
-                        <option value="50">50</option>
-                        <option value="100">100</option>
-                      </select>
-                    </div>
+                    {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
                   </div>
                 </div>
               </div>

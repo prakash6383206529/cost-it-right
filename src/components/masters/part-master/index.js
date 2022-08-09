@@ -30,6 +30,7 @@ class PartMaster extends Component {
             BulkUploadAccessibility: false,
             DownloadAccessibility: false,
             openDrawer: false,
+            isHover: false
         }
     }
 
@@ -114,6 +115,24 @@ class PartMaster extends Component {
     }
 
 
+    openFetchDrawer = () => {
+        this.setState({ openDrawer: true })
+    }
+    /**
+    * @method handleMouse
+    * @description FOR FETCH BUTTON CHANGE CSS ON MOUSE HOVER
+    */
+    handleMouse = () => {
+        this.setState({ isHover: true })
+    }
+    /**
+    * @method handleMouseOut
+    * @description FOR FETCH BUTTON CHANGE CSS ON MOUSE LEAVE
+    */
+    handleMouseOut = () => {
+        this.setState({ isHover: false })
+    }
+
 
     /**
     * @method render
@@ -153,9 +172,15 @@ class PartMaster extends Component {
                         <div>
                             <div className="d-flex justify-content-between">
                                 <h1>Part Master</h1>
-
+                                <button
+                                    type="button"
+                                    className={'secondary-btn mr5 mt-1'}
+                                    title="Fetch"
+                                    onClick={this.openFetchDrawer}
+                                    onMouseOver={this.handleMouse}
+                                    onMouseOut={this.handleMouseOut}>
+                                    <div className={`${this.state.isHover ? "swap-hover" : "swap"} mr-0`}></div></button>
                             </div>
-
 
                             <Nav tabs className="subtabs mt-0">
                                 <NavItem>

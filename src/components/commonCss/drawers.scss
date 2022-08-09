@@ -1,0 +1,61 @@
+@import 'cssVariable.scss';
+.calculator {
+    &__forging {
+       .drawer-1500px {
+           min-width: 1024px;
+       }
+       .text-overflow {
+           min-width: 70px;
+       }
+       @media screen and (max-width: $max1367)  {
+       table {
+               td {
+                   font-size: 14px;
+               }
+           }
+           .bluefooter-butn.border {
+               font-size: 15px;
+           }
+       }
+    }
+}
+.conversion-cost {
+    .MuiPaper-root {
+        padding-bottom: 0 !important;
+    }
+    .view-conversion-cost-drawer {
+        max-width: 1210px;
+        .drawer-1500px {
+            padding-bottom: 0;
+            min-width: 1180px;
+        }
+    }
+    .view-conversion-header {
+        padding-right: 0;
+        min-height: calc(100vh - 88px);
+    }
+    @media screen and (min-width:$middleDesktop) {
+        .view-conversion-cost-drawer {
+            max-width: 1390px;
+            .drawer-1500px {
+                padding-bottom: 0;
+                min-width: 1360px;
+            }
+        }
+    }
+}
+@media screen and (max-width: $max1367)  {
+    .drawer-wrapper {
+        .table {
+            td, th {
+                padding: 0.71rem 6px;
+                &:first-child {
+                     padding-left: 10px;
+                }
+                &:last-child {
+                    padding-right: 10px;
+                }
+            } 
+        }
+    }
+}

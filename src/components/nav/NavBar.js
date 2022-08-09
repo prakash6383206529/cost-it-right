@@ -30,9 +30,10 @@ import cirLogo from '../../assests/images/logo/CIRlogo.svg'
 import logoutImg from '../../assests/images/logout.svg'
 import activeReport from '../../assests/images/report-active.svg'
 import PopupMsgWrapper from "../common/PopupMsgWrapper";
-import { VERSION } from '../../config/constants';
 import Calculator from "../common/Calculator/component/Calculator";
 import Draggable from 'react-draggable';
+import { SIMULATION, VERSION } from '../../config/constants';
+import _ from "lodash";
 
 class SideBar extends Component {
   constructor(props) {
@@ -88,7 +89,11 @@ class SideBar extends Component {
         this.setState({ isLoader: false });
       });
 
-      this.props.getTopAndLeftMenuData(() => { })
+      this.props.getTopAndLeftMenuData((res) => {
+        this.simulationPermission(res?.data?.Data, 1)
+        this.simulationPermission(res?.data?.Data, 0)
+        this.simulationPermission(res?.data?.Data, 2)
+      })
     }
 
     const loginUserId = loggedInUserId();
@@ -101,14 +106,34 @@ class SideBar extends Component {
   }
 
   /**
+  * @method simulationPermission
+  * @description permission for add and view simulation
+  */
+  simulationPermission(Data, index) {
+    let simulationIndex = Data && Data?.findIndex(item => item?.ModuleName === SIMULATION)
+
+    if (simulationIndex !== -1 && simulationIndex !== undefined) {
+      let simulationPages = Data[simulationIndex].Pages && Data[simulationIndex].Pages.filter(item => item.Sequence !== 0 && item.IsChecked === true)
+      let simulationArray = simulationPages && simulationPages.filter((item) => {
+        if (item?.Actions[index] && item?.Actions[index]?.IsChecked === true) return item.PageName;
+      })
+      if (index === 1) {                                 // 1 IS FOR VIEW PERMISSION 
+        localStorage.setItem('simulationViewPermission', JSON.stringify(_.map(simulationArray, 'PageName')))
+      } else if (index === 0) {                          // 0 IS FOR ADD PERMISSION 
+        localStorage.setItem('simulationAddPermission', JSON.stringify(_.map(simulationArray, 'PageName')))
+      } else if (index === 2) {                          // 2 IS FOR Run PERMISSION 
+        localStorage.setItem('simulationRunPermission', JSON.stringify(_.map(simulationArray, 'PageName')))
+      }
+    }
+  }
+
+  /**
    * @method toggleMenue
    * @description Toggle the visibility of sidebar menue.
    */
   toggleMenue = () => {
     this.setState({ menu: !this.state.menu })
   }
-
-
 
 
   /**
@@ -257,15 +282,16 @@ class SideBar extends Component {
   renderMaster = (module, LandingPageURL) => {
     const { topAndLeftMenuData } = this.props
 
-    if (window.location.href.includes(LandingPageURL)) {
-      topAndLeftMenuData &&
-        topAndLeftMenuData.map((el, i) => {
-          if (el.ModuleName === module) {
-            this.setLeftMenu(el.ModuleId)
-          }
-        })
-    }
-
+    topAndLeftMenuData &&
+      topAndLeftMenuData.map((el, i) => {
+        if (el.ModuleName === module) {
+          el.Pages.map((item, index) => {
+            if (window.location.href.includes(item.NavigationURL)) {
+              this.setLeftMenu(el.ModuleId)
+            }
+          })
+        }
+      })
 
     return (
       topAndLeftMenuData &&
@@ -355,15 +381,16 @@ class SideBar extends Component {
 
     const { topAndLeftMenuData } = this.props
 
-
-    if (window.location.href.includes(LandingPageURL)) {
-      topAndLeftMenuData &&
-        topAndLeftMenuData.map((el, i) => {
-          if (el.ModuleName === module) {
-            this.setLeftMenu(el.ModuleId)
-          }
-        })
-    }
+    topAndLeftMenuData &&
+      topAndLeftMenuData.map((el, i) => {
+        if (el.ModuleName === module) {
+          el.Pages.map((item, index) => {
+            if (window.location.href.includes(item.NavigationURL)) {
+              this.setLeftMenu(el.ModuleId)
+            }
+          })
+        }
+      })
 
     return (
       topAndLeftMenuData &&
@@ -428,15 +455,16 @@ class SideBar extends Component {
   renderReportAnalytics = (module, LandingPageURL) => {
     const { topAndLeftMenuData } = this.props;
 
-    if (window.location.href.includes(LandingPageURL)) {
-      topAndLeftMenuData &&
-        topAndLeftMenuData.map((el, i) => {
-          if (el.ModuleName === module) {
-            this.setLeftMenu(el.ModuleId)
-          }
-        })
-    }
-
+    topAndLeftMenuData &&
+      topAndLeftMenuData.map((el, i) => {
+        if (el.ModuleName === module) {
+          el.Pages.map((item, index) => {
+            if (window.location.href.includes(item.NavigationURL)) {
+              this.setLeftMenu(el.ModuleId)
+            }
+          })
+        }
+      })
 
     return (
       topAndLeftMenuData && topAndLeftMenuData.map((el, i) => {
@@ -455,6 +483,14 @@ class SideBar extends Component {
                     PageURL: el.LandingPageURL,
                   },
                 }}
+              // to={{
+              //   pathname: el.LandingPageURL,
+              //   state: {
+              //     ModuleId: el.ModuleId,
+              //     PageName: "Reports And Analytics",
+              //     PageURL: el.LandingPageURL,
+              //   },
+              // }}       // WHEN DONE FROM BACKEND UNCOMMENT THIS AND TEST
               >
                 <img
                   className=""
@@ -540,14 +576,16 @@ class SideBar extends Component {
   renderSimulation = (module, LandingPageURL) => {
     const { topAndLeftMenuData } = this.props
 
-    if (window.location.href.includes(LandingPageURL)) {
-      topAndLeftMenuData &&
-        topAndLeftMenuData.map((el, i) => {
-          if (el.ModuleName === module) {
-            this.setLeftMenu(el.ModuleId)
-          }
-        })
-    }
+    topAndLeftMenuData &&
+      topAndLeftMenuData.map((el, i) => {
+        if (el.ModuleName === module) {
+          el.Pages.map((item, index) => {
+            if (window.location.href.includes(item.NavigationURL)) {
+              this.setLeftMenu(el.ModuleId)
+            }
+          })
+        }
+      })
 
     return (
       topAndLeftMenuData && topAndLeftMenuData.map((el, i) => {
@@ -627,15 +665,16 @@ class SideBar extends Component {
   renderUser = (module, LandingPageURL) => {
     const { topAndLeftMenuData } = this.props
 
-    if (window.location.href.includes(LandingPageURL)) {
-      topAndLeftMenuData &&
-        topAndLeftMenuData.map((el, i) => {
-          if (el.ModuleName === module) {
-            this.setLeftMenu(el.ModuleId)
-          }
-        })
-    }
-
+    topAndLeftMenuData &&
+      topAndLeftMenuData.map((el, i) => {
+        if (el.ModuleName === module) {
+          el.Pages.map((item, index) => {
+            if (window.location.href.includes(item.NavigationURL)) {
+              this.setLeftMenu(el.ModuleId)
+            }
+          })
+        }
+      })
 
     return (
       topAndLeftMenuData &&

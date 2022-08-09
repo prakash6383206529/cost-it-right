@@ -7,10 +7,13 @@
     min-height: 400px;
     max-width: 320px;
     max-height: 400px;
-    bottom: 25px;
+    bottom: -5px;
     right: -2px;
     transform: translate(0%, 0%);
     background-color: #fff;
+    @media screen and (max-width: 1367px) {
+      right: -64px;
+    }
   }
   
   .display-toolbar {

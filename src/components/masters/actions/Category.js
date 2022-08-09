@@ -18,7 +18,7 @@ import {
 import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
 
-const headers = config
+// const config() = config
 
 /**
  * @method createCategoryTypeAPI
@@ -26,7 +26,7 @@ const headers = config
  */
 export function createCategoryTypeAPI(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createcategoryTypeAPI, data, headers);
+        const request = axios.post(API.createcategoryTypeAPI, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -57,7 +57,7 @@ export function createCategoryTypeAPI(data, callback) {
 export function getCategoryTypeDataAPI(CategoryTypeId, callback) {
     return (dispatch) => {
         if (CategoryTypeId !== '') {
-            axios.get(`${API.getCategoryTypeDataAPI}/${CategoryTypeId}`, headers)
+            axios.get(`${API.getCategoryTypeDataAPI}/${CategoryTypeId}`, config())
                 .then((response) => {
                     dispatch({
                         type: GET_CATEGORY_TYPE_DATA_SUCCESS,
@@ -99,7 +99,7 @@ export function setEmptyCategoryTypeData(callback) {
 export function updateCategoryTypeAPI(requestData, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateCategoryTypeAPI}`, requestData, headers)
+        axios.put(`${API.updateCategoryTypeAPI}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -116,7 +116,7 @@ export function updateCategoryTypeAPI(requestData, callback) {
 export function deleteCategoryTypeAPI(CategoryTypeId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteCategoryTypeAPI}/${CategoryTypeId}`, headers)
+        axios.delete(`${API.deleteCategoryTypeAPI}/${CategoryTypeId}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -132,7 +132,7 @@ export function deleteCategoryTypeAPI(CategoryTypeId, callback) {
  */
 export function createCategoryAPI(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createCategoryAPI, data, headers);
+        const request = axios.post(API.createCategoryAPI, data, config());
         request.then((response) => {
             if (response && response.data && response.data.Result) {
                 dispatch({
@@ -164,7 +164,7 @@ export function createCategoryAPI(data, callback) {
 export function getCategoryData(CategoryId, callback) {
     return (dispatch) => {
         if (CategoryId !== '') {
-            axios.get(`${API.getCategoryData}/${CategoryId}`, headers)
+            axios.get(`${API.getCategoryData}/${CategoryId}`, config())
                 .then((response) => {
                     dispatch({
                         type: GET_CATEGORY_MASTER_DATA_SUCCESS,
@@ -192,7 +192,7 @@ export function getCategoryData(CategoryId, callback) {
 export function updateCategoryMasterAPI(requestData, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateCategoryMasterAPI}`, requestData, headers)
+        axios.put(`${API.updateCategoryMasterAPI}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -210,7 +210,7 @@ export function updateCategoryMasterAPI(requestData, callback) {
 export function deleteCategoryMasterAPI(CategoryId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteCategoryMasterAPI}/${CategoryId}`, headers)
+        axios.delete(`${API.deleteCategoryMasterAPI}/${CategoryId}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -226,7 +226,7 @@ export function deleteCategoryMasterAPI(CategoryId, callback) {
  */
 export function fetchCategoryMasterDataAPI() {
     return (dispatch) => {
-        const API1 = axios.get(API.fetchCategoryType, headers);
+        const API1 = axios.get(API.fetchCategoryType, config());
         Promise.all([API1])
             .then((response) => {
                 dispatch({
@@ -249,8 +249,8 @@ export function fetchCategoryMasterDataAPI() {
  */
 export function getCategoryDataAPI() {
     return (dispatch) => {
-        const API1 = axios.get(API.getCategoryAPI, headers);
-        const API2 = axios.get(API.getCategoryTypeAPI, headers);
+        const API1 = axios.get(API.getCategoryAPI, config());
+        const API2 = axios.get(API.getCategoryTypeAPI, config());
         Promise.all([API1, API2])
             .then((response) => {
                 dispatch({

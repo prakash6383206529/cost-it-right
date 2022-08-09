@@ -4,9 +4,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { getMachineProcessGroupDetail, setIdsOfProcessGroup, setSelectedDataOfCheckBox } from "../../actions/Costing";
 import { costingInfoContext } from "../CostingDetailStepTwo";
 import { getConfigurationKey } from "../../../../helper";
-import { EMPTY_GUID } from "../../../../config/constants";
+import { EMPTY_DATA, EMPTY_GUID, VBC, ZBC } from "../../../../config/constants";
 import LoaderCustom from "../../../common/LoaderCustom";
 import { Checkbox } from "@material-ui/core";
+import NoContentFound from "../../../common/NoContentFound";
+import { DIE_CASTING, Ferrous_Casting, FORGING, MACHINING } from "../../../../config/masterData";
 
 
 function GroupProcess(props) {
@@ -22,12 +24,13 @@ function GroupProcess(props) {
 
     useEffect(() => {
         let data = {
-            VendorId: costData.VendorId,
-            TechnologyId: String(`${costData.TechnologyId},14`),
+            VendorId: costData.VendorType === VBC ? costData.VendorId : EMPTY_GUID,
+            TechnologyId: Number(costData?.TechnologyId) === Number(FORGING) || Number(costData?.TechnologyId) === Number(DIE_CASTING) || Number(costData?.TechnologyId) === Number(Ferrous_Casting) ? String(`${costData?.TechnologyId},${MACHINING}`) : `${costData?.TechnologyId}`,
             VendorPlantId: getConfigurationKey()?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
-            DestinationPlantId: getConfigurationKey()?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID,
+            DestinationPlantId: costData.VendorType === VBC ? getConfigurationKey()?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID : EMPTY_GUID,
             CostingId: costData.CostingId,
             EffectiveDate: CostingEffectiveDate,
+            PlantId: costData.VendorType === ZBC ? costData.PlantId : EMPTY_GUID
         }
         setIsLoader(true)
         dispatch(getMachineProcessGroupDetail(data, (res) => {
@@ -90,15 +93,14 @@ function GroupProcess(props) {
         })
         return result
     }
-
     return (
         <div>
             <div className='py-3'>
-                <table className='table cr-brdr-main group-process-table'>
+                <table className='table cr-brdr-main group-process-table p-relative'>
                     <thead>
                         <tr>
                             <th>Process Group</th>
-                            <th>Technologies</th>
+                            <th>Technology</th>
                             <th>Machine Name</th>
                             <th>MachineTonnage</th>
                         </tr>
@@ -113,9 +115,15 @@ function GroupProcess(props) {
                                 <tr>
 
                                     <td> <span className='mr-2'>
-                                        {!findGroupCode(item, selectedProcessGroupId) && <input type="checkbox" defaultChecked={isCheckBoxApplicable(item, index)} onClick={() => handleCheckBox(item, index)} />}
+                                        <label className="custom-checkbox" > {item.GroupName} {!findGroupCode(item, selectedProcessGroupId) &&
+                                            <>
+                                                <input type="checkbox" defaultChecked={isCheckBoxApplicable(item, index)} onClick={() => handleCheckBox(item, index)} />
+                                                <span className="before-box" />
+                                            </>
+                                        }
+                                        </label>
                                     </span>
-                                        {item.GroupName}</td>
+                                    </td>
                                     <td>{item.Technology}</td>
                                     <td>{item.MachineName}</td>
                                     <td className='process-name'>{item.Tonnage} <div onClick={() => {
@@ -147,6 +155,11 @@ function GroupProcess(props) {
                                 </tr>}
                             </>
                         })}
+                        {tableData && tableData.length === 0 && <tr>
+                            <td colSpan={"4"}>
+                                <NoContentFound title={EMPTY_DATA} />
+                            </td>
+                        </tr>}
 
                     </tbody>
                 </table>
