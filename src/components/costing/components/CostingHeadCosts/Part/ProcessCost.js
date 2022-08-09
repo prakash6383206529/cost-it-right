@@ -1336,6 +1336,7 @@ function ProcessCost(props) {
             setOperationCost={setOperationCost}
             item={props.item}
             IsAssemblyCalculation={false}
+            rmFinishWeight={rmFinishWeight}
           />
 
           <OperationCostExcludedOverhead
@@ -1343,6 +1344,7 @@ function ProcessCost(props) {
             setOtherOperationCost={setOtherOperationCost}
             item={props.item}
             IsAssemblyCalculation={false}
+            rmFinishWeight={rmFinishWeight}
           />
 
         </div>
