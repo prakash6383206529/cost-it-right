@@ -5,7 +5,7 @@ import AddOperation from '../../Drawers/AddOperation';
 import { Col, Row, Table } from 'reactstrap';
 import { NumberFieldHookForm, TextAreaHookForm } from '../../../../layout/HookFormInputs';
 import NoContentFound from '../../../../common/NoContentFound';
-import { EMPTY_DATA } from '../../../../../config/constants';
+import { EMPTY_DATA, MASS } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
 import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected } from '../../../../../helper';
 import { ViewCostingContext } from '../../CostingDetails';
@@ -15,7 +15,7 @@ import Popup from 'reactjs-popup';
 
 let counter = 0;
 function OperationCostExcludedOverhead(props) {
-  const { item } = props;
+  const { item, rmFinishWeight } = props;
   const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
 
   const { register, control, formState: { errors }, setValue, getValues } = useForm({
@@ -76,7 +76,12 @@ function OperationCostExcludedOverhead(props) {
         const WithLaboutCost = checkForNull(el.Rate) * checkForNull(el.Quantity);
         const WithOutLabourCost = el.IsLabourRateExist ? checkForNull(el.LabourRate) * el.LabourQuantity : 0;
         const OperationCost = WithLaboutCost + WithOutLabourCost;
-
+        let QuantityMain = 1
+        if (el.UOMType === MASS) {
+          QuantityMain = rmFinishWeight ? rmFinishWeight : 1
+        } else {
+          QuantityMain = el.Quantity
+        }
         return {
           IsCostForPerAssembly: props.IsAssemblyCalculation ? true : false,
           OtherOperationId: el.OperationId,
@@ -84,7 +89,7 @@ function OperationCostExcludedOverhead(props) {
           OtherOperationCode: el.OperationCode,
           UOM: el.UnitOfMeasurement,
           Rate: el.Rate,
-          Quantity: el.Quantity,
+          Quantity: QuantityMain,
           LabourRate: el.IsLabourRateExist ? el.LabourRate : '-',
           LabourQuantity: el.IsLabourRateExist ? el.LabourQuantity : '-',
           IsLabourRateExist: el.IsLabourRateExist,
