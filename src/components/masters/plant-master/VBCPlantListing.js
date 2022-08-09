@@ -23,6 +23,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { PaginationWrapper } from '../../common/commonPagination';
+import { showTitleForActiveToggle } from '../../../helper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -165,6 +166,7 @@ class VBCPlantListing extends Component {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
         const { ActivateAccessibility } = this.props;
+        showTitleForActiveToggle(props)
         if (ActivateAccessibility) {
             return (
                 <>
@@ -179,6 +181,7 @@ class VBCPlantListing extends Component {
                             offColor="#FC5774"
                             id="normal-switch"
                             height={24}
+                            className={cellValue ? "active-switch" : "inactive-switch"}
                         />
                     </label>
                 </>
@@ -382,6 +385,15 @@ class VBCPlantListing extends Component {
 
 
     returnExcelColumn = (data = [], TempData) => {
+        let temp = []
+        temp = TempData && TempData.map((item) => {
+            if (item.IsActive === true) {
+                item.IsActive = 'Active'
+            } else if (item.IsActive === false) {
+                item.IsActive = 'In Active'
+            }
+            return temp;
+        })
         return (
             <ExcelSheet data={TempData} name={PlantVbc}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}

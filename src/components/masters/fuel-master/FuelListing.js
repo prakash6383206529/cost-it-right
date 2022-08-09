@@ -13,7 +13,7 @@ import DayTime from '../../common/DayTimeWrapper'
 import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import LoaderCustom from '../../common/LoaderCustom';
-import { checkForDecimalAndNull } from '../../../helper';
+import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper';
 import { FuelMaster } from '../../../config/constants';
 import { FUELLISTING_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import ReactExport from 'react-export-excel';
@@ -45,7 +45,8 @@ class FuelListing extends Component {
             rowData: null,
             isLoader: false,
             showPopup: false,
-            deletedId: ''
+            deletedId: '',
+            selectedRowData: false
 
         }
     }
@@ -91,7 +92,7 @@ class FuelListing extends Component {
     viewOrEditItemDetails = (Id, rowData, isViewMode) => {
         let data = {
             isEditFlag: true,
-            Id: Id,
+            Id: rowData?.FuelGroupEntryId,
             isViewMode: isViewMode
         }
         this.props.getDetails(data);
@@ -229,9 +230,14 @@ class FuelListing extends Component {
     onPageSizeChanged = (newPageSize) => {
         this.state.gridApi.paginationSetPageSize(Number(newPageSize));
     };
-
+    onRowSelect = () => {
+        const selectedRows = this.state.gridApi?.getSelectedRows()
+        this.setState({ selectedRowData: selectedRows })
+    }
     onBtExport = () => {
-        let tempArr = this.props.fuelDataList && this.props.fuelDataList
+        let tempArr = []
+        tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+        tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.fuelDataList ? this.props.fuelDataList : [])
         return this.returnExcelColumn(FUELLISTING_DOWNLOAD_EXCEl, tempArr)
     };
 
@@ -240,6 +246,7 @@ class FuelListing extends Component {
     }
 
     resetState() {
+        this.state.gridApi.deselectAll()
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
     }
@@ -249,6 +256,13 @@ class FuelListing extends Component {
         // return (
         //     <ExportCSVButton btnText='Download' onClick={() => this.handleExportCSVButtonClick(onClick)} />
         // );
+    }
+    /**
+   * @method hyphenFormatter
+   */
+    commonCostFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : '-';
     }
 
     /**
@@ -269,17 +283,27 @@ class FuelListing extends Component {
             lastPage: <span className="last-page-pg"></span>,
 
         };
+
+        const isFirstColumn = (params) => {
+            var displayedColumns = params.columnApi.getAllDisplayedColumns();
+            var thisIsFirstColumn = displayedColumns[0] === params.column;
+            return thisIsFirstColumn;
+        }
+
         const defaultColDef = {
             resizable: true,
             filter: true,
             sortable: true,
-
+            headerCheckboxSelectionFilteredOnly: true,
+            headerCheckboxSelection: isFirstColumn,
+            checkboxSelection: isFirstColumn
         };
 
         const frameworkComponents = {
             totalValueRenderer: this.buttonFormatter,
             effectiveDateRenderer: this.effectiveDateFormatter,
             customNoRowsOverlay: NoContentFound,
+            commonCostFormatter: this.commonCostFormatter
         };
 
 
@@ -368,12 +392,14 @@ class FuelListing extends Component {
                                         title: EMPTY_DATA,
                                         imagClass: 'imagClass'
                                     }}
+                                    rowSelection={'multiple'}
+                                    onSelectionChanged={this.onRowSelect}
                                     frameworkComponents={frameworkComponents}
                                 >
                                     <AgGridColumn field="FuelName" headerName="Fuel" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                                     <AgGridColumn field="UnitOfMeasurementName" headerName="UOM"></AgGridColumn>
                                     <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
-                                    <AgGridColumn field="Rate" headerName="Rate (INR)"></AgGridColumn>
+                                    <AgGridColumn field="Rate" headerName="Rate (INR)" cellRenderer={'commonCostFormatter'}></AgGridColumn>
                                     <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
                                     <AgGridColumn field="ModifiedDate" minWidth={170} headerName="Date Of Modification" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                     <AgGridColumn field="FuelDetailId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>

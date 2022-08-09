@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, required } from "../../../helper/validation";
+import { acceptAllExceptSingleSpecialCharacter, checkSpacesInString, checkWhiteSpaces, maxLength80, required } from "../../../helper/validation";
 import { renderText, focusOnError } from "../../layout/FormInputs";
 import { createReasonAPI, getReasonAPI, updateReasonAPI, setEmptyReason } from '../actions/ReasonMaster';
 import Toaster from '../../common/Toaster';
@@ -164,10 +164,10 @@ class AddReason extends Component {
               <Row className="drawer-heading">
                 <Col>
                   <div className={"header-wrapper left"}>
-                    <h3>{isEditFlag ? "UPDATE REASON" : "ADD REASON"}</h3>
+                    <h3>{isEditFlag ? "Update Reason" : "Add Reason"}</h3>
                   </div>
                   <div
-                    onClick={(e) => this.toggleDrawer(e)}
+                    onClick={this.cancel}
                     className={"close-button right"}
                   ></div>
                 </Col>
@@ -178,8 +178,8 @@ class AddReason extends Component {
                     label={`Reason`}
                     name={"Reason"}
                     type="text"
-                    placeholder={""}
-                    validate={[required, checkWhiteSpaces, maxLength80, acceptAllExceptSingleSpecialCharacter]}
+                    placeholder={this.state.isEditFlag ? '-' : "Enter"}
+                    validate={[required, checkWhiteSpaces, maxLength80, acceptAllExceptSingleSpecialCharacter, checkSpacesInString]}
                     component={renderText}
                     required={true}
                     className=" "
@@ -267,6 +267,7 @@ export default connect(mapStateToProps, {
   setEmptyReason,
 })(reduxForm({
   form: 'AddReason',
+  touchOnChange: true,
   onSubmitFail: errors => {
     focusOnError(errors);
   },

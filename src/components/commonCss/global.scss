@@ -1,6 +1,7 @@
 @import "./cssVariable.scss";
 @import "./style.scss";
 @import "./drawers.scss";
+@import "./masters.scss";
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700&display=swap");
 @import "../../../node_modules/ag-grid-community/src/styles/ag-grid.scss";
 @import "../../../node_modules/ag-grid-community/src/styles/ag-theme-material/sass/ag-theme-material-mixin";
@@ -2267,7 +2268,7 @@ input:disabled,
 .form-control:disabled,
 .form-control[readonly] {
   &::placeholder {
-    color: #616366;
+    color: #A4ABC5;
   }
 }
 .select--is-disabled {

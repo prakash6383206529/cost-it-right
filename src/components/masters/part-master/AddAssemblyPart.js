@@ -8,14 +8,14 @@ import { renderText, renderTextAreaField, focusOnError, renderDatePicker, render
 import { getPlantSelectListByType, getPartSelectList } from '../../../actions/Common';
 import {
   createAssemblyPart, updateAssemblyPart, getAssemblyPartDetail, fileUploadPart, fileDeletePart,
-  getBOMViewerTreeDataByPartIdAndLevel, getProductGroupSelectList, getPartDescription, getPartData, convertPartToAssembly,
+  getBOMViewerTreeDataByPartIdAndLevel, getPartDescription, getPartData, convertPartToAssembly, getProductGroupSelectList
 } from '../actions/Part';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import "react-datepicker/dist/react-datepicker.css";
-import { ASSEMBLY, BOUGHTOUTPART, COMPONENT_PART, FILE_URL, ZBC, } from '../../../config/constants';
+import { ASSEMBLY, BOUGHTOUTPART, COMPONENT_PART, FILE_URL, ZBC } from '../../../config/constants';
 import AddChildDrawer from './AddChildDrawer';
 import DayTime from '../../common/DayTimeWrapper'
 import BOMViewer from './BOMViewer';
@@ -83,13 +83,18 @@ class AddAssemblyPart extends Component {
   * @description 
   */
   componentDidMount() {
+    if (!(this.props.data.isEditFlag || this.state.isViewMode)) {
+      this.props.getCostingSpecificTechnology(loggedInUserId(), () => { })
+    }
     this.setState({ inputLoader: true })
-    this.props.getPlantSelectListByType(ZBC, () => { })
-    this.props.getProductGroupSelectList(() => { })
-    this.props.getCostingSpecificTechnology(loggedInUserId(), () => { })
-    this.props.getPartSelectList((res) => {
-      this.setState({ partListingData: res?.data?.SelectList, inputLoader: false })
-    })
+    if (!this.state.isViewMode) {
+      this.props.getProductGroupSelectList(() => { })
+    }
+    if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
+      this.props.getPartSelectList((res) => {
+        this.setState({ partListingData: res?.data?.SelectList, inputLoader: false })
+      })
+    }
     this.getDetails()
   }
 
@@ -887,9 +892,7 @@ class AddAssemblyPart extends Component {
                     <Col md="6">
                       <div className="form-heading mb-0">
                         <h1>
-                          {isEditFlag
-                            ? "Update Assembly Part"
-                            : "Add  Assembly Part"}
+                          {isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Assembly Part
                         </h1>
                       </div>
                     </Col>
@@ -956,7 +959,7 @@ class AddAssemblyPart extends Component {
                             label={`BOM No.`}
                             name={"BOMNumber"}
                             type="text"
-                            placeholder={""}
+                            placeholder={(isEditFlag && this.state.isDisableBomNo === false) ? '-' : "Enter"}
                             validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20, checkSpacesInString]}
                             component={renderText}
                             required={true}
@@ -970,7 +973,7 @@ class AddAssemblyPart extends Component {
                             label={`Assembly Part No.`}
                             name={"AssemblyPartNumber"}
                             type="text"
-                            placeholder={""}
+                            placeholder={isEditFlag || convertPartToAssembly ? '-' : "Enter"}
                             validate={[this.isRequired(), acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20, checkSpacesInString]}
                             component={renderText}
                             required={true}
@@ -985,8 +988,8 @@ class AddAssemblyPart extends Component {
                             label={`Assembly Name`}
                             name={"AssemblyPartName"}
                             type="text"
-                            placeholder={""}
-                            validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength75]}
+                            placeholder={isViewMode || (!isEditFlag && this.state.disablePartName) || convertPartToAssembly ? '-' : "Enter"}
+                            validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength75, checkSpacesInString]}
                             component={renderText}
                             required={true}
                             className=""
@@ -999,7 +1002,7 @@ class AddAssemblyPart extends Component {
                             label={`Description`}
                             name={"Description"}
                             type="text"
-                            placeholder={""}
+                            placeholder={isViewMode ? '-' : "Enter"}
                             validate={[maxLength80, checkWhiteSpaces]}
                             component={renderText}
                             required={false}
@@ -1013,8 +1016,8 @@ class AddAssemblyPart extends Component {
                             label={`ECN No.`}
                             name={"ECNNumber"}
                             type="text"
-                            placeholder={""}
-                            validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces]}
+                            placeholder={isViewMode ? '-' : "Enter"}
+                            validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, checkSpacesInString]}
                             component={renderText}
                             className=""
                             customClassName={"withBorder"}
@@ -1028,8 +1031,8 @@ class AddAssemblyPart extends Component {
                             label={`Revision No.`}
                             name={"RevisionNumber"}
                             type="text"
-                            placeholder={""}
-                            validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces]}
+                            placeholder={isViewMode ? '-' : "Enter"}
+                            validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, checkSpacesInString]}
                             component={renderText}
                             className=""
                             customClassName={"withBorder"}
@@ -1042,8 +1045,8 @@ class AddAssemblyPart extends Component {
                             label={`Drawing No.`}
                             name={"DrawingNumber"}
                             type="text"
-                            placeholder={""}
-                            validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces]}
+                            placeholder={isViewMode ? '-' : "Enter"}
+                            validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, checkSpacesInString]}
                             component={renderText}
                             className=""
                             customClassName={"withBorder"}
@@ -1060,7 +1063,7 @@ class AddAssemblyPart extends Component {
                             <Field
                               label="Group Code"
                               name="ProductGroup"
-                              placeholder={"Select"}
+                              placeholder={isViewMode ? '-' : "Select"}
                               selection={
                                 this.state.ProductGroup == null || this.state.ProductGroup.length === 0 ? [] : this.state.ProductGroup}
                               options={this.renderListing("ProductGroup")}
@@ -1078,7 +1081,7 @@ class AddAssemblyPart extends Component {
                               label={`Group Code`}
                               name={"GroupCode"}
                               type="text"
-                              placeholder={""}
+                              placeholder={isViewMode ? '-' : "Select Date"}
                               validate={[checkWhiteSpaces, alphaNumeric, maxLength20]}
                               component={renderText}
                               className=""
@@ -1097,7 +1100,7 @@ class AddAssemblyPart extends Component {
                             type="text"
                             name="TechnologyId"
                             component={searchableSelect}
-                            placeholder={"Technology"}
+                            placeholder={isViewMode ? '-' : "Select"}
                             options={this.renderListing("technology")}
                             validate={
                               this.state.TechnologySelected == null || Object.keys(this.state.TechnologySelected).length === 0 ? [required] : []}
@@ -1116,6 +1119,7 @@ class AddAssemblyPart extends Component {
                             <div className="inputbox date-section">
                               <Field
                                 label="Effective Date"
+                                placeholder={isEditFlag && !isViewMode ? getConfigurationKey().IsBOMEditable ? "Enter" : '-' : (isViewMode) ? '-' : "Enter"}
                                 name="EffectiveDate"
                                 selected={this.state.effectiveDate}
                                 onChange={this.handleEffectiveDateChange}
@@ -1157,7 +1161,7 @@ class AddAssemblyPart extends Component {
                           <Field
                             label={"Remarks"}
                             name={`Remark`}
-                            placeholder="Type here..."
+                            placeholder={isViewMode ? '-' : "Type here..."}
                             className=""
                             customClassName=" textAreaWithBorder"
                             validate={[maxLength512, checkWhiteSpaces]}
@@ -1363,10 +1367,11 @@ export default connect(mapStateToProps, {
   convertPartToAssembly,
   getAssemblyPartDetail,
   getBOMViewerTreeDataByPartIdAndLevel,
-  getProductGroupSelectList,
   getPartDescription,
   getPartData,
-  getCostingSpecificTechnology
+  getCostingSpecificTechnology,
+  getProductGroupSelectList,
+  getPartSelectList
 })(reduxForm({
   form: 'AddAssemblyPart',
   touchOnChange: true,

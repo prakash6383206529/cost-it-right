@@ -25,6 +25,7 @@ import { filterParams } from '../../common/DateFilter'
 import ScrollToTop from '../../common/ScrollToTop';
 import { getListingForSimulationCombined } from '../../simulation/actions/Simulation';
 import { PaginationWrapper } from '../../common/commonPagination';
+import { getConfigurationKey } from '../../../helper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -54,6 +55,7 @@ class ExchangeRateListing extends Component {
             isLoader: false,
             showPopup: false,
             deletedId: '',
+            selectedRowData: false
         }
     }
 
@@ -210,6 +212,13 @@ class ExchangeRateListing extends Component {
         const cellValue = props?.value;
         return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
     }
+    /**
+    * @method commonCostFormatter
+    */
+    commonCostFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : '-';
+    }
 
     /**
     * @method buttonFormatter
@@ -236,15 +245,15 @@ class ExchangeRateListing extends Component {
         this.setState({ toggleForm: true })
     }
 
-    hideForm = () => {
-
-        // this.props.getExchangeRateData('', (res) => { })
+    hideForm = (type) => {
         this.setState({
             currency: [],
             data: { isEditFlag: false, ID: '' },
             toggleForm: false,
         }, () => {
-            this.getTableListData()
+            if (type === 'submit') {
+                this.getTableListData()
+            }
         })
     }
 
@@ -274,10 +283,18 @@ class ExchangeRateListing extends Component {
         this.state.gridApi.paginationSetPageSize(Number(newPageSize));
     };
 
+    onRowSelect = () => {
+        const selectedRows = this.state.gridApi?.getSelectedRows()
+        this.setState({ selectedRowData: selectedRows })
+    }
+
     onBtExport = () => {
-        let tempArr = this.props.exchangeRateDataList && this.props.exchangeRateDataList
+        let tempArr = []
+        tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+        tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.exchangeRateDataList ? this.props.exchangeRateDataList : [])
         return this.returnExcelColumn(EXCHANGERATE_DOWNLOAD_EXCEl, tempArr)
     };
+
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
@@ -303,6 +320,7 @@ class ExchangeRateListing extends Component {
     }
 
     resetState() {
+        this.state.gridApi.deselectAll()
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
     }
@@ -311,7 +329,8 @@ class ExchangeRateListing extends Component {
         totalValueRenderer: this.buttonFormatter,
         effectiveDateRenderer: this.effectiveDateFormatter,
         customNoRowsOverlay: NoContentFound,
-        hyphenFormatter: this.hyphenFormatter
+        hyphenFormatter: this.hyphenFormatter,
+        commonCostFormatter: this.commonCostFormatter
     };
 
     /**
@@ -330,12 +349,20 @@ class ExchangeRateListing extends Component {
                 />
             )
         }
+        const isFirstColumn = (params) => {
+            var displayedColumns = params.columnApi.getAllDisplayedColumns();
+            var thisIsFirstColumn = displayedColumns[0] === params.column;
+            return thisIsFirstColumn;
+        }
+
         const defaultColDef = {
             resizable: true,
             filter: true,
             sortable: true,
+            headerCheckboxSelectionFilteredOnly: true,
+            headerCheckboxSelection: isFirstColumn,
+            checkboxSelection: isFirstColumn
         };
-
 
 
         const options = {
@@ -423,13 +450,15 @@ class ExchangeRateListing extends Component {
                                         title: EMPTY_DATA,
                                         imagClass: 'imagClass'
                                     }}
+                                    rowSelection={'multiple'}
+                                    onSelectionChanged={this.onRowSelect}
                                     frameworkComponents={this.frameworkComponents}
                                 >
                                     <AgGridColumn field="Currency" headerName="Currency" minWidth={135}></AgGridColumn>
-                                    <AgGridColumn suppressSizeToFit="true" field="CurrencyExchangeRate" headerName="Exchange Rate(INR)" minWidth={160}></AgGridColumn>
-                                    <AgGridColumn field="BankRate" headerName="Bank Rate(INR)" minWidth={150} cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                    <AgGridColumn suppressSizeToFit="true" field="CurrencyExchangeRate" headerName="Exchange Rate(INR)" minWidth={160} cellRenderer={'commonCostFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="BankRate" headerName="Bank Rate(INR)" minWidth={150} cellRenderer={'commonCostFormatter'}></AgGridColumn>
                                     <AgGridColumn suppressSizeToFit="true" field="BankCommissionPercentage" headerName="Bank Commission % " minWidth={160} cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="CustomRate" headerName="Custom Rate(INR)" minWidth={160} cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="CustomRate" headerName="Custom Rate(INR)" minWidth={160} cellRenderer={'commonCostFormatter'}></AgGridColumn>
                                     <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams} minWidth={160}></AgGridColumn>
                                     <AgGridColumn suppressSizeToFit="true" field="DateOfModification" headerName="Date of Modification" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams} minWidth={160}></AgGridColumn>
                                     {!this.props.isSimulation && <AgGridColumn suppressSizeToFit="true" field="ExchangeRateId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer='totalValueRenderer' minWidth={160} ></AgGridColumn>}

@@ -54,8 +54,8 @@ class AddInterestRate extends Component {
   * @description called before render the component
   */
   UNSAFE_componentWillMount() {
-    this.props.getVendorListByVendorType(true, () => { })
-
+    if (!(this.props.data.isEditFlag || this.state.isViewMode))
+      this.props.getVendorListByVendorType(true, () => { })
   }
 
   /**
@@ -68,6 +68,11 @@ class AddInterestRate extends Component {
       this.props.getPaymentTermsAppliSelectList(() => { })
     }
     this.getDetail()
+    if (!this.state.isViewMode) {
+      this.props.getICCAppliSelectList(() => { })
+      this.props.getPaymentTermsAppliSelectList(() => { })
+    }
+
   }
 
   componentDidUpdate(prevProps) {
@@ -436,11 +441,7 @@ class AddInterestRate extends Component {
                 <div className="row">
                   <div className="col-md-6">
                     <div className="form-heading mb-0">
-                      <h1>
-                        {this.state.isEditFlag
-                          ? "Update Interest Rate"
-                          : "Add Interest Rate"}
-                      </h1>
+                      <h1>{this.state.isViewMode ? "View" : this.state.isEditFlag ? "Update" : "Add"} Interest Rate</h1>
                     </div>
                   </div>
                 </div>
@@ -504,7 +505,7 @@ class AddInterestRate extends Component {
                           type="text"
                           label="ICC Applicability"
                           component={searchableSelect}
-                          placeholder={"Select"}
+                          placeholder={isViewMode ? '-' : "Select"}
                           options={this.renderListing("ICC")}
                           validate={
                             this.state.ICCApplicability == null ||
@@ -528,7 +529,7 @@ class AddInterestRate extends Component {
                             label={`Annual ICC (%)`}
                             name={"ICCPercent"}
                             type="text"
-                            placeholder={"Enter"}
+                            placeholder={isViewMode ? '-' : "Enter"}
                             validate={[required, positiveAndDecimalNumber, decimalLengthThree]}
                             max={100}
                             component={renderNumberInputField}
@@ -553,7 +554,7 @@ class AddInterestRate extends Component {
                           type="text"
                           label="Payment Terms Applicability"
                           component={searchableSelect}
-                          placeholder={"Select"}
+                          placeholder={isViewMode ? '-' : "Select"}
                           options={this.renderListing("PaymentTerms")}
                           validate={
                             this.state.PaymentTermsApplicability == null ||
@@ -580,7 +581,7 @@ class AddInterestRate extends Component {
                               label={`Repayment Period (Days)`}
                               name={"RepaymentPeriod"}
                               type="text"
-                              placeholder={"Enter"}
+                              placeholder={isViewMode ? '-' : "Enter"}
                               validate={[postiveNumber, maxLength10]}
                               component={renderNumberInputField}
                               required={false}
@@ -595,7 +596,7 @@ class AddInterestRate extends Component {
                               label={`Payment Term (%)`}
                               name={"PaymentTermPercent"}
                               type="text"
-                              placeholder={"Enter"}
+                              placeholder={isViewMode ? '-' : "Enter"}
                               validate={[positiveAndDecimalNumber, decimalLengthThree]}
                               component={renderNumberInputField}
                               max={100}

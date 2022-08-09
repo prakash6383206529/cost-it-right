@@ -178,8 +178,8 @@ function ManageSOBDrawer(props) {
   * @method cancel
   * @description used to Reset form
   */
-  const cancel = () => {
-    props.closeDrawer('')
+  const cancel = (type) => {
+    props.closeDrawer('', type)
   }
 
   /**
@@ -201,10 +201,6 @@ function ManageSOBDrawer(props) {
 
     // CHECK WHETHER SUM OF ALL SOB PERCENT IS LESS TAHN 100 
 
-    if (dropdownChanged) {
-      toggleDrawer('')
-      return false
-    }
 
     const sum = GridData.reduce((accummlator, el, currentIndex) => {
 
@@ -228,7 +224,7 @@ function ManageSOBDrawer(props) {
     dispatch(updateBOPSOBVendors(data, (res) => {
       if (res && res.data && res.data.Result) {
         Toaster.success('BOP Vendors SOB has been updated.')
-        props.closeDrawer('')
+        props.closeDrawer('a', 'submit')
       }
     }))
   }
@@ -325,8 +321,8 @@ function ManageSOBDrawer(props) {
                         GridData && <tr className="sob-background">
                           <td>{'BOP Cost'}</td>
                           <td>{''}</td>
-                          <td>{`Net Cost(Weighted Average)`}</td>
-                          <td>{`:${checkForDecimalAndNull(WeightedCost, initialConfiguration.NoOfDecimalForPrice)}`}</td>
+                          <td>{`Net Cost(Weighted Average):`}</td>
+                          <td>{`${checkForDecimalAndNull(WeightedCost, initialConfiguration.NoOfDecimalForPrice)}`}</td>
                         </tr>
                       }
 
@@ -349,7 +345,7 @@ function ManageSOBDrawer(props) {
                   <button
                     type={'button'}
                     className="reset mr15 cancel-btn"
-                    onClick={cancel} >
+                    onClick={() => { cancel('cancel') }} >
                     <div className={'cancel-icon'}></div> {'Cancel'}
                   </button>
                   <button

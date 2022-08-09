@@ -50,9 +50,11 @@ function RMImportListing(props) {
   const rmImportDataList = useSelector((state) => state.material.rmImportDataList);
   const filteredRMData = useSelector((state) => state.material.filteredRMData);
   const { selectedCostingListSimulation } = useSelector((state => state.simulation))
+  const allRmDataList = useSelector((state) => state.material.allRmDataList);
   const [showPopup, setShowPopup] = useState(false)
   const [deletedId, setDeletedId] = useState('')
   const [showPopupBulk, setShowPopupBulk] = useState(false)
+  const [disableDownload, setDisableDownload] = useState(false)
   const [disableFilter, setDisableFilter] = useState(true) // STATE MADE FOR CHECKBOX IN SIMULATION
   //STATES BELOW ARE MADE FOR PAGINATION PURPOSE
   const [warningMessage, setWarningMessage] = useState(false)
@@ -159,7 +161,10 @@ function RMImportListing(props) {
       ListFor: ListFor,
       StatusId: statusString
     }
-    setloader(true)
+
+    if (isPagination === true) {
+      setloader(true)
+    }
     //THIS CONDTION IS FOR IF THIS COMPONENT IS RENDER FROM MASTER APPROVAL SUMMARY IN THIS NO GET API
     if (!props.isMasterSummaryDrawer) {
       dispatch(getRMImportDataList(filterData, skip, take, isPagination, dataObj, (res) => {
@@ -181,6 +186,15 @@ function RMImportListing(props) {
           setmaxRange(0);
           setloader(false);
         }
+
+        if (res && isPagination === false) {
+          setDisableDownload(false)
+          setTimeout(() => {
+            let button = document.getElementById('Excel-Downloads-rm-import')
+            button && button.click()
+          }, 500);
+        }
+
         if (res) {
           let isReset = true
           setTimeout(() => {
@@ -324,7 +338,7 @@ function RMImportListing(props) {
   const confirmDelete = (ID) => {
     dispatch(deleteRawMaterialAPI(ID, (res) => {
       if (res.status === 417 && res.data.Result === false) {
-        Toaster.warning(res.data.Message)
+        Toaster.error(res.data.Message)
       } else if (res && res.data && res.data.Result === true) {
         Toaster.success(MESSAGES.DELETE_RAW_MATERIAL_SUCCESS);
         resetState()
@@ -431,12 +445,20 @@ function RMImportListing(props) {
   }
 
   /**
-  * @method freightCostFormatter
+  * @method commonCostFormatter
   * @description Renders buttons
   */
-  const freightCostFormatter = (props) => {
+  const commonCostFormatter = (props) => {
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
     return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : '-';
+  }
+  /**
+  * @method currencyFormatter
+  * @description Renders buttons
+  */
+  const currencyFormatter = (props) => {
+    const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+    return cell != null ? cell : '-';
   }
 
 
@@ -540,16 +562,34 @@ function RMImportListing(props) {
       </ExcelSheet>);
   }
 
+
+  const onExcelDownload = () => {
+    setDisableDownload(true)
+
+    //let tempArr = gridApi && gridApi?.getSelectedRows()
+    let tempArr = selectedCostingListSimulation
+    if (tempArr?.length > 0) {
+      setTimeout(() => {
+        setDisableDownload(false)
+        let button = document.getElementById('Excel-Downloads-rm-import')
+        button && button.click()
+      }, 400);
+
+    } else {
+
+      getDataList(null, null, null, null, null, 0, 0, defaultPageSize, false, floatingFilterData) // FOR EXCEL DOWNLOAD OF COMPLETE DATA
+    }
+
+  }
+
+
   const onBtExport = () => {
     let tempArr = []
-    if (isSimulation === true) {
-      const data = gridApi && gridApi.getModel().rowsToDisplay
-      data && data.map((item => {
-        tempArr.push(item.data)
-      }))
-    } else {
-      tempArr = rmImportDataList
-    }
+
+    //tempArr = gridApi && gridApi?.getSelectedRows()
+    tempArr = selectedCostingListSimulation
+    tempArr = (tempArr && tempArr.length > 0) ? tempArr : (allRmDataList ? allRmDataList : [])
+
     return returnExcelColumn(RMIMPORT_DOWNLOAD_EXCEl, tempArr)
   };
 
@@ -581,15 +621,11 @@ function RMImportListing(props) {
 
 
   const isFirstColumn = (params) => {
-    if (isSimulation) {
+    var displayedColumns = params.columnApi.getAllDisplayedColumns();
+    var thisIsFirstColumn = displayedColumns[0] === params.column;
 
-      var displayedColumns = params.columnApi.getAllDisplayedColumns();
-      var thisIsFirstColumn = displayedColumns[0] === params.column;
+    return thisIsFirstColumn;
 
-      return thisIsFirstColumn;
-    } else {
-      return false
-    }
   }
 
   const onRowSelect = (event) => {
@@ -615,12 +651,14 @@ function RMImportListing(props) {
       selectedRows = [...selectedRows, ...finalData]
     }
 
+
+    let uniqeArray = _.uniqBy(selectedRows, "RawMaterialId")           //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
+    dispatch(setSelectedCostingListSimualtion(uniqeArray))                   //SETTING CHECKBOX STATE DATA IN REDUCER
+    let finalArr = selectedRows
+    let length = finalArr?.length
+    let uniqueArray = _.uniqBy(finalArr, "RawMaterialId")
+
     if (isSimulation) {
-      let uniqeArray = _.uniqBy(selectedRows, "RawMaterialId")           //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
-      dispatch(setSelectedCostingListSimualtion(uniqeArray))                   //SETTING CHECKBOX STATE DATA IN REDUCER
-      let finalArr = selectedRows
-      let length = finalArr?.length
-      let uniqueArray = _.uniqBy(finalArr, "RawMaterialId")
       apply(uniqueArray, length)
     }
   }
@@ -642,11 +680,12 @@ function RMImportListing(props) {
     costingHeadRenderer: costingHeadFormatter,
     customNoRowsOverlay: NoContentFound,
     costFormatter: costFormatter,
-    freightCostFormatter: freightCostFormatter,
+    commonCostFormatter: commonCostFormatter,
     shearingCostFormatter: shearingCostFormatter,
     statusFormatter: statusFormatter,
     hyphenFormatter: hyphenFormatter,
-    checkBoxRenderer: checkBoxRenderer
+    checkBoxRenderer: checkBoxRenderer,
+    currencyFormatter: currencyFormatter
 
   };
 
@@ -706,12 +745,23 @@ function RMImportListing(props) {
                       {
                         DownloadAccessibility &&
                         <>
-                          <ExcelFile filename={'RM Import'} fileExtension={'.xls'} element={
-                            <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-                              {/* DOWNLOAD */}
-                            </button>}>
-                            {onBtExport()}
-                          </ExcelFile>
+                          {disableDownload ? <div className='p-relative mr5'> <LoaderCustom customClass={"download-loader"} /> <button type="button" className={'user-btn'}><div className="download mr-0"></div>
+                          </button></div> :
+
+                            <>
+                              <button type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                {/* DOWNLOAD */}
+                              </button>
+
+                              <ExcelFile filename={'RM Import'} fileExtension={'.xls'} element={
+                                <button id={'Excel-Downloads-rm-import'} className="p-absolute" type="button" >
+                                </button>}>
+                                {onBtExport()}
+                              </ExcelFile>
+
+                            </>
+
+                          }
                         </>
                       }
                     </>
@@ -761,10 +811,10 @@ function RMImportListing(props) {
                     <AgGridColumn field="Plant" headerName="Plant(Code)"></AgGridColumn>
                     <AgGridColumn field="VendorName" headerName="Vendor(Code)"></AgGridColumn>
                     <AgGridColumn field="UOM"></AgGridColumn>
-                    <AgGridColumn field="Currency"></AgGridColumn>
-                    <AgGridColumn field="BasicRate"></AgGridColumn>
-                    <AgGridColumn field="ScrapRate"></AgGridColumn>
-                    <AgGridColumn field="RMFreightCost" headerName="Freight Cost" cellRenderer='freightCostFormatter'></AgGridColumn>
+                    <AgGridColumn field="Currency" cellRenderer={"currencyFormatter"}></AgGridColumn>
+                    <AgGridColumn field="BasicRate" cellRenderer='commonCostFormatter'></AgGridColumn>
+                    <AgGridColumn field="ScrapRate" cellRenderer='commonCostFormatter'></AgGridColumn>
+                    <AgGridColumn field="RMFreightCost" headerName="Freight Cost" cellRenderer='commonCostFormatter'></AgGridColumn>
                     <AgGridColumn field="RMShearingCost" headerName="Shearing Cost" cellRenderer='shearingCostFormatter'></AgGridColumn>
                     <AgGridColumn field="NetLandedCost" headerName="Net Cost (Currency)" cellRenderer='costFormatter'></AgGridColumn>
                     <AgGridColumn field="NetLandedCostConversion" headerName="Net Cost(INR)" cellRenderer='costFormatter'></AgGridColumn>

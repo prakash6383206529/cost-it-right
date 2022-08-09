@@ -49,12 +49,12 @@ import { formatLoginResult } from '../helper/ApiResponse'
 import axios from 'axios';
 import CostingDetailReport from './report/components/CostingDetailReport'
 import SimulationApprovalSummary from './simulation/components/SimulationApprovalSummary'
-import RMApproval from './masters/material-master/RMApproval'
 import OperationsMaster from './masters/operation/index'
 import CostingBenchmarkReport from './report/components/CostingBenchmarkReport'
 import ToasterBoXWrapper from './common/ToasterBoXWrapper'
 import SimulationInsights from './report/components/SimulationInsights'
 import SimulationRoutes from './simulation/Routes'
+import CommonApproval from './masters/material-master/CommonApproval'
 const CustomHeader = {
   'Content-Type': 'application/x-www-form-urlencoded',
   'Access-Control-Allow-Origin': '*',
@@ -283,7 +283,7 @@ class Main extends Component {
 
                     <Route path="/raw-material-master" exact component={AuthMiddleware(RowMaterialMaster, RAW_MATERIAL,)} />
 
-                    <Route path="/raw-material-master/raw-material-approval" component={AuthMiddleware(RMApproval, RAW_MATERIAL)} />
+                    <Route path="/raw-material-master/raw-material-approval" component={AuthMiddleware(CommonApproval, RAW_MATERIAL)} />
 
                     <Route path="/plant-master" component={AuthMiddleware(PlantMaster, PLANT)} />
 

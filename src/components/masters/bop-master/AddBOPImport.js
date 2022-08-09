@@ -4,16 +4,15 @@ import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import {
   required, checkForNull, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter, maxLength20,
-  maxLength10, positiveAndDecimalNumber, maxLength512, maxLength, decimalLengthsix, checkWhiteSpaces, checkSpacesInString
+  maxLength10, positiveAndDecimalNumber, maxLength512, maxLength, decimalLengthsix, checkWhiteSpaces, checkSpacesInString, maxLength80
 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderTextAreaField, renderDatePicker, renderNumberInputField, focusOnError } from "../../layout/FormInputs";
-import { fetchMaterialComboAPI, getPlantBySupplier, getUOMSelectList, getCurrencySelectList, getPlantSelectListByType, } from '../../../actions/Common';
+import { getPlantBySupplier, getUOMSelectList, getCurrencySelectList, getPlantSelectListByType, getCityByCountry, getAllCity } from '../../../actions/Common';
 import {
   createBOPImport, updateBOPImport, getBOPCategorySelectList, getBOPImportById,
   fileUploadBOPDomestic, fileDeleteBOPDomestic,
 } from '../actions/BoughtOutParts';
 import { getVendorWithVendorCodeSelectList, getVendorTypeBOPSelectList, } from '../actions/Supplier';
-import { getPartSelectList } from '../actions/Part';
 import { masterFinalLevelUser } from '../actions/Material'
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
@@ -102,10 +101,9 @@ class AddBOPImport extends Component {
   * @description Called before render the component
   */
   UNSAFE_componentWillMount() {
-    this.props.getUOMSelectList(() => { })
     if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
+      this.props.getUOMSelectList(() => { })
       this.props.getBOPCategorySelectList(() => { })
-      this.props.getPartSelectList(() => { })
       this.props.getPlantSelectListByType(ZBC, () => { })
     }
   }
@@ -115,30 +113,37 @@ class AddBOPImport extends Component {
    * @description Called after rendering the component
    */
   componentDidMount() {
-    this.props.fetchMaterialComboAPI(res => { });
-    this.props.getCurrencySelectList(() => { })
+    if (!this.state.isViewMode) {
+      this.props.getAllCity(cityId => {
+        this.props.getCityByCountry(cityId, 0, () => { })
+      })
+    }
+    this.getDetails()
     if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
+      this.props.getCurrencySelectList(() => { })
       this.setState({ inputLoader: true })
       this.props.getVendorTypeBOPSelectList(() => { this.setState({ inputLoader: false }) })
     }
-    this.getDetails()
-
-    let obj = {
-      MasterId: BOP_MASTER_ID,
-      DepartmentId: userDetails().DepartmentId,
-      LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
-      LoggedInUserId: loggedInUserId()
-    }
-    this.props.masterFinalLevelUser(obj, (res) => {
-      if (res.data.Result) {
-        this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+    if (!this.state.isViewMode) {
+      let obj = {
+        MasterId: BOP_MASTER_ID,
+        DepartmentId: userDetails().DepartmentId,
+        LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
+        LoggedInUserId: loggedInUserId()
       }
-    })
+      this.props.masterFinalLevelUser(obj, (res) => {
+        if (res.data.Result) {
+          this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+        }
+      })
+    }
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props.fieldsObj !== prevProps.fieldsObj) {
-      this.handleCalculation()
+    if (!this.props.data.isViewFlag) {
+      if (this.props.fieldsObj !== prevProps.fieldsObj) {
+        this.handleCalculation()
+      }
     }
   }
 
@@ -203,15 +208,9 @@ class AddBOPImport extends Component {
 
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           this.setState({ minEffectiveDate: Data.EffectiveDate })
-          this.props.getPlantBySupplier(Data.Vendor, () => { })
 
           setTimeout(() => {
-            const { cityList, currencySelectList, UOMSelectList } = this.props;
             let plantObj;
-            let currencyObj = currencySelectList && currencySelectList.find(item => item.Text === Data.Currency)
-            let sourceLocationObj = cityList && cityList.find(item => Number(item.Value) === Data.SourceLocation)
-            let uomObject = UOMSelectList && UOMSelectList.find(item => item.Value === Data.UnitOfMeasurementId)
-            this.handleCurrency({ label: currencyObj?.Text, value: currencyObj?.Value })
             this.handleEffectiveDateChange(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
 
             if (getConfigurationKey().IsDestinationPlantConfigure) {
@@ -226,12 +225,12 @@ class AddBOPImport extends Component {
               BOPCategory: Data.CategoryName !== undefined ? { label: Data.CategoryName, value: Data.CategoryId } : [],
               selectedPlants: plantObj,
               vendorName: Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.Vendor } : [],
-              currency: currencyObj && currencyObj !== undefined ? { label: currencyObj.Text, value: currencyObj.Value } : [],
-              sourceLocation: sourceLocationObj && sourceLocationObj !== undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value } : [],
+              currency: Data.Currency !== undefined ? { label: Data.Currency, value: Data.CurrencyId } : [],
+              sourceLocation: Data.SourceSupplierLocationName !== undefined ? { label: Data.SourceSupplierLocationName, value: Data.SourceLocation } : [],
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
               oldDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
               files: Data.Attachements,
-              UOM: uomObject && uomObject !== undefined ? { label: uomObject.Display, value: uomObject.Value } : [],
+              UOM: Data.UnitOfMeasurement !== undefined ? { label: Data.UnitOfMeasurement, value: Data.UnitOfMeasurementId } : [],
               isLoader: false,
             }, () => this.setState({ isLoader: false }))
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
@@ -669,23 +668,24 @@ class AddBOPImport extends Component {
     }
 
     // if (this.state.isFinalApprovar && isEditFlag) {
+
+    if (DataToChange.IsVendor) {
+      if (DropdownChange && String(DataToChange.Source) === String(values.Source) &&
+        Number(DataToChange.BasicRate) === Number(values.BasicRate) && DataToChange.Remark === values.Remark && uploadAttachements &&
+        ((DataToChange.Source ? DataToChange.Source : '-') === (values.Source ? values.Source : '-')) &&
+        ((DataToChange.SourceLocation ? DataToChange.SourceLocation : '-') === (sourceLocation.value ? sourceLocation.value : '-'))) {
+        Toaster.warning('Please change data to send BOP for approval')
+        return false;
+      }
+    }
+    if (Boolean(DataToChange.IsVendor) === false) {
+      if (Number(DataToChange.BasicRate) === Number(values.BasicRate) && DataToChange.Remark === values.Remark && uploadAttachements) {
+        Toaster.warning('Please change data to send BOP for approval')
+        return false;
+      }
+    }
     if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(BOP_MASTER_ID) !== true)) {
 
-      if (DataToChange.IsVendor) {
-        if (DropdownChange && String(DataToChange.Source) === String(values.Source) &&
-          Number(DataToChange.BasicRate) === Number(values.BasicRate) && DataToChange.Remark === values.Remark && uploadAttachements &&
-          ((DataToChange.Source ? DataToChange.Source : '-') === (values.Source ? values.Source : '-')) &&
-          ((DataToChange.SourceLocation ? DataToChange.SourceLocation : '-') === (sourceLocation.value ? sourceLocation.value : '-'))) {
-          this.cancel()
-          return false;
-        }
-      }
-      if (Boolean(DataToChange.IsVendor) === false) {
-        if (Number(DataToChange.BasicRate) === Number(values.BasicRate) && DataToChange.Remark === values.Remark && uploadAttachements) {
-          this.cancel()
-          return false;
-        }
-      }
       this.setState({ setDisable: true, disablePopup: false })
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: BOPID }
@@ -726,13 +726,10 @@ class AddBOPImport extends Component {
 
       }
 
-
       if (isEditFlag) {
         this.setState({ showPopup: true, updatedObj: requestData })
         return false
       }
-
-
 
     } else {
 
@@ -741,7 +738,6 @@ class AddBOPImport extends Component {
       } else {
         this.setState({ IsSendForApproval: false })
       }
-
       this.setState({ setDisable: true })
       const formData = {
         IsSendForApproval: this.state.IsSendForApproval,
@@ -797,13 +793,15 @@ class AddBOPImport extends Component {
             Number(DataToChange.BasicRate) === Number(values.BasicRate) && DataToChange.Remark === values.Remark && uploadAttachements &&
             ((DataToChange.Source ? DataToChange.Source : '-') === (values.Source ? values.Source : '-')) &&
             ((DataToChange.SourceLocation ? DataToChange.SourceLocation : '-') === (sourceLocation.value ? sourceLocation.value : '-'))) {
-            this.cancel()
+            Toaster.warning('Please change data to send BOP for approval')
+            // this.cancel()
             return false;
           }
         }
         if (Boolean(DataToChange.IsVendor) === false) {
           if (Number(DataToChange.BasicRate) === Number(values.BasicRate) && DataToChange.Remark === values.Remark && uploadAttachements) {
-            this.cancel()
+            Toaster.warning('Please change data to send BOP for approval')
+            // this.cancel()
             return false;
           }
         }
@@ -884,8 +882,6 @@ class AddBOPImport extends Component {
     const promiseOptions = inputValue =>
       new Promise(resolve => {
         resolve(filterList(inputValue));
-
-
       });
     return (
       <>
@@ -899,9 +895,7 @@ class AddBOPImport extends Component {
                     <div className="row">
                       <div className="col-md-6">
                         <h1>
-                          {isEditFlag
-                            ? `Update BOP (Import)`
-                            : `Add BOP (Import)`}
+                          {isViewMode ? "View" : isEditFlag ? "Update" : "Add"} BOP (Import)
                         </h1>
                       </div>
                     </div>
@@ -961,7 +955,7 @@ class AddBOPImport extends Component {
                               name={"BoughtOutPartName"}
                               type="text"
                               placeholder={"Enter"}
-                              validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength(80), checkWhiteSpaces]}
+                              validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces, checkSpacesInString]}
                               component={renderText}
                               required={true}
                               disabled={isEditFlag ? true : false}
@@ -1002,8 +996,8 @@ class AddBOPImport extends Component {
                               label={`Specification`}
                               name={"Specification"}
                               type="text"
-                              placeholder={"Enter"}
-                              validate={[acceptAllExceptSingleSpecialCharacter, maxLength(80)]}
+                              placeholder={isEditFlag ? '-' : "Enter"}
+                              validate={[acceptAllExceptSingleSpecialCharacter, maxLength80, checkSpacesInString]}
                               component={renderText}
                               //required={true}
                               disabled={isEditFlag ? true : false}
@@ -1022,7 +1016,7 @@ class AddBOPImport extends Component {
                               type="text"
                               label="UOM"
                               component={searchableSelect}
-                              placeholder={"Select"}
+                              placeholder={isEditFlag ? '-' : "Select"}
                               options={this.renderListing("uom")}
                               //onKeyUp={(e) => this.changeItemDesc(e)}
                               validate={
@@ -1038,7 +1032,7 @@ class AddBOPImport extends Component {
                               <Field
                                 label={this.state.IsVendor ? 'Destination Plant' : 'Plant'}
                                 name="Plant"
-                                placeholder={"Select"}
+                                placeholder={isEditFlag ? '-' : "Select"}
                                 //   selection={ this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants} 
                                 options={this.renderListing("plant")}
                                 handleChangeDescription={this.handlePlant}
@@ -1092,7 +1086,7 @@ class AddBOPImport extends Component {
                                   label={`Source`}
                                   name={"Source"}
                                   type="text"
-                                  placeholder={"Enter"}
+                                  placeholder={isEditFlag ? '-' : "Enter"}
                                   validate={[acceptAllExceptSingleSpecialCharacter, maxLength(80)]}
                                   component={renderText}
                                   // required={true}
@@ -1107,7 +1101,7 @@ class AddBOPImport extends Component {
                                   type="text"
                                   label="Source Location"
                                   component={searchableSelect}
-                                  placeholder={"Select"}
+                                  placeholder={isEditFlag ? '-' : "Select"}
                                   options={this.renderListing("SourceLocation")}
                                   disabled={isViewMode}
 
@@ -1129,7 +1123,7 @@ class AddBOPImport extends Component {
                               type="text"
                               label="Currency"
                               component={searchableSelect}
-                              placeholder={"Select"}
+                              placeholder={isEditFlag ? '-' : "Select"}
                               options={this.renderListing("currency")}
                               validate={
                                 this.state.currency == null ||
@@ -1161,7 +1155,7 @@ class AddBOPImport extends Component {
                                 component={renderDatePicker}
                                 className="form-control"
                                 disabled={isViewMode || !this.state.IsFinancialDataChanged || (isEditFlag && isBOPAssociated)}
-                              //minDate={moment()}
+                                placeholder={isEditFlag ? '-' : "Select Date"}
                               />
                             </div>
 
@@ -1171,7 +1165,7 @@ class AddBOPImport extends Component {
                               label={`Basic Rate (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
                               name={"BasicRate"}
                               type="text"
-                              placeholder={"Enter"}
+                              placeholder={isEditFlag || (isEditFlag && isBOPAssociated) ? '-' : "Enter"}
                               validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
                               component={renderNumberInputField}
                               required={true}
@@ -1183,9 +1177,9 @@ class AddBOPImport extends Component {
                           <Col md="3">
                             <Field
                               label={`Net Cost (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
-                              name={"NetLandedCost"}
+                              name={this.state.netLandedcost === 0 ? '' : "NetLandedCost"}
                               type="text"
-                              placeholder={""}
+                              placeholder={"-"}
                               validate={[]}
                               component={renderNumberInputField}
                               required={false}
@@ -1199,9 +1193,9 @@ class AddBOPImport extends Component {
                             <Col md="3">
                               <Field
                                 label={`Net Cost (INR)`}
-                                name={"NetLandedCostCurrency"}
+                                name={this.state.netLandedConverionCost === 0 ? '' : "NetLandedCostCurrency"}
                                 type="text"
-                                placeholder={""}
+                                placeholder={"-"}
                                 validate={[]}
                                 component={renderNumberInputField}
                                 required={false}
@@ -1227,7 +1221,7 @@ class AddBOPImport extends Component {
                             <Field
                               label={"Remarks"}
                               name={`Remark`}
-                              placeholder="Type here..."
+                              placeholder={isViewMode ? '-' : "Type here..."}
                               className=""
                               customClassName=" textAreaWithBorder"
                               validate={[maxLength512]}
@@ -1454,8 +1448,6 @@ export default connect(mapStateToProps, {
   getVendorWithVendorCodeSelectList,
   getVendorTypeBOPSelectList,
   getPlantBySupplier,
-  getPartSelectList,
-  fetchMaterialComboAPI,
   getUOMSelectList,
   getCurrencySelectList,
   createBOPImport,
@@ -1466,7 +1458,9 @@ export default connect(mapStateToProps, {
   fileDeleteBOPDomestic,
   getPlantSelectListByType,
   getExchangeRateByCurrency,
-  masterFinalLevelUser
+  masterFinalLevelUser,
+  getCityByCountry,
+  getAllCity
 })(reduxForm({
   form: 'AddBOPImport',
   touchOnChange: true,

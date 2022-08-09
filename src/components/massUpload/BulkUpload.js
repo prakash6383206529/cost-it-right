@@ -24,6 +24,10 @@ import Drawer from '@material-ui/core/Drawer';
 import Downloadxls from './Downloadxls';
 import DayTime from '../common/DayTimeWrapper'
 import cloudImg from '../../assests/images/uploadcloud.png';
+import _ from 'lodash';
+import { ACTUALVOLUMEBULKUPLOAD, BOMBULKUPLOAD, BOPDOMESTICBULKUPLOAD, BOPIMPORTBULKUPLOAD, BUDGETEDVOLUMEBULKUPLOAD, FUELBULKUPLOAD, INTERESTRATEBULKUPLOAD, LABOURBULKUPLOAD, MACHINEBULKUPLOAD, OPERAIONBULKUPLOAD, PARTCOMPONENTBULKUPLOAD, PRODUCTCOMPONENTBULKUPLOAD, RMDOMESTIC, RMDOMESTICBULKUPLOAD, RMIMPORTBULKUPLOAD, RMSPECIFICATION, VENDORBULKUPLOAD } from '../../config/constants';
+import { BOMUpload, BOP_VBC_DOMESTIC, BOP_VBC_IMPORT, BOP_ZBC_DOMESTIC, BOP_ZBC_IMPORT, Fuel, Labour, MachineVBC, MachineZBC, MHRMoreZBC, PartComponent, ProductComponent, RawMaterialDomesticFileHeadsVBC, RawMaterialDomesticFileHeadsZBC, RMDomesticVBC, RMDomesticVBCTempData, RMDomesticZBC, RMDomesticZBCTempData, RMImportVBC, RMImportZBC, RMSpecification, VBCInterestRate, VBCOperation, Vendor, VOLUME_ACTUAL_VBC, VOLUME_ACTUAL_ZBC, VOLUME_BUDGETED_VBC, VOLUME_BUDGETED_ZBC, ZBCOperation } from '../../config/masterData';
+import { checkForSameFileUpload } from '../../helper';
 
 class BulkUpload extends Component {
     constructor(props) {
@@ -94,8 +98,8 @@ class BulkUpload extends Component {
 
         let fileObj = event.target.files[0];
         let fileHeads = [];
-        let uploadfileName = fileObj.name;
-        let fileType = uploadfileName.substr(uploadfileName.indexOf('.'));
+        let uploadfileName = fileObj?.name;
+        let fileType = uploadfileName?.substr(uploadfileName.indexOf('.'));
 
         //pass the fileObj as parameter
         if (fileType !== '.xls' && fileType !== '.xlsx') {
@@ -111,7 +115,107 @@ class BulkUpload extends Component {
                 } else {
 
                     fileHeads = resp.rows[0];
+                    let checkForFileHead
+                    switch (String(this.props.fileName)) {
+                        case String(RMDOMESTICBULKUPLOAD):
+                            if (this.state.costingHead === 'ZBC') {
+                                checkForFileHead = checkForSameFileUpload(RMDomesticZBC, fileHeads)
+                            }
+                            else {
+                                checkForFileHead = checkForSameFileUpload(RMDomesticVBC, fileHeads)
+                            }
+                            break;
+                        case String(RMIMPORTBULKUPLOAD):
 
+                            if (this.state.costingHead === 'ZBC') {
+                                checkForFileHead = checkForSameFileUpload(RMImportZBC, fileHeads)
+                            }
+                            else {
+                                checkForFileHead = checkForSameFileUpload(RMImportVBC, fileHeads)
+                            }
+                            break;
+                        case String(RMSPECIFICATION):
+                            checkForFileHead = checkForSameFileUpload(RMSpecification, fileHeads)
+                            break;
+                        case String(BOPDOMESTICBULKUPLOAD):
+                            if (this.state.costingHead === 'VBC') {
+                                checkForFileHead = checkForSameFileUpload(BOP_VBC_DOMESTIC, fileHeads)
+                            }
+                            else {
+                                checkForFileHead = checkForSameFileUpload(BOP_ZBC_DOMESTIC, fileHeads)
+                            }
+                            break;
+                        case String(BOPIMPORTBULKUPLOAD):
+                            if (this.state.costingHead === 'ZBC') {
+                                checkForFileHead = checkForSameFileUpload(BOP_ZBC_IMPORT, fileHeads)
+                            }
+                            else {
+                                checkForFileHead = checkForSameFileUpload(BOP_VBC_IMPORT, fileHeads)
+                            }
+                            break;
+                        case String(BOMBULKUPLOAD):
+                            checkForFileHead = checkForSameFileUpload(BOMUpload, fileHeads)
+                            break;
+                        case String(PARTCOMPONENTBULKUPLOAD):
+                            checkForFileHead = checkForSameFileUpload(PartComponent, fileHeads)
+                            break;
+                        case String(PRODUCTCOMPONENTBULKUPLOAD):
+                            checkForFileHead = checkForSameFileUpload(ProductComponent, fileHeads)
+                            break;
+                        case String(MACHINEBULKUPLOAD):
+                            if (this.state.costingHead === 'ZBC') {
+                                checkForFileHead = checkForSameFileUpload(MachineZBC, fileHeads)
+                            }
+                            else if (this.state.costingHead === 'VBC') {
+                                checkForFileHead = checkForSameFileUpload(MachineVBC, fileHeads)
+                            }
+                            else {
+                                checkForFileHead = checkForSameFileUpload(MHRMoreZBC, fileHeads)
+                            }
+                            break;
+                        case String(VENDORBULKUPLOAD):
+                            checkForFileHead = checkForSameFileUpload(Vendor, fileHeads)
+                            break;
+                        case String(LABOURBULKUPLOAD):
+                            checkForFileHead = checkForSameFileUpload(Labour, fileHeads)
+                            break;
+                        case String(OPERAIONBULKUPLOAD):
+                            if (this.state.costingHead === 'ZBC') {
+                                checkForFileHead = checkForSameFileUpload(ZBCOperation, fileHeads)
+                            }
+                            else {
+                                checkForFileHead = checkForSameFileUpload(VBCOperation, fileHeads)
+                            }
+                            break;
+                        case String(FUELBULKUPLOAD):
+                            checkForFileHead = checkForSameFileUpload(Fuel, fileHeads)
+                            break;
+                        case String(INTERESTRATEBULKUPLOAD):
+                            checkForFileHead = checkForSameFileUpload(VBCInterestRate, fileHeads)
+                            break;
+                        case String(ACTUALVOLUMEBULKUPLOAD):
+                            if (this.state.costingHead === 'ZBC') {
+                                checkForFileHead = checkForSameFileUpload(VOLUME_ACTUAL_ZBC, fileHeads)
+                            }
+                            else {
+                                checkForFileHead = checkForSameFileUpload(VOLUME_ACTUAL_VBC, fileHeads)
+                            }
+                            break;
+                        case String(BUDGETEDVOLUMEBULKUPLOAD):
+                            if (this.state.costingHead === 'ZBC') {
+                                checkForFileHead = checkForSameFileUpload(VOLUME_BUDGETED_ZBC, fileHeads)
+                            }
+                            else {
+                                checkForFileHead = checkForSameFileUpload(VOLUME_BUDGETED_VBC, fileHeads)
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                    if (!checkForFileHead) {
+                        Toaster.warning('Please select file of same Master')
+                        return false
+                    }
                     //
                     // fileHeads = ["SerialNumber", "BillNumber"]
 
@@ -128,7 +232,7 @@ class BulkUpload extends Component {
                             let obj = {}
                             val.map((el, i) => {
                                 if (fileHeads[i] === 'EffectiveDate' && typeof el === 'string') {
-                                    el = DayTime(Date(el)).format('YYYY-MM-DD HH:mm:ss')
+                                    el = DayTime(el).format('YYYY-MM-DD HH:mm:ss')
                                 }
                                 if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
                                     el = getJsDateFromExcel(el)

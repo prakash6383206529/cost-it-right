@@ -29,6 +29,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
 import ScrollToTop from '../../common/ScrollToTop';
 import { PaginationWrapper } from '../../common/commonPagination';
+import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -61,7 +62,8 @@ class LabourListing extends Component {
       rowData: null,
       isLoader: false,
       showPopup: false,
-      deletedId: ''
+      deletedId: '',
+      selectedRowData: false
     }
   }
 
@@ -266,6 +268,12 @@ class LabourListing extends Component {
     return cellValue === 'Contractual' ? 'Contractual' : 'Employed'
   }
 
+  commonCostFormatter = (props) => {
+    const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+    return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : '-';
+  }
+
+
   /**
   * @method hyphenFormatter
   */
@@ -370,8 +378,15 @@ class LabourListing extends Component {
     this.state.gridApi.paginationSetPageSize(Number(newPageSize));
   };
 
+  onRowSelect = () => {
+    const selectedRows = this.state.gridApi?.getSelectedRows()
+    this.setState({ selectedRowData: selectedRows })
+  }
+
   onBtExport = () => {
-    let tempArr = this.props.labourDataList && this.props.labourDataList
+    let tempArr = []
+    tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+    tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.labourDataList ? this.props.labourDataList : [])
     return this.returnExcelColumn(LABOUR_DOWNLOAD_EXCEl, tempArr)
   };
 
@@ -403,6 +418,7 @@ class LabourListing extends Component {
   }
 
   resetState() {
+    this.state.gridApi.deselectAll()
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
   }
@@ -435,11 +451,20 @@ class LabourListing extends Component {
       lastPage: <span className="last-page-pg"></span>,
     }
 
+    const isFirstColumn = (params) => {
+
+      var displayedColumns = params.columnApi.getAllDisplayedColumns();
+      var thisIsFirstColumn = displayedColumns[0] === params.column;
+      return thisIsFirstColumn;
+
+    }
     const defaultColDef = {
       resizable: true,
       filter: true,
       sortable: true,
-
+      headerCheckboxSelectionFilteredOnly: true,
+      headerCheckboxSelection: isFirstColumn,
+      checkboxSelection: isFirstColumn
     };
 
     const frameworkComponents = {
@@ -447,7 +472,8 @@ class LabourListing extends Component {
       customNoRowsOverlay: NoContentFound,
       costingHeadFormatter: this.costingHeadFormatter,
       effectiveDateRenderer: this.effectiveDateFormatter,
-      hyphenFormatter: this.hyphenFormatter
+      hyphenFormatter: this.hyphenFormatter,
+      commonCostFormatter: this.commonCostFormatter
     };
 
     return (
@@ -543,6 +569,8 @@ class LabourListing extends Component {
                   title: EMPTY_DATA,
                   imagClass: 'imagClass'
                 }}
+                rowSelection={'multiple'}
+                onSelectionChanged={this.onRowSelect}
                 frameworkComponents={frameworkComponents}
               >
                 <AgGridColumn field="IsContractBase" headerName="Employment Terms" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
@@ -551,7 +579,7 @@ class LabourListing extends Component {
                 <AgGridColumn field="State" headerName="State"></AgGridColumn>
                 <AgGridColumn field="MachineType" headerName="Machine Type"></AgGridColumn>
                 <AgGridColumn field="LabourType" headerName="Labour Type"></AgGridColumn>
-                <AgGridColumn width={205} field="LabourRate" headerName="Rate Per Person/Annum"></AgGridColumn>
+                <AgGridColumn width={205} field="LabourRate" headerName="Rate Per Person/Annum" cellRenderer={'commonCostFormatter'}></AgGridColumn>
                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                 <AgGridColumn field="LabourId" width={150} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
               </AgGridReact>

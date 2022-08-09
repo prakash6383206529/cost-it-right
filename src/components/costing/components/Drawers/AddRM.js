@@ -46,33 +46,24 @@ function AddRM(props) {
     getDataList()
   }, []);
 
-  const onRowSelect = (row, isSelected, e) => {
+  const onRowSelect = (event) => {
+    var selectedRows = gridApi && gridApi?.getSelectedRows();
 
-    var selectedRows = gridApi.getSelectedRows();
     //BELOW CONDITION, WHEN PLASTIC TECHNOLOGY SELECTED, MULTIPLE RM'S CAN BE ADDED
     if (isMultipleRMAllow(costData?.TechnologyId)) {
-      if (JSON.stringify(selectedRows) === JSON.stringify(Ids)) return false
-      setSelectedRowData(selectedRows)
-      // if (isSelected) {
-      //   let tempArr = [...selectedRowData, row]
-      //   setSelectedRowData(tempArr)
-      // } else {
-      //   const RawMaterialId = row.RawMaterialId;
-      //   let tempArr = selectedRowData && selectedRowData.filter(el => el.RawMaterialId !== RawMaterialId)
-      //   setSelectedRowData(tempArr)
-      // }
+      if (selectedRows?.length === 0) {
+        setSelectedRowData([])
+      } else {
+        setSelectedRowData(selectedRows)
+      }
     } else {
-
-      if (JSON.stringify(selectedRows) === JSON.stringify(Ids)) return false
-      setSelectedRowData(selectedRows[0])
-      // if (isSelected) {
-      //   setSelectedRowData(row)
-      // } else {
-      //   setSelectedRowData({})
-      // }
+      if (selectedRows?.length === 0) {
+        setSelectedRowData([])
+      } else {
+        setSelectedRowData(selectedRows[0])
+      }
     }
   }
-
 
   const netLandedFormat = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -103,7 +94,7 @@ function AddRM(props) {
   * @description ADD ROW IN TO RM COST GRID
   */
   const addRow = () => {
-    if (Object.keys(selectedRowData).length === 0) {
+    if (selectedRowData?.length === 0) {
       Toaster.warning('Please select row.')
       return false;
     }
@@ -324,7 +315,7 @@ function AddRM(props) {
                         suppressRowClickSelection={true}
                         rowSelection={isMultipleRMAllow(costData?.TechnologyId) && !IsApplyMasterBatch ? 'multiple' : 'single'}
                         frameworkComponents={frameworkComponents}
-                        onSelectionChanged={onRowSelect}
+                        onRowSelected={onRowSelect}
                         isRowSelectable={isRowSelectable}
                       >
                         <AgGridColumn field="RawMaterialId" hide={true}></AgGridColumn>

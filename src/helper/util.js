@@ -11,6 +11,7 @@ import {
 } from '../config/constants'
 import { getConfigurationKey } from './auth'
 import { data } from 'react-dom-factories';
+import _ from 'lodash';
 
 
 
@@ -27,6 +28,9 @@ export const apiErrors = (res) => {
     response && handleHTTPStatus(response)
   } else {
     if (navigator.userAgent.indexOf("Firefox") !== -1) {
+      setTimeout(() => {
+        toast.error('Something went wrong please try again.')
+      }, 600);
       return;
     }
     toast.error('Something went wrong please try again.')
@@ -950,4 +954,25 @@ export const labelWithUOMAndCurrency = (label, UOM, currency) => {
   return <div>
     <span className='d-flex'>{label} ({currency ? currency : getConfigurationKey().BaseCurrency}/{UOM ? displayUOM(UOM) : 'UOM'})</span>
   </div>
+}
+
+
+//COMMON FUNCTION FOR MASTERS BULKUPLOAD CHECK
+export const checkForSameFileUpload = (master, fileHeads) => {
+  let checkForFileHead, array = []
+  let bulkUploadArray = [];   //ARRAY FOR COMPARISON 
+  array = _.map(master, 'label')
+  bulkUploadArray = [...array]
+  checkForFileHead = _.isEqual(fileHeads, bulkUploadArray)
+  return checkForFileHead
+}
+
+// THIS FUNCTION SHOWING TITLE ON HOVER FOR ACTIVE AND INACTIVE STATUS IN GRID
+export const showTitleForActiveToggle = (props) => {
+  setTimeout(() => {
+    const titleActive = document.getElementsByClassName("active-switch")[props?.rowIndex];
+    titleActive?.setAttribute('title', 'Active');
+    const titleInactive = document.getElementsByClassName("inactive-switch")[props?.rowIndex];
+    titleInactive?.setAttribute('title', 'Inactive');
+  }, 500);
 }

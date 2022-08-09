@@ -1167,6 +1167,7 @@ function CostingDetails(props) {
           CostingId: Item.CostingId,
           DisplayStatus: '',
           Price: '',
+          Status: '',
         }
         tempArray = Object.assign([...zbcPlantGrid], { [index]: tempData })
         setZBCPlantGrid(tempArray)

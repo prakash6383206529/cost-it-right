@@ -39,14 +39,15 @@ class AssemblyPartListing extends Component {
             isEditFlag: false,
             isOpen: false,
             tableData: [],
-
+            disableDownload: false,
             isOpenVisualDrawer: false,
             visualAdId: '',
             BOMId: '',
             isBulkUpload: false,
             showPopup: false,
             deletedId: '',
-            isLoader: false
+            isLoader: false,
+            selectedRowData: false
         }
     }
 
@@ -275,9 +276,14 @@ class AssemblyPartListing extends Component {
         this.state.gridApi.paginationSetPageSize(Number(newPageSize));
     };
 
+    onRowSelect = () => {
+        const selectedRows = this.state.gridApi?.getSelectedRows()
+        this.setState({ selectedRowData: selectedRows })
+    }
     onBtExport = () => {
         let tempArr = []
-        tempArr = this.props.partsListing && this.props.partsListing
+        tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+        tempArr = (tempArr && tempArr?.length > 0) ? tempArr : (this.props.partsListing ? this.props.partsListing : [])
         return this.returnExcelColumn(ASSEMBLYPART_DOWNLOAD_EXCEl, tempArr)
     };
 
@@ -305,6 +311,7 @@ class AssemblyPartListing extends Component {
 
 
     resetState() {
+        this.state.gridApi.deselectAll()
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
     }
@@ -318,11 +325,19 @@ class AssemblyPartListing extends Component {
         const { isOpenVisualDrawer, isBulkUpload } = this.state;
         const { AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
 
+        const isFirstColumn = (params) => {
+            var displayedColumns = params.columnApi.getAllDisplayedColumns();
+            var thisIsFirstColumn = displayedColumns[0] === params.column;
+            return thisIsFirstColumn;
+        }
 
         const defaultColDef = {
             resizable: true,
             filter: true,
             sortable: true,
+            headerCheckboxSelectionFilteredOnly: true,
+            headerCheckboxSelection: isFirstColumn,
+            checkboxSelection: isFirstColumn
         };
 
         const frameworkComponents = {
@@ -365,18 +380,12 @@ class AssemblyPartListing extends Component {
                                 {
                                     DownloadAccessibility &&
                                     <>
-
-                                        <ExcelFile filename={'Assembly Part'} fileExtension={'.xls'} element={
+                                        <ExcelFile filename={'BOM'} fileExtension={'.xls'} element={
                                             <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-                                                {/* DOWNLOAD */}
                                             </button>}>
-
                                             {this.onBtExport()}
                                         </ExcelFile>
-
                                     </>
-
-
                                 }
                                 <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
                                     <div className="refresh mr-0"></div>
@@ -408,10 +417,12 @@ class AssemblyPartListing extends Component {
                                 title: EMPTY_DATA,
                                 imagClass: 'imagClass'
                             }}
+                            rowSelection={'multiple'}
+                            onSelectionChanged={this.onRowSelect}
                             frameworkComponents={frameworkComponents}
                         >
-                            <AgGridColumn field="Technology" headerName="Technology" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                            <AgGridColumn field="BOMNumber" headerName="BOM NO."></AgGridColumn>
+                            <AgGridColumn cellClass="has-checkbox" field="Technology" headerName="Technology" cellRenderer={'checkBoxRenderer'}></AgGridColumn>
+                            <AgGridColumn field="BOMNumber" headerName="BOM No."></AgGridColumn>
                             <AgGridColumn field="PartNumber" headerName="Part No."></AgGridColumn>
                             <AgGridColumn field="PartName" headerName="Name"></AgGridColumn>
                             <AgGridColumn field="NumberOfParts" headerName="No. of Child Parts"></AgGridColumn>

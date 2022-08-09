@@ -39,7 +39,6 @@ class UOMMaster extends Component {
       isEditFlag: false,
       uomId: '',
       dataList: [],
-
       ViewAccessibility: false,
       AddAccessibility: false,
       EditAccessibility: false,
@@ -52,8 +51,8 @@ class UOMMaster extends Component {
       showData: false,
       showPopup: false,
       deletedId: '',
-      isLoader: false
-
+      isLoader: false,
+      selectedRowData: false
     }
   }
 
@@ -201,7 +200,6 @@ class UOMMaster extends Component {
 
   unitSymbol = (props) => {
     const cellValue = props?.value;
-    console.log(cellValue, "cellValue");
     return (
       <div>{displayUOM(cellValue)}
       </div>
@@ -264,9 +262,14 @@ class UOMMaster extends Component {
   onPageSizeChanged = (newPageSize) => {
     this.state.gridApi.paginationSetPageSize(Number(newPageSize));
   };
-
+  onRowSelect = () => {
+    const selectedRows = this.state.gridApi?.getSelectedRows()
+    this.setState({ selectedRowData: selectedRows })
+  }
   onBtExport = () => {
-    let tempArr = this.state.dataList && this.state.dataList
+    let tempArr = []
+    tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+    tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.unitOfMeasurementList ? this.props.unitOfMeasurementList : [])
     return this.returnExcelColumn(UOM_DOWNLOAD_EXCEl, tempArr)
   };
 
@@ -284,6 +287,7 @@ class UOMMaster extends Component {
   }
 
   resetState() {
+    this.state.gridApi.deselectAll()
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
   }
@@ -296,12 +300,21 @@ class UOMMaster extends Component {
     const { isOpen, isEditFlag, uomId, AddAccessibility, DownloadAccessibility } = this.state;
 
 
+    const isFirstColumn = (params) => {
+
+      var displayedColumns = params.columnApi.getAllDisplayedColumns();
+      var thisIsFirstColumn = displayedColumns[0] === params.column;
+      return thisIsFirstColumn;
+
+    }
     const defaultColDef = {
       resizable: true,
       filter: true,
       sortable: true,
+      headerCheckboxSelectionFilteredOnly: true,
+      headerCheckboxSelection: isFirstColumn,
+      checkboxSelection: isFirstColumn
     };
-
     const frameworkComponents = {
       totalValueRenderer: this.buttonFormatter,
       customNoRowsOverlay: NoContentFound,
@@ -374,6 +387,8 @@ class UOMMaster extends Component {
                     noRowsOverlayComponentParams={{
                       title: EMPTY_DATA,
                     }}
+                    rowSelection={'multiple'}
+                    onSelectionChanged={this.onRowSelect}
                     frameworkComponents={frameworkComponents}
                   >
                     <AgGridColumn field="Unit" headerName="Unit"></AgGridColumn>

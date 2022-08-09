@@ -90,6 +90,7 @@ class SideBar extends Component {
       this.props.getTopAndLeftMenuData((res) => {
         this.simulationPermission(res?.data?.Data, 1)
         this.simulationPermission(res?.data?.Data, 0)
+        this.simulationPermission(res?.data?.Data, 2)
       })
     }
 
@@ -107,17 +108,19 @@ class SideBar extends Component {
   * @description permission for add and view simulation
   */
   simulationPermission(Data, index) {
-    let simulationIndex = Data && Data.findIndex(item => item.ModuleName === SIMULATION)
+    let simulationIndex = Data && Data?.findIndex(item => item?.ModuleName === SIMULATION)
 
-    if (simulationIndex !== -1) {
+    if (simulationIndex !== -1 && simulationIndex !== undefined) {
       let simulationPages = Data[simulationIndex].Pages && Data[simulationIndex].Pages.filter(item => item.Sequence !== 0 && item.IsChecked === true)
       let simulationArray = simulationPages && simulationPages.filter((item) => {
-        if (item.Actions[index].IsChecked === true) return item.PageName;
+        if (item?.Actions[index] && item?.Actions[index]?.IsChecked === true) return item.PageName;
       })
       if (index === 1) {                                 // 1 IS FOR VIEW PERMISSION 
         localStorage.setItem('simulationViewPermission', JSON.stringify(_.map(simulationArray, 'PageName')))
       } else if (index === 0) {                          // 0 IS FOR ADD PERMISSION 
         localStorage.setItem('simulationAddPermission', JSON.stringify(_.map(simulationArray, 'PageName')))
+      } else if (index === 2) {                          // 2 IS FOR Run PERMISSION 
+        localStorage.setItem('simulationRunPermission', JSON.stringify(_.map(simulationArray, 'PageName')))
       }
     }
   }
@@ -479,6 +482,14 @@ class SideBar extends Component {
                     PageURL: el.LandingPageURL,
                   },
                 }}
+              // to={{
+              //   pathname: el.LandingPageURL,
+              //   state: {
+              //     ModuleId: el.ModuleId,
+              //     PageName: "Reports And Analytics",
+              //     PageURL: el.LandingPageURL,
+              //   },
+              // }}       // WHEN DONE FROM BACKEND UNCOMMENT THIS AND TEST
               >
                 <img
                   className=""

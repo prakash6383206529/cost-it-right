@@ -614,3 +614,21 @@ export function deleteVendorPowerDetail(Id, callback) {
             });
     };
 }
+
+/**
+ * @method getFuelComboData
+ * @description USED TO GET FUEL COMBO DATA
+ */
+export function getUOMByFuelId(data, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getUOMByFuelId}?fuelId=${data}`, config());
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}

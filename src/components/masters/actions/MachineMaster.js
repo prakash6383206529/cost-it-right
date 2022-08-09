@@ -12,6 +12,7 @@ import {
     GET_MACHINE_TYPE_SELECTLIST,
     GET_PROCESSES_LIST_SUCCESS,
     GET_MACHINE_LIST_SUCCESS,
+    GET_ALL_MACHINE_DATALIST_SUCCESS,
     GET_MACHINE_APPROVAL_LIST,
     config,
     SET_PROCESS_GROUP_FOR_API,
@@ -158,7 +159,8 @@ export function createMachine(data, callback) {
  */
 export function copyMachine(MachineId, callback) {
     return (dispatch) => {
-        const request = axios.post(`${API.copyMachine}/${MachineId}`, '', config());
+        const queryParams = `machineId=${MachineId}&loggedInUserId=${loggedInUserId()}`
+        const request = axios.post(`${API.copyMachine}?${queryParams}`, '', config());
         request.then((response) => {
             if (response.data.Result === true) {
                 dispatch({ type: CREATE_SUCCESS, });
@@ -187,12 +189,20 @@ export function getMachineDataList(data, skip, take, isPagination, obj, callback
                     value = response.data.DataList.filter((item) => item.EffectiveDateNew = item.EffectiveDate)
                 }
                 if (response.data.Result === true || response?.status === 204) {
-                    dispatch({
-                        type: GET_MACHINE_DATALIST_SUCCESS,
-                        payload: response.status === 204 ? [] : value,
-                    });
-                    callback(response);
 
+                    if (isPagination === true) {
+                        dispatch({
+                            type: GET_MACHINE_DATALIST_SUCCESS,
+                            payload: response.status === 204 ? [] : value,
+                        });
+                    }
+                    else {
+                        dispatch({
+                            type: GET_ALL_MACHINE_DATALIST_SUCCESS,
+                            payload: response.status === 204 ? [] : value,
+                        });
+                    }
+                    callback(response);
                 }
             }).catch((error) => {
                 dispatch({ type: API_FAILURE });
@@ -431,7 +441,7 @@ export function checkAndGetMachineNumber(number, callback) {
 export function getFuelUnitCost(data, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const queryParams = `fuelId=${data.fuelId}&plantId=${data.plantId}`
+        const queryParams = `fuelId=${data?.fuelId}&plantId=${data?.plantId}&effectiveDate=${data?.effectiveDate}`
         axios.get(`${API.getFuelUnitCost}?${queryParams}`, config())
             .then((response) => {
                 if (response && response.data && response.data.Result === true) {

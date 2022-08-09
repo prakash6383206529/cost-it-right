@@ -4,8 +4,7 @@ import { Field, reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { checkForDecimalAndNull, required } from "../../../helper/validation";
 import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
-import { getManageBOPSOBDataList, getInitialFilterData, getBOPCategorySelectList, getAllVendorSelectList, } from '../actions/BoughtOutParts';
-import { getPlantSelectList, } from '../../../actions/Common';
+import { getManageBOPSOBDataList, getInitialFilterData } from '../actions/BoughtOutParts';
 import NoContentFound from '../../common/NoContentFound';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { BOP_SOBLISTING_DOWNLOAD_EXCEl, costingHeadObj } from '../../../config/masterData';
@@ -43,8 +42,8 @@ class SOBListing extends Component {
       rowData: null,
       sideBar: { toolPanels: ['columns'] },
       showData: false,
-      isLoader: false
-
+      isLoader: false,
+      selectedRowData: false
     }
   }
 
@@ -53,10 +52,6 @@ class SOBListing extends Component {
   * @description Called after rendering the component
   */
   componentDidMount() {
-    this.props.getBOPCategorySelectList(() => { })
-    this.props.getPlantSelectList(() => { })
-    this.props.getAllVendorSelectList(() => { })
-    // this.props.getInitialFilterData('', () => { })
     this.getDataList()
   }
 
@@ -169,13 +164,15 @@ class SOBListing extends Component {
   * @method closeDrawer
   * @description Filter listing
   */
-  closeDrawer = (e = '') => {
+  closeDrawer = (e = '', type) => {
     this.setState({
       isOpen: false,
       isEditFlag: false,
       ID: '',
     }, () => {
-      this.getDataList()
+      if (type === 'submit') {
+        this.getDataList()
+      }
     })
   }
 
@@ -249,9 +246,15 @@ class SOBListing extends Component {
     this.state.gridApi.paginationSetPageSize(Number(newPageSize));
   };
 
+  onRowSelect = () => {
+    const selectedRows = this.state.gridApi?.getSelectedRows()
+    this.setState({ selectedRowData: selectedRows })
+  }
+
   onBtExport = () => {
     let tempArr = []
-    tempArr = this.props.bopSobList && this.props.bopSobList
+    tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+    tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.bopSobList ? this.props.bopSobList : [])
     return this.returnExcelColumn(BOP_SOBLISTING_DOWNLOAD_EXCEl, tempArr)
   };
 
@@ -276,8 +279,8 @@ class SOBListing extends Component {
     this.state.gridApi.setQuickFilter(e.target.value);
   }
 
-
   resetState() {
+    this.state.gridApi.deselectAll()
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
   }
@@ -287,6 +290,10 @@ class SOBListing extends Component {
       // <ExportCSVButton btnText='Download' onClick={() => this.handleExportCSVButtonClick(onClick)} />
       <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
     );
+  }
+  commonCostFormatter = (props) => {
+    const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+    return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : '-';
   }
 
 
@@ -311,11 +318,19 @@ class SOBListing extends Component {
 
     };
 
+    const isFirstColumn = (params) => {
+      var displayedColumns = params.columnApi.getAllDisplayedColumns();
+      var thisIsFirstColumn = displayedColumns[0] === params.column;
+      return thisIsFirstColumn;
+    }
+
     const defaultColDef = {
       resizable: true,
       filter: true,
       sortable: true,
-
+      headerCheckboxSelectionFilteredOnly: true,
+      headerCheckboxSelection: isFirstColumn,
+      checkboxSelection: isFirstColumn
     };
 
     const frameworkComponents = {
@@ -323,7 +338,8 @@ class SOBListing extends Component {
       customNoRowsOverlay: NoContentFound,
       hyphenFormatter: this.hyphenFormatter,
       costingHeadFormatter: this.costingHeadFormatter,
-      effectiveDateFormatter: this.effectiveDateFormatter
+      effectiveDateFormatter: this.effectiveDateFormatter,
+      commonCostFormatter: this.commonCostFormatter
     };
 
     return (
@@ -347,7 +363,6 @@ class SOBListing extends Component {
                   <>
                     <ExcelFile filename={Sob} fileExtension={'.xls'} element={
                       <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-                        {/* DOWNLOAD */}
                       </button>}>
                       {this.onBtExport()}
                     </ExcelFile>
@@ -387,6 +402,8 @@ class SOBListing extends Component {
                     imagClass: 'imagClass'
                   }}
                   frameworkComponents={frameworkComponents}
+                  rowSelection={'multiple'}
+                  onSelectionChanged={this.onRowSelect}
                 >
                   {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
                   <AgGridColumn field="BoughtOutPartNumber" headerName="BOP Part No."></AgGridColumn>
@@ -396,7 +413,7 @@ class SOBListing extends Component {
                   <AgGridColumn field="NoOfVendors" headerName="No. of Vendors"></AgGridColumn>
                   <AgGridColumn field="Plant" headerName="Plant(Code)"></AgGridColumn>
                   <AgGridColumn field="ShareOfBusinessPercentage" headerName="Total SOB(%)"></AgGridColumn>
-                  <AgGridColumn width={205} field="WeightedNetLandedCost" headerName="Weighted Net Cost (INR)"></AgGridColumn>
+                  <AgGridColumn width={205} field="WeightedNetLandedCost" headerName="Weighted Net Cost (INR)" cellRenderer={'commonCostFormatter'}></AgGridColumn>
                   <AgGridColumn field="BoughtOutPartNumber" width={120} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                 </AgGridReact>
                 {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
@@ -436,9 +453,6 @@ function mapStateToProps({ boughtOutparts, comman }) {
 */
 export default connect(mapStateToProps, {
   getManageBOPSOBDataList,
-  getBOPCategorySelectList,
-  getPlantSelectList,
-  getAllVendorSelectList,
   getInitialFilterData,
 })(reduxForm({
   form: 'SOBListing',

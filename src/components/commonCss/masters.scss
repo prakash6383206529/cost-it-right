@@ -1,0 +1,37 @@
+.sub-form-container {
+    .text-help.mb-2 {
+        position: absolute;
+    }
+}
+.p-absolute {
+    position: absolute;
+}
+.rate-form-container {
+    .p-absolute {
+        bottom: 7px;
+    }
+}
+.truck-load-form-container {
+    .p-absolute {
+        bottom: 22px;
+    } 
+    .bottom-7 {
+        bottom: 7px;
+    }
+}
+.child-form-container {
+    @extend .truck-load-form-container;
+    .bottom-37 {
+        bottom: 37px;
+    }
+}
+.table {
+    .UOM-label-container {
+        span {
+            &:last-child {
+                position:absolute;
+                top: -5px;
+            }
+        }
+    }
+}

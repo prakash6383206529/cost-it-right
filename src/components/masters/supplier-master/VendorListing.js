@@ -18,7 +18,7 @@ import { fetchCountryDataAPI, } from '../../../actions/Common';
 import Switch from "react-switch";
 import BulkUpload from '../../massUpload/BulkUpload';
 import AddVendorDrawer from './AddVendorDrawer';
-import { checkPermission } from '../../../helper/util';
+import { checkPermission, showTitleForActiveToggle } from '../../../helper/util';
 import { MASTERS, VENDOR, VendorMaster } from '../../../config/constants';
 import { loggedInUserId } from '../../../helper';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -80,6 +80,7 @@ class VendorListing extends Component {
             pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
             globalTake: defaultPageSize,
             disableFilter: true,
+            disableDownload: false,
         }
     }
 
@@ -94,7 +95,7 @@ class VendorListing extends Component {
     }
 
     componentDidMount() {
-        this.getTableListData(0, '', "", "", 100, this.state.floatingFilterData, true)
+        this.getTableListData(0, '', "", "", defaultPageSize, this.state.floatingFilterData, true)
 
         this.applyPermission(this.props.topAndLeftMenuData)
     }
@@ -173,7 +174,7 @@ class VendorListing extends Component {
             vendorName: vendorName,
             country: country,
         }
-        this.setState({ isLoader: true })
+        this.setState({ isLoader: isPagination ? true : false })
 
         let constantFilterData = this.state.filterModel
         let object = { ...this.state.floatingFilterData }
@@ -194,6 +195,14 @@ class VendorListing extends Component {
                     totalRecordCount: Data[0].TotalRecordCount,
                 })
 
+            }
+
+            if (res && isPagination === false) {
+                this.setState({ disableDownload: false })
+                setTimeout(() => {
+                    let button = document.getElementById('Excel-Downloads-vendor')
+                    button && button.click()
+                }, 500);
             }
 
             if (res) {
@@ -397,38 +406,30 @@ class VendorListing extends Component {
     statusButtonFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const { ActivateAccessibility } = this.state;
-        if (ActivateAccessibility) {
-            return (
-                <>
-                    <label htmlFor="normal-switch" className="normal-switch" >
-                        <Switch
-                            onChange={() => this.handleChange(cellValue, rowData)}
-                            checked={cellValue}
-                            background="#ff6600"
-                            onColor="#4DC771"
-                            onHandleColor="#ffffff"
-                            offColor="#FC5774"
-                            id="normal-switch"
-                            height={24}
-                        />
-                    </label>
-                </>
-            )
-        } else {
-            return (
-                <>
-                    {
-                        cellValue ?
-                            <div className={'Activated'}> {'Active'}</div>
-                            :
-                            <div className={'Deactivated'}>{'Deactive'}</div>
-                    }
-                </>
-            )
-        }
-    }
 
+        const { ActivateAccessibility } = this.state;
+        if (rowData.UserId === loggedInUserId()) return null;
+        showTitleForActiveToggle(props)
+        return (
+            <>
+                <label htmlFor="normal-switch" className="normal-switch">
+                    {/* <span>Switch with default style</span> */}
+                    <Switch
+                        onChange={() => this.handleChange(cellValue, rowData)}
+                        checked={cellValue}
+                        disabled={!ActivateAccessibility}
+                        background="#ff6600"
+                        onColor="#4DC771"
+                        onHandleColor="#ffffff"
+                        offColor="#FC5774"
+                        id="normal-switch"
+                        height={24}
+                        className={cellValue ? "active-switch" : "inactive-switch"}
+                    />
+                </label>
+            </>
+        )
+    }
 
     /**
     * @method indexFormatter
@@ -492,7 +493,8 @@ class VendorListing extends Component {
         this.setState({ isOpenVendor: true, isViewMode: false })
     }
 
-    closeVendorDrawer = (e = '') => {
+    closeVendorDrawer = (e = '', type) => {
+
         this.setState({
             isOpenVendor: false,
             isEditFlag: false,
@@ -525,8 +527,28 @@ class VendorListing extends Component {
     };
 
 
+    onExcelDownload = () => {
+
+        this.setState({ disableDownload: true })
+
+        let tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+        if (tempArr?.length > 0) {
+            setTimeout(() => {
+                this.setState({ disableDownload: false })
+                let button = document.getElementById('Excel-Downloads-vendor')
+                button && button.click()
+            }, 400);
+
+        } else {
+
+            this.getTableListData(0, '', "", "", 100, this.state.floatingFilterData, false)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
+        }
+    }
+
     onBtExport = () => {
-        let tempArr = this.props.supplierDataList && this.props.supplierDataList
+        let tempArr = []
+        tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+        tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.allSupplierDataList ? this.props.allSupplierDataList : [])
         return this.returnExcelColumn(VENDOR_DOWNLOAD_EXCEl, tempArr)
     };
 
@@ -539,6 +561,12 @@ class VendorListing extends Component {
                 item.State = ' '
             } else if (String(item.City) === 'NA') {
                 item.City = ' '
+            }
+            if (item.IsActive === true) {
+                item.IsActive = 'Active'
+            }
+            else if (item.IsActive === false) {
+                item.IsActive = 'In Active'
             }
             return item
         })
@@ -555,7 +583,6 @@ class VendorListing extends Component {
     }
 
 
-
     /**
     * @method render
     * @description Renders the component
@@ -565,26 +592,21 @@ class VendorListing extends Component {
         const { isOpenVendor, isEditFlag, isBulkUpload, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.state;
         const ExcelFile = ReactExport.ExcelFile;
 
-        const options = {
-            clearSearch: true,
-            noDataText: (this.props.supplierDataList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
 
-            exportCSVBtn: this.createCustomExportCSVButton,
-            onExportToCSV: this.handleExportCSVButtonClick,
+        const isFirstColumn = (params) => {
 
-            paginationShowsTotal: this.renderPaginationShowsTotal,
-            prePage: <span className="prev-page-pg"></span>, // Previous page button text
-            nextPage: <span className="next-page-pg"></span>, // Next page button text
-            firstPage: <span className="first-page-pg"></span>, // First page button text
-            lastPage: <span className="last-page-pg"></span>,
-
-        };
+            var displayedColumns = params.columnApi.getAllDisplayedColumns();
+            var thisIsFirstColumn = displayedColumns[0] === params.column;
+            return thisIsFirstColumn;
+        }
 
         const defaultColDef = {
             resizable: true,
             filter: true,
             sortable: true,
-
+            headerCheckboxSelectionFilteredOnly: true,
+            headerCheckboxSelection: isFirstColumn,
+            checkboxSelection: isFirstColumn
         };
 
         const frameworkComponents = {
@@ -687,7 +709,7 @@ class VendorListing extends Component {
                                 <div className="warning-message d-flex align-items-center">
                                     {this.state.warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                                 </div>
-                                <div>
+                                <div className='d-flex'>
                                     <button title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch(this)} disabled={this.state.disableFilter}><div class="filter mr-0"></div></button>
                                     {AddAccessibility && (
                                         <button
@@ -714,13 +736,19 @@ class VendorListing extends Component {
                                     {
                                         DownloadAccessibility &&
                                         <>
-                                            <ExcelFile filename={'Vendor'} fileExtension={'.xls'} element={
-                                                <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-                                                    {/* DOWNLOAD */}
-                                                </button>}>
+                                            {this.state.disableDownload ? <div className='p-relative mr5'> <LoaderCustom customClass={"download-loader"} /> <button type="button" className={'user-btn'}><div className="download mr-0"></div>
+                                            </button></div> :
+                                                <>
+                                                    <button type="button" onClick={this.onExcelDownload} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                                    </button>
 
-                                                {this.onBtExport()}
-                                            </ExcelFile>
+                                                    <ExcelFile filename={'Vendor'} fileExtension={'.xls'} element={
+                                                        <button id={'Excel-Downloads-vendor'} className="p-absolute" type="button" >
+                                                        </button>}>
+                                                        {this.onBtExport()}
+                                                    </ExcelFile>
+                                                </>
+                                            }
                                         </>
                                     }
                                     <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
@@ -745,6 +773,7 @@ class VendorListing extends Component {
                             gridOptions={gridOptions}
                             suppressRowClickSelection={true}
                             noRowsOverlayComponent={'customNoRowsOverlay'}
+                            rowSelection={'multiple'}
                             noRowsOverlayComponentParams={{
                                 title: EMPTY_DATA,
                                 imagClass: 'imagClass'
@@ -819,11 +848,11 @@ class VendorListing extends Component {
 * @param {*} state
 */
 function mapStateToProps({ comman, supplier, auth, }) {
-    const { loading, vendorTypeList, vendorSelectList, vendorTypeByVendorSelectList, supplierDataList } = supplier;
+    const { loading, vendorTypeList, vendorSelectList, vendorTypeByVendorSelectList, supplierDataList, allSupplierDataList } = supplier;
     const { countryList } = comman;
     const { leftMenuData, topAndLeftMenuData } = auth;
 
-    return { loading, vendorTypeList, countryList, leftMenuData, vendorSelectList, vendorTypeByVendorSelectList, supplierDataList, topAndLeftMenuData };
+    return { loading, vendorTypeList, countryList, leftMenuData, vendorSelectList, vendorTypeByVendorSelectList, supplierDataList, allSupplierDataList, topAndLeftMenuData };
 }
 
 /**

@@ -87,7 +87,9 @@ class AddOperation extends Component {
   * @description called before render the component
   */
   UNSAFE_componentWillMount() {
-    this.props.getUOMSelectList(() => { })
+    if (!this.state.isViewMode) {
+      this.props.getUOMSelectList(() => { })
+    }
   }
 
   /**
@@ -311,7 +313,7 @@ class AddOperation extends Component {
         isEditFlag: true,
         OperationId: data.ID,
       })
-      this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
+      // this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
       this.props.getOperationDataAPI(data.ID, (res) => {
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data;
@@ -325,11 +327,7 @@ class AddOperation extends Component {
             return technologyArray;
           })
 
-
           setTimeout(() => {
-            const { UOMSelectList } = this.props;
-            const UOMObj = UOMSelectList && UOMSelectList.find(item => item.Value === Data.UnitOfMeasurementId)
-
             this.setState({
               isEditFlag: true,
               IsFinancialDataChanged: false,
@@ -338,8 +336,8 @@ class AddOperation extends Component {
               selectedTechnology: technologyArray,
               selectedPlants: [{ Text: Data.DestinationPlantName, Value: Data.DestinationPlantId }],
               vendorName: Data.VendorName && Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.VendorId } : [],
-              UOM: UOMObj && UOMObj !== undefined ? { label: UOMObj.Display, value: UOMObj.Value } : [],
-              oldUOM: UOMObj && UOMObj !== undefined ? { label: UOMObj.Display, value: UOMObj.Value } : [],
+              UOM: Data.UnitOfMeasurement !== undefined ? { label: Data.UnitOfMeasurement, value: Data.UnitOfMeasurementId } : [],
+              oldUOM: Data.UnitOfMeasurement !== undefined ? { label: Data.UnitOfMeasurement, value: Data.UnitOfMeasurementId } : [],
               isSurfaceTreatment: Data.IsSurfaceTreatmentOperation,
               remarks: Data.Remark,
               files: Data.Attachements,
@@ -370,6 +368,7 @@ class AddOperation extends Component {
     this.props.checkAndGetOperationCode(e.target.value, '', res => {
       if (res && res.data && res.data.Result === false) {
         Toaster.warning(res.data.Message);
+        this.props.change('OperationCode', "")
       }
     })
   }
@@ -554,6 +553,11 @@ class AddOperation extends Component {
     }
     /** Update existing detail of supplier master **/
     // if (this.state.isEditFlag && this.state.isFinalApprovar) {
+    if (Number(DataToChange.Rate) === Number(values.Rate) && DataToChange.Remark === values.Remark && UOM.value === oldUOM.value
+      && DataToChange.Description === values.Description && uploadAttachements) {
+      Toaster.warning('Please change data to send operation for approval')
+      return false
+    }
 
     if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(OPERATIONS_ID) !== true)) {
 
@@ -598,11 +602,6 @@ class AddOperation extends Component {
 
       }
 
-      if (Number(DataToChange.Rate) === Number(values.Rate) && DataToChange.Remark === values.Remark && UOM.value === oldUOM.value
-        && DataToChange.Description === values.Description && uploadAttachements) {
-        this.cancel('Cancel')
-        return false
-      }
 
       if (isEditFlag) {
         this.setState({ showPopup: true, updatedObj: updateData })
@@ -723,7 +722,7 @@ class AddOperation extends Component {
   */
   render() {
     const { handleSubmit, initialConfiguration, isOperationAssociated } = this.props;
-    const { isEditFlag, isOpenVendor, isOpenUOM, isDisableCode, isViewMode, setDisable, disablePopup } = this.state;
+    const { isEditFlag, isOpenVendor, isOpenUOM, isDisableCode, isViewMode, setDisable, disablePopup, selectedTechnology } = this.state;
     const filterList = (inputValue) => {
       let tempArr = []
 
@@ -744,7 +743,12 @@ class AddOperation extends Component {
 
 
       });
-
+    let temp = [];
+    selectedTechnology && selectedTechnology.map(item => {
+      temp.push(item.Text)
+    }
+    )
+    const technologyTitle = temp.join(",")
     return (
       <div className="container-fluid">
         {/* {isLoader && <Loader />} */}
@@ -754,10 +758,7 @@ class AddOperation extends Component {
               <div className="shadow-lgg login-formg">
                 <div className="row">
                   <div className="col-md-6">
-                    <h2>
-                      {this.state.isEditFlag
-                        ? "Update Operation"
-                        : "Add Operation"}
+                    <h2>{this.state.isViewMode ? "View" : this.state.isEditFlag ? "Update" : "Add"} Operation
                     </h2>
                   </div>
                 </div>
@@ -793,9 +794,10 @@ class AddOperation extends Component {
                     <Row>
                       <Col md="3">
                         <Field
+                          title={isEditFlag && technologyTitle}
                           label="Technology"
                           name="technology"
-                          placeholder="Select"
+                          placeholder={isEditFlag ? '-' : 'Select'}
                           selection={
                             this.state.selectedTechnology == null ||
                               this.state.selectedTechnology.length === 0
@@ -818,7 +820,7 @@ class AddOperation extends Component {
                           label={`Operation Name`}
                           name={"OperationName"}
                           type="text"
-                          placeholder={"Enter"}
+                          placeholder={isEditFlag ? '-' : "Select"}
                           validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces]}
                           onBlur={this.checkUniqCodeByName}
                           component={renderText}
@@ -833,12 +835,12 @@ class AddOperation extends Component {
                           label={`Operation Code`}
                           name={"OperationCode"}
                           type="text"
-                          placeholder={"Enter"}
+                          placeholder={(isEditFlag || isDisableCode || initialConfiguration.IsOperationCodeConfigure) ? '-' : "Select"}
                           validate={[acceptAllExceptSingleSpecialCharacter, maxLength15, checkWhiteSpaces, required, checkSpacesInString]}
                           component={renderText}
                           required={true}
                           onBlur={this.checkUniqCode}
-                          disabled={(isEditFlag || isDisableCode) ? true : false}
+                          disabled={(isEditFlag || isDisableCode || initialConfiguration.IsOperationCodeConfigure) ? true : false}
                           className=" "
                           customClassName=" withBorder"
                         />
@@ -848,7 +850,7 @@ class AddOperation extends Component {
                           label={`Description`}
                           name={"Description"}
                           type="text"
-                          placeholder={"Enter"}
+                          placeholder={isViewMode ? '-' : "Select"}
                           validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                           component={renderText}
                           disabled={isViewMode ? true : false}
@@ -864,7 +866,7 @@ class AddOperation extends Component {
                           <Field
                             label="Plant"
                             name="Plant"
-                            placeholder="Select"
+                            placeholder={isEditFlag ? '-' : 'Select'}
                             selection={this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants}
                             options={this.renderListing("plant")}
                             selectionChanged={this.handlePlants}
@@ -910,7 +912,7 @@ class AddOperation extends Component {
                           <Field
                             label={'Destination Plant'}
                             name="DestinationPlant"
-                            placeholder={"Select"}
+                            placeholder={isEditFlag ? '-' : "Select"}
                             options={this.renderListing("singlePlant")}
                             handleChangeDescription={this.handleDestinationPlant}
                             validate={this.state.destinationPlant == null || this.state.destinationPlant.length === 0 ? [required] : []}
@@ -929,7 +931,7 @@ class AddOperation extends Component {
                           type="text"
                           label="UOM"
                           component={searchableSelect}
-                          placeholder={"Select"}
+                          placeholder={isViewMode || (isEditFlag && isOperationAssociated) ? '-' : "Select"}
                           options={this.renderListing("UOM")}
                           validate={this.state.UOM == null || this.state.UOM.length === 0 ? [required] : []}
                           required={true}
@@ -943,7 +945,7 @@ class AddOperation extends Component {
                           label={`Rate (INR)`}
                           name={"Rate"}
                           type="text"
-                          placeholder={"Enter"}
+                          placeholder={isViewMode || (isEditFlag && isOperationAssociated) ? '-' : "Select"}
                           validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
                           component={renderNumberInputField}
                           required={true}
@@ -958,7 +960,7 @@ class AddOperation extends Component {
                           label={`Labour Rate/${this.state.UOM.label ? this.state.UOM.label : 'UOM'}`}
                           name={"LabourRatePerUOM"}
                           type="text"
-                          placeholder={"Enter"}
+                          placeholder={isViewMode ? '-' : "Select"}
                           validate={[positiveAndDecimalNumber, maxLength10]}
                           component={renderNumberInputField}
                           disabled={isEditFlag ? true : false}
@@ -984,6 +986,7 @@ class AddOperation extends Component {
                             className=" "
                             disabled={isViewMode || !this.state.IsFinancialDataChanged}
                             customClassName=" withBorder"
+                            placeholder={isViewMode || !this.state.IsFinancialDataChanged ? '-' : "Select Date"}
                           />
                         </div>
                       </Col>
@@ -1023,7 +1026,7 @@ class AddOperation extends Component {
                         <Field
                           label={'Remarks'}
                           name={`Remark`}
-                          placeholder="Type here..."
+                          placeholder={isViewMode ? '-' : "Type here..."}
                           value={this.state.remarks}
                           className=""
                           customClassName=" textAreaWithBorder"

@@ -39,7 +39,8 @@ class RMListing extends Component {
             rowData: null,
             showPopup: false,
             deletedId: '',
-            isLoader: false
+            isLoader: false,
+            selectedRowData: false
         }
     }
 
@@ -109,7 +110,7 @@ class RMListing extends Component {
     confirmDelete = (ID) => {
         this.props.deleteMaterialTypeAPI(ID, (res) => {
             if (res.status === 417 && res.data.Result === false) {
-                Toaster.warning(res.data.Message)
+                Toaster.error(res.data.Message)
             } else if (res && res.data && res.data.Result === true) {
                 Toaster.success(MESSAGES.DELETE_MATERIAL_SUCCESS);
                 this.getListData();
@@ -212,9 +213,15 @@ class RMListing extends Component {
     onPageSizeChanged = (newPageSize) => {
         this.state.gridApi.paginationSetPageSize(Number(newPageSize));
     };
+    onRowSelect = () => {
+        const selectedRows = this.state.gridApi?.getSelectedRows()
+        this.setState({ selectedRowData: selectedRows })
+    }
 
     onBtExport = () => {
-        let tempArr = this.props.rawMaterialTypeDataList && this.props.rawMaterialTypeDataList
+        let tempArr = []
+        tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+        tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.rawMaterialTypeDataList ? this.props.rawMaterialTypeDataList : [])
         return this.returnExcelColumn(RMLISTING_DOWNLOAD_EXCEl, tempArr)
     };
 
@@ -240,6 +247,7 @@ class RMListing extends Component {
     }
 
     resetState() {
+        this.state.gridApi.deselectAll()
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
     }
@@ -262,11 +270,20 @@ class RMListing extends Component {
             lastPage: <span className="last-page-pg"></span>,
 
         };
+        const isFirstColumn = (params) => {
+
+            var displayedColumns = params.columnApi.getAllDisplayedColumns();
+            var thisIsFirstColumn = displayedColumns[0] === params.column;
+            return thisIsFirstColumn;
+
+        }
         const defaultColDef = {
             resizable: true,
             filter: true,
             sortable: true,
-
+            headerCheckboxSelectionFilteredOnly: true,
+            headerCheckboxSelection: isFirstColumn,
+            checkboxSelection: isFirstColumn
         };
 
         const frameworkComponents = {
@@ -304,14 +321,17 @@ class RMListing extends Component {
                         {
                             DownloadAccessibility &&
                             <>
-                                <ExcelFile filename={RmMaterial} fileExtension={'.xls'} element={
-                                    <button title={"Download"} type="button" className={'user-btn mr5'}><div className="download mr-0"></div></button>}>
-                                    {this.onBtExport()}
-                                </ExcelFile>
+                                <>
+                                    <ExcelFile filename={'RmMaterial'} fileExtension={'.xls'} element={
+                                        <button title="Download" type="button" className={'user-btn mr5'} ><div className="download mr-0"></div></button>}>
+                                        {this.onBtExport()}
+                                    </ExcelFile>
+                                </>
                             </>
-                            //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
-                        }
 
+                            //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
+
+                        }
                         <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
                             <div className="refresh mr-0"></div>
                         </button>
@@ -343,7 +363,9 @@ class RMListing extends Component {
                                         title: EMPTY_DATA,
                                         imagClass: 'imagClass'
                                     }}
+                                    rowSelection={'multiple'}
                                     frameworkComponents={frameworkComponents}
+                                    onSelectionChanged={this.onRowSelect}
                                 >
                                     {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
                                     <AgGridColumn field="RawMaterial" headerName="Material"></AgGridColumn>

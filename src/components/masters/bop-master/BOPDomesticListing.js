@@ -16,7 +16,7 @@ import BulkUpload from '../../massUpload/BulkUpload';
 import { BOP_DOMESTIC_DOWNLOAD_EXCEl, } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
 import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
-import { loggedInUserId, userDepartmetList, userDetails } from '../../../helper';
+import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId, userDepartmetList, userDetails } from '../../../helper';
 import { BopDomestic, } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -26,6 +26,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getListingForSimulationCombined, setSelectedCostingListSimualtion } from '../../simulation/actions/Simulation';
 import { masterFinalLevelUser } from '../../masters/actions/Material'
 import WarningMessage from '../../common/WarningMessage';
+import { hyphenFormatter } from '../masterUtil';
 import _ from 'lodash';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -56,6 +57,7 @@ class BOPDomesticListing extends Component {
             isLoader: false,
             isFinalApprovar: false,
             disableFilter: true,
+            disableDownload: false,
 
             //states for pagination purpose
             floatingFilterData: { IsVendor: "", BoughtOutPartNumber: "", BoughtOutPartName: "", BoughtOutPartCategory: "", UOM: "", Specification: "", Plants: "", Vendor: "", BasicRate: "", NetLandedCost: "", EffectiveDateNew: "", DepartmentCode: this.props.isSimulation ? userDepartmetList() : "" },
@@ -124,7 +126,7 @@ class BOPDomesticListing extends Component {
             })
         } else {
 
-            this.setState({ isLoader: true })
+            this.setState({ isLoader: isPagination ? true : false })
             if (isMasterSummaryDrawer !== undefined && !isMasterSummaryDrawer) {
                 if (this.props.isSimulation) {
                     this.props?.changeTokenCheckBox(false)
@@ -144,6 +146,14 @@ class BOPDomesticListing extends Component {
                         this.setState({ tableData: [] })
                     } else {
                         this.setState({ tableData: [] })
+                    }
+
+                    if (res && isPagination === false) {
+                        this.setState({ disableDownload: false })
+                        setTimeout(() => {
+                            let button = document.getElementById('Excel-Downloads-bop-domestic')
+                            button && button.click()
+                        }, 500);
                     }
 
                     if (res) {
@@ -307,8 +317,6 @@ class BOPDomesticListing extends Component {
         )
     };
 
-
-
     checkBoxRenderer = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         // var selectedRows = gridApi?.getSelectedRows();
@@ -326,7 +334,14 @@ class BOPDomesticListing extends Component {
         }
 
     }
-
+    /**
+    * @method commonCostFormatter
+    * @description Renders buttons
+    */
+    commonCostFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : '-';
+    }
 
     /**
     * @method costingHeadFormatter
@@ -375,29 +390,37 @@ class BOPDomesticListing extends Component {
         return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
     }
 
-    /**
-    * @method hyphenFormatter
-    */
-    hyphenFormatter = (props) => {
-        const cellValue = props?.value;
-        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
-    }
 
     onGridReady = (params) => {
         this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
         params.api.paginationGoToPage(0);
     };
 
+
+    onExcelDownload = () => {
+
+        this.setState({ disableDownload: true })
+
+        //let tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+        let tempArr = this.props.selectedCostingListSimulation
+        if (tempArr?.length > 0) {
+            setTimeout(() => {
+                this.setState({ disableDownload: false })
+                let button = document.getElementById('Excel-Downloads-bop-domestic')
+                button && button.click()
+            }, 400);
+
+        } else {
+
+            this.getDataList("", 0, "", "", 0, defaultPageSize, false, this.state.floatingFilterData)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
+        }
+    }
+
     onBtExport = () => {
         let tempArr = []
-        if (this.props.isSimulation === true) {
-            const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-            data && data.map((item => (
-                tempArr.push(item.data)
-            )))
-        } else {
-            tempArr = this.props.bopDomesticList && this.props.bopDomesticList
-        }
+        //tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+        tempArr = this?.props?.selectedCostingListSimulation
+        tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.allBopDataList ? this.props.allBopDataList : [])
         return this.returnExcelColumn(BOP_DOMESTIC_DOWNLOAD_EXCEl, tempArr)
     };
 
@@ -476,15 +499,10 @@ class BOPDomesticListing extends Component {
 
 
         const isFirstColumn = (params) => {
-            if (this.props.isSimulation) {
 
-                var displayedColumns = params.columnApi.getAllDisplayedColumns();
-                var thisIsFirstColumn = displayedColumns[0] === params.column;
-
-                return thisIsFirstColumn;
-            } else {
-                return false
-            }
+            var displayedColumns = params.columnApi.getAllDisplayedColumns();
+            var thisIsFirstColumn = displayedColumns[0] === params.column;
+            return thisIsFirstColumn;
 
         }
         const defaultColDef = {
@@ -499,10 +517,11 @@ class BOPDomesticListing extends Component {
         const frameworkComponents = {
             totalValueRenderer: this.buttonFormatter,
             customNoRowsOverlay: NoContentFound,
-            hyphenFormatter: this.hyphenFormatter,
+            hyphenFormatter: hyphenFormatter,
             costingHeadFormatter: this.costingHeadFormatter,
             effectiveDateFormatter: this.effectiveDateFormatter,
-            checkBoxRenderer: this.checkBoxRenderer
+            checkBoxRenderer: this.checkBoxRenderer,
+            commonCostFormatter: this.commonCostFormatter
         };
 
         const onRowSelect = (event) => {
@@ -529,12 +548,15 @@ class BOPDomesticListing extends Component {
                 selectedRows = [...selectedRows, ...finalData]
             }
 
+
+            let uniqeArray = _.uniqBy(selectedRows, "BoughtOutPartId")           //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
+            this.props.setSelectedCostingListSimualtion(uniqeArray)                     //SETTING CHECKBOX STATE DATA IN REDUCER
+            let finalArr = selectedRows
+            let length = finalArr?.length
+            let uniqueArray = _.uniqBy(finalArr, "BoughtOutPartId")
+
             if (this.props.isSimulation) {
-                let uniqeArray = _.uniqBy(selectedRows, "BoughtOutPartId")           //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
-                this.props.setSelectedCostingListSimualtion(uniqeArray)                     //SETTING CHECKBOX STATE DATA IN REDUCER
-                let finalArr = selectedRows
-                let length = finalArr?.length
-                let uniqueArray = _.uniqBy(finalArr, "BoughtOutPartId")
+
                 this.props.apply(uniqueArray, length)
             }
             this.setState({ selectedRowData: selectedRows })
@@ -597,14 +619,23 @@ class BOPDomesticListing extends Component {
                                     DownloadAccessibility &&
                                     <>
 
-                                        <ExcelFile filename={'BOP Domestic'} fileExtension={'.xls'} element={
-                                            <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-                                                {/* DOWNLOAD */}
-                                            </button>}>
+                                        {this.state.disableDownload ? <div className='p-relative mr5'> <LoaderCustom customClass={"download-loader"} /> <button type="button" className={'user-btn'}><div className="download mr-0"></div>
+                                        </button></div> :
 
-                                            {this.onBtExport()}
-                                        </ExcelFile>
+                                            <>
+                                                <button type="button" onClick={this.onExcelDownload} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                                    {/* DOWNLOAD */}
+                                                </button>
 
+                                                <ExcelFile filename={'BOP Domestic'} fileExtension={'.xls'} element={
+                                                    <button id={'Excel-Downloads-bop-domestic'} className="p-absolute" type="button" >
+                                                    </button>}>
+                                                    {this.onBtExport()}
+                                                </ExcelFile>
+
+                                            </>
+
+                                        }
                                     </>
                                 }
                                 <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
@@ -651,8 +682,8 @@ class BOPDomesticListing extends Component {
                                     <AgGridColumn field="Specification" headerName="Specification" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="Plants" cellRenderer={'hyphenFormatter'} headerName="Plant(Code)"></AgGridColumn>
                                     <AgGridColumn field="Vendor" headerName="Vendor(Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="BasicRate" headerName="Basic Rate"></AgGridColumn>
-                                    <AgGridColumn field="NetLandedCost" headerName="Net Cost"></AgGridColumn>
+                                    <AgGridColumn field="BasicRate" headerName="Basic Rate" cellRenderer={'commonCostFormatter'} ></AgGridColumn>
+                                    <AgGridColumn field="NetLandedCost" headerName="Net Cost" cellRenderer={'commonCostFormatter'} ></AgGridColumn>
                                     <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams} ></AgGridColumn>
                                     {!this.props?.isSimulation && !this.props?.isMasterSummaryDrawer && <AgGridColumn field="BoughtOutPartId" width={160} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                 </AgGridReact>
@@ -698,11 +729,11 @@ class BOPDomesticListing extends Component {
 * @param {*} state
 */
 function mapStateToProps({ boughtOutparts, supplier, auth, material, simulation }) {
-    const { bopCategorySelectList, vendorAllSelectList, plantSelectList, bopDomesticList } = boughtOutparts;
+    const { bopCategorySelectList, vendorAllSelectList, plantSelectList, bopDomesticList, allBopDataList } = boughtOutparts;
     const { vendorWithVendorCodeSelectList } = supplier;
     const { initialConfiguration } = auth;
     const { selectedCostingListSimulation } = simulation;
-    return { bopCategorySelectList, plantSelectList, vendorAllSelectList, bopDomesticList, vendorWithVendorCodeSelectList, initialConfiguration, selectedCostingListSimulation }
+    return { bopCategorySelectList, plantSelectList, vendorAllSelectList, bopDomesticList, allBopDataList, vendorWithVendorCodeSelectList, initialConfiguration, selectedCostingListSimulation }
 }
 
 /**

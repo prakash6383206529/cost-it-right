@@ -53,7 +53,13 @@ class AddFreight extends Component {
       HandleChanged: true,
       setDisable: false,
       isVendorNameNotSelected: false,
-      inputLoader: false
+      inputLoader: false,
+      errorObj: {
+        capacity: false,
+        criteria: false,
+        rate: false,
+        effectiveDate: false
+      }
     };
   }
   /**
@@ -62,9 +68,11 @@ class AddFreight extends Component {
    */
   componentDidMount() {
     this.props.getFreightModeSelectList((res) => { });
-    this.props.getFreigtFullTruckCapacitySelectList((res) => { });
-    this.props.getFreigtRateCriteriaSelectList((res) => { });
-    if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
+    if (!this.state.isViewMode) {
+      this.props.getFreigtFullTruckCapacitySelectList((res) => { });
+      this.props.getFreigtRateCriteriaSelectList((res) => { });
+    }
+    if (!(this.props.data.isEditFlag || this.state.isViewMode)) {
       this.props.getAllCity(cityId => {
         this.props.getCityByCountry(cityId, 0, () => { })
       })
@@ -297,40 +305,60 @@ class AddFreight extends Component {
       effectiveDate,
     } = this.state;
     const { fieldsObj } = this.props;
-    if (FullTruckCapacity.length === 0 || RateCriteria.length === 0) {
-      Toaster.warning("Fields should not be empty");
-      return false;
-    }
-    //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
-    const isExist = gridTable.findIndex(
-      (el) =>
-        el.CapacityId === FullTruckCapacity.value &&
-        el.RateCriteriaId === RateCriteria.value
-    );
-    if (isExist !== -1) {
-      Toaster.warning("Already added, Please check the values.");
-      return false;
-    }
-    const Rate =
-      fieldsObj && fieldsObj !== undefined ? checkForNull(fieldsObj) : 0;
-    const tempArray = [];
-    tempArray.push(...gridTable, {
-      FullTruckLoadId: "",
-      Capacity: FullTruckCapacity.label,
-      RateCriteria: RateCriteria.label,
-      EffectiveDate: effectiveDate,
-      Rate: Rate,
-    });
-    this.setState(
-      {
-        gridTable: tempArray,
-        FullTruckCapacity: [],
-        RateCriteria: [],
-        effectiveDate: '',
-      },
-      () => this.props.change("Rate", 0)
-    );
-    this.setState({ AddUpdate: false })
+
+    let count = 0;
+    setTimeout(() => {
+
+      if (FullTruckCapacity.length === 0) {
+        this.setState({ errorObj: { ...this.state.errorObj, capacity: true } })
+        count++
+      }
+      if (RateCriteria.length === 0) {
+        this.setState({ errorObj: { ...this.state.errorObj, criteria: true } })
+        count++
+      }
+      if (fieldsObj === undefined || Number(fieldsObj) === 0) {
+        this.setState({ errorObj: { ...this.state.errorObj, rate: true } })
+        count++
+      }
+      if (effectiveDate === undefined || effectiveDate === '') {
+        this.setState({ errorObj: { ...this.state.errorObj, effectiveDate: true } })
+        count++
+      }
+      if (count > 0) {
+        return false
+      }
+      //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
+      const isExist = gridTable.findIndex(
+        (el) =>
+          el.CapacityId === FullTruckCapacity.value &&
+          el.RateCriteriaId === RateCriteria.value
+      );
+      if (isExist !== -1) {
+        Toaster.warning("Already added, Please check the values.");
+        return false;
+      }
+      const Rate =
+        fieldsObj && fieldsObj !== undefined ? checkForNull(fieldsObj) : 0;
+      const tempArray = [];
+      tempArray.push(...gridTable, {
+        FullTruckLoadId: "",
+        Capacity: FullTruckCapacity.label,
+        RateCriteria: RateCriteria.label,
+        EffectiveDate: effectiveDate,
+        Rate: Rate,
+      });
+      this.setState(
+        {
+          gridTable: tempArray,
+          FullTruckCapacity: [],
+          RateCriteria: [],
+          effectiveDate: '',
+        },
+        () => this.props.change("Rate", '')
+      );
+      this.setState({ AddUpdate: false, errorObj: { capacity: false, criteria: false, rate: false, effectiveDate: false } })
+    }, 200);
   };
   /**
    * @method updateGrid
@@ -346,6 +374,10 @@ class AddFreight extends Component {
       if (i === gridEditIndex) return false;
       return true;
     });
+    if (fieldsObj === undefined || Number(fieldsObj) === 0) {
+      this.setState({ errorObj: { rate: true } })
+      return false
+    }
     //CONDITION TO CHECK DUPLICATE ENTRY EXCEPT EDITED RECORD
     const isExist = skipEditedItem.findIndex(
       (el) =>
@@ -375,7 +407,8 @@ class AddFreight extends Component {
       },
       () => this.props.change("Rate", 0)
     );
-    this.setState({ AddUpdate: false })
+
+    this.setState({ AddUpdate: false, errorObj: { rate: false } })
   };
   /**
    * @method resetGridData
@@ -456,7 +489,7 @@ class AddFreight extends Component {
     const { fieldsObj } = this.props;
 
 
-    if (vendorName.length <= 0) {
+    if (IsVendor && vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
       return false
     }
@@ -464,7 +497,6 @@ class AddFreight extends Component {
 
     const userDetail = userDetails();
     if (isEditFlag) {
-
       if (
         DataToChange.LoadingUnloadingCharges == values.LoadingUnloadingCharges &&
         DataToChange.PartTruckLoadRatePerCubicFeet == values.PartTruckLoadRatePerCubicFeet &&
@@ -511,7 +543,6 @@ class AddFreight extends Component {
         FullTruckLoadDetails: gridTable,
         LoggedInUserId: loggedInUserId(),
       };
-
       this.props.createFreight(formData, (res) => {
         this.setState({ setDisable: false })
         if (res?.data?.Result) {
@@ -570,9 +601,7 @@ class AddFreight extends Component {
                       <div className="col-md-6">
                         <div className="form-heading mb-0">
                           <h1>
-                            {isEditFlag
-                              ? `Update Freight`
-                              : `Add Freight`}
+                            {isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Freight
                           </h1>
                         </div>
                       </div>
@@ -618,7 +647,7 @@ class AddFreight extends Component {
                                   type="text"
                                   label="Mode"
                                   component={searchableSelect}
-                                  placeholder={"Select"}
+                                  placeholder={isEditFlag ? '-' : "Select"}
                                   options={this.renderListing("FREIGHT_MODE")}
                                   //onKeyUp={(e) => this.changeItemDesc(e)}
                                   validate={
@@ -669,7 +698,7 @@ class AddFreight extends Component {
                               type="text"
                               label="Source City"
                               component={searchableSelect}
-                              placeholder={"Select"}
+                              placeholder={isViewMode ? '-' : 'Select'}
                               options={this.renderListing("SourceLocation")}
                               //onKeyUp={(e) => this.changeItemDesc(e)}
                               validate={
@@ -690,7 +719,7 @@ class AddFreight extends Component {
                               type="text"
                               label="Destination City"
                               component={searchableSelect}
-                              placeholder={"Select"}
+                              placeholder={isViewMode ? '-' : 'Select'}
                               options={this.renderListing("DestinationLocation")}
                               //onKeyUp={(e) => this.changeItemDesc(e)}
                               validate={
@@ -709,7 +738,7 @@ class AddFreight extends Component {
                         <Row className="mb27">
                           <Col md="12">
                             <label
-                              className={`custom-checkbox w-auto`}
+                              className={`custom-checkbox w-auto ${isViewMode ? "disabled" : ""}`}
                               onChange={this.onPressLoadUnload}
                             >
                               Loading/Unloading Charges
@@ -731,7 +760,7 @@ class AddFreight extends Component {
                               label={``}
                               name={"LoadingUnloadingCharges"}
                               type="text"
-                              placeholder={"Enter"}
+                              placeholder={isViewMode ? '-' : 'Enter'}
                               validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
                               component={renderNumberInputField}
                               disabled={isViewMode}
@@ -752,7 +781,7 @@ class AddFreight extends Component {
                               label={`Rate (INR/Kg)`}
                               name={"PartTruckLoadRatePerKilogram"}
                               type="text"
-                              placeholder={"Enter"}
+                              placeholder={isViewMode ? '-' : 'Enter'}
                               validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
                               component={renderNumberInputField}
                               disabled={isViewMode}
@@ -765,7 +794,7 @@ class AddFreight extends Component {
                               label={`Rate (INR/Cubic Feet)`}
                               name={"PartTruckLoadRatePerCubicFeet"}
                               type="text"
-                              placeholder={"Enter"}
+                              placeholder={isViewMode ? '-' : 'Enter'}
                               validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
                               component={renderNumberInputField}
                               disabled={isViewMode}
@@ -774,7 +803,7 @@ class AddFreight extends Component {
                             />
                           </Col>
                         </Row>
-                        <Row>
+                        <Row className="truck-load-form-container">
                           <Col md="12">
                             <div className="left-border">
                               {"Full Truck Load:"}
@@ -788,7 +817,7 @@ class AddFreight extends Component {
                                   type="text"
                                   label="Capacity"
                                   component={searchableSelect}
-                                  placeholder={"Select"}
+                                  placeholder={isViewMode ? '-' : 'Select'}
                                   options={this.renderListing(
                                     "FULL_TRUCK_CAPACITY"
                                   )}
@@ -796,7 +825,9 @@ class AddFreight extends Component {
                                   handleChangeDescription={this.handleCapacity}
                                   valueDescription={this.state.FullTruckCapacity}
                                   disabled={isViewMode}
+                                  required={true}
                                 />
+                                {this.state.errorObj.capacity && this.state.FullTruckCapacity.length === 0 && <div className='text-help p-absolute bottom-7'>This field is required.</div>}
                               </div>
                             </div>
                           </Col>
@@ -806,35 +837,35 @@ class AddFreight extends Component {
                               type="text"
                               label="Criteria"
                               component={searchableSelect}
-                              placeholder={"Select"}
+                              placeholder={isViewMode ? '-' : 'Select'}
                               options={this.renderListing(
                                 "FREIGHT_RATE_CRITERIA"
                               )}
                               disabled={isViewMode}
                               handleChangeDescription={this.criteriaHandler}
                               valueDescription={this.state.RateCriteria}
+                              required={true}
                             />
+                            {this.state.errorObj.criteria && this.state.RateCriteria.length === 0 && <div className='text-help p-absolute'>This field is required.</div>}
                           </Col>
                           <Col md="2">
                             <Field
                               label={`Rate (INR)`}
                               name={"Rate"}
                               type="text"
-                              placeholder={"Enter"}
+                              placeholder={isViewMode ? '-' : 'Enter'}
                               validate={[positiveAndDecimalNumber, maxLength10]}
                               component={renderNumberInputField}
-                              //required={true}
+                              required={true}
                               disabled={isViewMode}
                               className=" "
                               customClassName="withBorder"
                             />
+                            {this.state.errorObj.rate && (this.props.fieldsObj === undefined || Number(this.props.fieldsObj) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                           </Col>
                           <Col md="2">
                             <div className="form-group">
-                              <label>
-                                Effective Date
-
-                              </label>
+                              <label>Effective Date<span className="asterisk-required">*</span></label>
                               <div className="inputbox date-section">
                                 <DatePicker
                                   name="EffectiveDate"
@@ -844,18 +875,19 @@ class AddFreight extends Component {
                                   showYearDropdown
                                   dateFormat="dd/MM/yyyy"
                                   dropdownMode="select"
-                                  placeholderText="Select date"
+                                  placeholderText={isViewMode ? '-' : "Select Date"}
                                   className="withBorder"
                                   autoComplete={"off"}
                                   disabledKeyboardNavigation
                                   onChangeRaw={(e) => e.preventDefault()}
                                   disabled={isViewMode}
                                 />
+                                {this.state.errorObj.effectiveDate && this.state.effectiveDate === "" && <div className='text-help'>This field is required.</div>}
                               </div>
                             </div>
                           </Col>
                           <Col md="2">
-                            <div>
+                            <div className="pt-2">
                               {this.state.isEditIndex ? (
                                 <>
                                   <button
@@ -920,10 +952,12 @@ class AddFreight extends Component {
                                     );
                                   })}
                               </tbody>
+                              {this.state.gridTable.length === 0 && <tbody className="border">
+                                <tr>
+                                  <td colSpan={"5"}> <NoContentFound title={EMPTY_DATA} /></td>
+                                </tr>
+                              </tbody>}
                             </Table>
-                            {this.state.gridTable.length === 0 && (
-                              <NoContentFound title={EMPTY_DATA} />
-                            )}
                           </Col>
 
                         </Row>

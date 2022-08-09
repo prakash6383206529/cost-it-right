@@ -86,28 +86,26 @@ function PaymentTerms(props) {
                 IsVendor: costData.IsVendor
             }
 
-            if (costData?.IsVendor && (costData.IsVendor !== null || costData.IsVendor !== undefined)) {
-                dispatch(getPaymentTermsDataByHeads(reqParams, res => {
+            dispatch(getPaymentTermsDataByHeads(reqParams, res => {
 
-                    if (res && res.data && res.data.Result) {
-                        let Data = res.data.Data;
-                        setValue('RepaymentPeriodDays', Data.RepaymentPeriod)
-                        setValue('RepaymentPeriodPercentage', Data.InterestRate !== null ? Data.InterestRate : 0)
-                        setPaymentTermInterestRateId(Data.InterestRateId !== EMPTY_GUID ? Data.InterestRateId : null)
-                        checkPaymentTermApplicability(Data.PaymentTermApplicability)
-                        setPaymentTermsApplicability({ label: Data.PaymentTermApplicability, value: Data.PaymentTermApplicability })
-                        setPaymentTermObj(Data)
-                    } else if (res.status === 204) {
-                        setValue('RepaymentPeriodDays', '')
-                        setValue('RepaymentPeriodPercentage', '')
-                        setValue('RepaymentPeriodCost', '')
-                        checkPaymentTermApplicability('')
-                        setPaymentTermsApplicability([])
-                        setPaymentTermObj({})
-                    }
+                if (res && res.data && res.data.Result) {
+                    let Data = res.data.Data;
+                    setValue('RepaymentPeriodDays', Data.RepaymentPeriod)
+                    setValue('RepaymentPeriodPercentage', Data.InterestRate !== null ? Data.InterestRate : 0)
+                    setPaymentTermInterestRateId(Data.InterestRateId !== EMPTY_GUID ? Data.InterestRateId : null)
+                    checkPaymentTermApplicability(Data.PaymentTermApplicability)
+                    setPaymentTermsApplicability({ label: Data.PaymentTermApplicability, value: Data.PaymentTermApplicability })
+                    setPaymentTermObj(Data)
+                } else if (res.status === 204) {
+                    setValue('RepaymentPeriodDays', '')
+                    setValue('RepaymentPeriodPercentage', '')
+                    setValue('RepaymentPeriodCost', '')
+                    checkPaymentTermApplicability('')
+                    setPaymentTermsApplicability([])
+                    setPaymentTermObj({})
+                }
 
-                }))
-            }
+            }))
 
         } else {
             setPaymentTermsApplicability([])

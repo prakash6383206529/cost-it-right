@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { getConfigurationKey, loggedInUserId, userDetails } from '../../helper';
+import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId, userDetails } from '../../helper';
 import { approvalOrRejectRequestByMasterApprove, getAllMasterApprovalDepartment, getAllMasterApprovalUserByDepartment, masterApprovalRequestBySender } from './actions/Material';
 import { masterApprovalRequestBySenderBop } from './actions/BoughtOutParts'
 import { masterApprovalRequestBySenderOperation } from './actions/OtherOperation'
@@ -35,7 +35,7 @@ function MasterSendForApproval(props) {
     const reasonsList = useSelector((state) => state.approval.reasonsList)
     const { deptList } = useSelector((state) => state.material)
 
-
+    const { initialConfiguration } = useSelector(state => state.auth)
 
     const toggleDrawer = (event, type = 'cancel') => {
         if (
@@ -354,7 +354,7 @@ function MasterSendForApproval(props) {
                                             <SearchableSelectHookForm
                                                 label={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}`}
                                                 name={"dept"}
-                                                placeholder={"-Select-"}
+                                                placeholder={"Select"}
                                                 Controller={Controller}
                                                 control={control}
                                                 rules={{ required: false }}
@@ -371,13 +371,13 @@ function MasterSendForApproval(props) {
                                             <SearchableSelectHookForm
                                                 label={'Approver'}
                                                 name={'approver'}
-                                                placeholder={'-Select-'}
+                                                placeholder={'Select'}
                                                 Controller={Controller}
                                                 control={control}
                                                 rules={{ required: false }}
                                                 register={register}
                                                 options={approvalDropDown}
-                                                mandatory={false}
+                                                mandatory={true}
                                                 handleChange={() => { }}
                                                 disabled={false}
                                                 errors={errors.approver}
@@ -394,7 +394,7 @@ function MasterSendForApproval(props) {
                                             <SearchableSelectHookForm
                                                 label={'Reason'}
                                                 name={'reason'}
-                                                placeholder={'-Select-'}
+                                                placeholder={'Select'}
                                                 Controller={Controller}
                                                 control={control}
                                                 rules={{ required: true }}
@@ -418,7 +418,7 @@ function MasterSendForApproval(props) {
                                                             showYearDropdown
                                                             dateFormat="dd/MM/yyyy"
                                                             dropdownMode="select"
-                                                            placeholderText="Select date"
+                                                            placeholderText="-"
                                                             className="withBorder"
                                                             autoComplete={"off"}
                                                             disabledKeyboardNavigation
@@ -436,9 +436,10 @@ function MasterSendForApproval(props) {
                                                         control={control}
                                                         register={register}
                                                         className=""
+                                                        placeholder={'-'}
                                                         customClassName={'withBorder'}
                                                         errors={errors.basicRate}
-                                                        defaultValue={Object.keys(approvalObj).length > 0 ? approvalObj.BasicRatePerUOM : ''}
+                                                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.BasicRatePerUOM, initialConfiguration.NoOfDecimalForPrice) : ''}
                                                         disabled={true}
                                                     />
 
@@ -451,10 +452,11 @@ function MasterSendForApproval(props) {
                                                         control={control}
                                                         register={register}
                                                         className=""
+                                                        placeholder={'-'}
                                                         customClassName={'withBorder'}
                                                         errors={errors.basicRate}
                                                         disabled={true}
-                                                        defaultValue={Object.keys(approvalObj).length > 0 ? approvalObj.ScrapRate : ''}
+                                                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.ScrapRate, initialConfiguration.NoOfDecimalForPrice) : ''}
                                                     />
 
                                                 </div>
@@ -465,11 +467,12 @@ function MasterSendForApproval(props) {
                                                         Controller={Controller}
                                                         control={control}
                                                         register={register}
+                                                        placeholder={'-'}
                                                         className=""
                                                         customClassName={'withBorder'}
                                                         errors={errors.freightCost}
                                                         disabled={true}
-                                                        defaultValue={Object.keys(approvalObj).length > 0 ? approvalObj.RMFreightCost : ''}
+                                                        defaultValue={Object.keys(approvalObj).length > 0 ? approvalObj.RMFreightCost === undefined ? '' : checkForDecimalAndNull(approvalObj.RMFreightCost, initialConfiguration.NoOfDecimalForPrice) : ''}
                                                     />
 
                                                 </div>
@@ -480,11 +483,12 @@ function MasterSendForApproval(props) {
                                                         Controller={Controller}
                                                         control={control}
                                                         register={register}
+                                                        placeholder={'-'}
                                                         className=""
                                                         customClassName={'withBorder'}
                                                         errors={errors.shearingCost}
                                                         disabled={true}
-                                                        defaultValue={Object.keys(approvalObj).length > 0 ? approvalObj.RMShearingCost : ''}
+                                                        defaultValue={Object.keys(approvalObj).length > 0 ? approvalObj.RMShearingCost === undefined ? '' : checkForDecimalAndNull(approvalObj.RMShearingCost, initialConfiguration.NoOfDecimalForPrice) : ''}
                                                     />
 
                                                 </div>
@@ -495,11 +499,12 @@ function MasterSendForApproval(props) {
                                                         Controller={Controller}
                                                         control={control}
                                                         register={register}
+                                                        placeholder={'-'}
                                                         className=""
                                                         customClassName={'withBorder'}
                                                         errors={errors.netCost}
                                                         disabled={true}
-                                                        defaultValue={Object.keys(approvalObj).length > 0 ? approvalObj.NetLandedCost : ''}
+                                                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.NetLandedCost, initialConfiguration.NoOfDecimalForPrice) : ''}
                                                     />
 
                                                 </div>
@@ -520,7 +525,7 @@ function MasterSendForApproval(props) {
                                                             showYearDropdown
                                                             dateFormat="dd/MM/yyyy"
                                                             dropdownMode="select"
-                                                            placeholderText="Select date"
+                                                            placeholderText="-"
                                                             className="withBorder"
                                                             autoComplete={"off"}
                                                             disabledKeyboardNavigation
@@ -536,11 +541,12 @@ function MasterSendForApproval(props) {
                                                         name={'basicRate'}
                                                         Controller={Controller}
                                                         control={control}
+                                                        placeholder={'-'}
                                                         register={register}
                                                         className=""
                                                         customClassName={'withBorder'}
                                                         errors={errors.basicRate}
-                                                        defaultValue={Object.keys(approvalObj).length > 0 ? approvalObj.BasicRate : ''}
+                                                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.BasicRate, initialConfiguration.NoOfDecimalForPrice) : ''}
                                                         disabled={true}
                                                     />
 
@@ -554,12 +560,13 @@ function MasterSendForApproval(props) {
                                                         name={'netCost'}
                                                         Controller={Controller}
                                                         control={control}
+                                                        placeholder={'-'}
                                                         register={register}
                                                         className=""
                                                         customClassName={'withBorder'}
                                                         errors={errors.netCost}
                                                         disabled={true}
-                                                        defaultValue={Object.keys(approvalObj).length > 0 ? approvalObj.NetLandedCost : ''}
+                                                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.NetLandedCost, initialConfiguration.NoOfDecimalForPrice) : ''}
                                                     />
 
                                                 </div>
@@ -581,7 +588,7 @@ function MasterSendForApproval(props) {
                                                             showYearDropdown
                                                             dateFormat="dd/MM/yyyy"
                                                             dropdownMode="select"
-                                                            placeholderText="Select date"
+                                                            placeholderText="-"
                                                             className="withBorder"
                                                             autoComplete={"off"}
                                                             disabledKeyboardNavigation
@@ -601,8 +608,9 @@ function MasterSendForApproval(props) {
                                                         className=""
                                                         customClassName={'withBorder'}
                                                         errors={errors.basicRate}
-                                                        defaultValue={Object.keys(approvalObj).length > 0 ? approvalObj.Rate : ''}
+                                                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.Rate, initialConfiguration.NoOfDecimalForPrice) : ''}
                                                         disabled={true}
+                                                        placeholder={'-'}
                                                     />
 
                                                 </div>
@@ -624,7 +632,7 @@ function MasterSendForApproval(props) {
                                                             showYearDropdown
                                                             dateFormat="dd/MM/yyyy"
                                                             dropdownMode="select"
-                                                            placeholderText="Select date"
+                                                            placeholderText="-"
                                                             className="withBorder"
                                                             autoComplete={"off"}
                                                             disabledKeyboardNavigation
@@ -645,20 +653,18 @@ function MasterSendForApproval(props) {
                                                                 Controller={Controller}
                                                                 control={control}
                                                                 register={register}
+                                                                placeholder={'-'}
                                                                 className=""
                                                                 customClassName={'withBorder'}
                                                                 errors={errors.basicRate}
-                                                                defaultValue={item.MachineRate}
+                                                                defaultValue={checkForDecimalAndNull(item.MachineRate, initialConfiguration.NoOfDecimalForPrice)}
                                                                 disabled={true}
 
                                                             />
                                                         )
                                                     })
                                                     }
-
                                                 </div>
-
-
                                             </>
                                         }
 
@@ -676,6 +682,7 @@ function MasterSendForApproval(props) {
                                         handleChange={() => { }}
                                         className=""
                                         customClassName={'withBorder'}
+                                        placeholder={'Type Here...'}
                                         errors={errors.remark}
                                         disabled={false}
                                     />

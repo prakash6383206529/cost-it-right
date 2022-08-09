@@ -376,9 +376,7 @@ class AddIndivisualProduct extends Component {
                                             <Col md="6">
                                                 <div className="form-heading mb-0">
                                                     <h1>
-                                                        {this.state.isEditFlag
-                                                            ? "Update Product"
-                                                            : "Add Product"}
+                                                        {this.state.isViewMode ? "View" : this.state.isEditFlag ? "Update" : "Add "} Product
                                                     </h1>
                                                 </div>
                                             </Col>
@@ -396,7 +394,7 @@ class AddIndivisualProduct extends Component {
                                                             label={`Product Name`}
                                                             name={"ProductName"}
                                                             type="text"
-                                                            placeholder={""}
+                                                            placeholder={isEditFlag ? '-' : "Enter"}
                                                             validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20]}
                                                             component={renderText}
                                                             required={true}
@@ -410,7 +408,7 @@ class AddIndivisualProduct extends Component {
                                                             label={`Product Number`}
                                                             name={"ProductNumber"}
                                                             type="text"
-                                                            placeholder={""}
+                                                            placeholder={isEditFlag ? '-' : "Enter"}
                                                             validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20, checkSpacesInString]}
                                                             component={renderText}
                                                             required={true}
@@ -425,7 +423,7 @@ class AddIndivisualProduct extends Component {
                                                             label={`Description`}
                                                             name={"Description"}
                                                             type="text"
-                                                            placeholder={""}
+                                                            placeholder={isEditFlag ? '-' : "Enter"}
                                                             validate={[maxLength80, checkWhiteSpaces]}
                                                             component={renderText}
                                                             required={false}
@@ -442,7 +440,7 @@ class AddIndivisualProduct extends Component {
                                                                     label={`Group Code`}
                                                                     name={"ProductGroupCode"}
                                                                     type="text"
-                                                                    placeholder={""}
+                                                                    placeholder={isViewMode ? '-' : "Enter"}
                                                                     validate={[checkWhiteSpaces, alphaNumeric, maxLength20]}
                                                                     component={renderText}
                                                                     onChange={
@@ -456,15 +454,12 @@ class AddIndivisualProduct extends Component {
                                                             </Col>
                                                         )}
 
-                                                </Row>
-
-                                                <Row>
                                                     <Col md="3">
                                                         <Field
                                                             label={`ECN No.`}
                                                             name={"ECNNumber"}
                                                             type="text"
-                                                            placeholder={""}
+                                                            placeholder={isEditFlag ? '-' : "Enter"}
                                                             validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces]}
                                                             component={renderText}
                                                             //required={true}
@@ -478,7 +473,7 @@ class AddIndivisualProduct extends Component {
                                                             label={`Revision No.`}
                                                             name={"RevisionNumber"}
                                                             type="text"
-                                                            placeholder={""}
+                                                            placeholder={isEditFlag ? '-' : "Enter"}
                                                             validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces]}
                                                             component={renderText}
                                                             //required={true}
@@ -492,7 +487,7 @@ class AddIndivisualProduct extends Component {
                                                             label={`Drawing No.`}
                                                             name={"DrawingNumber"}
                                                             type="text"
-                                                            placeholder={""}
+                                                            placeholder={isEditFlag ? '-' : "Enter"}
                                                             validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces]}
                                                             component={renderText}
                                                             //required={true}
@@ -510,6 +505,7 @@ class AddIndivisualProduct extends Component {
                                                                 <Field
                                                                     label="Effective Date"
                                                                     name="EffectiveDate"
+                                                                    placeholder={isViewMode ? '-' : "Select Date"}
                                                                     selected={this.state.effectiveDate}
                                                                     onChange={this.handleEffectiveDateChange}
                                                                     type="text"
@@ -570,7 +566,7 @@ class AddIndivisualProduct extends Component {
                                                         <Field
                                                             label={"Remarks"}
                                                             name={`Remark`}
-                                                            placeholder={!isViewMode ? "Type here..." : ""}
+                                                            placeholder={isViewMode ? "-" : "Type here..."}
                                                             className=""
                                                             customClassName=" textAreaWithBorder"
                                                             validate={[maxLength512, checkWhiteSpaces]}
