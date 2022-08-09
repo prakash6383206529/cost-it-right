@@ -51,7 +51,8 @@ class AddFuel extends Component {
         state: false,
         rate: false,
         effectiveDate: false
-      }
+      },
+      isGridEdit: false
     }
   }
 
@@ -236,7 +237,7 @@ class AddFuel extends Component {
       StateName: [],
       effectiveDate: "",
     }, () => this.props.change('Rate', 0));
-    this.setState({ AddUpdate: false })
+    this.setState({ AddUpdate: false, isEditIndex: false })
 
   }
 
@@ -311,14 +312,19 @@ class AddFuel extends Component {
   */
   deleteItem = (index) => {
     const { rateGrid } = this.state;
+    this.setState({
+      rateGridEditIndex: '',
+      isEditIndex: false,
+      effectiveDate: '',
 
+      StateName: '',
+    }, () => this.props.change('Rate', 0))
     let tempData = rateGrid.filter((item, i) => {
       if (i === index) {
         return false;
       }
       return true;
     });
-
     this.setState({
       rateGrid: tempData
     })
@@ -511,7 +517,7 @@ class AddFuel extends Component {
   */
   render() {
     const { handleSubmit, initialConfiguration, } = this.props;
-    const { isOpenFuelDrawer, isEditFlag, isViewMode, setDisable } = this.state;
+    const { isOpenFuelDrawer, isEditFlag, isViewMode, setDisable, isGridEdit } = this.state;
 
     return (
       <>
@@ -726,7 +732,7 @@ class AddFuel extends Component {
                                           <button
                                             className="Delete"
                                             type={"button"}
-                                            disabled={isViewMode || item?.IsAssociated}
+                                            disabled={isViewMode || item?.IsAssociated || isGridEdit}
                                             onClick={() =>
                                               this.deleteItem(index)
                                             }
