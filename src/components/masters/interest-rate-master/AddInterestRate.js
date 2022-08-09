@@ -54,8 +54,8 @@ class AddInterestRate extends Component {
   * @description called before render the component
   */
   UNSAFE_componentWillMount() {
-    this.props.getVendorListByVendorType(true, () => { })
-
+    if (!(this.props.data.isEditFlag || this.state.isViewMode))
+      this.props.getVendorListByVendorType(true, () => { })
   }
 
   /**
@@ -64,8 +64,11 @@ class AddInterestRate extends Component {
    */
   componentDidMount() {
     this.getDetail()
-    this.props.getICCAppliSelectList(() => { })
-    this.props.getPaymentTermsAppliSelectList(() => { })
+    if (!this.state.isViewMode) {
+      this.props.getICCAppliSelectList(() => { })
+      this.props.getPaymentTermsAppliSelectList(() => { })
+    }
+
   }
 
   componentDidUpdate(prevProps) {

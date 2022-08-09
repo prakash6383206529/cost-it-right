@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import {
-    getRMSpecificationDataList, deleteRMSpecificationAPI, getRMGradeSelectListByRawMaterial, getGradeSelectList, getRawMaterialNameChild,
+    getRMSpecificationDataList, deleteRMSpecificationAPI, getRMGradeSelectListByRawMaterial, getGradeSelectList,
     getRawMaterialFilterSelectList, getGradeFilterByRawMaterialSelectList, getRawMaterialFilterByGradeSelectList,
 } from '../actions/Material';
 import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
@@ -58,7 +58,6 @@ class SpecificationListing extends Component {
    * @description Called after rendering the component
    */
     componentDidMount() {
-        this.props.getRawMaterialFilterSelectList(() => { })
         this.getSpecificationListData('', '');
     }
 
@@ -475,7 +474,6 @@ function mapStateToProps({ material }) {
 export default connect(mapStateToProps, {
     getRMSpecificationDataList,
     deleteRMSpecificationAPI,
-    getRawMaterialNameChild,
     getRMGradeSelectListByRawMaterial,
     getGradeSelectList,
     getRawMaterialFilterSelectList,

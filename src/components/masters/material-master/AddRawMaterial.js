@@ -37,17 +37,18 @@ class AddRawMaterial extends Component {
   * @method cancel
   * @description used to Reset form
   */
-  cancel = () => {
+  cancel = (type) => {
     const { reset } = this.props;
     reset();
-    this.toggleDrawer('')
+    this.toggleDrawer('', '', type)
   }
 
-  toggleDrawer = (event, formData) => {
+  toggleDrawer = (event, formData, type) => {
+
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }
-    this.props.closeDrawer('', formData)
+    this.props.closeDrawer('', formData, type)
   };
 
   /**
@@ -68,7 +69,7 @@ class AddRawMaterial extends Component {
       this.props.updateRawMaterialChildName(formData, (res) => {
         if (res.data.Result === true) {
           Toaster.success(MESSAGES.MATERIAL_UPDATE_SUCCESS);
-          this.toggleDrawer('', values)
+          this.toggleDrawer('', values, 'submit')
         }
       })
 
@@ -78,7 +79,7 @@ class AddRawMaterial extends Component {
       this.props.createRawMaterialNameChild(values, (res) => {
         if (res.data.Result === true) {
           Toaster.success(MESSAGES.MATERIAL_ADDED_SUCCESS);
-          this.toggleDrawer('', values)
+          this.toggleDrawer('', values, 'submit')
         }
       });
     }
@@ -121,7 +122,7 @@ class AddRawMaterial extends Component {
                       </h3>
                     </div>
                     <div
-                      onClick={(e) => this.toggleDrawer(e)}
+                      onClick={(e) => { this.toggleDrawer(e, '', 'cancel') }}
                       className={"close-button right"}
                     ></div>
                   </Col>
@@ -146,7 +147,7 @@ class AddRawMaterial extends Component {
                   <div className="col-md-12 pl-3 pr-3">
                     <div className="text-right ">
                       <button
-                        onClick={this.cancel}
+                        onClick={() => { this.cancel('cancel') }}
                         type="submit"
                         value="CANCEL"
                         className=" mr15 cancel-btn"
