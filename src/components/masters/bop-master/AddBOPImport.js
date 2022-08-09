@@ -69,7 +69,7 @@ class AddBOPImport extends Component {
       IsFinancialDataChanged: true,
       oldDate: '',
 
-      UOM: [],
+      UOM: {},
       isOpenUOM: false,
       currency: [],
       isDateChange: false,
@@ -218,19 +218,30 @@ class AddBOPImport extends Component {
             } else {
               plantObj = Data && Data.Plant.length > 0 ? { label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId } : []
             }
+            this.props.getExchangeRateByCurrency(Data.Currency, DayTime(Data.EffectiveDate).format('YYYY-MM-DD'), res => {
+              if (Object.keys(res.data.Data).length === 0) {
+                this.setState({ showWarning: true })
+              }
+              else {
+                this.setState({ showWarning: false })
+              }
+              this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate), showCurrency: true }, () => {
+                this.handleCalculation()
+              })
+            })
             this.setState({
               isEditFlag: true,
               IsFinancialDataChanged: false,
               IsVendor: Data.IsVendor,
-              BOPCategory: Data.CategoryName !== undefined ? { label: Data.CategoryName, value: Data.CategoryId } : [],
+              BOPCategory: Data.CategoryName !== undefined ? { label: Data.CategoryName, value: Data.CategoryId } : {},
               selectedPlants: plantObj,
-              vendorName: Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.Vendor } : [],
-              currency: Data.Currency !== undefined ? { label: Data.Currency, value: Data.CurrencyId } : [],
-              sourceLocation: Data.SourceSupplierLocationName !== undefined ? { label: Data.SourceSupplierLocationName, value: Data.SourceLocation } : [],
+              vendorName: Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.Vendor } : {},
+              currency: Data.Currency !== undefined ? { label: Data.Currency, value: Data.CurrencyId } : {},
+              sourceLocation: Data.SourceSupplierLocationName !== undefined ? { label: Data.SourceSupplierLocationName, value: Data.SourceLocation } : {},
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
               oldDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
               files: Data.Attachements,
-              UOM: Data.UnitOfMeasurement !== undefined ? { label: Data.UnitOfMeasurement, value: Data.UnitOfMeasurementId } : [],
+              UOM: ((Data.UnitOfMeasurement !== undefined) ? { label: Data.UnitOfMeasurement, value: Data.UnitOfMeasurementId } : {}),
               isLoader: false,
             }, () => this.setState({ isLoader: false }))
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
@@ -369,7 +380,7 @@ class AddBOPImport extends Component {
     if (newValue && newValue !== '') {
       this.setState({ UOM: newValue, })
     } else {
-      this.setState({ UOM: [] })
+      this.setState({ UOM: {} })
     }
   };
 
@@ -504,20 +515,20 @@ class AddBOPImport extends Component {
       })
 
     } else {
-      this.props.getExchangeRateByCurrency(currency.label, DayTime(date).format('YYYY-MM-DD'), res => {
-        //this.props.change('NetLandedCost', (fieldsObj.BasicRate * res.data.Data.CurrencyExchangeRate))
+      if (currency.length !== 0) {
+        this.props.getExchangeRateByCurrency(currency.label, DayTime(date).format('YYYY-MM-DD'), res => {
+          if (Object.keys(res.data.Data).length === 0) {
 
-        if (Object.keys(res.data.Data).length === 0) {
-
-          this.setState({ showWarning: true })
-        }
-        else {
-          this.setState({ showWarning: false })
-        }
-        this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate), showCurrency: true }, () => {
-          this.handleCalculation()
+            this.setState({ showWarning: true })
+          }
+          else {
+            this.setState({ showWarning: false })
+          }
+          this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate), showCurrency: true }, () => {
+            this.handleCalculation()
+          })
         })
-      })
+      }
     }
   };
 
@@ -640,7 +651,7 @@ class AddBOPImport extends Component {
       selectedPartAssembly: [],
       selectedPlants: [],
       sourceLocation: [],
-      UOM: [],
+      UOM: {},
     })
     this.props.getBOPImportById('', res => { })
     this.getDetails()
@@ -1087,7 +1098,7 @@ class AddBOPImport extends Component {
                                   name={"Source"}
                                   type="text"
                                   placeholder={isEditFlag ? '-' : "Enter"}
-                                  validate={[acceptAllExceptSingleSpecialCharacter, maxLength(80)]}
+                                  validate={[acceptAllExceptSingleSpecialCharacter, maxLength80]}
                                   component={renderText}
                                   // required={true}
                                   disabled={isViewMode}
