@@ -551,9 +551,6 @@ function Pipe(props) {
                     disabled={true}
                   />
                 </Col>
-              </Row>
-
-              <Row>
                 <Col md="3">
                   <NumberFieldHookForm
                     label={`Length of Sheet(cm)`}
@@ -646,9 +643,6 @@ function Pipe(props) {
                     disabled={true}
                   />
                 </Col>
-              </Row>
-
-              <Row className={''}>
                 <Col md="3">
                   <NumberFieldHookForm
                     label={`Weight of Sheet(g)`}

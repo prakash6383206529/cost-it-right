@@ -343,7 +343,7 @@ function AddFreight(props) {
             <Row className="drawer-heading">
               <Col>
                 <div className={'header-wrapper left'}>
-                  <h3>{isEditFlag ? 'Update Freight' : 'ADD Freight'}</h3>
+                  <h3>{isEditFlag ? 'Update Freight' : 'Add Freight'}</h3>
                 </div>
                 <div
                   onClick={(e) => toggleDrawer(e)}

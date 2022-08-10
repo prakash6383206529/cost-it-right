@@ -291,21 +291,21 @@ function OperationCost(props) {
 
             <Col md="12">
               <Table className="table cr-brdr-main costing-operation-cost-section" size="sm" >
-                <thead>
+                <thead className={`${initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure ? 'header-with-labour-rate' : 'header-without-labour-rate'}`}>
                   <tr>
                     <th>{`Operation Name`}</th>
                     <th>{`Operation Code`}</th>
                     <th>{`UOM`}</th>
                     <th>{`Rate`}</th>
-                    <th style={{ width: "220px" }} >{`Quantity`}</th>
+                    <th >{`Quantity`}</th>
                     {initialConfiguration &&
                       initialConfiguration.IsOperationLabourRateConfigure &&
-                      <th style={{ width: "220px" }}>{`Labour Rate`}</th>}
+                      <th>{`Labour Rate`}</th>}
                     {initialConfiguration &&
                       initialConfiguration.IsOperationLabourRateConfigure &&
-                      <th style={{ width: "220px" }}>{`Labour Quantity`}</th>}
-                    <th style={{ width: "220px" }}>{`Net Cost`}</th>
-                    <th style={{ width: "145px", textAlign: "right" }}>{`Action`}</th>
+                      <th>{`Labour Quantity`}</th>}
+                    <th>{`Net Cost`}</th>
+                    <th style={{ textAlign: "right" }}>{`Action`}</th>
                   </tr>
                 </thead>
                 <tbody >
@@ -319,7 +319,7 @@ function OperationCost(props) {
                             <td>{item.OperationCode}</td>
                             <td>{item.UOM}</td>
                             <td>{item.Rate}</td>
-                            <td style={{ width: 200 }}>
+                            <td style={{ width: 130 }}>
                               {
                                 <NumberFieldHookForm
                                   label=""
@@ -399,10 +399,10 @@ function OperationCost(props) {
                             <td>{item.OperationCode}</td>
                             <td>{item.UOM}</td>
                             <td>{item.Rate}</td>
-                            <td style={{ width: 200 }}>{item.Quantity}</td>
+                            <td style={{ width: 130 }}>{item.Quantity}</td>
                             {initialConfiguration &&
                               initialConfiguration.IsOperationLabourRateConfigure &&
-                              <td style={{ width: 200 }}>{item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourRate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>}
+                              <td style={{ width: 130 }}>{item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourRate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>}
                             {initialConfiguration &&
                               initialConfiguration.IsOperationLabourRateConfigure &&
                               <td>{item.IsLabourRateExist ? item.LabourQuantity : '-'}</td>}

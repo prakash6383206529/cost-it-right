@@ -278,11 +278,11 @@ function AddPackaging(props) {
       // onClose={(e) => toggleDrawer(e)}
       >
         <Container>
-          <div className={'drawer-wrapper'}>
+          <div className={'drawer-wrapper packing-drawer'}>
             <Row className="drawer-heading">
               <Col>
                 <div className={'header-wrapper left'}>
-                  <h3>{isEditFlag ? 'Update Packaging' : 'ADD Packaging'}</h3>
+                  <h3>{isEditFlag ? 'Update Packaging' : 'Add Packaging'}</h3>
                 </div>
                 <div
                   onClick={(e) => toggleDrawer(e)}

@@ -452,7 +452,7 @@ function LossStandardTable(props) {
 
   return (
     <Fragment>
-      <Row className={''}>
+      <Row className={`mb-3 ${isFerrous ? 'mx-0' : ''}`}>
         <Col md="12">
           <div className="header-title">
             <h5>{'Loss :'}</h5>
@@ -703,7 +703,7 @@ function LossStandardTable(props) {
           />
         </Col>
         <Col md="3" className="pr-0">
-          <div>
+          <div className='mt5'>
             {isEdit ? (
               <>
                 <button
