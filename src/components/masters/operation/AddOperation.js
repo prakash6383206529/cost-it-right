@@ -420,8 +420,9 @@ class AddOperation extends Component {
         this.setDisableFalseFunction()
         let Data = res.data[0]
         const { files } = this.state;
-        files.push(Data)
-        this.setState({ files: files })
+        let attachmentFileArray = [...files]
+        attachmentFileArray.push(Data)
+        this.setState({ files: attachmentFileArray })
       })
     }
 
@@ -550,11 +551,6 @@ class AddOperation extends Component {
     }
     /** Update existing detail of supplier master **/
     // if (this.state.isEditFlag && this.state.isFinalApprovar) {
-    if (Number(DataToChange.Rate) === Number(values.Rate) && DataToChange.Remark === values.Remark && UOM.value === oldUOM.value
-      && DataToChange.Description === values.Description && uploadAttachements) {
-      Toaster.warning('Please change data to send operation for approval')
-      return false
-    }
 
     if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(OPERATIONS_ID) !== true)) {
 
@@ -591,30 +587,55 @@ class AddOperation extends Component {
           return false
 
         } else {
-
           this.setState({ setDisable: false })
           Toaster.warning('Please update the effective date')
           return false
         }
 
       }
+      else {
 
+        if (Number(DataToChange.Rate) === Number(values.Rate) && DataToChange.Remark === values.Remark && UOM.value === oldUOM.value
+          && DataToChange.Description === values.Description && (JSON.stringify(files) === JSON.stringify(DataToChange.Attachements))) {
+          this.cancel('submit')
+          return false
+        }
+        else {
+          this.setState({ disablePopup: true })
+          this.props.updateOperationAPI(updateData
 
-      if (isEditFlag) {
-        this.setState({ showPopup: true, updatedObj: updateData })
-        this.setState({ setDisable: true })
-        return false
+            , (res) => {
+              this.setState({ setDisable: false })
+              if (res?.data?.Result) {
+                Toaster.success(MESSAGES.OPERATION_UPDATE_SUCCESS);
+                this.cancel('submit')
+              }
+            });
+        }
+
       }
+
+      // if (isEditFlag) {
+      //   this.setState({ showPopup: true, updatedObj: updateData })
+      //   this.setState({ setDisable: true })
+      //   return false
+      // }
 
 
     } else {/** Add new detail for creating operation master **/
 
 
       if (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !this.state.isFinalApprovar) {
+        if (Number(DataToChange.Rate) === Number(values.Rate) && DataToChange.Remark === values.Remark && UOM.value === oldUOM.value
+          && DataToChange.Description === values.Description && (JSON.stringify(files) === JSON.stringify(DataToChange.Attachements))) {
+          Toaster.warning('Please change data to send operation for approval')
+          return false
+        }
         this.setState({ IsSendForApproval: true })
       } else {
         this.setState({ IsSendForApproval: false })
       }
+
 
       this.setState({ setDisable: true })
       let formData = {
@@ -661,8 +682,8 @@ class AddOperation extends Component {
         }
 
 
-        if (Number(DataToChange.Rate) === Number(values.Rate) && DataToChange.Remark === values.Remark && UOM.value === oldUOM.value && DataToChange.Description === values.Description && uploadAttachements) {
-          this.cancel('Cancel')
+        if (Number(DataToChange.Rate) === Number(values.Rate) && DataToChange.Remark === values.Remark && UOM.value === oldUOM.value && DataToChange.Description === values.Description && (JSON.stringify(files) === JSON.stringify(DataToChange.Attachements))) {
+          this.cancel('submit')
           return false
         } else {
           this.setState({ approveDrawer: true, approvalObj: formData })
@@ -1126,7 +1147,7 @@ class AddOperation extends Component {
                       <button
                         type={"button"}
                         className="mr15 cancel-btn"
-                        onClick={() => { this.cancel('Cancel') }}
+                        onClick={() => { this.cancel('submit') }}
                         disabled={setDisable}
                       >
                         <div className={"cancel-icon"}></div>

@@ -92,7 +92,9 @@ class AddBOPImport extends Component {
       disablePopup: false,
       inputLoader: false,
       attachmentLoader: false,
-
+      isSourceChange: false,
+      source: '',
+      remarks: '',
     }
   }
 
@@ -421,14 +423,32 @@ class AddBOPImport extends Component {
   */
   handleSourceSupplierCity = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ sourceLocation: newValue, });
+      this.setState({ sourceLocation: newValue, isSourceChange: true });
     } else {
       this.setState({ sourceLocation: [], })
     }
     this.setState({ DropdownChange: false })
   };
 
+
+  handleSource = (newValue, actionMeta) => {
+
+    if (newValue && newValue !== '') {
+
+      this.setState({ source: newValue, isSourceChange: true })
+
+    }
+  }
   /**
+   * @method handleMessageChange
+   * @description used remarks handler
+   */
+  handleMessageChange = (e) => {
+    this.setState({
+      remarks: e.target.value,
+      isSourceChange: true
+    })
+  }  /**
   * @method handleCurrency
   * @description called
   */
@@ -474,9 +494,6 @@ class AddBOPImport extends Component {
 
     if (this.state.isEditFlag && Number(checkForDecimalAndNull(NetLandedCost, initialConfiguration.NoOfDecimalForPrice)) === Number(checkForDecimalAndNull(this.state.DataToChange?.NetLandedCostConversion, initialConfiguration.NoOfDecimalForPrice))) {
       this.setState({ IsFinancialDataChanged: false })
-    } else if (this.state.isEditFlag) {
-      this.setState({ IsFinancialDataChanged: true })
-
     }
 
     this.setState({ netLandedcost: (BasicRate), netLandedConverionCost: NetLandedCost })
@@ -643,7 +660,7 @@ class AddBOPImport extends Component {
   * @method cancel
   * @description used to Reset form
   */
-  cancel = () => {
+  cancel = (type) => {
     const { reset } = this.props;
     reset();
     this.setState({
@@ -655,7 +672,7 @@ class AddBOPImport extends Component {
     })
     this.props.getBOPImportById('', res => { })
     this.getDetails()
-    this.props.hideForm()
+    this.props.hideForm(type)
   }
 
   /**
@@ -663,7 +680,7 @@ class AddBOPImport extends Component {
   * @description Used to Submit the form
   */
   onSubmit = debounce((values) => {
-    const { IsVendor, BOPCategory, selectedPlants, vendorName, currency, sourceLocation, BOPID, isEditFlag, files, effectiveDate, oldDate, UOM, netLandedConverionCost, DataToChange, DropdownChange, uploadAttachements, isDateChange, IsFinancialDataChanged } = this.state;
+    const { IsVendor, BOPCategory, selectedPlants, vendorName, currency, isSourceChange, sourceLocation, BOPID, isEditFlag, files, effectiveDate, oldDate, UOM, netLandedConverionCost, DataToChange, DropdownChange, uploadAttachements, isDateChange, IsFinancialDataChanged } = this.state;
 
     if (vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
@@ -680,21 +697,15 @@ class AddBOPImport extends Component {
 
     // if (this.state.isFinalApprovar && isEditFlag) {
 
-    if (DataToChange.IsVendor) {
-      if (DropdownChange && String(DataToChange.Source) === String(values.Source) &&
-        Number(DataToChange.BasicRate) === Number(values.BasicRate) && DataToChange.Remark === values.Remark && uploadAttachements &&
-        ((DataToChange.Source ? DataToChange.Source : '-') === (values.Source ? values.Source : '-')) &&
-        ((DataToChange.SourceLocation ? DataToChange.SourceLocation : '-') === (sourceLocation.value ? sourceLocation.value : '-'))) {
-        Toaster.warning('Please change data to send BOP for approval')
-        return false;
-      }
-    }
-    if (Boolean(DataToChange.IsVendor) === false) {
-      if (Number(DataToChange.BasicRate) === Number(values.BasicRate) && DataToChange.Remark === values.Remark && uploadAttachements) {
-        Toaster.warning('Please change data to send BOP for approval')
-        return false;
-      }
-    }
+    // if (DataToChange.IsVendor) {
+
+    // }
+    // if (Boolean(DataToChange.IsVendor) === false) {
+    //   if (Number(DataToChange.BasicRate) === Number(values.BasicRate) && DataToChange.Remark === values.Remark && uploadAttachements) {
+    //     Toaster.warning('Please change data to send BOP for approval')
+    //     return false;
+    //   }
+    // }
     if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(BOP_MASTER_ID) !== true)) {
 
       this.setState({ setDisable: true, disablePopup: false })
@@ -716,31 +727,52 @@ class AddBOPImport extends Component {
         Attachements: updatedFiles,
         UnitOfMeasurementId: UOM.value,
         NetLandedCostConversion: netLandedConverionCost,
-        IsForcefulUpdated: true,
+        IsForcefulUpdated: isDateChange ? false : isSourceChange ? false : true,
         NumberOfPieces: 1,
         IsFinancialDataChanged: isDateChange ? true : false
       }
 
 
       if (IsFinancialDataChanged) {
-
         if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
           this.setState({ showPopup: true, updatedObj: requestData })
           return false
 
         } else {
-
           this.setState({ setDisable: false })
           Toaster.warning('Please update the effective date')
           return false
         }
 
       }
-
-      if (isEditFlag) {
-        this.setState({ showPopup: true, updatedObj: requestData })
-        return false
+      else {
+        if (DropdownChange && String(DataToChange.Source) === String(values.Source) &&
+          Number(DataToChange.BasicRate) === Number(values.BasicRate) && DataToChange.Remark === values.Remark && JSON.stringify(updatedFiles) === JSON.stringify(DataToChange.Attachements) &&
+          ((DataToChange.Source ? DataToChange.Source : '-') === (values.Source ? values.Source : '-')) &&
+          ((DataToChange.SourceLocation ? DataToChange.SourceLocation : '-') === (sourceLocation.value ? sourceLocation.value : '-'))) {
+          this.cancel('submit')
+          return false;
+        }
+        else {
+          if (isSourceChange) {
+            this.props.updateBOPImport(requestData, (res) => {
+              this.setState({ setDisable: false })
+              if (res?.data?.Result) {
+                Toaster.success(MESSAGES.UPDATE_BOP_SUCESS);
+                this.cancel('submit')
+              }
+            });
+          }
+          else {
+            this.setState({ showPopup: true, updatedObj: requestData })
+          }
+          return false
+        }
       }
+      // if (isEditFlag) {
+      //   this.setState({ showPopup: true, updatedObj: requestData })
+      //   return false
+      // }
 
     } else {
 
@@ -749,7 +781,7 @@ class AddBOPImport extends Component {
       } else {
         this.setState({ IsSendForApproval: false })
       }
-      this.setState({ setDisable: true })
+      // this.setState({ setDisable: true })
       const formData = {
         IsSendForApproval: this.state.IsSendForApproval,
         BoughtOutPartId: BOPID,
@@ -779,29 +811,30 @@ class AddBOPImport extends Component {
         IsFinancialDataChanged: isDateChange ? true : false
       }
 
-
-
       if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) {
-
+        if (DropdownChange && String(DataToChange.Source) === String(values.Source) &&
+          Number(DataToChange.BasicRate) === Number(values.BasicRate) && DataToChange.Remark === values.Remark && (files === DataToChange.Attachements) &&
+          ((DataToChange.Source ? DataToChange.Source : '-') === (values.Source ? values.Source : '-')) &&
+          ((DataToChange.SourceLocation ? DataToChange.SourceLocation : '-') === (sourceLocation.value ? sourceLocation.value : '-'))) {
+          Toaster.warning('Please change data to send BOP for approval')
+          return false;
+        }
+        this.setState({ disablePopup: false })
         if (IsFinancialDataChanged) {
-
           if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
             this.setState({ approveDrawer: true, approvalObj: formData })
             return false
 
           } else {
-
             this.setState({ setDisable: false })
             Toaster.warning('Please update the effective date')
             return false
           }
-
         }
-
 
         if (DataToChange.IsVendor) {
           if (DropdownChange &&
-            Number(DataToChange.BasicRate) === Number(values.BasicRate) && DataToChange.Remark === values.Remark && uploadAttachements &&
+            Number(DataToChange.BasicRate) === Number(values.BasicRate) && DataToChange.Remark === values.Remark && (files === DataToChange.Attachements) &&
             ((DataToChange.Source ? DataToChange.Source : '-') === (values.Source ? values.Source : '-')) &&
             ((DataToChange.SourceLocation ? DataToChange.SourceLocation : '-') === (sourceLocation.value ? sourceLocation.value : '-'))) {
             Toaster.warning('Please change data to send BOP for approval')
@@ -810,18 +843,27 @@ class AddBOPImport extends Component {
           }
         }
         if (Boolean(DataToChange.IsVendor) === false) {
-          if (Number(DataToChange.BasicRate) === Number(values.BasicRate) && DataToChange.Remark === values.Remark && uploadAttachements) {
+          if (Number(DataToChange.BasicRate) === Number(values.BasicRate) && DataToChange.Remark === values.Remark && (uploadAttachements === DataToChange.Attachements)) {
             Toaster.warning('Please change data to send BOP for approval')
             // this.cancel()
             return false;
           }
         }
 
+        if ((DataToChange.Remark) === (values.Remark) && (uploadAttachements === DataToChange.Attachements)) {
+          Toaster.warning('Please change data to send BOP for approval')
+          return false;
+        } else {
 
-        if (isEditFlag) {
-          this.setState({ showPopup: true, updatedObj: formData })
+          this.setState({ approveDrawer: true, approvalObj: formData })
           return false
         }
+
+
+        // if (isEditFlag) {
+        //   this.setState({ showPopup: true, updatedObj: formData })
+        //   return false
+        // }
 
 
       } else {
@@ -834,17 +876,6 @@ class AddBOPImport extends Component {
           }
         })
       }
-
-
-
-      // this.props.createBOPImport(formData, (res) => {
-      //   this.setState({ setDisable: false })
-      //   if (res?.data?.Result) {
-      //     Toaster.success(MESSAGES.BOP_ADD_SUCCESS);
-      //     this.cancel();
-      //   }
-      // });
-
     }
 
 
@@ -875,7 +906,7 @@ class AddBOPImport extends Component {
   */
   render() {
     const { handleSubmit, isBOPAssociated } = this.props;
-    const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, isViewMode, setDisable, disablePopup } = this.state;
+    const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, updatedObj, isViewMode, setDisable, disablePopup, DropdownChange, DataToChange } = this.state;
     const filterList = (inputValue) => {
       let tempArr = []
 
@@ -1100,7 +1131,8 @@ class AddBOPImport extends Component {
                                   placeholder={isEditFlag ? '-' : "Enter"}
                                   validate={[acceptAllExceptSingleSpecialCharacter, maxLength80]}
                                   component={renderText}
-                                  // required={true}
+                                  valueDescription={this.state.source}
+                                  onChange={this.handleSource}
                                   disabled={isViewMode}
                                   className=" "
                                   customClassName=" withBorder"
@@ -1236,7 +1268,8 @@ class AddBOPImport extends Component {
                               className=""
                               customClassName=" textAreaWithBorder"
                               validate={[maxLength512]}
-                              //required={true}
+                              value={this.state.remarks}
+                              onChange={this.handleMessageChange}
                               disabled={isViewMode}
                               component={renderTextAreaField}
                               maxLength="5000"
@@ -1328,7 +1361,7 @@ class AddBOPImport extends Component {
                           <button
                             type={"button"}
                             className=" mr15 cancel-btn"
-                            onClick={this.cancel}
+                            onClick={() => { this.cancel('submit') }}
                             disabled={setDisable}
                           >
                             <div className={"cancel-icon"}></div>
