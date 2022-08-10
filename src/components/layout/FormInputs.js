@@ -226,6 +226,7 @@ export function renderPasswordInputField(field) {
 */
 export function renderMultiSelectField(field) {
   const {
+    input,
     isTouched,
     meta: { touched, error, active },
   } = field;
@@ -249,6 +250,7 @@ export function renderMultiSelectField(field) {
       </label>
       <div className={inputbox} onClick={field.onTouched} title={field && field?.title}>
         <Select
+          {...input}
           className={InputClassName}
           getOptionLabel={optionLabel}
           getOptionValue={optionValue}
