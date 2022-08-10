@@ -122,7 +122,6 @@ function SimulationApprovalSummary(props) {
     const [editWarning, setEditWarning] = useState(false)
     const [toggleSeeData, setToggleSeeData] = useState(true)
     const [finalLeveluser, setFinalLevelUser] = useState(false)
-    const [apiCount, setApiCount] = useState(0)
     const headerName = ['Revision No.', 'Name', 'Old Cost/Pc', 'New Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
 
     const { setValue, getValues } = useForm({
@@ -137,10 +136,8 @@ function SimulationApprovalSummary(props) {
 
     useEffect(() => {
         dispatch(getTechnologySelectList(() => {
-            setApiCount(2)
         }))
         dispatch(getPlantSelectListByType(ZBC, () => {
-            setApiCount(3)
         }))
 
         const reqParams = {
@@ -148,8 +145,8 @@ function SimulationApprovalSummary(props) {
             approvalId: approvalId,
             loggedInUserId: loggedInUserId(),
         }
+        setLoader(true)
         dispatch(getApprovalSimulatedCostingSummary(reqParams, res => {
-            setApiCount(4)
             const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow,
                 IsPushedButtonShow, SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId,
                 SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements, DepartmentId, TotalImpactPerQuarter } = res.data.Data
@@ -196,7 +193,6 @@ function SimulationApprovalSummary(props) {
                 })
 
                 dispatch(getSimulatedAssemblyWiseImpactDate(requestData, isAssemblyInDraft, (res) => {
-                    setApiCount(5)
                 }))
             }
 
@@ -246,6 +242,10 @@ function SimulationApprovalSummary(props) {
         setShowExchangeRateColumn(keysForDownloadSummary?.IsExchangeRateSimulation === true ? true : false)
         setShowMachineRateColumn(keysForDownloadSummary?.IsMachineRateSimulation === true ? true : false)
 
+        setTimeout(() => {
+
+            setLoader(false)
+        }, 500);
 
     }
 
@@ -256,10 +256,10 @@ function SimulationApprovalSummary(props) {
 
     useEffect(() => {
         // if (costingList.length > 0 && effectiveDate) {
+        setLoader(true)
         if (effectiveDate && costingList && simulationDetail.SimulationId) {
             if (costingList && costingList.length > 0 && effectiveDate && Object.keys('simulationDetail'.length > 0) && DataForAssemblyImpactForFg[0]?.CostingHead === VBC) {
                 dispatch(getLastSimulationData(costingList[0].VendorId, effectiveDate, res => {
-                    setApiCount(6)
                     const structureOfData = {
                         ExchangeRateImpactedMasterDataList: [],
                         OperationImpactedMasterDataList: [],
@@ -285,7 +285,6 @@ function SimulationApprovalSummary(props) {
                 // }
                 // if (simulationDetail.SimulationId) {
                 dispatch(getImpactedMasterData(simulationDetail.SimulationId, () => {
-                    setApiCount(3)
                 }))
             }
         }
@@ -316,12 +315,6 @@ function SimulationApprovalSummary(props) {
     }, [impactedMasterData])
 
 
-    useEffect(() => {
-        if (apiCount >= 6) {
-            setLoader(false)
-            setApiCount(8)
-        }
-    }, [apiCount])
     const closeViewDrawer = (e = '') => {
         setViewButton(false)
     }
@@ -1465,7 +1458,7 @@ function SimulationApprovalSummary(props) {
 
                     </div>
 
-                    {!isApprovalDone &&
+                    {!isApprovalDone && !loader &&
                         <Row className="sf-btn-footer no-gutters justify-content-between">
                             <div className="col-sm-12 text-right bluefooter-butn">
                                 <Fragment>
