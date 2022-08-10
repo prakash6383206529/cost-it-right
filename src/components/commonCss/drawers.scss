@@ -59,3 +59,34 @@
         }
     }
 }
+.ferrous-calculator {
+    table.ferrous-table {
+        border-right: none !important;
+        border-left: none!important;
+        border-top: none!important;
+        .inputbox {
+            min-height: unset;
+            margin-bottom: 0;
+            label {
+                display: none;
+            }
+            input {
+                max-width: 80px;
+                height: calc(38px * 80/100);
+            }
+            .text-error-title .text-help {
+                margin-top: -2px;
+            }
+        }
+    }
+}
+.add-bop-drawer {
+    .drawer-wrapper {
+        max-width: 320px;
+        .bluefooter-butn {
+            display: flex;
+            justify-content: flex-end;
+            padding-right: 0 !important;
+        }
+    }
+}

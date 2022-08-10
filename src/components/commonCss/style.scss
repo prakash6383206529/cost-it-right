@@ -2586,7 +2586,7 @@ button:disabled {
   .costing-table-next {
     tbody {
       td {
-        word-break: break-all;
+        word-break: break-word;
 
         .mb-15 {
           margin-bottom: 0px;
@@ -3781,7 +3781,7 @@ body {
 
 .css-4ljt47-MenuList {
   >div {
-    word-break: break-all;
+    word-break: break-word;
   }
 }
 
@@ -4710,7 +4710,7 @@ body {
   font-size: 16px;
   width: 100%;
   display: inline-block;
-  word-break: break-all;
+  word-break: break-word;
 
   &.success {
     background-color: #DBF4E2;
@@ -6981,6 +6981,7 @@ body {
   .toggle-button-per-and-fix {
     margin-top: 0.5rem;
     display: flex !important;
+    justify-content: space-between;
 
     .form-group.inputbox.withBorder {
       min-width: 12rem;
@@ -7824,7 +7825,7 @@ body {
     display: -webkit-box;
     -webkit-box-orient: vertical;
     white-space: $whiteSpace;
-    word-break: break-all;
+    word-break: break-word;
   }
 
   @media (min-width:$middleDesktop) {
