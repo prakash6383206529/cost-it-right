@@ -78,6 +78,9 @@ class AddBOPDomestic extends Component {
       disablePopup: false,
       inputLoader: false,
       attachmentLoader: false,
+      isSourceChange: false,
+      source: '',
+      remarks: '',
     }
   }
 
@@ -382,13 +385,32 @@ class AddBOPDomestic extends Component {
   */
   handleSourceSupplierCity = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ sourceLocation: newValue, });
+      this.setState({ sourceLocation: newValue, isSourceChange: true });
     } else {
       this.setState({ sourceLocation: [], })
     }
     this.setState({ DropdownChanged: false })
   };
 
+
+  handleSource = (newValue, actionMeta) => {
+
+    if (newValue && newValue !== '') {
+
+      this.setState({ source: newValue, isSourceChange: true })
+
+    }
+  }
+  /**
+   * @method handleMessageChange
+   * @description used remarks handler
+   */
+  handleMessageChange = (e) => {
+    this.setState({
+      remarks: e.target.value,
+      isSourceChange: true
+    })
+  }
   /**
   * @method handleUOM
   * @description called
@@ -478,8 +500,9 @@ class AddBOPDomestic extends Component {
         this.setDisableFalseFunction()
         let Data = res.data[0]
         const { files } = this.state;
-        files.push(Data)
-        this.setState({ files: files })
+        let attachmentFileArray = [...files]
+        attachmentFileArray.push(Data)
+        this.setState({ files: attachmentFileArray })
       })
     }
 
@@ -575,7 +598,7 @@ class AddBOPDomestic extends Component {
 
     const { IsVendor, BOPCategory, selectedPlants, vendorName,
 
-      sourceLocation, BOPID, isEditFlag, files, DropdownChanged, oldDate, effectiveDate, UOM, DataToCheck, uploadAttachements, isDateChange, IsFinancialDataChanged } = this.state;
+      sourceLocation, BOPID, isEditFlag, files, DropdownChanged, oldDate, isSourceChange, effectiveDate, UOM, DataToCheck, uploadAttachements, isDateChange, IsFinancialDataChanged } = this.state;
 
     if (vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
@@ -588,12 +611,7 @@ class AddBOPDomestic extends Component {
     if (selectedPlants.length === 0 && !this.state.IsVendor) {
       return false;
     }
-    if (DropdownChanged && (DataToCheck.Remark) === (values.Remark) && uploadAttachements && Number(DataToCheck.BasicRate) === Number(values.BasicRate) &&
-      ((DataToCheck.Source ? DataToCheck.Source : '-') === (values.Source ? values.Source : '-')) &&
-      ((DataToCheck.SourceLocation ? DataToCheck.SourceLocation : '-') === (sourceLocation.value ? sourceLocation.value : '-'))) {
-      Toaster.warning('Please change data to send BOP for approval')
-      return false;
-    }
+
 
     // if (isEditFlag && this.state.isFinalApprovar) {
 
@@ -612,7 +630,7 @@ class AddBOPDomestic extends Component {
       //     return false;
       //   }
       // }
-      this.setState({ setDisable: true, disablePopup: false })
+      this.setState({ disablePopup: false })
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: BOPID }
       })
@@ -628,11 +646,12 @@ class AddBOPDomestic extends Component {
         Plant: selectedPlants !== undefined ? [{ PlantName: selectedPlants.label, PlantId: selectedPlants.value, PlantCode: '' }] : {},
         Attachements: updatedFiles,
         UnitOfMeasurementId: UOM.value,
-        IsForcefulUpdated: true,
+        IsForcefulUpdated: isDateChange ? false : isSourceChange ? false : true,
         NumberOfPieces: 1,
         VendorPlant: [],
         IsFinancialDataChanged: isDateChange ? true : false
       }
+
       if (IsFinancialDataChanged) {
         if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
           this.setState({ showPopup: true, updatedObj: requestData })
@@ -643,7 +662,35 @@ class AddBOPDomestic extends Component {
           return false
         }
       }
+      else {
+        if (DropdownChanged && (DataToCheck.Remark) === (values.Remark) && JSON.stringify(updatedFiles) === JSON.stringify(DataToCheck.Attachements) && Number(DataToCheck.BasicRate) === Number(values.BasicRate) &&
+          ((DataToCheck.Source ? String(DataToCheck.Source) : '-') === (values.Source ? String(values.Source) : '-')) &&
+          ((DataToCheck.SourceLocation ? String(DataToCheck.SourceLocation) : '') === (sourceLocation.value ? String(sourceLocation.value) : ''))) {
+          this.cancel('submit')
+          return false;
+        }
+        else {
+          // this.setState({ showPopup: true, updatedObj: requestData })
 
+          if (isSourceChange) {
+
+            this.props.updateBOPDomestic(requestData, (res) => {
+
+              this.setState({ setDisable: false })
+              if (res?.data?.Result) {
+                Toaster.success(MESSAGES.UPDATE_BOP_SUCESS);
+                this.cancel('submit');
+              }
+            })
+          }
+          else {
+            this.setState({ showPopup: true, updatedObj: requestData })
+          }
+          return false
+
+        }
+
+      }
 
     } else {
 
@@ -652,7 +699,7 @@ class AddBOPDomestic extends Component {
       } else {
         this.setState({ IsSendForApproval: false })
       }
-      this.setState({ setDisable: true })
+      // this.setState({ setDisable: true })
       const formData = {
         IsSendForApproval: this.state.IsSendForApproval,
         IsFinancialDataChanged: isDateChange ? true : false,
@@ -679,20 +726,19 @@ class AddBOPDomestic extends Component {
         Attachements: files,
       }
 
-      // this.props.createBOPDomestic(formData, (res) => {
-      //   this.setState({ setDisable: false })
-      //   if (res?.data?.Result) {
-      //     Toaster.success(MESSAGES.BOP_ADD_SUCCESS);
-      //     this.cancel();
-      //   }
-      // });
-
-
       if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) {
-
+        if (DropdownChanged && (DataToCheck.Remark) === (values.Remark) && (JSON.stringify(files) === JSON.stringify(DataToCheck.Attachements)) && Number(DataToCheck.BasicRate) === Number(values.BasicRate) &&
+          ((DataToCheck.Source ? String(DataToCheck.Source) : '-') === (values.Source ? String(values.Source) : '-')) &&
+          ((DataToCheck.SourceLocation ? String(DataToCheck.SourceLocation) : '') === (sourceLocation.value ? String(sourceLocation.value) : ''))) {
+          Toaster.warning('Please change data to send BOP for approval')
+          return false;
+        }
+        else {
+          this.setState({ approveDrawer: true, approvalObj: formData })
+        }
+        this.setState({ disablePopup: false })
 
         if (IsFinancialDataChanged) {
-
           if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
             this.setState({ approveDrawer: true, approvalObj: formData })
             return false
@@ -706,37 +752,36 @@ class AddBOPDomestic extends Component {
         }
         if (DataToCheck.IsVendor) {
           if (DropdownChanged &&
-            Number(DataToCheck.BasicRate) === Number(values.BasicRate) && DataToCheck.Remark === values.Remark && uploadAttachements &&
+            (Number(DataToCheck.BasicRate) === Number(values.BasicRate)) && (DataToCheck.Remark === values.Remark) && JSON.stringify(files) === JSON.stringify(DataToCheck.Attachements) &&
             ((DataToCheck.Source ? DataToCheck.Source : '-') === (values.Source ? values.Source : '-')) &&
             ((DataToCheck.SourceLocation ? DataToCheck.SourceLocation : '-') === (sourceLocation.value ? sourceLocation.value : '-'))) {
             Toaster.warning('Please change data to send BOP for approval')
-            // this.cancel()
             return false;
           }
         }
         if (Boolean(DataToCheck.IsVendor) === false) {
-          if (Number(DataToCheck.BasicRate) === Number(values.BasicRate) && DataToCheck.Remark === values.Remark && uploadAttachements) {
+          if ((Number(DataToCheck.BasicRate) === Number(values.BasicRate)) && ((DataToCheck.Remark ? DataToCheck.Remark : '') === (values.Remark ? values.Remark : '')) && JSON.stringify(files) === JSON.stringify(DataToCheck.Attachements)) {
             Toaster.warning('Please change data to send BOP for approval')
-            // this.cancel()
             return false;
           }
         }
-        if (isEditFlag) {
-          this.setState({ showPopup: true, updatedObj: formData })
-          return false
-        }
+        // if (isEditFlag) {
+        //   this.setState({ showPopup: true, updatedObj: formData })
+        //   return false
+        // }
 
-        if ((DataToCheck.Remark) === (values.Remark) && uploadAttachements) {
-          Toaster.warning('Please change data to send BOP for approval')
-          return false;
-        } else {
+        // if (((DataToCheck.Remark ? DataToCheck.Remark : '') === (values.Remark ? values.Remark : '')) && uploadAttachements) {
+        //   
+        //   
+        //   
+        //   Toaster.warning('Please change data to send BOP for approval')
+        //   return false;
+        // } 
+        else {
 
           this.setState({ approveDrawer: true, approvalObj: formData })
           return false
         }
-
-
-
       } else {
         this.props.createBOPDomestic(formData, (res) => {
           this.setState({ setDisable: false })
@@ -1026,7 +1071,8 @@ class AddBOPDomestic extends Component {
                                   placeholder={isViewMode ? "-" : "Enter"}
                                   validate={[acceptAllExceptSingleSpecialCharacter, maxLength(80)]}
                                   component={renderText}
-                                  // required={true}
+                                  valueDescription={this.state.source}
+                                  onChange={this.handleSource}
                                   disabled={isViewMode}
                                   className=" "
                                   customClassName=" withBorder"
@@ -1132,7 +1178,8 @@ class AddBOPDomestic extends Component {
                               customClassName=" textAreaWithBorder"
                               validate={[maxLength512]}
                               disabled={isViewMode}
-                              //required={true}
+                              value={this.state.remarks}
+                              onChange={this.handleMessageChange}
                               component={renderTextAreaField}
                               maxLength="5000"
                             />
@@ -1231,7 +1278,7 @@ class AddBOPDomestic extends Component {
                           <button
                             type={"button"}
                             className="mr15 cancel-btn"
-                            onClick={this.cancel}
+                            onClick={() => { this.cancel('submit') }}
                             disabled={setDisable}
                           >
                             <div className={"cancel-icon"}></div>
