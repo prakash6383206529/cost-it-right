@@ -38,11 +38,20 @@ export default function freightReducer(state = initialState, action) {
                 error: true
             };
         case GET_FREIGHT_SUCCESS:
+            let arr = []
+            arr = action.payload && action.payload.filter((el, i) => {
+                if (el.IsVendor === true) {
+                    el.IsVendor = "Vendor Based"
+                } else {
+                    el.IsVendor = "Zero Based"
+                }
+                return true
+            })
             return {
                 ...state,
                 loading: false,
                 error: true,
-                freightDetail: action.payload
+                freightDetail: arr
             };
         case GET_FREIGHT_FAILURE:
             return {
