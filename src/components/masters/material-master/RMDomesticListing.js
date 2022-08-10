@@ -193,8 +193,16 @@ function RMDomesticListing(props) {
                     let isReset = true
                     setTimeout(() => {
                         for (var prop in floatingFilterData) {
-                            if (prop !== "DepartmentCode" && floatingFilterData[prop] !== "") {
-                                isReset = false
+
+                            if (isSimulation) {
+                                if (prop !== "DepartmentCode" && floatingFilterData[prop] !== "") {
+                                    isReset = false
+                                }
+                            } else {
+
+                                if (floatingFilterData[prop] !== "") {
+                                    isReset = false
+                                }
                             }
                         }
                         // Sets the filter model via the grid API
@@ -243,7 +251,9 @@ function RMDomesticListing(props) {
                     setWarningMessage(false)
                     for (var prop in floatingFilterData) {
 
-                        if (prop !== "DepartmentCode") {
+                        if (isSimulation && prop !== "DepartmentCode") {
+                            floatingFilterData[prop] = ""
+                        } else {
                             floatingFilterData[prop] = ""
                         }
                     }
@@ -281,7 +291,9 @@ function RMDomesticListing(props) {
 
         for (var prop in floatingFilterData) {
 
-            if (prop !== "DepartmentCode") {
+            if (isSimulation && prop !== "DepartmentCode") {
+                floatingFilterData[prop] = ""
+            } else {
                 floatingFilterData[prop] = ""
             }
         }
@@ -438,7 +450,8 @@ function RMDomesticListing(props) {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
-        return (cellValue !== null && cellValue !== '-') ? `${cellValue}(${rowData.DepartmentCode !== null ? rowData.DepartmentCode : '-'})` : '-'
+        //return (cellValue !== null && cellValue !== '-') ? `${cellValue}(${rowData.DepartmentCode !== null ? rowData.DepartmentCode : '-'})` : '-'
+        return cellValue
     }
 
     const statusFormatter = (props) => {
@@ -845,7 +858,7 @@ function RMDomesticListing(props) {
 
                                         <AgGridColumn field="VendorName" headerName="Vendor(Code)"></AgGridColumn>
 
-                                        <AgGridColumn field="DepartmentName" headerName="Company" cellRenderer='companyFormatter'></AgGridColumn>
+                                        <AgGridColumn field="DepartmentCode" headerName="Company Code" cellRenderer='companyFormatter'></AgGridColumn>
 
                                         <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
 
