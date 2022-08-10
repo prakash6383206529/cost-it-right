@@ -256,15 +256,15 @@ function Ferrous(props) {
                 <form noValidate className="form"
                     onKeyDown={(e) => { handleKeyDown(e, onSubmit.bind(this)); }}>
 
-                    <Col md="12">
+                    <Col md="12" className='mt-3'>
                         <div className="header-title mt12">
                             <h5>{'Raw Material:'}</h5>
                         </div>
                         <Col md="12">
                             <tbody className='rm-table-body'></tbody>
                         </Col>
-                        <div className="costing-border px-4">
-                            <Table className="table cr-brdr-main costing-raw-material-section" size="sm">
+                        <div className="costing-border ferrous-calculator">
+                            <Table className="table cr-brdr-main ferrous-table" size="sm">
                                 <thead>
                                     <tr>
                                         <th className='rm-name-head'>{`RM Name`}</th>
@@ -315,7 +315,7 @@ function Ferrous(props) {
 
                                 </tbody>
                             </Table>
-                            <Row className={''}>
+                            <Row className={"mx-0"}>
                                 <Col md="3">
                                     <NumberFieldHookForm
                                         label={`Net RM Rate`}
@@ -388,7 +388,7 @@ function Ferrous(props) {
                                 ferrousErrors={errors}
                                 isFerrous={true}
                             />
-                            <Row className={'mt25'}>
+                            <Row className={'mt25 mx-0'}>
                                 <Col md="3" >
                                     <NumberFieldHookForm
                                         label={`Gross Weight(Kg)`}
@@ -543,8 +543,7 @@ function Ferrous(props) {
                             disabled={props.CostingViewMode || isDisable ? true : false}
                             className="btn-primary save-btn"
                         >
-                            <div className={'check-icon'}>
-                                <i class="fa fa-check" aria-hidden="true"></i>
+                            <div className={'save-icon'}>
                             </div>
                             {'SAVE'}
                         </button>

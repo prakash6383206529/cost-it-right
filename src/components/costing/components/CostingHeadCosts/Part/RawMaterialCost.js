@@ -5,7 +5,7 @@ import AddRM from '../../Drawers/AddRM'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 import NoContentFound from '../../../../common/NoContentFound'
 import { useDispatch, useSelector } from 'react-redux'
-import { EMPTY_DATA, } from '../../../../../config/constants'
+import { EMPTY_DATA, FERROUSCASTINGID, } from '../../../../../config/constants'
 import { NumberFieldHookForm, TextFieldHookForm, TextAreaHookForm } from '../../../../layout/HookFormInputs'
 import Toaster from '../../../../common/Toaster'
 import { calculatePercentage, calculatePercentageValue, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey, isRMDivisorApplicable } from '../../../../../helper'
@@ -1005,22 +1005,8 @@ function RawMaterialCost(props) {
       <div className="user-page p-0">
         <div>
           <Row className="align-items-center">
-            <Col md="10">
+            <Col md="6">
               <div className="left-border">{'Raw Material Cost:'}</div>
-            </Col>
-            <Col md="10">
-              {
-                getTechnology.includes(costData?.TechnologyId) &&
-                <td className="text-center">
-                  <button
-                    className="CalculatorIcon cr-cl-icon "
-                    type={'button'}
-                    onClick={() => toggleWeightCalculator(0)}
-                    disabled={CostingViewMode ? item?.RawMaterialCalculatorId === null ? true : false : false}
-                  />
-                </td>
-              }
-              {/* <div className="left-border">{'Raw Material Cost:'}</div> */}
             </Col>
             <Col md={'2'}>
               {!CostingViewMode && !IsLocked && gridData && isShowAddBtn() &&
@@ -1033,6 +1019,13 @@ function RawMaterialCost(props) {
                   <div className={'plus'}></div>RM
                 </button>
               }
+              {((String(costData?.TechnologyId) === FERROUSCASTINGID) && gridData.length !== 0) && <button
+                className="secondary-btn"
+                type={'button'}
+                onClick={() => toggleWeightCalculator(0)}
+                disabled={CostingViewMode ? item?.RawMaterialCalculatorId === null ? true : false : false}><div className='CalculatorIcon cr-cl-icon '></div>Weight Calculate</button>}
+
+
             </Col>
           </Row>
           <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}>
@@ -1053,9 +1046,8 @@ function RawMaterialCost(props) {
                       {isScrapRecoveryPercentageApplied && <th style={{ width: "200px" }}>{`Scrap Recovery(%)`}</th>}
                       {costData?.TechnologyId === PLASTIC && <th style={{ width: "190px" }}>{'Burning Loss Weight'}</th>}
                       <th style={{ width: "190px" }}>{`Scrap Weight`}</th>
-                      {costData?.TechnologyId === 6 && <th style={{ width: "190px" }}>{`Percentage`}</th>}
                       {/* //Add i here for MB+ */}
-                      <th style={{ width: "190px" }}>{`Net RM Cost ${isRMDivisorApplicable(costData.TechnologyName) ? '/(' + RMDivisor + ')' : ''}`}</th>
+                      <th style={{ width: "120" }}>{`Net RM Cost ${isRMDivisorApplicable(costData.TechnologyName) ? '/(' + RMDivisor + ')' : ''}`}</th>
 
                       <th style={{ width: "145px", textAlign: "right" }}>{`Action`}</th>
                     </tr>
