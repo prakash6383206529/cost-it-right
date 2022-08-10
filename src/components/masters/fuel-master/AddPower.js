@@ -1708,6 +1708,7 @@ class AddPower extends Component {
                                       type="button"
                                       className={'reset-btn  pull-left ml5'}
                                       onClick={this.resetData}
+                                      disabled={(checkPowerContribution || this.state.isAddedSEB) ? true : false}
                                     >Reset</button>
                                   </>
                                 }
@@ -1917,6 +1918,7 @@ class AddPower extends Component {
                                       type="button"
                                       className={'reset-btn mt30 ml5 pull-left'}
                                       onClick={this.resetPowerGridData}
+                                      disabled={checkPowerContribution || isViewMode ? true : false}
                                     >Reset</button>
                                   </>}
                               </div>
