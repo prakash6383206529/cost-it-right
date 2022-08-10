@@ -299,7 +299,7 @@ class AddLabour extends Component {
   }
 
   closeMachineTypeDrawer = (e = '', formData = {}) => {
-    this.setState({ isOpenMachineType: false }, () => {
+    this.setState({ isOpenMachineType: false, labourType: '' }, () => {
       this.props.getMachineTypeSelectList(() => {
         const { machineTypeSelectList } = this.props
         /*TO SHOW MACHINE TYPE VALUE PRE FILLED FROM DRAWER*/
