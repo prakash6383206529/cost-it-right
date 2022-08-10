@@ -1416,7 +1416,7 @@ function TabRMCC(props) {
                         <tr>
                           <th className="py-3 align-middle" style={{ minWidth: '100px' }}>{`Part Number`}</th>
                           <th className="py-3 align-middle" style={{ minWidth: '70px' }}>{`Level`}</th>
-                          <th className="py-3 align-middle" style={{ minWidth: '100px' }}>{`Type`}</th>
+                          <th className="py-3 align-middle" style={{ minWidth: '110px' }}>{`Type`}</th>
                           <th className="py-3 align-middle" style={{ minWidth: '100px' }}>{`RM Cost`}</th>
                           <th className="py-3 align-middle" style={{ minWidth: '100px' }}>{`Insert Cost`}</th>
                           <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`CC`}</th>

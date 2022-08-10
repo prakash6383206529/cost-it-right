@@ -344,15 +344,15 @@ function BOPCost(props) {
 
               <Col md="12">
                 <Table className="table cr-brdr-main costing-bop-cost-section" size="sm" >
-                  <thead>
+                  <thead className='table-header'>
                     <tr>
                       <th>{`Insert Part No.`}</th>
                       <th>{`Insert Part Name`}</th>
                       <th>{`UOM`}</th>
-                      <th style={{ width: "220px" }} >{`Insert Cost (INR)`}</th>
-                      <th style={{ width: "220px" }} >{`Quantity`}</th>
-                      <th style={{ width: "220px" }} >{`Net Insert Cost`}</th>
-                      <th style={{ width: "145px", textAlign: "right" }}>{`Action`}</th>
+                      <th>{`Insert Cost (INR)`}</th>
+                      <th>{`Quantity`}</th>
+                      <th>{`Net Insert Cost`}</th>
+                      <th>{`Action`}</th>
                     </tr>
                   </thead>
                   <tbody className='rm-table-body'>
@@ -460,8 +460,8 @@ function BOPCost(props) {
                 </Table>
               </Col>
             </Row>
-            <Row >
-              <Col md="12" className="py-3 ">
+            <Row className='handling-charge'>
+              <div className="pl-3">
                 <span className="d-inline-block">
                   <label
                     className={`custom-checkbox mb-0`}
@@ -480,10 +480,10 @@ function BOPCost(props) {
                     />
                   </label>
                 </span>
-              </Col>
+              </div>
 
               {IsApplyBOPHandlingCharges &&
-                <Col md="3" >
+                <Col md="2" >
                   <TextFieldHookForm
                     label="Percentage"
                     name={"BOPHandlingPercentage"}
@@ -515,7 +515,7 @@ function BOPCost(props) {
                 </Col>}
 
               {IsApplyBOPHandlingCharges &&
-                <Col md="3">
+                <Col md="2">
                   <TextFieldHookForm
                     label="Handling Charges"
                     name={'BOPHandlingCharges'}

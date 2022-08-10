@@ -211,7 +211,7 @@ function AssemblyPart(props) {
             }
           </td>
         } */}
-        <td>
+        <td width={"0"}>
 
           <div className='d-flex justify-content-end align-items-center'>
             <div className='d-flex'>

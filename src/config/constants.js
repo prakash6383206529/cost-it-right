@@ -1898,6 +1898,9 @@ export const INTERESTRATEBULKUPLOAD = 'InterestRate'
 export const ACTUALVOLUMEBULKUPLOAD = 'ActualVolume'
 export const BUDGETEDVOLUMEBULKUPLOAD = 'BudgetedVolume'
 
+// TECHNOLOGY
+export const FERROUSCASTINGID = '6'
+
 // KEY AND IV
 export const KEY = 'awvmhujtecmcecmj';
 export const IV = 'vuqqsafvwouoqtgh'
