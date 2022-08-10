@@ -637,11 +637,24 @@ function ReportListing(props) {
         </ExcelSheet>);
     }
 
+
+    const sapExcelDataFilter = (data) => {
+        let temp = []
+        data && data.map((item) => {
+            if (item.Status === "ApprovedByASMSimulation" || item.Status === "CreatedByAssembly") {
+                return false
+            } else {
+                temp.push(item)
+            }
+        })
+        return temp
+    }
+
     const renderColumnSAP = (fileName) => {
         let tempData = []
 
         if (selectedRowData.length === 0) {
-            tempData = reportListingData
+            tempData = sapExcelDataFilter(reportListingData)
         }
         else {
             tempData = selectedRowData
@@ -653,16 +666,13 @@ function ReportListing(props) {
     const renderColumnSAPEncoded = (fileName) => {
         let tempData = []
         if (selectedRowData.length === 0) {
-            tempData = reportListingData
+            tempData = sapExcelDataFilter(reportListingData)
         }
         else {
             tempData = selectedRowData
         }
         return returnExcelColumnSAPEncoded(REPORT_DOWNLOAD_SAP_EXCEl, tempData)
     }
-
-
-
 
     const returnExcelColumnSAP = (data = [], TempData) => {
         return (<ExcelSheet data={TempData} name={ReportSAPMaster}>

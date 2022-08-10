@@ -124,7 +124,7 @@ class AddInterestRate extends Component {
       plantSelectList &&
         plantSelectList.map((item) => {
           if (item.Value === '0') return false
-          temp.push({ label: item.Text, value: item.Value })
+          temp.push({ label: item.PlantName, value: item.PlantId })
           return null
         })
       return temp
