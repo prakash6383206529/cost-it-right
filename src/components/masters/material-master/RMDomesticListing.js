@@ -62,7 +62,7 @@ function RMDomesticListing(props) {
     const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
     const [currentRowIndex, setCurrentRowIndex] = useState(0)
     const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
-    const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", RawMaterialCode: "", Category: "", MaterialType: "", Plant: "", UOM: "", VendorName: "", BasicRate: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDate: "", DepartmentCode: isSimulation ? userDepartmetList() : "" })
+    const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", RawMaterialCode: "", Category: "", MaterialType: "", Plant: "", UOM: "", VendorName: "", BasicRate: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDate: "", DepartmentName: isSimulation ? userDepartmetList() : "" })
 
 
     var filterParams = {
@@ -194,13 +194,13 @@ function RMDomesticListing(props) {
                     setTimeout(() => {
                         for (var prop in floatingFilterData) {
 
-                            if (isSimulation) {
-                                if (prop !== "DepartmentCode" && floatingFilterData[prop] !== "") {
+                            if (isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant) {
+                                if (floatingFilterData[prop] !== "") {
                                     isReset = false
                                 }
                             } else {
 
-                                if (floatingFilterData[prop] !== "") {
+                                if (prop !== "DepartmentName" && floatingFilterData[prop] !== "") {
                                     isReset = false
                                 }
                             }
@@ -251,8 +251,11 @@ function RMDomesticListing(props) {
                     setWarningMessage(false)
                     for (var prop in floatingFilterData) {
 
-                        if (isSimulation && prop !== "DepartmentCode") {
-                            floatingFilterData[prop] = ""
+                        if (isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant) {
+                            if (prop !== "DepartmentName") {
+                                floatingFilterData[prop] = ""
+                            }
+
                         } else {
                             floatingFilterData[prop] = ""
                         }
@@ -291,8 +294,10 @@ function RMDomesticListing(props) {
 
         for (var prop in floatingFilterData) {
 
-            if (isSimulation && prop !== "DepartmentCode") {
-                floatingFilterData[prop] = ""
+            if (isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant) {
+                if (prop !== "DepartmentName") {
+                    floatingFilterData[prop] = ""
+                }
             } else {
                 floatingFilterData[prop] = ""
             }
@@ -863,7 +868,7 @@ function RMDomesticListing(props) {
 
                                         <AgGridColumn field="VendorName" headerName="Vendor(Code)"></AgGridColumn>
 
-                                        <AgGridColumn field="DepartmentCode" headerName="Company Code" cellRenderer='companyFormatter'></AgGridColumn>
+                                        <AgGridColumn field="DepartmentName" headerName="Company Code" ></AgGridColumn>
 
                                         <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
 
