@@ -437,7 +437,7 @@ class AddRMDomestic extends Component {
       this.props.getRawMaterialDetailsAPI(data, true, (res) => {
         if (res && res.data && res.data.Result) {
           const Data = res.data.Data
-          this.setState({ DataToChange: Data }, () => { })
+          this.setState({ DataToChange: Data })
           // this.props.getPlantBySupplier(Data.Vendor, () => { })
           this.props.change('FrieghtCharge', Data.RMFreightCost ? Data.RMFreightCost : '')
           this.props.change('ShearingCost', Data.RMShearingCost ? Data.RMShearingCost : '')
@@ -808,10 +808,8 @@ class AddRMDomestic extends Component {
       showPopup: false,
       updatedObj: {}
     })
-    if (type === 'submit') {
-      this.props.getRawMaterialDetailsAPI('', false, (res) => { })
-      this.props.fetchSpecificationDataAPI(0, () => { })
-    }
+    this.props.getRawMaterialDetailsAPI('', false, (res) => { })
+    this.props.fetchSpecificationDataAPI(0, () => { })
     this.props.hideForm(type)
   }
 
@@ -864,13 +862,13 @@ class AddRMDomestic extends Component {
     if (status === 'done') {
       let data = new FormData()
       data.append('file', file)
-
       this.props.fileUploadRMDomestic(data, (res) => {
         this.setDisableFalseFunction()
         let Data = res.data[0]
         const { files } = this.state
-        files.push(Data)
-        this.setState({ files: files })
+        let attachmentFileArray = [...files]
+        attachmentFileArray.push(Data)
+        this.setState({ files: attachmentFileArray })
       })
     }
 
@@ -956,7 +954,7 @@ class AddRMDomestic extends Component {
     //  
     const { IsVendor, RawMaterial, RMGrade, RMSpec, Category, Technology, selectedPlants, vendorName,
       VendorCode, HasDifferentSource, sourceLocation,
-      UOM, remarks, RawMaterialID, isEditFlag, files, effectiveDate, netLandedCost, oldDate, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, isSourceChange, uploadAttachements, IsFinancialDataChanged } = this.state
+      UOM, remarks, RawMaterialID, isEditFlag, files, effectiveDate, netLandedCost, oldDate, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, isSourceChange, IsFinancialDataChanged } = this.state
     const { initialConfiguration, fieldsObj } = this.props
     if (vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
@@ -1017,7 +1015,6 @@ class AddRMDomestic extends Component {
           return
 
         } else {
-
           this.setState({ setDisable: false })
           Toaster.warning('Please update the effective date')
           return false
@@ -1025,13 +1022,14 @@ class AddRMDomestic extends Component {
 
       }
       else {
-        if (uploadAttachements && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === values.BasicRate && Number(DataToChange.ScrapRate) === Number(values.ScrapRate)
+
+        if ((JSON.stringify(files) === JSON.stringify(DataToChange.FileList)) && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === values.BasicRate && Number(DataToChange.ScrapRate) === Number(values.ScrapRate)
           && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCost) && ((DataToChange.Remark ? DataToChange.Remark : '') === (values.Remark ? values.Remark : ''))
           && ((DataToChange.CutOffPrice ? Number(DataToChange.CutOffPrice) : '') === (values.cutOffPrice ? Number(values.cutOffPrice) : ''))
           && String(DataToChange.RawMaterialCode) === String(values.Code)
           && (DataToChange.Source === (!IsVendor && !HasDifferentSource ? '' : values.Source))
           && ((DataToChange.SourceLocation ? String(DataToChange.SourceLocation) : '') === (sourceLocationValue ? String(sourceLocationValue) : ''))) {
-          this.cancel()
+          this.cancel('submit')
           return false
         }
         else {
@@ -1098,12 +1096,12 @@ class AddRMDomestic extends Component {
         formData.IsSendForApproval = false
       }
       // }
-      console.log('values.Remark: ', values.Remark);
-      console.log('DataToChange.Remark: ', DataToChange.Remark);
-
       // THIS CONDITION TO CHECK IF IT IS FOR MASTER APPROVAL THEN WE WILL SEND DATA FOR APPROVAL ELSE CREATE API WILL BE CALLED
       if (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !this.state.isFinalApprovar) {
-        if (uploadAttachements && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === values.BasicRate && Number(DataToChange.ScrapRate) === Number(values.ScrapRate)
+        // 
+        // 
+        // 
+        if (((files ? JSON.stringify(files) : []) === (DataToChange.FileList ? JSON.stringify(DataToChange.FileList) : [])) && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === values.BasicRate && Number(DataToChange.ScrapRate) === Number(values.ScrapRate)
           && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCost) && ((DataToChange.Remark ? DataToChange.Remark : '') === (values.Remark ? values.Remark : ''))
           && ((DataToChange.CutOffPrice ? Number(DataToChange.CutOffPrice) : '') === (values.cutOffPrice ? Number(values.cutOffPrice) : ''))
           && String(DataToChange.RawMaterialCode) === String(values.Code)
@@ -1137,7 +1135,7 @@ class AddRMDomestic extends Component {
         } else {
 
           if (isEditFlag) {
-            if (uploadAttachements && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === values.BasicRate && Number(DataToChange.ScrapRate) === values.ScrapRate
+            if ((JSON.stringify(files) === JSON.stringify(DataToChange.FileList)) && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === values.BasicRate && Number(DataToChange.ScrapRate) === values.ScrapRate
               && Number(DataToChange.NetLandedCost) === values.NetLandedCost && (DataToChange.Remark ? DataToChange.Remark : '') === (values.Remark ? values.Remark : '')
               && (Number(DataToChange.CutOffPrice) === values.cutOffPrice || values.cutOffPrice === undefined)
               && DataToChange.RawMaterialCode === values.Code) {
@@ -1225,6 +1223,9 @@ class AddRMDomestic extends Component {
 
 
       });
+
+    // 
+
 
 
     return (
@@ -1773,7 +1774,7 @@ class AddRMDomestic extends Component {
                           <button
                             type={"button"}
                             className="mr15 cancel-btn"
-                            onClick={() => { this.cancel('cancel') }}
+                            onClick={() => { this.cancel('submit') }}
                             disabled={setDisable}
                           >
                             <div className={"cancel-icon"}></div>
