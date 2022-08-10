@@ -87,7 +87,7 @@ class BulkUpload extends Component {
     * @description Used for Costing head check
     */
     onPressHeads = (costingHeadFlag) => {
-        this.setState({ costingHead: costingHeadFlag, });
+        this.setState({ costingHead: costingHeadFlag, fileData: [], uploadfileName: "" });
     }
 
     /**
@@ -95,7 +95,6 @@ class BulkUpload extends Component {
      * @description called for profile pic change
      */
     fileHandler = event => {
-
         let fileObj = event.target.files[0];
         let fileHeads = [];
         let uploadfileName = fileObj?.name;
@@ -474,9 +473,9 @@ class BulkUpload extends Component {
     }
 
     /**
-    * @method render
-    * @description Renders the component
-    */
+     * @method render
+     * @description Renders the component
+     */
     render() {
         const { handleSubmit, isEditFlag, fileName, messageLabel, isZBCVBCTemplate = '', isMachineMoreTemplate } = this.props;
         const { faildRecords, failedData, costingHead, setDisable } = this.state;
