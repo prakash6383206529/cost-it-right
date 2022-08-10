@@ -132,7 +132,7 @@ function SimulationApprovalSummary(props) {
     const [showbutton, setShowButton] = useState(false)
     const [ammendentButton, setAmmendmentButton] = useState(false)
     const [finalLeveluser, setFinalLevelUser] = useState(false)
-
+    const [apiCount, setApiCount] = useState(0)
     const headerName = ['Revision No.', 'Name', 'Old Cost/Pc', 'New Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
 
     const { setValue, getValues } = useForm({
@@ -141,10 +141,13 @@ function SimulationApprovalSummary(props) {
     })
     const userLoggedIn = loggedInUserId()
 
-
     useEffect(() => {
-        dispatch(getTechnologySelectList(() => { }))
-        dispatch(getPlantSelectListByType(ZBC, () => { }))
+        dispatch(getTechnologySelectList(() => {
+            setApiCount(2)
+        }))
+        dispatch(getPlantSelectListByType(ZBC, () => {
+            setApiCount(3)
+        }))
 
         const reqParams = {
             approvalTokenNumber: approvalNumber,
@@ -152,6 +155,7 @@ function SimulationApprovalSummary(props) {
             loggedInUserId: loggedInUserId(),
         }
         dispatch(getApprovalSimulatedCostingSummary(reqParams, res => {
+            setApiCount(4)
             const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow,
                 IsPushedButtonShow, SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId,
                 SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements, DepartmentId, TotalImpactPerQuarter } = res.data.Data
@@ -197,7 +201,9 @@ function SimulationApprovalSummary(props) {
                     return null
                 })
 
-                dispatch(getSimulatedAssemblyWiseImpactDate(requestData, isAssemblyInDraft, (res) => { }))
+                dispatch(getSimulatedAssemblyWiseImpactDate(requestData, isAssemblyInDraft, (res) => {
+                    setApiCount(5)
+                }))
             }
 
             // const valueTemp = {
@@ -221,7 +227,6 @@ function SimulationApprovalSummary(props) {
                     setFinalLevelUser(res.data.Data.IsFinalApprover)
                 }
             }))
-
         }))
     }, [])
 
@@ -249,10 +254,6 @@ function SimulationApprovalSummary(props) {
         setShowMachineRateColumn(keysForDownloadSummary?.IsMachineRateSimulation === true ? true : false)
         setShowCombinedProcessColumn(keysForDownloadSummary?.IsCombinedProcessSimulation === true ? true : false)
 
-        setTimeout(() => {
-
-            setLoader(false)
-        }, 500);
 
     }
 
@@ -266,6 +267,7 @@ function SimulationApprovalSummary(props) {
         if (effectiveDate && costingList && simulationDetail.SimulationId) {
             if (costingList && costingList.length > 0 && effectiveDate && Object.keys('simulationDetail'.length > 0) && DataForAssemblyImpactForFg[0]?.CostingHead === VBC) {
                 dispatch(getLastSimulationData(costingList[0].VendorId, effectiveDate, res => {
+                    setApiCount(6)
                     const structureOfData = {
                         ExchangeRateImpactedMasterDataList: [],
                         OperationImpactedMasterDataList: [],
@@ -273,6 +275,7 @@ function SimulationApprovalSummary(props) {
                         BoughtOutPartImpactedMasterDataList: [],
                         CombinedProcessImpactedMasterDataList: [],
                     }
+
                     let masterId
                     let Data = []
                     if (Number(res?.status) === 204) {
@@ -281,7 +284,6 @@ function SimulationApprovalSummary(props) {
                         Data = res?.data?.Data
                         masterId = res?.data?.Data?.SimulationTechnologyId;
                     }
-
                     if (res) {
                         setImpactedMasterDataListForLastRevisionData(Data)
                         setShowLastRevisionData(true)
@@ -291,7 +293,9 @@ function SimulationApprovalSummary(props) {
                 }))
                 // }
                 // if (simulationDetail.SimulationId) {
-                dispatch(getImpactedMasterData(simulationDetail.SimulationId, () => { }))
+                dispatch(getImpactedMasterData(simulationDetail.SimulationId, () => {
+                    setApiCount(3)
+                }))
             }
         }
 
@@ -320,6 +324,13 @@ function SimulationApprovalSummary(props) {
         }
     }, [impactedMasterData])
 
+
+    useEffect(() => {
+        if (apiCount >= 6) {
+            setLoader(false)
+            setApiCount(8)
+        }
+    }, [apiCount])
     const closeViewDrawer = (e = '') => {
         setViewButton(false)
     }
