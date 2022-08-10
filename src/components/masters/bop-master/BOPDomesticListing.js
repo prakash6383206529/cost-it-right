@@ -59,7 +59,7 @@ class BOPDomesticListing extends Component {
             disableDownload: false,
 
             //states for pagination purpose
-            floatingFilterData: { IsVendor: "", BoughtOutPartNumber: "", BoughtOutPartName: "", BoughtOutPartCategory: "", UOM: "", Specification: "", Plants: "", Vendor: "", BasicRate: "", NetLandedCost: "", EffectiveDateNew: "", DepartmentCode: this.props.isSimulation ? userDepartmetList() : "" },
+            floatingFilterData: { IsVendor: "", BoughtOutPartNumber: "", BoughtOutPartName: "", BoughtOutPartCategory: "", UOM: "", Specification: "", Plants: "", Vendor: "", BasicRate: "", NetLandedCost: "", EffectiveDateNew: "", DepartmentName: this.props.isSimulation ? userDepartmetList() : "" },
             warningMessage: false,
             filterModel: {},
             pageNo: 1,
@@ -167,8 +167,15 @@ class BOPDomesticListing extends Component {
                         setTimeout(() => {
 
                             for (var prop in obj) {
-                                if (prop !== "DepartmentCode" && obj[prop] !== "") {
-                                    isReset = false
+                                if (this.props.isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant) {
+                                    if (prop !== "DepartmentName" && obj[prop] !== "") {
+                                        isReset = false
+                                    }
+
+                                } else {
+                                    if (obj[prop] !== "") {
+                                        isReset = false
+                                    }
                                 }
                             }
                             // Sets the filter model via the grid API
@@ -689,6 +696,7 @@ class BOPDomesticListing extends Component {
                                     <AgGridColumn field="Specification" headerName="Specification" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="Plants" cellRenderer={'hyphenFormatter'} headerName="Plant(Code)"></AgGridColumn>
                                     <AgGridColumn field="Vendor" headerName="Vendor(Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn>
                                     <AgGridColumn field="BasicRate" headerName="Basic Rate" cellRenderer={'commonCostFormatter'} ></AgGridColumn>
                                     <AgGridColumn field="NetLandedCost" headerName="Net Cost" cellRenderer={'commonCostFormatter'} ></AgGridColumn>
                                     <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams} ></AgGridColumn>
