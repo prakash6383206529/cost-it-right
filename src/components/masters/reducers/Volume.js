@@ -35,10 +35,19 @@ export default function VolumeReducer(state = initialState, action) {
                 financialYearSelectList: action.payload
             };
         case GET_VOLUME_DATA_LIST:
+            let arr = []
+            arr = action.payload && action.payload.filter((el, i) => {
+                if (el.IsVendor === true) {
+                    el.IsVendor = "Vendor Based"
+                } else {
+                    el.IsVendor = "Zero Based"
+                }
+                return true
+            })
             return {
                 ...state,
                 loading: false,
-                volumeDataList: action.payload
+                volumeDataList: arr
             }
         default:
             return state;

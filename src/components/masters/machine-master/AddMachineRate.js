@@ -907,8 +907,9 @@ class AddMachineRate extends Component {
         this.setDisableFalseFunction()
         let Data = res.data[0]
         const { files } = this.state;
-        files.push(Data)
-        this.setState({ files: files })
+        let attachmentFileArray = [...files]
+        attachmentFileArray.push(Data)
+        this.setState({ files: attachmentFileArray })
       })
     }
 
@@ -996,7 +997,7 @@ class AddMachineRate extends Component {
     this.setState({ isVendorNameNotSelected: false })
 
     if (isViewFlag) {
-      this.cancel('cancel');
+      this.cancel('submit');
       return false
     }
     const { machineData } = this.props;
@@ -1071,13 +1072,13 @@ class AddMachineRate extends Component {
 
         if (isEditFlag) {
 
-          if (DropdownChange && uploadAttachements &&
+          if (DropdownChange && (JSON.stringify(files) === JSON.stringify(DataToChange.Attachements)) &&
             (DataToChange.Specification ? DataToChange.Specification : '-') === (values.Specification ? values.Specification : '-') &&
             (DataToChange.MachineName ? DataToChange.MachineName : '-') === (values.MachineName ? values.MachineName : '-') &&
             (DataToChange?.MachineTypeId ? String(DataToChange?.MachineTypeId) : '-') === (machineType?.value ? String(machineType?.value) : '-') &&
             (DataToChange?.TonnageCapacity ? String(DataToChange?.TonnageCapacity) : '-') === (values?.TonnageCapacity ? String(values?.TonnageCapacity) : '-') &&
             DataToChange?.Remark === values?.Remark) {
-            Toaster.warning('Please change data to send machine for approval')
+            this.cancel('submit')
             return false
           }
 
@@ -1148,7 +1149,7 @@ class AddMachineRate extends Component {
         }
 
         if (isEditFlag) {
-          if (DropdownChange && uploadAttachements &&
+          if (DropdownChange && (JSON.stringify(files) === JSON.stringify(DataToChange.Attachements)) &&
             (DataToChange.Specification ? DataToChange.Specification : '-') === (values.Specification ? values.Specification : '-') &&
             (DataToChange.MachineName ? DataToChange.MachineName : '-') === (values.MachineName ? values.MachineName : '-') &&
             (DataToChange?.MachineTypeId ? String(DataToChange?.MachineTypeId) : '-') === (machineType?.value ? String(machineType?.value) : '-') &&
@@ -1802,7 +1803,7 @@ class AddMachineRate extends Component {
                               <button
                                 type={'button'}
                                 className=" mr15 cancel-btn"
-                                onClick={() => { this.cancel('cancel') }}
+                                onClick={() => { this.cancel('submit') }}
                                 disabled={setDisable}
                               >
                                 <div className={"cancel-icon"}></div> {'Cancel'}
