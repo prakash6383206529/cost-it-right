@@ -640,7 +640,12 @@ function RMDomesticListing(props) {
 
         var displayedColumns = params.columnApi.getAllDisplayedColumns();
         var thisIsFirstColumn = displayedColumns[0] === params.column;
-        return thisIsFirstColumn;
+
+        if (props?.isMasterSummaryDrawer) {
+            return false
+        } else {
+            return thisIsFirstColumn;
+        }
 
     }
 
