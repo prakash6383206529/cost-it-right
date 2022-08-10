@@ -498,7 +498,7 @@ class AddLabour extends Component {
         isEditIndex: false,
         effectiveDate: ''
       },
-      () => this.props.change('LabourRate', 0), this.props.getLabourTypeByMachineTypeSelectList('', () => { })
+      () => this.props.change('LabourRate', ''), this.props.getLabourTypeByMachineTypeSelectList('', () => { })
     )
   }
 
@@ -899,14 +899,23 @@ class AddLabour extends Component {
                               </button>
                             </>
                           ) : (
-                            <button
-                              type="button"
-                              className={"user-btn  pull-left"}
-                              onClick={this.gridHandler}
-                              disabled={isViewMode}
-                            >
-                              <div className={"plus"}></div>ADD
-                            </button>
+                            <>
+                              <button
+                                type="button"
+                                className={"user-btn  pull-left"}
+                                onClick={this.gridHandler}
+                                disabled={isViewMode}
+                              >
+                                <div className={"plus"}></div>ADD
+                              </button>
+                              <button
+                                type="button"
+                                className={"reset-btn pull-left ml5"}
+                                onClick={this.resetGridData}
+                              >
+                                Reset
+                              </button>
+                            </>
                           )}
                         </div>
                       </Col>

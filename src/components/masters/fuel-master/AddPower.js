@@ -623,6 +623,23 @@ class AddPower extends Component {
   }
 
   /**
+  * @method resetData
+  * @description Used to reset State electricity data
+  */
+  resetData = () => {
+    this.setState({
+      effectiveDate: new Date()
+    })
+    this.props.change('SEBPowerContributaion', '')
+    this.props.change('DutyChargesAndFCA', '')
+    this.props.change('MeterRentAndOtherChargesPerAnnum', '')
+    this.props.change('MinDemandKWPerMonth', '')
+    this.props.change('DemandChargesPerKW', '')
+    this.props.change('AvgUnitConsumptionPerMonth', '')
+    this.props.change('MaxDemandChargesKW', '')
+    this.props.change('UnitConsumptionPerAnnum', '')
+  }
+  /**
   * @method updateSEBGrid
   * @description Used to handle updateProcessGrid
   */
@@ -901,13 +918,13 @@ class AddPower extends Component {
       powerGridEditIndex: '',
       isEditIndex: false,
     }, () => {
-      this.props.change('AssetCost', 0)
-      this.props.change('AnnualCost', 0)
-      this.props.change('UnitGeneratedPerAnnum', 0)
-      this.props.change('SelfGeneratedCostPerUnit', 0)
-      this.props.change('SelfPowerContribution', 0)
-      this.props.change('CostPerUnitOfMeasurement', 0)
-      this.props.change('UnitGeneratedPerUnitOfFuel', 0)
+      this.props.change('AssetCost', '')
+      this.props.change('AnnualCost', '')
+      this.props.change('UnitGeneratedPerAnnum', '')
+      this.props.change('SelfGeneratedCostPerUnit', '')
+      this.props.change('SelfPowerContribution', '')
+      this.props.change('CostPerUnitOfMeasurement', '')
+      this.props.change('UnitGeneratedPerUnitOfFuel', '')
     });
   };
 
@@ -1678,12 +1695,19 @@ class AddPower extends Component {
                                     >Cancel</button>
                                   </>
                                   :
-                                  <button
-                                    type="button"
-                                    className={`${(checkPowerContribution || this.state.isAddedSEB) ? 'btn-secondary' : 'btn-primary'}  pull-left`}
-                                    disabled={(checkPowerContribution || this.state.isAddedSEB) ? true : false}
-                                    onClick={() => this.powerSEBTableHandler(false)}>
-                                    <div className={'plus'}></div>ADD</button>
+                                  <>
+                                    <button
+                                      type="button"
+                                      className={`${(checkPowerContribution || this.state.isAddedSEB) ? 'btn-secondary' : 'btn-primary'}  pull-left`}
+                                      disabled={(checkPowerContribution || this.state.isAddedSEB) ? true : false}
+                                      onClick={() => this.powerSEBTableHandler(false)}>
+                                      <div className={'plus'}></div>ADD</button>
+                                    <button
+                                      type="button"
+                                      className={'reset-btn  pull-left ml5'}
+                                      onClick={this.resetData}
+                                    >Reset</button>
+                                  </>
                                 }
 
                               </div>
@@ -1880,13 +1904,19 @@ class AddPower extends Component {
                                     >Cancel</button>
                                   </>
                                   :
-                                  <button
-                                    type="button"
-                                    className={`${checkPowerContribution ? 'btn-secondary' : 'btn-primary'} mt30 pull-left`}
-                                    disabled={checkPowerContribution || isViewMode ? true : false}
-                                    onClick={() => this.powerTableHandler(true)}>
-                                    <div className={'plus'}></div>ADD</button>}
-
+                                  <>
+                                    <button
+                                      type="button"
+                                      className={`${checkPowerContribution ? 'btn-secondary' : 'btn-primary'} mt30 pull-left`}
+                                      disabled={checkPowerContribution || isViewMode ? true : false}
+                                      onClick={() => this.powerTableHandler(true)}>
+                                      <div className={'plus'}></div>ADD</button>
+                                    <button
+                                      type="button"
+                                      className={'reset-btn mt30 ml5 pull-left'}
+                                      onClick={this.resetPowerGridData}
+                                    >Reset</button>
+                                  </>}
                               </div>
                             </Col>
                             <Col md="12">
