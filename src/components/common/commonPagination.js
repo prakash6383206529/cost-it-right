@@ -1,5 +1,6 @@
 import React from 'react';
 import { defaultPageSize } from '../../config/constants'
+import { getConfigurationKey } from '../../helper';
 export const onFloatingFilterChanged = (value, gridOptions, thisReference) => {
 
     const model = gridOptions?.api?.getFilterModel();
@@ -27,9 +28,16 @@ export const onFloatingFilterChanged = (value, gridOptions, thisReference) => {
                 thisReference.setState({ warningMessage: false })
                 for (var prop in thisReference.state.floatingFilterData) {
 
-                    if (prop !== "DepartmentCode") {
+                    if (thisReference.props.isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant) {
+
+                        if (prop !== "DepartmentName") {
+                            thisReference.state.floatingFilterData[prop] = ""
+                        }
+
+                    } else {
                         thisReference.state.floatingFilterData[prop] = ""
                     }
+
                 }
                 thisReference.setState({ floatingFilterData: thisReference.state.floatingFilterData })
             }
@@ -80,7 +88,11 @@ export const resetState = (gridOptions, thisReference, master) => {
     var obj = thisReference.state.floatingFilterData
 
     for (var prop in obj) {
-        if (prop !== "DepartmentCode") {
+        if (thisReference.props.isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant) {
+            if (prop !== "DepartmentName") {
+                obj[prop] = ""
+            }
+        } else {
             obj[prop] = ""
         }
     }
