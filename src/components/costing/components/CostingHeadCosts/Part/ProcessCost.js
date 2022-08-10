@@ -1018,7 +1018,6 @@ function ProcessCost(props) {
             <td>
               <div className='d-flex align-items-center'>
                 <span className="d-inline-block  mr-2">
-                  {console.log(errors.SingleProcessGridField, "rtest")}
 
                   {
                     <NumberFieldHookForm
