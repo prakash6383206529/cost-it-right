@@ -25,6 +25,49 @@
     text-align: center;
     width: 135px;
   }
+  .rm-table-header {
+    th {
+      &:nth-child(2) {
+        width: 8%;
+      }
+      &:nth-child(3) {
+        width: 8%;
+      }
+      &:nth-child(4) {
+        width: 10%;
+      }
+      &:nth-child(5) {
+        width: 9%;
+      }
+      &:nth-child(6) {
+        width: 9%;
+      }
+      &:nth-child(7) {
+        width: 9%;
+      }
+      &:nth-child(8) {
+        width: 9%;
+      }
+      &:nth-child(9) {
+        width: 9%;
+      }
+      &:nth-child(10) {
+        width: 9%;
+      }
+      &:last-child {
+        width: 8%;
+        min-width: 88px;
+      }
+      &.weight-calculator {
+        width: 9%;
+        min-width: 130px;
+      }
+      &.scrap-recovery {
+        width: 11%;
+        min-width: 136px;
+      }
+    }
+  }
 //   .gross-weight,
 //   .finish-weight {
 //     text-align: center;
