@@ -433,7 +433,7 @@ class AddFuel extends Component {
     const { isEditFlag, rateGrid, fuel, UOM, FuelDetailId, DeleteChanged, HandleChanged } = this.state;
 
     if (rateGrid.length === 0) {
-      Toaster.warning('Rate should not be empty.');
+      Toaster.warning("Please fill fuel's rate details for atleast one state");
       return false;
     }
 
