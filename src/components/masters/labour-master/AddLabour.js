@@ -823,7 +823,7 @@ class AddLabour extends Component {
                             />
                             {this.state.errorObj.machineType && this.state.machineType.length === 0 && <div className='text-help p-absolute'>This field is required.</div>}
                           </div>
-                          {!isEditFlag && (
+                          {!isViewMode && (
                             <div
                               onClick={this.machineTypeToggler}
                               className={"plus-icon-square right mt30"}
