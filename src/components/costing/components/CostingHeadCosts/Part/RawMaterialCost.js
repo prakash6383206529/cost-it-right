@@ -1010,7 +1010,7 @@ function RawMaterialCost(props) {
             <Col md="6">
               <div className="left-border">{'Raw Material Cost:'}</div>
             </Col>
-            <Col md={'2'}>
+            <Col md={'6'} className="btn-container">
               {!CostingViewMode && !IsLocked && gridData && isShowAddBtn() &&
                 <button
                   type="button"
@@ -1036,22 +1036,22 @@ function RawMaterialCost(props) {
 
               <Col md="12">
                 <Table className="table cr-brdr-main costing-raw-material-section" size="sm">
-                  <thead>
+                  <thead className='rm-table-header'>
                     <tr>
                       <th className='rm-name-head'>{`RM Name`}</th>
                       <th>{`RM Rate`}</th>
                       <th>{`Scrap Rate`}</th>
                       <th>{`UOM`}</th>
-                      {getTechnology.includes(costData?.TechnologyId) && <th style={{ width: "195px" }} className="text-center">{`Weight Calculator`}</th>}
-                      <th style={{ width: "190px" }}>{`Gross Weight`}</th>
-                      <th style={{ width: "190px" }}>{`Finish Weight`}</th>
-                      {isScrapRecoveryPercentageApplied && <th style={{ width: "200px" }}>{`Scrap Recovery(%)`}</th>}
-                      {costData?.TechnologyId === PLASTIC && <th style={{ width: "190px" }}>{'Burning Loss Weight'}</th>}
-                      <th style={{ width: "190px" }}>{`Scrap Weight`}</th>
+                      {getTechnology.includes(costData?.TechnologyId) && <th className="text-center weight-calculator">{`Weight Calculator`}</th>}
+                      <th>{`Gross Weight`}</th>
+                      <th>{`Finish Weight`}</th>
+                      {(String(costData?.TechnologyId) === FERROUSCASTINGID) && <th>Percentage</th>}
+                      {isScrapRecoveryPercentageApplied && <th className='scrap-recovery'>{`Scrap Recovery(%)`}</th>}
+                      {costData?.TechnologyId === PLASTIC && <th>{'Burning Loss Weight'}</th>}
+                      <th>{`Scrap Weight`}</th>
                       {/* //Add i here for MB+ */}
-                      <th style={{ width: "120" }}>{`Net RM Cost ${isRMDivisorApplicable(costData.TechnologyName) ? '/(' + RMDivisor + ')' : ''}`}</th>
-
-                      <th style={{ width: "145px", textAlign: "right" }}>{`Action`}</th>
+                      <th>{`Net RM Cost ${isRMDivisorApplicable(costData.TechnologyName) ? '/(' + RMDivisor + ')' : ''}`}</th>
+                      <th style={{ textAlign: "right" }}>{`Action`}</th>
                     </tr>
                   </thead>
                   <tbody className='rm-table-body'>
