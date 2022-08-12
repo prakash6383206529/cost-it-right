@@ -2286,10 +2286,6 @@ class AddMoreDetails extends Component {
                                 disabled={this.state.isViewFlag ? true : false}
                               />
                             </div>
-                            {!isEditFlag && <div
-                              onClick={this.machineTypeToggler}
-                              className={'plus-icon-square mr5 right'}>
-                            </div>}
                           </div>
                         </Col>
                         <Col md="3">

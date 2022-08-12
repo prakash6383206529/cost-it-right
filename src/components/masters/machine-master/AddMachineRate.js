@@ -1488,11 +1488,6 @@ class AddMachineRate extends Component {
                                 disabled={isViewMode ? true : false}
                               />
                             </div>
-                            {!isEditFlag && <div
-                              onClick={this.machineTypeToggler}
-                              className={this.state.isViewFlag ? 'blurPlus-icon-square mr5 mt-1 right' : 'plus-icon-square mr5 right'}>
-
-                            </div>}
                           </div>
                         </Col>
                         <Col md="3">
