@@ -1023,7 +1023,7 @@ function RawMaterialCost(props) {
                 className="secondary-btn"
                 type={'button'}
                 onClick={() => toggleWeightCalculator(0)}
-                disabled={CostingViewMode ? item?.RawMaterialCalculatorId === null ? true : false : false}><div className='CalculatorIcon cr-cl-icon '></div>Weight Calculate</button>}
+                disabled={CostingViewMode ? item?.RawMaterialCalculatorId === null ? true : false : false}><div className='CalculatorIcon cr-cl-icon '></div>Weight Calculator</button>}
 
 
             </Col>
