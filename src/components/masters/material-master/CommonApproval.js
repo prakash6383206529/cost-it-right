@@ -116,14 +116,14 @@ function CommonApproval(props) {
 */
 
     const getTableData = (skip = 0, take = 10, isPagination = true, dataObj) => {
-        console.log('dataObj: ', dataObj);
+
         //  API CALL FOR GETTING RM APPROVAL LIST
         setLoader(true)
 
         dispatch(getRMApprovalList(props?.MasterId, skip, take, isPagination, dataObj, (res) => {
             setLoader(false)
             let obj = { ...floatingFilterData }
-            console.log('obj: ', obj);
+
 
             if (res) {
                 let isReset = true
@@ -135,7 +135,7 @@ function CommonApproval(props) {
                         }
                     }
                     // Sets the filter model via the grid API
-                    console.log(isReset, "isReset");
+
                     isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(filterModel))
                 }, 300);
 
@@ -574,7 +574,7 @@ function CommonApproval(props) {
 
 
     const onPageSizeChanged = (newPageSize) => {
-        console.log('newPageSize: ', newPageSize);
+
         var value = document.getElementById('page-size').value;
 
         if (Number(newPageSize) === 10) {
