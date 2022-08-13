@@ -263,7 +263,6 @@ function TabToolCost(props) {
   * @description SAVE COSTING
   */
   const saveCosting = debounce(handleSubmit((formData) => {
-    console.log('checkIsToolTabChange: ', checkIsToolTabChange);
     if (checkIsToolTabChange) {
 
       const tabData = RMCCTabData[0]
@@ -289,7 +288,7 @@ function TabToolCost(props) {
         }
       }
 
-      console.log('bbbbb');
+
       dispatch(saveToolTab(data, res => {
         if (res.data.Result) {
           Toaster.success(MESSAGES.TOOL_TAB_COSTING_SAVE_SUCCESS);

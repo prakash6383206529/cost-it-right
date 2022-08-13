@@ -1169,7 +1169,7 @@ function TabDiscountOther(props) {
                       <div className={`${files.length >= 4 ? 'd-none' : ''}`}>
                         <Dropzone
                           ref={dropzone}
-                          getUploadParams={getUploadParams}
+                          // getUploadParams={getUploadParams}
                           onChangeStatus={handleChangeStatus}
                           PreviewComponent={Preview}
                           //onSubmit={this.handleSubmit}

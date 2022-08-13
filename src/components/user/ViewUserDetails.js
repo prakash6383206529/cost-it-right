@@ -107,7 +107,6 @@ class ViewUserDetails extends Component {
     this.props.getUsersMasterLevelAPI(UserId, (res) => {
       if (res && res.data && res.data.Data) {
         let Data = res.data.Data;
-        console.log(Data, "data");
         let masterLevel = Data.MasterLevels;
         this.setState({
           MasterLevelGrid: masterLevel,
