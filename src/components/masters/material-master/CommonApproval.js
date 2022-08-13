@@ -116,12 +116,14 @@ function CommonApproval(props) {
 */
 
     const getTableData = (skip = 0, take = 10, isPagination = true, dataObj) => {
+        console.log('dataObj: ', dataObj);
         //  API CALL FOR GETTING RM APPROVAL LIST
         setLoader(true)
 
         dispatch(getRMApprovalList(props?.MasterId, skip, take, isPagination, dataObj, (res) => {
             setLoader(false)
             let obj = { ...floatingFilterData }
+            console.log('obj: ', obj);
 
             if (res) {
                 let isReset = true
@@ -133,6 +135,7 @@ function CommonApproval(props) {
                         }
                     }
                     // Sets the filter model via the grid API
+                    console.log(isReset, "isReset");
                     isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(filterModel))
                 }, 300);
 
@@ -150,8 +153,6 @@ function CommonApproval(props) {
 
 
     const onFloatingFilterChanged = (value) => {
-
-
         setDisableFilter(false)
         const model = gridOptions?.api?.getFilterModel();
         setFilterModel(model)
@@ -573,6 +574,7 @@ function CommonApproval(props) {
 
 
     const onPageSizeChanged = (newPageSize) => {
+        console.log('newPageSize: ', newPageSize);
         var value = document.getElementById('page-size').value;
 
         if (Number(newPageSize) === 10) {
@@ -588,16 +590,17 @@ function CommonApproval(props) {
             setPageNo(pageNoNew)
             if (pageNo >= Math.ceil(totalRecordCount / 50)) {
                 setPageNo(Math.ceil(totalRecordCount / 50))
-                getTableData(0, 50, true, floatingFilterData)
+                // getTableData(0, 50, true, floatingFilterData)
             }
         }
         else if (Number(newPageSize) === 100) {
             getTableData(currentRowIndex, 100, true, floatingFilterData)
             setPageSize(prevState => ({ ...prevState, pageSize100: true, pageSize10: false, pageSize50: false }))
             setGlobalTake(100)
+
             if (pageNo >= Math.ceil(totalRecordCount / 100)) {
                 setPageNo(Math.ceil(totalRecordCount / 100))
-                getTableData(0, 100, true, floatingFilterData)
+                // getTableData(0, 100, true, floatingFilterData)
             }
         }
 
