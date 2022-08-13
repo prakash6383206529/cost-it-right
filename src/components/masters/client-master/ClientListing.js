@@ -84,7 +84,6 @@ class ClientListing extends Component {
             const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
 
             if (permmisionData !== undefined) {
-                console.log('permmisionData: ', permmisionData);
                 this.setState({
                     AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
                     ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,

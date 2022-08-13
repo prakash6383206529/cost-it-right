@@ -1510,7 +1510,6 @@ class AddPower extends Component {
                                     disabled={true}
                                   />
                                 </div>
-                                {console.log(this.props.fieldsObj.MinMonthlyCharge, "this.props.fieldsObj.MinMonthlyCharge")}
                               </div>
                             </Col>
                             <Col md="3">
