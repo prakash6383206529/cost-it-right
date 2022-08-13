@@ -337,8 +337,10 @@ export const ProcessGroup = (props) => {
 
 
 export const rmQueryParms = (isPagination, skip, take, obj) => {
+    console.log('obj: ', obj);
 
     let queryParamsSecond = `CostingHead=${obj.CostingHead !== undefined ? obj.CostingHead : ""}&Technology=${obj.TechnologyName !== undefined ? obj.TechnologyName : ""}&RMName=${obj.RawMaterial !== undefined ? obj.RawMaterial : ""}&RMGrade=${obj.RMGrade !== undefined ? obj.RMGrade : ""}&RMSpecs=${obj.RMSpec !== undefined ? obj.RMSpec : ""}&RMCode=${obj.RawMaterialCode !== undefined ? obj.RawMaterialCode : ""}&RMCategory=${obj.Category !== undefined ? obj.Category : ""}&Plant=${obj.Plant !== undefined ? obj.Plant : ""}&Vendor=${obj.VendorName !== undefined ? obj.VendorName : ""}&UOM=${obj.UOM !== undefined ? obj.UOM : ""}&BasicRate=${obj.BasicRate !== undefined ? obj.BasicRate : ""}&ScrapRate=${obj.ScrapRate !== undefined ? obj.ScrapRate : ""}&FreightCost=${obj.RMFreightCost !== undefined ? obj.RMFreightCost : ""}&ShearingCost=${obj.RMShearingCost !== undefined ? obj.RMShearingCost : ""}&EffectiveDate=${obj.EffectiveDate !== undefined ? obj.EffectiveDate : ""}&MaterialType=${obj.MaterialType !== undefined ? obj.MaterialType : ""}&applyPagination=${isPagination}&skip=${skip}&take=${take}`
+    console.log('queryParamsSecond: ', queryParamsSecond);
     return queryParamsSecond
 
 }
