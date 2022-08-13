@@ -219,6 +219,7 @@ function RMDomesticListing(props) {
 
 
     const onFloatingFilterChanged = (value) => {
+        console.log('value: ', value);
 
         setDisableFilter(false)
         const model = gridOptions?.api?.getFilterModel();
