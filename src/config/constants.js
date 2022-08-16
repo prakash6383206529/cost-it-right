@@ -669,6 +669,7 @@ export const API = {
   updateRoleAPI: `${BASE_URL}/user-role/update-new`,
   deleteRoleAPI: `${BASE_URL}/user-role/delete`,
   rolesSelectList: `${BASE_URL}/configuration/select-list-get-roles`,
+  activeInactiveRole: `${BASE_URL}/user-role/active-inactive-role`,
 
   //DEPARTMENT'S API
   addDepartmentAPI: `${BASE_URL}/user-department/create`,
