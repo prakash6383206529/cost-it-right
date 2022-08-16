@@ -843,8 +843,9 @@ class AddRMImport extends Component {
         this.setDisableFalseFunction()
         let Data = res.data[0]
         const { files } = this.state;
-        files.push(Data)
-        this.setState({ files: files })
+        let attachmentFileArray = [...files]
+        attachmentFileArray.push(Data)
+        this.setState({ files: attachmentFileArray })
       })
     }
 
@@ -912,7 +913,7 @@ class AddRMImport extends Component {
   onSubmit = (values) => {
     const { IsVendor, RawMaterial, RMGrade, RMSpec, Category, selectedPlants, vendorName, VendorCode,
       HasDifferentSource, sourceLocation, UOM, currency,
-      effectiveDate, remarks, RawMaterialID, isEditFlag, files, Technology, netCost, oldDate, netCurrencyCost, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, isSourceChange, uploadAttachements, currencyValue, IsFinancialDataChanged } = this.state;
+      effectiveDate, remarks, RawMaterialID, isEditFlag, files, Technology, netCost, oldDate, netCurrencyCost, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, isSourceChange, currencyValue, IsFinancialDataChanged } = this.state;
 
     const { initialConfiguration, fieldsObj } = this.props;
 
@@ -942,18 +943,6 @@ class AddRMImport extends Component {
     }
 
     let sourceLocationValue = (!IsVendor && !HasDifferentSource ? '' : sourceLocation.value)
-
-    if (uploadAttachements && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === Number(values.BasicRate) &&
-      Number(DataToChange.ScrapRate) === Number(values.ScrapRate) && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCost) &&
-      String(DataToChange.Remark) === String(values.Remark) && (Number(DataToChange.CutOffPrice) === Number(values.cutOffPrice) ||
-        values.cutOffPrice === undefined) && String(DataToChange.RawMaterialCode) === String(values.Code)
-      && (DataToChange.Source === (!IsVendor && !HasDifferentSource ? '' : values.Source))
-      && ((DataToChange.SourceLocation !== null ? DataToChange.SourceLocation : '-') ===
-        (sourceLocationValue ? sourceLocationValue : '-'))) {
-      Toaster.warning('Please change data to send RM for approval')
-      return false
-    }
-    this.setState({ setDisable: true, disablePopup: false })
 
     if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(RM_MASTER_ID) !== true)) {
 
@@ -1001,42 +990,38 @@ class AddRMImport extends Component {
         }
 
       }
-
-
-      if (isSourceChange) {
-        this.props.updateRMImportAPI(requestData, (res) => {
-          this.setState({ setDisable: false })
-          if (res?.data?.Result) {
-            Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
-            this.clearForm('submit')
-
-          }
-        })
-      }
       else {
-        this.setState({ showPopup: true, updatedObj: requestData })
+        if (JSON.stringify(files) === JSON.stringify(DataToChange.FileList) && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === Number(values.BasicRate) &&
+          Number(DataToChange.ScrapRate) === Number(values.ScrapRate) && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCost) &&
+          ((DataToChange.Remark ? DataToChange.Remark : '') === (values.Remark ? values.Remark : '')) && ((DataToChange.CutOffPrice ? Number(DataToChange.CutOffPrice) : '') === (values.cutOffPrice ? Number(values.cutOffPrice) : '')) && String(DataToChange.RawMaterialCode) === String(values.Code)
+          && (DataToChange.Source === (!IsVendor && !HasDifferentSource ? '' : values.Source))
+          && ((DataToChange.SourceLocation ? String(DataToChange.SourceLocation) : '') === (sourceLocationValue ? String(sourceLocationValue) : ''))) {
+          this.cancel('submit')
+          return false
+        }
+        else {
+          if (isSourceChange) {
+            this.props.updateRMImportAPI(requestData, (res) => {
+              this.setState({ setDisable: false })
+              if (res?.data?.Result) {
+                Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
+                this.clearForm('submit')
+
+              }
+            })
+          }
+          else {
+            this.setState({ showPopup: true, updatedObj: requestData })
+          }
+          return false
+
+        }
+
       }
-
-
-      // else {
-      //   if (uploadAttachements && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === Number(values.BasicRate) &&
-      //     Number(DataToChange.ScrapRate) === Number(values.ScrapRate) && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCost) &&
-      //     String(DataToChange.Remark) === String(values.Remark) && (Number(DataToChange.CutOffPrice) === Number(values.cutOffPrice) ||
-      //       values.cutOffPrice === undefined) && String(DataToChange.RawMaterialCode) === String(values.Code)) {
-      //     this.cancel()
-      //     return false
-      //   }
-      //   if ((Number(DataToChange.BasicRatePerUOM) !== values.BasicRate || Number(DataToChange.ScrapRate) !== values.ScrapRate ||
-      //     Number(DataToChange.NetLandedCost) !== values.NetLandedCost || (Number(DataToChange.CutOffPrice) !== values.cutOffPrice ||
-      //       values.cutOffPrice === undefined) || uploadAttachements === false)) {
-      //     this.setState({ showPopup: true, updatedObj: requestData })
-      //   }
-
-
 
     } else {
 
-      this.setState({ setDisable: true })
+      // this.setState({ setDisable: true })
       const formData = {
         RawMaterialId: RawMaterialID,
         IsFinancialDataChanged: isDateChange ? true : false,
@@ -1077,6 +1062,16 @@ class AddRMImport extends Component {
       // }
       // THIS CONDITION TO CHECK IF IT IS FOR MASTER APPROVAL THEN WE WILL SEND DATA FOR APPROVAL ELSE CREATE API WILL BE CALLED
       if (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !this.state.isFinalApprovar) {
+        if ((JSON.stringify(files) === JSON.stringify(DataToChange.FileList)) && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === Number(values.BasicRate) &&
+          Number(DataToChange.ScrapRate) === Number(values.ScrapRate) && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCost) &&
+          String(DataToChange.Remark ? DataToChange.Remark : '') === String(values.Remark ? values.Remark : '') && (Number(DataToChange.CutOffPrice) === Number(values.cutOffPrice) ||
+            values.cutOffPrice === undefined) && String(DataToChange.RawMaterialCode) === String(values.Code)
+          && (DataToChange.Source ? DataToChange.Source : '' === (!IsVendor && !HasDifferentSource ? '' : values.Source))
+          && ((DataToChange.SourceLocation ? String(DataToChange.SourceLocation) : '') === (sourceLocationValue ? String(sourceLocationValue) : ''))) {
+          Toaster.warning('Please change data to send RM for approval')
+          return false
+        }
+        // this.setState({ setDisable: true, disablePopup: false })
 
 
         if (IsFinancialDataChanged) {
@@ -1103,11 +1098,11 @@ class AddRMImport extends Component {
           if (isEditFlag) {
 
 
-            if (uploadAttachements && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === Number(values.BasicRate) &&
+            if ((JSON.stringify(files) === JSON.stringify(DataToChange.FileList)) && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === Number(values.BasicRate) &&
               Number(DataToChange.ScrapRate) === Number(values.ScrapRate) && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCost) &&
               String(DataToChange.Remark) === String(values.Remark) && (Number(DataToChange.CutOffPrice) === Number(values.cutOffPrice) ||
                 values.cutOffPrice === undefined) && String(DataToChange.RawMaterialCode) === String(values.Code)) {
-              this.cancel('cancel')
+              this.cancel('submit')
               return false
             }
           }
@@ -1768,7 +1763,7 @@ class AddRMImport extends Component {
                           <button
                             type={"button"}
                             className="mr15 cancel-btn"
-                            onClick={() => { this.cancel('cancel') }}
+                            onClick={() => { this.cancel('submit') }}
                             disabled={setDisable}
                           >
                             <div className={"cancel-icon"}></div>

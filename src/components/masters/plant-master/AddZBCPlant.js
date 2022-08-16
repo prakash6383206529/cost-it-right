@@ -41,7 +41,7 @@ class AddZBCPlant extends Component {
   * @description Used to cancel modal
   */
   componentDidMount() {
-    if (!this.props.isViewMode) {
+    if (!(this.props.isEditFlag || this.props.isViewMode)) {
       this.props.fetchCountryDataAPI(() => { })
     }
     if (this.props.initialConfiguration.IsCompanyConfigureOnPlant) {
@@ -52,8 +52,8 @@ class AddZBCPlant extends Component {
   }
 
   UNSAFE_componentWillMount() {
-    this.props.fetchCityDataAPI(0, () => { })
     if (!(this.props.isEditFlag || this.props.isViewMode)) {
+      this.props.fetchCityDataAPI(0, () => { })
       this.props.fetchStateDataAPI(0, () => { })
     }
   }
@@ -74,7 +74,7 @@ class AddZBCPlant extends Component {
 
           const Data = res.data.Data;
           this.setState({ DataToCheck: Data })
-          if (!this.state.isViewMode) {
+          if (!(this.props.isEditFlag || this.props.isViewMode)) {
             this.props.fetchStateDataAPI(Data.CountryId, () => { })
             this.props.fetchCityDataAPI(Data.StateId, () => { })
           }
@@ -476,7 +476,7 @@ class AddZBCPlant extends Component {
                       component={searchableSelect}
                       placeholder={"Select"}
                       options={this.selectType("country")}
-                      disabled={isViewMode}
+                      disabled={isEditFlag ? true : false}
                       validate={
                         this.state.country == null ||
                           this.state.country.length === 0
@@ -497,7 +497,7 @@ class AddZBCPlant extends Component {
                         component={searchableSelect}
                         placeholder={isViewMode ? '-' : "Select"}
                         options={this.selectType("state")}
-                        disabled={isViewMode}
+                        disabled={isEditFlag ? true : false}
                         validate={
                           this.state.state == null ||
                             this.state.state.length === 0
@@ -521,7 +521,7 @@ class AddZBCPlant extends Component {
                       component={searchableSelect}
                       placeholder={isViewMode ? '-' : "Select"}
                       options={this.selectType("city")}
-                      disabled={isViewMode}
+                      disabled={isEditFlag ? true : false}
                       //onKeyUp={(e) => this.changeItemDesc(e)}
                       validate={
                         this.state.city == null ||

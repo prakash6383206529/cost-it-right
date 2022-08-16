@@ -437,7 +437,7 @@ class AddRMDomestic extends Component {
       this.props.getRawMaterialDetailsAPI(data, true, (res) => {
         if (res && res.data && res.data.Result) {
           const Data = res.data.Data
-          this.setState({ DataToChange: Data }, () => { })
+          this.setState({ DataToChange: Data })
           // this.props.getPlantBySupplier(Data.Vendor, () => { })
           this.props.change('FrieghtCharge', Data.RMFreightCost ? Data.RMFreightCost : '')
           this.props.change('ShearingCost', Data.RMShearingCost ? Data.RMShearingCost : '')
@@ -808,10 +808,8 @@ class AddRMDomestic extends Component {
       showPopup: false,
       updatedObj: {}
     })
-    if (type === 'submit') {
-      this.props.getRawMaterialDetailsAPI('', false, (res) => { })
-      this.props.fetchSpecificationDataAPI(0, () => { })
-    }
+    this.props.getRawMaterialDetailsAPI('', false, (res) => { })
+    this.props.fetchSpecificationDataAPI(0, () => { })
     this.props.hideForm(type)
   }
 
@@ -864,13 +862,13 @@ class AddRMDomestic extends Component {
     if (status === 'done') {
       let data = new FormData()
       data.append('file', file)
-
       this.props.fileUploadRMDomestic(data, (res) => {
         this.setDisableFalseFunction()
         let Data = res.data[0]
         const { files } = this.state
-        files.push(Data)
-        this.setState({ files: files })
+        let attachmentFileArray = [...files]
+        attachmentFileArray.push(Data)
+        this.setState({ files: attachmentFileArray })
       })
     }
 
@@ -956,7 +954,7 @@ class AddRMDomestic extends Component {
     //  
     const { IsVendor, RawMaterial, RMGrade, RMSpec, Category, Technology, selectedPlants, vendorName,
       VendorCode, HasDifferentSource, sourceLocation,
-      UOM, remarks, RawMaterialID, isEditFlag, files, effectiveDate, netLandedCost, oldDate, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, isSourceChange, uploadAttachements, IsFinancialDataChanged } = this.state
+      UOM, remarks, RawMaterialID, isEditFlag, files, effectiveDate, netLandedCost, oldDate, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, isSourceChange, IsFinancialDataChanged } = this.state
     const { initialConfiguration, fieldsObj } = this.props
     if (vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
@@ -980,16 +978,7 @@ class AddRMDomestic extends Component {
       })
     }
     let sourceLocationValue = (!IsVendor && !HasDifferentSource ? '' : sourceLocation.value)
-    if (uploadAttachements && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === values.BasicRate && Number(DataToChange.ScrapRate) === Number(values.ScrapRate)
-      && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCost) && String(DataToChange.Remark) === String(values.Remark)
-      && ((DataToChange.CutOffPrice ? Number(DataToChange.CutOffPrice) : '') === (values.cutOffPrice ? Number(values.cutOffPrice) : ''))
-      && String(DataToChange.RawMaterialCode) === String(values.Code)
-      && (DataToChange.Source === (!IsVendor && !HasDifferentSource ? '' : values.Source))
-      && ((DataToChange.SourceLocation ? String(DataToChange.SourceLocation) : '') === (sourceLocationValue ? String(sourceLocationValue) : ''))) {
-      Toaster.warning('Please change data to send RM for approval')
-      return false
-    }
-    this.setState({ setDisable: true, disablePopup: false })
+
     if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(RM_MASTER_ID) !== true)) {
       //this.setState({ updatedObj: requestData })
 
@@ -1026,33 +1015,49 @@ class AddRMDomestic extends Component {
           return
 
         } else {
-
           this.setState({ setDisable: false })
           Toaster.warning('Please update the effective date')
           return false
         }
 
       }
-
-
-      if (isSourceChange) {
-        this.props.updateRMDomesticAPI(requestData, (res) => {
-          this.setState({ setDisable: false })
-          if (res?.data?.Result) {
-            Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
-            this.clearForm('submit')
-
-          }
-        })
-      }
       else {
-        this.setState({ showPopup: true, updatedObj: requestData })
+
+        if ((JSON.stringify(files) === JSON.stringify(DataToChange.FileList)) && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === values.BasicRate && Number(DataToChange.ScrapRate) === Number(values.ScrapRate)
+          && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCost) && ((DataToChange.Remark ? DataToChange.Remark : '') === (values.Remark ? values.Remark : ''))
+          && ((DataToChange.CutOffPrice ? Number(DataToChange.CutOffPrice) : '') === (values.cutOffPrice ? Number(values.cutOffPrice) : ''))
+          && String(DataToChange.RawMaterialCode) === String(values.Code)
+          && (DataToChange.Source === (!IsVendor && !HasDifferentSource ? '' : values.Source))
+          && ((DataToChange.SourceLocation ? String(DataToChange.SourceLocation) : '') === (sourceLocationValue ? String(sourceLocationValue) : ''))) {
+          this.cancel('submit')
+          return false
+        }
+        else {
+          // this.setState({ showPopup: true, updatedObj: requestData })
+
+          if (isSourceChange) {
+            this.props.updateRMDomesticAPI(requestData, (res) => {
+              this.setState({ setDisable: false })
+              if (res?.data?.Result) {
+                Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
+                this.clearForm('submit')
+
+              }
+            })
+          }
+          else {
+            this.setState({ showPopup: true, updatedObj: requestData })
+          }
+          return false
+
+        }
+
       }
 
     }
 
     else {
-      this.setState({ setDisable: true })
+      // this.setState({ setDisable: true })
       let formData = {}
       // const formData = {
       formData.RawMaterialId = RawMaterialID
@@ -1091,10 +1096,21 @@ class AddRMDomestic extends Component {
         formData.IsSendForApproval = false
       }
       // }
-
       // THIS CONDITION TO CHECK IF IT IS FOR MASTER APPROVAL THEN WE WILL SEND DATA FOR APPROVAL ELSE CREATE API WILL BE CALLED
       if (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !this.state.isFinalApprovar) {
-
+        // 
+        // 
+        // 
+        if (((files ? JSON.stringify(files) : []) === (DataToChange.FileList ? JSON.stringify(DataToChange.FileList) : [])) && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === values.BasicRate && Number(DataToChange.ScrapRate) === Number(values.ScrapRate)
+          && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCost) && ((DataToChange.Remark ? DataToChange.Remark : '') === (values.Remark ? values.Remark : ''))
+          && ((DataToChange.CutOffPrice ? Number(DataToChange.CutOffPrice) : '') === (values.cutOffPrice ? Number(values.cutOffPrice) : ''))
+          && String(DataToChange.RawMaterialCode) === String(values.Code)
+          && (DataToChange.Source === (!IsVendor && !HasDifferentSource ? '' : values.Source))
+          && ((DataToChange.SourceLocation ? String(DataToChange.SourceLocation) : '') === (sourceLocationValue ? String(sourceLocationValue) : ''))) {
+          Toaster.warning('Please change data to send RM for approval')
+          return false
+        }
+        this.setState({ setDisable: true, disablePopup: false })
 
         if (IsFinancialDataChanged) {
 
@@ -1119,8 +1135,8 @@ class AddRMDomestic extends Component {
         } else {
 
           if (isEditFlag) {
-            if (uploadAttachements && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === values.BasicRate && Number(DataToChange.ScrapRate) === values.ScrapRate
-              && Number(DataToChange.NetLandedCost) === values.NetLandedCost && DataToChange.Remark === (values.Remark === '' ? null : values.Remark)
+            if ((JSON.stringify(files) === JSON.stringify(DataToChange.FileList)) && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === values.BasicRate && Number(DataToChange.ScrapRate) === values.ScrapRate
+              && Number(DataToChange.NetLandedCost) === values.NetLandedCost && (DataToChange.Remark ? DataToChange.Remark : '') === (values.Remark ? values.Remark : '')
               && (Number(DataToChange.CutOffPrice) === values.cutOffPrice || values.cutOffPrice === undefined)
               && DataToChange.RawMaterialCode === values.Code) {
               Toaster.warning('Please change data to send RM for approval')
@@ -1207,6 +1223,9 @@ class AddRMDomestic extends Component {
 
 
       });
+
+    // 
+
 
 
     return (
@@ -1755,7 +1774,7 @@ class AddRMDomestic extends Component {
                           <button
                             type={"button"}
                             className="mr15 cancel-btn"
-                            onClick={() => { this.cancel('cancel') }}
+                            onClick={() => { this.cancel('submit') }}
                             disabled={setDisable}
                           >
                             <div className={"cancel-icon"}></div>

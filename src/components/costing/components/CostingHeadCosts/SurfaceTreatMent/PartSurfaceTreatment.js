@@ -90,7 +90,7 @@ function PartSurfaceTreatment(props) {
           <td>{item?.Quantity}</td>
           <td>{item.CostingPartDetails.NetSurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.NetSurfaceTreatmentCost * item.Quantity, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
         </div>
-        <td>
+        <td width={"0"}>
           <div className='d-flex justify-content-end align-items-center'>
             {!CostingViewMode && (item.CostingPartDetails.NetSurfaceTreatmentCost !== 0) ?
 

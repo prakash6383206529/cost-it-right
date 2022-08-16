@@ -122,14 +122,12 @@ function SimulationApprovalSummary(props) {
     const [editWarning, setEditWarning] = useState(false)
     const [toggleSeeData, setToggleSeeData] = useState(true)
     const [finalLeveluser, setFinalLevelUser] = useState(false)
-
     const headerName = ['Revision No.', 'Name', 'Old Cost/Pc', 'New Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
 
     const { setValue, getValues } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onChange',
     })
-
     const funcForErrorBoxButton = () => {
 
         const statusWithButton = <><p className={`${toggleSeeData ? 'status-overflow' : ''} `}><span>{status}</span></p>{<button className='see-data-btn' onClick={() => { setToggleSeeData(!toggleSeeData) }}>Show {toggleSeeData ? 'all' : 'less'} data</button>}</>
@@ -137,14 +135,17 @@ function SimulationApprovalSummary(props) {
     }
 
     useEffect(() => {
-        dispatch(getTechnologySelectList(() => { }))
-        dispatch(getPlantSelectListByType(ZBC, () => { }))
+        dispatch(getTechnologySelectList(() => {
+        }))
+        dispatch(getPlantSelectListByType(ZBC, () => {
+        }))
 
         const reqParams = {
             approvalTokenNumber: approvalNumber,
             approvalId: approvalId,
             loggedInUserId: loggedInUserId(),
         }
+        setLoader(true)
         dispatch(getApprovalSimulatedCostingSummary(reqParams, res => {
             const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow,
                 IsPushedButtonShow, SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId,
@@ -191,7 +192,8 @@ function SimulationApprovalSummary(props) {
                     return null
                 })
 
-                dispatch(getSimulatedAssemblyWiseImpactDate(requestData, isAssemblyInDraft, (res) => { }))
+                dispatch(getSimulatedAssemblyWiseImpactDate(requestData, isAssemblyInDraft, (res) => {
+                }))
             }
 
             // const valueTemp = {
@@ -215,7 +217,6 @@ function SimulationApprovalSummary(props) {
                     setFinalLevelUser(res.data.Data.IsFinalApprover)
                 }
             }))
-
         }))
     }, [])
 
@@ -255,6 +256,7 @@ function SimulationApprovalSummary(props) {
 
     useEffect(() => {
         // if (costingList.length > 0 && effectiveDate) {
+        setLoader(true)
         if (effectiveDate && costingList && simulationDetail.SimulationId) {
             if (costingList && costingList.length > 0 && effectiveDate && Object.keys('simulationDetail'.length > 0) && DataForAssemblyImpactForFg[0]?.CostingHead === VBC) {
                 dispatch(getLastSimulationData(costingList[0].VendorId, effectiveDate, res => {
@@ -264,6 +266,7 @@ function SimulationApprovalSummary(props) {
                         RawMaterialImpactedMasterDataList: [],
                         BoughtOutPartImpactedMasterDataList: []
                     }
+
                     let masterId
                     let Data = []
                     if (Number(res?.status) === 204) {
@@ -272,7 +275,6 @@ function SimulationApprovalSummary(props) {
                         Data = res?.data?.Data
                         masterId = res?.data?.Data?.SimulationTechnologyId;
                     }
-
                     if (res) {
                         setImpactedMasterDataListForLastRevisionData(Data)
                         setShowLastRevisionData(true)
@@ -282,7 +284,8 @@ function SimulationApprovalSummary(props) {
                 }))
                 // }
                 // if (simulationDetail.SimulationId) {
-                dispatch(getImpactedMasterData(simulationDetail.SimulationId, () => { }))
+                dispatch(getImpactedMasterData(simulationDetail.SimulationId, () => {
+                }))
             }
         }
 
@@ -310,6 +313,7 @@ function SimulationApprovalSummary(props) {
             setshowImpactedData(true)
         }
     }, [impactedMasterData])
+
 
     const closeViewDrawer = (e = '') => {
         setViewButton(false)
@@ -1454,7 +1458,7 @@ function SimulationApprovalSummary(props) {
 
                     </div>
 
-                    {!isApprovalDone &&
+                    {!isApprovalDone && !loader &&
                         <Row className="sf-btn-footer no-gutters justify-content-between">
                             <div className="col-sm-12 text-right bluefooter-butn">
                                 <Fragment>

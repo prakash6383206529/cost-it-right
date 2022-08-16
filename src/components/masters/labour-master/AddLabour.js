@@ -299,7 +299,7 @@ class AddLabour extends Component {
   }
 
   closeMachineTypeDrawer = (e = '', formData = {}) => {
-    this.setState({ isOpenMachineType: false }, () => {
+    this.setState({ isOpenMachineType: false, labourType: '' }, () => {
       this.props.getMachineTypeSelectList(() => {
         const { machineTypeSelectList } = this.props
         /*TO SHOW MACHINE TYPE VALUE PRE FILLED FROM DRAWER*/
@@ -498,7 +498,7 @@ class AddLabour extends Component {
         isEditIndex: false,
         effectiveDate: ''
       },
-      () => this.props.change('LabourRate', 0), this.props.getLabourTypeByMachineTypeSelectList('', () => { })
+      () => this.props.change('LabourRate', ''), this.props.getLabourTypeByMachineTypeSelectList('', () => { })
     )
   }
 
@@ -816,7 +816,7 @@ class AddLabour extends Component {
                             />
                             {this.state.errorObj.machineType && this.state.machineType.length === 0 && <div className='text-help p-absolute'>This field is required.</div>}
                           </div>
-                          {!isEditFlag && (
+                          {!isViewMode && (
                             <div
                               onClick={this.machineTypeToggler}
                               className={"plus-icon-square right mt30"}
@@ -899,14 +899,23 @@ class AddLabour extends Component {
                               </button>
                             </>
                           ) : (
-                            <button
-                              type="button"
-                              className={"user-btn  pull-left"}
-                              onClick={this.gridHandler}
-                              disabled={isViewMode}
-                            >
-                              <div className={"plus"}></div>ADD
-                            </button>
+                            <>
+                              <button
+                                type="button"
+                                className={"user-btn  pull-left"}
+                                onClick={this.gridHandler}
+                                disabled={isViewMode}
+                              >
+                                <div className={"plus"}></div>ADD
+                              </button>
+                              <button
+                                type="button"
+                                className={"reset-btn pull-left ml5"}
+                                onClick={this.resetGridData}
+                              >
+                                Reset
+                              </button>
+                            </>
                           )}
                         </div>
                       </Col>

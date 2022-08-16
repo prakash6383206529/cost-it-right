@@ -38,7 +38,7 @@ class AddClientDrawer extends Component {
     * @description called after render the component
     */
     componentDidMount() {
-        if (!this.state.isViewMode) {
+        if (!(this.props.isEditFlag || this.props.isViewMode)) {
             this.props.fetchCountryDataAPI(() => { })
         }
         this.getDetail()
@@ -145,7 +145,7 @@ class AddClientDrawer extends Component {
                 if (res && res.data && res.data.Data) {
                     let Data = res.data.Data;
                     this.setState({ DataToCheck: Data })
-                    if (!this.state.isViewMode) {
+                    if (!(this.props.isEditFlag || this.props.isViewMode)) {
                         this.props.fetchStateDataAPI(Data.CountryId, () => { })
                         this.props.fetchCityDataAPI(Data.StateId, () => { })
                     }
@@ -400,7 +400,7 @@ class AddClientDrawer extends Component {
                                             required={true}
                                             handleChangeDescription={this.countryHandler}
                                             valueDescription={this.state.country}
-                                            disabled={isViewMode}
+                                            disabled={isEditFlag ? true : false}
                                         />
                                     </Col>
                                 </Row>
@@ -419,7 +419,7 @@ class AddClientDrawer extends Component {
                                                 required={true}
                                                 handleChangeDescription={this.stateHandler}
                                                 valueDescription={this.state.state}
-                                                disabled={isViewMode}
+                                                disabled={isEditFlag ? true : false}
                                             />
                                         </Col>}
                                     <Col md='6'>
@@ -435,7 +435,7 @@ class AddClientDrawer extends Component {
                                             required={true}
                                             handleChangeDescription={this.cityHandler}
                                             valueDescription={this.state.city}
-                                            disabled={isViewMode}
+                                            disabled={isEditFlag ? true : false}
                                         />
                                     </Col>
 

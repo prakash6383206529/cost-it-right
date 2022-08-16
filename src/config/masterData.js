@@ -588,7 +588,7 @@ export const LabourTempData = [
         'EmploymentTerms': 'Contractual',
         'VendorName': 'Tata Steel',
         'VendorCode': 'VC123',
-        'State': 'MP',
+        'State': 'Madhya Pradesh',
         'PlantCode': 'Plant01',
         'MachineType': 'Grinder',
         'LabourType': 'Skilled',
@@ -599,7 +599,7 @@ export const LabourTempData = [
         'EmploymentTerms': 'Employed',
         'VendorName': 'Reliance',
         'VendorCode': 'VC124',
-        'State': 'MP',
+        'State': 'Madhya Pradesh',
         'PlantCode': 'Plant02',
         'MachineType': 'Grinder',
         'LabourType': 'Semi-Skilled',
@@ -622,8 +622,8 @@ export const Fuel = [
 export const FuelTempData = [
     {
         'FuelName': 'Petrol',
-        'UOM': 'Mililitre',
-        'State': 'MP',
+        'UOM': 'Millilitre',
+        'State': 'Madhya Pradesh',
         'Rate': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
     }
@@ -655,7 +655,7 @@ export const BOP_ZBC_DOMESTIC = [
     { label: 'Specification', value: 'Specification', },
     { label: 'UOM', value: 'UOM', }, //*
     { label: 'PlantCode', value: 'PlantCode', }, //*
-    { label: 'VendorName', value: 'VendorName', }, //*
+    { label: 'VendorCode', value: 'VendorCode', }, //NOUI
     { label: 'BasicRate', value: 'BasicRate', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', },
     { label: 'Remark', value: 'Remark' }
@@ -669,7 +669,7 @@ export const BOP_ZBC_DOMESTIC_TempData = [
         'Specification': '20 mm',
         'UOM': 'Gallon',
         'PlantCode': 'Plant101',
-        'VendorName': 'Systematix',
+        'VendorCode': 'Sys01',
         'BasicRate': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -809,7 +809,6 @@ export const BOP_VBC_IMPORT_TempData = [
 export const VOLUME_ACTUAL_ZBC = [
     { label: 'PlantCode', value: 'PlantCode', }, //*
     { label: 'PartNo', value: 'PartNo', }, //*
-    // { label: 'OldPartNo', value: 'OldPartNo', },
     { label: 'PartName', value: 'PartName', }, //NOUI
     { label: 'Year', value: 'Year', }, //*
     { label: 'Month', value: 'Month', }, //NOUI,*
@@ -820,7 +819,6 @@ export const VOLUME_ACTUAL_ZBC_TEMPDATA = [
     {
         'PlantCode': 'P1',
         'PartNo': 'Screw01',
-        // 'OldPartNo': 'Old Part 2',
         'PartName': 'Screw',
         'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
         'Month': DayTime().format('MM'),
@@ -832,12 +830,10 @@ export const VOLUME_ACTUAL_ZBC_TEMPDATA = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const VOLUME_ACTUAL_VBC = [
-    { label: 'VendorName', value: 'VendorName', },
     { label: 'VendorCode', value: 'VendorCode', }, //*
     { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
     { label: 'PartNo', value: 'PartNo', }, //*
-    // { label: 'OldPartNo', value: 'OldPartNo', },
     { label: 'PartName', value: 'PartName', }, //NOUI
     { label: 'Year', value: 'Year', }, //*
     { label: 'Month', value: 'Month', }, //NOUI ,*
@@ -846,12 +842,10 @@ export const VOLUME_ACTUAL_VBC = [
 
 export const VOLUME_ACTUAL_VBC_TEMPDATA = [
     {
-        'VendorName': 'Tata Steel',
         'VendorCode': 'Tata01',
         'DestinationPlant': 'Manesar',
         'DestinationPlantCode': 1032,
         'PartNo': 'Screw Jack',
-        // 'OldPartNo': 'Old Part1',
         'PartName': 'Screw',
         'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
         'Month': DayTime().format('MM'),
@@ -865,7 +859,6 @@ export const VOLUME_ACTUAL_VBC_TEMPDATA = [
 export const VOLUME_BUDGETED_ZBC = [
     { label: 'PlantCode', value: 'PlantCode', }, //*
     { label: 'PartNo', value: 'PartNo', }, //*
-    // { label: 'OldPartNo', value: 'OldPartNo', },
     { label: 'PartName', value: 'PartName', }, //NOUI
     { label: 'Year', value: 'Year', }, //*
     { label: 'Month', value: 'Month', }, //NOUI
@@ -876,7 +869,6 @@ export const VOLUME_BUDGETED_ZBC_TEMPDATA = [
     {
         'PlantCode': 'Systematix01',
         'PartNo': 'Screw01',
-        // 'OldPartNo': 'Old Part1',
         'PartName': 'Screw',
         'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
         'Month': DayTime().format('MM'),
@@ -888,12 +880,10 @@ export const VOLUME_BUDGETED_ZBC_TEMPDATA = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const VOLUME_BUDGETED_VBC = [
-    { label: 'VendorName', value: 'VendorName', },
     { label: 'VendorCode', value: 'VendorCode', }, //*
     { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
     { label: 'PartNo', value: 'PartNo', }, //*
-    // { label: 'OldPartNo', value: 'OldPartNo', },
     { label: 'PartName', value: 'PartName', },//NOUI
     { label: 'Year', value: 'Year', }, //*
     { label: 'Month', value: 'Month', }, //NOUI
@@ -902,12 +892,10 @@ export const VOLUME_BUDGETED_VBC = [
 
 export const VOLUME_BUDGETED_VBC_TEMPDATA = [
     {
-        'VendorName': 'Tata Steel',
         'VendorCode': 'Tata01',
         'DestinationPlant': 'Manesar',
         'DestinationPlantCode': "1032",
         'PartNo': 'Screw01',
-        // 'OldPartNo': 'OldPartNo',
         'PartName': 'Screw',
         'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
         'Month': DayTime().format('MM'),
@@ -2385,7 +2373,7 @@ export const ENDMILL = 'End Mill'
 export const BROACHING = 'Broaching'
 export const HARDFACING = 'Hard Facing'
 
-export const getTechnology = [1, 8, 7, 2, 4, 20, 23, 6]
+export const getTechnology = [1, 8, 7, 2, 4, 20, 23]
 export const technologyForDensity = [1, 2, 7]
 export const getTechnologyForRecoveryPercent = [4, 6, 3, 5, 2]
 export const getTechnologyForSimulation = ['1', '2', '3', '4', '5', '6', '7', '9']
