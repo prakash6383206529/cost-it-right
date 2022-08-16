@@ -76,6 +76,7 @@ class VendorListing extends Component {
             showPopup: false,
             deletedId: '',
             isViewMode: false,
+            showPopupToggle: false,
             isLoader: false,
             pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
             globalTake: defaultPageSize,
@@ -309,6 +310,10 @@ class VendorListing extends Component {
     }
     closePopUp = () => {
         this.setState({ showPopup: false })
+        this.setState({ showPopupToggle: false })
+    }
+    onPopupConfirmToggle = () => {
+        this.confirmDeactivateItem(this.state.cellData, this.state.cellValue)
     }
     /**
     * @method buttonFormatter
@@ -342,6 +347,9 @@ class VendorListing extends Component {
             ModifiedBy: loggedInUserId(),
             IsActive: !cell, //Status of the user.
         }
+        this.setState({ showPopupToggle: true, cellData: data, cellValue: cell })
+    }
+    confirmDeactivateItem = (data, cell) => {
         this.props.activeInactiveVendorStatus(data, res => {
             if (res && res.data && res.data.Result) {
                 if (cell == true) {
@@ -349,12 +357,11 @@ class VendorListing extends Component {
                 } else {
                     Toaster.success(MESSAGES.VENDOR_ACTIVE_SUCCESSFULLY)
                 }
-                //this.getTableListData(null, null, null)
                 this.filterList()
             }
         })
+        this.setState({ showPopupToggle: false })
     }
-
     /**
     * @method handleVendorType
     * @description Used to handle vendor type
@@ -562,12 +569,12 @@ class VendorListing extends Component {
             } else if (String(item.City) === 'NA') {
                 item.City = ' '
             }
-            if (item.IsActive === true) {
-                item.IsActive = 'Active'
-            }
-            else if (item.IsActive === false) {
-                item.IsActive = 'In Active'
-            }
+            // if (item.IsActive === true) {
+            //     item.IsActive = 'Active'
+            // }
+            // else if (item.IsActive === false) {
+            //     item.IsActive = 'In Active'
+            // }
             return item
         })
         return (
@@ -837,6 +844,9 @@ class VendorListing extends Component {
                 }
                 {
                     this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`Are you sure you want to delete this Vendor?`} />
+                }
+                {
+                    this.state.showPopupToggle && <PopupMsgWrapper isOpen={this.state.showPopupToggle} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirmToggle} message={`${this.state.cellValue ? MESSAGES.VENDOR_DEACTIVE_ALERT : MESSAGES.VENDOR_ACTIVE_ALERT}`} />
                 }
             </div >
         );

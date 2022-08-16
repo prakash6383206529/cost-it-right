@@ -55,7 +55,8 @@ class ReasonListing extends Component {
       renderState: true,
       showPopup: false,
       deletedId: '',
-      selectedRowData: false
+      selectedRowData: false,
+      showPopupToggle: false
     }
   }
 
@@ -168,6 +169,10 @@ class ReasonListing extends Component {
   }
   closePopUp = () => {
     this.setState({ showPopup: false })
+    this.setState({ showPopupToggle: false })
+  }
+  onPopupConfirmToggle = () => {
+    this.confirmDeactivateItem(this.state.cellData, this.state.cellValue)
   }
   /**
   * @method buttonFormatter
@@ -192,6 +197,7 @@ class ReasonListing extends Component {
    */
   statusButtonFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    console.log('cellValue: ', cellValue);
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
     const { ActivateAccessibility } = this.state;
@@ -224,7 +230,10 @@ class ReasonListing extends Component {
       LoggedInUserId: loggedInUserId(),
       IsActive: !cell, //Status of the Reason.
     }
-    this.props.activeInactiveReasonStatus(data, (res) => {
+    this.setState({ showPopupToggle: true, cellData: data, cellValue: cell })
+  }
+  confirmDeactivateItem = (data, cell) => {
+    this.props.activeInactiveReasonStatus(data, res => {
       if (res && res.data && res.data.Result) {
         if (cell == true) {
           Toaster.success(MESSAGES.REASON_INACTIVE_SUCCESSFULLY)
@@ -234,8 +243,8 @@ class ReasonListing extends Component {
         this.getTableListData()
       }
     })
+    this.setState({ showPopupToggle: false })
   }
-
   /**
    * @method indexFormatter
    * @description Renders serial number
@@ -311,11 +320,11 @@ class ReasonListing extends Component {
       } else if (item.Technology === '-') {
         item.Technology = ' '
       }
-      if (item.IsActive === true) {
-        item.IsActive = 'Active'
-      } else if (item.IsActive === false) {
-        item.IsActive = 'In Active'
-      }
+      // if (item.IsActive === true) {
+      //   item.IsActive = 'Active'
+      // } else if (item.IsActive === false) {
+      //   item.IsActive = 'In Active'
+      // }
       return item
     })
     return (
@@ -369,7 +378,6 @@ class ReasonListing extends Component {
       filter: true,
       sortable: true,
       headerCheckboxSelectionFilteredOnly: true,
-      headerCheckboxSelection: isFirstColumn,
       checkboxSelection: isFirstColumn
     };
 
@@ -462,6 +470,9 @@ class ReasonListing extends Component {
 
           {
             this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.REASON_DELETE_ALERT}`} />
+          }
+          {
+            this.state.showPopupToggle && <PopupMsgWrapper isOpen={this.state.showPopupToggle} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirmToggle} message={`${this.state.cellValue ? MESSAGES.REASON_DEACTIVE_ALERT : MESSAGES.REASON_ACTIVE_ALERT}`} />
           }
         </div>
         {isOpenDrawer && (
