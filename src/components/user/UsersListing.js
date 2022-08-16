@@ -315,24 +315,9 @@ class UsersListing extends Component {
 	}
 
 	handleChange = (cell, row) => {
-		let data = {
-			Id: row.UserId,
-			ModifiedBy: loggedInUserId(),
-			IsActive: !cell, //Status of the user.
-		}
-		this.setState({ showPopup: true, row: row, cell: cell })
-		const toastrConfirmOptions = {
 
-			onOk: () => {
-				this.confirmDeactivateItem(data, cell);
-			},
-			onCancel: () => { },
-			component: () => <ConfirmComponent />,
-		};
-		// return toastr.confirm(
-		// 	`${cell ? MESSAGES.USER_DEACTIVE_ALERT : MESSAGES.USER_ACTIVE_ALERT}`,
-		// 	toastrConfirmOptions
-		// );
+		this.setState({ showPopup: true, row: row, cell: cell })
+
 	}
 
 	/**
