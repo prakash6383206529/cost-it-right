@@ -677,26 +677,35 @@ class AddFuel extends Component {
                               {this.state.isEditIndex ? (
                                 <>
                                   <button type="button" className={"btn btn-primary mt30 pull-left mr5"} onClick={this.updateRateGrid}>Update</button>
+                                  <button
+                                    type="button"
+                                    className={"mr15 ml-1 mt30 add-cancel-btn cancel-btn"}
+                                    disabled={isViewMode}
+                                    onClick={this.rateTableReset}
+                                  >
+                                    <div className={"cancel-icon"}></div>Cancel
+                                  </button>
                                 </>
                               ) : (
-                                <button
-                                  type="button"
-                                  className={"user-btn mt30 pull-left"}
-                                  disabled={isViewMode}
-                                  onClick={this.rateTableHandler}
-                                >
-                                  <div className={"plus"}></div>ADD
-                                </button>
+                                <>
+                                  <button
+                                    type="button"
+                                    className={"user-btn mt30 pull-left"}
+                                    disabled={isViewMode}
+                                    onClick={this.rateTableHandler}
+                                  >
+                                    <div className={"plus"}></div>ADD
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className={"mr15 ml-1 mt30 reset-btn"}
+                                    disabled={isViewMode}
+                                    onClick={this.rateTableReset}
+                                  >
+                                    Reset
+                                  </button>
+                                </>
                               )}
-                              <button
-                                type="button"
-                                className={"mr15 ml-1 mt30 add-cancel-btn cancel-btn"}
-                                disabled={isViewMode}
-                                onClick={this.rateTableReset}
-                              >
-                                <div className={"cancel-icon"}></div>Cancel
-                              </button>
-
                             </div>
                           </Col>
                           <Col md="12">
