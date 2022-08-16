@@ -303,16 +303,12 @@ class AddPower extends Component {
           this.props.getPlantBySupplier(Data.VendorId, () => { })
 
           setTimeout(() => {
-            const { vendorWithVendorCodeSelectList } = this.props;
-
-            const vendorObj = vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.find(item => item.Value === Data.VendorId)
-
             this.setState({
               isEditFlag: true,
               isLoader: false,
               IsVendor: Data.IsVendor,
               VendorCode: Data.VendorCode,
-              vendorName: vendorObj && vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
+              vendorName: Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.VendorId } : [],
             })
             this.props.change('NetPowerCostPerUnit', Data.NetPowerCostPerUnit)
           }, 200)
