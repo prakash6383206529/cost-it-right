@@ -421,9 +421,6 @@ function SimulationApprovalListing(props) {
     }
 
     const conditionFormatter = (props) => {
-
-        // const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-
         const status = props.node.data.Status;
 
         if (status === DRAFT) {
@@ -610,19 +607,10 @@ function SimulationApprovalListing(props) {
 
     };
 
-    // const onPageSizeChanged = (newPageSize) => {
-    //     gridApi.paginationSetPageSize(Number(newPageSize));
-    // };
 
     const onFilterTextBoxChanged = (e) => {
         gridApi.setQuickFilter(e.target.value);
     }
-
-    // const resetState = debounce(() => {
-    //     getTableData()
-    //     gridOptions.columnApi.resetColumnState();
-
-    // }, 500)
 
     const frameworkComponents = {
         // totalValueRenderer: this.buttonFormatter,
@@ -730,10 +718,6 @@ function SimulationApprovalListing(props) {
                                     <AgGridColumn width={115} field="SimulationId" headerName='Actions' type="rightAligned" floatingFilter={false} cellRenderer='buttonFormatter'></AgGridColumn>
 
                                 </AgGridReact>
-                                {/* {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
-                                <div className="text-right pb-3">
-                                    <WarningMessage message="It may take up to 5 minutes for the status to be updated." />
-                                </div> */}
 
                                 <div className='button-wrapper'>
                                     {!isLoader && <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake} />}
@@ -751,17 +735,13 @@ function SimulationApprovalListing(props) {
                                     <WarningMessage message="It may take up to 5 minutes for the status to be updated." />
                                 </div>
 
-
                                 {approveDrawer &&
                                     <ApproveRejectDrawer
                                         isOpen={approveDrawer}
                                         anchor={'right'}
                                         approvalData={[]}
                                         type={isPendingForApproval ? 'Approve' : 'Sender'}
-                                        // simulationDetail={}
                                         selectedRowData={selectedRowData}
-                                        // costingArr={costingArr}
-                                        // master={selectedMasterForSimulation ? selectedMasterForSimulation.value : this.state.master}
                                         closeDrawer={closeDrawer}
                                         isSimulation={true}
                                         isSimulationApprovalListing={true}
@@ -774,11 +754,7 @@ function SimulationApprovalListing(props) {
                     </div>
 
                 </div>
-                // :
-                // <SimulationApprovalSummary
-                //     approvalNumber={approvalData.approvalNumber}
-                //     approvalId={approvalData.approvalProcessId}
-                // /> //TODO list
+
             }
             {
                 showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.DELETE_SIMULATION_DRAFT_TOKEN}`} />
