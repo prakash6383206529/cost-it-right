@@ -31,7 +31,7 @@ export function Clientbasedcostingdrawer(props) {
     // dropzone start
     // called every time a file's `status` changes
     const handleChangeStatus = ({ meta, file }, status) => {
-
+        setAttachmentLoader(true)
         if (status === 'removed') {
             const removedFileName = file.name;
             let tempArr = files && files.filter(item => item.OriginalFileName !== removedFileName)
