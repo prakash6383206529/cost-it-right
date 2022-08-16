@@ -131,6 +131,7 @@ class AddMoreDetails extends Component {
       UOMName: 'UOM',
       FuelEntryId: ''
     }
+    this.dropzone = React.createRef();
   }
 
 
@@ -1605,10 +1606,21 @@ class AddMoreDetails extends Component {
     this.props.change('NetLandedCost', NetLandedCost)
   }
 
+  /**
+  * @method setDisableFalseFunction
+  * @description setDisableFalseFunction
+  */
+  setDisableFalseFunction = () => {
+    const loop = Number(this.dropzone.current.files.length) - Number(this.state.files.length)
+    if (Number(loop) === 1) {
+      this.setState({ setDisable: false, attachmentLoader: false })
+    }
+  }
+
   // called every time a file's `status` changes
   handleChangeStatus = ({ meta, file }, status) => {
     const { files, } = this.state;
-
+    this.setState({ attachmentLoader: true })
     if (status === 'removed') {
       const removedFileName = file.name;
       let tempArr = files.filter(item => item.OriginalFileName !== removedFileName)
@@ -1621,13 +1633,25 @@ class AddMoreDetails extends Component {
       this.props.fileUploadMachine(data, (res) => {
         let Data = res.data[0]
         const { files } = this.state;
-        files.push(Data)
-        this.setState({ files: files, attachmentLoader: false })
+        let attachmentFileArray = [...files]
+        attachmentFileArray.push(Data)
+        this.setState({ files: attachmentFileArray, attachmentLoader: false })
       })
     }
 
     if (status === 'rejected_file_type') {
+      this.setDisableFalseFunction()
       Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
+    } else if (status === 'error_file_size') {
+      this.setDisableFalseFunction()
+      this.dropzone.current.files.pop()
+      Toaster.warning("File size greater than 2 mb not allowed")
+    } else if (status === 'error_validation'
+      || status === 'error_upload_params' || status === 'exception_upload'
+      || status === 'aborted' || status === 'error_upload') {
+      this.setDisableFalseFunction()
+      this.dropzone.current.files.pop()
+      Toaster.warning("Something went wrong")
     }
   }
 
@@ -1661,6 +1685,10 @@ class AddMoreDetails extends Component {
     if (FileId == null) {
       let tempArr = this.state.files.filter(item => item.FileName !== OriginalFileName)
       this.setState({ files: tempArr })
+    }
+    // ********** DELETE FILES THE DROPZONE'S PERSONAL DATA STORE **********
+    if (this.dropzone?.current !== null) {
+      this.dropzone.current.files.pop()
     }
   }
 
@@ -3624,23 +3652,37 @@ class AddMoreDetails extends Component {
                         </Col>
                         <Col md="3">
                           <label>Upload Files (upload up to 3 files)</label>
-                          {this.state.files.length >= 3 ? '' :
+                          <div className={`alert alert-danger mt-2 ${this.state.files.length === 3 ? '' : 'd-none'}`} role="alert">
+                            Maximum file upload limit has been reached.
+                          </div>
+                          <div className={`${this.state.files.length >= 3 ? 'd-none' : ''}`}>
                             <Dropzone
+                              ref={this.dropzone}
                               onChangeStatus={this.handleChangeStatus}
                               PreviewComponent={this.Preview}
-                              disabled={this.state.isViewMode}
-                              //onSubmit={this.handleSubmit}
                               accept="*"
                               initialFiles={this.state.initialFiles}
                               maxFiles={3}
                               maxSizeBytes={2000000}
-                              inputContent={(files, extra) => (extra.reject ? 'Image, audio and video files only' : 'Drag Files')}
+                              disabled={this.state.isViewFlag ? true : isViewMode}
+                              inputContent={(files, extra) => (extra.reject ? 'Image, audio and video files only' : (<div className="text-center">
+                                <i className="text-primary fa fa-cloud-upload"></i>
+                                <span className="d-block">
+                                  Drag and Drop or{" "}
+                                  <span className="text-primary">
+                                    Browse
+                                  </span>
+                                  <br />
+                                  file to upload
+                                </span>
+                              </div>))}
                               styles={{
                                 dropzoneReject: { borderColor: 'red', backgroundColor: '#DAA' },
                                 inputLabel: (files, extra) => (extra.reject ? { color: 'red' } : {}),
                               }}
                               classNames="draper-drop"
-                            />}
+                            />
+                          </div>
                         </Col>
                         <Col md="3">
                           <div className={'attachment-wrapper'}>
