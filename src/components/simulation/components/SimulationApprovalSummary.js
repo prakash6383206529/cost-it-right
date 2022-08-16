@@ -392,9 +392,7 @@ function SimulationApprovalSummary(props) {
             </span>
         )
     }
-    const getUploadParams = ({ file, meta }) => {
-        return { url: 'https://httpbin.org/post', }
-    }
+
     const handleChangeStatus = ({ meta, file }, status) => {
 
 
@@ -1404,7 +1402,6 @@ function SimulationApprovalSummary(props) {
                                     </div>
                                 ) : (
                                     <Dropzone
-                                        getUploadParams={getUploadParams}
                                         onChangeStatus={handleChangeStatus}
                                         PreviewComponent={Preview}
                                         // onSubmit={handleImapctSubmit}

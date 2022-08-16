@@ -571,12 +571,6 @@ function TabDiscountOther(props) {
 
   }
 
-  // specify upload params and url for your files
-  const getUploadParams = ({ file, meta }) => {
-    setAttachmentLoader(true)
-    return { url: 'https://httpbin.org/post', }
-  }
-
   /**
  * @method setDisableFalseFunction
  * @description setDisableFalseFunction
@@ -1169,7 +1163,6 @@ function TabDiscountOther(props) {
                       <div className={`${files.length >= 4 ? 'd-none' : ''}`}>
                         <Dropzone
                           ref={dropzone}
-                          // getUploadParams={getUploadParams}
                           onChangeStatus={handleChangeStatus}
                           PreviewComponent={Preview}
                           //onSubmit={this.handleSubmit}

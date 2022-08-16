@@ -1600,14 +1600,6 @@ class AddMoreDetails extends Component {
     this.props.change('NetLandedCost', NetLandedCost)
   }
 
-
-  // specify upload params and url for your files
-  getUploadParams = ({ file, meta }) => {
-    this.setState({ attachmentLoader: true })
-    return { url: 'https://httpbin.org/post', }
-
-  }
-
   // called every time a file's `status` changes
   handleChangeStatus = ({ meta, file }, status) => {
     const { files, } = this.state;
@@ -3635,7 +3627,6 @@ class AddMoreDetails extends Component {
                             </div>
                           ) :
                             <Dropzone
-                              getUploadParams={this.getUploadParams}
                               onChangeStatus={this.handleChangeStatus}
                               PreviewComponent={this.Preview}
                               disabled={this.state.isViewMode}

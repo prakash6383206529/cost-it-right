@@ -681,11 +681,6 @@ function ApproveRejectDrawer(props) {
     }
   }
 
-  const getUploadParams = ({ file, meta }) => {
-    setAttachmentLoader(true)
-    return { url: 'https://httpbin.org/post', }
-  }
-
   /**
  * @method setDisableFalseFunction
  * @description setDisableFalseFunction
@@ -1048,7 +1043,6 @@ function ApproveRejectDrawer(props) {
                           <div className={`${files.length >= 2 ? 'd-none' : ''}`}>
                             <Dropzone
                               ref={dropzone}
-                              getUploadParams={getUploadParams}
                               onChangeStatus={handleChangeStatus}
                               PreviewComponent={Preview}
                               // onSubmit={handleImapctSubmit}
