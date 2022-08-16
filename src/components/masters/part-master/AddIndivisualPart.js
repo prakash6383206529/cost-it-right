@@ -19,6 +19,7 @@ import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from "../../../assests/images/red-cross.png";
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import _, { debounce } from 'lodash';
+import { showDataOnHover } from '../../../helper';
 
 class AddIndivisualPart extends Component {
   constructor(props) {
@@ -515,6 +516,7 @@ class AddIndivisualPart extends Component {
                                 label="Group Code"
                                 name="ProductGroup"
                                 type="text"
+                                title={showDataOnHover(this.state.ProductGroup)}
                                 placeholder={isViewMode ? '-' : "Select"}
                                 selection={
                                   this.state.ProductGroup == null || this.state.ProductGroup.length === 0 ? [] : this.state.ProductGroup}

@@ -970,7 +970,15 @@ export const labelWithUOMAndCurrency = (label, UOM, currency) => {
   </div>
 }
 
-
+// THIS FUNCTION SHOWING TITLE ON HOVER FOR ACTIVE AND INACTIVE STATUS IN GRID
+export const showTitleForActiveToggle = (props) => {
+  setTimeout(() => {
+    const titleActive = document.getElementsByClassName("active-switch")[props?.rowIndex];
+    titleActive?.setAttribute('title', 'Active');
+    const titleInactive = document.getElementsByClassName("inactive-switch")[props?.rowIndex];
+    titleInactive?.setAttribute('title', 'Inactive');
+  }, 500);
+}
 //COMMON FUNCTION FOR MASTERS BULKUPLOAD CHECK
 export const checkForSameFileUpload = (master, fileHeads) => {
   let checkForFileHead, array = []
@@ -980,12 +988,11 @@ export const checkForSameFileUpload = (master, fileHeads) => {
   checkForFileHead = _.isEqual(fileHeads, bulkUploadArray)
   return checkForFileHead
 }
-// THIS FUNCTION SHOWING TITLE ON HOVER FOR ACTIVE AND INACTIVE STATUS IN GRID
-export const showTitleForActiveToggle = (props) => {
-  setTimeout(() => {
-    const titleActive = document.getElementsByClassName("active-switch")[props?.rowIndex];
-    titleActive?.setAttribute('title', 'Active');
-    const titleInactive = document.getElementsByClassName("inactive-switch")[props?.rowIndex];
-    titleInactive?.setAttribute('title', 'Inactive');
-  }, 500);
+
+// SHOW ALL DATA ON HOVER WHEN DATA INPUT FIELD WILL DISABLE OR VIEW MODE
+export const showDataOnHover = (value) => {
+  let temp = [];
+  value && value.map(item => temp.push(item.Text));
+  const data = temp.join(", ");
+  return data;
 }

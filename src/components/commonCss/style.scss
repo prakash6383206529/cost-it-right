@@ -8617,3 +8617,12 @@ padding-bottom: 3px;
   }
  }
 }
+.role-department-container {
+  display: flex;
+  .departments {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    white-space: nowrap;
+  }
+}

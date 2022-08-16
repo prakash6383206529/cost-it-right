@@ -33,7 +33,7 @@ import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom';
 import WarningMessage from '../../common/WarningMessage';
 import imgRedcross from '../../../assests/images/red-cross.png'
-import { CheckApprovalApplicableMaster } from '../../../helper';
+import { CheckApprovalApplicableMaster, showDataOnHover } from '../../../helper';
 import MasterSendForApproval from '../MasterSendForApproval';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { animateScroll as scroll } from 'react-scroll';
@@ -1359,6 +1359,7 @@ class AddRMImport extends Component {
                                 label="Plant"
                                 name="SourceSupplierPlantId"
                                 placeholder={"Select"}
+                                title={showDataOnHover(this.state.selectedPlants)}
                                 selection={
                                   this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants}
                                 options={this.renderListing("plant")}
