@@ -462,14 +462,6 @@ class AddBOPDomestic extends Component {
     });
   };
 
-
-  // specify upload params and url for your files
-  getUploadParams = ({ file, meta }) => {
-    this.setState({ attachmentLoader: true })
-    return { url: 'https://httpbin.org/post', }
-
-  }
-
   /**
   * @method setDisableFalseFunction
   * @description setDisableFalseFunction
@@ -1193,7 +1185,6 @@ class AddBOPDomestic extends Component {
                             <div className={`${this.state.files.length >= 3 ? 'd-none' : ''}`}>
                               <Dropzone
                                 ref={this.dropzone}
-                                getUploadParams={this.getUploadParams}
                                 onChangeStatus={this.handleChangeStatus}
                                 PreviewComponent={this.Preview}
                                 disabled={isViewMode}
