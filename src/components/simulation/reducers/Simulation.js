@@ -28,6 +28,7 @@ import {
     GET_SIMULATION_APPROVAL_LIST_DRAFT
 
 } from '../../../config/constants';
+import DayTime from '../../common/DayTimeWrapper';
 
 const initialState = {
     selectedCostingListSimulation: [],
@@ -73,7 +74,6 @@ export default function SimulationReducer(state = initialState, action) {
                     item.ProvisionalStatus = 'U'
                 }
                 return null;
-
             })
 
             return {
