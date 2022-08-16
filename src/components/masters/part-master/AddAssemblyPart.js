@@ -505,7 +505,7 @@ class AddAssemblyPart extends Component {
   // called every time a file's `status` changes
   handleChangeStatus = ({ meta, file }, status) => {
     const { files, } = this.state;
-    this.setState({ setDisable: true })
+    this.setState({ setDisable: true, uploadAttachements: false, attachmentLoader: true })
     if (status === 'removed') {
       const removedFileName = file.name;
       let tempArr = files.filter(item => item.OriginalFileName !== removedFileName)
