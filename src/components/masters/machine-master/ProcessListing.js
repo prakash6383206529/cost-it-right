@@ -407,9 +407,14 @@ class ProcessListing extends Component {
   onPageSizeChanged = (newPageSize) => {
     this.state.gridApi.paginationSetPageSize(Number(newPageSize));
   };
-
+  onRowSelect = () => {
+    const selectedRows = this.state.gridApi?.getSelectedRows()
+    this.setState({ selectedRowData: selectedRows })
+  }
   onBtExport = () => {
-    let tempArr = this.props.processList && this.props.processList
+    let tempArr = []
+    tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
+    tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.processList ? this.props.processList : [])
     return this.returnExcelColumn(PROCESSLISTING_DOWNLOAD_EXCEl, tempArr)
   };
 
@@ -418,6 +423,7 @@ class ProcessListing extends Component {
   }
 
   resetState() {
+    this.state.gridApi.deselectAll()
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
   }
@@ -430,12 +436,21 @@ class ProcessListing extends Component {
   render() {
     const { handleSubmit, AddAccessibility, DownloadAccessibility } = this.props;
     const { isOpenProcessDrawer, isEditFlag } = this.state;
-    const ExcelFile = ReactExport.ExcelFile
+    const ExcelFile = ReactExport.ExcelFile;
+
+    const isFirstColumn = (params) => {
+
+      var displayedColumns = params.columnApi.getAllDisplayedColumns();
+      var thisIsFirstColumn = displayedColumns[0] === params.column;
+      return thisIsFirstColumn;
+    }
+
     const defaultColDef = {
       resizable: true,
       filter: true,
       sortable: true,
-
+      headerCheckboxSelectionFilteredOnly: true,
+      checkboxSelection: isFirstColumn
     };
 
     const frameworkComponents = {
@@ -533,9 +548,7 @@ class ProcessListing extends Component {
                         {this.onBtExport()}
                       </ExcelFile>
                     </>
-                    //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
                   }
-
                   <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
                     <div className="refresh mr-0"></div>
                   </button>
@@ -563,6 +576,8 @@ class ProcessListing extends Component {
                   paginationPageSize={defaultPageSize}
                   onGridReady={this.onGridReady}
                   gridOptions={gridOptions}
+                  rowSelection={'multiple'}
+                  onSelectionChanged={this.onRowSelect}
                   noRowsOverlayComponent={'customNoRowsOverlay'}
                   noRowsOverlayComponentParams={{
                     title: EMPTY_DATA,
