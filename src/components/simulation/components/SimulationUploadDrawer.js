@@ -29,10 +29,6 @@ class SimulationUploadDrawer extends Component {
         }
     }
 
-    // specify upload params and url for your files
-    getUploadParams = ({ file, meta }) => {
-        return { url: 'https://httpbin.org/post' }
-    }
     // called every time a file's `status` changes
     handleChangeStatus = ({ meta, file }, status) => {
 
