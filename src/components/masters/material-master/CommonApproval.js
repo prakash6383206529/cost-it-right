@@ -115,15 +115,12 @@ function CommonApproval(props) {
 * @description getting approval list table
 */
 
-    const getTableData = (skip = 0, take = 10, isPagination = true, dataObj) => {
-
+    const getTableData = (skip = 0, take = 10, isPagination = true, dataObj, pageDropDownChange = false) => {
         //  API CALL FOR GETTING RM APPROVAL LIST
         setLoader(true)
-
         dispatch(getRMApprovalList(props?.MasterId, skip, take, isPagination, dataObj, (res) => {
             setLoader(false)
             let obj = { ...floatingFilterData }
-
 
             if (res) {
                 let isReset = true
@@ -135,19 +132,16 @@ function CommonApproval(props) {
                         }
                     }
                     // Sets the filter model via the grid API
-
                     isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(filterModel))
+                    setTimeout(() => {
+                        setWarningMessage(false)
+                        setFloatingFilterData(obj)
+                    }, 23);
                 }, 300);
-
-                setTimeout(() => {
-                    setWarningMessage(false)
-                }, 330);
-
                 setTimeout(() => {
                     setIsFilterButtonClicked(false)
                 }, 600);
             }
-
         }))
     }
 
@@ -578,29 +572,34 @@ function CommonApproval(props) {
         var value = document.getElementById('page-size').value;
 
         if (Number(newPageSize) === 10) {
-            getTableData(currentRowIndex, 10, true, floatingFilterData)
+            getTableData(currentRowIndex, 10, true, floatingFilterData, true)
             setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
             setGlobalTake(10)
             setPageNo(pageNoNew)
         }
         else if (Number(newPageSize) === 50) {
-            getTableData(currentRowIndex, 50, true, floatingFilterData)
+
             setPageSize(prevState => ({ ...prevState, pageSize50: true, pageSize10: false, pageSize100: false }))
             setGlobalTake(50)
             setPageNo(pageNoNew)
             if (pageNo >= Math.ceil(totalRecordCount / 50)) {
                 setPageNo(Math.ceil(totalRecordCount / 50))
-                // getTableData(0, 50, true, floatingFilterData)
+                getTableData(0, 50, true, floatingFilterData)
+            } else {
+                getTableData(currentRowIndex, 50, true, floatingFilterData, true)
             }
+
         }
         else if (Number(newPageSize) === 100) {
-            getTableData(currentRowIndex, 100, true, floatingFilterData)
+
             setPageSize(prevState => ({ ...prevState, pageSize100: true, pageSize10: false, pageSize50: false }))
             setGlobalTake(100)
 
             if (pageNo >= Math.ceil(totalRecordCount / 100)) {
                 setPageNo(Math.ceil(totalRecordCount / 100))
-                // getTableData(0, 100, true, floatingFilterData)
+                getTableData(0, 100, true, floatingFilterData)
+            } else {
+                getTableData(currentRowIndex, 100, true, floatingFilterData, true)
             }
         }
 
