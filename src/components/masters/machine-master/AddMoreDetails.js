@@ -128,7 +128,8 @@ class AddMoreDetails extends Component {
         processMachineRate: false,
         groupName: false
       },
-      UOMName: 'UOM'
+      UOMName: 'UOM',
+      FuelEntryId: ''
     }
   }
 
@@ -372,7 +373,8 @@ class AddMoreDetails extends Component {
               files: Data.Attachements,
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
               UOM: (this.state.isProcessGroup && !this.state.isViewMode) ? { label: Data.MachineProcessRates[0].UnitOfMeasurement, value: Data.MachineProcessRates.UnitOfMeasurementId, type: uomDetail.Type, uom: uomDetail.Text } : [],
-              lockUOMAndRate: (this.state.isProcessGroup && !this.state.isViewMode)
+              lockUOMAndRate: (this.state.isProcessGroup && !this.state.isViewMode),
+              FuelEntryId: Data?.FuelEntryId
             }, () => this.props.change('MachineRate', (this.state.isProcessGroup && !this.state.isViewMode) ? Data.MachineProcessRates[0].MachineRate : ''))
           }, 500)
         }
@@ -650,14 +652,16 @@ class AddMoreDetails extends Component {
               machineFullValue.FuelCostPerUnit = (Data.UnitCost ? Data.UnitCost : 0)
               this.setState({
                 machineFullValue: { ...machineFullValue, FuelCostPerUnit: machineFullValue.FuelCostPerUnit },
-                UOMName: Data?.UOMName ? Data?.UOMName : 'UOM'
+                UOMName: Data?.UOMName ? Data?.UOMName : 'UOM',
+                FuelEntryId: Data?.FuelEntryId ? Data?.FuelEntryId : EMPTY_GUID
               })
               this.props.change('FuelCostPerUnit', checkForDecimalAndNull(Data.UnitCost, this.props.initialConfiguration.NoOfDecimalForPrice))
             } else {
               machineFullValue.FuelCostPerUnit = (Data.UnitCost ? Data.UnitCost : 0)
               this.setState({
                 machineFullValue: { ...machineFullValue, FuelCostPerUnit: machineFullValue.FuelCostPerUnit },
-                UOMName: Data?.UOMName ? Data?.UOMName : 'UOM'
+                UOMName: Data?.UOMName ? Data?.UOMName : 'UOM',
+                FuelEntryId: Data?.FuelEntryId ? Data?.FuelEntryId : EMPTY_GUID
               })
               this.props.change('FuelCostPerUnit', checkForDecimalAndNull(Data.UnitCost, this.props.initialConfiguration.NoOfDecimalForPrice))
             }
@@ -1773,6 +1777,7 @@ class AddMoreDetails extends Component {
       IsUsesSolarPower: IsUsesSolar,
       FuleId: fuelType ? fuelType.value : '',
       FuelCostPerUnit: machineFullValue.FuelCostPerUnit,
+      FuelEntryId: this.state.FuelEntryId,
       ConsumptionPerYear: values.ConsumptionPerYear,
       TotalFuelCostPerYear: machineFullValue.TotalFuelCostPerYear,
       MachineLabourRates: labourGrid,
@@ -1921,7 +1926,8 @@ class AddMoreDetails extends Component {
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
         MachineProcessGroup: this.props.processGroupApiData,
         rowData: this.state.rowData,
-        IsFinancialDataChanged: this.state.isDateChange ? true : false
+        IsFinancialDataChanged: this.state.isDateChange ? true : false,
+        FuelEntryId: this.state.FuelEntryId,
       }
 
       let obj = {}
