@@ -73,7 +73,7 @@ class CostingBulkUploadDrawer extends Component {
 
         let data = new FormData()
         data.append('file', fileObj)
-
+        this.setState({ attachmentLoader: true })
         if (status === 'removed') {
             const removedFileName = file.name
             let tempArr = files.filter(

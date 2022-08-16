@@ -695,10 +695,8 @@ function ApproveRejectDrawer(props) {
 
   // called every time a file's `status` changes
   const handleChangeStatus = ({ meta, file }, status) => {
-
-
     setIsDisable(true)
-
+    setAttachmentLoader(true)
     if (status === 'removed') {
       const removedFileName = file.name;
       let tempArr = files && files.filter(item => item.OriginalFileName !== removedFileName)

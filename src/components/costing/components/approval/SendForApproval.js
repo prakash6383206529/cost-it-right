@@ -399,6 +399,7 @@ const SendForApproval = (props) => {
 
   // called every time a file's `status` changes
   const handleChangeStatus = ({ meta, file }, status) => {
+    setAttachmentLoader(true)
     if (status === "removed") {
       const removedFileName = file.name;
       let tempArr =
