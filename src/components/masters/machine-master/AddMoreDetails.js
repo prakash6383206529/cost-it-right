@@ -324,7 +324,7 @@ class AddMoreDetails extends Component {
             const machineTypeObj = machineTypeSelectList && machineTypeSelectList.find(item => Number(item.Value) === Data.MachineTypeId)
             const shiftObj = ShiftTypeSelectList && ShiftTypeSelectList.find(item => Number(item.Value) === Number(Data.WorkingShift))
             const depreciationObj = DepreciationTypeSelectList && DepreciationTypeSelectList.find(item => item.Value === Data.DepreciationType)
-            const fuelObj = fuelComboSelectList && fuelComboSelectList.Fuels && fuelComboSelectList.Fuels.find(item => item.Value === Data.FuleId)
+            const fuelObj = fuelComboSelectList && fuelComboSelectList.Fuels && fuelComboSelectList.Fuels.find(item => String(item.Value) === String(Data.FuleId))
 
             let LabourArray = Data && Data.MachineLabourRates?.map(el => {
               return {
@@ -1117,14 +1117,12 @@ class AddMoreDetails extends Component {
 
     if (IsUsesFuel) {
 
-      const FuelCostPerUnit = checkForNull(machineFullValue?.FuelCostPerUnit)
+      const FuelCostPerUnit = checkForNull(fieldsObj?.FuelCostPerUnit)
       const ConsumptionPerYear = checkForNull(fieldsObj?.ConsumptionPerYear)
       machineFullValue.TotalFuelCostPerYear = FuelCostPerUnit * ConsumptionPerYear
       this.setState({ machineFullValue: { ...machineFullValue, TotalFuelCostPerYear: machineFullValue.TotalFuelCostPerYear } })
       this.props.change('TotalFuelCostPerYear', checkForDecimalAndNull(FuelCostPerUnit * ConsumptionPerYear, initialConfiguration.NoOfDecimalForPrice))
-    } else {
-
-
+    } else if (IsUsesSolarPower) {
       // if (IsUsesSolarPower) {
       this.props.change('FuelCostPerUnit', 0)
       this.props.change('ConsumptionPerYear', 0)
