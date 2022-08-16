@@ -11,6 +11,7 @@ import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
+import { showDataOnHover } from '../../../helper';
 
 class AddMachineTypeDrawer extends Component {
   constructor(props) {
@@ -168,6 +169,7 @@ class AddMachineTypeDrawer extends Component {
                       label="Labour Type"
                       name="LabourTypeIds"
                       placeholder="Select"
+                      title={showDataOnHover(this.state.labourType)}
                       selection={
                         this.state.labourType == null || this.state.labourType.length === 0 ? [] : this.state.labourType}
                       options={this.renderListing("labourList")}

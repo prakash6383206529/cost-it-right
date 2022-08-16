@@ -700,6 +700,7 @@ class VendorListing extends Component {
                             }}
                             frameworkComponents={frameworkComponents}
                             enablePivot={true}
+                            enableBrowserTooltips={true}
                         >
                             <AgGridColumn field="VendorType" tooltipField="VendorType" width={"240px"} headerName="Vendor Type"></AgGridColumn>
                             <AgGridColumn field="VendorName" headerName="Vendor Name"></AgGridColumn>

@@ -219,7 +219,7 @@ export const MESSAGES = {
   //USER
   ADD_USER_SUCCESSFULLY: 'User has been added successfully',
   DELETE_USER_SUCCESSFULLY: 'User has been deleted successfully',
-  USER_ACTIVE_SUCCESSFULLY: 'User has been actived successfully',
+  USER_ACTIVE_SUCCESSFULLY: 'User has been activated successfully',
   USER_INACTIVE_SUCCESSFULLY: 'User has been de-activated successfully',
   USER_DEACTIVE_ALERT: 'Are you sure you want to de-activate this user?',
   USER_ACTIVE_ALERT: 'Are you sure you want to activate this user?',
