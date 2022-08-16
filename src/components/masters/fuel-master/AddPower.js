@@ -21,7 +21,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import NoContentFound from '../../common/NoContentFound';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import DayTime from '../../common/DayTimeWrapper'
-import { calculatePercentageValue } from '../../../helper';
+import { calculatePercentageValue, showDataOnHover } from '../../../helper';
 import { AcceptablePowerUOM } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
 import _, { debounce } from 'lodash';
@@ -1431,6 +1431,7 @@ class AddPower extends Component {
                                   <Field
                                     label="Plant"
                                     name="Plant"
+                                    title={showDataOnHover(this.state.selectedPlants)}
                                     placeholder="Select"
                                     selection={(this.state.selectedPlants == null || this.state.selectedPlants.length === 0) ? [] : this.state.selectedPlants}
                                     options={this.renderListing('plant')}

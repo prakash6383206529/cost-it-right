@@ -8699,3 +8699,14 @@ table.group-process-table {
     }
   }
 }
+
+.role-department-container {
+  display: flex;
+
+  .departments {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    white-space: nowrap;
+  }
+}

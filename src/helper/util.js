@@ -976,3 +976,11 @@ export const showTitleForActiveToggle = (props) => {
     titleInactive?.setAttribute('title', 'Inactive');
   }, 500);
 }
+
+// SHOW ALL DATA ON HOVER WHEN DATA INPUT FIELD WILL DISABLE OR VIEW MODE
+export const showDataOnHover = (value) => {
+  let temp = [];
+  value && value.map(item => temp.push(item.Text));
+  const data = temp.join(", ");
+  return data;
+}

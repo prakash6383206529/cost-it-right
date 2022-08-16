@@ -16,6 +16,7 @@ import Drawer from '@material-ui/core/Drawer';
 import AddVendorPlantDrawer from './AddVendorPlantDrawer';
 import LoaderCustom from '../../common/LoaderCustom';
 import { debounce } from 'lodash';
+import { showDataOnHover } from '../../../helper';
 
 class AddVendorDrawer extends Component {
     constructor(props) {
@@ -427,6 +428,7 @@ class AddVendorDrawer extends Component {
                                             label="Vendor Type"
                                             name="VendorType"
                                             placeholder="Select"
+                                            title={showDataOnHover(this.state.selectedVendorType)}
                                             selection={(this.state.selectedVendorType == null || this.state.selectedVendorType.length === 0) ? [] : this.state.selectedVendorType}
                                             options={this.renderListing('vendorType')}
                                             selectionChanged={this.handleVendorType}
