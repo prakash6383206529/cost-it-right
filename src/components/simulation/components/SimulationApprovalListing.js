@@ -19,7 +19,6 @@ import { allEqual, checkForNull, getConfigurationKey } from '../../../helper'
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import WarningMessage from '../../common/WarningMessage'
-import { debounce } from 'lodash'
 import ScrollToTop from '../../common/ScrollToTop'
 import { PaginationWrapper } from '../../common/commonPagination'
 import { checkFinalUser } from '../../costing/actions/Costing'
@@ -62,19 +61,67 @@ function SimulationApprovalListing(props) {
     const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
     const [floatingFilterData, setFloatingFilterData] = useState({ ApprovalNumber: "", CostingNumber: "", PartNumber: "", PartName: "", VendorName: "", PlantName: "", TechnologyName: "", NetPOPrice: "", OldPOPrice: "", Reason: "", EffectiveDate: "", CreatedBy: "", CreatedOn: "", RequestedBy: "", RequestedOn: "" })
 
-
     const { handleSubmit } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onChange',
     })
+
+    var filterParams = {
+        comparator: function (filterLocalDateAtMidnight, cellValue) {
+            var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+            var newDate = filterLocalDateAtMidnight != null ? DayTime(filterLocalDateAtMidnight).format('DD/MM/YYYY') : '';
+            setFloatingFilterData({ ...floatingFilterData, SimulatedOn: newDate })
+            if (dateAsString == null) return -1;
+            var dateParts = dateAsString.split('/');
+            var cellDate = new Date(
+                Number(dateParts[2]),
+                Number(dateParts[1]) - 1,
+                Number(dateParts[0])
+            );
+            if (filterLocalDateAtMidnight.getTime() === cellDate.getTime()) {
+                return 0;
+            }
+            if (cellDate < filterLocalDateAtMidnight) {
+                return -1;
+            }
+            if (cellDate > filterLocalDateAtMidnight) {
+                return 1;
+            }
+        },
+        browserDatePicker: true,
+        minValidYear: 2000,
+    };
+
+    var filterParamsSecond = {
+        comparator: function (filterLocalDateAtMidnight, cellValue) {
+            var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+            var newDate = filterLocalDateAtMidnight != null ? DayTime(filterLocalDateAtMidnight).format('DD/MM/YYYY') : '';
+            setFloatingFilterData({ ...floatingFilterData, RequestedOn: newDate })
+            if (dateAsString == null) return -1;
+            var dateParts = dateAsString.split('/');
+            var cellDate = new Date(
+                Number(dateParts[2]),
+                Number(dateParts[1]) - 1,
+                Number(dateParts[0])
+            );
+            if (filterLocalDateAtMidnight.getTime() === cellDate.getTime()) {
+                return 0;
+            }
+            if (cellDate < filterLocalDateAtMidnight) {
+                return -1;
+            }
+            if (cellDate > filterLocalDateAtMidnight) {
+                return 1;
+            }
+        },
+        browserDatePicker: true,
+        minValidYear: 2000,
+    };
+
+
     useEffect(() => {
         getTableData(0, defaultPageSize, true, floatingFilterData)
     }, [])
-
-    useEffect(() => {
-
-    }, [selectedIds])
-
 
 
     useEffect(() => {
@@ -93,7 +140,7 @@ function SimulationApprovalListing(props) {
      * @description getting approval list table
      */
     const getTableData = (skip = 0, take = 10, isPagination = true, dataObj, partNo = EMPTY_GUID, createdBy = EMPTY_GUID, requestedBy = EMPTY_GUID, status = 0,) => {
-        console.log('dataObj: ', dataObj);
+
 
         let filterData = {
             logged_in_user_id: loggedInUserId(),
@@ -105,30 +152,28 @@ function SimulationApprovalListing(props) {
             isDashboard: isDashboard ?? false
         }
         setIsLoader(true)
-        let obj = dataObj
-        console.log('obj: ', obj);
+        let obj = { ...dataObj }
         dispatch(getSimulationApprovalList(filterData, skip, take, isPagination, dataObj, (res) => {
             if (res?.data?.Result) {
                 setIsLoader(false)
                 let isReset = true
                 if (res) {
                     setTimeout(() => {
-                        console.log('obj: IN', obj);
                         for (var prop in obj) {
                             if (obj[prop] !== "") {
-                                console.log('IF CONDTIO');
+
                                 isReset = false
                             }
                         }
                         // Sets the filter model via the grid API
-                        // console.log('filterModel: ', filterModel);
+                        // 
                         isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(filterModel))
+
+                        setTimeout(() => {
+                            setWarningMessage(false)
+                            setFloatingFilterData(obj)
+                        }, 23);
                     }, 500);
-
-                    setTimeout(() => {
-                        setWarningMessage(false)
-                    }, 330);
-
                     setTimeout(() => {
                         setIsFilterButtonClicked(false)
                     }, 600);
@@ -138,25 +183,16 @@ function SimulationApprovalListing(props) {
     }
 
 
-    //////////////////////////PAGINATION FUNCTIONS/////////////////////////////////////////
-
-
     const onFloatingFilterChanged = (value) => {
-        console.log('value: ', value);
+
         setDisableFilter(false)
         const model = gridOptions?.api?.getFilterModel();
-        console.log('model: ', model);
-        // console.log('gridOptions?.api?.getFilterModel(): ', gridOptions?.api?.getFilterModel());
         setFilterModel(model)
         if (!isFilterButtonClicked) {
             setWarningMessage(true)
         }
-
-
-        // console.log('value?.filterInstance?.appliedModel: ', value?.filterInstance?.appliedModel);
-        // console.log('value?.filterInstance?.appliedModel?.filter: ', value?.filterInstance?.appliedModel?.filter);
         if (value?.filterInstance?.appliedModel === null || value?.filterInstance?.appliedModel?.filter === "") {
-            // console.log("IF");
+
             let isFilterEmpty = true
 
             if (model !== undefined && model !== null) {
@@ -184,7 +220,9 @@ function SimulationApprovalListing(props) {
             }
 
         } else {
-            // console.log("ELSE");
+            if (value.column.colId === "SimulatedOn" || value.column.colId === "RequestedOn") {
+                return false
+            }
             setFloatingFilterData({ ...floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter })
         }
     }
@@ -198,7 +236,7 @@ function SimulationApprovalListing(props) {
         setPageNo(1)
         setCurrentRowIndex(0)
         gridOptions?.columnApi?.resetColumnState();
-        console.log('floatingFilterData: ', floatingFilterData);
+
         getTableData(0, globalTake, true, floatingFilterData)
     }
 
@@ -220,7 +258,6 @@ function SimulationApprovalListing(props) {
         setPageNo(1)
         setCurrentRowIndex(0)
         dispatch(setSelectedCostingListSimualtion([]))
-        //getTableData("", "", "", "", 0, 10, true, floatingFilterData)
         getTableData(0, 10, true, floatingFilterData)
 
         setGlobalTake(10)
@@ -233,7 +270,6 @@ function SimulationApprovalListing(props) {
             setPageNo(pageNo - 1)
             setPageNoNew(pageNo - 1)
             const previousNo = currentRowIndex - 10;
-            // getTableData("", "", "", "", previousNo, globalTake, true, floatingFilterData)
             getTableData(previousNo, globalTake, true, floatingFilterData)
             setCurrentRowIndex(previousNo)
         }
@@ -252,7 +288,6 @@ function SimulationApprovalListing(props) {
             setPageNo(pageNo + 1)
             setPageNoNew(pageNo + 1)
             const nextNo = currentRowIndex + 10;
-            //getTableData("", "", "", "", nextNo, globalTake, true, floatingFilterData)
             getTableData(nextNo, globalTake, true, floatingFilterData)
             setCurrentRowIndex(nextNo)
         }
@@ -261,50 +296,37 @@ function SimulationApprovalListing(props) {
 
     const onPageSizeChanged = (newPageSize) => {
         if (Number(newPageSize) === 10) {
-            //getTableData("", "", "", "", currentRowIndex, 10, true, floatingFilterData)
             getTableData(currentRowIndex, 10, true, floatingFilterData)
             setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
             setGlobalTake(10)
             setPageNo(pageNoNew)
         }
         else if (Number(newPageSize) === 50) {
-            //getTableData("", "", "", "", currentRowIndex, 50, true, floatingFilterData)
-            getTableData(currentRowIndex, 50, true, floatingFilterData)
             setPageSize(prevState => ({ ...prevState, pageSize50: true, pageSize10: false, pageSize100: false }))
             setGlobalTake(50)
 
             setPageNo(pageNoNew)
             if (pageNo >= Math.ceil(totalRecordCount / 50)) {
                 setPageNo(Math.ceil(totalRecordCount / 50))
-                // getTableData("", "", "", "", 0, 50, true, floatingFilterData)
                 getTableData(0, 50, true, floatingFilterData)
+            } else {
+                getTableData(currentRowIndex, 50, true, floatingFilterData)
             }
+
         }
         else if (Number(newPageSize) === 100) {
-            // getTableData("", "", "", "", currentRowIndex, 100, true, floatingFilterData)
-            getTableData(currentRowIndex, 100, true, floatingFilterData)
-
-
-
             setPageSize(prevState => ({ ...prevState, pageSize100: true, pageSize10: false, pageSize50: false }))
             setGlobalTake(100)
             if (pageNo >= Math.ceil(totalRecordCount / 100)) {
                 setPageNo(Math.ceil(totalRecordCount / 100))
-                // getTableData("", "", "", "", 0, 100, true, floatingFilterData)
-
                 getTableData(0, 100, true, floatingFilterData)
-
+            } else {
+                getTableData(currentRowIndex, 100, true, floatingFilterData)
             }
         }
-
         gridApi.paginationSetPageSize(Number(newPageSize));
 
     };
-
-
-    /////////////////////////////////////////////////////////////////////////////////////////////////
-
-
 
     /**
      * @method linkableFormatter
@@ -702,11 +724,11 @@ function SimulationApprovalListing(props) {
                                     <AgGridColumn width={154} field="ImpactParts" headerName="Impacted Parts"></AgGridColumn>
                                     <AgGridColumn width={170} field="Reason" headerName="Reason" cellRenderer='reasonFormatter'></AgGridColumn>
                                     <AgGridColumn width={140} field="SimulatedByName" headerName='Initiated By' cellRenderer='requestedByFormatter'></AgGridColumn>
-                                    <AgGridColumn width={140} field="SimulatedOn" headerName='Simulated On' cellRenderer='requestedOnFormatter'></AgGridColumn>
+                                    <AgGridColumn width={140} field="SimulatedOn" headerName='Simulated On' cellRenderer='requestedOnFormatter' filter="agDateColumnFilter" filterParams={filterParams} ></AgGridColumn>
                                     <AgGridColumn width={142} field="LastApprovedBy" headerName='Last Approved / Rejected By' cellRenderer='requestedByFormatter'></AgGridColumn>
-                                    <AgGridColumn width={145} field="RequestedOn" headerName='Requested On' cellRenderer='requestedOnFormatter'></AgGridColumn>
+                                    <AgGridColumn width={145} field="RequestedOn" headerName='Requested On' cellRenderer='requestedOnFormatter' filter="agDateColumnFilter" filterParams={filterParamsSecond}></AgGridColumn>
 
-                                    {!isSmApprovalListing && <AgGridColumn pinned="right" field="Status" headerClass="justify-content-center" cellClass="text-center" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>}
+                                    {!isSmApprovalListing && <AgGridColumn pinned="right" field="DisplayStatus" headerClass="justify-content-center" cellClass="text-center" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>}
                                     <AgGridColumn width={115} field="SimulationId" headerName='Actions' type="rightAligned" floatingFilter={false} cellRenderer='buttonFormatter'></AgGridColumn>
 
                                 </AgGridReact>
@@ -716,7 +738,7 @@ function SimulationApprovalListing(props) {
                                 </div> */}
 
                                 <div className='button-wrapper'>
-                                    {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake} />}
+                                    {!isLoader && <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake} />}
                                     <div className="d-flex pagination-button-container">
                                         <p><button className="previous-btn" type="button" disabled={false} onClick={() => onBtPrevious()}> </button></p>
                                         {pageSize.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 10)}</p>}
