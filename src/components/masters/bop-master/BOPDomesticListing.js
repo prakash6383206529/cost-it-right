@@ -192,6 +192,8 @@ class BOPDomesticListing extends Component {
                         }, 600);
                     }
                 })
+            } else {
+                this.setState({ isLoader: false })
             }
         }
     }
