@@ -8,14 +8,14 @@ import { defaultPageSize, EMPTY_DATA, LINKED } from '../../../config/constants'
 import DayTime from '../../common/DayTimeWrapper'
 import { DRAFT, EMPTY_GUID, APPROVED, PUSHED, ERROR, WAITING_FOR_APPROVAL, REJECTED, POUPDATED } from '../../../config/constants'
 import Toaster from '../../common/Toaster'
-import { getSimulationApprovalList, setMasterForSimulation, deleteDraftSimulation } from '../actions/Simulation'
+import { getSimulationApprovalList, setMasterForSimulation, deleteDraftSimulation, setSelectedCostingListSimualtion } from '../actions/Simulation'
 import { Redirect, } from 'react-router-dom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../common/LoaderCustom'
 import { MESSAGES } from '../../../config/message'
-import { allEqual, getConfigurationKey } from '../../../helper'
+import { allEqual, checkForNull, getConfigurationKey } from '../../../helper'
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import WarningMessage from '../../common/WarningMessage'
@@ -26,7 +26,6 @@ import { checkFinalUser } from '../../costing/actions/Costing'
 
 
 const gridOptions = {};
-
 function SimulationApprovalListing(props) {
     const { isDashboard } = props
     const [approvalData, setApprovalData] = useState('')
@@ -50,12 +49,26 @@ function SimulationApprovalListing(props) {
     const [isLoader, setIsLoader] = useState(false)
     const isSmApprovalListing = props.isSmApprovalListing;
 
+    //STATES BELOW ARE MADE FOR PAGINATION PURPOSE
+    const [disableFilter, setDisableFilter] = useState(true)
+    const [warningMessage, setWarningMessage] = useState(false)
+    const [globalTake, setGlobalTake] = useState(defaultPageSize)
+    const [filterModel, setFilterModel] = useState({});
+    const [pageNo, setPageNo] = useState(1)
+    const [pageNoNew, setPageNoNew] = useState(1)
+    const [totalRecordCount, setTotalRecordCount] = useState(1)
+    const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
+    const [currentRowIndex, setCurrentRowIndex] = useState(0)
+    const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
+    const [floatingFilterData, setFloatingFilterData] = useState({ ApprovalNumber: "", CostingNumber: "", PartNumber: "", PartName: "", VendorName: "", PlantName: "", TechnologyName: "", NetPOPrice: "", OldPOPrice: "", Reason: "", EffectiveDate: "", CreatedBy: "", CreatedOn: "", RequestedBy: "", RequestedOn: "" })
+
+
     const { handleSubmit } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onChange',
     })
     useEffect(() => {
-        getTableData()
+        getTableData(0, defaultPageSize, true, floatingFilterData)
     }, [])
 
     useEffect(() => {
@@ -63,11 +76,24 @@ function SimulationApprovalListing(props) {
     }, [selectedIds])
 
 
+
+    useEffect(() => {
+        if ((isDashboard ? simualtionApprovalList : simualtionApprovalListDraft)?.length > 0) {
+
+            let array = isDashboard ? simualtionApprovalList : simualtionApprovalListDraft
+            setTotalRecordCount(checkForNull(array[0].TotalRecordCount))
+        }
+
+    }, [(isDashboard ? simualtionApprovalList : simualtionApprovalListDraft)])
+
+
+
     /**
      * @method getTableData
      * @description getting approval list table
      */
-    const getTableData = (partNo = EMPTY_GUID, createdBy = EMPTY_GUID, requestedBy = EMPTY_GUID, status = 0,) => {
+    const getTableData = (skip = 0, take = 10, isPagination = true, dataObj, partNo = EMPTY_GUID, createdBy = EMPTY_GUID, requestedBy = EMPTY_GUID, status = 0,) => {
+        console.log('dataObj: ', dataObj);
 
         let filterData = {
             logged_in_user_id: loggedInUserId(),
@@ -79,14 +105,206 @@ function SimulationApprovalListing(props) {
             isDashboard: isDashboard ?? false
         }
         setIsLoader(true)
-        dispatch(getSimulationApprovalList(filterData, (res) => {
+        let obj = dataObj
+        console.log('obj: ', obj);
+        dispatch(getSimulationApprovalList(filterData, skip, take, isPagination, dataObj, (res) => {
             if (res?.data?.Result) {
-                setTimeout(() => {
-                    setIsLoader(false)
-                }, 300);
+                setIsLoader(false)
+                let isReset = true
+                if (res) {
+                    setTimeout(() => {
+                        console.log('obj: IN', obj);
+                        for (var prop in obj) {
+                            if (obj[prop] !== "") {
+                                console.log('IF CONDTIO');
+                                isReset = false
+                            }
+                        }
+                        // Sets the filter model via the grid API
+                        // console.log('filterModel: ', filterModel);
+                        isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(filterModel))
+                    }, 500);
+
+                    setTimeout(() => {
+                        setWarningMessage(false)
+                    }, 330);
+
+                    setTimeout(() => {
+                        setIsFilterButtonClicked(false)
+                    }, 600);
+                }
             }
         }))
     }
+
+
+    //////////////////////////PAGINATION FUNCTIONS/////////////////////////////////////////
+
+
+    const onFloatingFilterChanged = (value) => {
+        console.log('value: ', value);
+        setDisableFilter(false)
+        const model = gridOptions?.api?.getFilterModel();
+        console.log('model: ', model);
+        // console.log('gridOptions?.api?.getFilterModel(): ', gridOptions?.api?.getFilterModel());
+        setFilterModel(model)
+        if (!isFilterButtonClicked) {
+            setWarningMessage(true)
+        }
+
+
+        // console.log('value?.filterInstance?.appliedModel: ', value?.filterInstance?.appliedModel);
+        // console.log('value?.filterInstance?.appliedModel?.filter: ', value?.filterInstance?.appliedModel?.filter);
+        if (value?.filterInstance?.appliedModel === null || value?.filterInstance?.appliedModel?.filter === "") {
+            // console.log("IF");
+            let isFilterEmpty = true
+
+            if (model !== undefined && model !== null) {
+                if (Object.keys(model).length > 0) {
+                    isFilterEmpty = false
+                    for (var property in floatingFilterData) {
+
+                        if (property === value.column.colId) {
+                            floatingFilterData[property] = ""
+                        }
+                    }
+                    setFloatingFilterData(floatingFilterData)
+                }
+
+                if (isFilterEmpty) {
+
+                    for (var prop in floatingFilterData) {
+                        if (prop !== "DepartmentCode") {
+                            floatingFilterData[prop] = ""
+                        }
+                    }
+                    setFloatingFilterData(floatingFilterData)
+                    setWarningMessage(false)
+                }
+            }
+
+        } else {
+            // console.log("ELSE");
+            setFloatingFilterData({ ...floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter })
+        }
+    }
+
+
+    const onSearch = () => {
+
+        setWarningMessage(false)
+        setIsLoader(true)
+        setIsFilterButtonClicked(true)
+        setPageNo(1)
+        setCurrentRowIndex(0)
+        gridOptions?.columnApi?.resetColumnState();
+        console.log('floatingFilterData: ', floatingFilterData);
+        getTableData(0, globalTake, true, floatingFilterData)
+    }
+
+    const resetState = () => {
+        setIsFilterButtonClicked(false)
+        setIsLoader(true)
+        gridOptions?.columnApi?.resetColumnState(null);
+        gridOptions?.api?.setFilterModel(null);
+
+        for (var prop in floatingFilterData) {
+
+            if (prop !== "DepartmentCode") {
+                floatingFilterData[prop] = ""
+            }
+        }
+
+        setFloatingFilterData(floatingFilterData)
+        setWarningMessage(false)
+        setPageNo(1)
+        setCurrentRowIndex(0)
+        dispatch(setSelectedCostingListSimualtion([]))
+        //getTableData("", "", "", "", 0, 10, true, floatingFilterData)
+        getTableData(0, 10, true, floatingFilterData)
+
+        setGlobalTake(10)
+        setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
+    }
+
+
+    const onBtPrevious = () => {
+        if (currentRowIndex >= 10) {
+            setPageNo(pageNo - 1)
+            setPageNoNew(pageNo - 1)
+            const previousNo = currentRowIndex - 10;
+            // getTableData("", "", "", "", previousNo, globalTake, true, floatingFilterData)
+            getTableData(previousNo, globalTake, true, floatingFilterData)
+            setCurrentRowIndex(previousNo)
+        }
+    }
+
+    const onBtNext = () => {
+
+        if (pageSize.pageSize50 && pageNo >= Math.ceil(totalRecordCount / 50)) {
+            return false
+        }
+        if (pageSize.pageSize100 && pageNo >= Math.ceil(totalRecordCount / 100)) {
+            return false
+        }
+
+        if (currentRowIndex < (totalRecordCount - 10)) {
+            setPageNo(pageNo + 1)
+            setPageNoNew(pageNo + 1)
+            const nextNo = currentRowIndex + 10;
+            //getTableData("", "", "", "", nextNo, globalTake, true, floatingFilterData)
+            getTableData(nextNo, globalTake, true, floatingFilterData)
+            setCurrentRowIndex(nextNo)
+        }
+    };
+
+
+    const onPageSizeChanged = (newPageSize) => {
+        if (Number(newPageSize) === 10) {
+            //getTableData("", "", "", "", currentRowIndex, 10, true, floatingFilterData)
+            getTableData(currentRowIndex, 10, true, floatingFilterData)
+            setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
+            setGlobalTake(10)
+            setPageNo(pageNoNew)
+        }
+        else if (Number(newPageSize) === 50) {
+            //getTableData("", "", "", "", currentRowIndex, 50, true, floatingFilterData)
+            getTableData(currentRowIndex, 50, true, floatingFilterData)
+            setPageSize(prevState => ({ ...prevState, pageSize50: true, pageSize10: false, pageSize100: false }))
+            setGlobalTake(50)
+
+            setPageNo(pageNoNew)
+            if (pageNo >= Math.ceil(totalRecordCount / 50)) {
+                setPageNo(Math.ceil(totalRecordCount / 50))
+                // getTableData("", "", "", "", 0, 50, true, floatingFilterData)
+                getTableData(0, 50, true, floatingFilterData)
+            }
+        }
+        else if (Number(newPageSize) === 100) {
+            // getTableData("", "", "", "", currentRowIndex, 100, true, floatingFilterData)
+            getTableData(currentRowIndex, 100, true, floatingFilterData)
+
+
+
+            setPageSize(prevState => ({ ...prevState, pageSize100: true, pageSize10: false, pageSize50: false }))
+            setGlobalTake(100)
+            if (pageNo >= Math.ceil(totalRecordCount / 100)) {
+                setPageNo(Math.ceil(totalRecordCount / 100))
+                // getTableData("", "", "", "", 0, 100, true, floatingFilterData)
+
+                getTableData(0, 100, true, floatingFilterData)
+
+            }
+        }
+
+        gridApi.paginationSetPageSize(Number(newPageSize));
+
+    };
+
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 
     /**
      * @method linkableFormatter
@@ -166,7 +384,7 @@ function SimulationApprovalListing(props) {
         dispatch(deleteDraftSimulation(deletedId, res => {
             if (res.data.Result) {
                 Toaster.success("Simulation token deleted successfully.")
-                getTableData()
+                getTableData(0, 10, true, floatingFilterData)
             }
         }))
         setShowPopup(false)
@@ -313,7 +531,7 @@ function SimulationApprovalListing(props) {
         gridApi.deselectAll()
         setApproveDrawer(false)
         if (type !== 'cancel') {
-            getTableData()
+            getTableData(0, 10, true, floatingFilterData)
         }
         setSelectedRowData([])
     }
@@ -372,20 +590,19 @@ function SimulationApprovalListing(props) {
 
     };
 
-    const onPageSizeChanged = (newPageSize) => {
-        gridApi.paginationSetPageSize(Number(newPageSize));
-    };
+    // const onPageSizeChanged = (newPageSize) => {
+    //     gridApi.paginationSetPageSize(Number(newPageSize));
+    // };
 
     const onFilterTextBoxChanged = (e) => {
         gridApi.setQuickFilter(e.target.value);
     }
 
-    const resetState = debounce(() => {
-        getTableData()
-        gridOptions.columnApi.resetColumnState();
-        gridOptions.api.setFilterModel(null);
+    // const resetState = debounce(() => {
+    //     getTableData()
+    //     gridOptions.columnApi.resetColumnState();
 
-    }, 500)
+    // }, 500)
 
     const frameworkComponents = {
         // totalValueRenderer: this.buttonFormatter,
@@ -409,15 +626,19 @@ function SimulationApprovalListing(props) {
             {
                 !showApprovalSumary &&
                 <div className={`${!isSmApprovalListing && 'container-fluid'} approval-listing-page`} id='history-go-to-top'>
-                    < div className={`ag-grid-react`}>
+                    < div className={`ag-grid-react custom-pagination`}>
                         <form onSubmit={handleSubmit(() => { })} noValidate>
                             {isLoader && <LoaderCustom customClass={"simulation-history-loader"} />}
                             <ScrollToTop pointProp={"history-go-to-top"} />
                             <Row className="pt-4">
 
 
-                                <Col md="2" lg="2" className="search-user-block mb-3">
+                                <Col md="8" lg="6" className="search-user-block mb-3">
                                     <div className="d-flex justify-content-end bd-highlight w100">
+                                        <div className="warning-message d-flex align-items-center">
+                                            {warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
+                                            <button disabled={disableFilter} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
+                                        </div>
                                         <button type="button" className="user-btn  mr5" title="Reset Grid" onClick={() => resetState()}>
                                             <div className="refresh mr-0"></div>
                                         </button>
@@ -435,7 +656,7 @@ function SimulationApprovalListing(props) {
                             </Row>
                         </form>
 
-                        <div className={`ag-grid-wrapper height-width-wrapper min-height-auto ${isDashboard ? simualtionApprovalList && simualtionApprovalList?.length <= 0 ? "overlay-contain" : "" : simualtionApprovalListDraft && simualtionApprovalListDraft?.length <= 0 ? "overlay-contain" : ""}`}>
+                        <div >
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                             </div>
@@ -451,8 +672,9 @@ function SimulationApprovalListing(props) {
                                     rowData={isDashboard ? simualtionApprovalList : simualtionApprovalListDraft}
                                     // columnDefs={colRow}
                                     pagination={true}
-                                    paginationPageSize={defaultPageSize}
+                                    paginationPageSize={globalTake}
                                     onGridReady={onGridReady}
+                                    onFilterModified={onFloatingFilterChanged}
                                     gridOptions={gridOptions}
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                     noRowsOverlayComponentParams={{
@@ -465,7 +687,7 @@ function SimulationApprovalListing(props) {
                                     isRowSelectable={isRowSelectable}
                                 >
 
-                                    <AgGridColumn width={120} field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No." cellClass="token-no-grid"></AgGridColumn>
+                                    <AgGridColumn width={120} field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token Non." cellClass="token-no-grid"></AgGridColumn>
                                     {isSmApprovalListing && <AgGridColumn field="Status" headerClass="justify-content-center" cellClass="text-center" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>}
                                     <AgGridColumn width={141} field="CostingHead" headerName="Costing Head" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     {/* THIS FEILD WILL ALWAYS COME BEFORE */}
@@ -488,10 +710,28 @@ function SimulationApprovalListing(props) {
                                     <AgGridColumn width={115} field="SimulationId" headerName='Actions' type="rightAligned" floatingFilter={false} cellRenderer='buttonFormatter'></AgGridColumn>
 
                                 </AgGridReact>
-                                {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
+                                {/* {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
+                                <div className="text-right pb-3">
+                                    <WarningMessage message="It may take up to 5 minutes for the status to be updated." />
+                                </div> */}
+
+                                <div className='button-wrapper'>
+                                    {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake} />}
+                                    <div className="d-flex pagination-button-container">
+                                        <p><button className="previous-btn" type="button" disabled={false} onClick={() => onBtPrevious()}> </button></p>
+                                        {pageSize.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 10)}</p>}
+                                        {pageSize.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 50)}</p>}
+                                        {pageSize.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 100)}</p>}
+                                        <p><button className="next-btn" type="button" onClick={() => onBtNext()}> </button></p>
+                                    </div>
+                                </div>
+
+
                                 <div className="text-right pb-3">
                                     <WarningMessage message="It may take up to 5 minutes for the status to be updated." />
                                 </div>
+
+
                                 {approveDrawer &&
                                     <ApproveRejectDrawer
                                         isOpen={approveDrawer}
