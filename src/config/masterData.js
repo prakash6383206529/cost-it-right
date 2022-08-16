@@ -1015,6 +1015,7 @@ export const Power = [
 */
 export const MachineZBC = [
     { label: 'Technology', value: 'Technology', }, //*
+    { label: "PlantName", value: "PlantName" },
     { label: 'PlantCode', value: 'PlantCode', }, //*
     { label: 'MachineNo', value: 'MachineNo', }, //*
     { label: 'MachineSpecification', value: 'MachineSpecification', },
@@ -1031,7 +1032,8 @@ export const MachineZBC = [
 export const MachineZBCTempData = [
     {
         'Technology': 'Sheet Metal',
-        'PlantCode': '1001',
+        'PlantCode': '8820',
+        'PlantName': 'P882022',
         'MachineNo': 'SM1002',
         'MachineSpecification': 'Mechanical Power Press',
         'MachineName': 'Power Press',
@@ -1050,6 +1052,7 @@ export const MachineZBCTempData = [
 */
 export const MHRMoreZBC = [
     { label: "Technology", value: "Technology", }, //*
+    { label: "PlantName", value: "PlantName" },
     { label: "PlantCode", value: "PlantCode", }, //*
     { label: "MachineNo", value: "MachineNo", }, //*
     { label: "MachineName", value: "MachineName", }, //*
@@ -1119,7 +1122,8 @@ export const CLIENT_DOWNLOAD_EXCEl = [
 export const MHRMoreZBCTempData = [
     {
         "Technology": "Sheet Metal",
-        "PlantCode": "P101",
+        'PlantCode': '8820',
+        'PlantName': 'P882022',
         "MachineNo": "MAC-001",
         "MachineName": "Power Press",
         "MachineSpec": "Machine Specification",
@@ -1173,7 +1177,8 @@ export const MHRMoreZBCTempData = [
     },
     {
         "Technology": "Sheet Metal",
-        "PlantCode": "P101",
+        'PlantCode': '8820',
+        'PlantName': 'P882022',
         "MachineNo": "MAC-002",
         "MachineName": "Hydraulic Press",
         "MachineSpec": "Machine Specification",
@@ -2950,7 +2955,7 @@ export const VBCPLANT_DOWNLOAD_EXCEl = [
 
 export const REASON_DOWNLOAD_EXCEl = [
     { label: "Reason", value: "Reason", },
-    { label: "Status", value: "IsActive", }
+    { label: "Status", value: "status", }
 
 ]
 
@@ -2961,7 +2966,7 @@ export const VENDOR_DOWNLOAD_EXCEl = [
     { label: "Country", value: "Country", },
     { label: "State", value: "State", },
     { label: "City", value: "City", },
-    { label: "Status", value: "IsActive", }
+    { label: "Status", value: "status", }
 ]
 
 export const UOM_DOWNLOAD_EXCEl = [
@@ -3002,7 +3007,7 @@ export const ZBCPLANT_DOWNLOAD_EXCEl = [
     { label: "Country", value: "CountryName", },
     { label: "State", value: "StateName", },
     { label: "City", value: "CityName", },
-    { label: "Status", value: "IsActive", },
+    { label: "Status", value: "status", },
 ]
 
 export const REPORT_DOWNLOAD_EXCEl = [
@@ -3121,7 +3126,7 @@ export const USER_LISTING_DOWNLOAD_EXCEl = [
     { label: "Phone No", value: "PhoneNumber", },
     { label: "Department", value: "DepartmentName", },
     { label: "Role", value: "RoleName", },
-    { label: "Status", value: "IsActive", }
+    { label: "Status", value: "status", }
 
 ]
 
