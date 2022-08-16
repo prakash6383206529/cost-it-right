@@ -307,11 +307,6 @@ class ZBCPlantListing extends Component {
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
         temp = TempData && TempData.map((item) => {
-            if (item.IsActive === true) {
-                item.IsActive = 'Active'
-            } else if (item.IsActive === false) {
-                item.IsActive = 'In Active'
-            }
             return temp;
         })
         return (
@@ -366,7 +361,6 @@ class ZBCPlantListing extends Component {
             filter: true,
             sortable: true,
             headerCheckboxSelectionFilteredOnly: true,
-            headerCheckboxSelection: isFirstColumn,
             checkboxSelection: isFirstColumn
         };
 

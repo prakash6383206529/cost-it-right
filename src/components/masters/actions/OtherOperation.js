@@ -258,7 +258,7 @@ export function getOperationsDataList(filterData, skip, take, isPagination, obj,
 
         let payload
         //dispatch({ type: API_REQUEST });
-        const QueryParams = `operation_for=${filterData.operation_for}&technology_id=${filterData.technology_id}&ListFor=${filterData.ListFor ? filterData.ListFor : ''}&StatusId=${filterData.StatusId ? filterData.StatusId : ''}&OperationType=${filterData.OperationType}&DepartmentCode=${obj.DepartmentCode !== undefined ? obj.DepartmentCode : ""}`
+        const QueryParams = `operation_for=${filterData.operation_for}&technology_id=${filterData.technology_id}&ListFor=${filterData.ListFor ? filterData.ListFor : ''}&StatusId=${filterData.StatusId ? filterData.StatusId : ''}&OperationType=${filterData.OperationType}&DepartmentCode=${obj.DepartmentName !== undefined ? obj.DepartmentName : ""}`
         const queryParamsSecond = `CostingHead=${obj.CostingHead !== undefined ? obj.CostingHead : ""}&Technology=${obj.Technology !== undefined ? obj.Technology : ""}&Vendor=${obj.VendorName !== undefined ? obj.VendorName : ""}&Plant=${obj.Plants !== undefined ? obj.Plants : ""}&OperationName=${obj.OperationName !== undefined ? obj.OperationName : ""}&OperationCode=${obj.OperationCode !== undefined ? obj.OperationCode : ""}&UOM=${obj.UnitOfMeasurement !== undefined ? obj.UnitOfMeasurement : ""}&Rate=${obj.Rate !== undefined ? obj.Rate : ""}&EffectiveDate=${obj.EffectiveDate !== undefined ? obj.EffectiveDate : ""}&applyPagination=${isPagination}&skip=${skip}&take=${take}`
         axios.get(`${API.getOperationsDataList}?${QueryParams}&${queryParamsSecond}`, config())
 

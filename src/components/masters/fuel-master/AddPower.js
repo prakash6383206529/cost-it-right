@@ -21,7 +21,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import NoContentFound from '../../common/NoContentFound';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import DayTime from '../../common/DayTimeWrapper'
-import { calculatePercentageValue } from '../../../helper';
+import { calculatePercentageValue, showDataOnHover } from '../../../helper';
 import { AcceptablePowerUOM } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
 import _, { debounce } from 'lodash';
@@ -303,16 +303,12 @@ class AddPower extends Component {
           this.props.getPlantBySupplier(Data.VendorId, () => { })
 
           setTimeout(() => {
-            const { vendorWithVendorCodeSelectList } = this.props;
-
-            const vendorObj = vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.find(item => item.Value === Data.VendorId)
-
             this.setState({
               isEditFlag: true,
               isLoader: false,
               IsVendor: Data.IsVendor,
               VendorCode: Data.VendorCode,
-              vendorName: vendorObj && vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
+              vendorName: Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.VendorId } : [],
             })
             this.props.change('NetPowerCostPerUnit', Data.NetPowerCostPerUnit)
           }, 200)
@@ -1433,6 +1429,7 @@ class AddPower extends Component {
                                   <Field
                                     label="Plant"
                                     name="Plant"
+                                    title={showDataOnHover(this.state.selectedPlants)}
                                     placeholder="Select"
                                     selection={(this.state.selectedPlants == null || this.state.selectedPlants.length === 0) ? [] : this.state.selectedPlants}
                                     options={this.renderListing('plant')}

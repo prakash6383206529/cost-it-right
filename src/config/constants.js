@@ -17,9 +17,10 @@ export const config = () => {
 
 // DEVELOPMENT
 const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
-// const BASE_URL = `https://demov3api.costitright.com/api/v1`;
 // const BASE_URL = `http://10.10.0.43/RohitCIR/api/v1`;
-// const BASE_URL = `https://upsapi.costitright.com/api/v1`;
+// const BASE_URL = `https://demov3api.costitright.com/api/v1`;
+//const BASE_URL = `http://10.10.1.100:1002/api/v1`;
+// const BASE_URL = `https://upsapi.costitright.com/api/v1`; 
 //FILE URL
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
 
@@ -1904,4 +1905,4 @@ export const KEY = 'gQUJ79YKYm22Cazw';
 export const IV = 'eTEFSa0PinFKTQNB'
 
 //VERSION 
-export const VERSION = "V1.2.419";
+export const VERSION = "V1.2.422";
