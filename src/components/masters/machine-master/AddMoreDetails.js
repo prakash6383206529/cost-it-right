@@ -375,7 +375,8 @@ class AddMoreDetails extends Component {
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
               UOM: (this.state.isProcessGroup && !this.state.isViewMode) ? { label: Data.MachineProcessRates[0].UnitOfMeasurement, value: Data.MachineProcessRates.UnitOfMeasurementId, type: uomDetail.Type, uom: uomDetail.Text } : [],
               lockUOMAndRate: (this.state.isProcessGroup && !this.state.isViewMode),
-              FuelEntryId: Data?.FuelEntryId
+              FuelEntryId: Data?.FuelEntryId,
+              machineFullValue: { FuelCostPerUnit: Data?.FuelCostPerUnit }
             }, () => this.props.change('MachineRate', (this.state.isProcessGroup && !this.state.isViewMode) ? Data.MachineProcessRates[0].MachineRate : ''))
           }, 500)
         }
@@ -1117,7 +1118,7 @@ class AddMoreDetails extends Component {
 
     if (IsUsesFuel) {
 
-      const FuelCostPerUnit = checkForNull(fieldsObj?.FuelCostPerUnit)
+      const FuelCostPerUnit = checkForNull(machineFullValue?.FuelCostPerUnit)
       const ConsumptionPerYear = checkForNull(fieldsObj?.ConsumptionPerYear)
       machineFullValue.TotalFuelCostPerYear = FuelCostPerUnit * ConsumptionPerYear
       this.setState({ machineFullValue: { ...machineFullValue, TotalFuelCostPerYear: machineFullValue.TotalFuelCostPerYear } })
