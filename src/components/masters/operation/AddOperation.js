@@ -24,7 +24,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
 import LoaderCustom from '../../common/LoaderCustom';
-import { CheckApprovalApplicableMaster } from '../../../helper';
+import { CheckApprovalApplicableMaster, showDataOnHover } from '../../../helper';
 import { masterFinalLevelUser } from '../actions/Material'
 import { getCostingSpecificTechnology } from '../../costing/actions/Costing'
 
@@ -383,13 +383,6 @@ class AddOperation extends Component {
         })
       }
     })
-  }
-
-  // specify upload params and url for your files
-  getUploadParams = ({ file, meta }) => {
-    this.setState({ attachmentLoader: true })
-    return { url: 'https://httpbin.org/post', }
-
   }
 
   /**
@@ -764,12 +757,7 @@ class AddOperation extends Component {
 
 
       });
-    let temp = [];
-    selectedTechnology && selectedTechnology.map(item => {
-      temp.push(item.Text)
-    }
-    )
-    const technologyTitle = temp.join(",")
+
     return (
       <div className="container-fluid">
         {/* {isLoader && <Loader />} */}
@@ -815,7 +803,7 @@ class AddOperation extends Component {
                     <Row>
                       <Col md="3">
                         <Field
-                          title={isEditFlag && technologyTitle}
+                          title={showDataOnHover(this.state.selectedTechnology)}
                           label="Technology"
                           name="technology"
                           placeholder={isEditFlag ? '-' : 'Select'}
@@ -887,6 +875,7 @@ class AddOperation extends Component {
                           <Field
                             label="Plant"
                             name="Plant"
+                            title={showDataOnHover(this.state.selectedPlants)}
                             placeholder={isEditFlag ? '-' : 'Select'}
                             selection={this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants}
                             options={this.renderListing("plant")}
@@ -1066,7 +1055,6 @@ class AddOperation extends Component {
                         <div className={`${this.state.files.length >= 3 ? 'd-none' : ''}`}>
                           <Dropzone
                             ref={this.dropzone}
-                            getUploadParams={this.getUploadParams}
                             onChangeStatus={this.handleChangeStatus}
                             PreviewComponent={this.Preview}
                             disabled={isViewMode}

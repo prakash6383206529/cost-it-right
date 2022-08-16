@@ -37,11 +37,22 @@ export default function ReasonReducer(state = initialState, action) {
                 error: true
             };
         case GET_REASON_DATA_SUCCESS:
+            let arr = []
+            arr = action.payload && action.payload.filter((el, i) => {
+                el.status = el.IsActive
+                if (el.status === true) {
+                    el.status = 'Active'
+                } else if (el.status === false) {
+                    el.status = 'In Active'
+                }
+                return true
+            })
+
             return {
                 ...state,
                 loading: false,
                 error: true,
-                reasonDataList: action.payload,
+                reasonDataList: arr,
             };
         case GET_REASON_SUCCESS:
             return {

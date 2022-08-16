@@ -18,7 +18,7 @@ import { ASSEMBLY, BOUGHTOUTPART, COMPONENT_PART, FILE_URL } from '../../../conf
 import AddChildDrawer from './AddChildDrawer';
 import DayTime from '../../common/DayTimeWrapper'
 import BOMViewer from './BOMViewer';
-import { getRandomSixDigit } from '../../../helper/util';
+import { getRandomSixDigit, showDataOnHover } from '../../../helper/util';
 import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from "../../../assests/images/red-cross.png";
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
@@ -495,13 +495,6 @@ class AddAssemblyPart extends Component {
     } else {
       this.setState({ isDisableBomNo: true })
     }
-  }
-
-  // specify upload params and url for your files
-  getUploadParams = ({ file, meta }) => {
-    this.setState({ attachmentLoader: true })
-    return { url: 'https://httpbin.org/post', }
-
   }
 
   /**
@@ -1070,6 +1063,7 @@ class AddAssemblyPart extends Component {
                               label="Group Code"
                               name="ProductGroup"
                               placeholder={isViewMode ? '-' : "Select"}
+                              title={showDataOnHover(this.state.ProductGroup)}
                               selection={
                                 this.state.ProductGroup == null || this.state.ProductGroup.length === 0 ? [] : this.state.ProductGroup}
                               options={this.renderListing("ProductGroup")}
@@ -1184,7 +1178,6 @@ class AddAssemblyPart extends Component {
                           <div className={`${this.state.files.length >= 3 ? 'd-none' : ''}`}>
                             <Dropzone
                               ref={this.dropzone}
-                              getUploadParams={this.getUploadParams}
                               onChangeStatus={this.handleChangeStatus}
                               PreviewComponent={this.Preview}
                               disabled={isViewMode}

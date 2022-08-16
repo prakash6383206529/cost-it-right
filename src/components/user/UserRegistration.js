@@ -26,6 +26,7 @@ import HeaderTitle from "../common/HeaderTitle";
 import PermissionsTabIndex from "./RolePermissions/PermissionsTabIndex";
 import { EMPTY_GUID } from "../../config/constants";
 import PopupMsgWrapper from "../common/PopupMsgWrapper";
+import { showDataOnHover } from "../../helper";
 var CryptoJS = require('crypto-js')
 const selector = formValueSelector('UserRegistration');
 
@@ -1484,6 +1485,7 @@ class UserRegistration extends Component {
                             <Field
                               name="DepartmentId"
                               type="text"
+                              title={showDataOnHover(this.state.department)}
                               label={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}`}
                               component={renderMultiSelectField}
                               placeholder={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}`}

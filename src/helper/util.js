@@ -969,3 +969,11 @@ export const checkForSameFileUpload = (master, fileHeads) => {
   checkForFileHead = _.isEqual(fileHeads, bulkUploadArray)
   return checkForFileHead
 }
+
+// SHOW ALL DATA ON HOVER WHEN DATA INPUT FIELD WILL DISABLE OR VIEW MODE
+export const showDataOnHover = (value) => {
+  let temp = [];
+  value && value.map(item => temp.push(item.Text));
+  const data = temp.join(", ");
+  return data;
+}
