@@ -561,8 +561,10 @@ function CommonApproval(props) {
 
     const onPageSizeChanged = (newPageSize) => {
 
+        if (props.isApproval) {
 
-        props.isPageNoChange()
+            props?.isPageNoChange()
+        }
 
         var value = document.getElementById('page-size').value;
 
