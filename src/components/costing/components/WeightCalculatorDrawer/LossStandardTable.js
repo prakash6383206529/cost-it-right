@@ -524,7 +524,7 @@ function LossStandardTable(props) {
                   required: false,
                   pattern: {
                     value: /^\d{1,3}(\.\d{0,3})?$/i,
-                    message: 'Maximum length for interger is 3 and for decimal is 3',
+                    message: 'Maximum length for integer is 3 and for decimal is 3',
                   },
                 }}
                 handleChange={() => { }}
@@ -549,7 +549,7 @@ function LossStandardTable(props) {
                   required: false,
                   pattern: {
                     value: /^\d{1,3}(\.\d{0,3})?$/i,
-                    message: 'Maximum length for interger is 3 and for decimal is 3',
+                    message: 'Maximum length for integer is 3 and for decimal is 3',
                   },
                 }}
                 handleChange={() => { }}
@@ -596,7 +596,7 @@ function LossStandardTable(props) {
                   required: true,
                   pattern: {
                     value: /^\d{1,3}(\.\d{0,3})?$/i,
-                    message: 'Maximum length for interger is 3 and for decimal is 3',
+                    message: 'Maximum length for integer is 3 and for decimal is 3',
                   },
                 }}
                 handleChange={() => { }}
@@ -619,7 +619,7 @@ function LossStandardTable(props) {
                   required: true,
                   pattern: {
                     value: /^\d{1,3}(\.\d{0,3})?$/i,
-                    message: 'Maximum length for interger is 3 and for decimal is 3',
+                    message: 'Maximum length for integer is 3 and for decimal is 3',
                   },
                 }}
                 handleChange={() => { }}
@@ -642,7 +642,7 @@ function LossStandardTable(props) {
                   required: true,
                   pattern: {
                     value: /^\d{1,3}(\.\d{0,3})?$/i,
-                    message: 'Maximum length for interger is 3 and for decimal is 3',
+                    message: 'Maximum length for integer is 3 and for decimal is 3',
                   },
                 }}
                 handleChange={() => { }}
