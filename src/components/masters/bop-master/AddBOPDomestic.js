@@ -720,17 +720,6 @@ class AddBOPDomestic extends Component {
       }
 
       if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) {
-        if (DropdownChanged && (DataToCheck.Remark) === (values.Remark) && (JSON.stringify(files) === JSON.stringify(DataToCheck.Attachements)) && Number(DataToCheck.BasicRate) === Number(values.BasicRate) &&
-          ((DataToCheck.Source ? String(DataToCheck.Source) : '-') === (values.Source ? String(values.Source) : '-')) &&
-          ((DataToCheck.SourceLocation ? String(DataToCheck.SourceLocation) : '') === (sourceLocation.value ? String(sourceLocation.value) : ''))) {
-          Toaster.warning('Please change data to send BOP for approval')
-          return false;
-        }
-        else {
-          this.setState({ approveDrawer: true, approvalObj: formData })
-        }
-        this.setState({ disablePopup: false })
-
         if (IsFinancialDataChanged) {
           if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
             this.setState({ approveDrawer: true, approvalObj: formData })
@@ -743,6 +732,17 @@ class AddBOPDomestic extends Component {
             return false
           }
         }
+        if (DropdownChanged && (DataToCheck.Remark) === (values.Remark) && (JSON.stringify(files) === JSON.stringify(DataToCheck.Attachements)) && Number(DataToCheck.BasicRate) === Number(values.BasicRate) &&
+          ((DataToCheck.Source ? String(DataToCheck.Source) : '-') === (values.Source ? String(values.Source) : '-')) &&
+          ((DataToCheck.SourceLocation ? String(DataToCheck.SourceLocation) : '') === (sourceLocation.value ? String(sourceLocation.value) : ''))) {
+          Toaster.warning('Please change data to send BOP for approval')
+          return false;
+        }
+        else {
+          this.setState({ approveDrawer: true, approvalObj: formData })
+        }
+        this.setState({ disablePopup: false })
+
         if (DataToCheck.IsVendor) {
           if (DropdownChanged &&
             (Number(DataToCheck.BasicRate) === Number(values.BasicRate)) && (DataToCheck.Remark === values.Remark) && JSON.stringify(files) === JSON.stringify(DataToCheck.Attachements) &&
