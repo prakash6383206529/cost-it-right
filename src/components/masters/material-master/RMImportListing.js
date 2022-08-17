@@ -709,6 +709,7 @@ function RMImportListing(props) {
     filter: true,
     sortable: true,
     headerCheckboxSelectionFilteredOnly: true,
+    headerCheckboxSelection: isSimulation ? isFirstColumn : false,
     checkboxSelection: isFirstColumn
   };
 

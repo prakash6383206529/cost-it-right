@@ -556,7 +556,8 @@ class MachineRateListing extends Component {
             filter: true,
             sortable: true,
             headerCheckboxSelectionFilteredOnly: true,
-            checkboxSelection: isFirstColumn
+            checkboxSelection: isFirstColumn,
+            headerCheckboxSelection: this.props.isSimulation ? isFirstColumn : false,
         };
 
         const frameworkComponents = {

@@ -526,6 +526,7 @@ class BOPDomesticListing extends Component {
             filter: true,
             sortable: true,
             headerCheckboxSelectionFilteredOnly: true,
+            headerCheckboxSelection: this.props.isSimulation ? isFirstColumn : false,
             checkboxSelection: isFirstColumn
         };
 
