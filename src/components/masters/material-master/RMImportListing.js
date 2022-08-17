@@ -849,7 +849,7 @@ function RMImportListing(props) {
                     <AgGridColumn field="MaterialType"></AgGridColumn>
                     <AgGridColumn field="Plant" headerName="Plant(Code)"></AgGridColumn>
                     <AgGridColumn field="VendorName" headerName="Vendor(Code)"></AgGridColumn>
-                    <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn>
+                    {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                     <AgGridColumn field="UOM"></AgGridColumn>
                     <AgGridColumn field="Currency" cellRenderer={"currencyFormatter"}></AgGridColumn>
                     <AgGridColumn field="BasicRate" cellRenderer='commonCostFormatter'></AgGridColumn>
