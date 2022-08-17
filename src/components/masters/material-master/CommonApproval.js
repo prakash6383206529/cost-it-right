@@ -554,7 +554,6 @@ function CommonApproval(props) {
         resizable: true,
         filter: true,
         sortable: true,
-        headerCheckboxSelection: isFirstColumn,
         checkboxSelection: isFirstColumn
     };
 
