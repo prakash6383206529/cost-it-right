@@ -3703,7 +3703,7 @@ class AddMoreDetails extends Component {
                                                                         <img src={fileURL} height={50} width={100} />
                                                                     </div> */}
 
-                                    <img className="float-right" alt={''} onClick={() => this.deleteFile(f.FileId, f.FileName)} src={imgRedcross}></img>
+                                    {!this.state.isViewMode && <img className="float-right" alt={''} disabled={this.state.isViewMode} onClick={() => this.deleteFile(f.FileId, f.FileName)} src={imgRedcross}></img>}
                                   </div>
                                 )
                               })
@@ -3752,30 +3752,35 @@ class AddMoreDetails extends Component {
               </div>
             </div>
           </div>
-        </div>
+        </div >
         {isOpenMachineType && <AddMachineTypeDrawer
           isOpen={isOpenMachineType}
           closeDrawer={this.closeMachineTypeDrawer}
           isEditFlag={false}
           ID={''}
           anchor={'right'}
-        />}
-        {isOpenAvailability && <EfficiencyDrawer
-          isOpen={isOpenAvailability}
-          closeDrawer={this.closeAvailabilityDrawer}
-          isEditFlag={false}
-          ID={''}
-          anchor={'right'}
-          NoOfWorkingHours={this.state.NoOfWorkingHours}
-          NumberOfWorkingHoursPerYear={this.state.WorkingHrPrYr}
-        />}
-        {isOpenProcessDrawer && <AddProcessDrawer
-          isOpen={isOpenProcessDrawer}
-          closeDrawer={this.closeProcessDrawer}
-          isEditFlag={false}
-          ID={''}
-          anchor={'right'}
-        />}
+        />
+        }
+        {
+          isOpenAvailability && <EfficiencyDrawer
+            isOpen={isOpenAvailability}
+            closeDrawer={this.closeAvailabilityDrawer}
+            isEditFlag={false}
+            ID={''}
+            anchor={'right'}
+            NoOfWorkingHours={this.state.NoOfWorkingHours}
+            NumberOfWorkingHoursPerYear={this.state.WorkingHrPrYr}
+          />
+        }
+        {
+          isOpenProcessDrawer && <AddProcessDrawer
+            isOpen={isOpenProcessDrawer}
+            closeDrawer={this.closeProcessDrawer}
+            isEditFlag={false}
+            ID={''}
+            anchor={'right'}
+          />
+        }
 
 
         {
