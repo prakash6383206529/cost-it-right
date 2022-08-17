@@ -132,6 +132,10 @@ export const positiveAndDecimalNumber = value =>
     value && !/^[+]?([0-9]+(?:[.][0-9]*)?|\.[0-9]+)$/.test(value)
         ? 'This field is invalid.' : undefined;
 
+export const decimalNumberLimit = value =>
+    value && !/^\d{0,6}(\.\d{0,4})?$/.test(value)
+        ? 'Maximum length for interger is 6 and for decimal is 4' : undefined;
+
 //ACCEPT ALPHABET,NUMBER,SPECIAL CHARACTER BUT NOT ONLY SPECIAL CHARACTER
 export const acceptAllExceptSingleSpecialCharacter = value => {
     let pattern = /[0-9a-zA-Z](?=@.#%\_!\^&\*\(\)-+\=\?<>,|)/;
