@@ -129,7 +129,8 @@ class AddMoreDetails extends Component {
         groupName: false
       },
       UOMName: 'UOM',
-      FuelEntryId: ''
+      FuelEntryId: '',
+      DataToChange: [],
     }
     this.dropzone = React.createRef();
   }
@@ -268,6 +269,7 @@ class AddMoreDetails extends Component {
         if (res && res.data && res.data.Result) {
 
           const Data = res.data.Data;
+          this.setState({ DataToChange: Data })
 
           this.props.getProcessGroupByMachineId(Data.MachineId, res => {
             // SET GET API STRUCTURE IN THE FORM OF SAVE API STRUCTURE BY DEFAULT
@@ -1748,6 +1750,7 @@ class AddMoreDetails extends Component {
     }
 
     const { data, editDetails, fieldsObj } = this.props;
+    const { DataToChange } = this.state
 
     const userDetail = userDetails()
 
@@ -1855,6 +1858,14 @@ class AddMoreDetails extends Component {
           this.setState({ setDisable: false })
           Toaster.warning('Please update the effective date')
         }
+      } else if (((files ? JSON.stringify(files) : []) === (DataToChange.Attachements ? JSON.stringify(DataToChange.Attachements) : [])) && String(DataToChange.MachineName) === String(values.MachineName) && String(DataToChange.Specification) === String(values.Specification)
+        && String(DataToChange.Description) === String(values.Description) && ((DataToChange.Remark ? DataToChange.Remark : '') === (values.Remark ? values.Remark : ''))
+        && ((DataToChange.TonnageCapacity ? Number(DataToChange.TonnageCapacity) : '') === (values.TonnageCapacity ? Number(values.TonnageCapacity) : ''))
+        && String(DataToChange.Manufacture) === String(values.Manufacture) && String(DataToChange.MachineType) === String(this.state.machineType.label) && isEditFlag
+      ) {
+        this.cancel()
+        return false
+
       } else {
         let MachineData = { ...requestData, MachineId: editDetails.Id }
         this.props.reset()
@@ -1980,9 +1991,19 @@ class AddMoreDetails extends Component {
             this.setState({ setDisable: false })
             Toaster.warning('Please update the effective date')
           }
+        } else if (((files ? JSON.stringify(files) : []) === (DataToChange.Attachements ? JSON.stringify(DataToChange.Attachements) : [])) && String(DataToChange.MachineName) === String(values.MachineName) && String(DataToChange.Specification) === String(values.Specification)
+          && String(DataToChange.Description) === String(values.Description) && ((DataToChange.Remark ? DataToChange.Remark : '') === (values.Remark ? values.Remark : ''))
+          && ((DataToChange.TonnageCapacity ? Number(DataToChange.TonnageCapacity) : '') === (values.TonnageCapacity ? Number(values.TonnageCapacity) : ''))
+          && String(DataToChange.Manufacture) === String(values.Manufacture) && String(DataToChange.MachineType) === String(this.state.machineType.label) && isEditFlag
+        ) {
+
+          Toaster.warning('Please change data to send Machine for approval')
+          return false
         } else {
+
           this.setState({ approveDrawer: true, approvalObj: finalObj, formDataState: formData })
         }
+
       } else {
 
         this.props.reset()
@@ -2002,7 +2023,6 @@ class AddMoreDetails extends Component {
   }
 
   handleYearChange = (year) => {
-
     this.setState({
       manufactureYear: year
     })
