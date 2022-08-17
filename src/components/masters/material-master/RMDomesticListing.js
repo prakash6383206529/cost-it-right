@@ -685,6 +685,7 @@ function RMDomesticListing(props) {
         resizable: true,
         filter: true,
         sortable: true,
+        headerCheckboxSelection: isSimulation ? isFirstColumn : false,
         headerCheckboxSelectionFilteredOnly: true,
         checkboxSelection: isFirstColumn
     };
