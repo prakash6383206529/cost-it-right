@@ -218,7 +218,7 @@ class AddFuel extends Component {
       })
 
       if ((stateList.includes(StateName?.value)) && (effectiveDateList?.includes(DayTime(effectiveDate).format('DD/MM/YYYY')))) {
-        Toaster.warning('RAte for this State and Effective Date already exist')
+        Toaster.warning('Rate for this State and Effective Date already exist')
         return false
       }
       tempArray.push(...rateGrid, {
