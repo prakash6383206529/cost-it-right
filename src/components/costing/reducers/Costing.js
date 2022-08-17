@@ -407,9 +407,7 @@ export default function costingReducer(state = initialState, action) {
     case GET_RM_DRAWER_DATA_LIST:
       let temp = [...action.payload]
       let arrayRM = temp && temp.map((item) => {
-        if (item.EntryType === 'Import') {
-          item.NetLandedCost = item.NetLandedCostConversion
-        }
+        item.EntryType === 'Import' ? item.NetLandedCostCombine = item.NetLandedCostConversion : item.NetLandedCostCombine = item.NetLandedCost
         return item
       })
       return {
@@ -492,9 +490,7 @@ export default function costingReducer(state = initialState, action) {
     case BOP_DRAWER_LIST:
       let tempBOP = [...action.payload]
       let arrayBOP = tempBOP && tempBOP.map((item) => {
-        if (item.EntryType === 'Import') {
-          item.NetLandedCost = item.NetLandedCostConversion
-        }
+        item.EntryType === 'Import' ? item.NetLandedCostCombine = item.NetLandedCostConversion : item.NetLandedCostCombine = item.NetLandedCost
         return item
       })
       return {
