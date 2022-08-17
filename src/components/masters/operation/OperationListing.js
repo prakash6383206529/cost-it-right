@@ -226,6 +226,9 @@ class OperationListing extends Component {
                     }
                     // SETS  THE FILTER MODEL VIA THE GRID API
                     isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(FloatingfilterData))
+                    setTimeout(() => {
+                        this.setState({ warningMessage: false })
+                    }, 23);
                 }, 300);
 
                 setTimeout(() => {
