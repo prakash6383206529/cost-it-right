@@ -67,7 +67,7 @@ function AddRM(props) {
 
   const netLandedFormat = (props) => {
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-    return checkForDecimalAndNull(rowData.NetLandedCost, getConfigurationKey().NoOfDecimalForPrice)
+    return checkForDecimalAndNull(rowData.NetLandedCostCombine, getConfigurationKey().NoOfDecimalForPrice)
   }
 
   const netLandedConversionFormat = (props) => {
@@ -329,7 +329,7 @@ function AddRM(props) {
                         <AgGridColumn field="UOM"></AgGridColumn>
                         <AgGridColumn field="BasicRatePerUOM" headerName="Basic Rate/UOM" cellRenderer={'currencyFormatter'}></AgGridColumn>
                         <AgGridColumn field="ScrapRate" headerName='Scrap Rate/UOM' cellRenderer={'currencyFormatter'}></AgGridColumn>
-                        <AgGridColumn field="NetLandedCost" headerName={'Net Cost INR/UOM'} cellRenderer={'netLandedFormat'}></AgGridColumn>
+                        <AgGridColumn field="NetLandedCostCombine" headerName={'Net Cost INR/UOM'} cellRenderer={'netLandedFormat'}></AgGridColumn>
                         <AgGridColumn field="NetLandedCost" headerName={'Net Cost Currency/UOM'} cellRenderer={'netLandedConversionFormat'}></AgGridColumn>
 
                       </AgGridReact>
