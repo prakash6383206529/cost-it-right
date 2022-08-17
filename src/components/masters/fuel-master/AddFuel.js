@@ -19,7 +19,7 @@ import NoContentFound from '../../common/NoContentFound';
 import DayTime from '../../common/DayTimeWrapper'
 import { AcceptableFuelUOM } from '../../../config/masterData'
 import LoaderCustom from '../../common/LoaderCustom';
-import { debounce } from 'lodash';
+import _, { debounce } from 'lodash';
 const selector = formValueSelector('AddFuel');
 
 class AddFuel extends Component {
@@ -209,8 +209,18 @@ class AddFuel extends Component {
         }
       }
 
+      let stateList = []
+      let effectiveDateList = []
+      rateGrid && rateGrid.map((item) => {
+        stateList.push(item.StateId)
+        effectiveDateList.push(DayTime(item.effectiveDate).format('DD/MM/YYYY'))
+        return null
+      })
 
-
+      if ((stateList.includes(StateName?.value)) && (effectiveDateList?.includes(DayTime(effectiveDate).format('DD/MM/YYYY')))) {
+        Toaster.warning('RAte for this State and Effective Date already exist')
+        return false
+      }
       tempArray.push(...rateGrid, {
         Id: '',
         StateLabel: StateName ? StateName.label : '',
