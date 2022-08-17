@@ -561,10 +561,7 @@ function CommonApproval(props) {
 
     const onPageSizeChanged = (newPageSize) => {
 
-        if (props.isApproval) {
 
-            props?.isPageNoChange()
-        }
 
         var value = document.getElementById('page-size').value;
 
@@ -607,7 +604,10 @@ function CommonApproval(props) {
         else {
             gridApi.paginationSetPageSize(Number(value));
         }
+        if (props.isApproval) {
 
+            props?.isPageNoChange()
+        }
     };
 
     const onFilterTextBoxChanged = (e) => {

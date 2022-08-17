@@ -92,9 +92,9 @@ function Dashboard(props) {
   const isPageNoChange = () => {
     setTimeout(() => {
       document.getElementById('go-top-top').scrollIntoView({
-        behavior: 'smooth'
+        behavior: 'auto'
       });
-    }, 20);
+    }, 30);
   }
 
   return (
