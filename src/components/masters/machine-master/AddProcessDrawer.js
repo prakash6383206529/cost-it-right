@@ -195,7 +195,6 @@ class AddProcessDrawer extends Component {
       let formData = {
         ProcessName: values.ProcessName,
         ProcessCode: values.ProcessCode,
-        EffectiveDate: DayTime(effectiveDate).format('YYYY/MM/DD'),
         LoggedInUserId: loggedInUserId(),
       }
       this.props.createProcess(formData, (res) => {
