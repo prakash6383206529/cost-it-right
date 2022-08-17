@@ -716,13 +716,13 @@ function SimulationApprovalListing(props) {
                                     <AgGridColumn width={170} field="Reason" headerName="Reason" cellRenderer='reasonFormatter'></AgGridColumn>
                                     <AgGridColumn width={140} field="SimulatedByName" headerName='Initiated By' cellRenderer='requestedByFormatter'></AgGridColumn>
                                     <AgGridColumn width={140} field="SimulatedOn" headerName='Last Approved On' cellRenderer='requestedOnFormatter' filter="agDateColumnFilter" filterParams={filterParams} ></AgGridColumn>
-                                    <AgGridColumn width={142} field="LastApprovedBy" headerName='Last Approved / Rejected By' cellRenderer='requestedByFormatter'></AgGridColumn>
+                                    <AgGridColumn width={142} field="LastApprovedBy" headerName='Last Approved/Rejected By' cellRenderer='requestedByFormatter'></AgGridColumn>
                                     <AgGridColumn width={145} field="RequestedOn" headerName='Requested On' cellRenderer='requestedOnFormatter' filter="agDateColumnFilter" filterParams={filterParamsSecond}></AgGridColumn>
 
                                     {!isSmApprovalListing && <AgGridColumn pinned="right" field="DisplayStatus" headerClass="justify-content-center" cellClass="text-center" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>}
                                     <AgGridColumn width={115} field="SimulationId" headerName='Actions' type="rightAligned" floatingFilter={false} cellRenderer='buttonFormatter'></AgGridColumn>
 
-                                </AgGridReact>
+                                </AgGridReact >
 
                                 <div className='button-wrapper'>
                                     {!isLoader && <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake} />}
@@ -740,7 +740,8 @@ function SimulationApprovalListing(props) {
                                     <WarningMessage message="It may take up to 5 minutes for the status to be updated." />
                                 </div>
 
-                                {approveDrawer &&
+                                {
+                                    approveDrawer &&
                                     <ApproveRejectDrawer
                                         isOpen={isApprovalDrawer}
                                         anchor={'right'}
@@ -758,7 +759,7 @@ function SimulationApprovalListing(props) {
                         </div >
                     </div >
 
-                </div>
+                </div >
 
             }
             {
