@@ -226,6 +226,9 @@ class OperationListing extends Component {
                     }
                     // SETS  THE FILTER MODEL VIA THE GRID API
                     isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(FloatingfilterData))
+                    setTimeout(() => {
+                        this.setState({ warningMessage: false })
+                    }, 23);
                 }, 300);
 
                 setTimeout(() => {
@@ -756,8 +759,8 @@ class OperationListing extends Component {
             filter: true,
             sortable: true,
             headerCheckboxSelectionFilteredOnly: true,
-            headerCheckboxSelection: isFirstColumn,
-            checkboxSelection: isFirstColumn
+            checkboxSelection: isFirstColumn,
+            headerCheckboxSelection: this.props.isSimulation ? isFirstColumn : false,
         };
 
         const frameworkComponents = {
@@ -890,7 +893,7 @@ class OperationListing extends Component {
                                 <AgGridColumn field="OperationCode" headerName="Operation Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 <AgGridColumn field="Plants" headerName="Plant(Code)"  ></AgGridColumn>
                                 <AgGridColumn field="VendorName" headerName="Vendor(Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn>
+                                {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                                 <AgGridColumn field="UnitOfMeasurement" headerName="UOM"></AgGridColumn>
                                 <AgGridColumn field="Rate" headerName="Rate" cellRenderer={'commonCostFormatter'}></AgGridColumn>
                                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>

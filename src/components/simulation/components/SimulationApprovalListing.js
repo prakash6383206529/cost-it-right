@@ -697,7 +697,7 @@ function SimulationApprovalListing(props) {
                                     isRowSelectable={isRowSelectable}
                                 >
 
-                                    <AgGridColumn width={120} field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token Non." cellClass="token-no-grid"></AgGridColumn>
+                                    <AgGridColumn width={120} field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No." cellClass="token-no-grid"></AgGridColumn>
                                     {isSmApprovalListing && <AgGridColumn field="Status" headerClass="justify-content-center" cellClass="text-center" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>}
                                     <AgGridColumn width={141} field="CostingHead" headerName="Costing Head" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     {/* THIS FEILD WILL ALWAYS COME BEFORE */}
@@ -713,7 +713,7 @@ function SimulationApprovalListing(props) {
                                     <AgGridColumn width={170} field="Reason" headerName="Reason" cellRenderer='reasonFormatter'></AgGridColumn>
                                     <AgGridColumn width={140} field="SimulatedByName" headerName='Initiated By' cellRenderer='requestedByFormatter'></AgGridColumn>
                                     <AgGridColumn width={140} field="SimulatedOn" headerName='Simulated On' cellRenderer='requestedOnFormatter' filter="agDateColumnFilter" filterParams={filterParams} ></AgGridColumn>
-                                    <AgGridColumn width={142} field="LastApprovedBy" headerName='Last Approved / Rejected By' cellRenderer='requestedByFormatter'></AgGridColumn>
+                                    <AgGridColumn width={142} field="LastApprovedBy" headerName='Last Approved/Rejected By' cellRenderer='requestedByFormatter'></AgGridColumn>
                                     <AgGridColumn width={145} field="RequestedOn" headerName='Requested On' cellRenderer='requestedOnFormatter' filter="agDateColumnFilter" filterParams={filterParamsSecond}></AgGridColumn>
 
                                     {!isSmApprovalListing && <AgGridColumn pinned="right" field="DisplayStatus" headerClass="justify-content-center" cellClass="text-center" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>}
