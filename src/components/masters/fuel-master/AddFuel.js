@@ -209,18 +209,26 @@ class AddFuel extends Component {
         }
       }
 
-      let stateList = []
-      let effectiveDateList = []
-      rateGrid && rateGrid.map((item) => {
-        stateList.push(item.StateId)
-        effectiveDateList.push(DayTime(item.effectiveDate).format('DD/MM/YYYY'))
-        return null
+      let countSame = 0
+      let objList = rateGrid && rateGrid.map((item) => {
+        let obj = {}
+        obj.stateList = (item.StateId)
+        obj.effectiveDateList = (DayTime(item.effectiveDate).format('DD/MM/YYYY'))
+        return obj
       })
 
-      if ((stateList.includes(StateName?.value)) && (effectiveDateList?.includes(DayTime(effectiveDate).format('DD/MM/YYYY')))) {
+      let checkObj = { stateList: StateName?.value, effectiveDateList: DayTime(effectiveDate).format('DD/MM/YYYY') }
+      objList && objList.map((item) => {
+        if (JSON.stringify(item) === JSON.stringify(checkObj)) {
+          countSame++
+        }
+        return null
+      })
+      if (countSame !== 0) {
         Toaster.warning('Rate for this State and Effective Date already exist')
         return false
       }
+
       tempArray.push(...rateGrid, {
         Id: '',
         StateLabel: StateName ? StateName.label : '',
