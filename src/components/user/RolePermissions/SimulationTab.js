@@ -258,10 +258,10 @@ class SimulationTab extends Component {
         let tempArray = Object.assign([...Modules], { [parentIndex]: Object.assign({}, Modules[parentIndex], { Actions: actionArray }) })
         this.setState({ Modules: tempArray }, () => {
             const { Modules } = this.state;
-            let aa = (Modules && Modules !== undefined) ? Modules[parentIndex].Actions : [];
-            let checkedActions = aa.filter(item => item.IsChecked === true)
-            let abcd = checkedActions && checkedActions.length !== 0 ? true : false;
-            let tempArray1 = Object.assign([...Modules], { [parentIndex]: Object.assign({}, Modules[parentIndex], { IsChecked: abcd, Actions: actionArray }) })
+            let actionTemp = (Modules && Modules !== undefined) ? Modules[parentIndex].Actions : [];
+            let checkedActions = actionTemp.filter(item => item.IsChecked === true)
+            let tempValue = checkedActions && checkedActions.length !== 0 ? true : false;
+            let tempArray1 = Object.assign([...Modules], { [parentIndex]: Object.assign({}, Modules[parentIndex], { IsChecked: tempValue, Actions: actionArray }) })
             this.setState({ Modules: tempArray1 })
         })
     }
