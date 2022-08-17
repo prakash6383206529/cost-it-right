@@ -50,6 +50,18 @@ class Downloadxls extends React.Component {
         })
     }
 
+    checkLabourRateConfigure = (excelData) => {
+        return excelData.filter((el) => {
+            if (getConfigurationKey().IsOperationLabourRateConfigure === false) {
+                if (el.value === 'LabourRate') return false;
+            }
+            if (getConfigurationKey().IsDestinationPlantConfigure === false) {
+                if (el.value === 'DestinationPlant') return false;
+                if (el.value === 'DestinationPlantCode') return false;
+            }
+            return true;
+        })
+    }
     /**
     * @method renderSwitch
     * @description Switch case for different xls file head according to master
@@ -91,7 +103,7 @@ class Downloadxls extends React.Component {
             case 'RMImport':
                 return this.returnExcelColumn(RMImportZBC, RMImportZBCTempData);
             case 'Operation':
-                return this.returnExcelColumn(this.checkVendorPlantConfig(ZBCOperation), ZBCOperationTempData);
+                return this.returnExcelColumn(this.checkLabourRateConfigure(ZBCOperation), ZBCOperationTempData);
             case 'Machine':
                 return this.returnExcelColumn(this.checkVendorPlantConfig(MachineZBC), MachineZBCTempData);
             case 'ZBC_MACHINE_MORE':
@@ -122,7 +134,7 @@ class Downloadxls extends React.Component {
             case 'RMImport':
                 return this.returnExcelColumn(this.checkVendorPlantConfig(RMImportVBC), RMImportVBCTempData);
             case 'Operation':
-                return this.returnExcelColumn(this.checkVendorPlantConfig(VBCOperation), VBCOperationTempData);
+                return this.returnExcelColumn(this.checkLabourRateConfigure(VBCOperation), VBCOperationTempData);
             case 'Machine':
 
                 return this.returnExcelColumn(this.checkVendorPlantConfig(MachineVBC), MachineVBCTempData);
