@@ -248,7 +248,7 @@ class AddClientDrawer extends Component {
                 this.setState({ setDisable: false })
                 if (res?.data?.Result) {
                     Toaster.success(MESSAGES.CLIENT_ADD_SUCCESS);
-                    this.cancel();
+                    this.cancel('submit');
                 }
             });
         }
