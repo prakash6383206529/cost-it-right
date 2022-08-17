@@ -325,7 +325,7 @@ class AddMoreDetails extends Component {
             const machineTypeObj = machineTypeSelectList && machineTypeSelectList.find(item => Number(item.Value) === Data.MachineTypeId)
             const shiftObj = ShiftTypeSelectList && ShiftTypeSelectList.find(item => Number(item.Value) === Number(Data.WorkingShift))
             const depreciationObj = DepreciationTypeSelectList && DepreciationTypeSelectList.find(item => item.Value === Data.DepreciationType)
-            const fuelObj = fuelComboSelectList && fuelComboSelectList.Fuels && fuelComboSelectList.Fuels.find(item => item.Value === Data.FuleId)
+            const fuelObj = fuelComboSelectList && fuelComboSelectList.Fuels && fuelComboSelectList.Fuels.find(item => String(item.Value) === String(Data.FuleId))
 
             let LabourArray = Data && Data.MachineLabourRates?.map(el => {
               return {
@@ -375,7 +375,8 @@ class AddMoreDetails extends Component {
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
               UOM: (this.state.isProcessGroup && !this.state.isViewMode) ? { label: Data.MachineProcessRates[0].UnitOfMeasurement, value: Data.MachineProcessRates.UnitOfMeasurementId, type: uomDetail.Type, uom: uomDetail.Text } : [],
               lockUOMAndRate: (this.state.isProcessGroup && !this.state.isViewMode),
-              FuelEntryId: Data?.FuelEntryId
+              FuelEntryId: Data?.FuelEntryId,
+              machineFullValue: { FuelCostPerUnit: Data?.FuelCostPerUnit }
             }, () => this.props.change('MachineRate', (this.state.isProcessGroup && !this.state.isViewMode) ? Data.MachineProcessRates[0].MachineRate : ''))
           }, 500)
         }
@@ -1123,9 +1124,7 @@ class AddMoreDetails extends Component {
       machineFullValue.TotalFuelCostPerYear = FuelCostPerUnit * ConsumptionPerYear
       this.setState({ machineFullValue: { ...machineFullValue, TotalFuelCostPerYear: machineFullValue.TotalFuelCostPerYear } })
       this.props.change('TotalFuelCostPerYear', checkForDecimalAndNull(FuelCostPerUnit * ConsumptionPerYear, initialConfiguration.NoOfDecimalForPrice))
-    } else {
-
-
+    } else if (IsUsesSolarPower) {
       // if (IsUsesSolarPower) {
       this.props.change('FuelCostPerUnit', 0)
       this.props.change('ConsumptionPerYear', 0)
@@ -3701,7 +3700,7 @@ class AddMoreDetails extends Component {
                                                                         <img src={fileURL} height={50} width={100} />
                                                                     </div> */}
 
-                                    <img className="float-right" alt={''} onClick={() => this.deleteFile(f.FileId, f.FileName)} src={imgRedcross}></img>
+                                    {!this.state.isViewMode && <img className="float-right" alt={''} disabled={this.state.isViewMode} onClick={() => this.deleteFile(f.FileId, f.FileName)} src={imgRedcross}></img>}
                                   </div>
                                 )
                               })
@@ -3750,30 +3749,35 @@ class AddMoreDetails extends Component {
               </div>
             </div>
           </div>
-        </div>
+        </div >
         {isOpenMachineType && <AddMachineTypeDrawer
           isOpen={isOpenMachineType}
           closeDrawer={this.closeMachineTypeDrawer}
           isEditFlag={false}
           ID={''}
           anchor={'right'}
-        />}
-        {isOpenAvailability && <EfficiencyDrawer
-          isOpen={isOpenAvailability}
-          closeDrawer={this.closeAvailabilityDrawer}
-          isEditFlag={false}
-          ID={''}
-          anchor={'right'}
-          NoOfWorkingHours={this.state.NoOfWorkingHours}
-          NumberOfWorkingHoursPerYear={this.state.WorkingHrPrYr}
-        />}
-        {isOpenProcessDrawer && <AddProcessDrawer
-          isOpen={isOpenProcessDrawer}
-          closeDrawer={this.closeProcessDrawer}
-          isEditFlag={false}
-          ID={''}
-          anchor={'right'}
-        />}
+        />
+        }
+        {
+          isOpenAvailability && <EfficiencyDrawer
+            isOpen={isOpenAvailability}
+            closeDrawer={this.closeAvailabilityDrawer}
+            isEditFlag={false}
+            ID={''}
+            anchor={'right'}
+            NoOfWorkingHours={this.state.NoOfWorkingHours}
+            NumberOfWorkingHoursPerYear={this.state.WorkingHrPrYr}
+          />
+        }
+        {
+          isOpenProcessDrawer && <AddProcessDrawer
+            isOpen={isOpenProcessDrawer}
+            closeDrawer={this.closeProcessDrawer}
+            isEditFlag={false}
+            ID={''}
+            anchor={'right'}
+          />
+        }
 
 
         {
