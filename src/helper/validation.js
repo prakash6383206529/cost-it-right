@@ -129,7 +129,7 @@ export const positiveAndDecimalNumber = value =>
 
 export const decimalNumberLimit = value =>
     value && !/^\d{0,6}(\.\d{0,4})?$/.test(value)
-        ? 'Maximum length for interger is 6 and for decimal is 4' : undefined;
+        ? 'Maximum length for integer is 6 and for decimal is 4' : undefined;
 
 //ACCEPT ALPHABET,NUMBER,SPECIAL CHARACTER BUT NOT ONLY SPECIAL CHARACTER
 export const acceptAllExceptSingleSpecialCharacter = value => {
