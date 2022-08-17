@@ -527,11 +527,12 @@ export function getManageBOPSOBDataList(data, callback) {
  * @method getManageBOPSOBById
  * @description GET MANAGE BOP SOB BY ID
  */
-export function getManageBOPSOBById(bopId, callback) {
+export function getManageBOPSOBById(boughtOutPartNumber, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        if (bopId !== '') {
-            axios.get(`${API.getManageBOPSOBById}/${bopId}`, config())
+        if (boughtOutPartNumber !== '') {
+            const queryParams = `boughtOutPartNumber=${boughtOutPartNumber}`
+            axios.get(`${API.getManageBOPSOBById}?${queryParams}`, config())
                 .then((response) => {
                     if (response.data.Result) {
                         dispatch({
