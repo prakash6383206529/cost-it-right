@@ -181,6 +181,9 @@ export const SearchableSelectHookForm = (field) => {
                 value={value}
                 isLoading={isLoader}
                 isMulti={isMultiple}
+                onKeyDown={(onKeyDown) => {
+                  if (onKeyDown.keyCode === 32 && !onKeyDown.target.value) onKeyDown.preventDefault();
+                }}
               />
               {isLoader && <LoaderCustom customClass={"input-loader"} />}
             </div>
