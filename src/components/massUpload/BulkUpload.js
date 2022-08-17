@@ -87,7 +87,9 @@ class BulkUpload extends Component {
     * @description Used for Costing head check
     */
     onPressHeads = (costingHeadFlag) => {
-        this.setState({ costingHead: costingHeadFlag, fileData: [], uploadfileName: "" });
+        setTimeout(() => {
+            this.setState({ costingHead: costingHeadFlag, fileData: [], uploadfileName: "" });
+        }, 300);
     }
 
 
@@ -118,7 +120,6 @@ class BulkUpload extends Component {
         if (fileType !== '.xls' && fileType !== '.xlsx') {
             Toaster.warning('File type should be .xls or .xlsx')
         } else {
-
             let data = new FormData()
             data.append('file', fileObj)
 
@@ -126,7 +127,6 @@ class BulkUpload extends Component {
                 if (err) {
 
                 } else {
-
                     fileHeads = resp.rows[0];
                     let checkForFileHead
                     switch (String(this.props.fileName)) {
@@ -502,7 +502,6 @@ class BulkUpload extends Component {
                 costingHead={costingHead}
             />
         }
-
         return (
             <Drawer anchor={this.props.anchor} open={this.props.isOpen}
             // onClose={(e) => this.toggleDrawer(e)}

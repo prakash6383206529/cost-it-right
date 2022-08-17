@@ -121,9 +121,9 @@ class AddBOPImport extends Component {
     }
     this.getDetails()
     if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
-      this.props.getCurrencySelectList(() => { })
       this.setState({ inputLoader: true })
       this.props.getVendorTypeBOPSelectList(() => { this.setState({ inputLoader: false }) })
+      this.props.getCurrencySelectList(() => { })
     }
     if (!this.state.isViewMode) {
       let obj = {
@@ -219,17 +219,19 @@ class AddBOPImport extends Component {
             } else {
               plantObj = Data && Data.Plant.length > 0 ? { label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId } : []
             }
-            this.props.getExchangeRateByCurrency(Data.Currency, DayTime(Data.EffectiveDate).format('YYYY-MM-DD'), res => {
-              if (Object.keys(res.data.Data).length === 0) {
-                this.setState({ showWarning: true })
-              }
-              else {
-                this.setState({ showWarning: false })
-              }
-              this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate), showCurrency: true }, () => {
-                this.handleCalculation()
+            if (!this.state.isViewMode) {
+              this.props.getExchangeRateByCurrency(Data.Currency, DayTime(Data.EffectiveDate).format('YYYY-MM-DD'), res => {
+                if (Object.keys(res.data.Data).length === 0) {
+                  this.setState({ showWarning: true })
+                }
+                else {
+                  this.setState({ showWarning: false })
+                }
+                this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate), showCurrency: true }, () => {
+                  this.handleCalculation()
+                })
               })
-            })
+            }
             this.setState({
               isEditFlag: true,
               IsFinancialDataChanged: false,
@@ -493,8 +495,10 @@ class AddBOPImport extends Component {
 
     if (this.state.isEditFlag && Number(checkForDecimalAndNull(NetLandedCost, initialConfiguration.NoOfDecimalForPrice)) === Number(checkForDecimalAndNull(this.state.DataToChange?.NetLandedCostConversion, initialConfiguration.NoOfDecimalForPrice))) {
       this.setState({ IsFinancialDataChanged: false })
-    }
+    } else if (this.state.isEditFlag) {
+      this.setState({ IsFinancialDataChanged: true })
 
+    }
     this.setState({ netLandedcost: (BasicRate), netLandedConverionCost: NetLandedCost })
     this.props.change('NetLandedCost', checkForDecimalAndNull((BasicRate), initialConfiguration.NoOfDecimalForPrice))
     this.props.change('NetLandedCostCurrency', checkForDecimalAndNull(NetLandedCost, initialConfiguration.NoOfDecimalForPrice))
@@ -803,14 +807,7 @@ class AddBOPImport extends Component {
       }
 
       if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) {
-        if (DropdownChange && String(DataToChange.Source) === String(values.Source) &&
-          Number(DataToChange.BasicRate) === Number(values.BasicRate) && DataToChange.Remark === values.Remark && (files === DataToChange.Attachements) &&
-          ((DataToChange.Source ? DataToChange.Source : '-') === (values.Source ? values.Source : '-')) &&
-          ((DataToChange.SourceLocation ? DataToChange.SourceLocation : '-') === (sourceLocation.value ? sourceLocation.value : '-'))) {
-          Toaster.warning('Please change data to send BOP for approval')
-          return false;
-        }
-        this.setState({ disablePopup: false })
+        console.log('IsFinancialDataChanged: ', IsFinancialDataChanged);
         if (IsFinancialDataChanged) {
           if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
             this.setState({ approveDrawer: true, approvalObj: formData })
@@ -822,6 +819,15 @@ class AddBOPImport extends Component {
             return false
           }
         }
+        if (DropdownChange && String(DataToChange.Source) === String(values.Source) &&
+          Number(DataToChange.BasicRate) === Number(values.BasicRate) && DataToChange.Remark === values.Remark && (files === DataToChange.Attachements) &&
+          ((DataToChange.Source ? DataToChange.Source : '-') === (values.Source ? values.Source : '-')) &&
+          ((DataToChange.SourceLocation ? DataToChange.SourceLocation : '-') === (sourceLocation.value ? sourceLocation.value : '-'))) {
+          Toaster.warning('Please change data to send BOP for approval')
+          return false;
+        }
+        this.setState({ disablePopup: false })
+
 
         if (DataToChange.IsVendor) {
           if (DropdownChange &&

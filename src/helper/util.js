@@ -68,11 +68,12 @@ const handleHTTPStatus = (response) => {
       const errMsg400 = response?.data?.Message ? response.data.Message : 'Bad Request. Please contact your IT Team.'
       return toast.error(errMsg400)
     case 401:
+      toast.error('Authentication error. Please contact your IT Team.')
       reactLocalStorage.setObject("isUserLoggedIn", false);
       reactLocalStorage.setObject("userDetail", {});
       reactLocalStorage.set('ModuleId', '');
       window.location.assign('/login');
-      return toast.error('Authentication error. Please contact your IT Team.')
+      return false
     case 403:
       const errMsg403 = response?.data?.Message ? response.data.Message : 'You are not allowed to access this resource. Please contact your IT Team.'
       return toast.error(errMsg403)
