@@ -16,7 +16,7 @@ export const config = () => {
 
 
 // DEVELOPMENT
-const BASE_URL = `http://10.10.1.100:1002/api/v1`;
+const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
 // const BASE_URL = `http://10.10.0.43/RohitCIR/api/v1`;
 // const BASE_URL = `https://demov3api.costitright.com/api/v1`;
 //const BASE_URL = `http://10.10.1.100:1002/api/v1`;
