@@ -495,6 +495,7 @@ export const ZBCOperation = [
     { label: 'Rate', value: 'Rate', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', }, //NOUI
     { label: 'IsSurfaceTreatmentOperation', value: 'IsSurfaceTreatmentOperation' },
+    { label: 'LabourRate', value: 'LabourRate', }, //NOUI
     { label: 'Remark', value: 'Remark', },
 ]
 
@@ -510,6 +511,7 @@ export const ZBCOperationTempData = [
         'Rate': 50,
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "IsSurfaceTreatmentOperation": "Yes or No",
+        'LabourRate': 5,
         'Remark': 'Remark Text',
     }
 ]
