@@ -233,6 +233,10 @@ export const MESSAGES = {
   DELETE_ROLE_SUCCESSFULLY: 'Role has been deleted successfully',
   ROLE_DELETE_ALERT: 'Are you sure you want to delete this role?',
   ROLE_UPDATE_ALERT: 'This will change the permissions for all the users associated with this role. Do you want to continue?',
+  ROLE_DEACTIVE_ALERT: 'Are you sure you want to de-activate this role?',
+  ROLE_ACTIVE_ALERT: 'Are you sure you want to activate this role?',
+  ROLE_ACTIVE_SUCCESSFULLY: 'Role has been activated successfully',
+  ROLE_INACTIVE_SUCCESSFULLY: 'Role has been de-activated successfully',
 
   //DEPARTMENT
   ADD_COMPANY_SUCCESSFULLY: 'Company has been added successfully',
