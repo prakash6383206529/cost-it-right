@@ -465,7 +465,7 @@ function MachiningStockTable(props) {
                   required: true,
                   pattern: {
                     value: /^\d{1,3}(\.\d{0,3})?$/i,
-                    message: 'Maximum length for interger is 3 and for decimal is 3',
+                    message: 'Maximum length for integer is 3 and for decimal is 3',
                   },
 
                 }}
@@ -495,7 +495,7 @@ function MachiningStockTable(props) {
                     required: true,
                     pattern: {
                       value: /^\d{0,3}(\.\d{0,5})?$/i,
-                      message: 'Maximum length for interger is 3 and for decimal is 5',
+                      message: 'Maximum length for integer is 3 and for decimal is 5',
                     },
 
                   }}
@@ -521,7 +521,7 @@ function MachiningStockTable(props) {
                     required: true,
                     pattern: {
                       value: /^\d{0,3}(\.\d{0,5})?$/i,
-                      message: 'Maximum length for interger is 3 and for decimal is 5',
+                      message: 'Maximum length for integer is 3 and for decimal is 5',
                     },
 
                     // maxLength: 4,
@@ -585,7 +585,7 @@ function MachiningStockTable(props) {
                   required: true,
                   pattern: {
                     value: /^\d{0,3}(\.\d{0,3})?$/i,
-                    message: 'Maximum length for interger is 3 and for decimal is 3',
+                    message: 'Maximum length for integer is 3 and for decimal is 3',
                   },
 
                   // maxLength: 4,
@@ -646,7 +646,7 @@ function MachiningStockTable(props) {
                   required: true,
                   pattern: {
                     value: /^\d{0,3}(\.\d{0,3})?$/i,
-                    message: 'Maximum length for interger is 3 and for decimal is 3',
+                    message: 'Maximum length for integer is 3 and for decimal is 3',
                   },
                   // maxLength: 4,
                 }}
@@ -670,7 +670,7 @@ function MachiningStockTable(props) {
                   required: true,
                   pattern: {
                     value: /^\d{0,3}(\.\d{0,3})?$/i,
-                    message: 'Maximum length for interger is 3 and for decimal is 3',
+                    message: 'Maximum length for integer is 3 and for decimal is 3',
                   },
 
                 }}
